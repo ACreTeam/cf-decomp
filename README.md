@@ -1,67 +1,83 @@
-decomp-toolkit Project Template
-===============================
+# Animal Crossing: City Folk
 
-If starting a new GameCube / Wii decompilation project, this repository can be used as a scaffold.
+[![Build Status]][actions] [![Discord Badge]][discord]
 
-See [decomp-toolkit](https://github.com/encounter/decomp-toolkit) for background on the concept and more information on the tooling used.
+[Build Status]: https://github.com/ACreTeam/cf-decomp/actions/workflows/build.yml/badge.svg
+[actions]: https://github.com/ACreTeam/cf-decomp/actions/workflows/build.yml
+[Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
+[discord]: https://discord.gg/hKx3FJJgrV
 
-Documentation
--------------
+A decompilation of Animal Crossing: City Folk for the Nintendo Wii.
 
-- [Dependencies](docs/dependencies.md)
-- [Getting Started](docs/getting_started.md)
+This repository does **not** contain any game assets. An existing copy of the game is required.
+
+Supported versions:
+
+- `RUUE01_00`: Rev 0 (USA)
+
+## Dependencies
+
+- Install [Python](https://www.python.org/downloads/).
+- Install [ninja](https://github.com/ninja-build/ninja/releases).
+
+See [Dependencies](docs/dependencies.md) for platform-specific setup. Native tooling
+is recommended on Windows; WSL and MSYS2 are not required. The compiler, linker
+and other build tools are downloaded automatically. On supported macOS and Linux
+platforms, [wibo](https://github.com/decompals/wibo) runs the Windows compiler tools.
+
+## Building
+
+1. Clone the repository:
+
+   ```sh
+   git clone https://github.com/ACreTeam/cf-decomp.git
+   cd cf-decomp
+   ```
+
+2. Extract your game's data partition and copy the files into `orig/RUUE01_00`.
+   The build requires the original DOL and all 187 RELs in this layout:
+
+   ```text
+   orig/RUUE01_00/sys/main.dol
+   orig/RUUE01_00/files/rels/*.rel
+   ```
+
+3. Configure:
+
+   ```sh
+   python configure.py --version RUUE01_00
+   ```
+
+4. Build:
+
+   ```sh
+   ninja
+   ```
+
+A successful build verifies the DOL and all RELs against their original SHA-1
+hashes. See [City Folk configuration setup](docs/city_folk_config.md) for details.
+
+## Diffing
+
+Once the initial build succeeds, an `objdiff.json` should exist in the project root.
+
+Download [objdiff](https://github.com/encounter/objdiff). Under project settings,
+set **Project directory** to this repository. The configuration should load automatically.
+
+Select an object from the left sidebar to begin diffing. Changes to source files,
+headers, `configure.py`, `splits.txt` or `symbols.txt` trigger automatic rebuilds.
+
+![objdiff interface](assets/objdiff.png)
+
+## Documentation
+
 - [City Folk configuration setup](docs/city_folk_config.md)
+- [Identified source splits](docs/identified_splits.txt)
 - [`symbols.txt`](docs/symbols.md)
 - [`splits.txt`](docs/splits.md)
-- [GitHub Actions](docs/github_actions.md)
+- [GitHub Actions and decomp.dev setup](docs/github_actions.md)
 
-General:
+## Credits
 
-- [Common BSS](docs/common_bss.md)
-- [`.comment` section](docs/comment_section.md)
-
-References
---------
-
-- [Discord: GC/Wii Decompilation](https://discord.gg/hKx3FJJgrV) (Come to `#dtk` for help!)
-- [objdiff](https://github.com/encounter/objdiff) (Local diffing tool)
-- [decomp.me](https://decomp.me) (Collaborate on matches)
-- [decomp.dev](https://decomp.dev) (Decompilation progress hub and API)
-- [wibo](https://github.com/decompals/wibo) (Minimal Win32 wrapper for Linux)
-- [sjiswrap](https://github.com/encounter/sjiswrap) (UTF-8 to Shift JIS wrapper)
-
-Nearly all active GC/Wii decompilation projects use this structure, and will be useful
-for reference. A list of active GC/Wii projects can be found on [decomp.dev](https://decomp.dev).
-
-Features
---------
-
-- Few external dependencies: Just `python` for the generator and `ninja` for the build system. See [Dependencies](docs/dependencies.md).
-- Simple configuration: Everything lives in `config.yml`, `symbols.txt`, and `splits.txt`.
-- Multi-version support: Separate configurations for each game version, and a `configure.py --version` flag to switch between them.
-- Feature-rich analyzer: Many time-consuming tasks are automated, allowing you to focus on the decompilation itself. See [Analyzer features](https://github.com/encounter/decomp-toolkit#analyzer-features).
-- REL support: RELs each have their own `symbols.txt` and `splits.txt`, and will automatically be built and linked against the main binary.
-- No manual assembly: decomp-toolkit handles splitting the DOL into relocatable objects based on the configuration. No game assets are committed to the repository.
-- Progress calculation and integration with [decomp.dev](https://decomp.dev).
-- Integration with [objdiff](https://github.com/encounter/objdiff) for a diffing workflow.
-- CI workflow template for GitHub Actions.
-
-Project structure
------------------
-
-- `configure.py` - Project configuration and generator script.
-- `config/[GAMEID]` - Configuration files for each game version.
-- `config/[GAMEID]/build.sha1` - SHA-1 hashes for each built artifact, for final verification.
-- `build/` - Build artifacts generated by the the build process. Ignored by `.gitignore`.
-- `orig/[GAMEID]` - Original game files, extracted from the disc. Ignored by `.gitignore`.
-- `orig/[GAMEID]/.gitkeep` - Empty checked-in file to ensure the directory is created on clone.
-- `src/` - C/C++ source files.
-- `include/` - C/C++ header files.
-- `tools/` - Scripts shared between projects.
-
-Temporary, delete when done:
-
-- `config/GAMEID/config.example.yml` - Example configuration file and documentation.
-- `docs/` - Documentation for decomp-toolkit configuration.
-- `README.md` - This file, replace with your own. For a template, see [`README.example.md`](README.example.md).
-- `LICENSE` - This repository is licensed under the CC0 license. Replace with your own if desired.
+- encounter and NWPlayer123 for [dtk-template](https://github.com/encounter/dtk-template)
+  and the build system.
