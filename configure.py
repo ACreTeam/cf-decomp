@@ -411,7 +411,7 @@ config.libs = [
         "cflags": cflags_identified_game,
         "progress_category": "sdk",
         "objects": [
-            Object(NonMatching, "lib/egg/core/eggDisposer.cpp"),
+            Object(Matching, "lib/egg/core/eggDisposer.cpp"),
             Object(NonMatching, "lib/egg/core/eggColorFader.cpp"),
         ],
     },
