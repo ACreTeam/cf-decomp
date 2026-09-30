@@ -13,6 +13,16 @@ Sections:
 	.sdata2     type:rodata align:8
 	.sbss2      type:bss align:16
 
+dol/game/d_actor.cpp:
+	.text       start:0x8000BCA8 end:0x8000C14C
+	.data       start:0x8049E010 end:0x8049E074 align:4
+	.sdata      start:0x80749798 end:0x807497A0 align:4
+	.sbss       start:0x8074E140 end:0x8074E148 align:4
+	.sdata2     start:0x8074FD68 end:0x8074FD70 align:4
+
+dol/game/d_base.cpp:
+	.text       start:0x80068474 end:0x800684A4
+
 dol/sLib/s_lib.cpp:
 	.text       start:0x802A9938 end:0x802A9EE0
 	.sdata      start:0x8074CB10 end:0x8074CB18 align:4

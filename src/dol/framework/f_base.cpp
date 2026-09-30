@@ -423,10 +423,6 @@ void *fBase_c::operator new(size_t size) {
     return mem;
 }
 
-inline void fBase_c::operator delete(void *mem) {
-    EGG::Heap::free(mem, mHeap::g_gameHeap);
-}
-
 void fBase_c::runCreate() {
     createPack();
 

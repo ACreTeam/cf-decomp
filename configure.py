@@ -406,6 +406,16 @@ config.libs = [
         ],
     },
     {
+        "lib": "game",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_identified_game,
+        "progress_category": "game",
+        "objects": [
+            Object(Matching, "dol/game/d_actor.cpp"),
+            Object(Matching, "dol/game/d_base.cpp"),
+        ],
+    },
+    {
         "lib": "EGG",
         "mw_version": "GC/3.0a5.2",
         "cflags": cflags_identified_game,

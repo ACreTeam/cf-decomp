@@ -6,6 +6,7 @@
 #include <game/framework/f_base_id.hpp>
 #include <game/framework/f_manager.hpp>
 #include <game/framework/f_line_mg.hpp>
+#include <game/mLib/m_heap.hpp>
 
 #define ACTOR_PARAM_CONFIG(name, offset, size) static const u16 PARAM_##name = ((offset << 8) | size)
 #define ACTOR_PARAM_LOCAL(param, name) ((param >> (PARAM_##name >> 8)) & ((1 << (PARAM_##name & 0xff)) - 1))
@@ -103,7 +104,7 @@ public:
     /// @details Bases are allocated in mHeap::g_gameHeap in a top-down direction, and are
     /// zero-initialized.
     static void *operator new(size_t);
-    static void operator delete(void *); ///< @p delete operator override for all bases.
+    static void operator delete(void *mem) { EGG::Heap::free(mem, mHeap::g_gameHeap); } ///< @p delete operator override for all bases.
 
 protected:
     /// @brief @p do method for the @p create operation.
