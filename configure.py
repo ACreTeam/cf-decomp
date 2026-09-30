@@ -354,7 +354,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             Object(NonMatching, "dol/sLib/s_lib.cpp"),
-            Object(NonMatching, "dol/sLib/s_Phase.cpp"),
+            Object(Matching, "dol/sLib/s_Phase.cpp"),
             Object(Matching, "dol/sLib/s_printf.cpp"),
         ],
     },
