@@ -23,6 +23,13 @@ dol/game/d_actor.cpp:
 dol/game/d_base.cpp:
 	.text       start:0x80068474 end:0x800684A4
 
+dol/game/d_demo_actor.cpp:
+	.text       start:0x80081868 end:0x80081F04
+	.ctors      start:0x8046564C end:0x80465650
+	.data       start:0x804D5938 end:0x804D59A0 align:4
+	.sbss       start:0x8074E288 end:0x8074E290 align:4
+	.sdata2     start:0x80750530 end:0x80750540 align:4
+
 dol/sLib/s_lib.cpp:
 	.text       start:0x802A9938 end:0x802A9EE0
 	.sdata      start:0x8074CB10 end:0x8074CB18 align:4

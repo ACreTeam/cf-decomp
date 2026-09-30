@@ -49,6 +49,11 @@ void addCalc0(float *value, float smoothing, float maxStep);
 /// @brief Returns the absolute wrapped distance between two binary angles.
 int distanceAngle(s16 angle1, s16 angle2);
 
+/// @brief Returns the signed wrapped difference from one binary angle to another.
+inline s16 angleDiff(s16 from, s16 to) {
+    return to - from;
+}
+
 /**
  * @brief Smoothly moves @p value towards @p target using proportional scaling.
  * @details If the applied step overshoots the target, the value is snapped exactly to the target.

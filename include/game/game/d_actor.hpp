@@ -34,7 +34,7 @@ public:
     static const mVec3_c* m_tmpCtPosP;
     static const mAng3_c* m_tmpCtAngleP;
 
-private:
+protected:
     mVec3_c mPos;
     mVec3_c mLastPos;
     mAng3_c mAngle;

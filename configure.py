@@ -413,6 +413,7 @@ config.libs = [
         "objects": [
             Object(Matching, "dol/game/d_actor.cpp"),
             Object(Matching, "dol/game/d_base.cpp"),
+            Object(Matching, "dol/game/d_demo_actor.cpp"),
         ],
     },
     {
