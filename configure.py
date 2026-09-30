@@ -353,7 +353,7 @@ config.libs = [
         "cflags": cflags_identified_game,
         "progress_category": "game",
         "objects": [
-            Object(NonMatching, "dol/sLib/s_lib.cpp"),
+            Object(Matching, "dol/sLib/s_lib.cpp"),
             Object(Matching, "dol/sLib/s_Phase.cpp"),
             Object(Matching, "dol/sLib/s_printf.cpp"),
         ],

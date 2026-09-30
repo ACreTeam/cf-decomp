@@ -15,6 +15,8 @@ Sections:
 
 dol/sLib/s_lib.cpp:
 	.text       start:0x802A9938 end:0x802A9EE0
+	.sdata      start:0x8074CB10 end:0x8074CB18 align:4
+	.sdata2     start:0x807528D0 end:0x807528D8 align:4
 
 dol/sLib/s_Phase.cpp:
 	.text       start:0x802A9EE0 end:0x802A9F98

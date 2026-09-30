@@ -40,6 +40,15 @@ T calcTimer(T *value) {
  */
 float addCalc(float *value, float target, float smoothing, float maxStep, float minStep);
 
+/// @brief Smooths towards a target with a maximum step and no minimum step.
+void addCalc2(float *value, float target, float smoothing, float maxStep);
+
+/// @brief Smooths towards zero with a maximum step.
+void addCalc0(float *value, float smoothing, float maxStep);
+
+/// @brief Returns the absolute wrapped distance between two binary angles.
+int distanceAngle(s16 angle1, s16 angle2);
+
 /**
  * @brief Smoothly moves @p value towards @p target using proportional scaling.
  * @details If the applied step overshoots the target, the value is snapped exactly to the target.
@@ -76,6 +85,7 @@ void addCalcAngle(s16 *value, s16 target, s16 smoothing, s16 maxStep); ///< @cop
  */
 template <typename T>
 BOOL chaseT(T *value, T target, T step);
+BOOL chase(u8 *value, u8 target, s16 step);
 BOOL chase(s16 *value, s16 target, s16 step); ///< @copydoc sLib::chaseT
 BOOL chase(int *value, int target, int step); ///< @copydoc sLib::chaseT
 BOOL chase(long *value, long target, long step); ///< @copydoc sLib::chaseT
@@ -91,19 +101,12 @@ BOOL chase(float *value, float target, float step); ///< @copydoc sLib::chaseT
  */
 BOOL chaseAngle(s16 *value, s16 target, s16 step);
 
-/**
- * @brief Moves @p value towards @p target by a fixed @p step amount.
- * @details The sign of @p step determines the rotation direction and is not automatically adjusted.
- * - If the step direction points toward the target and the applied step overshoots the target,
- * the value is snapped exactly to the target.
- * - If the step direction points away from the target, the value continues moving in that direction
- * and the value is not snapped to the target.
- * @param value The value to be updated.
- * @param target The target value.
- * @param step The step value.
- * @return @p TRUE if the value reached the target, @p FALSE otherwise.
- */
-BOOL chaseAngleByRotDir(s16 *value, s16 target, s16 step);
+/// @brief Tests an inclusive range, allowing either order for the bounds.
+template <typename T>
+BOOL isInRangeT(T value, T bound1, T bound2);
+BOOL isInRange(int value, int bound1, int bound2);
+BOOL isInRange(s16 value, s16 bound1, s16 bound2);
+BOOL isInRange(float value, float bound1, float bound2);
 
 extern vprintfFunc p_VPrintfFuncPtr; ///< Pointer to std::printf. @unofficial
 
