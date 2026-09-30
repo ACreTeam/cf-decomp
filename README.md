@@ -10,6 +10,7 @@ Documentation
 
 - [Dependencies](docs/dependencies.md)
 - [Getting Started](docs/getting_started.md)
+- [City Folk configuration setup](docs/city_folk_config.md)
 - [`symbols.txt`](docs/symbols.md)
 - [`splits.txt`](docs/splits.md)
 - [GitHub Actions](docs/github_actions.md)
