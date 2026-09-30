@@ -234,6 +234,7 @@ public:
 
     void rotX(mAng angle); ///< Rotates the vector on the X axis by the given angle.
     void rotY(mAng angle); ///< Rotates the vector on the Y axis by the given angle.
+    void rotZ(mAng angle); ///< Rotates the vector on the Z axis by the given angle.
 
     static mVec3_c Zero; ///< The null vector.
     static mVec3_c Ex; ///< The unit vector for the X axis.

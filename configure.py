@@ -394,7 +394,7 @@ config.libs = [
             Object(NonMatching, "dol/mLib/m_3d/anm_tex_pat.cpp"),
             Object(NonMatching, "dol/mLib/m_3d/anm_tex_srt.cpp"),
             Object(Matching, "dol/mLib/m_angle.cpp"),
-            Object(NonMatching, "dol/mLib/m_vec.cpp"),
+            Object(Matching, "dol/mLib/m_vec.cpp"),
             Object(NonMatching, "dol/mLib/m_2d.cpp"),
             Object(NonMatching, "dol/mLib/m_fader.cpp"),
             Object(NonMatching, "dol/mLib/m_fader_base.cpp"),

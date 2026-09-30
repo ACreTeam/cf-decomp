@@ -51,6 +51,15 @@ void mVec3_c::rotY(mAng angle) {
     this->z = -sin * x + cos * z;
 }
 
+void mVec3_c::rotZ(mAng angle) {
+    float cos = angle.cos();
+    float sin = angle.sin();
+    float x = this->x;
+    float y = this->y;
+    this->x = cos * x - sin * y;
+    this->y = sin * x + cos * y;
+}
+
 mVec3_c mVec3_c::Zero(0.0f, 0.0f, 0.0f);
 mVec3_c mVec3_c::Ex(1.0f, 0.0f, 0.0f);
 mVec3_c mVec3_c::Ey(0.0f, 1.0f, 0.0f);
