@@ -364,7 +364,7 @@ config.libs = [
         "cflags": cflags_identified_game,
         "progress_category": "game",
         "objects": [
-            Object(NonMatching, "dol/framework/f_arc_load.cpp"),
+            Object(Matching, "dol/framework/f_arc_load.cpp"),
             Object(NonMatching, "dol/framework/f_base.cpp"),
             Object(NonMatching, "dol/framework/f_line.cpp"),
             Object(NonMatching, "dol/framework/f_manager.cpp"),
