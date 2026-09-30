@@ -215,24 +215,67 @@ cflags_base = [
     f"-DVERSION_{config.version}",
 ]
 
+# Verified for the Matching cLib objects; the others remain candidates.
+# Start with NSMBW's code-generation flags and the imported header layout.
+cflags_clib = [
+    "-proc gekko",
+    "-fp hard",
+    "-O4",
+    "-func_align 4",
+    "-inline noauto",
+    "-Cpp_exceptions off",
+    "-enum int",
+    "-RTTI off",
+    "-ipa file",
+    "-enc SJIS",
+    "-nosyspath",
+    "-i include",
+    "-i include/lib",
+    "-i include/lib/MSL",
+    "-i include/lib/MSL/internal",
+    "-DREVOLUTION",
+]
+
 # Debug flags
 if args.debug:
     # Or -sym dwarf-2 for Wii compilers
     cflags_base.extend(["-sym on", "-DDEBUG=1"])
+    cflags_clib.extend(["-sym dwarf-2", "-DDEBUG=1"])
 else:
     cflags_base.append("-DNDEBUG=1")
+    cflags_clib.append("-DNDEBUG=1")
 
 # Warning flags
 if args.warn == "all":
     cflags_base.append("-W all")
+    cflags_clib.append("-W all")
 elif args.warn == "off":
     cflags_base.append("-W off")
+    cflags_clib.append("-W off")
 elif args.warn == "error":
     cflags_base.append("-W error")
+    cflags_clib.append("-W error")
+
+# Identified engine and EGG code has RTTI. Other code-generation settings
+# remain the cLib baseline until each imported implementation is matched.
+cflags_identified_game = [
+    *cflags_clib,
+    "-RTTI on",
+    "-i include/lib/revolution/BTE/include",
+    "-i include/lib/revolution/BTE/gki/common",
+    "-i include/lib/revolution/BTE/gki/platform",
+    "-i include/lib/revolution/BTE/stack/include",
+    "-i include/lib/revolution/BTE/stack/btm",
+    "-i include/lib/revolution/BTE/bta/include",
+    "-i include/lib/revolution/BTE/bta/sys",
+]
 
 # Metrowerks library flags
 cflags_runtime = [
     *cflags_base,
+    "-i include/lib",
+    "-i include/lib/MSL",
+    "-i include/lib/MSL/internal",
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-gccinc",
@@ -247,7 +290,7 @@ cflags_rel = [
     "-sdata2 0",
 ]
 
-config.linker_version = "Wii/1.0"
+config.linker_version = "GC/3.0a5.2"
 
 
 # Helper function for Dolphin libraries
@@ -265,7 +308,7 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
 def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
-        "mw_version": "GC/1.3.2",
+        "mw_version": "GC/3.0a5.2",
         "cflags": cflags_rel,
         "progress_category": "game",
         "objects": objects,
@@ -286,13 +329,101 @@ config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
     {
+        "lib": "cLib",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_clib,
+        "progress_category": "game",
+        "objects": [
+            Object(Matching, "dol/cLib/c_counter.cpp"),
+            Object(NonMatching, "dol/cLib/c_dylink.cpp"),
+            Object(Matching, "dol/cLib/c_lib.cpp"),
+            Object(Matching, "dol/cLib/c_line.cpp"),
+            # No verified City Folk split yet for c_m3d or c_owner_set.
+            Object(NonMatching, "dol/cLib/c_m3d.cpp"),
+            Object(Matching, "dol/cLib/c_math.cpp"),
+            Object(NonMatching, "dol/cLib/c_owner_set.cpp"),
+            # Preserve getRandomF's original extab and extabindex records.
+            Object(Matching, "dol/cLib/c_random.cpp", extra_cflags=["-Cpp_exceptions on"]),
+            Object(Matching, "dol/cLib/c_tree.cpp"),
+        ],
+    },
+    {
+        "lib": "sLib",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_identified_game,
+        "progress_category": "game",
+        "objects": [
+            Object(NonMatching, "dol/sLib/s_lib.cpp"),
+            Object(NonMatching, "dol/sLib/s_Phase.cpp"),
+            Object(NonMatching, "dol/sLib/s_printf.cpp"),
+        ],
+    },
+    {
+        "lib": "framework",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_identified_game,
+        "progress_category": "game",
+        "objects": [
+            Object(NonMatching, "dol/framework/f_arc_load.cpp"),
+            Object(NonMatching, "dol/framework/f_base.cpp"),
+            Object(NonMatching, "dol/framework/f_line.cpp"),
+            Object(NonMatching, "dol/framework/f_manager.cpp"),
+            Object(NonMatching, "dol/framework/f_tree.cpp"),
+        ],
+    },
+    {
+        "lib": "mLib",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_identified_game,
+        "progress_category": "game",
+        "objects": [
+            Object(NonMatching, "dol/mLib/m_heap.cpp"),
+            Object(NonMatching, "dol/mLib/m_mtx.cpp"),
+            Object(NonMatching, "dol/mLib/m_allocator.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/scn_leaf.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/calc_ratio.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/bmdl.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/smdl.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/mdl.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/banm.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/fanm.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/anm_chr.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/anm_vis.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/anm_mat_clr.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/anm_tex_pat.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/anm_tex_srt.cpp"),
+            Object(NonMatching, "dol/mLib/m_angle.cpp"),
+            Object(NonMatching, "dol/mLib/m_vec.cpp"),
+            Object(NonMatching, "dol/mLib/m_2d.cpp"),
+            Object(NonMatching, "dol/mLib/m_fader.cpp"),
+            Object(NonMatching, "dol/mLib/m_fader_base.cpp"),
+            Object(NonMatching, "dol/mLib/m_wipe_fader.cpp"),
+            Object(NonMatching, "dol/mLib/m_color_fader.cpp"),
+            Object(NonMatching, "dol/mLib/m_frustum.cpp"),
+            Object(NonMatching, "dol/mLib/m_3d/m_3d_capture.cpp"),
+            Object(NonMatching, "dol/mLib/m_color.cpp"),
+        ],
+    },
+    {
+        "lib": "EGG",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_identified_game,
+        "progress_category": "sdk",
+        "objects": [
+            Object(NonMatching, "lib/egg/core/eggDisposer.cpp"),
+            Object(NonMatching, "lib/egg/core/eggColorFader.cpp"),
+        ],
+    },
+    {
         "lib": "Runtime.PPCEABI.H",
         "mw_version": config.linker_version,
         "cflags": cflags_runtime,
         "progress_category": "sdk",  # str | List[str]
         "objects": [
             Object(NonMatching, "Runtime.PPCEABI.H/global_destructor_chain.c"),
-            Object(NonMatching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"),
+            Object(NonMatching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp", source="runtime/__init_cpp_exceptions.cpp"),
+            Object(NonMatching, "runtime/class_arrays.cpp", extra_cflags=["-Cpp_exceptions on"]),
         ],
     },
 ]

@@ -113,8 +113,12 @@ class PrepareConfigTests(unittest.TestCase):
         config["hash"] = helper.CITY_FOLK_DOL_HASH
         path = self.root / config["splits"]
         path.write_text("// initial comment\n", encoding="utf-8")
-        seeded = helper.initial_sections(self.root, config)[path]
+        outputs = helper.initial_sections(self.root, config)
+        seeded = outputs[path]
         self.assertTrue(seeded.startswith("// initial comment\n"))
+        self.assertIn(".text       type:code align:4", seeded)
+        self.assertIn("0x800075C0; // type:function size:0x4C align:16",
+                      outputs[self.root / config["symbols"]])
         self.assertIn(".sbss2      type:bss align:16", seeded)
         self.assertNotIn(".bss2", seeded)
         self.assertIn("Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:", seeded)
@@ -122,7 +126,12 @@ class PrepareConfigTests(unittest.TestCase):
             self.assertIn(f"rename:{subsection}", seeded)
         names = [line.split()[0] for line in seeded.splitlines() if "type:" in line]
         self.assertEqual(len(names), len(set(names)))
-        path.write_text(seeded, encoding="utf-8")
+        for destination, text in outputs.items():
+            destination.write_text(text, encoding="utf-8")
+        self.assertEqual(helper.initial_sections(self.root, config), {})
+        symbols = self.root / config["symbols"]
+        symbols.write_text("custom_name = .text:0x800075C0; // type:function size:0x4C align:16\n",
+                           encoding="utf-8")
         self.assertEqual(helper.initial_sections(self.root, config), {})
         config["modules"][0]["hash"] = "87a8ac3d70f23e8e5793aeb797ceb0e17fa68042"
         rel_path = self.root / config["modules"][0]["splits"]

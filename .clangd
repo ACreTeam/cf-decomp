@@ -1,0 +1,10 @@
+CompileFlags:
+  CompilationDatabase: .
+  Add:
+    # Match the cLib header search paths in configure.py.
+    - -Iinclude
+    - -Iinclude/lib
+    - -Iinclude/lib/MSL
+    - -Iinclude/lib/MSL/internal
+    # Imported CodeWarrior headers use __declspec attributes.
+    - -fdeclspec

@@ -2,7 +2,7 @@ Sections:
 	.init       type:code align:4
 	extab       type:rodata align:32
 	extabindex  type:rodata align:32
-	.text       type:code align:16
+	.text       type:code align:4
 	.ctors      type:rodata align:4
 	.dtors      type:rodata align:16
 	.rodata     type:rodata align:32
@@ -12,6 +12,183 @@ Sections:
 	.sbss       type:bss align:32
 	.sdata2     type:rodata align:8
 	.sbss2      type:bss align:16
+
+dol/sLib/s_lib.cpp:
+	.text       start:0x802A9938 end:0x802A9EE0
+
+dol/sLib/s_Phase.cpp:
+	.text       start:0x802A9EE0 end:0x802A9F98
+
+dol/sLib/s_printf.cpp:
+	.text       start:0x802A9F98 end:0x802AA07C
+
+dol/cLib/c_random.cpp:
+	extab       start:0x800064E0 end:0x800064E8
+	extabindex  start:0x80006BC0 end:0x80006BCC
+	.text       start:0x802AA07C end:0x802AA10C
+	.sdata2     start:0x807528D8 end:0x807528E0 align:4
+
+dol/cLib/c_counter.cpp:
+	.text       start:0x802AA10C end:0x802AA11C
+	.sbss       start:0x8074EFF0 end:0x8074EFF8 align:4
+
+dol/cLib/c_dylink.cpp:
+	.text       start:0x802AA11C end:0x802AAD00
+
+dol/cLib/c_lib.cpp:
+	.text       start:0x802AAD00 end:0x802AB6D0
+	.sdata2     start:0x807528E0 end:0x807528F0 align:4
+
+dol/cLib/c_line.cpp:
+	.text       start:0x802AB6D0 end:0x802AB820
+
+dol/cLib/c_math.cpp:
+	.text       start:0x802AB820 end:0x802ABC00
+	.ctors      start:0x804658BC end:0x804658C0
+	.data       start:0x80523160 end:0x80523968 align:4
+	.bss        start:0x806A5CA0 end:0x806A5CB8 align:4
+	.sbss       start:0x8074F010 end:0x8074F018 align:4
+	.sdata2     start:0x807528F0 end:0x80752920
+
+dol/cLib/c_tree.cpp:
+	.text       start:0x802ABC00 end:0x802ABDE0
+
+dol/framework/f_arc_load.cpp:
+	.text       start:0x802ABDE0 end:0x802ABF80
+
+dol/framework/f_base.cpp:
+	.text       start:0x802ABF80 end:0x802ACF14
+	.data       start:0x80523968 end:0x80523A78
+	.sdata      start:0x8074CB60 end:0x8074CB64 align:4
+	.sbss       start:0x8074F018 end:0x8074F028 align:4
+
+dol/framework/f_line.cpp:
+	.text       start:0x802ACF14 end:0x802AD060
+
+dol/framework/f_manager.cpp:
+	.text       start:0x802AD060 end:0x802AD2FC
+	.ctors      start:0x804658C0 end:0x804658C4
+	.data       start:0x80523A78 end:0x80523AB8 align:4
+	.bss        start:0x806A5CB8 end:0x806A5D58 align:4
+	.sdata      start:0x8074CB68 end:0x8074CB6C align:4
+	.sbss       start:0x8074F030 end:0x8074F034 align:4
+
+dol/framework/f_tree.cpp:
+	.text       start:0x802AD2FC end:0x802AD3E8
+
+dol/mLib/m_heap.cpp:
+	.text       start:0x802ADBB8 end:0x802AE09C
+
+dol/mLib/m_mtx.cpp:
+	.text       start:0x802AE09C end:0x802AE4F0
+	.ctors      start:0x804658C8 end:0x804658CC
+	.bss        start:0x806A5DA0 end:0x806A5DD0 align:4
+	.sdata2     start:0x80752920 end:0x80752930 align:4
+
+dol/mLib/m_allocator.cpp:
+	.text       start:0x802AE4F0 end:0x802AE810
+	.data       start:0x80523C78 end:0x80523C90
+	.sdata2     start:0x80752930 end:0x80752938 align:4
+
+dol/mLib/m_3d.cpp:
+	.text       start:0x802AE810 end:0x802AEC18
+	.sbss       start:0x8074F070 end:0x8074F078 align:4
+
+dol/mLib/m_3d/scn_leaf.cpp:
+	.text       start:0x802AEC18 end:0x802AEE8C
+
+dol/mLib/m_3d/calc_ratio.cpp:
+	.text       start:0x802AEE8C end:0x802AEFD4
+
+dol/mLib/m_3d/bmdl.cpp:
+	.text       start:0x802AEFD4 end:0x802AF99C
+
+dol/mLib/m_3d/smdl.cpp:
+	.text       start:0x802AF99C end:0x802AFAEC
+
+dol/mLib/m_3d/mdl.cpp:
+	.text       start:0x802AFAEC end:0x802B0520
+
+dol/mLib/m_3d/banm.cpp:
+	.text       start:0x802B0520 end:0x802B06D0
+
+dol/mLib/m_3d/fanm.cpp:
+	.text       start:0x802B06D0 end:0x802B0C00
+
+dol/mLib/m_3d/anm_chr.cpp:
+	.text       start:0x802B0C00 end:0x802B100C
+
+dol/mLib/m_3d/anm_vis.cpp:
+	.text       start:0x802B100C end:0x802B1254
+
+dol/mLib/m_3d/anm_mat_clr.cpp:
+	.text       start:0x802B13BC end:0x802B1E40
+
+dol/mLib/m_3d/anm_tex_pat.cpp:
+	.text       start:0x802B1E40 end:0x802B28D8
+
+dol/mLib/m_3d/anm_tex_srt.cpp:
+	.text       start:0x802B28D8 end:0x802B3368
+
+dol/mLib/m_angle.cpp:
+	.text       start:0x802B3998 end:0x802B39E4
+	.ctors      start:0x804658CC end:0x804658D0
+	.sbss       start:0x8074F080 end:0x8074F09E align:4
+
+dol/mLib/m_vec.cpp:
+	.text       start:0x802B3E40 end:0x802B41E4
+	.ctors      start:0x804658D0 end:0x804658D4
+	.bss        start:0x806A5DE0 end:0x806A5E40 align:4
+	.sdata2     start:0x80752970 end:0x80752980 align:4
+
+dol/mLib/m_2d.cpp:
+	.text       start:0x802B42F4 end:0x802B6484
+	.ctors      start:0x804658D4 end:0x804658D8
+	.bss        start:0x806A5E40 end:0x806A5E4C
+	.sbss       start:0x8074F0A0 end:0x8074F0A4 align:4
+	.sbss2      start:0x80753A08 end:0x80753A10 align:4
+
+dol/mLib/m_fader.cpp:
+	.text       start:0x802B6484 end:0x802B65E4
+	.sbss       start:0x8074F0B8 end:0x8074F0BC align:4
+
+dol/mLib/m_fader_base.cpp:
+	.text       start:0x802B65E4 end:0x802B679C
+	.data       start:0x80524238 end:0x80524260 align:4
+
+dol/mLib/m_wipe_fader.cpp:
+	.text       start:0x802B679C end:0x802B6ED4
+	.data       start:0x80524260 end:0x80524290 align:4
+
+dol/mLib/m_color_fader.cpp:
+	.text       start:0x802B6ED4 end:0x802B7230
+	.data       start:0x80524290 end:0x805242B4 align:4
+
+dol/mLib/m_frustum.cpp:
+	.text       start:0x802B7230 end:0x802B77BC
+	.sdata2     start:0x80752A28 end:0x80752A38 align:4
+
+dol/mLib/m_3d/m_3d_capture.cpp:
+	.text       start:0x802B77BC end:0x802B7A6C
+	.sdata2     start:0x80752A38 end:0x80752A40 align:4
+
+dol/mLib/m_color.cpp:
+	.text       start:0x802B8C1C end:0x802B8D30
+	.sdata2     start:0x80752A40 end:0x80752A50 align:4
+
+lib/egg/core/eggDisposer.cpp:
+	.text       start:0x804409DC end:0x80440AA4
+	.data       start:0x80561578 end:0x80561588
+
+lib/egg/core/eggColorFader.cpp:
+	.text       start:0x80441CD0 end:0x8044221C
+	.data       start:0x80561658 end:0x80561680
+	.sdata2     start:0x80753220 end:0x80753228 align:4
+
+runtime/class_arrays.cpp:
+	extab       start:0x80006938 end:0x80006980
+	extabindex  start:0x80007244 end:0x80007280
+	.text       start:0x8044E028 end:0x8044E3D8
 
 Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.text       start:0x8044EE58 end:0x8044EEC8

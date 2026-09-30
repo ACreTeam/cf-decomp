@@ -28,6 +28,8 @@ and hash-manifest contents are backed up under `build/config-backups/RUUE01_00`.
 Existing symbol and split analysis is preserved. For the verified RUUE01_00
 DOL and three REL hashes, blank/comment-only split files get initial section headers.
 The DOL profile also seeds the required exception-runtime split described below.
+An empty DOL symbols file gets the verified first `.text` function's 16-byte
+alignment override; other code defaults to four-byte alignment.
 Missing parent directories are created; DTK's initial analysis creates/populates
 the remaining files.
 `--check` verifies originals and output freshness without writing anything.
@@ -135,14 +137,128 @@ Petari's configuration was reviewed as a reference, but its compiler settings
 and map-based source layout were not copied. No `configure.py` changes were
 needed for this final fix. Original binaries, expected hashes, and verification
 rules remain unchanged; outputs are produced by DTK and the linker without
-post-link byte patches. A passing hash here means a matching reconstruction
-from the extracted objects, not that any game source has been decompiled yet.
+post-link byte patches. That initial baseline used extracted objects throughout.
+The first source-backed object is described below.
 
 Build and DOL comparison logs are saved under `build/matching-build.log` and
 `build/matching-dol-diff.log`. A successful `dtk dol diff` produces no output.
+
+## First shared source split: c_line.cpp
+
+`src/dol/cLib/c_line.cpp` is the first matching source-backed object. It contains
+four `cLineMg_c` linked-list methods, with no out-of-line constructors, vtables,
+or data allocations. The imported source and headers compile unchanged.
+
+[NSMBW's slice configuration](https://github.com/NSMBW-Community/NSMBW-Decomp/blob/master/slices/wiimj2d.json)
+lists this file as a code-only range at `.text` offsets
+`0x15A8D0..0x15AA20`, totaling `0x150` bytes. This suggests a candidate grouping;
+City Folk's addresses were established independently by compiling the imported
+source and searching the original DOL for its instructions.
+
+| Method | RUUE01_00 address | Size |
+| --- | --- | --- |
+| `cLineMg_c::insertLineNode` | `0x802AB6D0` | `0x50` |
+| `cLineMg_c::removeLineNode` | `0x802AB720` | `0x80` |
+| `cLineMg_c::addLastLineNode` | `0x802AB7A0` | `0x40` |
+| `cLineMg_c::addTopLineNode` | `0x802AB7E0` | `0x40` |
+
+Each compiled function has one unique match in the DOL after accounting for
+relocations. The only relocation is the tail branch at `0x802AB6D8` to
+`addTopLineNode` at `0x802AB7E0`, also confirmed in Ghidra. These contiguous
+functions occupy `.text` from `0x802AB6D0` through `0x802AB820` (exclusive),
+with no gaps or extra functions. The split and four mangled symbols are recorded
+in `config/RUUE01_00/splits.txt` and `symbols.txt`.
+
+`configure.py` registers `dol/cLib/c_line.cpp` as `Matching`, using `Wii/1.0`
+and scoped `cflags_clib` based on NSMBW's default code-generation flags.
+Objdiff reports all four functions and all 336 code bytes matched, and the
+source-backed build passes the original DOL plus all 187 REL checksums.
+The verification log is `build/shared-file-test/build.log`.
+
+This validates a usable source split without a linker map. It does not prove
+the historical filename or original translation-unit boundaries, nor establish
+compiler/RTTI flags for other engine files. Validate each additional file's
+code, data, relocations, and final checksum before marking it matching.
+
+## Remaining cLib scan
+
+All nine imported `src/dol/cLib/*.cpp` files were compiled with Wii/1.0 and
+scanned against RUUE01_00. Their order and contents are only partly shared with
+NSMBW. No imported C++ source or header changes were needed for this scan.
+
+| File | Current status | City Folk `.text` range (end exclusive) |
+| --- | --- | --- |
+| `c_counter.cpp` | Matching, linked from source | `0x802AA10C..0x802AA11C` |
+| `c_dylink.cpp` | NonMatching, code split for comparison | `0x802AA11C..0x802AAD00` |
+| `c_lib.cpp` | NonMatching, code/constants split for comparison | `0x802AAD00..0x802AB6D0` |
+| `c_line.cpp` | Matching, linked from source | `0x802AB6D0..0x802AB820` |
+| `c_math.cpp` | NonMatching, code/data split for comparison | `0x802AB820..0x802ABC00` |
+| `c_tree.cpp` | Matching, linked from source | `0x802ABC00..0x802ABDE0` |
+| `c_m3d.cpp` | NonMatching, no reliable location yet | Unassigned |
+| `c_owner_set.cpp` | NonMatching, no reliable location yet | Unassigned |
+| `c_random.cpp` | NonMatching, code/data split for comparison | `0x802AA07C..0x802AA10C` |
+
+The three matching objects total 832 code bytes, 11 functions, and 8 data bytes.
+All have 100% objdiff matches and are used by the normal link. The complete DOL
+and all 187 RELs still pass the original checksums. NonMatching units with splits
+compile for objdiff but use their extracted objects in the link. The two
+unassigned entries are recorded in `configure.py`; without established splits,
+they do not yet have Ninja/objdiff units. They were compiled separately for the scan.
+
+`c_counter.cpp` accesses `m_gameFrame` and `m_exeFrame` at `0x8074EFF0` and
+`0x8074EFF4`. The startup register initialization confirms `r13 = 0x807516C0`;
+the stores use offsets `-0x26D0` and `-0x26CC`. `c_tree.cpp` matches unchanged
+after adding `-func_align 4` following `-O4`. MWCC's `-O4` otherwise selects
+16-byte function alignment and introduces different loop padding as well.
+
+The DOL `.text` section default and the helper's initial profile now use
+`align:4`. The first function at `0x800075C0` explicitly retains `align:16`:
+`extabindex` ends at `0x800075B8`, so omitting that override moves the whole code
+section eight bytes earlier. The original DOL header and checksum comparison
+establish this exception. Preserve it when changing section or split defaults.
+
+The NonMatching ranges are working groupings supported by function comparisons
+and references, not recovered linker-map records. `c_dylink` has a matching
+checksum helper and constructor/destructor runners, but different module-control
+code; its data ownership still needs work. `c_lib` has additional City Folk
+functions and different vector code. Its shared methods were identified using
+instruction matches and Ghidra's control/data flow; their imported type names
+are working names for comparison, not independent proof of the original types.
+`c_math` has five exact larger-function matches and the same 1,025-entry arctangent
+table at `0x80523160`, but extra functions and different RNG initialization.
+Its initializer at `0x802ABB98` uses the constructor pointer at `0x804658BC`,
+two RNG objects at `0x8074F010..0x8074F018`, and destructor-registration storage
+at `0x806A5CA0..0x806A5CB8`. These references establish its data splits.
+
+`c_random` now has a working `.text` split at `0x802AA07C..0x802AA10C`:
+`cRandom_c::setSeed(u32)` at `0x802AA07C` (8 bytes), the no-argument raw RNG
+step at `0x802AA084` (80 bytes), and `cRandom_c::getRandomF()` at `0x802AA0D4`
+(56 bytes). The raw step is named `ranqdStep` to match the imported helper;
+these are reconstructed names, not recovered linker-map symbols. Ghidra confirms
+the function boundaries and the float routine's reference to `1.0f` at
+`0x807528D8`; its `.sdata2` split includes the following four padding bytes,
+ending at `0x807528E0`. The object remains `NonMatching`: the imported source
+also contains scaled-integer and second-float methods, and inlines its raw step,
+so configuring the split does not establish a source match.
+
+The scanner is now saved as `tools/find_candidates.py`. It preserves instruction
+opcodes and register fields when masking relocations, handles branch-only
+functions, rejects unsupported relocations, and can check known branch/SDA
+targets and DTK function boundaries. It only reads inputs and reports candidates;
+always validate relocation targets and the final checksum before linking a file.
+For example, after building the configured source objects:
+
+```powershell
+& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' tools/find_candidates.py build/RUUE01_00/src/dol/cLib/c_tree.o --dol orig/RUUE01_00/sys/main.dol --symbols config/RUUE01_00/symbols.txt --r2 0x80757D40 --r13 0x807516C0
+```
+
+The nine-object scan is saved at `build/shared-file-test/clib-scan.json`;
+the passing build and empty DOL diff logs are `clib-build.log` and
+`clib-dol-diff.log` in the same directory.
 
 ## Helper tests
 
 ```powershell
 & 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' -m unittest discover -s tools -p test_prepare_config.py -v
+& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' -m unittest discover -s tools -p test_find_candidates.py -v
 ```

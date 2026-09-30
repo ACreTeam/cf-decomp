@@ -1,0 +1,187 @@
+#include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_heap.hpp>
+
+size_t m3d::anmMatClr_c::child_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, bool calcAligned) {
+    size_t size = 0;
+    nw4r::g3d::AnmObjMatClrRes::Construct(nullptr, &size, anmClr, mdl, false);
+    if (calcAligned) {
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
+    }
+    return size;
+}
+
+bool m3d::anmMatClr_c::child_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, mAllocator_c *allocator, size_t *objSize) {
+    if (allocator == nullptr) {
+        allocator = m3d::internal::l_allocator_p;
+    }
+
+    size_t size;
+    if (objSize == nullptr) {
+        objSize = &size;
+    }
+
+    *objSize = heapCost(mdl, anmClr, false);
+    if (!createAllocator(allocator, objSize)) {
+        return false;
+    }
+
+    mpObj = nw4r::g3d::AnmObjMatClrRes::Construct(&mAllocator, nullptr, anmClr, mdl, false);
+    if (!mpObj->Bind(mdl)) {
+        remove();
+        return false;
+    }
+    setFrmCtrlDefault(anmClr, PLAYMODE_INHERIT);
+    return true;
+}
+
+void m3d::anmMatClr_c::child_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmClr anmClr, m3d::playMode_e playMode) {
+    releaseAnm();
+    mpObj = nw4r::g3d::AnmObjMatClrRes::Construct(&mAllocator, nullptr, anmClr, mdl.getResMdl(), false);
+    mpObj->Bind(mdl.getResMdl());
+    setFrmCtrlDefault(anmClr, playMode);
+}
+
+void m3d::anmMatClr_c::child_c::releaseAnm() {
+    if (mpObj == nullptr) {
+        return;
+    }
+    mpObj->Release();
+    mpHeap->free(MEM_FRM_HEAP_FREE_ALL);
+    mpObj = nullptr;
+}
+
+void m3d::anmMatClr_c::child_c::setFrmCtrlDefault(nw4r::g3d::ResAnmClr &anmClr, m3d::playMode_e playMode) {
+    if (playMode == PLAYMODE_INHERIT) {
+        playMode = (anmClr.GetAnmPolicy() == nw4r::g3d::ANM_POLICY_ONETIME) ? FORWARD_ONCE : FORWARD_LOOP;
+    }
+    fanm_c::set(anmClr.GetNumFrame(), playMode, 1.0f, -1.0f);
+}
+
+size_t m3d::anmMatClr_c::heapCost(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, long count, bool calcAligned) {
+    size_t size = 0;
+    nw4r::g3d::AnmObjMatClrOverride::Construct(nullptr, &size, mdl, count);
+    size += nw4r::ut::RoundUp(count * sizeof(child_c), 0x20);
+    size += nw4r::ut::RoundUp(child_c::heapCost(mdl, anmClr, true), 0x20) * count;
+    if (calcAligned) {
+        size = nw4r::ut::RoundUp(mHeap::frmHeapCost(size, 0x20), 0x20);
+    }
+    return size;
+}
+
+bool m3d::anmMatClr_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmClr anmClr, mAllocator_c *allocator, size_t *objSize, long count) {
+    if (allocator == nullptr) {
+        allocator = m3d::internal::l_allocator_p;
+    }
+
+    size_t size = 0;
+    if (objSize == nullptr) {
+        objSize = &size;
+    }
+
+    *objSize = heapCost(mdl, anmClr, count, false);
+    if (!createAllocator(allocator, objSize)) {
+        return false;
+    }
+
+    mpObj = nw4r::g3d::AnmObjMatClrOverride::Construct(&mAllocator, nullptr, mdl, count);
+    mpChildren = (m3d::anmMatClr_c::child_c *) MEMAllocFromAllocator(&mAllocator, nw4r::ut::RoundUp(count * sizeof(child_c), 0x20));
+
+    nw4r::g3d::AnmObjMatClrOverride *matClrOverride = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
+
+    child_c *child = &mpChildren[0];
+    for (int i = 0; i < count; i++) {
+        new(child) child_c();
+        if (!child->create(mdl, anmClr, &mAllocator, nullptr)) {
+            mHeap::destroyFrmHeap(mpHeap);
+            return false;
+        }
+        if (i == 0) {
+            nw4r::g3d::AnmObjMatClrRes *clrRes = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrRes>(child->getObj());
+            matClrOverride->Attach(i, clrRes);
+        } else {
+            child->releaseAnm();
+        }
+        child++;
+    }
+    return true;
+}
+
+m3d::anmMatClr_c::~anmMatClr_c() {
+    anmMatClr_c::remove();
+}
+
+void m3d::anmMatClr_c::remove() {
+    nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
+    if (matClr != nullptr && mpChildren != nullptr) {
+        int count = matClr->Size();
+        for (int i = 0; i < count; i++) {
+            mpChildren[i].remove();
+        }
+        mpChildren = nullptr;
+    }
+    banm_c::remove();
+}
+
+void m3d::anmMatClr_c::setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmClr clr, long idx, m3d::playMode_e playMode) {
+    nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
+    matClr->Detach(idx);
+    mpChildren[idx].setAnm(mdl, clr, playMode);
+    nw4r::g3d::AnmObjMatClrRes *clrRes = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrRes>(mpChildren[idx].getObj());
+    matClr->Attach(idx, clrRes);
+}
+
+void m3d::anmMatClr_c::releaseAnm(long idx) {
+    nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
+    matClr->Detach(idx);
+    mpChildren[idx].releaseAnm();
+}
+
+void m3d::anmMatClr_c::play() {
+    nw4r::g3d::AnmObjMatClrOverride *matClr = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::AnmObjMatClrOverride>(mpObj);
+    int count = matClr->Size();
+    for (int i = 0; i < count; i++) {
+        play(i);
+    }
+}
+
+void m3d::anmMatClr_c::play(long idx) {
+    if (mpChildren[idx].IsBound()) {
+        mpChildren[idx].play();
+    }
+}
+
+float m3d::anmMatClr_c::getFrame(long idx) const {
+    return mpChildren[idx].getFrame();
+}
+
+void m3d::anmMatClr_c::setFrame(float frame, long idx) {
+    mpChildren[idx].setFrame(frame);
+}
+
+float m3d::anmMatClr_c::getRate(long idx) const {
+    return mpChildren[idx].getRate();
+}
+
+void m3d::anmMatClr_c::setRate(float rate, long idx) {
+    mpChildren[idx].setRate(rate);
+}
+
+bool m3d::anmMatClr_c::isStop(long idx) const {
+    return mpChildren[idx].isStop();
+}
+
+bool m3d::anmMatClr_c::checkFrame(float frame, long idx) const {
+    return mpChildren[idx].checkFrame(frame);
+}
+
+void m3d::anmMatClr_c::setPlayMode(m3d::playMode_e playMode, long idx) {
+    mpChildren[idx].mPlayMode = playMode;
+}
+
+float m3d::anmMatClr_c::getFrameMax(long idx) const {
+    return mpChildren[idx].mFrameMax;
+}
+
+float m3d::anmMatClr_c::getFrameStart(long idx) const {
+    return mpChildren[idx].mFrameStart;
+}

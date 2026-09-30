@@ -26,6 +26,9 @@ except ImportError:
 PROJECT = Path(__file__).resolve().parent.parent
 PLACEHOLDER_HASH = "0123456789abcdef0123456789abcdef01234567"
 CITY_FOLK_DOL_HASH = "c87967b9ac0a943ba04ac16d875f5f79b4c46516"
+# The DOL starts .text at 0x800075C0, eight bytes after extabindex ends.
+# Keep this boundary while defaulting other code to four-byte alignment.
+CITY_FOLK_INITIAL_SYMBOLS = "fn_800075C0 = .text:0x800075C0; // type:function size:0x4C align:16\n"
 # Verified against this revision's DOL/startup table and DTK section detection.
 # DTK 1.8.3 may misname the final region as .bss2 or a second .sbss.
 # Original r2-relative accesses require the linker-recognized name .sbss2.
@@ -33,7 +36,7 @@ CITY_FOLK_SECTIONS = """Sections:
 \t.init       type:code align:4
 \textab       type:rodata align:32
 \textabindex  type:rodata align:32
-\t.text       type:code align:16
+\t.text       type:code align:4
 \t.ctors      type:rodata align:4
 \t.dtors      type:rodata align:16
 \t.rodata     type:rodata align:32
@@ -281,19 +284,23 @@ def write_changed(root: Path, path: Path, content: str, version: str) -> bool:
 
 
 def initial_sections(root: Path, config: dict) -> dict[Path, str]:
-    """Seed blank/comment-only splits for binaries with verified section profiles."""
+    """Seed empty analysis files with verified section/alignment settings."""
     outputs = {}
     for module in [config, *config.get("modules", [])]:
         sections = SECTION_PROFILES.get(module["hash"])
         if sections is None:
             continue
-        path = inside(root, module["splits"])
-        previous = path.read_text(encoding="utf-8-sig") if path.exists() else ""
-        if any(line.strip() and not line.lstrip().startswith(("//", "#")) for line in previous.splitlines()):
-            continue
-        # Preserve the user's initial comments, and never replace real split records.
-        prefix = previous.rstrip() + "\n\n" if previous.strip() else ""
-        outputs[path] = prefix + sections
+        seeds = {"splits": sections}
+        if module["hash"] == CITY_FOLK_DOL_HASH:
+            seeds["symbols"] = CITY_FOLK_INITIAL_SYMBOLS
+        for key, seed in seeds.items():
+            path = inside(root, module[key])
+            previous = path.read_text(encoding="utf-8-sig") if path.exists() else ""
+            if any(line.strip() and not line.lstrip().startswith(("//", "#")) for line in previous.splitlines()):
+                continue
+            # Preserve initial comments and never replace real analysis records.
+            prefix = previous.rstrip() + "\n\n" if previous.strip() else ""
+            outputs[path] = prefix + seed
     return outputs
 
 

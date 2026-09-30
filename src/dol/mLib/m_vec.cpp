@@ -1,0 +1,57 @@
+#include <game/mLib/m_angle.hpp>
+#include <game/mLib/m_vec.hpp>
+#include <float.h>
+#include <nw4r/math.h>
+
+// [This is required to ensure correct sdata2 ordering]
+// [It will be deadstripped by the linker later]
+DECL_WEAK
+void DUMMY_ORDERING() {
+    nw4r::math::SinIdx(0);
+}
+
+inline bool isZero(float val) {
+    return (std::fabs(val) <= FLT_EPSILON);
+}
+
+float mVec3_c::normalize() {
+    float mag = PSVECMag(*this);
+    if (!isZero(mag)) {
+        operator*=(1.0f/mag);
+    }
+
+    return mag;
+}
+
+bool mVec3_c::normalizeRS() {
+    float mag = PSVECMag(*this);
+    if (isZero(mag)) {
+        return false;
+    }
+
+    operator*=(1.0f/mag);
+    return true;
+}
+
+void mVec3_c::rotX(mAng angle) {
+    float cos = angle.cos();
+    float sin = angle.sin();
+    float y = this->y;
+    float z = this->z;
+    this->y = cos * y - sin * z;
+    this->z = sin * y + cos * z;
+}
+
+void mVec3_c::rotY(mAng angle) {
+    float cos = angle.cos();
+    float sin = angle.sin();
+    float x = this->x;
+    float z = this->z;
+    this->x = cos * x + sin * z;
+    this->z = -sin * x + cos * z;
+}
+
+mVec3_c mVec3_c::Zero(0.0f, 0.0f, 0.0f);
+mVec3_c mVec3_c::Ex(1.0f, 0.0f, 0.0f);
+mVec3_c mVec3_c::Ey(0.0f, 1.0f, 0.0f);
+mVec3_c mVec3_c::Ez(0.0f, 0.0f, 1.0f);
