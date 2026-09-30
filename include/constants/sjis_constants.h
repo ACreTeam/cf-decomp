@@ -29,6 +29,9 @@
 // [Translation: Dynamic linking heap (mHeap::dylinkHeap)]
 #define DYLINK_HEAP_NAME "ダイナミックリンク用ヒープ(mHeap::dylinkHeap)"
 
+// [Translation: General-purpose game heap (mHeap::gameHeap)]
+#define GAME_HEAP_NAME "ゲーム用汎用ヒープ(mHeap::gameHeap)"
+
 // [Translation: General-purpose heap for games 1(mHeap::gameHeaps[1])]
 #define GAME_HEAP_1_NAME "ゲーム用汎用ヒープ1(mHeap::gameHeaps[1])"
 

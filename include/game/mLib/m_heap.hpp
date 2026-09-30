@@ -12,10 +12,9 @@
  * It supports:
  * - @ref EGG::ExpHeap "Expandable heaps".
  * - @ref EGG::FrmHeap "Frame heaps".
- * - @ref EGG::UnitHeap "Unit heaps".
  *
  * It also manages various game-specific heaps:
- * - The @ref g_gameHeaps "game heaps", used for most game-related content. One game heap is created in MEM1 and one in MEM2.
+ * - The @ref g_gameHeap "game heap", used for most game-related content.
  * - The @ref g_archiveHeap "archive heap", used for loading resource files.
  * - The @ref g_commandHeap "command heap", used for @ref mDvd_command_c "DVD commands".
  * - The @ref g_dylinkHeap "dylink heap", used for loading and linking the game's REL files.
@@ -32,7 +31,9 @@ namespace mHeap {
         OPT_THREAD_SAFE = BIT_FLAG(2)  ///< Enables thread-safe memory block de/allocation.
     };
 
-    /// @brief The identifiers for the predefined game heaps.
+    // NSMBW declarations retained for imported callers that have not been ported.
+    // City Folk uses the single g_gameHeap and the two-argument createGameHeap.
+    /// @brief The identifiers for NSMBW's predefined game heaps.
     /// @unofficial
     enum GAME_HEAP_e {
         GAME_HEAP_DEFAULT, ///< The default game heap (alias of MEM1 or MEM2).
@@ -68,6 +69,7 @@ namespace mHeap {
     /// @return The total allocation size required.
     size_t frmHeapCost(size_t size, ulong align);
 
+    // NSMBW-only declaration retained for unported imported sources.
     /**
     * @brief Calculates the total required size for an @ref EGG::UnitHeap "unit heap", including internal overhead.
     * @param size The requested usable size.
@@ -119,6 +121,7 @@ namespace mHeap {
      */
     EGG::FrmHeap *createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt);
 
+    // NSMBW-only declaration retained for unported imported sources.
     /**
      * @brief Creates a unit heap.
      * @param size The size of the heap, or -1 to use all space available.
@@ -135,6 +138,7 @@ namespace mHeap {
         return GAME_HEAP_MEM1 <= idx && idx <= GAME_HEAP_MEM2;
     }
 
+    // NSMBW-only declaration retained for unported imported sources.
     /**
      * @brief Creates a generic expandable heap, with @ref MEM_EXP_HEAP_ALLOC_FAST "fast allocation mode" and @ref OPT_THREAD_SAFE "thread-safe de/allocation".
      * @param size The heap size.
@@ -144,6 +148,7 @@ namespace mHeap {
      */
     EGG::ExpHeap *createHeap(size_t size, EGG::Heap *parent, const char *name);
 
+    // NSMBW-only declarations retained for unported imported sources.
     /**
     * @brief Creates a game heap.
     * @param idx The game heap index.
@@ -154,19 +159,24 @@ namespace mHeap {
     EGG::Heap *createGameHeap(int idx, size_t size, EGG::Heap* parent);
     EGG::Heap *createGameHeap1(size_t size, EGG::Heap *parent); ///< Creates the MEM1 game heap. See createGameHeap().
     EGG::Heap *createGameHeap2(size_t size, EGG::Heap *parent); ///< Creates the MEM2 game heap. See createGameHeap().
-    EGG::Heap *createArchiveHeap(size_t size, EGG::Heap *parent); ///< Creates the archive heap. See createHeap().
-    EGG::Heap *createCommandHeap(size_t size, EGG::Heap *parent); ///< Creates the DVD command heap. See createHeap().
-    EGG::Heap *createDylinkHeap(size_t size, EGG::Heap *parent); ///< Creates the REL linking heap. See createHeap().
+    // City Folk's named expandable heaps use fast allocation and locking.
+    // Creation must succeed: these wrappers do not check for allocation failure.
+    EGG::Heap *createGameHeap(size_t size, EGG::Heap *parent); ///< Creates the game heap.
+    EGG::Heap *createArchiveHeap(size_t size, EGG::Heap *parent); ///< Creates the archive heap.
+    EGG::Heap *createCommandHeap(size_t size, EGG::Heap *parent); ///< Creates the DVD command heap.
+    EGG::Heap *createDylinkHeap(size_t size, EGG::Heap *parent); ///< Creates the REL linking heap.
 
     /// @brief Creates the assert heap.
     /// @details The size is determined automatically using EGG::AssertHeap::getMinSizeForCreate().
     EGG::Heap *createAssertHeap(EGG::Heap *parent);
 
+    // NSMBW-only declarations; City Folk has no indexed game-heap array.
     extern u8 g_DefaultGameHeapId; ///< The default game heap to be used if one isn't specified.
     extern const char * const s_GameHeapNames[GAME_HEAP_COUNT]; ///< The game heap names.
 
     extern EGG::Heap *s_SavedCurrentHeap; ///< The saved current heap.
-    extern EGG::ExpHeap *g_gameHeaps[GAME_HEAP_COUNT]; ///< The game heaps.
+    extern EGG::ExpHeap *g_gameHeap; ///< City Folk's game heap.
+    extern EGG::ExpHeap *g_gameHeaps[GAME_HEAP_COUNT]; ///< NSMBW's game heaps (unported callers only).
     extern EGG::ExpHeap *g_archiveHeap; ///< The archive resource heap.
     extern EGG::ExpHeap *g_commandHeap; ///< The DVD command heap.
     extern EGG::ExpHeap *g_dylinkHeap; ///< The REL linking heap.

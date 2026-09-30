@@ -1,16 +1,9 @@
 #include <game/mlib/m_heap.hpp>
 #include <constants/sjis_constants.h>
 
-u8 mHeap::g_DefaultGameHeapId = GAME_HEAP_MEM1;
-const char * const mHeap::s_GameHeapNames[GAME_HEAP_COUNT] = {
-    nullptr,
-    GAME_HEAP_1_NAME,
-    GAME_HEAP_2_NAME,
-};
-
 EGG::Heap *mHeap::s_SavedCurrentHeap;
 
-EGG::ExpHeap *mHeap::g_gameHeaps[GAME_HEAP_COUNT];
+EGG::ExpHeap *mHeap::g_gameHeap;
 EGG::ExpHeap *mHeap::g_archiveHeap;
 EGG::ExpHeap *mHeap::g_commandHeap;
 EGG::ExpHeap *mHeap::g_dylinkHeap;
@@ -54,15 +47,17 @@ EGG::ExpHeap *mHeap::createExpHeap(size_t size, EGG::Heap *parent, const char *n
     }
 
     void *buffer = parent->alloc(size, align);
-    EGG::ExpHeap *heap = nullptr;
+    EGG::ExpHeap *heap;
 
-    if (buffer != nullptr) {
-        heap = EGG::ExpHeap::create(buffer, size, GetOptFlag(opt));
-        if (heap == nullptr) {
-            parent->free(buffer);
-        } else if (name != nullptr) {
-            heap->setName(name);
-        }
+    if (buffer == nullptr) {
+        return nullptr;
+    }
+
+    heap = EGG::ExpHeap::create(buffer, size, GetOptFlag(opt));
+    if (heap == nullptr) {
+        parent->free(buffer);
+    } else if (name != nullptr) {
+        heap->setName(name);
     }
 
     return heap;
@@ -88,15 +83,17 @@ EGG::FrmHeap *mHeap::createFrmHeap(size_t size, EGG::Heap *parent, const char *n
     }
 
     void *buffer = parent->alloc(size, align);
-    EGG::FrmHeap *heap = nullptr;
+    EGG::FrmHeap *heap;
 
-    if (buffer != nullptr) {
-        heap = EGG::FrmHeap::create(buffer, size, GetOptFlag(opt));
-        if (heap == nullptr) {
-            parent->free(buffer);
-        } else if (name != nullptr) {
-            heap->setName(name);
-        }
+    if (buffer == nullptr) {
+        return nullptr;
+    }
+
+    heap = EGG::FrmHeap::create(buffer, size, GetOptFlag(opt));
+    if (heap == nullptr) {
+        parent->free(buffer);
+    } else if (name != nullptr) {
+        heap->setName(name);
     }
 
     return heap;
@@ -109,64 +106,21 @@ void mHeap::destroyFrmHeap(EGG::FrmHeap *heap) {
 }
 
 size_t mHeap::adjustFrmHeap(EGG::FrmHeap *heap) {
-    size_t totalFreeSpace = 0;
-
-    if (heap != nullptr) {
-        size_t freeSpace = heap->adjust();
-        size_t minCost = frmHeapCost(0, 4);
-        if (freeSpace >= minCost) {
-            totalFreeSpace = freeSpace - minCost;
-        }
+    if (heap == nullptr) {
+        return 0;
     }
 
-    return totalFreeSpace;
+    size_t freeSpace = heap->adjust();
+    size_t minCost = frmHeapCost(0, 4);
+    if (freeSpace >= minCost) {
+        freeSpace -= minCost;
+    }
+
+    return freeSpace;
 }
 
 size_t mHeap::frmHeapCost(size_t size, ulong align) {
     return size + nw4r::ut::RoundUp<size_t>(sizeof(EGG::FrmHeap) + MEM_FRM_HEAP_HEAD_SIZE, align);
-}
-
-EGG::UnitHeap *mHeap::createUntHeap(size_t size, ulong count, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt) {
-    if (parent == nullptr) {
-        parent = EGG::Heap::getCurrentHeap();
-    }
-
-    if (align < 0x20) {
-        align = 0x20;
-    }
-
-    size_t totalSize = untHeapCost(size, count, align);
-    EGG::UnitHeap *heap = nullptr;
-    void *buffer = parent->alloc(totalSize, align);
-
-    if (buffer != nullptr) {
-        heap = EGG::UnitHeap::create(buffer, totalSize, size, align, GetOptFlag(opt));
-        if (heap == nullptr) {
-            parent->free(buffer);
-        } else if (name != nullptr) {
-            heap->setName(name);
-        }
-    }
-
-    return heap;
-}
-
-size_t mHeap::untHeapCost(size_t size, ulong count, ulong align) {
-    return EGG::UnitHeap::calcHeapSize(size, count, align);
-}
-
-EGG::ExpHeap *mHeap::createHeap(size_t size, EGG::Heap *parent, const char *name) {
-    EGG::ExpHeap *heap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
-    if (heap != nullptr) {
-        heap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
-        if (name != nullptr) {
-            heap->setName(name);
-        }
-    } else {
-        parent->dump();
-    }
-
-    return heap;
 }
 
 void mHeap::saveCurrentHeap() {
@@ -180,53 +134,46 @@ void mHeap::restoreCurrentHeap() {
 
 EGG::FrmHeap *mHeap::createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt) {
     EGG::FrmHeap *heap = createFrmHeap(size, parent, name, align, opt);
-    if (heap != nullptr) {
-        s_SavedCurrentHeap = setCurrentHeap(heap);
-    }
-
-    return heap;
-}
-
-EGG::Heap *mHeap::createGameHeap(int idx, size_t size, EGG::Heap *parent) {
-    if (!isValidGameHeapId(idx)) {
+    if (heap == nullptr) {
         return nullptr;
     }
 
-    g_gameHeaps[idx] = createHeap(size, parent, s_GameHeapNames[idx]);
-    if (idx == g_DefaultGameHeapId) {
-        g_gameHeaps[GAME_HEAP_DEFAULT] = g_gameHeaps[idx];
-    }
-
-    return g_gameHeaps[idx];
+    s_SavedCurrentHeap = EGG::Heap::getCurrentHeap();
+    setCurrentHeap(heap);
+    return heap;
 }
 
-EGG::Heap *mHeap::createGameHeap1(size_t size, EGG::Heap *parent) {
-    return createGameHeap(GAME_HEAP_MEM1, size, parent);
-}
-
-EGG::Heap *mHeap::createGameHeap2(size_t size, EGG::Heap *parent) {
-    return createGameHeap(GAME_HEAP_MEM2, size, parent);
+EGG::Heap *mHeap::createGameHeap(size_t size, EGG::Heap *parent) {
+    g_gameHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
+    g_gameHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_gameHeap->setName(GAME_HEAP_NAME);
+    return g_gameHeap;
 }
 
 EGG::Heap *mHeap::createArchiveHeap(size_t size, EGG::Heap *parent) {
-    g_archiveHeap = createHeap(size, parent, ARCHIVE_HEAP_NAME);
+    g_archiveHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
+    g_archiveHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_archiveHeap->setName(ARCHIVE_HEAP_NAME);
     return g_archiveHeap;
 }
 
 EGG::Heap *mHeap::createCommandHeap(size_t size, EGG::Heap *parent) {
-    g_commandHeap = createHeap(size, parent, COMMAND_HEAP_NAME);
+    g_commandHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
+    g_commandHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_commandHeap->setName(COMMAND_HEAP_NAME);
     return g_commandHeap;
 }
 
 EGG::Heap *mHeap::createDylinkHeap(size_t size, EGG::Heap *parent) {
-    g_dylinkHeap = createHeap(size, parent, DYLINK_HEAP_NAME);
+    g_dylinkHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
+    g_dylinkHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_dylinkHeap->setName(DYLINK_HEAP_NAME);
     return g_dylinkHeap;
 }
 
 EGG::Heap *mHeap::createAssertHeap(EGG::Heap *parent) {
-    const char *heapName = ASSERT_HEAP_NAME;
     size_t size = EGG::AssertHeap::getMinSizeForCreate();
     g_assertHeap = EGG::AssertHeap::create(size, parent);
-    g_assertHeap->setName(heapName);
+    g_assertHeap->setName(ASSERT_HEAP_NAME);
     return g_assertHeap;
 }

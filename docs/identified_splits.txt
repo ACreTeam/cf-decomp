@@ -73,6 +73,37 @@ Symbols: 229 function/data names assigned from confirmed identities.
 The ambiguous fManager search at 802AD0B8 and bmdl Tev setter at 802AF530
 retain generic names. Existing manually named symbols were preserved.
 
+m_heap.cpp verification (RUUE01_00)
+----------------------------------
+The five trailing functions belong with the mHeap wrappers. Each writes a
+named heap pointer in the contiguous globals at 0x8074F054..0x8074F068, and
+each name string explicitly identifies its mHeap global:
+
+0x802ADF44  mHeap::createGameHeap(size_t, EGG::Heap*)     mHeap::gameHeap
+0x802ADF88  mHeap::createArchiveHeap(size_t, EGG::Heap*)  mHeap::archiveHeap
+0x802ADFCC  mHeap::createCommandHeap(size_t, EGG::Heap*)  mHeap::commandHeap
+0x802AE010  mHeap::createDylinkHeap(size_t, EGG::Heap*)   mHeap::dylinkHeap
+0x802AE054  mHeap::createAssertHeap(EGG::Heap*)          mHeap::assertHeap
+
+The four expandable heaps call EGG::ExpHeap::create(size, parent, 4), select
+fast allocation mode (0), and set the name without a failure check. The
+assert heap uses EGG::AssertHeap::getMinSizeForCreate() (0x80) and create().
+Startup calls the first four at 0x8016BB78, 0x8016BB9C, 0x8016BBB0 and
+0x8016BBC8; the assert-heap creation call is at 0x8016C0C8.
+
+City Folk has one game heap. NSMBW's indexed game heaps, unit-heap wrappers
+and generic createHeap implementation are absent from this code range and
+were removed from this source. Their declarations remain in the header for
+unported imported callers and are marked NSMBW-only.
+
+The split includes the five private name strings at 0x80523B80..0x80523C5C
+and six heap pointers at 0x8074F050..0x8074F068 (including the saved heap).
+All 16 functions match at 100% in objdiff. The compiler omits the final two
+zero padding bytes in .data; the linker restores them at the next split.
+With this unit linked from source, the DOL and all 187 REL SHA-1 checks pass.
+The unit is configured as Matching. This establishes the comparison split,
+not independent historical debug-symbol evidence of the original filename.
+
 Unresolved sources retained
 ---------------------------
 c_m3d.cpp, c_owner_set.cpp, anm_chr_blend.cpp, s_StateID.cpp,

@@ -377,7 +377,7 @@ config.libs = [
         "cflags": cflags_identified_game,
         "progress_category": "game",
         "objects": [
-            Object(NonMatching, "dol/mLib/m_heap.cpp"),
+            Object(Matching, "dol/mLib/m_heap.cpp"),
             Object(NonMatching, "dol/mLib/m_mtx.cpp"),
             Object(NonMatching, "dol/mLib/m_allocator.cpp"),
             Object(NonMatching, "dol/mLib/m_3d.cpp"),
