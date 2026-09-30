@@ -25,6 +25,7 @@ build.ninja
 # decompctx output
 ctx.*
 *.ctx
+notes/
 
 # Generated configs
 objdiff.json

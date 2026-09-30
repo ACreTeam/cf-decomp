@@ -56,8 +56,7 @@ public:
     };
 
     /// @brief The base's unique identifier.
-    /// @details This value is incremented for every created base. Should it reach @ref fBaseID_e::BASE_ID_MAX,
-    /// the game will intentionally stall.
+    /// @details The ID counter is incremented for every created base.
     fBaseID_e mUniqueID;
     u32 mParam; ///< A bitfield that configures the base's behaviour. Its usage varies from profile to profile.
     ProfileName mProfName; ///< The base's profile name.
@@ -101,7 +100,7 @@ public:
     fBase_c(); ///< Constructs a new base.
 
     /// @brief @p new operator override for all bases.
-    /// @details Bases are allocated in mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT] in a top-down direction, and are
+    /// @details Bases are allocated in mHeap::g_gameHeap in a top-down direction, and are
     /// zero-initialized.
     static void *operator new(size_t);
     static void operator delete(void *); ///< @p delete operator override for all bases.
@@ -109,11 +108,11 @@ public:
 protected:
     /// @brief @p do method for the @p create operation.
     /// @return A PACK_RESULT_e value.
-    virtual int create();
+    virtual int create() { return SUCCEEDED; }
 
     /// @brief @p pre method for the @p create operation.
     /// @return A PACK_RESULT_e value.
-    virtual int preCreate();
+    virtual int preCreate() { return SUCCEEDED; }
 
     /// @brief @p post method for the @p create operation.
     virtual void postCreate(MAIN_STATE_e state);
@@ -121,7 +120,7 @@ protected:
     /// @brief @p do method for the @p delete operation.
     /// @details This method was renamed due to conflict with the @p delete C++ keyword.
     /// @return A PACK_RESULT_e value.
-    virtual int doDelete();
+    virtual int doDelete() { return SUCCEEDED; }
 
     /// @brief @p pre method for the @p delete operation.
     /// @return A PACK_RESULT_e value.
@@ -132,28 +131,28 @@ protected:
 
     /// @brief @p do method for the @p execute operation.
     /// @return A PACK_RESULT_e value.
-    virtual int execute();
+    virtual int execute() { return SUCCEEDED; }
 
     /// @brief @p pre method for the @p execute operation.
     /// @return A PACK_RESULT_e value.
     virtual int preExecute();
 
     /// @brief @p post method for the @p execute operation.
-    virtual void postExecute(MAIN_STATE_e state);
+    virtual void postExecute(MAIN_STATE_e state) {}
 
     /// @brief @p do method for the @p draw operation.
     /// @return A PACK_RESULT_e value.
-    virtual int draw();
+    virtual int draw() { return SUCCEEDED; }
 
     /// @brief @p pre method for the @p draw operation.
     /// @return A PACK_RESULT_e value.
     virtual int preDraw();
 
     /// @brief @p post method for the @p draw operation.
-    virtual void postDraw(MAIN_STATE_e state);
+    virtual void postDraw(MAIN_STATE_e state) {}
 
     /// @brief Informs the base that it's about to be deleted.
-    virtual void deleteReady();
+    virtual void deleteReady() {}
 
     /**
      * @brief Creates a heap of the given size for the base.
@@ -176,7 +175,7 @@ protected:
      * @return If the heap creation was successful.
      */
     virtual bool entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap);
-    virtual bool createHeap(); ///< [Does nothing]. @unused
+    virtual bool createHeap() { return true; } ///< Default heap-creation hook.
 
     virtual ~fBase_c(); ///< Destroys the base.
 
@@ -189,11 +188,15 @@ public:
 
     fBase_c *getConnectParent() const; ///< Gets the base's parent.
     fBase_c *getConnectChild() const; ///< Gets the base's first child.
-    fBase_c *getConnectBrNext() const; ///< Gets the base's next sibling.
+
+    /// @brief Changes the execution priority, deferring reordering during execution.
+    void setExecuteOrder(u16 order);
+    /// @brief Changes the drawing priority, deferring reordering during drawing.
+    void setDrawOrder(u16 order);
 
     /// @brief Checks if the base has at least one child in the @ref LIFECYCLE_e::CREATING "CREATING" state.
     /// @return If such a child base exists.
-    bool checkChildProcessCreateState() const;
+    bool checkChildProcessCreateState() const { return getChildProcessCreateState() != nullptr; }
 
 private:
     int createPack(); ///< Executes the @p create operation. See commonPack().

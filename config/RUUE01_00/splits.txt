@@ -62,7 +62,7 @@ dol/framework/f_base.cpp:
 	.text       start:0x802ABF80 end:0x802ACF14
 	.data       start:0x80523968 end:0x80523A78
 	.sdata      start:0x8074CB60 end:0x8074CB64 align:4
-	.sbss       start:0x8074F018 end:0x8074F028 align:4
+	.sbss       start:0x8074F018 end:0x8074F030 align:4
 
 dol/framework/f_line.cpp:
 	.text       start:0x802ACF14 end:0x802AD060
@@ -70,7 +70,7 @@ dol/framework/f_line.cpp:
 dol/framework/f_manager.cpp:
 	.text       start:0x802AD060 end:0x802AD2FC
 	.ctors      start:0x804658C0 end:0x804658C4
-	.data       start:0x80523A78 end:0x80523AB8 align:4
+	.data       start:0x80523A78 end:0x80523AB8
 	.bss        start:0x806A5CB8 end:0x806A5D58 align:4
 	.sdata      start:0x8074CB68 end:0x8074CB6C align:4
 	.sbss       start:0x8074F030 end:0x8074F034 align:4

@@ -365,7 +365,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             Object(Matching, "dol/framework/f_arc_load.cpp"),
-            Object(NonMatching, "dol/framework/f_base.cpp"),
+            Object(Matching, "dol/framework/f_base.cpp"),
             Object(Matching, "dol/framework/f_line.cpp"),
             Object(NonMatching, "dol/framework/f_manager.cpp"),
             Object(NonMatching, "dol/framework/f_tree.cpp"),

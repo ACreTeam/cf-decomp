@@ -13,34 +13,28 @@ int (*fBase_c::sLoadAsyncCallback)();
 void (*fBase_c::sUnloadCallback)();
 
 fBase_c::fBase_c() :
-    mUniqueID(m_rootUniqueID),
-    mParam(m_tmpCtParam),
-    mProfName(m_tmpCtProfName),
-    mGroupType(m_tmpCtGroupType),
     mMng(this) {
 
-    // Update the unique ID. If it maxes out the counter, stall the game
+    mUniqueID = m_rootUniqueID;
     m_rootUniqueID = (fBaseID_e) (m_rootUniqueID + 1);
-    if (m_rootUniqueID == BASE_ID_MAX) {
-        while (true);
-    }
+    mParam = m_tmpCtParam;
+    mProfName = m_tmpCtProfName;
+    mGroupType = m_tmpCtGroupType;
 
     // Add the base to the connect and search trees
     fManager_c::m_connectManage.addTreeNode(&mMng.mConnectNode, m_tmpCtConnectParent);
     int idx = mMng.getSearchTableNum();
     fManager_c::m_searchManage[idx].addTopLineNode(&mMng.mSearchNode);
 
-    // Try to get the profile and set the order fields
+    // Set the order fields from the profile.
     const fProf::fBaseProfile_c *prof = (*fProfListMg_c::m_data_p)[mProfName].mBaseProfile;
-    if (prof != nullptr) {
-        u16 executeOrder = prof->mExecuteOrder;
-        mMng.mMainNode.mOrder = executeOrder;
-        mMng.mMainNode.mNewOrder = executeOrder;
+    u16 executeOrder = prof->mExecuteOrder;
+    mMng.mMainNode.mOrder = executeOrder;
+    mMng.mMainNode.mNewOrder = executeOrder;
 
-        u16 drawOrder = prof->mDrawOrder;
-        mMng.mDrawNode.mOrder = drawOrder;
-        mMng.mDrawNode.mNewOrder = drawOrder;
-    }
+    u16 drawOrder = prof->mDrawOrder;
+    mMng.mDrawNode.mOrder = drawOrder;
+    mMng.mDrawNode.mNewOrder = drawOrder;
 
     // Update process control flags to match the parent base
     fBase_c *parent = getConnectParent();
@@ -85,14 +79,6 @@ int fBase_c::commonPack(int (fBase_c::*doFunc)(), int (fBase_c::*preFunc)(), voi
     return result;
 }
 
-int fBase_c::create() {
-    return SUCCEEDED;
-}
-
-int fBase_c::preCreate() {
-    return SUCCEEDED;
-}
-
 void fBase_c::postCreate(MAIN_STATE_e state) {
 
     // Creation successful, remove the base from the creation list
@@ -113,10 +99,6 @@ void fBase_c::postCreate(MAIN_STATE_e state) {
     } else if (state == ERROR) {
         deleteRequest();
     }
-}
-
-int fBase_c::doDelete() {
-    return SUCCEEDED;
 }
 
 int fBase_c::createPack() {
@@ -165,10 +147,6 @@ int fBase_c::deletePack() {
     return commonPack(&fBase_c::doDelete, &fBase_c::preDelete, &fBase_c::postDelete);
 }
 
-int fBase_c::execute() {
-    return SUCCEEDED;
-}
-
 int fBase_c::preExecute() {
     // Can only execute if not deleting and execution is enabled
     if (mDeleteRequested || isProcControlFlag(DISABLE_EXECUTE)) {
@@ -177,16 +155,8 @@ int fBase_c::preExecute() {
     return SUCCEEDED;
 }
 
-void fBase_c::postExecute(MAIN_STATE_e state) {
-    // Do nothing
-}
-
 int fBase_c::executePack() {
     return commonPack(&fBase_c::execute, &fBase_c::preExecute, &fBase_c::postExecute);
-}
-
-int fBase_c::draw() {
-    return SUCCEEDED;
 }
 
 int fBase_c::preDraw() {
@@ -197,16 +167,8 @@ int fBase_c::preDraw() {
     return SUCCEEDED;
 }
 
-void fBase_c::postDraw(MAIN_STATE_e state) {
-    // Do nothing
-}
-
 int fBase_c::drawPack() {
     return commonPack(&fBase_c::draw, &fBase_c::preDraw, &fBase_c::postDraw);
-}
-
-void fBase_c::deleteReady() {
-    // Do nothing
 }
 
 int fBase_c::connectProc() {
@@ -287,16 +249,10 @@ int fBase_c::connectProc() {
 }
 
 void fBase_c::deleteRequest() {
-
     // Check that deletion hasn't already been requested
     if (!mDeleteRequested && mLifecycleState != DELETING) {
         mDeleteRequested = true;
         deleteReady();
-
-        // Delete all children recursively
-        for (fTrNdBa_c *curr = mMng.mConnectNode.getChild(); curr != nullptr; curr = curr->getBrNext()) {
-            curr->mpOwner->deleteRequest();
-        }
     }
 }
 
@@ -314,11 +270,38 @@ fBase_c *fBase_c::getConnectChild() const {
     return nullptr;
 }
 
-fBase_c *fBase_c::getConnectBrNext() const {
-    if (mMng.mConnectNode.getBrNext() != nullptr) {
-        return mMng.mConnectNode.getBrNext()->mpOwner;
+void fBase_c::setExecuteOrder(u16 order) {
+    if (mLifecycleState == ACTIVE) {
+        if (fManager_c::m_nowLoopProc == fManager_c::EXECUTE) {
+            mMng.mMainNode.mNewOrder = order;
+        } else {
+            fManager_c::m_executeManage.removeLineNode(&mMng.mMainNode);
+            fLiNdBaPr_c *node = &mMng.mMainNode;
+            node->mOrder = order;
+            node->mNewOrder = order;
+            fManager_c::m_executeManage.insertLineNodePriority(node);
+        }
+    } else {
+        mMng.mMainNode.mOrder = order;
+        mMng.mMainNode.mNewOrder = order;
     }
-    return nullptr;
+}
+
+void fBase_c::setDrawOrder(u16 order) {
+    if (mLifecycleState == ACTIVE) {
+        if (fManager_c::m_nowLoopProc == fManager_c::DRAW) {
+            mMng.mDrawNode.mNewOrder = order;
+        } else {
+            fManager_c::m_drawManage.removeLineNode(&mMng.mDrawNode);
+            fLiNdBaPr_c *node = &mMng.mDrawNode;
+            node->mOrder = order;
+            node->mNewOrder = order;
+            fManager_c::m_drawManage.insertLineNodePriority(node);
+        }
+    } else {
+        mMng.mDrawNode.mOrder = order;
+        mMng.mDrawNode.mNewOrder = order;
+    }
 }
 
 bool fBase_c::entryFrmHeap(unsigned long size, EGG::Heap *parentHeap) {
@@ -431,20 +414,17 @@ bool fBase_c::entryFrmHeapNonAdjust(unsigned long size, EGG::Heap *parentHeap) {
     return false;
 }
 
-bool fBase_c::createHeap() {
-    return true;
-}
-
 void *fBase_c::operator new(size_t size) {
-    void *mem = EGG::Heap::alloc(size, -4, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
-    if (mem != nullptr) {
-        memset(mem, 0, size);
+    void *mem = EGG::Heap::alloc(size, -4, mHeap::g_gameHeap);
+    if (mem == nullptr) {
+        return nullptr;
     }
+    memset(mem, 0, size);
     return mem;
 }
 
-void fBase_c::operator delete(void *mem) {
-    EGG::Heap::free(mem, mHeap::g_gameHeaps[mHeap::GAME_HEAP_DEFAULT]);
+inline void fBase_c::operator delete(void *mem) {
+    EGG::Heap::free(mem, mHeap::g_gameHeap);
 }
 
 void fBase_c::runCreate() {
@@ -476,10 +456,6 @@ fBase_c *fBase_c::getChildProcessCreateState() const {
     return nullptr;
 }
 
-bool fBase_c::checkChildProcessCreateState() const {
-    return getChildProcessCreateState() != nullptr;
-}
-
 void fBase_c::setTmpCtData(ProfileName profName, fTrNdBa_c *connectParent, unsigned long param, u8 groupType) {
     m_tmpCtParam = param;
     m_tmpCtProfName = profName;
@@ -498,21 +474,20 @@ fBase_c *fBase_c::fBase_make(ProfileName profName, fTrNdBa_c *connectParent, uns
     setTmpCtData(profName, connectParent, param, groupType);
     fBase_c *res = (fBase_c *) (*fProfListMg_c::m_data_p)[profName].mBaseProfile->mpClassInit();
 
-    // Reset the temporary data
-    setTmpCtData(0, nullptr, 0, 0);
+    if (res == nullptr) {
+        return nullptr;
+    }
 
     // Run create operation if the construction was successful
-    if (res != nullptr) {
-        res->runCreate();
-    }
+    res->runCreate();
     return res;
 }
 
 fBase_c *fBase_c::createChild(ProfileName profName, fBase_c *connectParent, unsigned long param, u8 groupType) {
-    if (connectParent == nullptr) {
-        return nullptr;
+    if (connectParent != nullptr) {
+        return fBase_make(profName, &connectParent->mMng.mConnectNode, param, groupType);
     }
-    return fBase_make(profName, &connectParent->mMng.mConnectNode, param, groupType);
+    return nullptr;
 }
 
 fBase_c *fBase_c::createRoot(ProfileName profName, unsigned long param, u8 groupType) {
