@@ -132,6 +132,7 @@ dol/mLib/m_3d/mdl.cpp:
 
 dol/mLib/m_3d/banm.cpp:
 	.text       start:0x802B0520 end:0x802B06D0
+	.data       start:0x80523E98 end:0x80523EB0
 
 dol/mLib/m_3d/fanm.cpp:
 	.text       start:0x802B06D0 end:0x802B0C00

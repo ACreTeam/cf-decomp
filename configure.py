@@ -386,7 +386,7 @@ config.libs = [
             Object(NonMatching, "dol/mLib/m_3d/bmdl.cpp"),
             Object(NonMatching, "dol/mLib/m_3d/smdl.cpp"),
             Object(NonMatching, "dol/mLib/m_3d/mdl.cpp"),
-            Object(NonMatching, "dol/mLib/m_3d/banm.cpp"),
+            Object(Matching, "dol/mLib/m_3d/banm.cpp"),
             Object(NonMatching, "dol/mLib/m_3d/fanm.cpp"),
             Object(NonMatching, "dol/mLib/m_3d/anm_chr.cpp"),
             Object(NonMatching, "dol/mLib/m_3d/anm_vis.cpp"),

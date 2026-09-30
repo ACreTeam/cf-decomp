@@ -1,6 +1,8 @@
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <constants/sjis_constants.h>
+
+// This string is shared with the other animation translation units.
+extern const char g_banmHeapName[];
 
 u32 m3d::banm_c::ms_DefaultAllocOptBit = mHeap::OPT_NONE;
 
@@ -13,19 +15,20 @@ void m3d::banm_c::remove() {
         mpObj->DetachFromParent();
         mpObj->Destroy();
         mpObj = nullptr;
+
+        if (mpHeap != nullptr) {
+            mHeap::destroyFrmHeap(mpHeap);
+            mpHeap = nullptr;
+        }
     }
 
-    if (mpHeap != nullptr) {
-        mHeap::destroyFrmHeap(mpHeap);
-        mpHeap = nullptr;
-    }
 }
 
 bool m3d::banm_c::createAllocator(mAllocator_c *allocator, size_t *size) {
     size_t aligned = nw4r::ut::RoundUp(mHeap::frmHeapCost(*size, 0x20), 0x20) - mHeap::frmHeapCost(0, 0x20);
     *size = nw4r::ut::RoundUp(mHeap::frmHeapCost(aligned, 0x20), 0x20);
 
-    mpHeap = mHeap::createFrmHeap(aligned, allocator->mpHeap, M3D_BANM_HEAP_NAME, ms_DefaultAllocOptBit, mHeap::OPT_NONE);
+    mpHeap = mHeap::createFrmHeap(aligned, allocator->mpHeap, g_banmHeapName, 0x20, mHeap::OPT_NONE);
     mAllocator.attach(mpHeap, 0x20);
     return true;
 }
