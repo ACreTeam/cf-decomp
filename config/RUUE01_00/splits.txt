@@ -30,6 +30,10 @@ dol/game/d_demo_actor.cpp:
 	.sbss       start:0x8074E288 end:0x8074E290 align:4
 	.sdata2     start:0x80750530 end:0x80750540 align:4
 
+dol/game/d_msg_rcpt.cpp:
+	.text       start:0x801A2168 end:0x801A2384
+	.data       start:0x804FB398 end:0x804FB43C align:4
+
 dol/sLib/s_lib.cpp:
 	.text       start:0x802A9938 end:0x802A9EE0
 	.sdata      start:0x8074CB10 end:0x8074CB18 align:4
