@@ -11,3 +11,7 @@
 
 # decomp-toolkit writes files with LF
 config/**/*.txt  text eol=lf
+
+# Keep this source in Windows Shift-JIS (CP932) in the working tree.
+# Git stores UTF-8 internally for readable diffs.
+src/dol/game/d_sv_mgr.cpp text working-tree-encoding=CP932

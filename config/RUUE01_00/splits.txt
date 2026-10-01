@@ -34,6 +34,15 @@ dol/game/d_msg_rcpt.cpp:
 	.text       start:0x801A2168 end:0x801A2384
 	.data       start:0x804FB398 end:0x804FB43C align:4
 
+dol/game/d_sv_mgr.cpp:
+	.text       start:0x801BB7C4 end:0x801C6D54
+	.ctors      start:0x80465850 end:0x80465854
+	.rodata     start:0x8047E2E8 end:0x8047E420 align:4
+	.data       start:0x804FD180 end:0x80500090 align:4
+	.bss        start:0x806259E0 end:0x806259F8 align:4
+	.sdata      start:0x8074C3C0 end:0x8074C5A8 align:4
+	.sbss       start:0x8074EB98 end:0x8074EBD4 align:4
+
 dol/sLib/s_lib.cpp:
 	.text       start:0x802A9938 end:0x802A9EE0
 	.sdata      start:0x8074CB10 end:0x8074CB18 align:4

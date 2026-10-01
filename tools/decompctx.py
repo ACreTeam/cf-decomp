@@ -65,8 +65,10 @@ def import_c_file(in_file: str) -> str:
     deps.append(in_file)
     out_text = ""
 
+    # This source is stored as CP932, matching its Git encoding attribute.
+    encoding = "cp932" if sanitize_path(in_file) == "src/dol/game/d_sv_mgr.cpp" else "utf-8"
     try:
-        with open(in_file, encoding="utf-8") as file:
+        with open(in_file, encoding=encoding) as file:
             out_text += process_file(in_file, list(file))
     except Exception:
         with open(in_file) as file:

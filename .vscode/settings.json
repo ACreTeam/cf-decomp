@@ -4,7 +4,9 @@
     "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
   },
   "[cpp]": {
-    "files.encoding": "utf8",
+    "files.autoGuessEncoding": true,
+    "files.candidateGuessEncodings": ["utf8", "shiftjis"],
+    "files.encoding": "shiftjis",
     "editor.defaultFormatter": "xaver.clang-format"
   },
   "[python]": {
