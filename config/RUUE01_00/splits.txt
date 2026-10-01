@@ -49,6 +49,20 @@ dol/game/d_item.cpp:
 	.sdata      start:0x8074A900 end:0x8074A9A0 align:4
 	.sbss       start:0x8074E490 end:0x8074E498 align:4
 
+dol/game/d_animal_id.cpp:
+	.text       start:0x80135E88 end:0x80136244
+	.rodata     start:0x804760D8 end:0x80476150 align:4
+	.sdata      start:0x8074B088 end:0x8074B090 align:4
+
+dol/game/d_private_data.cpp:
+	.text       start:0x80136244 end:0x8013CB30
+	.ctors      start:0x80465730 end:0x80465734
+	.rodata     start:0x80476150 end:0x80476258 align:4
+	.data       start:0x804EF1D8 end:0x804EF258 align:4
+	.bss        start:0x805F1A38 end:0x805F2680 align:4
+	.sdata      start:0x8074B090 end:0x8074B0A8 align:4
+	.sbss       start:0x8074E7C0 end:0x8074E7C8 align:4
+
 dol/game/d_msg_rcpt.cpp:
 	.text       start:0x801A2168 end:0x801A2384
 	.data       start:0x804FB398 end:0x804FB43C align:4

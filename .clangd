@@ -8,3 +8,9 @@ CompileFlags:
     - -Iinclude/lib/MSL/internal
     # Imported CodeWarrior headers use __declspec attributes.
     - -fdeclspec
+    - -fshort-wchar
+    - -D__CWCC__
+Completion:
+  # Only read by clangd 21+; older versions use --header-insertion=never
+  # from .vscode/settings.json.
+  HeaderInsertion: Never

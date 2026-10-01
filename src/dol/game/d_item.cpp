@@ -894,7 +894,7 @@ BITM *infoBank_c::getBITM(Item item) {
         if (bitm != NULL) {
             return bitm;
         }
-        if (isEncodedId(item.mId)) {
+        if (isRealItemId(item.mId)) {
             return mpItems;
         }
     }
@@ -967,7 +967,7 @@ u16 infoBank_c::getItemIdFromIndex(int index) {
 
 // 800C29D0
 u16 infoBank_c::getBaseIdFromItemId(u16 id) {
-    if (isEncodedId(id)) {
+    if (isRealItemId(id)) {
         return (id - 0x9000) >> 2;
     }
     return getBaseId(0);
@@ -980,7 +980,7 @@ BOOL infoBank_c::isBuiltinBaseId(u16 baseId) {
 
 // 800C2A3C
 BOOL infoBank_c::isBuiltinItemId(u16 id) {
-    if (isEncodedId(id)) {
+    if (isRealItemId(id)) {
         return isBuiltinBaseId(getBaseIdFromItemId(id));
     }
     return FALSE;
@@ -988,7 +988,7 @@ BOOL infoBank_c::isBuiltinItemId(u16 id) {
 
 // 800C2AA8
 u16 infoBank_c::getIndexFromItemId(u16 id) {
-    if (isEncodedId(id)) {
+    if (isRealItemId(id)) {
         u32 index = getIndexFromBaseId(getBaseIdFromItemId(id));
         if (index < DL_ITEM_END) {
             return index;
@@ -1152,7 +1152,7 @@ int seeker_c::findLike(Item item) {
 
 // 800C3088
 int seeker_c::findInSeries(Item item) {
-    if (isEncodedId(item.mId)) {
+    if (isRealItemId(item.mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
         if (bitm != NULL) {
             u32 series = 0;
@@ -1827,7 +1827,7 @@ BOOL dlBlockList_c::add(void *block) {
 
 // 800C4BC8
 BOOL dlBlockList_c::addItem(Item item) {
-    if (isEncodedId(item.mId)) {
+    if (isRealItemId(item.mId)) {
         void *dl = fn_80115CA4();
         void *block = fn_80115910(dl, item);
         if (block != NULL && add(block)) {

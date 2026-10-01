@@ -1,6 +1,9 @@
 #pragma once
 
 #include <types.h>
+#include <game/game/d_ftr_list.hpp>
+
+#define ITEM_NAME_LEN 16
 
 // The 2-byte item value used everywhere an item can sit: field-object ids
 // below 0xE5 (fg_treeA_x, fg_apple, ... in the 804E3C40 table) and encoded
@@ -19,9 +22,11 @@ enum {
     FG_COUNT = 0xE5,
 };
 
-inline bool isEncodedId(u16 id) {
-    int category = (id >> 12) & 0xF;
-    return category >= 9 && category <= 12;
+#define ITEM_NAME_TYPE(id) ((id >> 12) & 0xF);
+
+inline bool isRealItemId(u16 id) {
+    int category = ITEM_NAME_TYPE(id);
+    return category >= 0x9 && category <= 0xC;
 }
 
 // One field object (804E3C40 table, 0x20 bytes each).
@@ -33,7 +38,7 @@ struct FgInfo {
     u8 _08[5]; // 0x08
     s8 mTreeStage; // 0x0D: growth stage, negative for non-trees
     u8 _0E; // 0x0E
-    char mName[17]; // 0x0F: model resource name
+    char mName[ITEM_NAME_LEN+1]; // 0x0F: model resource name
 }; // sizeof = 0x20
 
 struct Item {
@@ -58,7 +63,7 @@ struct Item {
     }
     FgInfo *getFgInfo(); // 800A5EF0
 
-    BOOL isMoney(); // 800A5F20
+    BOOL isMoney() const; // 800A5F20
     BOOL isKabu(); // 800A5F48
     int getPrice() const; // 800A5F74
     // Price after the current shop discount.
@@ -106,8 +111,8 @@ struct Item {
     BOOL isMushroom(); // 800A6CB0
     BOOL isShell(); // 800A6CDC
     BOOL isAnyFlower(); // 800A6D08
-    BOOL is7000(); // 800A6D5C
-    int get7000Index(); // 800A6D7C
+    BOOL isSnowman(); // 800A6D5C
+    int getSnowmanIdx(); // 800A6D7C
     // Field object planted by this item, or the id itself if none.
     u16 getPlantedFg(); // 800A6D88
     int getFruitTreeType(); // 800A6E00
@@ -117,6 +122,14 @@ struct Item {
     Item getVariant(int variant); // 800A7094: tail-calls withVariant
     // Copy with the variant bits replaced by `variant & 3`.
     Item withVariant(int variant) const; // 800A7098
+
+    inline bool operator==(const Item& other) const {
+        return mId == other.mId;
+    }
+
+    inline bool operator!=(const Item& other) const {
+        return !(*this == other);
+    }
 
     u16 mId;
 };

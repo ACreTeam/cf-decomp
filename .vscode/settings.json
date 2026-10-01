@@ -24,4 +24,6 @@
   },
   // Disable C/C++ IntelliSense, use clangd instead
   "C_Cpp.intelliSenseEngine": "disabled",
+  // clangd < 21 ignores Completion.HeaderInsertion in .clangd
+  "clangd.arguments": ["--header-insertion=never"],
 }

@@ -288,7 +288,7 @@ void Item::setFromIndex(int base, int offset, BOOL skipCheck) {
 
 // 800A5E64
 BOOL Item::isSame(const Item &other) const {
-    if (isEncodedId(other.mId) && isEncodedId(mId)) {
+    if (isRealItemId(other.mId) && isRealItemId(mId)) {
         return ((mId - 0x9000) >> 2) == ((other.mId - 0x9000) >> 2);
     }
     return mId == other.mId;
@@ -303,7 +303,7 @@ FgInfo *Item::getFgInfo() {
 }
 
 // 800A5F20
-BOOL Item::isMoney() {
+BOOL Item::isMoney() const {
     return getKind() == KIND_MONEY;
 }
 
@@ -314,7 +314,7 @@ BOOL Item::isKabu() {
 
 // 800A5F74
 int Item::getPrice() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             switch (bitm->getKind()) {
@@ -430,7 +430,7 @@ BOOL Item::getExtFlag() const {
 
 // 800A651C
 BOOL Item::isOrgDesign() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         switch (getKind()) {
         case KIND_ORG_CLOTH:
         case KIND_ORG_UMB:
@@ -447,7 +447,7 @@ BOOL Item::isOrgDesign() const {
 
 // 800A658C
 int Item::getKind() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return bitm->getKind();
@@ -458,7 +458,7 @@ int Item::getKind() const {
 
 // 800A6608
 int Item::getFrom() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return clampField(bitm->m_from, FROM_COUNT, FROM_NONE);
@@ -469,7 +469,7 @@ int Item::getFrom() const {
 
 // 800A6684
 int Item::getFashion() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return bitm->getFashion();
@@ -480,7 +480,7 @@ int Item::getFashion() const {
 
 // 800A6700
 int Item::getStyle() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             int style = 0;
@@ -501,7 +501,7 @@ int Item::getClothStyle() {
 
 // 800A6780
 int Item::getColorA() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             u32 color = bitm->m_ftrColorA;
@@ -516,7 +516,7 @@ int Item::getColorA() const {
 
 // 800A680C
 int Item::getColorB() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             s8 color = bitm->m_ftrColorB;
@@ -531,7 +531,7 @@ int Item::getColorB() const {
 
 // 800A689C
 int Item::getPartA() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             int part = 0;
@@ -547,7 +547,7 @@ int Item::getPartA() const {
 
 // 800A6918
 int Item::getHideBone() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             s8 raw = bitm->m_hideBone;
@@ -581,7 +581,7 @@ int Item::getSeriesGroup() {
 
 // 800A6A34
 BOOL Item::hasNoFtrFunc() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         return !hasFtrFunc();
     }
     return FALSE;
@@ -589,7 +589,7 @@ BOOL Item::hasNoFtrFunc() const {
 
 // 800A6A8C
 BOOL Item::hasFtrFunc() const {
-    if (isEncodedId(mId)) {
+    if (isRealItemId(mId)) {
         BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return clampField(bitm->m_ftrFunc, 0x41, 1) != 0;
@@ -687,7 +687,7 @@ BOOL Item::isAnyFlower() {
 }
 
 // 800A6D5C
-BOOL Item::is7000() {
+BOOL Item::isSnowman() {
     BOOL result = FALSE;
     if (mId >= 0x7000 && mId <= 0x7002) {
         result = TRUE;
@@ -696,7 +696,7 @@ BOOL Item::is7000() {
 }
 
 // 800A6D7C
-int Item::get7000Index() {
+int Item::getSnowmanIdx() {
     return mId - 0x7000;
 }
 
