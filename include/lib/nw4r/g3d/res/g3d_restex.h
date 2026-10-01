@@ -43,6 +43,11 @@ public:
 
     void Init();
 
+    void DCStore(bool sync);
+    void EndEdit() {
+        DCStore(false);
+    }
+
     ulong GetRevision() const {
         return ref().revision;
     }
