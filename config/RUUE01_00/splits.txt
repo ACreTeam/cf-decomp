@@ -455,6 +455,177 @@ lib/RevoEX/ssl/ssl_api.c:
 	.sdata      start:0x8074CEA8 end:0x8074CEB0 align:4
 	.sbss       start:0x8074F140 end:0x8074F148 align:4
 
+lib/gamespy/darray.c:
+	.text       start:0x8033F348 end:0x8033FD9C
+
+lib/gamespy/hashtable.c:
+	.text       start:0x8033FD9C end:0x80340234
+
+lib/gamespy/md5c.c:
+	.text       start:0x80340234 end:0x8034115C
+	.rodata     start:0x8048D828 end:0x8048D840 align:4
+	.data       start:0x8053C4D0 end:0x8053C510 align:4
+
+lib/gamespy/common/revolution/gsSocketRevolution.c:
+	.text       start:0x8034115C end:0x803415E8
+	.sbss       start:0x8074F1F0 end:0x8074F1F8 align:4
+
+lib/gamespy/common/gsAvailable.c:
+	.text       start:0x8034265C end:0x803427D8
+	.data       start:0x8053C520 end:0x8053C548 align:4
+
+lib/gamespy/common/gsUdpEngine.c:
+	.text       start:0x803429B0 end:0x80343B80
+	.bss        start:0x806AB500 end:0x806AB540 align:4
+
+lib/gamespy/GP/gp.c:
+	.text       start:0x80343B80 end:0x80344A08
+	.data       start:0x8053C548 end:0x8053C8C0 align:4
+	.sdata      start:0x8074D148 end:0x8074D158 align:4
+
+lib/gamespy/GP/gpi.c:
+	.text       start:0x80344A08 end:0x80345394
+	.data       start:0x8053C8C0 end:0x8053C940 align:4
+	.sdata      start:0x8074D158 end:0x8074D190 align:4
+
+lib/gamespy/GP/gpiBuddy.c:
+	.text       start:0x80345394 end:0x803470C4
+	.data       start:0x8053C940 end:0x8053CA88 align:4
+	.sdata      start:0x8074D190 end:0x8074D230 align:4
+
+lib/gamespy/GP/gpiBuffer.c:
+	.text       start:0x803470C4 end:0x80347AF8
+	.data       start:0x8053CA88 end:0x8053CAF0 align:4
+	.sdata      start:0x8074D230 end:0x8074D248 align:4
+
+lib/gamespy/GP/gpiCallback.c:
+	.text       start:0x80347AF8 end:0x8034805C
+	.data       start:0x8053CAF0 end:0x8053CB00 align:4
+
+lib/gamespy/GP/gpiConnect.c:
+	.text       start:0x8034805C end:0x803496A4
+	.data       start:0x8053CB00 end:0x8053CEA8 align:4
+	.sdata      start:0x8074D248 end:0x8074D2E0 align:4
+
+lib/gamespy/GP/gpiInfo.c:
+	.text       start:0x803496A4 end:0x8034BB3C
+	.data       start:0x8053CEA8 end:0x8053D200 align:4
+	.sdata      start:0x8074D2E0 end:0x8074D398 align:4
+	.sdata2     start:0x80752D60 end:0x80752D68 align:4
+
+lib/gamespy/GP/gpiKeys.c:
+	.text       start:0x8034BB3C end:0x8034C1A4
+	.data       start:0x8053D200 end:0x8053D248 align:4
+	.sdata      start:0x8074D398 end:0x8074D3A0 align:4
+
+lib/gamespy/GP/gpiOperation.c:
+	.text       start:0x8034C1A4 end:0x8034C87C
+	.data       start:0x8053D248 end:0x8053D290 align:4
+
+lib/gamespy/GP/gpiPeer.c:
+	.text       start:0x8034C87C end:0x8034DF88
+	.data       start:0x8053D290 end:0x8053D360 align:4
+	.sdata      start:0x8074D3A0 end:0x8074D400 align:4
+
+lib/gamespy/GP/gpiProfile.c:
+	.text       start:0x8034DF88 end:0x8034E8D0
+	.data       start:0x8053D360 end:0x8053D518 align:4
+	.sdata      start:0x8074D400 end:0x8074D410 align:4
+
+lib/gamespy/GP/gpiSearch.c:
+	.text       start:0x8034E8D0 end:0x80350C6C
+	.data       start:0x8053D518 end:0x8053D838 align:4
+	.sdata      start:0x8074D410 end:0x8074D500 align:4
+
+lib/gamespy/GP/gpiTransfer.c:
+	.text       start:0x80350C6C end:0x80350D54
+	.data       start:0x8053D838 end:0x8053D860 align:4
+	.sdata      start:0x8074D500 end:0x8074D510 align:4
+
+lib/gamespy/GP/gpiUnique.c:
+	.text       start:0x80350D54 end:0x80350FAC
+	.data       start:0x8053D860 end:0x8053D8A0 align:4
+	.sdata      start:0x8074D510 end:0x8074D520 align:4
+
+lib/gamespy/GP/gpiUtility.c:
+	.text       start:0x80350FAC end:0x80351590
+	.data       start:0x8053D8A0 end:0x8053D8F8 align:4
+	.sdata      start:0x8074D520 end:0x8074D538 align:4
+
+lib/gamespy/gt2/gt2Auth.c:
+	.text       start:0x80351590 end:0x80351954
+	.data       start:0x8053D8F8 end:0x8053D920 align:4
+
+lib/gamespy/gt2/gt2Buffer.c:
+	.text       start:0x80351954 end:0x80351AF8
+
+lib/gamespy/gt2/gt2Callback.c:
+	.text       start:0x80351AF8 end:0x80352378
+
+lib/gamespy/gt2/gt2Connection.c:
+	.text       start:0x80352378 end:0x80352A4C
+
+lib/gamespy/gt2/gt2Main.c:
+	.text       start:0x80352A4C end:0x80352E5C
+
+lib/gamespy/gt2/gt2Socket.c:
+	.text       start:0x80356040 end:0x80356BD0
+
+lib/gamespy/gt2/gt2Utility.c:
+	.text       start:0x80356BD0 end:0x80356EBC
+	.bss        start:0x806AC540 end:0x806AC580 align:4
+	.sdata      start:0x8074D548 end:0x8074D560 align:4
+	.sbss       start:0x8074F200 end:0x8074F208 align:4
+
+lib/gamespy/qr2/qr2.c:
+	.text       start:0x80356EBC end:0x8035977C
+	.data       start:0x8053D920 end:0x8053E800 align:4
+	.bss        start:0x806AC580 end:0x806AC6E0 align:4
+	.sdata      start:0x8074D560 end:0x8074D590 align:4
+	.sbss       start:0x8074F208 end:0x8074F210 align:4
+	.sdata2     start:0x80752D68 end:0x80752D70 align:4
+
+lib/gamespy/qr2/qr2regkeys.c:
+	.text       start:0x8035977C end:0x8035980C
+
+lib/gamespy/gstats/gbucket.c:
+	.text       start:0x8035980C end:0x8035A9A4
+	.sbss       start:0x8074F210 end:0x8074F228
+	.sdata2     start:0x80752D70 end:0x80752D78
+
+lib/gamespy/gstats/gstats.c:
+	.text       start:0x8035A9A4 end:0x8035CA8C
+	.bss        start:0x806AC8E0 end:0x806ACAE0 align:4
+	.sdata      start:0x8074D608 end:0x8074D670 align:4
+	.sbss       start:0x8074F228 end:0x8074F248 align:4
+
+lib/gamespy/serverbrowsing/sb_crypt.c:
+	.text       start:0x8035EB44 end:0x8035EF78
+
+lib/gamespy/serverbrowsing/sb_queryengine.c:
+	.text       start:0x8035EF78 end:0x8035FA5C
+	.data       start:0x8053F0A0 end:0x8053F0C8 align:4
+	.sdata      start:0x8074D6A0 end:0x8074D6A8 align:4
+
+lib/gamespy/serverbrowsing/sb_server.c:
+	.text       start:0x8035FA5C end:0x80360780
+	.data       start:0x8053F0C8 end:0x8053F0D8 align:4
+	.sdata      start:0x8074D6A8 end:0x8074D6D8 align:4
+	.sbss       start:0x8074F298 end:0x8074F2A0 align:4
+	.sdata2     start:0x80752D78 end:0x80752D80 align:4
+
+lib/gamespy/serverbrowsing/sb_serverbrowsing.c:
+	.text       start:0x80360780 end:0x80360F94
+	.data       start:0x8053F0D8 end:0x8053F0F8 align:4
+	.sdata      start:0x8074D6D8 end:0x8074D6E0 align:4
+
+lib/gamespy/serverbrowsing/sb_serverlist.c:
+	.text       start:0x80360F94 end:0x80364968
+	.data       start:0x8053F0F8 end:0x8053F128 align:4
+	.sdata      start:0x8074D6E0 end:0x8074D6F0 align:4
+	.sbss       start:0x8074F2A8 end:0x8074F2B0 align:4
+	.sdata2     start:0x80752D80 end:0x80752D90
+
 lib/RVL_SDK/ai/ai.c:
 	.text       start:0x80373A40 end:0x80373FA4
 	.data       start:0x80541520 end:0x80541568 align:4
