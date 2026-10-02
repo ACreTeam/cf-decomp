@@ -67,6 +67,11 @@ dol/game/d_dsn.cpp:
 	.text       start:0x8010F124 end:0x8010FB6C
 	.data       start:0x804EE340 end:0x804EE380 align:4
 
+dol/game/d_land.cpp:
+	.text       start:0x8011660C end:0x80116900
+	.data       start:0x804EE398 end:0x804EE498 align:4
+	.sdata      start:0x8074B040 end:0x8074B048 align:4
+
 dol/game/d_mail.cpp:
 	.text       start:0x80117400 end:0x8011927C
 	.ctors      start:0x80465720 end:0x80465724

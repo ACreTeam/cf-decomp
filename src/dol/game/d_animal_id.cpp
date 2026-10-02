@@ -4,12 +4,6 @@
 #include <cstring>
 #include <cstdio>
 
-extern "C" {
-void fn_80116710(dLandID_c *land); // clear
-BOOL fn_80116758(const dLandID_c *land); // isValid
-void fn_8011676C(dLandID_c *dst, const dLandID_c *src); // copy
-}
-
 // 804760D8
 static const int lbl_804760D8[LANGUAGE_NUM] = {0, 1, 1, 1, 2, 3, 4, 5, 6, 7};
 
@@ -23,8 +17,8 @@ void dAnmPersonalID_c::clear() {
     memset(this, 0, sizeof(dAnmPersonalID_c));
     mNpcIdx = 0xFFFF;
     mLooks = LOOKS_TYPE_NUM;
-    fn_80116710(&mLand);
-    fn_80116710(&mLand2);
+    mLand.clear();
+    mLand2.clear();
 }
 
 // 80135EE0
@@ -47,8 +41,8 @@ void dAnmPersonalID_c::set(u16 npcIdx, u8 looks, const dLandID_c *land, const wc
                            const wchar_t *name7) {
     mNpcIdx = npcIdx;
     mLooks = looks;
-    fn_8011676C(&mLand, land);
-    fn_8011676C(&mLand2, land);
+    mLand.copy(land);
+    mLand2.copy(land);
     setName(0, name0);
     setName(1, name1);
     setName(2, name2);
@@ -61,7 +55,7 @@ void dAnmPersonalID_c::set(u16 npcIdx, u8 looks, const dLandID_c *land, const wc
 
 // 80136010
 BOOL dAnmPersonalID_c::isValid() const {
-    return mNpcIdx != 0xFFFF && mLooks != LOOKS_TYPE_NUM && fn_80116758(&mLand2);
+    return mNpcIdx != 0xFFFF && mLooks != LOOKS_TYPE_NUM && mLand2.isValid();
 }
 
 // 80136068
@@ -70,7 +64,7 @@ void dAnmPersonalID_c::copy(const dAnmPersonalID_c *other) {
 }
 
 // 80136070
-u8 dAnmPersonalID_c::getLooks() {
+u8 dAnmPersonalID_c::getLooks(int unused) {
     return mLooks;
 }
 
@@ -94,8 +88,8 @@ void dAnmPersonalID_c::makeResName(char *buf, u32 size, const char *name, u32 lo
 }
 
 // 80136138
-int dAnmPersonalID_c::getGender(int) {
-    return looksToGender(getLooks());
+int dAnmPersonalID_c::getGender(int unused) {
+    return looksToGender(getLooks(unused));
 }
 
 // 80136160

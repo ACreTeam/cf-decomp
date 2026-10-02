@@ -7,9 +7,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-// dLandID_c / dPersonalID_c.
-void fn_80116710(dLandID_c *land); // clear
-
 // dQuestTime_c.
 void fn_8014C468(dQuestTime_c *time); // reset to INT64_MAX
 
@@ -114,15 +111,14 @@ extern "C" int fn_8011B558(u32 *mask, const u32 *counts, u32 num, u32 skipMask, 
 
 // 8011B5E0
 // Least common personality among the given villagers.
-// TODO: the target passes r4 = 1 to getLooks; dAnmPersonalID_c::getLooks may take an argument.
 extern "C" int fn_8011B5E0(u32 *mask, dAnimal_c *animals, u32 num, u32 skipMask, BOOL useSkip) {
     u32 counts[LOOKS_TYPE_NUM];
     memset(counts, 0, sizeof(counts));
 
     for (u32 i = 0; i < num; i++, animals++) {
         dAnmPersonalID_c *id = &animals->mID;
-        if (id->isValid() && id->getLooks() < LOOKS_TYPE_NUM) {
-            counts[id->getLooks()]++;
+        if (id->isValid() && id->getLooks(1) < LOOKS_TYPE_NUM) {
+            counts[id->getLooks(1)]++;
         }
     }
 
@@ -182,7 +178,7 @@ dAnimalMemory_c::~dAnimalMemory_c() {}
 void dAnimalMemory_c::clear() {
     mPlayer.clear();
     fn_8014C468(&_04);
-    fn_80116710(&_38);
+    _38.clear();
     memset(_50, 0, sizeof(_50));
     memset(_62, 0, sizeof(_62));
     _84 = dItem::ITEM_ID_NONE;
@@ -246,7 +242,7 @@ void dAnimal_c::clear() {
         mMemories[i].clear();
     }
 
-    fn_80116710(&_230C);
+    _230C.clear();
     fn_80120584(this);
     _3004 = dItem::ITEM_ID_NONE;
     _3006 = dItem::ITEM_ID_NONE;

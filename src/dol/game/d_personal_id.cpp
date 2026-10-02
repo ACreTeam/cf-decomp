@@ -9,8 +9,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_80116710(dLandID_c *land); // clear
-BOOL fn_80116758(const dLandID_c *land); // isValid
 int fn_801017EC(const dPersonalID_c *pid);
 int fn_801018DC(const dPlayerID_c *id);
 BOOL fn_800DCEDC();
@@ -58,7 +56,7 @@ u16 dPersonalID_c::randomId() {
 // 8013E6FC
 void dPersonalID_c::clear() {
     player.clear();
-    fn_80116710(&land);
+    land.clear();
 }
 
 // 8013E734
@@ -100,7 +98,7 @@ void dPersonalID_c::setPlayerName(const wchar_t *name) {
 // 8013E868
 BOOL dPersonalID_c::isValid() const {
     BOOL valid = FALSE;
-    if (fn_80116758(&land) && player.isValid()) {
+    if (land.isValid() && player.isValid()) {
         valid = TRUE;
     }
     return valid;

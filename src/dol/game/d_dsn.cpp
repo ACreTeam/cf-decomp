@@ -11,10 +11,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-BOOL fn_80116758(const dLandID_c *land); // isValid
-void fn_8011676C(dLandID_c *dst, const dLandID_c *src); // copy
-void fn_80116710(dLandID_c *land); // clear
-void fn_801166FC(dLandID_c *land, const wchar_t *name, int language); // set name
 int fn_801068B4(); // current language
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 
@@ -92,10 +88,10 @@ BOOL dDesign_c::setFromItem(int index) {
 // 8010F3DC
 BOOL dDesign_c::setLandFromTown() {
     dPersonalID_c creator = mCreator;
-    if (fn_80116758(&dSaveData_c::getRaw()->mLandID)) {
+    if (dSaveData_c::getRaw()->mLandID.isValid()) {
         dSaveData_c* saveData = dSaveData_c::getRaw();
         dLandID_c* landID = &saveData->mLandID;
-        fn_8011676C(&creator.land, landID);
+        creator.land.copy(landID);
         mCreator = creator;
         return TRUE;
     }
@@ -199,7 +195,7 @@ BOOL dDesign_c::setFromBITM(dItem::BITM *bitm) {
         dHmnName::Word_c creatorName;
         dLandNameWord_c landName;
         dLandID_c land;
-        fn_80116710(&land);
+        land.clear();
         creator.clear();
 
         if ((s8)bitm->m_designCreatorName != 0) {
@@ -210,9 +206,9 @@ BOOL dDesign_c::setFromBITM(dItem::BITM *bitm) {
         }
 
         const wchar_t *landStr = static_cast<dScript::Word_c &>(landName).getBuffer();
-        fn_801166FC(&land, landStr, fn_801068B4());
+        land.setName(landStr, fn_801068B4());
         creator.setPlayer(static_cast<dScript::Word_c &>(creatorName).getBuffer(), dPlayerID_c::ID_UNSET, 0);
-        fn_8011676C(&creator.land, &land);
+        creator.land.copy(&land);
         mCreator = creator;
 
         setName(bitm->getName());

@@ -31,10 +31,10 @@ public:
              const wchar_t *name6, const wchar_t *name7);     // 80135F20
     BOOL isValid() const;                                           // 80136010
     void copy(const dAnmPersonalID_c *other);                 // 80136068
-    u8 getLooks();                                            // 80136070
+    u8 getLooks(int unused);                                  // 80136070
     static int looksToGender(u8 looks);                       // 80136078
     static void makeResName(char *buf, u32 size, const char *name, u32 looks); // 801360A0
-    int getGender(int language);                              // 80136138
+    int getGender(int unused);                                // 80136138
     const wchar_t *getName(int language);                     // 80136160; LANGUAGE_NUM or more uses the console language
     void setWord(dScript::Word_c *word, int language);        // 801361AC
 

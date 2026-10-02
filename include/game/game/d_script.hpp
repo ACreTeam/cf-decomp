@@ -38,14 +38,65 @@ public:
 }; // sizeof = 0x8
 
 // A word/name built from message data. Subclasses provide the buffer.
-// The vtable has 55 slots (0xDC bytes); only the ones used so far are
-// declared here.
+// The vtable has 55 slots (0xDC bytes).
 class Word_c {
 public:
     Word_c(); // 80157D3C
     virtual ~Word_c(); // 80157D8C
     virtual u32 getBufferSize() = 0; // vtable +0x0C
     virtual wchar_t *getBuffer() = 0; // vtable +0x10
+    // Vtable +0x14..+0xD8. Names and signatures are placeholders (vfXX =
+    // vtable offset); most of these are empty or tail-call another function.
+    virtual void vf14(); // 801598B8
+    virtual void vf18(); // 8015822C
+    virtual void vf1C(); // 8015A2E8
+    virtual void vf20(); // 8015B134
+    virtual void vf24(); // 8015A474
+    virtual void vf28(); // 80158088
+    virtual void vf2C(); // 80158258
+    virtual void vf30(); // 80158260
+    virtual void vf34(); // 80158268
+    virtual void vf38(); // 8015A038
+    virtual void vf3C(); // 8015A03C
+    virtual void vf40(); // 8015A0A0
+    virtual void vf44(); // 8015A0A4
+    virtual void vf48(); // 8015A0A8
+    virtual void vf4C(); // 8015A0AC
+    virtual void vf50(); // 8015A0B0
+    virtual void vf54(); // 8015A0B4
+    virtual void vf58(); // 8015A0B8
+    virtual void vf5C(); // 8015A0BC
+    virtual void vf60(); // 8015A0C0
+    virtual void vf64(); // 8015A1AC
+    virtual void vf68(); // 8015A1B0
+    virtual void vf6C(); // 8015A1B4
+    virtual void vf70(); // 8015A1B8
+    virtual void vf74(); // 8015A248
+    virtual void vf78(); // 8015A2DC
+    virtual void vf7C(); // 8015A2E0
+    virtual void vf80(); // 8015A2E4
+    virtual void vf84(); // 8015A370
+    virtual void vf88(); // 8015A374
+    virtual void vf8C(); // 8015A450
+    virtual void vf90(); // 8015A454
+    virtual void vf94(); // 8015A458
+    virtual void vf98(); // 8015A45C
+    virtual void vf9C(); // 8015A464
+    virtual void vfA0(); // 8015A46C
+    virtual void vfA4(); // 8015A470
+    virtual void vfA8(); // 8015A49C
+    virtual void vfAC(); // 8015A580
+    virtual void vfB0(); // 8015A98C
+    virtual void vfB4(); // 8015AD68
+    virtual void vfB8(); // 8015AD6C
+    virtual void vfBC(); // 8015AD70
+    virtual void vfC0(); // 8015AD74
+    virtual void vfC4(); // 8015AD78
+    virtual void vfC8(); // 8015AE0C
+    virtual void vfCC(); // 8015AE10
+    virtual void vfD0(); // 8015AE14
+    virtual void vfD4(); // 8015B12C
+    virtual void vfD8(); // 8015B130
 
     void clear(); // 80157DCC: zeroes the buffer and resets the word state
     BOOL set(const wchar_t *str, int); // 801590F0: clear(), copy, then parse

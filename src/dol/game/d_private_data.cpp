@@ -19,10 +19,7 @@ void fn_801014D0();
 BOOL fn_80101500();
 void fn_80101514();
 
-// dLandID_c / dPlayerID_c / dPersonalID_c.
-void fn_80116710(dLandID_c *land); // clear
-BOOL fn_80116758(const dLandID_c *land); // isValid
-void fn_8011676C(dLandID_c *dst, const dLandID_c *src); // copy
+// dPlayerID_c / dPersonalID_c.
 void fn_8013EE54(void *);
 
 // dMail_c.

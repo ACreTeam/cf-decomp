@@ -625,6 +625,7 @@ config.libs = [
             Object(NonMatching, "dol/game/d_player_mgr.cpp"),
             Object(NonMatching, "dol/game/d_save_data.cpp"),
             Object(Matching, "dol/game/d_dsn.cpp"),
+            Object(Matching, "dol/game/d_land.cpp"),
             Object(Matching, "dol/game/d_mail.cpp"),
             Object(NonMatching, "dol/game/d_animal.cpp"),
             Object(Matching, "dol/game/d_animal_id.cpp"),
