@@ -1,5 +1,6 @@
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_item.hpp>
+#include <game/game/d_save_data.hpp>
 
 using namespace dItem;
 
@@ -7,7 +8,6 @@ extern "C" {
 void __register_global_object(void *object, void *dtor, void *node);
 
 void *fn_80101770(); // current player
-u8 *fn_8010E1E4(); // town save block
 // Shop discount tier (2..4) for the player.
 int fn_80146AA4(void *shop, void *player);
 }
@@ -321,7 +321,7 @@ int Item::getPrice() const {
             case KIND_KABU:
                 return bitm->m_price;
             case KIND_FRUIT:
-                if (isSame(Item(*reinterpret_cast<u16 *>(fn_8010E1E4() + 0x683C2)))) {
+                if (isSame(Item(dSaveData_c::getTown()->_0683C2))) {
                     return bitm->m_price / 5;
                 }
                 return bitm->m_price;
@@ -348,7 +348,7 @@ int Item::getPrice() const {
 int Item::getShopPrice() {
     int price = getPrice();
     void *player = fn_80101770();
-    switch (fn_80146AA4(fn_8010E1E4() + 0x630C0, player)) {
+    switch (fn_80146AA4(dSaveData_c::getTown()->_0630C0, player)) {
     case 2:
         price = price - 0.05f * price;
         break;

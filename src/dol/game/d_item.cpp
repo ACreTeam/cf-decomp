@@ -1,4 +1,5 @@
 #include <game/game/d_item.hpp>
+#include <game/game/d_save_data.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/revolution/OS/OSCache.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
@@ -14,7 +15,6 @@ extern "C" {
 void __register_global_object(void *object, void *dtor, void *node);
 
 // Save data (d_sv / save module).
-u8 *fn_8010E1E4(); // town save block
 void *fn_80115CA4(); // downloadable-item area (const)
 void *fn_80115CA8(); // downloadable-item area
 void *fn_80115B10(void *dl, u32 slot);
@@ -70,7 +70,7 @@ static u32 getDlSlot(u16 index) {
 
 // 800C0F88
 static int getTownRegion() {
-    switch (fn_8010E1E4()[0x735C2] & 0xF) {
+    switch (dSaveData_c::getTown()->_0735C2 & 0xF) {
     case 1:
         return 2;
     case 2:

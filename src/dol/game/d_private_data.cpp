@@ -1,4 +1,5 @@
 #include <game/game/d_private_data.hpp>
+#include <game/game/d_save_data.hpp>
 #include <game/game/d_script.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <game/cLib/c_math.hpp>
@@ -6,13 +7,11 @@
 #include <cstring>
 #include <cstdio>
 #include <revolution/OS/OSCache.h>
+#include <revolution/OS/OSTime.h>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 // Save/town data roots.
-u8 *fn_8010DC3C();
-u8 *fn_8010E1E4();
-u8 *fn_8010E208();
 dPrivateData_c *fn_80101770(); // current player
 dPrivateData_c *fn_80101624(int idx);
 BOOL fn_80101490();
@@ -57,7 +56,6 @@ BOOL fn_8010F374(dDesign_c *design, int item);
 void fn_8010F65C(dDesign_c *design, u32 idx);
 
 // Other members.
-void fn_8010D7E8(void *);
 void fn_80110470(dUnk7FD6_c *obj); // clear
 void fn_8011A6C4(dPrivateData_c *player);
 BOOL fn_8011A6F4(dPrivateData_c *player);
@@ -84,21 +82,16 @@ BOOL fn_800DCEDC();
 void fn_800B0954(BOOL, int);
 u8 fn_80162548();
 BOOL fn_8019B864();
-int fn_8013DF24(void *, dPrivateData_c *);
-u8 *fn_8013E0A8(void *, int);
-int fn_8013E004(void *);
-u8 *fn_8013E0C4(void *, int);
+int fn_8013DF24(dSaveHouse_c *houses, dPrivateData_c *);
+dSaveHouse_c *fn_8013E0A8(dSaveHouse_c *houses, int);
+int fn_8013E004(dSaveHouse_c *houses);
+dSaveHouse_c *fn_8013E0C4(dSaveHouse_c *houses, int);
 void fn_80112CA8(void *);
 void fn_80112BB8(void *);
 void fn_80112D24(void *);
 
 // Calendar/time helpers.
 dTime_c fn_8014C2C4(const dQuestTime_c *time);
-dTime_c *fn_8016D2E8(); // current calendar time
-void fn_8016D784(dTime_c *cal);
-int fn_8016D65C(dTime_c a, dTime_c b);
-void fn_8016D7B8(dTime_c *cal, int days, int, int, int);
-s64 fn_803859E8(dTime_c *cal);
 BOOL fn_8014C384(dQuestTime_c *time);
 s64 fn_8014C380(dQuestTime_c *time);
 void fn_8014C6A4(dQuestTime_c *time, int days);
@@ -107,10 +100,8 @@ BOOL fn_8014C9C4(dQuestTime_c *time, s64 other, int, int);
 u16 fn_8014BE60(dTime_c cal);
 dTime_c fn_8014CBFC(dYMD_c *date);
 dTime_c fn_80111ABC(void);
-BOOL fn_8016D29C(int year);
 
 // Letters and events.
-int fn_8016DCF8();
 u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
@@ -119,9 +110,9 @@ void *fn_80190C44(int);
 BOOL fn_8008C674(void *map, int x, int y);
 void fn_800EBB24(int, const char *, int, int);
 void fn_801109EC(void *, int, int);
-void fn_80116540(u8 *, int);
-void fn_80116510(u8 *, int);
-BOOL fn_801164D0(u8 *, int);
+void fn_80116540(dSaveData_c *, int);
+void fn_80116510(dSaveData_c *, int);
+BOOL fn_801164D0(dSaveData_c *, int);
 int fn_801161F0();
 void fn_80169C48();
 void fn_80169F20();
@@ -228,15 +219,15 @@ void dPrivateHost_c::decrease(int n) {
 // 80136460
 void dPrivateData_c::saveHostToTown() {
     dPrivateData_c *player = fn_80101770();
-    u8 *town = fn_8010E1E4();
-    *(dPrivateHost_c *)(town + 0x734F2) = player->mHost;
+    dSaveData_c *town = dSaveData_c::getTown();
+    town->mTownHost = player->mHost;
 }
 
 // 8013654C
 void dPrivateData_c::loadHostFromTown() {
     dPrivateData_c *player = fn_80101770();
-    u8 *town = fn_8010E1E4();
-    player->mHost = *(dPrivateHost_c *)(town + 0x734F2);
+    dSaveData_c *town = dSaveData_c::getTown();
+    player->mHost = town->mTownHost;
 }
 
 // ---------------------------------------------------------------------------
@@ -251,7 +242,7 @@ void dUnkDesignBoard_c::clear() {
     _884 = 0;
     _885 = 0;
     _882 = 0;
-    dPrivateData_c::clearFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x54);
+    dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x54);
 }
 
 // 80136694
@@ -260,7 +251,7 @@ BOOL dPrivateData_c::fn_80136694() {
     if (player == NULL) {
         return FALSE;
     }
-    if (fn_8010DC3C()[0x735E4] == 0) {
+    if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
         return FALSE;
     }
     if (player->isFlag0(0xD)) {
@@ -272,11 +263,11 @@ BOOL dPrivateData_c::fn_80136694() {
     if (fn_800DCEDC()) {
         return FALSE;
     }
-    u8 *data = fn_8010E208();
-    if (data[0xA63] == 0) {
+    dSaveExtra_c *extra = dSaveData_c::getExtra();
+    if (extra->mDesignBoard._883 == 0) {
         return FALSE;
     }
-    return data[0xA62] != 0;
+    return extra->mDesignBoard._882 != 0;
 }
 
 // 8013675C
@@ -290,10 +281,10 @@ void dUnkDesignBoard_c::decrease(int n) {
 
 // 8013677C
 void dUnkDesignBoard_c::fn_8013677C() {
-    if (((dPrivateHost_c *)(fn_8010DC3C() + 0x734F2))->mCount != 0) {
+    if (dSaveData_c::getRaw()->mTownHost.mCount != 0) {
         return;
     }
-    if (fn_8010DC3C()[0x735E4] == 0) {
+    if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
         return;
     }
     if (!fn_80177C90()) {
@@ -306,7 +297,7 @@ void dUnkDesignBoard_c::fn_8013677C() {
         clear();
         _883 = 0;
         _882 = 10;
-    } else if (fn_8013E868((dPersonalID_c *)(fn_8010E208() + 0xA00))) {
+    } else if (fn_8013E868(&dSaveData_c::getExtra()->mDesignBoard.mDesign.mCreator)) {
         _882 = 7;
         _883 = 1;
     } else if (cM::rndInt(0x80) == 0) {
@@ -325,7 +316,7 @@ void dUnkDesignBoard_c::fn_80136868() {
     if (_883 == 0) {
         keep = _882;
     }
-    if (fn_8010DC3C()[0x735E4] == 0) {
+    if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
         reset = TRUE;
     }
     if (!fn_80177C90()) {
@@ -453,7 +444,7 @@ BOOL dPrivateData_c::isFlag0Any(dPrivateData_c *players, u32 flag) {
 // 80137000
 void dPrivateData_c::setup() {
     fn_8013E618(&mPID);
-    fn_8010D7E8(&_83E8);
+    fn_8010D7E8((dSaveOption_c *)&_83E8);
     mOrgDesigns.init(&mPID);
     mCatalog.clear();
     _85FA.clear();
@@ -488,7 +479,7 @@ int dPrivateData_c::findInSave() const {
     dPersonalID_c *pid;
 
     for (int i = 0; i < PLAYER_NUM; i++) {
-        player = getChecked((dPrivateData_c *)(fn_8010E1E4() + 0x20), i);
+        player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         same = FALSE;
         pid = &player->mPID;
         if (mPID.land.mId == pid->land.mId && mPID.land.mRegion == pid->land.mRegion &&
@@ -514,15 +505,15 @@ void dPrivateData_c::fn_801371DC() {
     prev.year--;
     dTime_c next = stamp;
     next.year++;
-    dTime_c now = *fn_8016D2E8();
-    fn_8016D784(&next);
-    fn_8016D784(&prev);
-    if (fn_8016D65C(now, prev) == 0) {
+    dTime_c now = *dTime_c::getCurrent();
+    next.normalize();
+    prev.normalize();
+    if (dTime_c::isSameOrBeforeDay(now, prev) == 0) {
         stamp.year = now.year;
-        fn_8014C5D0(&_8618, fn_803859E8(&stamp));
+        fn_8014C5D0(&_8618, OSCalendarTimeToTicks((OSCalendarTime *)&stamp));
         return;
     }
-    if (fn_8016D65C(now, next) != 1) {
+    if (dTime_c::isSameOrBeforeDay(now, next) != 1) {
         return;
     }
     if (isFlag0(0xD)) {
@@ -558,7 +549,7 @@ void dPrivateData_c::fn_8013760C() {
         u16 a;
 
         fn_801178F8(&mail);
-        b = fn_800FABF4(3, fn_8016DCF8());
+        b = fn_800FABF4(3, dTime_c::getCurrentSeason());
         a = cM::rndInt(3) + 1;
         fn_80118590(&mail, &a, "MAIL_NPC_maigo", &lbl_8074B098, &mPID, &b);
         dItem::Item present;
@@ -598,7 +589,7 @@ void dPrivateData_c::fn_80137898(int days) {
     if (isFlag0(0x28)) {
         return;
     }
-    BOOL closed = fn_8014D07C(fn_8010E1E4() + 0x632E0) != 0;
+    BOOL closed = fn_8014D07C(&dSaveData_c::getTown()->mTimeOffset) != 0;
     if (!closed || _862C > 0) {
         int months;
         int savings;
@@ -607,9 +598,9 @@ void dPrivateData_c::fn_80137898(int days) {
         pending = _862C;
         savings = mSavings;
         if (!closed) {
-            dTime_c now = *fn_8016D2E8();
-            dTime_c start = *fn_8016D2E8();
-            fn_8016D7B8(&start, -_8628, 0, 0, 0);
+            dTime_c now = *dTime_c::getCurrent();
+            dTime_c start = *dTime_c::getCurrent();
+            start.add(-_8628, 0, 0, 0);
             months = now.month - start.month;
             months += (now.year - start.year) * 12;
             if (months > 0) {
@@ -1069,9 +1060,9 @@ void dPrivateData_c::setDebtFromHouse() {
     // 80476220
     static const s32 lbl_80476220[6] = {19800, 120000, 248000, 368000, 598000, 0};
 
-    int house = fn_8013DF24(fn_8010E1E4() + 0x6D5C0, this);
+    int house = fn_8013DF24(dSaveData_c::getTown()->mHouses, this);
     if (house != -1) {
-        u32 size = fn_8013E0A8(fn_8010E1E4() + 0x6D5C0, house)[0x15B5];
+        u32 size = fn_8013E0A8(dSaveData_c::getTown()->mHouses, house)->_15B5;
         if (size < 5) {
             mDebt = lbl_80476220[size];
         }
@@ -1208,10 +1199,10 @@ void dPrivateData_c::set_86A5(u8 value) {
 
 // 8013902C
 void dPrivateData_c::fn_8013902C() {
-    u8 *houses = fn_8010DC3C() + 0x6D5C0;
-    u8 *house = fn_8013E0C4(houses, fn_8013E004(houses));
+    dSaveHouse_c *houses = dSaveData_c::getRaw()->mHouses;
+    dSaveHouse_c *house = fn_8013E0C4(houses, fn_8013E004(houses));
     if (house != NULL) {
-        set_86A5(house[0x15B4]);
+        set_86A5(house->_15B4);
     }
 }
 
@@ -1239,7 +1230,7 @@ void dPrivateData_c::subNookPoints(int points) {
 
 // 801390F8
 void dPrivateData_c::addNookPointsForShop() {
-    dLandID_c *town = (dLandID_c *)(fn_8010E1E4() + 0x683FE);
+    dLandID_c *town = &dSaveData_c::getTown()->mLandID;
     BOOL same = FALSE;
     if (mPID.land.mId == town->mId && mPID.land.mRegion == town->mRegion &&
         memcmp(mPID.land.mName, town->mName, sizeof(town->mName)) == 0) {
@@ -1268,7 +1259,7 @@ BOOL dPrivateData_c::fn_801391E0() {
     dTime_c cal;
     cal = fn_8014C2C4(&_8620);
     fn_8014C6A4(&week, -cal.wday);
-    dQuestTime_c now(fn_8016D2E8());
+    dQuestTime_c now(dTime_c::getCurrent());
     dTime_c nowCal;
     nowCal = fn_8014C2C4(&now);
     fn_8014C6A4(&now, -nowCal.wday);
@@ -1334,38 +1325,38 @@ BOOL dPrivateData_c::fn_801393AC() {
 
 // 80139408
 void *dPrivateData_c::fn_80139408() {
-    int idx = find((dPrivateData_c *)(fn_8010E1E4() + 0x20), &mPID);
+    int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
     }
-    return fn_8010E208() + 0x17FF58 + idx * 0x2738;
+    return dSaveData_c::getExtra()->_17FF58[idx];
 }
 
 // 80139468
 void *dPrivateData_c::fn_80139468() {
-    int idx = find((dPrivateData_c *)(fn_8010E1E4() + 0x20), &mPID);
+    int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
     }
-    return fn_8010E208() + 0xF1258 + idx * 0x23A00;
+    return &dSaveData_c::getExtra()->mSavedLetters[idx];
 }
 
 // 801394D0
 void *dPrivateData_c::fn_801394D0() {
-    int idx = find((dPrivateData_c *)(fn_8010E1E4() + 0x20), &mPID);
+    int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
     }
-    return fn_8010E208() + 0x17FA58 + idx * 0x140;
+    return dSaveData_c::getExtra()->_17FA58[idx];
 }
 
 // 80139530
 void *dPrivateData_c::fn_80139530() {
-    int idx = find((dPrivateData_c *)(fn_8010E1E4() + 0x20), &mPID);
+    int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
     }
-    return fn_8010E208() + 0xA80 + idx * 0x22020;
+    return &dSaveData_c::getExtra()->mSavedPatterns[idx];
 }
 
 // 80139594
@@ -1509,9 +1500,9 @@ BOOL dPrivateDates_c::fn_80139A6C() {
     if (mDate0.year == 0) {
         fn_8014CCB4(&mDate0, 2000, 0, 1);
     }
-    dTime_c now = *fn_8016D2E8();
+    dTime_c now = *dTime_c::getCurrent();
     if (now.hour < 6) {
-        fn_8016D7B8(&now, -1, 0, 0, 0);
+        now.add(-1, 0, 0, 0);
     }
     u16 today = fn_8014BE60(now);
     dTime_c last = fn_8014CBFC( &mDate0);
@@ -1528,9 +1519,9 @@ BOOL dPrivateDates_c::fn_80139C30(dYMD_c *out) {
         fn_8014CCB4(&mDate1, 2000, 0, 1);
     }
     dTime_c cal = fn_80111ABC();
-    if (cal.year != mDate1.year || cal.month != mDate1.month || cal.day != mDate1.day) {
+    if (cal.year != mDate1.year || cal.month != mDate1.month || cal.mday != mDate1.day) {
         if (out != NULL) {
-            fn_8014CCB4(out, cal.year, (u8)cal.month, (u8)cal.day);
+            fn_8014CCB4(out, cal.year, (u8)cal.month, (u8)cal.mday);
         }
         return TRUE;
     }
@@ -1775,7 +1766,7 @@ u16 dDesignList_c::fn_8013A888(u32 i, int kind) {
     dPrivateData_c *player = fn_80101770();
     dItem::seeker_c::get()->search(kind, 6, NULL);
     if (player != NULL) {
-        int idx = dPrivateData_c::find((dPrivateData_c *)(fn_8010E1E4() + 0x20), &player->mPID);
+        int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, &player->mPID);
         if (idx != -1) {
             return dItem::seeker_c::get()->getNth(order + idx * 8).mId;
         }
@@ -1959,10 +1950,10 @@ void dPrivateData_c::clearAll(dPrivateData_c *players) {
 // 8013AF0C
 void dPrivateData_c::clearPlayer(dPrivateData_c *players, int idx) {
     players[idx].clear();
-    fn_80112CA8(fn_8010E208() + 0xF1258 + idx * 0x23A00);
-    fn_80112BB8(fn_8010E208() + 0x17FA58 + idx * 0x140);
-    fn_80112D24(fn_8010E208() + 0xA80 + idx * 0x22020);
-    fn_8013EE54(fn_8010E208() + 0x17FF58 + idx * 0x2738);
+    fn_80112CA8(&dSaveData_c::getExtra()->mSavedLetters[idx]);
+    fn_80112BB8(dSaveData_c::getExtra()->_17FA58[idx]);
+    fn_80112D24(&dSaveData_c::getExtra()->mSavedPatterns[idx]);
+    fn_8013EE54(dSaveData_c::getExtra()->_17FF58[idx]);
 }
 
 // 8013AFB8
@@ -2118,7 +2109,7 @@ int dPrivateData_c::fn_8013B4F8() {
     counts[1] = 0;
     counts[2] = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *player = getChecked((dPrivateData_c *)(fn_8010E1E4() + 0x20), i);
+        dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (fn_8013E868(&player->mPID)) {
             counts[player->_869C]++;
         }
@@ -2140,7 +2131,7 @@ int dPrivateData_c::fn_8013B5CC() {
     int best = 0;
     int bestIdx = -1;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *player = getChecked((dPrivateData_c *)(fn_8010E1E4() + 0x20), i);
+        dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (fn_8013E868(&player->mPID)) {
             s8 x = player->_869A;
             s8 y = player->_869B;
@@ -2172,7 +2163,7 @@ int dPrivateData_c::fn_8013B5CC() {
 // 8013B7A4
 void dPrivateData_c::fn_8013B7A4() {
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *player = getChecked((dPrivateData_c *)(fn_8010E1E4() + 0x20), i);
+        dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (fn_8013E868(&player->mPID)) {
             player->_869A = -1;
             player->_869B = -1;
@@ -2180,7 +2171,7 @@ void dPrivateData_c::fn_8013B7A4() {
             player->clearFlag0(0x13);
         }
     }
-    fn_8010E1E4()[0x735CB] = 0xFF;
+    dSaveData_c::getTown()->_0735CB = 0xFF;
 }
 
 // 8013B848
@@ -2218,10 +2209,10 @@ void dPrivateData_c::fn_8013B848() {
     }
     if (x >= 0 && y >= 0) {
         fn_800EBB24(2, "BBS_office", 0, 0);
-        fn_801109EC(fn_8010E1E4() + 0x68414, x, y);
-        fn_80116540(fn_8010E1E4(), 0xB);
+        fn_801109EC(dSaveData_c::getTown()->_068414, x, y);
+        fn_80116540(dSaveData_c::getTown(), 0xB);
         fn_8013B7A4();
-        setFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x7F);
+        setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     }
 }
 
@@ -2229,9 +2220,9 @@ void dPrivateData_c::fn_8013B848() {
 void dPrivateData_c::fn_8013B9F8() {
     fn_800EBB24(3, "BBS_office", 0, 0);
     fn_80169F78();
-    fn_80116540(fn_8010E1E4(), 0xB);
+    fn_80116540(dSaveData_c::getTown(), 0xB);
     fn_8013B7A4();
-    setFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x7F);
+    setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
 }
 
 // 8013BA50
@@ -2248,12 +2239,12 @@ void dPrivateData_c::fn_8013BA50() {
             } else {
                 fn_800EBB24(6, "BBS_office", 0, 0);
             }
-            clearFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x6B);
+            clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6B);
             fn_80169F20();
         }
-        fn_80116540(fn_8010E1E4(), 0xB);
+        fn_80116540(dSaveData_c::getTown(), 0xB);
         fn_8013B7A4();
-        setFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x7F);
+        setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     } else {
         if (!b) {
             if (a) {
@@ -2261,18 +2252,18 @@ void dPrivateData_c::fn_8013BA50() {
             } else {
                 fn_800EBB24(5, "BBS_office", 0, 0);
             }
-            clearFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x6A);
+            clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6A);
             fn_80169F4C();
         }
-        fn_80116540(fn_8010E1E4(), 0xB);
+        fn_80116540(dSaveData_c::getTown(), 0xB);
         fn_8013B7A4();
-        setFlag0All((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x7F);
+        setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     }
 }
 
 // 8013BBCC
 void dPrivateData_c::fn_8013BBCC() {
-    if (fn_801164D0(fn_8010DC3C(), 0xB)) {
+    if (fn_801164D0(dSaveData_c::getRaw(), 0xB)) {
         switch (fn_801161F0()) {
         case 0:
             fn_8013B848();
@@ -2294,17 +2285,17 @@ void dPrivateData_c::fn_8013BC38(int days) {
     if (days < 1) {
         return;
     }
-    if (fn_8010DC3C()[0x735CB] != 0xFF) {
-        int left = fn_8010DC3C()[0x735CB] - days;
+    if (dSaveData_c::getRaw()->_0735CB != 0xFF) {
+        int left = dSaveData_c::getRaw()->_0735CB - days;
         left = left < 0 ? 0 : left;
-        fn_8010E1E4()[0x735CB] = left;
+        dSaveData_c::getTown()->_0735CB = left;
         if (left == 0) {
             fn_8013BBCC();
         }
     }
-    if (fn_801164D0(fn_8010DC3C(), 0xA)) {
-        fn_80116540(fn_8010E1E4(), 0xA);
-        fn_80116510(fn_8010E1E4(), 0xB);
+    if (fn_801164D0(dSaveData_c::getRaw(), 0xA)) {
+        fn_80116540(dSaveData_c::getTown(), 0xA);
+        fn_80116510(dSaveData_c::getTown(), 0xB);
         switch (fn_801161F0()) {
         case 0:
             fn_800EBB24(1, "BBS_office", 0, 0);
@@ -2315,7 +2306,7 @@ void dPrivateData_c::fn_8013BC38(int days) {
         case 3: {
             int x, y;
             u16 id = 0xD01D;
-            if (fn_8014B0F0(fn_8010DC3C() + 0x5EB04, &x, &y, &id, 1)) {
+            if (fn_8014B0F0(&dSaveData_c::getRaw()->_05EB04, &x, &y, &id, 1)) {
                 fn_800EBB24(8, "BBS_office", 0, 0);
             } else {
                 fn_800EBB24(7, "BBS_office", 0, 0);
@@ -2328,14 +2319,14 @@ void dPrivateData_c::fn_8013BC38(int days) {
 
 // 8013BDA0
 BOOL dPrivateData_c::fn_8013BDA0(int chance, int count, int flag) {
-    u8 *town = fn_8010E1E4();
-    if (isFlag0Any((dPrivateData_c *)(fn_8010E1E4() + 0x20), 0x4B)) {
+    dSaveData_c *town = dSaveData_c::getTown();
+    if (isFlag0Any(dSaveData_c::getTown()->mPlayers, 0x4B)) {
         return FALSE;
     }
     if (isFlag0(0x4C)) {
         return FALSE;
     }
-    dPrivateHost_c *townHost = (dPrivateHost_c *)(town + 0x734F2);
+    dPrivateHost_c *townHost = &town->mTownHost;
     if (townHost->mCount != 0) {
         return FALSE;
     }
@@ -2410,8 +2401,8 @@ void dItemPairRing_c::push(const dItem::Item *a, const dItem::Item *b) {
     }
     _22_6 = 1;
     mCount = 0;
-    u8* town = fn_8010E1E4();
-    town[0x6673F] = 1;
+    dSaveData_c *town = dSaveData_c::getTown();
+    town->_06673F = 1;
     if (fn_80013550()) {
         fn_800DD4C8();
         fn_800DD588(0x4B, 4);
@@ -2468,11 +2459,11 @@ void dPrivateData_c::inc_869D(int i) {
 
 // 8013C2D0
 BOOL dPrivateData_c::isBirthday(const dTime_c& cal) const {
-    if (mBirthday.isSame(1, 29) && !fn_8016D29C(cal.year) && cal.month == 1 && cal.day == 28) {
+    if (mBirthday.isSame(1, 29) && !dTime_c::isLeapYear(cal.year) && cal.month == 1 && cal.mday == 28) {
         return TRUE;
     }
     
-    if (mBirthday.isSame(cal.month, cal.day)) {
+    if (mBirthday.isSame(cal.month, cal.mday)) {
         return TRUE;
     }
 
@@ -2612,7 +2603,7 @@ BOOL dPrivateData_c::fn_8013C7CC() const {
     if (_8692 < 11) {
         return FALSE;
     }
-    return (s8)fn_8010E1E4()[0x6317F] != 0x7F;
+    return dSaveData_c::getTown()->_06317F != 0x7F;
 }
 
 // 8013C878

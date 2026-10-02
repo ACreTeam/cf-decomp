@@ -80,6 +80,8 @@ public:
 // 0x2A; ctor fn_801429C8, clear fn_80142A08, start fn_80142DA0 (kind from caller).
 // Town-level, at +0x1E2D4 of the villager block (fn_80129A3C).
 struct dQuestPlayerItem_c {
+    dQuestPlayerItem_c(); // 801429C8
+
     /* 0x00 */ dPlayerID_c mPlayer;
     /* 0x16 */ dQuestBase_c mBase;
     /* 0x24 */ dItem::Item mItem;
@@ -92,6 +94,8 @@ struct dQuestPlayerItem_c {
 // 0xEC; ctor fn_80142E68, clear fn_80142EDC, start fn_80143028 (kind 20).
 // Town-level, at +0x1E2FE of the villager block.
 struct dQuestPlayerAnimal_c {
+    dQuestPlayerAnimal_c(); // 80142E68
+
     /* 0x00 */ dPlayerID_c mPlayer;
     /* 0x16 */ dAnmPersonalID_c mAnimal;
     /* 0xD6 */ dQuestBase_c mBase;
@@ -105,6 +109,8 @@ struct dQuestPlayerAnimal_c {
 // 0x60; ctor fn_80143438, clear fn_801434A0, start fn_80143520 (kind 19).
 // Town-level, at +0x1E3EA of the villager block.
 struct dQuestPlayerPair_c {
+    dQuestPlayerPair_c(); // 80143438
+
     /* 0x00 */ dPlayerID_c mPlayers[2];
     /* 0x2C */ dQuestBase_c mBase;
     /* 0x3A */ wchar_t mText[17]; // 0x22 bytes, memset by clear

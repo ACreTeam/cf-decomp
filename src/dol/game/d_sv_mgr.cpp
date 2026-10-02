@@ -1,10 +1,7 @@
-// -*- coding: cp932 -*-
-// vim: set fileencoding=cp932 :
-// MWCC needs an extra backslash after a CP932 trail byte of 0x5C in string
-// literals.
 #include <cstring>
 #include <game/game/d_demo.hpp>
 #include <game/game/d_sv_mgr.hpp>
+#include <game/game/d_save_data.hpp>
 #include <game/game/d_sv_runtime.hpp>
 #include <game/mLib/m_fader.hpp>
 
@@ -96,8 +93,8 @@ int dSvMgr_c::isFullTransferComplete() {
 }
 
 int dSvMgr_c::isTownTransferComplete() {
-    fn_8010DC3C();
-    return isTransferComplete(0, fn_8010DC04());
+    dSaveData_c::getRaw();
+    return isTransferComplete(0, dSaveData_c::getHostOffset());
 }
 
 int dSvMgr_c::isHostTransferComplete() {
@@ -109,19 +106,19 @@ int dSvMgr_c::isPlayerTransferComplete(int player) {
 }
 
 int dSvMgr_c::getHostDataOffset() {
-    void *base = fn_8010DC3C();
-    char *host = static_cast<char *>(fn_8010DC3C()) + 0x20F320;
-    return host - static_cast<char *>(base);
+    dSaveData_c *base = dSaveData_c::getRaw();
+    u8 *host = dSaveData_c::getRaw()->mHostData;
+    return host - reinterpret_cast<u8 *>(base);
 }
 
 int dSvMgr_c::getVisitorDataOffset() {
-    void *base = fn_8010DC3C();
-    return reinterpret_cast<int>(fn_8010DC3C()) + 0x21B20 -
+    dSaveData_c *base = dSaveData_c::getRaw();
+    return reinterpret_cast<int>(&dSaveData_c::getRaw()->mAnimals) -
            reinterpret_cast<int>(base);
 }
 
 int dSvMgr_c::getPlayerDataOffset(int player) {
-    void *base = fn_8010DC3C();
+    dSaveData_c *base = dSaveData_c::getRaw();
     return reinterpret_cast<int>(fn_801016DC(player)) -
            reinterpret_cast<int>(base);
 }
@@ -303,7 +300,7 @@ void dSvMgr_c::stepSaveNormal_c::startVillageMail() {
 // 801BC8C0
 void dSvMgr_c::stepSaveNormal_c::waitVillageMail() {
     if (fn_801030D0()) {
-        fn_8010DC18();
+        dSaveData_c::get();
         fn_8010DDE0();
         nextStep();
     }
@@ -311,7 +308,7 @@ void dSvMgr_c::stepSaveNormal_c::waitVillageMail() {
 
 // 801BC96C
 void dSvMgr_c::stepSaveNormal_c::finish() {
-    fn_8010DC18();
+    dSaveData_c::get();
     fn_8010DED0();
     fn_801A4E44(mpOwner->getMessageController(), 0x0E);
     nextStep();
@@ -609,8 +606,8 @@ int dSvMgr_c::getLastVisitor() {
 
 void dSvMgr_c::finishLoad() {
     if (mLoadFailed) {
-        fn_8010EA88(fn_8010DC18());
-        fn_8010DCB0(fn_8010DC18());
+        dSaveData_c::get()->clear();
+        dSaveData_c::get()->initialize();
     }
     changeMode(&dSvMgr_c::executeIdle);
 }
@@ -635,10 +632,10 @@ void dSvMgr_c::executeLoad() {
 void dSvMgr_c::stepLoad_c::processLoadedSave() {
     switch (fn_800D2A44()) {
     case 1:
-        if (!fn_8010E0F8(fn_8010DC3C(), 1)) {
+        if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             mpOwner->setLoadFailed();
             setLoadErrorMessage(2);
-        } else if (!fn_8010DC44(fn_8010DC18())) {
+        } else if (!dSaveData_c::get()->isGood()) {
             mpOwner->setLoadFailed();
             setLoadErrorMessage(2);
         }
@@ -765,12 +762,12 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
     void *demo = dDemo_c::mInstance;
     switch (fn_800D2A44()) {
     case 1:
-        if (!fn_8010E0F8(fn_8010DC3C(), 1)) {
+        if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
             fn_801A4E44(demo, 0x13);
             fn_801A4E34(demo, mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-        } else if (!fn_8010DC44(fn_8010DC18())) {
+        } else if (!dSaveData_c::get()->isGood()) {
             releaseMessage(demo);
             fn_801A4E44(demo, 0x13);
             fn_801A4E34(demo, mMessageLabel);
@@ -781,12 +778,12 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             int index = mPlayerIndex;
             fn_801017B8();
             void *player = fn_80101624(index);
-            fn_8010DAFC(&field<u8>(player, 0x83E8));
+            fn_8010DAFC(&field<dSaveOption_c>(player, 0x83E8));
             fn_80136C7C(fn_80101770(), player);
-            fn_8010DC18();
+            dSaveData_c::get();
             fn_8010DFC0();
-            void *save = fn_8010DC3C();
-            fn_8014C2C4(savedIdentity, &field<u8>(save, 0x73522));
+            dSaveData_c *save = dSaveData_c::getRaw();
+            fn_8014C2C4(savedIdentity, &save->_073522);
             nextStep();
         }
         break;
@@ -1019,9 +1016,9 @@ void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
         void *player = fn_80101694(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
             if (field<TownIdentity>(player, 0x7FA8).isSame(
-                    field<TownIdentity>(fn_8010E1E4(), 0x683FE))) {
+                    field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
                 returning = true;
-                player = &field<u8>(fn_8010E1E4(), 0x734F2);
+                player = &dSaveData_c::getTown()->mTownHost;
                 fn_8013E6FC(player);
                 field<IdentityFlags>(player, 0x2C).state = 0;
                 if (fn_800DCF90()) {
@@ -1117,9 +1114,9 @@ void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
         void *player = fn_80101694(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
             if (field<TownIdentity>(player, 0x7FA8).isSame(
-                    field<TownIdentity>(fn_8010E1E4(), 0x683FE))) {
+                    field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
                 returning = true;
-                player = &field<u8>(fn_8010E1E4(), 0x734F2);
+                player = &dSaveData_c::getTown()->mTownHost;
                 fn_8013E6FC(player);
                 field<IdentityFlags>(player, 0x2C).state = 0;
                 if (fn_800DCF90()) {
@@ -1224,12 +1221,12 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
     void *demo = dDemo_c::mInstance;
     switch (fn_800D2A44()) {
     case 1:
-        if (!fn_8010E0F8(fn_8010DC3C(), 1)) {
+        if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
             fn_801A4E44(demo, 0x13);
             fn_801A4E34(demo, mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-        } else if (!fn_8010DC44(fn_8010DC18())) {
+        } else if (!dSaveData_c::get()->isGood()) {
             releaseMessage(demo);
             fn_801A4E44(demo, 0x13);
             fn_801A4E34(demo, mMessageLabel);
@@ -1240,12 +1237,12 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             int index = mPlayerIndex;
             fn_801017B8();
             void *player = fn_80101624(index);
-            fn_8010DAFC(&field<u8>(player, 0x83E8));
+            fn_8010DAFC(&field<dSaveOption_c>(player, 0x83E8));
             fn_80136C7C(fn_80101770(), player);
-            fn_8010DC18();
+            dSaveData_c::get();
             fn_8010DFC0();
-            void *save = fn_8010DC3C();
-            fn_8014C2C4(savedIdentity, &field<u8>(save, 0x73522));
+            dSaveData_c *save = dSaveData_c::getRaw();
+            fn_8014C2C4(savedIdentity, &save->_073522);
             nextStep();
         }
         break;
@@ -1364,8 +1361,8 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::waitLoad() {
 
 // 801C3480
 void dSvMgr_c::stepSaveInterruptNetVst_c::initializeFullSave() {
-    fn_8010DCF0(fn_8010DC18());
-    fn_8016D53C();
+    fn_8010DCF0(dSaveData_c::get());
+    dTime_c::saveOffset();
     fn_800D22F8();
     nextStep();
 }
@@ -1442,8 +1439,8 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed() {
 
 // 801C3A18
 void dSvMgr_c::stepSaveInterruptNetHst_c::initializeFullSave() {
-    fn_8010DCF0(fn_8010DC18());
-    fn_8016D53C();
+    fn_8010DCF0(dSaveData_c::get());
+    dTime_c::saveOffset();
     fn_800D22F8();
     nextStep();
 }
@@ -1542,8 +1539,8 @@ void dSvMgr_c::stepSaveContinueNetVst_c::saveFailed() {
 
 // 801C40F8
 void dSvMgr_c::stepSaveContinueNetHst_c::initializeFullSave() {
-    fn_8010DCF0(fn_8010DC18());
-    fn_8016D53C();
+    fn_8010DCF0(dSaveData_c::get());
+    dTime_c::saveOffset();
     fn_800D22F8();
     nextStep();
 }
@@ -1646,7 +1643,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::waitHostSave() {
 
 // 801C47BC
 void dSvMgr_c::stepSaveConnectNetHst_c::initializeTownSave() {
-    fn_8010DCF0(fn_8010DC18());
+    fn_8010DCF0(dSaveData_c::get());
     nextStep();
 }
 
@@ -1687,8 +1684,8 @@ void dSvMgr_c::stepSaveRetireNetVst_c::waitLoad() {
 
 // 801C4AE8
 void dSvMgr_c::stepSaveRetireNetVst_c::initializeFullSave() {
-    fn_8010DCF0(fn_8010DC18());
-    fn_8016D53C();
+    fn_8010DCF0(dSaveData_c::get());
+    dTime_c::saveOffset();
     fn_800D22F8();
     nextStep();
 }
@@ -1763,8 +1760,8 @@ void dSvMgr_c::stepSaveRetireNetVst_c::saveFailed() {
 
 // 801C5080
 void dSvMgr_c::stepSaveNormal_c::initializeFullSave() {
-    fn_8010DCF0(fn_8010DC18());
-    fn_8016D53C();
+    fn_8010DCF0(dSaveData_c::get());
+    dTime_c::saveOffset();
     fn_800D22F8();
     nextStep();
 }

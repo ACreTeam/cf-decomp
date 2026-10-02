@@ -49,6 +49,20 @@ dol/game/d_item.cpp:
 	.sdata      start:0x8074A900 end:0x8074A9A0 align:4
 	.sbss       start:0x8074E490 end:0x8074E498 align:4
 
+dol/game/d_save_data.cpp:
+	.text       start:0x8010D7E8 end:0x8010F124
+	.sbss       start:0x8074E6D8 end:0x8074E6E8 align:4
+
+dol/game/d_animal.cpp:
+	.text       start:0x8011B400 end:0x80135E88
+	.ctors      start:0x8046572C end:0x80465730
+	.rodata     start:0x80475D38 end:0x804760D8 align:4
+	.data       start:0x804EE5D0 end:0x804EF1D8 align:4
+	.bss        start:0x805F15D8 end:0x805F1A38 align:4
+	.sdata      start:0x8074B058 end:0x8074B088 align:4
+	.sbss       start:0x8074E708 end:0x8074E7C0 align:4
+	.sdata2     start:0x80750B68 end:0x80750BE0 align:4
+
 dol/game/d_animal_id.cpp:
 	.text       start:0x80135E88 end:0x80136244
 	.rodata     start:0x804760D8 end:0x80476150 align:4
@@ -62,6 +76,12 @@ dol/game/d_private_data.cpp:
 	.bss        start:0x805F1A38 end:0x805F2680 align:4
 	.sdata      start:0x8074B090 end:0x8074B0A8 align:4
 	.sbss       start:0x8074E7C0 end:0x8074E7C8 align:4
+
+dol/game/d_date.cpp:
+	.text       start:0x8016D264 end:0x8016DE60
+	.rodata     start:0x8047B150 end:0x8047B1B0 align:4
+	.bss        start:0x80600898 end:0x806008C0 align:4
+	.sbss       start:0x8074E8B0 end:0x8074E8C8 align:4
 
 dol/game/d_msg_rcpt.cpp:
 	.text       start:0x801A2168 end:0x801A2384
