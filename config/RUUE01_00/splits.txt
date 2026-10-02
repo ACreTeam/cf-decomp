@@ -289,6 +289,158 @@ dol/mLib/m_color.cpp:
 	.text       start:0x802B8C1C end:0x802B8D30
 	.sdata2     start:0x80752A40 end:0x80752A50 align:4
 
+lib/keyboard/tiPcKeyboard.cpp:
+	.text       start:0x802E5BB4 end:0x802EBC54
+	.ctors      start:0x804658F4 end:0x804658F8
+	.bss        start:0x806A6D30 end:0x806A6D40 align:4
+	.sdata2     start:0x80752B98 end:0x80752BA0 align:4
+
+lib/keyboard/tiCellPhone.cpp:
+	.text       start:0x802EBC54 end:0x802EF9FC
+	.ctors      start:0x804658F8 end:0x804658FC
+	.sdata2     start:0x80752BA0 end:0x80752BA8 align:4
+
+lib/keyboard/tiInputForm.cpp:
+	.text       start:0x802EF9FC end:0x802FA418
+	.ctors      start:0x804658FC end:0x80465900
+	.bss        start:0x806A6D40 end:0x806A6DA0 align:4
+	.sdata2     start:0x80752BA8 end:0x80752C10 align:4
+
+lib/keyboard/tiCandidateBox.cpp:
+	.text       start:0x802FA418 end:0x802FF618
+	.ctors      start:0x80465900 end:0x80465904
+	.sdata2     start:0x80752C10 end:0x80752C50 align:4
+
+lib/keyboard/tiToolBar.cpp:
+	.text       start:0x802FF618 end:0x80300A80
+	.ctors      start:0x80465904 end:0x80465908
+
+lib/keyboard/tiPredictLang.cpp:
+	.text       start:0x80300A80 end:0x80301F28
+	.ctors      start:0x80465908 end:0x8046590C
+
+lib/keyboard/tiSignWindow.cpp:
+	.text       start:0x80301F28 end:0x80303AE4
+	.ctors      start:0x8046590C end:0x80465910
+
+lib/keyboard/tiString.cpp:
+	.text       start:0x80303AE4 end:0x80304E9C
+
+lib/keyboard/tiTextDrawer.cpp:
+	.text       start:0x80304E9C end:0x80305C28
+	.bss        start:0x806A6DA0 end:0x806A7320 align:4
+	.sdata2     start:0x80752C50 end:0x80752C80 align:4
+
+lib/keyboard/tiNw4rManager.cpp:
+	.text       start:0x80305C28 end:0x803071BC
+	.sdata2     start:0x80752C80 end:0x80752C98 align:4
+
+lib/keyboard/tiManager.cpp:
+	.text       start:0x803071BC end:0x80308FCC
+	.ctors      start:0x80465910 end:0x80465914
+
+lib/keyboard/tiUtil.cpp:
+	.text       start:0x80308FCC end:0x80309C04
+	.ctors      start:0x80465914 end:0x80465918
+	.sdata2     start:0x80752C98 end:0x80752CB8 align:4
+
+lib/keyboard/tiCpData.cpp:
+	.text       start:0x80309C04 end:0x8030A04C
+	.ctors      start:0x80465918 end:0x8046591C
+
+lib/keyboard/tiSwData.cpp:
+	.text       start:0x8030A04C end:0x8030A860
+	.ctors      start:0x8046591C end:0x80465920
+
+lib/keyboard/tiPkData.cpp:
+	.text       start:0x8030A860 end:0x8030B344
+	.ctors      start:0x80465920 end:0x80465924
+
+lib/keyboard/tiTextInputBase.cpp:
+	.text       start:0x8030B344 end:0x8030B400
+
+lib/keyboard/MyTiManager.cpp:
+	.text       start:0x8030B400 end:0x80310344
+	.ctors      start:0x80465924 end:0x80465928
+	.bss        start:0x806A7320 end:0x806A7368 align:4
+	.sdata2     start:0x80752CB8 end:0x80752CD8 align:4
+
+lib/keyboard/MyTiInputForm.cpp:
+	.text       start:0x80310344 end:0x80313CB8
+	.sdata2     start:0x80752CD8 end:0x80752D10 align:4
+
+lib/keyboard/MyTiBg.cpp:
+	.text       start:0x80313CB8 end:0x80313D70
+
+lib/keyboard/tiDebug.cpp:
+	.text       start:0x80313D70 end:0x80314384
+	.sdata2     start:0x80752D10 end:0x80752D28 align:4
+
+lib/keyboard/tiGUIManager.cpp:
+	.text       start:0x80314384 end:0x80315ADC
+	.sdata2     start:0x80752D28 end:0x80752D38 align:4
+
+lib/keyboard/tiHKBManager.cpp:
+	.text       start:0x80315ADC end:0x8031730C
+	.ctors      start:0x80465928 end:0x8046592C
+	.bss        start:0x806A7368 end:0x806A7470 align:4
+
+lib/keyboard/tiHwKeyboard.cpp:
+	.text       start:0x8031730C end:0x80317FB0
+	.bss        start:0x806A7470 end:0x806A7480 align:4
+	.sdata2     start:0x80752D38 end:0x80752D50 align:4
+
+lib/keyboard/tiLayout.cpp:
+	.text       start:0x80317FB0 end:0x8031878C
+
+lib/keyboard/tiLayoutGather.cpp:
+	.text       start:0x8031878C end:0x8031881C
+
+lib/egg/core/eggArchive.cpp:
+	.text       start:0x8043E5E4 end:0x8043E9AC
+	.data       start:0x80561288 end:0x805612B0 align:4
+	.bss        start:0x807461E0 end:0x807461F0 align:4
+	.sbss       start:0x8074FBB0 end:0x8074FBB8 align:4
+
+lib/egg/core/eggDvdFile.cpp:
+	.text       start:0x8043E9AC end:0x8043ED60
+	.data       start:0x805612B0 end:0x80561300 align:4
+	.bss        start:0x807461F0 end:0x80746200 align:4
+	.sbss       start:0x8074FBB8 end:0x8074FBC0 align:4
+
+lib/egg/core/eggDvdRipper.cpp:
+	.text       start:0x8043ED60 end:0x8043EFD4
+	.sdata      start:0x8074DF30 end:0x8074DF38 align:4
+	.sbss       start:0x8074FBC0 end:0x8074FBC8 align:4
+
+lib/egg/core/eggDecomp.cpp:
+	.text       start:0x8043EFD4 end:0x8043F6CC
+	.sbss       start:0x8074FBC8 end:0x8074FBF0 align:4
+
+lib/egg/core/eggAllocator.cpp:
+	.text       start:0x8043F6CC end:0x8043F78C
+	.data       start:0x80561300 end:0x80561318 align:4
+
+lib/egg/core/eggHeap.cpp:
+	.text       start:0x8043F78C end:0x8043FEE0
+	.data       start:0x80561318 end:0x80561450 align:4
+	.bss        start:0x80746200 end:0x80746228 align:4
+	.sdata      start:0x8074DF38 end:0x8074DF48 align:4
+	.sbss       start:0x8074FBF0 end:0x8074FC18 align:4
+	.sdata2     start:0x807531F8 end:0x80753210 align:4
+
+lib/egg/core/eggExpHeap.cpp:
+	.text       start:0x8043FEE0 end:0x80440330
+	.data       start:0x80561450 end:0x805614C8 align:4
+
+lib/egg/core/eggFrmHeap.cpp:
+	.text       start:0x80440330 end:0x804406BC
+	.data       start:0x805614C8 end:0x80561520 align:4
+
+lib/egg/core/eggAssertHeap.cpp:
+	.text       start:0x804406BC end:0x804409DC
+	.data       start:0x80561520 end:0x80561578 align:4
+
 lib/egg/core/eggDisposer.cpp:
 	.text       start:0x804409DC end:0x80440AA4
 	.data       start:0x80561578 end:0x80561588
