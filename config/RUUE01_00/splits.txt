@@ -292,81 +292,127 @@ dol/mLib/m_color.cpp:
 lib/keyboard/tiPcKeyboard.cpp:
 	.text       start:0x802E5BB4 end:0x802EBC54
 	.ctors      start:0x804658F4 end:0x804658F8
+	.rodata     start:0x8048A7A0 end:0x8048BBE8 align:4
+	.data       start:0x805286F8 end:0x8052B610 align:4
 	.bss        start:0x806A6D30 end:0x806A6D40 align:4
+	.sdata      start:0x8074CC78 end:0x8074CCF0 align:4
+	.sbss       start:0x8074F0E8 end:0x8074F0F0 align:4
 	.sdata2     start:0x80752B98 end:0x80752BA0 align:4
 
 lib/keyboard/tiCellPhone.cpp:
 	.text       start:0x802EBC54 end:0x802EF9FC
 	.ctors      start:0x804658F8 end:0x804658FC
+	.rodata     start:0x8048BBE8 end:0x8048C0E0 align:4
+	.data       start:0x8052B610 end:0x8052BEE8 align:4
+	.sdata      start:0x8074CCF0 end:0x8074CD50 align:4
 	.sdata2     start:0x80752BA0 end:0x80752BA8 align:4
 
 lib/keyboard/tiInputForm.cpp:
 	.text       start:0x802EF9FC end:0x802FA418
 	.ctors      start:0x804658FC end:0x80465900
+	.rodata     start:0x8048C0E0 end:0x8048C338 align:4
+	.data       start:0x8052BEE8 end:0x8052C948 align:4
 	.bss        start:0x806A6D40 end:0x806A6DA0 align:4
+	.sdata      start:0x8074CD50 end:0x8074CD70 align:4
+	.sbss       start:0x8074F0F0 end:0x8074F110 align:4
 	.sdata2     start:0x80752BA8 end:0x80752C10 align:4
 
 lib/keyboard/tiCandidateBox.cpp:
 	.text       start:0x802FA418 end:0x802FF618
 	.ctors      start:0x80465900 end:0x80465904
+	.rodata     start:0x8048C338 end:0x8048C6B0 align:4
+	.data       start:0x8052C948 end:0x8052D748 align:4
+	.sdata      start:0x8074CD70 end:0x8074CD90 align:4
 	.sdata2     start:0x80752C10 end:0x80752C50 align:4
 
 lib/keyboard/tiToolBar.cpp:
 	.text       start:0x802FF618 end:0x80300A80
 	.ctors      start:0x80465904 end:0x80465908
+	.rodata     start:0x8048C6B0 end:0x8048C890 align:4
+	.data       start:0x8052D748 end:0x8052DAF8 align:4
+	.sdata      start:0x8074CD90 end:0x8074CDA8 align:4
 
 lib/keyboard/tiPredictLang.cpp:
 	.text       start:0x80300A80 end:0x80301F28
 	.ctors      start:0x80465908 end:0x8046590C
+	.rodata     start:0x8048C890 end:0x8048CAF8 align:4
+	.data       start:0x8052DAF8 end:0x8052E138 align:4
+	.sdata      start:0x8074CDA8 end:0x8074CDB0 align:4
 
 lib/keyboard/tiSignWindow.cpp:
 	.text       start:0x80301F28 end:0x80303AE4
 	.ctors      start:0x8046590C end:0x80465910
+	.rodata     start:0x8048CAF8 end:0x8048CDF8 align:4
+	.data       start:0x8052E138 end:0x8052EBA0 align:4
+	.sdata      start:0x8074CDB0 end:0x8074CDB8 align:4
 
 lib/keyboard/tiString.cpp:
 	.text       start:0x80303AE4 end:0x80304E9C
+	.data       start:0x8052EBA0 end:0x8052ECC0 align:4
 
 lib/keyboard/tiTextDrawer.cpp:
 	.text       start:0x80304E9C end:0x80305C28
+	.data       start:0x8052ECC0 end:0x8052ED58 align:4
 	.bss        start:0x806A6DA0 end:0x806A7320 align:4
 	.sdata2     start:0x80752C50 end:0x80752C80 align:4
 
 lib/keyboard/tiNw4rManager.cpp:
 	.text       start:0x80305C28 end:0x803071BC
+	.data       start:0x8052ED58 end:0x8052EE28 align:4
 	.sdata2     start:0x80752C80 end:0x80752C98 align:4
 
 lib/keyboard/tiManager.cpp:
 	.text       start:0x803071BC end:0x80308FCC
 	.ctors      start:0x80465910 end:0x80465914
+	.data       start:0x8052EE28 end:0x8052F890 align:4
+	.sbss       start:0x8074F110 end:0x8074F118 align:4
 
 lib/keyboard/tiUtil.cpp:
 	.text       start:0x80308FCC end:0x80309C04
 	.ctors      start:0x80465914 end:0x80465918
+	.data       start:0x8052F890 end:0x8052FAB0 align:4
+	.sbss       start:0x8074F118 end:0x8074F130 align:4
 	.sdata2     start:0x80752C98 end:0x80752CB8 align:4
 
 lib/keyboard/tiCpData.cpp:
 	.text       start:0x80309C04 end:0x8030A04C
 	.ctors      start:0x80465918 end:0x8046591C
+	.rodata     start:0x8048CDF8 end:0x8048D270 align:4
+	.data       start:0x8052FAB0 end:0x80532BB0 align:4
+	.sdata      start:0x8074CDB8 end:0x8074CDC0 align:4
 
 lib/keyboard/tiSwData.cpp:
 	.text       start:0x8030A04C end:0x8030A860
 	.ctors      start:0x8046591C end:0x80465920
+	.data       start:0x80532BB0 end:0x80534730 align:4
 
 lib/keyboard/tiPkData.cpp:
 	.text       start:0x8030A860 end:0x8030B344
 	.ctors      start:0x80465920 end:0x80465924
+	.data       start:0x80534730 end:0x80535D68 align:4
+
+lib/keyboard/tiLanguageIndependentData.cpp:
+	.data       start:0x80535D68 end:0x80536080 align:4
+	.sdata      start:0x8074CDC0 end:0x8074CE40 align:4
 
 lib/keyboard/tiTextInputBase.cpp:
 	.text       start:0x8030B344 end:0x8030B400
+	.data       start:0x80536080 end:0x805360A0 align:4
 
 lib/keyboard/MyTiManager.cpp:
 	.text       start:0x8030B400 end:0x80310344
 	.ctors      start:0x80465924 end:0x80465928
+	.data       start:0x805360A0 end:0x80536450 align:4
 	.bss        start:0x806A7320 end:0x806A7368 align:4
+	.sdata      start:0x8074CE40 end:0x8074CE58 align:4
+	.sbss       start:0x8074F130 end:0x8074F140 align:4
 	.sdata2     start:0x80752CB8 end:0x80752CD8 align:4
 
 lib/keyboard/MyTiInputForm.cpp:
 	.text       start:0x80310344 end:0x80313CB8
+	.rodata     start:0x8048D270 end:0x8048D778 align:4
+	.data       start:0x80536450 end:0x80536B28 align:4
+	.sdata      start:0x8074CE58 end:0x8074CEA0 align:4
 	.sdata2     start:0x80752CD8 end:0x80752D10 align:4
 
 lib/keyboard/MyTiBg.cpp:
@@ -378,23 +424,1007 @@ lib/keyboard/tiDebug.cpp:
 
 lib/keyboard/tiGUIManager.cpp:
 	.text       start:0x80314384 end:0x80315ADC
+	.data       start:0x80536B28 end:0x80536CA0 align:4
 	.sdata2     start:0x80752D28 end:0x80752D38 align:4
 
 lib/keyboard/tiHKBManager.cpp:
 	.text       start:0x80315ADC end:0x8031730C
 	.ctors      start:0x80465928 end:0x8046592C
+	.data       start:0x80536CA0 end:0x80536CF0 align:4
 	.bss        start:0x806A7368 end:0x806A7470 align:4
 
 lib/keyboard/tiHwKeyboard.cpp:
 	.text       start:0x8031730C end:0x80317FB0
+	.rodata     start:0x8048D778 end:0x8048D810 align:4
+	.data       start:0x80536CF0 end:0x80536D18 align:4
 	.bss        start:0x806A7470 end:0x806A7480 align:4
+	.sdata      start:0x8074CEA0 end:0x8074CEA8 align:4
 	.sdata2     start:0x80752D38 end:0x80752D50 align:4
 
 lib/keyboard/tiLayout.cpp:
 	.text       start:0x80317FB0 end:0x8031878C
+	.data       start:0x80536D18 end:0x80536D80 align:4
 
 lib/keyboard/tiLayoutGather.cpp:
 	.text       start:0x8031878C end:0x8031881C
+
+lib/RevoEX/ssl/ssl_api.c:
+	.text       start:0x8031881C end:0x80319568
+	.data       start:0x80536D80 end:0x80536DD8 align:4
+	.bss        start:0x806A7480 end:0x806AA4A0 align:4
+	.sdata      start:0x8074CEA8 end:0x8074CEB0 align:4
+	.sbss       start:0x8074F140 end:0x8074F148 align:4
+
+lib/RVL_SDK/ai/ai.c:
+	.text       start:0x80373A40 end:0x80373FA4
+	.data       start:0x80541520 end:0x80541568 align:4
+	.sdata      start:0x8074D7A0 end:0x8074D7A8 align:4
+	.sbss       start:0x8074F3A0 end:0x8074F3E0 align:4
+
+lib/RVL_SDK/arc/arc.c:
+	.text       start:0x80373FA4 end:0x80374924
+	.data       start:0x80541568 end:0x805415D8 align:4
+	.sdata      start:0x8074D7A8 end:0x8074D7B0 align:4
+
+lib/RVL_SDK/ax/AX.c:
+	.text       start:0x80374924 end:0x80374978
+	.data       start:0x805415D8 end:0x80541620 align:4
+	.sdata      start:0x8074D7B0 end:0x8074D7B8 align:4
+
+lib/RVL_SDK/ax/AXAlloc.c:
+	.text       start:0x80374980 end:0x80374E38
+	.bss        start:0x806B5258 end:0x806B5360 align:4
+	.sbss       start:0x8074F3E8 end:0x8074F3F0 align:4
+
+lib/RVL_SDK/ax/AXAux.c:
+	.text       start:0x80374E38 end:0x80375650
+	.bss        start:0x806B5360 end:0x806B84E0 align:4
+	.sbss       start:0x8074F3F0 end:0x8074F438 align:4
+
+lib/RVL_SDK/ax/AXCL.c:
+	.text       start:0x80375650 end:0x803760DC
+	.data       start:0x805416C0 end:0x80542680 align:4
+	.bss        start:0x806B84E0 end:0x806B85E0 align:4
+
+lib/RVL_SDK/ax/AXOut.c:
+	.text       start:0x803760DC end:0x803768D4
+	.data       start:0x80542680 end:0x80544680 align:4
+	.bss        start:0x806B85E0 end:0x806B93E0 align:4
+	.sdata      start:0x8074D7B8 end:0x8074D7C0 align:4
+	.sbss       start:0x8074F458 end:0x8074F498 align:4
+
+lib/RVL_SDK/ax/AXSPB.c:
+	.text       start:0x803768D4 end:0x80376CF4
+	.bss        start:0x806B93E0 end:0x806B9460 align:4
+	.sbss       start:0x8074F498 end:0x8074F4E8 align:4
+
+lib/RVL_SDK/ax/AXVPB.c:
+	.text       start:0x80376CF4 end:0x80377BB8
+	.bss        start:0x806B9460 end:0x806CAB60 align:4
+	.sdata2     start:0x80752DD8 end:0x80752DF8
+
+lib/RVL_SDK/ax/AXProf.c:
+	.text       start:0x80377BC8 end:0x80377C08
+	.sbss       start:0x8074F508 end:0x8074F518 align:4
+
+lib/RVL_SDK/axfx/AXFXReverbHi.c:
+	.text       start:0x80377C08 end:0x80377C6C
+	.sdata2     start:0x80752DF8 end:0x80752E00 align:4
+
+lib/RVL_SDK/axfx/AXFXReverbHiExp.c:
+	.text       start:0x80377C94 end:0x80378C7C
+	.data       start:0x80544680 end:0x80544820 align:4
+	.sdata2     start:0x80752E00 end:0x80752E40
+
+lib/RVL_SDK/axfx/AXFXReverbHiExpDpl2.c:
+	.text       start:0x80378C7C end:0x80379650
+	.data       start:0x805448E0 end:0x805449E0 align:4
+	.sdata2     start:0x80752E50 end:0x80752E60
+
+lib/RVL_SDK/base/PPCArch.c:
+	.text       start:0x80379D68 end:0x80379ED8
+	.data       start:0x805449E0 end:0x80544A18 align:4
+
+lib/RVL_SDK/os/OS.c:
+	.text       start:0x80379ED8 end:0x8037B2E8
+	.bss        start:0x806CAB80 end:0x806CABD0 align:4
+	.sdata      start:0x8074D7C8 end:0x8074D7F8 align:4
+
+lib/RVL_SDK/os/OSAlarm.c:
+	.text       start:0x8037B2E8 end:0x8037BACC
+
+lib/RVL_SDK/os/OSAlloc.c:
+	.text       start:0x8037BACC end:0x8037BDD4
+	.sbss       start:0x8074F568 end:0x8074F578 align:4
+
+lib/RVL_SDK/os/OSArena.c:
+	.text       start:0x8037BDD4 end:0x8037BE68
+
+lib/RVL_SDK/os/OSAudioSystem.c:
+	.text       start:0x8037BE68 end:0x8037C31C
+
+lib/RVL_SDK/os/OSCache.c:
+	.text       start:0x8037C31C end:0x8037C94C
+
+lib/RVL_SDK/os/OSContext.c:
+	.text       start:0x8037C94C end:0x8037D1D4
+	.data       start:0x805450D0 end:0x80545288 align:4
+
+lib/RVL_SDK/os/OSError.c:
+	.text       start:0x8037D1D4 end:0x8037D878
+
+lib/RVL_SDK/os/OSExec.c:
+	.text       start:0x8037D878 end:0x8037DD88
+
+lib/RVL_SDK/os/OSFont.c:
+	.text       start:0x8037FB20 end:0x803807E8
+	.data       start:0x80545640 end:0x80546150 align:4
+	.sdata      start:0x8074D828 end:0x8074D830 align:4
+	.sbss       start:0x8074F598 end:0x8074F5A8 align:4
+	.sdata2     start:0x80752EC8 end:0x80752ED0 align:4
+
+lib/RVL_SDK/os/OSInterrupt.c:
+	.text       start:0x803807E8 end:0x80380F6C
+	.data       start:0x80546150 end:0x80546180 align:4
+
+lib/RVL_SDK/os/OSLink.c:
+	.text       start:0x80381960 end:0x80381978
+
+lib/RVL_SDK/os/OSMessage.c:
+	.text       start:0x80381978 end:0x80381B7C
+
+lib/RVL_SDK/os/OSMemory.c:
+	.text       start:0x80381B7C end:0x80382390
+
+lib/RVL_SDK/os/OSMutex.c:
+	.text       start:0x80382390 end:0x80382778
+
+lib/RVL_SDK/os/OSReset.c:
+	.text       start:0x803827F8 end:0x80383164
+	.data       start:0x80546248 end:0x805463B8 align:4
+	.sdata      start:0x8074D830 end:0x8074D838 align:4
+	.sbss       start:0x8074F5C8 end:0x8074F5CC align:4
+
+lib/RVL_SDK/os/OSRtc.c:
+	.text       start:0x80383180 end:0x80383C0C
+
+lib/RVL_SDK/os/OSSemaphore.c:
+	.text       start:0x80383C0C end:0x80383D84
+
+lib/RVL_SDK/os/OSSync.c:
+	.text       start:0x80383D84 end:0x80383E04
+
+lib/RVL_SDK/os/OSThread.c:
+	.text       start:0x80383E04 end:0x803855D4
+	.bss        start:0x806CB290 end:0x806CB980 align:4
+
+lib/RVL_SDK/os/OSTime.c:
+	.text       start:0x803855D4 end:0x80385C88
+	.data       start:0x80546468 end:0x805464C8 align:4
+
+lib/RVL_SDK/os/OSUtf.c:
+	.text       start:0x80385C88 end:0x80385EC0
+	.data       start:0x805464C8 end:0x80552308 align:4
+
+lib/RVL_SDK/os/OSIpc.c:
+	.text       start:0x80385EC0 end:0x80385EE8
+
+lib/RVL_SDK/os/OSStateTM.c:
+	.text       start:0x803860C0 end:0x803865DC
+	.data       start:0x80552330 end:0x805523D0 align:4
+	.bss        start:0x806CB9C0 end:0x806CBA40 align:4
+
+lib/RVL_SDK/os/OSPlayRecord.c:
+	.text       start:0x803865DC end:0x80386CD4
+	.data       start:0x805523D0 end:0x80552418 align:4
+	.bss        start:0x806CBA40 end:0x806CBC40 align:4
+	.sbss       start:0x8074F630 end:0x8074F638 align:4
+
+lib/RVL_SDK/os/OSStateFlags.c:
+	.text       start:0x80386CD4 end:0x80386EE0
+	.data       start:0x80552418 end:0x80552440 align:4
+	.bss        start:0x806CBC40 end:0x806CBC60 align:4
+
+lib/RVL_SDK/os/OSNet.c:
+	.text       start:0x80386EE0 end:0x80386F94
+
+lib/RVL_SDK/os/OSNandbootInfo.c:
+	.text       start:0x80386F94 end:0x8038719C
+	.data       start:0x805525A8 end:0x805525C8 align:4
+
+lib/RVL_SDK/os/OSPlayTime.c:
+	.text       start:0x803871B4 end:0x80387A34
+	.data       start:0x805525C8 end:0x805525DC align:4
+	.bss        start:0x806CBC60 end:0x806CBC90 align:4
+	.sbss       start:0x8074F638 end:0x8074F648 align:4
+	.sdata2     start:0x80752ED0 end:0x80752EE0
+
+lib/RVL_SDK/os/__ppc_eabi_init.cpp:
+	.text       start:0x803887F4 end:0x803888A8
+
+lib/RVL_SDK/exi/EXIBios.c:
+	.text       start:0x803888A8 end:0x8038A13C
+	.data       start:0x805527F8 end:0x80552840 align:4
+	.sdata      start:0x8074D860 end:0x8074D868 align:4
+
+lib/RVL_SDK/exi/EXIUart.c:
+	.text       start:0x8038A13C end:0x8038A470
+	.sbss       start:0x8074F660 end:0x8074F670 align:4
+
+lib/RVL_SDK/exi/EXICommon.c:
+	.text       start:0x8038A470 end:0x8038A5FC
+
+lib/RVL_SDK/si/SIBios.c:
+	.text       start:0x8038A5FC end:0x8038B9F0
+	.data       start:0x80552840 end:0x80552888 align:4
+	.bss        start:0x806CBDD0 end:0x806CBF70 align:4
+	.sdata      start:0x8074D868 end:0x8074D870 align:4
+	.sbss       start:0x8074F670 end:0x8074F680 align:4
+
+lib/RVL_SDK/si/SISamplingRate.c:
+	.text       start:0x8038B9F0 end:0x8038BAD0
+
+lib/RVL_SDK/db/db.c:
+	.text       start:0x8038BAD0 end:0x8038BBB8
+	.data       start:0x80552948 end:0x80552960 align:4
+	.sbss       start:0x8074F688 end:0x8074F690 align:4
+
+lib/RVL_SDK/vi/vi.c:
+	.text       start:0x8038BD4C end:0x8038E4CC
+	.data       start:0x80552960 end:0x80552EB8 align:4
+	.bss        start:0x806CBFE8 end:0x806CC0E0 align:4
+
+lib/RVL_SDK/vi/i2c.c:
+	.text       start:0x8038E4CC end:0x8038EEE8
+	.sdata      start:0x8074D890 end:0x8074D898 align:4
+	.sbss       start:0x8074F740 end:0x8074F748 align:4
+
+lib/RVL_SDK/vi/vi3in1.c:
+	.text       start:0x8038EEE8 end:0x8039058C
+	.data       start:0x80552EB8 end:0x80553460 align:4
+	.bss        start:0x806CC0E0 end:0x806CC100 align:4
+	.sdata      start:0x8074D898 end:0x8074D8B0 align:4
+	.sbss       start:0x8074F74C end:0x8074F760 align:4
+
+lib/RVL_SDK/mtx/mtx.c:
+	.text       start:0x80390A10 end:0x80390F80
+	.sdata2     start:0x80752EF4 end:0x80752EF8 align:4
+
+lib/RVL_SDK/mtx/mtx44.c:
+	.text       start:0x803912E8 end:0x8039146C
+	.sdata2     start:0x80752F18 end:0x80752F20 align:4
+
+lib/RVL_SDK/mtx/vec.c:
+	.text       start:0x80391490 end:0x80391574
+	.sdata2     start:0x80752F20 end:0x80752F28 align:4
+
+lib/RVL_SDK/gx/GXInit.c:
+	.text       start:0x803919DC end:0x80392BA8
+	.data       start:0x80553460 end:0x805535D0 align:4
+	.sdata      start:0x8074D8B8 end:0x8074D8C0 align:4
+	.sbss       start:0x8074F770 end:0x8074F784 align:4
+
+lib/RVL_SDK/gx/GXFifo.c:
+	.text       start:0x80392BA8 end:0x80393750
+	.data       start:0x805536A0 end:0x805536D0 align:4
+	.bss        start:0x806CC780 end:0x806CC7C8 align:4
+
+lib/RVL_SDK/gx/GXAttr.c:
+	.text       start:0x803937A4 end:0x803949C8
+	.data       start:0x805536D0 end:0x80553948 align:4
+	.sdata      start:0x8074D8C0 end:0x8074D8D0 align:4
+
+lib/RVL_SDK/gx/GXMisc.c:
+	.text       start:0x803949C8 end:0x803951C4
+	.sbss       start:0x8074F7A8 end:0x8074F7C0 align:4
+
+lib/RVL_SDK/gx/GXGeometry.c:
+	.text       start:0x803951C4 end:0x80395784
+
+lib/RVL_SDK/gx/GXFrameBuf.c:
+	.text       start:0x80395784 end:0x80396250
+	.sdata2     start:0x80752F68 end:0x80752F78
+
+lib/RVL_SDK/gx/GXLight.c:
+	.text       start:0x803964E4 end:0x80396960
+	.sdata2     start:0x80752FA8 end:0x80752FB0 align:4
+
+lib/RVL_SDK/gx/GXTexture.c:
+	.text       start:0x80396960 end:0x80397A50
+	.data       start:0x80553A58 end:0x80553C80 align:4
+	.sdata      start:0x8074D8D0 end:0x8074D918 align:4
+	.sdata2     start:0x80752FB0 end:0x80752FE8
+
+lib/RVL_SDK/gx/GXBump.c:
+	.text       start:0x80397A50 end:0x80397E9C
+	.sdata2     start:0x80752FE8 end:0x80752FF0 align:4
+
+lib/RVL_SDK/gx/GXTev.c:
+	.text       start:0x80397E9C end:0x8039851C
+	.data       start:0x80553C80 end:0x80553CF8 align:4
+
+lib/RVL_SDK/gx/GXPixel.c:
+	.text       start:0x8039851C end:0x80398C80
+	.data       start:0x80553CF8 end:0x80553D18 align:4
+	.sdata2     start:0x80752FF0 end:0x80753040
+
+lib/RVL_SDK/gx/GXDisplayList.c:
+	.text       start:0x80399050 end:0x80399228
+	.bss        start:0x806CCA50 end:0x806CD180 align:4
+
+lib/RVL_SDK/gx/GXTransform.c:
+	.text       start:0x80399228 end:0x8039981C
+	.sdata2     start:0x80753060 end:0x80753078 align:4
+
+lib/RVL_SDK/gx/GXPerf.c:
+	.text       start:0x8039981C end:0x8039A058
+	.data       start:0x80553D18 end:0x80553E08 align:4
+
+lib/RVL_SDK/dvd/dvdfs.c:
+	.text       start:0x8039A058 end:0x8039AAA0
+	.data       start:0x80553E08 end:0x80553F70 align:4
+	.sdata      start:0x8074D920 end:0x8074D928 align:4
+	.sbss       start:0x8074F7C0 end:0x8074F7C8 align:4
+
+lib/RVL_SDK/dvd/dvd.c:
+	.text       start:0x8039AAA0 end:0x8039F7B0
+	.data       start:0x80553F70 end:0x80554318 align:4
+	.bss        start:0x806D1C80 end:0x806D1DD0 align:4
+	.sdata      start:0x8074D928 end:0x8074D940 align:4
+
+lib/RVL_SDK/dvd/dvdqueue.c:
+	.text       start:0x8039F7B0 end:0x8039FA08
+
+lib/RVL_SDK/dvd/dvderror.c:
+	.text       start:0x8039FA08 end:0x803A030C
+	.data       start:0x80554318 end:0x80554348 align:4
+	.bss        start:0x806D1E60 end:0x806D1FC0 align:4
+	.sbss       start:0x8074F878 end:0x8074F888 align:4
+
+lib/RVL_SDK/dvd/dvdidutils.c:
+	.text       start:0x803A030C end:0x803A03FC
+
+lib/RVL_SDK/dvd/dvdFatal.c:
+	.text       start:0x803A0528 end:0x803A053C
+
+lib/RVL_SDK/dvd/dvd_broadway.c:
+	.text       start:0x803A07EC end:0x803A2C38
+	.data       start:0x805549F0 end:0x805558B0 align:4
+	.bss        start:0x806D20E0 end:0x806D2280 align:4
+	.sdata      start:0x8074D948 end:0x8074D958 align:4
+	.sbss       start:0x8074F898 end:0x8074F8C0 align:4
+
+lib/RVL_SDK/mem/mem_heapCommon.c:
+	.text       start:0x803A2C38 end:0x803A31E4
+	.bss        start:0x806D2280 end:0x806D22A8 align:4
+	.sbss       start:0x8074F8C0 end:0x8074F8C8 align:4
+
+lib/RVL_SDK/mem/mem_expHeap.c:
+	.text       start:0x803A31E4 end:0x803A3E78
+
+lib/RVL_SDK/mem/mem_frameHeap.c:
+	.text       start:0x803A3E78 end:0x803A4440
+
+lib/RVL_SDK/mem/mem_allocator.c:
+	.text       start:0x803A4440 end:0x803A44C4
+	.sdata2     start:0x80753080 end:0x80753090 align:4
+
+lib/RVL_SDK/mem/mem_list.c:
+	.text       start:0x803A44C4 end:0x803A45D8
+
+lib/RVL_SDK/dsp/dsp.c:
+	.text       start:0x803A5EB8 end:0x803A60F4
+	.data       start:0x80556440 end:0x805564C0 align:4
+	.sdata      start:0x8074D958 end:0x8074D960 align:4
+
+lib/RVL_SDK/dsp/dsp_debug.c:
+	.text       start:0x803A60F4 end:0x803A6144
+
+lib/RVL_SDK/dsp/dsp_task.c:
+	.text       start:0x803A6144 end:0x803A69D8
+	.data       start:0x805564C0 end:0x80556600 align:4
+
+lib/RVL_SDK/esp/esp.c:
+	.text       start:0x803A69D8 end:0x803A70CC
+	.sdata      start:0x8074D968 end:0x8074D970 align:4
+
+lib/RVL_SDK/cx/CXUncompression.c:
+	.text       start:0x803A70CC end:0x803A724C
+
+lib/RVL_SDK/cx/CXSecureUncompression.c:
+	.text       start:0x803A73AC end:0x803A7728
+
+lib/RVL_SDK/nand/nand.c:
+	.text       start:0x803A7728 end:0x803A8918
+
+lib/RVL_SDK/nand/NANDOpenClose.c:
+	.text       start:0x803A8918 end:0x803A9CCC
+	.data       start:0x80556600 end:0x80556640 align:4
+	.sdata      start:0x8074D970 end:0x8074D980 align:4
+	.sbss       start:0x8074F900 end:0x8074F908 align:4
+
+lib/RVL_SDK/nand/NANDCore.c:
+	.text       start:0x803A9E78 end:0x803AAFAC
+	.data       start:0x805566F0 end:0x80556790 align:4
+	.sdata      start:0x8074D980 end:0x8074D9A0 align:4
+
+lib/RVL_SDK/nand/NANDSecret.c:
+	.text       start:0x803AB088 end:0x803AB140
+
+lib/RVL_SDK/nand/NANDCheck.c:
+	.text       start:0x803AB140 end:0x803AB1FC
+
+lib/RVL_SDK/nand/NANDLogging.c:
+	.text       start:0x803AB304 end:0x803AB8D4
+	.data       start:0x8055685C end:0x80556888 align:4
+	.sdata      start:0x8074D9B8 end:0x8074D9C0 align:4
+
+lib/RVL_SDK/sc/scsystem.c:
+	.text       start:0x803AB8D4 end:0x803AD338
+	.rodata     start:0x8048E530 end:0x8048E540 align:4
+	.data       start:0x80556888 end:0x80556A60 align:4
+	.bss        start:0x806DAB20 end:0x806DEB20 align:4
+	.sdata      start:0x8074D9C0 end:0x8074DAB8 align:4
+
+lib/RVL_SDK/sc/scapi.c:
+	.text       start:0x803AD338 end:0x803AD87C
+
+lib/RVL_SDK/sc/scapi_prdinfo.c:
+	.text       start:0x803AD8BC end:0x803ADBD4
+	.data       start:0x80556A60 end:0x80556AB8 align:4
+	.sdata      start:0x8074DAC8 end:0x8074DAF0 align:4
+	.sbss       start:0x8074F930 end:0x8074F938 align:4
+
+lib/RVL_SDK/pad/Pad.c:
+	.text       start:0x803ADDD8 end:0x803AF060
+	.bss        start:0x806DEB20 end:0x806DEBE0 align:4
+	.sdata      start:0x8074DAF0 end:0x8074DB10 align:4
+	.sbss       start:0x8074F93C end:0x8074F958 align:4
+
+lib/RVL_SDK/wpad/WPAD.c:
+	.text       start:0x803AF060 end:0x803B68F4
+	.rodata     start:0x8048E588 end:0x8048E5C8 align:4
+	.data       start:0x80556AB8 end:0x80556DF0 align:4
+	.sdata      start:0x8074DB10 end:0x8074DB28 align:4
+	.sdata2     start:0x80753098 end:0x807530A0 align:4
+
+lib/RVL_SDK/wpad/WPADHIDParser.c:
+	.text       start:0x803B68F4 end:0x803BBD94
+	.data       start:0x80556DF0 end:0x80557390 align:4
+	.bss        start:0x806E2308 end:0x806E2370 align:4
+	.sbss       start:0x8074F990 end:0x8074F9A8 align:4
+	.sdata2     start:0x807530A0 end:0x80753100
+
+lib/RVL_SDK/wpad/WPADEncrypt.c:
+	.text       start:0x803BBD94 end:0x803BCE3C
+	.data       start:0x80557390 end:0x805586B8 align:4
+	.sbss       start:0x8074F9A8 end:0x8074F9B0 align:4
+
+lib/RVL_SDK/wpad/debug_msg.c:
+	.text       start:0x803BCE3C end:0x803BCE8C
+
+lib/RVL_SDK/usb/usb.c:
+	.text       start:0x803BFEEC end:0x803C1260
+	.data       start:0x80558924 end:0x80558CC0 align:4
+	.sdata      start:0x8074DB9C end:0x8074DBA8 align:4
+	.sbss       start:0x8074F9D0 end:0x8074F9E0 align:4
+
+lib/RVL_SDK/wud/WUD.c:
+	.text       start:0x803C1AC0 end:0x803C64B0
+	.sdata      start:0x8074DBA8 end:0x8074DBB0 align:4
+	.sbss       start:0x8074F9E0 end:0x8074FA08 align:4
+	.sdata2     start:0x80753160 end:0x80753168 align:4
+
+lib/RVL_SDK/wud/WUDHidHost.c:
+	.text       start:0x803C64B0 end:0x803C6AAC
+	.data       start:0x80559CB8 end:0x80559F38 align:4
+
+lib/RVL_SDK/wud/debug_msg.c:
+	.text       start:0x803C6AAC end:0x803C6AFC
+
+lib/RVL_SDK/bte/gki_buffer.c:
+	.text       start:0x803C6AFC end:0x803C7F40
+	.data       start:0x80559F38 end:0x8055A080 align:4
+
+lib/RVL_SDK/bte/gki_time.c:
+	.text       start:0x803C7F40 end:0x803C8498
+
+lib/RVL_SDK/bte/gki_ppc.c:
+	.text       start:0x803C8498 end:0x803C8728
+
+lib/RVL_SDK/bte/hcisu_h2.c:
+	.text       start:0x803C8728 end:0x803C8DC4
+	.data       start:0x8055A080 end:0x8055A0F0 align:4
+	.bss        start:0x8070E368 end:0x8070E3A0 align:4
+	.sdata2     start:0x80753168 end:0x80753178 align:4
+
+lib/RVL_SDK/bte/uusb_ppc.c:
+	.text       start:0x803C8DC4 end:0x803C99BC
+	.bss        start:0x8070E3A0 end:0x80710400 align:4
+	.sdata      start:0x8074DBB4 end:0x8074DBC0 align:4
+	.sbss       start:0x8074FA08 end:0x8074FA20 align:4
+
+lib/RVL_SDK/bte/bte_hcisu.c:
+	.text       start:0x803C99BC end:0x803C9A74
+
+lib/RVL_SDK/bte/bte_init.c:
+	.text       start:0x803C9A74 end:0x803C9AA0
+
+lib/RVL_SDK/bte/bte_logmsg.c:
+	.text       start:0x803C9AA0 end:0x803C9C04
+	.bss        start:0x80710400 end:0x80710BE0 align:4
+	.sdata      start:0x8074DBF0 end:0x8074DBF8 align:4
+	.sbss       start:0x8074FA28 end:0x8074FA2C align:4
+
+lib/RVL_SDK/bte/bte_main.c:
+	.text       start:0x803C9C04 end:0x803C9D5C
+	.rodata     start:0x8048E5C8 end:0x8048E5E0 align:4
+	.bss        start:0x80710BE0 end:0x80711C10 align:4
+	.sdata      start:0x8074DBF8 end:0x8074DC00 align:4
+	.sbss       start:0x8074FA2C end:0x8074FA30 align:4
+
+lib/RVL_SDK/bte/btu_task1.c:
+	.text       start:0x803C9D5C end:0x803CA1AC
+	.sdata      start:0x8074DC00 end:0x8074DC08 align:4
+	.sbss       start:0x8074FA30 end:0x8074FA38 align:4
+
+lib/RVL_SDK/bte/bd.c:
+	.text       start:0x803CA1AC end:0x803CA280
+
+lib/RVL_SDK/bte/bta_sys_conn.c:
+	.text       start:0x803CA280 end:0x803CA4D4
+
+lib/RVL_SDK/bte/bta_sys_main.c:
+	.text       start:0x803CA4D4 end:0x803CA718
+	.data       start:0x8055A0F0 end:0x8055A128 align:4
+	.sdata2     start:0x80753178 end:0x80753180 align:4
+
+lib/RVL_SDK/bte/ptim.c:
+	.text       start:0x803CA718 end:0x803CA8F8
+
+lib/RVL_SDK/bte/utl.c:
+	.text       start:0x803CA8F8 end:0x803CA93C
+
+lib/RVL_SDK/bte/bta_dm_act.c:
+	.text       start:0x803CA93C end:0x803CCC78
+	.data       start:0x8055A128 end:0x8055A268 align:4
+	.bss        start:0x80711D28 end:0x80711D58 align:4
+	.sdata2     start:0x80753180 end:0x80753188 align:4
+
+lib/RVL_SDK/bte/bta_dm_api.c:
+	.text       start:0x803CCC78 end:0x803CD0E4
+	.sdata2     start:0x80753188 end:0x80753198 align:4
+
+lib/RVL_SDK/bte/bta_dm_main.c:
+	.text       start:0x803CD0E4 end:0x803CD244
+	.rodata     start:0x8048E728 end:0x8048E850 align:4
+
+lib/RVL_SDK/bte/bta_dm_pm.c:
+	.text       start:0x803CD244 end:0x803CDC60
+	.data       start:0x8055A268 end:0x8055A2B8 align:4
+
+lib/RVL_SDK/bte/bta_hh_act.c:
+	.text       start:0x803CDC60 end:0x803CF3A8
+	.data       start:0x8055A2B8 end:0x8055A7B0 align:4
+	.sdata      start:0x8074DC08 end:0x8074DC10 align:4
+
+lib/RVL_SDK/bte/bta_hh_api.c:
+	.text       start:0x803CF3A8 end:0x803CF778
+	.data       start:0x8055A7B0 end:0x8055A7E0 align:4
+	.sdata2     start:0x80753198 end:0x807531A0 align:4
+
+lib/RVL_SDK/bte/bta_hh_main.c:
+	.text       start:0x803CF778 end:0x803CFCCC
+	.rodata     start:0x8048E850 end:0x8048E8D8 align:4
+	.data       start:0x8055A7E0 end:0x8055AAC0 align:4
+
+lib/RVL_SDK/bte/bta_hh_utils.c:
+	.text       start:0x803CFCCC end:0x803D0078
+	.data       start:0x8055AAC0 end:0x8055AD80 align:4
+
+lib/RVL_SDK/bte/btm_acl.c:
+	.text       start:0x803D0078 end:0x803D1DBC
+	.data       start:0x8055AD80 end:0x8055B1A0 align:4
+
+lib/RVL_SDK/bte/btm_dev.c:
+	.text       start:0x803D1DBC end:0x803D2488
+
+lib/RVL_SDK/bte/btm_devctl.c:
+	.text       start:0x803D2488 end:0x803D3E10
+	.data       start:0x8055B1A0 end:0x8055B400 align:4
+	.sdata      start:0x8074DC10 end:0x8074DC28 align:4
+
+lib/RVL_SDK/bte/btm_discovery.c:
+	.text       start:0x803D3E10 end:0x803D3F44
+
+lib/RVL_SDK/bte/btm_inq.c:
+	.text       start:0x803D3F44 end:0x803D59DC
+	.data       start:0x8055B400 end:0x8055B610 align:4
+	.sdata2     start:0x807531A0 end:0x807531A8 align:4
+
+lib/RVL_SDK/bte/btm_main.c:
+	.text       start:0x803D59DC end:0x803D5A38
+
+lib/RVL_SDK/bte/btm_pm.c:
+	.text       start:0x803D5A38 end:0x803D66CC
+	.rodata     start:0x8048E8D8 end:0x8048E8E8 align:4
+	.data       start:0x8055B610 end:0x8055B650 align:4
+	.sdata2     start:0x807531A8 end:0x807531B0 align:4
+
+lib/RVL_SDK/bte/btm_sco.c:
+	.text       start:0x803D66CC end:0x803D7504
+	.rodata     start:0x8048E8E8 end:0x8048E8F8 align:4
+	.data       start:0x8055B650 end:0x8055B950 align:4
+
+lib/RVL_SDK/bte/btm_sec.c:
+	.text       start:0x803D7504 end:0x803DA4C8
+	.data       start:0x8055B950 end:0x8055C360 align:4
+	.sdata2     start:0x807531B0 end:0x807531B8 align:4
+
+lib/RVL_SDK/bte/btu_hcif.c:
+	.text       start:0x803DA4C8 end:0x803DB724
+	.data       start:0x8055C360 end:0x8055C3F0 align:4
+
+lib/RVL_SDK/bte/btu_init.c:
+	.text       start:0x803DB724 end:0x803DB79C
+
+lib/RVL_SDK/bte/wbt_ext.c:
+	.text       start:0x803DB79C end:0x803DB87C
+
+lib/RVL_SDK/bte/gap_api.c:
+	.text       start:0x803DB87C end:0x803DB8DC
+
+lib/RVL_SDK/bte/gap_conn.c:
+	.text       start:0x803DB8DC end:0x803DC418
+	.data       start:0x8055C3F0 end:0x8055C4C0 align:4
+	.sdata      start:0x8074DC28 end:0x8074DC30 align:4
+
+lib/RVL_SDK/bte/gap_utils.c:
+	.text       start:0x803DC418 end:0x803DCA34
+	.data       start:0x8055C4C0 end:0x8055C7B0 align:4
+
+lib/RVL_SDK/bte/hcicmds.c:
+	.text       start:0x803DCA34 end:0x803DF150
+	.rodata     start:0x8048E8F8 end:0x8048E908 align:4
+
+lib/RVL_SDK/bte/hidd_api.c:
+	.text       start:0x803DF150 end:0x803DF1B8
+
+lib/RVL_SDK/bte/hidd_conn.c:
+	.text       start:0x803DF1B8 end:0x803DF278
+	.data       start:0x8055C7B0 end:0x8055C7E0 align:4
+
+lib/RVL_SDK/bte/hidd_mgmt.c:
+	.text       start:0x803DF278 end:0x803DF340
+	.data       start:0x8055C7E0 end:0x8055C800 align:4
+
+lib/RVL_SDK/bte/hidd_pm.c:
+	.text       start:0x803DF340 end:0x803DF6BC
+
+lib/RVL_SDK/bte/hidh_api.c:
+	.text       start:0x803DF6BC end:0x803E043C
+	.data       start:0x8055C800 end:0x8055C918 align:4
+
+lib/RVL_SDK/bte/hidh_conn.c:
+	.text       start:0x803E043C end:0x803E247C
+	.rodata     start:0x8048E908 end:0x8048E930 align:4
+	.data       start:0x8055C918 end:0x8055CD00 align:4
+
+lib/RVL_SDK/bte/l2c_api.c:
+	.text       start:0x803E247C end:0x803E3048
+	.data       start:0x8055CD00 end:0x8055D490 align:4
+
+lib/RVL_SDK/bte/l2c_csm.c:
+	.text       start:0x803E3048 end:0x803E4524
+	.data       start:0x8055D490 end:0x8055DCC8 align:4
+
+lib/RVL_SDK/bte/l2c_link.c:
+	.text       start:0x803E4524 end:0x803E56B0
+	.data       start:0x8055DCC8 end:0x8055DF38 align:4
+
+lib/RVL_SDK/bte/l2c_main.c:
+	.text       start:0x803E56B0 end:0x803E66E0
+	.data       start:0x8055DF38 end:0x8055E238 align:4
+
+lib/RVL_SDK/bte/l2c_utils.c:
+	.text       start:0x803E66E0 end:0x803E85A4
+	.data       start:0x8055E238 end:0x8055E320 align:4
+	.sdata      start:0x8074DC30 end:0x8074DC40 align:4
+
+lib/RVL_SDK/bte/port_api.c:
+	.text       start:0x803E85A4 end:0x803E85F4
+
+lib/RVL_SDK/bte/port_rfc.c:
+	.text       start:0x803E85F4 end:0x803E99F0
+	.data       start:0x8055E320 end:0x8055E650 align:4
+
+lib/RVL_SDK/bte/port_utils.c:
+	.text       start:0x803E99F0 end:0x803E9FC8
+	.data       start:0x8055E650 end:0x8055E798 align:4
+
+lib/RVL_SDK/bte/rfc_l2cap_if.c:
+	.text       start:0x803E9FC8 end:0x803EA8FC
+	.data       start:0x8055E798 end:0x8055E8D8 align:4
+
+lib/RVL_SDK/bte/rfc_mx_fsm.c:
+	.text       start:0x803EA8FC end:0x803EB540
+	.data       start:0x8055E8D8 end:0x8055EB90 align:4
+
+lib/RVL_SDK/bte/rfc_port_fsm.c:
+	.text       start:0x803EB540 end:0x803EC6E0
+	.data       start:0x8055EB90 end:0x8055EEB8 align:4
+
+lib/RVL_SDK/bte/rfc_port_if.c:
+	.text       start:0x803EC6E0 end:0x803ECC0C
+
+lib/RVL_SDK/bte/rfc_ts_frames.c:
+	.text       start:0x803ECC0C end:0x803EE254
+	.data       start:0x8055EEB8 end:0x8055EF90 align:4
+	.sdata      start:0x8074DC40 end:0x8074DC50 align:4
+
+lib/RVL_SDK/bte/rfc_utils.c:
+	.text       start:0x803EE254 end:0x803EEA34
+	.rodata     start:0x8048E930 end:0x8048EA30 align:4
+	.data       start:0x8055EF90 end:0x8055F020 align:4
+
+lib/RVL_SDK/bte/sdp_api.c:
+	.text       start:0x803EEA34 end:0x803EF89C
+	.data       start:0x8055F020 end:0x8055F070 align:4
+
+lib/RVL_SDK/bte/sdp_db.c:
+	.text       start:0x803EF89C end:0x803F0568
+	.data       start:0x8055F070 end:0x8055F108 align:4
+
+lib/RVL_SDK/bte/sdp_discovery.c:
+	.text       start:0x803F0568 end:0x803F17E0
+	.data       start:0x8055F108 end:0x8055F268 align:4
+
+lib/RVL_SDK/bte/sdp_main.c:
+	.text       start:0x803F17E0 end:0x803F234C
+	.data       start:0x8055F268 end:0x8055F5C8 align:4
+
+lib/RVL_SDK/bte/sdp_server.c:
+	.text       start:0x803F234C end:0x803F305C
+	.data       start:0x8055F5C8 end:0x8055F608 align:4
+
+lib/RVL_SDK/bte/sdp_utils.c:
+	.text       start:0x803F305C end:0x803F409C
+	.rodata     start:0x8048EA30 end:0x8048EA40 align:4
+	.data       start:0x8055F608 end:0x8055F700 align:4
+
+lib/RVL_SDK/fs/fs.c:
+	.text       start:0x803F409C end:0x803F596C
+	.sbss       start:0x8074FA48 end:0x8074FA4C align:4
+
+lib/RVL_SDK/euart/euart.c:
+	.text       start:0x803F596C end:0x803F5CDC
+	.sbss       start:0x8074FA58 end:0x8074FA68 align:4
+
+lib/RVL_SDK/wenc/wenc.c:
+	.text       start:0x803F5CDC end:0x803F5FB4
+	.rodata     start:0x8048EA40 end:0x8048EA80 align:4
+	.sdata2     start:0x807531C0 end:0x807531C8
+
+lib/RVL_SDK/enc/encutility.c:
+	.text       start:0x803F5FB4 end:0x803F6228
+	.data       start:0x8055F728 end:0x8055F770 align:4
+	.sdata      start:0x8074DC60 end:0x8074DC68 align:4
+	.sbss       start:0x8074FA68 end:0x8074FA70 align:4
+
+lib/RVL_SDK/enc/encunicode.c:
+	.text       start:0x803F6228 end:0x803F6ECC
+
+lib/RVL_SDK/enc/encjapanese.c:
+	.text       start:0x803F6ECC end:0x803F7B7C
+	.rodata     start:0x8048EA80 end:0x804943F8 align:4
+
+lib/RVL_SDK/enc/encconvert.c:
+	.text       start:0x803F7E68 end:0x803F86E4
+	.rodata     start:0x804951F8 end:0x804970B8 align:4
+
+lib/RVL_SDK/tpl/TPL.c:
+	.text       start:0x803F8860 end:0x803F8994
+	.data       start:0x8055F7A8 end:0x8055F7D8 align:4
+	.sdata      start:0x8074DC70 end:0x8074DC78 align:4
+
+lib/RevoEX/wd/wd_misc.c:
+	.text       start:0x803F9EDC end:0x803FA014
+	.data       start:0x8055F8C8 end:0x8055F8D8 align:4
+
+lib/RevoEX/wd/wd_request.c:
+	.text       start:0x803FA47C end:0x803FA550
+
+lib/RevoEX/wd/wd_init.c:
+	.text       start:0x803FA6AC end:0x803FA7FC
+	.data       start:0x8055F8D8 end:0x8055F8F0 align:4
+
+lib/RevoEX/nwc24/NWC24StdAPI.c:
+	.text       start:0x804018A4 end:0x80402518
+	.data       start:0x8055FBE0 end:0x8055FC68 align:4
+
+lib/RevoEX/nwc24/NWC24FileAPI.c:
+	.text       start:0x80402518 end:0x80403BAC
+	.data       start:0x8055FC68 end:0x8055FC98 align:4
+	.sdata      start:0x8074DCA0 end:0x8074DCB8 align:4
+	.sbss       start:0x8074FAC0 end:0x8074FAD0 align:4
+
+lib/RevoEX/nwc24/NWC24Config.c:
+	.text       start:0x80403BAC end:0x8040426C
+	.data       start:0x8055FC98 end:0x8055FD00 align:4
+	.sdata      start:0x8074DCB8 end:0x8074DCC8 align:4
+	.sbss       start:0x8074FAD0 end:0x8074FAD8 align:4
+
+lib/RevoEX/nwc24/NWC24Utils.c:
+	.text       start:0x8040426C end:0x80404584
+
+lib/RevoEX/nwc24/NWC24Manage.c:
+	.text       start:0x80404584 end:0x8040508C
+	.data       start:0x8055FD00 end:0x8055FE68 align:4
+	.sdata      start:0x8074DCC8 end:0x8074DCD8 align:4
+
+lib/RevoEX/nwc24/NWC24MsgObj.c:
+	.text       start:0x80405138 end:0x804055FC
+
+lib/RevoEX/nwc24/NWC24Parser.c:
+	.text       start:0x80408B54 end:0x80408D7C
+	.data       start:0x8055FF70 end:0x80560220 align:4
+	.sdata      start:0x8074DCF8 end:0x8074DD38 align:4
+
+lib/RevoEX/nwc24/NWC24Schedule.c:
+	.text       start:0x8040C7DC end:0x8040D430
+	.data       start:0x80560570 end:0x805605E8 align:4
+	.bss        start:0x8071BF40 end:0x8071C0C0 align:4
+	.sbss       start:0x8074FB08 end:0x8074FB18 align:4
+
+lib/RevoEX/nwc24/NWC24FriendList.c:
+	.text       start:0x8040DC00 end:0x8040E2A4
+	.rodata     start:0x804970F0 end:0x80497100 align:4
+	.data       start:0x805605E8 end:0x80560608 align:4
+	.sdata      start:0x8074DDD8 end:0x8074DDE0 align:4
+
+lib/RevoEX/nwc24/NWC24SecretFList.c:
+	.text       start:0x8040EEC0 end:0x8040F0F0
+
+lib/RevoEX/nwc24/NWC24UserId.c:
+	.text       start:0x8040F1DC end:0x8040F274
+
+lib/RevoEX/nwc24/NWC24Time.c:
+	.text       start:0x8040F550 end:0x8040F9E0
+	.data       start:0x80560628 end:0x80560668 align:4
+	.bss        start:0x8071C0C0 end:0x8071C1A0 align:4
+	.sbss       start:0x8074FB18 end:0x8074FB30 align:4
+
+lib/RevoEX/nwc24/NWC24Ipc.c:
+	.text       start:0x8040F9E0 end:0x8040FB54
+	.sbss       start:0x8074FB30 end:0x8074FB38 align:4
+
+lib/RevoEX/nwc24/NWC24System.c:
+	.text       start:0x804124A8 end:0x80412568
+	.data       start:0x805606D0 end:0x805606FC align:4
+	.bss        start:0x8071C220 end:0x8071C240 align:4
+
+lib/RevoEX/vf/common/pf_clib.c:
+	.text       start:0x8041C194 end:0x8041C494
+
+lib/RevoEX/vf/common/pf_code.c:
+	.text       start:0x8041C494 end:0x8041C4B0
+
+lib/RevoEX/vf/common/pf_service.c:
+	.text       start:0x8041C4C0 end:0x8041C5D8
+
+lib/RevoEX/vf/common/pf_str.c:
+	.text       start:0x8041C5E0 end:0x8041CB60
+
+lib/RevoEX/vf/common/pf_w_clib.c:
+	.text       start:0x8041CB60 end:0x8041CBF4
+
+lib/RevoEX/vf/driver/pf_driver.c:
+	.text       start:0x8041CBF4 end:0x8041D5F0
+
+lib/RevoEX/vf/dskmng/pdm_bpb.c:
+	.text       start:0x8041D5F0 end:0x8041DF10
+
+lib/RevoEX/vf/dskmng/pdm_disk.c:
+	.text       start:0x8041E070 end:0x8041F470
+
+lib/RevoEX/vf/dskmng/pdm_partition.c:
+	.text       start:0x8041F470 end:0x804208B8
+
+lib/RevoEX/vf/dskmng/pdm_mbr.c:
+	.text       start:0x804208B8 end:0x80420E78
+
+lib/RevoEX/vf/dskmng/pdm_dskmng.c:
+	.text       start:0x80420FA0 end:0x8042109C
+
+lib/RevoEX/vf/fatfs/pf_cache.c:
+	.text       start:0x8042109C end:0x80422FD0
+
+lib/RevoEX/vf/fatfs/pf_cluster.c:
+	.text       start:0x804232E0 end:0x80423488
+
+lib/RevoEX/vf/fatfs/pf_entry.c:
+	.text       start:0x80424354 end:0x80425AA0
+	.data       start:0x80560F90 end:0x80560FA0 align:4
+	.sdata2     start:0x807531E0 end:0x807531E8 align:4
+
+lib/RevoEX/vf/fatfs/pf_entry_iterator.c:
+	.text       start:0x80425C4C end:0x804273D0
+	.sdata      start:0x8074DEA8 end:0x8074DED0 align:4
+
+lib/RevoEX/vf/fatfs/pf_fat.c:
+	.text       start:0x804274B8 end:0x8042A38C
+	.rodata     start:0x80497CE8 end:0x80497D28 align:4
+
+lib/RevoEX/vf/fatfs/pf_fat12.c:
+	.text       start:0x8042A38C end:0x8042A9E8
+
+lib/RevoEX/vf/fatfs/pf_fat16.c:
+	.text       start:0x8042AE74 end:0x8042B22C
+
+lib/RevoEX/vf/fatfs/pf_fat32.c:
+	.text       start:0x8042B3EC end:0x8042B84C
+
+lib/RevoEX/vf/fatfs/pf_fatfs.c:
+	.text       start:0x8042BA2C end:0x8042BA30
+
+lib/RevoEX/vf/fatfs/pf_file.c:
+	.text       start:0x8042BA30 end:0x8042E25C
+
+lib/RevoEX/vf/fatfs/pf_path.c:
+	.text       start:0x8042F1CC end:0x80431E28
+	.sdata      start:0x8074DED8 end:0x8074DF00 align:4
+	.sdata2     start:0x807531E8 end:0x807531F8 align:4
+
+lib/RevoEX/vf/fatfs/pf_sector.c:
+	.text       start:0x80431E28 end:0x804322A0
+
+lib/RevoEX/vf/fatfs/pf_volume.c:
+	.text       start:0x80432698 end:0x80433F84
+
+lib/RevoEX/vf/standard/pf_api_util.c:
+	.text       start:0x80434494 end:0x80434600
+	.data       start:0x80560FA0 end:0x80561040 align:4
+
+lib/RevoEX/vf/standard/pf_init_prfile2.c:
+	.text       start:0x80434878 end:0x804348B8
+
+lib/RevoEX/vf/standard/pf_unmount.c:
+	.text       start:0x80434958 end:0x80434980
+
+lib/RevoEX/vf/system/pf_filelock.c:
+	.text       start:0x80434980 end:0x80434994
+	.sbss       start:0x8074FB68 end:0x8074FB70 align:4
+
+lib/RevoEX/vf/system/pf_system.c:
+	.text       start:0x80434994 end:0x80434A0C
+
+lib/RevoEX/vf/develop/d_vf.c:
+	.text       start:0x80434A0C end:0x80435878
+	.bss        start:0x80745A80 end:0x80745A98 align:4
+	.sbss       start:0x8074FB70 end:0x8074FB78 align:4
+
+lib/RevoEX/vf/develop/d_vf_sys.c:
+	.text       start:0x80435878 end:0x80437AD0
+	.data       start:0x80561040 end:0x80561050 align:4
+	.bss        start:0x80745A98 end:0x80745BD0 align:4
+	.sdata      start:0x8074DF00 end:0x8074DF08 align:4
+	.sbss       start:0x8074FB78 end:0x8074FB90 align:4
+
+lib/RevoEX/vf/develop/d_hash.c:
+	.text       start:0x80437AD0 end:0x80438150
+	.bss        start:0x80745BD0 end:0x80745E10 align:4
+
+lib/RevoEX/vf/develop/d_time.c:
+	.text       start:0x80438150 end:0x80438230
+
+lib/RevoEX/vf/develop/d_common.c:
+	.text       start:0x80438230 end:0x80438EC8
+	.bss        start:0x80745E10 end:0x80746018 align:4
+
+lib/RevoEX/vf/develop/nand_drv.c:
+	.text       start:0x80438EC8 end:0x8043BE38
+	.rodata     start:0x8049BFA0 end:0x8049BFC0 align:4
+	.bss        start:0x80746018 end:0x807461B8 align:4
 
 lib/egg/core/eggArchive.cpp:
 	.text       start:0x8043E5E4 end:0x8043E9AC
