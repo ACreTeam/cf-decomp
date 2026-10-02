@@ -517,6 +517,11 @@ public:
     u32 searchFossil(int fossil); // 800C32E0
     Item getRandomFossil(int fossil); // 800C3330
 
+    inline int findFromId(u16 id) {
+        Item item(id);
+        return findLike(item);
+    }
+
     u8 mBits[(DL_ITEM_END + 7) / 8]; // 0x000
     u32 mCount; // 0x164
 }; // sizeof = 0x168
@@ -725,5 +730,9 @@ class nameCategoryQ5_c : public dString::Word_c {
 public:
     virtual ~nameCategoryQ5_c(); // 800361C4
 };
+
+static inline int Item_getIdxInKind(const Item &item) {
+    return seeker_c::get()->findLike(item);
+}
 
 } // namespace dItem

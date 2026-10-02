@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <lib/egg/core/eggMsgRes.h>
 
 // Script/word objects used to build localized names (TU around 80157D3C).
 // Names come from RTTI: dScript::Word_c (vtable 804EFB90), with
@@ -58,5 +59,15 @@ public:
     u8 _22; // 0x22 (cleared by clear(), not by the constructor)
     u8 _23; // 0x23
 }; // sizeof = 0x24
+
+// A BMG message resource. Name from RTTI; vtable 804EFCAC.
+class Res_c : public EGG::MsgRes {
+public:
+    Res_c(const void *data); // 8015784C
+    virtual ~Res_c(); // 80157888
+
+    const wchar_t *getMessage(int id); // 801578E0
+    u16 getCount(); // 801578F0: number of INF1 entries
+};
 
 } // namespace dScript

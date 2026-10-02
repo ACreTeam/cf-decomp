@@ -33,14 +33,6 @@ public:
     u8 _00[0x6E];
 };
 
-class dUnk7DFA_c { // 0xC8
-public:
-    dUnk7DFA_c(); // 80118EB4
-    ~dUnk7DFA_c(); // 80118EE4
-
-    u8 _00[0xC8];
-};
-
 class dUnk7FD6_c { // 0x18
 public:
     dUnk7FD6_c(); // 8011041C
@@ -343,7 +335,7 @@ public:
     static void clearFlag0All(dPrivateData_c *players, u32 flag); // 80136F00
     static BOOL isFlag0Any(dPrivateData_c *players, u32 flag);    // 80136F70
 
-    void setup();                                                 // 80137000
+    void setup(const wchar_t *name, u16 id, u8 gender);           // 80137000
     int findInSave() const;                                             // 80137110
 
     // Daily update, and the letters it generates.
@@ -496,7 +488,7 @@ public:
     /* 0x5608 */ dAnimalItem_c _5608;
     /* 0x56CA */ dMail_c mLetters[PLAYER_MAIL_COUNT];
     /* 0x7A6A */ dMail_c mFutureSelfLetter;
-    /* 0x7DFA */ dUnk7DFA_c _7DFA;
+    /* 0x7DFA */ dLetterStyle_c mLetterStyle;
     /* 0x7EC2 */ dPersonalID_c mPID;
     /* 0x7EEE */ dPersonalID_c _7EEE;
     /* 0x7F1A */ dEquip_c mEquipment;

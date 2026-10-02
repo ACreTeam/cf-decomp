@@ -49,9 +49,30 @@ dol/game/d_item.cpp:
 	.sdata      start:0x8074A900 end:0x8074A9A0 align:4
 	.sbss       start:0x8074E490 end:0x8074E498 align:4
 
+dol/game/d_player_mgr.cpp:
+	.text       start:0x800FBB18 end:0x8010263C
+	.ctors      start:0x804656F8 end:0x804656FC
+	.rodata     start:0x80475A00 end:0x80475B40 align:4
+	.data       start:0x804ED848 end:0x804ED8B8 align:4
+	.bss        start:0x805D2420 end:0x805EB900 align:4
+	.sdata      start:0x8074AF10 end:0x8074AF18 align:4
+	.sbss       start:0x8074E600 end:0x8074E608 align:4
+	.sdata2     start:0x80750A80 end:0x80750AB0 align:4
+
 dol/game/d_save_data.cpp:
 	.text       start:0x8010D7E8 end:0x8010F124
 	.sbss       start:0x8074E6D8 end:0x8074E6E8 align:4
+
+dol/game/d_dsn.cpp:
+	.text       start:0x8010F124 end:0x8010FB6C
+	.data       start:0x804EE340 end:0x804EE380 align:4
+
+dol/game/d_mail.cpp:
+	.text       start:0x80117400 end:0x8011927C
+	.ctors      start:0x80465720 end:0x80465724
+	.rodata     start:0x80475D10 end:0x80475D38 align:4
+	.data       start:0x804EE498 end:0x804EE4B0 align:4
+	.bss        start:0x805EF570 end:0x805F0F18 align:4
 
 dol/game/d_animal.cpp:
 	.text       start:0x8011B400 end:0x80135E88
@@ -76,6 +97,10 @@ dol/game/d_private_data.cpp:
 	.bss        start:0x805F1A38 end:0x805F2680 align:4
 	.sdata      start:0x8074B090 end:0x8074B0A8 align:4
 	.sbss       start:0x8074E7C0 end:0x8074E7C8 align:4
+
+dol/game/d_personal_id.cpp:
+	.text       start:0x8013E618 end:0x8013EBCC
+	.sdata2     start:0x80750BF0 end:0x80750BF8 align:4
 
 dol/game/d_date.cpp:
 	.text       start:0x8016D264 end:0x8016DE60

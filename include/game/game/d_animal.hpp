@@ -63,7 +63,7 @@ public:
 
     /* 0x00 */ u8 _00[4];
     /* 0x04 */ dQuestTime_c _04;
-    /* 0x0C */ dPersonalID_c mPlayer;   // cleared by fn_8013E6FC
+    /* 0x0C */ dPersonalID_c mPlayer;
     /* 0x38 */ dLandID_c _38;           // cleared by fn_80116710
     /* 0x4E */ dAnimalMemoryCount_c _4E;
     /* 0x50 */ u8 _50[0x12];

@@ -8,12 +8,11 @@
 #include <cstdio>
 #include <revolution/OS/OSCache.h>
 #include <revolution/OS/OSTime.h>
+#include <game/game/d_player_mgr.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 // Save/town data roots.
-dPrivateData_c *fn_80101770(); // current player
-dPrivateData_c *fn_80101624(int idx);
 BOOL fn_80101490();
 void fn_801014A4();
 void fn_801014D0();
@@ -24,36 +23,14 @@ void fn_80101514();
 void fn_80116710(dLandID_c *land); // clear
 BOOL fn_80116758(const dLandID_c *land); // isValid
 void fn_8011676C(dLandID_c *dst, const dLandID_c *src); // copy
-void fn_8013E6FC(dPersonalID_c *pid); // clear
-void fn_8013E618(dPersonalID_c *pid);
-BOOL fn_8013E734(const dPersonalID_c *a, const dPersonalID_c *b);
-BOOL fn_8013E868(const dPersonalID_c *pid); // isValid
-BOOL fn_8013E938(const dPersonalID_c *pid);
-BOOL fn_8013EA14(const dPlayerID_c *id);
-BOOL fn_8013EA30(const dPlayerID_c *a, const dPlayerID_c *b);
 void fn_8013EE54(void *);
 
 // dMail_c.
-void fn_80117450(dMail_c *mail, void *arg);
-BOOL fn_80117528(dMail_c *mail);
-BOOL fn_801175D4(dMail_c *mail);
-void fn_801176CC(dMail_c *mail, u16 item, int);
-BOOL fn_80117748(dMail_c *mail);
-void fn_801178F8(dMail_c *mail); // clear
-BOOL fn_80117938(dMail_c *mail);
-BOOL fn_80117A20(dMail_c *mail);
-BOOL fn_80117A28(dMail_c *mail);
-void fn_80118590(dMail_c *mail, u16 *msg, const char *label, const void *a, dPersonalID_c *pid, u16 *b);
-void fn_8011862C(dMail_c *mail, const u16 *msg, const char *label, const void *a, dPersonalID_c *pid, const u32 *b);
 int fn_800CBE0C(int, int, int, int);
-void fn_80118F24(dUnk7DFA_c *obj); // clear
 BOOL fn_801029C0(dMail_c *mail);
 BOOL fn_80102BBC(dMail_c *mail);
 
 // dDesign_c.
-void fn_8010F154(dDesign_c *design); // clear
-BOOL fn_8010F374(dDesign_c *design, int item);
-void fn_8010F65C(dDesign_c *design, u32 idx);
 
 // Other members.
 void fn_80110470(dUnk7FD6_c *obj); // clear
@@ -120,7 +97,6 @@ void fn_80169F4C();
 void fn_80169F78();
 void *fn_8014B6C8();
 BOOL fn_8014B0F0(void *, int *, int *, u16 *, int);
-void fn_8010F1C4(dDesign_c *design);
 BOOL fn_80177C90();
 BOOL fn_80013550();
 void fn_800DD4C8();
@@ -147,7 +123,7 @@ static inline BOOL isValidIndex(int idx) {
 
 // 80136244
 BOOL dPrivateData_c::fn_80136244() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -157,7 +133,7 @@ BOOL dPrivateData_c::fn_80136244() {
     if (player->isFlag0(0xD)) {
         return FALSE;
     }
-    if (!fn_8013E938(&player->mPID)) {
+    if (!player->mPID.isFromTown()) {
         return FALSE;
     }
     if (fn_800DCEDC()) {
@@ -171,7 +147,7 @@ BOOL dPrivateData_c::fn_80136244() {
 
 // 80136310
 BOOL dPrivateData_c::fn_80136310() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -181,7 +157,7 @@ BOOL dPrivateData_c::fn_80136310() {
     if (player->isFlag0(0xD)) {
         return FALSE;
     }
-    if (!fn_8013E938(&player->mPID)) {
+    if (!player->mPID.isFromTown()) {
         return FALSE;
     }
     if (fn_800DCEDC()) {
@@ -201,7 +177,7 @@ void dPrivateHost_c::decrease(int n) {
         s32 count = MAX(0, getCount() - n);
 
         if (count == 0) {
-            fn_8013E6FC(&mPID);
+            mPID.clear();
             setCount(0);
             mFlagA = 0;
             mFlagB = 0;
@@ -209,7 +185,7 @@ void dPrivateHost_c::decrease(int n) {
             setCount(count);
         }
     } else if (n < 0) {
-        fn_8013E6FC(&mPID);
+        mPID.clear();
         setCount(0);
         mFlagA = 0;
         mFlagB = 0;
@@ -218,14 +194,14 @@ void dPrivateHost_c::decrease(int n) {
 
 // 80136460
 void dPrivateData_c::saveHostToTown() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dSaveData_c *town = dSaveData_c::getTown();
     town->mTownHost = player->mHost;
 }
 
 // 8013654C
 void dPrivateData_c::loadHostFromTown() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dSaveData_c *town = dSaveData_c::getTown();
     player->mHost = town->mTownHost;
 }
@@ -235,7 +211,7 @@ void dPrivateData_c::loadHostFromTown() {
 
 // 80136638
 void dUnkDesignBoard_c::clear() {
-    fn_8010F1C4(&mDesign);
+    mDesign.initBlank();
     _880 = 2;
     _881 = 0;
     _883 = 0;
@@ -247,7 +223,7 @@ void dUnkDesignBoard_c::clear() {
 
 // 80136694
 BOOL dPrivateData_c::fn_80136694() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -257,7 +233,7 @@ BOOL dPrivateData_c::fn_80136694() {
     if (player->isFlag0(0xD)) {
         return FALSE;
     }
-    if (!fn_8013E938(&player->mPID)) {
+    if (!player->mPID.isFromTown()) {
         return FALSE;
     }
     if (fn_800DCEDC()) {
@@ -297,7 +273,7 @@ void dUnkDesignBoard_c::fn_8013677C() {
         clear();
         _883 = 0;
         _882 = 10;
-    } else if (fn_8013E868(&dSaveData_c::getExtra()->mDesignBoard.mDesign.mCreator)) {
+    } else if (dSaveData_c::getExtra()->mDesignBoard.mDesign.mCreator.isValid()) {
         _882 = 7;
         _883 = 1;
     } else if (cM::rndInt(0x80) == 0) {
@@ -396,7 +372,7 @@ BOOL dPrivateData_c::fn_80136E10(dPrivateData_c *players) {
     dPrivateData_c *player = players;
     BOOL result = TRUE;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID) && !fn_800E593C(player->_0000 + 4)) {
+        if (player->mPID.isValid() && !fn_800E593C(player->_0000 + 4)) {
             result = FALSE;
             break;
         }
@@ -409,7 +385,7 @@ BOOL dPrivateData_c::fn_80136E10(dPrivateData_c *players) {
 void dPrivateData_c::setFlag0All(dPrivateData_c *players, u32 flag) {
     dPrivateData_c *player = players;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             player->setFlag0(flag);
         }
         player++;
@@ -420,7 +396,7 @@ void dPrivateData_c::setFlag0All(dPrivateData_c *players, u32 flag) {
 void dPrivateData_c::clearFlag0All(dPrivateData_c *players, u32 flag) {
     dPrivateData_c *player = players;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             player->clearFlag0(flag);
         }
         player++;
@@ -432,7 +408,7 @@ BOOL dPrivateData_c::isFlag0Any(dPrivateData_c *players, u32 flag) {
     dPrivateData_c *player = players;
     BOOL result = FALSE;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID) && player->isFlag0(flag)) {
+        if (player->mPID.isValid() && player->isFlag0(flag)) {
             result = TRUE;
             break;
         }
@@ -442,8 +418,8 @@ BOOL dPrivateData_c::isFlag0Any(dPrivateData_c *players, u32 flag) {
 }
 
 // 80137000
-void dPrivateData_c::setup() {
-    fn_8013E618(&mPID);
+void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
+    mPID.setPlayer(name, id, gender);
     fn_8010D7E8((dSaveOption_c *)&_83E8);
     mOrgDesigns.init(&mPID);
     mCatalog.clear();
@@ -484,7 +460,7 @@ int dPrivateData_c::findInSave() const {
         pid = &player->mPID;
         if (mPID.land.mId == pid->land.mId && mPID.land.mRegion == pid->land.mRegion &&
             memcmp(mPID.land.mName, pid->land.mName, sizeof(pid->land.mName)) == 0 &&
-            fn_8013E734(&mPID, pid)) {
+            mPID.isSamePlayer(pid)) {
             same = TRUE;
         }
         if (same) {
@@ -529,9 +505,9 @@ void dPrivateData_c::fn_801371DC() {
     static u16 lbl_8074B090 = 0xF;
     static u16 lbl_8074B092 = 0x1100;
     static u32 lbl_8074B094 = 0x159;
-    fn_801178F8(&mail);
-    fn_8011862C(&mail, &lbl_8074B090, "MAIL_ETC_ATM", &lbl_8074B092, &mPID, &lbl_8074B094);
-    fn_801176CC(&mail, dItem::Item(0x905).mId, 0xFF);
+    mail.clear();
+    mail.setupSystem(&lbl_8074B090, "MAIL_ETC_ATM", (const u8 *)&lbl_8074B092, &mPID, (const int *)&lbl_8074B094);
+    mail.setPresent(dItem::Item(0x905).mId, 0xFF);
     if (fn_801029C0(&mail)) {
         setFlag0(0x6C);
     } else if (fn_80102BBC(&mail)) {
@@ -543,20 +519,20 @@ void dPrivateData_c::fn_801371DC() {
 void dPrivateData_c::fn_8013760C() {
     if (!isFlag0(0x28) && isFlag0(0x4A) && _8628 > 0) {        
         static dMail_c mail;
-        static u8 lbl_8074B098 = 8;
+        static u8 lbl_8074B098 = MAIL_FROM_THANK_YOU;
         s32 range[4];
         u16 b;
         u16 a;
 
-        fn_801178F8(&mail);
+        mail.clear();
         b = fn_800FABF4(3, dTime_c::getCurrentSeason());
         a = cM::rndInt(3) + 1;
-        fn_80118590(&mail, &a, "MAIL_NPC_maigo", &lbl_8074B098, &mPID, &b);
+        mail.setupSystem(&a, "MAIL_NPC_maigo", &lbl_8074B098, &mPID, (const dItem::Item *)&b);
         dItem::Item present;
         range[0] = 3;
         range[1] = 0x19;
         fn_800C60B4(&present, 1, range, 1, lbl_8059FF80, 0, 0, 0);
-        fn_801176CC(&mail, present.mId, 0xFF);
+        mail.setPresent(present.mId, 0xFF);
         if (fn_801029C0(&mail)) {
             clearFlag0(0x4A);
         } else if (fn_80102BBC(&mail)) {
@@ -568,15 +544,15 @@ void dPrivateData_c::fn_8013760C() {
 // 80137788
 BOOL dPrivateData_c::sendLetter(u16 kind, const dItem::Item *present, dPrivateData_c *player, int amount) {
     static dMail_c mail;
-    static u8 lbl_8074B099 = 7;
+    static u8 lbl_8074B099 = MAIL_FROM_ABD;
     static u32 lbl_8074B09C = 0x17D;
-    fn_801178F8(&mail);
+    mail.clear();
     fn_800CBE0C(0, amount, 5, 9);
     u16 msg = kind;
-    fn_8011862C(&mail, &msg, "MAIL_ETC_ATM", &lbl_8074B099, &player->mPID, &lbl_8074B09C);
+    mail.setupSystem(&msg, "MAIL_ETC_ATM", &lbl_8074B099, &player->mPID, (const int *)&lbl_8074B09C);
     dItem::Item item = *present;
     if (dItem::isRealItemId(item.mId)) {
-        fn_801176CC(&mail, item.mId, 0xFF);
+        mail.setPresent(item.mId, 0xFF);
     }
     if (fn_80102BBC(&mail)) {
         return TRUE;
@@ -713,7 +689,7 @@ void dPrivateData_c::updateHair(int days) {
 
 // 80137DA4
 void dPrivateData_c::dailyUpdate(int days) {
-    if ((u8)fn_80162548() == 0x3C && fn_80101770() == this) {
+    if ((u8)fn_80162548() == 0x3C && dPlayerMgr_c::getCurrentPlayer() == this) {
         return;
     }
     if (days != 0) {
@@ -739,14 +715,14 @@ void dPrivateData_c::dailyUpdate(int days) {
     _83CA = dItem::Item();
     _8628 += days;
     _8630 += days;
-    if (fn_80101770() == this) {
+    if (dPlayerMgr_c::getCurrentPlayer() == this) {
         fn_800B0954(_8628 != 0, 1);
         updateLooks(_8628);
         fn_80137898(_8628);
         fn_801371DC();
         fn_8013760C();
     }
-    if (fn_80101770() == this) {
+    if (dPlayerMgr_c::getCurrentPlayer() == this) {
         _8628 = 0;
     }
 }
@@ -852,18 +828,18 @@ void dPrivateData_c::setPocketFlag(int idx, int flag) {
 
 // 8013835C
 void dPrivateData_c::fn_8013835C(void *arg, int idx) {
-    fn_80117450(&mLetters[idx], arg);
+    mLetters[idx].copy((const dMail_c *)arg);
 }
 
 // 8013836C
 void dPrivateData_c::clearLetter(int idx) {
-    fn_801178F8(&mLetters[idx]);
+    mLetters[idx].clear();
 }
 
 // 8013837C
 int dPrivateData_c::findLetter() {
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
-        if (fn_80117748(&mLetters[i])) {
+        if (mLetters[i].isEmpty()) {
             return i;
         }
     }
@@ -878,20 +854,20 @@ int dPrivateData_c::getPocketFlag(int idx) const {
 // 801383EC
 void dPrivateData_c::clear() {
     memset(this, 0, sizeof(dPrivateData_c));
-    fn_8013E6FC(&mPID);
+    mPID.clear();
     mBells = 0;
     mCatalog.init();
     for (int i = 0; i < PLAYER_POCKETS_COUNT; i++) {
         mPockets[i] = dItem::Item();
     }
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
-        fn_801178F8(&mLetters[i]);
+        mLetters[i].clear();
     }
-    fn_80118F24(&_7DFA);
+    mLetterStyle.clear();
     mEquipment.clear();
     _8614.clear();
     _868F = 0;
-    fn_8013E6FC(&_7EEE);
+    _7EEE.clear();
     mDebt = 0;
     _83BE.clear();
     _83C2.clear();
@@ -899,7 +875,7 @@ void dPrivateData_c::clear() {
     fn_80140978(&mErrand);
     fn_8014C468(&_8620);
     fn_80110470(&_7FD6);
-    fn_8013E6FC(&mHost.mPID);
+    mHost.mPID.clear();
     mHost.mCount = 0;
     mHost.mFlagA = 0;
     mHost.mFlagB = 0;
@@ -1159,7 +1135,7 @@ BOOL dPrivateData_c::payMoney(int amount, BOOL allowItems) {
     if (getPocketMoney() < amount) {
         return FALSE;
     }
-    if (allowItems && fn_80101770()->countPockets(NULL, NULL) <= 0) {
+    if (allowItems && dPlayerMgr_c::getCurrentPlayer()->countPockets(NULL, NULL) <= 0) {
         int idx = findMoneyPocketSmallest();
         if (idx == -1) {
             return FALSE;
@@ -1363,14 +1339,14 @@ void *dPrivateData_c::fn_80139530() {
 dMail_c *dPrivateData_c::fn_80139594() {
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
         dMail_c* mail = &mLetters[i];
-        if (mail != NULL && fn_80117938(mail) && fn_80117528(mail) && fn_80117A20(mail)) {
+        if (mail != NULL && mail->isValid() && mail->isReadFlaggedInvite() && mail->getFromPlayer()) {
             return mail;
         }
     }
 
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
         dMail_c* mail = &mLetters[i];
-        if (mail != NULL && fn_80117938(mail) && fn_80117528(mail) && fn_80117A28(mail)) {
+        if (mail != NULL && mail->isValid() && mail->isReadFlaggedInvite() && mail->getFromAnimal()) {
             return mail;
         }
     }
@@ -1381,7 +1357,7 @@ dMail_c *dPrivateData_c::fn_80139594() {
 dMail_c *dPrivateData_c::fn_8013967C() {
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
         dMail_c* mail = &mLetters[i];
-        if (mail != NULL && fn_80117938(mail) && fn_801175D4(mail)) {
+        if (mail != NULL && mail->isValid() && mail->isReadUnflaggedInvite()) {
             return mail;
         }
     }
@@ -1412,7 +1388,7 @@ dQuestErrand_c *dPrivateData_c::findErrand(dAnmPersonalID_c *animal, int which, 
     if (!animal->isValid()) {
         return NULL;
     }
-    if (!fn_8013E868(&mPID)) {
+    if (!mPID.isValid()) {
         return NULL;
     }
     dQuestErrand_c *errand = fn_801409E0(&mErrand, idx);
@@ -1469,7 +1445,7 @@ int dPrivateData_c::countErrandPockets(u16 *mask) {
 
 // 80139948
 BOOL dPrivateData_c::fn_80139948(int arg) {
-    if (!fn_8013E868(&mPID)) {
+    if (!mPID.isValid()) {
         return FALSE;
     }
     if (!fn_80141748(&mErrand, arg)) {
@@ -1735,10 +1711,10 @@ void dDesignList_c::init(dPersonalID_c *creator) {
     dDesign_c *design;
     for (u32 i = 0; i < PLAYER_ORG_DESIGN_COUNT; i++) {
         design = &mDesigns[i & 7];
-        fn_8010F154(&mDesigns[i & 7]);
-        fn_8010F374(&mDesigns[i & 7], (i & 7) + 0x9CC);
+        mDesigns[i & 7].clear();
+        mDesigns[i & 7].setFromItem((i & 7) + 0x9CC);
         design->mCreator = *creator;
-        fn_8010F65C(design, i);
+        design->loadTextureA(i);
     }
     mOrder.init();
 }
@@ -1763,7 +1739,7 @@ u8 dDesignList_c::getOrder(u32 i) {
 // 8013A888
 u16 dDesignList_c::fn_8013A888(u32 i, int kind) {
     int order = getOrder(i);
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dItem::seeker_c::get()->search(kind, 6, NULL);
     if (player != NULL) {
         int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, &player->mPID);
@@ -1799,7 +1775,7 @@ BOOL dEquip_c::fn_8013A9C8() {
 
 // 8013AA28
 void dEquip_c::setFromPlayer() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     mHeld = player->mEquipment.mHeld;
     mShirt = player->mEquipment.mShirt;
     mHat = player->mEquipment.mHat;
@@ -1894,16 +1870,16 @@ void dOutfit_c::setDefault() {
 void dOutfit_c::setFromPlayer() {
     clear();
     mEquip.setFromPlayer();
-    mHairColor = fn_80101770()->mHairColor;
-    mHair = fn_80101770()->mHair;
-    mShoeColor = fn_80101770()->mShoeColor;
+    mHairColor = dPlayerMgr_c::getCurrentPlayer()->mHairColor;
+    mHair = dPlayerMgr_c::getCurrentPlayer()->mHair;
+    mShoeColor = dPlayerMgr_c::getCurrentPlayer()->mShoeColor;
     mFlags.valid = true;
     mFlags.male = false;
-    if (fn_80101770()->mPID.player.mGender == GENDER_MALE) {
+    if (dPlayerMgr_c::getCurrentPlayer()->mPID.player.mGender == GENDER_MALE) {
         mFlags.male = true;
     }
     mFlags.noShoes = false;
-    if (fn_80101770()->_83F7 == 0) {
+    if (dPlayerMgr_c::getCurrentPlayer()->_83F7 == 0) {
         mFlags.noShoes = true;
     }
 }
@@ -1958,7 +1934,7 @@ void dPrivateData_c::clearPlayer(dPrivateData_c *players, int idx) {
 
 // 8013AFB8
 int dPrivateData_c::find(dPrivateData_c *players, const dPersonalID_c *pid) {
-    if ((u32)fn_8013E868(pid) == TRUE) {
+    if ((u32)pid->isValid() == TRUE) {
         BOOL same;
         const dPersonalID_c* other;
         for (int i = 0; i < PLAYER_NUM; i++) {
@@ -1966,7 +1942,7 @@ int dPrivateData_c::find(dPrivateData_c *players, const dPersonalID_c *pid) {
             same = FALSE;
             if (pid->land.mId == other->land.mId && pid->land.mRegion == other->land.mRegion &&
                 memcmp(pid->land.mName, other->land.mName, sizeof(other->land.mName)) == 0 &&
-                fn_8013E734(pid, other)) {
+                pid->isSamePlayer(other)) {
                 same = TRUE;
             }
             if (same) {
@@ -1980,9 +1956,9 @@ int dPrivateData_c::find(dPrivateData_c *players, const dPersonalID_c *pid) {
 
 // 8013B080
 int dPrivateData_c::findByPlayerID(dPrivateData_c *players, const dPlayerID_c *id) {
-    if ((u32)fn_8013EA14(id) == TRUE) {
+    if ((u32)id->isValid() == TRUE) {
         for (int i = 0; i < PLAYER_NUM; i++) {
-            if (fn_8013EA30(id, &players->mPID.player)) {
+            if (id->isSame(&players->mPID.player)) {
                 return i;
             }
             players++;
@@ -1996,7 +1972,7 @@ int dPrivateData_c::findEmpty(dPrivateData_c *players) {
     dPrivateData_c *player = players;
     int result = -1;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (!fn_8013E868(&player->mPID)) {
+        if (!player->mPID.isValid()) {
             result = i;
             break;
         }
@@ -2010,7 +1986,7 @@ int dPrivateData_c::count(dPrivateData_c *players) {
     dPrivateData_c *player = players;
     int count = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             count++;
         }
         player++;
@@ -2046,7 +2022,7 @@ int dPrivateData_c::getNthValid(dPrivateData_c *players, u32 n) {
     int result = -1;
     u32 count = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             if (n == count) {
                 result = i;
                 break;
@@ -2063,7 +2039,7 @@ BOOL dPrivateData_c::contains(dPrivateData_c *players, const dPersonalID_c *pid)
     dPrivateData_c *player = players;
     BOOL result = FALSE;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (fn_8013E868(&player->mPID) && fn_8013E734(&player->mPID, pid)) {
+        if (player->mPID.isValid() && player->mPID.isSamePlayer(pid)) {
             result = TRUE;
             break;
         }
@@ -2110,7 +2086,7 @@ int dPrivateData_c::fn_8013B4F8() {
     counts[2] = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             counts[player->_869C]++;
         }
     }
@@ -2132,7 +2108,7 @@ int dPrivateData_c::fn_8013B5CC() {
     int bestIdx = -1;
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             s8 x = player->_869A;
             s8 y = player->_869B;
             if (x >= 0 && y >= 0) {
@@ -2164,7 +2140,7 @@ int dPrivateData_c::fn_8013B5CC() {
 void dPrivateData_c::fn_8013B7A4() {
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
-        if (fn_8013E868(&player->mPID)) {
+        if (player->mPID.isValid()) {
             player->_869A = -1;
             player->_869B = -1;
             player->_869C = 0;
@@ -2344,11 +2320,11 @@ BOOL dPrivateData_c::fn_8013BDA0(int chance, int count, int flag) {
     mHost.mFlagA = coin - 1 == 0;
     dPrivateData_c *host = NULL;
     if (flag == 1) {
-        host = fn_80101770();
+        host = dPlayerMgr_c::getCurrentPlayer();
     } else {
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = fn_80101624(i);
-            if (fn_8013E868(&player->mPID)) {
+            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            if (player->mPID.isValid()) {
                 host = player;
             }
         }

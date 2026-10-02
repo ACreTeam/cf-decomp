@@ -18,6 +18,7 @@ public:
 // A word with a fixed 101-character buffer.
 class Word_c : public WordBase_c {
 public:
+    Word_c(); // 8016B630
     virtual ~Word_c(); // 8016B740
     virtual u32 getBufferSize(); // 8016B798: returns sizeof(mBuffer)
     virtual wchar_t *getBuffer(); // 8016B7A0

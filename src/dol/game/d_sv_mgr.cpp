@@ -4,6 +4,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_sv_runtime.hpp>
 #include <game/mLib/m_fader.hpp>
+#include <game/game/d_player_mgr.hpp>
 
 // TODO: Not linkable yet; every function matches, but the section layout does not.
 // - The target is likely two TUs. .text/.ctors/.bss put the boundary after
@@ -119,7 +120,7 @@ int dSvMgr_c::getVisitorDataOffset() {
 
 int dSvMgr_c::getPlayerDataOffset(int player) {
     dSaveData_c *base = dSaveData_c::getRaw();
-    return reinterpret_cast<int>(fn_801016DC(player)) -
+    return reinterpret_cast<int>(dPlayerMgr_c::getPlayerRaw(player)) -
            reinterpret_cast<int>(base);
 }
 
@@ -777,9 +778,9 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             fn_800DCF58();
             int index = mPlayerIndex;
             fn_801017B8();
-            void *player = fn_80101624(index);
+            void *player = dPlayerMgr_c::getPlayer(index);
             fn_8010DAFC(&field<dSaveOption_c>(player, 0x83E8));
-            fn_80136C7C(fn_80101770(), player);
+            fn_80136C7C(dPlayerMgr_c::getCurrentPlayer(), player);
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();
@@ -1013,17 +1014,17 @@ void dSvMgr_c::stepSaveConnectNetVst_c::waitMessageEnd() {
 void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
     if (fn_800DCEDC() && mCurrentVisitor < 4) {
         bool returning = false;
-        void *player = fn_80101694(mCurrentVisitor);
+        void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
             if (field<TownIdentity>(player, 0x7FA8).isSame(
                     field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
                 returning = true;
                 player = &dSaveData_c::getTown()->mTownHost;
-                fn_8013E6FC(player);
+                ((dPersonalID_c *)player)->clear();
                 field<IdentityFlags>(player, 0x2C).state = 0;
                 if (fn_800DCF90()) {
-                    player = &field<u8>(fn_80101770(), 0x7FA8);
-                    fn_8013E6FC(player);
+                    player = &field<u8>(dPlayerMgr_c::getCurrentPlayer(), 0x7FA8);
+                    ((dPersonalID_c *)player)->clear();
                     field<IdentityFlags>(player, 0x2C).state = 0;
                 }
             }
@@ -1055,7 +1056,7 @@ void dSvMgr_c::stepSaveConnectNetVst_c::findFriend() {
     if (fn_800DCEDC()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
-        void *player = fn_80101694(visitor);
+        void *player = dPlayerMgr_c::getNetPlayer(visitor);
         u64 friendCode = fn_800DDDAC(visitor);
         int index = fn_8017BBB8(&field<u8>(player, 4));
         if (index >= 0 || index == -1) {
@@ -1111,17 +1112,17 @@ void dSvMgr_c::stepSaveConnectNetHst_c::waitMessageEnd() {
 void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
     if (fn_800DCEDC() && mCurrentVisitor < 4) {
         bool returning = false;
-        void *player = fn_80101694(mCurrentVisitor);
+        void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
             if (field<TownIdentity>(player, 0x7FA8).isSame(
                     field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
                 returning = true;
                 player = &dSaveData_c::getTown()->mTownHost;
-                fn_8013E6FC(player);
+                ((dPersonalID_c *)player)->clear();
                 field<IdentityFlags>(player, 0x2C).state = 0;
                 if (fn_800DCF90()) {
-                    player = &field<u8>(fn_80101770(), 0x7FA8);
-                    fn_8013E6FC(player);
+                    player = &field<u8>(dPlayerMgr_c::getCurrentPlayer(), 0x7FA8);
+                    ((dPersonalID_c *)player)->clear();
                     field<IdentityFlags>(player, 0x2C).state = 0;
                 }
             }
@@ -1153,7 +1154,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::findFriend() {
     if (fn_800DCEDC()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
-        void *player = fn_80101694(visitor);
+        void *player = dPlayerMgr_c::getNetPlayer(visitor);
         u64 friendCode = fn_800DDDAC(visitor);
         int index = fn_8017BBB8(&field<u8>(player, 4));
         if (index >= 0 || index == -1) {
@@ -1236,9 +1237,9 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             fn_800DCF58();
             int index = mPlayerIndex;
             fn_801017B8();
-            void *player = fn_80101624(index);
+            void *player = dPlayerMgr_c::getPlayer(index);
             fn_8010DAFC(&field<dSaveOption_c>(player, 0x83E8));
-            fn_80136C7C(fn_80101770(), player);
+            fn_80136C7C(dPlayerMgr_c::getCurrentPlayer(), player);
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();

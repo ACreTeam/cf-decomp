@@ -4,6 +4,7 @@
 #include <lib/revolution/OS/OSCache.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <cstdio>
+#include <game/game/d_player_mgr.hpp>
 
 // First pass: every function in the TU is written for equivalence; matching
 // work has not started. External callees whose owners are unrecovered keep
@@ -32,12 +33,8 @@ void *fn_80115910(void *dl, Item item);
 void *fn_801159B8(void *dl, Item item);
 s32 fn_80115A60(void *dl, Item *item);
 Item fn_80115BC0(void *dl, u32 slot);
-u8 *fn_80101794(); // current player
 BOOL fn_8013812C(void *player, Item *item, int);
 void fn_8013A044(void *player, u16 id, int);
-u16 fn_801174A4(void *design);
-void *fn_8010F7B0(void *design); // design texture
-void *fn_8010F850(void *design); // design palette
 
 // System helpers.
 int fn_801068B4(); // language
@@ -741,7 +738,7 @@ u16 BITM::getFromNameIndex() const {
 int BITM::resolveColor(int color, BOOL usePlayer) const {
     if (color == 0 && getKind() == KIND_CAP) {
         if (usePlayer) {
-            u8 *player = fn_80101794();
+            u8 *player = (u8 *)dPlayerMgr_c::getCurrentPlayerRaw();
             if (player != NULL) {
             switch (player[0x83EC]) {
             case 0:
@@ -1454,15 +1451,15 @@ BOOL resLoader_c::loadFromMemory(const void *src, u32 size, void *heap) {
 
 // 800C3CC0
 BOOL resLoader_c::loadDesign(void *design, void *heap, s16 width, s16 height) {
-    void *tex = fn_8010F7B0(design);
-    void *pltt = fn_8010F850(design);
+    void *tex = ((dDesign_c *)design)->getTexture();
+    void *pltt = ((dDesign_c *)design)->getPalette();
     return loadTexture(tex, pltt, heap, width, height);
 }
 
 // 800C3D30
 BOOL resLoader_c::loadDesignInPlace(void *design, void *heap, s16 width, s16 height) {
-    void *tex = fn_8010F7B0(design);
-    void *pltt = fn_8010F850(design);
+    void *tex = ((dDesign_c *)design)->getTexture();
+    void *pltt = ((dDesign_c *)design)->getPalette();
     return bindTexture(tex, pltt, heap, width, height);
 }
 
@@ -1723,13 +1720,13 @@ Item makePlEquipSendData_c::getItem(u32 index) {
 
 // 800C47B0
 u32 countPlEquipSendable() {
-    makePlEquipSendData_c data(fn_80101794());
+    makePlEquipSendData_c data((u8 *)dPlayerMgr_c::getCurrentPlayerRaw());
     return data.countSendable();
 }
 
 // 800C4804
 void *getPlEquipSendable(u32 n) {
-    makePlEquipSendData_c data(fn_80101794());
+    makePlEquipSendData_c data((u8 *)dPlayerMgr_c::getCurrentPlayerRaw());
     return data.getNthSendable(n);
 }
 
@@ -1863,7 +1860,7 @@ int dlBlockList_c::addFromPlayer(void *player) {
     u8 *design = p + 0x56CA;
     for (i = 0; i < 10; i++, design += 0x390) {
         Item item;
-        item.mId = fn_801174A4(design);
+        item.mId = ((dMail_c *)design)->getPresent();
         if (addItem(item)) {
             count++;
         }

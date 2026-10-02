@@ -75,8 +75,16 @@ public:
         return ref().height;
     }
 
+    void* GetTexData() {
+        ResTexData& r = ref();
+
+        return (r.toTexData != 0) ? (void*)((u8*)&r + r.toTexData) : NULL;
+    }
+
     const void* GetTexData() const {
-        return ofs_to_ptr<void>(ref().toTexData);
+        const ResTexData& r = ref();
+
+        return (r.toTexData != 0) ? (void*)((u8*)&r + r.toTexData) : NULL;
     }
 };
 

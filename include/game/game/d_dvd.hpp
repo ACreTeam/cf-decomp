@@ -19,6 +19,7 @@ public:
     virtual void freeData(); // 80086000
 
     s32 getSize() const; // 8008611C
+    void *getData() const { return mpData; }
 
 protected:
     void *mpCommand; // 0x08

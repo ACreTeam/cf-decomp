@@ -9,14 +9,11 @@
 extern "C" {
 // dLandID_c / dPersonalID_c.
 void fn_80116710(dLandID_c *land); // clear
-void fn_8013E6FC(dPersonalID_c *pid); // clear
 
 // dQuestTime_c.
 void fn_8014C468(dQuestTime_c *time); // reset to INT64_MAX
 
 // Member objects owned by other TUs.
-void fn_8010F154(dDesign_c *design); // clear
-void fn_801178F8(dMail_c *mail); // clear
 void fn_801192F4(dUnk300C_c *obj); // clear
 void fn_80143700(dUnk2BE4_c *obj); // clear
 BOOL fn_8013F4B0(dUnk2BE4_c *obj);
@@ -183,7 +180,7 @@ dAnimalMemory_c::~dAnimalMemory_c() {}
 
 // 8011C7F8
 void dAnimalMemory_c::clear() {
-    fn_8013E6FC(&mPlayer);
+    mPlayer.clear();
     fn_8014C468(&_04);
     fn_80116710(&_38);
     memset(_50, 0, sizeof(_50));
@@ -253,8 +250,8 @@ void dAnimal_c::clear() {
     fn_80120584(this);
     _3004 = dItem::ITEM_ID_NONE;
     _3006 = dItem::ITEM_ID_NONE;
-    fn_8010F154(&mDesign);
-    fn_801178F8(&mMail);
+    mDesign.clear();
+    mMail.clear();
     fn_80143700(&mQuest);
     _3033 = 3;
     _3034 = 4;

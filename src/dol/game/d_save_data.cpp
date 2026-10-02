@@ -5,12 +5,10 @@
 #include <lib/egg/core/eggHeap.h>
 #include <cstring>
 #include <cstddef>
+#include <game/game/d_player_mgr.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-dPrivateData_c *fn_80101624(int idx);
-dPrivateData_c *fn_80101770(); // current player
-BOOL fn_8013E868(const dPersonalID_c *pid); // isValid
 
 // Save header / checksum helpers (auto_03_8011524C, auto_03_80115CDC).
 dSaveHeader_c *fn_80115CA4();
@@ -95,8 +93,8 @@ void fn_8010D870(dSaveOption_c *opt) {
 
     if (fn_80115CE0(dSaveData_c::getTown())) {
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = fn_80101624(i);
-            if (fn_8013E868(&player->mPID) && getOption(player)->mBit7 == 1) {
+            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            if (player->mPID.isValid() && getOption(player)->mBit7 == 1) {
                 flag = FALSE;
             }
         }
@@ -190,7 +188,7 @@ void fn_8010DA34(u8 v) {
 
 // 8010DA54
 u8 fn_8010DA54() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return 0;
     }
@@ -199,12 +197,12 @@ u8 fn_8010DA54() {
 
 // 8010DA8C
 void fn_8010DA8C(u8 v) {
-    fn_8010D808(getOption(fn_80101770()), v);
+    fn_8010D808(getOption(dPlayerMgr_c::getCurrentPlayer()), v);
 }
 
 // 8010DAC8
 void fn_8010DAC8() {
-    dPrivateData_c *player = fn_80101770();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL) {
         fn_8010DAFC(getOption(player));
     }
