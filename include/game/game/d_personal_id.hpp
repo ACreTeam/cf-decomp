@@ -36,7 +36,7 @@ class dPersonalID_c {
 public:
     void setPlayer(const wchar_t *name, u16 id, u8 gender);     // 8013E618
     static u16 generateId(const u16 *used, int num);            // 8013E620: random id not in used
-    static BOOL containsId(u16 id, const u16 *ids, int num);    // 8013E690
+    static bool containsId(u16 id, const u16 *ids, int num);    // 8013E690
     static u16 randomId();                                      // 8013E6D0: 0x8000 | rnd(0x7FFF)
     void clear();                                               // 8013E6FC (Ghidra: ClearPersonalID)
     BOOL isSamePlayer(const dPersonalID_c *other) const;        // 8013E734 (Ghidra: CmpPlayerIdsFromPersonalIDs)

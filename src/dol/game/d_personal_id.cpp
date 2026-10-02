@@ -37,12 +37,12 @@ u16 dPersonalID_c::generateId(const u16 *used, int num) {
 }
 
 // 8013E690
-BOOL dPersonalID_c::containsId(u16 id, const u16 *ids, int num) {
-    BOOL found = FALSE;
+bool dPersonalID_c::containsId(u16 id, const u16 *ids, int num) {
+    bool found = false;
     if (num != 0 && ids != NULL) {
         for (int i = 0; i < num; i++, ids++) {
             if (id == *ids) {
-                found = TRUE;
+                found = true;
                 break;
             }
         }
@@ -118,16 +118,13 @@ void dPersonalID_c::setWord(dScript::Word_c *word) const {
 
 // 8013E8D0
 BOOL dPersonalID_c::isLand(const dLandID_c *other) const {
-    BOOL same = FALSE;
-    if (land == *other) {
-        same = TRUE;
-    }
-    return same;
+    return land == *other;
 }
 
 // 8013E938
 BOOL dPersonalID_c::isFromTown() const {
-    return isLand(&dSaveData_c::getRaw()->mLandID);
+    const dSaveData_c* save_p = dSaveData_c::getRaw();
+    return isLand(&save_p->mLandID);
 }
 
 // 8013E978
@@ -171,15 +168,17 @@ void dPlayerID_c::setName(const wchar_t *name) {
 // 8013EAA4
 void dPlayerID_c::setWord(dScript::Word_c *word) const {
     word->set(mName, 0);
+
+    dScript::Inflect_c& inflect = word->mInflect;
     switch (mGender) {
     case GENDER_MALE:
-        word->mInflect.setGender(GENDER_MALE);
+        inflect.setGender(GENDER_MALE);
         break;
     case GENDER_FEMALE:
-        word->mInflect.setGender(GENDER_FEMALE);
+        inflect.setGender(GENDER_FEMALE);
         break;
     default:
-        word->mInflect.setGender(GENDER_OTHER);
+        inflect.setGender(GENDER_OTHER);
         break;
     }
 }
