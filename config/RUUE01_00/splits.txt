@@ -504,7 +504,7 @@ lib/gamespy/GP/gpiCallback.c:
 
 lib/gamespy/GP/gpiConnect.c:
 	.text       start:0x8034805C end:0x803496A4
-	.data       start:0x8053CB00 end:0x8053CEA8 align:4
+	.data       start:0x8053CB00 end:0x8053CEA8 align:32
 	.sdata      start:0x8074D248 end:0x8074D2E0 align:4
 
 lib/gamespy/GP/gpiInfo.c:
@@ -579,7 +579,7 @@ lib/gamespy/gt2/gt2Utility.c:
 
 lib/gamespy/qr2/qr2.c:
 	.text       start:0x80356EBC end:0x8035977C
-	.data       start:0x8053D920 end:0x8053E800 align:4
+	.data       start:0x8053D920 end:0x8053E800 align:32
 	.bss        start:0x806AC580 end:0x806AC6E0 align:4
 	.sdata      start:0x8074D560 end:0x8074D590 align:4
 	.sbss       start:0x8074F208 end:0x8074F210 align:4
@@ -659,15 +659,13 @@ lib/RVL_SDK/ax/AXCL.c:
 
 lib/RVL_SDK/ax/AXOut.c:
 	.text       start:0x803760DC end:0x803768D4
-	.data       start:0x80542680 end:0x80544680 align:4
 	.bss        start:0x806B85E0 end:0x806B93E0 align:4
-	.sdata      start:0x8074D7B8 end:0x8074D7C0 align:4
 	.sbss       start:0x8074F458 end:0x8074F498 align:4
 
 lib/RVL_SDK/ax/AXSPB.c:
 	.text       start:0x803768D4 end:0x80376CF4
 	.bss        start:0x806B93E0 end:0x806B9460 align:4
-	.sbss       start:0x8074F498 end:0x8074F4E8 align:4
+	.sbss       start:0x8074F498 end:0x8074F4E8
 
 lib/RVL_SDK/ax/AXVPB.c:
 	.text       start:0x80376CF4 end:0x80377BB8
@@ -779,6 +777,8 @@ lib/RVL_SDK/os/OSUtf.c:
 
 lib/RVL_SDK/os/OSIpc.c:
 	.text       start:0x80385EC0 end:0x80385EE8
+	.sdata      start:0x8074D840 end:0x8074D844 align:4
+	.sbss       start:0x8074F5E8 end:0x8074F5EC align:4
 
 lib/RVL_SDK/os/OSStateTM.c:
 	.text       start:0x803860C0 end:0x803865DC
@@ -871,9 +871,11 @@ lib/RVL_SDK/mtx/vec.c:
 
 lib/RVL_SDK/gx/GXInit.c:
 	.text       start:0x803919DC end:0x80392BA8
-	.data       start:0x80553460 end:0x805535D0 align:4
-	.sdata      start:0x8074D8B8 end:0x8074D8C0 align:4
-	.sbss       start:0x8074F770 end:0x8074F784 align:4
+	.data       start:0x80553460 end:0x805536A0 align:4
+	.bss        start:0x806CC100 end:0x806CC780 align:4
+	.sdata      start:0x8074D8B8 end:0x8074D8BC align:4
+	.sbss       start:0x8074F760 end:0x8074F788 align:4
+	.sdata2     start:0x80752F40 end:0x80752F68 align:4
 
 lib/RVL_SDK/gx/GXFifo.c:
 	.text       start:0x80392BA8 end:0x80393750
@@ -916,8 +918,8 @@ lib/RVL_SDK/gx/GXTev.c:
 
 lib/RVL_SDK/gx/GXPixel.c:
 	.text       start:0x8039851C end:0x80398C80
-	.data       start:0x80553CF8 end:0x80553D18 align:4
-	.sdata2     start:0x80752FF0 end:0x80753040
+	.data       start:0x80553CF8 end:0x80553D18
+	.sdata2     start:0x80752FF0 end:0x80753040 align:16
 
 lib/RVL_SDK/gx/GXDisplayList.c:
 	.text       start:0x80399050 end:0x80399228
@@ -933,7 +935,7 @@ lib/RVL_SDK/gx/GXPerf.c:
 
 lib/RVL_SDK/dvd/dvdfs.c:
 	.text       start:0x8039A058 end:0x8039AAA0
-	.data       start:0x80553E08 end:0x80553F70 align:4
+	.data       start:0x80553E08 end:0x80553F70
 	.sdata      start:0x8074D920 end:0x8074D928 align:4
 	.sbss       start:0x8074F7C0 end:0x8074F7C8 align:4
 
@@ -945,18 +947,20 @@ lib/RVL_SDK/dvd/dvd.c:
 
 lib/RVL_SDK/dvd/dvdqueue.c:
 	.text       start:0x8039F7B0 end:0x8039FA08
+	.bss        start:0x806D1E30 end:0x806D1E50 align:4
 
 lib/RVL_SDK/dvd/dvderror.c:
 	.text       start:0x8039FA08 end:0x803A030C
 	.data       start:0x80554318 end:0x80554348 align:4
-	.bss        start:0x806D1E60 end:0x806D1FC0 align:4
-	.sbss       start:0x8074F878 end:0x8074F888 align:4
+	.bss        start:0x806D1E60 end:0x806D20C0 align:4
+	.sbss       start:0x8074F878 end:0x8074F884 align:4
 
 lib/RVL_SDK/dvd/dvdidutils.c:
 	.text       start:0x803A030C end:0x803A03FC
 
 lib/RVL_SDK/dvd/dvdFatal.c:
 	.text       start:0x803A0528 end:0x803A053C
+	.sbss       start:0x8074F888 end:0x8074F88C align:4
 
 lib/RVL_SDK/dvd/dvd_broadway.c:
 	.text       start:0x803A07EC end:0x803A2C38
@@ -1283,7 +1287,7 @@ lib/RVL_SDK/bte/hidh_conn.c:
 
 lib/RVL_SDK/bte/l2c_api.c:
 	.text       start:0x803E247C end:0x803E3048
-	.data       start:0x8055CD00 end:0x8055D490 align:4
+	.data       start:0x8055CD00 end:0x8055D490 align:32
 
 lib/RVL_SDK/bte/l2c_csm.c:
 	.text       start:0x803E3048 end:0x803E4524
@@ -1291,7 +1295,7 @@ lib/RVL_SDK/bte/l2c_csm.c:
 
 lib/RVL_SDK/bte/l2c_link.c:
 	.text       start:0x803E4524 end:0x803E56B0
-	.data       start:0x8055DCC8 end:0x8055DF38 align:4
+	.data       start:0x8055DCC8 end:0x8055DF38
 
 lib/RVL_SDK/bte/l2c_main.c:
 	.text       start:0x803E56B0 end:0x803E66E0
@@ -1323,14 +1327,14 @@ lib/RVL_SDK/bte/rfc_mx_fsm.c:
 
 lib/RVL_SDK/bte/rfc_port_fsm.c:
 	.text       start:0x803EB540 end:0x803EC6E0
-	.data       start:0x8055EB90 end:0x8055EEB8 align:4
+	.data       start:0x8055EB90 end:0x8055EEB8 align:16
 
 lib/RVL_SDK/bte/rfc_port_if.c:
 	.text       start:0x803EC6E0 end:0x803ECC0C
 
 lib/RVL_SDK/bte/rfc_ts_frames.c:
 	.text       start:0x803ECC0C end:0x803EE254
-	.data       start:0x8055EEB8 end:0x8055EF90 align:4
+	.data       start:0x8055EEB8 end:0x8055EF90
 	.sdata      start:0x8074DC40 end:0x8074DC50 align:4
 
 lib/RVL_SDK/bte/rfc_utils.c:
@@ -1340,7 +1344,7 @@ lib/RVL_SDK/bte/rfc_utils.c:
 
 lib/RVL_SDK/bte/sdp_api.c:
 	.text       start:0x803EEA34 end:0x803EF89C
-	.data       start:0x8055F020 end:0x8055F070 align:4
+	.data       start:0x8055F020 end:0x8055F070 align:32
 
 lib/RVL_SDK/bte/sdp_db.c:
 	.text       start:0x803EF89C end:0x803F0568
@@ -1352,7 +1356,7 @@ lib/RVL_SDK/bte/sdp_discovery.c:
 
 lib/RVL_SDK/bte/sdp_main.c:
 	.text       start:0x803F17E0 end:0x803F234C
-	.data       start:0x8055F268 end:0x8055F5C8 align:4
+	.data       start:0x8055F268 end:0x8055F5C8
 
 lib/RVL_SDK/bte/sdp_server.c:
 	.text       start:0x803F234C end:0x803F305C
@@ -1564,7 +1568,6 @@ lib/RevoEX/vf/standard/pf_unmount.c:
 
 lib/RevoEX/vf/system/pf_filelock.c:
 	.text       start:0x80434980 end:0x80434994
-	.sbss       start:0x8074FB68 end:0x8074FB70 align:4
 
 lib/RevoEX/vf/system/pf_system.c:
 	.text       start:0x80434994 end:0x80434A0C
