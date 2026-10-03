@@ -49,7 +49,7 @@ void fn_8010D824(dSaveOption_c *opt, const void *src); // copy byte 0 in
 void fn_8010D82C(dSaveOption_c *opt);                 // clear the changed flags
 void fn_8010D83C(dSaveOption_c *opt);                 // defaults + clear flags
 void fn_8010D870(dSaveOption_c *opt);
-u8 fn_8010D944();       // static copy getters/setters
+int fn_8010D944();       // static copy getters/setters
 void fn_8010D950(u8 v);
 u8 fn_8010D970();
 void fn_8010D97C(u8 v);

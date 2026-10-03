@@ -24,7 +24,6 @@ void fn_800CC1AC(const dAnmPersonalID_c *sender);
 void fn_800CBC70(int slot, const dAnmPersonalID_c *sender);
 void fn_800CBC10(int slot, const dAnmPersonalID_c *sender);
 
-void fn_80159164(dScript::Word_c *dst, dScript::Word_c *src, int); // copy a word
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 void fn_8016B15C(int slot, dScript::Word_c *word); // script tag word
 void fn_8016B050(int slot, const dPersonalID_c *pid); // script tag player
@@ -564,7 +563,7 @@ void dMailAddress_c::setWord(dScript::Word_c *word, BOOL skipNoName) {
         word->set(mText, 0);
         return;
     }
-    fn_80159164(word, &name, 0);
+    word->copy(&name, 0);
 }
 
 // 80118AD8

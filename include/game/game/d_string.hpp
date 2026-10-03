@@ -19,6 +19,7 @@ public:
 class Word_c : public WordBase_c {
 public:
     Word_c(); // 8016B630
+    Word_c(u16 index, const char *group); // 8016B6D4: loads a BMG string (fn_8016AE68)
     virtual ~Word_c(); // 8016B740
     virtual u32 getBufferSize(); // 8016B798: returns sizeof(mBuffer)
     virtual wchar_t *getBuffer(); // 8016B7A0

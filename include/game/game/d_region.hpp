@@ -34,7 +34,24 @@ enum REGION_e {
     REGION_NUM
 };
 
-/// @brief Returns the REGION_e for the console's SCGetLanguage() setting.
-/// On RUUE01: SC_LANG_EN -> REGION_US, SC_LANG_SP -> REGION_MX,
-/// SC_LANG_FR -> REGION_QC, anything else -> REGION_US.
-extern "C" int fn_801068B4(); // 801068B4
+enum CONSOLE_REGION_e {
+    CONSOLE_REGION_JP,
+    CONSOLE_REGION_NA,
+    CONSOLE_REGION_EU,
+    CONSOLE_REGION_KR,
+
+    CONSOLE_REGION_NUM,
+};
+
+// Source: src/dol/game/d_region.cpp (.text 801068AC..8010693C). Names are inferred.
+
+/// @brief Console region; always 1 (North America) on RUUE01.
+int getRegion(); // 801068AC
+
+/// @brief Returns the LANGUAGE_e for the console's SCGetLanguage() setting.
+/// On RUUE01: SC_LANG_SP -> LANGUAGE_MX, SC_LANG_FR -> LANGUAGE_QC,
+/// anything else -> LANGUAGE_US.
+int getLanguage(); // 801068B4
+
+/// @brief Area for a LANGUAGE_e: 0 Japan, 1 America, 2 Europe, 3 Korea, 4 if out of range.
+int getLanguageArea(int language); // 80106918

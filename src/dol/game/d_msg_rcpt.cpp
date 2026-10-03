@@ -4,7 +4,7 @@
 #pragma force_active on
 
 #include <game/game/d_msg_rcpt.hpp>
-#include <game/game/d_bmg.hpp>
+#include <game/game/d_script.hpp>
 #include <cstring>
 
 typedef char dMsgRcptSizeCheck[sizeof(dMsg::Rcpt_c) == 0x64 ? 1 : -1];
@@ -24,7 +24,7 @@ int Rcpt_c::rcptHook90() { return 3; }
 int Rcpt_c::rcptHook8C() { return 0; }
 
 void Rcpt_c::setSpeakerName(const u16 *name, u8 nameKind) {
-    int length = BMG_DAT_GetStringLength_wchar_t(name, 0, 0);
+    int length = dScript::getStringLength((const wchar_t *)name, 0, 0);
     std::memset(mSpeakerName, 0, sizeof(mSpeakerName));
     std::memcpy(mSpeakerName, name, length * sizeof(u16));
     mSpeakerNameKind = nameKind;

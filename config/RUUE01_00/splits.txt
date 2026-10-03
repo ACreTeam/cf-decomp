@@ -59,6 +59,10 @@ dol/game/d_player_mgr.cpp:
 	.sbss       start:0x8074E600 end:0x8074E608 align:4
 	.sdata2     start:0x80750A80 end:0x80750AB0 align:4
 
+dol/game/d_region.cpp:
+	.text       start:0x801068AC end:0x8010693C
+	.rodata     start:0x80475C08 end:0x80475C30 align:4
+
 dol/game/d_save_data.cpp:
 	.text       start:0x8010D7E8 end:0x8010F124
 	.sbss       start:0x8074E6D8 end:0x8074E6E8 align:4
@@ -106,6 +110,15 @@ dol/game/d_private_data.cpp:
 dol/game/d_personal_id.cpp:
 	.text       start:0x8013E618 end:0x8013EBCC
 	.sdata2     start:0x80750BF0 end:0x80750BF8 align:4
+
+dol/game/d_script.cpp:
+	.text       start:0x8015593C end:0x8015B618
+	.ctors      start:0x8046574C end:0x80465750
+	.rodata     start:0x804767E8 end:0x80476E88 align:4
+	.data       start:0x804EF668 end:0x804EFCE0 align:4
+	.bss        start:0x805F2E88 end:0x805F2F20 align:4
+	.sdata      start:0x8074B1C0 end:0x8074B1F8 align:4
+	.sbss       start:0x8074E810 end:0x8074E818 align:4
 
 dol/game/d_date.cpp:
 	.text       start:0x8016D264 end:0x8016DE60

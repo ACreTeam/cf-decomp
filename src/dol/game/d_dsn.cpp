@@ -1,5 +1,6 @@
 // Original designs (patterns). .text 8010F124..8010FB6C.
 // First pass: every function is written for equivalence.
+#include <game/game/d_region.hpp>
 #include <game/game/d_dsn.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
@@ -11,7 +12,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-int fn_801068B4(); // current language
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 
 // Downloaded item blocks (Ghidra: DLC_Item).
@@ -206,7 +206,7 @@ BOOL dDesign_c::setFromBITM(dItem::BITM *bitm) {
         }
 
         const wchar_t *landStr = static_cast<dScript::Word_c &>(landName).getBuffer();
-        land.setName(landStr, fn_801068B4());
+        land.setName(landStr, getLanguage());
         creator.setPlayer(static_cast<dScript::Word_c &>(creatorName).getBuffer(), dPlayerID_c::ID_UNSET, 0);
         creator.land.copy(&land);
         mCreator = creator;

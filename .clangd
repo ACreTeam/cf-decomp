@@ -10,6 +10,7 @@ CompileFlags:
     - -fdeclspec
     - -fshort-wchar
     - -D__CWCC__
+    - -D__INTELLISENSE__
 Completion:
   # Only read by clangd 21+; older versions use --header-insertion=never
   # from .vscode/settings.json.

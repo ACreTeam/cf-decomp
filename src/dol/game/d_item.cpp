@@ -1,3 +1,4 @@
+#include <game/game/d_region.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/cLib/c_math.hpp>
@@ -37,7 +38,6 @@ BOOL fn_8013812C(void *player, Item *item, int);
 void fn_8013A044(void *player, u16 id, int);
 
 // System helpers.
-int fn_801068B4(); // language
 u8 fn_80162548();
 
 // Loads entry `index` of a message group into a word (TU near 8016AC58).
@@ -493,7 +493,7 @@ int BITM::getFtrFuncType() const {
 
 // 800C1CF8
 const wchar_t *BITM::getName() const {
-    switch (fn_801068B4()) {
+    switch (getLanguage()) {
     case LANG_US:
         return m_nameUs;
     case LANG_QC:
@@ -519,7 +519,7 @@ const wchar_t *BITM::getName() const {
 
 // 800C1D90
 int BITM::getDefArticle() const {
-    switch (fn_801068B4()) {
+    switch (getLanguage()) {
     case LANG_US:
         return m_defUs;
     case LANG_QC:
@@ -546,7 +546,7 @@ int BITM::getDefArticle() const {
 
 // 800C1E48
 int BITM::getIndefArticle() const {
-    switch (fn_801068B4()) {
+    switch (getLanguage()) {
     case LANG_US:
         return m_indefUs;
     case LANG_QC:
@@ -572,7 +572,7 @@ int BITM::getIndefArticle() const {
 
 // 800C1F00
 int BITM::getGender() const {
-    switch (fn_801068B4()) {
+    switch (getLanguage()) {
     case LANG_US:
         return 0;
     case LANG_QC:

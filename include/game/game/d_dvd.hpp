@@ -45,6 +45,7 @@ protected:
 class arcBank_c : public bank_c {
 public:
     arcBank_c() : mArcReady(0) {}
+    virtual void onLoaded(); // 80065430: ARCInitHandle on the loaded data, sets mArcReady
     virtual u32 getFileSize(const char *name); // 80086398
     virtual BOOL copyFile(void *dst, const char *name); // 80086474
     virtual BOOL bindFile(void *dst); // 800864D8

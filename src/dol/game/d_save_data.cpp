@@ -116,7 +116,7 @@ void fn_8010D870(dSaveOption_c *opt) {
 }
 
 // 8010D944
-u8 fn_8010D944() {
+int fn_8010D944() {
     return dSaveData_c::sOption.mBit7;
 }
 

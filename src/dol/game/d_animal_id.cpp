@@ -95,7 +95,7 @@ int dAnmPersonalID_c::getGender(int unused) {
 // 80136160
 const wchar_t *dAnmPersonalID_c::getName(int language) {
     if (language >= LANGUAGE_NUM) {
-        language = fn_801068B4();
+        language = getLanguage();
     }
     return mNameByRegion[getNameSlot(language)];
 }
