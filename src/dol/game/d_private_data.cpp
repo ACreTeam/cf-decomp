@@ -40,7 +40,6 @@ BOOL fn_80141748(dQuestErrandList_c *list, int arg);
 BOOL fn_8013F7E8(dQuestErrand_c *errand);
 dAnmPersonalID_c *fn_80140850(dQuestErrand_c *errand, int i);
 void fn_80150AD4(dUnk5560_c *obj);
-void fn_8013CF7C(u16 *items, int set, int);
 u32 fn_802A98FC(const void *data, u32 size, int, int);
 
 // 64-bit time (dQuestTime_c) and calendar helpers.
@@ -56,10 +55,6 @@ BOOL fn_800DCEDC();
 void fn_800B0954(BOOL, int);
 u8 fn_80162548();
 BOOL fn_8019B864();
-int fn_8013DF24(dSaveHouse_c *houses, dPrivateData_c *);
-dSaveHouse_c *fn_8013E0A8(dSaveHouse_c *houses, int);
-int fn_8013E004(dSaveHouse_c *houses);
-dSaveHouse_c *fn_8013E0C4(dSaveHouse_c *houses, int);
 void fn_80112CA8(void *);
 void fn_80112BB8(void *);
 void fn_80112D24(void *);
@@ -1033,9 +1028,9 @@ void dPrivateData_c::setDebtFromHouse() {
     // 80476220
     static const s32 lbl_80476220[6] = {19800, 120000, 248000, 368000, 598000, 0};
 
-    int house = fn_8013DF24(dSaveData_c::getTown()->mHouses, this);
+    int house = dSaveData_c::getTown()->mHomes.findOwner(this);
     if (house != -1) {
-        u32 size = fn_8013E0A8(dSaveData_c::getTown()->mHouses, house)->_15B5;
+        u32 size = dSaveData_c::getTown()->mHomes.getHome(house)->mNextSize;
         if (size < 5) {
             mDebt = lbl_80476220[size];
         }
@@ -1172,10 +1167,10 @@ void dPrivateData_c::set_86A5(u8 value) {
 
 // 8013902C
 void dPrivateData_c::fn_8013902C() {
-    dSaveHouse_c *houses = dSaveData_c::getRaw()->mHouses;
-    dSaveHouse_c *house = fn_8013E0C4(houses, fn_8013E004(houses));
+    dHomeList_c *homes = &dSaveData_c::getRaw()->mHomes;
+    const dHome_c *house = static_cast<const dHomeList_c *>(homes)->getHome(homes->findCurrentPlayer());
     if (house != NULL) {
-        set_86A5(house->_15B4);
+        set_86A5(house->mSize);
     }
 }
 
@@ -1526,7 +1521,7 @@ void dCatalog_c::registerDefaults(int set) {
         items[0] = dItem::ITEM_ID_NONE;
         items[1] = dItem::ITEM_ID_NONE;
         items[2] = dItem::ITEM_ID_NONE;
-        fn_8013CF7C(items, set, 0);
+        dHomeRoom_c::getDefaultItems(items, set, 0);
         registerItem(items[0], FALSE);
         registerItem(items[1], FALSE);
         registerItem(items[2], FALSE);

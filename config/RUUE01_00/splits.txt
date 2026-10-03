@@ -112,9 +112,22 @@ dol/game/d_private_data.cpp:
 	.sdata      start:0x8074B090 end:0x8074B0A8 align:4
 	.sbss       start:0x8074E7C0 end:0x8074E7C8 align:4
 
+dol/game/d_home.cpp:
+	.text       start:0x8013CB30 end:0x8013E618
+	.rodata     start:0x80476258 end:0x80476350 align:4
+	.data       start:0x804EF258 end:0x804EF2D8 align:4
+	.sdata2     start:0x80750BE0 end:0x80750BF0 align:4
+
 dol/game/d_personal_id.cpp:
 	.text       start:0x8013E618 end:0x8013EBCC
 	.sdata2     start:0x80750BF0 end:0x80750BF8 align:4
+
+dol/game/d_police_box.cpp:
+	.text       start:0x801538F8 end:0x80153E9C
+	.rodata     start:0x804766C0 end:0x804766D8 align:4
+
+dol/game/d_recycle_bin.cpp:
+	.text       start:0x80153E9C end:0x80154080
 
 dol/game/d_script.cpp:
 	.text       start:0x8015593C end:0x8015B618
@@ -124,6 +137,13 @@ dol/game/d_script.cpp:
 	.bss        start:0x805F2E88 end:0x805F2F20 align:4
 	.sdata      start:0x8074B1C0 end:0x8074B1F8 align:4
 	.sbss       start:0x8074E810 end:0x8074E818 align:4
+
+dol/game/d_string.cpp:
+	.text       start:0x8016AE68 end:0x8016B894
+	.ctors      start:0x8046575C end:0x80465760
+	.data       start:0x804F4088 end:0x804F4260 align:4
+	.bss        start:0x805FF388 end:0x80600750 align:4
+	.sdata      start:0x8074B4E8 end:0x8074B4F0 align:4
 
 dol/game/d_date.cpp:
 	.text       start:0x8016D264 end:0x8016DE60

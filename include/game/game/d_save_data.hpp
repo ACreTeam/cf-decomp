@@ -8,6 +8,9 @@
 #include <types.h>
 #include <game/game/d_item.hpp>
 #include <game/game/d_dsn.hpp>
+#include <game/game/d_home.hpp>
+#include <game/game/d_police_box.hpp>
+#include <game/game/d_recycle_bin.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_quest.hpp>
 #include <game/game/d_private_data.hpp>
@@ -83,30 +86,9 @@ struct dSaveHeader_c {
     /* 0x08 */ u8 _08[0x18];
 }; // size 0x20
 
-// A room of a house (ctor inlined from fn_8010EBCC, dtor 800B4C7C).
-// The two 0x200 layers have ctor 800B4BD0 / dtor 800B4C18.
-struct dSaveRoom_c {
-    /* 0x000 */ u8 mLayers[2][0x200];
-    /* 0x400 */ u8 _400[0x4E];  // 2 x 0x20 (ctor 80110F30) + 0xE (ctor 80110FDC); clear fn_801113F8
-    /* 0x44E */ dItem::Item _44E;
-    /* 0x450 */ dItem::Item _450;
-    /* 0x452 */ dItem::Item _452;
-    /* 0x454 */ u8 _454;
-    /* 0x455 */ u8 _455;
-    /* 0x456 */ u8 _456;
-}; // size 0x458
-
-// A player's house (ctor fn_8010EC64, dtor fn_8010ECC0). 0x15C0.
-struct dSaveHouse_c {
-    /* 0x000 */ dDesign_c mDesign;
-    /* 0x880 */ u8 _880[0x2C];
-    /* 0x8AC */ dSaveRoom_c mRooms[3];
-    /* 0x15B4 */ u8 _15B4;
-    /* 0x15B5 */ u8 _15B5;   // a size (dPrivateData_c)
-    /* 0x15B6 */ u8 _15B6[2];
-    /* 0x15B8 */ dItem::Item _15B8;
-    /* 0x15BA */ u8 _15BA[6];
-}; // size 0x15C0
+// Rooms and houses (dHomeRoom_c / dHome_c / dHomeList_c) are in d_home.hpp.
+// The house ctor/dtor used here are fn_8010EC64 / fn_8010ECC0 (rooms: ctor inlined
+// from fn_8010EBCC, dtor 800B4C7C; layers: ctor 800B4BD0 / dtor 800B4C18).
 
 // 0x78 record (ctor fn_8010EB50: Item = none, then fn_8010A758).
 struct dSaveRecord78_c {
@@ -213,6 +195,12 @@ public:
     void clear();                         // 8010EA88: memset the whole file
     static void *operator new(size_t, void *p) { return p; }
 
+    // Takes its own copy of the item; dHomeRoom_c::recycleItems only matches with the extra copy.
+    static BOOL addToRecycleBin(const dItem::Item &item) {
+        dItem::Item copy = item;
+        return getTown()->mRecycleBin.add(copy.mId);
+    }
+
     static dSaveOption_c sOption;         // 8074E6D8: cached option bits + changed flags
     static dSaveData_c *sSaveData;        // 8074E6E0: the whole save file
 
@@ -256,7 +244,7 @@ public:
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
     /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dQuestTime_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
     /* 0x0634F0 */ u8 _0634F0[0x200];       // 3 dQuestTime_c, Item[2] at +0x1F8; fn_80114070, fn_80113AEC
-    /* 0x0636F0 */ dSaveRoom_c _0636F0;
+    /* 0x0636F0 */ dHomeRoom_c _0636F0;
     /* 0x063B48 */ u8 _063B48[0xF8];
     /* 0x063C40 */ dSaveRecord78_c _063C40[9]; // then fn_8010C0A4 on the array
     /* 0x064078 */ u8 _064078[0x52];
@@ -265,7 +253,7 @@ public:
     /* 0x0641EC */ u8 _0641EC;              // bitfield byte, cleared by the ctor
     /* 0x0641ED */ u8 _0641ED;
     /* 0x0641EE */ u8 _0641EE[2];
-    /* 0x0641F0 */ dSaveRoom_c _0641F0;
+    /* 0x0641F0 */ dHomeRoom_c _0641F0;
     /* 0x064648 */ u8 _064648[0xF4];
     /* 0x06473C */ u8 _06473C[0x2000];      // ctor 80115380
     /* 0x06673C */ u8 _06673C[3];
@@ -287,9 +275,11 @@ public:
     /* 0x0683FC */ u8 _0683FC[2];
     /* 0x0683FE */ dLandID_c mLandID;       // this town
     /* 0x068414 */ u8 _068414[0x51AC];      // ctor 80110634
-    /* 0x06D5C0 */ dSaveHouse_c mHouses[PLAYER_NUM];
+    /* 0x06D5C0 */ dHomeList_c mHomes;
     /* 0x072CC0 */ u8 _072CC0[0x5A];
-    /* 0x072D1A */ u8 _072D1A[0xF0];        // ctor 80150140
+    /* 0x072D1A */ u8 _072D1A[0xC0];        // 8 x 0x18 entries, ctor 80150140
+    /* 0x072DDA */ dPoliceBox_c mPoliceBox;
+    /* 0x072DF2 */ dRecycleBin_c mRecycleBin;
     /* 0x072E0A */ u8 _072E0A[0x6E8];       // ctor 80150B94
     /* 0x0734F2 */ dPrivateHost_c mTownHost; // copied to/from dPrivateData_c::mHost
     /* 0x073520 */ u16 mItemVersion;        // dItem::BITM version, checked by isExtraGood

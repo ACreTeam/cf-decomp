@@ -632,8 +632,12 @@ config.libs = [
             Object(NonMatching, "dol/game/d_animal.cpp"),
             Object(Matching, "dol/game/d_animal_id.cpp"),
             Object(NonMatching, "dol/game/d_private_data.cpp"),
+            Object(Matching, "dol/game/d_home.cpp"),
             Object(Matching, "dol/game/d_personal_id.cpp"),
+            Object(Matching, "dol/game/d_police_box.cpp"),
+            Object(Matching, "dol/game/d_recycle_bin.cpp"),
             Object(Matching, "dol/game/d_script.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_string.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_date.cpp"),
             # Stored as CP932; pass directly to MWCC without UTF-8 conversion.
             Object(NonMatching, "dol/game/d_sv_mgr.cpp", shift_jis=False),

@@ -22,7 +22,7 @@ enum {
     FG_COUNT = 0xE5,
 };
 
-#define ITEM_NAME_TYPE(id) ((id >> 12) & 0xF);
+#define ITEM_NAME_TYPE(id) (((id) >> 12) & 0xF)
 
 inline bool isRealItemId(u16 id) {
     int category = ITEM_NAME_TYPE(id);
