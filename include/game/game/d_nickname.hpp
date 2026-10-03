@@ -1,9 +1,10 @@
 #pragma once
 
 #include <game/game/d_script.hpp>
+#include <game/game/d_animal.hpp>
 
 // Script word holding a villager nickname. Name from RTTI ("dNicknameWord_c");
-// vtable 804ECD38. Its TU (around 800EB96C) is not split; names are inferred.
+// vtable 804ECD38. Defined in src/dol/game/d_nickname.cpp; names are inferred.
 class dNicknameWord_c : public dScript::Word_c {
 public:
     dNicknameWord_c(); // 800EB9B4
@@ -13,5 +14,5 @@ public:
 
     BOOL hasNoLetters(); // 800EBA60: TRUE if there is no kana or Latin letter
 
-    /* 0x24 */ wchar_t mBuffer[9];
+    /* 0x24 */ wchar_t mBuffer[ANIMAL_NICKNAME_LEN+1];
 }; // size 0x38

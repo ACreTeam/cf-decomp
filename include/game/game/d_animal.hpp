@@ -16,6 +16,7 @@
 #define ANIMAL_NUM 10        // villagers per town (fn_80129A3C)
 #define ANIMAL_MEMORY_NUM 16 // fn_8011E2C0
 #define ANIMAL_GREETING_LEN 16
+#define ANIMAL_NICKNAME_LEN 8
 #define ANIMAL_HABIT_LEN 10
 
 // Script words for a villager's greeting and catchphrase. Names from RTTI.

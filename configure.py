@@ -622,6 +622,7 @@ config.libs = [
             Object(Matching, "dol/game/d_msg_rcpt.cpp"),
             Object(Matching, "dol/game/d_fg_item.cpp", extra_cflags=["-sym on"]),
             Object(NonMatching, "dol/game/d_item.cpp", shift_jis=False),
+            Object(Matching, "dol/game/d_nickname.cpp"),
             Object(NonMatching, "dol/game/d_player_mgr.cpp"),
             Object(Matching, "dol/game/d_region.cpp"),
             Object(NonMatching, "dol/game/d_save_data.cpp"),

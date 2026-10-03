@@ -226,5 +226,8 @@ public:
 }; // size 0x8C
 
 int getStringLength(const wchar_t *text, u32 maxSize, int breakOnNewLine); // 8015790C
+BOOL isHiragana(wchar_t c); // 80155D9C
+BOOL isKatakana(wchar_t c); // 80155DD0
+BOOL isAlpha(wchar_t c); // 80155E6C
 
 } // namespace dScript
