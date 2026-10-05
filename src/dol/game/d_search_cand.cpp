@@ -6,9 +6,6 @@
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 
-// Random float in [0, max) from rnd (unsplit TU at 80107A20).
-extern "C" float fn_80107EC8(cRandom_c *rnd, float max);
-
 // 8015F2B0
 dSearchCandCore_c::dSearchCandCore_c(int num, u32 *bits) {
     mNum = num;
@@ -47,8 +44,8 @@ int dSearchCandCore_c::getRandom() {
 }
 
 // 8015F458
-int dSearchCandCore_c::getRandom(cRandom_c *rnd) {
-    return getNth(fn_80107EC8(rnd, mCount));
+int dSearchCandCore_c::getRandom(dRandom_c *rnd) {
+    return getNth(rnd->rndF(mCount));
 }
 
 // 8015F4BC

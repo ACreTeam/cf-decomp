@@ -16,6 +16,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/game/d_museum.hpp>
+#include <game/game/d_theater.hpp>
 #include <game/game/d_notice.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
@@ -173,7 +174,8 @@ struct dSaveExtra_c {
     /* 0x000020 */ u32 mChecksum;
     /* 0x000024 */ u8 _000024[0x16];
     /* 0x00003A */ dOutfit_c mOutfit;
-    /* 0x000046 */ u8 _000046[0x188];
+    /* 0x000046 */ u8 _000046[0x182];
+    /* 0x0001C8 */ dTheater::dSchedule_c mTheater; // the theater's weekly programs
     /* 0x0001CE */ dSaveUnk1CE_c _0001CE;
     /* 0x0001E0 */ dUnkDesignBoard_c mDesignBoard; // fn_80136868 from fn_8010DDE0
     /* 0x000A80 */ dSaveDesignBox_c mSavedPatterns[PLAYER_NUM];

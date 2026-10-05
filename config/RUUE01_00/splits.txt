@@ -93,6 +93,9 @@ dol/game/d_region.cpp:
 	.text       start:0x801068AC end:0x8010693C
 	.rodata     start:0x80475C08 end:0x80475C30 align:4
 
+dol/game/d_random.cpp:
+	.text       start:0x80107D6C end:0x80107F00
+
 dol/game/d_save_data.cpp:
 	.text       start:0x8010D7E8 end:0x8010F124
 	.sbss       start:0x8074E6D8 end:0x8074E6E8 align:4
@@ -173,6 +176,12 @@ dol/game/d_quest.cpp:
 	.bss        start:0x805F2680 end:0x805F2720 align:4
 	.sdata      start:0x8074B0A8 end:0x8074B0F8 align:4
 	.sdata2     start:0x80750BF8 end:0x80750C40
+
+dol/game/d_theater.cpp:
+	.text       start:0x8014BD88 end:0x8014C2C4
+	.data       start:0x804EF518 end:0x804EF5C0
+	.sdata      start:0x8074B168 end:0x8074B180
+	.sdata2     start:0x80750CB8 end:0x80750CC8
 
 dol/game/d_time_stamp.cpp:
 	.text       start:0x8014C2C4 end:0x8014CBFC

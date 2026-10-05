@@ -49,7 +49,6 @@ void fn_80112BB8(void *);
 void fn_80112D24(void *);
 
 // Calendar/time helpers.
-u16 fn_8014BE60(dTime_c cal);
 dTime_c fn_8014CBFC(dYMD_c *date);
 dTime_c fn_80111ABC(void);
 
@@ -1455,9 +1454,9 @@ BOOL dPrivateDates_c::fn_80139A6C() {
     if (now.hour < 6) {
         now.add(-1, 0, 0, 0);
     }
-    u16 today = fn_8014BE60(now);
+    u16 today = dTheater::getWeek(now);
     dTime_c last = fn_8014CBFC( &mDate0);
-    u16 last_day = fn_8014BE60(last);
+    u16 last_day = dTheater::getWeek(last);
     if (today != last_day) {
         return TRUE;
     }
