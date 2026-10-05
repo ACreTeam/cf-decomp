@@ -193,6 +193,12 @@ dol/game/d_script.cpp:
 	.sdata      start:0x8074B1C0 end:0x8074B1F8 align:4
 	.sbss       start:0x8074E810 end:0x8074E818 align:4
 
+dol/game/d_search_cand.cpp:
+	.text       start:0x8015F2B0 end:0x8015F748
+	.data       start:0x804F0598 end:0x804F0628
+	.sdata      start:0x8074B290 end:0x8074B2A0
+	.sdata2     start:0x80750E18 end:0x80750E20
+
 dol/game/d_string.cpp:
 	.text       start:0x8016AE68 end:0x8016B894
 	.ctors      start:0x8046575C end:0x80465760

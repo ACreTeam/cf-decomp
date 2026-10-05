@@ -643,6 +643,7 @@ config.libs = [
             Object(Matching, "dol/game/d_personal_id.cpp"),
             Object(NonMatching, "dol/game/d_quest.cpp"),
             Object(Matching, "dol/game/d_time_stamp.cpp"),
+            Object(Matching, "dol/game/d_search_cand.cpp"),
             Object(Matching, "dol/game/d_police_box.cpp"),
             Object(Matching, "dol/game/d_recycle_bin.cpp"),
             Object(Matching, "dol/game/d_script.cpp", extra_cflags=["-sym on"]),
