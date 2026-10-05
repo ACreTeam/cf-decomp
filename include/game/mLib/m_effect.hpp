@@ -4,62 +4,25 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
 
+// City Folk's mEf::effect_c (RTTI string 804DF7E0). Replaces the NSMBW-derived header, whose
+// EGG::Effect layout and derived classes (levelEffect_c, levelOneEffect_c) do not match City Folk
+// and were unused. The new virtuals follow EGG::Effect's at 0x94..0xAC in dEffect_c's vtable
+// (804DF6C8), in NSMBW's order; createEffect(const char *, ulong, const mMtx_c *) is at 0x9C.
+
 namespace mEf {
 
 class effect_c : public EGG::Effect {
 public:
     effect_c() {}
+    ~effect_c() {}
 
-    virtual void reset();
-    virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void createEffect(const char *, ulong, const mMtx_c *);
-    virtual void vfa8();
-    virtual void vfac();
-    virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual bool follow(const mMtx_c *);
-
-    void copyExEffectParam();
+    virtual void createEffect(const char *name, int);                                          // 0x94
+    virtual void createEffect(const char *name, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 0x98
+    virtual void createEffect(const char *name, ulong, const mMtx_c *mtx);                     // 0x9C
+    virtual void vfA0();
+    virtual void vfA4();
+    virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);                    // 0xA8
+    virtual bool follow(const mMtx_c *mtx);                                                    // 0xAC
 };
 
-class levelEffect_c : public effect_c {
-public:
-    levelEffect_c() : m_114(0), m_118(0), m_11c(0), m_11d(0), m_120(0), m_124(0) {}
-    virtual ~levelEffect_c() { cleanup(); }
-
-    virtual void fade();
-    virtual void kill();
-    virtual void update();
-    virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void createEffect(const char *, ulong, const mMtx_c *);
-    virtual void vfa8();
-    virtual void vfac();
-    virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual bool follow(const mMtx_c *);
-    virtual bool isActive();
-
-    void cleanup();
-
-    u32 m_114, m_118;
-    u8 m_11c, m_11d;
-    u32 m_120, m_124;
-};
-
-class levelOneEffect_c : public levelEffect_c {
-public:
-    levelOneEffect_c() { reset(); }
-    ~levelOneEffect_c() {}
-
-    virtual void reset();
-    virtual void createEffect(const char *, int);
-    virtual void createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-    virtual void createEffect(const char *, ulong, const mMtx_c *);
-
-    float mEmissionRateMaybe;
-    nw4r::ef::EmitterInheritSetting mSetting;
-};
-
-void createEffect(const char *, unsigned long, const mVec3_c *, const mAng3_c *, const mVec3_c *);
-
-}; // namespace mEf
+} // namespace mEf

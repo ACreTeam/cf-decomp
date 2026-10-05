@@ -5,11 +5,11 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_search_cand.hpp>
 #include <game/game/d_random.hpp>
+#include <game/game/d_fireworks.hpp>
 #include <string.h>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-int fn_80090850(int min, int max);                                    // 80090850: random min..max-1
 BOOL fn_8014D07C(dSaveTimeOffset_c *offset);                          // 8014D07C: clock was changed
 }
 
@@ -71,7 +71,7 @@ void dSchedule_c::build(u16 week) {
     dRandom_c rnd(157);
     int seed[5];
     for (int i = 0; i < 5; i++) {
-        seed[i] = fn_80090850(0, 9999);
+        seed[i] = randomInt(0, 9999);
     }
     rnd.init(seed[0], seed[1], seed[2], seed[3], seed[4]);
 

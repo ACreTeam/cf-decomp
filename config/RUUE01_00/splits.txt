@@ -38,6 +38,44 @@ dol/game/d_event.cpp:
 	.sdata      start:0x80749ED0 end:0x80749EE0 align:4
 	.sbss       start:0x8074E2E0 end:0x8074E2E8 align:4
 
+dol/game/d_field_info.cpp:
+	.text       start:0x8008BD2C end:0x8008EDEC
+	.rodata     start:0x8046EEA8 end:0x8046EEC0
+	.data       start:0x804DF990 end:0x804DFB10
+	.bss        start:0x80587818 end:0x80587840
+	.sdata      start:0x80749EE0 end:0x80749F28
+	.sbss       start:0x8074E300 end:0x8074E310
+	.sdata2     start:0x807505A0 end:0x807505C0
+
+dol/game/d_screenshot.cpp:
+	.text       start:0x8008EDEC end:0x8008FE50
+	.data       start:0x804DFB10 end:0x804DFB60
+	.bss        start:0x80587840 end:0x80588D10
+	.sdata      start:0x80749F28 end:0x80749F60
+	.sbss       start:0x8074E310 end:0x8074E330
+
+dol/game/d_fireworks.cpp:
+	.text       start:0x8008FE50 end:0x80090964
+	.rodata     start:0x8046EEC0 end:0x8046EEF0
+	.data       start:0x804DFB60 end:0x804DFB90
+	.sdata      start:0x80749F60 end:0x80749F70
+	.sbss       start:0x8074E330 end:0x8074E338
+	.sdata2     start:0x807505C0 end:0x80750608
+
+dol/game/d_star.cpp:
+	.text       start:0x80090964 end:0x80090E2C
+	.data       start:0x804DFB90 end:0x804DFBA0
+	.sdata2     start:0x80750608 end:0x80750630
+
+dol/game/d_fish_info.cpp:
+	.text       start:0x80090E2C end:0x80091AF8
+	.ctors      start:0x8046566C end:0x80465670
+	.rodata     start:0x8046EEF0 end:0x8046EFA0
+	.data       start:0x804DFBA0 end:0x804E1808
+	.bss        start:0x80588D10 end:0x80588D58
+	.sdata      start:0x80749F70 end:0x80749FB8
+	.sdata2     start:0x80750630 end:0x80750658
+
 dol/game/d_fg_item.cpp:
 	.text       start:0x800A5D3C end:0x800A70AC
 	.ctors      start:0x80465674 end:0x80465678
