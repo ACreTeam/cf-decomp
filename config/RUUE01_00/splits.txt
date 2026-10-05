@@ -68,13 +68,17 @@ dol/game/d_star.cpp:
 	.sdata2     start:0x80750608 end:0x80750630
 
 dol/game/d_fish_info.cpp:
-	.text       start:0x80090E2C end:0x80091AF8
-	.ctors      start:0x8046566C end:0x80465670
+	.text       start:0x80090E2C end:0x8009176C
 	.rodata     start:0x8046EEF0 end:0x8046EFA0
-	.data       start:0x804DFBA0 end:0x804E1808
-	.bss        start:0x80588D10 end:0x80588D58
+	.data       start:0x804DFBA0 end:0x804E17F0
 	.sdata      start:0x80749F70 end:0x80749FB8
 	.sdata2     start:0x80750630 end:0x80750658
+
+dol/game/d_fg_data.cpp:
+	.text       start:0x8009176C end:0x80091AF8
+	.ctors      start:0x8046566C end:0x80465670
+	.data       start:0x804E17F0 end:0x804E1808
+	.bss        start:0x80588D10 end:0x80588D58
 
 dol/game/d_fg_item.cpp:
 	.text       start:0x800A5D3C end:0x800A70AC
