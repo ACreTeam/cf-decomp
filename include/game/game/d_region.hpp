@@ -11,7 +11,7 @@ enum LANGUAGE_e {
     LANGUAGE_US, // American English
     LANGUAGE_MX, // Mexican/Latino Spanish
     LANGUAGE_QC, // French Canadian
-    LANGUAGE_EN, // British English
+    LANGUAGE_EN, // British English, also Dutch (SCGetLanguage() == 6)
     LANGUAGE_ES, // Spanish
     LANGUAGE_FR, // French
     LANGUAGE_IT, // Italian

@@ -620,6 +620,7 @@ config.libs = [
             Object(Matching, "dol/game/d_actor.cpp"),
             Object(Matching, "dol/game/d_base.cpp"),
             Object(Matching, "dol/game/d_demo_actor.cpp"),
+            Object(Matching, "dol/game/d_event.cpp"),
             Object(Matching, "dol/game/d_msg_rcpt.cpp"),
             Object(Matching, "dol/game/d_fg_item.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_friend.cpp"),

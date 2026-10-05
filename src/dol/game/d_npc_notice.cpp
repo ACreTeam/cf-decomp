@@ -1,6 +1,7 @@
 // Bulletin board notices: posting BBS messages for dates, events and villagers, and the
 // town board note count. .text 800EBB24..800ECD90 (no static initializer).
 // Notes: notes/d_npc_notice.txt.
+#include <game/game/d_event.hpp>
 #include <game/game/d_npc_notice.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -26,7 +27,6 @@ void fn_800CBD30(int slot, u16 msgId, const char *group);
 dTime_c fn_8014C2C4(const dQuestTime_c *time);
 
 // Event schedule (unsplit TU 80088AD4..8008BCCC).
-BOOL fn_80089890(const int &event, const dTime_c *day);
 
 // Save sync (unsplit TU 800CCC54..800DE0E4).
 void fn_800DD4C8();
@@ -222,7 +222,7 @@ void fn_800EC19C(const dTime_c *day) {
 
     const dNpcEventNotice_c *notice = sEventNotices;
     for (int i = 0; i < 31; i++, notice++) {
-        if (fn_80089890(notice->mEvent, sDays[notice->mDay])) {
+        if (dEvent::isEventOn(reinterpret_cast<const dQuestEvent_e &>(notice->mEvent), sDays[notice->mDay])) {
             u16 msgId = notice->mMsgId;
             if (notice->mEvent == 0x2D && ((dSaveData_c::getTown()->_0735C2 >> 4) & 0xF) == 9) {
                 msgId = 0x33;

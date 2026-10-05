@@ -76,10 +76,34 @@ def import_c_file(in_file: str) -> str:
     return out_text
 
 
+def first_code_line(lines: List[str]) -> int:
+    """Index of the first line that is not blank or part of a leading comment."""
+    in_comment = False
+    for idx, line in enumerate(lines):
+        text = line.strip()
+        while text:
+            if in_comment:
+                end = text.find("*/")
+                if end < 0:
+                    text = ""
+                    break
+                text = text[end + 2 :].strip()
+                in_comment = False
+            elif text.startswith("/*"):
+                text = text[2:]
+                in_comment = True
+            elif text.startswith("//"):
+                text = ""
+            else:
+                return idx
+    return 0
+
+
 def process_file(in_file: str, lines: List[str]) -> str:
     out_text = ""
+    guard_idx = first_code_line(lines)
     for idx, line in enumerate(lines):
-        if idx == 0:
+        if idx == guard_idx:
             guard_match = guard_pattern.match(line.strip())
             if guard_match:
                 if guard_match[1] in defines:

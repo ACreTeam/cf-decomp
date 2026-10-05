@@ -1,5 +1,6 @@
 // Quest save data. .text 8013F458..80143E78 (sinit 80143DD4).
 // See include/game/game/d_quest.hpp and notes/d_quest.txt.
+#include <game/game/d_event.hpp>
 #include <game/game/d_quest.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_string.hpp>
@@ -8,16 +9,12 @@
 
 // Event ids checked by checkEventSchedule / checkTodayEvents. The callee takes the id by const
 // reference, so literal arguments become anonymous .sdata temporaries.
-enum dQuestEvent_e {};
 
 extern "C" {
 // dQuestTime_c -> dTime_c (unsplit TU 8014BD88..80153818; see d_quest_time.hpp).
 dTime_c fn_8014C2C4(const dQuestTime_c *time);
 
 // Event schedule (unsplit TU 80088AD4..8008BCCC).
-BOOL fn_80089968(const dQuestEvent_e &event, const dTime_c &time, const int &a, const int &b);
-BOOL fn_80089F0C(const dQuestEvent_e &event);
-BOOL fn_8008A27C(const dQuestEvent_e &event);
 }
 
 // First kind of each quest type (lbl_80476350).
@@ -1656,8 +1653,8 @@ int dQuestWish_c::toQuestKind(int kind) {
 
 // 801438F8: is quest kind allowed around the scheduled events at time?
 BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
-    static const int sEvents0[10] = {0x17, 0x11, 0x16, 0x0E, 0x0F, 0x10, 0x15, 0x13, 0x18, 0};
-    static const int sEvents1[4] = {0x0A, 0x0B, 0x0C, 0x0D};
+    static const int sEvents0[10] = {EVENT_TOY_DAY, EVENT_FLEA_MARKET, EVENT_HARVEST_FESTIVAL, EVENT_FISHING_TOURNEY, EVENT_BUG_OFF, EVENT_FIREWORKS, EVENT_HALLOWEEN, EVENT_COUNTDOWN, EVENT_FESTIVALE, 0};
+    static const int sEvents1[4] = {EVENT_PLAYER_BIRTHDAY_0, EVENT_PLAYER_BIRTHDAY_1, EVENT_PLAYER_BIRTHDAY_2, EVENT_PLAYER_BIRTHDAY_3};
 
     dTime_c::getCurrent(); // result unused in the original
     u32 i;
@@ -1674,7 +1671,7 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
         case QUEST_KIND_ERRAND_REQUEST:
         case QUEST_KIND_ERRAND_REQUEST_FINAL:
             for (i = 0; i < 9; i++) {
-                if (fn_80089968((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
+                if (dEvent::isEventWithin((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
                     result = FALSE;
                     break;
                 }
@@ -1683,8 +1680,8 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
         case QUEST_KIND_STYLE:
             for (i = 0; i < 9; i++) {
                 hit = FALSE;
-                if (sEvents0[i] != 0x17) {
-                    if (fn_80089968((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
+                if (sEvents0[i] != EVENT_TOY_DAY) {
+                    if (dEvent::isEventWithin((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
                         hit = TRUE;
                     }
                 }
@@ -1697,14 +1694,14 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
         case QUEST_KIND_APPOINTMENT_0:
         case QUEST_KIND_APPOINTMENT_1:
             for (i = 0; i < 9; i++) {
-                if (fn_80089968((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
+                if (dEvent::isEventWithin((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
                     result = FALSE;
                     break;
                 }
             }
             if (result) {
                 for (i = 0; i < 4; i++) {
-                    if (fn_80089968((dQuestEvent_e)sEvents1[i], day, 1, 1)) {
+                    if (dEvent::isEventWithin((dQuestEvent_e)sEvents1[i], day, 1, 1)) {
                         result = FALSE;
                         break;
                     }
@@ -1712,11 +1709,11 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
             }
             break;
         case QUEST_KIND_REQUEST_6:
-            if (fn_80089968((dQuestEvent_e)0x15, day, 1, 1)) {
+            if (dEvent::isEventWithin(EVENT_HALLOWEEN, day, 1, 1)) {
                 result = FALSE;
             }
             for (i = 0; i < 4; i++) {
-                if (fn_80089968((dQuestEvent_e)sEvents1[i], day, 1, 1)) {
+                if (dEvent::isEventWithin((dQuestEvent_e)sEvents1[i], day, 1, 1)) {
                     result = FALSE;
                     break;
                 }
@@ -1729,27 +1726,27 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
 
 // 80143BA4: is quest kind allowed during today's events?
 BOOL dQuestBase_c::checkTodayEvents(int kind) {
-    static const int sEvents0[4] = {0x11, 0x15, 0x13, 0x18};
+    static const int sEvents0[4] = {EVENT_FLEA_MARKET, EVENT_HALLOWEEN, EVENT_COUNTDOWN, EVENT_FESTIVALE};
     static const int sEvents1[22] = {
-        0x19, 0x14, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22,
-        0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0,
+        EVENT_BUNNY_DAY, EVENT_NEW_YEARS_DAY, EVENT_JP_SETSUBUN, EVENT_JP_GIRLS_DAY, EVENT_JP_CHILDRENS_DAY, EVENT_JP_AUTUMN_MOON, EVENT_JP_TANABATA, EVENT_NA_GROUNDHOG_DAY, EVENT_NA_NATURE_DAY, EVENT_NA_LABOR_DAY, EVENT_NA_EXPLORERS_DAY,
+        EVENT_NA_AUTUMN_MOON, EVENT_EU_MIDSUMMERS_DAY, EVENT_EU_NAUGHTY_OR_NICE_DAY, EVENT_EU_MIDWINTERS_DAY, EVENT_EU_AUTUMN_MOON, EVENT_KR_LUNAR_NEW_YEAR, EVENT_KR_ARBOR_DAY, EVENT_KR_TEACHERS_DAY, EVENT_KR_DAEBOREUM, EVENT_APRIL_FOOLS_DAY, 0,
     };
 
     for (u32 i = 0; i < 4; i++) {
-        if (fn_80089F0C((dQuestEvent_e)sEvents0[i])) {
+        if (dEvent::isActive((dQuestEvent_e)sEvents0[i])) {
             return FALSE;
         }
     }
 
     if (kind == QUEST_KIND_HIDE_AND_SEEK) {
         for (u32 i = 0; i < 21; i++) {
-            if (fn_80089F0C((dQuestEvent_e)sEvents1[i])) {
+            if (dEvent::isActive((dQuestEvent_e)sEvents1[i])) {
                 return FALSE;
             }
         }
     }
 
-    if (fn_80089F0C((dQuestEvent_e)0x17)) {
+    if (dEvent::isActive(EVENT_TOY_DAY)) {
         switch (kind) {
             case QUEST_KIND_REQUEST_6:
             case QUEST_KIND_ERRAND_REQUEST:
@@ -1761,7 +1758,7 @@ BOOL dQuestBase_c::checkTodayEvents(int kind) {
         }
     }
 
-    if (fn_80089F0C((dQuestEvent_e)0x16) || fn_80089F0C((dQuestEvent_e)0x10)) {
+    if (dEvent::isActive(EVENT_HARVEST_FESTIVAL) || dEvent::isActive(EVENT_FIREWORKS)) {
         switch (kind) {
             case QUEST_KIND_REQUEST_5:
             case QUEST_KIND_REQUEST_6:
@@ -1773,24 +1770,24 @@ BOOL dQuestBase_c::checkTodayEvents(int kind) {
         }
     }
 
-    if (fn_80089F0C((dQuestEvent_e)0x0E)) {
+    if (dEvent::isActive(EVENT_FISHING_TOURNEY)) {
         switch (kind) {
             case QUEST_KIND_REQUEST_6:
             case QUEST_KIND_HIDE_AND_SEEK:
                 return FALSE;
         }
-        if (!fn_8008A27C((dQuestEvent_e)0x0E)) {
+        if (!dEvent::isOver(EVENT_FISHING_TOURNEY)) {
             return FALSE;
         }
     }
 
-    if (fn_80089F0C((dQuestEvent_e)0x0F)) {
+    if (dEvent::isActive(EVENT_BUG_OFF)) {
         switch (kind) {
             case QUEST_KIND_REQUEST_6:
             case QUEST_KIND_HIDE_AND_SEEK:
                 return FALSE;
         }
-        if (!fn_8008A27C((dQuestEvent_e)0x0F)) {
+        if (!dEvent::isOver(EVENT_BUG_OFF)) {
             return FALSE;
         }
     }
@@ -1800,7 +1797,7 @@ BOOL dQuestBase_c::checkTodayEvents(int kind) {
         case QUEST_KIND_APPOINTMENT_0:
         case QUEST_KIND_APPOINTMENT_1:
             for (int i = 0; i < 4; i++) {
-                if (fn_80089F0C((dQuestEvent_e)(i + 10))) {
+                if (dEvent::isActive((dQuestEvent_e)(i + EVENT_PLAYER_BIRTHDAY_0))) {
                     return FALSE;
                 }
             }

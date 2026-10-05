@@ -620,7 +620,7 @@ public:
     /* 0x1E452 */ dAnimalHomeStay_c mHomeStay;
     /* 0x1E454 */ u16 mMovedOutNpcIdx[ANIMAL_NUM]; // npc indices of recently moved-out villagers (can't move back), 0xFFFF = empty
     /* 0x1E468 */ s8 mOutdoorQueue[ANIMAL_NUM]; // filled with -1 by clearIdxList
-    /* 0x1E472 */ u8 mEventId;             // 0x2F when cleared
+    /* 0x1E472 */ u8 mEventId;             // dQuestEvent_e; EVENT_NUM when cleared
     /* 0x1E473 */ u8 mAppearedFlags[0x1B];       // npc index bitset (0xD2 bits); passed to pickTemplate
     /* 0x1E48E */ u8 mMoveDays;             // day counter capped at 0xFF (addMoveDays, updateMoves)
     /* 0x1E48F */ s8 mMoveOutIdx;             // -1 when cleared

@@ -1,5 +1,6 @@
 // Villager (animal) save data TU. Draft: only the class anchors are written so far.
 // .text 8011B400..80135E88 (sinit fn_80135E40). See notes/d_animal.txt.
+#include <game/game/d_event.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <game/cLib/c_lib.hpp>
@@ -30,7 +31,6 @@ BOOL fn_80162594(u8 kind, int);
 
 // Later functions of this TU, not written yet (C linkage keeps the target names).
 
-enum dQuestEvent_e {};
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -46,9 +46,6 @@ struct dAnimalEvent_c {
 
 // Callees in other TUs declared with differing signatures by the first-pass chunks.
 extern "C" {
-BOOL fn_80089F0C(const dQuestEvent_e &event);
-BOOL fn_80089FE8(const dQuestEvent_e &event);
-BOOL fn_8008A27C(const dQuestEvent_e &event);
 int fn_80091370(dTime_c *time, int, int, int);
 int fn_800BD6A8(dTime_c *time, int, int, int);
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
@@ -77,15 +74,15 @@ dAnimal_c *fn_8011BA8C(u16 npcIdx, dAnimal_c *animals, u32 num);
 dAnimal_c *fn_8011BB0C(u16 npcIdx, dAnimal_c *animals, u32 num);
 int findAnimalIdx(dAnmPersonalID_c *id, dAnimal_c *animals, u32 num);
 int pickAnimalIdx(dAnmPersonalID_c **exclude, u32 numExclude, dAnimal_c *animals, u32 num, BOOL flag);
-void initEvent16(dAnimal_c *animals, u32 num);
-void initEvent15(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 special);
-void initEvent0E(dAnimal_c *animals, u32 num);
-void fn_8011C2A0(dAnimal_c *animals, u32 num);
-void fn_8011C320(dAnimal_c *animals, u32 num);
-void fn_8011C3A0(dAnimal_c *animals, u32 num);
-void initEvent11(dAnimal_c *animals, u32 num);
-void fn_8011C518(dAnimal_c *animals, u32 num);
-void fn_8011C598(dAnimal_c *animals, u32 num);
+void initHarvestFestival(dAnimal_c *animals, u32 num);
+void initHalloween(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 special);
+void initFishingTourney(dAnimal_c *animals, u32 num);
+void initBugOff(dAnimal_c *animals, u32 num);
+void initCountdown(dAnimal_c *animals, u32 num);
+void initFireworks(dAnimal_c *animals, u32 num);
+void initFleaMarket(dAnimal_c *animals, u32 num);
+void initFestivale(dAnimal_c *animals, u32 num);
+void initToyDay(dAnimal_c *animals, u32 num);
 BOOL getOwnHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getOtherHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getPlayerHouseSpot(int *x, int *z, u32 player);
@@ -200,16 +197,16 @@ int getImpression(dPrivateData_c *player);
 BOOL sendVisitorLetter(dPrivateData_c *player);
 
 // Chunk 8 passes event ids through a struct so each call gets its own stack temporary.
-static inline BOOL isEventF0C(const dEventId_c &event) {
-    return fn_80089F0C(reinterpret_cast<const dQuestEvent_e &>(event));
+static inline BOOL isEventActive(const dEventId_c &event) {
+    return dEvent::isActive(reinterpret_cast<const dQuestEvent_e &>(event));
 }
 
-static inline BOOL isEventFE8(const dEventId_c &event) {
-    return fn_80089FE8(reinterpret_cast<const dQuestEvent_e &>(event));
+static inline BOOL isEventOngoing(const dEventId_c &event) {
+    return dEvent::isOngoing(reinterpret_cast<const dQuestEvent_e &>(event));
 }
 
-static inline BOOL isEvent8A27C(const dEventId_c &event) {
-    return fn_8008A27C(reinterpret_cast<const dQuestEvent_e &>(event));
+static inline BOOL isEventOver(const dEventId_c &event) {
+    return dEvent::isOver(reinterpret_cast<const dQuestEvent_e &>(event));
 }
 
 // 805F15E8; constructed by __sinit (80135E40), first used by writeReplyLetter.
@@ -513,7 +510,7 @@ int pickAnimalIdx(dAnmPersonalID_c **exclude, u32 numExclude, dAnimal_c *animals
 }
 
 // 8011BDB4
-void initEvent16(dAnimal_c *animals, u32 num) {
+void initHarvestFestival(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -526,7 +523,7 @@ static inline BOOL isPlayerIdx(int idx) {
 }
 
 // 8011BE34
-void initEvent15(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 special) {
+void initHalloween(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 special) {
     u32 left = want < num ? want : num;
 
     if (left != 0) {
@@ -643,7 +640,7 @@ void initEvent15(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 spe
 }
 
 // 8011C220
-void initEvent0E(dAnimal_c *animals, u32 num) {
+void initFishingTourney(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -652,7 +649,7 @@ void initEvent0E(dAnimal_c *animals, u32 num) {
 }
 
 // 8011C2A0
-void fn_8011C2A0(dAnimal_c *animals, u32 num) {
+void initBugOff(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -661,7 +658,7 @@ void fn_8011C2A0(dAnimal_c *animals, u32 num) {
 }
 
 // 8011C320
-void fn_8011C320(dAnimal_c *animals, u32 num) {
+void initCountdown(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -670,7 +667,7 @@ void fn_8011C320(dAnimal_c *animals, u32 num) {
 }
 
 // 8011C3A0
-void fn_8011C3A0(dAnimal_c *animals, u32 num) {
+void initFireworks(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -679,7 +676,7 @@ void fn_8011C3A0(dAnimal_c *animals, u32 num) {
 }
 
 // 8011C420
-void initEvent11(dAnimal_c *animals, u32 num) {
+void initFleaMarket(dAnimal_c *animals, u32 num) {
     dAnimal_c *animal = animals;
     for (u32 i = 0; i < num; i++, animal++) {
         if (animal->mID.isValid() && !animal->isMoving()) {
@@ -701,7 +698,7 @@ void initEvent11(dAnimal_c *animals, u32 num) {
 }
 
 // 8011C518
-void fn_8011C518(dAnimal_c *animals, u32 num) {
+void initFestivale(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -710,7 +707,7 @@ void fn_8011C518(dAnimal_c *animals, u32 num) {
 }
 
 // 8011C598
-void fn_8011C598(dAnimal_c *animals, u32 num) {
+void initToyDay(dAnimal_c *animals, u32 num) {
     for (u32 i = 0; i < num; i++, animals++) {
         if (animals->mID.isValid() && !animals->isMoving()) {
             animals->mEvent.setPlace(2);
@@ -5744,7 +5741,6 @@ extern "C" {
 // This chunk, used before their definitions.
 
 // Other TUs.
-int fn_80089C40(const dTime_c *time);
 BOOL fn_8014A098(void *fg, int idx);
 BOOL fn_8014A4F4(void *fg, int idx);
 BOOL fn_8014A544(void *fg, int *x, int *z, int idx);
@@ -6171,7 +6167,7 @@ void dAnimalBlock_c::clear() {
     mStyle.clear();
     mHomeStay.clear();
     clearIdxList(mOutdoorQueue, ANIMAL_NUM);
-    mEventId = 0x2F;
+    mEventId = EVENT_NUM;
     mMoveOutIdx = -1;
     mMoveInIdx = -1;
     clearMovedOut();
@@ -6783,7 +6779,7 @@ void dAnimalBlock_c::decideOutdoorAnimals(BOOL flag) {
     if (flag) {
         dTime_c *now = dTime_c::getCurrent();
         unk->clear();
-        if (fn_80089C40(now) == -1) {
+        if (dEvent::getTownEventOn(now) == -1) {
             u32 num = 0;
             dAnimal_c *animal;
             int i;
@@ -6973,8 +6969,6 @@ extern "C" {
 
 // Other TUs.
 void fn_8008BED0(mVec3_c *out, int x, int z);
-BOOL fn_80089968(const dQuestEvent_e &event, const dTime_c &time, const int &a, const int &b);
-BOOL fn_8008A058(const dQuestEvent_e &event);
 }
 
 // The flag in dAnimalMemory_c+0x00 tested by sendTunekichiInvites.
@@ -7053,7 +7047,7 @@ void dAnimalBlock_c::updateAnimalPlaces() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     BOOL flag = player != NULL ? player->isFlag0(0xD) : FALSE;
     dAnimal_c *animal = getAnimal(0);
-    BOOL event = fn_80089F0C((dQuestEvent_e)0x17) != FALSE;
+    BOOL event = dEvent::isActive(EVENT_TOY_DAY) != FALSE;
 
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
         if (!animal->mID.isValid()) {
@@ -7121,15 +7115,15 @@ void dAnimalBlock_c::resetDailyTalkCounts() {
 
 // 80475D38
 static const dAnimalEvent_c sEventHandlers[] = {
-    {0x16, (dAnimalEventFunc)initEvent16}, {0x15, (dAnimalEventFunc)initEvent15}, {0x0E, (dAnimalEventFunc)initEvent0E}, {0x0F, (dAnimalEventFunc)fn_8011C2A0}, {0x13, (dAnimalEventFunc)fn_8011C320},
-    {0x10, (dAnimalEventFunc)fn_8011C3A0}, {0x11, (dAnimalEventFunc)initEvent11}, {0x18, (dAnimalEventFunc)fn_8011C518}, {0x17, (dAnimalEventFunc)fn_8011C598},
+    {EVENT_HARVEST_FESTIVAL, (dAnimalEventFunc)initHarvestFestival}, {EVENT_HALLOWEEN, (dAnimalEventFunc)initHalloween}, {EVENT_FISHING_TOURNEY, (dAnimalEventFunc)initFishingTourney}, {EVENT_BUG_OFF, (dAnimalEventFunc)initBugOff}, {EVENT_COUNTDOWN, (dAnimalEventFunc)initCountdown},
+    {EVENT_FIREWORKS, (dAnimalEventFunc)initFireworks}, {EVENT_FLEA_MARKET, (dAnimalEventFunc)initFleaMarket}, {EVENT_FESTIVALE, (dAnimalEventFunc)initFestivale}, {EVENT_TOY_DAY, (dAnimalEventFunc)initToyDay},
 };
 
 // 8012BF70
 const dAnimalEvent_c *findTodayEvent() {
     const dAnimalEvent_c *event = sEventHandlers;
     for (u32 i = 0; i < ARRAY_SIZE(sEventHandlers); i++, event++) {
-        if (fn_80089F0C((dQuestEvent_e)event->mEvent)) {
+        if (dEvent::isActive((dQuestEvent_e)event->mEvent)) {
             return event;
         }
     }
@@ -7143,7 +7137,7 @@ const dAnimalEvent_c *findEventOnDay(const dTime_c *time, u32 arg) {
     t.add(0, -6, 0, 0);
 
     for (u32 i = 0; i < ARRAY_SIZE(sEventHandlers); i++, event++) {
-        if (fn_80089968((dQuestEvent_e)event->mEvent, t, 0, arg)) {
+        if (dEvent::isEventWithin((dQuestEvent_e)event->mEvent, t, 0, arg)) {
             return event;
         }
     }
@@ -7153,13 +7147,13 @@ const dAnimalEvent_c *findEventOnDay(const dTime_c *time, u32 arg) {
 // 8012C0C4
 void dAnimalBlock_c::updateEvent(BOOL force) {
     BOOL update = FALSE;
-    if (mEventId >= 0x2F || force) {
+    if (mEventId >= EVENT_NUM || force) {
         update = TRUE;
     }
 
     if (update) {
         dAnimal_c *animal = getAnimal(0);
-        mEventId = 0x2F;
+        mEventId = EVENT_NUM;
         for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
             animal->mEvent.clear();
         }
@@ -7172,7 +7166,7 @@ void dAnimalBlock_c::updateEvent(BOOL force) {
                 event->mFunc(getAnimal(0), ANIMAL_NUM, mOutdoorQueue, arg, mAppointment.mAnimalIdx);
             }
         }
-    } else if (mEventId < 0x2F) {
+    } else if (mEventId < EVENT_NUM) {
         dAnimal_c *animal = getAnimal(0);
         dTime_c *now = dTime_c::getCurrent();
 
@@ -7183,25 +7177,25 @@ void dAnimalBlock_c::updateEvent(BOOL force) {
         case 0x11:
         case 0x15:
         case 0x16:
-            if (fn_8008A058((dQuestEvent_e)mEventId)) {
+            if (dEvent::isNotStarted((dQuestEvent_e)mEventId)) {
                 for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
                     animal->clearMemoryFlag24();
                     animal->clearEventFlags();
                 }
-            } else if (fn_80089FE8((dQuestEvent_e)mEventId)) {
+            } else if (dEvent::isOngoing((dQuestEvent_e)mEventId)) {
                 for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
                     animal->clearMemoryFlag24();
                 }
             }
             break;
         case 0x13:
-            if (fn_8008A058((dQuestEvent_e)mEventId)) {
+            if (dEvent::isNotStarted((dQuestEvent_e)mEventId)) {
                 for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
                     animal->clearMemoryFlag24();
                     animal->clearEventFlags();
                 }
             } else {
-                if (fn_80089FE8((dQuestEvent_e)mEventId) && now->hour > 6) {
+                if (dEvent::isOngoing((dQuestEvent_e)mEventId) && now->hour > 6) {
                     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
                         animal->clearMemoryFlag24();
                     }
@@ -9173,9 +9167,9 @@ extern dUnk8074EBE8_c *lbl_8074EBE8;
 }
 
 // Event ids (.sdata). Plain ints so they are not constructed by __sinit.
-int lbl_8074B060 = 0x11;
-int lbl_8074B064 = 0x12;
-int lbl_8074B068 = 0x12;
+int lbl_8074B060 = EVENT_FLEA_MARKET;
+int lbl_8074B064 = EVENT_VALENTINES_DAY;
+int lbl_8074B068 = EVENT_VALENTINES_DAY;
 
 static inline BOOL isValidPlayerNo(int i) {
     return i >= 0 && i < PLAYER_NUM;
@@ -9576,81 +9570,81 @@ static inline BOOL isItemChanged(const dItem::Item &give, const dItem::Item *cur
     return give.isSame(*cur) == FALSE;
 }
 
-static inline BOOL checkEvent15(int kind) {
-    return kind == 0x15 && isEventFE8(kind);
+static inline BOOL isHalloweenOngoing(int kind) {
+    return kind == EVENT_HALLOWEEN && isEventOngoing(kind);
 }
 
-static inline BOOL isFE8i(int k) {
-    return isEventFE8(k);
+static inline BOOL isOngoingInt(int k) {
+    return isEventOngoing(k);
 }
-static inline BOOL isA27Ci(int k) {
-    return isEvent8A27C(k);
+static inline BOOL isOverInt(int k) {
+    return isEventOver(k);
 }
-static inline BOOL isF0Ci(int k) {
-    return isEventF0C(k);
+static inline BOOL isActiveInt(int k) {
+    return isEventActive(k);
 }
-static inline BOOL checkEventA(int kind) {
-    return isFE8i(kind) || isEvent8A27C(kind);
-}
-
-static inline BOOL checkEventC22(int kind, const dTime_c *now) {
-    return isEventF0C(kind) && now->hour == 22;
+static inline BOOL isStarted(int kind) {
+    return isOngoingInt(kind) || isEventOver(kind);
 }
 
-static inline BOOL checkEventC2230(int kind, const dTime_c *now) {
-    return checkEventC22(kind, now) && now->min >= 30;
+static inline BOOL isActiveAt22(int kind, const dTime_c *now) {
+    return isEventActive(kind) && now->hour == 22;
 }
 
-static inline BOOL checkEvent13Any(int kind, const dTime_c *now) {
-    return checkEventA(kind) || checkEventC2230(kind, now);
+static inline BOOL isActiveAfter2230(int kind, const dTime_c *now) {
+    return isActiveAt22(kind, now) && now->min >= 30;
 }
 
-static inline BOOL checkEvent13(int kind, const dTime_c *now) {
-    return kind == 0x13 && checkEvent13Any(kind, now);
+static inline BOOL isStartedOrAfter2230(int kind, const dTime_c *now) {
+    return isStarted(kind) || isActiveAfter2230(kind, now);
 }
 
-static inline BOOL checkEventE(int kind) {
-    return isF0Ci(kind) && !isEvent8A27C(kind);
+static inline BOOL isCountdownTime(int kind, const dTime_c *now) {
+    return kind == EVENT_COUNTDOWN && isStartedOrAfter2230(kind, now);
 }
 
-static inline BOOL checkEventE18(int kind, const dTime_c *now) {
-    return checkEventE(kind) && now->hour == 18;
+static inline BOOL isActiveNotOver(int kind) {
+    return isActiveInt(kind) && !isEventOver(kind);
 }
 
-static inline BOOL checkEventE1830(int kind, const dTime_c *now) {
-    return checkEventE18(kind, now) && now->min >= 30;
+static inline BOOL isActiveNotOverAt18(int kind, const dTime_c *now) {
+    return isActiveNotOver(kind) && now->hour == 18;
 }
 
-static inline BOOL checkEvent10Any(int kind, const dTime_c *now) {
-    return isEventFE8(kind) || checkEventE1830(kind, now);
+static inline BOOL isActiveNotOverAfter1830(int kind, const dTime_c *now) {
+    return isActiveNotOverAt18(kind, now) && now->min >= 30;
 }
 
-static inline BOOL checkEvent10(int kind, const dTime_c *now) {
-    return kind == 0x10 && checkEvent10Any(kind, now);
+static inline BOOL isOngoingOrAfter1830(int kind, const dTime_c *now) {
+    return isEventOngoing(kind) || isActiveNotOverAfter1830(kind, now);
 }
 
-static inline BOOL checkEventF0C(int kind, int want) {
-    return kind == want && isEventF0C(kind);
+static inline BOOL isFireworksTime(int kind, const dTime_c *now) {
+    return kind == EVENT_FIREWORKS && isOngoingOrAfter1830(kind, now);
 }
 
-static inline BOOL checkEventFE8(int kind, int want) {
-    return kind == want && isEventFE8(kind);
+static inline BOOL isWantedActive(int kind, int want) {
+    return kind == want && isEventActive(kind);
 }
 
-static inline BOOL checkEvent2FF6F0C(dAnimal_c *animal, int kind, int want) {
-    return checkEventF0C(kind, want) && animal->mEvent.isInEvent();
+static inline BOOL isWantedOngoing(int kind, int want) {
+    return kind == want && isEventOngoing(kind);
 }
 
-static inline BOOL checkEvent2FF6FE8(dAnimal_c *animal, int kind, int want) {
-    return checkEventFE8(kind, want) && animal->mEvent.isInEvent();
+static inline BOOL isInWantedActive(dAnimal_c *animal, int kind, int want) {
+    return isWantedActive(kind, want) && animal->mEvent.isInEvent();
 }
 
-static inline BOOL checkEvent128374F0C(dAnimal_c *animal, int kind, int want) {
-    return checkEvent2FF6F0C(animal, kind, want) && animal->isLostItemRequestDone(0, 1);
+static inline BOOL isInWantedOngoing(dAnimal_c *animal, int kind, int want) {
+    return isWantedOngoing(kind, want) && animal->mEvent.isInEvent();
 }
 
-static inline BOOL checkEvent128374FE8(dAnimal_c *animal, int kind, int want) {
-    return checkEvent2FF6FE8(animal, kind, want) && animal->isLostItemRequestDone(0, 1);
+static inline BOOL isRequestDoneActive(dAnimal_c *animal, int kind, int want) {
+    return isInWantedActive(animal, kind, want) && animal->isLostItemRequestDone(0, 1);
+}
+
+static inline BOOL isRequestDoneOngoing(dAnimal_c *animal, int kind, int want) {
+    return isInWantedOngoing(animal, kind, want) && animal->isLostItemRequestDone(0, 1);
 }
 
 static inline BOOL isWeatherIn(const dUnk8074EBE8_c *p, int want) {
@@ -9725,19 +9719,19 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (checkEvent15(kind)) {
+    } else if (isHalloweenOngoing(kind)) {
         give = dItem::ITEM_ID_NONE;
         set = TRUE;
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (checkEvent13(kind, now)) {
+    } else if (isCountdownTime(kind, now)) {
         give = dItem::ITEM_ID_NONE;
         set = TRUE;
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (checkEvent10(kind, now)) {
+    } else if (isFireworksTime(kind, now)) {
         give = dItem::ITEM_ID_NONE;
         set = TRUE;
         if (isItemChanged(give, cur)) {
@@ -9762,19 +9756,19 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (checkEvent128374F0C(animal, kind, 0x18)) {
+    } else if (isRequestDoneActive(animal, kind, EVENT_FESTIVALE)) {
         give = dItem::ITEM_ID_NONE;
         set = TRUE;
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (checkEvent128374FE8(animal, kind, 0xE)) {
+    } else if (isRequestDoneOngoing(animal, kind, EVENT_FISHING_TOURNEY)) {
         give = item99F;
         set = TRUE;
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (checkEvent128374FE8(animal, kind, 0xF)) {
+    } else if (isRequestDoneOngoing(animal, kind, EVENT_BUG_OFF)) {
         give = item99E;
         set = TRUE;
         if (isItemChanged(give, cur)) {
@@ -9826,7 +9820,7 @@ BOOL dAnimalBlock_c::updateEvent15Flag(int idx) {
     }
 
     obj = &animal->mEvent;
-    u32 event = isEventFE8(kind) != 0;
+    u32 event = isEventOngoing(kind) != 0;
     u32 cur = obj->isFlag(0);
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL && player->isFlag0(0xD) && event) {
@@ -9847,7 +9841,7 @@ BOOL dAnimalBlock_c::updateEvent15Flag(int idx) {
 
 // 801323A4
 int dAnimalBlock_c::pickEvent11Animal(BOOL any, const dPersonalID_c *pid, const dLandID_c *land) {
-    if (!isEventFE8(reinterpret_cast<const dEventId_c &>(lbl_8074B060))) {
+    if (!isEventOngoing(reinterpret_cast<const dEventId_c &>(lbl_8074B060))) {
         return -1;
     }
     int kind = mEventId;
@@ -9968,7 +9962,7 @@ BOOL dAnimalBlock_c::decideBirthdayHost(int playerNo) {
     if (!player->mPID.isValid()) {
         return FALSE;
     }
-    if (!isEventF0C(playerNo + 10)) {
+    if (!isEventActive(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
         return FALSE;
     }
 
@@ -9998,7 +9992,7 @@ void dAnimalBlock_c::clearBirthdayHost(int playerNo) {
             dUnk55FC_c *unk = &player->mBirthdayHost;
             s32 year = dTime_c::getCurrent()->year;
             if (year == unk->_00 && (u32)unk->_08 < ANIMAL_NUM) {
-                if (!isEventF0C(playerNo + 10)) {
+                if (!isEventActive(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
                     if (year == unk->_04) {
                         unk->_08 = -1;
                     } else {
@@ -10033,7 +10027,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
     if (!pid->isValid()) {
         return;
     }
-    if (!isEventFE8(playerNo + 10)) {
+    if (!isEventOngoing(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
         return;
     }
 
@@ -10101,7 +10095,7 @@ BOOL dAnimalBlock_c::hasBirthdayHost() {
     if (!player->mPID.isValid()) {
         return FALSE;
     }
-    if (!isEventFE8(playerNo + 10)) {
+    if (!isEventOngoing(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
         return FALSE;
     }
     s32 year = dTime_c::getCurrent()->year;
@@ -10125,7 +10119,7 @@ void dAnimalBlock_c::sendBirthdayHostPresent() {
             dPersonalID_c *pid = getPlayerPID(player);
             if (pid->isValid()) {
                 if ((u8)fn_80162548() == 0x3B) {
-                    if (isEventFE8(playerNo + 10)) {
+                    if (isEventOngoing(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
                         s32 year = dTime_c::getCurrent()->year;
                         if (year == player->mBirthdayHost._00) {
                             if (year == player->mBirthdayHost._04) {
@@ -10179,10 +10173,10 @@ int getBirthdayHostIdxIn(dAnimal_c *animals, u32 num, int playerNo, BOOL checkEv
     }
 
     int event = playerNo + 10;
-    if (!isEventF0C(event)) {
+    if (!isEventActive(event)) {
         return -1;
     }
-    checkEvent = checkEvent && !isEventFE8(event);
+    checkEvent = checkEvent && !isEventOngoing(event);
     if (checkEvent) {
         return -1;
     }
@@ -10235,7 +10229,7 @@ void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
     if (!pid->isValid()) {
         return;
     }
-    if (!isEventFE8(reinterpret_cast<const dEventId_c &>(lbl_8074B064))) {
+    if (!isEventOngoing(reinterpret_cast<const dEventId_c &>(lbl_8074B064))) {
         return;
     }
 
@@ -10298,7 +10292,7 @@ void dAnimalBlock_c::sendValentineLetters() {
     int playerNo = fn_801017B8();
     if (isValidPlayerNo(playerNo)) {
         dPrivateData_c *player = dPlayerMgr_c::getPlayer(playerNo);
-        if (player != NULL && player->mPID.isValid() && isEventFE8(reinterpret_cast<const dEventId_c &>(lbl_8074B068))) {
+        if (player != NULL && player->mPID.isValid() && isEventOngoing(reinterpret_cast<const dEventId_c &>(lbl_8074B068))) {
             sendValentineLetter(player);
         }
     }
@@ -10311,7 +10305,6 @@ extern "C" {
 
 // Other TUs.
 extern dUnk8074EBE8_c *lbl_8074EBE8;
-int fn_8008A6A0(int arg);
 void fn_801192C0(dUnk300C_c *dst, const dUnk300C_c *src); // copy
 u16 fn_800CBA98(const char *label);
 u16 fn_800CBAC4(const char *label);
@@ -10320,7 +10313,7 @@ BOOL fn_80102BBC(dMail_c *mail);
 // This chunk, used before their definitions.
 }
 
-static int s_801334A8_event = 0x14; // 8074B06C
+static int s_801334A8_event = EVENT_NEW_YEARS_DAY; // 8074B06C
 
 // 801334A8
 // Sends the New Year letters (once a year, from villagers who like the player).
@@ -10328,7 +10321,7 @@ void dAnimalBlock_c::sendNewYearLetters(dPrivateData_c *player) {
     if (player != NULL) {
         dUnk8634_c *last;
         dPersonalID_c *pid = &player->mPID;
-        if (pid->isValid() && fn_80089FE8(reinterpret_cast<const dQuestEvent_e &>(s_801334A8_event))) {
+        if (pid->isValid() && dEvent::isOngoing(reinterpret_cast<const dQuestEvent_e &>(s_801334A8_event))) {
             last = &player->mNewYearYear;
             int year = dTime_c::getCurrent()->year;
             if (player->isFlag0(0xD)) {
@@ -10351,7 +10344,7 @@ void dAnimalBlock_c::sendNewYearLetters(dPrivateData_c *player) {
     }
 }
 
-static int s_801335CC_event = 0x14; // 8074B070
+static int s_801335CC_event = EVENT_NEW_YEARS_DAY; // 8074B070
 
 static inline BOOL isValidPlayerIdx(int idx) {
     BOOL valid = FALSE;
@@ -10366,7 +10359,7 @@ void dAnimalBlock_c::sendNewYearLettersCurrent() {
     int idx = fn_801017B8();
     if (isValidPlayerIdx(idx)) {
         dPrivateData_c *player = dPlayerMgr_c::getPlayer(idx);
-        if (player != NULL && player->mPID.isValid() && fn_80089FE8(reinterpret_cast<const dQuestEvent_e &>(s_801335CC_event))) {
+        if (player != NULL && player->mPID.isValid() && dEvent::isOngoing(reinterpret_cast<const dQuestEvent_e &>(s_801335CC_event))) {
             sendNewYearLetters(player);
         }
     }
@@ -11005,7 +10998,7 @@ BOOL fn_80134D54(const dPrivateData_c *player) {
 
 // 80134DA8
 BOOL fn_80134DA8(const dPrivateData_c *player) {
-    return fn_8008A6A0(0) < 0x2F;
+    return dEvent::getActiveOfKind(EVENT_KIND_TOWN) < EVENT_NUM;
 }
 
 // 80134DE0

@@ -202,6 +202,10 @@ public:
         return getTown()->mRecycleBin.add(copy.mId);
     }
 
+    static inline int getSaveRegion() {
+        return (dSaveData_c::getRaw()->_0735C2 >> 4) & 0xF;
+    }
+
     static dSaveOption_c sOption;         // 8074E6D8: cached option bits + changed flags
     static dSaveData_c *sSaveData;        // 8074E6E0: the whole save file
 

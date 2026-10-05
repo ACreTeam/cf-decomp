@@ -30,6 +30,14 @@ dol/game/d_demo_actor.cpp:
 	.sbss       start:0x8074E288 end:0x8074E290 align:4
 	.sdata2     start:0x80750530 end:0x80750540 align:4
 
+dol/game/d_event.cpp:
+	.text       start:0x80088BCC end:0x8008AEF0
+	.rodata     start:0x8046E340 end:0x8046EEA8 align:4
+	.data       start:0x804DF968 end:0x804DF990 align:4
+	.bss        start:0x80585368 end:0x805853E0 align:4
+	.sdata      start:0x80749ED0 end:0x80749EE0 align:4
+	.sbss       start:0x8074E2E0 end:0x8074E2E8 align:4
+
 dol/game/d_fg_item.cpp:
 	.text       start:0x800A5D3C end:0x800A70AC
 	.ctors      start:0x80465674 end:0x80465678
