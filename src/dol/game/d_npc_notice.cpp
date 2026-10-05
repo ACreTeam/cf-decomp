@@ -23,8 +23,7 @@ void fn_800CBBB0(int slot, const dPersonalID_c *pid);
 void fn_800CBC70(int slot, const dAnmPersonalID_c *animal);
 void fn_800CBD30(int slot, u16 msgId, const char *group);
 
-// dQuestTime_c -> dTime_c (unsplit TU 8014BD88..80153818).
-dTime_c fn_8014C2C4(const dQuestTime_c *time);
+// dTimeStamp_c -> dTime_c (unsplit TU 8014BD88..80153818).
 
 // Event schedule (unsplit TU 80088AD4..8008BCCC).
 
@@ -248,14 +247,14 @@ void fn_800EC4B0(const dTime_c *day) {
 
 // 800EC4F8: a notice three days before the shop changes (save+0x683D0).
 void fn_800EC4F8(const dTime_c *day) {
-    dQuestTime_c *time = (dQuestTime_c *)((u8 *)dSaveData_c::getTown() + 0x683D0);
-    if (!fn_8014C384(time)) {
-        dTime_c date = fn_8014C2C4(time);
+    dTimeStamp_c *time = (dTimeStamp_c *)((u8 *)dSaveData_c::getTown() + 0x683D0);
+    if (!time->isNone()) {
+        dTime_c date = time->get();
         date.add(-3, 0, 0, 0);
         if (dTime_c::isSameDay(date, *day)) {
             fn_800CBD30(0, *(u32 *)((u8 *)dSaveData_c::getTown() + 0x630C0) + 0x2E, "sys_STRING/STR_Unit");
             u16 msgId = cM::rndInt(2) + 1;
-            dTime_c when = fn_8014C2C4(time);
+            dTime_c when = time->get();
             fn_800CBAF0(2, when.month);
             fn_800CBB50(3, when.mday);
             fn_800EBB24(msgId, "BBS_tanukichi", day, NULL);

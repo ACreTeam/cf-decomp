@@ -9,7 +9,6 @@
 extern "C" {
 void fn_8014CC98(dYMD_c *date, const dTime_c *time);
 int fn_8014CF88(const dYMD_c *a, const dYMD_c *b); // 1 when a is later than b
-dTime_c fn_8014C2C4(const dQuestTime_c *time);
 }
 
 // ---------------------------------------------------------------------------
@@ -138,7 +137,7 @@ void dNoticeBoard_c::clear() {
     for (int i = 0; i < NOTICE_NUM; i++, notice++) {
         notice->clear();
     }
-    fn_8014C468(&mTime);
+    mTime.reset();
 }
 
 // 8011AFD8
@@ -235,13 +234,13 @@ void dNoticeBoard_c::setRead(int i, int player) {
 
 // 8011B324
 dTime_c dNoticeBoard_c::getTime() {
-    return fn_8014C2C4(&mTime);
+    return mTime.get();
 }
 
 // 8011B328
 void dNoticeBoard_c::setTime(const dTime_c *now) {
-    fn_8014C538(&mTime, now);
-    fn_8014C818(&mTime);
+    mTime.set(now);
+    mTime.toDayStart();
 }
 
 // 8011B35C

@@ -7,7 +7,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_animal.hpp>
-#include <game/game/d_quest_time.hpp>
+#include <game/game/d_time_stamp.hpp>
 #include <game/cLib/c_math.hpp>
 #include <revolution/SC/scapi.h>
 
@@ -1119,11 +1119,11 @@ BOOL isVisitorHere(int kind) {
 
 // 8008AD7C
 BOOL isSavedDateToday() {
-    dQuestTime_c *time = (dQuestTime_c *)&dSaveData_c::getRaw()->_0683C8[8];
-    if (fn_8014C384(time)) {
+    dTimeStamp_c *time = (dTimeStamp_c *)&dSaveData_c::getRaw()->_0683C8[8];
+    if (time->isNone()) {
         return FALSE;
     }
-    dTime_c date = fn_8014C2C4(time);
+    dTime_c date = time->get();
     return dTime_c::isSameDay(sDay, date);
 }
 

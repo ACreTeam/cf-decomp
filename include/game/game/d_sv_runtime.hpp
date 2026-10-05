@@ -97,7 +97,6 @@ void fn_8017C3EC(int, void *, void *, u64 *);
 int fn_800DCF90();
 void fn_80136C7C(void *, void *);
 void fn_8010DFC0();
-void fn_8014C2C4(void *, void *);
 }
 
 inline void releaseMessage(void *controller) {

@@ -180,10 +180,9 @@ int fn_8008AEE8();                                             // 8008AEE8: retu
 } // namespace dEvent
 
 // Other TUs used here, not split yet (C linkage keeps the target names).
-struct dQuestTime_c;
+struct dTimeStamp_c;
 extern "C" {
 int fn_800DCF90();                               // 800DCF90
 void fn_8010FC3C(void *obj);                     // 8010FC3C: on dSaveData_c::_0683C8
 u8 fn_801100B8(void *obj, int wday);             // 801100B8: on dSaveData_c::_0683C8
-dTime_c fn_8014C2C4(const dQuestTime_c *time);   // 8014C2C4: dQuestTime_c -> dTime_c
 }

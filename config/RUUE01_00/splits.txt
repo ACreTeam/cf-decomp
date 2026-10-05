@@ -113,6 +113,14 @@ dol/game/d_mail.cpp:
 	.data       start:0x804EE498 end:0x804EE4B0 align:4
 	.bss        start:0x805EF570 end:0x805F0F18 align:4
 
+dol/game/d_museum.cpp:
+	.text       start:0x8011947C end:0x8011A6C4
+	.ctors      start:0x80465724 end:0x80465728
+	.data       start:0x804EE4B0 end:0x804EE4C0
+	.bss        start:0x805F0F18 end:0x805F1420
+	.sdata      start:0x8074B048 end:0x8074B050
+	.sbss       start:0x8074E700 end:0x8074E708
+
 dol/game/d_friend.cpp:
 	.text       start:0x8011A6C4 end:0x8011ACB4
 
@@ -130,7 +138,7 @@ dol/game/d_animal.cpp:
 	.data       start:0x804EE5D0 end:0x804EF1D8
 	.bss        start:0x805F15D8 end:0x805F1A38 align:4
 	.sdata      start:0x8074B058 end:0x8074B088 align:4
-	.sbss       start:0x8074E708 end:0x8074E7C0 align:4
+	.sbss       start:0x8074E708 end:0x8074E7C0
 	.sdata2     start:0x80750B68 end:0x80750BE0 align:4
 
 dol/game/d_animal_id.cpp:
@@ -165,6 +173,9 @@ dol/game/d_quest.cpp:
 	.bss        start:0x805F2680 end:0x805F2720 align:4
 	.sdata      start:0x8074B0A8 end:0x8074B0F8 align:4
 	.sdata2     start:0x80750BF8 end:0x80750C40
+
+dol/game/d_time_stamp.cpp:
+	.text       start:0x8014C2C4 end:0x8014CBFC
 
 dol/game/d_police_box.cpp:
 	.text       start:0x801538F8 end:0x80153E9C

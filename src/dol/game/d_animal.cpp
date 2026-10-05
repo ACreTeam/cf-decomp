@@ -53,7 +53,6 @@ BOOL fn_800DCEDC();
 u16 fn_800FABF4(int looks, int season);
 dDesign_c *fn_80147F80(dDesign_c *designs, int idx);
 BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item item, int);
-dTime_c fn_8014C2C4(const dQuestTime_c *time);
 }
 
 // Free functions of this TU.
@@ -765,7 +764,7 @@ dAnimalMemory_c::~dAnimalMemory_c() {}
 // 8011C7F8
 void dAnimalMemory_c::clear() {
     mPlayer.clear();
-    fn_8014C468(&mLastTalkTime);
+    mLastTalkTime.reset();
     mLand.clear();
     memset(mNickname, 0, sizeof(mNickname));
     memset(mGreeting, 0, sizeof(mGreeting));
@@ -826,7 +825,7 @@ void dAnimalMemory_c::updateTalk(const dPersonalID_c *pid, const dLandID_c *land
     mLand.copy(land);
     dTime_c cal;
     memcpy(&cal, time, sizeof(dTime_c));
-    fn_8014C538(&mLastTalkTime, &cal);
+    mLastTalkTime.set(&cal);
 }
 
 // 8011CB4C
@@ -853,7 +852,7 @@ void dAnimalMemory_c::set(s8 a, u16 count, const dPersonalID_c *pid, const dLand
     mLand.copy(land);
     dTime_c cal;
     memcpy(&cal, time, sizeof(dTime_c));
-    fn_8014C538(&mLastTalkTime, &cal);
+    mLastTalkTime.set(&cal);
 }
 
 // 8011CCCC
@@ -864,8 +863,8 @@ void dAnimalMemory_c::setTalkDays(u16 count) {
     mFlags.mTalkDays = count;
 }
 
-static inline BOOL isTimeSet(dQuestTime_c *time) {
-    return !fn_8014C384(time);
+static inline BOOL isTimeSet(dTimeStamp_c *time) {
+    return !time->isNone();
 }
 
 // 8011CCE8
@@ -875,7 +874,7 @@ BOOL dAnimalMemory_c::calcTalkDays(const dTime_c *now) {
     BOOL first = FALSE;
 
     if (isTimeSet(&mLastTalkTime) && mPlayer.isValid()) {
-        dTime_c lastDay = fn_8014C2C4(&mLastTalkTime);
+        dTime_c lastDay = mLastTalkTime.get();
         dTime_c nowDay = *now;
         lastDay.add(0, -6, 0, 0);
         nowDay.add(0, -6, 0, 0);
@@ -1145,7 +1144,7 @@ dAnimalSpot_c::~dAnimalSpot_c() {}
 
 // 8011D5D4
 void dAnimalSpot_c::clear() {
-    fn_8014C468(&mTime);
+    mTime.reset();
     mX = -1;
     mZ = -1;
     mGroup = 0;
@@ -1164,24 +1163,24 @@ BOOL dAnimalSpot_c::isValid() {
 
 // 8011D650
 dTime_c dAnimalSpot_c::getTime() {
-    return fn_8014C2C4(&mTime);
+    return mTime.get();
 }
 
 // 8011D654
 s64 dAnimalSpot_c::getTimeRaw() {
-    return fn_8014C380(&mTime);
+    return mTime.getTicks();
 }
 
 // 8011D658
 void dAnimalSpot_c::setTime(const dTime_c *time, int mins) {
     dTime_c cal = *time;
     cal.add(0, 0, mins, 0);
-    fn_8014C538(&mTime, &cal);
+    mTime.set(&cal);
 }
 
 // 8011D6FC
 void dAnimalSpot_c::setTimeRaw(const s64 *value) {
-    fn_8014C5D0(&mTime, *value);
+    mTime.set(*value);
 }
 
 // Spot pickers for pickWishSpot: fill *x / *z with a unit position, return FALSE if none.
@@ -1716,7 +1715,7 @@ int dAnimal_c::getReplaceMemoryIdx(dAnimalMemoryFilter filter) {
                                 best = mem;
                                 res = i;
                             } else if (best->getFriendship() == mem->getFriendship()) {
-                                if (!dTime_c::isSameOrAfter(fn_8014C2C4(&mem->mLastTalkTime), fn_8014C2C4(&best->mLastTalkTime))) {
+                                if (!dTime_c::isSameOrAfter(mem->mLastTalkTime.get(), best->mLastTalkTime.get())) {
                                     best = mem;
                                     res = i;
                                 }
@@ -3210,17 +3209,17 @@ BOOL dAnimal_c::isQuestStarted() {
 
 // 801223A0
 void dAnimal_c::clearPlaceChangeTime() {
-    fn_8014C468(&mPlaceChangeTime);
+    mPlaceChangeTime.reset();
 }
 
 // 801223A8
 dTime_c dAnimal_c::getPlaceChangeTime() {
-    return fn_8014C2C4(&mPlaceChangeTime);
+    return mPlaceChangeTime.get();
 }
 
 // 801223B0
 BOOL dAnimal_c::isPlaceChangeTimeSet() {
-    return fn_8014C384(&mPlaceChangeTime) == FALSE;
+    return mPlaceChangeTime.isNone() == FALSE;
 }
 
 // 801223DC
@@ -3230,7 +3229,7 @@ void dAnimal_c::setPlaceChangeTime(int mins, const dTime_c *time) {
     }
     dTime_c t = *time;
     t.add(0, 0, mins, 0);
-    fn_8014C538(&mPlaceChangeTime, &t);
+    mPlaceChangeTime.set(&t);
 }
 
 // 80122498
@@ -5514,8 +5513,8 @@ s8 dAnimal_c::getMaxFriendship() {
     return best;
 }
 
-static inline bool isQuestTimeSet(dQuestTime_c *time) {
-    return !fn_8014C384(time);
+static inline bool isQuestTimeSet(dTimeStamp_c *time) {
+    return !time->isNone();
 }
 
 // 8012855C
@@ -5525,7 +5524,7 @@ int dAnimal_c::getDaysSinceLastTalk(const dTime_c *now) {
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++, memory++) {
         if (memory->mPlayer.isValid() && isQuestTimeSet(&memory->mLastTalkTime)) {
             dTime_c time;
-            time = fn_8014C2C4(&memory->mLastTalkTime);
+            time = memory->mLastTalkTime.get();
             int days = fn_8045243C(dTime_c::diffDays(now, &time, FALSE));
             if (best < 0 || days < best) {
                 best = days;
@@ -6878,7 +6877,7 @@ BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
     }
 
     dSaveData_c *town = dSaveData_c::getTown();
-    dTime_c time = fn_8014C2C4(&town->_073522);
+    dTime_c time = town->_073522.get();
     dTime_c start;
     start.set(time.year, time.month, time.mday, time.hour - 1, 0, 0);
     start.normalize();
@@ -7082,18 +7081,18 @@ void dAnimalBlock_c::updateAnimalPlaces() {
 
 // 8012BCBC
 void dAnimalBlock_c::stampTalkCountTime() {
-    fn_8014C61C(&mTalkCountTime);
+    mTalkCountTime.setNow();
 }
 
 // 8012BCC8
 void dAnimalBlock_c::resetDailyTalkCounts() {
     dTime_c *now = dTime_c::getCurrent();
-    dTime_c last = fn_8014C2C4(&mTalkCountTime);
+    dTime_c last = mTalkCountTime.get();
     BOOL newDay = FALSE;
 
-    dQuestTime_c today(now);
-    fn_8014C818(&today);
-    dTime_c start = fn_8014C2C4(&today);
+    dTimeStamp_c today(now);
+    today.toDayStart();
+    dTime_c start = today.get();
 
     if (dTime_c::isSameOrAfter(start, last)) {
         newDay = TRUE;
@@ -10859,7 +10858,7 @@ BOOL dAnimalSave_c::updateMoves(int days) {
 
     dMovedAnimalList_c *list = &mMoved;
     dLandID_c *land = &dSaveData_c::getRaw()->mLandID;
-    dUnk300C_c *arg = (dUnk300C_c *)dSaveData_c::getRaw()->_07359E;
+    dUnk300C_c *arg = &dSaveData_c::getRaw()->_07359E;
     dAnimalBlock_c *block = &mTown;
     block->finishMovingIn();
     block->addMoveDays(days);

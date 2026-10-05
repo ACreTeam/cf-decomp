@@ -10,13 +10,6 @@
 // Event ids checked by checkEventSchedule / checkTodayEvents. The callee takes the id by const
 // reference, so literal arguments become anonymous .sdata temporaries.
 
-extern "C" {
-// dQuestTime_c -> dTime_c (unsplit TU 8014BD88..80153818; see d_quest_time.hpp).
-dTime_c fn_8014C2C4(const dQuestTime_c *time);
-
-// Event schedule (unsplit TU 80088AD4..8008BCCC).
-}
-
 // First kind of each quest type (lbl_80476350).
 static const int sKindBase[QUEST_TYPE_NUM] = {
     QUEST_KIND_REQUEST_INSECT, QUEST_KIND_ERRAND_REQUEST, QUEST_KIND_APPOINTMENT_0,
@@ -155,7 +148,7 @@ dQuestBase_c::~dQuestBase_c() {}
 void dQuestBase_c::clear() {
     mKind = QUEST_KIND_NONE;
     mItem.mId = dItem::ITEM_ID_NONE;
-    fn_8014C468(&mTimeLimit);
+    mTimeLimit.reset();
     mDeadline = QUEST_DEADLINE_LIMIT;
 }
 
@@ -236,12 +229,12 @@ int dQuestBase_c::pickKind(const int *kinds, u32 num, dTime_c *time) {
 
 // 8013F9D8
 void dQuestBase_c::setTimeLimit(const dTime_c &time) {
-    fn_8014C538(&mTimeLimit, &time);
+    mTimeLimit.set(&time);
 }
 
 // 8013F9DC
 dTime_c dQuestBase_c::getTimeLimit() const {
-    return fn_8014C2C4(&mTimeLimit);
+    return mTimeLimit.get();
 }
 
 // 8013F9E0: the top of the next hour (or the one after, from :50)
@@ -1097,7 +1090,7 @@ dLostQuest_c::dLostQuest_c() {}
 
 // 801422A4
 void dLostQuest_c::clear() {
-    fn_8014C468(&mTime);
+    mTime.reset();
     _08 = -1;
     mKeyIdx = -1;
 }
@@ -1111,12 +1104,12 @@ void dLostQuest_c::set(const dTime_c &time, int value, const dItem::Item *item) 
 
 // 80142330
 void dLostQuest_c::setTime(const dTime_c &time) {
-    fn_8014C538(&mTime, &time);
+    mTime.set(&time);
 }
 
 // 80142334
 dTime_c dLostQuest_c::getTime() {
-    return fn_8014C2C4(&mTime);
+    return mTime.get();
 }
 
 // 80142338

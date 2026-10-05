@@ -8,7 +8,7 @@
 #include <types.h>
 #include <game/game/d_date.hpp>
 #include <game/game/d_personal_id.hpp>
-#include <game/game/d_quest_time.hpp>
+#include <game/game/d_time_stamp.hpp>
 #include <game/game/d_string.hpp>
 
 // One posted notice. 0x19A bytes, 2-byte aligned.
@@ -72,7 +72,7 @@ public:
     void setTime(const dTime_c *now);                                // 8011B328
     void clearRead(int player);                                      // 8011B35C
 
-    /* 0x0000 */ dQuestTime_c mTime;
+    /* 0x0000 */ dTimeStamp_c mTime;
     /* 0x0008 */ dNotice_c mNotices[NOTICE_NUM];
     /* 0x180E */ u8 mHead;
 }; // size 0x1810

@@ -523,8 +523,8 @@ public:
     /* 0x85FA */ dPrivateBits85FA_c _85FA;
     /* 0x8604 */ dPrivateBits8604_c _8604;
     /* 0x8614 */ dPrivateSlots_c _8614;
-    /* 0x8618 */ dQuestTime_c _8618;
-    /* 0x8620 */ dQuestTime_c _8620;
+    /* 0x8618 */ dTimeStamp_c _8618;
+    /* 0x8620 */ dTimeStamp_c _8620;
     /* 0x8628 */ s32 _8628;
     /* 0x862C */ s32 _862C;
     /* 0x8630 */ s32 _8630;

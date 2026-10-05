@@ -9,7 +9,7 @@
 #include <game/game/d_item.hpp>
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_animal_id.hpp>
-#include <game/game/d_quest_time.hpp>
+#include <game/game/d_time_stamp.hpp>
 
 class dMail_c;
 
@@ -152,7 +152,7 @@ public:
     static BOOL checkEventSchedule(int kind, const dTime_c *time); // 801438F8: NULL = now
     static BOOL checkTodayEvents(int kind);                      // 80143BA4
 
-    /* 0x00 */ dQuestTime_c mTimeLimit;
+    /* 0x00 */ dTimeStamp_c mTimeLimit;
     /* 0x08 */ dItem::Item mItem; // ITEM_ID_NONE when cleared
     /* 0x0A */ u8 mKind;          // dQuestKind_e; QUEST_KIND_NONE when cleared
     /* 0x0B */ u8 mState;
@@ -270,7 +270,7 @@ public:
     dItem::Item fn_801423D8();                                   // 801423D8: random key other than mKeyIdx
     BOOL fn_801424BC(dTime_c *now);                              // 801424BC
 
-    /* 0x0 */ dQuestTime_c mTime;
+    /* 0x0 */ dTimeStamp_c mTime;
     /* 0x8 */ s8 _08;     // -1 when cleared
     /* 0x9 */ s8 mKeyIdx; // -1 when cleared
 }; // size 0xA

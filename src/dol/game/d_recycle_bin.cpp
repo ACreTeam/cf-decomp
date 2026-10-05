@@ -1,7 +1,7 @@
 // The town hall's recycle bin. .text 80153E9C..80154080, no data.
 #include <game/game/d_recycle_bin.hpp>
 #include <game/game/d_item.hpp>
-#include <game/game/d_quest_time.hpp>
+#include <game/game/d_time_stamp.hpp>
 
 // 80153E9C
 void dRecycleBin_c::clear() {
@@ -19,9 +19,9 @@ void dRecycleBin_c::update(dTime_c *now, int days) {
         clear();
         return;
     }
-    dQuestTime_c time(now);
-    fn_8014C818(&time);
-    switch (fn_8014C8E4(&time)) {
+    dTimeStamp_c time(now);
+    time.toDayStart();
+    switch (time.getWeekday()) {
     case 1:
     case 4:
         clear();

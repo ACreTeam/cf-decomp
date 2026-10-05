@@ -775,7 +775,6 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             fn_801A4E34(demo, mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
         } else {
-            u8 savedIdentity[40];
             fn_800DCF58();
             int index = mPlayerIndex;
             fn_801017B8();
@@ -785,7 +784,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();
-            fn_8014C2C4(savedIdentity, &save->_073522);
+            save->_073522.get();
             nextStep();
         }
         break;
@@ -1234,7 +1233,6 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             fn_801A4E34(demo, mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
         } else {
-            u8 savedIdentity[40];
             fn_800DCF58();
             int index = mPlayerIndex;
             fn_801017B8();
@@ -1244,7 +1242,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();
-            fn_8014C2C4(savedIdentity, &save->_073522);
+            save->_073522.get();
             nextStep();
         }
         break;

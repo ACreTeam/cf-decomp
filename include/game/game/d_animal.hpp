@@ -128,7 +128,7 @@ public:
 
 
     /* 0x00 */ dAnimalMemoryFlags_c mFlags;
-    /* 0x04 */ dQuestTime_c mLastTalkTime;
+    /* 0x04 */ dTimeStamp_c mLastTalkTime;
     /* 0x0C */ dPersonalID_c mPlayer;
     /* 0x38 */ dLandID_c mLand;           // cleared by dLandID_c::clear
     /* 0x4E */ dAnimalTalkCount_c mTalkCount;
@@ -177,7 +177,7 @@ public:
     BOOL setD013Spot(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E200
 
 
-    /* 0x00 */ dQuestTime_c mTime;
+    /* 0x00 */ dTimeStamp_c mTime;
     /* 0x08 */ s32 mX; // -1 when cleared
     /* 0x0C */ s32 mZ; // -1 when cleared
     /* 0x10 */ u8 mType;  // 4 when cleared
@@ -417,7 +417,7 @@ public:
     /* 0x1824 */ dAnimalTemplate_c mTemplate;
     /* 0x19BC */ u8 _19BC[4];
     /* 0x19C0 */ dDesign_c mClothDesign;
-    /* 0x2240 */ dQuestTime_c mPlaceChangeTime;
+    /* 0x2240 */ dTimeStamp_c mPlaceChangeTime;
     /* 0x2248 */ s32 mVersion; // getVersion / initVersion
     /* 0x224C */ dAnmPersonalID_c mID;
     /* 0x230C */ dLandID_c mPrevLand;
@@ -616,7 +616,7 @@ public:
     /* 0x1E2D4 */ dQuestPlayerItem_c mAppointment;     // clear()
     /* 0x1E2FE */ dQuestPlayerAnimal_c mHideAndSeek; // clear()
     /* 0x1E3EA */ dQuestPlayerPair_c mStyle;     // clear()
-    /* 0x1E44A */ dQuestTime_c mTalkCountTime;
+    /* 0x1E44A */ dTimeStamp_c mTalkCountTime;
     /* 0x1E452 */ dAnimalHomeStay_c mHomeStay;
     /* 0x1E454 */ u16 mMovedOutNpcIdx[ANIMAL_NUM]; // npc indices of recently moved-out villagers (can't move back), 0xFFFF = empty
     /* 0x1E468 */ s8 mOutdoorQueue[ANIMAL_NUM]; // filled with -1 by clearIdxList

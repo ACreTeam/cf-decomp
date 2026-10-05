@@ -15,6 +15,7 @@
 #include <game/game/d_quest.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_animal.hpp>
+#include <game/game/d_museum.hpp>
 #include <game/game/d_notice.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
@@ -140,6 +141,26 @@ struct dSaveDistContentList_c {
     /* 0x00004 */ dSaveDistContent_c mContents[10][6];
 }; // size 0x5A0F4
 
+// Skeleton members whose classes live in unsplit TUs. Their constructors keep the target's C names
+// until those TUs are split; the inline ctors reproduce the calls dSaveData_c::create makes.
+extern "C" {
+void fn_80150140(void *obj); // 80150140
+void fn_80150B94(void *obj); // 80150B94
+void fn_80117118(void *obj); // 80117118
+}
+struct dSaveUnk72D1A_c {
+    dSaveUnk72D1A_c() { fn_80150140(this); }
+    u8 _00[0xC0];
+};
+struct dSaveUnk72E0A_c {
+    dSaveUnk72E0A_c() { fn_80150B94(this); }
+    u8 _00[0x6E8];
+};
+struct dSaveUnk1CE_c {
+    dSaveUnk1CE_c() { fn_80117118(this); }
+    u8 _00[0x12];
+};
+
 // Second half of the file (base+0x735E0), returned by dSaveData_c::getExtra().
 // Has its own CRC at +0x20 over +0x24..end (fn_80117078 updates it, fn_801170B0
 // checks it, fn_80116900 initializes the block). Holds per-player storage
@@ -153,7 +174,7 @@ struct dSaveExtra_c {
     /* 0x000024 */ u8 _000024[0x16];
     /* 0x00003A */ dOutfit_c mOutfit;
     /* 0x000046 */ u8 _000046[0x188];
-    /* 0x0001CE */ u8 _0001CE[0x12];       // ctor 80117118
+    /* 0x0001CE */ dSaveUnk1CE_c _0001CE;
     /* 0x0001E0 */ dUnkDesignBoard_c mDesignBoard; // fn_80136868 from fn_8010DDE0
     /* 0x000A80 */ dSaveDesignBox_c mSavedPatterns[PLAYER_NUM];
     /* 0x088B00 */ dSaveDistPattern_c mDistPattern;
@@ -227,13 +248,13 @@ public:
     /* 0x063080 */ u8 _063080[0x40];
     /* 0x0630C0 */ u8 _0630C0[0x98];        // passed to fn_80146AA4
     /* 0x063158 */ u32 _063158;
-    /* 0x06315C */ dQuestTime_c _06315C[4];
+    /* 0x06315C */ dTimeStamp_c _06315C[4];
     /* 0x06317C */ u8 _06317C[3];
     /* 0x06317F */ s8 _06317F;              // 0x7F = none
     /* 0x063180 */ u8 _063180[4];
-    /* 0x063184 */ dQuestTime_c _063184;
+    /* 0x063184 */ dTimeStamp_c _063184;
     /* 0x06318C */ u8 _06318C[0xC];
-    /* 0x063198 */ dQuestTime_c _063198;
+    /* 0x063198 */ dTimeStamp_c _063198;
     /* 0x0631A0 */ u8 _0631A0[0x5C];
     /* 0x0631FC */ u16 _0631FC;
     /* 0x0631FE */ u8 _0631FE;
@@ -247,8 +268,8 @@ public:
     /* 0x063247 */ u8 _063247;
     /* 0x063248 */ u8 _063248[0x98];
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
-    /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dQuestTime_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
-    /* 0x0634F0 */ u8 _0634F0[0x200];       // 3 dQuestTime_c, Item[2] at +0x1F8; fn_80114070, fn_80113AEC
+    /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
+    /* 0x0634F0 */ u8 _0634F0[0x200];       // 3 dTimeStamp_c, Item[2] at +0x1F8; fn_80114070, fn_80113AEC
     /* 0x0636F0 */ dHomeRoom_c _0636F0;
     /* 0x063B48 */ u8 _063B48[0xF8];
     /* 0x063C40 */ dSaveRecord78_c _063C40[9]; // then fn_8010C0A4 on the array
@@ -282,15 +303,15 @@ public:
     /* 0x068414 */ u8 _068414[0x51AC];      // ctor 80110634
     /* 0x06D5C0 */ dHomeList_c mHomes;
     /* 0x072CC0 */ u8 _072CC0[0x5A];
-    /* 0x072D1A */ u8 _072D1A[0xC0];        // 8 x 0x18 entries, ctor 80150140
+    /* 0x072D1A */ dSaveUnk72D1A_c _072D1A; // 8 x 0x18 entries
     /* 0x072DDA */ dPoliceBox_c mPoliceBox;
     /* 0x072DF2 */ dRecycleBin_c mRecycleBin;
-    /* 0x072E0A */ u8 _072E0A[0x6E8];       // ctor 80150B94
+    /* 0x072E0A */ dSaveUnk72E0A_c _072E0A;
     /* 0x0734F2 */ dPrivateHost_c mTownHost; // copied to/from dPrivateData_c::mHost
     /* 0x073520 */ u16 mItemVersion;        // dItem::BITM version, checked by isExtraGood
-    /* 0x073522 */ dQuestTime_c _073522;    // set by fn_8010DCF0
-    /* 0x07352A */ u8 _07352A[0x74];        // ctor 8011960C
-    /* 0x07359E */ u8 _07359E[0x10];        // ctor 8011927C
+    /* 0x073522 */ dTimeStamp_c _073522;    // set by fn_8010DCF0
+    /* 0x07352A */ dMuseum_c mMuseum;
+    /* 0x07359E */ dUnk300C_c _07359E;
     /* 0x0735AE */ u8 _0735AE[0x14];
     /* 0x0735C2 */ u8 _0735C2;              // low nibble read by d_item
     /* 0x0735C3 */ u8 _0735C3[8];

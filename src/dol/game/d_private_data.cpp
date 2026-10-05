@@ -35,7 +35,7 @@ BOOL fn_80102BBC(dMail_c *mail);
 void fn_80110470(dUnk7FD6_c *obj); // clear
 void fn_80150AD4(dUnk5560_c *obj);
 
-// Calendar helpers (dQuestTime_c helpers are in d_quest_time.hpp).
+// Calendar helpers (dYMD_c; not split yet).
 BOOL fn_8014CCB4(dYMD_c *date, int year, int month, int day);
 
 // Misc.
@@ -49,7 +49,6 @@ void fn_80112BB8(void *);
 void fn_80112D24(void *);
 
 // Calendar/time helpers.
-dTime_c fn_8014C2C4(const dQuestTime_c *time);
 u16 fn_8014BE60(dTime_c cal);
 dTime_c fn_8014CBFC(dYMD_c *date);
 dTime_c fn_80111ABC(void);
@@ -451,7 +450,7 @@ void dPrivateData_c::fn_801371DC() {
         return;
     }
     dTime_c stamp;
-    stamp = fn_8014C2C4(&_8618);
+    stamp = _8618.get();
     dTime_c prev = stamp;
     prev.year--;
     dTime_c next = stamp;
@@ -461,7 +460,7 @@ void dPrivateData_c::fn_801371DC() {
     prev.normalize();
     if (dTime_c::isSameOrBeforeDay(now, prev) == 0) {
         stamp.year = now.year;
-        fn_8014C5D0(&_8618, OSCalendarTimeToTicks((OSCalendarTime *)&stamp));
+        _8618.set(OSCalendarTimeToTicks((OSCalendarTime *)&stamp));
         return;
     }
     if (dTime_c::isSameOrBeforeDay(now, next) != 1) {
@@ -848,7 +847,7 @@ void dPrivateData_c::clear() {
     _83C2.clear();
     mSavings = 0;
     mErrand.clear();
-    fn_8014C468(&_8620);
+    _8620.reset();
     fn_80110470(&_7FD6);
     mHost.mPID.clear();
     mHost.mCount = 0;
@@ -1197,24 +1196,24 @@ void dPrivateData_c::addNookPointsForShop() {
 
 // 801391A0
 void dPrivateData_c::fn_801391A0() {
-    fn_8014C61C(&_8620);
-    fn_8014C818(&_8620);
+    _8620.setNow();
+    _8620.toDayStart();
 }
 
 // 801391E0
 BOOL dPrivateData_c::fn_801391E0() {
-    if (fn_8014C384(&_8620)) {
+    if (_8620.isNone()) {
         return TRUE;
     }
-    dQuestTime_c week(fn_8014C380(&_8620));
+    dTimeStamp_c week(_8620.getTicks());
     dTime_c cal;
-    cal = fn_8014C2C4(&_8620);
-    fn_8014C6A4(&week, -cal.wday);
-    dQuestTime_c now(dTime_c::getCurrent());
+    cal = _8620.get();
+    week.addDays(-cal.wday);
+    dTimeStamp_c now(dTime_c::getCurrent());
     dTime_c nowCal;
-    nowCal = fn_8014C2C4(&now);
-    fn_8014C6A4(&now, -nowCal.wday);
-    return fn_8014C9C4(&week, fn_8014C380(&now), 1, 0) != 0;
+    nowCal = now.get();
+    now.addDays(-nowCal.wday);
+    return week.diffDays(now.getTicks(), 1, 0) != 0;
 }
 
 // 801392B8
