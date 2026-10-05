@@ -2178,7 +2178,7 @@ u16 fn_800FFFCC(int gender) {
     int r = cM::rndInt(800);
     dItem::Item item(lbl_80475A50[r & 7][gender & 1]);
     if (item.getKind() != 4) {
-        item.setFromIndex(0x376);
+        item.setFromIndex(dItem::ITEM_IDX_FOUR_BALL_SHIRT);
     }
     return item.mId;
 }
@@ -3317,11 +3317,11 @@ int fn_801021D0(const dItem::Item *a, const dItem::Item *b) {
     if (isSpecialFashion(b)) {
         return 0x1773;
     }
-    dItem::Item item(0x56E);
+    dItem::Item item(dItem::ITEM_IDX_PUMPKIN_HEAD);
     if (b->isSame(item)) {
         return 0x1772;
     }
-    item.setFromIndex(0x56F);
+    item.setFromIndex(dItem::ITEM_IDX_KING_TUT_MASK);
     if (b->isSame(item)) {
         return 0x1746;
     }

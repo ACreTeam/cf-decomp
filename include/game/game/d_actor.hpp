@@ -30,6 +30,7 @@ public:
     float getSpeedF(const mVec3_c *speed);
     static s16 targetAngleY(const mVec3_c *origin, const mVec3_c *target);
     void getOffsetPos(mVec3_c *result, float distance, int snapToCardinal);
+    const mVec3_c *getPosP() const { return &mPos; }
 
     static const mVec3_c* m_tmpCtPosP;
     static const mAng3_c* m_tmpCtAngleP;

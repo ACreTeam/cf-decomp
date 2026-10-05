@@ -54,6 +54,23 @@ dol/game/d_nickname.cpp:
 	.data       start:0x804ECD38 end:0x804ECE38 align:4
 	.sdata      start:0x8074AE80 end:0x8074AE88 align:4
 
+dol/game/d_npc_notice.cpp:
+	.text       start:0x800EBB24 end:0x800ECD90
+	.rodata     start:0x80474DC8 end:0x80474F70 align:4
+	.data       start:0x804ECE38 end:0x804ECE68
+	.bss        start:0x805BEDA0 end:0x805BF600 align:4
+	.sbss       start:0x8074E558 end:0x8074E560 align:4
+
+dol/game/d_npc.cpp:
+	.text       start:0x800ECD90 end:0x800F59C8
+	.ctors      start:0x804656DC end:0x804656E0
+	.rodata     start:0x80474F70 end:0x80475418 align:4
+	.data       start:0x804ECE68 end:0x804ED108
+	.bss        start:0x805BF600 end:0x805CE800 align:4
+	.sdata      start:0x8074AE88 end:0x8074AEE8
+	.sbss       start:0x8074E560 end:0x8074E570 align:4
+	.sdata2     start:0x80750948 end:0x80750980
+
 dol/game/d_player_mgr.cpp:
 	.text       start:0x800FBB18 end:0x8010263C
 	.ctors      start:0x804656F8 end:0x804656FC
@@ -88,11 +105,21 @@ dol/game/d_mail.cpp:
 	.data       start:0x804EE498 end:0x804EE4B0 align:4
 	.bss        start:0x805EF570 end:0x805F0F18 align:4
 
+dol/game/d_friend.cpp:
+	.text       start:0x8011A6C4 end:0x8011ACB4
+
+dol/game/d_notice.cpp:
+	.text       start:0x8011ACB4 end:0x8011B400
+	.ctors      start:0x80465728 end:0x8046572C
+	.data       start:0x804EE4C0 end:0x804EE5D0
+	.bss        start:0x805F1420 end:0x805F15D8 align:4
+	.sdata      start:0x8074B050 end:0x8074B058
+
 dol/game/d_animal.cpp:
 	.text       start:0x8011B400 end:0x80135E88
 	.ctors      start:0x8046572C end:0x80465730
 	.rodata     start:0x80475D38 end:0x804760D8 align:4
-	.data       start:0x804EE5D0 end:0x804EF1D8 align:4
+	.data       start:0x804EE5D0 end:0x804EF1D8
 	.bss        start:0x805F15D8 end:0x805F1A38 align:4
 	.sdata      start:0x8074B058 end:0x8074B088 align:4
 	.sbss       start:0x8074E708 end:0x8074E7C0 align:4
@@ -121,6 +148,15 @@ dol/game/d_home.cpp:
 dol/game/d_personal_id.cpp:
 	.text       start:0x8013E618 end:0x8013EBCC
 	.sdata2     start:0x80750BF0 end:0x80750BF8 align:4
+
+dol/game/d_quest.cpp:
+	.text       start:0x8013F458 end:0x80143E78
+	.ctors      start:0x80465734 end:0x80465738
+	.rodata     start:0x80476350 end:0x80476458 align:4
+	.data       start:0x804EF2D8 end:0x804EF318 align:4
+	.bss        start:0x805F2680 end:0x805F2720 align:4
+	.sdata      start:0x8074B0A8 end:0x8074B0F8 align:4
+	.sdata2     start:0x80750BF8 end:0x80750C40
 
 dol/game/d_police_box.cpp:
 	.text       start:0x801538F8 end:0x80153E9C
@@ -163,6 +199,10 @@ dol/game/d_sv_mgr.cpp:
 	.bss        start:0x806259E0 end:0x806259F8 align:4
 	.sdata      start:0x8074C3C0 end:0x8074C5A8 align:4
 	.sbss       start:0x8074EB98 end:0x8074EBD4 align:4
+
+dol/sLib/s_crc.cpp:
+	.text       start:0x802A98FC end:0x802A9938
+	.rodata     start:0x804899C8 end:0x80489DC8 align:4
 
 dol/sLib/s_lib.cpp:
 	.text       start:0x802A9938 end:0x802A9EE0

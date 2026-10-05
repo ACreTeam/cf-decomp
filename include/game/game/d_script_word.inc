@@ -78,7 +78,6 @@ extern "C" {
 BOOL fn_8016AE68(Word_c *word, u16 index, const char *group); // loads a BMG string
 u16 fn_8016AF68(const char *group); // number of strings in a group
 u16 fn_8016AFD4(const char *group); // random string index
-u16 fn_800F3F84(void *obj, u8 looks, int);
 extern u8 lbl_805FF398[];
 }
 
@@ -805,7 +804,7 @@ int Word_c::procUnit(int pos) {
 // 8015A0C4
 int Word_c::procAnimalUnit(int pos, void *obj, dAnmPersonalID_c *id) {
     getTagLength(getBuffer() + pos);
-    u16 index = fn_800F3F84(obj, id->getLooks(1), 0);
+    u16 index = fn_800F3F84((const dPersonalID_c *)obj, id->getLooks(1), NULL);
     if (index != 0) {
         dString::Word_c word(index, "sys_STRING/STR_Unit");
         _18 = 0;

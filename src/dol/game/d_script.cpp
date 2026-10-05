@@ -16,6 +16,7 @@
 #include <game/game/d_animal_id.hpp>
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_nickname.hpp>
+#include <game/game/d_npc.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <cstring>
 #include <cstdio>
@@ -86,7 +87,6 @@ extern "C" {
 BOOL fn_8016AE68(Word_c *word, u16 index, const char *group); // loads a BMG string
 u16 fn_8016AF68(const char *group); // number of strings in a group
 u16 fn_8016AFD4(const char *group); // random string index
-u16 fn_800F3F84(void *obj, u8 looks, int);
 extern u8 lbl_805FF398[];
 }
 

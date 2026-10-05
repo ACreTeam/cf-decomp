@@ -11,7 +11,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-dAnimal_c *fn_80129D90(dAnimalBlock_c *block, int idx); // villager, index clamped to the town's count
 
 // dLetter text builders (fill the header/body/footer words).
 void fn_800CB638(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 kind, const char *label);
@@ -467,7 +466,7 @@ void dMail_c::setupSystem(const u16 *kind, const char *label, const u8 *senderKi
 // 80118694
 void dMail_c::setToVillager(int idx) {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    dAnimal_c *animal = fn_80129D90(&dSaveData_c::getTown()->mAnimals.mBlock, idx);
+    dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     mTo.setAnimal(&animal->mID);
     player->mLetterStyle.applyHeader(this);
 }
@@ -493,8 +492,7 @@ void dMail_c::setToSelf() {
 // 801187DC
 void dMail_c::setToFriend(int idx) {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    // TODO: 0x78-byte records at dPrivateData_c+0x1D0 (still inside _0000), each starting with a dPersonalID_c.
-    mTo.setPlayer((const dPersonalID_c *)(player->_0000 + 0x1D0 + idx * 0x78));
+    mTo.setPlayer(&player->mFriends.mFriends[idx].mPID);
     player->mLetterStyle.applyHeader(this);
 }
 

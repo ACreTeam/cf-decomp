@@ -56,6 +56,7 @@ typedef int BOOL;
 #define ROUND_UP_PTR(x, align)  ((void*)((((u32)(x)) + (align) - 1) & (~((align) - 1))))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define CLAMP(v, min, max) ((v) < (min) ? (min) : ((v) > (max) ? (max) : (v)))
 
 // No-op on release
 #define EGG_ASSERT(...)

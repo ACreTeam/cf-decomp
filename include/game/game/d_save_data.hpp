@@ -15,6 +15,7 @@
 #include <game/game/d_quest.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_animal.hpp>
+#include <game/game/d_notice.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
@@ -259,7 +260,7 @@ public:
     /* 0x06673C */ u8 _06673C[3];
     /* 0x06673F */ u8 _06673F;
     /* 0x066740 */ u8 _066740[0x422];
-    /* 0x066B62 */ u8 _066B62[0x1810];      // ctor 8011AF14
+    /* 0x066B62 */ dNoticeBoard_c mNoticeBoard;
     /* 0x068372 */ u8 _068372[0x50];        // ctor 8014D0BC
     /* 0x0683C2 */ u16 _0683C2;             // an item id (d_fg_item)
     /* 0x0683C4 */ u8 _0683C4[4];

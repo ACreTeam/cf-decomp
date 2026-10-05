@@ -5,6 +5,7 @@
 #include <game/game/d_sv_runtime.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_npc.hpp>
 
 // TODO: Not linkable yet; every function matches, but the section layout does not.
 // - The target is likely two TUs. .text/.ctors/.bss put the boundary after

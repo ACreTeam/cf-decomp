@@ -42,7 +42,6 @@ int fn_800D2404();
 int fn_800D240C();
 int fn_800D241C();
 void fn_800DCF58();
-void fn_800F47F4();
 void fn_801A316C(void *demo, int mode);
 int fn_8017B18C();
 int fn_8017B190();

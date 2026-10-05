@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <game/game/d_item_def.hpp>
 #include <game/game/d_ftr_list.hpp>
 
 #define ITEM_NAME_LEN 16

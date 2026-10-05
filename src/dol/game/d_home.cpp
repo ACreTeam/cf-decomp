@@ -26,25 +26,25 @@ static const u32 sHomeScenes[] = {0x01000450, 0x02000450, 0x04000450, 0x08000450
 
 // 80476270: default mWallpaper per style and room
 static const int sDefaultWallpapers[4][HOME_ROOM_NUM] = {
-    {0x2F7, 0x312, 0x2F4},
-    {0x2EC, 0x312, 0x2F4},
-    {0x2F3, 0x312, 0x2F4},
-    {0x2E9, 0x312, 0x2F4},
+    {dItem::ITEM_IDX_WOOD_PANELING, dItem::ITEM_IDX_COMMON_WALL, dItem::ITEM_IDX_CONCRETE_WALL},
+    {dItem::ITEM_IDX_OLD_BRICK_WALL, dItem::ITEM_IDX_COMMON_WALL, dItem::ITEM_IDX_CONCRETE_WALL},
+    {dItem::ITEM_IDX_STONE_WALL, dItem::ITEM_IDX_COMMON_WALL, dItem::ITEM_IDX_CONCRETE_WALL},
+    {dItem::ITEM_IDX_ORNATE_WALL, dItem::ITEM_IDX_COMMON_WALL, dItem::ITEM_IDX_CONCRETE_WALL},
 };
 
 // 804762A0: default mCarpet per style and room
 static const int sDefaultCarpets[4][HOME_ROOM_NUM] = {
-    {0x354, 0x36B, 0x34E},
-    {0x34D, 0x36B, 0x34E},
-    {0x362, 0x36B, 0x34E},
-    {0x35F, 0x36B, 0x34E},
+    {dItem::ITEM_IDX_OPULENT_RUG, dItem::ITEM_IDX_COMMON_FLOOR, dItem::ITEM_IDX_BASEMENT_FLOOR},
+    {dItem::ITEM_IDX_CONCRETE_FLOOR, dItem::ITEM_IDX_COMMON_FLOOR, dItem::ITEM_IDX_BASEMENT_FLOOR},
+    {dItem::ITEM_IDX_SHANTY_MAT, dItem::ITEM_IDX_COMMON_FLOOR, dItem::ITEM_IDX_BASEMENT_FLOOR},
+    {dItem::ITEM_IDX_PLANK_FLOORING, dItem::ITEM_IDX_COMMON_FLOOR, dItem::ITEM_IDX_BASEMENT_FLOOR},
 };
 
 // 804762D0: default item placed in the main room per style
-static const int sDefaultItems0[4] = {0x8C1, 0x8C4, 0x8C2, 0x8C3};
+static const int sDefaultItems0[4] = {dItem::ITEM_IDX_CANDLE, dItem::ITEM_IDX_TABLE_LAMP, dItem::ITEM_IDX_MINI_LAMP, dItem::ITEM_IDX_DESK_LIGHT};
 
 // 804762E0: dHome_c::_15B8 per style
-static const int sHomeItems[4] = {0x8C6, 0x8C7, 0x8C8, 0x8C9};
+static const int sHomeItems[4] = {dItem::ITEM_IDX_BASIC_RED_BED, dItem::ITEM_IDX_BASIC_BLUE_BED, dItem::ITEM_IDX_BASIC_YELLOW_BED, dItem::ITEM_IDX_BASIC_GREEN_BED};
 
 // 804762F0: rooms available per house size
 static const u8 sHasRoom[HOME_SIZE_NUM][HOME_ROOM_NUM] = {
@@ -71,9 +71,9 @@ void dHomeRoom_c::clear() {
         mLayers[i].clear();
     }
     mMap.clear();
-    mWallpaper = dItem::Item(0x2BE);
+    mWallpaper = dItem::Item(dItem::ITEM_IDX_EXOTIC_WALL);
     _454 = 1;
-    mCarpet = dItem::Item(0x319);
+    mCarpet = dItem::Item(dItem::ITEM_IDX_EXOTIC_RUG);
     _455 = 2;
     mSong.mId = dItem::ITEM_ID_NONE;
     _456 = 0;
@@ -201,8 +201,8 @@ void dHomeRoom_c::init(int style, int room) {
         if (room == 0) {
             dHomeLayer_c *floor = getLayer(0);
             dHomeLayer_c *top = getLayer(1);
-            floor->set(10, 9, dItem::Item(0x88D));
-            floor->set(10, 6, dItem::Item(0x8BE));
+            floor->set(10, 9, dItem::Item(dItem::ITEM_IDX_TAPE_DECK));
+            floor->set(10, 6, dItem::Item(dItem::ITEM_IDX_CARDBOARD_BOX));
             top->set(10, 6, dItem::Item(items[0]));
             mMap.set(9, 10, 0, FALSE);
             mMap.set(6, 10, 1, FALSE);
@@ -326,7 +326,7 @@ void dHome_c::init(u32 style) {
     static const u8 sStyleSizes[4] = {0, 1, 2, 3};
     clear();
     mDesign.clear();
-    mDesign.setFromItem(0x9DD + (style & 3));
+    mDesign.setFromItem(dItem::ITEM_IDX_RED_LEAF + (style & 3));
     mDesign.loadTextureD(style);
     for (int i = 0; i < HOME_ROOM_NUM; i++) {
         mRooms[i].init(style, i);

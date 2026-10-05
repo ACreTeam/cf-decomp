@@ -58,7 +58,7 @@ void dPoliceBox_c::refill(int days) {
                 int category = 0xFF;
                 if (roll >= 50 && roll < 100) {
                 } else if (roll >= 30 && roll < 50) {
-                    mItems[i] = dItem::Item(0xA).mId;
+                    mItems[i] = dItem::Item(dItem::ITEM_IDX_PITFALL_SEED).mId;
                     n++;
                 } else {
                     if (roll >= 20 && roll < 30) {

@@ -1,4 +1,5 @@
 #include <game/game/d_private_data.hpp>
+#include <game/sLib/s_crc.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_script.hpp>
 #include <game/game/d_sv_mgr.hpp>
@@ -9,6 +10,7 @@
 #include <revolution/OS/OSCache.h>
 #include <revolution/OS/OSTime.h>
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_npc_notice.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -31,22 +33,9 @@ BOOL fn_80102BBC(dMail_c *mail);
 
 // Other members.
 void fn_80110470(dUnk7FD6_c *obj); // clear
-void fn_8011A6C4(dPrivateData_c *player);
-BOOL fn_8011A6F4(dPrivateData_c *player);
-void fn_8011A750(dPrivateData_c *player);
-void fn_80140978(dQuestErrandList_c *list); // clear
-dQuestErrand_c *fn_801409E0(dQuestErrandList_c *list, u32 i);
-BOOL fn_80141748(dQuestErrandList_c *list, int arg);
-BOOL fn_8013F7E8(dQuestErrand_c *errand);
-dAnmPersonalID_c *fn_80140850(dQuestErrand_c *errand, int i);
 void fn_80150AD4(dUnk5560_c *obj);
-u32 fn_802A98FC(const void *data, u32 size, int, int);
 
-// 64-bit time (dQuestTime_c) and calendar helpers.
-void fn_8014C468(dQuestTime_c *time); // reset to INT64_MAX
-void fn_8014C5D0(dQuestTime_c *time, s64 value);
-void fn_8014C61C(dQuestTime_c *time);
-void fn_8014C818(dQuestTime_c *time);
+// Calendar helpers (dQuestTime_c helpers are in d_quest_time.hpp).
 BOOL fn_8014CCB4(dYMD_c *date, int year, int month, int day);
 
 // Misc.
@@ -61,11 +50,6 @@ void fn_80112D24(void *);
 
 // Calendar/time helpers.
 dTime_c fn_8014C2C4(const dQuestTime_c *time);
-BOOL fn_8014C384(dQuestTime_c *time);
-s64 fn_8014C380(dQuestTime_c *time);
-void fn_8014C6A4(dQuestTime_c *time, int days);
-void fn_8014C538(dQuestTime_c *time, dTime_c *cal);
-BOOL fn_8014C9C4(dQuestTime_c *time, s64 other, int, int);
 u16 fn_8014BE60(dTime_c cal);
 dTime_c fn_8014CBFC(dYMD_c *date);
 dTime_c fn_80111ABC(void);
@@ -77,7 +61,6 @@ extern u8 lbl_8059FF80[];
 BOOL fn_8014D07C(void *);
 void *fn_80190C44(int);
 BOOL fn_8008C674(void *map, int x, int y);
-void fn_800EBB24(int, const char *, int, int);
 void fn_801109EC(void *, int, int);
 void fn_80116540(dSaveData_c *, int);
 void fn_80116510(dSaveData_c *, int);
@@ -314,13 +297,13 @@ void dPrivateData_c::copy(const dPrivateData_c *other) {
 
 // 80136C88
 void dPrivateData_c::updateChecksum() {
-    fn_8011A6C4(this);
+    mFriends.updateChecksum();
     mChecksum = calcChecksum();
 }
 
 // 80136CC0
 BOOL dPrivateData_c::isChecksumValid(int) {
-    if (!fn_8011A6F4(this)) {
+    if (!mFriends.isChecksumOK()) {
         return FALSE;
     }
 
@@ -333,7 +316,7 @@ BOOL dPrivateData_c::isChecksumValid(int) {
 
 // 80136D1C
 u32 dPrivateData_c::calcChecksum() const {
-    return fn_802A98FC(&mDates, sizeof(dPrivateData_c) - sizeof(mChecksum) - ((u8 *)&mChecksum - (u8 *)this), -1, -1);
+    return sCrc::calcCRC32(&mDates, sizeof(dPrivateData_c) - sizeof(mChecksum) - ((u8 *)&mChecksum - (u8 *)this), -1, -1);
 }
 
 // 80136D40
@@ -364,7 +347,7 @@ BOOL dPrivateData_c::fn_80136E10(dPrivateData_c *players) {
     dPrivateData_c *player = players;
     BOOL result = TRUE;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (player->mPID.isValid() && !fn_800E593C(player->_0000 + 4)) {
+        if (player->mPID.isValid() && !fn_800E593C(player->mFriends._0004)) {
             result = FALSE;
             break;
         }
@@ -418,7 +401,7 @@ void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
     _85FA.clear();
     _8604.clear();
     fn_80110470(&_7FD6);
-    fn_8011A750(this);
+    mFriends.clear();
     mDates.init();
     _869A = -1;
     _869B = -1;
@@ -499,7 +482,7 @@ void dPrivateData_c::fn_801371DC() {
     static u32 lbl_8074B094 = 0x159;
     mail.clear();
     mail.setupSystem(&lbl_8074B090, "MAIL_ETC_ATM", (const u8 *)&lbl_8074B092, &mPID, (const int *)&lbl_8074B094);
-    mail.setPresent(dItem::Item(0x905).mId, 0xFF);
+    mail.setPresent(dItem::Item(dItem::ITEM_IDX_TOWN_HALL_MODEL).mId, 0xFF);
     if (fn_801029C0(&mail)) {
         setFlag0(0x6C);
     } else if (fn_80102BBC(&mail)) {
@@ -615,7 +598,7 @@ void dPrivateData_c::fn_80137898(int days) {
         }
     }
     if (days > 0 && isFlag0(0x46)) {
-        dItem::Item present(0xE0);
+        dItem::Item present(dItem::ITEM_IDX_SHOPPING_CARD);
         if (sendLetter(0xE, &present, this, 0)) {
             clearFlag0(0x46);
         }
@@ -864,7 +847,7 @@ void dPrivateData_c::clear() {
     _83BE.clear();
     _83C2.clear();
     mSavings = 0;
-    fn_80140978(&mErrand);
+    mErrand.clear();
     fn_8014C468(&_8620);
     fn_80110470(&_7FD6);
     mHost.mPID.clear();
@@ -875,10 +858,10 @@ void dPrivateData_c::clear() {
     _8698 = 0;
     _8699 = 0;
     _83C6.clear();
-    _55FC.clear();
-    _5608.clear();
-    _8634.clear();
-    _8638.clear();
+    mBirthdayHost.clear();
+    mVisitorLetter.clear();
+    mValentineYear.clear();
+    mNewYearYear.clear();
     _86A5 = 0;
 }
 
@@ -952,8 +935,8 @@ void dPrivateData_c::setFlag3(u32 flag) {
 BOOL dPrivateData_c::fn_80138760() {
     if (isFlag0(0x3A) && !isFlag0(0x46)) {
         BOOL found = FALSE;
-        dItem::Item a(0xE0);
-        dItem::Item b(0xE1);
+        dItem::Item a(dItem::ITEM_IDX_SHOPPING_CARD);
+        dItem::Item b(dItem::ITEM_IDX_GOLD_CARD);
 
         for (int i = 0; i < PLAYER_POCKETS_COUNT; i++) {
             if (mPockets[i] == a || mPockets[i] == b) {
@@ -972,8 +955,8 @@ BOOL dPrivateData_c::fn_80138760() {
 int dPrivateData_c::fn_80138890() const {
     int savings = mSavings;
     if (savings > 0 && isFlag0(0x3A)) {
-        const dItem::Item a(0xE0);
-        const dItem::Item b(0xE1);
+        const dItem::Item a(dItem::ITEM_IDX_SHOPPING_CARD);
+        const dItem::Item b(dItem::ITEM_IDX_GOLD_CARD);
         for (int i = 0; i < PLAYER_POCKETS_COUNT; i++) {
             if (mPockets[i] == a || mPockets[i] == b) {
                 return savings;
@@ -1053,7 +1036,7 @@ int dPrivateData_c::getPocketMoney() const {
 // 80138B58
 int dPrivateData_c::getMoneyRoom(int slots) {
     int room = PRIVATE_BELLS_MAX - mBells;
-    int bagPrice = dItem::Item(0xBE).getPrice();
+    int bagPrice = dItem::Item(dItem::ITEM_IDX_99000_BELLS).getPrice();
     for (int i = 0; i < PLAYER_POCKETS_COUNT; i++) {
         if (getPocketFlag(i) == 0 && mPockets[i].isMoney()) {
             room += bagPrice - mPockets[i].getPrice();
@@ -1067,7 +1050,7 @@ int dPrivateData_c::getMoneyRoom(int slots) {
 // 80138C24
 int dPrivateData_c::findMoneyPocketMostRoom() {
     int idx = findEmptyPocket(0);
-    int bagPrice = dItem::Item(0xBE).getPrice();
+    int bagPrice = dItem::Item(dItem::ITEM_IDX_99000_BELLS).getPrice();
     if (idx == -1) {
         int i, best;
         for (best = 0, i = 0; i < PLAYER_POCKETS_COUNT; i++) {
@@ -1087,7 +1070,7 @@ int dPrivateData_c::findMoneyPocketMostRoom() {
 int dPrivateData_c::findMoneyPocketSmallest() {
     int idx = -1;
     int i;
-    int smallest = dItem::Item(0xBE).getPrice() + 1;
+    int smallest = dItem::Item(dItem::ITEM_IDX_99000_BELLS).getPrice() + 1;
     for (i = 0; i < PLAYER_POCKETS_COUNT; i++) {
         if (getPocketFlag(i) == 0 && mPockets[i].isMoney()) {
             int price = mPockets[i].getPrice();
@@ -1105,7 +1088,7 @@ BOOL dPrivateData_c::addMoney(int amount) {
     if (getMoneyRoom(0) < amount) {
         return FALSE;
     }
-    int bagPrice = dItem::Item(0xBE).getPrice();
+    int bagPrice = dItem::Item(dItem::ITEM_IDX_99000_BELLS).getPrice();
     int bells = mBells + amount;
     while (bells > PRIVATE_BELLS_MAX) {
         int idx = findMoneyPocketMostRoom();
@@ -1383,13 +1366,14 @@ dQuestErrand_c *dPrivateData_c::findErrand(dAnmPersonalID_c *animal, int which, 
     if (!mPID.isValid()) {
         return NULL;
     }
-    dQuestErrand_c *errand = fn_801409E0(&mErrand, idx);
-    if (errand != NULL && fn_8013F7E8(errand)) {
+    const dQuestErrandList_c &errands = mErrand;
+    const dQuestErrand_c *errand = errands.get(idx);
+    if (errand != NULL && errand->mBase.isActive()) {
         for (int i = 0; i < 2; i++) {
             if (which == 2 || which == i) {
                 BOOL same;
                 BOOL ok;
-                dAnmPersonalID_c *other = fn_80140850(errand, i);
+                const dAnmPersonalID_c *other = errand->getAnimal(i);
 
                 // My suspicion is that this is something like *animal == *other
                 // Perhaps this is a const function and it takes const dAnmPersonalID_c& instead of a pointer.
@@ -1413,7 +1397,7 @@ dQuestErrand_c *dPrivateData_c::findErrand(dAnmPersonalID_c *animal, int which, 
                         break;
                     }
                     if (ok) {
-                        return errand;
+                        return (dQuestErrand_c *)errand;
                     }
                 }
             }
@@ -1440,7 +1424,7 @@ BOOL dPrivateData_c::fn_80139948(int arg) {
     if (!mPID.isValid()) {
         return FALSE;
     }
-    if (!fn_80141748(&mErrand, arg)) {
+    if (!mErrand.isExpired(*(dTime_c *)arg)) {
         return FALSE;
     }
     u16 mask = 0;
@@ -1514,8 +1498,8 @@ void dCatalog_c::init() {
 
 // 80139D3C
 void dCatalog_c::registerDefaults(int set) {
-    registerItem(dItem::Item(0x88D).mId, FALSE);
-    registerItem(dItem::Item(0x8BE).mId, FALSE);
+    registerItem(dItem::Item(dItem::ITEM_IDX_TAPE_DECK).mId, FALSE);
+    registerItem(dItem::Item(dItem::ITEM_IDX_CARDBOARD_BOX).mId, FALSE);
     if (set != -1) {
         u16 items[3];
         items[0] = dItem::ITEM_ID_NONE;
@@ -1773,7 +1757,7 @@ void dEquip_c::setFromPlayer() {
     mHat = player->mEquipment.mHat;
     mAcc = player->mEquipment.mAcc;
     if (mShirt.mId == dItem::ITEM_ID_NONE) {
-        mShirt = dItem::Item(0x372);
+        mShirt = dItem::Item(dItem::ITEM_IDX_WORK_UNIFORM);
     }
 }
 
@@ -1851,8 +1835,8 @@ void dOutfit_c::clear() {
 // 8013AC78
 void dOutfit_c::setDefault() {
     clear();
-    mEquip.mShirt = dItem::Item(0x412);
-    mEquip.mHat = dItem::Item(0x507);
+    mEquip.mShirt = dItem::Item(dItem::ITEM_IDX_GRACIES_TOP);
+    mEquip.mHat = dItem::Item(dItem::ITEM_IDX_GRACIE_HAT);
     mEquip.mHeld = dItem::Item();
     mEquip.mAcc = dItem::Item();
     mFlags.valid = true;

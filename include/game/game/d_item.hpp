@@ -735,4 +735,9 @@ static inline int Item_getIdxInKind(const Item &item) {
     return seeker_c::get()->findLike(item);
 }
 
+static inline dItem::BITM* getBITM(u16 id) {
+    Item item(id);
+    return infoBank_c::get()->getBITM(item);
+}
+
 } // namespace dItem

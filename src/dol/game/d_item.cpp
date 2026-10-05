@@ -1,4 +1,5 @@
 #include <game/game/d_region.hpp>
+#include <game/sLib/s_crc.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/cLib/c_math.hpp>
@@ -43,7 +44,6 @@ u8 fn_80162548();
 // Loads entry `index` of a message group into a word (TU near 8016AC58).
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 
-void fn_802A98FC(void *, void *, u32, int);
 
 // Item debug TU (empty in release).
 void *fn_800C59EC();
@@ -945,11 +945,11 @@ u16 infoBank_c::getBaseId(u16 index) {
             if (baseId < BASE_ID_COUNT) {
                 return baseId;
             }
-            return getBaseId(0);
+            return getBaseId(ITEM_IDX_DUMMY);
         }
-        return getBaseId(0);
+        return getBaseId(ITEM_IDX_DUMMY);
     }
-    return getBaseId(0);
+    return getBaseId(ITEM_IDX_DUMMY);
 }
 
 // 800C2998
@@ -967,7 +967,7 @@ u16 infoBank_c::getBaseIdFromItemId(u16 id) {
     if (isRealItemId(id)) {
         return (id - 0x9000) >> 2;
     }
-    return getBaseId(0);
+    return getBaseId(ITEM_IDX_DUMMY);
 }
 
 // 800C2A10
@@ -1609,7 +1609,7 @@ BOOL resLoader_c::loadIndex(u16 index, void *heap) {
         }
         return mpData != NULL;
     }
-    return loadIndex(0, heap);
+    return loadIndex(ITEM_IDX_DUMMY, heap);
 }
 
 // 800C43B8
@@ -2254,7 +2254,7 @@ void addCatalogItems(u8 *mask, void *player) {
 
 // 800C5278
 extern "C" void fn_800C5278(void *a, void *b) {
-    fn_802A98FC(a, b, 0x04201018, -1);
+    sCrc::calcCRC32(a, (ulong)b, 0x04201018, -1);
 }
 
 // 800C5288

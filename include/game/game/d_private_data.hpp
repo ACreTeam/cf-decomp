@@ -4,6 +4,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_personal_id.hpp>
+#include <game/game/d_friend.hpp>
 #include <game/game/d_animal_id.hpp>
 #include <game/game/d_dsn.hpp>
 #include <game/game/d_mail.hpp>
@@ -323,8 +324,8 @@ public:
     void copy(const dPrivateData_c *other);                       // 80136C7C; memcpy 0x86C0
 
     // Checksum over 0x1124..0x86C0 (fn_802A98FC, seed -1), stored in mChecksum.
-    void updateChecksum();                                        // 80136C88; calls fn_8011A6C4 first
-    BOOL isChecksumValid(int arg);                                // 80136CC0; calls fn_8011A6F4 first
+    void updateChecksum();                                        // 80136C88; updates mFriends first
+    BOOL isChecksumValid(int arg);                                // 80136CC0; checks mFriends first
     u32 calcChecksum() const;                                           // 80136D1C
     static void updateChecksumAll(dPrivateData_c *players);       // 80136D40; 4 players, stride 0x86C0
     static BOOL isChecksumValidAll(dPrivateData_c *players, int arg); // 80136D90
@@ -473,7 +474,7 @@ public:
         return FALSE;
     }
 
-    /* 0x0000 */ u8 _0000[0x1120];
+    /* 0x0000 */ dFriendList_c mFriends;
     /* 0x1120 */ u32 mChecksum;
     /* 0x1124 */ dPrivateDates_c mDates;
     /* 0x1134 */ s32 mBells;
@@ -484,8 +485,8 @@ public:
     /* 0x55CE */ dItemPairRing_c _55CE;
     /* 0x55F4 */ u32 _55F4;
     /* 0x55F8 */ u32 _55F8;
-    /* 0x55FC */ dUnk55FC_c _55FC;
-    /* 0x5608 */ dAnimalItem_c _5608;
+    /* 0x55FC */ dUnk55FC_c mBirthdayHost;
+    /* 0x5608 */ dAnimalItem_c mVisitorLetter;
     /* 0x56CA */ dMail_c mLetters[PLAYER_MAIL_COUNT];
     /* 0x7A6A */ dMail_c mFutureSelfLetter;
     /* 0x7DFA */ dLetterStyle_c mLetterStyle;
@@ -501,7 +502,6 @@ public:
     /* 0x7FA8 */ dPrivateHost_c mHost;
     /* 0x7FD6 */ dUnk7FD6_c _7FD6;
     /* 0x7FEE */ dQuestErrandList_c mErrand;
-    /* 0x817E */ u8 _817E[0x240];
     /* 0x83BE */ dYMD_c _83BE;
     /* 0x83C2 */ dYMD_c _83C2;
     /* 0x83C6 */ dYMD_c _83C6;
@@ -528,8 +528,8 @@ public:
     /* 0x8628 */ s32 _8628;
     /* 0x862C */ s32 _862C;
     /* 0x8630 */ s32 _8630;
-    /* 0x8634 */ dUnk8634_c _8634;
-    /* 0x8638 */ dUnk8634_c _8638;
+    /* 0x8634 */ dUnk8634_c mValentineYear;
+    /* 0x8638 */ dUnk8634_c mNewYearYear;
     /* 0x863C */ u8 mPocketFlags[PLAYER_POCKETS_COUNT]; // one per pocket; getPocketMoney skips nonzero
     /* 0x864B */ u8 mFlags0[PRIVATE_FLAGS0_NUM / 8]; // bit 41 = reset flag
     /* 0x865F */ u8 mFlags1[PRIVATE_FLAGS1_NUM / 8];

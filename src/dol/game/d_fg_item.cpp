@@ -257,7 +257,7 @@ static FgInfo *sFgInfo = sFgInfoTable;
 
 // Pick items for KIND_MUSH_FTR, by findLike result.
 static const int sMushFtrItems[12] = {
-    0x2CB, 0x326, 0x6C2, 0x6C3, 0x6C4, 0x6C5, 0x6C6, 0x6C7, 0x6C8, 0x6C9, 0x6CA, 0x6CB,
+    ITEM_IDX_FOREST_WALL_WALL, ITEM_IDX_FOREST_FLOOR_CARPET, ITEM_IDX_MUSH_BED_FTR, ITEM_IDX_MUSH_DRESSER_FTR, ITEM_IDX_MUSH_CLOSET_FTR, ITEM_IDX_MUSH_CHAIR_FTR, ITEM_IDX_MUSH_STOOL_FTR, ITEM_IDX_MUSH_TABLE_FTR, ITEM_IDX_MUSH_END_TABLE_FTR, ITEM_IDX_MUSH_LAMP_FTR, ITEM_IDX_MUSH_STAND_FTR, ITEM_IDX_MUSH_TV_FTR,
 };
 
 // 800A5D3C
@@ -369,7 +369,7 @@ u16 Item::getMoneyItem(int amount, BOOL roundUp, int *remainder) {
         *remainder = 0;
     }
     if (roundUp) {
-        item.setFromIndex(0xBE);
+        item.setFromIndex(ITEM_IDX_99000_BELLS);
         if (item.getPrice() < amount) {
             return ITEM_ID_NONE;
         }
@@ -384,7 +384,7 @@ u16 Item::getMoneyItem(int amount, BOOL roundUp, int *remainder) {
             }
         }
     } else {
-        item.setFromIndex(0x53);
+        item.setFromIndex(ITEM_IDX_100_BELLS);
         if (item.getPrice() > amount) {
             return ITEM_ID_NONE;
         }
@@ -748,9 +748,9 @@ Item Item::getPickItem() const {
     if (isFlower()) {
         result = Item(0x59F, mId - 0x9E, FALSE);
     } else if (mId == 0xDE) {
-        result = Item(0x5BF);
+        result = Item(ITEM_IDX_DANDELIONS);
     } else if (mId == 0xDF) {
-        result = Item(0x5C0);
+        result = Item(ITEM_IDX_DANDELION_PUFFS);
     } else if (inRange(mId, 0x95, 0x9D)) {
         result = Item(0x18A, mId - 0x95, FALSE);
     } else if (getKind() == KIND_MUSH_FTR) {
@@ -758,7 +758,7 @@ Item Item::getPickItem() const {
         if (n >= 0 && n < 12) {
             result.setFromIndex(sMushFtrItems[n]);
         } else {
-            result.setFromIndex(0x2CB);
+            result.setFromIndex(ITEM_IDX_FOREST_WALL_WALL);
         }
     }
     return result;

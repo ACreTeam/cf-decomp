@@ -47,7 +47,7 @@ void dDesign_c::initBlank() {
 // 8010F210
 void dDesign_c::initDefault() {
     clear();
-    setFromItem(0x9D3);
+    setFromItem(dItem::ITEM_IDX_PLAIN_CLOTH_4);
     loadTexture(0x9D3);
 }
 
