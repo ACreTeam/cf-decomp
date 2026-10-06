@@ -39,6 +39,7 @@ enum {
 class dMuseum_c {
 public:
     dMuseum_c();                                                // 8011960C
+    void init();                                                // 80119478: clear()
     void clear();                                               // 80119654
     void clearDonor(const dItem::Item &item);                   // 8011980C
     void setDeleted(const dItem::Item &item);                   // 80119858

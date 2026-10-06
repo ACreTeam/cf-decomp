@@ -22,9 +22,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-// Member objects owned by other TUs.
-void fn_801192F4(dUnk300C_c *obj); // clear
-
 // Memory-kind helpers.
 u32 fn_80162548();
 BOOL fn_80162594(u8 kind, int);
@@ -1532,7 +1529,7 @@ void dAnimal_c::clear() {
     mEvent.clear();
     mBoxedFtrMask = 0;
     mHeldItem = dItem::ITEM_ID_NONE;
-    fn_801192F4(&_300C);
+    mMelody.clear();
     mSpot.clear();
     clearPlaceChangeTime();
 }
@@ -10301,7 +10298,6 @@ extern "C" {
 
 // Other TUs.
 extern dUnk8074EBE8_c *lbl_8074EBE8;
-void fn_801192C0(dUnk300C_c *dst, const dUnk300C_c *src); // copy
 u16 fn_800CBA98(const char *label);
 u16 fn_800CBAC4(const char *label);
 BOOL fn_80102BBC(dMail_c *mail);
@@ -10713,7 +10709,7 @@ u32 dMovedAnimalList_c::getReplaceIdx(dAnimal_c *animal) {
 
 // 801342E0
 // Stores a copy of the villager in the list. Returns its slot, or -1.
-u32 dMovedAnimalList_c::addAnimal(dAnimal_c *animal, const dLandID_c *land, const dUnk300C_c *arg) {
+u32 dMovedAnimalList_c::addAnimal(dAnimal_c *animal, const dLandID_c *land, const dSaveMelody_c *arg) {
     dAnmPersonalID_c *id = &animal->mID;
     if (!id->isValid()) {
         return -1;
@@ -10737,7 +10733,7 @@ u32 dMovedAnimalList_c::addAnimal(dAnimal_c *animal, const dLandID_c *land, cons
             dst->mPrevLand.copy(land);
         }
         if (arg != NULL) {
-            fn_801192C0(&dst->_300C, arg);
+            dst->mMelody.copy(arg);
         }
         dItem::Item none;
         dst->setHeldItem(&none);
@@ -10855,7 +10851,7 @@ BOOL dAnimalSave_c::updateMoves(int days) {
 
     dMovedAnimalList_c *list = &mMoved;
     dLandID_c *land = &dSaveData_c::getRaw()->mLandID;
-    dUnk300C_c *arg = &dSaveData_c::getRaw()->_07359E;
+    dSaveMelody_c *arg = &dSaveData_c::getRaw()->mVillageMelody;
     dAnimalBlock_c *block = &mTown;
     block->finishMovingIn();
     block->addMoveDays(days);

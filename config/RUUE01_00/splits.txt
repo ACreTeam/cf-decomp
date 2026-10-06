@@ -206,8 +206,14 @@ dol/game/d_mail.cpp:
 	.data       start:0x804EE498 end:0x804EE4B0 align:4
 	.bss        start:0x805EF570 end:0x805F0F18 align:4
 
+dol/game/d_save_melody.cpp:
+	.text       start:0x8011927C end:0x80119444
+
+dol/game/d_save_money.cpp:
+	.text       start:0x80119444 end:0x80119478
+
 dol/game/d_museum.cpp:
-	.text       start:0x8011947C end:0x8011A6C4
+	.text       start:0x80119478 end:0x8011A6C4
 	.ctors      start:0x80465724 end:0x80465728
 	.data       start:0x804EE4B0 end:0x804EE4C0
 	.bss        start:0x805F0F18 end:0x805F1420
@@ -266,6 +272,10 @@ dol/game/d_quest.cpp:
 	.bss        start:0x805F2680 end:0x805F2720 align:4
 	.sdata      start:0x8074B0A8 end:0x8074B0F8 align:4
 	.sdata2     start:0x80750BF8 end:0x80750C40
+
+dol/game/d_save_stalk_market.cpp:
+	.text       start:0x80146D80 end:0x80147A48
+	.sdata2     start:0x80750C68 end:0x80750CA0 align:4
 
 dol/game/d_theater.cpp:
 	.text       start:0x8014BD88 end:0x8014C2C4

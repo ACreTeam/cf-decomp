@@ -12,6 +12,7 @@
 #include <game/game/d_mail.hpp>
 #include <game/game/d_quest.hpp>
 #include <game/game/d_script.hpp>
+#include <game/game/d_save_melody.hpp>
 
 class dAnimal_c;
 class dAnimalBlock_c;
@@ -186,13 +187,6 @@ public:
 
 // Unrecovered member objects. Their constructors and destructors live in other TUs.
 // dQuestVillagerWish_c (wish + villager request) is in d_quest.hpp.
-class dUnk300C_c { // 0x10
-public:
-    dUnk300C_c(); // 8011927C
-    ~dUnk300C_c(); // 80119280
-
-    u8 _00[0x10];
-};
 
 // Per-species template record, copied whole into dAnimal_c+0x1824 by fn_8011E688.
 struct dAnimalTemplate_c {
@@ -432,7 +426,7 @@ public:
     /* 0x3006 */ dItem::Item mCarpet;
     /* 0x3008 */ dItem::Item mHeldItem;
     /* 0x300A */ u16 mBoxedFtrMask;
-    /* 0x300C */ dUnk300C_c _300C;
+    /* 0x300C */ dSaveMelody_c mMelody; // the town tune, carried when moving
     /* 0x301C */ dAnimalSpot_c mSpot;
     /* 0x3030 */ u16 mIsMoving : 1; // isMoving
     /* 0x3030 */ u16 mIsMovingIn : 1;
@@ -642,7 +636,7 @@ public:
     int pickMoveInIdx(dAnimalBlock_c *block, const dLandID_c *land); // 80133C34
     int tryPickMoveInIdx(dAnimalBlock_c *block, const dLandID_c *land); // 80133E98
     u32 getReplaceIdx(dAnimal_c *animal); // 80133F60
-    u32 addAnimal(dAnimal_c *animal, const dLandID_c *land, const dUnk300C_c *arg); // 801342E0
+    u32 addAnimal(dAnimal_c *animal, const dLandID_c *land, const dSaveMelody_c *arg); // 801342E0
     u32 pickGiveAwayIdx(const dLandID_c *land); // 8013443C
 
 

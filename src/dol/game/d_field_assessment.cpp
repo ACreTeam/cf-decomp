@@ -62,9 +62,6 @@ static const u8 sAround5[5] = {
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 void fn_8018EF28();
-BOOL fn_801164D0(dSaveData_c *save, int idx);
-void fn_80116510(dSaveData_c *save, int idx);
-void fn_80116540(dSaveData_c *save, int idx);
 int fn_8016CF08(int idx);
 void fn_802B8D30(OSThread *thread, int arg);
 void fn_802B8D90(OSThread *thread);
@@ -128,7 +125,6 @@ void fn_801510A0(void *obj);
 void fn_800DD5F8(int a, void *b, int c);
 void fn_8015384C(void *obj);
 void fn_801541D8(void *obj);
-void fn_80146DD8(void *obj);
 void fn_8014F998(void *obj, dTime_c *now);
 void fn_8014F96C(void *obj);
 void fn_80186838();
@@ -4091,7 +4087,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     }
     dSaveData_c::getExtra()->mTheater.update();
     fn_801541D8(dSaveData_c::getTown()->_0735B7);
-    fn_80146DD8(&dSaveData_c::getTown()->_063200);
+    dSaveData_c::getTown()->mStalkMarket.checkDate();
     ((dTimeStamp_c *)save->_068372)->set(OSCalendarTimeToTicks(&today));
     sFgMngProcFlags = 0;
     int lastWeekday = dTime_c::getWeekday(last.year, last.month, last.mday);

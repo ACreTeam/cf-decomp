@@ -23,6 +23,7 @@
 #include <game/game/d_save_dl_item.hpp>
 #include <game/game/d_save_box.hpp>
 #include <game/game/d_bug_off.hpp>
+#include <game/game/d_save_stalk_market.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
@@ -249,13 +250,7 @@ public:
     /* 0x0631FC */ u16 _0631FC;
     /* 0x0631FE */ u8 _0631FE;
     /* 0x0631FF */ u8 _0631FF;
-    /* 0x063200 */ u32 _063200;
-    /* 0x063204 */ u32 _063204;
-    /* 0x063208 */ u32 _063208[13];
-    /* 0x06323C */ u8 _06323C[8];
-    /* 0x063244 */ u16 _063244;
-    /* 0x063246 */ u8 _063246;
-    /* 0x063247 */ u8 _063247;
+    /* 0x063200 */ dSaveStalkMarket_c mStalkMarket;
     /* 0x063248 */ u8 _063248[0x98];
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
     /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
@@ -300,14 +295,26 @@ public:
     /* 0x073520 */ u16 mItemVersion;        // dItem::BITM version, checked by isExtraGood
     /* 0x073522 */ dTimeStamp_c _073522;    // set by fn_8010DCF0
     /* 0x07352A */ dMuseum_c mMuseum;
-    /* 0x07359E */ dUnk300C_c _07359E;
+    /* 0x07359E */ dSaveMelody_c mVillageMelody; // the town tune
     /* 0x0735AE */ u8 _0735AE;               // fn_8015384C's object starts here
     /* 0x0735AF */ dItem::dSaveItemRarity_c mItemRarity;
     /* 0x0735B7 */ u8 _0735B7[0xB];         // fn_801541D8
     /* 0x0735C2 */ u8 _0735C2;              // low nibble read by d_item
-    /* 0x0735C3 */ u8 _0735C3[8];
+    /* 0x0735C3 */ u8 _0735C3[8];          // town flags, bits 0..63 (SAVE_FLAG_*, fn_801164D0 / fn_80116510 / fn_80116540)
     /* 0x0735CB */ u8 _0735CB;              // 0xFF = none; days counter
     /* 0x0735CC */ u8 _0735CC[0x14];
     /* 0x0735E0 */ dSaveExtra_c mExtra;
     /* 0x20F320 */ dSaveDLItemList_c mDLItems; // getDLData()
 }; // size 0x40F340
+
+// Town flags: 64 bits at dSaveData_c::_0735C3, indexed 0..63. Most indices are not named yet.
+enum {
+    SAVE_FLAG_TURNIPS_SPOILED = 1, // set when the clock is changed or goes back within the week, cleared each new week (inferred)
+};
+
+// Town flag accessors (not split yet; C linkage keeps the target names). Out-of-range indices are ignored.
+extern "C" {
+BOOL fn_801164D0(dSaveData_c *save, int idx); // 801164D0: is the flag set
+void fn_80116510(dSaveData_c *save, int idx); // 80116510: set the flag
+void fn_80116540(dSaveData_c *save, int idx); // 80116540: clear the flag
+}

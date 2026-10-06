@@ -1,5 +1,5 @@
 // Museum donation record (AC m_museum_display.c counterpart). See notes/d_museum.txt.
-// .text 8011947C..8011A6C4, .ctors 80465724, .data 804EE4B0..804EE4C0 (sender label),
+// .text 80119478..8011A6C4, .ctors 80465724, .data 804EE4B0..804EE4C0 (sender label),
 // .bss 805F0F18..805F1420, .sdata 8074B048..8074B050, .sbss 8074E700..8074E708.
 #include <game/game/d_museum.hpp>
 #include <game/game/d_save_data.hpp>
@@ -25,6 +25,11 @@ static inline dPrivateData_c *getTownPlayer(int idx) {
 // The nibble of item idx in a donor array.
 static inline int getNibble(const u8 *donors, int idx) {
     return (donors[idx >> 1] >> ((idx & 1) << 2)) & 0xF;
+}
+
+// 80119478
+void dMuseum_c::init() {
+    clear();
 }
 
 // 8011947C
