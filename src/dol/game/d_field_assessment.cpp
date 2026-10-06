@@ -112,10 +112,8 @@ BOOL fn_8016286C(u8 scene);
 void fn_8011641C(dSaveData_c *save, int a, int b, int c);
 void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
-void fn_80113AEC(void *obj);
 void fn_8014FD48(void *obj, dTime_c last, dTime_c *now, int *days);
 void fn_80151CF0(void *obj);
-void fn_80113B20(void *obj);
 void fn_80143F40(void *obj, int days);
 void fn_80143FE0(void *obj);
 void *fn_8010D6BC();
@@ -4008,7 +4006,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         fn_800EC7C8(&today);
     }
     fn_80151CBC(dSaveData_c::getTown()->_0632F0);
-    fn_80113AEC(dSaveData_c::getTown()->_0634F0);
+    dSaveData_c::getTown()->mBugOff.update();
     fn_8014FD48(&dSaveData_c::getTown()->_05EC64, last, &today, &days);
     if (days != 0) {
         dPrivateData_c::fn_8013B474(dSaveData_c::getTown()->mPlayers, (int)&now);
@@ -4028,7 +4026,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     dPrivateData_c::fn_8013BC38(days);
     sFgMngProc.updateFg56();
     fn_80151CF0(dSaveData_c::getTown()->_0632F0);
-    fn_80113B20(dSaveData_c::getTown()->_0634F0);
+    dSaveData_c::getTown()->mBugOff.checkDay();
     fn_80143F40(dSaveData_c::getTown()->_05EC80, days);
     if (days != 0) {
         fn_8010C808(fn_8010D6BC(), 5, lbl_8074AFF8, 0);

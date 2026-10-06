@@ -105,7 +105,6 @@ u16 *fn_80110CE4(void *field, int x, int z);                           // 80110C
 u16 *fn_80110C70(void *field, int x, int z);                           // 80110C70
 dItem::Item *fn_80110BF0(void *field, int x, int z);                   // 80110BF0
 dFdUnitAttr_c *fn_801683D8();                                          // 801683D8
-int fn_80111F38(dHomeRoom_c *room);                                    // 80111F38: BG id of a model room
 }
 
 // Units where Racco can appear (RTTI raccoCand_c; vtable 804DF990): units of BG attribute
@@ -1144,7 +1143,7 @@ BOOL dFdInfoSvMdlRm_c::build(dHomeRoom_c *room, int bgId, EGG::Heap *heap) {
     BOOL ok = TRUE;
     if (block != NULL) {
         if (block->mBgData == NULL) {
-            int roomId = fn_80111F38(room);
+            int roomId = static_cast<dModelRoom_c *>(room)->getBgId(); // room is a model room
             void *buf = heap->alloc(0xA00, 4);
             if (buf != NULL) {
                 fn_80069680(fn_80069978(), buf, roomId);

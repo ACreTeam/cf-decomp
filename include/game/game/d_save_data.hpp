@@ -9,6 +9,7 @@
 #include <game/game/d_item.hpp>
 #include <game/game/d_dsn.hpp>
 #include <game/game/d_home.hpp>
+#include <game/game/d_model_room.hpp>
 #include <game/game/d_police_box.hpp>
 #include <game/game/d_recycle_bin.hpp>
 #include <game/game/d_mail.hpp>
@@ -20,10 +21,11 @@
 #include <game/game/d_notice.hpp>
 #include <game/game/d_save_check.hpp>
 #include <game/game/d_save_dl_item.hpp>
+#include <game/game/d_save_box.hpp>
+#include <game/game/d_bug_off.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
-#define SAVE_MAILBOX_NUM 160
 
 // Player option bits, 3 bytes. Lives at dPrivateData_c+0x83E8; the current
 // values are cached in a static copy (lbl_8074E6D8) whose third byte marks
@@ -94,16 +96,7 @@ struct dSaveRecord78_c {
     /* 0x02 */ u8 _02[0x76];
 }; // size 0x78
 
-// 64 designs (ctor fn_8010ED28). 0x22020.
-struct dSaveDesignBox_c {
-    /* 0x00000 */ dDesign_c mDesigns[64];
-    /* 0x22000 */ u8 _22000[0x20];
-}; // size 0x22020
-
-// Stored letters (ctor fn_8010EDC4, dtor fn_8010EE0C). 0x23A00.
-struct dSaveMailBox_c {
-    /* 0x0000 */ dMail_c mMails[SAVE_MAILBOX_NUM];
-}; // size 0x23A00
+// The per-player storage boxes (dSaveDesignBox_c, dSaveMailBox_c, dSaveItemBox_c) are in d_save_box.hpp.
 
 // Downloaded pattern with its version (dSaveExtra_c+0x88B00; clear fn_8010F008, set fn_8010F018).
 struct dSaveDistPattern_c {
@@ -190,7 +183,7 @@ struct dSaveExtra_c {
     /* 0x08A960 */ dSaveDistBlock_c _08A960;
     /* 0x097164 */ dSaveDistContentList_c mDistContent;
     /* 0x0F1258 */ dSaveMailBox_c mSavedLetters[PLAYER_NUM];
-    /* 0x17FA58 */ u8 _17FA58[PLAYER_NUM][0x140];  // ctor/dtor fn_8010EE70 / fn_8010EE74 (empty)
+    /* 0x17FA58 */ dSaveItemBox_c mSavedLetterItems[PLAYER_NUM];
     /* 0x17FF58 */ u8 _17FF58[PLAYER_NUM][0x2738]; // ctor 8013ED24, dtor 8013ED88
     /* 0x189C38 */ u8 _189C38[0x12108];     // ctor 8013F098; used by the mail code at 8010263C
 }; // size 0x19BD40
@@ -266,9 +259,9 @@ public:
     /* 0x063248 */ u8 _063248[0x98];
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
     /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
-    /* 0x0634F0 */ u8 _0634F0[0x200];       // 3 dTimeStamp_c, Item[2] at +0x1F8; fn_80114070, fn_80113AEC
-    /* 0x0636F0 */ dHomeRoom_c _0636F0;
-    /* 0x063B48 */ u8 _063B48[0xF8];
+    /* 0x0634F0 */ dBugOff_c mBugOff;          // Bug-Off standings (d_bug_off)
+    /* 0x0636F0 */ dModelRoom_c _0636F0;
+    /* 0x063C3C */ u8 _063C3C[4];
     /* 0x063C40 */ dSaveRecord78_c _063C40[9]; // then fn_8010C0A4 on the array
     /* 0x064078 */ u8 _064078[0x52];
     /* 0x0640CA */ dOutfit_c _0640CA;
@@ -276,8 +269,7 @@ public:
     /* 0x0641EC */ u8 _0641EC;              // bitfield byte, cleared by the ctor
     /* 0x0641ED */ u8 _0641ED;
     /* 0x0641EE */ u8 _0641EE[2];
-    /* 0x0641F0 */ dHomeRoom_c _0641F0;
-    /* 0x064648 */ u8 _064648[0xF4];
+    /* 0x0641F0 */ dModelRoom_c _0641F0;
     /* 0x06473C */ dSaveDLItem_c _06473C;
     /* 0x06673C */ u8 _06673C[3];
     /* 0x06673F */ u8 _06673F;

@@ -445,8 +445,10 @@ void fn_800F1A54(u8 *dst, int idx, const void *item);                  // 800F1A
 void fn_800F1A68(int idx, const void *item);                           // 800F1A68
 
 // Furniture footprint iterator (fn_800A8B28 / fn_800A8BB8 / fn_800A8BE4).
+// fn_800A8B28 fills it from an item (and returns it), fn_800A8BB8 is the tile count.
 struct dNpcFtrShape_c {
-    /* 0x00 */ u8 _00[0x14];
+    /* 0x0 */ s32 mSize; // BITM::m_ftrSize (0..2)
+    /* 0x4 */ s32 mRot; // the item id's low 2 bits
 };
 
 // Extra filter for the spot pickers.

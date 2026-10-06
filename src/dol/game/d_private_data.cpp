@@ -45,13 +45,9 @@ BOOL fn_800DCEDC();
 void fn_800B0954(BOOL, int);
 u8 fn_80162548();
 BOOL fn_8019B864();
-void fn_80112CA8(void *);
-void fn_80112BB8(void *);
-void fn_80112D24(void *);
 
 // Calendar/time helpers.
 dTime_c fn_8014CBFC(dYMD_c *date);
-dTime_c fn_80111ABC(void);
 
 // Letters and events.
 u16 fn_800FABF4(int, int);
@@ -1295,7 +1291,7 @@ void *dPrivateData_c::fn_801394D0() {
     if (idx == -1) {
         return NULL;
     }
-    return dSaveData_c::getExtra()->_17FA58[idx];
+    return &dSaveData_c::getExtra()->mSavedLetterItems[idx];
 }
 
 // 80139530
@@ -1467,7 +1463,7 @@ BOOL dPrivateDates_c::fn_80139C30(dYMD_c *out) {
     if (mDate1.year == 0) {
         fn_8014CCB4(&mDate1, 2000, 0, 1);
     }
-    dTime_c cal = fn_80111ABC();
+    dTime_c cal = getModelRoomDate();
     if (cal.year != mDate1.year || cal.month != mDate1.month || cal.mday != mDate1.day) {
         if (out != NULL) {
             fn_8014CCB4(out, cal.year, (u8)cal.month, (u8)cal.mday);
@@ -1899,9 +1895,9 @@ void dPrivateData_c::clearAll(dPrivateData_c *players) {
 // 8013AF0C
 void dPrivateData_c::clearPlayer(dPrivateData_c *players, int idx) {
     players[idx].clear();
-    fn_80112CA8(&dSaveData_c::getExtra()->mSavedLetters[idx]);
-    fn_80112BB8(dSaveData_c::getExtra()->_17FA58[idx]);
-    fn_80112D24(&dSaveData_c::getExtra()->mSavedPatterns[idx]);
+    dSaveData_c::getExtra()->mSavedLetters[idx].clear();
+    dSaveData_c::getExtra()->mSavedLetterItems[idx].clear();
+    dSaveData_c::getExtra()->mSavedPatterns[idx].init();
     fn_8013EE54(dSaveData_c::getExtra()->_17FF58[idx]);
 }
 

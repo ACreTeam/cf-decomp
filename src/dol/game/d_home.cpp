@@ -12,7 +12,6 @@
 extern "C" {
 dItem::Item fn_80077730(const dHomeRoom_c *room); // room->mWallpaper
 dItem::Item fn_80077748(const dHomeRoom_c *room); // room->mCarpet
-void fn_80112BAC(dHomeRoom_c *room, dItem::Item item); // room->mSong = item
 int fn_801626A8(int scene, const u32 *table, int *index);
 u8 fn_80162548(); // current scene
 void *fn_801683D8();
@@ -701,7 +700,7 @@ BOOL setRoomSong(int scene, dItem::Item item) {
         if (h != NULL) {
             dHomeRoom_c *r = h->getRoom(room);
             if (r != NULL) {
-                fn_80112BAC(r, item);
+                r->setSong(item);
                 return TRUE;
             }
         }
