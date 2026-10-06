@@ -166,6 +166,25 @@ dol/game/d_dsn.cpp:
 	.text       start:0x8010F124 end:0x8010FB6C
 	.data       start:0x804EE340 end:0x804EE380 align:4
 
+dol/game/d_model_room.cpp:
+	.text       start:0x80111A2C end:0x80112BB8
+	.rodata     start:0x80475CF8 end:0x80475D10 align:4
+	.bss        start:0x805ECB58 end:0x805ED1D0 align:4
+	.sbss       start:0x8074E6E8 end:0x8074E6F0 align:4
+	.sdata2     start:0x80750AD8 end:0x80750AE0
+
+dol/game/d_save_box.cpp:
+	.text       start:0x80112BB8 end:0x80113158
+
+dol/game/d_bug_off.cpp:
+	.text       start:0x80113158 end:0x8011524C
+	.ctors      start:0x80465718 end:0x8046571C
+	.data       start:0x804EE380 end:0x804EE398 align:4
+	.bss        start:0x805ED1D0 end:0x805ED570 align:4
+	.sdata      start:0x8074B018 end:0x8074B040 align:4
+	.sbss       start:0x8074E6F0 end:0x8074E700 align:4
+	.sdata2     start:0x80750AE0 end:0x80750B60
+
 dol/game/d_save_check.cpp:
 	.text       start:0x8011524C end:0x80115380
 
