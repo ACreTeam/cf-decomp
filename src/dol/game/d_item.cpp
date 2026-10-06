@@ -12,29 +12,13 @@
 // work has not started. External callees whose owners are unrecovered keep
 // their address names (see the extern "C" block).
 
+#include <game/game/d_save_dl_item.hpp>
+
 using namespace dItem;
 
 extern "C" {
 void __register_global_object(void *object, void *dtor, void *node);
 
-// Save data (d_sv / save module).
-void *fn_80115CA4(); // downloadable-item area (const)
-void *fn_80115CA8(); // downloadable-item area
-void *fn_80115B10(void *dl, u32 slot);
-void *fn_80115B30(void *dl, u32 slot);
-BITM *fn_80115420(void *block);
-BITM *fn_80115460(void *block);
-void *fn_801154DC(void *block, void *heap);
-s32 fn_801154A8(void *block);
-BOOL fn_80115588(void *block);
-BOOL fn_801155C0(void *block);
-void fn_801156AC(void *dst, void *src);
-Item fn_801153B8(void *block);
-Item fn_801157B4(void *dl, void *block, int);
-void *fn_80115910(void *dl, Item item);
-void *fn_801159B8(void *dl, Item item);
-s32 fn_80115A60(void *dl, Item *item);
-Item fn_80115BC0(void *dl, u32 slot);
 BOOL fn_8013812C(void *player, Item *item, int);
 void fn_8013A044(void *player, u16 id, int);
 
@@ -263,7 +247,7 @@ void indexTable_c::build() {
 
 // 800C1790
 void indexTable_c::addDlItems() {
-    void *dl = fn_80115CA4();
+    const dSaveDLItemList_c *dl = dSaveDLItemList_c::get();
     for (u16 *p = mIndex; p < mIndex + BASE_ID_COUNT; p++) {
         if (*p >= DL_ITEM_FIRST && *p < DL_ITEM_END) {
             *p = INDEX_NONE;
@@ -271,7 +255,7 @@ void indexTable_c::addDlItems() {
     }
 
     for (u32 slot = 0; slot < DL_ITEM_COUNT; slot++) {
-        BITM *bitm = fn_80115420(fn_80115B10(dl, slot));
+        BITM *bitm = dl->getAt(slot)->getValidBITM();
         if (bitm != NULL) {
             u16 baseId = static_cast<u32>(bitm->m_baseId);
             if (baseId < BASE_ID_COUNT) {
@@ -866,10 +850,10 @@ BITM *infoBank_c::getBITM(u16 index) {
             }
             return mpItems;
         } else if (index < DL_ITEM_END) {
-            void *dl = fn_80115CA8();
-            void *block = fn_80115B30(dl, getDlSlot(index));
+            dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
+            dSaveDLItem_c *block = dl->getAt(getDlSlot(index));
             if (block != NULL) {
-                BITM *bitm = fn_80115420(block);
+                BITM *bitm = block->getValidBITM();
                 if (bitm != NULL) {
                     if (bitm->isValid()) {
                         return bitm;
@@ -1066,7 +1050,7 @@ void seeker_c::search(int kind, int flags, candCB_c *cb) {
     }
 
     if (flags & 4) {
-        fn_80115CA8();
+        dSaveDLItemList_c::getRaw();
         BOOL any = flags & 1;
         for (u32 i = DL_ITEM_FIRST; i < DL_ITEM_END; i++) {
             BITM *bitm = bank->getBITM(static_cast<u16>(i));
@@ -1595,15 +1579,15 @@ BOOL resLoader_c::loadIndex(u16 index, void *heap) {
         return load(path, heap, 0);
     }
 
-    void *dl = fn_80115CA4();
+    const dSaveDLItemList_c *dl = dSaveDLItemList_c::get();
     u32 slot = getDlSlot(index);
     if (slot < DL_ITEM_COUNT) {
-        void *block = fn_80115B10(dl, slot);
+        dSaveDLItem_c *block = dl->getAt(slot);
         if (block != NULL) {
-            mpData = fn_801154DC(block, heap);
+            mpData = block->loadArchive((EGG::Heap *)heap);
             if (mpData != NULL) {
                 mpHeap = heap;
-                mSize = fn_801154A8(block);
+                mSize = block->getArchiveSize();
                 onLoaded();
             }
         }
@@ -1671,12 +1655,12 @@ BOOL isDlItemMarked(const u8 *mask, u16 id);
 
 // 800C45D0
 u32 makeSendData_c::countSendable() {
-    void *dl = fn_80115CA8();
+    dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
     u32 count = 0;
     for (u32 i = 0; i < mCount; i++) {
         Item item = getItem(i);
         BOOL ok = FALSE;
-        if (item.mId != ITEM_ID_NONE && fn_801159B8(dl, item)) {
+        if (item.mId != ITEM_ID_NONE && dl->find(item)) {
             ok = TRUE;
         }
         if (ok && (mpExclude == NULL || !isDlItemMarked(mpExclude, item.mId))) {
@@ -1688,11 +1672,11 @@ u32 makeSendData_c::countSendable() {
 
 // 800C4698
 void *makeSendData_c::getNthSendable(u32 n) {
-    void *dl = fn_80115CA8();
+    dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
     u32 found = 0;
     for (u32 i = 0; i < mCount; i++) {
         Item item = getItem(i);
-        void *block = fn_801159B8(dl, item);
+        void *block = dl->find(item);
         if (block != NULL && (mpExclude == NULL || !isDlItemMarked(mpExclude, item.mId))) {
             if (n == found) {
                 return block;
@@ -1732,13 +1716,13 @@ void *getPlEquipSendable(u32 n) {
 
 // 800C4868
 BOOL hasDlItem(void *block) {
-    Item item = fn_801157B4(fn_80115CA4(), block, 0);
+    Item item = dSaveDLItemList_c::get()->add((dSaveDLItem_c *)block, 0);
     return item.mId != ITEM_ID_NONE;
 }
 
 // 800C48C8
 Item makeToCstmSendData_c::getItem(u32 index) {
-    return fn_80115BC0(fn_80115CA8(), index);
+    return dSaveDLItemList_c::getRaw()->getItemAt(index);
 }
 
 // 800C4910
@@ -1762,7 +1746,7 @@ BOOL isDlBlockUsed(void *block) {
 BOOL markDlItem(u8 *mask, u16 id) {
     Item item;
     item.mId = id;
-    s32 slot = fn_80115A60(fn_80115CA8(), &item);
+    s32 slot = dSaveDLItemList_c::getRaw()->getSlot(&item);
     if (slot >= 0) {
         mask[(slot >> 3) & 0x1F] |= 1 << (slot & 7);
         return TRUE;
@@ -1774,7 +1758,7 @@ BOOL markDlItem(u8 *mask, u16 id) {
 BOOL isDlItemMarked(const u8 *mask, u16 id) {
     Item item;
     item.mId = id;
-    s32 slot = fn_80115A60(fn_80115CA8(), &item);
+    s32 slot = dSaveDLItemList_c::getRaw()->getSlot(&item);
     if (slot >= 0) {
         return (mask[(slot >> 3) & 0x1F] >> (slot & 7)) & 1;
     }
@@ -1784,9 +1768,9 @@ BOOL isDlItemMarked(const u8 *mask, u16 id) {
 // 800C4A68
 void buildDlItemMask(u8 *mask) {
     memset(mask, 0, 0x20);
-    void *dl = fn_80115CA8();
+    dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
     for (u32 slot = 0; slot < DL_ITEM_COUNT; slot++) {
-        Item item = fn_80115BC0(dl, slot);
+        Item item = dl->getItemAt(slot);
         if (item.mId != ITEM_ID_NONE) {
             markDlItem(mask, item.mId);
         }
@@ -1802,10 +1786,10 @@ dlBlockList_c::dlBlockList_c(u8 *blocks, u32 count) {
 // 800C4AF4
 BOOL dlBlockList_c::add(void *block) {
     if (block != NULL) {
-        BITM *bitm = fn_80115460(block);
+        BITM *bitm = ((dSaveDLItem_c *)block)->getBITM();
         for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
-            if (fn_80115588(p)) {
-                int rawOther = fn_80115460(p)->m_baseId;
+            if (((dSaveDLItem_c *)p)->isBITM()) {
+                int rawOther = ((dSaveDLItem_c *)p)->getBITM()->m_baseId;
                 u16 other = rawOther;
                 int rawMine = bitm->m_baseId;
                 u16 mine = rawMine;
@@ -1813,7 +1797,7 @@ BOOL dlBlockList_c::add(void *block) {
                     return TRUE;
                 }
             } else {
-                fn_801156AC(p, block);
+                ((dSaveDLItem_c *)p)->copy((dSaveDLItem_c *)block);
                 return TRUE;
             }
         }
@@ -1825,8 +1809,8 @@ BOOL dlBlockList_c::add(void *block) {
 // 800C4BC8
 BOOL dlBlockList_c::addItem(Item item) {
     if (isRealItemId(item.mId)) {
-        void *dl = fn_80115CA4();
-        void *block = fn_80115910(dl, item);
+        const dSaveDLItemList_c *dl = dSaveDLItemList_c::get();
+        void *block = dl->find(item);
         if (block != NULL && add(block)) {
             return TRUE;
         }
@@ -1885,10 +1869,10 @@ int dlBlockList_c::addFromPlayer(void *player) {
 // 800C4DA0
 int dlBlockList_c::countValid() {
     int count = 0;
-    void *dl = fn_80115CA4();
+    dSaveDLItemList_c *dl = dSaveDLItemList_c::get();
     for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
-        if (fn_801155C0(p)) {
-            Item item = fn_801157B4(dl, p, 0);
+        if (((dSaveDLItem_c *)p)->isUsed()) {
+            Item item = dl->add((dSaveDLItem_c *)p, 0);
             if (item.mId != ITEM_ID_NONE) {
                 count++;
             }
@@ -1900,10 +1884,10 @@ int dlBlockList_c::countValid() {
 // 800C4E48
 int dlBlockList_c::countOwned(void *player) {
     int count = 0;
-    fn_80115CA4();
+    dSaveDLItemList_c::get();
     for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
-        if (fn_801155C0(p)) {
-            Item item = fn_801153B8(p);
+        if (((dSaveDLItem_c *)p)->isUsed()) {
+            Item item = ((dSaveDLItem_c *)p)->getItem();
             if (item.mId != ITEM_ID_NONE && fn_8013812C(player, &item, 1)) {
                 count++;
             }

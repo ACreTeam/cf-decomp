@@ -10,17 +10,12 @@
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 
-// Save header / checksum helpers (auto_03_8011524C, auto_03_80115CDC).
-dSaveHeader_c *fn_80115CA4();
-u32 fn_80115BE8();
-void *fn_80115CA8();
-BOOL fn_80115C00(void *);
+// Checksum helpers (auto_03_80115CDC).
 BOOL fn_80115CDC(dSaveData_c *save);
 BOOL fn_80115CE0(dSaveData_c *save);
 void fn_80115CE4(dSaveData_c *save);
 BOOL fn_80115D34(dSaveData_c *save);
 void fn_80115E04(dSaveData_c *save);
-void fn_80115718(dSaveHeader_c *header);
 void fn_80116900(dSaveExtra_c *extra);
 void fn_80117078(dSaveExtra_c *extra); // update checksum
 BOOL fn_801170B0(dSaveExtra_c *extra, int arg);
@@ -243,8 +238,8 @@ extern "C" int fn_8010DBFC() {
 }
 
 // 8010DC04
-u32 dSaveData_c::getHostOffset() {
-    return offsetof(dSaveData_c, mHostData);
+u32 dSaveData_c::getDLDataOffset() {
+    return offsetof(dSaveData_c, mDLItems);
 }
 
 // 8010DC10
@@ -277,7 +272,7 @@ BOOL dSaveData_c::isGood() {
 // 8010DCB0
 void dSaveData_c::initialize() {
     fn_80115E04(this);
-    fn_80115718(fn_80115CA4());
+    dSaveDLItemList_c::get()->updateChecksum();
     fn_80116900(&mExtra);
 }
 
@@ -293,8 +288,8 @@ extern "C" void fn_8010DED0() {
 // 8010E0A8
 void dSaveData_c::updateChecksum() {
     fn_80115CE4(this);
-    dSaveHeader_c *header = fn_80115CA4();
-    header->mChecksum = fn_80115BE8();
+    dSaveDLItemList_c *items = dSaveDLItemList_c::get();
+    items->mChecksum = items->calcChecksum();
     fn_80117078(&mExtra);
 }
 
@@ -314,13 +309,13 @@ BOOL dSaveData_c::isExtraGood(int arg) {
     if (!(fn_8014B3CC() == stamp)) {
         return FALSE;
     }
-    return fn_80115C00(fn_80115CA8()) != FALSE;
+    return dSaveDLItemList_c::getRaw()->isChecksumOK() != FALSE;
 }
 
 // 8010E1B8
-u8 *dSaveData_c::getHost() {
-    dSvMgr_c::isHostTransferComplete();
-    return get()->mHostData;
+dSaveDLItemList_c *dSaveData_c::getDLData() {
+    dSvMgr_c::isDLDataTransferComplete();
+    return &get()->mDLItems;
 }
 
 // 8010E1E4

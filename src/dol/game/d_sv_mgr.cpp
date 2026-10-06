@@ -96,21 +96,21 @@ int dSvMgr_c::isFullTransferComplete() {
 
 int dSvMgr_c::isTownTransferComplete() {
     dSaveData_c::getRaw();
-    return isTransferComplete(0, dSaveData_c::getHostOffset());
+    return isTransferComplete(0, dSaveData_c::getDLDataOffset());
 }
 
-int dSvMgr_c::isHostTransferComplete() {
-    return isTransferComplete(getHostDataOffset(), 0x200004);
+int dSvMgr_c::isDLDataTransferComplete() {
+    return isTransferComplete(getDLDataOffset(), offsetof(dSaveDLItemList_c, _200004)); // checksum + slots
 }
 
 int dSvMgr_c::isPlayerTransferComplete(int player) {
     return isTransferComplete(getPlayerDataOffset(player), 0x86C0);
 }
 
-int dSvMgr_c::getHostDataOffset() {
+int dSvMgr_c::getDLDataOffset() {
     dSaveData_c *base = dSaveData_c::getRaw();
-    u8 *host = dSaveData_c::getRaw()->mHostData;
-    return host - reinterpret_cast<u8 *>(base);
+    u8 *data = (u8 *)&dSaveData_c::getRaw()->mDLItems;
+    return data - reinterpret_cast<u8 *>(base);
 }
 
 int dSvMgr_c::getVisitorDataOffset() {

@@ -18,6 +18,8 @@
 #include <game/game/d_museum.hpp>
 #include <game/game/d_theater.hpp>
 #include <game/game/d_notice.hpp>
+#include <game/game/d_save_check.hpp>
+#include <game/game/d_save_dl_item.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
@@ -80,14 +82,7 @@ struct dSaveTimeOffset_c {
     /* 0x8 */ u8 _8[8];
 }; // size 0x10
 
-// 0x20 at the start of the file. CRC32 over +0x04..+0x20.
-struct dSaveHeader_c {
-    /* 0x00 */ u32 mChecksum;
-    /* 0x04 */ u16 mVersion; // SAVE_VERSION
-    /* 0x06 */ u8 mState;
-    /* 0x07 */ u8 mFlags;
-    /* 0x08 */ u8 _08[0x18];
-}; // size 0x20
+// The check block at the start of the file is dSaveCheck_c (d_save_check.hpp).
 
 // Rooms and houses (dHomeRoom_c / dHome_c / dHomeList_c) are in d_home.hpp.
 // The house ctor/dtor used here are fn_8010EC64 / fn_8010ECC0 (rooms: ctor inlined
@@ -202,7 +197,7 @@ struct dSaveExtra_c {
 
 class dSaveData_c {
 public:
-    static u32 getHostOffset();           // 8010DC04
+    static u32 getDLDataOffset();         // 8010DC04: offsetof mDLItems
     static u16 getVersion();              // 8010DC10
     static dSaveData_c *get();            // 8010DC18 (after dSvMgr_c::isFullTransferComplete)
     static dSaveData_c *getRaw();         // 8010DC3C
@@ -210,7 +205,7 @@ public:
     void initialize();                    // 8010DCB0: initial fill after construction
     void updateChecksum();                // 8010E0A8
     BOOL isExtraGood(int arg);            // 8010E0F8: dSaveExtra_c CRC, buildings CRC, item version
-    static u8 *getHost();                 // 8010E1B8 (after isHostTransferComplete): base+0x20F320
+    static dSaveDLItemList_c *getDLData(); // 8010E1B8: mDLItems, after isDLDataTransferComplete
     static dSaveData_c *getTown();        // 8010E1E4 (after isTownTransferComplete)
     static dSaveExtra_c *getExtra();      // 8010E208
     static dSaveData_c *getRaw2();        // 8010E234
@@ -232,7 +227,7 @@ public:
     static dSaveOption_c sOption;         // 8074E6D8: cached option bits + changed flags
     static dSaveData_c *sSaveData;        // 8074E6E0: the whole save file
 
-    /* 0x000000 */ dSaveHeader_c mHeader;
+    /* 0x000000 */ dSaveCheck_c mHeader;
     /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
     /* 0x021B20 */ dAnimalSave_c mAnimals;
     /* 0x05E260 */ dDesign_c _05E260;
@@ -283,7 +278,7 @@ public:
     /* 0x0641EE */ u8 _0641EE[2];
     /* 0x0641F0 */ dHomeRoom_c _0641F0;
     /* 0x064648 */ u8 _064648[0xF4];
-    /* 0x06473C */ u8 _06473C[0x2000];      // ctor 80115380
+    /* 0x06473C */ dSaveDLItem_c _06473C;
     /* 0x06673C */ u8 _06673C[3];
     /* 0x06673F */ u8 _06673F;
     /* 0x066740 */ u8 _066740[0x422];
@@ -314,11 +309,13 @@ public:
     /* 0x073522 */ dTimeStamp_c _073522;    // set by fn_8010DCF0
     /* 0x07352A */ dMuseum_c mMuseum;
     /* 0x07359E */ dUnk300C_c _07359E;
-    /* 0x0735AE */ u8 _0735AE[0x14];
+    /* 0x0735AE */ u8 _0735AE;               // fn_8015384C's object starts here
+    /* 0x0735AF */ dItem::dSaveItemRarity_c mItemRarity;
+    /* 0x0735B7 */ u8 _0735B7[0xB];         // fn_801541D8
     /* 0x0735C2 */ u8 _0735C2;              // low nibble read by d_item
     /* 0x0735C3 */ u8 _0735C3[8];
     /* 0x0735CB */ u8 _0735CB;              // 0xFF = none; days counter
     /* 0x0735CC */ u8 _0735CC[0x14];
     /* 0x0735E0 */ dSaveExtra_c mExtra;
-    /* 0x20F320 */ u8 mHostData[0x200020];  // ctor 801156B4; getHost()
+    /* 0x20F320 */ dSaveDLItemList_c mDLItems; // getDLData()
 }; // size 0x40F340

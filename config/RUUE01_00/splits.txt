@@ -166,6 +166,15 @@ dol/game/d_dsn.cpp:
 	.text       start:0x8010F124 end:0x8010FB6C
 	.data       start:0x804EE340 end:0x804EE380 align:4
 
+dol/game/d_save_check.cpp:
+	.text       start:0x8011524C end:0x80115380
+
+dol/game/d_save_dl_item.cpp:
+	.text       start:0x80115380 end:0x80115CDC
+	.ctors      start:0x8046571C end:0x80465720
+	.bss        start:0x805ED570 end:0x805EF570
+	.sdata2     start:0x80750B60 end:0x80750B68 align:4
+
 dol/game/d_land.cpp:
 	.text       start:0x8011660C end:0x80116900
 	.data       start:0x804EE398 end:0x804EE498 align:4
@@ -204,7 +213,7 @@ dol/game/d_animal.cpp:
 	.bss        start:0x805F15D8 end:0x805F1A38 align:4
 	.sdata      start:0x8074B058 end:0x8074B088 align:4
 	.sbss       start:0x8074E708 end:0x8074E7C0
-	.sdata2     start:0x80750B68 end:0x80750BE0 align:4
+	.sdata2     start:0x80750B68 end:0x80750BE0
 
 dol/game/d_animal_id.cpp:
 	.text       start:0x80135E88 end:0x80136244

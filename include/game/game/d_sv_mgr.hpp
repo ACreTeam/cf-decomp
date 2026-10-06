@@ -248,9 +248,9 @@ public:
     static int isTransferComplete(int offset, int size);
     static int isFullTransferComplete();
     static int isTownTransferComplete();
-    static int isHostTransferComplete();
+    static int isDLDataTransferComplete();
     static int isPlayerTransferComplete(int player);
-    static int getHostDataOffset();
+    static int getDLDataOffset();
     static int getVisitorDataOffset();
     static int getPlayerDataOffset(int player);
     static void addVisitor(int player);

@@ -4089,10 +4089,10 @@ void fgMngProc_procDayChange(BOOL arg) {
         fn_80190C44(FD_ID_TOWN)->clearFlagsB();
         dSaveData_c::getTown()->mTownHost.decrease(days);
         dSaveData_c::getTown()->mMuseum.sendCompleteMail();
-        fn_8015384C(dSaveData_c::getTown()->_0735AE);
+        fn_8015384C(&dSaveData_c::getTown()->_0735AE);
     }
     dSaveData_c::getExtra()->mTheater.update();
-    fn_801541D8(&dSaveData_c::getTown()->_0735AE[9]);
+    fn_801541D8(dSaveData_c::getTown()->_0735B7);
     fn_80146DD8(&dSaveData_c::getTown()->_063200);
     ((dTimeStamp_c *)save->_068372)->set(OSCalendarTimeToTicks(&today));
     sFgMngProcFlags = 0;

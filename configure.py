@@ -640,6 +640,8 @@ config.libs = [
             Object(Matching, "dol/game/d_random.cpp"),
             Object(NonMatching, "dol/game/d_save_data.cpp"),
             Object(Matching, "dol/game/d_dsn.cpp"),
+            Object(Matching, "dol/game/d_save_check.cpp"),
+            Object(Matching, "dol/game/d_save_dl_item.cpp"),
             Object(Matching, "dol/game/d_land.cpp"),
             Object(Matching, "dol/game/d_mail.cpp"),
             Object(Matching, "dol/game/d_museum.cpp"),

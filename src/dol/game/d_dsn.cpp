@@ -15,8 +15,6 @@ extern "C" {
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 
 // Downloaded item blocks (Ghidra: DLC_Item).
-dItem::BITM *fn_80115460(void *dlItem);
-void *fn_801154DC(void *dlItem, EGG::Heap *heap); // decompressed .brres, allocated from heap
 }
 
 extern EGG::Heap *lbl_8074E440;
@@ -54,14 +52,14 @@ void dDesign_c::initDefault() {
 // 8010F254
 BOOL dDesign_c::setFromDlItem(void *dlItem) {
     BOOL ok = TRUE;
-    dItem::BITM *bitm = fn_80115460(dlItem);
-    setFromBITM(fn_80115460(dlItem));
+    dItem::BITM *bitm = ((dSaveDLItem_c *)dlItem)->getBITM();
+    setFromBITM(((dSaveDLItem_c *)dlItem)->getBITM());
     if (!bitm->m_hasRes) {
         return FALSE;
     }
 
     EGG::Heap *heap = lbl_8074E440;
-    void *data = fn_801154DC(dlItem, heap);
+    void *data = ((dSaveDLItem_c *)dlItem)->loadArchive(heap); // the .brres
     if (data != NULL) {
         nw4r::g3d::ResFile file(data);
         file.Init();
