@@ -4,6 +4,7 @@
 // sinit 800F5768; built with -sym on). Class names under dNpc:: come from RTTI; the rest,
 // and all method and field names, are inferred unless they came with symbols.txt.
 
+#include <game/game/d_field_info.hpp>
 #include <types.h>
 #include <game/game/d_date.hpp>
 #include <game/game/d_item.hpp>
@@ -443,17 +444,6 @@ void fn_800F1A28(int *idx, void *item, const u8 *src);                // 800F1A2
 void fn_800F1A54(u8 *dst, int idx, const void *item);                  // 800F1A54
 void fn_800F1A68(int idx, const void *item);                           // 800F1A68
 
-// Unit/block map returned by fn_80190C44 (0: current scene, 1: outdoors).
-struct dNpcFieldMap_c {
-    /* 0x00 */ u8 _00[8];
-    /* 0x08 */ int mBlockW;
-    /* 0x0C */ int mBlockH;
-    /* 0x10 */ int mUnitW;
-    /* 0x14 */ int mUnitH;
-    /* 0x18 */ u8 _18[0xC];
-    /* 0x24 */ void *_24;
-};
-
 // Furniture footprint iterator (fn_800A8B28 / fn_800A8BB8 / fn_800A8BE4).
 struct dNpcFtrShape_c {
     /* 0x00 */ u8 _00[0x14];
@@ -467,12 +457,12 @@ class dActor_c;
 class dPlayerActor_c;
 dPlayerActor_c *fn_800F1AE0(int x, int z);                           // 800F1AE0
 dActor_c *fn_800F1B7C(int x, int z);                                 // 800F1B7C
-dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dNpcFieldMap_c *map, u32 kind); // 800F1BE4
-BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dNpcFieldMap_c *map, u32 kind, BOOL allowFg94, BOOL checkA); // 800F1DF0
-BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dNpcFieldMap_c *map, u32 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
+dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u32 kind); // 800F1BE4
+BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u32 kind, BOOL allowFg94, BOOL checkA); // 800F1DF0
+BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u32 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
 BOOL fn_800F2138(mVec3_c *out, const mVec3_c *pos, u32 radius);      // 800F2138
 BOOL fn_800F22FC(const mVec3_c *pos, int x, int z, f32 dist);        // 800F22FC
-BOOL fn_800F23C0(int *outX, int *outZ, dNpcFieldMap_c *map, u8 kind, int x0, int x1, int z0, int z1,
+BOOL fn_800F23C0(int *outX, int *outZ, dFdBase_c *map, u8 kind, int x0, int x1, int z0, int z1,
                  dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist); // 800F23C0
 BOOL fn_800F25A4(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist); // 800F25A4
 BOOL fn_800F2644(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist); // 800F2644
@@ -481,9 +471,9 @@ BOOL fn_800F28AC(mVec3_c *out);                                      // 800F28AC
 BOOL fn_800F2920(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist); // 800F2920
 BOOL fn_800F29C4(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist); // 800F29C4
 BOOL fn_800F2A48(const dItem::Item *item);                           // 800F2A48
-u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dNpcFieldMap_c *map, const mVec3_c *exclude,
+u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, const mVec3_c *exclude,
                 BOOL allowFg94, f32 dist); // 800F2C94
-u32 fn_800F2F8C(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dNpcFieldMap_c *map, const mVec3_c *exclude,
+u32 fn_800F2F8C(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, const mVec3_c *exclude,
                 BOOL allowFg94, f32 dist); // 800F2F8C
 BOOL fn_800F3178(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c *exclude, u32 type,
                  BOOL skipTrees, BOOL allowFg94, f32 dist); // 800F3178

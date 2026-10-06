@@ -4,7 +4,6 @@
 #include <game/game/d_save_data.hpp>
 #include <revolution/OS/OSTime.h>
 
-#define MONTHDAY(m, d) (((m) << 8) | (d))
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {

@@ -27,14 +27,14 @@ public:
     virtual void vf20();
     virtual void vf24();
     virtual void vf28();
-    virtual void vf2C();
+    virtual void vf2C(f32 value);                      // 0x2C: (d_field_assessment)
     virtual void vf30();
     virtual void vf34();
     virtual void vf38();
-    virtual void vf3C();
+    virtual void vf3C(f32 value);                      // 0x3C
     virtual void vf40();
     virtual void vf44();
-    virtual void vf48();
+    virtual void vf48(const nw4r::math::VEC3 *vec);    // 0x48
     virtual void vf4C();
     virtual void vf50();
     virtual void setRegisterColor(const _GXColor &color0, const _GXColor &color1, u8 index); // 0x54
@@ -43,7 +43,7 @@ public:
     virtual void vf60();
     virtual void vf64();
     virtual void vf68();
-    virtual void vf6C();
+    virtual void vf6C(const nw4r::math::VEC3 *vec, int arg); // 0x6C
     virtual void vf70();
     virtual void vf74();
     virtual void setScale(float scale); // 0x78

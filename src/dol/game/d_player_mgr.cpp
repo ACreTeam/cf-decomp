@@ -69,8 +69,6 @@ void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 void fn_801B9304();
-void fn_800A3044(u8 a, u8 b, u8 c);
-void fn_800A3118(int a, u8 b, u8 c, int d);
 int fn_80162548();
 BOOL fn_80162558(u8 a);
 void fn_80082B04(mVec3_c *out, const mVec3_c *in);
@@ -82,6 +80,10 @@ void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarg
 void fn_80285110(void *obj, dEffectTarget_c *target);
 u8 fn_800A8850(const mVec3_c *pos);
 }
+
+// The field task code (d_fg_mng_task.inc, #included by d_field_assessment.cpp).
+void fgMngTask_procGroupAt(u8 x, u8 z, u8 layer);               // 800A3044
+void fgMngTask_releaseAt(u8 scene, int x, int z, u32 layer);    // 800A3118
 
 // 8074E600 / 8074E602, set by the __sinit: look-at limits (fn_800FE938, also read by d_a_player).
 s16 sLookPitchMax = 10.0f * 182.04445f;
@@ -2893,7 +2895,7 @@ void fn_80101540() {
 }
 
 // 80101558
-u8 fn_80101558() {
+BOOL fn_80101558() {
     return lbl_805D2440._194AB;
 }
 
@@ -3200,21 +3202,21 @@ void fn_80101DC4() {
 }
 
 // 80101DC8
-BOOL fn_80101DC8(int idx, int b, int state, const u8 *param) {
+BOOL fn_80101DC8(int idx, u8 b, int state, const u8 *param) {
     fn_80101DA8(idx, state);
     fn_80101DAC(idx, param);
     return fn_80101EB0(idx, b, state, param);
 }
 
 // 80101E3C
-BOOL fn_80101E3C(int idx, int b, int state, const u8 *param) {
+BOOL fn_80101E3C(int idx, u8 b, int state, const u8 *param) {
     fn_80101DA8(idx, state);
     fn_80101DAC(idx, param);
     return fn_80101EB0(idx, b, state, param);
 }
 
 // 80101EB0
-BOOL fn_80101EB0(int idx, int b, int state, const u8 *param) {
+BOOL fn_80101EB0(int idx, u8 b, int state, const u8 *param) {
     switch (state) {
     case 0x12:
     case 0x3C:
@@ -3222,34 +3224,34 @@ BOOL fn_80101EB0(int idx, int b, int state, const u8 *param) {
     case 0x55:
     case 0x57:
     case 0x5B:
-        fn_800A3044(param[0], param[1], 0);
+        fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
     case 0x13:
     case 0x41:
         if (param[5] != 0) {
-            fn_800A3044(param[2], param[3], 0);
+            fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
     case 0x40:
-        fn_800A3044(param[4], param[5], 0);
+        fgMngTask_procGroupAt(param[4], param[5], 0);
         break;
     case 0x45:
-        fn_800A3044(param[2], param[3], 0);
+        fgMngTask_procGroupAt(param[2], param[3], 0);
         break;
     case 0x46:
     case 0x52:
     case 0x53:
         if (param[4] != 0) {
-            fn_800A3118(b, param[2], param[3], 0);
+            fgMngTask_releaseAt(b, param[2], param[3], 0);
         } else {
-            fn_800A3044(param[2], param[3], 0);
+            fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
     case 0x59:
-        fn_800A3118(b, param[0], param[1], 0);
+        fgMngTask_releaseAt(b, param[0], param[1], 0);
         break;
     case 0x7E:
-        fn_800A3044(param[2], param[3], param[4]);
+        fgMngTask_procGroupAt(param[2], param[3], param[4]);
         break;
     default:
         return FALSE;

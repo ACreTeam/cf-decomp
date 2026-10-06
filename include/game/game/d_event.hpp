@@ -62,6 +62,18 @@ enum dQuestEvent_e {
     EVENT_NUM
 };
 
+// Ids past EVENT_NUM in the town's event list (procEvents adds them on Wisp's days; endEvents
+// removes the lamps for both).
+enum {
+    EVENT_LAMP_BURIED = EVENT_NUM, // buryLamp() succeeded today
+    EVENT_LAMP_SAME_DAY,           // the saved lamp date is today
+};
+
+// dEvent::getTodayVisitor() (only the one the field manager uses is named).
+enum dVisitor_e {
+    VISITOR_WISP = 5, // isVisitorHere: 20:00..6:00; procEvents buries a lamp on his day
+};
+
 #define EVENT_ACTIVE_NUM 10
 
 // dEventInfo_c::mKind

@@ -15,6 +15,8 @@
 #include <lib/egg/core/eggHeap.h>
 #include <game/game/d_date.hpp>
 #include <game/game/d_catalog.hpp>
+#include <game/game/d_fish_info.hpp>
+#include <game/game/d_insect_info.hpp>
 #include <cstring>
 #include <cstddef>
 
@@ -46,8 +48,6 @@ struct dAnimalEvent_c {
 
 // Callees in other TUs declared with differing signatures by the first-pass chunks.
 extern "C" {
-int fn_80091370(dTime_c *time, int, int, int);
-int fn_800BD6A8(dTime_c *time, int, int, int);
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 BOOL fn_800DCEDC();
 u16 fn_800FABF4(int looks, int season);
@@ -299,8 +299,6 @@ extern "C" {
 
 // Other TUs.
 BOOL fn_8014A034(void *fg, int *x, int *z, u32 player);
-dNpcFieldMap_c *fn_80190C44(int outdoor);
-BOOL fn_8008C39C(dNpcFieldMap_c *map, int bx, int bz, u32 type);
 }
 BOOL isFurnitureKind(int kind);
 
@@ -1294,7 +1292,7 @@ BOOL D014(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
 // 8011DBA0
 // Random block (not on the map edge) of the given type; returns its center unit.
 BOOL getBlockTypeSpot(int *x, int *z, u32 type) {
-    dNpcFieldMap_c *map = fn_80190C44(1);
+    dFdBase_c *map = fn_80190C44(1);
     if (map == NULL) {
         return FALSE;
     }
@@ -1307,7 +1305,7 @@ BOOL getBlockTypeSpot(int *x, int *z, u32 type) {
 
     for (int j = 1; j < h; j++) {
         for (int i = 1; i < w; i++) {
-            if (fn_8008C39C(map, i, j, type)) {
+            if (map->hasBlockFlag(i, j, type)) {
                 count++;
                 f32 chance = 100.0f / count;
                 if (cM::rndF(100.0f) < chance) {
@@ -2893,7 +2891,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
     switch (kind) {
     case 0:
         if (cM::rndF(100.0f) < 50.0f) {
-            u32 idx = fn_800BD6A8(now, 4, 0, 1);
+            u32 idx = dInsectInfo::getRandomByRarity(*now, INSECT_RARITY_RARE, INSECT_RARITY_COMMON, TRUE);
             if (idx < 0x40) {
                 item.setFromIndex(dItem::ITEM_IDX_COMMON_BUTTERFLY, idx, 0);
                 if (item.isSame(prev)) {
@@ -2904,7 +2902,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
         break;
     case 1:
         if (cM::rndF(100.0f) < 50.0f) {
-            u32 idx = fn_80091370(now, 4, 0, 1);
+            u32 idx = dFishInfo::getRandomByRarity(*now, FISH_RARITY_RARE, FISH_RARITY_COMMON, TRUE);
             if (idx < 0x40) {
                 item.setFromIndex(dItem::ITEM_IDX_BITTERLING, idx, 0);
                 if (item.isSame(prev)) {
@@ -4102,14 +4100,14 @@ BOOL dAnimal_c::clearExpiredRequest(dLostQuest_c *lost, BOOL enable) {
 
 // 80124AF0
 u32 dAnimal_c::pickInsectRequest(dItem::Item *item, u8 *arg) {
-    item->setFromIndex(dItem::ITEM_IDX_COMMON_BUTTERFLY, fn_800BD6A8(dTime_c::getCurrent(), 4, 0, 1), FALSE);
+    item->setFromIndex(dItem::ITEM_IDX_COMMON_BUTTERFLY, dInsectInfo::getRandomByRarity(*dTime_c::getCurrent(), INSECT_RARITY_RARE, INSECT_RARITY_COMMON, TRUE), FALSE);
     *arg = dQuestVillager_c::getInsectPriceRank(item);
     return 0;
 }
 
 // 80124B5C
 u32 dAnimal_c::pickFishRequest(dItem::Item *item, u8 *arg) {
-    item->setFromIndex(dItem::ITEM_IDX_BITTERLING, fn_80091370(dTime_c::getCurrent(), 4, 0, 1), FALSE);
+    item->setFromIndex(dItem::ITEM_IDX_BITTERLING, dFishInfo::getRandomByRarity(*dTime_c::getCurrent(), FISH_RARITY_RARE, FISH_RARITY_COMMON, TRUE), FALSE);
     *arg = dQuestVillager_c::getFishPriceRank(item);
     return 0;
 }
@@ -6967,7 +6965,6 @@ extern "C" {
 // Event handlers in lbl_80475D38.
 
 // Other TUs.
-void fn_8008BED0(mVec3_c *out, int x, int z);
 }
 
 // The flag in dAnimalMemory_c+0x00 tested by sendTunekichiInvites.
@@ -6982,7 +6979,7 @@ BOOL dAnimalBlock_c::getHousePos(mVec3_c *out, int idx) {
     int x = 0;
     int z = 0;
     if (getHouseBlockPos(&x, &z, idx)) {
-        fn_8008BED0(out, x, z);
+        dFdBase_c::getUnitCenterPos(out, x, z);
         return TRUE;
     }
     return FALSE;

@@ -39,19 +39,19 @@ dol/game/d_event.cpp:
 	.sbss       start:0x8074E2E0 end:0x8074E2E8 align:4
 
 dol/game/d_field_info.cpp:
-	.text       start:0x8008BD2C end:0x8008EDEC
+	.text       start:0x8008BD2C end:0x8008EDE8
 	.rodata     start:0x8046EEA8 end:0x8046EEC0
 	.data       start:0x804DF990 end:0x804DFB10
 	.bss        start:0x80587818 end:0x80587840
-	.sdata      start:0x80749EE0 end:0x80749F28
+	.sdata      start:0x80749EE0 end:0x80749F20
 	.sbss       start:0x8074E300 end:0x8074E310
 	.sdata2     start:0x807505A0 end:0x807505C0
 
 dol/game/d_screenshot.cpp:
-	.text       start:0x8008EDEC end:0x8008FE50
+	.text       start:0x8008EDE8 end:0x8008FE50
 	.data       start:0x804DFB10 end:0x804DFB60
-	.bss        start:0x80587840 end:0x80588D10
-	.sdata      start:0x80749F28 end:0x80749F60
+	.bss        start:0x80587840 end:0x80588D10 align:32
+	.sdata      start:0x80749F20 end:0x80749F60
 	.sbss       start:0x8074E310 end:0x8074E330
 
 dol/game/d_fireworks.cpp:
@@ -80,6 +80,16 @@ dol/game/d_fg_data.cpp:
 	.data       start:0x804E17F0 end:0x804E1808
 	.bss        start:0x80588D10 end:0x80588D58
 
+dol/game/d_field_assessment.cpp:
+	.text       start:0x80091AF8 end:0x800A5D3C
+	.ctors      start:0x80465670 end:0x80465674
+	.rodata     start:0x8046EFA0 end:0x8046F1E8
+	.data       start:0x804E1808 end:0x804E3C40
+	.bss        start:0x80588D58 end:0x8058B5F8
+	.sdata      start:0x80749FB8 end:0x8074A3C8
+	.sbss       start:0x8074E338 end:0x8074E378
+	.sdata2     start:0x80750658 end:0x80750708
+
 dol/game/d_fg_item.cpp:
 	.text       start:0x800A5D3C end:0x800A70AC
 	.ctors      start:0x80465674 end:0x80465678
@@ -90,6 +100,16 @@ dol/game/d_fg_item.cpp:
 	.sbss       start:0x8074E378 end:0x8074E380 align:4
 	.sdata2     start:0x80750708 end:0x80750728 align:4
 
+dol/game/d_insect_info.cpp:
+	.text       start:0x800BD450 end:0x800BDDE0
+	.ctors      start:0x804656B0 end:0x804656B4
+	.rodata     start:0x80471A00 end:0x80471B40
+	.data       start:0x804E7478 end:0x804E89A8
+	.bss        start:0x8059AD80 end:0x8059AD98
+	.sdata      start:0x8074A4F8 end:0x8074A520
+	.sbss       start:0x8074E488 end:0x8074E490
+	.sdata2     start:0x807507B0 end:0x807507C8
+
 dol/game/d_item.cpp:
 	.text       start:0x800C0F80 end:0x800C578C
 	.ctors      start:0x804656B4 end:0x804656B8
@@ -97,7 +117,7 @@ dol/game/d_item.cpp:
 	.data       start:0x804EA298 end:0x804EA8E0 align:4
 	.bss        start:0x8059AD98 end:0x8059DD30 align:4
 	.sdata      start:0x8074A900 end:0x8074A9A0 align:4
-	.sbss       start:0x8074E490 end:0x8074E498 align:4
+	.sbss       start:0x8074E490 end:0x8074E498
 
 dol/game/d_nickname.cpp:
 	.text       start:0x800EB9B4 end:0x800EBB24

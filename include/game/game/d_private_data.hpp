@@ -506,7 +506,7 @@ public:
     /* 0x83C2 */ dYMD_c _83C2;
     /* 0x83C6 */ dYMD_c _83C6;
     /* 0x83CA */ dItem::Item _83CA;
-    /* 0x83CC */ u8 _83CC[0x1A];
+    /* 0x83CC */ u16 _83CC[13]; // Bunny Day egg counts (12 kinds + the fake egg)
     /* 0x83E6 */ dBirthday_c mBirthday;
     /* 0x83E8 */ u8 _83E8;
     /* 0x83E9 */ u8 _83E9;

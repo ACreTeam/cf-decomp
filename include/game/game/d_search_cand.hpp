@@ -17,15 +17,6 @@
 #include <game/game/d_random.hpp>
 #include <game/game/d_field_info.hpp>
 
-// Field grid sizes returned by fn_80190C44 (class not recovered; only the fields used here).
-struct dFdGridInfo_c {
-    /* 0x00 */ u8 _00[8];
-    /* 0x08 */ int mBlockW; // acres (BLOCK_X_NUM)
-    /* 0x0C */ int mBlockH;
-    /* 0x10 */ int mUnitW;  // units (BLOCK_X_NUM * UT_X_NUM)
-    /* 0x14 */ int mUnitH;
-};
-extern "C" dFdGridInfo_c *fn_80190C44(int idx); // 80190C44
 
 class dSearchCandCore_c {
 public:
@@ -61,7 +52,29 @@ public:
     dSearchCandXZCore_c(int width, int height, u32 *bits)
         : dSearchCandCore_c(width * height, bits), mWidth(width), mHeight(height) {}
     virtual BOOL check(int idx) { return check(idx % mWidth, idx / mWidth); } // 8008EDC0 (weak)
-    virtual BOOL check(int x, int z) = 0;
+    virtual BOOL check(int x, int z) { return TRUE; } // 8008EDE0 (weak)
+
+    // A random candidate as (x, z); FALSE if none.
+    BOOL getRandomXZ(int *x, int *z) {
+        int idx = getRandom();
+        if (idx < 0) {
+            return FALSE;
+        }
+        *x = idx % mWidth;
+        *z = idx / mWidth;
+        return TRUE;
+    }
+
+    // The nth candidate as (x, z); FALSE if none.
+    BOOL getNthXZ(int n, int *x, int *z) {
+        int idx = getNth(n);
+        if (idx < 0) {
+            return FALSE;
+        }
+        *x = idx % mWidth;
+        *z = idx / mWidth;
+        return TRUE;
+    }
 
     void removeBorder();                                     // 8015F674: the outer ring of cells
 
@@ -118,11 +131,13 @@ public:
 // (insidePlHsBkCand_c, ufoCand_c, lightHouseCand_c), plHsCand_c.
 class dFdGutSearchCand_c : public dSearchCandXZCore_c {
 public:
-    dFdGutSearchCand_c(dFdGridInfo_c *info = fn_80190C44(1))
+    dFdGutSearchCand_c(dFdBase_c *info = fn_80190C44(1))
         : dSearchCandXZCore_c(info->mUnitW, info->mUnitH, mBuf) {
         mInfo = fn_80190C44(1);
     }
+    // Every unit of a dFdBase_c's grid; the derived class sets mInfo (raccoCand_c).
+    explicit dFdGutSearchCand_c(const dFdBase_c *fd) : dSearchCandXZCore_c(fd->mUnitW, fd->mUnitW, mBuf) {}
 
     /* 0x01C */ u32 mBuf[(BLOCK_X_NUM * UT_X_NUM * BLOCK_Z_NUM * UT_Z_NUM + 31) / 32];
-    /* 0x63C */ dFdGridInfo_c *mInfo;
+    /* 0x63C */ dFdBase_c *mInfo;
 }; // size 0x640

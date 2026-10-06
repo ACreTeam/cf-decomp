@@ -1,3 +1,4 @@
+#include <game/game/d_field_info.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <game/game/d_save_data.hpp>
@@ -57,8 +58,6 @@ u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
 BOOL fn_8014D07C(void *);
-void *fn_80190C44(int);
-BOOL fn_8008C674(void *map, int x, int y);
 void fn_801109EC(void *, int, int);
 void fn_80116540(dSaveData_c *, int);
 void fn_80116510(dSaveData_c *, int);
@@ -2133,20 +2132,20 @@ void dPrivateData_c::fn_8013B848() {
         x = idx / 7;
         y = idx % 7;
     } else {
-        s32 *map = (s32 *)fn_80190C44(1);
+        dFdBase_c *map = fn_80190C44(1);
         int count = 0;
-        for (int j = 1; j < map[3] - 1; j++) {
-            for (int i = 1; i < map[2] - 1; i++) {
-                if (fn_8008C674(map, i, j)) {
+        for (int j = 1; j < map->mBlockH - 1; j++) {
+            for (int i = 1; i < map->mBlockW - 1; i++) {
+                if (map->isBlockVariant(i, j)) {
                     count++;
                 }
             }
         }
         int pick = cM::rndInt(count);
         int n = 0;
-        for (int j = 1; j < map[3] - 1; j++) {
-            for (int i = 1; i < map[2] - 1; i++) {
-                if (fn_8008C674(map, i, j)) {
+        for (int j = 1; j < map->mBlockH - 1; j++) {
+            for (int i = 1; i < map->mBlockW - 1; i++) {
+                if (map->isBlockVariant(i, j)) {
                     if (n == pick) {
                         x = i;
                         y = j;

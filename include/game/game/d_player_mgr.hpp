@@ -370,7 +370,7 @@ BOOL fn_80101500(); // 80101500
 void fn_80101514(); // 80101514
 u8 fn_8010152C(); // 8010152C
 void fn_80101540(); // 80101540
-u8 fn_80101558(); // 80101558
+BOOL fn_80101558(); // 80101558
 void fn_8010156C(); // 8010156C
 BOOL fn_80101584(int slot, const dItem::Item *item); // 80101584
 u32 fn_801015F4(); // 801015F4
@@ -398,9 +398,9 @@ void fn_80101DAC(int idx, const u8 *value); // 80101DAC
 BOOL fn_80101DB0(int idx, int state); // 80101DB0
 void fn_80101DC0(); // 80101DC0
 void fn_80101DC4(); // 80101DC4
-BOOL fn_80101DC8(int idx, int b, int state, const u8 *param); // 80101DC8
-BOOL fn_80101E3C(int idx, int b, int state, const u8 *param); // 80101E3C
-BOOL fn_80101EB0(int idx, int b, int state, const u8 *param); // 80101EB0
+BOOL fn_80101DC8(int idx, u8 b, int state, const u8 *param); // 80101DC8
+BOOL fn_80101E3C(int idx, u8 b, int state, const u8 *param); // 80101E3C
+BOOL fn_80101EB0(int idx, u8 b, int state, const u8 *param); // 80101EB0
 BOOL fn_80102138(int a, int b); // 80102138
 u8 fn_801021B0(u32 state); // 801021B0
 int fn_801021D0(const dItem::Item *a, const dItem::Item *b); // 801021D0

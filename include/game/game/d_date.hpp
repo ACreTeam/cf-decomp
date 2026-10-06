@@ -67,6 +67,40 @@ enum dTime_Month_e {
     MONTH_NUM
 };
 
+#define MONTHDAY(m, d) (((m) << 8) | (d)) // month 0-based, as dTime_c::month
+
+#define TIME_DAY_START_HOUR 6 // the game day starts at 6:00 (the day change)
+#define TIME_DAYS_PER_WEEK 7
+
+// dTime_c::getTerm(): the first i with MONTHDAY(month, mday) <= sTermDates[i] (d_date.cpp).
+enum dTime_Term_e {
+    TERM_JAN_01_FEB_03,
+    TERM_FEB_04_FEB_17,
+    TERM_FEB_18_FEB_24,
+    TERM_FEB_25_MAR_31,
+    TERM_APR_01_APR_03,
+    TERM_APR_04_APR_08,
+    TERM_APR_09_JUL_22,
+    TERM_JUL_23_SEP_15,
+    TERM_SEP_16_SEP_30,
+    TERM_OCT_01_OCT_04,
+    TERM_OCT_05_OCT_10,
+    TERM_OCT_11_OCT_16,
+    TERM_OCT_17_OCT_20,
+    TERM_OCT_21_OCT_25,
+    TERM_OCT_26_OCT_30,
+    TERM_OCT_31_NOV_02,
+    TERM_NOV_03_NOV_09,
+    TERM_NOV_10_NOV_13,
+    TERM_NOV_14_NOV_19,
+    TERM_NOV_20_NOV_25,
+    TERM_NOV_26_DEC_01,
+    TERM_DEC_02_DEC_10,
+    TERM_DEC_11_DEC_31,
+
+    TERM_NUM
+};
+
 class dTime_c : public OSCalendarTime {
 public:
     static void setFlag(u8 flag);                  // 8016D264
