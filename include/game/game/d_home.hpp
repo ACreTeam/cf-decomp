@@ -30,8 +30,8 @@ struct dHomeLayer_c {
     /* 0x000 */ dItem::Item mItems[16][16];
 }; // size 0x200
 
-// The classes below (dHomeActiveFtr_c, dHomeGyroids_c, dHomeRoomMap_c) are defined in the
-// unsplit TU around 80110F30; only their inline ctors live here.
+// The classes below (dHomeActiveFtr_c, dHomeGyroids_c, dHomeRoomMap_c) are defined in
+// src/dol/game/d_home_room_map.cpp (.text 80110F30..80111A2C); see d_home_room_map.hpp.
 
 // Furniture active (switched on) bits for one layer: 16x16 bits, one u16 per row.
 // Starts with every bit set; dHomeRoom_c::init clears the default furniture's tiles.
@@ -53,14 +53,23 @@ struct dHomeGyroids_c {
     void clear(); // 80110FDC
     int get(int x, int z); // 80111058: value at (x, z)
     BOOL remove(int x, int z); // 801111D8
-    BOOL add(int x, int z, int value); // 80111278 (inferred: looks the spot up with get first)
+    BOOL add(int x, int z, int value); // 80111278: sets the value if (x, z) is already there
+
+    // The bit and nibble shifts are separate locals; folding them into the expressions
+    // changes the register allocation in remove and add.
+    BOOL isActive(u32 i) { return (mActive[i >> 3] >> (i & 7)) & 1; }
+    int getValue(u32 i) { return (mValues[i >> 1] >> ((i & 1) * 4)) & 0xF; }
+    void setValue(u32 i, int value) {
+        u32 shift = (i & 1) * 4;
+        mValues[i >> 1] = (u8)(mValues[i >> 1] & ~(0xF << shift)) | (value << shift);
+    }
 
     struct Pos {
         u8 x : 4;
         u8 z : 4;
     };
     /* 0x0 */ Pos mPos[8];
-    /* 0x8 */ u8 mActive; // bit per entry
+    /* 0x8 */ u8 mActive[1]; // bit per entry
     /* 0x9 */ u8 mValues[4]; // a nibble per entry
 }; // size 0xD
 
@@ -161,7 +170,7 @@ struct dHomeList_c {
     int findOwner(dPrivateData_c *player); // 8013DF24: house index or -1
     int findPlayer(u32 player); // 8013DFA8
     int findCurrentPlayer(); // 8013E004
-    static int getHomeFromScene(int *room, int scene); // 8013E04C
+    static int getHomeFromScene(int *room, u8 scene); // 8013E04C
     dHome_c *getHome(u32 home); // 8013E0A8
     const dHome_c *getHome(u32 home) const; // 8013E0C4
     int getPlayerOfHome(u32 home); // 8013E0E0
@@ -175,11 +184,11 @@ struct dHomeList_c {
 
 // The song playing in a room, by scene.
 dItem::Item getCurrentRoomSong(); // 8013E2DC
-BOOL setRoomSong(int scene, dItem::Item item); // 8013E384
+BOOL setRoomSong(u8 scene, dItem::Item item); // 8013E384
 BOOL setCurrentRoomSong(dItem::Item item); // 8013E424
 BOOL clearRoomSong(u8 scene); // 8013E458
 BOOL clearCurrentRoomSong(); // 8013E488
-BOOL isSongInOtherRoom(int scene, const dItem::Item &item); // 8013E4B8
+BOOL isSongInOtherRoom(u8 scene, const dItem::Item &item); // 8013E4B8
 BOOL isSongInOtherCurrentRoom(const dItem::Item &item); // 8013E598
-int getRoomFromScene(int scene); // 8013E5D0
+int getRoomFromScene(u8 scene); // 8013E5D0
 dItem::Item getRoomSong(const dHomeRoom_c *room); // 8013E60C

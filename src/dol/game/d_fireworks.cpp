@@ -6,6 +6,7 @@
 #include <game/game/d_event.hpp>
 #include <game/game/d_date.hpp>
 #include <game/game/d_base.hpp>
+#include <game/game/d_scene.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <revolution/MTX.h>
@@ -14,9 +15,6 @@
 class dSkyLight_c;
 extern "C" {
 void fn_8000F828(int se);                                        // 8000F828: play a sound effect
-u8 fn_80162548();                                                // 80162548: current scene
-BOOL fn_8016286C(u8 scene);                                      // 8016286C
-BOOL fn_80162594(u8 scene, int flags);                           // 80162594: scene has any of flags
 BOOL fn_80199BBC(void *glow, const GXColor *color, const nw4r::math::VEC3 *pos, f32 size); // 80199BBC: queue a glow
 
 extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: town center the show is above
@@ -200,9 +198,9 @@ dFireWorksMgr_c::~dFireWorksMgr_c() {
 void dFireWorksMgr_c::init(BOOL withEffect) {
     BOOL allowed = FALSE;
     mWithEffect = withEffect;
-    if (!fn_8016286C(fn_80162548()) && !fn_80162594(fn_80162548(), 0x110) &&
-        !fn_80162594(fn_80162548(), 0x4000) && fn_80162548() != 0x3B && fn_80162548() != 0x39 &&
-        fn_80162548() != 0x3A) {
+    if (!isCityScene(getCurrentScene()) && !isSceneAttr(getCurrentScene(), SCENE_ATTR_CHKP | SCENE_ATTR_ROOM) &&
+        !isSceneAttr(getCurrentScene(), SCENE_ATTR_BUS) && getCurrentScene() != SCENE_DM_PL_SEL &&
+        getCurrentScene() != SCENE_DM_SAVE && getCurrentScene() != SCENE_DM_LOAD) {
         allowed = TRUE;
     }
     mAllowed = allowed;

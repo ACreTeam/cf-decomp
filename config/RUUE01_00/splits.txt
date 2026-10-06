@@ -166,6 +166,21 @@ dol/game/d_dsn.cpp:
 	.text       start:0x8010F124 end:0x8010FB6C
 	.data       start:0x804EE340 end:0x804EE380 align:4
 
+dol/game/d_save_visitor_npc.cpp:
+	.text       start:0x8010FB6C end:0x8011041C
+
+dol/game/d_save_mother_mail.cpp:
+	.text       start:0x8011041C end:0x80110634
+
+dol/game/d_save_main_field.cpp:
+	.text       start:0x80110634 end:0x80110F30
+
+dol/game/d_home_room_map.cpp:
+	.text       start:0x80110F30 end:0x80111A2C
+	.ctors      start:0x80465714 end:0x80465718
+	.rodata     start:0x80475CE0 end:0x80475CF8 align:4
+	.bss        start:0x805EC5D0 end:0x805ECB58 align:4
+
 dol/game/d_model_room.cpp:
 	.text       start:0x80111A2C end:0x80112BB8
 	.rodata     start:0x80475CF8 end:0x80475D10 align:4
@@ -307,6 +322,29 @@ dol/game/d_search_cand.cpp:
 	.data       start:0x804F0598 end:0x804F0628
 	.sdata      start:0x8074B290 end:0x8074B2A0
 	.sdata2     start:0x80750E18 end:0x80750E20
+
+dol/game/d_side_wipe_fader.cpp:
+	.text       start:0x80160AE4 end:0x80160EA4
+	.data       start:0x804F0710 end:0x804F0768 align:4
+	.sdata      start:0x8074B2B8 end:0x8074B2C0 align:4
+	.sbss       start:0x8074E828 end:0x8074E830 align:4
+	.sdata2     start:0x80750E78 end:0x80750E98 align:4
+
+dol/game/d_play_util.cpp:
+	.text       start:0x80160EA4 end:0x80161CC4
+	.bss        start:0x805FAF38 end:0x805FAF58 align:4
+	.sbss       start:0x8074E830 end:0x8074E848
+	.sdata2     start:0x80750E98 end:0x80750EB8 align:4
+
+dol/game/d_scene.cpp:
+	.text       start:0x80161CC4 end:0x80163AA0
+	.ctors      start:0x80465754 end:0x80465758
+	.rodata     start:0x80479BB0 end:0x80479F70 align:4
+	.data       start:0x804F0768 end:0x804F0C50 align:4
+	.bss        start:0x805FAF58 end:0x805FB008 align:4
+	.sdata      start:0x8074B2C0 end:0x8074B340 align:4
+	.sbss       start:0x8074E848 end:0x8074E858 align:4
+	.sdata2     start:0x80750EB8 end:0x80750EE0 align:4
 
 dol/game/d_string.cpp:
 	.text       start:0x8016AE68 end:0x8016B894

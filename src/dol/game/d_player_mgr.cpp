@@ -3,6 +3,7 @@
 // First pass: every function is written for equivalence; matching has not started.
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_scene.hpp>
 #include <game/game/d_item.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/sLib/s_lib.hpp>
@@ -26,7 +27,6 @@ int fn_800DCF58(); // index of the current player
 u32 fn_8019AFE4();
 int fn_800BA890(const dItem::Item *item);
 int fn_800BA888(void *obj);
-BOOL fn_801625D0(int type);
 void fn_801B910C(int idx, int part, u16 item);
 void fn_801B8898(int idx, int part, u16 item);
 void fn_801B8FD8(int idx, int type);
@@ -69,8 +69,6 @@ void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 void fn_801B9304();
-int fn_80162548();
-BOOL fn_80162558(u8 a);
 void fn_80082B04(mVec3_c *out, const mVec3_c *in);
 int fn_8006E1BC(dGroundCheck_c *check, const mVec3_c *pos, int a, int b, int c);
 BOOL fn_8006E400(dGroundCheck_c *check, f32 y);
@@ -415,7 +413,7 @@ void fn_800FC404() {
     if (!fn_80101584(fn_8019AFE4() & 7, &held)) {
         return;
     }
-    if (fn_800BA890(&held) == 0xA && fn_801625D0(0x10)) {
+    if (fn_800BA890(&held) == 0xA && isCurrentSceneAttr(SCENE_ATTR_ROOM)) {
         fn_801B910C(fn_800DCF58(), 3, held.mId);
         fn_801B8898(fn_800DCF58(), 3, held.mId);
     }
@@ -727,7 +725,7 @@ BOOL fn_800FCD60(u32 a, u32 b, BOOL c) {
 }
 
 // BITM::m_hideBone, clamped like the target (values >= 0xB become 0xA).
-static inline int getHideBone(dItem::BITM *bitm) {
+static inline int getHideBone(const dItem::BITM *bitm) {
     int v = (s8)bitm->m_hideBone;
     return (u32)v < 0xB ? v : 0xA;
 }
@@ -758,7 +756,7 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
     if (hat != NULL) {
         int bone = 0xA;
         if (hat->mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*hat);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*hat);
             if (bitm != NULL) {
                 bone = getHideBone(bitm);
             }
@@ -774,15 +772,15 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
 
     if (held != NULL) {
         if (held->mId == dItem::ITEM_ID_NONE) {
-            if (fn_801625D0(1)) {
+            if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR)) {
                 player->_22DA = 2;
             }
             fn_801B910C(fn_800DCF58(), 3, held->mId);
             fn_801B8898(fn_800DCF58(), 3, held->mId);
         } else {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
             if (bitm != NULL && getHideBone(bitm) == 9) {
-                if (fn_801625D0(1)) {
+                if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR)) {
                     player->_22DA = 1;
                 }
                 fn_801B910C(fn_800DCF58(), 3, held->mId);
@@ -803,7 +801,7 @@ BOOL fn_800FD058(const dItem::Item *item) {
     if (player == NULL) {
         return FALSE;
     }
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -1663,19 +1661,19 @@ BOOL fn_800FECF8(const dItem::Item *held) {
         return FALSE;
     }
     if (held->mId == dItem::ITEM_ID_NONE) {
-        if (fn_801625D0(5) || (fn_801625D0(9) && fn_800BD134(held))) {
+        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && fn_800BD134(held))) {
             player->_22DA = 2;
             player->_223C = 1;
         }
     } else {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
         if (bitm == NULL) {
             return FALSE;
         }
         if (getHideBone(bitm) != 9) {
             return FALSE;
         }
-        if (fn_801625D0(5) || (fn_801625D0(9) && fn_800BD134(held))) {
+        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && fn_800BD134(held))) {
             player->_22DA = 1;
             player->_223C = 1;
         }
@@ -1908,7 +1906,7 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
     if (changeHat) {
         int bone = 0xA;
         if (hat.mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(hat);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(hat);
             if (bitm != NULL) {
                 bone = getHideBone(bitm);
             }
@@ -1928,7 +1926,7 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
             fn_801B910C(fn_800DCF58(), 2, acc.mId);
             fn_801B8898(fn_800DCF58(), 2, acc.mId);
         } else {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
             if (bitm != NULL && getHideBone(bitm) == 8) {
                 player->_22B4 = (player->_22B4 & ~0x80) | 0x40;
                 if (current->_83F5 != 0) {
@@ -1987,7 +1985,7 @@ BOOL fn_800FF8B0() {
     if (current != NULL && current->mEquipment.mHeld.mId == dItem::ITEM_ID_NONE) {
         return FALSE;
     }
-    if (fn_801625D0(5) || (fn_801625D0(9) && fn_800BD134(&current->mEquipment.mHeld))) {
+    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && fn_800BD134(&current->mEquipment.mHeld))) {
         return TRUE;
     }
     return FALSE;
@@ -2717,11 +2715,11 @@ BOOL fn_80101060(const dItem::Item *held) {
     if (player->mState != 0x8) {
         return FALSE;
     }
-    if (!fn_801625D0(5)) {
+    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     if (held->mId != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
         if (bitm == NULL) {
             return FALSE;
         }
@@ -3336,7 +3334,7 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
         return;
     }
     mVec3_c pos;
-    if (fn_80162558((u8)fn_80162548())) {
+    if (isOutdoorScene((u8)getCurrentScene())) {
         mVec3_c src = obj->_AC;
         fn_80082B04(&pos, &src);
     } else {

@@ -15,8 +15,6 @@ mFaderColor()
     }
 }
 
-mFaderBase_c::~mFaderBase_c() {}
-
 void mFaderBase_c::setFrame(u16 duration) {
     mFrameCount = duration;
 }
@@ -25,10 +23,6 @@ void mFaderBase_c::setColor(const mColor &color) {
     mFaderColor.r = color.r;
     mFaderColor.g = color.g;
     mFaderColor.b = color.b;
-}
-
-mFaderBase_c::EStatus mFaderBase_c::getStatus() const {
-    return mStatus;
 }
 
 bool mFaderBase_c::fadeIn() {

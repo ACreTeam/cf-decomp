@@ -24,6 +24,8 @@
 #include <game/game/d_save_box.hpp>
 #include <game/game/d_bug_off.hpp>
 #include <game/game/d_save_stalk_market.hpp>
+#include <game/game/d_save_main_field.hpp>
+#include <game/game/d_save_visitor_npc.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
@@ -273,7 +275,8 @@ public:
     /* 0x068372 */ u8 _068372[0x50];        // ctor 8014D0BC
     /* 0x0683C2 */ u16 _0683C2;             // an item id (d_fg_item)
     /* 0x0683C4 */ u8 _0683C4[4];
-    /* 0x0683C8 */ u8 _0683C8[0x18];        // ctor 8010FB6C
+    /* 0x0683C8 */ dSaveVisitorNpc_c mVisitorNpc;
+    /* 0x0683DF */ u8 _0683DF;
     /* 0x0683E0 */ u16 _0683E0;
     /* 0x0683E2 */ u8 _0683E2;
     /* 0x0683E3 */ u8 _0683E3;
@@ -284,7 +287,8 @@ public:
     /* 0x0683FB */ u8 _0683FB;
     /* 0x0683FC */ u8 _0683FC[2];
     /* 0x0683FE */ dLandID_c mLandID;       // this town
-    /* 0x068414 */ u8 _068414[0x51AC];      // ctor 80110634
+    /* 0x068414 */ dSaveMainField_c mMainField; // the town field
+    /* 0x06D5BC */ u8 _06D5BC[4];
     /* 0x06D5C0 */ dHomeList_c mHomes;
     /* 0x072CC0 */ u8 _072CC0[0x5A];
     /* 0x072D1A */ dSaveUnk72D1A_c _072D1A; // 8 x 0x18 entries

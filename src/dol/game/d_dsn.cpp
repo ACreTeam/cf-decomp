@@ -52,7 +52,7 @@ void dDesign_c::initDefault() {
 // 8010F254
 BOOL dDesign_c::setFromDlItem(void *dlItem) {
     BOOL ok = TRUE;
-    dItem::BITM *bitm = ((dSaveDLItem_c *)dlItem)->getBITM();
+    const dItem::BITM *bitm = ((dSaveDLItem_c *)dlItem)->getBITM();
     setFromBITM(((dSaveDLItem_c *)dlItem)->getBITM());
     if (!bitm->m_hasRes) {
         return FALSE;
@@ -76,7 +76,7 @@ BOOL dDesign_c::setFromDlItem(void *dlItem) {
 
 // 8010F374
 BOOL dDesign_c::setFromItem(int index) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(index);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(index);
     if (bitm != NULL && setFromBITM(bitm)) {
         return TRUE;
     }
@@ -187,7 +187,7 @@ void dDesign_c::setStyle(u32 style) {
 }
 
 // 8010F930
-BOOL dDesign_c::setFromBITM(dItem::BITM *bitm) {
+BOOL dDesign_c::setFromBITM(const dItem::BITM *bitm) {
     if (bitm != NULL) {
         dPersonalID_c creator;
         dHmnName::Word_c creatorName;

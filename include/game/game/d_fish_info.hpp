@@ -54,8 +54,8 @@ enum dFishType_e {
     FISH_SURGEONFISH,       // fsh_nanyou
     FISH_BUTTERFLY_FISH,    // fsh_chouchou
     FISH_NAPOLEONFISH,      // fsh_napoleon
-    FISH_LIONFISH,          // fsh_minokasago
-    FISH_BLOWFISH,          // fsh_harisen
+    FISH_ZEBRA_TURKEYFISH,  // fsh_minokasago
+    FISH_PUFFER_FISH,       // fsh_harisen
     FISH_HORSE_MACKEREL,    // fsh_aji
     FISH_BARRED_KNIFEJAW,   // fsh_ishidai
     FISH_SEA_BASS,          // fsh_suzuki

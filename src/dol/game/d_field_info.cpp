@@ -88,7 +88,6 @@ int fn_800732B8(int unitX, int unitZ);                                 // 800732
 int fn_80073314(int unitX, int unitZ);                                 // 80073314
 int fn_80072D54(int unitX, int unitZ);                                 // 80072D54
 int fn_80072F80(int unitX, int unitZ);                                 // 80072F80: unit attribute
-u8 fn_80162548();                                                      // 80162548: current scene
 void *fn_8014B6C8();                                                   // 8014B6C8
 dItem::Item fn_8014B034(void *fg, int x, int z, int);                  // 8014B034
 dFdExtInfo_c *fn_80167FB4(int index);                                  // 80167FB4
@@ -101,9 +100,6 @@ void *fn_800A9058();                                                   // 800A90
 dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
 void *fn_80069978();                                                   // 80069978: BG data loader
 void fn_80069680(void *loader, void *buf, int id);                     // 80069680: loads a BG into buf
-u16 *fn_80110CE4(void *field, int x, int z);                           // 80110CE4
-u16 *fn_80110C70(void *field, int x, int z);                           // 80110C70
-dItem::Item *fn_80110BF0(void *field, int x, int z);                   // 80110BF0
 dFdUnitAttr_c *fn_801683D8();                                          // 801683D8
 }
 
@@ -686,7 +682,7 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
                 *attr = 0x15;
                 return TRUE;
             }
-        } else if (fn_80162548() == 0x2D) {
+        } else if (getCurrentScene() == SCENE_TOWN) {
             fg = fn_8014B034(fn_8014B6C8(), x, z, 2);
             if (fg.isExtId()) {
                 dFdExtInfo_c *info = fn_80167FB4(fg.getExtIndex());
@@ -873,7 +869,7 @@ u32 dFdInfo_c::getHeapSize() {
 
 // 8008DD70
 BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
-    void *field;
+    dSaveMainField_c *field;
     dFdBlock_c *block;
     const dFdBlockId_c *blockIds;
     void *data;
@@ -884,8 +880,8 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
     }
     block = mBlocks;
     if (block != NULL) {
-        field = dSaveData_c::getTown()->_068414;
-        blockIds = (const dFdBlockId_c *)field;
+        field = &dSaveData_c::getTown()->mMainField;
+        blockIds = field->mFieldBlockData[0];
         for (z = 0; z < mBlockH; z++) {
             for (x = 0; x < mBlockW; x++) {
                 if (block->mBgData == NULL) {
@@ -893,8 +889,8 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
                     if (data != NULL) {
                         fn_80069680(fn_80069978(), data, blockIds->mId);
                     }
-                    block->set(blockIds->mId, fn_80110BF0(field, x, z), NULL, fn_80110C70(field, x, z),
-                               fn_80110CE4(field, x, z), data, x, z, blockIds->mFlag, mBg);
+                    block->set(blockIds->mId, field->getBlockItems(x, z), NULL, (u16 *)field->getBlockBuried(x, z),
+                               (u16 *)field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
                 }
                 block++;
                 blockIds++;
@@ -907,23 +903,23 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
 
 // 8008DEF4
 BOOL dFdInfo_c::updateTown() {
-    void *field;
+    dSaveMainField_c *field;
     void *data;
     dFdBlock_c *block;
     const dFdBlockId_c *blockIds;
     int x, z;
     block = mBlocks;
     if (block != NULL) {
-        field = dSaveData_c::getTown()->_068414;
-        blockIds = (const dFdBlockId_c *)field;
+        field = &dSaveData_c::getTown()->mMainField;
+        blockIds = field->mFieldBlockData[0];
         for (z = 0; z < mBlockH; z++) {
             for (x = 0; x < mBlockW; x++) {
                 data = block->mBgData;
                 if (data != NULL) {
                     fn_80069680(fn_80069978(), data, blockIds->mId);
                 }
-                block->set(blockIds->mId, fn_80110BF0(field, x, z), NULL, fn_80110C70(field, x, z),
-                           fn_80110CE4(field, x, z), data, x, z, blockIds->mFlag, mBg);
+                block->set(blockIds->mId, field->getBlockItems(x, z), NULL, (u16 *)field->getBlockBuried(x, z),
+                           (u16 *)field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
                 block++;
                 blockIds++;
             }

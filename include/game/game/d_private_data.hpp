@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <game/game/d_date.hpp>
+#include <game/game/d_save_mother_mail.hpp>
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_friend.hpp>
@@ -34,13 +35,6 @@ public:
     u8 _00[0x6E];
 };
 
-class dUnk7FD6_c { // 0x18
-public:
-    dUnk7FD6_c(); // 8011041C
-    ~dUnk7FD6_c(); // 80110430
-
-    u8 _00[0x18];
-};
 
 // 0x0E at dPrivateData_c+0x1124. Play dates (fn_8014CCB4 sets a dYMD_c).
 struct dPrivateDates_c {
@@ -500,7 +494,7 @@ public:
     /* 0x7FA4 */ u16 mNookPointsMax; // max balance reached
     /* 0x7FA6 */ u16 _7FA6;
     /* 0x7FA8 */ dPrivateHost_c mHost;
-    /* 0x7FD6 */ dUnk7FD6_c _7FD6;
+    /* 0x7FD6 */ dSaveMotherMail_c mMotherMail;
     /* 0x7FEE */ dQuestErrandList_c mErrand;
     /* 0x83BE */ dYMD_c _83BE;
     /* 0x83C2 */ dYMD_c _83C2;

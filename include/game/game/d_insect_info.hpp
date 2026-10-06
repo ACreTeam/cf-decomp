@@ -35,9 +35,9 @@ enum dInsectType_e {
     INSECT_EVENING_CICADA,          // ins_higu
     INSECT_LANTERN_FLY,             // ins_biwa
     INSECT_RED_DRAGONFLY,           // ins_akane
-    INSECT_COMMON_DRAGONFLY,        // ins_ginyan
-    INSECT_DARNER_DRAGONFLY,        // ins_oniyan
-    INSECT_BANDED_DRAGONFLY,        // ins_mukashi
+    INSECT_DARNER_DRAGONFLY,        // ins_ginyan
+    INSECT_BANDED_DRAGONFLY,        // ins_oniyan
+    INSECT_GIANT_PETALTAIL_DRAGONFLY, // ins_mukashi
     INSECT_ANT,                     // ins_ari
     INSECT_POND_SKATER,             // ins_amenbo
     INSECT_DIVING_BEETLE,           // ins_gengorou

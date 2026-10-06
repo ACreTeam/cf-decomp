@@ -8,13 +8,18 @@ public:
 
     mWipeFader_c(mColor col, mFaderBase_c::EStatus status);
 
-    virtual ~mWipeFader_c();
+    virtual ~mWipeFader_c() {}
     virtual void setStatus(EStatus status);
     virtual int calc();
     virtual void draw();
-    virtual void setTexture(void *data, int width, int height); ///< Sets the texture to use for the fader.
+    /// @brief Sets the texture to use for the fader.
+    virtual void setTexture(void *data, int width, int height) {
+        mpTextureData = data;
+        mTexWidth = width;
+        mTexHeight = height;
+    }
 
-private:
+protected:
     /// @brief Calculates the texture matrix needed for drawing the texture to the screen.
     /// @details Automatically called by calc().
     virtual void calcMtx();

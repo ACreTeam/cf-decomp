@@ -52,6 +52,7 @@
 //     dFdInfoSvMdlRm_c            the model room
 
 #include <lib/egg/core/eggHeap.h>
+#include <game/game/d_scene.hpp>
 
 struct dHomeRoom_c;
 
@@ -224,11 +225,7 @@ enum {
     FD_ID_TOWN = 1,
 };
 
-// Scenes (fn_80162548: the current one) and their attribute masks (fn_80162594(scene, mask):
-// (sSceneAttr[scene] & mask) == mask, the 0x44-entry table 80479BE0).
-#define SCENE_NUM 0x44
-#define SCENE_ATTR_TOWN 0x05          // outdoors (scenes 0, 0x38, 0x42)
-#define SCENE_ATTR_PLAYER_HOUSE 0x450 // the 16 player house scenes 1..0x10
+// Scenes (getCurrentScene()) and their attributes (isSceneAttr()) are in d_scene.hpp.
 
 class dFdInfo_c : public dFdBase_c {
 public:

@@ -346,7 +346,7 @@ int dMuseum_c::getIndex(const dItem::Item &item) {
 
 // 8011A29C
 BOOL dMuseum_c::isFossilSetComplete(const dItem::Item &item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -360,7 +360,7 @@ BOOL dMuseum_c::isFossilSetComplete(const dItem::Item &item) {
     }
     for (u32 i = 0; i < MUSEUM_FOSSIL_NUM; i++) {
         dItem::Item fossil(dItem::ITEM_IDX_AMBER, i, FALSE);
-        dItem::BITM *b = dItem::infoBank_c::get()->getBITM(fossil);
+        const dItem::BITM *b = dItem::infoBank_c::get()->getBITM(fossil);
         int other;
         if (b != NULL) {
             other = 0;

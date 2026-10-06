@@ -456,20 +456,20 @@ public:
     void loadDlItems(); // 800C2670
     void setDlItem(u16 baseId, u16 slot); // 800C2684
     void setPalettes(nw4r::g3d::ResFile file); // 800C2690
-    BITM *getBITM(u16 index); // 800C2704
-    BITM *getBITM(Item item); // 800C27E0
+    const BITM *getBITM(u16 index) const; // 800C2704
+    const BITM *getBITM(Item item) const; // 800C27E0
     Series *getSeries(u32 series); // 800C2870
     NpcMsg *getNpcMsg(u16 index); // 800C2890
     NpcMsgBullfest *getNpcMsgBullfest(u16 index); // 800C28C0
     KindInfo *getKindInfo(u32 kind); // 800C28EC
-    u16 getIndexFromBaseId(u16 baseId); // 800C2910
-    u16 getBaseId(u16 index); // 800C291C
+    u16 getIndexFromBaseId(u16 baseId) const; // 800C2910
+    u16 getBaseId(u16 index) const; // 800C291C
     u16 getItemId(u16 index); // 800C2998
     u16 getItemIdFromIndex(int index); // 800C29C8
-    u16 getBaseIdFromItemId(u16 id); // 800C29D0
+    u16 getBaseIdFromItemId(u16 id) const; // 800C29D0
     BOOL isBuiltinBaseId(u16 baseId); // 800C2A10
     BOOL isBuiltinItemId(u16 id); // 800C2A3C
-    u16 getIndexFromItemId(u16 id); // 800C2AA8
+    u16 getIndexFromItemId(u16 id) const; // 800C2AA8
 
     u8 mDlLoaded; // 0x74
     BITM *mpItems; // 0x78
@@ -639,7 +639,7 @@ public:
 
     nw4r::ut::Link mLink; // 0x58
     u16 mIndex; // 0x60
-    BITM *mpBITM; // 0x64
+    const BITM *mpBITM; // 0x64
     u16 mItemId; // 0x68 (a raw id: the constructor leaves it unset)
     u8 mFromArchive; // 0x6A
     s32 mSize; // 0x6C
@@ -735,7 +735,7 @@ static inline int Item_getIdxInKind(const Item &item) {
     return seeker_c::get()->findLike(item);
 }
 
-static inline dItem::BITM* getBITM(u16 id) {
+static inline const dItem::BITM *getBITM(u16 id) {
     Item item(id);
     return infoBank_c::get()->getBITM(item);
 }

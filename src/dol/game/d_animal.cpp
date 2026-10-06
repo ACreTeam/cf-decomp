@@ -6,6 +6,7 @@
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_scene.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_home.hpp>
@@ -19,17 +20,6 @@
 #include <game/game/d_insect_info.hpp>
 #include <cstring>
 #include <cstddef>
-
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-// Memory-kind helpers.
-u32 fn_80162548();
-BOOL fn_80162594(u8 kind, int);
-
-}
-
-// Later functions of this TU, not written yet (C linkage keeps the target names).
-
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -722,27 +712,27 @@ void dAnimalTalkCount_c::clear() {
 }
 
 // 8011C66C
-void dAnimalTalkCount_c::inc(u32 kind) {
+void dAnimalTalkCount_c::inc(u8 kind) {
     if (mCount < 5) {
         mCount++;
     }
 
     if (mCountNoAttr5 < 5) {
-        if (kind == 0x44) {
-            kind = fn_80162548();
+        if (kind == SCENE_NUM) {
+            kind = getCurrentScene();
         }
-        if (!fn_80162594(kind, 5)) {
+        if (!isSceneAttr(kind, SCENE_ATTR_TOWN)) {
             mCountNoAttr5++;
         }
     }
 }
 
 // 8011C6E4
-u8 dAnimalTalkCount_c::get(u32 kind) {
-    if (kind == 0x44) {
-        kind = fn_80162548();
+u8 dAnimalTalkCount_c::get(u8 kind) {
+    if (kind == SCENE_NUM) {
+        kind = getCurrentScene();
     }
-    if (fn_80162594(kind, 5)) {
+    if (isSceneAttr(kind, SCENE_ATTR_TOWN)) {
         return mCount;
     }
     return mCountNoAttr5;
@@ -1029,7 +1019,7 @@ BOOL dAnimalMemory_c::setPresent(const dItem::Item *item) {
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -1833,7 +1823,7 @@ void dAnimal_c::clearInvalidPresents() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++, mem++) {
         if (mem->mPlayer.isValid() && mem->mPresent.mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::getBITM(mem->mPresent.mId);
+            const dItem::BITM *bitm = dItem::getBITM(mem->mPresent.mId);
             if (bitm == NULL) {
                 mem->setEmptyItem();
             }
@@ -2035,7 +2025,7 @@ BOOL isHouseItem(const dItem::Item *item) {
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::getBITM(item->mId);
+    const dItem::BITM *bitm = dItem::getBITM(item->mId);
     int kind = bitm != NULL ? bitm->getKind() : dItem::KIND_COUNT;
     BOOL res = FALSE;
 
@@ -2108,7 +2098,7 @@ int getFossilSlot(const dItem::Item *item, int start, int end, BOOL wish) {
         return 10;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL || bitm->getKind() != dItem::KIND_FOSSIL) {
         return 10;
     }
@@ -2142,7 +2132,7 @@ int getFossilSet(const dItem::Item *item) {
         return 0;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL || bitm->getKind() != dItem::KIND_FOSSIL) {
         return 0;
     }
@@ -2186,7 +2176,7 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -2324,7 +2314,7 @@ dItem::Item getMovingBox(const dItem::Item *item) {
     static const dItem::Item sItems[3] = {dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_03), dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_02), dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_01)};
 
     if (item->mId != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
         if (bitm != NULL) {
             u32 size = getFtrSize(bitm);
             if (size < 3) {
@@ -2400,7 +2390,7 @@ void dAnimal_c::validateHouse() {
         dItem::Item item = getFtr(i);
         dItem::Item copy = item;
         if (item.mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(copy);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(copy);
             if (bitm == NULL) {
                 clearFtr(i);
             }
@@ -2418,12 +2408,12 @@ void dAnimal_c::validateHouse() {
         }
     }
 
-    dItem::BITM *wall = dItem::infoBank_c::get()->getBITM(*getWall());
+    const dItem::BITM *wall = dItem::infoBank_c::get()->getBITM(*getWall());
     if (wall == NULL) {
         setWall(ptrTo(dItem::Item((u16)(int)mTemplate.mWall)));
     }
 
-    dItem::BITM *carpet = dItem::infoBank_c::get()->getBITM(*getCarpet());
+    const dItem::BITM *carpet = dItem::infoBank_c::get()->getBITM(*getCarpet());
     if (carpet == NULL) {
         setCarpet(ptrTo(dItem::Item((u16)(int)mTemplate.mCarpet)));
     }
@@ -2496,7 +2486,7 @@ BOOL isNewItemKind(const dItem::Item *item) {
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -2561,7 +2551,7 @@ void dAnimal_c::validateNewItems() {
     dItem::Item *p = mNewItems;
     for (int i = 0; i < 4; i++, p++) {
         if (p->mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
             if (bitm == NULL) {
                 *p = dItem::ITEM_ID_NONE;
             }
@@ -2579,7 +2569,7 @@ dItem::Item *dAnimal_c::pickNewItem(const dItem::Item *exclude, u32 num, BOOL al
     u32 mask = 0;
     for (int i = 0; i < 4; i++, p++) {
         if (p->mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
             if (bitm != NULL && (all || !bitm->m_noPurchase)) {
                 e = exclude;
                 BOOL found = FALSE;
@@ -2608,7 +2598,7 @@ dItem::Item *dAnimal_c::pickPricedNewItem(const dItem::Item *exclude, u32 num, B
     u32 count = 0;
     for (int i = 0; i < 4; i++, p++) {
         if (p->mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
             if (bitm != NULL && (all || !bitm->m_noPurchase)) {
                 e = exclude;
                 BOOL found = FALSE;
@@ -2650,7 +2640,7 @@ dItem::Item dAnimal_c::pickNewItemOfKind(int kind, const dItem::Item *exclude) {
     for (int i = 0; i < 4; i++) {
         dItem::Item *p = fn_801205C0(i);
         if (p != NULL && p->mId != dItem::ITEM_ID_NONE && isNotSame(p, exclude)) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
             if (bitm != NULL && kind == bitm->getKind()) {
                 count++;
                 f32 rate = 100.0f / count;
@@ -2727,7 +2717,7 @@ void dAnimal_c::applyNewItems(u8 idx, BOOL notify) {
             if (!noBin) {
             dItem::Item copy = got;
             if (got.mId != dItem::ITEM_ID_NONE) {
-                dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(copy);
+                const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(copy);
                 if (bitm != NULL) {
                     int kind = bitm->getKind();
                     u32 size = 3;
@@ -2849,7 +2839,7 @@ struct dNpcPair_c {
 };
 
 static inline BOOL isItemKind(const dItem::Item &item, int kind) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
     return bitm != NULL ? bitm->getKind() == kind : FALSE;
 }
 
@@ -3020,7 +3010,7 @@ int dAnimal_c::getRoomLayout(int *type) {
 
 // 8012194C
 void dAnimal_c::setCloth(const dItem::Item *item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm != NULL) {
         switch (bitm->getKind()) {
         case dItem::KIND_CLOTH:
@@ -3047,7 +3037,7 @@ BOOL dAnimal_c::wearTailorDesign(u32 idx) {
 
 // 80121A64
 BOOL isOrgCloth(const dItem::Item *item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm != NULL && bitm->getKind() == dItem::KIND_ORG_CLOTH) {
         return TRUE;
     }
@@ -3063,7 +3053,7 @@ BOOL dAnimal_c::isWearingOrgCloth() {
 BOOL dAnimal_c::isWearingCloth() {
     dItem::Item item = mCloth;
     if (item.mId != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
         if (bitm != NULL && bitm->getKind() == dItem::KIND_CLOTH) {
             return TRUE;
         }
@@ -3093,7 +3083,7 @@ BOOL dAnimal_c::wearDesign(const dDesign_c *design) {
 // 80121FEC
 // 0 or 1 if the clothing's style is one of the villager's two styles, else 2.
 int dAnimal_c::getStyleMatch(const dItem::Item *item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     int result = 2;
     if (bitm != NULL && bitm->getKind() == dItem::KIND_CLOTH) {
         int style = 0;
@@ -4096,21 +4086,21 @@ BOOL dAnimal_c::clearExpiredRequest(dLostQuest_c *lost, BOOL enable) {
 }
 
 // 80124AF0
-u32 dAnimal_c::pickInsectRequest(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickInsectRequest(dItem::Item *item, u8 *arg) const {
     item->setFromIndex(dItem::ITEM_IDX_COMMON_BUTTERFLY, dInsectInfo::getRandomByRarity(*dTime_c::getCurrent(), INSECT_RARITY_RARE, INSECT_RARITY_COMMON, TRUE), FALSE);
     *arg = dQuestVillager_c::getInsectPriceRank(item);
     return 0;
 }
 
 // 80124B5C
-u32 dAnimal_c::pickFishRequest(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFishRequest(dItem::Item *item, u8 *arg) const {
     item->setFromIndex(dItem::ITEM_IDX_BITTERLING, dFishInfo::getRandomByRarity(*dTime_c::getCurrent(), FISH_RARITY_RARE, FISH_RARITY_COMMON, TRUE), FALSE);
     *arg = dQuestVillager_c::getFishPriceRank(item);
     return 0;
 }
 
 // 80124BC8
-u32 dAnimal_c::pickFossilRequest(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFossilRequest(dItem::Item *item, u8 *arg) const {
     if (cM::rndF(100.0f) <= 33.0f) {
         return 1;
     }
@@ -4122,17 +4112,17 @@ u32 dAnimal_c::pickFossilRequest(dItem::Item *item, u8 *arg) {
 }
 
 // 80124C44
-u32 dAnimal_c::pickClothRequestNotDisliked(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickClothRequestNotDisliked(dItem::Item *item, u8 *arg) const {
     return 1;
 }
 
 // 80124C4C
-u32 dAnimal_c::pickClothRequestLikedStyle(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickClothRequestLikedStyle(dItem::Item *item, u8 *arg) const {
     return 2;
 }
 
 // 80124C54
-u32 dAnimal_c::pickClothRequestItemNotDisliked(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickClothRequestItemNotDisliked(dItem::Item *item, u8 *arg) const {
     int style = mTemplate.mDislikedStyle;
     dItem::Item exclude = mCloth;
     dItem::clothCandCB_c cb(exclude, 10, style, TRUE);
@@ -4145,7 +4135,7 @@ u32 dAnimal_c::pickClothRequestItemNotDisliked(dItem::Item *item, u8 *arg) {
 }
 
 // 80124CEC
-u32 dAnimal_c::pickClothRequestItemLikedStyle(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickClothRequestItemLikedStyle(dItem::Item *item, u8 *arg) const {
     int style = mTemplate.mLikedStyle;
     dItem::Item exclude = mCloth;
     dItem::clothCandCB_c cb(exclude, style, 10, TRUE);
@@ -4158,7 +4148,7 @@ u32 dAnimal_c::pickClothRequestItemLikedStyle(dItem::Item *item, u8 *arg) {
 }
 
 // 80124D84
-u32 dAnimal_c::pickClothRequest(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickClothRequest(dItem::Item *item, u8 *arg) const {
     static const RequestPickFunc sFuncs[4] = {
         &dAnimal_c::pickClothRequestNotDisliked,
         &dAnimal_c::pickClothRequestLikedStyle,
@@ -4178,13 +4168,13 @@ u32 dAnimal_c::pickClothRequest(dItem::Item *item, u8 *arg) {
 }
 
 // 80124E10
-u32 dAnimal_c::pickFtrRequestCategory(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFtrRequestCategory(dItem::Item *item, u8 *arg) const {
     *arg = cM::rndInt(10) + 1;
     return 3;
 }
 
 // 80124E4C
-u32 dAnimal_c::pickFtrRequestColor(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFtrRequestColor(dItem::Item *item, u8 *arg) const {
     u32 value = 0;
     if (cM::rndF(2.0f) < 1.0f) {
         value = (s8)mTemplate.mFavFtrColor;
@@ -4197,7 +4187,7 @@ u32 dAnimal_c::pickFtrRequestColor(dItem::Item *item, u8 *arg) {
 }
 
 // 80124ED0
-u32 dAnimal_c::pickFtrRequestTaste(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFtrRequestTaste(dItem::Item *item, u8 *arg) const {
     u32 value = 4;
     if (cM::rndF(2.0f) < 1.0f) {
         u32 n = 0;
@@ -4235,7 +4225,7 @@ u32 dAnimal_c::pickFtrRequestTaste(dItem::Item *item, u8 *arg) {
 }
 
 // 80125044
-u32 dAnimal_c::pickFtrRequestSeries(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFtrRequestSeries(dItem::Item *item, u8 *arg) const {
     static const int sValues[12] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     u32 value = 0x84;
@@ -4250,7 +4240,7 @@ u32 dAnimal_c::pickFtrRequestSeries(dItem::Item *item, u8 *arg) {
 }
 
 // 801250C8
-u32 dAnimal_c::pickFtrRequest(dItem::Item *item, u8 *arg) {
+u32 dAnimal_c::pickFtrRequest(dItem::Item *item, u8 *arg) const {
     static const RequestPickFunc sFuncs[4] = {
         &dAnimal_c::pickFtrRequestCategory,
         &dAnimal_c::pickFtrRequestColor,
@@ -4374,7 +4364,7 @@ BOOL isFossilRequestMatch(const dItem::Item *item, int mode, const dItem::Item *
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL || bitm->getKind() != 0xB) {
         return FALSE;
     }
@@ -4416,7 +4406,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
         if (exclude->mId == dItem::ITEM_ID_NONE) {
             break;
         }
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*exclude);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*exclude);
         if (bitm == NULL || bitm->getKind() != 0xB) {
             break;
         }
@@ -4480,7 +4470,7 @@ BOOL dAnimal_c::isClothRequestMatch(const dItem::Item *item, int mode, const dIt
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL || bitm->getKind() != 4) {
         return FALSE;
     }
@@ -4591,7 +4581,7 @@ u32 dAnimal_c::checkFtrRequest(const dItem::Item *item, int mode, int value) {
         return 4;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL || bitm->getKind() != 3) {
         return 4;
     }
@@ -5381,7 +5371,7 @@ dItem::Item dAnimal_c::getUmbrella() {
 // 801280B8
 void dAnimal_c::setUmbrella(const dItem::Item *item) {
     if (item->mId != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
         if (bitm != NULL) {
             switch (bitm->getKind()) {
             case dItem::KIND_UMBRELLA:
@@ -5540,7 +5530,7 @@ void dAnimal_c::validateItems() {
 void dAnimal_c::validateUmbrella() {
     dItem::Item umbrella = getUmbrella();
     dItem::Item tmp = umbrella;
-    dItem::BITM *bitm = umbrella.mId != dItem::ITEM_ID_NONE ? dItem::infoBank_c::get()->getBITM(tmp) : NULL;
+    const dItem::BITM *bitm = umbrella.mId != dItem::ITEM_ID_NONE ? dItem::infoBank_c::get()->getBITM(tmp) : NULL;
     dItem::Item item;
     if (bitm == NULL) {
         item = pickRandomUmbrella();
@@ -6015,7 +6005,7 @@ BOOL dAnimal_c::pickDesignToWear() {
     return FALSE;
 }
 
-static inline dItem::BITM *getItemBITM(const dItem::Item *item) {
+static inline const dItem::BITM *getItemBITM(const dItem::Item *item) {
     if (item->mId != dItem::ITEM_ID_NONE) {
         return dItem::infoBank_c::get()->getBITM(*item);
     }
@@ -6050,7 +6040,7 @@ BOOL dAnimal_c::pickUmbrella() {
     if (item.mId != dItem::ITEM_ID_NONE) {
         setUmbrella(&item);
         dItem::Item *cur = &mHeldItem;
-        dItem::BITM *bitm = getItemBITM(cur);
+        const dItem::BITM *bitm = getItemBITM(cur);
         if (bitm != NULL && bitm->getKind() == dItem::KIND_UMBRELLA && isDifferentItem(cur, &item)) {
             setHeldItem(&item);
         }
@@ -6867,7 +6857,7 @@ BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
         return TRUE;
     }
 
-    if ((u8)fn_80162548() != 0x3B) {
+    if ((u8)getCurrentScene() != SCENE_DM_PL_SEL) {
         return FALSE;
     }
 
@@ -7899,7 +7889,7 @@ int dAnimalBlock_c::getLostItemLikeIdx(dPrivateData_c *player) {
     if (quest->mBase.mState == 0 && quest->getPlayerFlag(&player->mPID.player)) {
         dItem::Item item = quest->mBase.mItem;
         if (item.mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
             if (bitm != NULL) {
                 int kind = 0x29;
                 int k = bitm->m_kind;
@@ -9154,7 +9144,6 @@ extern "C" {
 // Other TUs.
 int fn_800BA890(const dItem::Item *item);
 void *fn_800F9F64(u32 *num);
-u32 fn_80162550();
 
 extern dUnk8074EBE8_c *lbl_8074EBE8;
 }
@@ -9180,8 +9169,8 @@ static inline dPersonalID_c *getPlayerPID(dPrivateData_c *player) {
     return &player->mPID;
 }
 
-static inline BOOL isScene3B() {
-    return (u8)fn_80162548() == 0x3B;
+static inline BOOL isPlayerSelectScene() {
+    return (u8)getCurrentScene() == SCENE_DM_PL_SEL;
 }
 
 // Flag word at dAnimalMemory_c+0x00 (declared there as u8[4]).
@@ -9682,7 +9671,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
 
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
     cur = getCurItem(animal);
-    dItem::BITM *bitm = cur->mId != dItem::ITEM_ID_NONE ? dItem::infoBank_c::get()->getBITM(*cur) : NULL;
+    const dItem::BITM *bitm = cur->mId != dItem::ITEM_ID_NONE ? dItem::infoBank_c::get()->getBITM(*cur) : NULL;
     bool isKind43;
     if (bitm != NULL) {
         isKind43 = bitm->getKind() == 0x43;
@@ -9705,7 +9694,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
     dItem::Item item99E(dItem::ITEM_IDX_NET);
     dItem::Item item99F(dItem::ITEM_IDX_FISHING_ROD);
 
-    if (!fn_800DCEDC() && (u8)fn_80162550() == 0x3B &&
+    if (!fn_800DCEDC() && (u8)getPrevScene() == SCENE_DM_PL_SEL &&
         isBirthdayHost(&animal->mID, fn_801017B8(), TRUE, TRUE, TRUE) && special) {
         give = animal->getUmbrella();
         set = TRUE;
@@ -10025,7 +10014,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
     }
 
     s32 year = dTime_c::getCurrent()->year;
-    BOOL inScene = isScene3B();
+    BOOL inScene = isPlayerSelectScene();
     if (player->isFlag0(0xD)) {
         player->mBirthdayHost._04 = year;
         return;
@@ -10111,7 +10100,7 @@ void dAnimalBlock_c::sendBirthdayHostPresent() {
         if (player != NULL) {
             dPersonalID_c *pid = getPlayerPID(player);
             if (pid->isValid()) {
-                if ((u8)fn_80162548() == 0x3B) {
+                if ((u8)getCurrentScene() == SCENE_DM_PL_SEL) {
                     if (isEventOngoing(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
                         s32 year = dTime_c::getCurrent()->year;
                         if (year == player->mBirthdayHost._00) {
@@ -10995,7 +10984,7 @@ BOOL fn_80134DA8(const dPrivateData_c *player) {
 
 // 80134DE0
 BOOL isHoldingNet(const dPrivateData_c *player) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
     if (bitm != NULL && bitm->isNet()) {
         return TRUE;
     }
@@ -11004,7 +10993,7 @@ BOOL isHoldingNet(const dPrivateData_c *player) {
 
 // 80134E30
 BOOL isHoldingFishingrod(const dPrivateData_c *player) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
     if (bitm != NULL && bitm->isFishingrod()) {
         return TRUE;
     }
@@ -11013,7 +11002,7 @@ BOOL isHoldingFishingrod(const dPrivateData_c *player) {
 
 // 80134E80
 BOOL isHoldingWatering(const dPrivateData_c *player) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
     if (bitm != NULL && bitm->isWatering()) {
         return TRUE;
     }
@@ -11022,7 +11011,7 @@ BOOL isHoldingWatering(const dPrivateData_c *player) {
 
 // 80134ED0
 BOOL isHoldingAxe(const dPrivateData_c *player) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(player->mEquipment.mHeld);
     if (bitm != NULL && bitm->isAxe()) {
         return TRUE;
     }
@@ -11333,7 +11322,7 @@ BOOL fn_8013585C(const dPrivateData_c *player) {
     if (acc.mId == dItem::ITEM_ID_NONE) {
         return FALSE;
     }
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
     if (!bitm->_187_3) {
         return FALSE;
     }
@@ -11505,7 +11494,7 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
 
     present = gift->mItem.mId;
     if (present != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(present));
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(present));
         if (bitm == NULL) {
             present = dItem::ITEM_ID_NONE;
         }

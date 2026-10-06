@@ -18,6 +18,7 @@
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_home.hpp>
+#include <game/game/d_home_room_map.hpp>
 #include <game/game/d_insect_info.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_museum.hpp>
@@ -76,13 +77,10 @@ void fn_80440604(EGG::FrmHeap *heap, int arg);
 void fn_8014D3F4(void *obj, int rank, int days);
 int fn_8014D844(void *obj, int id);
 void fn_80169ED8();
-void fn_801114B8();
 void fn_80169C38();
 void fn_80169BF4();
 void fn_800D11C8(dTime_c *last, int days);
 void fn_80143F48(void *designs);
-BOOL fn_80162594(u8 scene, int flags);
-u16 *fn_80110CE4(void *field, int x, int z);
 void fn_80081238(u16 *flags, int x, int z);
 void *fn_8014B6C8();
 BOOL fn_8014B474(void *fg, int x, int z);
@@ -103,9 +101,6 @@ void fn_8014D89C(void *events, int id);
 f32 fn_80074D64(int x, int z);
 f32 fn_80074974(const nw4r::math::VEC3 *pos, int a);
 int fn_800812C8(int blockType);
-u8 fn_80162548();
-u8 fn_80162550();
-BOOL fn_8016286C(u8 scene);
 void fn_8011641C(dSaveData_c *save, int a, int b, int c);
 void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
@@ -133,9 +128,7 @@ void fn_8014EFC0(void *obj, u8 a);
 BOOL fn_8018EEEC();
 void fn_8018EEF4();
 void fn_8018EE7C();
-void fn_80163740(void *obj, f32 a);
 nw4r::math::VEC3 *fn_8016A28C();
-void fn_80162F40(void *obj, int a, const nw4r::math::VEC3 *pos, int b, int c, int d, int e);
 BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item *item, int);
 void fn_800755A0(int bg);
 f32 fn_80073510(const nw4r::math::VEC3 *pos);
@@ -161,7 +154,6 @@ extern void *lbl_8074E9A0[2];
 extern u16 *lbl_8074E800;
 }
 
-extern u8 lbl_805FAF98[];
 extern EGG::Heap *lbl_8074E478;
 
 typedef BOOL (*dFgMngAroundFunc)(dFdBase_c *fd, const int *pos, int x, int z, int *size);
@@ -358,11 +350,10 @@ static dFgCBRate_c *sCBCarnation[CBCarnationBaseHostIO_c::CARNATION_COLOR_NUM][C
 
 #include <game/game/d_fg_mng_task.inc>
 
-// 80091AF8: returns &lbl_805FAF98 (a 0x30-byte .bss object; identical 3-insn getters exist in 6+
-// other TUs: 800573C4, 800D3584, 80161CC4, 80166990, 8018DABC, 801B97A8). The only use here
-// passes it to fn_80163740, which ignores r3. Identity unknown.
-void *fn_80091AF8() {
-    return lbl_805FAF98;
+// 80091AF8: returns &gSceneChange, like getSceneChange (80161CC4); identical 3-insn getters exist
+// in 6+ other TUs: 800573C4, 800D3584, 80166990, 8018DABC, 801B97A8.
+dSceneChange_c *fn_80091AF8() {
+    return &gSceneChange;
 }
 
 // 80091B04: returns 0x3400: size of the "createGrowUpHeap" EGG::ExpHeap lbl_8074E478 (created at
@@ -578,7 +569,7 @@ void dFdAsBlock_c::assess(dFdBase_c *fd, int blockX, int blockZ) {
                     if (item->isShell()) {
                         mShellNum++;
                     } else {
-                        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+                        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
                         if (bitm != NULL) {
                             switch (bitm->getKind()) {
                             case dItem::KIND_FRUIT:
@@ -700,7 +691,7 @@ void dFdAsBlock_c::assessLive(dFdBase_c *fd, int blockX, int blockZ) {
                     if (item->isShell()) {
                         mShellNum++;
                     } else {
-                        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+                        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
                         if (bitm != NULL) {
                             switch (bitm->getKind()) {
                             case dItem::KIND_CANDY:
@@ -1261,7 +1252,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     fd->fn_8008D70C((const nw4r::math::VEC3 *)days, 3);
     dSaveData_c::getTown()->mPoliceBox.refill(days);
     dSaveData_c::getTown()->mRecycleBin.update(last, days);
-    fn_801114B8();
+    clearShopRoomMaps();
     if ((u8)dEvent::getTodayVisitor() == 6) {
         fn_80116540(dSaveData_c::getTown(), 0x12);
         fn_80116540(dSaveData_c::getTown(), 0x13);
@@ -1474,7 +1465,7 @@ void dFgMngProc_c::trySpawnShellOnline() {
                     u8 scene;
                     u8 b;
                     u32 info;
-                    if (((dFgMngPlInfoFunc)fn_80101DC4)(&info, &scene, &b, i) && fn_80162594(scene, SCENE_ATTR_TOWN)) {
+                    if (((dFgMngPlInfoFunc)fn_80101DC4)(&info, &scene, &b, i) && isSceneAttr(scene, SCENE_ATTR_TOWN)) {
                         f32 pos[2];
                         u8 posInfo[8];
                         if (((dFgMngPlPosFunc)fn_80101DC0)(posInfo, pos, &c, i) && ((int)pos[0] >> 9) >= 5) {
@@ -1523,7 +1514,7 @@ void dFgMngProc_c::fillBeachShells(dFdBase_c *fd) {
 }
 
 // 800947A4: sets the bit of every flower / red turnip unit (isFlowerOrRedKabu) in the town's
-// per-block flag grids (save _068414).
+// per-block watered-unit grids (dSaveMainField_c::mWater).
 void dFgMngProc_c::markFlowerUnits(dFdBase_c *fd, int w, int h) {
     int unitX;
     int unitZ;
@@ -1532,7 +1523,7 @@ void dFgMngProc_c::markFlowerUnits(dFdBase_c *fd, int w, int h) {
     u16 *flags;
     for (blockZ = 1; blockZ < h + 1; blockZ++) {
         for (blockX = 1; blockX < w + 1; blockX++) {
-            flags = fn_80110CE4(dSaveData_c::getTown()->_068414, blockX, blockZ);
+            flags = (u16 *)dSaveData_c::getTown()->mMainField.getBlockWater(blockX, blockZ);
             if (flags != NULL) {
                 for (unitZ = 0; unitZ < UT_Z_NUM; unitZ++) {
                     for (unitX = 0; unitX < UT_X_NUM; unitX++) {
@@ -2734,7 +2725,7 @@ void dFgMngProc_c::growRedKabu(dFdBase_c *fd, int num) {
     int uz;
     for (bz = 1; bz < FG_BLOCK_Z_NUM + 1; bz++) {
         for (bx = 1; bx < FG_BLOCK_X_NUM + 1; bx++) {
-            u16 *rows = fn_80110CE4(dSaveData_c::getTown()->_068414, bx, bz);
+            u16 *rows = (u16 *)dSaveData_c::getTown()->mMainField.getBlockWater(bx, bz);
             if (rows != NULL) {
                 row = rows;
                 for (uz = 0; uz < UT_Z_NUM; uz++, row++) {
@@ -3480,7 +3471,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
         for (x = 0; x < unitW; x++) {
             dItem::Item *item = fd->getItem(x, z, 0);
             if (item != NULL && dItem::isRealItemId(item->mId)) {
-                dItem::BITM *bitm = dItem::getBITM(item->mId);
+                const dItem::BITM *bitm = dItem::getBITM(item->mId);
                 if (bitm->getKind() == dItem::KIND_EGG_BINGO_BEFORE) {
                     dItem::Item first(dItem::ITEM_IDX_BUNNY_EGG_00);
                     found[(item->mId - first.mId) >> 2]++;
@@ -3699,7 +3690,7 @@ void dFgMngProc_c::removeEggs(dFdBase_c *fd) {
         for (x = 0; x < unitW; x++) {
             dItem::Item *item = fd->getItem(x, z, 0);
             if (item != NULL && dItem::isRealItemId(item->mId)) {
-                dItem::BITM *bitm = dItem::getBITM(item->mId);
+                const dItem::BITM *bitm = dItem::getBITM(item->mId);
                 if (bitm->getKind() == dItem::KIND_EGG_BINGO_BEFORE || bitm->getKind() == dItem::KIND_EGG_FAKE_BEFORE) {
                     setUnitItem(fd, x, z, dItem::ITEM_ID_NONE, FALSE);
                 }
@@ -3729,7 +3720,7 @@ void dFgMngProc_c::endEggs(dFdBase_c *fd) {
         for (x = 0; x < unitW; x++) {
             dItem::Item *item = fd->getItem(x, z, 0);
             if (item != NULL && fd->isFlagA(x, z) && dItem::isRealItemId(item->mId)) {
-                dItem::BITM *bitm = dItem::getBITM(item->mId);
+                const dItem::BITM *bitm = dItem::getBITM(item->mId);
                 if (bitm->getKind() == dItem::KIND_EGG_BINGO_BEFORE || bitm->getKind() == dItem::KIND_EGG_FAKE_BEFORE) {
                     setUnitItem(fd, x, z, dItem::ITEM_ID_NONE, FALSE);
                 }
@@ -4168,7 +4159,7 @@ void fgMngProc_updateFrame() {
     if (!fgMngProc_canCheckDayChange()) {
         return;
     }
-    if (fn_80162594(fn_80162548(), 0x10)) {
+    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_ROOM)) {
         sFgMngProc.updateShellSpawn();
         return;
     }
@@ -4176,8 +4167,8 @@ void fgMngProc_updateFrame() {
         sFgMngProcFlags |= FG_MNG_PROC_FLAG_DAY_CHANGE;
         if (fn_8018EEEC()) {
             fn_8018EEF4();
-            BOOL inside = fn_8016286C(fn_80162548());
-            fn_80163740(fn_80091AF8(), 0.0f);
+            BOOL inside = isCityScene(getCurrentScene());
+            fn_80091AF8()->setReturnExitHere(0.0f);
             nw4r::math::VEC3 pos;
             if (inside) {
                 nw4r::math::VEC3 *p = fn_8016A28C();
@@ -4186,7 +4177,7 @@ void fgMngProc_updateFrame() {
                 f32 x = p->x;
                 nw4r::math::VEC3 top(x, y, z);
                 top.z += 64.0f;
-                fn_80162F40(fn_80091AF8(), 0x2D, &top, 0x8C, 0, 0, 0);
+                fn_80091AF8()->request(SCENE_TOWN, (mVec3_c *)&top, 0x8C, 0, 0, 0);
             } else {
                 dItem::Item item((u16)0xD013);
                 int x, z;
@@ -4195,7 +4186,7 @@ void fgMngProc_updateFrame() {
                 fn_800755A0(1);
                 pos.y = fn_80073510(&pos);
                 fn_800755A0(0);
-                fn_80162F40(fn_80091AF8(), 0, &pos, 0x8C, 0, 0, 0);
+                fn_80091AF8()->request(SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
             }
         } else {
             fn_8018EE7C();
@@ -4238,8 +4229,8 @@ void fgMngProc_threadMain() {
             fn_80116540(dSaveData_c::getTown(), 0x12);
             fn_80116540(dSaveData_c::getTown(), 0x13);
         }
-        switch (fn_80162548()) {
-        case 0x4B:
+        switch (getCurrentScene()) {
+        case SCENE_NONE:
             sFgMngProc.procLiveDay(1);
             break;
         default:
@@ -4330,9 +4321,9 @@ void fgMngProc_initOnCreate() {
     if (!fn_800DCEDC() && dPlayerMgr_c::getCurrentPlayer() != NULL) {
         dLandID_c *town = &dSaveData_c::getTown()->mLandID;
         BOOL home = dPlayerMgr_c::getCurrentPlayer()->mPID.land == *town;
-        if (home && fn_80162594(fn_80162548(), SCENE_ATTR_TOWN)) {
+        if (home && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
             dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
-            if (homes->getHome(homes->findCurrentPlayer()) == NULL && fn_80162594(fn_80162550(), SCENE_ATTR_PLAYER_HOUSE)) {
+            if (homes->getHome(homes->findCurrentPlayer()) == NULL && isSceneAttr(getPrevScene(), SCENE_ATTR_PLAYER_HOUSE)) {
                 fgMngProc_clearFg94();
             }
         }
@@ -4431,7 +4422,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
 BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj) {
     dItem::Item item(itemId);
     BOOL ok = TRUE;
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -4638,7 +4629,7 @@ BOOL fgMngProc_getRafflesiaPos(nw4r::math::VEC3 *pos) {
 // 8009D0E8: from d_a_player: damages the flower at unit (x, z) with petals (mode 1) or, 12.5%,
 // destroys it (mode 0); returns the mode (3 = nothing / not outdoors).
 int fgMngProc_trampleFlowerAt(int x, int z) {
-    if (!fn_80162594(fn_80162548(), SCENE_ATTR_TOWN)) {
+    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
         return 3;
     }
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
@@ -4723,7 +4714,7 @@ static const u16 sFlowerFirstFg[] = {dItem::FG_TULIP_RED, dItem::FG_PANSY_WHITE,
 // 8009D2C0: spawns the afm_*_fall / *_leaf_fall effects for the flower at unit (x, z) (wilted
 // variants, wind direction, scale by mode).
 void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, const mAng3_c *ang, BOOL wind) {
-    if (!fn_80162594(fn_80162548(), SCENE_ATTR_TOWN)) {
+    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
         return;
     }
     int kind = getFlowerKind(item);
@@ -5025,7 +5016,7 @@ void fgMngProc_recvUnitFg(const u16 *data) {
     dFgMngProc_c::setUnitItem(fd, unit.mX, unit.mZ, fg, 0);
 }
 
-// 8009DEE4: FALSE while fading, in scenes 0x38..0x43 / 0x4B, or without the 8074E800 state 1;
+// 8009DEE4: FALSE while fading, in SCENE_DM_TITLE..SCENE_RM_SAMPLE / SCENE_NONE, or without the 8074E800 state 1;
 // gate of fgMngProc_updateFrame.
 BOOL fgMngProc_canCheckDayChange() {
     BOOL fading = TRUE;
@@ -5035,20 +5026,20 @@ BOOL fgMngProc_canCheckDayChange() {
     if (fading) {
         return FALSE;
     }
-    switch (fn_80162548()) {
-    case 0x4B:
-    case 0x38:
-    case 0x39:
-    case 0x3A:
-    case 0x3B:
-    case 0x3C:
-    case 0x3D:
-    case 0x3E:
-    case 0x3F:
-    case 0x40:
-    case 0x41:
-    case 0x42:
-    case 0x43:
+    switch (getCurrentScene()) {
+    case SCENE_NONE:
+    case SCENE_DM_TITLE:
+    case SCENE_DM_SAVE:
+    case SCENE_DM_LOAD:
+    case SCENE_DM_PL_SEL:
+    case SCENE_DM_BUS_PL_CRT:
+    case SCENE_DM_BUS_TO_TOWN:
+    case SCENE_DM_BUS_TO_LAND:
+    case SCENE_DM_CHKP_CNNCT:
+    case SCENE_DM_CHKP_DCNNCT:
+    case SCENE_DM_CHKP_MISS:
+    case SCENE_CHECK_FIELD:
+    case SCENE_RM_SAMPLE:
         return FALSE;
     }
     if (lbl_8074E800 == NULL || lbl_8074E800[4] != 1) {
@@ -5138,7 +5129,7 @@ void fgMngProc_getLitterFlags(dFgMngLitterFlags_c *flags) {
 // 8009E238: offline outdoors: turnips/candy attract ants, turnips/trash flies (flags
 // d_insect_field reads; likely ants / flies), then clears the flags.
 void fgMngProc_attractInsects(dFgMngLitterFlags_c *flags) {
-    if (!fn_800DCEDC() && fn_80162594(fn_80162548(), SCENE_ATTR_TOWN)) {
+    if (!fn_800DCEDC() && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
         if (flags->mHasBadKabu || flags->mHasCandy) {
             dInsectInfo::setAntsAttracted();
         }

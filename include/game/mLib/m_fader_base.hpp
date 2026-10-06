@@ -27,10 +27,10 @@ public:
     /// @param status The fader's initial status (#OPAQUE or #HIDDEN).
     mFaderBase_c(const mColor &color, EStatus status);
 
-    virtual ~mFaderBase_c(); ///< Destroys the fader.
+    virtual ~mFaderBase_c() {} ///< Destroys the fader.
 
     virtual void setStatus(EStatus status) = 0; ///< Sets the fader's status.
-    virtual EStatus getStatus() const; ///< Gets the fader's status.
+    virtual EStatus getStatus() const { return mStatus; } ///< Gets the fader's status.
 
     /// @brief Initiates a fade in from pure blacked-out.
     /// @details The screen must be #OPAQUE for the operation to be executed.

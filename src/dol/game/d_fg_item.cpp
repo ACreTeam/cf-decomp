@@ -315,7 +315,7 @@ BOOL Item::isKabu() {
 // 800A5F74
 int Item::getPrice() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             switch (bitm->getKind()) {
             case KIND_KABU:
@@ -448,7 +448,7 @@ BOOL Item::isOrgDesign() const {
 // 800A658C
 int Item::getKind() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return bitm->getKind();
         }
@@ -459,7 +459,7 @@ int Item::getKind() const {
 // 800A6608
 int Item::getFrom() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return clampField(bitm->m_from, FROM_COUNT, FROM_NONE);
         }
@@ -470,7 +470,7 @@ int Item::getFrom() const {
 // 800A6684
 int Item::getFashion() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return bitm->getFashion();
         }
@@ -481,7 +481,7 @@ int Item::getFashion() const {
 // 800A6700
 int Item::getStyle() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             int style = 0;
             u32 raw = bitm->m_style;
@@ -502,7 +502,7 @@ int Item::getClothStyle() {
 // 800A6780
 int Item::getColorA() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             u32 color = bitm->m_ftrColorA;
             if (color < 0xF) {
@@ -517,7 +517,7 @@ int Item::getColorA() const {
 // 800A680C
 int Item::getColorB() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             s8 color = bitm->m_ftrColorB;
             if (static_cast<u32>(color) < 0xF) {
@@ -532,7 +532,7 @@ int Item::getColorB() const {
 // 800A689C
 int Item::getPartA() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             int part = 0;
             u32 raw = bitm->m_ftrPartA;
@@ -548,7 +548,7 @@ int Item::getPartA() const {
 // 800A6918
 int Item::getHideBone() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             s8 raw = bitm->m_hideBone;
             return clampField(raw, 0xB, 0xA);
@@ -559,7 +559,7 @@ int Item::getHideBone() const {
 
 // 800A6998
 int Item::getSeries() {
-    BITM *bitm = infoBank_c::get()->getBITM(*this);
+    const BITM *bitm = infoBank_c::get()->getBITM(*this);
     if (bitm != NULL) {
         int series = 0;
         if (static_cast<u32>(bitm->m_series) < SERIES_COUNT) {
@@ -572,7 +572,7 @@ int Item::getSeries() {
 
 // 800A69F0
 int Item::getSeriesGroup() {
-    BITM *bitm = infoBank_c::get()->getBITM(*this);
+    const BITM *bitm = infoBank_c::get()->getBITM(*this);
     if (bitm != NULL) {
         return bitm->getSeriesGroup();
     }
@@ -590,7 +590,7 @@ BOOL Item::hasNoFtrFunc() const {
 // 800A6A8C
 BOOL Item::hasFtrFunc() const {
     if (isRealItemId(mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
             return clampField(bitm->m_ftrFunc, 0x41, 1) != 0;
         }

@@ -314,7 +314,7 @@ public:
 
 } // namespace dNpc
 
-// Placement data returned by fn_80161D10 (used by fn_800EF670).
+// A scene's actor placements (getSceneData; dSceneActorData_c in d_scene.hpp), as used by fn_800EF670.
 struct dNpcLayoutEntry_c {
     /* 0x00 */ u8 _00[4];
     /* 0x04 */ mVec3_c mPos;
@@ -335,7 +335,7 @@ struct dNpcLayout_c {
     /* 0x4 */ dNpcLayoutGroup_c *mGroups;
 };
 
-BOOL fn_800EF670(mVec3_c *pos, s16 *angle, const dItem::Item &key, int layout); // 800EF670
+BOOL fn_800EF670(mVec3_c *pos, s16 *angle, const dItem::Item &key, u8 layout); // 800EF670
 
 // Daub manager access (lbl_8074AE88: the normal and special managers).
 dNpc::daubMng_c *fn_800EFBBC(u32 i);                                 // 800EFBBC
@@ -459,9 +459,9 @@ class dActor_c;
 class dPlayerActor_c;
 dPlayerActor_c *fn_800F1AE0(int x, int z);                           // 800F1AE0
 dActor_c *fn_800F1B7C(int x, int z);                                 // 800F1B7C
-dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u32 kind); // 800F1BE4
-BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u32 kind, BOOL allowFg94, BOOL checkA); // 800F1DF0
-BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u32 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
+dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 kind); // 800F1BE4
+BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F1DF0
+BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
 BOOL fn_800F2138(mVec3_c *out, const mVec3_c *pos, u32 radius);      // 800F2138
 BOOL fn_800F22FC(const mVec3_c *pos, int x, int z, f32 dist);        // 800F22FC
 BOOL fn_800F23C0(int *outX, int *outZ, dFdBase_c *map, u8 kind, int x0, int x1, int z0, int z1,

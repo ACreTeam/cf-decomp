@@ -53,7 +53,7 @@ void dRecycleBin_c::set(int slot, u16 item) {
 
 // 80153FB8
 BOOL dRecycleBin_c::add(u16 item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
     if (bitm != NULL) {
         int kind = bitm->getKind();
         if (bitm->getKindFlag4() && kind != dItem::KIND_FISH && kind != dItem::KIND_INSECT) {

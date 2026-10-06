@@ -2,6 +2,7 @@
 // First-pass scaffold; see include/game/game/d_npc.hpp and notes/d_npc.txt.
 #include <game/game/d_npc.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_scene.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_script.hpp>
 #include <game/cLib/c_math.hpp>
@@ -30,7 +31,6 @@ BOOL fn_800DCEDC();
 u32 fn_800DCF30();
 BOOL fn_800DCF2C(int player);
 int fn_800DCF58(); // own player index
-dNpcLayout_c *fn_80161D10(int layout);
 void fn_800DD5F8(int id, int a, int b);
 BOOL fn_800DD64C(int id);
 u32 fn_800DD680(int id);
@@ -39,8 +39,6 @@ mVec3_c fn_801506F8(const void *data);
 // Field map / actors.
 void *fn_8014B6C8();
 dItem::Item fn_8014B034(void *fg, int x, int z, int);
-u32 fn_80162548();
-BOOL fn_80162594(u8 kind, int);
 dActor_c *fn_800F9860(int x, int z);
 dActor_c *fn_800F98CC(int x, int z);
 void fn_800A8B28(dNpcFtrShape_c *shape, dItem::Item item);
@@ -56,7 +54,6 @@ void fn_800CBC10(int slot, const dAnmPersonalID_c *animal);
 void fn_800CBDA0(int slot, const dItem::Item *item);
 BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 u16 fn_800F88AC(const dItem::Item *key);
-BOOL fn_801625D0(int);
 dActor_c *fn_800F9878(const dItem::Item *key);
 BOOL fn_80013F98(int x, int z, int arg);
 void *fn_800F9F64(int *arg);
@@ -1169,8 +1166,8 @@ int daubMngSpecial_c::getIdx(const u16 *key) {
 } // namespace dNpc
 
 // 800EF670: finds the placement whose key matches in layout `layout`.
-BOOL fn_800EF670(mVec3_c *pos, s16 *angle, const dItem::Item &key, int layout) {
-    dNpcLayout_c *data = fn_80161D10(layout);
+BOOL fn_800EF670(mVec3_c *pos, s16 *angle, const dItem::Item &key, u8 layout) {
+    dNpcLayout_c *data = (dNpcLayout_c *)getSceneData(layout);
     if (data != NULL) {
         int num = data->mNum;
         for (int i = 0; i < num; i++) {
@@ -2352,11 +2349,11 @@ dActor_c *fn_800F1B7C(int x, int z) {
 }
 
 // 800F1BE4: the furniture whose footprint covers unit (x, z).
-dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u32 kind) {
-    if (kind == 0x44) {
-        kind = fn_80162548();
+dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 kind) {
+    if (kind == SCENE_NUM) {
+        kind = getCurrentScene();
     }
-    if (!fn_80162594(kind, 0x10)) {
+    if (!isSceneAttr(kind, SCENE_ATTR_ROOM)) {
         return dItem::Item();
     }
     if (map == NULL) {
@@ -2381,7 +2378,7 @@ dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u32 
         for (int xx = x - 1; xx <= x + 1; xx++) {
             dItem::Item *item = map->getItem(xx, zz, 0);
             if (item != NULL && item->mId != dItem::ITEM_ID_NONE) {
-                dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+                const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
                 if (bitm != NULL && getFtrFunc(bitm) != 0) {
                     dNpcFtrShape_c shape;
                     fn_800A8B28(&shape, *item);
@@ -2401,13 +2398,13 @@ dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u32 
 }
 
 // 800F1DF0: whether `item` can be placed on unit (x, z).
-BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u32 kind, BOOL allowFg94, BOOL checkA) {
+BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
     BOOL result = FALSE;
     if (map == NULL) {
         map = fn_80190C44(0);
     }
-    if (kind == 0x44) {
-        kind = fn_80162548();
+    if (kind == SCENE_NUM) {
+        kind = getCurrentScene();
     }
     if (map == NULL) {
         return result;
@@ -2426,7 +2423,7 @@ BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u32 kind
         if (cat >= 9 && cat <= 12) {
             isFtr = TRUE;
         }
-        if (isFtr && (fn_80162594(kind, 5) || !cur->hasFtrFunc())) {
+        if (isFtr && (isSceneAttr(kind, SCENE_ATTR_TOWN) || !cur->hasFtrFunc())) {
             goto free;
         }
         if (cur->mId >= 0xE5) {
@@ -2454,10 +2451,10 @@ free:
         }
     }
     result = TRUE;
-    if (fn_80162594(kind, 0x10)) {
+    if (isSceneAttr(kind, SCENE_ATTR_ROOM)) {
         dItem::Item ftr = fn_800F1BE4(NULL, NULL, x, z, NULL, 0x44);
         if (ftr.mId != dItem::ITEM_ID_NONE) {
-            dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(ftr);
+            const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(ftr);
             if (bitm != NULL && getFtrFunc(bitm) != 0) {
                 result = FALSE;
             }
@@ -2467,7 +2464,7 @@ free:
 }
 
 // 800F20D0
-BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u32 kind, BOOL allowFg94, BOOL checkA) {
+BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
     return fn_800F1DF0((int)pos->x >> 5, (int)pos->z >> 5, item, map, kind, allowFg94, checkA);
 }
 
@@ -2652,7 +2649,7 @@ BOOL fn_800F2920(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c
     if (map == NULL) {
         return FALSE;
     }
-    u32 kind = fn_80162548();
+    u8 kind = getCurrentScene();
     return fn_800F23C0(outX, outZ, map, kind, 0, map->mUnitW, 0, map->mUnitH, func, arg, exclude, dist);
 }
 
@@ -3429,7 +3426,7 @@ BOOL fn_800F4AB8(dAnimal_c **animals) {
 
 // 800F4C08: whether the villager `animal` is not standing on a blocked unit.
 BOOL fn_800F4C08(dAnimal_c *animal, int arg) {
-    if (!fn_801625D0(5)) {
+    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     const dAnmPersonalID_c *id = &animal->mID;

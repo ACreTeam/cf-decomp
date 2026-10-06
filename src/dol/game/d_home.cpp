@@ -6,22 +6,28 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_scene.hpp>
 #include <cstring>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 dItem::Item fn_80077730(const dHomeRoom_c *room); // room->mWallpaper
 dItem::Item fn_80077748(const dHomeRoom_c *room); // room->mCarpet
-int fn_801626A8(int scene, const u32 *table, int *index);
-u8 fn_80162548(); // current scene
 void *fn_801683D8();
 void *fn_80167BAC(void *);
 void fn_801911AC(void *);
 void fn_801911E8(int home);
 }
 
-// 80476258: house scene per house (fn_801626A8)
-static const u32 sHomeScenes[] = {0x01000450, 0x02000450, 0x04000450, 0x08000450, 0, 0};
+// 80476258: house scene attribute per house (getSceneAttrTableIndex)
+static const u32 sHomeScenes[] = {
+    SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE,
+    SCENE_ATTR_HOUSE1 | SCENE_ATTR_PLAYER_HOUSE,
+    SCENE_ATTR_HOUSE2 | SCENE_ATTR_PLAYER_HOUSE,
+    SCENE_ATTR_HOUSE3 | SCENE_ATTR_PLAYER_HOUSE,
+    0,
+    0,
+};
 
 // 80476270: default mWallpaper per style and room
 static const int sDefaultWallpapers[4][HOME_ROOM_NUM] = {
@@ -131,7 +137,7 @@ void dHomeRoom_c::recycleItems() {
         if (items != NULL) {
             for (dItem::Item *p = items; p < items + 0x100; p++) {
                 if (!p->isOrgDesign()) {
-                    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*p);
+                    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*p);
                     if (bitm != NULL && bitm->m_noPurchase) {
                         dItem::Item item = *p;
                         dSaveData_c::addToRecycleBin(item);
@@ -148,7 +154,7 @@ void dHomeRoom_c::recycleItems() {
         if (items != NULL) {
             for (dItem::Item *p = items; p < items + 0x100; p++) {
                 if (!p->isOrgDesign()) {
-                    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*p);
+                    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*p);
                     if (bitm != NULL && !bitm->m_noPurchase) {
                         dItem::Item item = *p;
                         dSaveData_c::addToRecycleBin(item);
@@ -239,7 +245,7 @@ const dHomeLayer_c *dHomeRoom_c::getLayer(int layer) const {
 
 // 8013D260
 BOOL dHomeRoom_c::hasInvalidItem() const {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(fn_80077730(this));
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(fn_80077730(this));
     if (bitm == NULL) {
         return TRUE;
     }
@@ -593,13 +599,13 @@ int dHomeList_c::findCurrentPlayer() {
 }
 
 // 8013E04C
-int dHomeList_c::getHomeFromScene(int *room, int scene) {
+int dHomeList_c::getHomeFromScene(int *room, u8 scene) {
     int home = -1;
     int dummy = -1;
     if (room == NULL) {
         room = &dummy;
     }
-    *room = fn_801626A8(scene, sHomeScenes, &home);
+    *room = getSceneAttrTableIndex(scene, sHomeScenes, &home);
     return home;
 }
 
@@ -677,7 +683,7 @@ void dHomeList_c::updateAll(int days) {
 // 8013E2DC
 dItem::Item getCurrentRoomSong() {
     int room;
-    u8 scene = fn_80162548();
+    u8 scene = getCurrentScene();
     int home = dHomeList_c::getHomeFromScene(&room, scene);
     if (home != -1 && dHome_c::isValidRoom(room)) {
         dHome_c *h = dSaveData_c::getTown()->mHomes.getHome(home);
@@ -692,7 +698,7 @@ dItem::Item getCurrentRoomSong() {
 }
 
 // 8013E384
-BOOL setRoomSong(int scene, dItem::Item item) {
+BOOL setRoomSong(u8 scene, dItem::Item item) {
     int room;
     int home = dHomeList_c::getHomeFromScene(&room, scene);
     if (home != -1 && dHome_c::isValidRoom(room)) {
@@ -710,7 +716,7 @@ BOOL setRoomSong(int scene, dItem::Item item) {
 
 // 8013E424
 BOOL setCurrentRoomSong(dItem::Item item) {
-    return setRoomSong(fn_80162548(), item);
+    return setRoomSong(getCurrentScene(), item);
 }
 
 // 8013E458
@@ -724,7 +730,7 @@ BOOL clearCurrentRoomSong() {
 }
 
 // 8013E4B8
-BOOL isSongInOtherRoom(int scene, const dItem::Item &item) {
+BOOL isSongInOtherRoom(u8 scene, const dItem::Item &item) {
     int room;
     int home = dHomeList_c::getHomeFromScene(&room, scene);
     if (home != -1 && room != -1) {
@@ -745,11 +751,11 @@ BOOL isSongInOtherRoom(int scene, const dItem::Item &item) {
 
 // 8013E598
 BOOL isSongInOtherCurrentRoom(const dItem::Item &item) {
-    return isSongInOtherRoom(fn_80162548(), item);
+    return isSongInOtherRoom(getCurrentScene(), item);
 }
 
 // 8013E5D0
-int getRoomFromScene(int scene) {
+int getRoomFromScene(u8 scene) {
     int room;
     if (dHomeList_c::getHomeFromScene(&room, scene) != -1) {
         return room;

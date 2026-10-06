@@ -404,7 +404,7 @@ struct dFgMngLitterFlags_c {
 // The d_fgobj_manager callback (8074E358).
 typedef void (*dFgObjCallback)(int a, int b, int c, mAng3_c *ang, int d);
 
-extern "C" void *fn_80091AF8();                 // 80091AF8: &lbl_805FAF98 (unknown 0x30-byte object)
+extern "C" dSceneChange_c *fn_80091AF8();       // 80091AF8: &gSceneChange (d_scene.hpp)
 int fgMngProc_getGrowUpHeapSize();              // 80091B04: 0x3400, the "createGrowUpHeap" ExpHeap (thread stack)
 int fgMngProc_getFgHeapSize();                  // 80091B0C: 0x2617C0, the "createFgHeap" FrmHeap (m_heap)
 int fgMngProc_getElapsedDays();                 // 80091B18: days since the last processed day (at 6:00)

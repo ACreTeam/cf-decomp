@@ -2,6 +2,7 @@
 #include <game/sLib/s_crc.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_scene.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/revolution/OS/OSCache.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
@@ -22,8 +23,6 @@ void __register_global_object(void *object, void *dtor, void *node);
 BOOL fn_8013812C(void *player, Item *item, int);
 void fn_8013A044(void *player, u16 id, int);
 
-// System helpers.
-u8 fn_80162548();
 
 // Loads entry `index` of a message group into a word (TU near 8016AC58).
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
@@ -67,7 +66,7 @@ static int getTownRegion() {
 void setItemName(dScript::Word_c *name, Item item) {
     dScript::Inflect_c *inflect;
     name->clear();
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         inflect = &name->mInflect;
         name->set(bitm->getName(), 0);
@@ -102,7 +101,7 @@ static inline T ClampEnum(T v, T max) {
 
 // 800C1108
 void setItemFashionName(dScript::Word_c *name, Item item) {
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         setFashionName(name, bitm->getFashion());
     }
@@ -190,7 +189,7 @@ u16 indexTable_c::getKindLast(int kind) const {
 // 800C148C
 int indexTable_c::getIndexInKind(u16 index) const {
     if (index < ITEM_COUNT) {
-        BITM *bitm = infoBank_c::get()->getBITM(index);
+        const BITM *bitm = infoBank_c::get()->getBITM(index);
         if (bitm != NULL) {
             dItem::Item item(getKindFirst(bitm->getKind()));
             return index - item.mId;
@@ -219,7 +218,7 @@ void indexTable_c::build() {
     infoBank_c *bank = infoBank_c::get();
     u32 i;
     for (i = 0; i < ITEM_COUNT; i++) {
-        BITM *bitm = bank->getBITM(static_cast<u16>(i));
+        const BITM *bitm = bank->getBITM(static_cast<u16>(i));
         if (bitm != NULL) {
             u16 baseId = static_cast<u32>(bitm->m_baseId);
             if (baseId < BASE_ID_COUNT) {
@@ -234,7 +233,7 @@ void indexTable_c::build() {
     }
 
     for (i = 0; i < ITEM_COUNT; i++) {
-        BITM *bitm = bank->getBITM(static_cast<u16>(i));
+        const BITM *bitm = bank->getBITM(static_cast<u16>(i));
         if (bitm != NULL) {
             int kind = bitm->getKind();
             if (mKindFirst[kind] == INDEX_NONE) {
@@ -255,7 +254,7 @@ void indexTable_c::addDlItems() {
     }
 
     for (u32 slot = 0; slot < DL_ITEM_COUNT; slot++) {
-        BITM *bitm = dl->getAt(slot)->getValidBITM();
+        const BITM *bitm = dl->getAt(slot)->getValidBITM();
         if (bitm != NULL) {
             u16 baseId = static_cast<u32>(bitm->m_baseId);
             if (baseId < BASE_ID_COUNT) {
@@ -841,7 +840,7 @@ void infoBank_c::setPalettes(nw4r::g3d::ResFile file) {
 }
 
 // 800C2704
-BITM *infoBank_c::getBITM(u16 index) {
+const BITM *infoBank_c::getBITM(u16 index) const {
     if (mpItems != NULL) {
         if (index < ITEM_COUNT) {
             BITM *bitm = &mpItems[index];
@@ -853,7 +852,7 @@ BITM *infoBank_c::getBITM(u16 index) {
             dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
             dSaveDLItem_c *block = dl->getAt(getDlSlot(index));
             if (block != NULL) {
-                BITM *bitm = block->getValidBITM();
+                const BITM *bitm = block->getValidBITM();
                 if (bitm != NULL) {
                     if (bitm->isValid()) {
                         return bitm;
@@ -868,10 +867,10 @@ BITM *infoBank_c::getBITM(u16 index) {
 }
 
 // 800C27E0
-BITM *infoBank_c::getBITM(Item item) {
+const BITM *infoBank_c::getBITM(Item item) const {
     u16 index = getIndexFromItemId(item.mId);
     if (index < DL_ITEM_END) {
-        BITM *bitm = getBITM(index);
+        const BITM *bitm = getBITM(index);
         if (bitm != NULL) {
             return bitm;
         }
@@ -915,13 +914,13 @@ KindInfo *infoBank_c::getKindInfo(u32 kind) {
 }
 
 // 800C2910
-u16 infoBank_c::getIndexFromBaseId(u16 baseId) {
+u16 infoBank_c::getIndexFromBaseId(u16 baseId) const {
     return s_indexTable.getIndex(baseId);
 }
 
 // 800C291C
-u16 infoBank_c::getBaseId(u16 index) {
-    BITM *bitm = getBITM(index);
+u16 infoBank_c::getBaseId(u16 index) const {
+    const BITM *bitm = getBITM(index);
     if (bitm != NULL) {
         int raw = bitm->m_baseId;
         u16 baseId = raw;
@@ -947,7 +946,7 @@ u16 infoBank_c::getItemIdFromIndex(int index) {
 }
 
 // 800C29D0
-u16 infoBank_c::getBaseIdFromItemId(u16 id) {
+u16 infoBank_c::getBaseIdFromItemId(u16 id) const {
     if (isRealItemId(id)) {
         return (id - 0x9000) >> 2;
     }
@@ -968,13 +967,13 @@ BOOL infoBank_c::isBuiltinItemId(u16 id) {
 }
 
 // 800C2AA8
-u16 infoBank_c::getIndexFromItemId(u16 id) {
+u16 infoBank_c::getIndexFromItemId(u16 id) const {
     if (isRealItemId(id)) {
         u32 index = getIndexFromBaseId(getBaseIdFromItemId(id));
         if (index < DL_ITEM_END) {
             return index;
         } else {
-            fn_80162548();
+            getCurrentScene();
             return INDEX_NONE;
         }
     }
@@ -1007,7 +1006,7 @@ BOOL seeker_c::contains(u16 index) const {
 
 // 800C2BC0
 void seeker_c::searchItem(const Item &item, int flags, candCB_c *cb) {
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         search(bitm->getKind(), flags, cb);
     } else {
@@ -1026,7 +1025,7 @@ void seeker_c::search(int kind, int flags, candCB_c *cb) {
         if (first != INDEX_NONE && last != INDEX_NONE) {
             BOOL any = flags & 1;
             for (u16 i = first; i <= last; i++) {
-                BITM *bitm = bank->getBITM(i);
+                const BITM *bitm = bank->getBITM(i);
                 if (bitm == NULL) {
                     continue;
                 }
@@ -1053,7 +1052,7 @@ void seeker_c::search(int kind, int flags, candCB_c *cb) {
         dSaveDLItemList_c::getRaw();
         BOOL any = flags & 1;
         for (u32 i = DL_ITEM_FIRST; i < DL_ITEM_END; i++) {
-            BITM *bitm = bank->getBITM(static_cast<u16>(i));
+            const BITM *bitm = bank->getBITM(static_cast<u16>(i));
             if (bitm == NULL) {
                 continue;
             }
@@ -1134,7 +1133,7 @@ int seeker_c::findLike(Item item) {
 // 800C3088
 int seeker_c::findInSeries(Item item) {
     if (isRealItemId(item.mId)) {
-        BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
+        const BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
         if (bitm != NULL) {
             u32 series = 0;
             if (static_cast<u32>(bitm->m_series) < SERIES_COUNT) {
@@ -1262,7 +1261,7 @@ BOOL fromCandCB_c::check(const BITM *bitm, Item *item) {
 
 // 800C3718
 void fossilCandCB_c::set(Item item) {
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         u32 value = 0;
         u32 fossil = bitm->m_fossil;
@@ -1786,7 +1785,7 @@ dlBlockList_c::dlBlockList_c(u8 *blocks, u32 count) {
 // 800C4AF4
 BOOL dlBlockList_c::add(void *block) {
     if (block != NULL) {
-        BITM *bitm = ((dSaveDLItem_c *)block)->getBITM();
+        const BITM *bitm = ((dSaveDLItem_c *)block)->getBITM();
         for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
             if (((dSaveDLItem_c *)p)->isBITM()) {
                 int rawOther = ((dSaveDLItem_c *)p)->getBITM()->m_baseId;
@@ -1941,7 +1940,7 @@ static void addCatalogList(const u16 *table, u32 count, const u8 *mask, void *pl
         if (*entry != INDEX_NONE) {
             Item item = makeItemFromBaseId(*entry);
             if (item.mId != ITEM_ID_NONE && ((mask[byte] >> bit) & 1)) {
-                BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
+                const BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
                 if (bitm != NULL && bitm->canAddToCatalog()) {
                     fn_8013A044(player, item.mId, 0);
                 }
@@ -1963,7 +1962,7 @@ static void addCatalogRecords(const u16 *table, u32 count, const u8 *mask, void 
         if (*entry != INDEX_NONE) {
             Item item = makeItemFromBaseId(*entry);
             if (item.mId != ITEM_ID_NONE && ((mask[byte] >> bit) & 1)) {
-                BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
+                const BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
                 if (bitm != NULL && bitm->canAddToCatalog()) {
                     fn_8013A044(player, item.mId, 0);
                 }
@@ -2259,7 +2258,7 @@ BOOL isKindAvailable(u32 kind) {
 
 // 800C52DC
 int getCategoryQ5(const Item &item) {
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         u32 partA = 0;
         u32 rawA = bitm->m_ftrPartA;
@@ -2316,7 +2315,7 @@ int getCategoryQ5(const Item &item) {
 
 // 800C5454
 int getNpcMsgFlagged(Item item, int index, BOOL first) {
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         NpcMsg *msg = infoBank_c::get()->getNpcMsg(static_cast<int>(bitm->m_ftrKind));
         if (msg != NULL) {
@@ -2331,7 +2330,7 @@ int getNpcMsgFlagged(Item item, int index, BOOL first) {
 
 // 800C54EC
 int getNpcMsgBullfest(Item item, int index) {
-    BITM *bitm = infoBank_c::get()->getBITM(item);
+    const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         NpcMsgBullfest *msg = infoBank_c::get()->getNpcMsgBullfest(static_cast<int>(bitm->_E));
         if (msg != NULL) {

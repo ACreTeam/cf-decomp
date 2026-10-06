@@ -19,12 +19,12 @@ public:
     dSaveDLItem_c();                                  // 80115380: zeroes it
 
     dItem::Item getItem();                            // 801153B8: ITEM_ID_NONE if not an item
-    dItem::BITM *getValidBITM();                      // 80115420: NULL without the BITM magic
+    const dItem::BITM *getValidBITM() const;                      // 80115420: NULL without the BITM magic
     void *getArchive();                               // 80115464: NULL unless its state is 2
     u32 getArchiveSize();                             // 801154A8
     void *loadArchive(EGG::Heap *heap);               // 801154DC: decompressed into a block of heap
-    dItem::BITM *getBITM();                           // 80115460
-    BOOL isBITM();                                    // 80115588: the 'BITM' magic
+    const dItem::BITM *getBITM() const;                           // 80115460
+    BOOL isBITM() const;                                    // 80115588: the 'BITM' magic
     BOOL isUsed();                                    // 801155C0: a BITM with a base id below 0x1000
     BOOL isGood();                                    // 80115624: checksum, isUsed and BITM::isValid
     u32 getChecksum();                                // 8011569C

@@ -173,7 +173,7 @@ dTime_c *getToday();                                           // 8008A7FC
 BOOL isNowBetween(const int &startHour, const int &startMin, const int &endHour, const int &endMin); // 8008A808
 BOOL isNowBefore(const int &hour, const int &min);             // 8008AA44
 
-// Today's visitor from the weekly schedule (dSaveData_c::_0683C8). The kinds are inferred from
+// Today's visitor from the weekly schedule (dSaveData_c::mVisitorNpc, VISITOR_NPC_*). The kinds are inferred from
 // their hours (2: 6:00-12:00, Joan?); 7..9 are picked at random.
 BOOL isRandomVisitor(int kind);                                // 8008AB3C: 7..9
 int pickRandomVisitor(int a, int b);                           // 8008AB5C: one of 7..9 other than a and b
@@ -195,6 +195,4 @@ int fn_8008AEE8();                                             // 8008AEE8: retu
 struct dTimeStamp_c;
 extern "C" {
 int fn_800DCF90();                               // 800DCF90
-void fn_8010FC3C(void *obj);                     // 8010FC3C: on dSaveData_c::_0683C8
-u8 fn_801100B8(void *obj, int wday);             // 801100B8: on dSaveData_c::_0683C8
 }

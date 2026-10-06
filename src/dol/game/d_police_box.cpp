@@ -113,7 +113,7 @@ void dPoliceBox_c::set(int slot, u16 item) {
 // 80153D4C
 BOOL dPoliceBox_c::add(u16 item) {
     compact();
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
     if (bitm != NULL) {
         int kind = bitm->getKind();
         if (bitm->getKindFlag4() && kind != dItem::KIND_FISH && kind != dItem::KIND_INSECT) {

@@ -901,7 +901,7 @@ void buildSchedule(const dTime_c &now, BOOL reset) {
 void updateSchedule(const dTime_c &now, BOOL reset) {
     buildSchedule(now, reset);
     if (fn_800DCF90()) {
-        fn_8010FC3C(dSaveData_c::getTown()->_0683C8);
+        dSaveData_c::getTown()->mVisitorNpc.update();
     }
 }
 
@@ -1076,7 +1076,7 @@ int pickRandomVisitor(int a, int b) {
 // 8008AC40
 u8 getTodayVisitor() {
     dSaveData_c *town = dSaveData_c::getTown();
-    return fn_801100B8(town->_0683C8, getToday()->wday);
+    return town->mVisitorNpc.getDay(getToday()->wday);
 }
 
 // 8008AC84
@@ -1119,7 +1119,7 @@ BOOL isVisitorHere(int kind) {
 
 // 8008AD7C
 BOOL isSavedDateToday() {
-    dTimeStamp_c *time = (dTimeStamp_c *)&dSaveData_c::getRaw()->_0683C8[8];
+    dTimeStamp_c *time = &dSaveData_c::getRaw()->mVisitorNpc.mEventDay;
     if (time->isNone()) {
         return FALSE;
     }

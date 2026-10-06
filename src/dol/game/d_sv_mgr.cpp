@@ -151,7 +151,7 @@ int dSvMgr_c::create() {
     };
     dState::mode_c<dSvMgr_c>::initialize("dSvMgr_c", modes, 11);
     mLoadFailed = false;
-    if (fn_80162548() == 0x3A) {
+    if (getCurrentScene() == SCENE_DM_LOAD) {
         fn_80154358(lbl_8074E7F8);
         changeMode(&dSvMgr_c::executeLoad);
     }
@@ -163,7 +163,7 @@ int dSvMgr_c::doDelete() {
     if (!fn_800D2A4C()) {
         return NOT_READY;
     }
-    if (fn_80162548() == 0x3A) {
+    if (getCurrentScene() == SCENE_DM_LOAD) {
         int result;
         if (mLoadFailed) {
             result = fn_8015436C(lbl_8074E7F8, 5);
@@ -700,7 +700,7 @@ void dSvMgr_c::closeGateForSave() {
 
 // 801BEC2C
 void dSvMgr_c::stepLoad_c::gotoTitle() {
-    fn_80162B1C(0x38, 5, 2);
+    requestSceneChange(SCENE_DM_TITLE, 5, 2);
     nextStep();
 }
 
@@ -743,7 +743,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::waitMessageEnd() {
 
 // 801BEFF0
 void dSvMgr_c::stepSaveInterruptNetVst_c::gotoOutsideGate() {
-    fn_801634AC(fn_801BB7B8(), 1, 5, 0);
+    fn_801BB7B8()->requestExit(1, 5, 0);
     nextStep();
 }
 
@@ -849,7 +849,7 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::waitMessageEnd() {
 
 // 801BF7FC
 void dSvMgr_c::stepSaveInterruptNetHst_c::gotoPreviousScene() {
-    fn_801634AC(fn_801BB7B8(), 0, 5, 0);
+    fn_801BB7B8()->requestExit(0, 5, 0);
     nextStep();
 }
 
@@ -912,7 +912,7 @@ void dSvMgr_c::stepSaveContinueNetVst_c::waitMessageEnd() {
 
 // 801BFDB4
 void dSvMgr_c::stepSaveContinueNetVst_c::gotoPreviousScene() {
-    fn_801634AC(fn_801BB7B8(), 0, 5, 0);
+    fn_801BB7B8()->requestExit(0, 5, 0);
     nextStep();
 }
 
@@ -962,7 +962,7 @@ void dSvMgr_c::stepSaveContinueNetHst_c::waitMessageEnd() {
 
 // 801C0220
 void dSvMgr_c::stepSaveContinueNetHst_c::gotoPreviousScene() {
-    fn_801634AC(fn_801BB7B8(), 0, 5, 0);
+    fn_801BB7B8()->requestExit(0, 5, 0);
     nextStep();
 }
 
@@ -1030,9 +1030,9 @@ void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
             }
         }
         if (returning) {
-            fn_80162B1C(0x41, 5, 0);
+            requestSceneChange(SCENE_DM_CHKP_MISS, 5, 0);
         } else {
-            fn_80162B1C(0x3F, 5, 0);
+            requestSceneChange(SCENE_DM_CHKP_CNNCT, 5, 0);
         }
         nextStep();
     }
@@ -1128,9 +1128,9 @@ void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
             }
         }
         if (returning) {
-            fn_80162B1C(0x41, 5, 0);
+            requestSceneChange(SCENE_DM_CHKP_MISS, 5, 0);
         } else {
-            fn_80162B1C(0x3F, 5, 0);
+            requestSceneChange(SCENE_DM_CHKP_CNNCT, 5, 0);
         }
         nextStep();
     }
@@ -1208,7 +1208,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::waitMessageEnd() {
 
 // 801C1484
 void dSvMgr_c::stepSaveRetireNetVst_c::gotoOutsideGate() {
-    fn_801634AC(fn_801BB7B8(), 1, 5, 0);
+    fn_801BB7B8()->requestExit(1, 5, 0);
     nextStep();
 }
 
@@ -1307,7 +1307,7 @@ void dSvMgr_c::stepSaveNormal_c::waitMessageEnd() {
 
 // 801C1BEC
 void dSvMgr_c::stepSaveNormal_c::gotoTitle() {
-    fn_80162B1C(0x38, 5, 2);
+    requestSceneChange(SCENE_DM_TITLE, 5, 2);
     nextStep();
 }
 

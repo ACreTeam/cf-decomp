@@ -91,7 +91,7 @@ BOOL dQuestWish_c::isWishItem(const dItem::Item *item, int kind) {
         return FALSE;
     }
 
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL) {
         return FALSE;
     }
@@ -1048,7 +1048,7 @@ void dQuestVillager_c::clearRequester() {
 
 // 80142128: insect price band (0-2), or 3 if not an insect
 int dQuestVillager_c::getInsectPriceRank(const dItem::Item *item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     int result = 3;
     if (bitm != NULL && bitm->getKind() == dItem::KIND_INSECT) {
         int price = item->getPrice();
@@ -1066,7 +1066,7 @@ int dQuestVillager_c::getInsectPriceRank(const dItem::Item *item) {
 
 // 801421C8: fish price band (0-2), or 3 if not a fish
 int dQuestVillager_c::getFishPriceRank(const dItem::Item *item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     int result = 3;
     if (bitm != NULL && bitm->getKind() == dItem::KIND_FISH) {
         int price = item->getPrice();
@@ -1116,7 +1116,7 @@ dTime_c dLostQuest_c::getTime() {
 void dLostQuest_c::fn_80142338(const dItem::Item *item) {
     s8 group = -1;
     if (item->mId != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
         if (bitm != NULL && bitm->getKind() == 0x35) {
             group = dItem::seeker_c::get()->findLike(*item);
         }

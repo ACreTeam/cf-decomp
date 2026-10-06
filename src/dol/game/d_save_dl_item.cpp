@@ -28,7 +28,7 @@ dSaveDLItem_c::dSaveDLItem_c() {
 
 // 801153B8
 dItem::Item dSaveDLItem_c::getItem() {
-    dItem::BITM *bitm = getValidBITM();
+    const dItem::BITM *bitm = getValidBITM();
     if (bitm != NULL && (u16)bitm->m_baseId <= 0xFFF) {
         dItem::Item item = makeItemFromBaseId(bitm->m_baseId);
         return item;
@@ -37,7 +37,7 @@ dItem::Item dSaveDLItem_c::getItem() {
 }
 
 // 80115420
-dItem::BITM *dSaveDLItem_c::getValidBITM() {
+const dItem::BITM *dSaveDLItem_c::getValidBITM() const {
     if (isBITM()) {
         return &mBITM;
     }
@@ -45,7 +45,7 @@ dItem::BITM *dSaveDLItem_c::getValidBITM() {
 }
 
 // 80115460
-dItem::BITM *dSaveDLItem_c::getBITM() {
+const dItem::BITM *dSaveDLItem_c::getBITM() const {
     return &mBITM;
 }
 
@@ -83,7 +83,7 @@ void *dSaveDLItem_c::loadArchive(EGG::Heap *heap) {
 }
 
 // 80115588
-BOOL dSaveDLItem_c::isBITM() {
+BOOL dSaveDLItem_c::isBITM() const {
     return getBITM()->m_magic == 'BITM';
 }
 
@@ -144,7 +144,7 @@ int dSaveDLItemList_c::getNum() {
 // 801157B4: stores a received item in its slot (unless the slot already holds it) and returns
 // its item, or ITEM_ID_NONE when it isn't a good downloaded item.
 dItem::Item dSaveDLItemList_c::add(const dSaveDLItem_c *item, int arg) {
-    dItem::BITM *bitm;
+    const dItem::BITM *bitm;
     u16 baseId;
     dSaveDLItem_c *src;
     src = (dSaveDLItem_c *)item;
@@ -235,7 +235,7 @@ dSaveDLItem_c *dSaveDLItemList_c::getAt(u32 slot) {
 
 // 80115B50
 BOOL dSaveDLItemList_c::isSlotTaken(const dSaveDLItem_c *item) {
-    dItem::BITM *bitm = ((dSaveDLItem_c *)item)->getValidBITM();
+    const dItem::BITM *bitm = ((dSaveDLItem_c *)item)->getValidBITM();
     if (bitm != NULL) {
         return getItemAt(bitm->m_addItem).mId != dItem::ITEM_ID_NONE;
     }

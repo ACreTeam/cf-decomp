@@ -50,15 +50,15 @@ public:
     /* 0x24 */ wchar_t mBuffer[ANIMAL_HABIT_LEN + 1];
 }; // size 0x3C
 
-// Two capped counters (max 5) at dAnimalMemory_c+0x4E. The kind argument goes
-// through fn_80162548 / fn_80162594 to pick which counter applies.
+// Two capped counters (max 5) at dAnimalMemory_c+0x4E. The kind argument is a scene (SCENE_NUM: the
+// current one); isSceneAttr(kind, SCENE_ATTR_TOWN) picks which counter applies.
 class dAnimalTalkCount_c {
 public:
     dAnimalTalkCount_c(); // 8011C618
     ~dAnimalTalkCount_c(); // 8011C61C
     void clear(); // 8011C65C
-    void inc(u32 kind); // 8011C66C
-    u8 get(u32 kind); // 8011C6E4
+    void inc(u8 kind); // 8011C66C
+    u8 get(u8 kind); // 8011C6E4
 
     /* 0x0 */ u8 mCount;
     /* 0x1 */ u8 mCountNoAttr5;
@@ -235,20 +235,20 @@ public:
     BOOL usesNickname(const dPersonalID_c *pid); // 8011F090
 
     // Request item pickers (pointer-to-member tables in pickRequestItem, pickClothRequest, pickFtrRequest).
-    typedef u32 (dAnimal_c::*RequestPickFunc)(dItem::Item *item, u8 *arg);
-    u32 pickInsectRequest(dItem::Item *item, u8 *arg); // 80124AF0: insect
-    u32 pickFishRequest(dItem::Item *item, u8 *arg); // 80124B5C: fish
-    u32 pickFossilRequest(dItem::Item *item, u8 *arg); // 80124BC8: fossil
-    u32 pickClothRequestNotDisliked(dItem::Item *item, u8 *arg); // 80124C44
-    u32 pickClothRequestLikedStyle(dItem::Item *item, u8 *arg); // 80124C4C
-    u32 pickClothRequestItemNotDisliked(dItem::Item *item, u8 *arg); // 80124C54: clothing
-    u32 pickClothRequestItemLikedStyle(dItem::Item *item, u8 *arg); // 80124CEC: clothing
-    u32 pickClothRequest(dItem::Item *item, u8 *arg); // 80124D84: clothing; returns the isClothRequestMatch mode
-    u32 pickFtrRequestCategory(dItem::Item *item, u8 *arg); // 80124E10: furniture conditions return the checkFtrRequest mode (3-6)
-    u32 pickFtrRequestColor(dItem::Item *item, u8 *arg); // 80124E4C
-    u32 pickFtrRequestTaste(dItem::Item *item, u8 *arg); // 80124ED0
-    u32 pickFtrRequestSeries(dItem::Item *item, u8 *arg); // 80125044
-    u32 pickFtrRequest(dItem::Item *item, u8 *arg); // 801250C8: furniture
+    typedef u32 (dAnimal_c::*RequestPickFunc)(dItem::Item *item, u8 *arg) const;
+    u32 pickInsectRequest(dItem::Item *item, u8 *arg) const; // 80124AF0: insect
+    u32 pickFishRequest(dItem::Item *item, u8 *arg) const; // 80124B5C: fish
+    u32 pickFossilRequest(dItem::Item *item, u8 *arg) const; // 80124BC8: fossil
+    u32 pickClothRequestNotDisliked(dItem::Item *item, u8 *arg) const; // 80124C44
+    u32 pickClothRequestLikedStyle(dItem::Item *item, u8 *arg) const; // 80124C4C
+    u32 pickClothRequestItemNotDisliked(dItem::Item *item, u8 *arg) const; // 80124C54: clothing
+    u32 pickClothRequestItemLikedStyle(dItem::Item *item, u8 *arg) const; // 80124CEC: clothing
+    u32 pickClothRequest(dItem::Item *item, u8 *arg) const; // 80124D84: clothing; returns the isClothRequestMatch mode
+    u32 pickFtrRequestCategory(dItem::Item *item, u8 *arg) const; // 80124E10: furniture conditions return the checkFtrRequest mode (3-6)
+    u32 pickFtrRequestColor(dItem::Item *item, u8 *arg) const; // 80124E4C
+    u32 pickFtrRequestTaste(dItem::Item *item, u8 *arg) const; // 80124ED0
+    u32 pickFtrRequestSeries(dItem::Item *item, u8 *arg) const; // 80125044
+    u32 pickFtrRequest(dItem::Item *item, u8 *arg) const; // 801250C8: furniture
     int getMemoryIdx(const dPersonalID_c *pid); // 8011E7C8
     dAnimalMemory_c *getMemory(u32 idx); // 8011E888
     dAnimalMemory_c *getMemory2(u32 idx); // 8011E8A8

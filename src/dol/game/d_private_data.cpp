@@ -2,6 +2,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_scene.hpp>
 #include <game/game/d_script.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <game/cLib/c_math.hpp>
@@ -33,7 +34,6 @@ BOOL fn_80102BBC(dMail_c *mail);
 // dDesign_c.
 
 // Other members.
-void fn_80110470(dUnk7FD6_c *obj); // clear
 void fn_80150AD4(dUnk5560_c *obj);
 
 // Calendar helpers (dYMD_c; not split yet).
@@ -43,7 +43,6 @@ BOOL fn_8014CCB4(dYMD_c *date, int year, int month, int day);
 BOOL fn_800E593C(void *);
 BOOL fn_800DCEDC();
 void fn_800B0954(BOOL, int);
-u8 fn_80162548();
 BOOL fn_8019B864();
 
 // Calendar/time helpers.
@@ -54,7 +53,6 @@ u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
 BOOL fn_8014D07C(void *);
-void fn_801109EC(void *, int, int);
 int fn_801161F0();
 void fn_80169C48();
 void fn_80169F20();
@@ -390,7 +388,7 @@ void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
     mCatalog.clear();
     _85FA.clear();
     _8604.clear();
-    fn_80110470(&_7FD6);
+    mMotherMail.clear();
     mFriends.clear();
     mDates.init();
     _869A = -1;
@@ -654,7 +652,7 @@ void dPrivateData_c::updateHair(int days) {
 
 // 80137DA4
 void dPrivateData_c::dailyUpdate(int days) {
-    if ((u8)fn_80162548() == 0x3C && dPlayerMgr_c::getCurrentPlayer() == this) {
+    if ((u8)getCurrentScene() == SCENE_DM_BUS_PL_CRT && dPlayerMgr_c::getCurrentPlayer() == this) {
         return;
     }
     if (days != 0) {
@@ -695,7 +693,7 @@ void dPrivateData_c::dailyUpdate(int days) {
 // 80137F58
 void dPrivateData_c::setPocket(const dItem::Item *item, int idx, BOOL flag) {
     if (item->mId != dItem::ITEM_ID_NONE) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
         if (bitm == NULL || !bitm->getKindFlag4()) {
             return;
         }
@@ -839,7 +837,7 @@ void dPrivateData_c::clear() {
     mSavings = 0;
     mErrand.clear();
     _8620.reset();
-    fn_80110470(&_7FD6);
+    mMotherMail.clear();
     mHost.mPID.clear();
     mHost.mCount = 0;
     mHost.mFlagA = 0;
@@ -1540,7 +1538,7 @@ BOOL dCatalog_c::isNthRegistered(int kind, u32 n) {
 
 // 80139FA4
 bool dCatalog_c::isRegistered(u16 item) {
-    dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
     if (bitm != NULL && bitm->m_catalogStore) {
         u16 baseId = dItem::infoBank_c::get()->getBaseIdFromItemId(item);
         if (baseId < CATALOG_BIT_NUM) {
@@ -1558,7 +1556,7 @@ BOOL dCatalog_c::isRegistered(const dItem::Item &item) {
 // 8013A044
 BOOL dCatalog_c::registerItem(u16 item, BOOL force) {
     if (!force) {
-        dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
+        const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(item));
         int kind = bitm != NULL ? bitm->getKind() : dItem::KIND_NONE;
         if (kind == dItem::KIND_INSECT || kind == dItem::KIND_FISH) {
             return FALSE;
@@ -2151,7 +2149,7 @@ void dPrivateData_c::fn_8013B848() {
     }
     if (x >= 0 && y >= 0) {
         fn_800EBB24(2, "BBS_office", 0, 0);
-        fn_801109EC(dSaveData_c::getTown()->_068414, x, y);
+        dSaveData_c::getTown()->mMainField.setChangeBlock(x, y);
         fn_80116540(dSaveData_c::getTown(), 0xB);
         fn_8013B7A4();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);

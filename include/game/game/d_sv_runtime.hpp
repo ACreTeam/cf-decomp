@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <game/game/d_demo.hpp>
+#include <game/game/d_scene.hpp>
 #include <cstring>
 
 // Narrow ABI boundary for dependencies whose class interfaces are unrecovered.
@@ -33,7 +34,6 @@ inline bool isDemoMode(void *demo, const DemoMethod &expected) {
 }
 
 extern "C" {
-u8 fn_80162548();
 void *fn_8017D8E8();
 void fn_80154358(void *process);
 int fn_8015436C(void *process, int mode);
@@ -49,9 +49,7 @@ extern const int lbl_80750AD0;
 extern const int lbl_80750330;
 extern unsigned char lbl_8074E7F8[8];
 extern const char *lbl_8074B010;
-void *fn_801BB7B8();
-void fn_801634AC(void *, int, int, int);
-void fn_80162B1C(int, int, int);
+dSceneChange_c *fn_801BB7B8(); // 801BB7B8: &gSceneChange
 void fn_801A4E44(void *, u16);
 void fn_801A4E34(void *, const char *);
 void fn_80106988();

@@ -74,7 +74,7 @@ public:
     void setName(const wchar_t *name);             // 8010F8C0
     int getStyle() const;                           // 8010F8FC
     void setStyle(u32 style);                       // 8010F914
-    BOOL setFromBITM(dItem::BITM *bitm);           // 8010F930
+    BOOL setFromBITM(const dItem::BITM *bitm);           // 8010F930
 
     const dPersonalID_c *getCreator() const { return &mCreator; }
 

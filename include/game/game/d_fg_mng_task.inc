@@ -296,7 +296,7 @@ void dFgMngTask_c::finish() {
 
 // 800A2918
 void dFgMngTask_c::apply() {
-    if (fn_80162594(mScene, SCENE_ATTR_TOWN)) {
+    if (isSceneAttr(mScene, SCENE_ATTR_TOWN)) {
         dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
         dFgMngProc_c::setUnitItem(fd, getX(), getZ(), mNewItem, mStage);
         notify(mStage != 0);
@@ -426,7 +426,7 @@ void fgMngTask_procAt(u8 scene, const dFdAsPos_c *pos, u32 layer) {
 // 800A2F7C
 void fgMngTask_procAt(int x, int z, u32 layer) {
     dFdAsPos_c pos(x, z);
-    fgMngTask_procAt(fn_80162548(), &pos, layer);
+    fgMngTask_procAt(getCurrentScene(), &pos, layer);
 }
 
 // 800A2FC0
@@ -467,7 +467,7 @@ void fgMngTask_releaseAt(u8 scene, const dFdAsPos_c *pos, u32 layer) {
 // 800A30D4
 void fgMngTask_releaseAt(int x, int z, u32 layer) {
     dFdAsPos_c pos(x, z);
-    fgMngTask_releaseAt(fn_80162548(), &pos, layer);
+    fgMngTask_releaseAt(getCurrentScene(), &pos, layer);
 }
 
 // 800A3118
@@ -941,7 +941,7 @@ BOOL fgMngState_canAct(int player, int x, int z) {
     if (kind == FG_MNG_KIND_WATER) {
         return TRUE;
     }
-    int idx = fgMngTask_findMarked(fn_80162548(), &pos, st->mLayer);
+    int idx = fgMngTask_findMarked(getCurrentScene(), &pos, st->mLayer);
     if (idx < 0) {
         if (kind == FG_MNG_KIND_SWAP) {
             ok = TRUE;
@@ -1083,7 +1083,7 @@ void dFgMngReq_c::send(BOOL local, int player, u8 scene) {
     cmd.mDropPos[2] = FG_MNG_POS_NONE;
     int size = dFgMngCmd_c::SEND_SIZE_SHORT;
     if (local) {
-        fn_80162548();
+        getCurrentScene();
         switch (cmd.mKind) {
         case FG_MNG_KIND_BLOCKED:
         case FG_MNG_KIND_HIT_ROCK:

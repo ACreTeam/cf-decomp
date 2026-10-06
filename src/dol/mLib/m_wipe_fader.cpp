@@ -18,14 +18,6 @@ mWipeFader_c::mWipeFader_c(mColor col, mFaderBase_c::EStatus status) :
     }
 }
 
-mWipeFader_c::~mWipeFader_c() {}
-
-void mWipeFader_c::setTexture(void *data, int width, int height) {
-    mpTextureData = data;
-    mTexWidth = width;
-    mTexHeight = height;
-}
-
 void mWipeFader_c::setStatus(EStatus status) {
     if (status == OPAQUE) {
         mStatus = OPAQUE;
