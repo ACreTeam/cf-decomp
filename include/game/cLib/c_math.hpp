@@ -17,4 +17,15 @@ namespace cM {
     int rndInt(int max); ///< Generates an integer between 0 and the given max.
     float rndF(float max); ///< Generates a floating point number between 0 and the given max.
 
+    /// @brief Generates a number between @p min and @p max (@p max excluded for integers).
+    /// @details Not inline: every instantiation is emitted as a weak function (80090850 for int,
+    /// 800908CC for float; the kept copies are in d_fireworks.cpp).
+    template <typename T>
+    T rndRange(T min, T max) {
+        f32 r = cM::rndF(max - min);
+        f32 m = min;
+        m += r;
+        return m;
+    }
+
 } // namespace cM

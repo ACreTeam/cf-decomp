@@ -22,8 +22,8 @@ public:
         STATE_FADE,
     };
 
-    dFireWork_c() : mId(-1) {} // 8009042C
-    ~dFireWork_c();             // 80090924
+    dFireWork_c();      // 8009042C
+    ~dFireWork_c() {}   // 80090924
 
     void reset();                    // 8008FE50
     void launch(BOOL withEffect);    // 8008FE94
@@ -63,7 +63,3 @@ public:
     /* 0x14E */ u8 mWasShowTime;
 }; // size 0x150
 
-// Generic helpers defined at the end of this TU and used across the game (real names unknown).
-int randomInt(int min, int max);           // 80090850: random min..max-1 (cM::rndF)
-f32 randomFloat(f32 min, f32 max);         // 800908CC: random min..max
-int calcTimer(int *timer);                 // 80090908: decrement if nonzero, return it (like sLib::calcTimer)

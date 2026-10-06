@@ -5,7 +5,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_search_cand.hpp>
 #include <game/game/d_random.hpp>
-#include <game/game/d_fireworks.hpp>
+#include <game/cLib/c_math.hpp>
 #include <string.h>
 
 // Not split yet (C linkage keeps the target names).
@@ -71,7 +71,7 @@ void dSchedule_c::build(u16 week) {
     dRandom_c rnd(157);
     int seed[5];
     for (int i = 0; i < 5; i++) {
-        seed[i] = randomInt(0, 9999);
+        seed[i] = cM::rndRange(0, 9999);
     }
     rnd.init(seed[0], seed[1], seed[2], seed[3], seed[4]);
 

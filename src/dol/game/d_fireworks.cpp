@@ -69,10 +69,10 @@ void dFireWork_c::launch(BOOL withEffect) {
     mGlow = 0.0f;
     mBrightness = 0.0f;
     mMtx_c mtx;
-    f32 y = randomFloat(200.0f, 300.0f);
-    PSMTXTrans(mtx.mtx, randomFloat(-200.0f, 200.0f), y, 0.0f);
-    mScale = randomFloat(0.7f, 1.3f);
-    mColor = randomInt(0, 3);
+    f32 y = cM::rndRange(200.0f, 300.0f);
+    PSMTXTrans(mtx.mtx, cM::rndRange(-200.0f, 200.0f), y, 0.0f);
+    mScale = cM::rndRange(0.7f, 1.3f);
+    mColor = cM::rndRange(0, 3);
     if (withEffect) {
         dEffect_c effect;
         effect.createEffect("af_fld_firework", &mtx);
@@ -102,7 +102,7 @@ void dFireWork_c::execute(BOOL withEffect) {
     case STATE_IDLE:
         break;
     case STATE_WAIT:
-        if (calcTimer(&mTimer) == 0) {
+        if (sLib::calcTimer(&mTimer) == 0) {
             mState = STATE_RISE;
             mTimer = 128;
         }
@@ -115,7 +115,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         mBrightness += rate * (0.625f - mBrightness);
         mPos = lbl_80623FEC;
         mPos.y += height;
-        if (calcTimer(&mTimer) == 0) {
+        if (sLib::calcTimer(&mTimer) == 0) {
             GXColor color;
             *(u32 *)&color = *(const u32 *)&sLightColor[mColor];
             mState = STATE_BURST;
@@ -150,7 +150,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         break;
     }
     case STATE_BURST:
-        if (calcTimer(&mTimer) == 0) {
+        if (sLib::calcTimer(&mTimer) == 0) {
             mState = STATE_FADE;
             mTimer = 90;
         }
@@ -163,7 +163,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         mBrightness += -mBrightness * rate;
         mPos = lbl_80623FEC;
         mPos.y += height;
-        if (calcTimer(&mTimer) == 0) {
+        if (sLib::calcTimer(&mTimer) == 0) {
             reset();
         }
         break;
@@ -182,6 +182,9 @@ void dFireWork_c::draw(BOOL withEffect) {
         fn_80199BBC(lbl_8074EA60, &color, &mPos, mGlow);
     }
 }
+
+// 8009042C
+inline dFireWork_c::dFireWork_c() : mId(-1) {}
 
 // 800903D0
 dFireWorksMgr_c::dFireWorksMgr_c() {
@@ -208,7 +211,7 @@ void dFireWorksMgr_c::init(BOOL withEffect) {
     }
     mWasShowTime = isShowTime();
     mWait = 0;
-    mBurstLeft = randomInt(2, 8);
+    mBurstLeft = cM::rndRange(2, 8);
 }
 
 // 800905A8
@@ -220,11 +223,11 @@ void dFireWorksMgr_c::execute() {
         }
         if (sLib::chase(&mWait, 0, 1)) {
             if (sLib::chase(&mBurstLeft, 0, 1)) {
-                mWait = randomInt(180, 300);
-                mBurstLeft = randomInt(2, 8);
+                mWait = cM::rndRange(180, 300);
+                mBurstLeft = cM::rndRange(2, 8);
             } else {
                 launch();
-                mWait = randomInt(30, 90);
+                mWait = cM::rndRange(30, 90);
             }
         }
         mWasShowTime = TRUE;
@@ -271,24 +274,3 @@ dFireWork_c *dFireWorksMgr_c::getFreeShell() {
     }
     return NULL;
 }
-
-// 80090850
-int randomInt(int min, int max) {
-    return min + cM::rndF(max - min);
-}
-
-// 800908CC
-f32 randomFloat(f32 min, f32 max) {
-    return min + cM::rndF(max - min);
-}
-
-// 80090908
-int calcTimer(int *timer) {
-    if (*timer != 0) {
-        (*timer)--;
-    }
-    return *timer;
-}
-
-// 80090924
-dFireWork_c::~dFireWork_c() {}

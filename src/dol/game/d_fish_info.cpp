@@ -6,7 +6,6 @@
 #include <game/cLib/c_math.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/sLib/s_lib.hpp>
-#include <game/game/d_fireworks.hpp>
 
 // Not split yet (C linkage keeps the target name).
 extern "C" BOOL fn_800DCEDC(); // 800DCEDC: an online session is active (spawn rolls use 0..95 then)
@@ -1944,7 +1943,7 @@ int getTourneyFish(const dTime_c &time) {
     const int *cand = fish[idx];
     int type = cand[0];
     for (int i = 1; i < 3; i++) {
-        if (randomFloat(0.0f, 1.0f) <= 1.0f / (i + 1)) {
+        if (cM::rndRange(0.0f, 1.0f) <= 1.0f / (i + 1)) {
             type = cand[i];
         }
     }
