@@ -1075,7 +1075,7 @@ int pickRandomVisitor(int a, int b) {
 
 // 8008AC40
 u8 getTodayVisitor() {
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     return town->mVisitorNpc.getDay(getToday()->wday);
 }
 

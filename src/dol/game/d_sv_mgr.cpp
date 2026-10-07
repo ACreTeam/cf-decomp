@@ -784,7 +784,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();
-            save->_073522.get();
+            save->mSaveTime.get();
             nextStep();
         }
         break;
@@ -1242,7 +1242,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();
-            save->_073522.get();
+            save->mSaveTime.get();
             nextStep();
         }
         break;

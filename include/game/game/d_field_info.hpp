@@ -83,41 +83,80 @@ struct dFdBlockId_c {
     u16 mFlag : 1;
 };
 
-// Per-block (acre) data of a dFdBase_c. Its functions are around 80080DDC..800811D8.
+// Block type flags (dFdBlock_c::hasFlag; fn_80081324 looks them up by block type).
+enum {
+    // A river block with a bridge. Every BgModel type with a bridge model has it, and each river shape
+    // without it has a same-index variant with it (fn_80081514): the extra bridge from the public works
+    // turns a block into that variant (dSaveMainField_c::buildBridge).
+    FD_BLOCK_FLAG_BRIDGE = 0x8,
+};
+
+// Per-block (acre) data of a dFdBase_c (d_field_block.cpp, 80080D7C..800811F4).
 struct dFdBlock_c {
+    static void *operator new(size_t size, void *p) { return p; }
+
+    dFdBlock_c();                                                            // 80080D7C
     static u32 getAllocSize(int num, int align);                             // 80080DDC: ROUND_UP(num * 0x24, align)
     static dFdBlock_c *create(int num, EGG::Heap *heap, int align);          // 80080DF4: heap array, each constructed
     void release(EGG::Heap *heap, BOOL items, BOOL data);                    // 80080E88: frees mItems[] / mBgData
-    void set(int type, dItem::Item *items0, dItem::Item *items1, u16 *flagsA, u16 *flagsB, void *bgData,
+    void set(int type, dItem::Item *items0, dItem::Item *items1, u16 *buried, u16 *watered, void *bgData,
              int blockX, int blockZ, int flag, int bg);                      // 80080F38: then fn_800756F4
     BOOL hasFlag(int mask) const;                                            // 80080F80: flags of mType
+    BOOL fn_80080FC0() const;                                                // 80080FC0: mType in fn_80106464's list
     BOOL setItem(const dItem::Item *item, int unitX, int unitZ, int layer);  // 80080FC8
+    dItem::Item *getItemP(int unitX, int unitZ, int layer);                  // 8008101C
+    dItem::Item *getItemP(int unitX, int unitZ, int layer) const;            // 80081074
     dItem::Item *getItem(int unitX, int unitZ, int layer) const;             // 800810CC
-    BOOL setFlagA(int unitX, int unitZ);                                     // 800810D0
-    BOOL clearFlagA(int unitX, int unitZ);                                   // 800810E8
-    BOOL isFlagA(int unitX, int unitZ) const;                                // 80081100
-    BOOL setFlagB(int unitX, int unitZ);                                     // 80081160
-    BOOL isFlagB(int unitX, int unitZ) const;                                // 80081178
-    void clearFlagsB();                                                      // 800811D8
+    BOOL setBuried(int unitX, int unitZ);                                    // 800810D0
+    BOOL clearBuried(int unitX, int unitZ);                                  // 800810E8
+    BOOL isBuried(int unitX, int unitZ) const;                               // 80081100
+    BOOL setWatered(int unitX, int unitZ);                                   // 80081160
+    BOOL isWatered(int unitX, int unitZ) const;                              // 80081178
+    void clearWatered();                                                     // 800811D8
 
     /* 0x00 */ int mType;              // block (acre) type, or the room's BG id
     /* 0x04 */ dItem::Item *mItems[2]; // 16 x 16 items per layer
-    /* 0x0C */ u16 *mFlagsA;           // one u16 bit row per unit z
-    /* 0x10 */ u16 *mFlagsB;
+    /* 0x0C */ u16 *mBuried;           // dSaveMainField_c::mBuried: an item is buried in the unit
+    /* 0x10 */ u16 *mWatered;          // dSaveMainField_c::mWater: watered today (cleared daily)
     /* 0x14 */ void *mBgData;          // 0xA00 bytes loaded by fn_80069680
     /* 0x18 */ int mBlockX;
     /* 0x1C */ int mBlockZ;
     /* 0x20 */ int mFlag;              // the save's block flag
 }; // size 0x24
 
-// Per-unit attribute map (r3 of 80167CD8..80167DE4; class not recovered).
+// One block's unit attributes: a 4-bit attribute per unit, two units per byte (even unit index in
+// the low nibble).
+struct dFdUnitAttrBlock_c {
+    u32 get(int idx) const { return (mUnits[idx >> 1] >> ((idx & 1) * 4)) & 0xF; }
+    void set(int idx, u32 attr) {
+        int shift = (idx & 1) * 4;
+        u8 *p = &mUnits[idx >> 1];
+        *p = (u8)(*p & ~(0xF << shift)) | ((attr & 0xF) << shift);
+    }
+
+    /* 0x00 */ u8 mUnits[UT_TOTAL_NUM / 2];
+}; // size 0x80
+
+// Per-unit attribute map of the town's structures, for every block. Filled by 801679A8 from each
+// placed structure's (items 0xD000..0xD044) own BG: its STR_* BG attributes (3..8) become these bits.
+// See notes/bg_attributes.txt.
 class dFdUnitAttr_c {
 public:
-    u32 getAttr(int unitX, int unitZ);   // 80167CD8
-    BOOL isOpen(int unitX, int unitZ);   // 80167D8C: (attr & 5) == 0
-    BOOL isOpen1(int unitX, int unitZ);  // 80167DB8: (attr & 1) == 0
-    BOOL isAttr2(int unitX, int unitZ);  // 80167DE4: attr bit 1
-};
+    enum {
+        STR_COL = 1 << 0, // BG STR_COL (3), STR_ENT_TO_RU/LU (7, 8): structure collision
+        STR_DEL = 1 << 1, // BG STR_DEL (6), STR_INS (5): no tree planting
+        STR_ENT = 1 << 2, // BG STR_ENT (4), STR_ENT_TO_RU/LU (7, 8): structure entrance
+        STR_INS = 1 << 3, // BG STR_INS (5) only; never tested on its own
+    };
+
+    void setAttr(int unitX, int unitZ, u32 attr); // 80167C08
+    u32 getAttr(int unitX, int unitZ);            // 80167CD8
+    BOOL isGroundFree(int unitX, int unitZ);      // 80167D8C: neither STR_COL nor STR_ENT
+    BOOL isNotStrCol(int unitX, int unitZ);       // 80167DB8: not STR_COL
+    BOOL isNoPlantUnit(int unitX, int unitZ);     // 80167DE4: STR_DEL
+
+    /* 0x0000 */ dFdUnitAttrBlock_c mBlocks[BLOCK_Z_NUM][BLOCK_X_NUM];
+}; // size 0x1880
 
 class dFdBase_c : public dBGCF::clmcb_c {
 public:
@@ -166,34 +205,34 @@ public:
     static f32 getRaccoParamA();                                                         // 8008C570
     static f32 getRaccoParamB();                                                         // 8008C578
     nw4r::math::VEC3 getRaccoPos(int blockX, int blockZ) const;                          // 8008C580
-    BOOL isBlockVariant(int blockX, int blockZ) const;                                   // 8008C674
+    BOOL isBlockVariant(int blockX, int blockZ) const;                                   // 8008C674: has a bridge variant (river without a bridge)
     void clearUnknownItems();                                                            // 8008C6C8
     dItem::Item *getItem(const nw4r::math::VEC3 *pos, int layer) const;                  // 8008C878
     BOOL setItem(const dItem::Item *item, int blockX, int blockZ, int unitX, int unitZ, int layer); // 8008C8F4
     BOOL setItem(const dItem::Item *item, int unitX, int unitZ, int layer);              // 8008C970
     BOOL setItem(const dItem::Item *item, const nw4r::math::VEC3 *pos, int layer);       // 8008C998
-    BOOL setFlagA(int blockX, int blockZ, int unitX, int unitZ);                         // 8008CA24
-    BOOL setFlagA(int unitX, int unitZ);                                                 // 8008CA78
-    BOOL clearFlagA(int blockX, int blockZ, int unitX, int unitZ);                       // 8008CA9C
-    BOOL clearFlagA(int unitX, int unitZ);                                               // 8008CAF0
-    BOOL isFlagA(int blockX, int blockZ, int unitX, int unitZ) const;                    // 8008CB14
-    BOOL isFlagA(int unitX, int unitZ) const;                                            // 8008CB68
-    BOOL isFlagA(const nw4r::math::VEC3 *pos) const;                                     // 8008CB8C
-    BOOL setFlagB(int blockX, int blockZ, int unitX, int unitZ);                         // 8008CBF8
-    BOOL setFlagB(int unitX, int unitZ);                                                 // 8008CC4C
-    BOOL isFlagB(int blockX, int blockZ, int unitX, int unitZ) const;                    // 8008CC70
-    BOOL isFlagB(int unitX, int unitZ) const;                                            // 8008CCC4
-    void clearFlagsB();                                                                  // 8008CCE8
+    BOOL setBuried(int blockX, int blockZ, int unitX, int unitZ);                        // 8008CA24
+    BOOL setBuried(int unitX, int unitZ);                                                // 8008CA78
+    BOOL clearBuried(int blockX, int blockZ, int unitX, int unitZ);                      // 8008CA9C
+    BOOL clearBuried(int unitX, int unitZ);                                              // 8008CAF0
+    BOOL isBuried(int blockX, int blockZ, int unitX, int unitZ) const;                   // 8008CB14
+    BOOL isBuried(int unitX, int unitZ) const;                                           // 8008CB68
+    BOOL isBuried(const nw4r::math::VEC3 *pos) const;                                    // 8008CB8C
+    BOOL setWatered(int blockX, int blockZ, int unitX, int unitZ);                       // 8008CBF8
+    BOOL setWatered(int unitX, int unitZ);                                               // 8008CC4C
+    BOOL isWatered(int blockX, int blockZ, int unitX, int unitZ) const;                  // 8008CC70
+    BOOL isWatered(int unitX, int unitZ) const;                                          // 8008CCC4
+    void clearWatered();                                                                 // 8008CCE8
     int bgCall_80073D2C(void *arg, int unitX, int unitZ, int arg2);                      // 8008CD5C
-    int bgCall_80073158(int unitX, int unitZ) const;                                     // 8008CEE4
-    int bgCall_80073158(const nw4r::math::VEC3 *pos);                                    // 8008CF6C
-    int bgCall_80073208(int unitX, int unitZ) const;                                     // 8008CFB4
-    int bgCall_800733F0(int unitX, int unitZ) const;                                     // 8008D03C
-    int bgCall_80073260(int unitX, int unitZ) const;                                     // 8008D0C4
-    int bgCall_800732B8(int unitX, int unitZ) const;                                     // 8008D14C
-    int bgCall_800732B8(const nw4r::math::VEC3 *pos);                                    // 8008D1D4
-    int bgCall_80073314(int unitX, int unitZ) const;                                     // 8008D21C
-    int bgCall_80073314(int blockX, int blockZ, int unitX, int unitZ);                   // 8008D2DC
+    int canPutItem(int unitX, int unitZ) const;                                          // 8008CEE4: an item can be put (BG flag 0x27 bit 0)
+    int canPutItem(const nw4r::math::VEC3 *pos);                                         // 8008CF6C
+    int isGrassGround(int unitX, int unitZ) const;                                       // 8008CFB4: SOIL, SOILX, CLIFF_* (BG flag 0x28 bit 6)
+    int isBeachGround(int unitX, int unitZ) const;                                       // 8008D03C: WAVE_S/SE2/SW2 (BG flag 0x28 bit 5)
+    int canNpcPutItem(int unitX, int unitZ) const;                                       // 8008D0C4: BG flag 0x27 bit 1 (clear on TOWN_NO_NPC)
+    int getDigType(int unitX, int unitZ) const;                                          // 8008D14C: 0 soil, 1 sand, 2 other, 3 water
+    int getDigType(const nw4r::math::VEC3 *pos);                                         // 8008D1D4
+    int getPlantType(int unitX, int unitZ) const;                                        // 8008D21C: 2 SOIL (saplings grow), 1 SOILX/cliff/sand, 0
+    int getPlantType(int blockX, int blockZ, int unitX, int unitZ);                      // 8008D2DC
 
     int bgCall_80072D54(const nw4r::math::VEC3 *pos);                                    // 8008D610
     void fn_8008D658(int unitX, int unitZ, int a, int b);                                // 8008D658

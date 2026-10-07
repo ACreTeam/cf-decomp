@@ -549,6 +549,7 @@ public:
 
 class fromCandCB_c : public seeker_c::candCB_c {
 public:
+    fromCandCB_c(int from) : mFrom(from) {}
     virtual BOOL check(const BITM *bitm, Item *item); // 800C36DC
 
     int mFrom; // 0x04

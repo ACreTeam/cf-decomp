@@ -74,7 +74,7 @@ void dSaveVisitorNpc_c::update() {
             }
         }
 
-        if (free > 0 && !fn_801164D0(dSaveData_c::getRaw(), 0x12) && !fn_801164D0(dSaveData_c::getRaw(), 0x13) &&
+        if (free > 0 && !dSaveData_c::getRaw()->isFlag(0x12) && !dSaveData_c::getRaw()->isFlag(0x13) &&
             cM::rndInt(100) < 30) {
             int day = getFreeDay(5);
             if (day != -1) {
@@ -116,7 +116,7 @@ void dSaveVisitorNpc_c::update() {
                 ok = FALSE;
             }
         }
-        if (!fn_801164D0(dSaveData_c::getRaw(), 0x15)) {
+        if (!dSaveData_c::getRaw()->isFlag(0x15)) {
             ok = FALSE;
         }
         if (ok && cM::rndInt(100) < 50) {

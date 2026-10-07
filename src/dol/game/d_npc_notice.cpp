@@ -116,7 +116,7 @@ BOOL fn_800EBDE0() {
 // 800EBEA4
 void fn_800EBEA4(int idx) {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     int playerIdx = dPrivateData_c::find(save->mPlayers, &player->mPID);
     if (playerIdx != -1) {
         save->mNoticeBoard.setRead(idx, playerIdx);
@@ -282,7 +282,7 @@ void fn_800EC77C(const dTime_c *day) {
 // 800EC7C8: posts the notices for every day since the board was last updated (up to 30).
 void fn_800EC7C8(const dTime_c *now) {
     sNoteCount = 0;
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dTime_c today = *now;
     dTime_c last = save->mNoticeBoard.getTime();
     if (!dTime_c::isSameDay(last, today)) {
@@ -309,7 +309,7 @@ void fn_800EC7C8(const dTime_c *now) {
 // 800ECC78
 void fn_800ECC78() {
     if ((int)sNoteCount > 1) {
-        dSaveData_c *town = dSaveData_c::getTown();
+        dSaveTown_c *town = dSaveData_c::getTown();
         town->mNoticeBoard.sort(sNoteCount);
     }
 }

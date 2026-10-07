@@ -42,7 +42,7 @@ enum dFgMngKind_e {
     FG_MNG_KIND_CHOP_TREE,            // 0x06 fgobj fn_111_94AC (tool type 1, axe): unit flag = hits so far, felled into the stump (FgInfo::_00) at a per-stage hit count; proc counts felled trees (fn_800C77B8, stat 1)
     FG_MNG_KIND_CHOP_TREE_SPECIAL,    // 0x07 as CHOP_TREE for trees 0x17 / 0x54 when fgMngProc_canEditField (hedged, see 0x02)
     FG_MNG_KIND_DIG_HOLE,             // 0x08 fgobj fn_111_9880 (tool type 2, shovel): empty diggable ground, weeds, flowers -> hole fg 0x94
-    FG_MNG_KIND_DIG_UP,               // 0x09 fn_111_9880: a buried item (dFdBase_c::isFlagA) or a planted red turnip 0x95..0x9D (gives ITEM_IDX_RED_TURNIP_00 + n)
+    FG_MNG_KIND_DIG_UP,               // 0x09 fn_111_9880: a buried item (dFdBase_c::isBuried) or a planted red turnip 0x95..0x9D (gives ITEM_IDX_RED_TURNIP_00 + n)
     FG_MNG_KIND_DIG_UP_FULL,          // 0x0A DIG_UP with a full pocket (waits for KIND_BURY with an item)
     FG_MNG_KIND_DIG_OUT,              // 0x0B fn_111_9880: stumps 0x05..0x10, dead trees 0x01..0x04, 0x95 / 0x9D, saplings (FgInfo stage 0)
     FG_MNG_KIND_BLOCKED,              // 0x0C tool blocked: an item (BITM / furniture) or another player on the unit, undiggable ground, rafflesia; no field change (exec / Req::proc return TRUE)

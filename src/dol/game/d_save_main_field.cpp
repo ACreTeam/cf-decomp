@@ -12,8 +12,7 @@ void fn_8014A978(void *obj);
 void *fn_800A835C();
 BOOL fn_800A7B18(void *obj, int arg, int arg2);
 BOOL fn_800A7B9C(void *obj);
-int fn_80081514(int type); // the variant of a block type
-void fn_8011641C(dSaveData_c *save, int a, int b, int c);
+int fn_80081514(int type); // the bridge variant of a block type (or the type itself)
 void fn_8014F0A4(void *obj);
 }
 
@@ -129,15 +128,15 @@ void dSaveMainField_c::resetCreate() {
 }
 
 // 801109EC
-BOOL dSaveMainField_c::setChangeBlock(int blockX, int blockZ) {
+BOOL dSaveMainField_c::setBridgeBlock(int blockX, int blockZ) {
     bool done = false;
-    if (mChangeBlockX == -1 && mChangeBlockZ == -1) {
+    if (mBridgeBlockX == -1 && mBridgeBlockZ == -1) {
         done = true;
     }
-    if (!done && (mChangeBlockX == 0 || mChangeBlockZ == 0)) {
+    if (!done && (mBridgeBlockX == 0 || mBridgeBlockZ == 0)) {
         if (isFieldBlock(blockX, blockZ)) {
-            mChangeBlockX = blockX;
-            mChangeBlockZ = blockZ;
+            mBridgeBlockX = blockX;
+            mBridgeBlockZ = blockZ;
             return TRUE;
         }
     }
@@ -145,22 +144,22 @@ BOOL dSaveMainField_c::setChangeBlock(int blockX, int blockZ) {
 }
 
 // 80110A7C
-BOOL dSaveMainField_c::changeBlock() {
+BOOL dSaveMainField_c::buildBridge() {
     char z; // char (not s8 / int) for the match
     char x;
-    x = mChangeBlockX;
+    x = mBridgeBlockX;
     if (x != 0) {
-        z = mChangeBlockZ;
+        z = mBridgeBlockZ;
         if (z != 0 && x != -1 && z != -1 && isFieldBlock(x, z)) {
             dFdBlockId_c *blockId = &mFieldBlockData[z][x];
             int type = blockId->mId;
             int newType = fn_80081514(type);
             blockId->mId = newType;
             if (newType != type) {
-                dSaveData_c *town = dSaveData_c::getTown();
+                dSaveTown_c *town = dSaveData_c::getTown();
                 *(u32 *)&town->_05EC78[4] = 0;
-                fn_8011641C(dSaveData_c::getTown(), 1, mChangeBlockX, mChangeBlockZ);
-                mChangeBlockX = mChangeBlockZ = -1;
+                dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_BRIDGE, mBridgeBlockX, mBridgeBlockZ);
+                mBridgeBlockX = mBridgeBlockZ = -1;
                 fn_8014F0A4(&dSaveData_c::getTown()->_064078[0x50]);
                 return TRUE;
             }

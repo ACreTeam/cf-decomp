@@ -80,7 +80,6 @@ void fn_80169ED8();
 void fn_80169C38();
 void fn_80169BF4();
 void fn_800D11C8(dTime_c *last, int days);
-void fn_80143F48(void *designs);
 void fn_80081238(u16 *flags, int x, int z);
 void *fn_8014B6C8();
 BOOL fn_8014B474(void *fg, int x, int z);
@@ -101,13 +100,10 @@ void fn_8014D89C(void *events, int id);
 f32 fn_80074D64(int x, int z);
 f32 fn_80074974(const nw4r::math::VEC3 *pos, int a);
 int fn_800812C8(int blockType);
-void fn_8011641C(dSaveData_c *save, int a, int b, int c);
 void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
 void fn_8014FD48(void *obj, dTime_c last, dTime_c *now, int *days);
 void fn_80151CF0(void *obj);
-void fn_80143F40(void *obj, int days);
-void fn_80143FE0(void *obj);
 void *fn_8010D6BC();
 void fn_8010C808(void *obj, int a, int b, int c);
 BOOL fn_8014D740(void *obj);
@@ -406,10 +402,10 @@ void *fgMngProcThreadFunc(void *arg) {
 
 // 80091C78
 void startFgMngProcThread(OSThreadFunc func) {
-    if (fn_801164D0(dSaveData_c::getTown(), 0x1A)) {
-        fn_80116510(dSaveData_c::getTown(), 6);
+    if (dSaveData_c::getTown()->isFlag(0x1A)) {
+        dSaveData_c::getTown()->setFlag(6);
     } else {
-        fn_80116540(dSaveData_c::getTown(), 6);
+        dSaveData_c::getTown()->clearFlag(6);
     }
     sFgMngProcFlags |= FG_MNG_PROC_FLAG_THREAD;
     sFgMngProcThreadStack = lbl_8074E478->alloc(FG_MNG_THREAD_STACK_SIZE, 0x20);
@@ -519,7 +515,7 @@ void dFdAsBlock_c::assess(dFdBase_c *fd, int blockX, int blockZ) {
                         mCedarB56Num++;
                     }
                 } else if (item->isWiltedFlower()) {
-                    if (fd->isFlagB(blockX, blockZ, x, z) || id == dItem::FG_WILTED_ROSE_GOLD) {
+                    if (fd->isWatered(blockX, blockZ, x, z) || id == dItem::FG_WILTED_ROSE_GOLD) {
                         mFlags.mBits.mHasFlower = TRUE;
                         mFlowerNum++;
                     }
@@ -552,20 +548,20 @@ void dFdAsBlock_c::assess(dFdBase_c *fd, int blockX, int blockZ) {
                 if (id == coconut.mId) {
                     mFlags.mBits.mHasCoconut = TRUE;
                 } else if (item->isDust()) {
-                    if (!fd->isFlagA(blockX, blockZ, x, z)) {
+                    if (!fd->isBuried(blockX, blockZ, x, z)) {
                         mFlags.mBits.mHasDust = TRUE;
                     }
                     mDustNum++;
                 }
                 dItem::Item badKabu(dItem::ITEM_IDX_SPOILED_TURNIPS);
                 if (id == badKabu.mId) {
-                    if (!fd->isFlagA(blockX, blockZ, x, z)) {
+                    if (!fd->isBuried(blockX, blockZ, x, z)) {
                         mFlags.mBits.mHasBadKabu = TRUE;
                     }
                     mDustNum++;
                 } else if (item->isMushroom()) {
                     mMushroomNum++;
-                } else if (!fd->isFlagA(blockX, blockZ, x, z)) {
+                } else if (!fd->isBuried(blockX, blockZ, x, z)) {
                     if (item->isShell()) {
                         mShellNum++;
                     } else {
@@ -676,18 +672,18 @@ void dFdAsBlock_c::assessLive(dFdBase_c *fd, int blockX, int blockZ) {
             case 11:
             case 12: {
                 if (item->isDust()) {
-                    if (!fd->isFlagA(blockX, blockZ, x, z)) {
+                    if (!fd->isBuried(blockX, blockZ, x, z)) {
                         mFlags.mBits.mHasDust = TRUE;
                     }
                     mDustNum++;
                 }
                 dItem::Item badKabu(dItem::ITEM_IDX_SPOILED_TURNIPS);
                 if (id == badKabu.mId) {
-                    if (!fd->isFlagA(blockX, blockZ, x, z)) {
+                    if (!fd->isBuried(blockX, blockZ, x, z)) {
                         mFlags.mBits.mHasBadKabu = TRUE;
                     }
                     mDustNum++;
-                } else if (!fd->isFlagA(blockX, blockZ, x, z)) {
+                } else if (!fd->isBuried(blockX, blockZ, x, z)) {
                     if (item->isShell()) {
                         mShellNum++;
                     } else {
@@ -1210,7 +1206,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     resetStones(fd, w, h);
     sFdAssess.assessTown(fd, w, h);
     int rank = sFdAssess.mRank;
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     fn_8014D3F4(town->_068372, rank, days);
     fgMngProc_seedRandom(now, seed + 0x2221);
     int num = days;
@@ -1254,22 +1250,22 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     dSaveData_c::getTown()->mRecycleBin.update(last, days);
     clearShopRoomMaps();
     if ((u8)dEvent::getTodayVisitor() == 6) {
-        fn_80116540(dSaveData_c::getTown(), 0x12);
-        fn_80116540(dSaveData_c::getTown(), 0x13);
+        dSaveData_c::getTown()->clearFlag(0x12);
+        dSaveData_c::getTown()->clearFlag(0x13);
     }
-    if (fn_801164D0(dSaveData_c::getRaw(), 0x12)) {
-        fn_80116510(dSaveData_c::getTown(), 0x13);
+    if (dSaveData_c::getRaw()->isFlag(0x12)) {
+        dSaveData_c::getTown()->setFlag(0x13);
     }
-    fn_80116540(dSaveData_c::getTown(), 0x12);
+    dSaveData_c::getTown()->clearFlag(0x12);
     fn_80169C38();
-    fn_80116540(dSaveData_c::getTown(), 0x19);
-    if (fn_801164D0(dSaveData_c::getRaw(), 0x13)) {
+    dSaveData_c::getTown()->clearFlag(0x19);
+    if (dSaveData_c::getRaw()->isFlag(0x13)) {
         fn_80169BF4();
     }
-    fn_80116540(dSaveData_c::getTown(), 0x16);
+    dSaveData_c::getTown()->clearFlag(0x16);
     fgMngProc_seedRandom(now, seed + 0x2232);
     fn_800D11C8(last, days);
-    fn_80143F48(dSaveData_c::getTown()->_05EC80);
+    dSaveData_c::getTown()->mShops.update();
     dSaveData_c::getExtra()->mDesignBoard.decrease(days);
     if (days >= TIME_DAYS_PER_WEEK || last->wday < now->wday) {
         spoilAllKabu();
@@ -1290,9 +1286,9 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     }
     fgMngProc_seedRandom(now, seed + 0x222C);
     plantClovers(fd, *last, num, w, h);
-    if (fn_801164D0(dSaveData_c::getRaw(), 0x11)) {
+    if (dSaveData_c::getRaw()->isFlag(0x11)) {
         removeWeeds(fd);
-        fn_80116540(dSaveData_c::getTown(), 0x11);
+        dSaveData_c::getTown()->clearFlag(0x11);
     }
     num = days;
     if ((u32)days > 50) {
@@ -1320,7 +1316,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     fgMngProc_seedRandom(now, seed + 0x222D);
     plantDandelions(fd, *last, num, w, h);
     fgMngState_clearUnitFlags(&sFgMngState);
-    fd->clearFlagsB();
+    fd->clearWatered();
     sFgMngUnitMask = 0;
 }
 
@@ -1417,7 +1413,7 @@ void dFgMngProc_c::putShellOnBeach(dFdBase_c *fd, int blockX, BOOL avoidPlayer) 
                 if (it != NULL && it->mId == dItem::ITEM_ID_NONE) {
                     x = x0 + unitX;
                     z = unitZ + BEACH_BLOCK_Z * UT_Z_NUM;
-                    if (fd->bgCall_800733F0(x, z)) {
+                    if (fd->isBeachGround(x, z)) {
                         if (plBlockZ < BEACH_BLOCK_Z || plUnitX < x - 8 || plUnitX > x + 8) {
                             (*p)[0] = x;
                             num++;
@@ -1594,10 +1590,10 @@ void dFgMngProc_c::checkCedarSapling(dFdBase_c *fd, dItem::Item *item, int *size
     checkSapling(fd, item, size, x, z);
 }
 
-// 80094AB4: a sapling dies on ground other than type 2 (bgCall_80073314) or with an obstacle in
+// 80094AB4: a sapling dies on ground other than type 2 (getPlantType) or with an obstacle in
 // the 8 units around it.
 void dFgMngProc_c::checkSapling(dFdBase_c *fd, dItem::Item *item, int *size, int x, int z) {
-    if (fd->bgCall_80073314(x, z) != 2) {
+    if (fd->getPlantType(x, z) != 2) {
         killTree(fd, item, x, z);
     } else if (!isSaplingSpaceFree(fd, size, x, z)) {
         killTree(fd, item, x, z);
@@ -1790,10 +1786,10 @@ BOOL killSaplingAt(dFdBase_c *fd, const int *pos, int x, int z, int *size) {
     return FALSE;
 }
 
-// 8009536C: unit attribute bit 0 set, occupied per fn_8014B474, no item slot, or a grown tree
-// (stage > 0). Also used by setupUnitMask and 80185F60.
+// 8009536C: a structure collision unit (dFdUnitAttr_c::STR_COL), occupied per fn_8014B474, no item
+// slot, or a grown tree (stage > 0). Also used by setupUnitMask and 80185F60.
 BOOL isBlockedUnit(dFdBase_c *fd, int x, int z) {
-    if (fd->_24 != NULL && (fd->_24->getAttr(x, z) & 1)) {
+    if (fd->_24 != NULL && (fd->_24->getAttr(x, z) & dFdUnitAttr_c::STR_COL)) {
         return TRUE;
     }
     if (fn_8014B474(fn_8014B6C8(), x, z)) {
@@ -1983,13 +1979,13 @@ void dFgMngProc_c::updateFlowers(dFdBase_c *fd) {
                 if (id == dItem::FG_WILTED_ROSE_GOLD) {
                     next = dItem::FG_ROSE_GOLD;
                 } else if (item->isWiltedFlower()) {
-                    if (fd->isFlagB(x, z)) {
+                    if (fd->isWatered(x, z)) {
                         next = id - 0x20;
                     } else {
                         next = dItem::ITEM_ID_NONE;
                     }
                 } else if (item->isFlower()) {
-                    if (!fd->isFlagB(x, z) && !(*(u16 *)((u8 *)dSaveData_c::getTown() + 0x5EC74) & 0x80)) {
+                    if (!fd->isWatered(x, z) && !(*(u16 *)((u8 *)dSaveData_c::getTown() + 0x5EC74) & 0x80)) {
                         u32 chance = getWiltChance(id);
                         if ((u32)(int)fgMngProc_rndF(100.0f) < chance) {
                             next = id + 0x20;
@@ -2093,7 +2089,7 @@ BOOL CBUtSearch_c::check(int x, int z) {
     int unitX = (mBlockX << 4) + x;
     int unitZ = (mBlockZ << 4) + z;
     dItem::Item *item = mFd->getItem(unitX, unitZ, 0);
-    if (item != NULL && inRange(item, dItem::FG_TULIP_RED, dItem::FG_CARNATION_WHITE) && mFd->isFlagB(unitX, unitZ)) {
+    if (item != NULL && inRange(item, dItem::FG_TULIP_RED, dItem::FG_CARNATION_WHITE) && mFd->isWatered(unitX, unitZ)) {
         return TRUE;
     }
     return FALSE;
@@ -2148,7 +2144,7 @@ BOOL tryCrossBreedAt(dFdBase_c *fd, const int *pos, int x, int z, int *size) {
     dItem::Item *b;
     ret = FALSE;
     a = fd->getItem(pos[0], pos[1], 0);
-    if (a != NULL && inRange(a, dItem::FG_TULIP_RED, dItem::FG_CARNATION_WHITE) && fd->isFlagB(pos[0], pos[1])) {
+    if (a != NULL && inRange(a, dItem::FG_TULIP_RED, dItem::FG_CARNATION_WHITE) && fd->isWatered(pos[0], pos[1])) {
         b = fd->getItem(x, z, 0);
         kind = getFlowerKind(b);
         if (kind == getFlowerKind(a)) {
@@ -2438,7 +2434,7 @@ void dFgMngProc_c::removeTreesInWater(dFdBase_c *fd, int blockW, int blockH) {
         for (bx = 1; bx < blockW + 1; bx++) {
             for (uz = 0; uz < UT_Z_NUM; uz++) {
                 for (ux = 0; ux < UT_X_NUM; ux++) {
-                    if (fd->bgCall_80073314(bx, bz, ux, uz) != 2) {
+                    if (fd->getPlantType(bx, bz, ux, uz) != 2) {
                         dItem::Item *item = fd->getItem(bx, bz, ux, uz, 0);
                         if (item != NULL) {
                             dItem::FgInfo *info = item->getFgInfo();
@@ -2502,7 +2498,7 @@ struct dFgSaveEvents_c {
 
 // 80097568
 void dFgMngProc_c::endEvents(dFdBase_c *fd) {
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dFgSaveEvents_c *events = (dFgSaveEvents_c *)save->_068372;
     for (int i = 0; i < 4; i++) {
         int id = events->mEnd[i];
@@ -2538,7 +2534,7 @@ void dFgMngProc_c::endEvents(dFdBase_c *fd) {
 
 // 80097640
 void dFgMngProc_c::procDay(dFdBase_c *fd, dTime_c *time) {
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dTime_c t = *time;
     t.add(0, -TIME_DAY_START_HOUR, 0, 0);
     u8 *stamp = save->_068372 + 0x44;
@@ -2963,7 +2959,7 @@ void dFgMngProc_c::makeGoldenShovels(dFdBase_c *fd, int blockW, int blockH) {
                             found = TRUE;
                         }
                     }
-                    if (found && fd->isFlagA(bx, bz, ux, uz)) {
+                    if (found && fd->isBuried(bx, bz, ux, uz)) {
                         grow = TRUE;
                     }
                     if (grow) {
@@ -2977,7 +2973,7 @@ void dFgMngProc_c::makeGoldenShovels(dFdBase_c *fd, int blockW, int blockH) {
 
 // 80098C10
 BOOL dFgMngProc_c::isGrassUnit(dFdBase_c *fd, int x, int z) {
-    if (fd->bgCall_80073208(x, z)) {
+    if (fd->isGrassGround(x, z)) {
         return dFgMngProc_c::isUnitFree(x, z);
     }
     return FALSE;
@@ -2986,7 +2982,7 @@ BOOL dFgMngProc_c::isGrassUnit(dFdBase_c *fd, int x, int z) {
 // 80098C64
 BOOL dFgMngProc_c::isGroundUnit(dFdBase_c *fd, int x, int z) {
     BOOL ok = FALSE;
-    switch (fd->bgCall_800732B8(x, z)) {
+    switch (fd->getDigType(x, z)) {
     case 0:
     case 1:
         ok = dFgMngProc_c::isUnitFree(x, z);
@@ -2997,7 +2993,7 @@ BOOL dFgMngProc_c::isGroundUnit(dFdBase_c *fd, int x, int z) {
 
 // 80098CD0
 BOOL dFgMngProc_c::isLilyUnit(dFdBase_c *fd, int x, int z) {
-    if (fd->bgCall_80073208(x, z)) {
+    if (fd->isGrassGround(x, z)) {
         int attr = fd->bgCall_80072F80(x, z);
         if (attr >= 0x57 && attr <= 0x62) {
             return TRUE;
@@ -3043,7 +3039,7 @@ BOOL dFgMngProc_c::isRafflesiaUnit(dFdBase_c *fd, int x, int z) {
     BOOL ok;
     int i;
     ok = FALSE;
-    switch (fd->bgCall_80073314(x, z)) {
+    switch (fd->getPlantType(x, z)) {
     case 2:
         if (dFgMngProc_c::isUnitFree(x, z)) {
             ok = TRUE;
@@ -3074,7 +3070,7 @@ BOOL dFgMngProc_c::isFlowerUnit(dFdBase_c *fd, int x, int z) {
 // 80098F70
 BOOL dFgMngProc_c::isDigUnit(dFdBase_c *fd, int x, int z) {
     BOOL ok = FALSE;
-    switch (fd->bgCall_800732B8(x, z)) {
+    switch (fd->getDigType(x, z)) {
     case 0:
     case 1:
         ok = dFgMngProc_c::isUnitFree(x, z);
@@ -3091,7 +3087,7 @@ BOOL dFgMngProc_c::isBeachUnit(dFdBase_c *fd, int x, int z) {
 // 80098FE0
 BOOL dFgMngProc_c::isSandUnit(dFdBase_c *fd, int x, int z) {
     BOOL ok = FALSE;
-    if (fd->bgCall_800733F0(x, z)) {
+    if (fd->isBeachGround(x, z)) {
         ok = TRUE;
     }
     return ok;
@@ -3265,18 +3261,18 @@ int dFgMngProc_c::plantGrass(dFdBase_c *fd, int spotNum, dFdAsPos_c *spots, int 
 }
 
 // 80099514
-void dFgMngProc_c::setUnitItem(dFdBase_c *fd, int blockX, int blockZ, int unitX, int unitZ, u16 id, BOOL flagA) {
-    setUnitItem(fd, (blockX << 4) + unitX, (blockZ << 4) + unitZ, id, flagA);
+void dFgMngProc_c::setUnitItem(dFdBase_c *fd, int blockX, int blockZ, int unitX, int unitZ, u16 id, BOOL buried) {
+    setUnitItem(fd, (blockX << 4) + unitX, (blockZ << 4) + unitZ, id, buried);
 }
 
 // 80099538
-void dFgMngProc_c::setUnitItem(dFdBase_c *fd, int unitX, int unitZ, u16 id, BOOL flagA) {
+void dFgMngProc_c::setUnitItem(dFdBase_c *fd, int unitX, int unitZ, u16 id, BOOL buried) {
     dItem::Item item(id);
     fd->setItem(&item, unitX, unitZ, 0);
-    if (flagA) {
-        fd->setFlagA(unitX, unitZ);
+    if (buried) {
+        fd->setBuried(unitX, unitZ);
     } else {
-        fd->clearFlagA(unitX, unitZ);
+        fd->clearBuried(unitX, unitZ);
     }
     mVec3_c pos;
     dFdBase_c::getUnitCenterPos(&pos, unitX, unitZ);
@@ -3719,7 +3715,7 @@ void dFgMngProc_c::endEggs(dFdBase_c *fd) {
     for (z = 0; z < unitH; z++) {
         for (x = 0; x < unitW; x++) {
             dItem::Item *item = fd->getItem(x, z, 0);
-            if (item != NULL && fd->isFlagA(x, z) && dItem::isRealItemId(item->mId)) {
+            if (item != NULL && fd->isBuried(x, z) && dItem::isRealItemId(item->mId)) {
                 const dItem::BITM *bitm = dItem::getBITM(item->mId);
                 if (bitm->getKind() == dItem::KIND_EGG_BINGO_BEFORE || bitm->getKind() == dItem::KIND_EGG_FAKE_BEFORE) {
                     setUnitItem(fd, x, z, dItem::ITEM_ID_NONE, FALSE);
@@ -3824,7 +3820,7 @@ BOOL LampUtSearch_c::check(int x, int z) {
         if (item == NULL || item->mId != dItem::ITEM_ID_NONE) {
             return FALSE;
         }
-        return mFd->bgCall_80073158(unitX, unitZ);
+        return mFd->canPutItem(unitX, unitZ);
     }
     return FALSE;
 }
@@ -3834,7 +3830,7 @@ static inline void seedRandomAt(const dTime_c &time, int seed) {
     fgMngProc_seedRandom(&time, seed);
 }
 BOOL dFgMngProc_c::buryLamp(dFdBase_c *fd) {
-    int seed = *(int *)&dSaveData_c::getTown()->_05EB08[0x158];
+    int seed = (int)dSaveData_c::getTown()->mTownChecksum;
     seedRandomAt(fgMngProc_getLastDayTime(), seed + 0x2233);
     LampBkSearch_c blocks(fd);
     LampUtSearch_c units(fd);
@@ -3972,7 +3968,7 @@ void dFgMngProc_c::setupUnitMask(dFdBase_c *fd, u16 *buf) {
 void fgMngProc_procDayChange(BOOL arg) {
     dRandom_c rnd(0x9D);
     sFgMngRandom = &rnd;
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dTime_c now = *dTime_c::getCurrent();
     dTime_c last = fgMngProc_getLastDayTime();
     dTime_c today = now;
@@ -3984,7 +3980,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     today.min = 0;
     int days = dTime_c::diffDays(&today, &last, TRUE);
     if (days != 0) {
-        fn_8011641C(dSaveData_c::getTown(), 0, 0, 0);
+        dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_NONE, 0, 0);
         fn_8014F248(&dSaveData_c::getTown()->_064078[0x50], days);
         dFgMngProc_c::clearFg94();
     }
@@ -4014,12 +4010,12 @@ void fgMngProc_procDayChange(BOOL arg) {
     sFgMngProc.updateFg56();
     fn_80151CF0(dSaveData_c::getTown()->_0632F0);
     dSaveData_c::getTown()->mBugOff.checkDay();
-    fn_80143F40(dSaveData_c::getTown()->_05EC80, days);
+    dSaveData_c::getTown()->mShops.processDays(days);
     if (days != 0) {
         fn_8010C808(fn_8010D6BC(), 5, lbl_8074AFF8, 0);
     }
     if (days >= 1) {
-        sFgMngProc.processDays(&last, &today, days, fn_801164D0(dSaveData_c::getRaw(), 6), arg);
+        sFgMngProc.processDays(&last, &today, days, dSaveData_c::getRaw()->isFlag(6), arg);
     } else {
         sFgMngProc.createHeap();
         u16 *buf = (u16 *)sFgMngProc.mBuffer;
@@ -4030,9 +4026,9 @@ void fgMngProc_procDayChange(BOOL arg) {
         }
         if (days < 0) {
             sFgMngProc.spoilAllKabu();
-            fn_80116540(dSaveData_c::getTown(), 0x12);
-            fn_80116540(dSaveData_c::getTown(), 0x13);
-            fn_80116540(dSaveData_c::getTown(), 0x19);
+            dSaveData_c::getTown()->clearFlag(0x12);
+            dSaveData_c::getTown()->clearFlag(0x13);
+            dSaveData_c::getTown()->clearFlag(0x19);
             fn_80169C38();
         }
         if (fn_8014D844(dSaveData_c::getTown()->_068372, EVENT_BUNNY_DAY) >= 0) {
@@ -4041,13 +4037,13 @@ void fgMngProc_procDayChange(BOOL arg) {
         sFgMngUnitMask = 0;
     }
     if (days != 0) {
-        fn_80116540(dSaveData_c::getTown(), 3);
-        fn_80116540(dSaveData_c::getTown(), 0xF);
-        fn_80116540(dSaveData_c::getTown(), 0x10);
+        dSaveData_c::getTown()->clearFlag(3);
+        dSaveData_c::getTown()->clearFlag(0xF);
+        dSaveData_c::getTown()->clearFlag(0x10);
         fn_800F5AE8();
-        fn_80116540(dSaveData_c::getTown(), 0x14);
-        fn_80116540(dSaveData_c::getTown(), 4);
-        fn_80116540(dSaveData_c::getTown(), 5);
+        dSaveData_c::getTown()->clearFlag(0x14);
+        dSaveData_c::getTown()->clearFlag(4);
+        dSaveData_c::getTown()->clearFlag(5);
         fn_80150524(dSaveData_c::getTown()->_06673C);
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
@@ -4067,24 +4063,24 @@ void fgMngProc_procDayChange(BOOL arg) {
         }
         u16 arg2 = 0;
         fn_800DD5F8(0x2A, &arg2, 0);
-        fn_80116540(save, 6);
+        save->clearFlag(6);
         if (sFgMngProcFlags & FG_MNG_PROC_FLAG_SAVE_FLAG6) {
-            fn_80116510(dSaveData_c::getTown(), 6);
+            dSaveData_c::getTown()->setFlag(6);
         }
-        fn_80190C44(FD_ID_TOWN)->clearFlagsB();
+        fn_80190C44(FD_ID_TOWN)->clearWatered();
         dSaveData_c::getTown()->mTownHost.decrease(days);
         dSaveData_c::getTown()->mMuseum.sendCompleteMail();
         fn_8015384C(&dSaveData_c::getTown()->_0735AE);
     }
     dSaveData_c::getExtra()->mTheater.update();
     fn_801541D8(dSaveData_c::getTown()->_0735B7);
-    dSaveData_c::getTown()->mStalkMarket.checkDate();
+    dSaveData_c::getTown()->mShops.mStalkMarket.checkDate();
     ((dTimeStamp_c *)save->_068372)->set(OSCalendarTimeToTicks(&today));
     sFgMngProcFlags = 0;
     int lastWeekday = dTime_c::getWeekday(last.year, last.month, last.mday);
     int weekday = dTime_c::getWeekday(today.year, today.month, today.mday);
     if (days < 0 || days >= TIME_DAYS_PER_WEEK || weekday - lastWeekday < 0) {
-        fn_80143FE0(dSaveData_c::getTown()->_05EC80);
+        dSaveData_c::getTown()->mShops.decideStalkPrices();
     }
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
@@ -4092,10 +4088,10 @@ void fgMngProc_procDayChange(BOOL arg) {
             int flag = i + 0x1B;
             if (player->isFlag0(0x28)) {
                 if (days != 0) {
-                    fn_80116510(dSaveData_c::getTown(), flag);
+                    dSaveData_c::getTown()->setFlag(flag);
                 }
-            } else if (fn_801164D0(dSaveData_c::getTown(), flag)) {
-                fn_80116540(dSaveData_c::getTown(), flag);
+            } else if (dSaveData_c::getTown()->isFlag(flag)) {
+                dSaveData_c::getTown()->clearFlag(flag);
                 memset((u8 *)player + 0x865F, 0, 0x10);
             }
             player->dailyUpdate(days);
@@ -4121,9 +4117,9 @@ void fgMngProc_procDayChange(BOOL arg) {
         fn_8014F998(&dSaveData_c::getTown()->_05EC64, &today);
     }
     fn_80186838();
-    u32 v = *(u32 *)dSaveData_c::getTown()->_0630C0;
+    u32 v = dSaveData_c::getTown()->mShops.mShop.mStage;
     fn_8014F030(&dSaveData_c::getTown()->_064078[0x50], v);
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     fn_8014EFC0(&town->_064078[0x50], fgMngProc_assessLiveTown());
     sFgMngRandom = NULL;
     if (days != 0) {
@@ -4217,7 +4213,7 @@ void fgMngProc_threadMain() {
         }
         dRandom_c rnd(0x9D);
         sFgMngRandom = &rnd;
-        fgMngProc_seedRandom(&last, *(int *)&dSaveData_c::getTown()->_05EB08[0x158] + 0x2220);
+        fgMngProc_seedRandom(&last, (int)dSaveData_c::getTown()->mTownChecksum + 0x2220);
         sFgMngProc.fillBeachShells(fd);
         sFgMngRandom = NULL;
     }
@@ -4226,8 +4222,8 @@ void fgMngProc_threadMain() {
         if (fgMngProc_isClockSetBack()) {
             sFgMngProc.spoilAllKabu();
             fn_800D16E8();
-            fn_80116540(dSaveData_c::getTown(), 0x12);
-            fn_80116540(dSaveData_c::getTown(), 0x13);
+            dSaveData_c::getTown()->clearFlag(0x12);
+            dSaveData_c::getTown()->clearFlag(0x13);
         }
         switch (getCurrentScene()) {
         case SCENE_NONE:
@@ -4282,7 +4278,7 @@ void fgMngProc_collectFg56Units() {
 // buries fossils / pitfalls, plants trees, changes stones, stamps _05EC64; only caller
 // fn_8014D27C (likely new-town creation).
 void fgMngProc_initTownField() {
-    int salt = *(int *)&dSaveData_c::getTown()->_05EB08[0x158];
+    int salt = (int)dSaveData_c::getTown()->mTownChecksum;
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
     if (fd != NULL) {
         int w = fd->mBlockW - 2;
@@ -4398,7 +4394,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     if (fn_801017B8() >= 4) {
         return;
     }
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     if (!fn_8014D740(save->_068372)) {
         return;
     }
@@ -4565,7 +4561,7 @@ void fgMngProc_waterAround(int member, const dFdAsPos_c *pos) {
                 }
             }
         }
-        fd->setFlagB(unit.mX, unit.mZ);
+        fd->setWatered(unit.mX, unit.mZ);
         dx++;
         dz++;
     }
@@ -4598,14 +4594,14 @@ void fgMngProc_clearFg56Units() {
     }
 }
 
-// 8009CF84: TRUE while the save time stamp _073522 lies after now (clock moved back); the thread
+// 8009CF84: TRUE while the save time mSaveTime lies after now (clock moved back); the thread
 // then spoils all turnips.
 BOOL fgMngProc_isClockSetBack() {
     BOOL ret = FALSE;
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dTime_c now = *dTime_c::getCurrent();
-    if (!save->_073522.isNone()) {
-        const dTime_c &t = save->_073522.get();
+    if (!save->mSaveTime.isNone()) {
+        const dTime_c &t = save->mSaveTime.get();
         if (dTime_c::diffTicks(&now, &t, TRUE) < 0) {
             ret = TRUE;
         }
@@ -5079,7 +5075,7 @@ dTime_c fgMngProc_getLastDayTime() {
 void fgMngProc_setSaveFlag6() {
     u8 flags = sFgMngProcFlags;
     if (!(flags & (FG_MNG_PROC_FLAG_DAY_CHANGE | FG_MNG_PROC_FLAG_THREAD))) {
-        fn_80116510(dSaveData_c::getTown(), 6);
+        dSaveData_c::getTown()->setFlag(6);
     } else if (flags & FG_MNG_PROC_FLAG_DAY_CHANGE) {
         sFgMngProcFlags = flags | FG_MNG_PROC_FLAG_SAVE_FLAG6;
     }
@@ -5089,7 +5085,7 @@ void fgMngProc_setSaveFlag6() {
 // fn_801C91CC.
 BOOL fgMngProc_isSaveFlag6() {
     u8 flags = sFgMngProcFlags;
-    return !(flags & (FG_MNG_PROC_FLAG_DAY_CHANGE | FG_MNG_PROC_FLAG_THREAD)) ? fn_801164D0(dSaveData_c::getRaw(), 6) : flags & FG_MNG_PROC_FLAG_SAVE_FLAG6;
+    return !(flags & (FG_MNG_PROC_FLAG_DAY_CHANGE | FG_MNG_PROC_FLAG_THREAD)) ? dSaveData_c::getRaw()->isFlag(6) : flags & FG_MNG_PROC_FLAG_SAVE_FLAG6;
 }
 
 // 8009E158: wrapper for dFgMngProc_c::clearFg94 (removes all fg 0x94); callers d_save_data and
@@ -5166,15 +5162,15 @@ f32 fgMngProc_rndF(f32 max) {
 // 8009E31C: remembers save flag 0x1A in sFgMngProc.mSaveFlag; paired with fgMngProc_stashFg94 in
 // fn_80084B88 / fn_80084F18.
 void fgMngProc_backupSaveFlag1A() {
-    sFgMngProc.mSaveFlag = fn_801164D0(dSaveData_c::getTown(), 0x1A);
+    sFgMngProc.mSaveFlag = dSaveData_c::getTown()->isFlag(0x1A);
 }
 
 // 8009E350: restores save flag 0x1A from sFgMngProc.mSaveFlag; in fn_80084CA4 / fn_80084FA0.
 void fgMngProc_restoreSaveFlag1A() {
     if (sFgMngProc.mSaveFlag) {
-        fn_80116510(dSaveData_c::getTown(), 0x1A);
+        dSaveData_c::getTown()->setFlag(0x1A);
     } else {
-        fn_80116540(dSaveData_c::getTown(), 0x1A);
+        dSaveData_c::getTown()->clearFlag(0x1A);
     }
 }
 

@@ -563,7 +563,7 @@ void dQuestErrandList_c::start11() {
 // 80140D50
 void dQuestErrandList_c::startDeliverFtr() {
     dQuestErrand_c *errand = getErrand(0);
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dAnimal_c *animal = save->mAnimals.mTown.pickRandomAnimalNotMoving(NULL, 0);
     if (animal != NULL) {
         dItem::Item item(dItem::ITEM_IDX_EXOTIC_BED);
@@ -618,7 +618,7 @@ void dQuestErrandList_c::startSendLetter() {
         num = 1;
     }
 
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dAnimal_c *animal = save->mAnimals.mTown.pickRandomAnimalNotMoving(exclude, num);
     if (animal != NULL) {
         dItem::Item item;
@@ -679,7 +679,7 @@ void dQuestErrandList_c::startDeliverCarpet() {
         }
     }
 
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dAnimal_c *animal = save->mAnimals.mTown.pickRandomAnimalNotMoving(exclude, num);
     if (animal != NULL) {
         dItem::Item item(dItem::ITEM_IDX_EXOTIC_RUG);

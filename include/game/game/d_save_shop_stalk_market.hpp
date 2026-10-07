@@ -16,7 +16,7 @@ enum {
 #define STALK_MARKET_PRICE_NUM 14 // Sunday AM .. Saturday PM
 
 // The stalk market (turnips): Joan's price and the week's prices at Nook's. In the save data at
-// dSaveData_c::mStalkMarket. Source: src/dol/game/d_save_stalk_market.cpp (.text 80146D80..80147A48).
+// dSaveShops_c::mStalkMarket. Source: src/dol/game/d_save_shop_stalk_market.cpp (.text 80146D80..80147A48).
 class dSaveStalkMarket_c { // 0x48
 public:
     void clear(); // 80146D80

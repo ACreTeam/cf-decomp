@@ -1,31 +1,17 @@
 #pragma once
 
-// The whole save file (rvforest.dat, 0x40F340 bytes) as it sits in memory.
+// The whole save file (rvforest.dat, 0x40F340 bytes) as it sits in memory: the town
+// (dSaveTown_c, d_save_town.hpp), then dSaveExtra_c and the downloaded items.
 // Skeleton: known member types are filled in, everything else is a u8 array
 // named by offset. Class and member names are inferred. See
 // notes/save_file_layout.txt for where each unknown member's code lives.
 
 #include <types.h>
-#include <game/game/d_item.hpp>
-#include <game/game/d_dsn.hpp>
-#include <game/game/d_home.hpp>
-#include <game/game/d_model_room.hpp>
-#include <game/game/d_police_box.hpp>
-#include <game/game/d_recycle_bin.hpp>
+#include <game/game/d_save_town.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_quest.hpp>
-#include <game/game/d_private_data.hpp>
-#include <game/game/d_animal.hpp>
-#include <game/game/d_museum.hpp>
 #include <game/game/d_theater.hpp>
-#include <game/game/d_notice.hpp>
-#include <game/game/d_save_check.hpp>
-#include <game/game/d_save_dl_item.hpp>
 #include <game/game/d_save_box.hpp>
-#include <game/game/d_bug_off.hpp>
-#include <game/game/d_save_stalk_market.hpp>
-#include <game/game/d_save_main_field.hpp>
-#include <game/game/d_save_visitor_npc.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
@@ -81,23 +67,11 @@ void fn_8010DAC8();      // write changed static bits to the current player
 void fn_8010DAFC(dSaveOption_c *opt);
 }
 
-// Saved game-clock offset (fn_8014D054 / fn_8014D064 / fn_8014D07C / fn_8014D09C).
-struct dSaveTimeOffset_c {
-    /* 0x0 */ s64 mOffset; // dTime_c::sOffset
-    /* 0x8 */ u8 _8[8];
-}; // size 0x10
-
 // The check block at the start of the file is dSaveCheck_c (d_save_check.hpp).
 
 // Rooms and houses (dHomeRoom_c / dHome_c / dHomeList_c) are in d_home.hpp.
 // The house ctor/dtor used here are fn_8010EC64 / fn_8010ECC0 (rooms: ctor inlined
 // from fn_8010EBCC, dtor 800B4C7C; layers: ctor 800B4BD0 / dtor 800B4C18).
-
-// 0x78 record (ctor fn_8010EB50: Item = none, then fn_8010A758).
-struct dSaveRecord78_c {
-    /* 0x00 */ dItem::Item mItem;
-    /* 0x02 */ u8 _02[0x76];
-}; // size 0x78
 
 // The per-player storage boxes (dSaveDesignBox_c, dSaveMailBox_c, dSaveItemBox_c) are in d_save_box.hpp.
 
@@ -133,21 +107,8 @@ struct dSaveDistContentList_c {
     /* 0x00004 */ dSaveDistContent_c mContents[10][6];
 }; // size 0x5A0F4
 
-// Skeleton members whose classes live in unsplit TUs. Their constructors keep the target's C names
-// until those TUs are split; the inline ctors reproduce the calls dSaveData_c::create makes.
-extern "C" {
-void fn_80150140(void *obj); // 80150140
-void fn_80150B94(void *obj); // 80150B94
-void fn_80117118(void *obj); // 80117118
-}
-struct dSaveUnk72D1A_c {
-    dSaveUnk72D1A_c() { fn_80150140(this); }
-    u8 _00[0xC0];
-};
-struct dSaveUnk72E0A_c {
-    dSaveUnk72E0A_c() { fn_80150B94(this); }
-    u8 _00[0x6E8];
-};
+// Skeleton member of dSaveExtra_c (unsplit TU; C linkage keeps the target name).
+extern "C" void fn_80117118(void *obj); // 80117118
 struct dSaveUnk1CE_c {
     dSaveUnk1CE_c() { fn_80117118(this); }
     u8 _00[0x12];
@@ -191,7 +152,7 @@ struct dSaveExtra_c {
     /* 0x189C38 */ u8 _189C38[0x12108];     // ctor 8013F098; used by the mail code at 8010263C
 }; // size 0x19BD40
 
-class dSaveData_c {
+class dSaveData_c : public dSaveTown_c {
 public:
     static u32 getDLDataOffset();         // 8010DC04: offsetof mDLItems
     static u16 getVersion();              // 8010DC10
@@ -202,12 +163,13 @@ public:
     void updateChecksum();                // 8010E0A8
     BOOL isExtraGood(int arg);            // 8010E0F8: dSaveExtra_c CRC, buildings CRC, item version
     static dSaveDLItemList_c *getDLData(); // 8010E1B8: mDLItems, after isDLDataTransferComplete
-    static dSaveData_c *getTown();        // 8010E1E4 (after isTownTransferComplete)
+    static dSaveTown_c *getTown();        // 8010E1E4 (after isTownTransferComplete)
     static dSaveExtra_c *getExtra();      // 8010E208
     static dSaveData_c *getRaw2();        // 8010E234
     static u32 getSize();                 // 8010E23C
     static void create();                 // 8010E248
     void clear();                         // 8010EA88: memset the whole file
+
     static void *operator new(size_t, void *p) { return p; }
 
     // Takes its own copy of the item; dHomeRoom_c::recycleItems only matches with the extra copy.
@@ -223,102 +185,8 @@ public:
     static dSaveOption_c sOption;         // 8074E6D8: cached option bits + changed flags
     static dSaveData_c *sSaveData;        // 8074E6E0: the whole save file
 
-    /* 0x000000 */ dSaveCheck_c mHeader;
-    /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
-    /* 0x021B20 */ dAnimalSave_c mAnimals;
-    /* 0x05E260 */ dDesign_c _05E260;
-    /* 0x05EAE0 */ u8 _05EAE0[0x24];
-    /* 0x05EB04 */ u32 _05EB04;             // object, ctor 80149E38; checked against fn_8014B3CC
-    /* 0x05EB08 */ u8 _05EB08[0x15C];
-    /* 0x05EC64 */ u16 _05EC64;
-    /* 0x05EC66 */ u8 _05EC66;
-    /* 0x05EC67 */ u8 _05EC67;
-    /* 0x05EC68 */ u8 _05EC68[0xE];
-    /* 0x05EC76 */ u8 _05EC76;              // bitfield byte, cleared by the ctor
-    /* 0x05EC77 */ u8 _05EC77;
-    /* 0x05EC78 */ u8 _05EC78[8];
-    /* 0x05EC80 */ dDesign_c _05EC80[8];
-    /* 0x063080 */ u8 _063080[0x40];
-    /* 0x0630C0 */ u8 _0630C0[0x98];        // passed to fn_80146AA4
-    /* 0x063158 */ u32 _063158;
-    /* 0x06315C */ dTimeStamp_c _06315C[4];
-    /* 0x06317C */ u8 _06317C[3];
-    /* 0x06317F */ s8 _06317F;              // 0x7F = none
-    /* 0x063180 */ u8 _063180[4];
-    /* 0x063184 */ dTimeStamp_c _063184;
-    /* 0x06318C */ u8 _06318C[0xC];
-    /* 0x063198 */ dTimeStamp_c _063198;
-    /* 0x0631A0 */ u8 _0631A0[0x5C];
-    /* 0x0631FC */ u16 _0631FC;
-    /* 0x0631FE */ u8 _0631FE;
-    /* 0x0631FF */ u8 _0631FF;
-    /* 0x063200 */ dSaveStalkMarket_c mStalkMarket;
-    /* 0x063248 */ u8 _063248[0x98];
-    /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
-    /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
-    /* 0x0634F0 */ dBugOff_c mBugOff;          // Bug-Off standings (d_bug_off)
-    /* 0x0636F0 */ dModelRoom_c _0636F0;
-    /* 0x063C3C */ u8 _063C3C[4];
-    /* 0x063C40 */ dSaveRecord78_c _063C40[9]; // then fn_8010C0A4 on the array
-    /* 0x064078 */ u8 _064078[0x52];
-    /* 0x0640CA */ dOutfit_c _0640CA;
-    /* 0x0640D6 */ u8 _0640D6[0x116];
-    /* 0x0641EC */ u8 _0641EC;              // bitfield byte, cleared by the ctor
-    /* 0x0641ED */ u8 _0641ED;
-    /* 0x0641EE */ u8 _0641EE[2];
-    /* 0x0641F0 */ dModelRoom_c _0641F0;
-    /* 0x06473C */ dSaveDLItem_c _06473C;
-    /* 0x06673C */ u8 _06673C[3];
-    /* 0x06673F */ u8 _06673F;
-    /* 0x066740 */ u8 _066740[0x422];
-    /* 0x066B62 */ dNoticeBoard_c mNoticeBoard;
-    /* 0x068372 */ u8 _068372[0x50];        // ctor 8014D0BC
-    /* 0x0683C2 */ u16 _0683C2;             // an item id (d_fg_item)
-    /* 0x0683C4 */ u8 _0683C4[4];
-    /* 0x0683C8 */ dSaveVisitorNpc_c mVisitorNpc;
-    /* 0x0683DF */ u8 _0683DF;
-    /* 0x0683E0 */ u16 _0683E0;
-    /* 0x0683E2 */ u8 _0683E2;
-    /* 0x0683E3 */ u8 _0683E3;
-    /* 0x0683E4 */ u8 _0683E4[4];
-    /* 0x0683E8 */ u8 _0683E8[2][8];        // {u16, u8, u8, pad}, zeroed by the ctor
-    /* 0x0683F8 */ u16 _0683F8;
-    /* 0x0683FA */ u8 _0683FA;
-    /* 0x0683FB */ u8 _0683FB;
-    /* 0x0683FC */ u8 _0683FC[2];
-    /* 0x0683FE */ dLandID_c mLandID;       // this town
-    /* 0x068414 */ dSaveMainField_c mMainField; // the town field
-    /* 0x06D5BC */ u8 _06D5BC[4];
-    /* 0x06D5C0 */ dHomeList_c mHomes;
-    /* 0x072CC0 */ u8 _072CC0[0x5A];
-    /* 0x072D1A */ dSaveUnk72D1A_c _072D1A; // 8 x 0x18 entries
-    /* 0x072DDA */ dPoliceBox_c mPoliceBox;
-    /* 0x072DF2 */ dRecycleBin_c mRecycleBin;
-    /* 0x072E0A */ dSaveUnk72E0A_c _072E0A;
-    /* 0x0734F2 */ dPrivateHost_c mTownHost; // copied to/from dPrivateData_c::mHost
-    /* 0x073520 */ u16 mItemVersion;        // dItem::BITM version, checked by isExtraGood
-    /* 0x073522 */ dTimeStamp_c _073522;    // set by fn_8010DCF0
-    /* 0x07352A */ dMuseum_c mMuseum;
-    /* 0x07359E */ dSaveMelody_c mVillageMelody; // the town tune
-    /* 0x0735AE */ u8 _0735AE;               // fn_8015384C's object starts here
-    /* 0x0735AF */ dItem::dSaveItemRarity_c mItemRarity;
-    /* 0x0735B7 */ u8 _0735B7[0xB];         // fn_801541D8
-    /* 0x0735C2 */ u8 _0735C2;              // low nibble read by d_item
-    /* 0x0735C3 */ u8 _0735C3[8];          // town flags, bits 0..63 (SAVE_FLAG_*, fn_801164D0 / fn_80116510 / fn_80116540)
-    /* 0x0735CB */ u8 _0735CB;              // 0xFF = none; days counter
-    /* 0x0735CC */ u8 _0735CC[0x14];
+    // 0x000000..0x0735E0: dSaveTown_c
     /* 0x0735E0 */ dSaveExtra_c mExtra;
     /* 0x20F320 */ dSaveDLItemList_c mDLItems; // getDLData()
 }; // size 0x40F340
 
-// Town flags: 64 bits at dSaveData_c::_0735C3, indexed 0..63. Most indices are not named yet.
-enum {
-    SAVE_FLAG_TURNIPS_SPOILED = 1, // set when the clock is changed or goes back within the week, cleared each new week (inferred)
-};
-
-// Town flag accessors (not split yet; C linkage keeps the target names). Out-of-range indices are ignored.
-extern "C" {
-BOOL fn_801164D0(dSaveData_c *save, int idx); // 801164D0: is the flag set
-void fn_80116510(dSaveData_c *save, int idx); // 80116510: set the flag
-void fn_80116540(dSaveData_c *save, int idx); // 80116540: clear the flag
-}

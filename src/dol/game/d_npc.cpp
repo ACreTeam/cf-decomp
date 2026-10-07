@@ -707,7 +707,7 @@ dNpcAnimal_c *dNpcAnimalBuf_c::get(int i) {
 
 // 800EE440
 BOOL dNpcAnimalBuf_c::fn_800EE440(int arg) {
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dNpcAnimal_c *animal = get(0);
     animal->clear();
     return save->mAnimals.takeMovedAnimal(&animal->mAnimal, arg);
@@ -715,7 +715,7 @@ BOOL dNpcAnimalBuf_c::fn_800EE440(int arg) {
 
 // 800EE4AC
 BOOL dNpcAnimalBuf_c::fn_800EE4AC() {
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     dNpcAnimal_c *animal = get(0);
     BOOL result = save->mAnimals.addMovedAnimal(&animal->mAnimal);
     animal->clear();
@@ -2409,7 +2409,7 @@ BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind,
     if (map == NULL) {
         return result;
     }
-    if (!((checkA && map->bgCall_80073260(x, z)) || (!checkA && map->bgCall_80073158(x, z)))) {
+    if (!((checkA && map->canNpcPutItem(x, z)) || (!checkA && map->canPutItem(x, z)))) {
         return result;
     }
 
@@ -3014,7 +3014,7 @@ BOOL fn_800F3C0C(int x, int z) {
             return TRUE;
         }
     }
-    if (map->_24 != NULL && (map->_24->getAttr(x, z + 1) & 1)) {
+    if (map->_24 != NULL && (map->_24->getAttr(x, z + 1) & dFdUnitAttr_c::STR_COL)) {
         return TRUE;
     }
     return FALSE;

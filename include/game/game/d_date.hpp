@@ -67,6 +67,18 @@ enum dTime_Month_e {
     MONTH_NUM
 };
 
+enum dTime_Weekday_e {
+    WEEKDAY_SUNDAY,
+    WEEKDAY_MONDAY,
+    WEEKDAY_TUESDAY,
+    WEEKDAY_WEDNESDAY,
+    WEEKDAY_THURSDAY,
+    WEEKDAY_FRIDAY,
+    WEEKDAY_SATURDAY,
+
+    WEEKDAY_NUM
+};
+
 #define MONTHDAY(m, d) (((m) << 8) | (d)) // month 0-based, as dTime_c::month
 
 #define TIME_DAY_START_HOUR 6 // the game day starts at 6:00 (the day change)

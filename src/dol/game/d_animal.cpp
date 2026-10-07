@@ -38,7 +38,6 @@ extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 BOOL fn_800DCEDC();
 u16 fn_800FABF4(int looks, int season);
-dDesign_c *fn_80147F80(dDesign_c *designs, int idx);
 BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item item, int);
 }
 
@@ -1234,7 +1233,7 @@ BOOL getOtherPlayerHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *
 }
 
 // The save pointer is fetched before the item copy is made.
-static inline BOOL findFgItem(dSaveData_c *save, int *x, int *z, const dItem::Item &item) {
+static inline BOOL findFgItem(dSaveTown_c *save, int *x, int *z, const dItem::Item &item) {
     return fn_8014B0F0(&save->_05EB04, x, z, item, 1);
 }
 
@@ -3064,7 +3063,7 @@ BOOL dAnimal_c::isWearingCloth() {
 // 80121B3C
 BOOL dAnimal_c::setDesignFromTailor(u32 idx) {
     if (idx < 8) {
-        mClothDesign = *fn_80147F80(dSaveData_c::getTown()->_05EC80, idx);
+        mClothDesign = *dSaveData_c::getTown()->mShops.mShopTailor.getDesign(idx);
         return TRUE;
     }
     return FALSE;
@@ -3249,7 +3248,7 @@ void dAnimal_c::initVersion() {
 
 // 80122634
 dItem::Item dAnimal_c::getKey() {
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     return town->mAnimals.getAnimalKey(&mID);
 }
 
@@ -5902,7 +5901,7 @@ BOOL dAnimal_c::isItemInMyBlock(const dItem::Item *item) {
         return FALSE;
     }
 
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     int x = -1;
     int z = -1;
     bool nf = !fn_8014B0F0(&town->_05EB04, &x, &z, *item, 1);
@@ -5954,11 +5953,11 @@ dItem::Item pickRandomUmbrella() {
 
 // 801294C4
 dDesign_c *pickTownDesign(int style, u32 sameStyle) {
-    dDesign_c *designs = dSaveData_c::getTown()->_05EC80;
+    dSaveShopTailor_c *tailor = &dSaveData_c::getTown()->mShops.mShopTailor;
     dDesign_c *result = NULL;
     u32 num = 0;
     for (int i = 4; i < 8; i++) {
-        dDesign_c *design = fn_80147F80(designs, i);
+        dDesign_c *design = tailor->getDesign(i);
         bool same = design->getStyle() == style;
         if (design->getCreator()->isValid()) {
             if (style >= 11 || sameStyle == same) {
@@ -6861,8 +6860,8 @@ BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
         return FALSE;
     }
 
-    dSaveData_c *town = dSaveData_c::getTown();
-    dTime_c time = town->_073522.get();
+    dSaveTown_c *town = dSaveData_c::getTown();
+    dTime_c time = town->mSaveTime.get();
     dTime_c start;
     start.set(time.year, time.month, time.mday, time.hour - 1, 0, 0);
     start.normalize();
@@ -10786,7 +10785,7 @@ static inline BOOL checkCrc(dAnimalSave_c *save) {
 }
 
 // 80134648
-BOOL dAnimalSave_c::isChecksumValid() {
+BOOL dAnimalSave_c::isChecksumValid(int) {
     if (checkCrc(this)) {
         return TRUE;
     }

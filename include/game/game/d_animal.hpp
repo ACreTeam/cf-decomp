@@ -650,7 +650,7 @@ public:
     dItem::Item getAnimalKey(const dAnmPersonalID_c *animal); // 80134704: key of a villager
     dAnimal_c *getAnimalByKey(const dItem::Item *key); // 801347FC: villager by key
     void updateChecksum(); // 80134614
-    BOOL isChecksumValid(); // 80134648
+    BOOL isChecksumValid(int arg); // 80134648: arg unused
     u32 calcChecksum() const; // 80134690
     void clear(); // 801346B8
     BOOL updateMoves(int days); // 801348A0

@@ -8,8 +8,6 @@ using namespace dItem;
 extern "C" {
 void __register_global_object(void *object, void *dtor, void *node);
 
-// Shop discount tier (2..4) for the player.
-int fn_80146AA4(void *shop, void *player);
 }
 
 // Owner of the 0xD000 id range (TU near 80167FB4).
@@ -347,8 +345,8 @@ int Item::getPrice() const {
 // 800A60F8
 int Item::getShopPrice() {
     int price = getPrice();
-    void *player = dPlayerMgr_c::getCurrentPlayer();
-    switch (fn_80146AA4(dSaveData_c::getTown()->_0630C0, player)) {
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    switch (dSaveData_c::getTown()->mShops.mShop.getRank(player)) {
     case 2:
         price = price - 0.05f * price;
         break;

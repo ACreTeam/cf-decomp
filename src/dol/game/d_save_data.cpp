@@ -10,12 +10,6 @@
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 
-// Checksum helpers (auto_03_80115CDC).
-BOOL fn_80115CDC(dSaveData_c *save);
-BOOL fn_80115CE0(dSaveData_c *save);
-void fn_80115CE4(dSaveData_c *save);
-BOOL fn_80115D34(dSaveData_c *save);
-void fn_80115E04(dSaveData_c *save);
 void fn_80116900(dSaveExtra_c *extra);
 void fn_80117078(dSaveExtra_c *extra); // update checksum
 BOOL fn_801170B0(dSaveExtra_c *extra, int arg);
@@ -86,7 +80,7 @@ void fn_8010D83C(dSaveOption_c *opt) {
 void fn_8010D870(dSaveOption_c *opt) {
     BOOL flag = TRUE;
 
-    if (fn_80115CE0(dSaveData_c::getTown())) {
+    if (dSaveData_c::getTown()->isHeaderState2()) {
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
             if (player->mPID.isValid() && getOption(player)->mBit7 == 1) {
@@ -263,15 +257,15 @@ BOOL dSaveData_c::isGood() {
     if (!dPrivateData_c::fn_80136E10(mPlayers)) {
         return FALSE;
     }
-    if (!fn_80115CE0(this)) {
+    if (!isHeaderState2()) {
         return FALSE;
     }
-    return fn_80115CDC(this) != FALSE;
+    return isHeaderVersionOK() != FALSE;
 }
 
 // 8010DCB0
 void dSaveData_c::initialize() {
-    fn_80115E04(this);
+    clearTown();
     dSaveDLItemList_c::get()->updateChecksum();
     fn_80116900(&mExtra);
 }
@@ -287,7 +281,7 @@ extern "C" void fn_8010DED0() {
 
 // 8010E0A8
 void dSaveData_c::updateChecksum() {
-    fn_80115CE4(this);
+    updateTownChecksum();
     dSaveDLItemList_c *items = dSaveDLItemList_c::get();
     items->mChecksum = items->calcChecksum();
     fn_80117078(&mExtra);
@@ -295,7 +289,7 @@ void dSaveData_c::updateChecksum() {
 
 // 8010E0F8
 BOOL dSaveData_c::isExtraGood(int arg) {
-    if (!fn_80115D34(this)) {
+    if (!isTownChecksumOK(arg)) {
         return FALSE;
     }
     if (!fn_801170B0(&mExtra, arg)) {
@@ -319,7 +313,7 @@ dSaveDLItemList_c *dSaveData_c::getDLData() {
 }
 
 // 8010E1E4
-dSaveData_c *dSaveData_c::getTown() {
+dSaveTown_c *dSaveData_c::getTown() {
     dSvMgr_c::isTownTransferComplete();
     return get();
 }

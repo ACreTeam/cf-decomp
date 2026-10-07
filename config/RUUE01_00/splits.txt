@@ -23,6 +23,9 @@ dol/game/d_actor.cpp:
 dol/game/d_base.cpp:
 	.text       start:0x80068474 end:0x800684A4
 
+dol/game/d_field_block.cpp:
+	.text       start:0x80080D7C end:0x800811F4
+
 dol/game/d_demo_actor.cpp:
 	.text       start:0x80081868 end:0x80081F04
 	.ctors      start:0x8046564C end:0x80465650
@@ -209,6 +212,9 @@ dol/game/d_save_dl_item.cpp:
 	.bss        start:0x805ED570 end:0x805EF570
 	.sdata2     start:0x80750B60 end:0x80750B68 align:4
 
+dol/game/d_save_town.cpp:
+	.text       start:0x80115CDC end:0x8011660C
+
 dol/game/d_land.cpp:
 	.text       start:0x8011660C end:0x80116900
 	.data       start:0x804EE398 end:0x804EE498 align:4
@@ -288,9 +294,41 @@ dol/game/d_quest.cpp:
 	.sdata      start:0x8074B0A8 end:0x8074B0F8 align:4
 	.sdata2     start:0x80750BF8 end:0x80750C40
 
-dol/game/d_save_stalk_market.cpp:
+dol/game/d_save_shops.cpp:
+	.text       start:0x80143ECC end:0x80143FE8
+
+dol/game/d_save_shop.cpp:
+	.text       start:0x80143FE8 end:0x80146D80
+	.ctors      start:0x80465738 end:0x8046573C
+	.rodata     start:0x80476458 end:0x804764A8 align:4
+	.data       start:0x804EF318 end:0x804EF360 align:4
+	.bss        start:0x805F2720 end:0x805F2AC0 align:4
+	.sdata      start:0x8074B0F8 end:0x8074B130 align:4
+	.sbss       start:0x8074E7C8 end:0x8074E7D0 align:4
+	.sdata2     start:0x80750C40 end:0x80750C68 align:4
+
+dol/game/d_save_shop_stalk_market.cpp:
 	.text       start:0x80146D80 end:0x80147A48
 	.sdata2     start:0x80750C68 end:0x80750CA0 align:4
+
+dol/game/d_save_catherine.cpp:
+	.text       start:0x80147A48 end:0x80147ECC
+
+dol/game/d_save_shop_tailor.cpp:
+	.text       start:0x80147ECC end:0x801483D8
+
+dol/game/d_save_shop_gallery.cpp:
+	.text       start:0x801483D8 end:0x80148C40
+	.sdata2     start:0x80750CA0 end:0x80750CA8 align:4
+
+dol/game/d_save_shop_grace.cpp:
+	.text       start:0x80148C40 end:0x80149608
+	.rodata     start:0x804764A8 end:0x80476648 align:4
+	.data       start:0x804EF360 end:0x804EF388 align:4
+	.sdata2     start:0x80750CA8 end:0x80750CB0 align:4
+
+dol/game/d_save_cafe_guest.cpp:
+	.text       start:0x80149608 end:0x80149B70
 
 dol/game/d_theater.cpp:
 	.text       start:0x8014BD88 end:0x8014C2C4
@@ -323,6 +361,27 @@ dol/game/d_search_cand.cpp:
 	.sdata      start:0x8074B290 end:0x8074B2A0
 	.sdata2     start:0x80750E18 end:0x80750E20
 
+dol/game/d_shop_layout.cpp:
+	.text       start:0x8015F748 end:0x8015FDF0
+	.rodata     start:0x80476FB0 end:0x80479BB0 align:4
+	.data       start:0x804F0628 end:0x804F0658 align:4
+
+dol/game/d_shutdown_fader.cpp:
+	.text       start:0x8015FDF0 end:0x801603A0
+	.data       start:0x804F0658 end:0x804F06A0 align:4
+	.sdata      start:0x8074B2A0 end:0x8074B2A8 align:4
+	.sbss       start:0x8074E818 end:0x8074E820 align:4
+	.sdata2     start:0x80750E20 end:0x80750E48 align:4
+
+dol/game/d_shutter_fader.cpp:
+	.text       start:0x801603A0 end:0x80160AE4
+	.ctors      start:0x80465750 end:0x80465754
+	.data       start:0x804F06A0 end:0x804F0710 align:4
+	.bss        start:0x805F2F20 end:0x805FAF38 align:4
+	.sdata      start:0x8074B2A8 end:0x8074B2B8 align:4
+	.sbss       start:0x8074E820 end:0x8074E828 align:4
+	.sdata2     start:0x80750E48 end:0x80750E78 align:4
+
 dol/game/d_side_wipe_fader.cpp:
 	.text       start:0x80160AE4 end:0x80160EA4
 	.data       start:0x804F0710 end:0x804F0768 align:4
@@ -345,6 +404,9 @@ dol/game/d_scene.cpp:
 	.sdata      start:0x8074B2C0 end:0x8074B340 align:4
 	.sbss       start:0x8074E848 end:0x8074E858 align:4
 	.sdata2     start:0x80750EB8 end:0x80750EE0 align:4
+
+dol/game/d_field_unit_attr.cpp:
+	.text       start:0x80167C08 end:0x80167E08
 
 dol/game/d_string.cpp:
 	.text       start:0x8016AE68 end:0x8016B894

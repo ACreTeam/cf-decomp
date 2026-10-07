@@ -968,7 +968,7 @@ static BOOL getBuildingExit(u16 building, u8 *scene, mVec3_c *pos, u32 *type, s1
     }
     dItem::Item item(building);
     int x, z;
-    dSaveData_c *save = dSaveData_c::getTown();
+    dSaveTown_c *save = dSaveData_c::getTown();
     if (fn_8014B0F0(&save->_05EB04, &x, &z, &item, flags)) {
         dSceneBuilding_c *bld = fn_80167734(fn_801683CC(), building);
         if (bld != NULL) {

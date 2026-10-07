@@ -775,7 +775,7 @@ BOOL dFgMngStone_c::drop(dFdBase_c *fd, const dFdAsPos_c *pos) {
     }
     BOOL ok = FALSE;
     dItem::Item *cur = fd->getItem(pos->mX, pos->mZ, 0);
-    if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->bgCall_80073158(pos->mX, pos->mZ)) {
+    if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->canPutItem(pos->mX, pos->mZ)) {
         u16 shovel = dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId;
         BOOL gold = FALSE;
         if ((u16)fgMngProc_getMemberHeldItem(fn_800DCF58()) == shovel && cM::rndF(100.0f) < 10.0f) {
@@ -908,13 +908,13 @@ BOOL fgMngState_isFreeOfNpcs(int x, int z) {
             int ux = (int)actor->mPos.x >> 5;
             int uz = (int)actor->mPos.z >> 5;
             if (ux == x && uz == z) {
-                if (actor->mProfName != 0x6E || !fn_801164D0(dSaveData_c::getRaw(), 4)) {
+                if (actor->mProfName != 0x6E || !dSaveData_c::getRaw()->isFlag(4)) {
                     return FALSE;
                 }
             }
         }
     }
-    if (dSaveData_c::getTown()->_0735CC[0] == 2) {
+    if (dSaveData_c::getTown()->mNewConstruction == NEW_CONSTRUCTION_FOUNTAIN) {
         dFgMngActor_c *actor = (dFgMngActor_c *)fManager_c::searchBaseByProfName(0x93, NULL);
         if (actor != NULL && actor->mState == 1) {
             int ux = (int)actor->mPos.x >> 5;
@@ -1152,7 +1152,7 @@ int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {
         p.mZ = (d & 0xF) + pos->mZ - 8;
         if (fgMngLock_find(mScene, (dFdAsPos_c *)&p, 0) < 0) {
             dItem::Item *cur = fd->getItem(p.mX, p.mZ, 0);
-            if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->bgCall_80073158(p.mX, p.mZ)) {
+            if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->canPutItem(p.mX, p.mZ)) {
                 fn_800755A0(1);
                 BOOL found = fn_800737E4(pos->mX, pos->mZ, ground, p.mX, p.mZ);
                 fn_800755A0(0);

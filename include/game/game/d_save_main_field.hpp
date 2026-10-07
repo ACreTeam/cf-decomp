@@ -23,7 +23,7 @@ enum {
     MAIN_FIELD_CREATE_DONE,       // 8: done with createFinish
 };
 
-// One bit per unit of a block, a u16 row per unit z (dFdBlock_c::mFlagsA / mFlagsB). Its ctor and
+// One bit per unit of a block, a u16 row per unit z (dFdBlock_c::mBuried / mWatered). Its ctor and
 // dtor are with dFdBlock_c's functions.
 class dFdUnitFlags_c { // 0x20
 public:
@@ -63,8 +63,8 @@ public:
     BOOL createField(int arg); // 80110774: steps mCreateStep up to MAIN_FIELD_CREATE_FIELD_DONE
     BOOL createFinish(); // 80110958: up to MAIN_FIELD_CREATE_DONE
     void resetCreate(); // 801109D4: back to MAIN_FIELD_CREATE_FIELD_DONE
-    BOOL setChangeBlock(int blockX, int blockZ); // 801109EC: unless already set or done
-    BOOL changeBlock(); // 80110A7C: the block at mChangeBlockX/Z to its variant
+    BOOL setBridgeBlock(int blockX, int blockZ); // 801109EC: where the extra bridge goes, unless already set or built
+    BOOL buildBridge(); // 80110A7C: the block at mBridgeBlockX/Z to its bridge variant (FD_BLOCK_FLAG_BRIDGE)
     static BOOL getSaveBlock(int *x, int *z, int blockX, int blockZ); // 80110BA0: field block -> 0..4
     dItem::Item *getBlockItems(int blockX, int blockZ); // 80110BF0
     dFdUnitFlags_c *getBlockBuried(int blockX, int blockZ); // 80110C70
@@ -91,7 +91,7 @@ public:
     /* 0x51A2 */ u8 mCreateStep; // MAIN_FIELD_CREATE_*
     /* 0x51A3 */ u8 mGrassType; // 0..2
     /* 0x51A4 */ u8 mSeason;
-    // volatile: setChangeBlock reloads them on every read.
-    /* 0x51A5 */ volatile s8 mChangeBlockX; // a block to change to its variant; 0: none, -1: done
-    /* 0x51A6 */ volatile s8 mChangeBlockZ;
+    // volatile: setBridgeBlock reloads them on every read.
+    /* 0x51A5 */ volatile s8 mBridgeBlockX; // the extra bridge (public works); 0: none, -1: built
+    /* 0x51A6 */ volatile s8 mBridgeBlockZ;
 }; // size 0x51A8

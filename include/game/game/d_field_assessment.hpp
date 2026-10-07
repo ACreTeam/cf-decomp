@@ -348,8 +348,8 @@ public:
 
     // 8009936C..8009B47C
     int plantGrass(dFdBase_c *fd, int spotNum, dFdAsPos_c *spots, int num);                         // 8009936C
-    static void setUnitItem(dFdBase_c *fd, int blockX, int blockZ, int unitX, int unitZ, u16 id, BOOL flagA); // 80099514
-    static void setUnitItem(dFdBase_c *fd, int unitX, int unitZ, u16 id, BOOL flagA);               // 80099538
+    static void setUnitItem(dFdBase_c *fd, int blockX, int blockZ, int unitX, int unitZ, u16 id, BOOL buried); // 80099514
+    static void setUnitItem(dFdBase_c *fd, int unitX, int unitZ, u16 id, BOOL buried);               // 80099538
     static BOOL isUnitFree(int unitX, int unitZ);                                                   // 800995E0: sFgMngUnitMask bit clear
     static void clearFg94();                                                                        // 80099648
     void spoilKabu(dFdBase_c *fd);                                                                  // 80099744

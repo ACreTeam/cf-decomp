@@ -1,5 +1,5 @@
 // The stalk market (dSaveStalkMarket_c). .text 80146D80..80147A48, .sdata2 80750C68..80750CA0.
-#include <game/game/d_save_stalk_market.hpp>
+#include <game/game/d_save_shop_stalk_market.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/cLib/c_math.hpp>
 #include <cstring>
@@ -26,18 +26,18 @@ void dSaveStalkMarket_c::checkDate() {
         reset = TRUE;
     }
     if (reset) {
-        fn_80116540(dSaveData_c::getTown(), SAVE_FLAG_TURNIPS_SPOILED);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_TURNIPS_SPOILED);
         fn_8014CCC4(&mDate, TRUE);
     } else if (fn_8014D07C(&dSaveData_c::getTown()->mTimeOffset)) {
-        fn_80116510(dSaveData_c::getTown(), SAVE_FLAG_TURNIPS_SPOILED);
+        dSaveData_c::getTown()->setFlag(SAVE_FLAG_TURNIPS_SPOILED);
         fn_8014CCC4(&mDate, TRUE);
     } else {
         int days = fn_8014CFB8(&mDate, dTime_c::getCurrent(), FALSE);
         if (days < 0) {
-            fn_80116510(dSaveData_c::getTown(), SAVE_FLAG_TURNIPS_SPOILED);
+            dSaveData_c::getTown()->setFlag(SAVE_FLAG_TURNIPS_SPOILED);
             fn_8014CCC4(&mDate, TRUE);
         } else if (days >= 7) {
-            fn_80116540(dSaveData_c::getTown(), SAVE_FLAG_TURNIPS_SPOILED);
+            dSaveData_c::getTown()->clearFlag(SAVE_FLAG_TURNIPS_SPOILED);
             fn_8014CCC4(&mDate, TRUE);
         }
     }
@@ -224,6 +224,6 @@ int dSaveStalkMarket_c::calcPrice(f32 max, f32 min) {
 
 // 80147A08
 void dSaveStalkMarket_c::invalidate() {
-    fn_80116510(dSaveData_c::getTown(), SAVE_FLAG_TURNIPS_SPOILED);
+    dSaveData_c::getTown()->setFlag(SAVE_FLAG_TURNIPS_SPOILED);
     fn_8014CCC4(&mDate, TRUE);
 }

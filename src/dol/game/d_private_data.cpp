@@ -53,7 +53,6 @@ u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
 BOOL fn_8014D07C(void *);
-int fn_801161F0();
 void fn_80169C48();
 void fn_80169F20();
 void fn_80169F4C();
@@ -158,14 +157,14 @@ void dPrivateHost_c::decrease(int n) {
 // 80136460
 void dPrivateData_c::saveHostToTown() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     town->mTownHost = player->mHost;
 }
 
 // 8013654C
 void dPrivateData_c::loadHostFromTown() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     player->mHost = town->mTownHost;
 }
 
@@ -2111,7 +2110,7 @@ void dPrivateData_c::fn_8013B7A4() {
             player->clearFlag0(0x13);
         }
     }
-    dSaveData_c::getTown()->_0735CB = 0xFF;
+    dSaveData_c::getTown()->mPublicWorksDays = 0xFF;
 }
 
 // 8013B848
@@ -2149,8 +2148,8 @@ void dPrivateData_c::fn_8013B848() {
     }
     if (x >= 0 && y >= 0) {
         fn_800EBB24(2, "BBS_office", 0, 0);
-        dSaveData_c::getTown()->mMainField.setChangeBlock(x, y);
-        fn_80116540(dSaveData_c::getTown(), 0xB);
+        dSaveData_c::getTown()->mMainField.setBridgeBlock(x, y);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         fn_8013B7A4();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     }
@@ -2160,7 +2159,7 @@ void dPrivateData_c::fn_8013B848() {
 void dPrivateData_c::fn_8013B9F8() {
     fn_800EBB24(3, "BBS_office", 0, 0);
     fn_80169F78();
-    fn_80116540(dSaveData_c::getTown(), 0xB);
+    dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
     fn_8013B7A4();
     setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
 }
@@ -2182,7 +2181,7 @@ void dPrivateData_c::fn_8013BA50() {
             clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6B);
             fn_80169F20();
         }
-        fn_80116540(dSaveData_c::getTown(), 0xB);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         fn_8013B7A4();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     } else {
@@ -2195,7 +2194,7 @@ void dPrivateData_c::fn_8013BA50() {
             clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6A);
             fn_80169F4C();
         }
-        fn_80116540(dSaveData_c::getTown(), 0xB);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         fn_8013B7A4();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     }
@@ -2203,8 +2202,8 @@ void dPrivateData_c::fn_8013BA50() {
 
 // 8013BBCC
 void dPrivateData_c::fn_8013BBCC() {
-    if (fn_801164D0(dSaveData_c::getRaw(), 0xB)) {
-        switch (fn_801161F0()) {
+    if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE)) {
+        switch (dSaveData_c::getPublicWorks()) {
         case 0:
             fn_8013B848();
             break;
@@ -2225,18 +2224,18 @@ void dPrivateData_c::fn_8013BC38(int days) {
     if (days < 1) {
         return;
     }
-    if (dSaveData_c::getRaw()->_0735CB != 0xFF) {
-        int left = dSaveData_c::getRaw()->_0735CB - days;
+    if (dSaveData_c::getRaw()->mPublicWorksDays != 0xFF) {
+        int left = dSaveData_c::getRaw()->mPublicWorksDays - days;
         left = left < 0 ? 0 : left;
-        dSaveData_c::getTown()->_0735CB = left;
+        dSaveData_c::getTown()->mPublicWorksDays = left;
         if (left == 0) {
             fn_8013BBCC();
         }
     }
-    if (fn_801164D0(dSaveData_c::getRaw(), 0xA)) {
-        fn_80116540(dSaveData_c::getTown(), 0xA);
-        fn_80116510(dSaveData_c::getTown(), 0xB);
-        switch (fn_801161F0()) {
+    if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_PUBLIC_WORKS_FUNDED)) {
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_FUNDED);
+        dSaveData_c::getTown()->setFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
+        switch (dSaveData_c::getPublicWorks()) {
         case 0:
             fn_800EBB24(1, "BBS_office", 0, 0);
             break;
@@ -2259,7 +2258,7 @@ void dPrivateData_c::fn_8013BC38(int days) {
 
 // 8013BDA0
 BOOL dPrivateData_c::fn_8013BDA0(int chance, int count, int flag) {
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     if (isFlag0Any(dSaveData_c::getTown()->mPlayers, 0x4B)) {
         return FALSE;
     }
@@ -2341,7 +2340,7 @@ void dItemPairRing_c::push(const dItem::Item *a, const dItem::Item *b) {
     }
     _22_6 = 1;
     mCount = 0;
-    dSaveData_c *town = dSaveData_c::getTown();
+    dSaveTown_c *town = dSaveData_c::getTown();
     town->_06673F = 1;
     if (fn_80013550()) {
         fn_800DD4C8();
@@ -2543,7 +2542,7 @@ BOOL dPrivateData_c::fn_8013C7CC() const {
     if (_8692 < 11) {
         return FALSE;
     }
-    return dSaveData_c::getTown()->_06317F != 0x7F;
+    return dSaveData_c::getTown()->mShops.mShop.mCountdown != 0x7F;
 }
 
 // 8013C878
