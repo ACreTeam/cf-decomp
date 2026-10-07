@@ -16,10 +16,7 @@ bool m3d::anmVis_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmVis anmVis, m
     }
 
     mpObj = nw4r::g3d::AnmObjVisRes::Construct(&mAllocator, &size, anmVis, mdl);
-    if (!mpObj->Bind(mdl)) {
-        remove();
-        return false;
-    }
+    mpObj->Bind(mdl);
     setFrmCtrlDefault(anmVis, PLAYMODE_INHERIT);
     return true;
 }

@@ -122,11 +122,12 @@ void dSaveShopGrace_c::update() {
                               .mId;
     }
 
-    const int *const series = sSeries;
-    mStock[10].mItem =
-        dItem::seeker_c::get()->getNthInSeries(0, series[getLayoutType(today.get().month)], 1).mId;
-    mStock[11].mItem =
-        dItem::seeker_c::get()->getNthInSeries(0, series[getLayoutType(today.get().month)], 2).mId;
+    for (int i = 0; i < 1; i++) {
+        mStock[10 + i * 2].mItem =
+            dItem::seeker_c::get()->getNthInSeries(i, sSeries[getLayoutType(today.get().month)], 1).mId;
+        mStock[11 + i * 2].mItem =
+            dItem::seeker_c::get()->getNthInSeries(i, sSeries[getLayoutType(today.get().month)], 2).mId;
+    }
 
     dItem::fromCandCB_c fromA(sFromA[getLayoutType(today.get().month)]);
     dItem::seeker_c::get()->search(dItem::KIND_CLOTH, 6, &fromA);

@@ -21,6 +21,7 @@
 #include <cstring>
 #include <cstddef>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_weather.hpp>
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -1638,15 +1639,6 @@ static inline int getFurnitureSlotIdx(u16 id) {
     return isFurnitureSlotId(id) ? (id - 0xF000) >> 2 : -1;
 }
 
-static inline int getFtrSize(const dItem::BITM *bitm) {
-    u32 raw = static_cast<s8>(bitm->m_ftrSize);
-    int size = 0;
-    if (raw < 3) {
-        size = raw;
-    }
-    return size;
-}
-
 // 8011E8A8
 dAnimalMemory_c *dAnimal_c::getMemory2(u32 idx) {
     if (idx < ANIMAL_MEMORY_NUM) {
@@ -2066,12 +2058,12 @@ u32 getRoomFtrSlot(const dItem::Item *room, u32 x, u32 z) {
 // 8011F8EC
 // Furniture slot range [*start, *end) for a size class.
 BOOL getFtrSlotRange(int *start, int *end, u32 size, BOOL wish) {
-    static const int sStart[3] = {5, 1, 0};
-    static const int sEnd[3] = {10, 5, 1};
-    static const int sWishStart[3] = {5, 3, 0};
-    static const int sWishEnd[3] = {10, 5, 3};
+    static const int sStart[dItem::FTR_SIZE_COUNT] = {5, 1, 0};
+    static const int sEnd[dItem::FTR_SIZE_COUNT] = {10, 5, 1};
+    static const int sWishStart[dItem::FTR_SIZE_COUNT] = {5, 3, 0};
+    static const int sWishEnd[dItem::FTR_SIZE_COUNT] = {10, 5, 3};
 
-    if (size >= 3) {
+    if (size >= dItem::FTR_SIZE_COUNT) {
         return FALSE;
     }
 
@@ -2102,9 +2094,9 @@ int getFossilSlot(const dItem::Item *item, int start, int end, BOOL wish) {
         return 10;
     }
 
-    int size = getFtrSize(bitm);
+    int size = bitm->getFtrSize();
     int res = 10;
-    if (size >= 1 && size <= 2) {
+    if (size >= dItem::FTR_SIZE_1x2 && size <= dItem::FTR_SIZE_2x2) {
         int fossil = 0;
         u32 raw = bitm->m_fossil;
         if (raw < 0x1C) {
@@ -2182,7 +2174,7 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
 
     if (isHouseItem(item)) {
         dQuestWish_c *wish = &mQuest.mWish;
-        int size = getFtrSize(bitm);
+        int size = bitm->getFtrSize();
         wish->isWishItem(item);
         BOOL isWish = wish->isValid() ? wish->mKind == 2 : FALSE;
 
@@ -2310,13 +2302,13 @@ BOOL dAnimal_c::throwAwayFtr() {
 
 // 80120124
 dItem::Item getMovingBox(const dItem::Item *item) {
-    static const dItem::Item sItems[3] = {dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_03), dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_02), dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_01)};
+    static const dItem::Item sItems[dItem::FTR_SIZE_COUNT] = {dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_03), dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_02), dItem::Item(dItem::ITEM_IDX_NOT_USED_FTR_01)};
 
     if (item->mId != dItem::ITEM_ID_NONE) {
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
         if (bitm != NULL) {
-            u32 size = getFtrSize(bitm);
-            if (size < 3) {
+            u32 size = bitm->getFtrSize();
+            if (size < dItem::FTR_SIZE_COUNT) {
                 return sItems[size];
             }
         }
@@ -2707,7 +2699,7 @@ void dAnimal_c::applyNewItems(u8 idx, BOOL notify) {
     }
 
     dQuestBase_c *quest;
-    dItem::Item best[3];
+    dItem::Item best[dItem::FTR_SIZE_COUNT];
     for (int i = 0; i < 4; i++) {
         dItem::Item *p = fn_801205A0(i);
         if (p != NULL && p->mId != dItem::ITEM_ID_NONE) {
@@ -2719,12 +2711,12 @@ void dAnimal_c::applyNewItems(u8 idx, BOOL notify) {
                 const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(copy);
                 if (bitm != NULL) {
                     int kind = bitm->getKind();
-                    u32 size = 3;
+                    u32 size = dItem::FTR_SIZE_COUNT;
                     switch (kind) {
                     case dItem::KIND_FTR:
                     case dItem::KIND_FOSSIL:
                     case dItem::KIND_HANIWA:
-                        size = getFtrSize(bitm);
+                        size = bitm->getFtrSize();
                         break;
                     case dItem::KIND_CLOTH:
                     case dItem::KIND_PICTURE:
@@ -2732,12 +2724,12 @@ void dAnimal_c::applyNewItems(u8 idx, BOOL notify) {
                     case dItem::KIND_FAKE_PICTURE_AFTER:
                     case dItem::KIND_UMBRELLA:
                         if (dItem::clampField(bitm->m_ftrFunc, 0x41, 1) != 0) {
-                            size = getFtrSize(bitm);
+                            size = bitm->getFtrSize();
                         }
                         break;
                     }
 
-                    if (size < 3) {
+                    if (size < dItem::FTR_SIZE_COUNT) {
                         dItem::Item *slot = &best[size];
                         if (slot->mId == dItem::ITEM_ID_NONE) {
                             *slot = got;
@@ -4861,11 +4853,6 @@ u32 fn_80169298();
 int fn_8045243C(int value); // abs
 }
 
-struct dUnk8074EBE8_c {
-    u8 _0000[0x5884];
-    int _5884;
-};
-extern dUnk8074EBE8_c *lbl_8074EBE8;
 
 // 80126544
 BOOL dAnimal_c::sendSickReward(dItem::Item *item, dPrivateData_c *player, int arg) {
@@ -9131,7 +9118,6 @@ extern "C" {
 int fn_800BA890(const dItem::Item *item);
 void *fn_800F9F64(u32 *num);
 
-extern dUnk8074EBE8_c *lbl_8074EBE8;
 }
 
 // Event ids (.sdata). Plain ints so they are not constructed by __sinit.
@@ -10272,7 +10258,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-extern dUnk8074EBE8_c *lbl_8074EBE8;
 u16 fn_800CBA98(const char *label);
 u16 fn_800CBAC4(const char *label);
 

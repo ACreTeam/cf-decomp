@@ -14,6 +14,7 @@ namespace EGG {
 class Effect {
 public:
     enum ERecursive {
+        RECURSIVE_0 = 0,
         RECURSIVE_3 = 3
     };
 
@@ -36,7 +37,7 @@ public:
     virtual void vf44();
     virtual void vf48(const nw4r::math::VEC3 *vec);    // 0x48
     virtual void vf4C();
-    virtual void vf50();
+    virtual void setColor(u8 r, u8 g, u8 b, u8 a, ERecursive recursive); // 0x50 (d_fish_field)
     virtual void setRegisterColor(const _GXColor &color0, const _GXColor &color1, u8 index); // 0x54
     virtual void vf58();
     virtual void vf5C();

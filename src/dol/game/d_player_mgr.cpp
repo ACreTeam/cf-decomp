@@ -5,6 +5,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_item.hpp>
+#include <game/game/d_weather.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/cLib/c_math.hpp>
@@ -14,14 +15,9 @@
 #include <cmath>
 
 // Dependencies whose owners are not recovered yet.
-struct dUnk8074EBE8_c {
-    u8 _0000[0x5884];
-    int _5884;
-};
 
 extern "C" {
 extern u8 lbl_8074EA7D;
-extern dUnk8074EBE8_c *lbl_8074EBE8;
 
 int fn_800DCF58(); // index of the current player
 u32 fn_8019AFE4();

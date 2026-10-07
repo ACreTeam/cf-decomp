@@ -4,12 +4,13 @@
 #include <game/game/d_play_util.hpp>
 #include <game/game/d_date.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/game/d_fish_field.hpp>
+#include <game/game/d_weather.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <revolution/OS/OSTime.h>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-int fn_801C98CC(void *weather); // the weather manager's current weather
 BOOL fn_800DCF2C(int player); // net: the member is present
 int fn_800DCF58(); // net: own member index
 BOOL fn_800DD960();
@@ -18,16 +19,14 @@ void fn_800DD518(const void *data, u32 size);
 void fn_800DD588(int type, int dst);
 void *fn_800DD64C(int id); // net: a shared record
 void fn_800DD5F8(int id, void *data, int arg); // net: set a shared record
-
-extern void *lbl_8074EBE8; // the weather manager
 }
 
 void *lbl_8074E830; // 8074E830: the sky light (d_fireworks, d_star)
 u32 lbl_8074E834; // 8074E834
 dPlayActorMng_c *lbl_8074E838; // 8074E838: the actor manager (findActorIf, ...)
 u8 lbl_8074E83C; // 8074E83C
-dPlaySyncHost_c *lbl_8074E840; // 8074E840: the shared records' host copy
-u8 lbl_8074E844; // 8074E844
+dFishField_c *lbl_8074E840; // 8074E840: the fish field (the shared records' host)
+u8 lbl_8074E844; // 8074E844: the fish field respawns on its next initSpawn
 
 static u8 sSyncAcks[PLAY_SYNC_REC_NUM][4]; // 805FAF38: per record, per member
 

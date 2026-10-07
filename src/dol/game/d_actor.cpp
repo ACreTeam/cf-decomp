@@ -75,12 +75,12 @@ void dActor_c::calcSpeed() {
     mSpeed.x = mSpeedF * sin;
 }
 
-void dActor_c::makeMtx(mMtx_c *matrix, const mVec3_c *position, const mAng *yaw) {
+void dActor_c::makeMtx(mMtx_c *matrix, const mVec3_c *position, mAng yaw) {
     mVec3_c convertedPos;
     u16 rotation = dWorld::curvePosition(&convertedPos, position);
     PSMTXTrans(*matrix, convertedPos.x, convertedPos.y, convertedPos.z);
     matrix->XrotM(mAng(rotation));
-    matrix->YrotM(*yaw);
+    matrix->YrotM(yaw);
 }
 
 float dActor_c::getSpeedF(const mVec3_c *speed) {

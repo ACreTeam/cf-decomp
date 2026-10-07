@@ -41,6 +41,7 @@ public:
     void bid(int price);                                     // 8010B8B4
     BOOL isMyUnsold() const;                                       // 8010B8BC
     BOOL isMyWon() const;                                          // 8010B9C0
+    u32 getDay() const { return mDay; }
     BOOL isOpenToday() const;                                      // 8010BAB4
     BOOL isNotToday() const;                                       // 8010BB58
     void take();                                             // 8010BBD8: the current player received it

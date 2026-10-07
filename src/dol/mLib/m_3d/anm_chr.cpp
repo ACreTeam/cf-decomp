@@ -18,10 +18,7 @@ bool m3d::anmChr_c::create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmChr anmChr, m
     }
 
     mpObj = nw4r::g3d::AnmObjChrRes::Construct(&mAllocator, &size, anmChr, mdl, false);
-    if (!mpObj->Bind(mdl)) {
-        remove();
-        return false;
-    }
+    mpObj->Bind(mdl);
 
     setFrmCtrlDefault(anmChr, PLAYMODE_INHERIT);
     return true;

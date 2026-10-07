@@ -322,6 +322,7 @@ struct FgInfo {
 struct Item {
     Item() : mId(ITEM_ID_NONE) {}
     Item(u16 id) : mId(id) {}
+    Item(const Item &other) : mId(other.mId) {}
     // From an item index (not an id); leaves mId to setFromIndex.
     explicit Item(int index); // 800A5D3C
     Item(int base, int offset, BOOL skipCheck); // 800A5D6C
@@ -334,6 +335,8 @@ struct Item {
     // Same item, ignoring the 2 variant bits of encoded ids.
     BOOL isSame(const Item &other) const; // 800A5E64
     BOOL isNotSame(const Item &other) const { return !isSame(other); }
+
+    bool isValid() const { return mId != ITEM_ID_NONE; }
 
     bool isFg() {
         return mId < FG_COUNT;

@@ -39,8 +39,8 @@ int mWipeFader_c::calc() {
     }
 
     switch (mStatus) {
-        case OPAQUE: mProgress = 255; break;
         case HIDDEN: mProgress = 0; break;
+        case OPAQUE: mProgress = 255; break;
         case FADE_IN: mProgress = 255 - (currFrame * 255 / endFrame); break;
         case FADE_OUT: mProgress = (currFrame * 255 / endFrame); break;
     }

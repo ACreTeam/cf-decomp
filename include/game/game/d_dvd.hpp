@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <lib/revolution/ARC/arc.h>
+#include <nw4r/g3d/res/g3d_resfile.h>
 
 // Archive/resource loaders. The implementation TU (around 80085E8C) is not
 // recovered yet; layouts come from the constructors and their derived users.
@@ -63,6 +64,12 @@ class brresBank_c : public bank_c {
 public:
     brresBank_c() {}
     virtual ~brresBank_c() {} // 80069BD8
+    virtual void onLoaded() {
+        nw4r::g3d::ResFile res(mpData);
+        res.Init();
+        res.Release();
+        res.Bind(res);
+    }
 }; // sizeof = 0x58
 
 } // namespace dDvd

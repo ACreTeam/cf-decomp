@@ -17,3 +17,14 @@ public:
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);                    // 80087158
     virtual bool follow(const mMtx_c *mtx);                                                    // 8008724C
 };
+
+// Game level effect (RTTI dLevelEffect_c, vtable 804DF5E8; bases EGG::Effect, mEf::effect_c,
+// mEf::levelEffect_c). Its ctor and dtor are inline (users call EGG::Effect's ctor and store the
+// vtable directly).
+class dLevelEffect_c : public mEf::levelEffect_c {
+public:
+    dLevelEffect_c() {}
+    ~dLevelEffect_c() {}
+
+    virtual void vf10(); // 8008771C
+};

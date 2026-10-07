@@ -360,7 +360,7 @@ inline f32 VEC3Dot(register const VEC3* pA, register const VEC3* pB) {
 }
 
 inline f32 VEC3LenSq(register const VEC3* pVec) {
-    register f32 work0, work1, work2;
+    register f32 work2, work1, work0; // this order: d_fish_field (work0 not first)
 
     // clang-format off
     asm {

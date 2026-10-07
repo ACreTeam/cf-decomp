@@ -27,8 +27,9 @@ void *__register_global_object(void *pObj, dtorPtr pDtor, objectRef *pLastRef) {
 void __destroy_global_chain() {
     objectRef *pRef;
     while ((pRef = __global_destructor_chain) != nullptr) {
+        void *pObj;
         __global_destructor_chain = __global_destructor_chain->mpLastObject;
-        void *pObj = pRef->mpObject;
+        pObj = pRef->mpObject;
         pRef->mpDtor(pObj, -1);
     }
 }

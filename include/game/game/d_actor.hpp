@@ -26,7 +26,7 @@ public:
                                const mVec3_c *position, const mAng3_c *rotation);
 
     void calcSpeed();
-    static void makeMtx(mMtx_c *matrix, const mVec3_c *position, const mAng *yaw);
+    static void makeMtx(mMtx_c *matrix, const mVec3_c *position, mAng yaw); // the yaw by value (callers copy it)
     float getSpeedF(const mVec3_c *speed);
     static s16 targetAngleY(const mVec3_c *origin, const mVec3_c *target);
     void getOffsetPos(mVec3_c *result, float distance, int snapToCardinal);

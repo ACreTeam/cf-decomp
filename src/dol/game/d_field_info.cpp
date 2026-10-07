@@ -1023,12 +1023,19 @@ BOOL dFdInfoNpcHs_c::isCountZero() {
 
 // 8008E3B0
 BOOL dFdInfoNpcHs_c::build(int animalIdx, EGG::Heap *heap) {
-    dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(animalIdx);
+    dSaveTown_c *town;
+    dFdBlock_c *block;
+    dAnimal_c *animal;
+    int type;
+    int layout;
+    BOOL ok;
+    town = dSaveData_c::getTown();
+    animal = town->mAnimals.mTown.getAnimal(animalIdx);
     if (animal == NULL) {
         return FALSE;
     }
-    int type = 1;
-    int layout = animal->getRoomLayout(&type);
+    type = 1;
+    layout = animal->getRoomLayout(&type);
     if (layout == -1) {
         return FALSE;
     }
@@ -1036,8 +1043,8 @@ BOOL dFdInfoNpcHs_c::build(int animalIdx, EGG::Heap *heap) {
         mBlocks = dFdBlock_c::create(1, heap, 4);
         setup(1, 1, 0xE);
     }
-    dFdBlock_c *block = mBlocks;
-    BOOL ok = TRUE;
+    block = mBlocks;
+    ok = TRUE;
     if (block != NULL) {
         if (block->mBgData == NULL) {
             void *bgData = getBgData(0xC1);

@@ -193,7 +193,7 @@ public:
     mVec3_c operator-(const mVec3_c &v) const { return mVec3_c(x - v.x, y - v.y, z - v.z); }
 
     /// @brief Scalar product operator.
-    mVec3_c operator*(f32 f) const { return mVec3_c(f * x, f * y, f * z); }
+    mVec3_c operator*(f32 f) const { return mVec3_c(x * f, y * f, z * f); }
 
     /// @brief Scalar division operator.
     mVec3_c operator/(f32 f) const { f32 r = 1.0f / f; return mVec3_c(x * r, y * r, z * r); }

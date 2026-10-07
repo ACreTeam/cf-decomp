@@ -47,7 +47,7 @@
 // Field info objects (src/dol/game/d_field_info.cpp, .text 8008BD2C..8008EDEC). Class names are
 // from the RTTI; method names are inferred. See notes/d_field_info.txt.
 //
-// dBGCF::clmcb_c                  collision callback (vtable 804A6BA8, code around 80076688)
+// dBGCF::clmcb_c                  collision callback (d_bgcf.hpp; vtable 804A6BA8, code around 80076688)
 //   dFdBase_c                     a grid of units with per-unit data, registered with dBGCF
 //     dFdInfo_c                   the town field
 //     dFdInfoNpcHs_c              a villager's house room
@@ -58,17 +58,7 @@
 
 struct dHomeRoom_c;
 
-namespace dBGCF {
-
-// Collision callback base. The real class lives elsewhere (dtor 80076690, getAttr 80076688); our weak
-// copies are dropped at link.
-class clmcb_c {
-public:
-    virtual ~clmcb_c() {}
-    virtual BOOL getAttr(f32 *height, f32 *param, int *attr, int x, int z); // 0x0C: 80076688
-};
-
-} // namespace dBGCF
+#include <game/game/d_bgcf.hpp> // dBGCF::clmcb_c
 
 namespace dItem {
 struct Item;
@@ -172,6 +162,9 @@ public:
     virtual BOOL getAttr(f32 *height, f32 *param, int *attr, int x, int z);              // 8008D3A0
     virtual void release(EGG::Heap *heap) {}                                             // 8008ED24
     virtual int getKind() = 0;
+
+    int getBlockW() const { return mBlockW; }
+    int getBlockH() const { return mBlockH; }
 
     // Functions used across the TU (names fixed; more members follow in the cpp's order).
     BOOL setup(int blockW, int blockH, int bg);                                          // 8008BD2C

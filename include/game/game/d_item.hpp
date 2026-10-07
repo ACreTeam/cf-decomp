@@ -139,6 +139,15 @@ enum Kind {
     KIND_COUNT, // 0x57
 };
 
+// Furniture footprint (BITM::m_ftrSize).
+enum FtrSize {
+    FTR_SIZE_1x1, // 0x00
+    FTR_SIZE_1x2,
+    FTR_SIZE_2x2,
+
+    FTR_SIZE_COUNT, // 0x03
+};
+
 // Item source groups (BITM::m_from). Names follow the game's own string table
 // (804EA114, owned by the preceding TU).
 enum From {
@@ -284,6 +293,11 @@ struct BITM {
     int getKind() const {
         int kind = m_kind;
         return static_cast<u32>(kind) < KIND_COUNT ? kind : KIND_NONE;
+    }
+
+    int getFtrSize() const {
+        int size = static_cast<s8>(m_ftrSize);
+        return static_cast<u32>(size) < FTR_SIZE_COUNT ? static_cast<FtrSize>(size) : FTR_SIZE_1x1;
     }
 
     int getFashion() const {

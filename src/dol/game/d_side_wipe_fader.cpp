@@ -10,8 +10,6 @@ void fn_802466E8(u32 mask);
 void *fn_8017CD3C(); // the wipe texture
 int fn_8017CD48(); // its width
 int fn_8017CD50(); // its height
-void fn_80390CE8(Mtx m, f32 x, f32 y, f32 z); // PSMTXScale
-void fn_803905EC(const Mtx a, const Mtx b, Mtx ab); // PSMTXConcat
 }
 
 static dShutterFader_c *sShutterFader; // 8074E828
@@ -73,10 +71,10 @@ void dSideWipeFader_c::calcMtx() {
     PSMTXTrans(mTexMtx, x, y, 0.0f);
 
     Mtx scaleMtx;
-    fn_80390CE8(scaleMtx, scale, scale * scrH / scrW, 0.0f);
-    fn_803905EC(mTexMtx, scaleMtx, mTexMtx);
+    PSMTXScale(scaleMtx, scale, scale * scrH / scrW, 0.0f);
+    PSMTXConcat(mTexMtx, scaleMtx, mTexMtx);
 
     Mtx transMtx;
     PSMTXTrans(transMtx, -x, -y, 0.0f);
-    fn_803905EC(mTexMtx, transMtx, mTexMtx);
+    PSMTXConcat(mTexMtx, transMtx, mTexMtx);
 }

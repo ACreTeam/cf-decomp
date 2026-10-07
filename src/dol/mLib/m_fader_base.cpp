@@ -1,7 +1,7 @@
 #include <game/mLib/m_fader_base.hpp>
 #include <game/mLib/m_color.hpp>
 
-mFaderBase_c::mFaderBase_c(const mColor &color, mFaderBase_c::EStatus status) :
+mFaderBase_c::mFaderBase_c(mColor color, mFaderBase_c::EStatus status) :
 mFlag(0),
 mFrameCount(20),
 mCurrFrame(0),
@@ -19,7 +19,7 @@ void mFaderBase_c::setFrame(u16 duration) {
     mFrameCount = duration;
 }
 
-void mFaderBase_c::setColor(const mColor &color) {
+void mFaderBase_c::setColor(mColor color) {
     mFaderColor.r = color.r;
     mFaderColor.g = color.g;
     mFaderColor.b = color.b;

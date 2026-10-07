@@ -62,4 +62,7 @@ namespace cLib {
      */
     bool chasePos(mVec3_c *currentPos, const mVec3_c &targetPos, float step);
 
+    /// @brief chasePos on the XZ plane (y is left as is).
+    bool chasePosXZ(mVec3_c *currentPos, const mVec3_c &targetPos, float step);
+
 } // namespace cLib

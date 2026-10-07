@@ -89,11 +89,11 @@ public:
     /// @brief Copy constructor.
     mAng3_c(const mAng3_c &v) : x(v.x), y(v.y), z(v.z) {}
 
-    mAng3_c *operator=(const mAng3_c &v) {
+    mAng3_c &operator=(const mAng3_c &v) {
         x = v.x;
         y = v.y;
         z = v.z;
-        return this;
+        return *this;
     }
 
     void set(const mAng3_c &v) { x = v.x; y = v.y; z = v.z; }

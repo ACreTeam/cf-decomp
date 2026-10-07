@@ -425,7 +425,7 @@ dol/game/d_shop_layout.cpp:
 
 dol/game/d_shutdown_fader.cpp:
 	.text       start:0x8015FDF0 end:0x801603A0
-	.data       start:0x804F0658 end:0x804F06A0 align:4
+	.data       start:0x804F0658 end:0x804F06A0
 	.sdata      start:0x8074B2A0 end:0x8074B2A8 align:4
 	.sbss       start:0x8074E818 end:0x8074E820 align:4
 	.sdata2     start:0x80750E20 end:0x80750E48 align:4

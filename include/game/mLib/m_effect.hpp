@@ -25,4 +25,24 @@ public:
     virtual bool follow(const mMtx_c *mtx);                                                    // 0xAC
 };
 
+// mEf::levelEffect_c (RTTI string 804DF7B8, vtable 805242D0): an effect_c kept in a global list
+// (mPrev / mNext). Its dtor is inline (cleanup(), then the bases'). Only what d_fish_field uses
+// is declared.
+class levelEffect_c : public effect_c {
+public:
+    levelEffect_c() : mPrev(NULL), mNext(NULL), mActive(false), _85(false), _88(0), _8C(0) {}
+    ~levelEffect_c() { cleanup(); }
+
+    virtual void vf10(); // 802B898C
+
+    void cleanup(); // 802B88C4
+
+    /* 0x7C */ levelEffect_c *mPrev;
+    /* 0x80 */ levelEffect_c *mNext;
+    /* 0x84 */ bool mActive;
+    /* 0x85 */ bool _85;
+    /* 0x88 */ u32 _88;
+    /* 0x8C */ u32 _8C;
+}; // size 0x90
+
 } // namespace mEf

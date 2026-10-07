@@ -594,6 +594,7 @@ modules:
   name: d_fish_fieldNP
   symbols: config/RUUE01_00/d_fish_fieldNP/symbols.txt
   splits: config/RUUE01_00/d_fish_fieldNP/splits.txt
+  force_active: [__global_destructor_chain] # the module runtime's chain: the REL's 4-byte .bss
 - object: files/rels/d_fish_museumNP.rel
   hash: 788d1e2864024f2454c53c6f0134b95aed475986
   name: d_fish_museumNP

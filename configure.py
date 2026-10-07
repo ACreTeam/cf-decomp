@@ -283,9 +283,9 @@ cflags_runtime = [
     "-inline auto",
 ]
 
-# REL flags
+# REL flags: the game's flags, without small data (RELs have no .sdata / .sbss).
 cflags_rel = [
-    *cflags_base,
+    *cflags_identified_game,
     "-sdata 0",
     "-sdata2 0",
 ]
@@ -622,7 +622,7 @@ config.libs = [
             Object(Matching, "dol/game/d_base.cpp"),
             Object(Matching, "dol/game/d_field_block.cpp"),
             Object(Matching, "dol/game/d_demo_actor.cpp"),
-            Object(NonMatching, "dol/game/d_field_info.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_field_info.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_event.cpp"),
             Object(Matching, "dol/game/d_fireworks.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_fish_info.cpp"),
@@ -644,7 +644,7 @@ config.libs = [
             Object(Matching, "dol/game/d_rec_bank.cpp"),
             Object(Matching, "dol/game/d_region.cpp"),
             Object(Matching, "dol/game/d_random.cpp"),
-            Object(NonMatching, "dol/game/d_sv_auc.cpp"),
+            Object(Matching, "dol/game/d_sv_auc.cpp"),
             Object(NonMatching, "dol/game/d_save_data.cpp"),
             Object(Matching, "dol/game/d_dsn.cpp"),
             Object(Matching, "dol/game/d_save_visitor_npc.cpp"),
@@ -674,13 +674,13 @@ config.libs = [
             Object(Matching, "dol/game/d_save_catherine.cpp"),
             Object(Matching, "dol/game/d_save_shop_tailor.cpp"),
             Object(Matching, "dol/game/d_save_shop_gallery.cpp"),
-            Object(NonMatching, "dol/game/d_save_shop_grace.cpp"),
+            Object(Matching, "dol/game/d_save_shop_grace.cpp"),
             Object(Matching, "dol/game/d_save_cafe_guest.cpp"),
             Object(NonMatching, "dol/game/d_save_building.cpp"),
             Object(Matching, "dol/game/d_theater.cpp"),
             Object(Matching, "dol/game/d_time_stamp.cpp"),
             Object(Matching, "dol/game/d_search_cand.cpp"),
-            Object(NonMatching, "dol/game/d_shop_layout.cpp"),
+            Object(Matching, "dol/game/d_shop_layout.cpp"),
             Object(NonMatching, "dol/game/d_shutdown_fader.cpp"),
             Object(NonMatching, "dol/game/d_shutter_fader.cpp"),
             Object(Matching, "dol/game/d_side_wipe_fader.cpp"),
@@ -1091,6 +1091,17 @@ config.libs = [
             Object(NonMatching, "runtime/class_arrays.cpp", extra_cflags=["-Cpp_exceptions on"]),
         ],
     },
+    Rel(
+        "d_fish_fieldNP",
+        [
+            Object(Matching, "d_fish_fieldNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            # The module runtime's destructor chain: its functions are stripped, but the 4-byte
+            # __global_destructor_chain (force_active in config.yml) is the REL's whole .bss.
+            Object(Matching, "d_fish_fieldNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(Matching, "d_fish_fieldNP/d_fish_field.cpp", extra_cflags=["-sym on"]),
+        ],
+    ),
 ]
 
 

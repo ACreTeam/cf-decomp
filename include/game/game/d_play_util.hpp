@@ -48,12 +48,73 @@ enum {
     PLAY_SYNC_STATE_CLAIMED,
 };
 
-// A shared record (8 bytes; the bits are packed from the low bit of byte 0 up).
+// A shared record (8 bytes; the bits are packed from the low bit of byte 0 up):
+//   bits  0..6   A           (fish field: the fish type, FISH_TYPE_NUM = none)
+//   bits  7..13  C           (fish field: the fish's 7-bit id)
+//   bits 14..17  fish state  (dFishFldShadow_c::State_e)
+//   bits 18..29  pos x       (world, 12 bits)
+//   bits 30..41  pos z
+//   bits 42..48  home unit x (7 bits)
+//   bits 49..55  home unit z
+//   bits 56..58  member
+//   bits 59..61  dir         (1/8 turns; nibbling flag while nibbling)
+//   bits 62..63  state       (PLAY_SYNC_STATE_*)
 struct dPlaySyncRec_c {
     u32 getA() const { return b0 & 0x7F; } // 7 bits
-    u32 getC() const { return ((b0 >> 7) & 1) + (b1 & 0x3F) * 2; } // 7 bits
-    int getMember() const { return b7 & 7; }
-    void setMember(u32 member) { b7 = (b7 & 0xF8) | member; }
+    u16 getC() const { return ((b0 >> 7) & 1) + (b1 & 0x3F) * 2; } // 7 bits
+    u32 getFishState() const { return ((b1 >> 6) & 3) + (b2 & 3) * 4; }
+    u32 getPosX() const { return ((b2 >> 2) & 0x3F) + (b3 & 0x3F) * 0x40; }
+    u32 getPosZ() const { return (b5 & 3) * 0x400 + (((b3 >> 6) & 3) + b4 * 4); }
+    u32 getHomeUnitX() const { return ((b5 >> 2) & 0x3F) + (b6 & 1) * 0x40; }
+    u32 getHomeUnitZ() const { return (b6 >> 1) & 0x7F; }
+    u8 getMember() const { return b7 & 7; }
+    u32 getDir() const { return (b7 >> 3) & 7; }
+    u32 getState() const { return (b7 >> 6) & 3; }
+    void setA(u32 a) {
+        b0 &= ~0x7F;
+        b0 |= a & 0x7F;
+    }
+    void setC(u32 c) {
+        b0 &= ~0x80;
+        b0 |= (c & 1) << 7;
+        b1 &= ~0x3F;
+        b1 |= (c >> 1) & 0x3F;
+    }
+    void setFishState(u32 state) {
+        b1 &= ~0xC0;
+        b1 |= (state & 3) << 6;
+        b2 &= ~0x03;
+        b2 |= (state >> 2) & 3;
+    }
+    void setPosX(f32 x) {
+        b2 &= ~0xFC;
+        b2 |= ((u32)x & 0x3F) << 2;
+        b3 &= ~0x3F;
+        b3 |= ((u32)x >> 6) & 0x3F;
+    }
+    void setPosZ(f32 z) {
+        b3 &= ~0xC0;
+        b3 |= ((u32)z & 3) << 6;
+        b4 &= ~0xFF;
+        b4 |= ((u32)z >> 2) & 0xFF;
+        b5 &= ~0x03;
+        b5 |= ((u32)z >> 10) & 3;
+    }
+    void setHomeUnitX(u32 x) {
+        b5 &= ~0xFC;
+        b5 |= (x & 0x3F) << 2;
+        b6 &= ~0x01;
+        b6 |= (x >> 6) & 1;
+    }
+    void setHomeUnitZ(u32 z) {
+        b6 &= ~0xFE;
+        b6 |= (z & 0x7F) << 1;
+    }
+    void setMember(u32 member) { b7 = (member & 7) | (b7 & 0xF8); }
+    void setDir(u32 dir) {
+        b7 &= ~0x38;
+        b7 |= (dir & 7) << 3;
+    }
     void setState(u32 state) { b7 = (b7 & 0x3F) | (state << 6); }
 
     /* 0x0 */ u8 b0;
@@ -76,22 +137,19 @@ struct dPlaySyncRecBuf_c {
         mRec.b5 = 0;
         mRec.b6 = 0;
         mRec.b7 = 0;
-        _08 = 0;
-        _09 = 0;
-        _0C = -1;
+        mRemote = 0;
+        mReleasePending = 0;
+        mClaimMember = -1;
     }
+    ~dPlaySyncRecBuf_c() {}
 
     /* 0x0 */ dPlaySyncRec_c mRec;
-    /* 0x8 */ u8 _08;
-    /* 0x9 */ u8 _09;
-    /* 0xC */ s32 _0C;
+    /* 0x8 */ u8 mRemote;         // the record is another member's (fish field: recvRecs)
+    /* 0x9 */ u8 mReleasePending; // claimSyncRec on the next sendRecs
+    /* 0xC */ s32 mClaimMember;    // >= 0: sendSyncRecClaim to it on the next sendRecs
 }; // size 0x10
 
-// The host's copy of the records (lbl_8074E840).
-struct dPlaySyncHost_c {
-    /* 0x000 */ u8 _000[0x178];
-    /* 0x178 */ dPlaySyncRecBuf_c mRecs[PLAY_SYNC_REC_NUM];
-};
+class dFishField_c; // the host of the records: the fish (d_fish_field.hpp, mRecs)
 
 // The sync message (net packet 0x41, 4 bytes; the bits are packed from the low bit of byte 0 up).
 struct dPlaySyncMsg_c {
@@ -124,7 +182,8 @@ struct dPlaySyncMsg_c {
 
 extern void *lbl_8074E830; // the sky light
 extern dPlayActorMng_c *lbl_8074E838;
-extern dPlaySyncHost_c *lbl_8074E840;
+extern dFishField_c *lbl_8074E840;
+extern u8 lbl_8074E844; // set: the fish field spawns again on its next initSpawn (net)
 
 // getWeatherPhaseA / getWeatherPhaseB results.
 enum {

@@ -1334,13 +1334,7 @@ BOOL seriesCandCB_c::check(const BITM *bitm, Item *item) {
 
 // 800C3954
 BOOL sizeCandCB_c::check(const BITM *bitm, Item *item) {
-    int want = mSize;
-    int size = 0;
-    u32 raw = static_cast<s8>(bitm->m_ftrSize);
-    if (raw < 3) {
-        size = raw;
-    }
-    return want == size;
+    return mSize == bitm->getFtrSize();
 }
 
 // 800C3984

@@ -274,6 +274,8 @@ BOOL dShopLayout_findFreeUnit(int kind, int *unitX, int *unitZ) {
 // 8015F930: the stock slot of the item on a unit of the current shop. Nook's saplings are slots
 // 14.., in layout order of the KIND_SEEDLING units; everything else is looked up by item id.
 int dShopLayout_getSlot(int unitX, int unitZ) {
+    u16 id;
+
     dItem::Item item = fn_80190C44(0)->getUnitItem(unitX, unitZ);
     if (!dItem::isRealItemId(item.mId)) {
         return -1;
@@ -304,7 +306,7 @@ int dShopLayout_getSlot(int unitX, int unitZ) {
         default:
             for (int i = 0; i < 36; i++) {
                 dSaveTown_c *town = dSaveData_c::getTown();
-                u16 id = item.mId;
+                id = item.mId;
                 if (id == town->mShops.mShop.getItem(i)) {
                     return i;
                 }
@@ -315,8 +317,8 @@ int dShopLayout_getSlot(int unitX, int unitZ) {
     case SCENE_RM_BROKER:
         for (int i = 0; i < 3; i++) {
             dSaveTown_c *town = dSaveData_c::getTown();
-                u16 id = item.mId;
-                if (id == town->mShops.mShopGallery.getItem(i)) {
+            id = item.mId;
+            if (id == town->mShops.mShopGallery.getItem(i)) {
                 return i;
             }
         }
@@ -324,8 +326,8 @@ int dShopLayout_getSlot(int unitX, int unitZ) {
     case SCENE_RM_TAILOR:
         for (int i = 0; i < 14; i++) {
             dSaveTown_c *town = dSaveData_c::getTown();
-                u16 id = item.mId;
-                if (id == town->mShops.mShopTailor.getItem(i)) {
+            id = item.mId;
+            if (id == town->mShops.mShopTailor.getItem(i)) {
                 return i;
             }
         }
@@ -333,8 +335,8 @@ int dShopLayout_getSlot(int unitX, int unitZ) {
     case SCENE_RM_GRACE:
         for (int i = 0; i < 23; i++) {
             dSaveTown_c *town = dSaveData_c::getTown();
-                u16 id = item.mId;
-                if (id == town->mShops.mShopGrace.getItem(i, 1)) {
+            id = item.mId;
+            if (id == town->mShops.mShopGrace.getItem(i, 1)) {
                 return i;
             }
         }

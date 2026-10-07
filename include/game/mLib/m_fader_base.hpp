@@ -25,7 +25,7 @@ public:
     /// @brief Constructs a new fader.
     /// @param color The fader's color.
     /// @param status The fader's initial status (#OPAQUE or #HIDDEN).
-    mFaderBase_c(const mColor &color, EStatus status);
+    mFaderBase_c(mColor color, EStatus status);
 
     virtual ~mFaderBase_c() {} ///< Destroys the fader.
 
@@ -49,7 +49,7 @@ public:
     virtual void draw() = 0; ///< Draws the fader.
 
     void setFrame(u16 duration); ///< Sets the duration of the fade. Duration must not be zero.
-    void setColor(const mColor &color); ///< Sets the fader's color. Alpha is not modified.
+    void setColor(mColor color); ///< Sets the fader's color. Alpha is not modified.
 
     /// @brief Checks if the fader is in a specific status.
     /// @unofficial

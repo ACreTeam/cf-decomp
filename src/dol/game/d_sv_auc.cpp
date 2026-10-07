@@ -420,8 +420,7 @@ BOOL dSvAucItem_c::isMyWon() const {
 // 8010BAB4
 BOOL dSvAucItem_c::isOpenToday() const {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid() && !mSold) {
-        u16 day = mDay;
-        return dSvAuc_c::getToday() == day && dSvAuc_c::getTodayType() == 2;
+        return dSvAuc_c::getToday() == getDay() && dSvAuc_c::getTodayType() == 2;
     }
     return FALSE;
 }
@@ -616,12 +615,7 @@ int dSvAuc_c::findSlot(const dItem::Item *item) const {
     if (dItem::isRealItemId(check.mId)) {
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(check);
         if (bitm != NULL) {
-            u32 raw = static_cast<s8>(bitm->m_ftrSize);
-            int size = 0;
-            if (raw < 3) {
-                size = static_cast<s8>(bitm->m_ftrSize);
-            }
-            if (size == 0) {
+            if (bitm->getFtrSize() == dItem::FTR_SIZE_1x1) {
                 for (u32 i = 3; i <= 8; i++) {
                     if (!dItem::isRealItemId(getItemConst(i)->mItem.mId)) {
                         return i;
@@ -809,11 +803,7 @@ BOOL dSvAuc_c::addListing(const dSvAucItem_c *item, const u64 *sender) {
     dItem::Item check = item->mItem;
     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(check);
     if (bitm != NULL) {
-        int large = 0;
-        u32 raw = static_cast<s8>(bitm->m_ftrSize);
-        if (raw < 3) {
-            large = raw;
-        }
+        int large = bitm->getFtrSize();
         u32 mask = 0;
         int num = 0;
         for (u32 i = 0; i < 9; i++) {
@@ -821,11 +811,11 @@ BOOL dSvAuc_c::addListing(const dSvAucItem_c *item, const u64 *sender) {
             if (dItem::isRealItemId(own->mItem.mId) && own->mSeller.isValid() && own->isFromOtherTown(NULL) &&
                 own->hasNoBids()) {
                 if (i >= 3) {
-                    if (large == 0) {
+                    if (large == dItem::FTR_SIZE_1x1) {
                         num++;
                         mask |= 1 << i;
                     }
-                } else if (large != 0) {
+                } else if (large != dItem::FTR_SIZE_1x1) {
                     num++;
                     mask |= 1 << i;
                 }
@@ -851,16 +841,14 @@ BOOL dSvAuc_c::addListing(const dSvAucItem_c *item, const u64 *sender) {
 
 // 8010CFC8
 int dSvAuc_c::find(const dSvAucItem_c *item) const {
-    const dSvAucItem_c *own; // some how this needs to be r29
     const dPersonalID_c *ownSeller;
     const dPersonalID_c *seller;
-    u32 i;
     if (dItem::isRealItemId(item->mItem.mId) && item->mSeller.isValid()) {
-        for (i = 0; i < 9; i++) {
-            own = getItemConst(i);
+        for (u32 i = 0; i < 9; i++) {
+            const dSvAucItem_c *own = getItemConst(i);
             if (item->mItem.isSame(own->mItem)) {
-                seller = &item->mSeller;
                 ownSeller = &own->mSeller;
+                seller = &item->mSeller;
                 if (*seller == *ownSeller) {
                     return i;
                 }
@@ -963,8 +951,8 @@ void dSvAuc_c::pickDLItem() {
         const dSvAucItem_c *item = getItemConst(i);
         found = FALSE;
         if (dItem::isRealItemId(item->mItem.mId)) {
-            dItem::Item check(item->mItem.mId);
-            if (dl->getSlot(&check) != -1) {
+            s32 slot = dl->getSlot(&dItem::Item(item->mItem.mId));
+            if (slot != -1) {
                 found = TRUE;
             }
         }

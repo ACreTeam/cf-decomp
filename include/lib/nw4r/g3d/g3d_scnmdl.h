@@ -26,6 +26,9 @@ public:
         ResMatMisc GetResMatMisc(bool markDirty);
         ResMatPix GetResMatPix(bool markDirty);
         ResMatTevColor GetResMatTevColor(bool markDirty);
+        ResMatTevColor GetResMatTevColor(); // 80254954 (d_fish_field)
+
+        bool IsValid() const { return mpScnMdl != NULL; }
         ResTev GetResTev(bool markDirty);
 
         ResTexSrt GetResTexSrtEx();
