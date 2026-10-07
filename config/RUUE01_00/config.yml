@@ -24,6 +24,7 @@ fill_gaps: true
 export_all: true
 globalize_symbols: true
 clean_extab: false
+force_active: [lbl_8074E834] # d_play_util .sbss word nothing references; the original link kept it
 block_relocations:
 # 80514A80: a word inside lbl_80509320 (binary data) that looks like 8046E62A, inside d_event's
 # sJpAutumnMoonDates. Not a pointer.

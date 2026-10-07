@@ -1650,9 +1650,7 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
     static const int sEvents1[4] = {EVENT_PLAYER_BIRTHDAY_0, EVENT_PLAYER_BIRTHDAY_1, EVENT_PLAYER_BIRTHDAY_2, EVENT_PLAYER_BIRTHDAY_3};
 
     dTime_c::getCurrent(); // result unused in the original
-    u32 i;
     BOOL result = TRUE;
-    BOOL hit;
     if (time == NULL) {
         time = dTime_c::getCurrent();
     }
@@ -1662,56 +1660,60 @@ BOOL dQuestBase_c::checkEventSchedule(int kind, const dTime_c *time) {
 
     switch (kind) {
         case QUEST_KIND_ERRAND_REQUEST:
-        case QUEST_KIND_ERRAND_REQUEST_FINAL:
-            for (i = 0; i < 9; i++) {
-                if (dEvent::isEventWithin((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
+        case QUEST_KIND_ERRAND_REQUEST_FINAL: {
+            const int *events = sEvents0;
+            for (u32 i = 0; i < 9; i++, events++) {
+                if (dEvent::isEventWithin((dQuestEvent_e)*events, day, 1, 1)) {
                     result = FALSE;
                     break;
                 }
             }
             break;
-        case QUEST_KIND_STYLE:
-            for (i = 0; i < 9; i++) {
-                hit = FALSE;
-                if (sEvents0[i] != EVENT_TOY_DAY) {
-                    if (dEvent::isEventWithin((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
-                        hit = TRUE;
-                    }
-                }
+        }
+        case QUEST_KIND_STYLE: {
+            const int *events = sEvents0;
+            for (u32 i = 0; i < 9; i++, events++) {
+                BOOL hit = *events != EVENT_TOY_DAY && dEvent::isEventWithin((dQuestEvent_e)*events, day, 1, 1);
                 if (hit) {
                     result = FALSE;
                     break;
                 }
             }
             break;
+        }
         case QUEST_KIND_APPOINTMENT_0:
-        case QUEST_KIND_APPOINTMENT_1:
-            for (i = 0; i < 9; i++) {
-                if (dEvent::isEventWithin((dQuestEvent_e)sEvents0[i], day, 1, 1)) {
+        case QUEST_KIND_APPOINTMENT_1: {
+            const int *events = sEvents0;
+            for (u32 i = 0; i < 9; i++, events++) {
+                if (dEvent::isEventWithin((dQuestEvent_e)*events, day, 1, 1)) {
                     result = FALSE;
                     break;
                 }
             }
             if (result) {
-                for (i = 0; i < 4; i++) {
-                    if (dEvent::isEventWithin((dQuestEvent_e)sEvents1[i], day, 1, 1)) {
+                events = sEvents1;
+                for (u32 i = 0; i < 4; i++, events++) {
+                    if (dEvent::isEventWithin((dQuestEvent_e)*events, day, 1, 1)) {
                         result = FALSE;
                         break;
                     }
                 }
             }
             break;
-        case QUEST_KIND_REQUEST_6:
+        }
+        case QUEST_KIND_REQUEST_6: {
             if (dEvent::isEventWithin(EVENT_HALLOWEEN, day, 1, 1)) {
                 result = FALSE;
             }
-            for (i = 0; i < 4; i++) {
-                if (dEvent::isEventWithin((dQuestEvent_e)sEvents1[i], day, 1, 1)) {
+            const int *events = sEvents1;
+            for (u32 i = 0; i < 4; i++, events++) {
+                if (dEvent::isEventWithin((dQuestEvent_e)*events, day, 1, 1)) {
                     result = FALSE;
                     break;
                 }
             }
             break;
+        }
     }
 
     return result;
