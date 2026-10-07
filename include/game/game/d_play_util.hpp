@@ -163,6 +163,7 @@ struct dPlaySyncMsg_c {
     u32 getIdx() const { return b0 & 0xF; }
     u32 getA() const { return ((b0 >> 4) & 0xF) + (b1 & 7) * 0x10; }
     u32 getC() const { return ((b1 >> 3) & 0x1F) + (b2 & 0xF) * 0x20; }
+    int getMember() const { return mMember & 0xF; }
     void setIdx(u32 idx) { b0 = (b0 & 0xF0) | (idx & 0xF); }
     void setA(u32 a) {
         b0 = (b0 & 0x0F) | ((a & 0xF) << 4);
@@ -173,6 +174,10 @@ struct dPlaySyncMsg_c {
         b2 = (b2 & 0xF0) | ((c >> 5) & 0xF);
     }
     void setType(u32 type) { b2 = (b2 & 0x0F) | (type << 4); }
+    void setMember(int member) {
+        mMember &= 0xF0;
+        mMember |= member & 0xF;
+    }
 
     /* 0x0 */ u8 b0;
     /* 0x1 */ u8 b1;

@@ -194,7 +194,7 @@ void sendSyncRecClaim(dPlaySyncRec_c *rec, int idx) {
         msg.setIdx(idx);
         msg.setA(rec->getA());
         msg.setC(rec->getC());
-        msg.mMember = rec->getMember();
+        msg.setMember(rec->getMember());
         fn_800DD4C8();
         fn_800DD518(&msg, sizeof(msg));
         fn_800DD588(0x41, 4);
@@ -208,7 +208,7 @@ void sendSyncRecRelease(const dPlaySyncRec_c *rec, int idx) {
     msg.setIdx(idx);
     msg.setA(rec->getA());
     msg.setC(rec->getC());
-    msg.mMember = rec->getMember();
+    msg.setMember(rec->getMember());
     fn_800DD4C8();
     fn_800DD518(&msg, sizeof(msg));
     fn_800DD588(0x41, 4);
@@ -270,7 +270,7 @@ void recvSyncAck(const dPlaySyncMsg_c *msg, int member) {
         out.setIdx(idx);
         out.setA(msg->getA());
         out.setC(msg->getC());
-        out.mMember = msg->mMember & 0xF;
+        out.setMember(msg->getMember());
         fn_800DD4C8();
         fn_800DD518(&out, sizeof(out));
         fn_800DD588(0x41, 4);
