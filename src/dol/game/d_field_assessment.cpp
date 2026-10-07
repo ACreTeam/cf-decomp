@@ -73,7 +73,6 @@ BOOL fn_800DCF90();
 void fn_800DD4C8();
 void fn_800DD518(void *data, int size);
 void fn_800DD588(int a, int b);
-void fn_80440604(EGG::FrmHeap *heap, int arg);
 void fn_8014D3F4(void *obj, int rank, int days);
 int fn_8014D844(void *obj, int id);
 void fn_80169ED8();
@@ -1184,7 +1183,7 @@ int fgMngCmd_findFree() {
 // 80093994
 void dFgMngProc_c::destroyHeap() {
     if (m_heap != NULL) {
-        fn_80440604(m_heap, 3);
+        m_heap->free(3);
         mHeap::destroyFrmHeap(m_heap);
         m_heap = NULL;
         mBuffer = NULL;
