@@ -127,10 +127,7 @@ public:
     /* 0x000000 */ dSaveCheck_c mHeader;
     /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
     /* 0x021B20 */ dAnimalSave_c mAnimals;
-    /* 0x05E260 */ dDesign_c _05E260;
-    /* 0x05EAE0 */ u8 _05EAE0[0x24];
-    /* 0x05EB04 */ u32 _05EB04;             // object, ctor 80149E38; checked against fn_8014B3CC
-    /* 0x05EB08 */ u8 _05EB08[0x158];
+    /* 0x05E260 */ dSaveBuilding_c mBuilding;  // the town flag, the gate and the building positions
     /* 0x05EC60 */ u32 mTownChecksum;     // calcTownChecksum: +0x5EC64 up to mExtra (also a random seed)
     /* 0x05EC64 */ u16 _05EC64;
     /* 0x05EC66 */ u8 _05EC66;

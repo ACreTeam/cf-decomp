@@ -17,13 +17,6 @@
 #include <nw4r/math.h>
 
 // Ext item data (0xD000 ids), see d_fg_item.cpp.
-struct dFdExtInfo_c {
-    /* 0x00 */ u8 _00[0xF];
-    /* 0x0F */ u8 mValueA;
-    /* 0x10 */ u8 mValueB;
-    /* 0x11 */ u8 mFlag;
-};
-
 // Result of the ground check fn_8006E1BC.
 struct dFdGroundCheck_c {
     /* 0x00 */ u8 _00[0x34];
@@ -88,9 +81,6 @@ int fn_800732B8(int unitX, int unitZ);                                 // 800732
 int fn_80073314(int unitX, int unitZ);                                 // 80073314
 int fn_80072D54(int unitX, int unitZ);                                 // 80072D54
 int fn_80072F80(int unitX, int unitZ);                                 // 80072F80: unit attribute
-void *fn_8014B6C8();                                                   // 8014B6C8
-dItem::Item fn_8014B034(void *fg, int x, int z, int);                  // 8014B034
-dFdExtInfo_c *fn_80167FB4(int index);                                  // 80167FB4
 void *fn_800A835C();                                                   // 800A835C
 void fn_800A7F14(void *, const nw4r::math::VEC3 *pos, int, int, int);  // 800A7F14
 void fn_800A7F9C(void *, const nw4r::math::VEC3 *pos, int, int);       // 800A7F9C
@@ -295,7 +285,7 @@ BOOL dFdBase_c::getRaccoSpot(int *unitX, int *unitZ, s16 *angle) {
     cand.clear();
     cand.search();
     if (cand.getRandomXZ(unitX, unitZ)) {
-        u32 idx = bgCall_80072F80(*unitX, *unitZ) - 0x6C;
+        u32 idx = getBgAttr(*unitX, *unitZ) - BG_ATTR_BR_RACCO_W;
         if (idx < ARRAY_SIZE(sRaccoAngle)) {
             *angle = sRaccoAngle[idx];
             return TRUE;
@@ -661,7 +651,7 @@ int dFdBase_c::bgCall_80072D54(int unitX, int unitZ) const {
 }
 
 // 8008D348
-int dFdBase_c::bgCall_80072F80(int unitX, int unitZ) const {
+int dFdBase_c::getBgAttr(int unitX, int unitZ) const {
     fn_800755A0(mBg);
     int res = fn_80072F80(unitX, unitZ);
     fn_800755A0(0);
@@ -679,19 +669,19 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
             if (valid && (_24 == NULL || !_24->getAttr(x, z))) {
                 *height = value;
                 *param = item->getExtValueB();
-                *attr = 0x15;
+                *attr = BG_ATTR_WOOD;
                 return TRUE;
             }
         } else if (getCurrentScene() == SCENE_TOWN) {
-            fg = fn_8014B034(fn_8014B6C8(), x, z, 2);
+            fg = dSaveBuildingList_c::get()->getAt(x, z, 2);
             if (fg.isExtId()) {
-                dFdExtInfo_c *info = fn_80167FB4(fg.getExtIndex());
+                dBuildingInfo_c *info = fn_80167FB4(fg.getExtIndex());
                 f32 value = (int)info->mValueA;
                 if (value != 0.0f) {
                     f32 p = (int)info->mValueB;
                     *height = value;
                     *param = p;
-                    *attr = 0x15;
+                    *attr = BG_ATTR_WOOD;
                     return TRUE;
                 }
             }
@@ -756,7 +746,7 @@ u8 dFdBase_c::fn_8008D760(const nw4r::math::VEC3 *pos, BOOL onlyAttr16) {
         int attr = check.mAttr;
         fn_800755A0(0);
         if (onlyAttr16) {
-            if (attr == 0x16) {
+            if (attr == BG_ATTR_SOIL) {
                 return fn_802B6258((u8 *)fn_800A835C() + 0x58, unitX, unitZ);
             }
             return 0;
@@ -1210,12 +1200,12 @@ BOOL raccoCand_c::check(int x, int z) {
             return FALSE;
         }
     }
-    switch (mInfo->bgCall_80072F80(x, z)) {
-    case 0x6C:
-    case 0x6D:
-    case 0x6E:
-    case 0x6F:
-    case 0x70:
+    switch (mInfo->getBgAttr(x, z)) {
+    case BG_ATTR_BR_RACCO_W:
+    case BG_ATTR_BR_RACCO_S:
+    case BG_ATTR_BR_RACCO_E:
+    case BG_ATTR_BR_RACCO_SW:
+    case BG_ATTR_BR_RACCO_SE:
         if ((s8)dSaveData_c::getTown()->mNewConstruction == NEW_CONSTRUCTION_BRIDGE && mBlockX == -1 && mBlockZ == -1) {
             int blockX, blockZ;
             fn_8006CD4C(&blockX, &blockZ, x, z);

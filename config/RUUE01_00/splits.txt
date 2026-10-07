@@ -330,6 +330,16 @@ dol/game/d_save_shop_grace.cpp:
 dol/game/d_save_cafe_guest.cpp:
 	.text       start:0x80149608 end:0x80149B70
 
+dol/game/d_save_building.cpp:
+	.text       start:0x80149B70 end:0x8014BD88
+	.ctors      start:0x8046573C end:0x80465740
+	.rodata     start:0x80476648 end:0x80476668 align:4
+	.data       start:0x804EF388 end:0x804EF518 align:4
+	.bss        start:0x805F2AC0 end:0x805F2AD0 align:4
+	.sdata      start:0x8074B130 end:0x8074B168 align:4
+	.sbss       start:0x8074E7D0 end:0x8074E7E0 align:4
+	.sdata2     start:0x80750CB0 end:0x80750CB8 align:4
+
 dol/game/d_theater.cpp:
 	.text       start:0x8014BD88 end:0x8014C2C4
 	.data       start:0x804EF518 end:0x804EF5C0

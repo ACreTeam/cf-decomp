@@ -8,7 +8,6 @@
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_80149C08(void *obj);
 void fn_801503E4(void *obj);
 void fn_8014EB3C(void *obj);
 void fn_80150524(void *obj);
@@ -20,7 +19,6 @@ void fn_8010C0A4(void *obj);
 void fn_80150E74(void *obj, int player);
 void fn_8010CDCC(void *obj, int player);
 void fn_80150088(void *obj, int player);
-BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item *item, int);
 int fn_80177C0C();
 }
 
@@ -78,7 +76,7 @@ u32 dSaveTown_c::calcTownChecksum() const {
 void dSaveTown_c::clearTown() {
     mSaveTime.reset();
     mMainField.clear();
-    fn_80149C08(&_05E260);
+    mBuilding.clear();
     dPrivateData_c::clearAll(mPlayers);
     mHomes.initAll();
     _0636F0.clear();
@@ -163,7 +161,7 @@ void dSaveTown_c::resetSaveTime() {
 
 // The save pointer is fetched before the item.
 static inline BOOL findFgItem(dSaveTown_c *save, int *x, int *z, dItem::Item *item) {
-    return fn_8014B0F0(&save->_05EB04, x, z, item, 1);
+    return save->mBuilding.mList.getPos(x, z, item, 1);
 }
 
 // 801161F0: read by dPrivateData_c's "BBS_office" notices

@@ -10,14 +10,7 @@ void __register_global_object(void *object, void *dtor, void *node);
 
 }
 
-// Owner of the 0xD000 id range (TU near 80167FB4).
-struct ExtInfo {
-    u8 _00[0xF];
-    u8 mValueA; // 0x0F
-    u8 mValueB; // 0x10
-    u8 mFlag; // 0x11
-};
-extern "C" ExtInfo *fn_80167FB4(int index);
+// The 0xD000 ids index the building table (dBuildingInfo_c, fn_80167FB4; d_save_building.hpp).
 
 static FgInfo sFgInfoTable[FG_COUNT] = {
     {0x0000, 0xFFF1, 0x0000, (s16)0xFFF1, {0x00, 0x00, 0x00, 0x00, 0x00}, -1, 0x00, "fg_apple"}, // 0x00

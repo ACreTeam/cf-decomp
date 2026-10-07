@@ -38,7 +38,6 @@ extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 BOOL fn_800DCEDC();
 u16 fn_800FABF4(int looks, int season);
-BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item item, int);
 }
 
 // Free functions of this TU.
@@ -284,7 +283,6 @@ extern "C" {
 // This TU, chunk 0 (used before their definition).
 
 // Other TUs.
-BOOL fn_8014A034(void *fg, int *x, int *z, u32 player);
 }
 BOOL isFurnitureKind(int kind);
 
@@ -1210,7 +1208,7 @@ BOOL getPlayerHouseSpot(int *x, int *z, u32 player) {
     if (player >= 4) {
         return FALSE;
     }
-    return fn_8014A034(&dSaveData_c::getTown()->_05EB04, x, z, player) != 0;
+    return dSaveData_c::getTown()->mBuilding.mList.getPlayerHousePos(x, z, player) != 0;
 }
 
 // 8011D928
@@ -1234,7 +1232,8 @@ BOOL getOtherPlayerHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *
 
 // The save pointer is fetched before the item copy is made.
 static inline BOOL findFgItem(dSaveTown_c *save, int *x, int *z, const dItem::Item &item) {
-    return fn_8014B0F0(&save->_05EB04, x, z, item, 1);
+    dItem::Item copy = item;
+    return save->mBuilding.mList.getPos(x, z, &copy, 1);
 }
 
 // 8011DA10
@@ -5724,10 +5723,6 @@ extern "C" {
 // This chunk, used before their definitions.
 
 // Other TUs.
-BOOL fn_8014A098(void *fg, int idx);
-BOOL fn_8014A4F4(void *fg, int idx);
-BOOL fn_8014A544(void *fg, int *x, int *z, int idx);
-BOOL fn_8014A5B8(void *fg, int idx);
 void fn_8014EE50(void *obj, const dPersonalID_c *pid, const dAnmPersonalID_c *animal, u8 value);
 extern u8 lbl_8059FF80[];
 }
@@ -5904,7 +5899,8 @@ BOOL dAnimal_c::isItemInMyBlock(const dItem::Item *item) {
     dSaveTown_c *town = dSaveData_c::getTown();
     int x = -1;
     int z = -1;
-    bool nf = !fn_8014B0F0(&town->_05EB04, &x, &z, *item, 1);
+    dItem::Item copy = *item;
+    bool nf = !town->mBuilding.mList.getPos(&x, &z, &copy, 1);
     if (nf) {
         return FALSE;
     }
@@ -6892,14 +6888,14 @@ void dAnimalBlock_c::updateOutdoorAnimals(BOOL flag) {
 // 8012B688
 void dAnimalBlock_c::syncHouses() {
     dAnimal_c *animal = getAnimalConst(0);
-    void *fg = &dSaveData_c::getTown()->_05EB04;
+    dSaveBuildingList_c *fg = &dSaveData_c::getTown()->mBuilding.mList;
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
         if (animal->mID.isValid()) {
-            if (!fn_8014A5B8(fg, i)) {
-                fn_8014A098(fg, i);
+            if (!fg->hasNpcHouse(i)) {
+                fg->setNpcHouse(i);
             }
-        } else if (fn_8014A5B8(fg, i)) {
-            fn_8014A4F4(fg, i);
+        } else if (fg->hasNpcHouse(i)) {
+            fg->removeNpcHouse(i);
         }
     }
 }
@@ -6910,9 +6906,9 @@ BOOL dAnimalBlock_c::removeHouse(u32 idx) {
         return FALSE;
     }
 
-    void *fg = &dSaveData_c::getTown()->_05EB04;
-    if (fn_8014A5B8(fg, idx)) {
-        fn_8014A4F4(fg, idx);
+    dSaveBuildingList_c *fg = &dSaveData_c::getTown()->mBuilding.mList;
+    if (fg->hasNpcHouse(idx)) {
+        fg->removeNpcHouse(idx);
         return TRUE;
     }
     return FALSE;
@@ -6920,7 +6916,7 @@ BOOL dAnimalBlock_c::removeHouse(u32 idx) {
 
 // 8012B7B4
 BOOL dAnimalBlock_c::getHouseBlockPos(int *x, int *z, int idx) {
-    void *fg = &dSaveData_c::getTown()->_05EB04;
+    dSaveBuildingList_c *fg = &dSaveData_c::getTown()->mBuilding.mList;
     dAnimal_c *animal = getAnimalConst(idx);
     if (animal != NULL && animal->mID.isValid()) {
         int tmpX = 0;
@@ -6931,7 +6927,7 @@ BOOL dAnimalBlock_c::getHouseBlockPos(int *x, int *z, int idx) {
         if (z == NULL) {
             z = &tmpZ;
         }
-        if (fn_8014A544(fg, x, z, idx)) {
+        if (fg->getNpcHousePos(x, z, idx)) {
             return TRUE;
         }
     }

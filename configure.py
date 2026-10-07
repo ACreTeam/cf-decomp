@@ -671,6 +671,7 @@ config.libs = [
             Object(Matching, "dol/game/d_save_shop_gallery.cpp"),
             Object(NonMatching, "dol/game/d_save_shop_grace.cpp"),
             Object(Matching, "dol/game/d_save_cafe_guest.cpp"),
+            Object(NonMatching, "dol/game/d_save_building.cpp"),
             Object(Matching, "dol/game/d_theater.cpp"),
             Object(Matching, "dol/game/d_time_stamp.cpp"),
             Object(Matching, "dol/game/d_search_cand.cpp"),

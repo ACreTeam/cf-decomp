@@ -37,15 +37,11 @@ u32 fn_800DD680(int id);
 mVec3_c fn_801506F8(const void *data);
 
 // Field map / actors.
-void *fn_8014B6C8();
-dItem::Item fn_8014B034(void *fg, int x, int z, int);
 dActor_c *fn_800F9860(int x, int z);
 dActor_c *fn_800F98CC(int x, int z);
 void fn_800A8B28(dNpcFtrShape_c *shape, dItem::Item item);
 u32 fn_800A8BB8(dNpcFtrShape_c *shape);
 const int *fn_800A8BE4(dNpcFtrShape_c *shape, u32 i);
-BOOL fn_8014B474(void *fg, int x, int z);
-BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item *item, int);
 BOOL fn_80169FA4(mVec3_c *out, const dItem::Item *item, int i);
 BOOL fn_80106464(u32 block);
 BOOL fn_80013550();
@@ -2602,7 +2598,7 @@ BOOL fn_800F26C8(int *outX, int *outZ) {
     int blockW = map->mBlockW;
     int blockH = map->mBlockH;
     u32 num = 0;
-    void *fg = fn_8014B6C8();
+    dSaveBuildingList_c *fg = dSaveBuildingList_c::get();
     for (int bz = 2, z0 = 0x20; bz < blockH - 1; bz++, z0 += 0x10) {
         for (int bx = 2, x0 = 0x20; bx < blockW - 2; bx++, x0 += 0x10) {
             for (int j = 4; j < 12; j++) {
@@ -2611,8 +2607,8 @@ BOOL fn_800F26C8(int *outX, int *outZ) {
                     int x = x0 + i;
                     dItem::Item none;
                     if (fn_800F1DF0(x, z, &none, map, 0, TRUE, TRUE) != FALSE) {
-                        dItem::Item a = fn_8014B034(fg, x, z - 1, 1);
-                        dItem::Item b = fn_8014B034(fg, x, z - 2, 1);
+                        dItem::Item a = fg->getAt(x, z - 1, 1);
+                        dItem::Item b = fg->getAt(x, z - 2, 1);
                         if (a.mId == dItem::ITEM_ID_NONE && b.mId == dItem::ITEM_ID_NONE) {
                             num++;
                             f32 chance = 100.0f / num;
@@ -2702,7 +2698,7 @@ u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
         return num;
     }
 
-    void *fg = fn_8014B6C8();
+    dSaveBuildingList_c *fg = dSaveBuildingList_c::get();
     int x0 = bx << 4;
     int z0 = bz << 4;
     int x1 = x0 + 0x10;
@@ -2712,7 +2708,7 @@ u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
             if (fn_800F22FC(exclude, x, z, dist)) {
                 continue;
             }
-            dItem::Item item = fn_8014B034(fg, x, z, 1);
+            dItem::Item item = fg->getAt(x, z, 1);
             if (item.mId != dItem::ITEM_ID_NONE) {
                 if (fn_800F2A48(&item)) {
                     for (int i = 0; i < 2; i++) {
@@ -2732,7 +2728,7 @@ u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
                 }
             } else {
                 BOOL ok = FALSE;
-                if (fn_8014B474(fg, x, z)) {
+                if (fg->isBuildSite(x, z)) {
                     dItem::Item none;
                     if (fn_800F1DF0(x, z - 1, &none, map, 0, allowFg94, TRUE)) {
                         ok = TRUE;
@@ -2883,7 +2879,7 @@ BOOL fn_800F3178(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c
         int fx = 0;
         int fz = 0;
         dItem::Item item(0xD014);
-        if (fn_8014B0F0(fn_8014B6C8(), &fx, &fz, &item, 1) != FALSE) {
+        if (dSaveBuildingList_c::get()->getPos(&fx, &fz, &item, 1) != FALSE) {
             u32 bx = (fx >> 4) - 1;
             u32 bz = (fz >> 4) - 1;
             if (bx < 5 && bz < 5) {
@@ -3008,8 +3004,8 @@ BOOL fn_800F3C0C(int x, int z) {
             return TRUE;
         }
     }
-    if (fn_8014B474(fn_8014B6C8(), x, z + 1)) {
-        dItem::Item fg = fn_8014B034(fn_8014B6C8(), x, z + 1, 1);
+    if (dSaveBuildingList_c::get()->isBuildSite(x, z + 1)) {
+        dItem::Item fg = dSaveBuildingList_c::get()->getAt(x, z + 1, 1);
         if (fg.mId == dItem::ITEM_ID_NONE) {
             return TRUE;
         }

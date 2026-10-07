@@ -57,8 +57,6 @@ void fn_80169C48();
 void fn_80169F20();
 void fn_80169F4C();
 void fn_80169F78();
-void *fn_8014B6C8();
-BOOL fn_8014B0F0(void *, int *, int *, u16 *, int);
 BOOL fn_80177C90();
 BOOL fn_80013550();
 void fn_800DD4C8();
@@ -2167,10 +2165,10 @@ void dPrivateData_c::fn_8013B9F8() {
 // 8013BA50
 void dPrivateData_c::fn_8013BA50() {
     int x, y;
-    u16 id1 = 0xD01D;
-    BOOL a = fn_8014B0F0(fn_8014B6C8(), &x, &y, &id1, 1);
-    u16 id2 = 0xD01C;
-    BOOL b = fn_8014B0F0(fn_8014B6C8(), &x, &y, &id2, 1);
+    dItem::Item id1((u16)BUILDING_WINDMILL);
+    BOOL a = dSaveBuildingList_c::get()->getPos(&x, &y, &id1, 1);
+    dItem::Item id2((u16)BUILDING_LIGHTHOUSE);
+    BOOL b = dSaveBuildingList_c::get()->getPos(&x, &y, &id2, 1);
     if ((u8)fn_8013B4F8() == 1) {
         if (!a) {
             if (b) {
@@ -2244,8 +2242,8 @@ void dPrivateData_c::fn_8013BC38(int days) {
             break;
         case 3: {
             int x, y;
-            u16 id = 0xD01D;
-            if (fn_8014B0F0(&dSaveData_c::getRaw()->_05EB04, &x, &y, &id, 1)) {
+            dItem::Item id((u16)BUILDING_WINDMILL);
+            if (dSaveData_c::getRaw()->mBuilding.mList.getPos(&x, &y, &id, 1)) {
                 fn_800EBB24(8, "BBS_office", 0, 0);
             } else {
                 fn_800EBB24(7, "BBS_office", 0, 0);

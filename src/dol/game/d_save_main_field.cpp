@@ -8,7 +8,6 @@
 extern "C" {
 BOOL fn_80106250(dSaveMainField_c *field, int arg);
 BOOL fn_8010640C();
-void fn_8014A978(void *obj);
 void *fn_800A835C();
 BOOL fn_800A7B18(void *obj, int arg, int arg2);
 BOOL fn_800A7B9C(void *obj);
@@ -84,7 +83,7 @@ BOOL dSaveMainField_c::createField(int arg) {
         if (fd != NULL) {
             ((dFdInfo_c *)fd)->updateTown();
         }
-        fn_8014A978(&dSaveData_c::getTown()->_05EB04);
+        dSaveData_c::getTown()->mBuilding.mList.create();
         mCreateStep = MAIN_FIELD_CREATE_STEP3;
     }
     if (mCreateStep == MAIN_FIELD_CREATE_STEP3) {

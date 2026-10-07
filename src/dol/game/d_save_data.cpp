@@ -14,7 +14,6 @@ void fn_80116900(dSaveExtra_c *extra);
 void fn_80117078(dSaveExtra_c *extra); // update checksum
 BOOL fn_801170B0(dSaveExtra_c *extra, int arg);
 
-u32 fn_8014B3CC();
 void fn_800FADE4();
 void fn_80101424();
 void fn_800CAC20();
@@ -299,8 +298,8 @@ BOOL dSaveData_c::isExtraGood(int arg) {
     if (version != dItem::BITM::getVersion()) {
         return FALSE;
     }
-    u32 stamp = _05EB04;
-    if (!(fn_8014B3CC() == stamp)) {
+    u32 stamp = mBuilding.mList.mChecksum;
+    if (!(mBuilding.mList.calcChecksum() == stamp)) {
         return FALSE;
     }
     return dSaveDLItemList_c::getRaw()->isChecksumOK() != FALSE;

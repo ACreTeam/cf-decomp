@@ -137,6 +137,8 @@ public:
     }
     // Every unit of a dFdBase_c's grid; the derived class sets mInfo (raccoCand_c).
     explicit dFdGutSearchCand_c(const dFdBase_c *fd) : dSearchCandXZCore_c(fd->mUnitW, fd->mUnitW, mBuf) {}
+    // The derived class sets mInfo (d_save_building's candidates).
+    dFdGutSearchCand_c(int width, int height) : dSearchCandXZCore_c(width, height, mBuf) {}
 
     /* 0x01C */ u32 mBuf[(BLOCK_X_NUM * UT_X_NUM * BLOCK_Z_NUM * UT_Z_NUM + 31) / 32];
     /* 0x63C */ dFdBase_c *mInfo;

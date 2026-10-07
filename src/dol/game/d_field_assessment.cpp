@@ -81,8 +81,6 @@ void fn_80169C38();
 void fn_80169BF4();
 void fn_800D11C8(dTime_c *last, int days);
 void fn_80081238(u16 *flags, int x, int z);
-void *fn_8014B6C8();
-BOOL fn_8014B474(void *fg, int x, int z);
 u32 fn_80081324(int type);
 void fn_80169AC4();
 void fn_80169ADC();
@@ -125,7 +123,6 @@ BOOL fn_8018EEEC();
 void fn_8018EEF4();
 void fn_8018EE7C();
 nw4r::math::VEC3 *fn_8016A28C();
-BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item *item, int);
 void fn_800755A0(int bg);
 f32 fn_80073510(const nw4r::math::VEC3 *pos);
 void fn_800D16E8();
@@ -1786,13 +1783,13 @@ BOOL killSaplingAt(dFdBase_c *fd, const int *pos, int x, int z, int *size) {
     return FALSE;
 }
 
-// 8009536C: a structure collision unit (dFdUnitAttr_c::STR_COL), occupied per fn_8014B474, no item
+// 8009536C: a structure collision unit (dFdUnitAttr_c::STR_COL), a build site (dSaveBuildingList_c::isBuildSite), no item
 // slot, or a grown tree (stage > 0). Also used by setupUnitMask and 80185F60.
 BOOL isBlockedUnit(dFdBase_c *fd, int x, int z) {
     if (fd->_24 != NULL && (fd->_24->getAttr(x, z) & dFdUnitAttr_c::STR_COL)) {
         return TRUE;
     }
-    if (fn_8014B474(fn_8014B6C8(), x, z)) {
+    if (dSaveBuildingList_c::get()->isBuildSite(x, z)) {
         return TRUE;
     }
     dItem::Item *item = fd->getItem(x, z, 0);
@@ -1806,11 +1803,11 @@ BOOL isBlockedUnit(dFdBase_c *fd, int x, int z) {
     return TRUE;
 }
 
-// 80095438: the unit's bg attribute is 0x57, 0x5B or 0x5C (a subset of the water-edge attributes
+// 80095438: the unit's bg attribute is BG_ATTR_CLIFF_N, CLIFF_NW or CLIFF_NE (a subset of the water-edge attributes
 // isLilyUnit checks). Also used by setupUnitMask and 80185F78.
 BOOL isPondEdgeUnit(dFdBase_c *fd, int x, int z) {
-    int attr = fd->bgCall_80072F80(x, z);
-    if (attr == 0x5B || attr == 0x5C || attr == 0x57) {
+    int attr = fd->getBgAttr(x, z);
+    if (attr == BG_ATTR_CLIFF_NW || attr == BG_ATTR_CLIFF_NE || attr == BG_ATTR_CLIFF_N) {
         return TRUE;
     }
     return FALSE;
@@ -2994,36 +2991,36 @@ BOOL dFgMngProc_c::isGroundUnit(dFdBase_c *fd, int x, int z) {
 // 80098CD0
 BOOL dFgMngProc_c::isLilyUnit(dFdBase_c *fd, int x, int z) {
     if (fd->isGrassGround(x, z)) {
-        int attr = fd->bgCall_80072F80(x, z);
-        if (attr >= 0x57 && attr <= 0x62) {
+        int attr = fd->getBgAttr(x, z);
+        if (attr >= BG_ATTR_CLIFF_N && attr <= BG_ATTR_CLIFF_SE2) {
             return TRUE;
         }
-        attr = fd->bgCall_80072F80(x - 1, z - 1);
-        if (attr == 0x5B || attr == 0x5F) {
+        attr = fd->getBgAttr(x - 1, z - 1);
+        if (attr == BG_ATTR_CLIFF_NW || attr == BG_ATTR_CLIFF_NW2) {
             return TRUE;
         }
-        if (fd->bgCall_80072F80(x, z - 1) == 0x57) {
+        if (fd->getBgAttr(x, z - 1) == BG_ATTR_CLIFF_N) {
             return TRUE;
         }
-        attr = fd->bgCall_80072F80(x + 1, z - 1);
-        if (attr == 0x5C || attr == 0x60) {
+        attr = fd->getBgAttr(x + 1, z - 1);
+        if (attr == BG_ATTR_CLIFF_NE || attr == BG_ATTR_CLIFF_NE2) {
             return TRUE;
         }
-        if (fd->bgCall_80072F80(x - 1, z) == 0x58) {
+        if (fd->getBgAttr(x - 1, z) == BG_ATTR_CLIFF_W) {
             return TRUE;
         }
-        if (fd->bgCall_80072F80(x + 1, z) == 0x5A) {
+        if (fd->getBgAttr(x + 1, z) == BG_ATTR_CLIFF_E) {
             return TRUE;
         }
-        attr = fd->bgCall_80072F80(x - 1, z + 1);
-        if (attr == 0x5D || attr == 0x61) {
+        attr = fd->getBgAttr(x - 1, z + 1);
+        if (attr == BG_ATTR_CLIFF_SW || attr == BG_ATTR_CLIFF_SW2) {
             return TRUE;
         }
-        if (fd->bgCall_80072F80(x, z + 1) == 0x59) {
+        if (fd->getBgAttr(x, z + 1) == BG_ATTR_CLIFF_S) {
             return TRUE;
         }
-        attr = fd->bgCall_80072F80(x + 1, z + 1);
-        if (attr == 0x5E || attr == 0x62) {
+        attr = fd->getBgAttr(x + 1, z + 1);
+        if (attr == BG_ATTR_CLIFF_SE || attr == BG_ATTR_CLIFF_SE2) {
             return TRUE;
         }
         return FALSE;
@@ -4177,7 +4174,7 @@ void fgMngProc_updateFrame() {
             } else {
                 dItem::Item item((u16)0xD013);
                 int x, z;
-                fn_8014B0F0(fn_8014B6C8(), &x, &z, &item, 1);
+                dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1);
                 dFdBase_c::getUnitCenterPos(&pos, x, z);
                 fn_800755A0(1);
                 pos.y = fn_80073510(&pos);

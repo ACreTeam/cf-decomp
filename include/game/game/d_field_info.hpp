@@ -7,6 +7,7 @@
 // including the border acres around it; FG_BLOCK_X_NUM x FG_BLOCK_Z_NUM of them are the usable
 // field (CF has no extra rows for the train tracks / ocean like GC's 7 x 10).
 
+#include <game/game/d_bg_attr.hpp>
 #include <types.h>
 
 // Units per block.
@@ -89,6 +90,9 @@ enum {
     // without it has a same-index variant with it (fn_80081514): the extra bridge from the public works
     // turns a block into that variant (dSaveMainField_c::buildBridge).
     FD_BLOCK_FLAG_BRIDGE = 0x8,
+    // The stone-paved plaza acre (block types 0x36..0x38, models m_stone / m_soil_stone); the fountain
+    // goes at its unit (7, 8) (dSaveBuildingList_c::setFountain).
+    FD_BLOCK_FLAG_PLAZA = 0x800,
 };
 
 // Per-block (acre) data of a dFdBase_c (d_field_block.cpp, 80080D7C..800811F4).
@@ -184,7 +188,7 @@ public:
     dItem::Item *getItem(int unitX, int unitZ, int layer) const;                         // 8008C850
     static void getUnitCenterPos(nw4r::math::VEC3 *pos, int unitX, int unitZ);          // 8008BED0
     int bgCall_80072D54(int unitX, int unitZ) const;                                     // 8008D2F0
-    int bgCall_80072F80(int unitX, int unitZ) const;                                     // 8008D348
+    int getBgAttr(int unitX, int unitZ) const;                                           // 8008D348: BG_ATTR_*
     int bgCall_80076260(int unitX, int unitZ);                                           // 8008CDF4
     void setBorderUnits();                                                               // 8008CE4C: bgCall_80076260 on the border ring
 

@@ -37,12 +37,6 @@ int fn_8008B91C();
 int fn_8008B924();
 int fn_80169124();
 void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
-BOOL fn_8014B0F0(void *fg, int *x, int *z, dItem::Item *item, int flags);
-struct dSceneBuildingInfo_c {
-    u8 _00[0xE];
-    u8 mFlags; // 0x0E
-};
-dSceneBuildingInfo_c *fn_80167FB4(int index);
 void *fn_801683CC();
 struct dSceneBuilding_c {
     u8 _00[0x1A];
@@ -964,12 +958,12 @@ static BOOL getBuildingExit(u16 building, u8 *scene, mVec3_c *pos, u32 *type, s1
                             int *blockZ) {
     u8 flags = 1;
     if (dItem::Item(building).isExtId()) {
-        flags = fn_80167FB4(dItem::Item(building).getExtIndex())->mFlags;
+        flags = fn_80167FB4(dItem::Item(building).getExtIndex())->mField;
     }
     dItem::Item item(building);
     int x, z;
     dSaveTown_c *save = dSaveData_c::getTown();
-    if (fn_8014B0F0(&save->_05EB04, &x, &z, &item, flags)) {
+    if (save->mBuilding.mList.getPos(&x, &z, &item, flags)) {
         dSceneBuilding_c *bld = fn_80167734(fn_801683CC(), building);
         if (bld != NULL) {
             if (flags & 1) {
