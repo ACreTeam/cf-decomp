@@ -2,6 +2,7 @@
 // First pass: written for equivalence, matching has not started.
 #include <game/game/d_date.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_post_office.hpp>
 #include <revolution/OS/OSTime.h>
 
 
@@ -10,7 +11,6 @@ extern "C" {
 BOOL fn_8014D054(dSaveTimeOffset_c *offset);
 BOOL fn_8014D064(dSaveTimeOffset_c *offset);
 void fn_8014D09C(dSaveTimeOffset_c *offset);
-void fn_8013F354(void *obj);
 }
 
 // 8047B150
@@ -144,7 +144,7 @@ void dTime_c::saveOffset() {
 // 8016D5A0
 void dTime_c::resetOffset() {
     if (isFlag(TIME_FLAG_ADJUSTED)) {
-        fn_8013F354(dSaveData_c::getExtra()->_189C38);
+        dPostBox_c::get()->scheduleDelivery();
     }
     fn_8014D054(&dSaveData_c::getTown()->mTimeOffset);
     clearFlag(TIME_FLAG_ADJUSTED);

@@ -9,7 +9,8 @@
 #include <game/game/d_event.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_insect_info.hpp>
-#include <game/cLib/c_math.hpp>
+#include <game/cLib/c_math.hpp>
+#include <game/game/d_post_office.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -22,8 +23,6 @@ void fn_800CBBB0(int slot, const dPersonalID_c *pid);          // 800CBBB0: play
 void fn_800CBC70(int slot, const dAnmPersonalID_c *animal);    // 800CBC70: villager name word
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter,
                 const dItem::Item *exclude, int excludeNum, int); // 800C60B4: random item
-BOOL fn_80102BBC(dMail_c *mail); // 80102BBC: hold at the post office
-void fn_80102C24(dMail_c *mail); // 80102C24: send to another town
 extern u8 lbl_8059FF80[];
 }
 
@@ -138,7 +137,7 @@ void dBugOff_c::sendResultLetters() {
                     dBugOffItemRange_c range(3, 0x1E);
                     fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
                     sMail.setPresent(present.mId, 0xFF);
-                    if (fn_80102BBC(&sMail)) {
+                    if (dPostOffice::add(&sMail)) {
                         getTownPlayer(i)->clearFlag0(BUG_OFF_FLAG0_ENTERED);
                     } else {
                         getTownPlayer(i)->mFutureSelfLetter.copy(&sMail);
@@ -148,7 +147,7 @@ void dBugOff_c::sendResultLetters() {
                 } else {
                     dPrivateData_c *player = getTownPlayer(i);
                     setupMail(&sMail, cM::rndInt(3) + 4, 12, &player->mPID, 0x14C);
-                    if (fn_80102BBC(&sMail)) {
+                    if (dPostOffice::add(&sMail)) {
                         getTownPlayer(i)->clearFlag0(BUG_OFF_FLAG0_ENTERED);
                     } else {
                         getTownPlayer(i)->mFutureSelfLetter.copy(&sMail);
@@ -173,7 +172,7 @@ void dBugOff_c::sendResultLetters() {
             dBugOffItemRange_c range(3, 0x1E);
             fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
             sMail.setPresent(present.mId, 0xFF);
-            fn_80102C24(&sMail);
+            dPostOffice::holdMail(&sMail);
         }
         mLettersSent = TRUE;
     }

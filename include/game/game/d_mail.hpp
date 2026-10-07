@@ -103,7 +103,7 @@ public:
     void clearFlags2();                  // 801174CC (same code as clearFlags)
     void setFlag(int bit);               // 801174D8
     void clearFlag(int bit);             // 801174F4
-    u8 isFlag(int bit);                  // 80117510
+    BOOL isFlag(int bit);                // 80117510
     BOOL isReadFlaggedInvite();          // 80117528: read && isFlaggedInvite
     BOOL isFlaggedInvite();              // 80117570: invite card with MAIL_38C_INVITE_FLAG
     BOOL isReadUnflaggedInvite();        // 801175D4: read invite card without MAIL_38C_INVITE_FLAG

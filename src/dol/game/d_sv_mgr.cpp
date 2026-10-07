@@ -6,6 +6,7 @@
 #include <game/mLib/m_fader.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_npc.hpp>
+#include <game/game/d_post_office.hpp>
 
 // TODO: Not linkable yet; every function matches, but the section layout does not.
 // - The target is likely two TUs. .text/.ctors/.bss put the boundary after
@@ -295,13 +296,13 @@ void dSvMgr_c::stepSaveNormal_c::waitWC24Send() {
 
 // 801BC824
 void dSvMgr_c::stepSaveNormal_c::startVillageMail() {
-    fn_80103094();
+    dPostOffice::startSend();
     nextStep();
 }
 
 // 801BC8C0
 void dSvMgr_c::stepSaveNormal_c::waitVillageMail() {
-    if (fn_801030D0()) {
+    if (dPostOffice::updateSend()) {
         dSaveData_c::get();
         fn_8010DDE0();
         nextStep();
@@ -378,8 +379,8 @@ void dSvMgr_c::executeSaveConnectNetHst() {
 // 801BD098
 void dSvMgr_c::stepSaveConnectNetHst_c::initializeSave() {
     if (fn_800DCF30() == 1) {
-        fn_80102AA4();
-        fn_80102AA4();
+        dPostOffice::deliverAll();
+        dPostOffice::deliverAll();
         dSvMgr_c::clearVisitors();
     }
     nextStep();

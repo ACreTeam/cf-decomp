@@ -8,12 +8,7 @@
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_item.hpp>
-
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-BOOL fn_801029C0(dMail_c *mail); // 801029C0: deliver to the mailbox
-BOOL fn_80102BBC(dMail_c *mail); // 80102BBC: hold at the post office
-}
+#include <game/game/d_post_office.hpp>
 
 // 805F0F18: lists the items of a kind for countDonated / getNthDonated.
 static dItem::seeker_c sSeeker;
@@ -49,9 +44,9 @@ void dMuseum_c::sendCompleteMail() {
         sMail.setupSystem(&sKind, "MAIL_NPC_hu-ta", (const u8 *)&sSender, &getTownPlayer(i)->mPID,
                           (const int *)&sPaper);
         sMail.setPresent(dItem::Item(dItem::ITEM_IDX_MUSEUM_MODEL).mId, 0xFF);
-        if (fn_801029C0(&sMail)) {
+        if (dPostOffice::deliverToPlayer(&sMail)) {
             getTownPlayer(i)->setFlag0(0x2F);
-        } else if (fn_80102BBC(&sMail)) {
+        } else if (dPostOffice::add(&sMail)) {
             getTownPlayer(i)->setFlag0(0x2F);
         }
     }

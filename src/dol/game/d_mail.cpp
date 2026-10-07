@@ -101,7 +101,7 @@ void dMail_c::clearFlag(int bit) {
 }
 
 // 80117510
-u8 dMail_c::isFlag(int bit) {
+BOOL dMail_c::isFlag(int bit) {
     return mSenderKind & (u8)(1 << bit);
 }
 

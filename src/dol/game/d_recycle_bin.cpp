@@ -69,4 +69,6 @@ BOOL dRecycleBin_c::add(u16 item) {
 }
 
 // 8015407C
-void dRecycleBin_c::fn_8015407C() {}
+u16 *dRecycleBin_c::getItems() {
+    return mItems;
+}

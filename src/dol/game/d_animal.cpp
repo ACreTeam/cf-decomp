@@ -20,6 +20,7 @@
 #include <game/game/d_insect_info.hpp>
 #include <cstring>
 #include <cstddef>
+#include <game/game/d_post_office.hpp>
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -2818,10 +2819,6 @@ u16 fn_800CBA40(const char *label);
 u16 fn_800CBA6C(const char *label);
 u16 fn_800CBA98(const char *label);
 u16 fn_800CBAC4(const char *label);
-int fn_80103BC8(dMail_c *mail);
-int fn_80103C10(dMail_c *mail);
-u16 fn_80103D24(dMail_c *mail);
-BOOL fn_80102BBC(dMail_c *mail);
 int fn_801017B8();
 }
 
@@ -3388,7 +3385,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         return FALSE;
     }
 
-    int kind = fn_80103C10(mail);
+    int kind = dPostOffice::getReplyType(mail);
     BOOL send = FALSE;
     int delta = 0;
     switch (kind) {
@@ -3398,7 +3395,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         u16 header = rndCount(fn_800CBA14(label));
         dItem::Item present;
         if (mail->getPresent() != dItem::ITEM_ID_NONE) {
-            switch (fn_80103BC8(mail)) {
+            switch (dPostOffice::getLengthType(mail)) {
             case 1: {
                 static dNpcPair_c sPair(3, 0);
                 fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
@@ -3421,10 +3418,10 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         }
 
         const char *body = present.mId != dItem::ITEM_ID_NONE ? sReSP2[looks] : sReSP1[looks];
-        u16 idx = fn_80103D24(mail);
+        int idx = dPostOffice::findSpecial(mail);
         u16 num = fn_800CBA40(body);
         u16 bodyIdx = idx;
-        if (idx >= num) {
+        if (bodyIdx >= num) {
             bodyIdx = rndCount(num);
         }
         dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
@@ -3462,7 +3459,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         u16 a = rndCount(num);
         dItem::Item present;
         if (mail->getPresent() != dItem::ITEM_ID_NONE) {
-            switch (fn_80103BC8(mail)) {
+            switch (dPostOffice::getLengthType(mail)) {
             case 1: {
                 static dNpcPair_c sPair(3, 0);
                 fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
@@ -3512,7 +3509,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         }
     }
 
-    if (send && fn_80102BBC(&sMail)) {
+    if (send && dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -3646,8 +3643,6 @@ u8 *fn_800AC28C();
 u16 fn_800CBA14(const char *label);
 u16 fn_800CBA40(const char *label);
 u16 fn_800CBA6C(const char *label);
-BOOL fn_801029C0(dMail_c *mail);
-BOOL fn_80102BBC(dMail_c *mail);
 extern u8 lbl_8059FF80[];
 }
 
@@ -3824,10 +3819,10 @@ BOOL dAnimal_c::sendErrandThanksLetter(const dPersonalID_c *to, dAnmPersonalID_c
         sMail.setPresent(present->mId, 0xFF);
     }
 
-    if (tryDirect && fn_801029C0(&sMail)) {
+    if (tryDirect && dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -4842,10 +4837,10 @@ BOOL dAnimal_c::sendSickThanksLetter(const dPersonalID_c *to, const dItem::Item 
         sMail.setPresent(present->mId, 0xFF);
     }
 
-    if (tryDirect && fn_801029C0(&sMail)) {
+    if (tryDirect && dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -4860,8 +4855,6 @@ u16 fn_800CBA14(const char *label); // letter part counts
 u16 fn_800CBA40(const char *label);
 u16 fn_800CBA6C(const char *label);
 void fn_800CBEB4(int slot, int value);
-BOOL fn_801029C0(dMail_c *mail);
-BOOL fn_80102BBC(dMail_c *mail);
 int fn_800BA890(const dItem::Item *item);
 u32 fn_800DCF30();
 u32 fn_80169298();
@@ -5035,10 +5028,10 @@ BOOL dAnimal_c::sendTunekichiLetter(const dPersonalID_c *to, BOOL invite, BOOL f
     }
 
     if (flag) {
-        if (fn_80102BBC(&sMail)) {
+        if (dPostOffice::add(&sMail)) {
             return TRUE;
         }
-    } else if (fn_801029C0(&sMail)) {
+    } else if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -5082,10 +5075,10 @@ BOOL dAnimal_c::sendBirthdayLetter(const dPersonalID_c *to, const dItem::Item *p
         sMail.setPresent(present->mId, hi);
     }
 
-    if (fn_801029C0(&sMail)) {
+    if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -5130,10 +5123,10 @@ BOOL dAnimal_c::sendValentineLetter(const dPersonalID_c *to, const dItem::Item *
         sMail.setPresent(present->mId, hi);
     }
 
-    if (fn_801029C0(&sMail)) {
+    if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -5171,10 +5164,10 @@ BOOL dAnimal_c::sendNewYearLetter(const dPersonalID_c *to, int year) {
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
 
-    if (fn_801029C0(&sMail)) {
+    if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -5228,10 +5221,10 @@ BOOL dAnimal_c::sendMoveLetter(const dPersonalID_c *to) {
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
 
-    if (fn_801029C0(&sMail)) {
+    if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -8124,8 +8117,6 @@ u16 fn_800CBA14(const char *label); // header variants of a mail label
 u16 fn_800CBA40(const char *label); // body variants
 u16 fn_800CBA6C(const char *label); // footer variants
 void fn_800CBCD4(int slot, dScript::Word_c *word);
-BOOL fn_801029C0(dMail_c *mail);
-BOOL fn_80102BBC(dMail_c *mail);
 extern u8 lbl_8059FF80[];
 }
 
@@ -8315,10 +8306,10 @@ BOOL dAnimalBlock_c::sendStyleLetter(const dPersonalID_c *pid0, const dPersonalI
     if (present->mId != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present->mId, 0xFF);
     }
-    if (flag && fn_801029C0(&sMail)) {
+    if (flag && dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -8642,10 +8633,10 @@ BOOL sendPresentLetter(const char *label, const dPersonalID_c *to, dAnmPersonalI
     sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, id, to, &paper);
     dItem::Item item = *present;
     sMail.setPresent(item.mId, 0xFF);
-    if (fn_801029C0(&sMail)) {
+    if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -9103,10 +9094,10 @@ BOOL sendQ10Letter(const dPersonalID_c *to, dAnmPersonalID_c *id, const dItem::I
     sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, id, to, &paper);
     dItem::Item item = *present;
     sMail.setPresent(item.mId, 0xFF);
-    if (flag && fn_801029C0(&sMail)) {
+    if (flag && dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
     }
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;
@@ -10284,7 +10275,6 @@ extern "C" {
 extern dUnk8074EBE8_c *lbl_8074EBE8;
 u16 fn_800CBA98(const char *label);
 u16 fn_800CBAC4(const char *label);
-BOOL fn_80102BBC(dMail_c *mail);
 
 // This chunk, used before their definitions.
 }
@@ -11526,7 +11516,7 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
         sMail.setPresent(present, 0xFF);
     }
 
-    if (fn_80102BBC(&sMail)) {
+    if (dPostOffice::add(&sMail)) {
         return TRUE;
     }
     return FALSE;

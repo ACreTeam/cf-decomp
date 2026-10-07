@@ -13,6 +13,7 @@
 #include <revolution/OS/OSTime.h>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_npc_notice.hpp>
+#include <game/game/d_post_office.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -28,8 +29,6 @@ void fn_8013EE54(void *);
 
 // dMail_c.
 int fn_800CBE0C(int, int, int, int);
-BOOL fn_801029C0(dMail_c *mail);
-BOOL fn_80102BBC(dMail_c *mail);
 
 // dDesign_c.
 
@@ -468,9 +467,9 @@ void dPrivateData_c::fn_801371DC() {
     mail.clear();
     mail.setupSystem(&lbl_8074B090, "MAIL_ETC_ATM", (const u8 *)&lbl_8074B092, &mPID, (const int *)&lbl_8074B094);
     mail.setPresent(dItem::Item(dItem::ITEM_IDX_TOWN_HALL_MODEL).mId, 0xFF);
-    if (fn_801029C0(&mail)) {
+    if (dPostOffice::deliverToPlayer(&mail)) {
         setFlag0(0x6C);
-    } else if (fn_80102BBC(&mail)) {
+    } else if (dPostOffice::add(&mail)) {
         setFlag0(0x6C);
     }
 }
@@ -493,9 +492,9 @@ void dPrivateData_c::fn_8013760C() {
         range[1] = 0x19;
         fn_800C60B4(&present, 1, range, 1, lbl_8059FF80, 0, 0, 0);
         mail.setPresent(present.mId, 0xFF);
-        if (fn_801029C0(&mail)) {
+        if (dPostOffice::deliverToPlayer(&mail)) {
             clearFlag0(0x4A);
-        } else if (fn_80102BBC(&mail)) {
+        } else if (dPostOffice::add(&mail)) {
             clearFlag0(0x4A);
         }
     }
@@ -514,7 +513,7 @@ BOOL dPrivateData_c::sendLetter(u16 kind, const dItem::Item *present, dPrivateDa
     if (dItem::isRealItemId(item.mId)) {
         mail.setPresent(item.mId, 0xFF);
     }
-    if (fn_80102BBC(&mail)) {
+    if (dPostOffice::add(&mail)) {
         return TRUE;
     }
     return FALSE;
@@ -669,7 +668,7 @@ void dPrivateData_c::dailyUpdate(int days) {
         }
         fn_8013C878();
     }
-    if (isFlag0(0x72) && fn_80102BBC(&mFutureSelfLetter)) {
+    if (isFlag0(0x72) && dPostOffice::add(&mFutureSelfLetter)) {
         clearFlag0(0x72);
     }
     _83CA = dItem::Item();

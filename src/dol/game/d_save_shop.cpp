@@ -19,6 +19,7 @@
 #include <game/game/d_npc_notice.hpp>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
+#include <game/game/d_post_office.hpp>
 
 extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
@@ -39,8 +40,6 @@ void fn_800CBAF0(int slot, int month);                    // 800CBAF0: month nam
 void fn_800CBB50(int slot, u8 day);                       // 800CBB50: day word
 void fn_800CBDA0(int slot, const dItem::Item *item);      // 800CBDA0: item name word
 void fn_800CBFE0(u8 hour, int slot, int);                 // 800CBFE0: hour word
-BOOL fn_80102BBC(dMail_c *mail);                          // 80102BBC: hold at the post office
-BOOL fn_801029C0(dMail_c *mail);                          // 801029C0: deliver to the mailbox
 void *fn_801683D8();                                      // 801683D8
 void fn_80167BAC(void *);                                 // 80167BAC: reloads the structures' unit attributes
 }
@@ -355,7 +354,7 @@ void dSaveShop_c::updateMail(int days) {
     dTimeStamp_c today(dTime_c::getCurrent());
     today.toDayStart();
 
-    if (today.get().month == 9) {
+    if (today.get().month == MONTH_OCTOBER) {
         if (mOctoberDate.isNone() || mOctoberDate.get().year != today.get().year) {
             for (int i = 0; i < PLAYER_NUM; i++) {
                 dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
@@ -367,7 +366,7 @@ void dSaveShop_c::updateMail(int days) {
             mOctoberDate.toDayStart();
         }
     }
-    if (today.get().month == 11 && today.get().mday >= 15 && today.get().mday <= 24) {
+    if (today.get().month == MONTH_DECEMBER && today.get().mday >= 15 && today.get().mday <= 24) {
         if (mDecemberDate.isNone() || mDecemberDate.get().year != today.get().year) {
             for (int i = 0; i < PLAYER_NUM; i++) {
                 dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
@@ -395,7 +394,7 @@ void dSaveShop_c::updateMail(int days) {
             dItem::Item gift(dItem::ITEM_IDX_NOOKS_CRANNY);
             fn_800CBDA0(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
-            if (fn_80102BBC(&sMail)) {
+            if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x33);
             }
         }
@@ -407,7 +406,7 @@ void dSaveShop_c::updateMail(int days) {
             dItem::Item gift(dItem::ITEM_IDX_NOOK_N_GO);
             fn_800CBDA0(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
-            if (fn_80102BBC(&sMail)) {
+            if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x34);
             }
         }
@@ -419,7 +418,7 @@ void dSaveShop_c::updateMail(int days) {
             dItem::Item gift(dItem::ITEM_IDX_NOOKWAY);
             fn_800CBDA0(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
-            if (fn_80102BBC(&sMail)) {
+            if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x35);
             }
         }
@@ -431,7 +430,7 @@ void dSaveShop_c::updateMail(int days) {
             dItem::Item gift(dItem::ITEM_IDX_NOOKINGTONS);
             fn_800CBDA0(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
-            if (fn_80102BBC(&sMail)) {
+            if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x36);
             }
         }
@@ -443,37 +442,37 @@ void dSaveShop_c::updateMail(int days) {
             dItem::Item gift(dItem::ITEM_IDX_SILVER_CAN);
             fn_800CBDA0(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
-            if (fn_80102BBC(&sMail)) {
+            if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x18);
             }
         }
 
         if (days != 0 && player->isFlag0(0x56) && !player->isFlag0(0xD)) {
-            if (today.get().month != 9) {
+            if (today.get().month != MONTH_OCTOBER) {
                 player->clearFlag0(0x56);
             } else {
                 static const u16 kind = 1;
                 static const u8 sender[2] = {0x0E, 0x00};
                 static const int paper = 0x17C;
                 sMail.setupSystem(&kind, "MAIL_NPC_Pumpking", sender, &player->mPID, &paper);
-                if (fn_801029C0(&sMail)) {
+                if (dPostOffice::deliverToPlayer(&sMail)) {
                     player->clearFlag0(0x56);
-                } else if (fn_80102BBC(&sMail)) {
+                } else if (dPostOffice::add(&sMail)) {
                     player->clearFlag0(0x56);
                 }
             }
         }
         if (days != 0 && player->isFlag0(0x84) && !player->isFlag0(0xD)) {
-            if (today.get().month != 11 || today.get().mday < 15 || today.get().mday > 24) {
+            if (today.get().month != MONTH_DECEMBER || today.get().mday < 15 || today.get().mday > 24) {
                 player->clearFlag0(0x84);
             } else {
                 static const u16 kind = 2;
                 static const u8 sender[2] = {0x12, 0x00};
                 static const int paper = 0x162;
                 sMail.setupSystem(&kind, "MAIL_NPC_Pumpking", sender, &player->mPID, &paper);
-                if (fn_801029C0(&sMail)) {
+                if (dPostOffice::deliverToPlayer(&sMail)) {
                     player->clearFlag0(0x84);
-                } else if (fn_80102BBC(&sMail)) {
+                } else if (dPostOffice::add(&sMail)) {
                     player->clearFlag0(0x84);
                 }
             }
@@ -607,7 +606,7 @@ void dSaveShop_c::update() {
     }
 
     int seasonal = 0;
-    if (today.get().month == 11) {
+    if (today.get().month == MONTH_DECEMBER) {
         if (today.get().mday >= 1 && today.get().mday <= 23) {
             if (getRegion() == 1) {
                 if (cM::rndInt(2) == 0) {
@@ -627,7 +626,7 @@ void dSaveShop_c::update() {
                 seasonal = 0x2B;
             }
         }
-    } else if (getRegion() == 0 && today.get().month == 2 && today.get().mday >= 1 && today.get().mday <= 3) {
+    } else if (getRegion() == 0 && today.get().month == MONTH_MARCH && today.get().mday >= 1 && today.get().mday <= 3) {
         seasonal = 0x53;
     }
     if (seasonal != 0) {
@@ -840,7 +839,7 @@ void dSaveShop_c::stockTools() {
     today.toDayStart();
 
     for (u32 i = 0; i < getToolNum(); i++) {
-        if (i == 0 && today.get().month == 9) {
+        if (i == 0 && today.get().month == MONTH_OCTOBER) {
             dItem::Item item;
             int range[2];
             range[0] = 0x30;

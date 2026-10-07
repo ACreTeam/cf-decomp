@@ -229,5 +229,9 @@ int getStringLength(const wchar_t *text, u32 maxSize, int breakOnNewLine); // 80
 BOOL isHiragana(wchar_t c); // 80155D9C
 BOOL isKatakana(wchar_t c); // 80155DD0
 BOOL isAlpha(wchar_t c); // 80155E6C
+bool toLower(wchar_t *c); // 80156368
+int getLineLength(const u16 *text, u32 maxSize); // 801579C0
+Bank_c *getBank(); // 80157B30
+void *getBmgFile(Bank_c *bank, const char *name); // 80157BA0
 
 } // namespace dScript

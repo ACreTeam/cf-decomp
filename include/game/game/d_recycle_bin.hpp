@@ -18,7 +18,7 @@ public:
     u16 get(int slot); // 80153FA0
     void set(int slot, u16 item); // 80153FAC
     BOOL add(u16 item); // 80153FB8: first free slot; not insects, fish or items without kind flag 4
-    void fn_8015407C(); // 8015407C: empty
+    u16 *getItems(); // 8015407C: mItems (at offset 0, so just blr)
 
     /* 0x00 */ u16 mItems[RECYCLE_BIN_ITEM_NUM];
 }; // size 0x18
