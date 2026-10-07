@@ -188,7 +188,8 @@ public:
     /* 0x0735AE */ u8 _0735AE;               // fn_8015384C's object starts here
     /* 0x0735AF */ dItem::dSaveItemRarity_c mItemRarity;
     /* 0x0735B7 */ u8 _0735B7[0xB];         // fn_801541D8
-    /* 0x0735C2 */ u8 _0735C2;              // low nibble read by d_item
+    /* 0x0735C2 */ u8 _0735C2;              // low nibble: region (getRegion() value, dSaveData_c::getTownRegion);
+                                            // high nibble: language (LANGUAGE_*, dSaveData_c::getTownLanguage)
     /* 0x0735C3 */ u8 mFlags[8];           // town flags, bits 0..63 (SAVE_FLAG_*, isFlag / setFlag / clearFlag)
     /* 0x0735CB */ u8 mPublicWorksDays;     // days left in the public works vote; 0xFF = none
     /* 0x0735CC */ u8 mNewConstruction;     // NEW_CONSTRUCTION_*

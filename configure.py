@@ -639,7 +639,7 @@ config.libs = [
             Object(NonMatching, "dol/game/d_npc.cpp", extra_cflags=["-sym on"]),
             Object(NonMatching, "dol/game/d_player_mgr.cpp"),
             Object(NonMatching, "dol/game/d_post_office.cpp"),
-            Object(NonMatching, "dol/game/d_prc_mng.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_prc_mng.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_random_field.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_rec_bank.cpp"),
             Object(Matching, "dol/game/d_region.cpp"),

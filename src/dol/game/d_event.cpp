@@ -695,7 +695,7 @@ BOOL getFrMothersDayDate(dTime_c *out, const int &year) {
 // 800895E0
 BOOL isMothersDay(const dTime_c *t, const u8 *a, const u8 *b) {
     dTime_c date;
-    switch (dSaveData_c::getSaveRegion()) {
+    switch (dSaveData_c::getTownLanguage()) {
     case LANGUAGE_ES:
         date.month = MONTH_MAY;
         date.mday = dTime_c::getNthWeekday(t->year, MONTH_MAY, 0, 1);
@@ -744,7 +744,7 @@ BOOL getAscensionDayDate(dTime_c *out, const int &year) {
 // 800897B0
 BOOL isFathersDay(const dTime_c *t, const u8 *a, const u8 *b) {
     dTime_c date;
-    switch (dSaveData_c::getSaveRegion()) {
+    switch (dSaveData_c::getTownLanguage()) {
     case LANGUAGE_ES:
     case LANGUAGE_IT:
         date.month = MONTH_MARCH;

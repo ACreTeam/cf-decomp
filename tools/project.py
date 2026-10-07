@@ -1590,9 +1590,9 @@ def generate_objdiff_config(
             "*.pch++",
             "*.inc",
             "*.py",
-            "*.yml",
-            "*.txt",
-            "*.json",
+            # No *.yml / *.txt / *.json: dtk split rewrites those during the build, so watching
+            # them made objdiff's auto-build retrigger itself (and race other ninja runs). Rebuild
+            # manually after editing config files (symbols.txt, splits.txt, config.yml).
         ],
         "units": [],
         "progress_categories": [],

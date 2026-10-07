@@ -21,6 +21,7 @@ public:
     void *request(const char *path, u8 mountDirection, void *heap); // 80085EF4: the data once loaded, else NULL
     s32 getSize() const; // 8008611C
     void *getData() const { return mpData; }
+    s32 getStatus() const { return mStatus; } // the file size once loaded
 
 protected:
     void *mpCommand; // 0x08

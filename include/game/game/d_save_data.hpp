@@ -89,9 +89,10 @@ struct dSaveDistMail_c {
     /* 0x4 */ dMail_c mMail;
 }; // size 0x394
 
-// 0xC800-byte downloaded blob (dSaveExtra_c+0x8A960; clear fn_8010EEB4, set fn_8010EF10).
+// Downloaded NG-word patterns, up to 0xC800 bytes (dSaveExtra_c+0x8A960; clear fn_8010EEB4,
+// set fn_8010EF10). dPrcMng_c prefers them to the disc's /PRC/<region>.bin.
 struct dSaveDistBlock_c {
-    /* 0x0000 */ u32 _0000;
+    /* 0x0000 */ s32 mSize; // 0 = none
     /* 0x0004 */ u8 mData[0xC800];
 }; // size 0xC804
 
@@ -178,7 +179,13 @@ public:
         return getTown()->mRecycleBin.add(copy.mId);
     }
 
-    static inline int getSaveRegion() {
+    static dSaveExtra_c *getRawExtra() { return &getRaw()->mExtra; }
+
+    // The region the town was made in (getRegion() value); dPrcMng_c ignores downloaded patterns otherwise.
+    static int getTownRegion() { return dSaveData_c::getRaw()->_0735C2 & 0xF; }
+
+    // The town's language (LANGUAGE_*); events and holidays follow it.
+    static inline int getTownLanguage() {
         return (dSaveData_c::getRaw()->_0735C2 >> 4) & 0xF;
     }
 
