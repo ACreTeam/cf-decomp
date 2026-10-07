@@ -23,6 +23,7 @@
 #include <game/game/d_save_visitor_npc.hpp>
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_land.hpp>
+#include <game/game/d_sv_auc.hpp>
 #include <game/game/d_save_building.hpp>
 
 // Saved game-clock offset (fn_8014D054 / fn_8014D064 / fn_8014D07C / fn_8014D09C).
@@ -30,12 +31,6 @@ struct dSaveTimeOffset_c {
     /* 0x0 */ s64 mOffset; // dTime_c::sOffset
     /* 0x8 */ u8 _8[8];
 }; // size 0x10
-
-// 0x78 record (ctor fn_8010EB50: Item = none, then fn_8010A758).
-struct dSaveRecord78_c {
-    /* 0x00 */ dItem::Item mItem;
-    /* 0x02 */ u8 _02[0x76];
-}; // size 0x78
 
 // Skeleton members whose classes live in unsplit TUs. Their constructors keep the target's C names
 // until those TUs are split; the inline ctors reproduce the calls dSaveData_c::create makes.
@@ -105,6 +100,21 @@ enum {
     SAVE_FLAG_BUS_NET_EVENT_DONE = 0x1F, // set by the player-create NPC REL after its scene on the bus to the city
 };
 
+// Town block at 0x640C8 (methods in the unsplit code at 8014EB3C..: fn_8014EB3C init, fn_8014EFC0,
+// fn_8014F030, fn_8014F0A4, fn_8014F248). Holds the auction's featured downloaded item: one object,
+// since the target reaches the flag byte and mDLItem from one base.
+struct dSaveTown640C8_c {
+    /* 0x000 */ u8 _000;
+    /* 0x001 */ u8 mFlags;                // 0x20: dSvAuc_c::pickDLItem set mDLItem
+    /* 0x002 */ dOutfit_c _002;
+    /* 0x00E */ u8 _00E[0x116];
+    /* 0x124 */ u8 _124;                  // bitfield byte, cleared by the ctor
+    /* 0x125 */ u8 _125;
+    /* 0x126 */ u8 _126[2];
+    /* 0x128 */ dModelRoom_c _128;
+    /* 0x674 */ dSaveDLItem_c mDLItem;
+}; // size 0x2674
+
 class dSaveTown_c {
 public:
     BOOL isHeaderVersionOK();             // 80115CDC
@@ -123,6 +133,7 @@ public:
     void clearFlag(int idx);              // 80116540
     static BOOL isBusNetEventPending();   // 80116570: WiiConnect24 connected and SAVE_FLAG_BUS_NET_EVENT_DONE not set
     void backupFlag6();                   // 801165B8: SAVE_FLAG_FLAG6_BACKUP = flag 6
+    dSvAuc_c *getAuction() { return (dSvAuc_c *)mAuctionItems; }
 
     /* 0x000000 */ dSaveCheck_c mHeader;
     /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
@@ -142,15 +153,13 @@ public:
     /* 0x0634F0 */ dBugOff_c mBugOff;          // Bug-Off standings (d_bug_off)
     /* 0x0636F0 */ dModelRoom_c _0636F0;
     /* 0x063C3C */ u8 _063C3C[4];
-    /* 0x063C40 */ dSaveRecord78_c _063C40[9]; // then fn_8010C0A4 on the array
-    /* 0x064078 */ u8 _064078[0x52];
-    /* 0x0640CA */ dOutfit_c _0640CA;
-    /* 0x0640D6 */ u8 _0640D6[0x116];
-    /* 0x0641EC */ u8 _0641EC;              // bitfield byte, cleared by the ctor
-    /* 0x0641ED */ u8 _0641ED;
-    /* 0x0641EE */ u8 _0641EE[2];
-    /* 0x0641F0 */ dModelRoom_c _0641F0;
-    /* 0x06473C */ dSaveDLItem_c _06473C;
+    // The auction (d_sv_auc): items, their senders, day and day type; dSvAuc_c describes the whole
+    // block (getAuction). Kept as plain members: a wrapper member adds a destructor to our d_save_data.
+    // The target's town constructor builds the items then calls dSvAuc_c::clear here, so the original
+    // may well have had a dSvAuc_c member (see notes/d_sv_auc.txt).
+    /* 0x063C40 */ dSvAucItem_c mAuctionItems[9];
+    /* 0x064078 */ u8 mAuctionData[0x50];      // dSvAuc_c::mTags, mDay, mDayType
+    /* 0x0640C8 */ dSaveTown640C8_c _0640C8;
     /* 0x06673C */ u8 _06673C[3];
     /* 0x06673F */ u8 _06673F;
     /* 0x066740 */ u8 _066740[0xA];

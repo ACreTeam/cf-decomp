@@ -827,13 +827,10 @@ BOOL dSaveShop_c::isSold(int slot) {
 // 80146434
 void dSaveShop_c::stockTools() {
     u8 used[7];
-    used[0] = FALSE;
-    used[1] = FALSE;
-    used[2] = FALSE;
-    used[3] = FALSE;
-    used[4] = FALSE;
-    used[5] = FALSE;
-    used[6] = FALSE;
+
+    for (int i = 0; i < 7; i++) {
+        used[i] = FALSE;
+    }
     BOOL october = FALSE;
     dTimeStamp_c today(dTime_c::getCurrent());
     today.toDayStart();

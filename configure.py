@@ -644,6 +644,7 @@ config.libs = [
             Object(Matching, "dol/game/d_rec_bank.cpp"),
             Object(Matching, "dol/game/d_region.cpp"),
             Object(Matching, "dol/game/d_random.cpp"),
+            Object(NonMatching, "dol/game/d_sv_auc.cpp"),
             Object(NonMatching, "dol/game/d_save_data.cpp"),
             Object(Matching, "dol/game/d_dsn.cpp"),
             Object(Matching, "dol/game/d_save_visitor_npc.cpp"),

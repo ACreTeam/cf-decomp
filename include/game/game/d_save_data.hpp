@@ -121,6 +121,10 @@ struct dSaveUnk1CE_c {
 // (saved patterns, saved letters) and WiiConnect24 / distribution data, mostly
 // used by the code at 801769B4..8017B858. The name is inferred.
 struct dSaveExtra_c {
+    dSvAucList_c *getAucListings() { return (dSvAucList_c *)_089734; }
+    dSvAucList_c *getAucBids() { return (dSvAucList_c *)_089918; }
+    dSvAucList_c *getAucSales() { return (dSvAucList_c *)_089AFC; }
+
     /* 0x000000 */ u8 _000000[4];
     /* 0x000004 */ u8 mNetEnabled;          // gates all distribution handling
     /* 0x000005 */ u8 _000005[0x1B];
@@ -134,12 +138,14 @@ struct dSaveExtra_c {
     /* 0x000A80 */ dSaveDesignBox_c mSavedPatterns[PLAYER_NUM];
     /* 0x088B00 */ dSaveDistPattern_c mDistPattern;
     /* 0x0893A0 */ dSaveDistMail_c mDistMail;
+    // Auction records for other towns (d_sv_auc): each header + items is a dSvAucList_c (getAucListings
+    // / getAucBids / getAucSales). Kept as plain members, like dSaveTown_c::mAuctionItems.
     /* 0x089734 */ u8 _089734[4];
-    /* 0x089738 */ dSaveRecord78_c _089738[4];
+    /* 0x089738 */ dSvAucItem_c mAucListings[4];
     /* 0x089918 */ u8 _089918[4];
-    /* 0x08991C */ dSaveRecord78_c _08991C[4];
+    /* 0x08991C */ dSvAucItem_c mAucBids[4];
     /* 0x089AFC */ u8 _089AFC[4];
-    /* 0x089B00 */ dSaveRecord78_c _089B00[4];
+    /* 0x089B00 */ dSvAucItem_c mAucSales[4];
     /* 0x089CE0 */ u8 _089CE0[0x360];       // received-message manager (fn_8014DD14, fn_8014E920, ...)
     /* 0x08A040 */ dLandID_c mSenderLands[100]; // fn_801795C4
     /* 0x08A8D8 */ u8 _08A8D8[0x64];

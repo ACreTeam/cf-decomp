@@ -158,7 +158,7 @@ BOOL dSaveMainField_c::buildBridge() {
                 *(u32 *)&town->_05EC78[4] = 0;
                 dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_BRIDGE, mBridgeBlockX, mBridgeBlockZ);
                 mBridgeBlockX = mBridgeBlockZ = -1;
-                fn_8014F0A4(&dSaveData_c::getTown()->_064078[0x50]);
+                fn_8014F0A4(&dSaveData_c::getTown()->_0640C8);
                 return TRUE;
             }
             return FALSE;

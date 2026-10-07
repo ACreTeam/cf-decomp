@@ -15,9 +15,7 @@ void fn_801505E4(void *obj);
 void fn_80150628(void *obj);
 void fn_801510A0(void *obj);
 void fn_80150BDC(void *obj);
-void fn_8010C0A4(void *obj);
 void fn_80150E74(void *obj, int player);
-void fn_8010CDCC(void *obj, int player);
 void fn_80150088(void *obj, int player);
 int fn_80177C0C();
 }
@@ -84,7 +82,7 @@ void dSaveTown_c::clearTown() {
     mMuseum.init();
     fn_801503E4(&_0683F8);
     mAnimals.clear();
-    fn_8014EB3C(&_064078[0x50]);
+    fn_8014EB3C(&_0640C8);
     fn_80150524(_06673C);
     fn_801505E4(&_066740[1]);
     fn_80150628(&_066740[5]);
@@ -93,7 +91,7 @@ void dSaveTown_c::clearTown() {
     mNoticeBoard.clear();
     fn_80150BDC(&_072E0A);
     mVillageMelody.clear();
-    fn_8010C0A4(_063C40);
+    getAuction()->clear();
     mItemVersion = dItem::BITM::getVersion();
     _072CEE.clear();
     setNewConstruction(NEW_CONSTRUCTION_NONE, 0, 0);
@@ -109,7 +107,7 @@ void dSaveTown_c::deletePlayer(int player) {
     mMuseum.deletePlayer(player);
     fn_80150E74(&_072E0A, player);
     dPrivateData_c::clearPlayer(mPlayers, player);
-    fn_8010CDCC(_063C40, player);
+    getAuction()->deletePlayer(player);
     mNoticeBoard.clearRead(player);
     fn_80150088(&_05EC64, player);
 

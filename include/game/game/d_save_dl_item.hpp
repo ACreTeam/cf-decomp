@@ -33,9 +33,11 @@ public:
 
     union {
         dItem::BITM mBITM;
-        u8 mData[0x1FFC];
+        struct {
+            u8 mData[0x1FFC];
+            /* 0x1FFC */ u32 mChecksum;
+        };
     };
-    /* 0x1FFC */ u32 mChecksum;
 }; // size 0x2000
 
 // All downloaded items of the save (dSaveData_c::mDLItems, save + 0x20F320): a CRC32 over the

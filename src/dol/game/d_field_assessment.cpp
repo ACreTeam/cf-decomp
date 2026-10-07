@@ -101,8 +101,6 @@ void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
 void fn_8014FD48(void *obj, dTime_c last, dTime_c *now, int *days);
 void fn_80151CF0(void *obj);
-void *fn_8010D6BC();
-void fn_8010C808(void *obj, int a, int b, int c);
 BOOL fn_8014D740(void *obj);
 void fn_8014D69C(void *obj);
 void fn_800F5AE8();
@@ -141,7 +139,6 @@ void fn_800C77B8(int player);
 void fn_800C77D0(int player);
 void fn_800C7818(int player);
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
-extern int lbl_8074AFF8;
 extern void *lbl_8074E9A0[2];
 extern u16 *lbl_8074E800;
 }
@@ -3977,7 +3974,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     int days = dTime_c::diffDays(&today, &last, TRUE);
     if (days != 0) {
         dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_NONE, 0, 0);
-        fn_8014F248(&dSaveData_c::getTown()->_064078[0x50], days);
+        fn_8014F248(&dSaveData_c::getTown()->_0640C8, days);
         dFgMngProc_c::clearFg94();
     }
     dEvent::updateSchedule(today, days != 0);
@@ -4008,7 +4005,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     dSaveData_c::getTown()->mBugOff.checkDay();
     dSaveData_c::getTown()->mShops.processDays(days);
     if (days != 0) {
-        fn_8010C808(fn_8010D6BC(), 5, lbl_8074AFF8, 0);
+        dSvAuc_c::get()->update(5, dSvAuc_c::sToday, NULL);
     }
     if (days >= 1) {
         sFgMngProc.processDays(&last, &today, days, dSaveData_c::getRaw()->isFlag(6), arg);
@@ -4114,9 +4111,9 @@ void fgMngProc_procDayChange(BOOL arg) {
     }
     fn_80186838();
     u32 v = dSaveData_c::getTown()->mShops.mShop.mStage;
-    fn_8014F030(&dSaveData_c::getTown()->_064078[0x50], v);
+    fn_8014F030(&dSaveData_c::getTown()->_0640C8, v);
     dSaveTown_c *town = dSaveData_c::getTown();
-    fn_8014EFC0(&town->_064078[0x50], fgMngProc_assessLiveTown());
+    fn_8014EFC0(&town->_0640C8, fgMngProc_assessLiveTown());
     sFgMngRandom = NULL;
     if (days != 0) {
         fn_800ECC78();

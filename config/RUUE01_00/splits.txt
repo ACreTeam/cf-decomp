@@ -191,6 +191,23 @@ dol/game/d_region.cpp:
 dol/game/d_random.cpp:
 	.text       start:0x80107D6C end:0x80107F00
 
+dol/game/d_s_boot_static.cpp:
+	.text       start:0x80107F00 end:0x8010A120
+	.ctors      start:0x8046570C end:0x80465710
+	.data       start:0x804EDA08 end:0x804EE300 align:4
+	.bss        start:0x805EBD90 end:0x805EC1A8 align:4
+	.sdata      start:0x8074AF48 end:0x8074AFF8 align:4
+	.sbss       start:0x8074E648 end:0x8074E6C0 align:4
+	.sdata2     start:0x80750AC0 end:0x80750AD0 align:4
+
+dol/game/d_sv_auc.cpp:
+	.text       start:0x8010A120 end:0x8010D7E8
+	.ctors      start:0x80465710 end:0x80465714
+	.data       start:0x804EE300 end:0x804EE330 align:4
+	.bss        start:0x805EC1A8 end:0x805EC5D0 align:4
+	.sdata      start:0x8074AFF8 end:0x8074B010 align:4
+	.sbss       start:0x8074E6C0 end:0x8074E6D8 align:4
+
 dol/game/d_save_data.cpp:
 	.text       start:0x8010D7E8 end:0x8010F124
 	.sbss       start:0x8074E6D8 end:0x8074E6E8 align:4
