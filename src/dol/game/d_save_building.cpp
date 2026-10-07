@@ -323,7 +323,7 @@ BOOL dSaveBuildingList_c::hasNpcHouse(u32 no) const {
 
 // 8014A5E4
 BOOL dSaveBuildingList_c::setFountain() {
-    dFdBlock_c *block = fn_80190C44(FD_ID_TOWN)->findBlock(FD_BLOCK_FLAG_PLAZA);
+    dFdBlock_c *block = fn_80190C44(FD_ID_TOWN)->findBlock(BLOCK_KIND_FLAG_GATE);
     if (block != NULL) {
         int bx = block->mBlockX;
         int bz = block->mBlockZ;
@@ -429,11 +429,13 @@ void dSaveBuildingList_c::setCityBuildings() {
     mChecksum = calcChecksum();
 }
 
+// The four player houses: one away from the river, the cliffs and the beach, one by the river, one by
+// a cliff, one on the beach.
 static const dPlHsFlags_c sPlHsFlags[PLAYER_NUM] = {
-    {0x00000000, 0x1FEFE010},
-    {0x000FE000, 0x1FE00010},
-    {0x0FE00000, 0x100FE010},
-    {0x00000010, 0x000FE000},
+    {0, BLOCK_KIND_FLAG_RAMP | BLOCK_KIND_FLAG_CLIFF | BLOCK_KIND_FLAG_RIVER | BLOCK_KIND_FLAG_BEACH},
+    {BLOCK_KIND_FLAG_RIVER, BLOCK_KIND_FLAG_RAMP | BLOCK_KIND_FLAG_CLIFF | BLOCK_KIND_FLAG_BEACH},
+    {BLOCK_KIND_FLAG_CLIFF, BLOCK_KIND_FLAG_RAMP | BLOCK_KIND_FLAG_RIVER | BLOCK_KIND_FLAG_BEACH},
+    {BLOCK_KIND_FLAG_BEACH, BLOCK_KIND_FLAG_RIVER},
 };
 
 // 8014ADB0

@@ -64,7 +64,7 @@ public:
     BOOL createFinish(); // 80110958: up to MAIN_FIELD_CREATE_DONE
     void resetCreate(); // 801109D4: back to MAIN_FIELD_CREATE_FIELD_DONE
     BOOL setBridgeBlock(int blockX, int blockZ); // 801109EC: where the extra bridge goes, unless already set or built
-    BOOL buildBridge(); // 80110A7C: the block at mBridgeBlockX/Z to its bridge variant (FD_BLOCK_FLAG_BRIDGE)
+    BOOL buildBridge(); // 80110A7C: the block at mBridgeBlockX/Z to its bridge variant (BLOCK_KIND_FLAG_BRIDGE)
     static BOOL getSaveBlock(int *x, int *z, int blockX, int blockZ); // 80110BA0: field block -> 0..4
     dItem::Item *getBlockItems(int blockX, int blockZ); // 80110BF0
     dFdUnitFlags_c *getBlockBuried(int blockX, int blockZ); // 80110C70

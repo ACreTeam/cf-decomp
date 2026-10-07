@@ -1,6 +1,7 @@
 // Per-block (acre) data of a dFdBase_c (dFdBlock_c).
 // .text 80080D7C..800811F4
 #include <game/game/d_field_info.hpp>
+#include <game/game/d_random_field.hpp>
 #include <game/game/d_fg_item.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <string.h>
@@ -10,7 +11,6 @@ void fn_800756F4(int blockX, int blockZ, void *data, int flag, int bg); // 80075
 u32 fn_80081324(int type);                                             // 80081324: flags of a block type
 BOOL fn_80081238(u16 *flags, int x, int z);                            // 80081238: set a unit's flag
 BOOL fn_80081280(u16 *flags, int x, int z);                            // 80081280: clear a unit's flag
-BOOL fn_80106464(u32 type);                                            // 80106464
 }
 
 static inline BOOL isUnitInBlock(int unitX, int unitZ) {
@@ -85,7 +85,7 @@ BOOL dFdBlock_c::hasFlag(int mask) const {
 
 // 80080FC0
 BOOL dFdBlock_c::fn_80080FC0() const {
-    return fn_80106464(mType);
+    return dRF::isPondType(mType);
 }
 
 // 80080FC8

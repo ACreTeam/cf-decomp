@@ -1,13 +1,12 @@
 // The town field in the save data (dSaveMainField_c). .text 80110634..80110F30.
 #include <game/game/d_save_main_field.hpp>
+#include <game/game/d_random_field.hpp>
 #include <game/game/d_fg_data.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/cLib/c_math.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-BOOL fn_80106250(dSaveMainField_c *field, int arg);
-BOOL fn_8010640C();
 void *fn_800A835C();
 BOOL fn_800A7B18(void *obj, int arg, int arg2);
 BOOL fn_800A7B9C(void *obj);
@@ -47,10 +46,10 @@ BOOL dSaveMainField_c::createField(int arg) {
     }
     if (mCreateStep == MAIN_FIELD_CREATE_BLOCKS) {
         mGrassType = cM::rndInt(3);
-        if (!fn_80106250(this, 0)) {
+        if (!dRF::create(this, NULL)) {
             return FALSE;
         }
-        if (!fn_8010640C()) {
+        if (!dRF::finishCreate()) {
             return FALSE;
         }
         if (!createBlocks()) {

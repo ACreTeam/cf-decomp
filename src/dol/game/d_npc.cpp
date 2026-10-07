@@ -1,6 +1,7 @@
 // NPC / villager management. .text 800EBB24..800F59C8 (sinit 800F5768), built with -sym on.
 // First-pass scaffold; see include/game/game/d_npc.hpp and notes/d_npc.txt.
 #include <game/game/d_npc.hpp>
+#include <game/game/d_random_field.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -43,7 +44,6 @@ void fn_800A8B28(dNpcFtrShape_c *shape, dItem::Item item);
 u32 fn_800A8BB8(dNpcFtrShape_c *shape);
 const int *fn_800A8BE4(dNpcFtrShape_c *shape, u32 i);
 BOOL fn_80169FA4(mVec3_c *out, const dItem::Item *item, int i);
-BOOL fn_80106464(u32 block);
 BOOL fn_80013550();
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 void fn_800CBC10(int slot, const dAnmPersonalID_c *animal);
@@ -2856,7 +2856,7 @@ BOOL fn_800F3178(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c
                 busy = TRUE;
             } else {
                 const dFdBlock_c *block = map->getBlock(x + 1, z + 1);
-                if (block != NULL && fn_80106464(block->mType)) {
+                if (block != NULL && dRF::isPondType(block->mType)) {
                     busy = TRUE;
                 }
             }

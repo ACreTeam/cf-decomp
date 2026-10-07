@@ -154,6 +154,36 @@ dol/game/d_player_mgr.cpp:
 	.sbss       start:0x8074E600 end:0x8074E608 align:4
 	.sdata2     start:0x80750A80 end:0x80750AB0 align:4
 
+dol/game/d_post_office.cpp:
+	.text       start:0x8010263C end:0x80104770
+	.ctors      start:0x804656FC end:0x80465700
+	.rodata     start:0x80475B40 end:0x80475B58 align:4
+	.data       start:0x804ED8B8 end:0x804ED8F0 align:4
+	.bss        start:0x805EB900 end:0x805EB9B0 align:4
+	.sdata      start:0x8074AF18 end:0x8074AF20 align:4
+	.sbss       start:0x8074E608 end:0x8074E618 align:4
+
+dol/game/d_prc_mng.cpp:
+	.text       start:0x80104770 end:0x80104C64
+	.ctors      start:0x80465700 end:0x80465704
+	.data       start:0x804ED8F0 end:0x804ED948 align:4
+	.bss        start:0x805EB9B0 end:0x805EBD08 align:4
+	.sdata      start:0x8074AF20 end:0x8074AF28 align:4
+	.sbss       start:0x8074E618 end:0x8074E628 align:4
+
+dol/game/d_random_field.cpp:
+	.text       start:0x80104C64 end:0x8010655C
+	.ctors      start:0x80465704 end:0x80465708
+	.rodata     start:0x80475B58 end:0x80475C08 align:4
+	.data       start:0x804ED948 end:0x804ED9B0 align:4
+	.bss        start:0x805EBD08 end:0x805EBD80 align:4
+	.sdata      start:0x8074AF28 end:0x8074AF38 align:4
+	.sbss       start:0x8074E628 end:0x8074E638 align:4
+
+dol/game/d_rec_bank.cpp:
+	.text       start:0x8010655C end:0x801068AC
+	.data       start:0x804ED9B0 end:0x804ED9D8 align:4
+
 dol/game/d_region.cpp:
 	.text       start:0x801068AC end:0x8010693C
 	.rodata     start:0x80475C08 end:0x80475C30 align:4

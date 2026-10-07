@@ -8,6 +8,7 @@
 // field (CF has no extra rows for the train tracks / ocean like GC's 7 x 10).
 
 #include <game/game/d_bg_attr.hpp>
+#include <game/game/d_block_kind.hpp>
 #include <types.h>
 
 // Units per block.
@@ -84,16 +85,10 @@ struct dFdBlockId_c {
     u16 mFlag : 1;
 };
 
-// Block type flags (dFdBlock_c::hasFlag; fn_80081324 looks them up by block type).
-enum {
-    // A river block with a bridge. Every BgModel type with a bridge model has it, and each river shape
-    // without it has a same-index variant with it (fn_80081514): the extra bridge from the public works
-    // turns a block into that variant (dSaveMainField_c::buildBridge).
-    FD_BLOCK_FLAG_BRIDGE = 0x8,
-    // The stone-paved plaza acre (block types 0x36..0x38, models m_stone / m_soil_stone); the fountain
-    // goes at its unit (7, 8) (dSaveBuildingList_c::setFountain).
-    FD_BLOCK_FLAG_PLAZA = 0x800,
-};
+// Block type flags (dFdBlock_c::hasFlag; fn_80081324 looks them up by block type): BLOCK_KIND_FLAG_*
+// in d_block_kind.hpp. BLOCK_KIND_FLAG_BRIDGE: every BgModel type with a bridge model has it, and each
+// river shape without it has a same-index variant with it (fn_80081514), which the public works' extra
+// bridge switches a block to (dSaveMainField_c::buildBridge).
 
 // Per-block (acre) data of a dFdBase_c (d_field_block.cpp, 80080D7C..800811F4).
 struct dFdBlock_c {
@@ -106,7 +101,7 @@ struct dFdBlock_c {
     void set(int type, dItem::Item *items0, dItem::Item *items1, u16 *buried, u16 *watered, void *bgData,
              int blockX, int blockZ, int flag, int bg);                      // 80080F38: then fn_800756F4
     BOOL hasFlag(int mask) const;                                            // 80080F80: flags of mType
-    BOOL fn_80080FC0() const;                                                // 80080FC0: mType in fn_80106464's list
+    BOOL fn_80080FC0() const;                                                // 80080FC0: mType has a pond (dRF::isPondType)
     BOOL setItem(const dItem::Item *item, int unitX, int unitZ, int layer);  // 80080FC8
     dItem::Item *getItemP(int unitX, int unitZ, int layer);                  // 8008101C
     dItem::Item *getItemP(int unitX, int unitZ, int layer) const;            // 80081074
