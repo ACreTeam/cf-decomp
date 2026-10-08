@@ -185,7 +185,6 @@ struct dPlaySyncMsg_c {
     /* 0x3 */ u8 mMember;
 }; // size 0x4
 
-extern void *lbl_8074E830; // the sky light
 extern dPlayActorMng_c *lbl_8074E838;
 extern dFishField_c *lbl_8074E840;
 extern u8 lbl_8074E844; // set: the fish field spawns again on its next initSpawn (net)

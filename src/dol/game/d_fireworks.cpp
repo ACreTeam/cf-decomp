@@ -5,14 +5,13 @@
 #include <game/game/d_effect.hpp>
 #include <game/game/d_event.hpp>
 #include <game/game/d_date.hpp>
-#include <game/game/d_base.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/game/d_sky.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <revolution/MTX.h>
 
 // Not split yet (C linkage keeps the target names).
-class dSkyLight_c;
 extern "C" {
 void fn_8000F828(int se);                                        // 8000F828: play a sound effect
 BOOL fn_80199BBC(void *glow, const GXColor *color, const nw4r::math::VEC3 *pos, f32 size); // 80199BBC: queue a glow
@@ -20,19 +19,12 @@ BOOL fn_80199BBC(void *glow, const GXColor *color, const nw4r::math::VEC3 *pos, 
 extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: town center the show is above
 extern u8 *lbl_8074E538;        // 8074E538: [0x3671] picks the alternative sounds
 extern void *lbl_8074EA60;      // 8074EA60: glow drawer (NULL: no sounds / glow without the effect)
-extern dSkyLight_c *lbl_8074E830; // 8074E830: sky light
 extern f32 lbl_8074EA1C;        // 8074EA1C..8074EA28: burst light color
 extern f32 lbl_8074EA20;
 extern f32 lbl_8074EA24;
 extern f32 lbl_8074EA28;
 extern f32 lbl_8074C010;        // 8074C010: burst light fade speed
 }
-
-// Sky light actor (8074E830); only its first own virtual is used.
-class dSkyLight_c : public dBase_c {
-public:
-    virtual void setFireworksBrightness(f32 brightness); // vtable 0x4C
-};
 
 // 8046EEC0 / 8046EECC: the effect's two register colors per shell color.
 static const GXColor sEffectColor0[3] = {{0xFF, 0xC0, 0xB8, 0xFF}, {0xB8, 0xFF, 0xA0, 0xFF}, {0xF8, 0xFF, 0xE0, 0xFF}};
