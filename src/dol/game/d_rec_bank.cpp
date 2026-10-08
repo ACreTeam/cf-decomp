@@ -1,11 +1,12 @@
 // dRecBank::bankTbl_c: a pool of same-sized frame heaps (see include/game/game/d_rec_bank.hpp).
 // .text 8010655C..801068AC.
 #include <game/game/d_rec_bank.hpp>
+#include <lib/egg/core/eggExpHeap.h>
 #include <game/mLib/m_heap.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
 
 // The heap the entry array comes from (not identified yet; also used by d_dsn).
-extern EGG::Heap *lbl_8074E440;
+extern EGG::ExpHeap *lbl_8074E440;
 
 namespace dRecBank {
 

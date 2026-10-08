@@ -57,6 +57,9 @@ struct mAng {
     /// @brief Computes the cosine of the angle.
     float cos() const { return nw4r::math::CosIdx(mAngle); }
 
+    /// @brief Converts the angle to degrees.
+    float degree() const { return mAngle * AngleToDegreeCoefficient; }
+
     s16 mAngle; ///< The rotation.
 
     static float AngleToDegreeCoefficient;

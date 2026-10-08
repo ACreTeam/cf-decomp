@@ -634,6 +634,7 @@ modules:
   name: d_skyNP
   symbols: config/RUUE01_00/d_skyNP/symbols.txt
   splits: config/RUUE01_00/d_skyNP/splits.txt
+  force_active: [__global_destructor_chain] # the module runtime's chain: the REL's first 4 bytes of .bss
 - object: files/rels/d_sky_auroraNP.rel
   hash: 8ac2dd16d6f0a4a6d9239411fdb20cb24f9f61ad
   name: d_sky_auroraNP

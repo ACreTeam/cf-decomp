@@ -1,6 +1,7 @@
 // Original designs (patterns). .text 8010F124..8010FB6C.
 // First pass: every function is written for equivalence.
 #include <game/game/d_region.hpp>
+#include <lib/egg/core/eggExpHeap.h>
 #include <game/game/d_dsn.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
@@ -17,7 +18,7 @@ void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a
 // Downloaded item blocks (Ghidra: DLC_Item).
 }
 
-extern EGG::Heap *lbl_8074E440;
+extern EGG::ExpHeap *lbl_8074E440;
 
 // 8010F124
 dDesign_c::dDesign_c() {

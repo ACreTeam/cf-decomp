@@ -9,6 +9,8 @@
 
 class dStar_c {
 public:
+    dStar_c() : mWait(0), mActive(false) {}
+
     void start(int wait); // 80090D20
     void execute();       // 80090D70
     int countDown();      // 80090E10

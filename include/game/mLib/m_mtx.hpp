@@ -24,10 +24,9 @@ public:
     operator const Mtx*() const { return &mtx; }
 
     mMtx_c &operator=(const mMtx_c &other) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                m[i][j] = other.m[i][j];
-            }
+        for (int i = 0; i < 12; i++) {
+            f32 v = other.a[i];
+            a[i] = v;
         }
         return *this;
     }
@@ -53,7 +52,7 @@ public:
         return mVec3_c(x, y, z);
     }
 
-    static mMtx_c createTrans(const mVec3_c &v) { return createTrans(v.x, v.y, v.z); }
+    static mMtx_c createTrans(const mVec3_c &v) { mMtx_c mtx; mtx.trans(v); return mtx; }
     static mMtx_c createTrans(float x, float y, float z) { mMtx_c mtx; PSMTXTrans(mtx, x, y, z); return mtx; }
     static mMtx_c createScale(const mVec3_c &v) { mMtx_c mtx; PSMTXScale(mtx, v.x, v.y, v.z); return mtx; }
     static mMtx_c createScale(float x, float y, float z) { mMtx_c mtx; PSMTXScale(mtx, x, y, z); return mtx; }
