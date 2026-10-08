@@ -4,6 +4,7 @@
 #include <game/game/d_play_util.hpp>
 #include <game/game/d_date.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/game/d_sky.hpp>
 #include <game/game/d_fish_field.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/cLib/c_lib.hpp>
@@ -21,7 +22,7 @@ void *fn_800DD64C(int id); // net: a shared record
 void fn_800DD5F8(int id, void *data, int arg); // net: set a shared record
 }
 
-void *lbl_8074E830; // 8074E830: the sky light (d_fireworks, d_star)
+dSky_c *lbl_8074E830; // 8074E830: the sky actor
 u32 lbl_8074E834; // 8074E834
 dPlayActorMng_c *lbl_8074E838; // 8074E838: the actor manager (findActorIf, ...)
 u8 lbl_8074E83C; // 8074E83C

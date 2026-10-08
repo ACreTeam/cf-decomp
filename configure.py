@@ -626,6 +626,8 @@ config.libs = [
             Object(Matching, "dol/game/d_field_info.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_event.cpp"),
             Object(Matching, "dol/game/d_fireworks.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_star_mgr.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_star.cpp"),
             Object(Matching, "dol/game/d_fish_info.cpp"),
             Object(Matching, "dol/game/d_fg_data.cpp"),
             Object(NonMatching, "dol/game/d_field_assessment.cpp", extra_cflags=["-sym on"]),

@@ -374,10 +374,14 @@ dol/game/d_fireworks.cpp:
 	.sbss       start:0x8074E330 end:0x8074E338
 	.sdata2     start:0x807505C0 end:0x80750608
 
+dol/game/d_star_mgr.cpp:
+	.text       start:0x80090964 end:0x80090D70
+	.sdata2     start:0x80750608 end:0x80750628
+
 dol/game/d_star.cpp:
-	.text       start:0x80090964 end:0x80090E2C
+	.text       start:0x80090D70 end:0x80090E2C
 	.data       start:0x804DFB90 end:0x804DFBA0
-	.sdata2     start:0x80750608 end:0x80750630
+	.sdata2     start:0x80750628 end:0x80750630
 
 dol/game/d_fish_info.cpp:
 	.text       start:0x80090E2C end:0x8009176C
