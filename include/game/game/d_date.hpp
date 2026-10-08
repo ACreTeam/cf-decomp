@@ -3,6 +3,10 @@
 #include <types.h>
 #include <revolution/OS/OSTime.h>
 
+class dTime_c;
+
+// A calendar date (month 0-based, as dTime_c). year == 0 or day == 0 means "not set".
+// Source: src/dol/game/d_ymd.cpp (.text 8014CBFC..8014D020). Function names are inferred.
 struct dYMD_c {
     dYMD_c() : year(0), month(0), day(0) {}
     void clear() {
@@ -10,6 +14,27 @@ struct dYMD_c {
         month = 0;
         day = 0;
     }
+    BOOL isNone() const {
+        BOOL none = FALSE;
+        if (year == 0 || day == 0) {
+            none = TRUE;
+        }
+        return none;
+    }
+
+    BOOL isDate(int year, u8 month, u8 day) const {
+        return this->year == year && this->month == month && this->day == day;
+    }
+
+    dTime_c get() const;                              // 8014CBFC: 0:00:00 of the date
+    void set(const dTime_c *time);                    // 8014CC98
+    void set(int year, u8 month, u8 day);             // 8014CCB4
+    void setToday(BOOL dayStart);                     // 8014CCC4: dayStart: days begin at 6:00
+    BOOL isToday(BOOL dayStart) const;                // 8014CD88
+    int compare(int year, u8 month, u8 day) const;    // 8014CF38: 1 later, 0 same, -1 earlier
+    int compare(const dYMD_c *other) const;           // 8014CF88
+    int compare(const dTime_c *time) const;           // 8014CF9C
+    int diffDays(const dTime_c *time, BOOL adjust) const; // 8014CFB8: time - this, in days
 
     u16 year;
     u8 month;

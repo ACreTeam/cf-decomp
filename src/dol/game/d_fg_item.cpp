@@ -286,7 +286,7 @@ BOOL Item::isSame(const Item &other) const {
 }
 
 // 800A5EF0
-FgInfo *Item::getFgInfo() {
+FgInfo *Item::getFgInfo() const {
     if (isFg()) {
         return &sFgInfo[getFgIndex()];
     }

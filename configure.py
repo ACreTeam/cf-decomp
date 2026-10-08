@@ -679,6 +679,8 @@ config.libs = [
             Object(NonMatching, "dol/game/d_save_building.cpp"),
             Object(Matching, "dol/game/d_theater.cpp"),
             Object(Matching, "dol/game/d_time_stamp.cpp"),
+            Object(Matching, "dol/game/d_ymd.cpp"),
+            Object(Matching, "dol/game/d_sv_time_offset.cpp"),
             Object(Matching, "dol/game/d_search_cand.cpp"),
             Object(Matching, "dol/game/d_shop_layout.cpp"),
             Object(NonMatching, "dol/game/d_shutdown_fader.cpp"),

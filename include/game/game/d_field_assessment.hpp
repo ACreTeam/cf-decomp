@@ -46,6 +46,13 @@ enum dFgFlowerKind_e {
     FLOWER_KIND_NONE = FLOWER_KIND_NUM,
 };
 
+// What fgMngProc_trampleFlowerAt / fgMngProc_damageFlower do to a flower (their `mode`).
+enum dFgFlowerDamage_e {
+    FLOWER_DAMAGE_REMOVE,   // the flower is destroyed (removed, synced)
+    FLOWER_DAMAGE_PETALS,   // only petals fall (effect scale 1)
+    FLOWER_DAMAGE_NONE = 3, // fgMngProc_trampleFlowerAt: not outdoors / no flower
+};
+
 // sFgMngProcFlags (8074E33D).
 enum {
     FG_MNG_PROC_FLAG_SAVE_FLAG6 = 1 << 0, // fgMngProc_setSaveFlag6 deferred it to the day change

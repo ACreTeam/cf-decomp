@@ -91,8 +91,6 @@ void fn_80169B3C();
 void fn_80169B54();
 void fn_80169B64();
 void fn_80169BB4();
-BOOL fn_8014CF9C(void *stamp, const dTime_c *time);
-void fn_8014CC98(void *stamp, const dTime_c *time);
 void fn_8014D89C(void *events, int id);
 f32 fn_80074D64(int x, int z);
 f32 fn_80074974(const nw4r::math::VEC3 *pos, int a);
@@ -124,7 +122,7 @@ void fn_800755A0(int bg);
 f32 fn_80073510(const nw4r::math::VEC3 *pos);
 void fn_800D16E8();
 int fn_801017B8();
-u8 *fn_800AC28C(int idx);
+const u8 *fn_800AC28C(int idx);
 void fn_800C77E8(void *obj);
 void fn_800C7800(void *obj);
 void fn_800C7830(void *obj);
@@ -149,7 +147,7 @@ typedef BOOL (*dFgMngAroundFunc)(dFdBase_c *fd, const int *pos, int x, int z, in
 struct dFgMngGroundCheck_c;
 // Helpers of the tree, weed and flower processing (some are also called by other TUs).
 void killTree(dFdBase_c *fd, dItem::Item *item, int x, int z);
-void growTree(dFdBase_c *fd, dItem::Item *item, int x, int z);
+void growTree(dFdBase_c *fd, const dItem::Item *item, int x, int z);
 BOOL forEachAroundUnit(dFdBase_c *fd, int *size, int x, int z, dFgMngAroundFunc func);
 BOOL isTreeObstacleAt(dFdBase_c *fd, const int *pos, int x, int z, int *size);
 BOOL killSaplingAt(dFdBase_c *fd, const int *pos, int x, int z, int *size);
@@ -157,8 +155,8 @@ BOOL isBlockedUnit(dFdBase_c *fd, int x, int z);
 BOOL isPondEdgeUnit(dFdBase_c *fd, int x, int z);
 BOOL isSapling(dItem::Item *item);
 BOOL tryCrossBreedAt(dFdBase_c *fd, const int *pos, int x, int z, int *size);
-int getFlowerKind(dItem::Item *item);
-int getFlowerColor(dItem::Item *item);
+int getFlowerKind(const dItem::Item *item);
+int getFlowerColor(const dItem::Item *item);
 
 // Objects of this TU, in .sbss / .bss order (the __sinit 8009FFEC constructs them).
 void *sFgObjMgr;                          // 8074E338: the d_fgobj_managerNP actor (set by its create)
@@ -443,6 +441,14 @@ void fgMngTask_resetAll() {
 
 // ---------------------------------------------------------------------------------------------
 // Field assessment
+
+static inline BOOL inRange(const dItem::Item *item, u16 lo, u16 hi) {
+    BOOL result = FALSE;
+    if (item->mId >= lo && item->mId <= hi) {
+        result = TRUE;
+    }
+    return result;
+}
 
 static inline BOOL inRange(dItem::Item *item, u16 lo, u16 hi) {
     BOOL result = FALSE;
@@ -1086,19 +1092,17 @@ dFgMngLock_c *fgMngLock_get(int idx) {
 void fgMngCmd_apply(dFgMngCmd_c *cmd, u32 arg) {
     dFgMngPlayerState_c *slot = &sFgMngState.mPlayers[cmd->mReqPlayer];
     if (!cmd->mLocal) {
-        int player = cmd->mPlayer;
-        if (player == fn_800DCF58()) {
+        if (cmd->getPlayer() == fn_800DCF58()) {
             slot->mState = dFgMngPlayerState_c::STATE_REJECTED;
         }
     } else {
-        int kind = cmd->mKind;
+        int kind = cmd->getKind();
         int idx = fgMngCmd_findFree();
         (dFgMngCmd_c &)sFgMngCmds[idx] = *cmd;
         if (!cmd->exec()) {
             fgMngCmd_setRetry(idx);
         }
-        int player = cmd->mPlayer;
-        if (player == fn_800DCF58()) {
+        if (cmd->getPlayer() == fn_800DCF58()) {
             slot->mState = dFgMngPlayerState_c::STATE_ACCEPTED;
             switch (kind) {
             case FG_MNG_KIND_BLOCKED:
@@ -1131,7 +1135,9 @@ dFgMngCmd_c *fgMngCmd_get(int idx) {
 
 // 8009378C: locks (scene, unit, layer) for every player present. The task test can never be true.
 void fgMngLock_add(u32 scene, dFdAsPos_c *pos, u32 layer) {
-    if (fgMngLock_find(scene, pos, layer) < 0 || fgMngTask_find(scene, pos, layer) < -1) {
+    int s = scene;
+    int l = layer;
+    if (fgMngLock_find(s, pos, l) < 0 || fgMngTask_find(s, pos, l) < -1) {
         dFgMngLock_c *lock = fgMngLock_get(fgMngLock_findFree());
         if (!fn_800DCEDC()) {
             lock->mPendingPlayers |= 1;
@@ -1714,8 +1720,9 @@ void dFgMngProc_c::growTrees(dFdBase_c *fd, int *size) {
 
 // 80094FB8: grows a tree one step: fruit trees / palms go from stage 3 to their fruit-bearing
 // variant (+4) and regrow fruit (+1) when it has none; other trees +1 below stage 4.
-void growTree(dFdBase_c *fd, dItem::Item *item, int x, int z) {
-    u16 id = item->mId;
+void growTree(dFdBase_c *fd, const dItem::Item *item, int x, int z) {
+    dItem::Item tree = *item;
+    u16 id = tree.getId();
     dItem::FgInfo *info = item->getFgInfo();
     if (inRange(item, dItem::FG_PEACH_TREE_SAPLING, dItem::FG_PEACH_TREE_FRUIT) || inRange(item, dItem::FG_APPLE_TREE_SAPLING, dItem::FG_APPLE_TREE_FRUIT) || inRange(item, dItem::FG_ORANGE_TREE_SAPLING, dItem::FG_ORANGE_TREE_FRUIT) ||
         inRange(item, dItem::FG_PEAR_TREE_SAPLING, dItem::FG_PEAR_TREE_FRUIT) || inRange(item, dItem::FG_CHERRY_TREE_SAPLING, dItem::FG_CHERRY_TREE_FRUIT) || inRange(item, dItem::FG_PALM_SAPLING, dItem::FG_PALM_FRUIT)) {
@@ -2011,10 +2018,10 @@ void dFgMngProc_c::updateFlowersLaterDay(dFdBase_c *fd, int day) {
     int h;
     int z;
     dItem::Item *item;
-    u16 next;
-    BOOL weekly;
-    int x;
     u16 id;
+    u16 next;
+    int x;
+    bool weekly;
     weekly = day % TIME_DAYS_PER_WEEK == 0;
     w = fd->mBlockW << 4;
     h = fd->mBlockH << 4;
@@ -2159,7 +2166,7 @@ BOOL tryCrossBreedAt(dFdBase_c *fd, const int *pos, int x, int z, int *size) {
 
 // 80096594: flower kind (live or wilted): 0 tulip, 1 pansy, 2 cosmos, 3 rose, 4 carnation, 5
 // lily, 6 dandelion, 7 dandelion puff, else 8.
-int getFlowerKind(dItem::Item *item) {
+int getFlowerKind(const dItem::Item *item) {
     int kind = FLOWER_KIND_NONE;
     if (inRange(item, dItem::FG_TULIP_RED, dItem::FG_TULIP_BLACK) || inRange(item, dItem::FG_WILTED_TULIP_RED, dItem::FG_WILTED_TULIP_BLACK)) {
         return FLOWER_KIND_TULIP;
@@ -2191,7 +2198,7 @@ int getFlowerKind(dItem::Item *item) {
 }
 
 // 80096768: color index within the flower's kind (gold rose 8, wilted gold rose 6).
-int getFlowerColor(dItem::Item *item) {
+int getFlowerColor(const dItem::Item *item) {
     u16 id = item->mId;
     int color = 0;
     if (id == dItem::FG_ROSE_GOLD) {
@@ -2251,9 +2258,9 @@ u16 dFgMngProc_c::getCrossBreed(const dItem::Item *a, const dItem::Item *b) {
     f32 roll = fgMngProc_rndF(100.0f);
     f32 sum = 0.0f;
     u16 result = dItem::ITEM_ID_NONE;
-    int type = getFlowerKind((dItem::Item *)a);
-    int colorA = getFlowerColor((dItem::Item *)a);
-    int colorB = getFlowerColor((dItem::Item *)b);
+    int type = getFlowerKind(a);
+    int colorA = getFlowerColor(a);
+    int colorB = getFlowerColor(b);
     int i;
     switch (type) {
     case FLOWER_KIND_TULIP: {
@@ -2485,7 +2492,7 @@ void dFgMngProc_c::procEvents(dFdBase_c *fd, const dTime_c *time) {
 // The town's event object (dSaveData_c+0x68372, ctor 8014D0BC; fn_8014D89C adds an event).
 struct dFgSaveEvents_c {
     /* 0x00 */ u8 _00[0x44];
-    /* 0x44 */ u8 mStamp[4];   // last processed day (fn_8014CF9C / fn_8014CC98)
+    /* 0x44 */ dYMD_c mStamp;  // last processed day
     /* 0x48 */ u16 mEnd[4];    // events to end the next day (0xFFFF: none)
 };
 
@@ -2530,15 +2537,11 @@ void dFgMngProc_c::procDay(dFdBase_c *fd, dTime_c *time) {
     dSaveTown_c *save = dSaveData_c::getTown();
     dTime_c t = *time;
     t.add(0, -TIME_DAY_START_HOUR, 0, 0);
-    u8 *stamp = save->_068372 + 0x44;
-    BOOL due = FALSE;
-    if (*(u16 *)stamp == 0 || stamp[3] == 0) {
-        due = TRUE;
-    }
-    if (due || fn_8014CF9C(stamp, &t)) {
+    dYMD_c *stamp = (dYMD_c *)(save->_068372 + 0x44);
+    if (stamp->isNone() || stamp->compare(&t)) {
         endEvents(fd);
         procEvents(fd, &t);
-        fn_8014CC98(stamp, &t);
+        stamp->set(&t);
     }
 }
 
@@ -3431,6 +3434,12 @@ void dFgMngProc_c::updateEggs() {
     hideEggs(fd);
 }
 
+// The egg kind (0..11) of a real egg item (ids by 4 from the first egg).
+static inline int getEggKind(const dItem::Item &item) {
+    dItem::Item first(dItem::ITEM_IDX_BUNNY_EGG_00);
+    return (item.mId - first.mId) >> 2;
+}
+
 // 80099C60: removes the eggs from the field and credits them to the town owner.
 // The loops are not fully unrolled in the target (unlike everywhere else in the TU).
 #pragma push
@@ -3462,8 +3471,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
             if (item != NULL && dItem::isRealItemId(item->mId)) {
                 const dItem::BITM *bitm = dItem::getBITM(item->mId);
                 if (bitm->getKind() == dItem::KIND_EGG_BINGO_BEFORE) {
-                    dItem::Item first(dItem::ITEM_IDX_BUNNY_EGG_00);
-                    found[(item->mId - first.mId) >> 2]++;
+                    found[getEggKind(*item)]++;
                     setUnitItem(fd, x, z, dItem::ITEM_ID_NONE, FALSE);
                 } else if (bitm->getKind() == dItem::KIND_EGG_FAKE_BEFORE) {
                     setUnitItem(fd, x, z, dItem::ITEM_ID_NONE, FALSE);
@@ -4366,16 +4374,12 @@ u16 fgMngProc_getMemberHeldItem(int member) {
     return id;
 }
 
-static inline BOOL isMyHeld(int index) {
-    u16 id = dItem::Item(index).mId;
-    BOOL diff = id != fgMngProc_getMemberHeldItem(fn_800DCF58());
-    return !diff;
-}
-
 // 8009C678: with the golden shovel held, buried money becomes fg 0x11 and, by a price/luck-based
 // chance (doubled when _83F9 == 3), fg 0x49 (FG_MONEY_TREE_SAPLING).
 void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
-    if (!isMyHeld(dItem::ITEM_IDX_GOLDEN_SHOVEL)) {
+    u8 v;
+    dSaveTown_c *save;
+    if (fgMngProc_getMemberHeldItem(fn_800DCF58()) != dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).getId()) {
         return;
     }
     dItem::Item item(itemId);
@@ -4387,11 +4391,11 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     if (fn_801017B8() >= 4) {
         return;
     }
-    dSaveTown_c *save = dSaveData_c::getTown();
+    save = dSaveData_c::getTown();
     if (!fn_8014D740(save->_068372)) {
         return;
     }
-    u8 v = *fn_800AC28C(4);
+    v = *fn_800AC28C(4);
     f32 rate = (10.0f * (4.0f * v) + item.getPrice()) / 1000.0f;
     if (dPlayerMgr_c::getCurrentPlayer()->_83F9 == 3) {
         rate *= 2.0f;
@@ -4443,7 +4447,7 @@ BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj) {
         *outFg = ((item.mId - dItem::Item(dItem::ITEM_IDX_RED_TURNIP_00).mId) >> 2) + dItem::FG_RED_TURNIP_0;
         break;
     case dItem::KIND_FLOWER: {
-        u16 id = item.mId;
+        u16 id = item.getId();
         *outBase = dItem::FG_SEED;
         if (id == dItem::Item(dItem::ITEM_IDX_LUCKY_CLOVER).mId) {
             *outFg = dItem::FG_LUCKY_CLOVER;
@@ -4619,18 +4623,15 @@ BOOL fgMngProc_getRafflesiaPos(nw4r::math::VEC3 *pos) {
 // destroys it (mode 0); returns the mode (3 = nothing / not outdoors).
 int fgMngProc_trampleFlowerAt(int x, int z) {
     if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
-        return 3;
+        return FLOWER_DAMAGE_NONE;
     }
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
-    int mode = 3;
+    int mode = FLOWER_DAMAGE_NONE;
     if (fd != NULL) {
         dItem::Item *item = fd->getItem(x, z, 0);
         if (item != NULL) {
             f32 r = cM::rndF(100.0f);
-            mode = 1;
-            if (r < 12.5f) {
-                mode = 0;
-            }
+            mode = r < 12.5f ? FLOWER_DAMAGE_REMOVE : FLOWER_DAMAGE_PETALS;
             fgMngProc_damageFlower(item, x, z, mode);
         }
     }
@@ -4642,7 +4643,7 @@ int fgMngProc_trampleFlowerAt(int x, int z) {
 void fgMngProc_damageFlower(dItem::Item *item, int x, int z, int mode) {
     if (item->isAnyFlower()) {
         fgMngProc_playFlowerFallEffect(item, x, z, mode, NULL, FALSE);
-        if (mode == 0) {
+        if (mode == FLOWER_DAMAGE_REMOVE) {
             fgMngProc_setUnitFgSync(x, z, dItem::ITEM_ID_NONE);
         }
     }
@@ -4802,14 +4803,18 @@ static inline dTimeStamp_c getLastStamp() {
     return *(dTimeStamp_c *)dSaveData_c::getTown()->_068372;
 }
 
+static inline int diffDaysFromToday(const dTimeStamp_c &stamp) {
+    dTime_c now = *dTime_c::getCurrent();
+    now.add(0, -TIME_DAY_START_HOUR, 0, 0);
+    dTime_c t = stamp.get();
+    return dTime_c::diffDays(&now, &t, TRUE);
+}
+
 static inline BOOL isUpToDate(dTimeStamp_c stamp) {
     if (stamp.isNone()) {
         return TRUE;
     }
-    dTime_c now = *dTime_c::getCurrent();
-    now.add(0, -TIME_DAY_START_HOUR, 0, 0);
-    dTime_c t = stamp.get();
-    return dTime_c::diffDays(&now, &t, TRUE) <= 0;
+    return diffDaysFromToday(stamp) <= 0;
 }
 
 // 8009D6F4: TRUE when the last day-change stamp (_068372) is unset or not before today 6:00;
@@ -4848,24 +4853,12 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     dFdAsPos_c pu;
     int angle;
     int i;
-    BOOL ok = TRUE;
-    BOOL ok2 = TRUE;
     dFdBase_c *fd;
     int x, z;
     u16 held;
     int attr;
     held = fgMngProc_getMemberHeldItem(fn_800DCF58());
-    if (held != dItem::Item(dItem::ITEM_IDX_SHOVEL).mId) {
-        if (held != dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId) {
-            ok2 = FALSE;
-        }
-    }
-    if (!ok2) {
-        if (held != dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).mId) {
-            ok = FALSE;
-        }
-    }
-    if (!ok) {
+    if (!(held == dItem::Item(dItem::ITEM_IDX_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).mId)) {
         return FALSE;
     }
     dPlayerActor_c *player = fn_800FBC7C(4);
@@ -4875,21 +4868,27 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     mVec3_c pos = player->mPos;
     angle = player->mAngle.y;
     attr = fn_80072E94(&pos);
-    pu.mX = (int)pos.x >> 5;
-    pu.mZ = (int)pos.z >> 5;
+    f32 px = pos.x;
+    f32 pz = pos.z;
+    pu.mX = (int)px >> 5;
+    pu.mZ = (int)pz >> 5;
     fd = fn_80190C44(FD_ID_CURRENT);
     int ax, az, bz, bx;
     dPlayerActor_c **actors = (dPlayerActor_c **)lbl_8074E9A0;
     if (actors[0] != NULL) {
-        ax = (int)actors[0]->mPos.x >> 5;
-        az = (int)actors[0]->mPos.z >> 5;
+        f32 px = actors[0]->mPos.x;
+        f32 pz = actors[0]->mPos.z;
+        ax = (int)px >> 5;
+        az = (int)pz >> 5;
     } else {
         az = -1;
         ax = -1;
     }
     if (actors[1] != NULL) {
-        bx = (int)actors[1]->mPos.x >> 5;
-        bz = (int)actors[1]->mPos.z >> 5;
+        f32 px = actors[1]->mPos.x;
+        f32 pz = actors[1]->mPos.z;
+        bx = (int)px >> 5;
+        bz = (int)pz >> 5;
     } else {
         bz = -1;
         bx = -1;

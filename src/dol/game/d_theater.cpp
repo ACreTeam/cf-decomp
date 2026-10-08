@@ -8,11 +8,6 @@
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-BOOL fn_8014D07C(dSaveTimeOffset_c *offset);                          // 8014D07C: clock was changed
-}
-
 namespace dTheater {
 
 // Dr. Shrunk's programs.
@@ -53,7 +48,7 @@ u16 getWeek(dTime_c time) {
 
 // 8014BEDC
 void dSchedule_c::update() {
-    if (!fn_8014D07C(&dSaveData_c::getTown()->mTimeOffset) || !isValid()) {
+    if (!dSaveData_c::getTown()->mTimeOffset.isChanged() || !isValid()) {
         dTime_c now = *dTime_c::getCurrent();
         u16 week = getWeek(now);
         if (week != mWeek || !isValid()) {

@@ -339,13 +339,13 @@ struct Item {
     bool isValid() const { return mId != ITEM_ID_NONE; }
     u16 getId() const { return mId; }
 
-    bool isFg() {
+    bool isFg() const {
         return mId < FG_COUNT;
     }
-    int getFgIndex() {
+    int getFgIndex() const {
         return isFg() ? mId & 0xFFF : -1;
     }
-    FgInfo *getFgInfo(); // 800A5EF0
+    FgInfo *getFgInfo() const; // 800A5EF0
 
     BOOL isMoney() const; // 800A5F20
     BOOL isKabu(); // 800A5F48

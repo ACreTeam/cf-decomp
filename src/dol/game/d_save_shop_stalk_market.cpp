@@ -4,13 +4,6 @@
 #include <game/cLib/c_math.hpp>
 #include <cstring>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-void fn_8014CCC4(dYMD_c *date, BOOL gameDay); // date = today
-int fn_8014CFB8(dYMD_c *date, dTime_c *time, BOOL adjust); // days from date to time
-BOOL fn_8014D07C(dSaveTimeOffset_c *offset); // the clock was changed
-}
-
 // 80146D80
 void dSaveStalkMarket_c::clear() {
     memset(this, 0, sizeof(dSaveStalkMarket_c));
@@ -27,18 +20,18 @@ void dSaveStalkMarket_c::checkDate() {
     }
     if (reset) {
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_TURNIPS_SPOILED);
-        fn_8014CCC4(&mDate, TRUE);
-    } else if (fn_8014D07C(&dSaveData_c::getTown()->mTimeOffset)) {
+        mDate.setToday(TRUE);
+    } else if (dSaveData_c::getTown()->mTimeOffset.isChanged()) {
         dSaveData_c::getTown()->setFlag(SAVE_FLAG_TURNIPS_SPOILED);
-        fn_8014CCC4(&mDate, TRUE);
+        mDate.setToday(TRUE);
     } else {
-        int days = fn_8014CFB8(&mDate, dTime_c::getCurrent(), FALSE);
+        int days = mDate.diffDays(dTime_c::getCurrent(), FALSE);
         if (days < 0) {
             dSaveData_c::getTown()->setFlag(SAVE_FLAG_TURNIPS_SPOILED);
-            fn_8014CCC4(&mDate, TRUE);
+            mDate.setToday(TRUE);
         } else if (days >= 7) {
             dSaveData_c::getTown()->clearFlag(SAVE_FLAG_TURNIPS_SPOILED);
-            fn_8014CCC4(&mDate, TRUE);
+            mDate.setToday(TRUE);
         }
     }
 }
@@ -225,5 +218,5 @@ int dSaveStalkMarket_c::calcPrice(f32 max, f32 min) {
 // 80147A08
 void dSaveStalkMarket_c::invalidate() {
     dSaveData_c::getTown()->setFlag(SAVE_FLAG_TURNIPS_SPOILED);
-    fn_8014CCC4(&mDate, TRUE);
+    mDate.setToday(TRUE);
 }

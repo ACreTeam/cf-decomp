@@ -35,23 +35,16 @@ int fn_800CBE0C(int, int, int, int);
 // Other members.
 void fn_80150AD4(dUnk5560_c *obj);
 
-// Calendar helpers (dYMD_c; not split yet).
-BOOL fn_8014CCB4(dYMD_c *date, int year, int month, int day);
-
 // Misc.
 BOOL fn_800E593C(void *);
 BOOL fn_800DCEDC();
 void fn_800B0954(BOOL, int);
 BOOL fn_8019B864();
 
-// Calendar/time helpers.
-dTime_c fn_8014CBFC(dYMD_c *date);
-
 // Letters and events.
 u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
-BOOL fn_8014D07C(void *);
 void fn_80169C48();
 void fn_80169F20();
 void fn_80169F4C();
@@ -524,7 +517,7 @@ void dPrivateData_c::fn_80137898(int days) {
     if (isFlag0(0x28)) {
         return;
     }
-    BOOL closed = fn_8014D07C(&dSaveData_c::getTown()->mTimeOffset) != 0;
+    BOOL closed = dSaveData_c::getTown()->mTimeOffset.isChanged() != 0;
     if (!closed || _862C > 0) {
         int months;
         int savings;
@@ -1425,8 +1418,8 @@ BOOL dPrivateData_c::fn_80139948(int arg) {
 
 // 80139A14
 void dPrivateDates_c::init() {
-    fn_8014CCB4(&mDate0, 2000, 0, 1);
-    fn_8014CCB4(&mDate1, 2000, 0, 1);
+    mDate0.set(2000, 0, 1);
+    mDate1.set(2000, 0, 1);
     _08 = 0;
     _0C = 0;
 }
@@ -1434,14 +1427,14 @@ void dPrivateDates_c::init() {
 // 80139A6C
 BOOL dPrivateDates_c::fn_80139A6C() {
     if (mDate0.year == 0) {
-        fn_8014CCB4(&mDate0, 2000, 0, 1);
+        mDate0.set(2000, 0, 1);
     }
     dTime_c now = *dTime_c::getCurrent();
     if (now.hour < 6) {
         now.add(-1, 0, 0, 0);
     }
     u16 today = dTheater::getWeek(now);
-    dTime_c last = fn_8014CBFC( &mDate0);
+    dTime_c last = mDate0.get();
     u16 last_day = dTheater::getWeek(last);
     if (today != last_day) {
         return TRUE;
@@ -1452,12 +1445,12 @@ BOOL dPrivateDates_c::fn_80139A6C() {
 // 80139C30
 BOOL dPrivateDates_c::fn_80139C30(dYMD_c *out) {
     if (mDate1.year == 0) {
-        fn_8014CCB4(&mDate1, 2000, 0, 1);
+        mDate1.set(2000, 0, 1);
     }
     dTime_c cal = getModelRoomDate();
     if (cal.year != mDate1.year || cal.month != mDate1.month || cal.mday != mDate1.day) {
         if (out != NULL) {
-            fn_8014CCB4(out, cal.year, (u8)cal.month, (u8)cal.mday);
+            out->set(cal.year, cal.month, cal.mday);
         }
         return TRUE;
     }

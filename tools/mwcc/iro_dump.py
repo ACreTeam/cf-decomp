@@ -55,6 +55,37 @@ def patched_compiler(src):
     return exe
 
 
+def compile_log(src, input_file=None, overlay=None, keep=True, runner=None):
+    """Compile `src` (or the variant `input_file`, with src's flags) with the patched compiler and return
+    (log text, log path). Each process uses its own directory (parallel-safe); with keep=False the
+    directory is removed afterwards (logs are ~100 MB for a big TU). runner(argv, cwd) -> exit code
+    replaces the plain compile (iro_why.py runs it under the debugger)."""
+    cc = patched_compiler(src)
+    tmp = os.path.join(WORK, 'iro', str(os.getpid()))
+    os.makedirs(tmp, exist_ok=True)
+    copy = os.path.join(tmp, os.path.basename(input_file or src))
+    shutil.copy2(os.path.join(mwcc_cmd.ROOT, input_file or src), copy)
+    log = os.path.splitext(copy)[0] + '.log'
+    for stale in (log, copy + '.log'):
+        if os.path.exists(stale):
+            os.remove(stale)
+    argv = mwcc_cmd.compile_argv(src, compiler=cc, overlay=overlay, input_file=copy, outdir=tmp)
+    if runner is not None:
+        if runner(argv, tmp) != 0:
+            raise SystemExit('compile failed')
+    else:
+        r = mwcc_cmd.run(argv)
+        if r.returncode != 0:
+            sys.stderr.write(r.stdout[-3000:])
+            raise SystemExit('compile failed')
+    if not os.path.exists(log):
+        log = copy + '.log' if os.path.exists(copy + '.log') else log
+    text = open(log, encoding='latin1').read()
+    if not keep:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return text, log
+
+
 def split_log(text):
     """[(function, header, body)] for every 'Dumping function' section, plus other lines attached to
     the preceding section."""
@@ -85,23 +116,7 @@ def main():
     ap.add_argument('--list', action='store_true', help='list functions and their passes, then exit')
     a = ap.parse_args()
 
-    cc = patched_compiler(a.src)
-    tmp = os.path.join(WORK, 'iro')
-    os.makedirs(tmp, exist_ok=True)
-    copy = os.path.join(tmp, os.path.basename(a.input or a.src))
-    shutil.copy2(os.path.join(mwcc_cmd.ROOT, a.input or a.src), copy)
-    log = os.path.splitext(copy)[0] + '.log'
-    for stale in (log, copy + '.log'):
-        if os.path.exists(stale):
-            os.remove(stale)
-    argv = mwcc_cmd.compile_argv(a.src, compiler=cc, overlay=a.overlay, input_file=copy, outdir=tmp)
-    r = mwcc_cmd.run(argv)
-    if r.returncode != 0:
-        sys.stderr.write(r.stdout[-3000:])
-        raise SystemExit('compile failed')
-    if not os.path.exists(log):
-        log = copy + '.log' if os.path.exists(copy + '.log') else log
-    text = open(log, encoding='latin1').read()
+    text, log = compile_log(a.src, a.input, a.overlay)
     sections = split_log(text)
     if a.list:
         seen = {}

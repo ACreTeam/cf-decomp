@@ -26,11 +26,7 @@
 #include <game/game/d_sv_auc.hpp>
 #include <game/game/d_save_building.hpp>
 
-// Saved game-clock offset (fn_8014D054 / fn_8014D064 / fn_8014D07C / fn_8014D09C).
-struct dSaveTimeOffset_c {
-    /* 0x0 */ s64 mOffset; // dTime_c::sOffset
-    /* 0x8 */ u8 _8[8];
-}; // size 0x10
+#include <game/game/d_sv_time_offset.hpp>
 
 // Skeleton members whose classes live in unsplit TUs. Their constructors keep the target's C names
 // until those TUs are split; the inline ctors reproduce the calls dSaveData_c::create makes.

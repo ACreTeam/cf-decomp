@@ -36,7 +36,7 @@ public:
 };
 
 
-// 0x0E at dPrivateData_c+0x1124. Play dates (fn_8014CCB4 sets a dYMD_c).
+// 0x0E at dPrivateData_c+0x1124. Play dates (dYMD_c).
 struct dPrivateDates_c {
     void init(); // 80139A14
     BOOL fn_80139A6C(); // 80139A6C; uses mDate0

@@ -40,22 +40,10 @@ f32 fn_8006E31C(dFgMngGround_c *g, int);                          // 8006E31C
 
 static inline BOOL fgMngInRange(u16 id, u16 lo, u16 hi) {
     BOOL in = FALSE;
-    if (id >= lo && id <= hi) {
+    if (!(id < lo || id > hi)) {
         in = TRUE;
     }
     return in;
-}
-
-static inline void fgMngStorePos(dFgMngCmd_c *cmd, int idx, const dFdAsPos_c *pos) {
-    int z = pos->mZ;
-    int x = pos->mX;
-    ((u8 *)&cmd->mDropPos[idx])[0] = x;
-    ((u8 *)&cmd->mDropPos[idx])[1] = z;
-}
-
-static inline void fgMngOffsetPos(dFdAsPos_c *pos, u16 origin, u8 dir) {
-    pos->mX = (dir >> 4) + (origin >> 8) - 8;
-    pos->mZ = (dir & 0xF) + (origin & 0xFF) - 8;
 }
 
 // 8046EFA0: the fruit of each fruit tree type (getFruit).
@@ -183,28 +171,12 @@ void dFgMngTask_c::proc() {
     finish();
 }
 
-static inline BOOL fgMngInRange(dItem::Item *item, u16 lo, u16 hi) {
+static inline BOOL fgMngInRange(const dItem::Item *item, u16 lo, u16 hi) {
     BOOL in = FALSE;
     if (item->mId >= lo && item->mId <= hi) {
         in = TRUE;
     }
     return in;
-}
-
-static inline int getGroupNum(u16 id) {
-    int num = 0;
-    dItem::Item item(id);
-    dItem::FgInfo *info = item.getFgInfo();
-    if (info != NULL && (u16)(int)info->mDropItem != dItem::ITEM_ID_NONE) {
-        if (fgMngInRange(&item, dItem::FG_CEDAR_SAPLING, dItem::FG_CEDAR_LIGHTS) || fgMngInRange(&item, dItem::FG_PALM_SAPLING, dItem::FG_PALM_FRUIT)) {
-            num = 2;
-        } else {
-            num = 3;
-        }
-    } else if (id == dItem::FG_TREE_FTR || id == dItem::FG_TREE_BELLS || id == dItem::FG_CEDAR_FTR || id == dItem::FG_CEDAR_BELLS) {
-        num = 1;
-    }
-    return num;
 }
 
 // 800A2584
@@ -214,7 +186,21 @@ void dFgMngTask_c::procGroup() {
     case FG_MNG_KIND_SHAKE_TREE_SPECIAL:
     case FG_MNG_KIND_CHOP_TREE:
     case FG_MNG_KIND_CHOP_TREE_SPECIAL: {
-        int num = getGroupNum(mPrevItem);
+        int num = 0;
+        u16 id = mPrevItem;
+        dItem::Item item(id);
+        dItem::FgInfo *info = item.getFgInfo();
+        if (info != NULL && (u16)(int)info->mDropItem != dItem::ITEM_ID_NONE) {
+            if (fgMngInRange(&item, dItem::FG_CEDAR_SAPLING, dItem::FG_CEDAR_LIGHTS) ||
+                fgMngInRange(&item, dItem::FG_PALM_SAPLING, dItem::FG_PALM_FRUIT)) {
+                num = 2;
+            } else {
+                num = 3;
+            }
+        } else if (id == dItem::FG_TREE_FTR || id == dItem::FG_TREE_BELLS || id == dItem::FG_CEDAR_FTR ||
+                   id == dItem::FG_CEDAR_BELLS) {
+            num = 1;
+        }
         for (int i = 0; i < num; i++) {
             int idx = fgMngTask_findGroup(mPlayer, i, FALSE);
             if (idx >= 0) {
@@ -371,18 +357,33 @@ BOOL fgMngTask_add(u8 player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 ite
 }
 
 // 800A2C98
-BOOL fgMngTask_replace(int player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 item, u16 item2, int kind,
+BOOL fgMngTask_replace(int player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 item, u16 item2, u32 kind,
                        u8 stage, u8 b2, u8 idx, u8 layer, s8 day) {
+    dFgMngTask_c *task;
     int i = fgMngTask_find(scene, &pos, layer);
     if (i >= 0) {
-        dFgMngTask_c *task = &sFgMngTaskList.mTasks[i];
+        task = &sFgMngTaskList.mTasks[i];
         if (!task->mActive) {
             switch (task->mKind) {
             case FG_MNG_KIND_SHAKE_TREE:
             case FG_MNG_KIND_SHAKE_TREE_SPECIAL:
             case FG_MNG_KIND_CHOP_TREE:
             case FG_MNG_KIND_CHOP_TREE_SPECIAL: {
-                int num = getGroupNum(task->mPrevItem);
+                int num = 0;
+                u16 id = task->mPrevItem;
+                dItem::Item item(id);
+                dItem::FgInfo *info = item.getFgInfo();
+                if (info != NULL && (u16)(int)info->mDropItem != dItem::ITEM_ID_NONE) {
+                    if (fgMngInRange(&item, dItem::FG_CEDAR_SAPLING, dItem::FG_CEDAR_LIGHTS) ||
+                        fgMngInRange(&item, dItem::FG_PALM_SAPLING, dItem::FG_PALM_FRUIT)) {
+                        num = 2;
+                    } else {
+                        num = 3;
+                    }
+                } else if (id == dItem::FG_TREE_FTR || id == dItem::FG_TREE_BELLS || id == dItem::FG_CEDAR_FTR ||
+                           id == dItem::FG_CEDAR_BELLS) {
+                    num = 1;
+                }
                 for (int j = 0; j < num; j++) {
                     int k = fgMngTask_findGroup(player, j, FALSE);
                     if (k >= 0) {
@@ -571,14 +572,15 @@ int fgMngTask_findOwn(int player, u32 scene, const dFdAsPos_c *pos, u32 layer) {
 
 // 800A3694
 int fgMngTask_findFree() {
+    dFgMngTask_c *task = sFgMngTaskList.mTasks;
     int i;
     int found = -1;
     for (i = 0; i < FG_MNG_TASK_NUM; i++) {
-        dFgMngTask_c *task = &sFgMngTaskList.mTasks[i];
         if (task->isFree()) {
             found = i;
             break;
         }
+        task++;
     }
     return found;
 }
@@ -587,9 +589,10 @@ int fgMngTask_findFree() {
 int fgMngTask_findActive(u8 player) {
     int i;
     int found = -1;
+    player &= 3;
     for (i = 0; i < FG_MNG_TASK_NUM; i++) {
         dFgMngTask_c *task = &sFgMngTaskList.mTasks[i];
-        if ((u32)(player & 3) == task->mPlayer && task->mActive) {
+        if (player == task->mPlayer && task->mActive) {
             found = i;
             break;
         }
@@ -698,10 +701,11 @@ void dFgMngStone_c::update() {
             mTimer--;
         }
         if (mTimer == 0) {
-            dFdAsPos_c pos(mPos >> 8, mPos & 0xFF);
+            dFdBase_c *fd;
+            dFdAsPos_c pos(mPos.mPos >> 8, mPos.mPos & 0xFF);
             if (fgMngTask_find(0, &pos, 0) < 0) {
                 u16 item = dItem::FG_STONE_A;
-                dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+                fd = fn_80190C44(FD_ID_TOWN);
                 mTimer = TIMER_NONE;
                 if (fd != NULL) {
                     dItem::Item *cur = fd->getItem(pos.mX, pos.mZ, 0);
@@ -709,7 +713,7 @@ void dFgMngStone_c::update() {
                         item = (u32)(cur->mId - dItem::FG_MONEY_ROCK_P0_A) % 5 + dItem::FG_STONE_A;
                     }
                 }
-                dFgMngProc_c::setUnitItem(fd, mPos >> 8, mPos & 0xFF, item, 0);
+                dFgMngProc_c::setUnitItem(fd, mPos.mPos >> 8, mPos.mPos & 0xFF, item, 0);
             }
         }
     }
@@ -719,10 +723,7 @@ void dFgMngStone_c::update() {
 void dFgMngStone_c::hit(dFdAsPos_c pos) {
     u8 *townFlags;
     if (mTimer < 0) {
-        int z = pos.mZ;
-        int x = pos.mX;
-        ((u8 *)&mPos)[1] = z;
-        ((u8 *)&mPos)[0] = x;
+        mPos.set(pos.mX, pos.mZ);
         mTimer = ((u32)(*fn_800AC28C(4) * 0x898) >> 12) + 0x1D1;
     }
     int max = HIT_MAX;
@@ -746,12 +747,15 @@ void dFgMngStone_c::hit(dFdAsPos_c pos) {
 
 // 800A3F20
 void dFgMngStone_c::spawn(const dFdAsPos_c *pos) {
-    int i;
+    int w;
+    int h;
+    dFdBase_c *fd;
     const u8 *dir;
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    int i;
+    fd = fn_80190C44(FD_ID_TOWN);
     if (fd != NULL) {
-        int w = fd->mBlockW * UT_X_NUM;
-        int h = fd->mBlockH * UT_Z_NUM;
+        w = fd->mBlockW * UT_X_NUM;
+        h = fd->mBlockH * UT_Z_NUM;
         dir = sAround8;
         for (i = 0; i < 8; i++, dir++) {
             dFdAsPos_c p;
@@ -776,11 +780,8 @@ BOOL dFgMngStone_c::drop(dFdBase_c *fd, const dFdAsPos_c *pos) {
     BOOL ok = FALSE;
     dItem::Item *cur = fd->getItem(pos->mX, pos->mZ, 0);
     if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->canPutItem(pos->mX, pos->mZ)) {
-        u16 shovel = dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId;
-        BOOL gold = FALSE;
-        if ((u16)fgMngProc_getMemberHeldItem(fn_800DCF58()) == shovel && cM::rndF(100.0f) < 10.0f) {
-            gold = TRUE;
-        }
+        dItem::Item shovel(dItem::ITEM_IDX_SILVER_SHOVEL);
+        BOOL gold = fgMngProc_getMemberHeldItem(fn_800DCF58()) == shovel.getId() && cM::rndF(100.0f) < 10.0f;
         u16 item;
         u8 stage;
         if (gold) {
@@ -905,8 +906,10 @@ BOOL fgMngState_isFreeOfNpcs(int x, int z) {
     for (int i = 0; i < 8; i++, prof++) {
         dFgMngActor_c *actor = (dFgMngActor_c *)fManager_c::searchBaseByProfName(*prof, NULL);
         if (actor != NULL && (actor->mState == 1 || actor->mProfName == 0x9F)) {
-            int ux = (int)actor->mPos.x >> 5;
-            int uz = (int)actor->mPos.z >> 5;
+            f32 fx = actor->mPos.x;
+            f32 fz = actor->mPos.z;
+            int ux = (int)fx >> 5;
+            int uz = (int)fz >> 5;
             if (ux == x && uz == z) {
                 if (actor->mProfName != 0x6E || !dSaveData_c::getRaw()->isFlag(4)) {
                     return FALSE;
@@ -914,11 +917,14 @@ BOOL fgMngState_isFreeOfNpcs(int x, int z) {
             }
         }
     }
-    if (dSaveData_c::getTown()->mNewConstruction == NEW_CONSTRUCTION_FOUNTAIN) {
+    int construction = dSaveData_c::getTown()->mNewConstruction;
+    if (construction == NEW_CONSTRUCTION_FOUNTAIN) {
         dFgMngActor_c *actor = (dFgMngActor_c *)fManager_c::searchBaseByProfName(0x93, NULL);
         if (actor != NULL && actor->mState == 1) {
-            int ux = (int)actor->mPos.x >> 5;
-            int uz = (int)actor->mPos.z >> 5;
+            f32 fx = actor->mPos.x;
+            f32 fz = actor->mPos.z;
+            int ux = (int)fx >> 5;
+            int uz = (int)fz >> 5;
             if (ux == x && uz == z) {
                 return FALSE;
             }
@@ -1016,7 +1022,6 @@ void dFgMngCmd_c::init() {
 BOOL dFgMngCmd_c::exec() {
     dFdAsPos_c pos(mPos >> 8, mPos & 0xFF);
     dFdAsPos_c pos2;
-    u16 *list;
     BOOL ok;
     switch (mKind) {
     case FG_MNG_KIND_BLOCKED:
@@ -1026,7 +1031,7 @@ BOOL dFgMngCmd_c::exec() {
         return TRUE;
     case FG_MNG_KIND_SWAP:
     case FG_MNG_KIND_PUT_PENDING:
-        pos2 = dFdAsPos_c(mDropPos[0] >> 8, mDropPos[0] & 0xFF);
+        pos2 = dFdAsPos_c(mDropPos[0].mPos >> 8, mDropPos[0].mPos & 0xFF);
         break;
     }
     dItem::Item *item = fn_80190C44(fn_80190C58(mScene))->getItem(pos.mX, pos.mZ, 0);
@@ -1045,10 +1050,9 @@ BOOL dFgMngCmd_c::exec() {
     if (mHasDrops) {
         u16 group = mDropItem;
         pos2 = dFdAsPos_c(-1, -1);
-        list = mDropPos;
-        for (int i = 0; i < 3; i++, list++) {
-            pos = dFdAsPos_c(*list >> 8, *list & 0xFF);
-            if (mDropPos[i] != FG_MNG_POS_NONE) {
+        for (int i = 0; i < 3; i++) {
+            pos = dFdAsPos_c(*(u16 *)&mDropPos[i] >> 8, *(u16 *)&mDropPos[i] & 0xFF);
+            if (mDropPos[i].mPos != FG_MNG_POS_NONE) {
                 u8 layer = mLayer;
                 fgMngTask_replace(mPlayer, mScene, pos, pos2, group, dItem::ITEM_ID_NONE, FG_MNG_KIND_DROP, 0, 0, i, layer, -1);
             }
@@ -1078,9 +1082,9 @@ void dFgMngReq_c::send(BOOL local, int player, u8 scene) {
     cmd.mNewItem = mItem;
     cmd.mItem = mItem2;
     cmd.mScene = scene;
-    cmd.mDropPos[0] = FG_MNG_POS_NONE;
-    cmd.mDropPos[1] = FG_MNG_POS_NONE;
-    cmd.mDropPos[2] = FG_MNG_POS_NONE;
+    cmd.mDropPos[0].mPos = FG_MNG_POS_NONE;
+    cmd.mDropPos[1].mPos = FG_MNG_POS_NONE;
+    cmd.mDropPos[2].mPos = FG_MNG_POS_NONE;
     int size = dFgMngCmd_c::SEND_SIZE_SHORT;
     if (local) {
         getCurrentScene();
@@ -1098,7 +1102,7 @@ void dFgMngReq_c::send(BOOL local, int player, u8 scene) {
                 case FG_MNG_KIND_SWAP:
                 case FG_MNG_KIND_PUT_PENDING:
                     size = dFgMngCmd_c::SEND_SIZE_FULL;
-                    cmd.mDropPos[0] = sFgMngTaskList.mTasks[fgMngTask_findActive(player)].mPos;
+                    cmd.mDropPos[0].mPos = sFgMngTaskList.mTasks[fgMngTask_findActive(player)].mPos;
                     break;
                 }
                 break;
@@ -1140,16 +1144,20 @@ dFgMngCmdEntry_c::~dFgMngCmdEntry_c() {}
 
 // 800A4E50
 int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {
+    const int *order;
+    int i;
     nw4r::math::VEC3 center;
     dFdBase_c::getUnitCenterPos(&center, pos->mX, pos->mZ);
     int ground = fn_80072E94(&center);
     BOOL blocked = FALSE;
-    const int *order = sSpotOrder[dir];
-    for (int i = 0; i < 8; i++, order++) {
+    order = sSpotOrder[dir];
+    for (i = 0; i < 8; i++, order++) {
         dFdAsPos_c p;
         u8 d = sDirOffset[*order];
-        p.mX = (d >> 4) + pos->mX - 8;
-        p.mZ = (d & 0xF) + pos->mZ - 8;
+        s32 dx = (d >> 4) - 8;
+        s32 dz = (d & 0xF) - 8;
+        p.mX = pos->mX + dx;
+        p.mZ = pos->mZ + dz;
         if (fgMngLock_find(mScene, (dFdAsPos_c *)&p, 0) < 0) {
             dItem::Item *cur = fd->getItem(p.mX, p.mZ, 0);
             if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->canPutItem(p.mX, p.mZ)) {
@@ -1208,10 +1216,14 @@ int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {
         }
     }
     u8 d = sDirOffset[sSpotOrder[dir][0]];
-    pos->mX = (d >> 4) + pos->mX - 8;
-    pos->mZ = (d & 0xF) + pos->mZ - 8;
+    s32 dx = (d >> 4) - 8;
+    s32 dz = (d & 0xF) - 8;
+    pos->mX += dx;
+    pos->mZ += dz;
     switch (blocked) {
-    case TRUE:
+    case FALSE:
+        break;
+    default:
         return SPOT_BLOCKED;
     }
     return SPOT_NONE;
@@ -1243,17 +1255,20 @@ BOOL dFgMngCmd_c::planFruit(int player, u16 id) {
     int res[3];
     for (int i = 0; i < num; i++) {
         u8 d = sDirOffset[sFruitDir[i]];
-        fgMngOffsetPos(&pos[i], mPos, d);
+        const u16 p = mPos;
+        s32 dx = (d >> 4) - 8;
+        s32 dz = (d & 0xF) - 8;
+        pos[i] = dFdAsPos_c((p >> 8) + dx, (p & 0xFF) + dz);
         res[i] = searchSpot(&pos[i], i, fd);
         switch (res[i]) {
         case SPOT_NONE:
-            mDropPos[i] = FG_MNG_POS_NONE;
+            mDropPos[i].mPos = FG_MNG_POS_NONE;
             break;
         case SPOT_FOUND:
             if (player == fn_800DCF58()) {
                 fgMngTask_add(player, 0, pos[i], none, fruit, dItem::ITEM_ID_NONE, FG_MNG_KIND_DROP, 0, 0, i, 0, -1);
             }
-            fgMngStorePos(this, i, &pos[i]);
+            mDropPos[i].set(pos[i].mX, pos[i].mZ);
             break;
         default:
             for (int j = 0; j < i; j++) {
@@ -1269,19 +1284,23 @@ BOOL dFgMngCmd_c::planFruit(int player, u16 id) {
 // 800A54B0: the one item a shaken tree drops (a random item, or money), beside the tree on the
 // player's side.
 BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
+    dFdBase_c *fd;
+    u16 item;
     int base = 0;
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    nw4r::math::VEC3 at;
+    dFdAsPos_c pos;
+    fd = fn_80190C44(FD_ID_TOWN);
     if (fd == NULL) {
         return TRUE;
     }
-    u16 item;
     switch (req->mTarget) {
     case dItem::FG_TREE_FTR:
     case dItem::FG_TREE_BEES:
     case dItem::FG_CEDAR_FTR:
     case dItem::FG_CEDAR_BEES: {
         dItem::Item got;
-        dFgMngItemFilter_c filter = lbl_8059FF80;
+        dFgMngItemFilter_c filter;
+        filter = lbl_8059FF80;
         if (*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 0x10) {
             filter.mNum = 8;
         }
@@ -1303,23 +1322,24 @@ BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
         base = 3;
         break;
     }
-    nw4r::math::VEC3 at;
     fgMngProc_getUnitGroundPos(&at, req->mPos >> 8, req->mPos & 0xFF);
     int idx = base + fgMngState_isPlayerLeftOf(player, &at.x);
     u8 d = sDirOffset[sFruitDir[idx]];
-    dFdAsPos_c pos;
-    fgMngOffsetPos(&pos, mPos, d);
-    int res = searchSpot(&pos, 0, fd);
+    const u16 p = mPos;
+    s32 dx = (d >> 4) - 8;
+    s32 dz = (d & 0xF) - 8;
+    pos = dFdAsPos_c((p >> 8) + dx, (p & 0xFF) + dz);
+    int res = searchSpot(&pos, idx, fd);
     dFdAsPos_c none(-1, -1);
     switch (res) {
     case SPOT_NONE:
-        mDropPos[0] = FG_MNG_POS_NONE;
+        mDropPos[0].mPos = FG_MNG_POS_NONE;
         break;
     case SPOT_FOUND:
         if (player == fn_800DCF58()) {
             fgMngTask_add(player, 0, pos, none, item, dItem::ITEM_ID_NONE, FG_MNG_KIND_DROP, 0, 0, 0, 0, -1);
         }
-        fgMngStorePos(this, 0, &pos);
+        mDropPos[0].set(pos.mX, pos.mZ);
         break;
     default:
         return FALSE;
@@ -1337,9 +1357,9 @@ int dFgMngCmd_c::plan(dFgMngReq_c *req, int player) {
     case FG_MNG_KIND_CHOP_TREE: {
         id = req->mTarget;
         dItem::Item item;
-        mDropPos[0] = FG_MNG_POS_NONE;
-        mDropPos[1] = FG_MNG_POS_NONE;
-        mDropPos[2] = FG_MNG_POS_NONE;
+        mDropPos[0].mPos = FG_MNG_POS_NONE;
+        mDropPos[1].mPos = FG_MNG_POS_NONE;
+        mDropPos[2].mPos = FG_MNG_POS_NONE;
         item = req->mTarget;
         dItem::FgInfo *info = item.getFgInfo();
         if (info != NULL && (u16)(int)info->mDropItem != dItem::ITEM_ID_NONE) {
@@ -1372,7 +1392,7 @@ int dFgMngCmd_c::plan(dFgMngReq_c *req, int player) {
 // 800A588C
 BOOL dFgMngCmd_c::isPlanned(int x, int z) {
     for (int i = 0; i < 3; i++) {
-        if (x == mDropPos[i] >> 8 && z == (mDropPos[i] & 0xFF)) {
+        if (x == mDropPos[i].mPos >> 8 && z == (mDropPos[i].mPos & 0xFF)) {
             return TRUE;
         }
     }

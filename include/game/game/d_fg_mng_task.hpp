@@ -120,14 +120,18 @@ public:
     void notify(BOOL keep);                                              // 800A29D0
     void release();                                                      // 800A314C
 
-    BOOL isOwner(u32 player) const { return player == mPlayer && mActive; }
-    BOOL isAt(const dFdAsPos_c *pos) const { return pos->mX == getX() && pos->mZ == getZ(); }
+    BOOL isOwner(u32 player) const { return (player == mPlayer && mActive) ? TRUE : FALSE; }
+    BOOL isAt(const dFdAsPos_c *pos) const {
+        u16 p = mPos;
+        return (pos->mX == p >> 8 ? TRUE : FALSE) && pos->mZ == (p & 0xFF);
+    }
     BOOL isAtLayer(const dFdAsPos_c *pos, u32 layer) const { return isAt(pos) && layer == mLayer; }
     BOOL isScene(u32 scene) const { return scene == mScene || scene == FG_MNG_SCENE_ANY; }
     BOOL isAtScene(u32 scene, const dFdAsPos_c *pos, u32 layer) const {
         return isAtLayer(pos, layer) && isScene(scene);
     }
-    BOOL isOwnAtX(int player, const dFdAsPos_c *pos) const { return player == mPlayer && pos->mX == getX(); }
+    BOOL isPlayer(int player) const { return player == mPlayer ? TRUE : FALSE; }
+    BOOL isOwnAtX(int player, const dFdAsPos_c *pos) const { return isPlayer(player) && pos->mX == getX(); }
     BOOL isOwnAt(int player, const dFdAsPos_c *pos) const { return isOwnAtX(player, pos) && pos->mZ == getZ(); }
     BOOL isOwnAtScene0(int player, u32 scene, const dFdAsPos_c *pos) const {
         return isOwnAt(player, pos) && scene == mScene;
@@ -139,10 +143,19 @@ public:
     BOOL isOwnerAtP(u32 player, const dFgMngTaskPos_c *pos) const {
         return isOwnerAtXP(player, pos) && (mPos & 0xFF) == (pos->mPos & 0xFF);
     }
-    BOOL isOwnerOf(const dFgMngTask_c *other) const { return mPlayer == other->mPlayer && mActive; }
-    BOOL isAtXOf(const dFgMngTask_c *other) const { return isOwnerOf(other) && mPos >> 8 == other->mLinkPos >> 8; }
-    BOOL isLinkOf(const dFgMngTask_c *other) const { return isAtXOf(other) && (mPos & 0xFF) == (other->mLinkPos & 0xFF); }
-    BOOL isFree() const { return getX() == 0xFF && getZ() == 0xFF; }
+    BOOL isOwnerOf(const dFgMngTask_c *other) const { return (mPlayer == other->mPlayer && mActive) ? TRUE : FALSE; }
+    BOOL isSameX(dFgMngTaskPos_c pos) const { return mPos >> 8 == pos.mPos >> 8; }
+    BOOL isSameZ(dFgMngTaskPos_c pos) const { return (mPos & 0xFF) == (pos.mPos & 0xFF); }
+    BOOL isAtXOf(const dFgMngTask_c *other) const { return isOwnerOf(other) && isSameX(dFgMngTaskPos_c(other->mLinkPos)); }
+    BOOL isLinkOf(const dFgMngTask_c *other) const { return isAtXOf(other) && isSameZ(dFgMngTaskPos_c(other->mLinkPos)); }
+    BOOL isFree() const {
+        BOOL ret = FALSE;
+        u16 p = mPos;
+        if (p >> 8 == 0xFF && (p & 0xFF) == 0xFF) {
+            ret = TRUE;
+        }
+        return ret;
+    }
 
     int getX() const { return mPos >> 8; }
     int getZ() const { return mPos & 0xFF; }
@@ -186,7 +199,7 @@ extern dFgMngTaskList_c sFgMngTaskList; // 80589B7C
 
 BOOL fgMngTask_add(u8 player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 item, u16 item2, int kind,
                    u8 stage, u8 b2, u8 idx, u8 layer, s8 day);                            // 800A2B0C
-BOOL fgMngTask_replace(int player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 item, u16 item2, int kind,
+BOOL fgMngTask_replace(int player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 item, u16 item2, u32 kind,
                        u8 stage, u8 b2, u8 idx, u8 layer, s8 day);                        // 800A2C98
 void fgMngTask_procAt(u8 scene, const dFdAsPos_c *pos, u32 layer);                        // 800A2F58
 void fgMngTask_procAt(int x, int z, u32 layer);                                           // 800A2F7C
@@ -236,6 +249,23 @@ struct dFgMngPlayerState_c {
     /* 0x20 */ u32 _20;
 }; // size 0x24
 
+// A unit position packed into a halfword: x in the high byte, z in the low byte
+// (dFgMngCmd_c::mDropPos; FG_MNG_POS_NONE when unused).
+struct dFgMngPackedPos_c {
+    void set(u8 x, u8 z) {
+        mX = x;
+        mZ = z;
+    }
+
+    union {
+        /* 0x0 */ u16 mPos;
+        struct {
+            /* 0x0 */ u8 mX;
+            /* 0x1 */ u8 mZ;
+        };
+    };
+}; // size 0x2
+
 // A rock: hits and the respawn countdown (dFgMngState_c + 0x6AC).
 struct dFgMngStone_c {
     enum {
@@ -251,7 +281,7 @@ struct dFgMngStone_c {
     void spawn(const dFdAsPos_c *pos);                  // 800A3F20
     BOOL drop(dFdBase_c *fd, const dFdAsPos_c *pos);    // 800A4000
 
-    /* 0x0 */ u16 mPos;
+    /* 0x0 */ dFgMngPackedPos_c mPos;
     /* 0x2 */ s16 mHit;
     /* 0x4 */ s16 mTimer;
 }; // size 0x6
@@ -329,6 +359,9 @@ struct dFgMngCmd_c {
     int plan(dFgMngReq_c *req, int player);                     // 800A5738
     BOOL isPlanned(int x, int z);                               // 800A588C
 
+    int getPlayer() const { return mPlayer; }
+    int getKind() const { return mKind; }
+
     union {
         u16 mRaw; // copied as one halfword
         struct {
@@ -346,7 +379,7 @@ struct dFgMngCmd_c {
     /* 0x04 */ u16 mNewItem; // 0xFFFF: a free command
     /* 0x06 */ u16 mItem;
     /* 0x08 */ u8 mScene;
-    /* 0x0A */ u16 mDropPos[3];
+    /* 0x0A */ dFgMngPackedPos_c mDropPos[3];
     /* 0x10 */ u16 mDropItem;
 }; // size 0x12
 

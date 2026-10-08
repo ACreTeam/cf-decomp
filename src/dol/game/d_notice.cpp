@@ -5,12 +5,6 @@
 #include <game/cLib/c_lib.hpp>
 #include <cstring>
 
-// Dependencies whose owners are not recovered yet (unsplit TU 8014BD88..80153818).
-extern "C" {
-void fn_8014CC98(dYMD_c *date, const dTime_c *time);
-int fn_8014CF88(const dYMD_c *a, const dYMD_c *b); // 1 when a is later than b
-}
-
 // ---------------------------------------------------------------------------
 // dNotice_c
 
@@ -35,7 +29,7 @@ void dNotice_c::clear() {
 void dNotice_c::init(const dTime_c *date) {
     clear();
     mFlags = 1;
-    fn_8014CC98(&mDate, date);
+    mDate.set(date);
 }
 
 // 8011AD94
@@ -217,7 +211,7 @@ void dNoticeBoard_c::sort(int count) {
             a = at(i);
             for (int j = i + 1; j < num; j++) {
                 b = at(j);
-                if (fn_8014CF88(&a->mDate, &b->mDate) == 1) {
+                if (a->mDate.compare(&b->mDate) == 1) {
                     tmp = *a;
                     *a = *b;
                     *b = tmp;

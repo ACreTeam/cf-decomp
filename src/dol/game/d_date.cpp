@@ -6,13 +6,6 @@
 #include <revolution/OS/OSTime.h>
 
 
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-BOOL fn_8014D054(dSaveTimeOffset_c *offset);
-BOOL fn_8014D064(dSaveTimeOffset_c *offset);
-void fn_8014D09C(dSaveTimeOffset_c *offset);
-}
-
 // 8047B150
 static const u8 sDaysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // 8047B15C
@@ -125,7 +118,7 @@ void dTime_c::setOffset(dTime_c time) {
 // 8016D4D8
 void dTime_c::loadOffset() {
     sOffset = dSaveData_c::getTown()->mTimeOffset.mOffset;
-    if (fn_8014D064(&dSaveData_c::getTown()->mTimeOffset)) {
+    if (dSaveData_c::getTown()->mTimeOffset.isAdjusted()) {
         setFlag(TIME_FLAG_ADJUSTED);
     } else {
         clearFlag(TIME_FLAG_ADJUSTED);
@@ -137,7 +130,7 @@ void dTime_c::loadOffset() {
 void dTime_c::saveOffset() {
     dSaveData_c::getTown()->mTimeOffset.mOffset = sOffset;
     if (isFlag(TIME_FLAG_ADJUSTED)) {
-        fn_8014D09C(&dSaveData_c::getTown()->mTimeOffset);
+        dSaveData_c::getTown()->mTimeOffset.setAdjusted();
     }
 }
 
@@ -146,7 +139,7 @@ void dTime_c::resetOffset() {
     if (isFlag(TIME_FLAG_ADJUSTED)) {
         dPostBox_c::get()->scheduleDelivery();
     }
-    fn_8014D054(&dSaveData_c::getTown()->mTimeOffset);
+    dSaveData_c::getTown()->mTimeOffset.clearFlags();
     clearFlag(TIME_FLAG_ADJUSTED);
 }
 
