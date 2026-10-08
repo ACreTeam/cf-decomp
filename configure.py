@@ -628,7 +628,7 @@ config.libs = [
             Object(Matching, "dol/game/d_fish_info.cpp"),
             Object(Matching, "dol/game/d_fg_data.cpp"),
             Object(NonMatching, "dol/game/d_field_assessment.cpp", extra_cflags=["-sym on"]),
-            Object(Matching, "dol/game/d_msg_rcpt.cpp"),
+            Object(NonMatching, "dol/game/d_msg.cpp"),
             Object(Matching, "dol/game/d_fg_item.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_friend.cpp"),
             Object(Matching, "dol/game/d_insect_info.cpp"),
@@ -689,7 +689,7 @@ config.libs = [
             Object(Matching, "dol/game/d_police_box.cpp"),
             Object(Matching, "dol/game/d_recycle_bin.cpp"),
             Object(Matching, "dol/game/d_script.cpp", extra_cflags=["-sym on"]),
-            Object(Matching, "dol/game/d_field_unit_attr.cpp"),
+            Object(NonMatching, "dol/game/d_str.cpp"),
             Object(Matching, "dol/game/d_string.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_date.cpp"),
             # Stored as CP932; pass directly to MWCC without UTF-8 conversion.

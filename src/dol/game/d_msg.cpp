@@ -1,3 +1,8 @@
+// dMsg: message tag dispatch, windows and text (dMsg::Seq_c, Word_c, Ruby_c, RndJump_c, ...),
+// the receipt Rcpt_c and the composer Comp_c (dState<Comp_c>). .text 8019C414..801A6468.
+// TODO: only dMsg::Rcpt_c (801A2168..801A2384) is decompiled. The rest of the TU, the tag/window
+// code before it and Comp_c after it plus their data, still has to be done.
+
 // TODO: remove this once we've got the RTTI at the right location.
 // Keep the duplicate RTTI name string at 804FB42C even when the linker
 // selects the earlier weak RTTI record, which references 804A0640.

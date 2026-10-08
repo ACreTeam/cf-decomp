@@ -1,5 +1,7 @@
-// Per-unit field attribute map (dFdUnitAttr_c).
-// .text 80167C08..80167E08
+// dSTR: town structures (banks, flatness/copy checks, collision bank) and the per-unit field
+// attribute map dFdUnitAttr_c. .text 80166990..8016AE68.
+// TODO: only dFdUnitAttr_c (80167C08..80167E08) is decompiled. The rest of the TU, the dSTR code
+// before and after it plus its data and __sinit (8016AB1C), still has to be done.
 #include <game/game/d_field_info.hpp>
 
 extern "C" void fn_8006CD4C(int *blockX, int *blockZ, int unitX, int unitZ); // 8006CD4C: block of a unit
