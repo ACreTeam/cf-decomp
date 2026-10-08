@@ -1113,7 +1113,7 @@ config.libs = [
             Object(Matching, "d_skyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_skyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_skyNP/d_sky.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "d_skyNP/d_sky.cpp", extra_cflags=["-sym on"]),
         ],
     ),
 ]
