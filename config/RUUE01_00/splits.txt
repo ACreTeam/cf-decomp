@@ -430,7 +430,7 @@ dol/game/d_font.cpp:
 	.data       start:0x804E5AE8 end:0x804E5B10
 	.bss        start:0x8058B6D8 end:0x8058B760
 
-dol/game/d_footmark.cpp:
+dol/game/d_grass_wear.cpp:
 	.text       start:0x800A773C end:0x800A858C
 	.ctors      start:0x80465680 end:0x80465684 align:8
 	.rodata     start:0x8046F228 end:0x8046F268

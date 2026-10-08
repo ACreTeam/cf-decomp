@@ -92,8 +92,6 @@ void fn_80169B54();
 void fn_80169B64();
 void fn_80169BB4();
 void fn_8014D89C(void *events, int id);
-f32 fn_80074D64(int x, int z);
-f32 fn_80074974(const nw4r::math::VEC3 *pos, int a);
 int fn_800812C8(int blockType);
 void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
@@ -118,8 +116,6 @@ BOOL fn_8018EEEC();
 void fn_8018EEF4();
 void fn_8018EE7C();
 nw4r::math::VEC3 *fn_8016A28C();
-void fn_800755A0(int bg);
-f32 fn_80073510(const nw4r::math::VEC3 *pos);
 void fn_800D16E8();
 int fn_801017B8();
 const u8 *fn_800AC28C(int idx);
@@ -129,9 +125,6 @@ void fn_800C7830(void *obj);
 u32 fn_8008299C(const mVec3_c *pos);
 BOOL fn_80087820(dEffect_c *effect, const char *name, const mVec3_c *pos, const mAng3_c *ang, const mVec3_c *scale);
 f32 fn_8044B83C(EGG::Effect *effect);
-int fn_8006E1BC(void *check, const nw4r::math::VEC3 *pos, int, int, int);
-int fn_80072E94(const nw4r::math::VEC3 *pos);
-BOOL fn_800737E4(int x, int z, int attr, int x2, int z2);
 int fn_80190C58(int a);
 void fn_800C77B8(int player);
 void fn_800C77D0(int player);
@@ -1589,10 +1582,10 @@ void dFgMngProc_c::checkCedarSapling(dFdBase_c *fd, dItem::Item *item, int *size
     checkSapling(fd, item, size, x, z);
 }
 
-// 80094AB4: a sapling dies on ground other than type 2 (getPlantType) or with an obstacle in
+// 80094AB4: a sapling dies on ground other than BG_PLANT_SOIL (getPlantType) or with an obstacle in
 // the 8 units around it.
 void dFgMngProc_c::checkSapling(dFdBase_c *fd, dItem::Item *item, int *size, int x, int z) {
-    if (fd->getPlantType(x, z) != 2) {
+    if (fd->getPlantType(x, z) != BG_PLANT_SOIL) {
         killTree(fd, item, x, z);
     } else if (!isSaplingSpaceFree(fd, size, x, z)) {
         killTree(fd, item, x, z);
@@ -2434,7 +2427,7 @@ void dFgMngProc_c::removeTreesInWater(dFdBase_c *fd, int blockW, int blockH) {
         for (bx = 1; bx < blockW + 1; bx++) {
             for (uz = 0; uz < UT_Z_NUM; uz++) {
                 for (ux = 0; ux < UT_X_NUM; ux++) {
-                    if (fd->getPlantType(bx, bz, ux, uz) != 2) {
+                    if (fd->getPlantType(bx, bz, ux, uz) != BG_PLANT_SOIL) {
                         dItem::Item *item = fd->getItem(bx, bz, ux, uz, 0);
                         if (item != NULL) {
                             dItem::FgInfo *info = item->getFgInfo();
@@ -2979,8 +2972,8 @@ BOOL dFgMngProc_c::isGrassUnit(dFdBase_c *fd, int x, int z) {
 BOOL dFgMngProc_c::isGroundUnit(dFdBase_c *fd, int x, int z) {
     BOOL ok = FALSE;
     switch (fd->getDigType(x, z)) {
-    case 0:
-    case 1:
+    case BG_DIG_SOIL:
+    case BG_DIG_SAND:
         ok = dFgMngProc_c::isUnitFree(x, z);
         break;
     }
@@ -3036,17 +3029,17 @@ BOOL dFgMngProc_c::isRafflesiaUnit(dFdBase_c *fd, int x, int z) {
     int i;
     ok = FALSE;
     switch (fd->getPlantType(x, z)) {
-    case 2:
+    case BG_PLANT_SOIL:
         if (dFgMngProc_c::isUnitFree(x, z)) {
             ok = TRUE;
             for (i = 0, ofs = sAround8; i < 8; i++, ofs++) {
                 nx = x + (*ofs >> 4) - 8;
                 nz = z + (*ofs & 0xF) - 8;
                 if (fd->getItem(nx, nz, 0) != NULL) {
-                    f32 height = fn_80074D64(nx, nz);
+                    f32 height = dBGCF::getUnitBaseY(nx, nz);
                     nw4r::math::VEC3 pos;
                     dFdBase_c::getUnitCenterPos(&pos, nx, nz);
-                    if (height != fn_80074974(&pos, 1)) {
+                    if (height != dBGCF::getGroundY((const mVec3_c *)&pos, TRUE)) {
                         ok = FALSE;
                         break;
                     }
@@ -3067,8 +3060,8 @@ BOOL dFgMngProc_c::isFlowerUnit(dFdBase_c *fd, int x, int z) {
 BOOL dFgMngProc_c::isDigUnit(dFdBase_c *fd, int x, int z) {
     BOOL ok = FALSE;
     switch (fd->getDigType(x, z)) {
-    case 0:
-    case 1:
+    case BG_DIG_SOIL:
+    case BG_DIG_SAND:
         ok = dFgMngProc_c::isUnitFree(x, z);
         break;
     }
@@ -4180,9 +4173,9 @@ void fgMngProc_updateFrame() {
                 int x, z;
                 dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1);
                 dFdBase_c::getUnitCenterPos(&pos, x, z);
-                fn_800755A0(1);
-                pos.y = fn_80073510(&pos);
-                fn_800755A0(0);
+                dBGCF::setCurrentBg(1);
+                pos.y = dBGCF::getUnitY((const mVec3_c *)&pos);
+                dBGCF::setCurrentBg(0);
                 fn_80091AF8()->request(SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
             }
         } else {
@@ -4778,22 +4771,12 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, c
     }
 }
 
-// Result of the ground check fn_8006E1BC.
-struct dFgMngGroundCheck_c {
-    /* 0x00 */ u8 _00[0x30];
-    /* 0x30 */ int _30;
-    /* 0x34 */ int mAttr;
-    /* 0x38 */ u8 _38[0x54];
-}; // size 0x8C
-
-// 8009D68C: ground check at the unit's position: TRUE for attribute 0x17 or result _30 == 2;
-// caller d_fg_draw (hedged: meaning of the attribute unknown).
+// 8009D68C: ground check at the unit's position: TRUE for sand or sea water; caller d_fg_draw.
 BOOL fgMngProc_isUnitSpecialGround(int x, int z) {
     nw4r::math::VEC3 pos;
     fgMngProc_getUnitGroundPos(&pos, x, z);
-    dFgMngGroundCheck_c check;
-    fn_8006E1BC(&check, &pos, 0, 0, 0);
-    if (check.mAttr == 0x17 || check._30 == 2) {
+    dBGCF::groundChk_c check((const mVec3_c *)&pos, dBGCF::LAYER_TOP, 0, 0);
+    if (check.mAttr == BG_ATTR_SAND || check.mWater == BG_WATER_SEA) {
         return TRUE;
     }
     return FALSE;
@@ -4867,7 +4850,7 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     }
     mVec3_c pos = player->mPos;
     angle = player->mAngle.y;
-    attr = fn_80072E94(&pos);
+    attr = dBGCF::getUnitQuarter(&pos);
     f32 px = pos.x;
     f32 pz = pos.z;
     pu.mX = (int)px >> 5;
@@ -4898,7 +4881,7 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
         x = (off >> 4) + pu.mX - 8;
         z = (off & 0xF) + pu.mZ - 8;
         dItem::Item *item = fd->getItem(x, z, 0);
-        if (item != NULL && inRange(item, dItem::FG_HOLE, dItem::FG_HOLE) && fn_800737E4(pu.mX, pu.mZ, attr, x, z) &&
+        if (item != NULL && inRange(item, dItem::FG_HOLE, dItem::FG_HOLE) && dBGCF::checkWalkable(pu.mX, pu.mZ, attr, x, z) &&
             !(x == ax && z == az) && !(x == bx && z == bz)) {
             dFdAsPos_c unit;
             unit.mX = x;
@@ -5086,12 +5069,12 @@ void fgMngProc_clearFg94() {
     dFgMngProc_c::clearFg94();
 }
 
-// 8009E15C: ground position of town unit (x, z) (dFdBase_c::getUnitGroundPos with fn_800755A0
+// 8009E15C: ground position of town unit (x, z) (dFdBase_c::getUnitGroundPos with dBGCF::setCurrentBg
 // set around it).
 void fgMngProc_getUnitGroundPos(nw4r::math::VEC3 *pos, int x, int z) {
-    fn_800755A0(1);
+    dBGCF::setCurrentBg(1);
     dFdBase_c::getUnitGroundPos(pos, x, z);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(0);
 }
 
 // 8009E1BC: copies the assessment's has-trash / has-spoiled-turnip / has-candy bits into the

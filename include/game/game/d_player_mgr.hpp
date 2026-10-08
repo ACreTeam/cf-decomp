@@ -152,15 +152,6 @@ extern dPlayerMgr_c lbl_805D2440;
 extern s16 sLookPitchMax; // 8074E600: 10 degrees
 extern s16 sLookYawMax;   // 8074E602: 45 degrees
 
-// Arguments of the ground check used by the splash effects (fn_8006E1BC).
-struct dGroundCheck_c {
-    /* 0x00 */ u8 _00[0x34];
-    /* 0x34 */ int _34; // ground attribute
-    /* 0x38 */ u8 _38[0x4];
-    /* 0x3C */ f32 _3C; // height
-    /* 0x40 */ u8 _40[0x10];
-};
-
 // Object passed to the splash effect callback (fn_801022B8).
 struct dEffectTarget_c {
     /* 0x00 */ u8 _00[0xAC];

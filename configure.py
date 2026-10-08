@@ -245,6 +245,11 @@ else:
     cflags_base.append("-DNDEBUG=1")
     cflags_clib.append("-DNDEBUG=1")
 
+# Matching builds keep objects that exist only to reproduce the original layout
+if not config.non_matching:
+    cflags_base.append("-DMUST_MATCH")
+    cflags_clib.append("-DMUST_MATCH")
+
 # Warning flags
 if args.warn == "all":
     cflags_base.append("-W all")
@@ -621,6 +626,7 @@ config.libs = [
             Object(Matching, "dol/game/d_actor.cpp"),
             Object(Matching, "dol/game/d_base.cpp"),
             Object(Matching, "dol/game/d_bgc.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_bgcf.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_field_block.cpp"),
             Object(Matching, "dol/game/d_demo_actor.cpp"),
             Object(Matching, "dol/game/d_field_info.cpp", extra_cflags=["-sym on"]),

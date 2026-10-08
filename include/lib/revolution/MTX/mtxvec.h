@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+void fn_803911A4(const Mtx mtx, const Vec* vec, Vec* out); // like PSMTXMultVec (also applies the translation)
 void PSMTXMultVec(const Mtx mtx, const Vec* vec, Vec* out);
 
 #ifdef __cplusplus

@@ -29,6 +29,9 @@ block_relocations:
 # 80514A80: a word inside lbl_80509320 (binary data) that looks like 8046E62A, inside d_event's
 # sJpAutumnMoonDates. Not a pointer.
 - source: 0x80514A80
+# 80515974: another word inside lbl_80509320 that looks like 8057B67C, inside d_bgcf's l_mgr.
+# Not a pointer.
+- source: 0x80515974
 modules:
 - object: files/rels/d_profileNP.rel
   hash: d54fb2da838201b0feded746aa62f3728e904c2e

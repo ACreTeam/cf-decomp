@@ -27,8 +27,8 @@
 #define FG_BLOCK_Z_NUM (BLOCK_Z_NUM - 2) // 5
 #define FG_BLOCK_TOTAL_NUM (FG_BLOCK_X_NUM * FG_BLOCK_Z_NUM)
 
-// World size of a unit: positions are multiplied by 1 / 32 to get unit indices (fn_8006CC64)
-// and by 1 / 512 for block indices (fn_8006CCD8); the same for x and z. GC uses 40.
+// World size of a unit: positions are multiplied by 1 / 32 to get unit indices (dBGCF::posToUnit)
+// and by 1 / 512 for block indices (dBGCF::posToBlock); the same for x and z. GC uses 40.
 #define mFI_UNIT_BASE_SIZE 32
 #define mFI_UNIT_BASE_SIZE_F ((f32)mFI_UNIT_BASE_SIZE)
 #define mFI_UT_WORLDSIZE_X mFI_UNIT_BASE_SIZE
@@ -89,7 +89,7 @@ struct dFdBlock_c {
     static dFdBlock_c *create(int num, EGG::Heap *heap, int align);          // 80080DF4: heap array, each constructed
     void release(EGG::Heap *heap, BOOL items, BOOL data);                    // 80080E88: frees mItems[] / mBgData
     void set(int type, dItem::Item *items0, dItem::Item *items1, u16 *buried, u16 *watered, void *bgData,
-             int blockX, int blockZ, int flag, int bg);                      // 80080F38: then fn_800756F4
+             int blockX, int blockZ, int flag, int bg);                      // 80080F38: then dBGCF::setBlock
     BOOL hasFlag(int mask) const;                                            // 80080F80: flags of mType
     BOOL fn_80080FC0() const;                                                // 80080FC0: mType has a pond (dRF::isPondType)
     BOOL setItem(const dItem::Item *item, int unitX, int unitZ, int layer);  // 80080FC8
@@ -175,7 +175,7 @@ public:
     dItem::Item *getItem(int blockX, int blockZ, int unitX, int unitZ, int layer) const; // 8008C7F4
     dItem::Item *getItem(int unitX, int unitZ, int layer) const;                         // 8008C850
     static void getUnitCenterPos(nw4r::math::VEC3 *pos, int unitX, int unitZ);          // 8008BED0
-    int bgCall_80072D54(int unitX, int unitZ) const;                                     // 8008D2F0
+    int getRouteDirs(int unitX, int unitZ) const;                                     // 8008D2F0
     int getBgAttr(int unitX, int unitZ) const;                                           // 8008D348: BG_ATTR_*
     int bgCall_80076260(int unitX, int unitZ);                                           // 8008CDF4
     void setBorderUnits();                                                               // 8008CE4C: bgCall_80076260 on the border ring
@@ -221,12 +221,12 @@ public:
     int isGrassGround(int unitX, int unitZ) const;                                       // 8008CFB4: SOIL, SOILX, CLIFF_* (BG flag 0x28 bit 6)
     int isBeachGround(int unitX, int unitZ) const;                                       // 8008D03C: WAVE_S/SE2/SW2 (BG flag 0x28 bit 5)
     int canNpcPutItem(int unitX, int unitZ) const;                                       // 8008D0C4: BG flag 0x27 bit 1 (clear on TOWN_NO_NPC)
-    int getDigType(int unitX, int unitZ) const;                                          // 8008D14C: 0 soil, 1 sand, 2 other, 3 water
+    int getDigType(int unitX, int unitZ) const;                                          // 8008D14C: bgDig_e
     int getDigType(const nw4r::math::VEC3 *pos);                                         // 8008D1D4
-    int getPlantType(int unitX, int unitZ) const;                                        // 8008D21C: 2 SOIL (saplings grow), 1 SOILX/cliff/sand, 0
+    int getPlantType(int unitX, int unitZ) const;                                        // 8008D21C: bgPlant_e
     int getPlantType(int blockX, int blockZ, int unitX, int unitZ);                      // 8008D2DC
 
-    int bgCall_80072D54(const nw4r::math::VEC3 *pos);                                    // 8008D610
+    int getRouteDirs(const nw4r::math::VEC3 *pos);                                    // 8008D610
     void fn_8008D658(int unitX, int unitZ, int a, int b);                                // 8008D658
     void fn_8008D6B4(const nw4r::math::VEC3 *pos, int a, int b);                         // 8008D6B4
     void fn_8008D70C(const nw4r::math::VEC3 *pos, int a);                                // 8008D70C
@@ -245,7 +245,7 @@ public:
     /* 0x14 */ int mUnitH;   // mBlockH * UT_Z_NUM
     /* 0x18 */ f32 mWorldW;  // mBlockW * block world size
     /* 0x1C */ f32 mWorldH;
-    /* 0x20 */ int mBg;      // dBGCF slot (fn_80075658 / fn_800755A0 / fn_8007589C)
+    /* 0x20 */ int mBg;      // dBGCF slot (dBGCF::entryBg / setCurrentBg / releaseBg)
     /* 0x24 */ dFdUnitAttr_c *_24; // optional per-unit attributes
 }; // size 0x28
 

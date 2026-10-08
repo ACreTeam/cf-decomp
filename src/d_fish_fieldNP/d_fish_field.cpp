@@ -23,15 +23,6 @@ BOOL fn_800DD960();                            // net: this machine is the host
 int fn_800DCF58();                             // net: own member index
 void *fn_800DD64C(int id);                     // net: shared record id
 void fn_800DD5F8(int id, void *data, int arg); // net: send shared record id
-int fn_80072F80(int unitX, int unitZ);         // unit attribute
-int fn_80073054(int unitX, int unitZ);         // unit water kind
-BOOL fn_800730D0(int unitX, int unitZ);        // unit is river water
-BOOL fn_80073114(int unitX, int unitZ);        // unit is water
-int fn_8006E1BC(dBgGroundCheck_c *check, const nw4r::math::VEC3 *pos, int, int, int);
-f32 fn_8006E31C(dBgGroundCheck_c *check, int arg);  // ground height
-BOOL fn_8006E400(dBgGroundCheck_c *check, f32 y);
-void fn_80074234(f32 radius, dBGCF::acch_c *obj, mVec3_c *pos, const mVec3_c *prev, mAng angle, int, int,
-                 int);                                // bg wall check
 void fn_80082B04(mVec3_c *out, const mVec3_c *in);  // world -> field position
 dItem::Item fn_80153410(const void *obj);           // the item at obj + 0x1F8
 // The player's fishing float while it is free for fish (or fish is on it), NULL if none.
@@ -55,8 +46,6 @@ void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3
                  int arg);                         // d_fgobj_managerNP
 }
 
-extern const f32 lbl_8075041C;
-extern const f32 lbl_80750420;
 extern EGG::Heap *lbl_8074E440;
 extern nw4r::math::VEC3 lbl_80623FEC; // the camera's target (the view center)
 
@@ -218,7 +207,7 @@ dFishPlaceCheck getPlaceCheck(int place) {
 
 // 0x400
 BOOL isWaterfallUnit(int blockX, int blockZ, int unitX, int unitZ, void *user) {
-    switch (fn_80072F80((blockX << 4) + unitX, (blockZ << 4) + unitZ)) {
+    switch (dBGCF::getAttr((blockX << 4) + unitX, (blockZ << 4) + unitZ)) {
     case BG_ATTR_FALL_S:
     case BG_ATTR_FALL_SW:
     case BG_ATTR_FALL_SE:
@@ -241,7 +230,7 @@ BOOL isOpenWater(const mVec3_c *pos) {
     int ofs[cNum][2] = {{0, 0}, {-2, 0}, {2, 0}, {-2, 3}, {2, 3}};
     int *o = ofs[0];
     for (int i = 0; i < cNum; i++, o += 2) {
-        if (fn_80073054(unitX + o[0], unitZ + o[1]) != 2) {
+        if (dBGCF::getWaterKind(unitX + o[0], unitZ + o[1]) != BG_WATER_SEA) {
             return FALSE;
         }
     }
@@ -321,14 +310,12 @@ int dFishField_c::create() {
             if (cnt == 2) {
                 mFallPos.z -= 16.0f;
             }
-            dBgGroundCheck_c check;
-            fn_8006E1BC(&check, &mFallPos, 1, 0, 0);
-            mFallNormal = check.mNormal;
+            dBGCF::groundChk_c check(&mFallPos, dBGCF::LAYER_WATER, 0, 0);
+            mFallNormal = check.mDir;
             mVec3_c pos = mFallPos;
             pos += mFallNormal;
-            dBgGroundCheck_c check2;
-            fn_8006E1BC(&check2, &pos, 1, 0, 0);
-            mFallPos.y = check2.mHeight;
+            dBGCF::groundChk_c check2(&pos, dBGCF::LAYER_WATER, 0, 0);
+            mFallPos.y = check2.mWaterY;
         }
         break;
     }
@@ -442,10 +429,9 @@ BOOL dSearchFishPos::check(int x, int z) {
         if (d.x * d.x + d.z * d.z > cFallAreaRSq) {
             return FALSE;
         }
-        f32 depth = 0.5f * (lbl_8075041C + lbl_80750420);
-        dBgGroundCheck_c check;
-        fn_8006E1BC(&check, &pos, 1, 0, 0);
-        if (check.mHeight > depth) {
+        f32 depth = 0.5f * (dBGCF::cWaterY1 + dBGCF::cWaterY2);
+        dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
+        if (check.mWaterY > depth) {
             return FALSE;
         }
         break;
@@ -454,14 +440,14 @@ BOOL dSearchFishPos::check(int x, int z) {
     switch (mWater) {
     case FISH_WATER_RIVER: {
         BOOL ret = FALSE;
-        if (fn_800730D0(unitX, unitZ) && !fn_80073114(unitX, unitZ + 1) && !fn_80073114(unitX, unitZ + 2)) {
+        if (dBGCF::isRiver(unitX, unitZ) && !dBGCF::isSea(unitX, unitZ + 1) && !dBGCF::isSea(unitX, unitZ + 2)) {
             ret = TRUE;
         }
         return ret;
     }
     case FISH_WATER_SEA: {
         BOOL ret = FALSE;
-        if (fn_80073114(unitX, unitZ) && fn_80073114(unitX, unitZ - 1)) {
+        if (dBGCF::isSea(unitX, unitZ) && dBGCF::isSea(unitX, unitZ - 1)) {
             ret = TRUE;
         }
         return ret;
@@ -619,9 +605,8 @@ BOOL dFishField_c::addFish(int type, int water, const mVec3_c *pos, const mAng3_
         if (mFish[i] == NULL) {
             mVec3_c p = *pos;
             mAng3_c ang = *angle;
-            dBgGroundCheck_c check;
-            fn_8006E1BC(&check, &p, 1, 0, 0);
-            p.y = check.mHeight;
+            dBGCF::groundChk_c check(&p, dBGCF::LAYER_WATER, 0, 0);
+            p.y = check.mWaterY;
             mFish[i] = new (m_childHeap[i]) dFishFldShadow_c(&sFishParam[type]);
             mFish[i]->mPos = mFish[i]->mHomePos = mFish[i]->mTargetPos = p;
             mFish[i]->mTargetAngle = mFish[i]->mAngle = ang;
@@ -655,9 +640,8 @@ BOOL dFishField_c::addFishFromRec(int type, int idx) {
     if (mFish[idx] == NULL) {
         dPlaySyncRec_c *rec = &mRecs[idx].mRec;
         mVec3_c pos(rec->getPosX(), 0.0f, rec->getPosZ());
-        dBgGroundCheck_c check;
-        fn_8006E1BC(&check, &pos, 1, 0, 0);
-        pos.y = check.mHeight;
+        dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
+        pos.y = check.mWaterY;
         mFish[idx] = new (m_childHeap[idx]) dFishFldShadow_c(&sFishParam[type]);
         mFish[idx]->mPos = mFish[idx]->mTargetPos = pos;
         dFdBase_c::getUnitCenterPos(&mFish[idx]->mHomePos, rec->getHomeUnitX(), rec->getHomeUnitZ());
@@ -1132,15 +1116,14 @@ void dFishFldShadow_c::initSwim() {
         static const f32 cHomeRSq = 96.0f * 96.0f;
         mVec3_c d = mHomePos - mPos;
         f32 distSq = nw4r::math::VEC3LenSq(d);
-        if (fn_80073114(unitX, unitZ)) {
+        if (dBGCF::isSea(unitX, unitZ)) {
             f32 deg = cM::rndRange(-15.0f, 15.0f);
             s16 ofs = deg * mAng::DegreeToAngleCoefficient;
             mCourse = cM::atan2s(d.x, d.z);
             mCourse.mAngle += ofs;
         } else if (distSq > cHomeRSq) {
-            dBgGroundCheck_c check;
-            fn_8006E1BC(&check, &mPos, 1, 1, 0);
-            mVec3_c n = check.mNormal;
+            dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
+            mVec3_c n = check.mDir;
             if (n.x * d.x + n.y * d.y + n.z * d.z < 0.0f) {
                 f32 deg = cM::rndRange(-30.0f, 30.0f);
                 s16 ofs = deg * mAng::DegreeToAngleCoefficient;
@@ -1177,8 +1160,7 @@ void dFishFldShadow_c::initSwim() {
             static const f32 cHomeRSq = 96.0f * 96.0f;
             mVec3_c d = mHomePos - mPos;
             if (nw4r::math::VEC3LenSq(d) > cHomeRSq) {
-                dBgGroundCheck_c check;
-                fn_8006E1BC(&check, &mPos, 1, 1, 0);
+                dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
                 if (d.x < 0.0f) {
                     s16 ofs;
                     if (d.z < 0.0f) {
@@ -1219,9 +1201,8 @@ void dFishFldShadow_c::initSwim() {
     ahead.rotY(mCourse);
     side.rotY(mCourse);
     ahead += mPos;
-    dBgGroundCheck_c check;
-    fn_8006E1BC(&check, &ahead, 1, 1, 0);
-    if (check.mWater == 0) {
+    dBGCF::groundChk_c check(&ahead, dBGCF::LAYER_WATER, 1, 0);
+    if (check.mWater == BG_WATER_NONE) {
         if ((s16)(mCourse.mAngle - mTargetAngle.y.mAngle) > 0) {
             mCourse.mAngle += 0x2AAB;
         } else {
@@ -1255,10 +1236,9 @@ void dFishFldShadow_c::executeSwim() {
     }
     _1DC.set(0.0f, 0.0f, mSpeed);
     _1DC.rotY(mCourse);
-    dBgGroundCheck_c check;
-    fn_8006E1BC(&check, &mPos, 1, 1, 0);
+    dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
     int ang;
-    if (check.mWater == 2) {
+    if (check.mWater == BG_WATER_SEA) {
         mVec3_c d = mHomePos - mPos;
         if (d.x * d.x + d.z * d.z < 64.0f) {
             ang = 0x4000;
@@ -1266,14 +1246,14 @@ void dFishFldShadow_c::executeSwim() {
             ang = cM::atan2s(d.x, d.z);
         }
     } else {
-        s16 rev = cM::atan2s(check.mNormal.x, check.mNormal.z) + 0x8000U;
+        s16 rev = cM::atan2s(check.mDir.x, check.mDir.z) + 0x8000U;
         ang = rev;
     }
     f32 speed = 0.25f - 0.2f * nw4r::math::CosIdx((s16)(ang - mTargetAngle.y.mAngle) / 2);
     if (isSeaSlot() == 1) {
         speed *= 0.5f;
     }
-    _1DC += check.mNormal * speed;
+    _1DC += check.mDir * speed;
     if (mSpeed < 0.1f) {
         s16 step = 2.0f * mAng::DegreeToAngleCoefficient;
         sLib::addCalcAngle(&mCourse.mAngle, ang, 8, step);
@@ -1353,10 +1333,9 @@ void dFishFldShadow_c::executeApproach() {
                     mTimer = cM::rndRange<s16>(30, 90);
                 }
             } else if (sLib::calcTimer(&mTimer) != 0) {
-                dBgGroundCheck_c check;
-                fn_8006E1BC(&check, &mPos, 1, 1, 0);
-                s16 ang = cM::atan2s(check.mNormal.x, check.mNormal.z);
-                _1DC = check.mNormal * (0.25f - 0.2f * nw4r::math::CosIdx((mAng(ang + 0x8000U) - mTargetAngle.y).mAngle / 2));
+                dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
+                s16 ang = cM::atan2s(check.mDir.x, check.mDir.z);
+                _1DC = check.mDir * (0.25f - 0.2f * nw4r::math::CosIdx((mAng(ang + 0x8000U) - mTargetAngle.y).mAngle / 2));
                 f32 dist = EGG::Mathf::sqrt(d.x * d.x + d.z * d.z);
                 if (dist < 32.0f) {
                     f32 rate = (32.0f - dist) / 32.0f;
@@ -1479,10 +1458,9 @@ void dFishFldShadow_c::executeNibble() {
         } else {
             sLib::addCalc2(&mAnmRate, 0.5f, 0.2f, 0.1f);
             if (sLib::calcTimer(&mTimer) != 0 || !mine) {
-                dBgGroundCheck_c check;
-                fn_8006E1BC(&check, &mPos, 1, 1, 0);
-                s16 ang = cM::atan2s(check.mNormal.x, check.mNormal.z);
-                _1DC = check.mNormal * (0.25f - 0.2f * nw4r::math::CosIdx((mAng(ang + 0x8000U) - mTargetAngle.y).mAngle / 2));
+                dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
+                s16 ang = cM::atan2s(check.mDir.x, check.mDir.z);
+                _1DC = check.mDir * (0.25f - 0.2f * nw4r::math::CosIdx((mAng(ang + 0x8000U) - mTargetAngle.y).mAngle / 2));
                 f32 dist2 = EGG::Mathf::sqrt(d.x * d.x + d.z * d.z);
                 if (dist2 < 32.0f) {
                     if (mNibbleNum == 0) {
@@ -2048,19 +2026,18 @@ void dFishFldShadow_c::calcBgMove() {
     } else {
         radius = 32.0f;
     }
-    dBgGroundCheck_c check;
-    fn_8006E1BC(&check, &mTargetPos, 1, 0, 0);
-    f32 height = fn_8006E31C(&check, 0);
+    dBGCF::groundChk_c check(&mTargetPos, dBGCF::LAYER_WATER, 0, 0);
+    f32 height = check.getHeight(0);
     f32 y = mTargetPos.y;
     mPos.y = height;
     mTargetPos.y = height;
     pushOutOfFall();
-    fn_80074234(radius, &mWallCheck, &mPos, &mTargetPos, mTargetAngle.y, 0, 0x13, 1);
+    mWallCheck.check(radius, &mPos, &mTargetPos, mTargetAngle.y, 0,
+                     dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS, 1);
     mTargetPos.y = y;
     mPos.y = y;
-    dBgGroundCheck_c check2;
-    fn_8006E1BC(&check2, &mPos, 1, 0, 0);
-    f32 h = check2.mHeight;
+    dBGCF::groundChk_c check2(&mPos, dBGCF::LAYER_WATER, 0, 0);
+    f32 h = check2.mWaterY;
     if (mPos.y - h > 1.0f) {
         mPos = mTargetPos;
     }
@@ -2126,14 +2103,12 @@ void dFishFldShadow_c::setState(int state) {
 // 0x62D8
 void dFishFldShadow_c::recvRec() {
     if (mState == STATE_SWIM) {
-        dBgGroundCheck_c check;
-        fn_8006E1BC(&check, &mPos, 1, 0, 0);
+        dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 0, 0);
         dPlaySyncRecBuf_c *buf = getRec();
-        if (check.mWater == 0 && buf != NULL) {
+        if (check.mWater == BG_WATER_NONE && buf != NULL) {
             mVec3_c pos(buf->mRec.getPosX(), mPos.y, buf->mRec.getPosZ());
-            dBgGroundCheck_c check2;
-            fn_8006E1BC(&check2, &pos, 1, 0, 0);
-            if (check2.mWater != 0) {
+            dBGCF::groundChk_c check2(&pos, dBGCF::LAYER_WATER, 0, 0);
+            if (check2.mWater != BG_WATER_NONE) {
                 mTargetPos = pos;
                 mPos = mTargetPos;
             } else {
@@ -2187,9 +2162,8 @@ int dFishFldShadow_c::execute() {
             mtx.multVecZero(pos);
             mVec3_c fieldPos;
             fn_80082B04(&fieldPos, &pos);
-            dBgGroundCheck_c check;
-            fn_8006E1BC(&check, &fieldPos, 1, 0, 0);
-            fieldPos.y = check.mHeight;
+            dBGCF::groundChk_c check(&fieldPos, dBGCF::LAYER_WATER, 0, 0);
+            fieldPos.y = check.mWaterY;
             dWorld::curvePosition(&pos, &fieldPos);
             mtx.m[0][3] = pos.x;
             mtx.m[1][3] = pos.y;
@@ -2401,9 +2375,8 @@ void dFishRipple_c::execute() {
     mVec3_c ofs(0.0f, 0.0f, -20.0f * param->mScale[2]);
     ofs.rotY(mOwner->mTargetAngle.y);
     pos += ofs;
-    dBgGroundCheck_c check;
-    fn_8006E1BC(&check, &pos, 1, 0, 0);
-    f32 h = check.mHeight;
+    dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
+    f32 h = check.mWaterY;
     pos.y = h;
     mVec3_c scale(param->mScale[0], param->mScale[0], param->mScale[0]);
     f32 r = cM::rndRange(min, max);
@@ -2480,12 +2453,11 @@ void dFishFldShadow_c::splashCallback(dEffectTarget_c *target, u32 kind) {
     mVec3_c src;
     src = target->_AC;
     fn_80082B04(&pos, &src);
-    dBgGroundCheck_c check;
-    fn_8006E1BC(&check, &pos, 1, 0, 0);
-    if (check.mWater != 0) {
-        if (fn_8006E400(&check, pos.y)) {
-            if (check.mHeight - pos.y < 5.0f) {
-                pos.y = check.mHeight;
+    dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
+    if (check.mWater != BG_WATER_NONE) {
+        if (check.isUnderWater(pos.y)) {
+            if (check.mWaterY - pos.y < 5.0f) {
+                pos.y = check.mWaterY;
                 fn_80087790(sNames[kind], &pos, 0, NULL);
             }
             if (target->_C8 != NULL) {
@@ -2493,7 +2465,7 @@ void dFishFldShadow_c::splashCallback(dEffectTarget_c *target, u32 kind) {
             }
         }
     } else {
-        f32 ground = fn_8006E31C(&check, 0);
+        f32 ground = check.getHeight(0);
         f32 d = ground - pos.y;
         if (d > 0.0f) {
             if (kind == 1 && d < 5.0f) {
@@ -2529,9 +2501,8 @@ void dFishFldShadow_c::setSplashEffect() {
         break;
     }
     mVec3_c pos = mPos;
-    dBgGroundCheck_c check;
-    fn_8006E1BC(&check, &pos, 1, 0, 0);
-    pos.y = check.mHeight;
+    dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
+    pos.y = check.mWaterY;
     fn_80087790(sColumnNames[mParam.mSize], &pos, 0, NULL);
     f32 s = sDropScales[mParam.mSize];
     mVec3_c scale(s, s, s);

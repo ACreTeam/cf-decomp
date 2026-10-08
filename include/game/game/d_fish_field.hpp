@@ -54,18 +54,6 @@ struct dFishSizeParam_c {
     /* 0x12 */ s16 mHookTimeMax;
 }; // size 0x14
 
-// Result of the ground check fn_8006E1BC (also declared, partially, in d_player_mgr.hpp /
-// d_field_info.cpp / d_field_assessment.cpp).
-struct dBgGroundCheck_c {
-    /* 0x00 */ u8 _00[0x24];
-    /* 0x24 */ mVec3_c mNormal;
-    /* 0x30 */ int mWater; // 0: no water, 2: the fish's home water (states 0..2)
-    /* 0x34 */ int mAttr;  // 0: no water
-    /* 0x38 */ u8 _38[0x4];
-    /* 0x3C */ f32 mHeight;
-    /* 0x40 */ u8 _40[0x44];
-}; // size 0x84
-
 // A player's fishing float (DOL, not split yet; fn_801710A4(player, fish) returns it while it is
 // free for that fish, fn_801710BC(player, fish) reserves it). Only what this TU uses.
 struct dFishingFloat_c {

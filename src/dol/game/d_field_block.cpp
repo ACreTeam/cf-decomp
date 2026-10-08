@@ -7,7 +7,6 @@
 #include <string.h>
 
 extern "C" {
-void fn_800756F4(int blockX, int blockZ, void *data, int flag, int bg); // 800756F4
 u32 fn_80081324(int type);                                             // 80081324: flags of a block type
 BOOL fn_80081238(u16 *flags, int x, int z);                            // 80081238: set a unit's flag
 BOOL fn_80081280(u16 *flags, int x, int z);                            // 80081280: clear a unit's flag
@@ -75,7 +74,7 @@ void dFdBlock_c::set(int type, dItem::Item *items0, dItem::Item *items1, u16 *bu
     mBlockX = blockX;
     mBlockZ = blockZ;
     mFlag = flag;
-    fn_800756F4(blockX, blockZ, bgData, flag, bg);
+    dBGCF::setBlock(blockX, blockZ, (dBGCF::unitDat_c *)bgData, flag, bg);
 }
 
 // 80080F80

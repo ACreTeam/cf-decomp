@@ -25,8 +25,8 @@ inline bool isZero(f32 v) {
     return EGG::Mathf::abs(v) < 0.001f;
 }
 
-// A vertical circle (XZ plane) at mCenter. RTTI dBGC::circle_c, vtable 804A6CC4 (weak, kept in
-// d_bgcf.cpp): its only virtual is a pure destructor.
+// A vertical circle (XZ plane) at mCenter. RTTI dBGC::circle_c (80749CB8). Its only virtual is the
+// destructor (kept pure: no circle_c vtable exists in the DOL; 804A6CC4 is column_c's RTTI base list).
 class circle_c {
 public:
     /* 0x00 */ mVec3_c mCenter;
@@ -46,6 +46,10 @@ class column_c : public circle_c {
 public:
     /* 0x14 */ f32 mHeight;
 
+    column_c() {
+        mRadius = 0.0f;
+        mHeight = 0.0f;
+    }
     virtual ~column_c() {}
 
     f32 getHeight() const { return mHeight; }
@@ -130,7 +134,7 @@ public:
     BOOL checkInside(const vecXZ_c &p) const;                                   // 8006BE38
     BOOL correctFace(vecXZ_c *pos, const vecXZ_c &old, f32 r) const;            // 8006BFD4
     BOOL correctEdge(vecXZ_c *pos, const vecXZ_c &old, f32 r) const;            // 8006C0E8
-    BOOL correctCross(vecXZ_c *pos, const vecXZ_c &old, f32 r) const;           // 8006C2D4
+    BOOL correctCross(vecXZ_c *pos, const vecXZ_c &old, f32 r, BOOL flag = FALSE) const; // 8006C2D4
 
     virtual BOOL isValid() const { return TRUE; } // 8006C598
 
@@ -150,6 +154,10 @@ public:
     /* 0x34 */ // vtable
 
     poly_c(); // 8006AB54
+    poly_c(const mVec3_c &p0, const mVec3_c &p1, const mVec3_c &p2) { set(p0, p1, p2); }
+    poly_c(const mVec3_c &p0, const mVec3_c &p1, const mVec3_c &p2, const mVec3_c &normal) {
+        set(p0, p1, p2, normal);
+    }
 
     f32 calcY(const mVec3_c &p) const; // 8006AB78
 

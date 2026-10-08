@@ -156,7 +156,10 @@ def simplify(order_asc, neighbours, K=29):
     return stack[::-1]
 
 
-def search_numbering(asc, neighbours, want, movers=(), limit=30):
+MAX_MOVER_COMBOS = 2000000  # placements of the --movers set; more would run for hours
+
+
+def search_numbering(asc, neighbours, want, movers=(), limit=30, max_combos=MAX_MOVER_COMBOS):
     """Which renumberings of the virtual registers would give the `want` assignment ({vreg: phys})?
 
     Re-runs simplify + select (exactly as the compiler does, see simplify/simulate) for:
@@ -191,6 +194,12 @@ def search_numbering(asc, neighbours, want, movers=(), limit=30):
                 hits.append(('swap', (asc[i], asc[j]), order))
     if movers:
         rest = [x for x in asc if x not in movers]
+        combos = (len(rest) + 1) ** len(movers)
+        if combos > max_combos:
+            print('  --movers: %d nodes over %d positions = %d placements (limit %d); skipped. Use 2-3 movers,'
+                  % (len(movers), len(rest) + 1, combos, max_combos))
+            print('  or raise the limit with --max-combos (each placement is one colouring simulation).')
+            return hits
         for places in itertools.product(range(len(rest) + 1), repeat=len(movers)):
             order = list(rest)
             for p, v in sorted(zip(places, movers), key=lambda t: -t[0]):
@@ -216,10 +225,15 @@ def main():
     ap.add_argument('--sim', action='store_true', help='re-simulate select from the dumped graph (implies --select)')
     ap.add_argument('--all-classes', action='store_true', help='also print the FPR/other class assignments')
     ap.add_argument('--want', help='search: wanted registers, e.g. "this=r28,fl=r29,v48=r22" (object name or vNN)')
-    ap.add_argument('--movers', help='search: also place these nodes together anywhere (names or vNN, comma separated)')
+    ap.add_argument('--movers', help='search: also place these nodes together anywhere (names or vNN, comma separated); '
+                    'the search grows as positions^movers, so keep it to 2-3 nodes')
+    ap.add_argument('--max-combos', type=int, default=MAX_MOVER_COMBOS,
+                    help='search: skip --movers when it would try more placements than this (default %(default)s)')
     ap.add_argument('--limit', type=int, default=30, help='search: how many hits to print per kind')
+    ap.add_argument('--dump-graph', help='write each matching function GPR graph (colouring order, neighbours, '
+                    'object names, real assignment) as JSON lines to this file, for offline searches')
     a = ap.parse_args()
-    collect = a.select or a.sim or a.want
+    collect = a.select or a.sim or a.want or a.dump_graph
     fpat = re.compile(a.func)
 
     _, v = mwcc_cmd.find_compile(a.src)
@@ -325,6 +339,16 @@ def main():
             vr, ph, fl, deg, ob, cost = (p.s16(n + 0x10), p.s16(n + 0x12), p.u16(n + 0x14), p.s16(n + 0x16),
                                          p.u32(n + 4), p.u32(n + 0xC))
             print('  v%-4d -> r%-3d flags=%04X degree=%-3d cost=%-6d %s' % (vr, ph, fl, deg, cost, p.objname(ob) if ob else ''))
+        if a.dump_graph and name() in graph and cls == GPR_CLASS:
+            import json
+            g_order, g_nb = graph[name()]
+            with open(a.dump_graph, 'a') as f:
+                f.write(json.dumps({'func': name(), 'order': list(g_order),
+                                    'nb': {str(k): list(v) for k, v in g_nb.items()},
+                                    'names': {str(p.s16(base + x * 0x1E + 0x10)): p.objname(p.u32(base + x * 0x1E + 4)) or ''
+                                              for x in range(lo, hi)},
+                                    'real': {str(p.s16(base + x * 0x1E + 0x10)): p.s16(base + x * 0x1E + 0x12)
+                                             for x in range(lo, hi)}}) + '\n')
         if a.sim and name() in graph and cls == GPR_CLASS:
             order, nb = graph[name()]
             sim = simulate(order, nb)
@@ -365,7 +389,7 @@ def main():
         print('  now: %s' % ', '.join('%s=r%d' % (named(v), real.get(v, -1)) for v in want))
         if not base_ok:
             print('  WARNING: simplify(ascending numbering) does not reproduce the compiler order; hits may be unreliable')
-        hits = search_numbering(asc, nb, want, movers)
+        hits = search_numbering(asc, nb, want, movers, max_combos=a.max_combos)
         if not hits:
             print('  no single move, swap or mover placement gives that. Try --movers with the nodes you suspect.')
             return
