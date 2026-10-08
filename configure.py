@@ -620,6 +620,7 @@ config.libs = [
         "objects": [
             Object(Matching, "dol/game/d_actor.cpp"),
             Object(Matching, "dol/game/d_base.cpp"),
+            Object(Matching, "dol/game/d_bgc.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_field_block.cpp"),
             Object(Matching, "dol/game/d_demo_actor.cpp"),
             Object(Matching, "dol/game/d_field_info.cpp", extra_cflags=["-sym on"]),

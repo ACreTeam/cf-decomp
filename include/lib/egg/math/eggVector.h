@@ -41,6 +41,9 @@ namespace EGG {
         /// @brief Constructs a vector from two floating point values.
         Vector3f(f32 fx, f32 fy, f32 fz) { set(fx, fy, fz); }
 
+        /// @brief Dot product.
+        f32 dot(const Vector3f &v) const { return x * v.x + y * v.y + z * v.z; }
+
         void set(float x, float y, float z) {
             this->x = x;
             this->y = y;

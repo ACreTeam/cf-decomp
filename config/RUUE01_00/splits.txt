@@ -200,7 +200,7 @@ dol/game/d_bg.cpp:
 dol/game/d_bgc.cpp:
 	.text       start:0x80069D2C end:0x8006C620
 	.ctors      start:0x8046563C end:0x80465640
-	.data       start:0x804A5508 end:0x804A55A8
+	.data       start:0x804A5508 end:0x804A5588
 	.sdata      start:0x80749C40 end:0x80749C60
 	.sbss       start:0x8074E1E0 end:0x8074E1E8
 	.sdata2     start:0x807503F8 end:0x80750418
@@ -209,7 +209,7 @@ dol/game/d_bgcf.cpp:
 	.text       start:0x8006C620 end:0x800767A8
 	.ctors      start:0x80465640 end:0x80465644 align:8
 	.rodata     start:0x8046CE20 end:0x8046D2B0 align:4
-	.data       start:0x804A55A8 end:0x804A6CE0
+	.data       start:0x804A5588 end:0x804A6CE0
 	.bss        start:0x80575EB0 end:0x80582E60
 	.sdata      start:0x80749C60 end:0x80749CC0
 	.sbss       start:0x8074E1E8 end:0x8074E270

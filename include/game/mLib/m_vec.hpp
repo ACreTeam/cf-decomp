@@ -216,6 +216,11 @@ public:
         return EGG::Mathf::sqrt(PSVECSquareDistance((const Vec*) this, (const Vec*) &other));
     }
 
+    /// @brief Cross product (weak copy at 8006C50C, kept from d_bgc.cpp).
+    mVec3_c cross(const mVec3_c &v) const {
+        return mVec3_c(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+    }
+
     friend mVec3_c operator*(f32 f, const mVec3_c &v) {
         return mVec3_c(v.x * f, v.y * f, v.z * f);
     }
