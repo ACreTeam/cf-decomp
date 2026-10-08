@@ -5,3 +5,16 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_skyNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_skyNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_skyNP/d_sky.cpp:
+	.text       start:0x0000005C end:0x00001AB8
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x000000AC
+	.data       start:0x00000000 end:0x000001B8
+	.bss        start:0x00000008 end:0x0000001C
