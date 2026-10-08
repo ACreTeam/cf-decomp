@@ -632,7 +632,7 @@ config.libs = [
             Object(Matching, "dol/game/d_fg_item.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_friend.cpp"),
             Object(Matching, "dol/game/d_insect_info.cpp"),
-            Object(NonMatching, "dol/game/d_item.cpp", shift_jis=False),
+            Object(Matching, "dol/game/d_item.cpp", shift_jis=False, extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_nickname.cpp"),
             Object(Matching, "dol/game/d_notice.cpp"),
             Object(NonMatching, "dol/game/d_npc_notice.cpp"),

@@ -3672,7 +3672,7 @@ static inline int getBITMStyle(const dItem::BITM *bitm) {
 static inline int getBITMSeries(const dItem::BITM *bitm) {
     int series = bitm->m_series;
     int ret = 0;
-    if ((u32)series < 0x84) {
+    if ((u32)series < dItem::SERIES_COUNT) {
         ret = series;
     }
     return ret;

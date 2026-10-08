@@ -5,6 +5,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/revolution/OS/OSCache.h>
+#include <lib/revolution/OS/OSError.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <cstdio>
 #include <game/game/d_player_mgr.hpp>
@@ -14,14 +15,13 @@
 // their address names (see the extern "C" block).
 
 #include <game/game/d_save_dl_item.hpp>
+#include <game/game/d_private_data.hpp>
+#include <game/game/d_catalog.hpp>
 
 using namespace dItem;
 
 extern "C" {
 void __register_global_object(void *object, void *dtor, void *node);
-
-BOOL fn_8013812C(void *player, Item *item, int);
-void fn_8013A044(void *player, u16 id, int);
 
 
 // Loads entry `index` of a message group into a word (TU near 8016AC58).
@@ -33,13 +33,97 @@ void *fn_800C59EC();
 void fn_800C59E0(void *debug);
 void fn_800C59E4(void *debug);
 void fn_800C59E8(void *debug, Item item);
-
-// Tables owned by neighbouring TUs.
-extern const char *lbl_804E9768[];
-extern const char *lbl_804E98D0[];
-extern const char *lbl_804E9C80[];
 }
 
+
+// 804E91E8: furniture function names (debug). Unreferenced in the release build.
+const char *dItem::sFtrFuncNames[0x98] = {
+    "なし", "ソ\ファ", "引き出し型収納", "扉型収納", "ブーブークッション", "電気スイッチ", "蛍光灯", "ろうそく", "イス", "ベッド", "いぬごや",
+    "マスターソ\ード", "アーウィン", "トライフォース", "ちゃいろのドラムかん", "みどりのドラムかん", "あかいドラムかん", "キケンなドラムかん", "きいろいドラムかん",
+    "だんしようトイレ", "ピクミン", "おきあがりこぼし", "ちょきんばこ", "ゴング", "コイン", "どかん", "ファイアフラワー", "はた", "ハテナブロック",
+    "キノコ", "ノコノコのこうら", "キラーほうだい", "ピンボールだい", "サンドバッグ", "ボウリングのピン", "トーテムポール・アラ", "トーテムポール・オヤ",
+    "トーテムポール・サテ", "トーテムポール・マア", "ちきゅうぎ", "１ＵＰキノコ", "スピードバッグ", "きゅうゆき", "ておしぐるま", "イス型トイレ",
+    "マッサージいす", "じっけんイス", "じっけんだい", "そらとぶえんばん", "バーベキューグリル", "ハムスターのかご", "たいまつ", "とりかご", "たきび",
+    "キャンプファイア", "いろり", "ダルマストーブ", "ストーブ", "だんろ", "プール", "ファイアバー", "ふるいミシン", "スター", "メリーゴーランド",
+    "メトロイド", "アップライトゲームき", "しばかりき", "マーライオン", "てつどうもけい", "せんぷうき", "スプリンクラー", "にそうしきせんたくき",
+    "ぜんじどうせんたくき", "ミキサー", "ろてんぶろ", "すごそうなキカイ", "しょうべんこぞう", "クッキングヒーター", "キッチンのシンク", "ドラムしきせんたくき",
+    "でんしレンジ", "ミツバチ", "スズメバチ", "アブラゼミ", "ミンミンゼミ", "ヒグラシ", "カ", "ハエ", "れいぞうこ", "たからばこ", "ミイラのひつぎ",
+    "きんこ", "ひっしょうダルマ", "ファッションケース", "ダルマ", "ミニダルマ", "にんじゃとう", "パソ\コン", "木のイス", "通常時計", "振り子時計",
+    "鳩時計", "ボンボン時計", "テレビ", "テレビデオ", "エフゼロ", "ビックリばこ", "アナログレコードプレイヤー", "オルゴール", "ししおどし", "みずのみドリ",
+    "アメリカンクラッカー", "ごみばこ", "マトリョーシカ", "トースター", "キャンディマシン", "レジスター", "よくわからないキカイ", "しりょくそくていき",
+    "ゆりかご", "ボウリングリターン", "メトロノーム", "むぎばたけ", "ちくおんき", "テープレコーダー", "レトロなステレオ", "サイコロコンポ", "ラジカセ",
+    "CDラジカセ", "ダブルラジカセ", "ロボコンポ", "うばぐるま", "ロボタンス", "ロッカー", "ロイヤル系ベッド", "ショウリョウバッタ", "オケラ",
+    "ツクツクホウシ", "ローラー付き家具", "ゆぶね", "ロケット", "しんじつのくち", "かきごおりき", "ヨッシーのタマゴ", "バースデーケーキ", "うらないテレフォン",
+    "スノードーム", "しろいにほんとう", "はりこのとら", "ひばち", "マウンテンバイク", "クーラーバック",
+};
+
+// 804E9768: field object model name per BITM fgobj (getFgObjName, alt)
+static const char *sFgObjNamesAlt[0x5A] = {
+    "fg_apple", "fg_wall", "fg_carpet", "fg_cloth", "fg_cap", "fg_glass", "fg_apple", "fg_orange",
+    "fg_pear", "fg_peach", "fg_cherry", "fg_coconut", "fg_moneybag", "fg_music", "fg_fossil",
+    "fg_paper", "fg_leaf", "fg_cage", "fg_present", "fg_seedpitfall", "fg_seed", "fg_seedling",
+    "fg_seedling_c", "fg_medicine", "fg_kabu", "fg_r_kabu", "fg_timer", "fg_haniwa", "fg_paperbag",
+    "fg_umbrella", "fg_wig", "fg_letter", "fg_conch", "fg_bivalve", "fg_coral", "fg_tire", "fg_can",
+    "fg_boot", "fg_paint_rd", "fg_paint_bl", "fg_paint_ye", "fg_paint_gr", "fg_paint_pi",
+    "fg_paint_or", "fg_paint_lb", "fg_paint_yg", "fg_paint_vi", "fg_paint_br", "fg_paint_wt",
+    "fg_paint_bk", "fg_kabu_x", "fg_bottle_mail", "fg_coin", "fg_key", "fg_soldout", "mush0",
+    "mush1", "mush2", "mush3", "mush4", "fg_cake", "fg_chocolate", "fg_candy", "fg_egg", "fg_bone",
+    "fg_card", "fg_gd_card", "fg_grace_soldout", "fg_lamp", "fg_ufo_parts", "fg_axe", "fg_S_axe",
+    "fg_G_axe", "fg_jyoro", "fg_S_jyoro", "fg_G_jyoro", "fg_net", "fg_S_net", "fg_G_net", "fg_pole",
+    "fg_S_pole", "fg_G_pole", "fg_scoop", "fg_S_scoop", "fg_G_scoop", "fg_sling", "fg_S_sling",
+    "fg_G_sling", "fg_easter_ticket", "fg_present_gr",
+};
+
+// 804E98D0: field object model name per BITM fgobj (getFgObjName)
+static const char *sFgObjNames[0x5A] = {
+    "fg_apple", "fg_wall", "fg_carpet", "fg_cloth", "fg_cap", "fg_glass", "fg_apple", "fg_orange",
+    "fg_pear", "fg_peach", "fg_cherry", "fg_coconut", "fg_moneybag", "fg_music", "fg_fossil",
+    "fg_paper", "fg_leaf", "fg_cage", "fg_present", "fg_seedpitfall", "fg_seed", "fg_seedling",
+    "fg_seedling_c", "fg_medicine", "fg_kabu", "fg_r_kabu", "fg_timer", "fg_haniwa", "fg_paperbag",
+    "fg_umbrella", "fg_wig", "fg_letter", "fg_conch", "fg_bivalve", "fg_coral", "fg_tire", "fg_can",
+    "fg_boot", "fg_paint_rd", "fg_paint_bl", "fg_paint_ye", "fg_paint_gr", "fg_paint_pi",
+    "fg_paint_or", "fg_paint_lb", "fg_paint_yg", "fg_paint_vi", "fg_paint_br", "fg_paint_wt",
+    "fg_paint_bk", "fg_kabu_x", "fg_bottle_mail", "fg_coin", "fg_key", "fg_soldout", "mush0",
+    "mush1", "mush2", "mush3", "mush4", "fg_cake", "fg_chocolate", "fg_candy", "fg_egg", "fg_bone",
+    "fg_card", "fg_gd_card", "fg_grace_soldout", "fg_lamp", "fg_ufo_parts", "fg_axe", "fg_S_axe",
+    "fg_G_axe", "fg_jyoro", "fg_S_jyoro", "fg_G_jyoro", "fg_net", "fg_S_net", "fg_G_net", "fg_pole",
+    "fg_S_pole", "fg_G_pole", "fg_scoop", "fg_S_scoop", "fg_G_scoop", "fg_sling", "fg_S_sling",
+    "fg_G_sling", "fg_easter_ticket", "fg_present_gr",
+};
+
+// 804E9C80: kind names (getKindName); also the item/Res archive prefixes
+static const char *sKindNames[KIND_COUNT] = {
+    "Money", "Wall", "Carpet", "Ftr", "Cloth", "Cap", "Acc", "Insect", "Fish", "Paper",
+    "BeforeFossil", "Fossil", "Haniwa", "Picture", "Music", "Fruit", "Seed", "FakePictureBefore",
+    "FakePictureAfter", "OrgCloth", "OrgUmb", "OrgCap", "OrgWC", "OrgEasel", "TaCloth", "Seedling",
+    "Kabu", "BadKabu", "Rkabu", "RkabuSeed", "Paint", "Shell", "SoldOut", "BottleBefore",
+    "BottleAfter", "PitfallSeed", "Pbox", "Hand_Letter", "Paper_Bag", "Medicine", "Dust", "None",
+    "Dummy", "EggFakeBefore", "EggFakeAfter", "EggBingoBefore", "EggBingoAfter", "KnifeAndFork",
+    "Candy", "Hanabi", "Chocolate", "Cracker", "CatalogOnly", "Key", "Mushroom", "Timer",
+    "Umbrella", "Flower", "Fishingrod", "SilverFishingrod", "GoldFishingrod", "Scoop",
+    "SilverScoop", "GoldScoop", "Axe", "SilverAxe", "GoldAxe", "Watering", "SilverWatering",
+    "GoldWatering", "Net", "SilverNet", "GoldNet", "Pachinko", "GoldPachinko", "SilverPachinko",
+    "Balloon", "Syabon", "Windmill", "CreditCard", "Lamp", "UfoParts", "DsnDataPlayer", "DsnDataTa",
+    "DsnDataFlag", "DsnDataSeiichi", "MushFtr",
+};
+
+// 804EA128: source group names, per From. Unreferenced in the release build.
+const char *dItem::sFromNames[FROM_COUNT] = {
+    "GROUP_ABC", "GROUP_ABC_AVERAGE", "GROUP_ABC_ALL", "GROUP_A", "GROUP_B", "GROUP_C",
+    "EYE_CATCHER", "FOX", "TAILOR", "PRESENT", "HANIWA", "FLOWER", "INSECT", "FISH",
+    "NORMAL_FOSSIL", "NICE_FOSSIL", "SP_PRESENT", "SNOW", "JONNY", "FORTUNE", "RAKKO", "PICTURE",
+    "ORIGINAL", "NOUSE", "DONGURI", "LOST", "WARASIBE", "SAVING", "FISHING", "FISHING_SP",
+    "BUGCATCHING", "GARDENING", "GRACE", "ROLAN", "SHELL", "BED_DEFAULT", "FOX_PICTURE", "FORGED",
+    "HAPPY_ROOM", "POINT_CHANGE", "POINT_PRESENT", "AFTER_FORGED", "LIMITED1", "LIMITED2", "NONE",
+    "JINGLE", "SETSUBUN", "HINA", "KODOMO", "TSUKIMI_JP", "TSUKIMI_EU", "TSUKIMI_KR", "GROUNDHOG",
+    "EARTH_DAY", "LABOR_DAY", "COLUMBUS_DAY", "HARVESTMOON", "MIDSUMMER", "ST_NICHOLAS_DAY",
+    "MIDWINTER", "OLD_NEWYEAR", "PLANTING_DAY", "MASTERS_DAY", "TANABATA", "NEWYEAR", "COUNTDOWN",
+    "HARVESTFESTIVAL", "HALLOWEEN", "FIREWORKS", "EASTER", "GRACE_SPR", "GRACE_SUM", "GRACE_AUT",
+    "GRACE_WIN", "CARNIVAL", "MUSIC_GOKIGEN", "MUSIC_FUKIGEN", "MUSIC_MATTARI", "MUSIC_BLUE",
+    "MUSIC_UNKNOWN", "MUSIC_SECRET", "APRIL_FOOL", "LIMITED3", "LIMITED4", "BALLOON",
+    "GRACE_SPR_FASHION", "GRACE_SUM_FASHION", "GRACE_AUT_FASHION", "GRACE_WIN_FASHION",
+    "BALLOON_MAN", "MUSHROOM", "MUSIC_HAZURE",
+};
 
 static wchar_t sNone[] = L"\x306A\x3057"; // "なし" (none); lives in .sdata, so not const
 
@@ -443,24 +527,52 @@ BOOL BITM::isValid() const {
     return static_cast<u16>(version) == BITM_VERSION;
 }
 
-// 800C1CA0
+// 800C1CA0. Nothing in the DOL calls it, yet the original link kept it.
+#pragma force_active on
 const char *getDevelopOnlyLabel() {
     static const char *label = "DEVELOP ONLY";
     return label;
 }
+#pragma force_active reset
+
+// .rodata order: sKindAvailable, sFromNameIndex, sFtrFuncTypes, then the catalog tables.
+// 80471B40
+static const u8 sKindAvailable[0x80] = {
+    1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+};
+
+// 80471BC0: name index per From (getFromNameIndex)
+static const u16 sFromNameIndex[FROM_COUNT] = {
+    0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x97, 0x19C, 0x3, 0x3E8, 0x33C, 0x5,
+    0x3, 0x3, 0x12C, 0x3E8, 0x457, 0x378, 0x19C, 0x53, 0x607, 0xC80, 0x3, 0x0,
+    0x19C, 0x500, 0x145, 0x390, 0x320, 0x320, 0x320, 0x320, 0x3, 0x3, 0x3, 0x0,
+    0x97, 0x0, 0x457, 0x457, 0x457, 0x0, 0x97, 0x97, 0x0, 0x4C8, 0xCA, 0x12F,
+    0x1F9, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96,
+    0x96, 0x96, 0x96, 0x4D, 0x65, 0x141, 0x258, 0x258, 0x96, 0x258, 0xFA, 0xFA,
+    0xFA, 0xFA, 0x258, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x96, 0x97, 0x97,
+    0x320, 0xFA, 0xFA, 0xFA, 0xFA, 0x58, 0x19C, 0x0,
+};
+
+// 80471C78: furniture function -> type (convFtrFunc)
+static const u16 sFtrFuncTypes[0x41] = {
+    0x21, 0x22, 0x22, 0x23, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x32, 0x32, 0x40,
+    0x29, 0x29, 0x29, 0x29, 0x29, 0x29, 0x2A, 0x2A, 0x2A, 0x2B, 0x2B, 0x2B, 0x2B,
+    0x2B, 0x2C, 0x2C, 0x2C, 0x2D, 0x2D, 0x2D, 0x2E, 0x2F, 0x30, 0x30, 0x31, 0x3B,
+    0x34, 0x35, 0x36, 0x3C, 0x3D, 0x43, 0x38, 0x37, 0x39, 0x3A, 0x42, 0x41, 0x33,
+    0x3E, 0x3F, 0x29, 0x29, 0x29, 0x29, 0x29, 0x29, 0x44, 0x45, 0x42, 0x46, 0x2C,
+};
 
 // 800C1CA8
 int convFtrFunc(u32 func) {
-    // 80471C78
-    static const u16 table[0x41] = {
-        0x21, 0x22, 0x22, 0x23, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x32, 0x32, 0x40,
-        0x29, 0x29, 0x29, 0x29, 0x29, 0x29, 0x2A, 0x2A, 0x2A, 0x2B, 0x2B, 0x2B, 0x2B,
-        0x2B, 0x2C, 0x2C, 0x2C, 0x2D, 0x2D, 0x2D, 0x2E, 0x2F, 0x30, 0x30, 0x31, 0x3B,
-        0x34, 0x35, 0x36, 0x3C, 0x3D, 0x43, 0x38, 0x37, 0x39, 0x3A, 0x42, 0x41, 0x33,
-        0x3E, 0x3F, 0x29, 0x29, 0x29, 0x29, 0x29, 0x29, 0x44, 0x45, 0x42, 0x46, 0x2C,
-    };
     if (func < 0x41) {
-        return table[func];
+        return sFtrFuncTypes[func];
     }
     return 0x21;
 }
@@ -689,30 +801,19 @@ const char *BITM::getFgObjName(BOOL alt) const {
     u32 fgobj = m_fgobj;
     if (fgobj < 0x5A) {
         if (alt) {
-            return lbl_804E9768[fgobj];
+            return sFgObjNamesAlt[fgobj];
         }
-        return lbl_804E98D0[fgobj];
+        return sFgObjNames[fgobj];
     }
-    return lbl_804E9768[0];
+    return sFgObjNamesAlt[0];
 }
 
 // 800C2318
 u16 BITM::getFromNameIndex() const {
-    // 80471BC0
-    static const u16 table[FROM_COUNT] = {
-        0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x97, 0x19C, 0x3, 0x3E8, 0x33C, 0x5,
-        0x3, 0x3, 0x12C, 0x3E8, 0x457, 0x378, 0x19C, 0x53, 0x607, 0xC80, 0x3, 0x0,
-        0x19C, 0x500, 0x145, 0x390, 0x320, 0x320, 0x320, 0x320, 0x3, 0x3, 0x3, 0x0,
-        0x97, 0x0, 0x457, 0x457, 0x457, 0x0, 0x97, 0x97, 0x0, 0x4C8, 0xCA, 0x12F,
-        0x1F9, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96, 0x96,
-        0x96, 0x96, 0x96, 0x4D, 0x65, 0x141, 0x258, 0x258, 0x96, 0x258, 0xFA, 0xFA,
-        0xFA, 0xFA, 0x258, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x96, 0x97, 0x97,
-        0x320, 0xFA, 0xFA, 0xFA, 0xFA, 0x58, 0x19C, 0x0,
-    };
     int raw = m_from;
     u32 from = static_cast<u32>(raw) < FROM_COUNT ? raw : FROM_NONE;
     if (from < FROM_COUNT) {
-        return table[from];
+        return sFromNameIndex[from];
     }
     return 0;
 }
@@ -763,7 +864,7 @@ public:
     u8 mEnabled;
 };
 
-static debugFlag_c s_debugFlag;
+debugFlag_c s_debugFlag; // global: the item debug TU after this one reads it
 
 // 800C242C
 dsnPlttLoader_c *dsnPlttLoader_c::get() {
@@ -1015,15 +1116,28 @@ void seeker_c::searchItem(const Item &item, int flags, candCB_c *cb) {
 }
 
 // 800C2C58
+// Inlined into search(): accepts every item when there is no callback.
+static inline BOOL checkCand(seeker_c::candCB_c *cb, infoBank_c *bank, const BITM *bitm, u16 index) {
+    BOOL ok = TRUE;
+    if (cb != NULL) {
+        Item item(bank->getItemId(index));
+        if (!cb->check(bitm, &item)) {
+            ok = FALSE;
+        }
+    }
+    return ok;
+}
+
 void seeker_c::search(int kind, int flags, candCB_c *cb) {
+    BOOL any;
     memset(this, 0, sizeof(seeker_c));
     infoBank_c *bank = infoBank_c::get();
 
     if (flags & 2) {
-        u16 first = s_indexTable.getKindFirst(kind);
-        u16 last = s_indexTable.getKindLast(kind);
+        const u16 first = s_indexTable.getKindFirst(kind);
+        const u16 last = s_indexTable.getKindLast(kind);
         if (first != INDEX_NONE && last != INDEX_NONE) {
-            BOOL any = flags & 1;
+            any = flags & 1;
             for (u16 i = first; i <= last; i++) {
                 const BITM *bitm = bank->getBITM(i);
                 if (bitm == NULL) {
@@ -1032,15 +1146,7 @@ void seeker_c::search(int kind, int flags, candCB_c *cb) {
                 if (!any && !bitm->isAvailableInRegion()) {
                     continue;
                 }
-                BOOL ok = TRUE;
-                if (cb != NULL) {
-                    Item item;
-                    item.mId = bank->getItemId(i);
-                    if (!cb->check(bitm, &item)) {
-                        ok = FALSE;
-                    }
-                }
-                if (ok) {
+                if (checkCand(cb, bank, bitm, i)) {
                     add(i);
                     mCount++;
                 }
@@ -1050,9 +1156,9 @@ void seeker_c::search(int kind, int flags, candCB_c *cb) {
 
     if (flags & 4) {
         dSaveDLItemList_c::getRaw();
-        BOOL any = flags & 1;
-        for (u32 i = DL_ITEM_FIRST; i < DL_ITEM_END; i++) {
-            const BITM *bitm = bank->getBITM(static_cast<u16>(i));
+        any = flags & 1;
+        for (u32 j = DL_ITEM_FIRST; j < DL_ITEM_END; j++) {
+            const BITM *bitm = bank->getBITM(static_cast<u16>(j));
             if (bitm == NULL) {
                 continue;
             }
@@ -1062,16 +1168,8 @@ void seeker_c::search(int kind, int flags, candCB_c *cb) {
             if (!any && !bitm->isAvailableInRegion()) {
                 continue;
             }
-            BOOL ok = TRUE;
-            if (cb != NULL) {
-                Item item;
-                item.mId = bank->getItemId(i);
-                if (!cb->check(bitm, &item)) {
-                    ok = FALSE;
-                }
-            }
-            if (ok) {
-                add(i);
+            if (checkCand(cb, bank, bitm, j)) {
+                add(j);
                 mCount++;
             }
         }
@@ -1115,8 +1213,7 @@ int seeker_c::find(const Item &item) const {
         if (!contains(i)) {
             continue;
         }
-        u16 id = key.mId;
-        if (infoBank_c::get()->getItemId(i) == id) {
+        if (infoBank_c::get()->getItemId(i) == key.getId()) {
             return found;
         }
         found++;
@@ -1200,7 +1297,7 @@ void clothCandCB_c::set(Item item, int style, int prevStyle, BOOL excludeNoSale)
 }
 
 // 800C3400
-BOOL clothCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL clothCandCB_c::check(const BITM *bitm, Item *item) const {
     int style = 0;
     u32 raw = bitm->m_style;
     if (raw < 0xB) {
@@ -1227,7 +1324,7 @@ static inline int getFrom(const BITM *bitm) {
 }
 
 // 800C34D0
-BOOL musicCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL musicCandCB_c::check(const BITM *bitm, Item *item) const {
     static seeker_c s_seeker;
     int index = s_seeker.findLike(*item);
     if (index != -1) {
@@ -1252,7 +1349,7 @@ BOOL musicCandCB_c::check(const BITM *bitm, Item *item) {
 }
 
 // 800C36DC
-BOOL fromCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL fromCandCB_c::check(const BITM *bitm, Item *item) const {
     if (mFrom == FROM_COUNT || mFrom == getFrom(bitm)) {
         return TRUE;
     }
@@ -1275,26 +1372,21 @@ void fossilCandCB_c::set(Item item) {
 }
 
 // 800C3784
-BOOL fossilCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL fossilCandCB_c::check(const BITM *bitm, Item *item) const {
     if (mFossil == 0) {
         if (bitm->getKind() == KIND_FOSSIL) {
             return TRUE;
         }
         return FALSE;
     }
-    int fossil = 0;
-    u32 raw = bitm->m_fossil;
-    if (raw < 0x1C) {
-        fossil = raw;
-    }
-    if (mFossil == fossil) {
+    if (mFossil == bitm->getFossil()) {
         return TRUE;
     }
     return FALSE;
 }
 
 // 800C37F0
-BOOL colorCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL colorCandCB_c::check(const BITM *bitm, Item *item) const {
     u32 colorA = bitm->m_ftrColorA;
     int color;
     if (colorA < 0xF) {
@@ -1316,46 +1408,40 @@ BOOL colorCandCB_c::check(const BITM *bitm, Item *item) {
 }
 
 // 800C38AC
-BOOL seriesCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL seriesCandCB_c::check(const BITM *bitm, Item *item) const {
     if (mExclude.mId != ITEM_ID_NONE && item->isSame(mExclude)) {
         return FALSE;
     }
     if (mExcludeNoSale && bitm->isNotForSale()) {
         return FALSE;
     }
-    int want = mSeries;
-    u32 series = 0;
-    u32 raw = bitm->m_series;
-    if (raw < SERIES_COUNT) {
-        series = raw;
-    }
-    return want == series;
+    return mSeries == bitm->getSeries();
 }
 
 // 800C3954
-BOOL sizeCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL sizeCandCB_c::check(const BITM *bitm, Item *item) const {
     return mSize == bitm->getFtrSize();
 }
 
 // 800C3984
-BOOL ftrSeCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL ftrSeCandCB_c::check(const BITM *bitm, Item *item) const {
     return mSfx == bitm->m_ftrSfx;
 }
 
 // 800C399C
-BOOL newOldCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL newOldCandCB_c::check(const BITM *bitm, Item *item) const {
     return bitm->getNewOld() == mValue;
 }
 
 // 800C39DC
-BOOL adultKiddyCandCB_c::check(const BITM *bitm, Item *item) {
+BOOL adultKiddyCandCB_c::check(const BITM *bitm, Item *item) const {
     return bitm->getAdultKiddy() == mValue;
 }
 
 int getCategoryQ5(const Item &item);
 
 // 800C3A1C
-BOOL categoryQ5CandCB_c::check(const BITM *bitm, Item *item) {
+BOOL categoryQ5CandCB_c::check(const BITM *bitm, Item *item) const {
     return getCategoryQ5(*item) == mCategory;
 }
 
@@ -1374,7 +1460,7 @@ void resLoader_c::link(u16 index) {
 
 // 800C3AC4
 void resLoader_c::unlink() {
-    if (mIndex != INDEX_NONE) {
+    if (isLinked()) {
         if (mIndex < ITEM_COUNT) {
             s_resList.mState[mIndex] = 0;
         }
@@ -1531,8 +1617,7 @@ BOOL resLoader_c::loadIndex(u16 index, void *heap) {
     if (index < ITEM_COUNT) {
         if (mFromArchive) {
             char path[50];
-            int number = s_indexTable.getIndexInKind(index);
-            snprintf(path, sizeof(path), "item/Res/%s%d.brres", mpBITM->getKindName(), number);
+            snprintf(path, sizeof(path), "item/Res/%s%d.brres", mpBITM->getKindName(), s_indexTable.getIndexInKind(index));
             u32 size;
             void *src = infoBank_c::get()->getFile(path, &size);
             if (loadFromMemory(src, size, heap)) {
@@ -1550,7 +1635,7 @@ BOOL resLoader_c::loadIndex(u16 index, void *heap) {
                 resLoader_c *other = static_cast<resLoader_c *>(nw4r::ut::List_GetNext(&s_resList.mList, NULL));
                 while (other != NULL) {
                     resLoader_c *next = static_cast<resLoader_c *>(nw4r::ut::List_GetNext(&s_resList.mList, other));
-                    void *data = other->mpData;
+                    void *data = other->getData();
                     if (index == other->mIndex && data != NULL) {
                         s32 size = other->getDataSize();
                         if (data != NULL && loadFromMemory(data, size, heap)) {
@@ -1565,9 +1650,8 @@ BOOL resLoader_c::loadIndex(u16 index, void *heap) {
         }
 
         char path[50];
-        int number = s_indexTable.getIndexInKind(index);
-        const char *kindName = mpBITM->getKindName();
-        snprintf(path, sizeof(path), "/Item/%s/%s%d.brres", mpBITM->getKindName(), kindName, number);
+        snprintf(path, sizeof(path), "/Item/%s/%s%d.brres", mpBITM->getKindName(), mpBITM->getKindName(),
+                 s_indexTable.getIndexInKind(index));
         link(index);
         return load(path, heap, 0);
     }
@@ -1589,6 +1673,12 @@ BOOL resLoader_c::loadIndex(u16 index, void *heap) {
     return loadIndex(ITEM_IDX_DUMMY, heap);
 }
 
+// Not in the DOL: nothing calls it, so the linker dead-strips it. Its body is unknown; only its
+// error string ("furniture SE error") survives, unreferenced, in .data at 804EA4A8.
+void reportFtrSeError() {
+    OSReport("家具SEエラー");
+}
+
 // 800C43B8
 BOOL resLoader_c::release() {
     if (unload(FALSE)) {
@@ -1601,10 +1691,7 @@ BOOL resLoader_c::release() {
 
 // 800C440C
 void resLoader_c::onLoaded() {
-    nw4r::g3d::ResFile file(mpData);
-    file.Init();
-    file.Release();
-    file.Bind();
+    dDvd::brresBank_c::onLoaded();
     mpBITM = NULL;
     if (mIndex < ITEM_COUNT) {
         s_resList.mState[mIndex] = 2;
@@ -1647,15 +1734,12 @@ makeSendData_c::makeSendData_c(u32 count, u8 *exclude) {
 BOOL isDlItemMarked(const u8 *mask, u16 id);
 
 // 800C45D0
-u32 makeSendData_c::countSendable() {
+u32 makeSendData_c::countSendable() const {
     dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
     u32 count = 0;
     for (u32 i = 0; i < mCount; i++) {
-        Item item = getItem(i);
-        BOOL ok = FALSE;
-        if (item.mId != ITEM_ID_NONE && dl->find(item)) {
-            ok = TRUE;
-        }
+        const Item item = getItem(i);
+        BOOL ok = item.isValid() && dl->find(item);
         if (ok && (mpExclude == NULL || !isDlItemMarked(mpExclude, item.mId))) {
             count++;
         }
@@ -1664,7 +1748,7 @@ u32 makeSendData_c::countSendable() {
 }
 
 // 800C4698
-void *makeSendData_c::getNthSendable(u32 n) {
+void *makeSendData_c::getNthSendable(u32 n) const {
     dSaveDLItemList_c *dl = dSaveDLItemList_c::getRaw();
     u32 found = 0;
     for (u32 i = 0; i < mCount; i++) {
@@ -1681,29 +1765,25 @@ void *makeSendData_c::getNthSendable(u32 n) {
 }
 
 // 800C4760
-Item makePlEquipSendData_c::getItem(u32 index) {
-    Item out;
-    u8 *player = static_cast<u8 *>(mpPlayer);
-    if (player != NULL) {
-        Item items[2];
-        items[0].mId = *reinterpret_cast<u16 *>(player + 0x7F1E);
-        items[1].mId = *reinterpret_cast<u16 *>(player + 0x7F20);
+Item makePlEquipSendData_c::getItem(u32 index) const {
+    if (mpPlayer != NULL) {
+        Item items[2] = {mpPlayer->mEquipment.mHat, mpPlayer->mEquipment.mAcc};
         if (index < 2) {
             return items[index];
         }
     }
-    return out;
+    return Item();
 }
 
 // 800C47B0
 u32 countPlEquipSendable() {
-    makePlEquipSendData_c data((u8 *)dPlayerMgr_c::getCurrentPlayerRaw());
+    makePlEquipSendData_c data(dPlayerMgr_c::getCurrentPlayerRaw());
     return data.countSendable();
 }
 
 // 800C4804
 void *getPlEquipSendable(u32 n) {
-    makePlEquipSendData_c data((u8 *)dPlayerMgr_c::getCurrentPlayerRaw());
+    makePlEquipSendData_c data(dPlayerMgr_c::getCurrentPlayerRaw());
     return data.getNthSendable(n);
 }
 
@@ -1714,7 +1794,7 @@ BOOL hasDlItem(void *block) {
 }
 
 // 800C48C8
-Item makeToCstmSendData_c::getItem(u32 index) {
+Item makeToCstmSendData_c::getItem(u32 index) const {
     return dSaveDLItemList_c::getRaw()->getItemAt(index);
 }
 
@@ -1782,7 +1862,8 @@ BOOL dlBlockList_c::add(void *block) {
         const BITM *bitm = ((dSaveDLItem_c *)block)->getBITM();
         for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
             if (((dSaveDLItem_c *)p)->isBITM()) {
-                int rawOther = ((dSaveDLItem_c *)p)->getBITM()->m_baseId;
+                const BITM *otherBitm = ((dSaveDLItem_c *)p)->getBITM();
+                int rawOther = otherBitm->m_baseId;
                 u16 other = rawOther;
                 int rawMine = bitm->m_baseId;
                 u16 mine = rawMine;
@@ -1819,41 +1900,27 @@ void dlBlockList_c::clear() {
 }
 
 // 800C4C8C
-int dlBlockList_c::addFromPlayer(void *player) {
-    u8 *p = static_cast<u8 *>(player);
+int dlBlockList_c::addFromPlayer(dPrivateData_c *player) {
     int count = 0;
     clear();
-
-    u16 *items = reinterpret_cast<u16 *>(p + 0x7F22);
-    int i;
-    for (i = 0; i < 15; i++, items++) {
-        Item item;
-        item.mId = *items;
-        if (addItem(item)) {
+    Item *pocket = player->mPockets;
+    for (int i = 0; i < PLAYER_POCKETS_COUNT; i++, pocket++) {
+        if (addItem(*pocket)) {
             count++;
         }
     }
-
-    u8 *design = p + 0x56CA;
-    for (i = 0; i < 10; i++, design += 0x390) {
-        Item item;
-        item.mId = ((dMail_c *)design)->getPresent();
-        if (addItem(item)) {
+    for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
+        if (addItem(player->mLetters[i].getPresent())) {
             count++;
         }
     }
-
-    Item item;
-    item.mId = *reinterpret_cast<u16 *>(p + 0x7F1E);
-    if (addItem(item)) {
+    if (addItem(player->mEquipment.mHat)) {
         count++;
     }
-    item.mId = *reinterpret_cast<u16 *>(p + 0x7F20);
-    if (addItem(item)) {
+    if (addItem(player->mEquipment.mAcc)) {
         count++;
     }
-    item.mId = *reinterpret_cast<u16 *>(p + 0x7F1A);
-    if (addItem(item)) {
+    if (addItem(player->mEquipment.mHeld)) {
         count++;
     }
     return count;
@@ -1875,13 +1942,13 @@ int dlBlockList_c::countValid() {
 }
 
 // 800C4E48
-int dlBlockList_c::countOwned(void *player) {
+int dlBlockList_c::countOwned(dPrivateData_c *player) {
     int count = 0;
     dSaveDLItemList_c::get();
     for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
         if (((dSaveDLItem_c *)p)->isUsed()) {
             Item item = ((dSaveDLItem_c *)p)->getItem();
-            if (item.mId != ITEM_ID_NONE && fn_8013812C(player, &item, 1)) {
+            if (item.mId != ITEM_ID_NONE && player->pickUp(&item, TRUE)) {
                 count++;
             }
         }
@@ -1890,7 +1957,7 @@ int dlBlockList_c::countOwned(void *player) {
 }
 
 // 800C4F00
-int addPlayerDlItems(u8 *blocks, void *player) {
+int addPlayerDlItems(u8 *blocks, dPrivateData_c *player) {
     dlBlockList_c list(blocks, 0x1C);
     return list.addFromPlayer(player);
 }
@@ -1901,10 +1968,10 @@ int countPlayerDlItems(u8 *blocks) {
     return list.countValid();
 }
 
-int countOwnedDlItems(u8 *blocks, void *player);
+int countOwnedDlItems(u8 *blocks, dPrivateData_c *player);
 
 // 800C4F78
-int countTownDlItems(u8 *blocks, void *player) {
+int countTownDlItems(u8 *blocks, dPrivateData_c *player) {
     dlBlockList_c list(blocks, 0xF);
     int count = list.countValid();
     countOwnedDlItems(blocks, player);
@@ -1912,7 +1979,7 @@ int countTownDlItems(u8 *blocks, void *player) {
 }
 
 // 800C4FE0
-int countOwnedDlItems(u8 *blocks, void *player) {
+int countOwnedDlItems(u8 *blocks, dPrivateData_c *player) {
     dlBlockList_c list(blocks, 0xF);
     return list.countOwned(player);
 }
@@ -1926,7 +1993,7 @@ Item makeItemFromBaseId(u16 baseId) {
 }
 
 // 800C5050
-static void addCatalogList(const u16 *table, u32 count, const u8 *mask, void *player) {
+static void addCatalogList(const u16 *table, u32 count, const u8 *mask, dCatalog_c *catalog) {
     const u16 *entry = table;
     for (u32 i = 0; i < count; i++) {
         u32 byte = i >> 3;
@@ -1936,7 +2003,7 @@ static void addCatalogList(const u16 *table, u32 count, const u8 *mask, void *pl
             if (item.mId != ITEM_ID_NONE && ((mask[byte] >> bit) & 1)) {
                 const BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
                 if (bitm != NULL && bitm->canAddToCatalog()) {
-                    fn_8013A044(player, item.mId, 0);
+                    catalog->registerItem(item.mId, FALSE);
                 }
             }
         }
@@ -1945,7 +2012,7 @@ static void addCatalogList(const u16 *table, u32 count, const u8 *mask, void *pl
 }
 
 // 800C5110
-static void addCatalogRecords(const u16 *table, u32 count, const u8 *mask, void *player) {
+static void addCatalogRecords(const u16 *table, u32 count, const u8 *mask, dCatalog_c *catalog) {
     u32 i;
     const u16 *entry = table + 3;
     u32 n = 3;
@@ -1958,7 +2025,7 @@ static void addCatalogRecords(const u16 *table, u32 count, const u8 *mask, void 
             if (item.mId != ITEM_ID_NONE && ((mask[byte] >> bit) & 1)) {
                 const BITM *bitm = infoBank_c::get()->getBITM(Item(item.mId));
                 if (bitm != NULL && bitm->canAddToCatalog()) {
-                    fn_8013A044(player, item.mId, 0);
+                    catalog->registerItem(item.mId, FALSE);
                 }
             }
         }
@@ -1966,18 +2033,6 @@ static void addCatalogRecords(const u16 *table, u32 count, const u8 *mask, void 
         entry += 4;
     }
 }
-
-// 80471B40
-static const u8 sKindAvailable[0x80] = {
-    1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-};
 
 // 80471CFC
 static const u16 sCatalogFurniture[0x6E9] = {
@@ -2219,14 +2274,15 @@ static const u16 sCatalogRecords[0x100] = {
 };
 
 // 800C51D8
-void addCatalogItems(u8 *mask, void *player) {
+void addCatalogItems(void *addr, dCatalog_c *catalog) {
+    u8 *mask = (u8 *)addr;
     u8 *extra = mask + 0x100;
     u8 *list1 = extra + 9;
     u8 *records = list1 + 0x12;
-    addCatalogList(sCatalogList0, 0x44, extra, player);
-    addCatalogList(sCatalogList1, 0x44, list1, player);
-    addCatalogList(sCatalogFurniture, 0x6E9, mask, player);
-    addCatalogRecords(sCatalogRecords, 0x100, records, player);
+    addCatalogList(sCatalogList0, 0x44, extra, catalog);
+    addCatalogList(sCatalogList1, 0x44, list1, catalog);
+    addCatalogList(sCatalogFurniture, 0x6E9, mask, catalog);
+    addCatalogRecords(sCatalogRecords, 0x100, records, catalog);
 }
 
 // 800C5278
@@ -2237,9 +2293,9 @@ extern "C" void fn_800C5278(void *a, void *b) {
 // 800C5288
 const char *getKindName(u32 kind) {
     if (kind < KIND_COUNT) {
-        return lbl_804E9C80[kind];
+        return sKindNames[kind];
     }
-    return lbl_804E9C80[0];
+    return sKindNames[0];
 }
 
 // 800C52B0
@@ -2254,12 +2310,7 @@ BOOL isKindAvailable(u32 kind) {
 int getCategoryQ5(const Item &item) {
     const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
-        u32 partA = 0;
-        u32 rawA = bitm->m_ftrPartA;
-        if (rawA < 6) {
-            partA = rawA;
-        }
-        switch (partA) {
+        switch (bitm->getFtrPartA()) {
         case 2:
         case 3:
             return 3;
@@ -2279,12 +2330,7 @@ int getCategoryQ5(const Item &item) {
             return 0xA;
         }
 
-        u32 lamp = 0;
-        u32 rawLamp = static_cast<s8>(bitm->m_ftrLamp);
-        if (rawLamp < 3) {
-            lamp = rawLamp;
-        }
-        if (lamp != 0) {
+        if (bitm->getFtrLamp() != FTR_LAMP_NONE) {
             return 4;
         }
 
@@ -2334,34 +2380,19 @@ int getNpcMsgBullfest(Item item, int index) {
     return 0;
 }
 
-// 800C56D4
-BOOL seeker_c::candCB_c::check(const BITM *bitm, Item *item) {
-    return TRUE;
-}
-
-// 800C56DC
-seriesCandCB_c::seriesCandCB_c(int series, Item exclude, BOOL excludeNoSale) {
-    set(series, exclude, excludeNoSale);
-}
-
-// 800C5730
-void seriesCandCB_c::set(int series, Item exclude, BOOL excludeNoSale) {
-    mSeries = series;
-    mExclude = exclude;
-    mExcludeNoSale = excludeNoSale;
-}
-
-// 800C5744
-fossilCandCB_c::fossilCandCB_c(Item item) {
-    set(item);
-}
+// 800C5564
+infoBank_c::~infoBank_c() {}
 
 class resListInit_c {
 public:
     resListInit_c() {
-        memset(s_resList.mState, 0, sizeof(s_resList.mState));
+        memset(s_resList.mState, 0, sizeof(s_resList)); // clears 0xC bytes past the end
         resLoader_c tmp;
         nw4r::ut::List_Init(&s_resList.mList, reinterpret_cast<u8 *>(&tmp.mLink) - reinterpret_cast<u8 *>(&tmp));
     }
 };
 static resListInit_c s_resListInit;
+
+// The base candCB_c::check and the series/fossil callback constructors sit after the
+// static initializer and the d_dvd.hpp weak functions, so they come from an included
+// file (with -sym on, MWCC gives an included file's functions their own .text section).

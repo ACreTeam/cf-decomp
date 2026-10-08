@@ -117,9 +117,9 @@ dol/game/d_item.cpp:
 	.text       start:0x800C0F80 end:0x800C578C
 	.ctors      start:0x804656B4 end:0x804656B8
 	.rodata     start:0x80471B40 end:0x80472DE0 align:4
-	.data       start:0x804EA298 end:0x804EA8E0 align:4
+	.data       start:0x804E89A8 end:0x804EA8E0
 	.bss        start:0x8059AD98 end:0x8059DD30 align:4
-	.sdata      start:0x8074A900 end:0x8074A9A0 align:4
+	.sdata      start:0x8074A520 end:0x8074A9A0
 	.sbss       start:0x8074E490 end:0x8074E498
 
 dol/game/d_nickname.cpp:

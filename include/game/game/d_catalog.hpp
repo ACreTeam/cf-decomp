@@ -38,7 +38,7 @@ public:
 
     // Fails if mpCatalog is NULL; passes everything if !mOnlyRegistered,
     // otherwise only items registered in mpCatalog.
-    virtual BOOL check(const dItem::BITM *bitm, dItem::Item *item); // 8013CAE8
+    virtual BOOL check(const dItem::BITM *bitm, dItem::Item *item) const; // 8013CAE8
 
     dCatalog_c *mpCatalog; // 0x04
     BOOL mOnlyRegistered;  // 0x08

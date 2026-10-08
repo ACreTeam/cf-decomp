@@ -45,6 +45,20 @@ protected:
     char mPath[0x40]; // 0x16
 }; // sizeof = 0x58 (aligned)
 
+// brresBank_c comes before arcBank_c: MWCC emits weak vtables/RTTI in reverse class-definition
+// order, and d_item.o has arcBank_c's RTTI before brresBank_c's.
+class brresBank_c : public bank_c {
+public:
+    brresBank_c() {}
+    virtual ~brresBank_c() {} // 80069BD8
+    virtual void onLoaded() {
+        nw4r::g3d::ResFile res(mpData);
+        res.Init();
+        res.Release();
+        res.Bind(res);
+    }
+}; // sizeof = 0x58
+
 class arcBank_c : public bank_c {
 public:
     arcBank_c() : mArcReady(0) {}
@@ -59,17 +73,5 @@ protected:
     u8 mArcReady; // 0x56
     ARCHandle mHandle; // 0x58
 }; // sizeof = 0x74
-
-class brresBank_c : public bank_c {
-public:
-    brresBank_c() {}
-    virtual ~brresBank_c() {} // 80069BD8
-    virtual void onLoaded() {
-        nw4r::g3d::ResFile res(mpData);
-        res.Init();
-        res.Release();
-        res.Bind(res);
-    }
-}; // sizeof = 0x58
 
 } // namespace dDvd

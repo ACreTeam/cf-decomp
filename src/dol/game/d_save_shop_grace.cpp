@@ -10,7 +10,7 @@
 #include <string.h>
 
 static const int sMonthType[12] = {3, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3}; // the last month of each type has the sale
-static const int sSeries[4] = {18, 21, 20, 19}; // the series of slots 0..11
+static const int sSeries[4] = {dItem::SERIES_PRINCESS, dItem::SERIES_GRACIE, dItem::SERIES_SWEETS, dItem::SERIES_GORGEOUS}; // the series of slots 0..11
 
 // 1-based index in the series of slots 0..9.
 static const int sOrder[4][10] = {
@@ -53,10 +53,10 @@ int dSaveShopGrace_c::getSaleStage() {
     dTimeStamp_c today(dTime_c::getCurrent());
     today.toDayStart();
     switch (today.get().month) {
-    case 0:
-    case 3:
-    case 6:
-    case 9:
+    case MONTH_JANUARY:
+    case MONTH_APRIL:
+    case MONTH_JULY:
+    case MONTH_OCTOBER:
         if (today.get().mday >= 26) {
             return 3;
         }

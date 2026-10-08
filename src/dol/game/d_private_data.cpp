@@ -2611,7 +2611,7 @@ dOutfit_c *dPrivateData_c::getOutfit(int i) {
 }
 
 // 8013CAE8
-BOOL catalogCandCB_c::check(const dItem::BITM *, dItem::Item *item) {
+BOOL catalogCandCB_c::check(const dItem::BITM *, dItem::Item *item) const {
     if (mpCatalog != NULL) {
         if (mOnlyRegistered == TRUE) {
             return mpCatalog->isRegistered(item->mId);

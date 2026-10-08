@@ -558,7 +558,7 @@ int Item::getSeries() {
         }
         return series;
     }
-    return 0x65;
+    return SERIES_OTHER;
 }
 
 // 800A69F0

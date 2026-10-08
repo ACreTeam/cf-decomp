@@ -337,6 +337,7 @@ struct Item {
     BOOL isNotSame(const Item &other) const { return !isSame(other); }
 
     bool isValid() const { return mId != ITEM_ID_NONE; }
+    u16 getId() const { return mId; }
 
     bool isFg() {
         return mId < FG_COUNT;
