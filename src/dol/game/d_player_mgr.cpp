@@ -2,6 +2,7 @@
 // and visitors. .text 800FBB18..8010263C.
 // First pass: every function is written for equivalence; matching has not started.
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_bgcf.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_item.hpp>
@@ -37,7 +38,6 @@ void fn_802B0994(m3d::fanm_c *anm, f32 frame);
 BOOL fn_802C4404(dUnk83ED_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
-f32 fn_80074974(const mVec3_c *pos, int a); // ground height
 void fn_801710BC(int idx, int a);
 BOOL fn_8018EB8C();
 BOOL fn_8018ECA0();
@@ -66,9 +66,6 @@ void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 void fn_801B9304();
 void fn_80082B04(mVec3_c *out, const mVec3_c *in);
-int fn_8006E1BC(dGroundCheck_c *check, const mVec3_c *pos, int a, int b, int c);
-BOOL fn_8006E400(dGroundCheck_c *check, f32 y);
-f32 fn_8006E31C(dGroundCheck_c *check, int a);
 void fn_80087790(const char *name, const mVec3_c *pos, int a, int b);
 void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarget_c *, u32), u32 kind);
 void fn_80285110(void *obj, dEffectTarget_c *target);
@@ -1752,7 +1749,7 @@ BOOL fn_800FF080(mVec3_c *out) {
     out->x = player->mPos.x + 12.0f * nw4r::math::SinFIdx((1.0f / 256.0f) * angle);
     out->z = player->mPos.z + 12.0f * nw4r::math::CosFIdx((1.0f / 256.0f) * angle);
     mVec3_c pos(out->x, player->mPos.y, out->z);
-    out->y = fn_80074974(&pos, 0);
+    out->y = dBGCF::getGroundY(&pos, FALSE);
     return TRUE;
 }
 
@@ -2225,8 +2222,8 @@ BOOL fn_80100128(f32 *out, int idx) {
 
 // 80100194
 f32 fn_80100194(const mVec3_c *a, const mVec3_c *b, const mVec3_c *c) {
-    f32 hb = fn_80074974(b, 0);
-    f32 ha = fn_80074974(a, 0);
+    f32 hb = dBGCF::getGroundY(b, FALSE);
+    f32 ha = dBGCF::getGroundY(a, FALSE);
     f32 hc = c->y;
     if ((hb <= ha && hb >= hc) || (hb >= ha && hb <= hc)) {
         return hb;
@@ -3337,18 +3334,17 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
         pos = obj->_AC;
     }
 
-    dGroundCheck_c check;
-    // The target tests r0 after this call, not r3 (see notes/d_player_mgr.txt).
-    if (fn_8006E1BC(&check, &pos, 0, 0, 0) != 0) {
-        if (fn_8006E400(&check, pos.y)) {
-            pos.y = check._3C;
+    dBGCF::groundChk_c check(&pos, dBGCF::LAYER_TOP, 0, 0);
+    if (check.mWater != BG_WATER_NONE) {
+        if (check.isUnderWater(pos.y)) {
+            pos.y = check.mWaterY;
             fn_80087790("afi_hny_watersplash_b", &pos, 0, 0);
             if (obj->_C8 != NULL) {
                 fn_80285110(obj->_C8, obj);
             }
         }
     } else {
-        f32 ground = fn_8006E31C(&check, 1);
+        f32 ground = check.getHeight(TRUE);
         if (pos.y <= ground) {
             const char *name = kind == 3 ? "afi_hny_snowbreak" : "afi_hny_watersplash_a";
             if (fabsf(ground - pos.y) <= 5.0f) {
@@ -3364,12 +3360,11 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
 
 // 80102434
 int fn_80102434(const mVec3_c *pos) {
-    dGroundCheck_c check;
-    // The target tests r0 after this call, not r3 (see notes/d_player_mgr.txt).
-    if (fn_8006E1BC(&check, pos, 0, 0, 0) == 2) {
+    dBGCF::groundChk_c check(pos, dBGCF::LAYER_TOP, 0, 0);
+    if (check.mWater == BG_WATER_SEA) {
         return 1;
     }
-    int attr = check._34;
+    int attr = check.mAttr;
     if (lbl_8074EBE8 != NULL) {
         int mode = lbl_8074EBE8->_5884;
         BOOL special = FALSE;

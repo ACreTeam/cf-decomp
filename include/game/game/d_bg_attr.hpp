@@ -143,3 +143,26 @@ enum {
 
     BG_ATTR_NUM = 0x86, // larger attributes always give a query's default
 };
+
+// The water kind of an attribute (+0x27 bits 6..7; dBGCF::getWaterKind, dBGCF::groundChk_c::mWater).
+enum bgWater_e {
+    BG_WATER_NONE = 0,
+    BG_WATER_RIVER = 1, // RIVER_*, FALL_*
+    BG_WATER_SEA = 2,   // SEA, SEA_SW / SE, WAVE, UFO
+    BG_WATER_POND = 3   // WATER
+};
+
+// What digging an attribute gives (+0x27 bits 2..3; dBGCF::getDigType).
+enum bgDig_e {
+    BG_DIG_SOIL = 0,
+    BG_DIG_SAND = 1,
+    BG_DIG_OTHER = 2,
+    BG_DIG_WATER = 3
+};
+
+// What grows on an attribute (+0x27 bits 4..5; dBGCF::getPlantType).
+enum bgPlant_e {
+    BG_PLANT_NONE = 0,
+    BG_PLANT_SOILX = 1, // SOILX, the cliffs, sand
+    BG_PLANT_SOIL = 2   // SOIL only: saplings grow
+};

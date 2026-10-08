@@ -17,13 +17,6 @@
 #include <nw4r/math.h>
 
 // Ext item data (0xD000 ids), see d_fg_item.cpp.
-// Result of the ground check fn_8006E1BC.
-struct dFdGroundCheck_c {
-    /* 0x00 */ u8 _00[0x34];
-    /* 0x34 */ int mAttr;
-    /* 0x38 */ u8 _38[0x50];
-}; // size 0x88
-
 // The furniture interface the unit's furniture object exposes (base at +0x158 of fn_800A8FC4's result).
 class dFdFtrIf_c {
 public:
@@ -62,29 +55,10 @@ extern const f32 lbl_80750528; // 80750528: half a block in x (256)
 extern const f32 lbl_8075052C; // 8075052C: half a block in z (256)
 extern EGG::Heap *lbl_8074E3F4; // 8074E3F4
 
-BOOL fn_80075658(int blockW, int blockH, dBGCF::clmcb_c *cb, int bg); // 80075658: register a BG slot
-void fn_800755A0(int bg);                                              // 800755A0: select the current BG slot
-void fn_8007589C(int bg);                                              // 8007589C: release a BG slot
-void fn_800756F4(int blockX, int blockZ, void *data, int flag, int bg); // 800756F4
-f32 fn_80074D64(int unitX, int unitZ);                                 // 80074D64: ground height of a unit
-void fn_8006CD90(nw4r::math::VEC3 *pos, int unitX, int unitZ);         // 8006CD90: unit -> world position
-void fn_8006CD4C(int *blockX, int *blockZ, int unitX, int unitZ);      // 8006CD4C: block of a unit
-f32 fn_80074974(const nw4r::math::VEC3 *pos, int a);                   // 80074974: ground height
 int fn_80081514(int type);                                             // 80081514: the bridge variant of a block type
-int fn_80073D2C(void *arg, int unitX, int unitZ, int arg2);            // 80073D2C
-int fn_80076260(int unitX, int unitZ);                                 // 80076260
-int fn_80073158(int unitX, int unitZ);                                 // 80073158
-int fn_80073208(int unitX, int unitZ);                                 // 80073208
-int fn_800733F0(int unitX, int unitZ);                                 // 800733F0
-int fn_80073260(int unitX, int unitZ);                                 // 80073260
-int fn_800732B8(int unitX, int unitZ);                                 // 800732B8
-int fn_80073314(int unitX, int unitZ);                                 // 80073314
-int fn_80072D54(int unitX, int unitZ);                                 // 80072D54
-int fn_80072F80(int unitX, int unitZ);                                 // 80072F80: unit attribute
 void *fn_800A835C();                                                   // 800A835C
 void fn_800A7F14(void *, const nw4r::math::VEC3 *pos, int, int, int);  // 800A7F14
 void fn_800A7F9C(void *, const nw4r::math::VEC3 *pos, int, int);       // 800A7F9C
-int fn_8006E1BC(dFdGroundCheck_c *check, const nw4r::math::VEC3 *pos, int, int, int); // 8006E1BC
 u32 fn_802B6258(void *, int x, int z);                                 // 802B6258
 void *fn_800A9058();                                                   // 800A9058
 dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
@@ -127,7 +101,7 @@ BOOL dFdBase_c::setup(int blockW, int blockH, int bg) {
     mWorldW = blockW * lbl_80750520;
     mWorldH = blockH * lbl_80750524;
     mBg = bg;
-    return fn_80075658(blockW, blockH, this, bg);
+    return dBGCF::entryBg(blockW, blockH, this, bg);
 }
 
 // Stripped by the linker (placeholder name and body); its 0.0f pools that constant before the
@@ -194,7 +168,7 @@ void dFdBase_c::getUnitGroundPos(nw4r::math::VEC3 *pos, int unitX, int unitZ) {
     f32 z = mFI_UT_WORLDSIZE_HALF_Z_F + unitToWorld(unitZ);
     pos->x = x;
     pos->z = z;
-    pos->y = fn_80074D64(unitX, unitZ);
+    pos->y = dBGCF::getUnitBaseY(unitX, unitZ);
 }
 
 // 8008C010
@@ -333,10 +307,10 @@ nw4r::math::VEC3 dFdBase_c::getRaccoPos(int blockX, int blockZ) const {
     int unitX;
     int unitZ;
     if (cand.getRandomXZ(&unitX, &unitZ)) {
-        fn_800755A0(1);
-        fn_8006CD90(&pos, unitX, unitZ);
-        fn_800755A0(0);
-        pos.y = fn_80074974(&pos, 0);
+        dBGCF::setCurrentBg(1);
+        dBGCF::unitToPos((mVec3_c *)&pos, unitX, unitZ);
+        dBGCF::setCurrentBg(0);
+        pos.y = dBGCF::getGroundY((const mVec3_c *)&pos, FALSE);
     }
     return pos;
 }
@@ -527,17 +501,17 @@ int dFdBase_c::bgCall_80073D2C(void *arg, int unitX, int unitZ, int arg2) {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
         return 0;
     }
-    fn_800755A0(mBg);
-    int res = fn_80073D2C(arg, unitX, unitZ, arg2);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::checkPut((const mVec3_c *)arg, unitX, unitZ, arg2);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
 // 8008CDF4
 int dFdBase_c::bgCall_80076260(int unitX, int unitZ) {
-    fn_800755A0(mBg);
-    int res = fn_80076260(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::setSoilX(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
@@ -557,9 +531,9 @@ int dFdBase_c::canPutItem(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
         return 0;
     }
-    fn_800755A0(mBg);
-    int res = fn_80073158(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::canPutItem(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
@@ -575,9 +549,9 @@ int dFdBase_c::isGrassGround(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
         return 0;
     }
-    fn_800755A0(mBg);
-    int res = fn_80073208(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::isGrassGround(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
@@ -586,9 +560,9 @@ int dFdBase_c::isBeachGround(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
         return 0;
     }
-    fn_800755A0(mBg);
-    int res = fn_800733F0(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::isBeachGround(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
@@ -597,20 +571,20 @@ int dFdBase_c::canNpcPutItem(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isNotStrCol(unitX, unitZ)) {
         return 0;
     }
-    fn_800755A0(mBg);
-    int res = fn_80073260(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::canNpcPutItem(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
 // 8008D14C
 int dFdBase_c::getDigType(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
-        return 2;
+        return BG_DIG_OTHER;
     }
-    fn_800755A0(mBg);
-    int res = fn_800732B8(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::getDigType(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
@@ -624,13 +598,13 @@ int dFdBase_c::getDigType(const nw4r::math::VEC3 *pos) {
 // 8008D21C
 int dFdBase_c::getPlantType(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
-        return 0;
+        return BG_PLANT_NONE;
     }
-    fn_800755A0(mBg);
-    int res = fn_80073314(unitX, unitZ);
-    fn_800755A0(0);
-    if (res == 2 && _24 != NULL && _24->isNoPlantUnit(unitX, unitZ)) {
-        return 1;
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::getPlantType(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
+    if (res == BG_PLANT_SOIL && _24 != NULL && _24->isNoPlantUnit(unitX, unitZ)) {
+        return BG_PLANT_SOILX;
     }
     return res;
 }
@@ -643,18 +617,18 @@ int dFdBase_c::getPlantType(int blockX, int blockZ, int unitX, int unitZ) {
 }
 
 // 8008D2F0
-int dFdBase_c::bgCall_80072D54(int unitX, int unitZ) const {
-    fn_800755A0(mBg);
-    int res = fn_80072D54(unitX, unitZ);
-    fn_800755A0(0);
+int dFdBase_c::getRouteDirs(int unitX, int unitZ) const {
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::getRouteDirs(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
 // 8008D348
 int dFdBase_c::getBgAttr(int unitX, int unitZ) const {
-    fn_800755A0(mBg);
-    int res = fn_80072F80(unitX, unitZ);
-    fn_800755A0(0);
+    dBGCF::setCurrentBg(mBg);
+    int res = dBGCF::getAttr(unitX, unitZ);
+    dBGCF::setCurrentBg(0);
     return res;
 }
 
@@ -706,10 +680,10 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
 }
 
 // 8008D610
-int dFdBase_c::bgCall_80072D54(const nw4r::math::VEC3 *pos) {
+int dFdBase_c::getRouteDirs(const nw4r::math::VEC3 *pos) {
     f32 x = pos->x;
     f32 z = pos->z;
-    return bgCall_80072D54((int)x >> 5, (int)z >> 5);
+    return getRouteDirs((int)x >> 5, (int)z >> 5);
 }
 
 // 8008D658
@@ -740,11 +714,10 @@ u8 dFdBase_c::fn_8008D760(const nw4r::math::VEC3 *pos, BOOL onlyAttr16) {
         f32 z = pos->z;
         int unitX = (int)x >> 5;
         int unitZ = (int)z >> 5;
-        fn_800755A0(mBg);
-        dFdGroundCheck_c check;
-        fn_8006E1BC(&check, pos, 0, 0, 0);
+        dBGCF::setCurrentBg(mBg);
+        dBGCF::groundChk_c check((const mVec3_c *)pos, dBGCF::LAYER_TOP, 0, 0);
         int attr = check.mAttr;
-        fn_800755A0(0);
+        dBGCF::setCurrentBg(0);
         if (onlyAttr16) {
             if (attr == BG_ATTR_SOIL) {
                 return fn_802B6258((u8 *)fn_800A835C() + 0x58, unitX, unitZ);
@@ -779,13 +752,13 @@ dItem::Item dFdBase_c::getUnitItem(int unitX, int unitZ) const {
 void dFdBase_c::registerBg() {
     int w = mBlockW;
     int h = mBlockH;
-    fn_80075658(w, h, this, 0);
+    dBGCF::entryBg(w, h, this, 0);
     int x, z;
     for (z = 0; z < h; z++) {
         for (x = 0; x < w; x++) {
             dFdBlock_c *block = getBlock(x, z);
             if (block != NULL) {
-                fn_800756F4(block->mBlockX, block->mBlockZ, block->mBgData, block->mFlag, 0);
+                dBGCF::setBlock(block->mBlockX, block->mBlockZ, (dBGCF::unitDat_c *)block->mBgData, block->mFlag, 0);
             }
         }
     }
@@ -849,7 +822,7 @@ void dFdInfo_c::release(EGG::Heap *heap) {
         mBlocks = NULL;
     }
     _24 = NULL;
-    fn_8007589C(mBg);
+    dBGCF::releaseBg(mBg);
 }
 
 // 8008DD3C
@@ -1091,7 +1064,7 @@ void dFdInfoNpcHs_c::destroy(EGG::Heap *heap) {
     }
     _24 = NULL;
     if (isCountZero()) {
-        fn_8007589C(mBg);
+        dBGCF::releaseBg(mBg);
     }
 }
 
@@ -1162,7 +1135,7 @@ void dFdInfoSvMdlRm_c::destroy(EGG::Heap *heap) {
         mBlocks = NULL;
     }
     _24 = NULL;
-    fn_8007589C(mBg);
+    dBGCF::releaseBg(mBg);
 }
 
 // 8008EA5C
@@ -1202,7 +1175,7 @@ void dFdInfoSvMdlRm_c::remove(dFdInfoSvMdlRm_c **info, EGG::Heap *heap) {
 BOOL raccoCand_c::check(int x, int z) {
     if (mBlockX != -1 || mBlockZ != -1) {
         int blockX, blockZ;
-        fn_8006CD4C(&blockX, &blockZ, x, z);
+        dBGCF::unitToBlock(&blockX, &blockZ, x, z);
         if (blockX != mBlockX || blockZ != mBlockZ) {
             return FALSE;
         }
@@ -1215,7 +1188,7 @@ BOOL raccoCand_c::check(int x, int z) {
     case BG_ATTR_BR_RACCO_SE:
         if ((s8)dSaveData_c::getTown()->mNewConstruction == NEW_CONSTRUCTION_BRIDGE && mBlockX == -1 && mBlockZ == -1) {
             int blockX, blockZ;
-            fn_8006CD4C(&blockX, &blockZ, x, z);
+            dBGCF::unitToBlock(&blockX, &blockZ, x, z);
             dSaveTown_c *save1 = dSaveData_c::getTown();
             if (blockX == save1->mNewConstructionBlockX) {
                 dSaveTown_c *save2 = dSaveData_c::getTown();

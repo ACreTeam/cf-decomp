@@ -29,15 +29,6 @@ struct dFgMngActor_c {
     /* 0x1C38 */ u8 mState;
 };
 
-// The ground check result of fn_8006E238 (0x84).
-struct dFgMngGround_c {
-    /* 0x00 */ u8 _00[0x84];
-};
-extern "C" {
-void fn_8006E238(dFgMngGround_c *g, int x, int z, int, int, int); // 8006E238
-f32 fn_8006E31C(dFgMngGround_c *g, int);                          // 8006E31C
-}
-
 static inline BOOL fgMngInRange(u16 id, u16 lo, u16 hi) {
     BOOL in = FALSE;
     if (!(id < lo || id > hi)) {
@@ -1148,7 +1139,7 @@ int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {
     int i;
     nw4r::math::VEC3 center;
     dFdBase_c::getUnitCenterPos(&center, pos->mX, pos->mZ);
-    int ground = fn_80072E94(&center);
+    int ground = dBGCF::getUnitQuarter((const mVec3_c *)&center);
     BOOL blocked = FALSE;
     order = sSpotOrder[dir];
     for (i = 0; i < 8; i++, order++) {
@@ -1161,9 +1152,9 @@ int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {
         if (fgMngLock_find(mScene, (dFdAsPos_c *)&p, 0) < 0) {
             dItem::Item *cur = fd->getItem(p.mX, p.mZ, 0);
             if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->canPutItem(p.mX, p.mZ)) {
-                fn_800755A0(1);
-                BOOL found = fn_800737E4(pos->mX, pos->mZ, ground, p.mX, p.mZ);
-                fn_800755A0(0);
+                dBGCF::setCurrentBg(1);
+                BOOL found = dBGCF::checkWalkable(pos->mX, pos->mZ, ground, p.mX, p.mZ);
+                dBGCF::setCurrentBg(0);
                 if (!found) {
                     dItem::Item *a = NULL;
                     dItem::Item *b = NULL;
@@ -1185,12 +1176,10 @@ int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {
                         b = fd->getItem(p.mX, p.mZ - 1, 0);
                         break;
                     }
-                    dFgMngGround_c g1;
-                    fn_8006E238(&g1, p.mX, p.mZ, 0, 0, 0);
-                    f32 h1 = fn_8006E31C(&g1, 0);
-                    dFgMngGround_c g0;
-                    fn_8006E238(&g0, pos->mX, pos->mZ, 0, 0, 0);
-                    f32 diff = fn_8006E31C(&g0, 0) - h1;
+                    dBGCF::groundChk_c g1(p.mX, p.mZ, dBGCF::LAYER_TOP, 0, 0);
+                    f32 h1 = g1.getHeight(FALSE);
+                    dBGCF::groundChk_c g0(pos->mX, pos->mZ, dBGCF::LAYER_TOP, 0, 0);
+                    f32 diff = g0.getHeight(FALSE) - h1;
                     if (diff >= -10.0f && diff <= 10.0f) {
                         if (a != NULL && a->mId < dItem::FG_COUNT) {
                             found = TRUE;

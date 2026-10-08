@@ -10,7 +10,6 @@
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_8006CD4C(int *blockX, int *blockZ, int unitX, int unitZ); // unit -> acre
 void *fn_801683D8(); // the town's building registry
 void *fn_801683E4(); // the city's
 void fn_801679A8(void *registry, u16 id);
@@ -54,7 +53,7 @@ public:
 
     BOOL isFree(int x, int z) const {
         int blockX, blockZ;
-        fn_8006CD4C(&blockX, &blockZ, x, z);
+        dBGCF::unitToBlock(&blockX, &blockZ, x, z);
         if (mInfo->getBlock(blockX, blockZ) != NULL && dSaveBuildingList_c::get()->isBuildSite(x, z)) {
             if (isBuildingId(dSaveBuildingList_c::get()->getAt(x, z, 1).mId)) {
                 return FALSE;
@@ -67,7 +66,7 @@ public:
     // The same; its own copy only for the stack layout of check().
     BOOL isFreeSite(int x, int z) const {
         int blockZ, blockX;
-        fn_8006CD4C(&blockX, &blockZ, x, z);
+        dBGCF::unitToBlock(&blockX, &blockZ, x, z);
         if (mInfo->getBlock(blockX, blockZ) != NULL && dSaveBuildingList_c::get()->isBuildSite(x, z)) {
             if (isBuildingId(dSaveBuildingList_c::get()->getAt(x, z, 1).mId)) {
                 return FALSE;
@@ -613,7 +612,7 @@ int dSaveBuildingList_c::countHouses(int blockX, int blockZ) const {
         dItem::Item id(getId(i));
         if (getPos(&x, &z, &id, 1)) {
             int bx, bz;
-            fn_8006CD4C(&bx, &bz, x, z);
+            dBGCF::unitToBlock(&bx, &bz, x, z);
             if (bx == blockX && bz == blockZ) {
                 count++;
             }
@@ -623,7 +622,7 @@ int dSaveBuildingList_c::countHouses(int blockX, int blockZ) const {
         dItem::Item id(getId(i));
         if (getPos(&x, &z, &id, 1)) {
             int bx, bz;
-            fn_8006CD4C(&bx, &bz, x, z);
+            dBGCF::unitToBlock(&bx, &bz, x, z);
             if (bx == blockX && bz == blockZ) {
                 count++;
             }
@@ -651,14 +650,14 @@ dSaveBuildingList_c *dSaveBuildingList_c::get() {
 BOOL nearBkCand_c::check(int x, int z) {
     if (isFree(x, z)) {
         int blockX, blockZ;
-        fn_8006CD4C(&blockX, &blockZ, x, z);
+        dBGCF::unitToBlock(&blockX, &blockZ, x, z);
         if (mFd->getBlock(blockX, blockZ) != NULL) {
             for (u16 id = mFirst; id < mLast; id++) {
                 dItem::Item item(id);
                 int hx, hz;
                 if (dSaveBuildingList_c::get()->getPos(&hx, &hz, &item, 1)) {
                     int hbx, hbz;
-                    fn_8006CD4C(&hbx, &hbz, hx, hz);
+                    dBGCF::unitToBlock(&hbx, &hbz, hx, hz);
                     BOOL adjacent = (blockX == hbx && blockZ == hbz) || (blockX == hbx && blockZ == hbz + 1) ||
                                     (blockX == hbx && blockZ == hbz - 1) || (blockX == hbx + 1 && blockZ == hbz) ||
                                     (blockX == hbx - 1 && blockZ == hbz);
@@ -679,7 +678,7 @@ BOOL reserveCand_c::check(int x, int z) {
 BOOL insidePlHsBkCand_c::check(int x, int z) {
     if (isFree(x, z)) {
         int blockX, blockZ;
-        fn_8006CD4C(&blockX, &blockZ, x, z);
+        dBGCF::unitToBlock(&blockX, &blockZ, x, z);
         dFdBlock_c *block = mInfo->getBlock(blockX, blockZ);
         u32 i = 0;
         for (u32 id = BUILDING_PLAYER_HOUSE_0; id <= BUILDING_PLAYER_HOUSE_3; id++, i++) {
@@ -688,7 +687,7 @@ BOOL insidePlHsBkCand_c::check(int x, int z) {
                 int hx, hz;
                 if (dSaveBuildingList_c::get()->getPos(&hx, &hz, &item, 1)) {
                     int hbx, hbz;
-                    fn_8006CD4C(&hbx, &hbz, hx, hz);
+                    dBGCF::unitToBlock(&hbx, &hbz, hx, hz);
                     if (blockX == hbx && blockZ == hbz) {
                         return TRUE;
                     }
@@ -718,7 +717,7 @@ BOOL lightHouseCand_c::check(int x, int z) {
 // 8014BC6C
 BOOL plHsCand_c::check(int x, int z) {
     int blockX, blockZ;
-    fn_8006CD4C(&blockX, &blockZ, x, z);
+    dBGCF::unitToBlock(&blockX, &blockZ, x, z);
     dFdBlock_c *block = mInfo->getBlock(blockX, blockZ);
     if (block != NULL && (block->hasFlag(mNeed) || mNeed == 0) && !block->hasFlag(mAvoid) &&
         dSaveBuildingList_c::get()->isBuildSite(x, z)) {

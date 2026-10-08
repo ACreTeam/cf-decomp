@@ -639,7 +639,7 @@ BOOL lineXZ_c::correctEdge(vecXZ_c *pos, const vecXZ_c &old, f32 r) const {
 }
 
 // 8006C2D4
-BOOL lineXZ_c::correctCross(vecXZ_c *pos, const vecXZ_c &old, f32 r) const {
+BOOL lineXZ_c::correctCross(vecXZ_c *pos, const vecXZ_c &old, f32 r, BOOL) const {
     if (calcDist(old) > 0.0f) {
         vecXZ_c cross;
         if (crossSeg(&cross, *pos, old)) {
