@@ -315,7 +315,7 @@ struct FgInfo {
     s16 mPlantItem; // 0x06: item that plants this object (or ITEM_ID_NONE)
     u8 _08[5]; // 0x08
     s8 mTreeStage; // 0x0D: growth stage, negative for non-trees
-    u8 _0E; // 0x0E
+    u8 mGrassGrowth; // 0x0E: grass wear value the unit under the item regains each day (dFootmark)
     char mName[ITEM_NAME_LEN+1]; // 0x0F: model resource name
 }; // sizeof = 0x20
 

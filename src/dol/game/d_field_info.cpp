@@ -12,6 +12,7 @@
 #include <game/game/d_home.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/game/d_fg_data.hpp>
+#include <game/game/d_footmark.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/math.h>
@@ -56,10 +57,6 @@ extern const f32 lbl_8075052C; // 8075052C: half a block in z (256)
 extern EGG::Heap *lbl_8074E3F4; // 8074E3F4
 
 int fn_80081514(int type);                                             // 80081514: the bridge variant of a block type
-void *fn_800A835C();                                                   // 800A835C
-void fn_800A7F14(void *, const nw4r::math::VEC3 *pos, int, int, int);  // 800A7F14
-void fn_800A7F9C(void *, const nw4r::math::VEC3 *pos, int, int);       // 800A7F9C
-u32 fn_802B6258(void *, int x, int z);                                 // 802B6258
 void *fn_800A9058();                                                   // 800A9058
 dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
 void *fn_80069978();                                                   // 80069978: BG data loader
@@ -687,28 +684,28 @@ int dFdBase_c::getRouteDirs(const nw4r::math::VEC3 *pos) {
 }
 
 // 8008D658
-void dFdBase_c::fn_8008D658(int unitX, int unitZ, int a, int b) {
+void dFdBase_c::wearGrass(int unitX, int unitZ, int amount, int arg) {
     nw4r::math::VEC3 pos;
     getUnitCenterPos(&pos, unitX, unitZ);
-    fn_8008D6B4(&pos, a, b);
+    wearGrass(&pos, amount, arg);
 }
 
 // 8008D6B4
-void dFdBase_c::fn_8008D6B4(const nw4r::math::VEC3 *pos, int a, int b) {
+void dFdBase_c::wearGrass(const nw4r::math::VEC3 *pos, int amount, int arg) {
     if (_24 != NULL) {
-        fn_800A7F14(fn_800A835C(), pos, -a, 0, 1);
+        dFootmark::getEditor()->addPos((const mVec3_c *)pos, -amount, FALSE, TRUE);
     }
 }
 
 // 8008D70C
-void dFdBase_c::fn_8008D70C(const nw4r::math::VEC3 *pos, int a) {
+void dFdBase_c::updateGrass(int days, int arg) {
     if (_24 != NULL) {
-        fn_800A7F9C(fn_800A835C(), pos, a, 0);
+        dFootmark::getEditor()->updateDay(days, arg, FALSE);
     }
 }
 
 // 8008D760
-u8 dFdBase_c::fn_8008D760(const nw4r::math::VEC3 *pos, BOOL onlyAttr16) {
+u8 dFdBase_c::getGrassWear(const nw4r::math::VEC3 *pos, BOOL onlySoil) {
     if (_24 != NULL) {
         f32 x = pos->x;
         f32 z = pos->z;
@@ -718,13 +715,13 @@ u8 dFdBase_c::fn_8008D760(const nw4r::math::VEC3 *pos, BOOL onlyAttr16) {
         dBGCF::groundChk_c check((const mVec3_c *)pos, dBGCF::LAYER_TOP, 0, 0);
         int attr = check.mAttr;
         dBGCF::setCurrentBg(0);
-        if (onlyAttr16) {
+        if (onlySoil) {
             if (attr == BG_ATTR_SOIL) {
-                return fn_802B6258((u8 *)fn_800A835C() + 0x58, unitX, unitZ);
+                return dFootmark::getEditor()->getWear(unitX, unitZ);
             }
             return 0;
         }
-        return fn_802B6258((u8 *)fn_800A835C() + 0x58, unitX, unitZ);
+        return dFootmark::getEditor()->getWear(unitX, unitZ);
     }
     return 0xFF;
 }

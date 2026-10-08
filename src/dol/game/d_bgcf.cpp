@@ -2627,7 +2627,7 @@ int getPlantType(int unitX, int unitZ) {
 }
 
 // 80073370
-u8 getGrassMin(int unitX, int unitZ) {
+int getGrassMin(int unitX, int unitZ) {
     int attr = getUnitAttr(unitX, unitZ);
     if (attr < BG_ATTR_NUM) {
         return getAttrData(attr)->mGrassMin;
@@ -2636,7 +2636,7 @@ u8 getGrassMin(int unitX, int unitZ) {
 }
 
 // 800733B0
-u8 getGrassMax(int unitX, int unitZ) {
+int getGrassMax(int unitX, int unitZ) {
     int attr = getUnitAttr(unitX, unitZ);
     if (attr < BG_ATTR_NUM) {
         return getAttrData(attr)->mGrassMax;

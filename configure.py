@@ -640,6 +640,7 @@ config.libs = [
             Object(NonMatching, "dol/game/d_field_assessment.cpp", extra_cflags=["-sym on"]),
             Object(NonMatching, "dol/game/d_msg.cpp"),
             Object(Matching, "dol/game/d_fg_item.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_footmark.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_friend.cpp"),
             Object(Matching, "dol/game/d_insect_info.cpp"),
             Object(Matching, "dol/game/d_item.cpp", shift_jis=False, extra_cflags=["-sym on"]),

@@ -60,7 +60,7 @@ public:
     dSaveMainField_c(); // 80110634
     void clear(); // 801106F4
     BOOL createBlocks(); // 8011076C: nothing to do
-    BOOL createField(int arg); // 80110774: steps mCreateStep up to MAIN_FIELD_CREATE_FIELD_DONE
+    BOOL createField(EGG::Heap *heap); // 80110774: steps mCreateStep up to MAIN_FIELD_CREATE_FIELD_DONE
     BOOL createFinish(); // 80110958: up to MAIN_FIELD_CREATE_DONE
     void resetCreate(); // 801109D4: back to MAIN_FIELD_CREATE_FIELD_DONE
     BOOL setBridgeBlock(int blockX, int blockZ); // 801109EC: where the extra bridge goes, unless already set or built

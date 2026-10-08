@@ -1237,7 +1237,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
         putMushrooms(fd);
     }
     makeGoldenShovels(fd, w, h);
-    fd->fn_8008D70C((const nw4r::math::VEC3 *)days, 3);
+    fd->updateGrass(days, 3);
     dSaveData_c::getTown()->mPoliceBox.refill(days);
     dSaveData_c::getTown()->mRecycleBin.update(last, days);
     clearShopRoomMaps();

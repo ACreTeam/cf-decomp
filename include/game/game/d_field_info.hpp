@@ -227,10 +227,10 @@ public:
     int getPlantType(int blockX, int blockZ, int unitX, int unitZ);                      // 8008D2DC
 
     int getRouteDirs(const nw4r::math::VEC3 *pos);                                    // 8008D610
-    void fn_8008D658(int unitX, int unitZ, int a, int b);                                // 8008D658
-    void fn_8008D6B4(const nw4r::math::VEC3 *pos, int a, int b);                         // 8008D6B4
-    void fn_8008D70C(const nw4r::math::VEC3 *pos, int a);                                // 8008D70C
-    u8 fn_8008D760(const nw4r::math::VEC3 *pos, BOOL onlyAttr16);                        // 8008D760
+    void wearGrass(int unitX, int unitZ, int amount, int arg);                           // 8008D658
+    void wearGrass(const nw4r::math::VEC3 *pos, int amount, int arg);                    // 8008D6B4: dFootmark
+    void updateGrass(int days, int arg);                                                 // 8008D70C: dFootmark daily update
+    u8 getGrassWear(const nw4r::math::VEC3 *pos, BOOL onlySoil);                         // 8008D760
     dItem::Item getUnitItem(int unitX, int unitZ) const;                                 // 8008D858
     void registerBg();                                                                   // 8008D99C
     static int getHomeRoomBg(u32 home, int room);                                        // 8008E054: 0x10 if none

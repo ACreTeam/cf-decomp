@@ -488,8 +488,8 @@ int isGrassGround(int unitX, int unitZ);                 // 80073208
 int canNpcPutItem(int unitX, int unitZ);                 // 80073260
 int getDigType(int unitX, int unitZ);                    // 800732B8
 int getPlantType(int unitX, int unitZ);                  // 80073314
-u8 getGrassMin(int unitX, int unitZ);                    // 80073370: grass wear limits
-u8 getGrassMax(int unitX, int unitZ);                    // 800733B0
+int getGrassMin(int unitX, int unitZ);                   // 80073370: grass wear limits
+int getGrassMax(int unitX, int unitZ);                   // 800733B0
 int isBeachGround(int unitX, int unitZ);                 // 800733F0
 BOOL getMapColors(u8 *out, int unitX, int unitZ);        // 80073434: 3 x 3 town map pixels
 f32 getUnitY(const mVec3_c *pos);                        // 80073510

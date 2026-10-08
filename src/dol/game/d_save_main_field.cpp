@@ -3,13 +3,11 @@
 #include <game/game/d_random_field.hpp>
 #include <game/game/d_fg_data.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_footmark.hpp>
 #include <game/cLib/c_math.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void *fn_800A835C();
-BOOL fn_800A7B18(void *obj, int arg, int arg2);
-BOOL fn_800A7B9C(void *obj);
 int fn_80081514(int type); // the bridge variant of a block type (or the type itself)
 void fn_8014F0A4(void *obj);
 }
@@ -39,7 +37,7 @@ BOOL dSaveMainField_c::createBlocks() {
 }
 
 // 80110774
-BOOL dSaveMainField_c::createField(int arg) {
+BOOL dSaveMainField_c::createField(EGG::Heap *heap) {
     if (mCreateStep == MAIN_FIELD_CREATE_CLEAR) {
         clear();
         mCreateStep = MAIN_FIELD_CREATE_BLOCKS;
@@ -86,13 +84,13 @@ BOOL dSaveMainField_c::createField(int arg) {
         mCreateStep = MAIN_FIELD_CREATE_STEP3;
     }
     if (mCreateStep == MAIN_FIELD_CREATE_STEP3) {
-        if (!fn_800A7B18(fn_800A835C(), arg, 1)) {
+        if (!dFootmark::getEditor()->create(heap, FD_ID_TOWN)) {
             return FALSE;
         }
         mCreateStep = MAIN_FIELD_CREATE_STEP4;
     }
     if (mCreateStep == MAIN_FIELD_CREATE_STEP4) {
-        if (!fn_800A7B9C(fn_800A835C())) {
+        if (!dFootmark::getEditor()->destroy()) {
             return FALSE;
         }
         mCreateStep = MAIN_FIELD_CREATE_FIELD_DONE;
