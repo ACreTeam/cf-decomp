@@ -1824,15 +1824,27 @@ BOOL isSapling(dItem::Item *item) {
 // 800954CC: plants days * 2 weeds spread evenly (rest at random) over the 5 x 5 blocks,
 // redistributing what full blocks can't take.
 void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
+    int rest;
+    int got;
+    int idx;
+    int *cnt;
+    int blockX;
+    int blockZ;
+    int k;
+    int per;
+    int *p;
+    int i;
+    int freeNum;
+    u32 fullBlocks;
+    int left;
     int perBlock[FG_BLOCK_TOTAL_NUM];
     int freeBlocks[FG_BLOCK_TOTAL_NUM];
     int pos[UT_TOTAL_NUM][2];
-    u32 fullBlocks = 0;
-    int left = days * 2;
+    fullBlocks = 0;
+    left = days * 2;
     do {
-        int freeNum = 0;
-        int i;
-        int *p = freeBlocks;
+        freeNum = 0;
+        p = freeBlocks;
         for (i = 0; i < FG_BLOCK_TOTAL_NUM; i++) {
             perBlock[i] = 0;
             if (!(fullBlocks & (1 << i))) {
@@ -1843,13 +1855,13 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
         if (freeNum == 0) {
             break;
         }
-        int per = left / freeNum;
+        per = left / freeNum;
         left -= per * freeNum;
         for (i = 0; i < freeNum; i++) {
             perBlock[freeBlocks[i]] = per;
         }
         while (left != 0) {
-            int k = (int)fgMngProc_rndF(freeNum);
+            k = (int)fgMngProc_rndF(freeNum);
             freeNum--;
             perBlock[freeBlocks[k]]++;
             for (i = k; i < freeNum; i++) {
@@ -1857,14 +1869,14 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
             }
             left--;
         }
-        int *cnt = perBlock;
-        int idx = 0;
+        cnt = perBlock;
+        idx = 0;
         left = 0;
-        for (int blockZ = 0; blockZ < FG_BLOCK_Z_NUM; blockZ++) {
-            for (int blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, idx++, cnt++) {
+        for (blockZ = 0; blockZ < FG_BLOCK_Z_NUM; blockZ++) {
+            for (blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, idx++, cnt++) {
                 if (*cnt != 0) {
-                    int got = collectUnits((dFdAsPos_c *)pos, fd, blockX, blockZ, dFgMngProc_c::isGrassUnit);
-                    int rest = *cnt - plantGrass(fd, got, (dFdAsPos_c *)pos, *cnt);
+                    got = collectUnits((dFdAsPos_c *)pos, fd, blockX, blockZ, dFgMngProc_c::isGrassUnit);
+                    rest = *cnt - plantGrass(fd, got, (dFdAsPos_c *)pos, *cnt);
                     left += rest;
                     if (rest > 0) {
                         fullBlocks |= 1 << idx;
@@ -4701,7 +4713,7 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, c
         return;
     }
     int kind = getFlowerKind(item);
-    u16 id = item->mId;
+    u16 id = item->getId();
     mVec3_c pos;
     fgMngProc_getUnitGroundPos(&pos, x, z);
     f32 scale;
@@ -4834,12 +4846,13 @@ static const u8 sFrontUnit[] = {
 // (d_menu_item00).
 BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     dFdAsPos_c pu;
-    int angle;
-    int i;
     dFdBase_c *fd;
-    int x, z;
-    u16 held;
+    const s16 *angles;
+    int angle;
     int attr;
+    int x, z;
+    int i;
+    u16 held;
     held = fgMngProc_getMemberHeldItem(fn_800DCF58());
     if (!(held == dItem::Item(dItem::ITEM_IDX_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).mId)) {
         return FALSE;
@@ -4856,33 +4869,28 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     pu.mX = (int)px >> 5;
     pu.mZ = (int)pz >> 5;
     fd = fn_80190C44(FD_ID_CURRENT);
-    int ax, az, bz, bx;
+    int ux[2], uz[2];
     dPlayerActor_c **actors = (dPlayerActor_c **)lbl_8074E9A0;
-    if (actors[0] != NULL) {
-        f32 px = actors[0]->mPos.x;
-        f32 pz = actors[0]->mPos.z;
-        ax = (int)px >> 5;
-        az = (int)pz >> 5;
-    } else {
-        az = -1;
-        ax = -1;
+    for (int j = 0; j < 2; j++) {
+        if (actors[j] != NULL) {
+            f32 px = actors[j]->mPos.x;
+            f32 pz = actors[j]->mPos.z;
+            ux[j] = (int)px >> 5;
+            uz[j] = (int)pz >> 5;
+        } else {
+            uz[j] = -1;
+            ux[j] = -1;
+        }
     }
-    if (actors[1] != NULL) {
-        f32 px = actors[1]->mPos.x;
-        f32 pz = actors[1]->mPos.z;
-        bx = (int)px >> 5;
-        bz = (int)pz >> 5;
-    } else {
-        bz = -1;
-        bx = -1;
-    }
-    for (i = 0; i < 3; i++) {
-        u8 off = sFrontUnit[((angle + sFrontAngle[i]) >> 12) & 0xF];
-        x = (off >> 4) + pu.mX - 8;
-        z = (off & 0xF) + pu.mZ - 8;
+    for (i = 0, angles = sFrontAngle; i < 3; i++, angles++) {
+        u8 off = sFrontUnit[((angle + *angles) >> 12) & 0xF];
+        s32 dx = (off >> 4) - 8;
+        s32 dz = (off & 0xF) - 8;
+        x = pu.mX + dx;
+        z = pu.mZ + dz;
         dItem::Item *item = fd->getItem(x, z, 0);
         if (item != NULL && inRange(item, dItem::FG_HOLE, dItem::FG_HOLE) && dBGCF::checkWalkable(pu.mX, pu.mZ, attr, x, z) &&
-            !(x == ax && z == az) && !(x == bx && z == bz)) {
+            !(x == ux[0] && z == uz[0]) && !(x == ux[1] && z == uz[1])) {
             dFdAsPos_c unit;
             unit.mX = x;
             unit.mZ = z;

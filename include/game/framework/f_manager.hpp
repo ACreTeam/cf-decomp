@@ -59,6 +59,10 @@ public:
     /// @details [This calls fTrMgBa_c::searchNodeByGroupType internally].
     static fBase_c *searchBaseByGroupType(unsigned char groupType, const fBase_c *parent);
 
+    /// @brief Whether execution is globally skipped this frame (#m_StopProcInf).
+    /// @unofficial
+    static bool isExecuteStopped() { return (m_StopProcInf & PROC_FLAG_EXECUTE) == PROC_FLAG_EXECUTE; }
+
 private:
     fTrNdBa_c mConnectNode; ///< The node in the @ref m_connectManage "connect tree".
 
@@ -80,9 +84,8 @@ private:
     static fLiMgBa_c m_searchManage[8];
 
     /// @brief The operations which should be globally skipped this frame.
-    /// @unused
-    /// @details Value is a combination of PROC_FLAGS_e.
-    static u32 m_StopProcInf;
+    /// @details Value is a combination of PROC_FLAGS_e. Signed: d_bgm's checks compare with cmpwi.
+    static int m_StopProcInf;
 
     /// @brief The current operation being globally executed. See mainLoop().
     /// @details The list for this operation cannot be updated until the operation has finished executing.

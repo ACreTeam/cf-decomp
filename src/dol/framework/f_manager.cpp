@@ -8,7 +8,7 @@ fLiMgBaFuPr_c fManager_c::m_drawManage(&fBase_c::drawPack);
 fLiMgBaFuPr_c fManager_c::m_deleteManage(&fBase_c::deletePack);
 fLiMgBa_c fManager_c::m_searchManage[8];
 
-u32 fManager_c::m_StopProcInf;
+int fManager_c::m_StopProcInf;
 fManager_c::LOOP_PROC_e fManager_c::m_nowLoopProc = CONNECT;
 
 int fManager_c::getSearchTableNum() {
