@@ -17,7 +17,13 @@ public:
         f32 damping;      // at 0xC
         f32 crossTalk;    // at 0x10
         f32 outGain;      // at 0x14
-    };
+        // City Folk's version has five more words (ctor 80262D10 sets 5, f, 0, f, f).
+        int field_0x18;   // at 0x18
+        f32 field_0x1C;   // at 0x1C
+        int field_0x20;   // at 0x20
+        f32 field_0x24;   // at 0x24
+        f32 field_0x28;   // at 0x28
+    }; // size 0x2C
 
 public:
     FxReverbHiDpl2();
@@ -42,9 +48,13 @@ public:
     bool SetParam(const ReverbHiDpl2Param &rParam);
 
 private:
-    detail::AxfxImpl mImpl;        // at 0xC
-    ReverbHiDpl2Param mParam;      // at 0x18
-    AXFX_REVERBHI_DPL2 mAxfxParam; // at 0x30
+    // City Folk's layout (ctor 80262D10, UpdateBuffer 8026333C; size 0x308).
+    u8 mIsActive;                         // at 0xC
+    int mOutputMode;                      // at 0x10 (1: DPL2)
+    detail::AxfxImpl mImpl;               // at 0x14
+    ReverbHiDpl2Param mParam;             // at 0x1C
+    AXFX_REVERBHI_EXP mAxfxParam;         // at 0x48
+    AXFX_REVERBHI_EXP_DPL2 mAxfxParamDpl; // at 0x190
 };
 
 } // namespace snd

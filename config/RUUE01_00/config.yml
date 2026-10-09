@@ -32,6 +32,20 @@ block_relocations:
 # 80515974: another word inside lbl_80509320 that looks like 8057B67C, inside d_bgcf's l_mgr.
 # Not a pointer.
 - source: 0x80515974
+# 8047AC84 + 0x40 * n (n = 0..11): a word in d_str's .rodata tables that reads 80602000, inside
+# d_voice_chat's l_spkBuf. Not a pointer (the same field holds FFA40000 in other entries).
+- source: 0x8047AC84
+- source: 0x8047ACC4
+- source: 0x8047AD04
+- source: 0x8047AD44
+- source: 0x8047AD84
+- source: 0x8047ADC4
+- source: 0x8047AE04
+- source: 0x8047AE44
+- source: 0x8047AE84
+- source: 0x8047AEC4
+- source: 0x8047AF04
+- source: 0x8047AF44
 modules:
 - object: files/rels/d_profileNP.rel
   hash: d54fb2da838201b0feded746aa62f3728e904c2e

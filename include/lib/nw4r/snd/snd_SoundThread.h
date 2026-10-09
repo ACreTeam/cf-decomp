@@ -51,9 +51,11 @@ namespace nw4r { namespace snd { namespace detail
 
 		// late virtual methods
 		public:
-			virtual void at_0x08();
-			virtual void at_0x0c();
-			virtual void at_0x10();
+			// City Folk's vtable for a derived class (SoundAudioFrameCallback, 80503C90): the dtor,
+			// an override at 0xC and an inline empty function at 0x10 (80010478, weak).
+			virtual ~SoundFrameCallback() {}
+			virtual void OnBeginSoundFrame() {}
+			virtual void OnEndSoundFrame() {}
 		}; // size 0x0c
 
 		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2cc6f

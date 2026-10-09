@@ -262,7 +262,9 @@ namespace nw4r { namespace snd
 		SoundArchive									const *mSoundArchive;		// size 0x04, offset 0x10
 		GroupAddressTable								*mGroupTable;				// size 0x04, offset 0x14
 		FileAddressTable								*mFileTable;				// size 0x04, offset 0x18
-		SoundArchivePlayer_FileManager					*mFileManager;				// size 0x04, offset 0x1c
+		// Not in City Folk's version: its ctor (8026ABB0) puts mSeqCallback at 0x1C, and every
+		// later member is 4 bytes lower than the offsets below (size 0xe8).
+		// SoundArchivePlayer_FileManager					*mFileManager;				// size 0x04, offset 0x1c
 		SeqNoteOnCallback								mSeqCallback;				// size 0x08, offset 0x20
 		WsdCallback										mWsdCallback;				// size 0x08, offset 0x28
 		detail::SeqTrackAllocator						*mSeqTrackAllocator;		// size 0x04, offset 0x30
@@ -278,7 +280,7 @@ namespace nw4r { namespace snd
 		detail::MmlParser								mMmlParser;					// size 0x04, offset 0xe0
 		void											*mSetupBufferAddress;		// size 0x04, offset 0xe4
 		ulong												mSetupBufferSize;			// size 0x04, offset 0xe8
-	}; // size 0xec
+	}; // size 0xec (0xe8 in City Folk)
 }} // namespace nw4r::snd
 
 #endif // NW4R_SND_SOUND_ARCHIVE_PLAYER_H

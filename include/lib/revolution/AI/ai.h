@@ -17,6 +17,7 @@ typedef enum {
 
 AIDMACallback AIRegisterDMACallback(AIDMACallback callback);
 void AIInitDMA(void* buffer, u32 length);
+u32 AIGetDMAStartAddr(void);
 void AIStartDMA(void);
 u32 AIGetDMABytesLeft(void);
 void AISetDSPSampleRate(u32 rate);
