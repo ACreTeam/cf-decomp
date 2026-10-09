@@ -16,7 +16,6 @@ extern EGG::ExpHeap *lbl_8074E440;    // 8074E440
 
 void fn_80197414(mColor *color, int idx); // 80197414: a sky color for the time of day
 u8 fn_801977BC();                         // 801977BC: the star color's alpha
-u32 fn_801660B0(const dTime_c *time);     // 801660B0
 }
 
 void *dSky_c_classInit();
@@ -94,7 +93,7 @@ int dSky_c::create() {
     if (!mResMoon.load("/Sky/bg_moon.brres", heap, 0)) {
         ok = FALSE;
     }
-    if (!fn_801640DC(&mStarDraw, heap)) {
+    if (!mStarDraw.create(heap)) {
         ok = FALSE;
     }
     if (!ok) {
@@ -107,9 +106,9 @@ int dSky_c::create() {
     mMdlMoon.create(nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0), &mAllocator, 0, 1, NULL);
 
     if (mIsCity || isSceneAttr(getCurrentScene(), 0x110)) {
-        mStarDraw.m128 = 1;
+        mStarDraw.mMode = 1;
     } else {
-        mStarDraw.m128 = 0;
+        mStarDraw.mMode = 0;
     }
 
     mAnmCloud.create(nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0),
@@ -221,7 +220,7 @@ int dSky_c::doDelete() {
     if (!mResMoon.unload(FALSE)) {
         ok = FALSE;
     }
-    if (!fn_8016418C(&mStarDraw)) {
+    if (!mStarDraw.unload()) {
         ok = FALSE;
     }
     if (!ok) {
@@ -340,6 +339,6 @@ void dSky_c::calc() {
     }
     mMdlMoon.setLocalMtx(&mMoonMtx);
 
-    fn_80164278(&mStarDraw, &mPos, fn_801660B0(&now) >> 16);
+    mStarDraw.calc(&mPos, dStarDraw_c::getSkyAngle(&now));
     mStarMgr.execute();
 }

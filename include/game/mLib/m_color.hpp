@@ -9,6 +9,14 @@ public:
     mColor(nw4r::ut::Color color) : nw4r::ut::Color(color) {} ///< Creates a color from from a base nw4r::ut::Color instance.
     mColor(u8 r, u8 g, u8 b, u8 a) { Set(r, g, b, a); } ///< Creates a color from its channels (after the default white).
 
+    mColor &operator=(nw4r::ut::Color color) {
+        r = color.r;
+        g = color.g;
+        b = color.b;
+        a = color.a;
+        return *this;
+    }
+
     /// @brief Linearly interpolates all RGBA channels between two color values.
     /// @param c1 The first color.
     /// @param c2 The second color.

@@ -701,6 +701,7 @@ config.libs = [
             Object(Matching, "dol/game/d_police_box.cpp"),
             Object(Matching, "dol/game/d_recycle_bin.cpp"),
             Object(Matching, "dol/game/d_script.cpp", extra_cflags=["-sym on"]),
+            Object(NonMatching, "dol/game/d_star_draw.cpp", extra_cflags=["-sym on"]),
             Object(NonMatching, "dol/game/d_str.cpp"),
             Object(Matching, "dol/game/d_string.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_date.cpp"),
