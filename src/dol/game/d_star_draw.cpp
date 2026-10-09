@@ -222,7 +222,7 @@ int dStarDraw_c::findStar(const mVec2_c *pos, StarFilter filter, f32 radius) {
     for (int i = 0; i < 400; i++) {
         mVec2_c screen;
         getStarScreenPos(i, &screen);
-        EGG::Vector2f d = *pos - screen;
+        mVec2_c d = *pos - screen;
         f32 dist = d.x * d.x + d.y * d.y;
         if (dist < best && (filter == NULL || filter(i, this))) {
             best = dist;
@@ -252,7 +252,7 @@ int dStarDraw_c::findLinkedStar(int star, const mVec2_c *pos, u16 *line, LineFil
         }
         mVec2_c screen;
         getStarScreenPos(other, &screen);
-        EGG::Vector2f d = *pos - screen;
+        mVec2_c d = *pos - screen;
         f32 dist = d.x * d.x + d.y * d.y;
         if (dist < best) {
             best = dist;
@@ -282,8 +282,8 @@ int dStarDraw_c::findLine(int star, const mVec2_c *pos, LineFilter filter, f32 r
         getStarScreenPos(l->mStar1, &start);
         mVec2_c end;
         getStarScreenPos(l->mStar2, &end);
-        EGG::Vector2f dir = end - start;
-        EGG::Vector2f rel = *pos - start;
+        mVec2_c dir = end - start;
+        mVec2_c rel = *pos - start;
         f32 dot = dir.x * rel.x + dir.y * rel.y;
         f32 len = dir.x * dir.x + dir.y * dir.y;
         EGG::Vector2f nearest;
@@ -325,8 +325,8 @@ u16 dStarDraw_c::findSignLine(const mVec2_c *pos, LineFilter filter, u16 *slot, 
             getStarScreenPos(line->mStar1, &start);
             mVec2_c end;
             getStarScreenPos(line->mStar2, &end);
-            EGG::Vector2f dir = end - start;
-            EGG::Vector2f rel = *pos - start;
+            mVec2_c dir = end - start;
+            mVec2_c rel = *pos - start;
             f32 dot = dir.x * rel.x + dir.y * rel.y;
             f32 len = dir.x * dir.x + dir.y * dir.y;
             EGG::Vector2f nearest;
@@ -369,8 +369,8 @@ int dStarDraw_c::findSign(const mVec2_c *pos, f32 radius) {
                     getStarScreenPos(line->mStar1, &start);
                     mVec2_c end;
                     getStarScreenPos(line->mStar2, &end);
-                    EGG::Vector2f dir = end - start;
-                    EGG::Vector2f rel = *pos - start;
+                    mVec2_c dir = end - start;
+                    mVec2_c rel = *pos - start;
                     f32 dot = dir.x * rel.x + dir.y * rel.y;
                     f32 len = dir.x * dir.x + dir.y * dir.y;
                     EGG::Vector2f nearest;

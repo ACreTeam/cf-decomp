@@ -89,10 +89,13 @@ public:
     /// @brief Positive operator.
     mVec2_c operator+() const { return *this; }
 
-    // The binary operators are EGG::Vector2f's: the DOL has only their copies (m_pad, d_star_draw).
+    // + and * are EGG::Vector2f's (d_star_draw). operator- is mVec2_c's own: its kept copy (8000AD30)
+    // is in d_m2d's m_vec.hpp weak section, after SetColorMapping (see notes/d_m2d.txt).
     using EGG::Vector2f::operator+;
-    using EGG::Vector2f::operator-;
     using EGG::Vector2f::operator*;
+
+    /// @brief Subtraction operator.
+    mVec2_c operator-(const mVec2_c &v) const { return mVec2_c(x - v.x, y - v.y); }
 
     /// @brief Negative operator.
     mVec2_c operator-() const { return mVec2_c(-x, -y); }
