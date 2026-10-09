@@ -90,17 +90,13 @@ public:
     /// @brief Positive operator.
     mVec2_c operator+() const { return *this; }
 
+    // The binary operators are EGG::Vector2f's: the DOL has only their copies (m_pad, d_star_draw).
+    using EGG::Vector2f::operator+;
+    using EGG::Vector2f::operator-;
+    using EGG::Vector2f::operator*;
+
     /// @brief Negative operator.
     mVec2_c operator-() const { return mVec2_c(-x, -y); }
-
-    /// @brief Addition operator.
-    mVec2_c operator+(const mVec2_c &v) const { return mVec2_c(x + v.x, y + v.y); }
-
-    /// @brief Subtraction operator.
-    mVec2_c operator-(const mVec2_c &v) const { return mVec2_c(x - v.x, y - v.y); }
-
-    /// @brief Scalar product operator.
-    mVec2_c operator*(f32 f) const { return mVec2_c(f * x, f * y); }
 
     /// @brief Scalar division operator.
     mVec2_c operator/(f32 f) const { f32 r = 1.0f / f; return operator*(r); }

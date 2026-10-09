@@ -43,6 +43,10 @@ public:
     virtual void SetProjectionGX() const;
     virtual void CopyToG3D(nw4r::g3d::Camera camera) const;
     void ResetOrthographic(f32 top, f32 bottom, f32 left, f32 right, f32 nearZ, f32 farZ);
+
+    // Names inferred.
+    void GetPerspectiveMtx(nw4r::math::MTX44 *mtx) const;  // 80447E7C
+    void GetOrthographicMtx(nw4r::math::MTX44 *mtx) const; // 80447F0C
 };
 
 } // namespace EGG

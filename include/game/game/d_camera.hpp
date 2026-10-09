@@ -1,18 +1,32 @@
 #pragma once
 
-// The game camera (RTTI "dCamera_c"); not decompiled yet. Only what the sky, the drum (d_drum)
-// and d_objc use.
+// The game camera (RTTI "dCamera_c"); not decompiled yet. Only what the sky, the star field, the drum
+// (d_drum) and d_objc use.
 
+#include <egg/gfxe/eggFrustum.h>
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/math.h>
 
 class dCamera_c {
 public:
+    f32 getAspect() const; // 8018B2EC
+    static f32 getFovy();  // 8018B2FC
+
+    void getProjectionMtx(nw4r::math::MTX44 *mtx) const {
+        if (mFrustum.mProjType == EGG::Frustum::PROJ_ORTHO) {
+            mFrustum.GetOrthographicMtx(mtx);
+        } else {
+            mFrustum.GetPerspectiveMtx(mtx);
+        }
+    }
+
     // 801B0194 (weak copy kept in d_objc). Non-const: a const version stores y before x.
     mVec3_c getEyePos() { return mVec3_c(mEyePos); }
 
-    /* 0x000 */ u8 _000[0x130];
+    /* 0x000 */ u8 _000[0x64];
+    /* 0x064 */ EGG::Frustum mFrustum;
+    /* 0x0A0 */ u8 _0A0[0x130 - 0xA0];
     /* 0x130 */ nw4r::math::VEC3 mEyePos;
     /* 0x13C */ u8 _13C[0x16C - 0x13C];
     /* 0x16C */ mMtx_c mViewMtx;
