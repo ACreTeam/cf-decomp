@@ -675,21 +675,21 @@ void dStarDraw_c::drawLine(const pos_c *star1, const pos_c *star2, f32 width, co
     if (dir.normalizeRS()) {
         mVec3_c side = dir;
         side.rotZ(0x4000);
-        dir *= 10.0f;
-        side *= width;
         mVec3_c v0, v1, v2, v3;
-        v3 = end;
-        v3 -= dir;
-        v3 -= side;
+        dir *= 10.0f;
         v2 = end;
-        v2 -= dir;
-        v2 += side;
         v0 = start;
-        v0 += dir;
-        v0 += side;
         v1 = start;
+        v3 = end;
+        v0 += dir;
         v1 += dir;
+        side *= width;
+        v2 -= dir;
+        v0 += side;
+        v3 -= dir;
+        v2 += side;
         v1 -= side;
+        v3 -= side;
 
         GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
         u8 alpha1 = star1->mAlpha;
