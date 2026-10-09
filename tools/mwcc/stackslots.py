@@ -31,6 +31,7 @@ the tool reads the result at 00589600 (StackFrameEABI_GeneratePrologueEpilogue, 
 import argparse
 import os
 import re
+import shutil
 import struct
 import sys
 
@@ -165,7 +166,10 @@ def main():
     handlers = {BP_GENERATOR: on_generator}
     handlers.update(tt.handlers())
     lazy = {BP_SLOT: on_slot, BP_LOCALS: on_locals, BP_AFTER_LAYOUT: on_after_layout}
-    code = dbgcore.run(argv, handlers, cwd=mwcc_cmd.ROOT, lazy=lazy)
+    try:
+        code = dbgcore.run(argv, handlers, cwd=mwcc_cmd.ROOT, lazy=lazy)
+    finally:
+        shutil.rmtree(outdir, ignore_errors=True)
     if not st['out']:
         print('no function matched %r (compiler exit code %d)' % (a.func, code), file=sys.stderr)
 

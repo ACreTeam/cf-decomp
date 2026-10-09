@@ -16,6 +16,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import struct
 import subprocess
 import sys
@@ -85,7 +86,24 @@ def rename_symbols(path, mapping, dst):
     open(dst, 'wb').write(d)
 
 
-def score_unit(src, input_file=None, overlay=None, maps=(), diff_funcs=None, work=None, func_regex='.'):
+def score_unit(src, input_file=None, overlay=None, maps=(), diff_funcs=None, work=None, func_regex='.', keep=False):
+    """Score `src` (see _score_unit). A work folder this call creates itself is deleted afterwards unless
+    `keep`; a `work` passed in by the caller is left alone (the caller owns it)."""
+    own = work is None
+    if own:
+        os.makedirs(os.path.join(ROOT, 'build', 'mwcc_tools'), exist_ok=True)
+        work = tempfile.mkdtemp(prefix='score_', dir=os.path.join(ROOT, 'build', 'mwcc_tools'))
+    try:
+        res = _score_unit(src, input_file, overlay, maps, diff_funcs, work, func_regex)
+    finally:
+        if own and not keep:
+            shutil.rmtree(work, ignore_errors=True)
+    if own and keep:
+        res['work'] = work
+    return res
+
+
+def _score_unit(src, input_file, overlay, maps, diff_funcs, work, func_regex):
     """Compile `src` (or `input_file` with src's flags, plus an optional overlay include dir) and score it in
     objdiff project mode. Returns {'ok': bool, 'error': str, 'results': [(score|None, our_name, note,
     diff_lines)]}. Instruction diffs are produced for our function names in `diff_funcs` (a set) that
@@ -96,9 +114,6 @@ def score_unit(src, input_file=None, overlay=None, maps=(), diff_funcs=None, wor
     for m in maps:
         t, o = m.split('=', 1)
         ours_to_target[o] = t
-    if work is None:
-        os.makedirs(os.path.join(ROOT, 'build', 'mwcc_tools'), exist_ok=True)
-        work = tempfile.mkdtemp(prefix='score_', dir=os.path.join(ROOT, 'build', 'mwcc_tools'))
     argv = mwcc_cmd.compile_argv(src, overlay=overlay, input_file=input_file, outdir=work)
     r = mwcc_cmd.run(argv)
     obj = mwcc_cmd.object_path(argv)
@@ -173,10 +188,13 @@ def main():
     ap.add_argument('-f', '--func', default='.', help='regex on our mangled function names')
     ap.add_argument('--diff', action='store_true', help='print instruction diffs for functions below 100')
     ap.add_argument('--map', action='append', default=[], help='extra "targetName=ourName" pairs')
+    ap.add_argument('--keep', action='store_true', help='keep the work folder under build/mwcc_tools (deleted by default)')
     a = ap.parse_args()
     fre = re.compile(a.func)
     res = score_unit(a.src, a.input, a.overlay, a.map, func_regex=a.func,
-                     diff_funcs=_AllNames() if a.diff else None)
+                     diff_funcs=_AllNames() if a.diff else None, keep=a.keep)
+    if a.keep and res.get('work'):
+        print('work folder kept: %s' % res['work'])
     if not res['ok']:
         sys.stderr.write(res['error'])
         raise SystemExit('compile or scoring failed')

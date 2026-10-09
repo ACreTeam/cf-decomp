@@ -126,6 +126,7 @@ def main():
     ap.add_argument('--jobs', type=int, default=max(1, (os.cpu_count() or 4) // 2))
     ap.add_argument('--top', type=int, default=20, help='how many results to print')
     ap.add_argument('--best-out', help='write the best variant\'s source here (and its overlay next to it)')
+    ap.add_argument('--keep', action='store_true', help='keep the work folder under build/mwcc_tools (deleted by default)')
     a = ap.parse_args()
     fre = re.compile(a.func)
     singles = load_variants(a.rewrites)
@@ -137,7 +138,16 @@ def main():
         print('note: %d runs, capped to %d (--max)' % (len(runs), a.max))
         runs = runs[:a.max]
     base_dir = tempfile.mkdtemp(prefix='variants_', dir=os.path.join(ROOT, 'build', 'mwcc_tools'))
-    print('%d runs, %d jobs, work dir %s' % (len(runs), a.jobs, base_dir))
+    print('%d runs, %d jobs, work dir %s%s' % (len(runs), a.jobs, base_dir, ' (kept)' if a.keep else ''))
+    try:
+        report(a, runs, fre, base_dir)
+    finally:
+        if not a.keep:
+            shutil.rmtree(base_dir, ignore_errors=True)
+
+
+def report(a, runs, fre, base_dir):
+    """Run every variant in `base_dir`, print the ranking and copy out --best-out."""
     with concurrent.futures.ThreadPoolExecutor(a.jobs) as ex:
         results = list(ex.map(lambda r: run_one(a.src, r[0], r[1], fre, base_dir), runs))
     base = results[0]
