@@ -225,6 +225,8 @@ public:
         return mVec3_c(v.x * f, v.y * f, v.z * f);
     }
 
+    bool isZero() const { return std::fabs(nw4r::math::VEC3LenSq(this)) <= FLT_EPSILON; }
+
     bool isSmallerThan1() const {
         return PSVECMag(*this) <= 1.0f;
     }

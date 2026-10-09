@@ -26,6 +26,11 @@ globalize_symbols: true
 clean_extab: false
 force_active: [lbl_8074E834] # d_play_util .sbss word nothing references; the original link kept it
 block_relocations:
+# 8047DD54 / 8047DD70: words in an unsplit .rodata table (8047DB98..) whose field always holds 80XX0000
+# (80250000, 80060000, 801E0000, 804C0000, ...); 804A0000 and 804D0000 just happen to be data addresses
+# (804A0000 is d_a_npc's recept_c request table). Not pointers.
+- source: 0x8047DD54
+- source: 0x8047DD70
 # 80514A80: a word inside lbl_80509320 (binary data) that looks like 8046E62A, inside d_event's
 # sJpAutumnMoonDates. Not a pointer.
 - source: 0x80514A80
@@ -46,6 +51,13 @@ block_relocations:
 - source: 0x8047AEC4
 - source: 0x8047AF04
 - source: 0x8047AF44
+# 8046B8A4 / 8046B8A8: words inside d_a_npc's l_quickHandItems (u16 item ids 804C 804D / 804A 801E) that
+# look like pointers into .data. Not pointers.
+- source: 0x8046B8A4
+- source: 0x8046B8A8
+# 8046C438: u16 pair 804A 0012 in d_npc_talk_free's table lbl_8046C428 that looks like a pointer into
+# d_a_npc's function-local request table (804A0000). Not a pointer.
+- source: 0x8046C438
 modules:
 - object: files/rels/d_profileNP.rel
   hash: d54fb2da838201b0feded746aa62f3728e904c2e

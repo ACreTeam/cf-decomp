@@ -298,7 +298,6 @@ public:
     /* 0x0B8 */ dFishFrog_c mFrog;     // set up when mKind == FISH_FROG (0xB)
     /* 0x0C0 */ dBGCF::acch_c mWallCheck;
     /* 0x108 */ dLevelEffect_c mEffect; // af_fsh_shadow / af_fsh_sebire_moya (execute)
-    /* 0x198 */ int _198;
     /* 0x19C */ int mState;           // State_e
     /* 0x1A0 */ mVec3_c mHomePos;
     /* 0x1AC */ mVec3_c mPos;

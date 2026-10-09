@@ -67,6 +67,13 @@ public:
         }
     }
     void SetMatrix(const math::MTX34 &mtx) { PSMTXCopy(mtx, *mpM); }
+    void SetMatrix(const math::MTX34 *pM) {
+        if (pM) {
+            PSMTXCopy(*pM, *mpM);
+        } else {
+            PSMTXIdentity(*mpM);
+        }
+    }
 
 private:
     math::MTX34* mpM; // at 0x0

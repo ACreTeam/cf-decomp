@@ -21,7 +21,7 @@ public:
     virtual void rcptHook28(); // vtable +0x28
     virtual void rcptHook2C(); // vtable +0x2C
     virtual void init(); // +0x30, 801A2168
-    virtual void rcptHook34();
+    virtual void rcptHook34(u32 tag); // called with a u16 message tag value (dAcNpc_c::recept_c: feel)
     virtual void rcptHook38();
     virtual void rcptHook3C();
     virtual void rcptHook40();
@@ -52,6 +52,8 @@ public:
     void setMessageLabel(const char *label); // 801A22A8
     void attachController(Comp_c *controller); // 801A2304
     void detachController(); // 801A230C
+
+    Comp_c *getController() const { return mpController; }
 
 protected:
     char mMessageLabel[61]; // 0x04; copy limit 60, extra terminator byte

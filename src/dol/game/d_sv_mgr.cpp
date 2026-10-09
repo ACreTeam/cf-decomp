@@ -188,9 +188,7 @@ void dSvMgr_c::requestMessage(u16 code) {
     dDemo_c *demo = dDemo_c::mInstance;
     setMessageLabel(mMessageLabel);
     setMessageCode(code);
-    // The existing demo binding API names this receiver parameter as an actor.
-    demo->attachActor(
-        reinterpret_cast<dDemoActor_c *>(static_cast<dMsg::Rcpt_c *>(this)));
+    demo->attachActor(this);
     fn_801A316C(demo, 0);
 }
 

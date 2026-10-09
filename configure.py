@@ -615,7 +615,8 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             Object(Matching, "dol/game/d_m3d.cpp", extra_cflags=["-sym on"]),
-            Object(Matching, "dol/game/d_actor.cpp"),
+            Object(Matching, "dol/game/d_actor.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "dol/game/d_a_npc.cpp", shift_jis=False, extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_base.cpp"),
             Object(Matching, "dol/game/d_bg.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_bgc.cpp", extra_cflags=["-sym on"]),

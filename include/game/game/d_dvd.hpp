@@ -23,6 +23,7 @@ public:
     s32 getSize() const; // 8008611C
     void *getData() const { return mpData; }
     s32 getStatus() const { return mStatus; } // the file size once loaded
+    BOOL release(); // 80085FAC: finishes the command, forgets data and heap, status -1; returns TRUE
 
 protected:
     void *mpCommand; // 0x08

@@ -667,3 +667,4 @@ public:
 
 // Random set bit of mask (count bits set, num bits wide), or -1. 80134CD4
 u32 pickRandomBit(u32 mask, int count, u32 num);
+BOOL isHoldableItem(const dItem::Item *item); // 80128B90: an item an npc can hold up as a tool

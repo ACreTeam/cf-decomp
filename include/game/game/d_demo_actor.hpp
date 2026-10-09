@@ -4,6 +4,9 @@
 #include <game/cLib/c_line.hpp>
 
 class dDemoActor_c;
+namespace dMsg {
+class Rcpt_c;
+}
 
 // Demo actors use their own ID-bearing nodes, independent of fBase's lists.
 // Node/list names and behavioral method names are inferred from the binary.
@@ -36,10 +39,10 @@ public:
     virtual bool canInteract(dDemoActor_c *actor);
     virtual void demoHook50();
     virtual mVec3_c *getDemoPosition();
-    virtual int demoHook58();
+    virtual mVec3_c *demoHook58(); // a position of the actor (dAcNpc_c: look/talk target)
     virtual int demoHook5C();
     virtual int demoHook60();
-    virtual int demoHook64();
+    virtual int demoHook64(mVec3_c *pos); // dAcNpc_c: writes a position of the npc
 
     static void initActorList();
     u32 getDemoID();
@@ -64,8 +67,9 @@ public:
     bool hasDemoFlags(u32 flags);
     void setDemoFlags(u32 flags);
     void clearDemoFlags(u32 flags);
-    void attachDemoActor(dDemoActor_c *actor);
-    void detachDemoActor(dDemoActor_c *actor);
+    // Binds / unbinds a message receiver (dMsg::Rcpt_c) to the message controller.
+    void attachDemoActor(dMsg::Rcpt_c *rcpt);
+    void detachDemoActor(dMsg::Rcpt_c *rcpt);
 
     static dDemoActorList_c mActorList;
     static const s16 mInteractionAngle; // 80750538; inferred name, shared with RELs

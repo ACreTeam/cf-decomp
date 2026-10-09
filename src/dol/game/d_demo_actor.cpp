@@ -1,5 +1,6 @@
 #include <game/game/d_demo.hpp>
 #include <game/game/d_demo_actor.hpp>
+#include <game/game/d_msg_rcpt.hpp>
 
 typedef char dDemoActorSizeCheck[sizeof(dDemoActor_c) == 0xBC ? 1 : -1];
 
@@ -112,7 +113,7 @@ void dDemoActor_c::demoHook50() {
 mVec3_c *dDemoActor_c::getDemoPosition() {
     return &mPos;
 }
-int dDemoActor_c::demoHook58() {
+mVec3_c *dDemoActor_c::demoHook58() {
     return 0;
 }
 int dDemoActor_c::demoHook5C() {
@@ -121,7 +122,7 @@ int dDemoActor_c::demoHook5C() {
 int dDemoActor_c::demoHook60() {
     return 0;
 }
-int dDemoActor_c::demoHook64() {
+int dDemoActor_c::demoHook64(mVec3_c *pos) {
     return 0;
 }
 void dDemoActor_c::setInteractionRadius(float radius) {
@@ -171,10 +172,10 @@ void dDemoActor_c::setDemoFlags(u32 flags) {
 void dDemoActor_c::clearDemoFlags(u32 flags) {
     mDemoFlags &= ~flags;
 }
-void dDemoActor_c::attachDemoActor(dDemoActor_c *actor) {
-    dDemo_c::mInstance->attachActor(actor);
+void dDemoActor_c::attachDemoActor(dMsg::Rcpt_c *rcpt) {
+    dDemo_c::mInstance->attachActor(rcpt);
 }
-void dDemoActor_c::detachDemoActor(dDemoActor_c *actor) {
-    // The target reuses fBase's heap-pointer slot for the actor's demo owner.
-    reinterpret_cast<dDemo_c *>(actor->mHeap)->detachActor();
+void dDemoActor_c::detachDemoActor(dMsg::Rcpt_c *rcpt) {
+    // Rcpt_c::mpController is the dMsg::Comp_c controller, which this code calls dDemo_c.
+    reinterpret_cast<dDemo_c *>(rcpt->getController())->detachActor();
 }

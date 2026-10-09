@@ -34,10 +34,8 @@ void fn_8016FC44(dFishingFloat_c *fl, int state);
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
-void fn_80087790(const char *name, const mVec3_c *pos, int arg, const mVec3_c *scale); // effect
 void fn_80087844(const char *name, const mVec3_c *pos, int arg, const mVec3_c *scale,
                  void (*cb)(dEffectTarget_c *, u32), u32 kind); // effect with a callback
-void fn_80087B40(EGG::Effect *effect, const char *name, const mMtx_c *mtx, int arg);
 void fn_80285110(void *obj, dEffectTarget_c *target);
 BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
 void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3_c *angle,
