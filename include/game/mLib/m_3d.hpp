@@ -17,7 +17,7 @@ namespace m3d {
         /// @unofficial
         enum leafType_e {
             TYPE_BMDL,
-            TYPE_UNUSED,
+            TYPE_FACE, ///< m3d::faceEx_c (face_ex.cpp)
             TYPE_PROC
         };
 
@@ -43,55 +43,6 @@ namespace m3d {
 
     protected:
         nw4r::g3d::ScnLeaf *mpScn;
-    };
-}
-
-// ---- bmdl (was m_3d/bmdl.hpp)
-namespace m3d {
-    class banm_c;
-    class bmdl_c : public scnLeaf_c {
-    public:
-        bmdl_c() : mpAnm(nullptr) {}
-        virtual ~bmdl_c();
-
-        virtual scnLeaf_c::leafType_e getType() const { return TYPE_BMDL; }
-        virtual void remove();
-        virtual void setAnm(m3d::banm_c &anm);
-        virtual void play();
-
-        bool getNodeWorldMtx(ulong idx, nw4r::math::MTX34 *mtx) const;
-        bool getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) const;
-
-        nw4r::g3d::ResMdl getResMdl() const;
-        nw4r::g3d::ResMat getResMat(size_t idx) const;
-        void removeAnm(nw4r::g3d::ScnMdlSimple::AnmObjType objType);
-
-        void setTevColor(ulong idx, _GXTevRegID regID, _GXColor color, bool markDirty);
-        void setTevColorAll(_GXTevRegID regID, _GXColor color, bool markDirty);
-        void setTevKColor(ulong idx, _GXTevKColorID colID, _GXColor color, bool markDirty);
-        void setTevKColorAll(_GXTevKColorID colID, _GXColor color, bool markDirty);
-
-    protected:
-        banm_c *mpAnm;
-    };
-}
-
-// ---- smdl (was m_3d/smdl.hpp)
-namespace m3d {
-    class smdl_c : public bmdl_c {
-    public:
-        smdl_c();
-        virtual ~smdl_c();
-
-        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount, size_t *objSize);
-
-        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount) {
-            return create(resMdl, allocator, bufferOption, viewCount, nullptr);
-        }
-
-        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption) {
-            return create(resMdl, allocator, bufferOption, 1);
-        }
     };
 }
 
@@ -138,6 +89,59 @@ namespace m3d {
     };
 }
 
+// ---- bmdl (was m_3d/bmdl.hpp)
+namespace m3d {
+    class banm_c;
+    class bmdl_c : public scnLeaf_c {
+    public:
+        bmdl_c() : mpAnm(nullptr) {}
+        virtual ~bmdl_c();
+
+        virtual scnLeaf_c::leafType_e getType() const { return TYPE_BMDL; }
+        virtual void remove();
+        virtual void setAnm(m3d::banm_c &anm);
+        virtual void play();
+
+        void setDrawMode(nw4r::g3d::ResMdlDrawMode mode);
+        bool getNodeWorldMtx(ulong idx, nw4r::math::MTX34 *mtx) const;
+        bool getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) const;
+        bool getNodeWorldMtxMultVec(ulong idx, const nw4r::math::VEC3 &in, nw4r::math::VEC3 &out) const;
+
+        nw4r::g3d::ResMdl getResMdl() const;
+        nw4r::g3d::ResMat getResMat(size_t idx) const;
+        void removeAnm(nw4r::g3d::ScnMdlSimple::AnmObjType objType);
+
+        void setTevColor(ulong idx, _GXTevRegID regID, _GXColor color, bool markDirty);
+        void setTevColorAll(_GXTevRegID regID, _GXColor color, bool markDirty);
+        void setTevKColor(ulong idx, _GXTevKColorID colID, _GXColor color, bool markDirty);
+        void setTevKColorAll(_GXTevKColorID colID, _GXColor color, bool markDirty);
+        void setLightSetIdxAll(int idx); ///< @unofficial
+        void setEnvMapRefAll(int camRef, int lightRef); ///< @unofficial
+
+    protected:
+        banm_c *mpAnm;
+    };
+}
+
+// ---- smdl (was m_3d/smdl.hpp)
+namespace m3d {
+    class smdl_c : public bmdl_c {
+    public:
+        smdl_c();
+        virtual ~smdl_c();
+
+        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount, size_t *objSize);
+
+        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount) {
+            return create(resMdl, allocator, bufferOption, viewCount, nullptr);
+        }
+
+        bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption) {
+            return create(resMdl, allocator, bufferOption, 1);
+        }
+    };
+}
+
 // ---- mdl (was m_3d/mdl.hpp)
 namespace m3d {
     class mdl_c : public smdl_c {
@@ -150,7 +154,7 @@ namespace m3d {
             virtual void timingC(nw4r::math::MTX34 *mtx, nw4r::g3d::ResMdl resMdl) {}
         };
 
-        class mdlCallback_c {
+        class mdlCallback_c : public nw4r::g3d::ICalcWorldCallback {
         public:
             mdlCallback_c();
             virtual ~mdlCallback_c();
@@ -236,7 +240,7 @@ namespace m3d {
             TYPE_ANM_MAT_CLR,
             TYPE_ANM_TEX_PAT,
             TYPE_ANM_TEX_SRT,
-            TYPE_ANM_OTHER ///< Never used
+            TYPE_ANM_SHP
         };
 
         banm_c() : mpObj(nullptr), mpHeap(nullptr) {}
@@ -258,9 +262,6 @@ namespace m3d {
         nw4r::g3d::AnmObj *mpObj;
         EGG::FrmHeap *mpHeap;
         mAllocator_c mAllocator;
-
-    private:
-        static u32 ms_DefaultAllocOptBit;
     };
 }
 
@@ -287,9 +288,14 @@ namespace m3d {
          */
         void set(float duration, m3d::playMode_e playMode, float updateRate, float startFrame);
 
+        float getFrame() const;
+
         /// @brief Jumps to the specified frame in the animation.
         /// @param frame The frame to jump to.
         void setFrame(float frame);
+
+        float getRate() const;
+        void setRate(float rate);
 
         /// @brief Checks whether the animation is stopped.
         bool isStop() const;
@@ -353,6 +359,19 @@ namespace m3d {
     };
 }
 
+// ---- anm_shp
+namespace m3d {
+    class anmShp_c : public fanm_c {
+    public:
+        virtual ~anmShp_c() {}
+        virtual banm_c::anmType_e getType() const { return banm_c::TYPE_ANM_SHP; };
+
+        bool create(nw4r::g3d::ResMdl mdl, nw4r::g3d::ResAnmShp anmShp, mAllocator_c *allocator, size_t *objSize);
+        void setAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResAnmShp anmShp, m3d::playMode_e playMode);
+        void setFrmCtrlDefault(nw4r::g3d::ResAnmShp &anmShp, m3d::playMode_e playMode);
+    };
+}
+
 // ---- anm_mat_clr (was m_3d/anm_mat_clr.hpp)
 namespace m3d {
     class anmMatClr_c : public banm_c {
@@ -375,6 +394,7 @@ namespace m3d {
         bool isStop(long idx) const;
         bool checkFrame(float frame, long idx) const;
         void setPlayMode(m3d::playMode_e playMode, long idx);
+        m3d::playMode_e getPlayMode(long idx) const;
         float getFrameMax(long idx) const;
         float getFrameStart(long idx) const;
 
@@ -416,6 +436,7 @@ namespace m3d {
         bool isStop(long idx) const;
         bool checkFrame(float frame, long idx) const;
         void setPlayMode(m3d::playMode_e playMode, long idx);
+        m3d::playMode_e getPlayMode(long idx) const;
         float getFrameMax(long idx) const;
         float getFrameStart(long idx) const;
 
@@ -465,8 +486,9 @@ namespace m3d {
         bool isStop(long idx) const;
         bool checkFrame(float frame, long idx) const;
         void setPlayMode(m3d::playMode_e playMode, long idx);
+        m3d::playMode_e getPlayMode(long idx) const;
         float getFrameMax(long idx) const;
-        void setFrameStart(float frame, long idx);
+        float getFrameStart(long idx) const;
 
         class child_c : public fanm_c {
         public:

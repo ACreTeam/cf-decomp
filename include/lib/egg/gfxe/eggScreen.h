@@ -48,11 +48,14 @@ public:
     static void Initialize(const unsigned short *, const unsigned short *, Screen *);
     static void SetTVModeDefault();
 
-    const Screen *mParent;
-    nw4r::math::VEC2 mPosition;
-    nw4r::math::VEC2 field_0x48;
-    nw4r::math::VEC2 field_0x50;
-    mutable DataEfb mDataEfb;
+    // CF's (older) EGG::Screen is 0x68 bytes: no cached DataEfb (see the ctor at 804487D8 and the
+    // functions after it, which use offsets up to 0x64).
+    /* 0x3C */ const Screen *mParent;
+    /* 0x40 */ nw4r::math::VEC2 mPosition;
+    /* 0x48 */ nw4r::math::VEC2 field_0x48;
+    /* 0x50 */ nw4r::math::VEC2 field_0x50;
+    /* 0x58 */ nw4r::math::VEC2 field_0x58;
+    /* 0x60 */ nw4r::math::VEC2 field_0x60;
 
     static TVMode sTVMode;
     static TVModeInfo sTVModeInfo[Screen::TV_MODE_MAX];

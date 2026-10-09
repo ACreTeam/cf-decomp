@@ -5,7 +5,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
 
-// Player manager. Source: src/dol/game/d_player_mgr.cpp (.text 800FBB18..8010263C).
+// Player manager. Source: src/dol/game/d_player_mgr.cpp (.text 800FBB58..8010263C).
 // Notes: notes/d_player_mgr.txt. Names are inferred; fn_ ones are not understood yet.
 //
 // Player index arguments: 0-3 are local controllers, 4 means "the current one"
@@ -168,7 +168,6 @@ struct dMiiData_c {
 };
 
 extern "C" {
-void *fn_800FBB18(void *p, int del); // 800FBB18
 mVec3_c *fn_800FBC48(int idx); // 800FBC48
 dPlayerActor_c *fn_800FBC7C(int idx); // 800FBC7C
 dPlayerActor_c *fn_800FBC80(int idx); // 800FBC80

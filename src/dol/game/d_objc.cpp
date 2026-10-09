@@ -17,6 +17,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_mtx.hpp>
+#include <game/mLib/m_pad.hpp>
 #include <lib/MSL/arith.h>
 #include <lib/egg/math/eggMath.h>
 #include <revolution/MTX.h>
@@ -24,14 +25,11 @@
 
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
-extern void *lbl_8074F0B0; // 8074F0B0: the main controller (EGG)
 
 // 800FA6AC (d_pad): the pointer's screen position
 void fn_800FA6AC(mVec2_c *pos);
 // 8018A080 (d_camera): a screen position to a world position
 void fn_8018A080(mVec3_c *pos, const dCamera_c *cam, const mVec2_c *screen);
-// 804434E4 (EGG controller): > 0 while the pointer is valid
-int fn_804434E4(void *controller);
 // 801692A0 (d_str): the structure manager
 void *fn_801692A0();
 // 80169424 (d_str): the structure standing on a unit
@@ -592,7 +590,7 @@ void calc() {
     field = fn_80190C44(0);
     l_dpdPos.clear();
     l_dpdHit.clear();
-    if (cam != NULL && fn_804434E4(lbl_8074F0B0) > 0 && player != NULL && field != NULL) {
+    if (cam != NULL && mPad::getCore()->getDpdValidFlag() > 0 && player != NULL && field != NULL) {
         dBGC::column_c hitCol;
         mVec2_c screen;
         fn_800FA6AC(&screen);

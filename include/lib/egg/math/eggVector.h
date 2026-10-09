@@ -21,6 +21,8 @@ namespace EGG {
             this->y = y;
         }
 
+        Vector2f operator-(const Vector2f &v) const { return Vector2f(x - v.x, y - v.y); }
+
         float normalise();
 
         /// @brief Gets the squared length of the vector.

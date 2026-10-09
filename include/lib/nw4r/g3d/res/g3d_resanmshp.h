@@ -88,9 +88,10 @@ struct ResAnmShpData {
     s32 toResFileData;         // at 0xC
     s32 toShpDataDic;          // at 0x10
     s32 toVtxNameArray;        // at 0x14
-    s32 name;                  // at 0x18
-    s32 original_path;         // at 0x1C
-    ResAnmShpInfoData info;    // at 0x20
+    s32 toResUserData;         // at 0x18
+    s32 name;                  // at 0x1C
+    s32 original_path;         // at 0x20
+    ResAnmShpInfoData info;    // at 0x24
 };
 
 class ResAnmShp : public ResCommon<ResAnmShpData> {

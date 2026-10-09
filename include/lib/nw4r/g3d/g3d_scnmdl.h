@@ -24,6 +24,7 @@ public:
         ResMatChan GetResMatChan(bool markDirty);
         ResGenMode GetResGenMode(bool markDirty);
         ResMatMisc GetResMatMisc(bool markDirty);
+        ResMatMisc GetResMatMisc(); // 802548F4 (m3d::bmdl_c)
         ResMatPix GetResMatPix(bool markDirty);
         ResMatTevColor GetResMatTevColor(bool markDirty);
         ResMatTevColor GetResMatTevColor(); // 80254954 (d_fish_field)

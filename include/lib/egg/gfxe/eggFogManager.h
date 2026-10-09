@@ -11,7 +11,7 @@ public:
     virtual void vf_c(); ///< @unofficial
     virtual void vf_10(); ///< @unofficial
     virtual void vf_14(); ///< @unofficial
-    virtual ~FogManager();
+    virtual ~FogManager() {}
 
     void Calc();
     void CopyToG3D(nw4r::g3d::ScnRoot *) const;

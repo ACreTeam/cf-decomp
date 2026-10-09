@@ -109,6 +109,10 @@ public:
         mFrame = frame;
     }
 
+    const res::AnimationBlock* GetAnimResource() const {
+        return mpRes;
+    }
+
     f32 GetFrameMax() const {
         return static_cast<f32>(GetFrameSize());
     }

@@ -804,7 +804,7 @@ dol/game/d_paper.cpp:
 	.sdata2     start:0x807509C0 end:0x80750A60
 
 dol/game/d_photo.cpp:
-	.text       start:0x800FACC0 end:0x800FBB18
+	.text       start:0x800FACC0 end:0x800FBB58
 	.ctors      start:0x804656F4 end:0x804656F8
 	.rodata     start:0x804759F0 end:0x80475A00
 	.bss        start:0x805CEB20 end:0x805D2420
@@ -812,7 +812,7 @@ dol/game/d_photo.cpp:
 	.sdata2     start:0x80750A60 end:0x80750A80
 
 dol/game/d_player_mgr.cpp:
-	.text       start:0x800FBB18 end:0x8010263C
+	.text       start:0x800FBB58 end:0x8010263C
 	.ctors      start:0x804656F8 end:0x804656FC
 	.rodata     start:0x80475A00 end:0x80475B40 align:4
 	.data       start:0x804ED848 end:0x804ED8B8 align:4
@@ -2535,51 +2535,16 @@ dol/mLib/m_allocator.cpp:
 	.sdata2     start:0x80752930 end:0x80752938 align:4
 
 dol/mLib/m_3d.cpp:
-	.text       start:0x802AE810 end:0x802AEC18
-	.sbss       start:0x8074F070 end:0x8074F078 align:4
-
-dol/mLib/m_3d/scn_leaf.cpp:
-	.text       start:0x802AEC18 end:0x802AEE8C
-
-dol/mLib/m_3d/calc_ratio.cpp:
-	.text       start:0x802AEE8C end:0x802AEFD4
-
-dol/mLib/m_3d/bmdl.cpp:
-	.text       start:0x802AEFD4 end:0x802AF99C
-
-dol/mLib/m_3d/smdl.cpp:
-	.text       start:0x802AF99C end:0x802AFAEC
-
-dol/mLib/m_3d/mdl.cpp:
-	.text       start:0x802AFAEC end:0x802B0520
-
-dol/mLib/m_3d/banm.cpp:
-	.text       start:0x802B0520 end:0x802B06D0
-	.data       start:0x80523E98 end:0x80523EB0
-
-dol/mLib/m_3d/fanm.cpp:
-	.text       start:0x802B06D0 end:0x802B0C00
-
-dol/mLib/m_3d/anm_chr.cpp:
-	.text       start:0x802B0C00 end:0x802B100C
-
-dol/mLib/m_3d/anm_vis.cpp:
-	.text       start:0x802B100C end:0x802B1254
-
-dol/mLib/m_3d/anm_shp.cpp:
-	.text       start:0x802B1254 end:0x802B13BC
-
-dol/mLib/m_3d/anm_mat_clr.cpp:
-	.text       start:0x802B13BC end:0x802B1E40
-
-dol/mLib/m_3d/anm_tex_pat.cpp:
-	.text       start:0x802B1E40 end:0x802B28D8
-
-dol/mLib/m_3d/anm_tex_srt.cpp:
-	.text       start:0x802B28D8 end:0x802B363C
+	.text       start:0x802AE810 end:0x802B363C
+	.data       start:0x80523CF0 end:0x80523FB0 align:4
+	.sdata      start:0x8074CBB0 end:0x8074CBF0 align:4
+	.sbss       start:0x8074F070 end:0x8074F080 align:4
+	.sdata2     start:0x80752938 end:0x80752950
 
 dol/mLib/m_3d/face_ex.cpp:
 	.text       start:0x802B363C end:0x802B3998
+	.data       start:0x80523FB0 end:0x80524030
+	.sdata      start:0x8074CBF0 end:0x8074CC00
 
 dol/mLib/m_angle.cpp:
 	.text       start:0x802B3998 end:0x802B39E4
@@ -2600,11 +2565,25 @@ dol/mLib/m_quat.cpp:
 	.sdata2     start:0x80752980 end:0x80752998
 
 dol/mLib/m_2d.cpp:
-	.text       start:0x802B42F4 end:0x802B6484
-	.ctors      start:0x804658D4 end:0x804658D8
-	.bss        start:0x806A5E40 end:0x806A5E4C
-	.sbss       start:0x8074F0A0 end:0x8074F0A4 align:4
+	.text       start:0x802B42F4 end:0x802B5CA4
+	.data       start:0x80524098 end:0x805241C8 align:4
+	.bss        start:0x806A5E40 end:0x806A5E78
+	.sdata      start:0x8074CC18 end:0x8074CC38 align:4
+	.sbss       start:0x8074F0A0 end:0x8074F0A8 align:4
+	.sdata2     start:0x80752998 end:0x807529D0
 	.sbss2      start:0x80753A08 end:0x80753A10 align:4
+
+dol/mLib/m_pad.cpp:
+	.text       start:0x802B5CA4 end:0x802B5F10
+	.ctors      start:0x804658D4 end:0x804658D8
+	.bss        start:0x806A5E78 end:0x806A5EF8
+	.sbss       start:0x8074F0A8 end:0x8074F0B8
+	.sdata2     start:0x807529D0 end:0x807529D4
+
+dol/mLib/m_tex.cpp:
+	.text       start:0x802B5F10 end:0x802B6484
+	.data       start:0x805241C8 end:0x80524238
+	.sdata      start:0x8074CC38 end:0x8074CC48
 
 dol/mLib/m_fader.cpp:
 	.text       start:0x802B6484 end:0x802B65E4
@@ -2612,7 +2591,7 @@ dol/mLib/m_fader.cpp:
 
 dol/mLib/m_fader_base.cpp:
 	.text       start:0x802B65E4 end:0x802B679C
-	.data       start:0x80524238 end:0x80524260 align:4
+	.data       start:0x80524238 end:0x80524260
 
 dol/mLib/m_wipe_fader.cpp:
 	.text       start:0x802B679C end:0x802B6ED4
@@ -2628,7 +2607,7 @@ dol/mLib/m_frustum.cpp:
 
 dol/mLib/m_3d/m_3d_capture.cpp:
 	.text       start:0x802B77BC end:0x802B7A6C
-	.sdata2     start:0x80752A38 end:0x80752A40 align:4
+	.sdata2     start:0x80752A38 end:0x80752A3C align:4
 
 dol/mLib/m_ef.cpp:
 	.text       start:0x802B7A6C end:0x802B8C1C
@@ -2639,7 +2618,7 @@ dol/mLib/m_ef.cpp:
 
 dol/mLib/m_color.cpp:
 	.text       start:0x802B8C1C end:0x802B8D30
-	.sdata2     start:0x80752A40 end:0x80752A50 align:4
+	.sdata2     start:0x80752A40 end:0x80752A50
 
 dol/mLib/m_perf.cpp:
 	.text       start:0x802B8D30 end:0x802B8E00

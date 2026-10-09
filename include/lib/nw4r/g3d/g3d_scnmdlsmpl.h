@@ -121,6 +121,9 @@ public:
     ResMdlDrawMode GetDrawMode() const {
         return mDrawMode;
     }
+    void SetDrawMode(ResMdlDrawMode mode) {
+        mDrawMode = mode;
+    }
 
     void SetScnMdlCallback(ICalcWorldCallback* pCallback) {
         mpCalcWorldCallback = pCallback;

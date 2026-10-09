@@ -1,5 +1,5 @@
 // Player manager: player actor and player data access for the local players
-// and visitors. .text 800FBB18..8010263C.
+// and visitors. .text 800FBB58..8010263C.
 // First pass: every function is written for equivalence; matching has not started.
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_bg.hpp>
@@ -35,8 +35,6 @@ BOOL fn_800B72A4(const dItem::Item *item);
 BOOL fn_800BD134(const dItem::Item *item);
 u8 *fn_800F5BA8();
 BOOL fn_8018F438(int type);
-f32 fn_802B0980(m3d::fanm_c *anm); // frame
-void fn_802B0994(m3d::fanm_c *anm, f32 frame);
 BOOL fn_802C4404(dUnk83ED_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
@@ -83,15 +81,6 @@ static u8 lbl_8074AF10 = 0x3F;
 
 // 805D2440
 dPlayerMgr_c lbl_805D2440;
-
-// 800FBB18
-void *fn_800FBB18(void *p, int del) {
-    // Deleting destructor of an empty class.
-    if (p != NULL && del > 0) {
-        operator delete(p);
-    }
-    return p;
-}
 
 // 800FBB58
 dPlayerMgr_c::dPlayerMgr_c() {
@@ -1239,7 +1228,7 @@ f32 fn_800FDF28() {
     if (player->mAnmId == 0xB2) {
         m3d::fanm_c *anm = player->getAnm();
         if (anm != NULL) {
-            return fn_802B0980(anm);
+            return anm->getFrame();
         }
     }
     return 0.0f;
@@ -1687,7 +1676,7 @@ BOOL fn_800FEEB0() {
         if (player->mAnmId == 0x24) {
             return TRUE;
         }
-        if (player->mAnmId == 0x26 && fn_802B0980(player->getAnm()) < 57.0f) {
+        if (player->mAnmId == 0x26 && player->getAnm()->getFrame() < 57.0f) {
             return TRUE;
         }
         break;
@@ -1701,7 +1690,7 @@ BOOL fn_800FEEB0() {
         return TRUE;
     case 0x4C:
     case 0x79:
-        if (fn_802B0980(player->getAnm()) < 57.0f) {
+        if (player->getAnm()->getFrame() < 57.0f) {
             return TRUE;
         }
         break;
@@ -2211,7 +2200,7 @@ BOOL fn_80100128(f32 *out, int idx) {
     if ((u32)(player->mAnmId - 0x3C) <= 1) {
         m3d::fanm_c *anm = player->getAnm();
         if (anm != NULL) {
-            *out = fn_802B0980(anm);
+            *out = anm->getFrame();
             return TRUE;
         }
     }
@@ -2658,7 +2647,7 @@ BOOL fn_80100F00(s16 angle, f32 frame) {
     if (fn_80101A74(0x92, 4)) {
         m3d::fanm_c *anm = player->getAnm();
         if (anm != NULL) {
-            fn_802B0994(anm, frame);
+            anm->setFrame(frame);
         }
         return TRUE;
     }

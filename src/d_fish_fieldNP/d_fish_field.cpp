@@ -34,8 +34,6 @@ void fn_8016FC44(dFishingFloat_c *fl, int state);
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
-int fn_802AEB48(nw4r::g3d::ResMdl mdl, const char *name); // m3d: material id by name, -1
-void fn_802B09F4(m3d::fanm_c *anm, f32 rate);
 void fn_80087790(const char *name, const mVec3_c *pos, int arg, const mVec3_c *scale); // effect
 void fn_80087844(const char *name, const mVec3_c *pos, int arg, const mVec3_c *scale,
                  void (*cb)(dEffectTarget_c *, u32), u32 kind); // effect with a callback
@@ -1563,7 +1561,7 @@ void dFishFldShadow_c::executeEscape() {
     }
     if (!isFinFish()) {
         nw4r::g3d::ResMdl mdl = mMdl.getResMdl();
-        int matID = fn_802AEB48(mdl, "m0");
+        int matID = m3d::getMatID(mdl, "m0");
         nw4r::g3d::ScnMdl::CopiedMatAccess cma(nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mMdl.getScn()), matID);
         if (cma.IsValid()) {
             GXColor color;
@@ -1820,7 +1818,7 @@ void dFishFldShadow_c::executeRelease() {
             return;
         }
         nw4r::g3d::ResMdl mdl = mMdl.getResMdl();
-        int matID = fn_802AEB48(mdl, "m0");
+        int matID = m3d::getMatID(mdl, "m0");
         nw4r::g3d::ScnMdl::CopiedMatAccess cma(nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mMdl.getScn()), matID);
         if (cma.IsValid()) {
             GXColor color;
@@ -2132,7 +2130,7 @@ int dFishFldShadow_c::execute() {
     if (isMine() && getRec() != NULL) {
         getRec()->mRec.setFishState(mState);
     }
-    fn_802B09F4(&mAnm, mAnmRate);
+    mAnm.setRate(mAnmRate);
     calcMtx();
     if (mKind < FISH_NUM || !mHeld) {
         getMdl()->play();
