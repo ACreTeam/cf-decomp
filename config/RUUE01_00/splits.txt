@@ -277,7 +277,7 @@ dol/game/d_drum.cpp:
 	.text       start:0x8008278C end:0x80082F24
 	.ctors      start:0x80465654 end:0x80465658
 	.data       start:0x804DE6B8 end:0x804DE6D8 align:4
-	.bss        start:0x80583A08 end:0x80583A60
+	.bss        start:0x80583A08 end:0x80583A50
 	.sdata      start:0x80749E20 end:0x80749E28
 	.sbss       start:0x8074E290 end:0x8074E2A0
 	.sdata2     start:0x80750540 end:0x80750568
@@ -285,7 +285,7 @@ dol/game/d_drum.cpp:
 dol/game/d_pattern_copy.cpp:
 	.text       start:0x80082F24 end:0x8008350C
 	.ctors      start:0x80465658 end:0x8046565C align:8
-	.bss        start:0x80583A60 end:0x80584B60
+	.bss        start:0x80583A60 end:0x80584B60 align:32
 	.sdata      start:0x80749E28 end:0x80749E30
 	.sdata2     start:0x80750568 end:0x80750570
 

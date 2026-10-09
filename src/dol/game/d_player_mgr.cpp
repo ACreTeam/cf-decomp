@@ -8,6 +8,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_weather.hpp>
+#include <game/game/d_world.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/cLib/c_math.hpp>
@@ -43,7 +44,6 @@ void fn_801710BC(int idx, int a);
 BOOL fn_8018EB8C();
 BOOL fn_8018ECA0();
 BOOL fn_800FA724();
-u32 fn_800827A8(mVec3_c *out, int arg);
 void fn_801B961C();
 void fn_801B9658(int value);
 void fn_800BD2D8();
@@ -64,7 +64,6 @@ void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 void fn_801B9304();
-void fn_80082B04(mVec3_c *out, const mVec3_c *in);
 void fn_80087790(const char *name, const mVec3_c *pos, int a, int b);
 void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarget_c *, u32), u32 kind);
 void fn_80285110(void *obj, dEffectTarget_c *target);
@@ -2141,20 +2140,20 @@ BOOL fn_800FFDC0(const mVec3_c *target, int maxAngle, f32 maxDist) {
 }
 
 // 800FFEAC
-void fn_800FFEAC(mMtx_c *mtx, int arg, const mAng *angle) {
+void fn_800FFEAC(mMtx_c *mtx, const mVec3_c *position, const mAng *angle) {
     mVec3_c pos;
-    u32 tilt = fn_800827A8(&pos, arg);
+    u16 tilt = dWorld::curvePositionSimple(&pos, position);
     PSMTXTrans(*mtx, pos.x, pos.y, pos.z);
-    mtx->XrotM(mAng(tilt >> 16));
+    mtx->XrotM(mAng(tilt));
     mtx->YrotM(*angle);
 }
 
 // 800FFF2C
-void fn_800FFF2C(mMtx_c *mtx, int arg, const mAng3_c *angle) {
+void fn_800FFF2C(mMtx_c *mtx, const mVec3_c *position, const mAng3_c *angle) {
     mVec3_c pos;
-    u32 tilt = fn_800827A8(&pos, arg);
+    s16 tilt = dWorld::curvePositionSimple(&pos, position);
     PSMTXTrans(*mtx, pos.x, pos.y, pos.z);
-    mtx->XrotM(mAng((s16)(tilt >> 16) + angle->x.mAngle));
+    mtx->XrotM(mAng(tilt + angle->x.mAngle));
     mtx->ZrotM(angle->z);
     mtx->YrotM(angle->y);
 }
@@ -3328,7 +3327,7 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
     mVec3_c pos;
     if (isOutdoorScene((u8)getCurrentScene())) {
         mVec3_c src = obj->_AC;
-        fn_80082B04(&pos, &src);
+        dWorld::toFieldPosition(&pos, &src);
     } else {
         pos = obj->_AC;
     }

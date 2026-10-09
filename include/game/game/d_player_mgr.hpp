@@ -293,8 +293,8 @@ BOOL fn_800FFCA8(); // 800FFCA8
 BOOL fn_800FFD10(); // 800FFD10
 u16 fn_800FFD64(); // 800FFD64
 BOOL fn_800FFDC0(const mVec3_c *target, int maxAngle, f32 maxDist); // 800FFDC0
-void fn_800FFEAC(mMtx_c *mtx, int arg, const mAng *angle); // 800FFEAC
-void fn_800FFF2C(mMtx_c *mtx, int arg, const mAng3_c *angle); // 800FFF2C
+void fn_800FFEAC(mMtx_c *mtx, const mVec3_c *position, const mAng *angle); // 800FFEAC
+void fn_800FFF2C(mMtx_c *mtx, const mVec3_c *position, const mAng3_c *angle); // 800FFF2C
 u16 fn_800FFFCC(int gender); // 800FFFCC
 void fn_8010003C(); // 8010003C
 void fn_80100068(int value); // 80100068

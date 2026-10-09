@@ -60,10 +60,18 @@ struct mAng {
     /// @brief Converts the angle to degrees.
     float degree() const { return mAngle * AngleToDegreeCoefficient; }
 
+    /// @brief Converts degrees to an angle.
+    static s16 fromDegree(float deg) { return deg * DegreeToAngleCoefficient; }
+
+    /// @brief Converts radians to an angle.
+    static s16 fromRadian(float rad) { return rad * RadianToAngleCoefficient; }
+
     s16 mAngle; ///< The rotation.
 
-    static float AngleToDegreeCoefficient;
-    static float DegreeToAngleCoefficient;
+    static const float AngleToDegreeCoefficient;
+    static const float DegreeToAngleCoefficient;
+    static const float AngleToRadianCoefficient;
+    static const float RadianToAngleCoefficient;
 };
 
 /// @brief A three-dimensional short angle vector.

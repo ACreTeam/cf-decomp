@@ -24,7 +24,6 @@ BOOL fn_800DD960();                            // net: this machine is the host
 int fn_800DCF58();                             // net: own member index
 void *fn_800DD64C(int id);                     // net: shared record id
 void fn_800DD5F8(int id, void *data, int arg); // net: send shared record id
-void fn_80082B04(mVec3_c *out, const mVec3_c *in);  // world -> field position
 dItem::Item fn_80153410(const void *obj);           // the item at obj + 0x1F8
 // The player's fishing float while it is free for fish (or fish is on it), NULL if none.
 dFishingFloat_c *fn_801710A4(int player, dFishFldShadow_c *fish);
@@ -2162,7 +2161,7 @@ int dFishFldShadow_c::execute() {
             mVec3_c pos;
             mtx.multVecZero(pos);
             mVec3_c fieldPos;
-            fn_80082B04(&fieldPos, &pos);
+            dWorld::toFieldPosition(&fieldPos, &pos);
             dBGCF::groundChk_c check(&fieldPos, dBGCF::LAYER_WATER, 0, 0);
             fieldPos.y = check.mWaterY;
             dWorld::curvePosition(&pos, &fieldPos);
@@ -2453,7 +2452,7 @@ void dFishFldShadow_c::splashCallback(dEffectTarget_c *target, u32 kind) {
     mVec3_c pos;
     mVec3_c src;
     src = target->_AC;
-    fn_80082B04(&pos, &src);
+    dWorld::toFieldPosition(&pos, &src);
     dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
     if (check.mWater != BG_WATER_NONE) {
         if (check.isUnderWater(pos.y)) {

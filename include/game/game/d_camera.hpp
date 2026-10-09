@@ -1,11 +1,25 @@
 #pragma once
 
-// The game camera; not decompiled yet. Only what the sky uses.
+// The game camera (RTTI "dCamera_c"); not decompiled yet. Only what the sky and the drum
+// (d_drum) use.
 
+#include <game/mLib/m_mtx.hpp>
+#include <game/mLib/m_vec.hpp>
 #include <nw4r/math.h>
+
+class dCamera_c {
+public:
+    /* 0x000 */ u8 _000[0x16C];
+    /* 0x16C */ mMtx_c mViewMtx;
+    /* 0x19C */ u8 _19C[0x1CC - 0x19C];
+    /* 0x1CC */ s16 mPitch;
+    /* 0x1CE */ s16 mYaw;
+};
 
 extern "C" {
 extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: the camera's target (the view center)
+extern mVec3_c lbl_80624004;          // 80624004: the camera's eye position
+extern dCamera_c *lbl_8074E9B0;       // 8074E9B0: the camera
 }
 
 template <typename T>

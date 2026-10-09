@@ -3,13 +3,9 @@
 // .sdata2 807503F8..80750418. See notes/d_bgc.txt. Function and class member names are inferred.
 #include <game/game/d_bgc.hpp>
 #include <game/game/d_bgc_sphere.hpp>
+#include <game/cLib/c_math.hpp>
 
 namespace dBGC {
-
-// v * v. As an inline its operands are evaluated right to left (a + b squares b first).
-static inline f32 square(f32 v) {
-    return v * v;
-}
 
 // 80069D2C
 bool circle_c::checkInsideXZ(const mVec3_c &p) const {
@@ -21,7 +17,7 @@ bool circle_c::checkInsideXZ(const mVec3_c &p) const {
     if (EGG::Mathf::abs(dz) > mRadius) {
         return false;
     }
-    return square(dx) + square(dz) <= square(mRadius);
+    return cM::square(dx) + cM::square(dz) <= cM::square(mRadius);
 }
 
 // 80069DC0
@@ -86,12 +82,12 @@ BOOL column_c::crossSide(mVec3_c *pos, const mVec3_c &old) const {
         mVec3_c end(pos->x, pos->y, pos->z);
         mVec3_c center(mCenter.x, mCenter.y, mCenter.z);
         mVec3_c dir = end - start;
-        f32 a = square(dir.x) + square(dir.z);
+        f32 a = cM::square(dir.x) + cM::square(dir.z);
         if (isZero(a)) {
             return FALSE;
         }
         f32 b = 2.0f * ((dir.x * (start.x - center.x) + dir.z * (start.z - center.z)) / a);
-        f32 c = ((square(start.x - center.x) + square(start.z - center.z)) - square(r)) / a;
+        f32 c = ((cM::square(start.x - center.x) + cM::square(start.z - center.z)) - cM::square(r)) / a;
         f32 disc = b * b - 4.0f * c;
         if (disc < 0.0f) {
             return FALSE;
@@ -152,12 +148,12 @@ BOOL column_c::crossSideInf(mVec3_c *pos, const mVec3_c &old) const {
         mVec3_c end(pos->x, pos->y, pos->z);
         mVec3_c center(mCenter.x, mCenter.y, mCenter.z);
         mVec3_c dir = end - start;
-        f32 a = square(dir.x) + square(dir.z);
+        f32 a = cM::square(dir.x) + cM::square(dir.z);
         if (isZero(a)) {
             return FALSE;
         }
         f32 b = 2.0f * ((dir.x * (start.x - center.x) + dir.z * (start.z - center.z)) / a);
-        f32 c = ((square(start.x - center.x) + square(start.z - center.z)) - square(r)) / a;
+        f32 c = ((cM::square(start.x - center.x) + cM::square(start.z - center.z)) - cM::square(r)) / a;
         f32 disc = b * b - 4.0f * c;
         if (disc < 0.0f) {
             return FALSE;

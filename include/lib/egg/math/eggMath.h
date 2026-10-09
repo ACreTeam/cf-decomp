@@ -8,6 +8,7 @@ namespace EGG {
     class Math {
     public:
         static T sqrt(T v);
+        static T atan2(T y, T x);
 
         static T abs(T v) {
             return v < 0 ? -v : v;

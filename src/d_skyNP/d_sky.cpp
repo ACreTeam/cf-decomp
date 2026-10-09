@@ -10,18 +10,8 @@
 #include <revolution/MTX.h>
 #include <math.h>
 
-// The game camera; only what the sky uses.
-struct dSkyCamera_c {
-    /* 0x000 */ u8 _000[0x16C];
-    /* 0x16C */ mMtx_c mViewMtx;
-    /* 0x19C */ u8 _19C[0x1CC - 0x19C];
-    /* 0x1CC */ s16 mPitch;
-    /* 0x1CE */ s16 mYaw;
-};
-
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
-extern dSkyCamera_c *lbl_8074E9B0;    // 8074E9B0: the camera
 extern EGG::ExpHeap *lbl_8074E440;    // 8074E440
 
 void fn_80197414(mColor *color, int idx); // 80197414: a sky color for the time of day

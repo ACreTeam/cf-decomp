@@ -12,6 +12,7 @@
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_world.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -25,8 +26,6 @@ u32 fn_800DCF30();
 int fn_800DCF58();
 BOOL fn_800DD6B4();
 void fn_800DD6D8(int arg);
-void fn_80082794();
-void fn_8008279C();
 void fn_800C7704();
 void fn_800C7708();
 void fn_801A6584();
@@ -536,8 +535,7 @@ BOOL createScene(fBase_c *parent) {
     sParent = parent;
     sCreated = TRUE;
     getSceneChange()->setScene(SCENE_NONE);
-    isOutdoorScene(sCurScene);
-    fn_80082794();
+    dWorld::setCurve(isOutdoorScene(sCurScene));
     dFgMngProc_c::create();
     fn_800C7704();
     fn_801A6584();
@@ -567,7 +565,7 @@ void destroyScene() {
     sE848 = 0;
     sPlayer = NULL;
     sParent = NULL;
-    fn_8008279C();
+    dWorld::clearCurve();
     dFgMngProc_c::destroy();
     fn_800C7708();
     fn_801A670C();

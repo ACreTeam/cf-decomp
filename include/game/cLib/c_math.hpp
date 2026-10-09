@@ -11,6 +11,10 @@ namespace cM {
     s16 atan2s(float sin, float cos); ///< Converts a sine and a cosine to an angle in units.
     float atan2f(float sin, float cons);
 
+    /// @brief v * v. As an inline its operand is evaluated once and the calls in an expression are
+    /// evaluated right to left (a + b squares b first), which the bg and world code rely on.
+    inline f32 square(f32 v) { return v * v; }
+
     // RNG utilities
     void initRnd(ulong seed); ///< Initializes ::s_rnd with the given seed.
     float rnd(); ///< Generates a floating point number between 0 and 1.

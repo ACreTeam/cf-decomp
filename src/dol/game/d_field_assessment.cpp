@@ -34,6 +34,7 @@
 #include <game/game/d_sv_mgr.hpp>
 #include <game/game/d_theater.hpp>
 #include <game/game/d_time_stamp.hpp>
+#include <game/game/d_world.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_fader.hpp>
@@ -122,7 +123,6 @@ const u8 *fn_800AC28C(int idx);
 void fn_800C77E8(void *obj);
 void fn_800C7800(void *obj);
 void fn_800C7830(void *obj);
-u32 fn_8008299C(const mVec3_c *pos);
 BOOL fn_80087820(dEffect_c *effect, const char *name, const mVec3_c *pos, const mAng3_c *ang, const mVec3_c *scale);
 f32 fn_8044B83C(EGG::Effect *effect);
 int fn_80190C58(int a);
@@ -4719,10 +4719,10 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, c
     } else {
         dir.set(0.25f, 0.0f, 0.0f);
     }
-    u32 tilt = fn_8008299C(&pos) >> 16;
+    s16 tilt = dWorld::getCurveAngle(&pos);
     if (ang != NULL) {
         dir.rotY(ang->y);
-        dir.rotX(mAng((s16)tilt));
+        dir.rotX(mAng(tilt));
     }
     const char *name;
     if (item->isWiltedFlower()) {
