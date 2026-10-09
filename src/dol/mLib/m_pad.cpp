@@ -1,4 +1,5 @@
 // Based on the Skyward Sword decompilation (zeldaret/ss), m/m_pad.cpp
+#include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_pad.hpp>
 
 namespace mPad {
@@ -14,9 +15,9 @@ struct PadAdditionalData_t {
     PadAdditionalData_t() {}
     ~PadAdditionalData_t() {}
 
-    EGG::Vector2f v1;
-    EGG::Vector2f v2;
-    EGG::Vector2f v3;
+    mVec2_c v1;
+    mVec2_c v2;
+    mVec2_c v3;
 };
 
 static PadAdditionalData_t g_PadAdditionalData[4];
@@ -38,8 +39,8 @@ void beginPad() {
         if (ctl->isConnected()) {
             f32 y = ctl->getCoreStatus()->acc_vertical.y;
             f32 x = ctl->getCoreStatus()->acc_vertical.x;
-            EGG::Vector2f pos(x, y);
-            EGG::Vector2f v = pos - dat->v1;
+            mVec2_c pos(x, y);
+            mVec2_c v = pos - dat->v1;
             dat->v1 = pos;
             dat->v3 = v - dat->v2;
             dat->v2 = v;

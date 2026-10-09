@@ -1,6 +1,8 @@
 // .text 8008EDE8..8008FE50, .data 804DFB10..804DFB60, .bss 80587840..80588D10,
 // .sdata 80749F20..80749F60, .sbss 8074E310..8074E330.
 #include <game/game/d_screenshot.hpp>
+#include <game/game/d_m2d.hpp>
+#include <game/mLib/m_allocator.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <lib/revolution/OS/OSThread.h>
 #include <cstdio>
@@ -8,12 +10,7 @@
 
 using namespace dScreenshot;
 
-struct dHeapOwner_c {
-    /* 0x00 */ u8 _00[0x14];
-    /* 0x14 */ EGG::Heap *mHeap;
-};
 extern "C" {
-dHeapOwner_c *fn_800077C4();
 u8 *fn_800FADCC();                  // the JPEG
 u32 fn_800FADD4();                  // its size
 int fn_8016CF08(int idx);
@@ -172,7 +169,7 @@ static int unlock(int arg) {
 
 // 8008F0D8
 static void startThread(OSThreadFunc func, void *arg) {
-    l_stack = fn_800077C4()->mHeap->alloc(0x2800, 32);
+    l_stack = m2d::ResAccLoader_c::getAllocator()->mpHeap->alloc(0x2800, 32);
     OSCreateThread(&l_thread, func, arg, (u8 *)l_stack + 0x2800, 0x2800, 24, OS_THREAD_DETACHED);
     fn_802B8D30(&l_thread, fn_8016CF08(11));
     OSResumeThread(&l_thread);
@@ -187,7 +184,7 @@ static BOOL endThread() {
     }
     if (OSIsThreadTerminated(&l_thread)) {
         if (l_stack) {
-            EGG::Heap *heap = fn_800077C4()->mHeap;
+            EGG::Heap *heap = m2d::ResAccLoader_c::getAllocator()->mpHeap;
             heap->free(l_stack);
             l_stack = NULL;
             fn_802B8D90(&l_thread);

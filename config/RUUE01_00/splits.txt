@@ -2,7 +2,7 @@ Sections:
 	.init       type:code align:4
 	extab       type:rodata align:32
 	extabindex  type:rodata align:32
-	.text       type:code align:4
+	.text       type:code align:16
 	.ctors      type:rodata align:4
 	.dtors      type:rodata align:16
 	.rodata     type:rodata align:32
@@ -43,6 +43,7 @@ dol/game/d_analog_select.cpp:
 
 dol/game/d_snd_util.cpp:
 	.text       start:0x8000DE5C end:0x800107AC
+	.bss        start:0x80562EA0 end:0x80564B60 align:32
 	.sbss       start:0x8074E148 end:0x8074E150
 	.sdata2     start:0x8074FDD0 end:0x8074FDD8
 

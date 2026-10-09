@@ -9,6 +9,7 @@
 #include <game/game/d_region.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_script.hpp>
+#include <game/game/d_m2d.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
@@ -24,7 +25,6 @@ BOOL fn_800DCF2C(int player);                   // member present
 void fn_800DD4C8();                             // start a packet
 void fn_800DD518(const void *data, u32 size);   // add data
 void fn_800DD588(int type, int player);         // send it
-int fn_800092CC(const wchar_t *str);            // string length
 
 int fn_8017BF90(const dPersonalID_c *pid, dPrivateData_c *player); // friend index
 
@@ -694,7 +694,7 @@ int scoreNames(dMail_c *mail) {
 
 // 80103BC8
 int getLengthType(dMail_c *mail) {
-    int len = fn_800092CC(mail->mBody);
+    int len = m2d::Word_c::getLength(mail->mBody);
     if (len > 40) {
         return 2;
     }

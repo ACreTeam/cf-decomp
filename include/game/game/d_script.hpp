@@ -227,6 +227,8 @@ public:
 
 int getStringLength(const wchar_t *text, u32 maxSize, int breakOnNewLine); // 8015790C
 BOOL setNumber(Word_c *word, int value, int digits, NumberFormat_e format); // 8015665C
+BOOL formatNumber(Word_c *word, int value, int digits, NumberFormat_e format, int sep); // 801566E8
+u8 getTagLength(const wchar_t *tag);
 int to12Hour(int hour); // 80156A8C
 BOOL setAmPm(Word_c *word, int hour); // 80156B00
 BOOL isHiragana(wchar_t c); // 80155D9C

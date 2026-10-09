@@ -1,7 +1,7 @@
 #pragma once
 
 #include <game/game/d_actor.hpp>
-#include <game/cLib/c_line.hpp>
+#include <game/game/d_line.hpp>
 
 class dDemoActor_c;
 namespace dMsg {
@@ -17,9 +17,8 @@ public:
     dDemoActor_c *mpActor;
 };
 
-class dDemoActorList_c : public cLineMg_c {
+class dDemoActorList_c : public dLineMg_c {
 public:
-    void init();
     bool add(dDemoActorNode_c *node);
     dDemoActorNode_c *find(u32 id);
 };

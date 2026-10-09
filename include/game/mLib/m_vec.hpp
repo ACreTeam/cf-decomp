@@ -29,7 +29,6 @@ public:
     /// @brief Constructs an empty vector.
     mVec2_c() {}
 
-    ~mVec2_c() {}
 
     /// @brief Constructs a vector from a float array.
     mVec2_c(const f32 *p) { x = p[0]; y = p[1]; }
@@ -103,7 +102,7 @@ public:
     mVec2_c operator*(f32 f) const { return mVec2_c(f * x, f * y); }
 
     /// @brief Scalar division operator.
-    mVec2_c operator/(f32 f) const { f32 r = 1.0f / f; return operator*(r); }
+    mVec2_c operator/(f32 f) const { f32 r = 1.0f / f; return mVec2_c(x * r, y * r); }
 
     /// @brief Equality operator.
     bool operator==(const mVec2_c &v) const { return x == v.x && y == v.y; }
@@ -125,7 +124,6 @@ public:
     /// @brief Constructs an empty vector.
     mVec3_c() {}
 
-    ~mVec3_c() {}
 
     /// @brief Constructs a vector from a float array.
     mVec3_c(const f32 *p) { x = p[0]; y = p[1]; z = p[2]; }

@@ -86,6 +86,10 @@ public:
     const wchar_t* GetString() const {
         return mTextBuf;
     }
+    u16 GetStringLength() const {
+        return mTextLen;
+    }
+
     const wchar_t* GetStringBuffer() const {
         return mTextBuf;
     }
