@@ -614,6 +614,7 @@ config.libs = [
         "cflags": cflags_identified_game,
         "progress_category": "game",
         "objects": [
+            Object(Matching, "dol/game/d_m3d.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_actor.cpp"),
             Object(Matching, "dol/game/d_base.cpp"),
             Object(Matching, "dol/game/d_bg.cpp", extra_cflags=["-sym on"]),
