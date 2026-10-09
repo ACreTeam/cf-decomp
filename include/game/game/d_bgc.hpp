@@ -33,6 +33,13 @@ public:
     /* 0x0C */ f32 mRadius;
     /* 0x10 */ // vtable
 
+    circle_c() {}
+    // The center and radius set in the body (not a mem-initializer list): d_objc's columns need it.
+    circle_c(const mVec3_c &center, f32 radius) {
+        mCenter = center;
+        mRadius = radius;
+    }
+
     virtual ~circle_c() = 0;
 
     bool checkInsideXZ(const mVec3_c &p) const; // 80069D2C
@@ -50,9 +57,21 @@ public:
         mRadius = 0.0f;
         mHeight = 0.0f;
     }
+    // d_objc: the vtable store lands between mRadius and mHeight (circle_c part first), and the
+    // drum column sets mHeight afterwards (hence the default).
+    column_c(const mVec3_c &center, f32 radius, f32 height = 0.0f) : circle_c(center, radius) {
+        mHeight = height;
+    }
     virtual ~column_c() {}
 
     f32 getHeight() const { return mHeight; }
+
+    // d_objc (the pointed-at column): height and radius are read before the center copy.
+    void set(const mVec3_c &center, f32 radius, f32 height) {
+        mCenter = center;
+        mRadius = radius;
+        mHeight = height;
+    }
 
     BOOL correctSide(mVec3_c *pos, f32 r) const;                 // 80069DC0
     BOOL correctTop(mVec3_c *pos, const mVec3_c &old) const;     // 80069F2C

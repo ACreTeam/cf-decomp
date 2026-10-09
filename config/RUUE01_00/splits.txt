@@ -1623,6 +1623,11 @@ dol/game/d_npc_mng.cpp:
 dol/game/d_objc.cpp:
 	.text       start:0x801AD6E0 end:0x801B0230
 	.ctors      start:0x80465840 end:0x80465844 align:8
+	.data       start:0x804FB8A0 end:0x804FB9A0 align:4
+	.bss        start:0x80625370 end:0x80625470 align:4
+	.sdata      start:0x8074C1E0 end:0x8074C210 align:4
+	.sbss       start:0x8074EAD8 end:0x8074EB08 align:4
+	.sdata2     start:0x80751800 end:0x80751848
 
 dol/game/d_obj_bal.cpp:
 	.text       start:0x801B0230 end:0x801B0B20

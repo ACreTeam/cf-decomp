@@ -1,7 +1,7 @@
 #pragma once
 
-// The game camera (RTTI "dCamera_c"); not decompiled yet. Only what the sky and the drum
-// (d_drum) use.
+// The game camera (RTTI "dCamera_c"); not decompiled yet. Only what the sky, the drum (d_drum)
+// and d_objc use.
 
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
@@ -9,7 +9,12 @@
 
 class dCamera_c {
 public:
-    /* 0x000 */ u8 _000[0x16C];
+    // 801B0194 (weak copy kept in d_objc). Non-const: a const version stores y before x.
+    mVec3_c getEyePos() { return mVec3_c(mEyePos); }
+
+    /* 0x000 */ u8 _000[0x130];
+    /* 0x130 */ nw4r::math::VEC3 mEyePos;
+    /* 0x13C */ u8 _13C[0x16C - 0x13C];
     /* 0x16C */ mMtx_c mViewMtx;
     /* 0x19C */ u8 _19C[0x1CC - 0x19C];
     /* 0x1CC */ s16 mPitch;

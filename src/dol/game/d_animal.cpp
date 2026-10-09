@@ -4850,7 +4850,6 @@ void fn_800CBEB4(int slot, int value);
 int fn_800BA890(const dItem::Item *item);
 u32 fn_800DCF30();
 u32 fn_80169298();
-int fn_8045243C(int value); // abs
 }
 
 
@@ -5488,7 +5487,7 @@ int dAnimal_c::getDaysSinceLastTalk(const dTime_c *now) {
         if (memory->mPlayer.isValid() && isQuestTimeSet(&memory->mLastTalkTime)) {
             dTime_c time;
             time = memory->mLastTalkTime.get();
-            int days = fn_8045243C(dTime_c::diffDays(now, &time, FALSE));
+            int days = labs(dTime_c::diffDays(now, &time, FALSE));
             if (best < 0 || days < best) {
                 best = days;
             }
