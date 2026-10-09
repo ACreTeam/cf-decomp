@@ -106,6 +106,7 @@ public:
     void SetLightSetIdx(int);
     int GetLightSetIdx() const;
     int GetFogIdx() const;
+    void SetFogIdx(int);
 
     void GetIndirectTexMtxCalcMethod(GXIndTexMtxID id,
                                      ResMatMiscData::IndirectMethod* pMethod,

@@ -21,7 +21,9 @@ namespace EGG {
             this->y = y;
         }
 
+        Vector2f operator+(const Vector2f &v) const { return Vector2f(x + v.x, y + v.y); }
         Vector2f operator-(const Vector2f &v) const { return Vector2f(x - v.x, y - v.y); }
+        Vector2f operator*(f32 f) const { return Vector2f(x * f, y * f); }
 
         float normalise();
 
