@@ -41,7 +41,7 @@ int fn_800D2A4C();
 int fn_800D2404();
 int fn_800D240C();
 int fn_800D241C();
-void fn_800DCF58();
+int fn_800DCF58(); // 800DCF58: this console's net member index (d_net.hpp)
 void fn_801A316C(void *demo, int mode);
 int fn_8017B18C();
 int fn_8017B190();

@@ -110,6 +110,9 @@ struct dSaveDistContentList_c {
 
 // Skeleton member of dSaveExtra_c (unsplit TU; C linkage keeps the target name).
 extern "C" void fn_80117118(void *obj); // 80117118
+struct dSaveUnk1CE_c;
+// d_sv_lang_flag: clears bit `bit` (< 6) of player `player` (< 4) in the flags at extra+0x1CE.
+extern "C" void fn_801172C0(dSaveUnk1CE_c *flags, u32 player, u32 bit); // 801172C0
 struct dSaveUnk1CE_c {
     dSaveUnk1CE_c() { fn_80117118(this); }
     u8 _00[0x12];

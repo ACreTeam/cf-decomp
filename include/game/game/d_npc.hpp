@@ -21,6 +21,12 @@ class dPrivateData_c;
 
 namespace dNpc {
 
+// Inferred placement policy for foreground object 0x94 (a hole).
+enum holeCheck_e {
+    IGNORE_HOLES,
+    CHECK_HOLES
+};
+
 // 0x48. A remembered message (group label + index).
 class msgMemory_c {
 public:
@@ -232,20 +238,20 @@ public:
     static void unpackXZ(const u8 *src, mVec3_c *dst);               // 800EEAD4
     void set08(const u16 *value);                                    // 800EEB28
     mAng get08();                                                    // 800EEB34
-    void set0D(const u16 *value);                                    // 800EEB6C
+    void set0D(mAng value);                                    // 800EEB6C
     mAng get0D();                                                    // 800EEB78
-    void set0F(const u16 *value);                                    // 800EEBB0
+    void set0F(mAng value);                                    // 800EEBB0
     mAng get0F();                                                    // 800EEBBC
     void get11(void *dst, u32 size);                                 // 800EEBF4
     void set11(const void *src, u32 size);                           // 800EEC2C
     void get19(u32 *a, u32 *b);                                      // 800EEC5C
-    void set19(u8 a, u8 b);                                          // 800EEC80
+    void set19(u32 a, u32 b);                                        // 800EEC80
     void getMove(mVec3_c *from, mVec3_c *to, u16 *angle, f32 *speed); // 800EEC8C
     void setMove(const mVec3_c *from, const mVec3_c *to, const u16 *angle, f32 speed); // 800EED5C
     void getTalk(u16 *a, u16 *b, f32 *c);                            // 800EEE10
     void setTalk(const u16 *a, const u16 *b, f32 c);                 // 800EEEA8
     void getAct(u32 *a, u8 *b, f32 *c, f32 *d);                      // 800EEF14
-    void setAct(u16 a, u8 b, f32 c, f32 d);                          // 800EEFDC
+    void setAct(u32 a, u8 b, f32 c, f32 d);                          // 800EEFDC
 
     /* 0x00 */ u8 _00[4];
     /* 0x04 */ u8 _04[4];
@@ -347,7 +353,7 @@ void fn_800EFD48();                                                  // 800EFD48
 void fn_800EFDD0(void *dst, int id);                                 // 800EFDD0
 void fn_800EFDD4();                                                  // 800EFDD4
 void fn_800EFE68(void *dst, int id);                                 // 800EFE68
-BOOL fn_800EFE6C(const u16 *key);                                    // 800EFE6C
+const dNpcDaub_c *fn_800EFE6C(const u16 *key);                      // 800EFE6C: the received daub copy
 void fn_800EFEDC(void *dst, int id);                                 // 800EFEDC
 void fn_800EFF60(int *idx, void *dst, const u8 *src);                // 800EFF60
 void fn_800EFF8C(u8 *dst, int idx, const void *src);                  // 800EFF8C

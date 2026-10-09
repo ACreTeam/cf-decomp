@@ -28,8 +28,10 @@ public:
     void calcSpeed();
     static void makeMtx(mMtx_c *matrix, const mVec3_c *position, mAng yaw); // the yaw by value (callers copy it)
     float getSpeedF(const mVec3_c *speed);
+    f32 getSpeedF() const { return mSpeedF; }
     static s16 targetAngleY(const mVec3_c *origin, const mVec3_c *target);
     void getOffsetPos(mVec3_c *result, float distance, int snapToCardinal);
+    void makeMtx(mMtx_c *matrix) { makeMtx(matrix, &mPos, mAngle.y.mAngle); }
     const mVec3_c *getPosP() const { return &mPos; }
 
     static const mVec3_c* m_tmpCtPosP;

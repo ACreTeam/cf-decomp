@@ -39,7 +39,7 @@ public:
     virtual void vf4C();
     virtual void setColor(u8 r, u8 g, u8 b, u8 a, ERecursive recursive); // 0x50 (d_fish_field)
     virtual void setRegisterColor(const _GXColor &color0, const _GXColor &color1, u8 index); // 0x54
-    virtual void vf58();
+    virtual void setRegisterAlpha(u8 alpha0, u8 alpha1, u8 index); // 0x58 (d_a_npc)
     virtual void vf5C();
     virtual void vf60();
     virtual void vf64();

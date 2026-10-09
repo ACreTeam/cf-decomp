@@ -156,7 +156,7 @@ struct unitDat_c {
 class mvbg_c {
 public:
     virtual ~mvbg_c() {}                                 // 80076700
-    virtual void onHit(wall_c *wall, int arg, f32 dist); // 80072068
+    virtual void onHit(wall_c *wall, int ownerId, f32 dist); // 80072068
 
     void init(); // 80071EC8
     mAng getAngle() const { return mAngle; }
@@ -290,7 +290,7 @@ class wallList_c {
 public:
     u32 getNum() const { return mNum; }
 
-    BOOL correct(mVec3_c *pos, const mVec3_c &old, f32 r, acch_c *acch, u32 flags, int arg,
+    BOOL correct(mVec3_c *pos, const mVec3_c &old, f32 r, acch_c *acch, u32 flags, int ownerId,
                  BOOL noCheck);                                                    // 8006F7D0
     BOOL add(const wall_c &wall);                                                  // 8006FC0C
     BOOL add(const wallDat_s &dat, const dBGC::vecXZ_c &normal, mvbg_c *mvbg);     // 8006FC58
@@ -318,8 +318,8 @@ class columnList_c {
 public:
     u32 getNum() const { return mNum; }
 
-    BOOL correctSide(mVec3_c *pos, f32 r, acch_c *acch, int arg, clmcb_c *cb);         // 80070D94
-    BOOL correctTop(mVec3_c *pos, const mVec3_c &old, int *attr, int arg, clmcb_c *cb); // 80070E80
+    BOOL correctSide(mVec3_c *pos, f32 r, acch_c *acch, int ownerId, clmcb_c *cb);         // 80070D94
+    BOOL correctTop(mVec3_c *pos, const mVec3_c &old, int *attr, int ownerId, clmcb_c *cb); // 80070E80
     BOOL add(f32 r, f32 h, const mVec3_c &pos, int type, int attr);                     // 80070F30
     void make(clmcb_c *cb, const int *min, const int *max, BOOL anm);                   // 80070F90
     void makeWalls(wallList_c *walls, u32 flags, clmcb_c *cb);                          // 80071160
@@ -415,8 +415,8 @@ public:
     void clear();                 // 800715A8
     void init();                  // 8007162C
     void calcWallFlags(mAng ang); // 80071690
-    void checkSteps(f32 r, mVec3_c *pos, const mVec3_c *old, mAng ang, int arg, u32 flags); // 8007405C
-    void check(f32 r, mVec3_c *pos, const mVec3_c *old, mAng ang, int arg, u32 flags,
+    void checkSteps(f32 r, mVec3_c *pos, const mVec3_c *old, mAng ang, int ownerId, u32 flags); // 8007405C
+    void check(f32 r, mVec3_c *pos, const mVec3_c *old, mAng ang, int ownerId, u32 flags,
                BOOL doClear); // 80074234
     f32 getStepHeight() const { return mStepHeight; }
 
@@ -472,7 +472,7 @@ unitDat_c *getUnitDat(const mVec3_c *pos);               // 80072B7C
 int getUnitAttr(int unitX, int unitZ);                   // 80072BB4
 clmcb_c *getClmcb();                                     // 80072BE8
 BOOL isWaterAttr(int attr, int mode);                    // 80072C60
-BOOL isWaterToLand(const mVec3_c *from, const mVec3_c *to, acch_c *acch, int arg); // 80072CD8
+BOOL isWaterToLand(const mVec3_c *from, const mVec3_c *to, acch_c *acch, int ownerId); // 80072CD8
 int getRouteDirs(int unitX, int unitZ);                  // 80072D54: 1 << unitQuarter_e per route neighbour
 void setRoute(int unitX, int unitZ, int on);             // 80072E50
 int getUnitQuarter(const mVec3_c *pos);                  // 80072E94: unitQuarter_e

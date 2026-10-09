@@ -55,6 +55,9 @@ dol/game/d_a_npc.cpp:
 	.ctors      start:0x80465628 end:0x8046562C align:8
 	.rodata     start:0x804659F0 end:0x8046BCD0
 	.data       start:0x8049E7C8 end:0x804A0768 align:4
+	.bss        start:0x80564B60 end:0x80565060 align:4
+	.sdata      start:0x80749848 end:0x80749908 align:4
+	.sbss       start:0x8074E150 end:0x8074E188
 	.sdata2     start:0x8074FDE0 end:0x8074FF30
 
 dol/game/d_a_npc_nml.cpp:

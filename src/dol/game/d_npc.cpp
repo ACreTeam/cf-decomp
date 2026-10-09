@@ -33,7 +33,7 @@ u32 fn_800DCF30();
 BOOL fn_800DCF2C(int player);
 int fn_800DCF58(); // own player index
 void fn_800DD5F8(int id, int a, int b);
-BOOL fn_800DD64C(int id);
+void *fn_800DD64C(int id);
 u32 fn_800DD680(int id);
 mVec3_c fn_801506F8(const void *data);
 
@@ -875,8 +875,8 @@ mAng dNpcDaub_c::get08() {
 }
 
 // 800EEB6C
-void dNpcDaub_c::set0D(const u16 *value) {
-    cLib::memCpy(_0D, value, 2);
+void dNpcDaub_c::set0D(mAng value) {
+    cLib::memCpy(_0D, &value, 2);
 }
 
 // 800EEB78
@@ -887,8 +887,8 @@ mAng dNpcDaub_c::get0D() {
 }
 
 // 800EEBB0
-void dNpcDaub_c::set0F(const u16 *value) {
-    cLib::memCpy(_0F, value, 2);
+void dNpcDaub_c::set0F(mAng value) {
+    cLib::memCpy(_0F, &value, 2);
 }
 
 // 800EEBBC
@@ -923,7 +923,7 @@ void dNpcDaub_c::get19(u32 *a, u32 *b) {
 }
 
 // 800EEC80
-void dNpcDaub_c::set19(u8 a, u8 b) {
+void dNpcDaub_c::set19(u32 a, u32 b) {
     _19[0] = a;
     _19[1] = b;
 }
@@ -995,7 +995,7 @@ void dNpcDaub_c::getAct(u32 *a, u8 *b, f32 *c, f32 *d) {
 }
 
 // 800EEFDC
-void dNpcDaub_c::setAct(u16 a, u8 b, f32 c, f32 d) {
+void dNpcDaub_c::setAct(u32 a, u8 b, f32 c, f32 d) {
     u16 value = a;
     cLib::memCpy(&_19[2], &value, 2);
     _19[4] = b;
@@ -1355,19 +1355,19 @@ void fn_800EFE68(void *dst, int id) {
 }
 
 // 800EFE6C
-BOOL fn_800EFE6C(const u16 *key) {
+const dNpcDaub_c *fn_800EFE6C(const u16 *key) {
     if (!fn_800DCEDC()) {
-        return FALSE;
+        return NULL;
     }
     dNpc::daubMng_c *mng = fn_800EFBDC(key);
     if (mng == NULL) {
-        return FALSE;
+        return NULL;
     }
     int id = mng->keyToId(key);
     if (id == 0xBA) {
-        return FALSE;
+        return NULL;
     }
-    return fn_800DD64C(id);
+    return (const dNpcDaub_c *)fn_800DD64C(id);
 }
 
 // 800EFEDC

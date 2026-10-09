@@ -62,7 +62,7 @@ void Rcpt_c::rcptHook24() {}
 void Rcpt_c::rcptHook28() {}
 void Rcpt_c::rcptHook2C() {}
 void Rcpt_c::rcptHook78() {}
-void Rcpt_c::rcptHook34() {}
+void Rcpt_c::rcptHook34(u32 tag) {}
 void Rcpt_c::rcptHook38() {}
 void Rcpt_c::rcptHook3C() {}
 void Rcpt_c::rcptHook40() {}

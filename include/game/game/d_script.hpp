@@ -226,6 +226,9 @@ public:
 }; // size 0x8C
 
 int getStringLength(const wchar_t *text, u32 maxSize, int breakOnNewLine); // 8015790C
+BOOL setNumber(Word_c *word, int value, int digits, NumberFormat_e format); // 8015665C
+int to12Hour(int hour); // 80156A8C
+BOOL setAmPm(Word_c *word, int hour); // 80156B00
 BOOL isHiragana(wchar_t c); // 80155D9C
 BOOL isKatakana(wchar_t c); // 80155DD0
 BOOL isAlpha(wchar_t c); // 80155E6C

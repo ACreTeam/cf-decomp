@@ -33,11 +33,15 @@ struct mAng {
         return ::abs(mAngle);
     }
 
+    s32 labs() const {
+        return ::labs(mAngle);
+    }
+
     /// @brief Augmented addition operator.
-    mAng &operator+=(const mAng &v) { mAngle += v.mAngle; return *this; }
+    mAng &operator+=(mAng v) { *this = mAngle + v.mAngle; return *this; }
 
     /// @brief Augmented subtraction operator.
-    mAng &operator-=(const mAng &v) { mAngle -= v.mAngle; return *this; }
+    mAng &operator-=(mAng v) { mAngle -= v.mAngle; return *this; }
 
     /// @brief Positive operator.
     mAng operator+() const { return *this; }

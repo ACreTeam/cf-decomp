@@ -5,7 +5,7 @@
 // 804A55A8, name at +0x14; no code reads the names). Each entry's flag bytes +0x27 / +0x28 decide
 // what the per-unit BG queries answer; see notes/bg_attributes.txt for the table.
 
-enum {
+enum bgAttr_e {
     BG_ATTR_NONE = 0x00,
     BG_ATTR_ATTRW = 0x01,
     BG_ATTR_OBJ = 0x02,

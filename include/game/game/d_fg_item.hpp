@@ -343,6 +343,7 @@ struct Item {
     // Same item, ignoring the 2 variant bits of encoded ids.
     BOOL isSame(const Item &other) const; // 800A5E64
     BOOL isNotSame(const Item &other) const { return !isSame(other); }
+    BOOL isSame(u16 id) const { return isSame(Item(id)); }
 
     bool isValid() const { return mId != ITEM_ID_NONE; }
     u16 getId() const { return mId; }
