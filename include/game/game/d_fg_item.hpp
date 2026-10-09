@@ -323,6 +323,14 @@ struct Item {
     Item() : mId(ITEM_ID_NONE) {}
     Item(u16 id) : mId(id) {}
     Item(const Item &other) : mId(other.mId) {}
+    Item &operator=(const Item &other) {
+        mId = other.mId;
+        return *this;
+    }
+    Item &operator=(u16 id) {
+        mId = id;
+        return *this;
+    }
     // From an item index (not an id); leaves mId to setFromIndex.
     explicit Item(int index); // 800A5D3C
     Item(int base, int offset, BOOL skipCheck); // 800A5D6C

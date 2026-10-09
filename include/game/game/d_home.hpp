@@ -104,18 +104,21 @@ struct dHomeRoom_c {
     BOOL isFlag(int flag) const; // 8013D430
     void setFlags(u8 flags); // 8013D470
 
-    // Weak (MWCC doesn't inline them; callers keep the bl).
+    // Weak (MWCC doesn't inline them; callers keep the bl). The kept copies of the wallpaper /
+    // carpet ones are in d_bg_util.
     void setWallpaper(dItem::Item item) { mWallpaper = item; } // 80077724
+    dItem::Item getWallpaper() const { return mWallpaper; } // 80077730
     void setCarpet(dItem::Item item) { mCarpet = item; } // 8007773C
+    dItem::Item getCarpet() const { return mCarpet; } // 80077748
     void setSong(dItem::Item item) { mSong = item; } // 80112BAC (kept in d_model_room)
 
     /* 0x000 */ dHomeLayer_c mLayers[HOME_LAYER_NUM];
     /* 0x400 */ dHomeRoomMap_c mMap;
-    /* 0x44E */ dItem::Item mWallpaper; // default 0x2BE (getter fn_80077730)
-    /* 0x450 */ dItem::Item mCarpet; // default 0x319 (getter fn_80077748)
+    /* 0x44E */ dItem::Item mWallpaper; // default 0x2BE
+    /* 0x450 */ dItem::Item mCarpet; // default 0x319
     /* 0x452 */ dItem::Item mSong; // song playing on the room's stereo; set by 800A9890 as Item(0xEE, song) for furniture func 0xC
-    /* 0x454 */ u8 _454;
-    /* 0x455 */ u8 _455;
+    /* 0x454 */ u8 _454; // wallpaper type (dBgUtil::setSceneWallpaper)
+    /* 0x455 */ u8 _455; // carpet type (dBgUtil::setSceneCarpet)
     /* 0x456 */ u8 _456;
     /* 0x457 */ u8 mFlags; // 3 bits
 }; // size 0x458

@@ -2294,8 +2294,8 @@ BOOL dPrivateData_c::fn_8013BDA0(int chance, int count, int flag) {
 // 8013C054
 void dItemPairRing_c::clear() {
     for (int i = 0; i < 8; i++) {
-        mA[i].mId = 0xFFFF;
-        mB[i].mId = 0xFFFF;
+        mA[i] = 0xFFFF;
+        mB[i] = 0xFFFF;
     }
     mCount = 0;
     mIndex = -1;

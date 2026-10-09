@@ -7,6 +7,7 @@ struct mColor : public nw4r::ut::Color {
 public:
     mColor() : nw4r::ut::Color() {} ///< Creates the default color.
     mColor(nw4r::ut::Color color) : nw4r::ut::Color(color) {} ///< Creates a color from from a base nw4r::ut::Color instance.
+    mColor(u8 r, u8 g, u8 b, u8 a) { Set(r, g, b, a); } ///< Creates a color from its channels (after the default white).
 
     /// @brief Linearly interpolates all RGBA channels between two color values.
     /// @param c1 The first color.

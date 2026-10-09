@@ -32,6 +32,9 @@ public:
     Editor_c() : mTex::edit8b_c(0, 0, NULL), m_frmHeap_p(NULL) { init(); }
     virtual ~Editor_c() {}
 
+    // The texture (d_bg's packBank_c points the grass model's texture here).
+    u8 *getPixels() { return mPixels; }
+
     // The wear of a unit (0 = bare ground); 0 outside the texture.
     int getWear(int x, int z) { return get(x, z); }
 

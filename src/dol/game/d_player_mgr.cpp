@@ -2,6 +2,7 @@
 // and visitors. .text 800FBB18..8010263C.
 // First pass: every function is written for equivalence; matching has not started.
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_bg.hpp>
 #include <game/game/d_bgcf.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
@@ -41,8 +42,6 @@ int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
 void fn_801710BC(int idx, int a);
 BOOL fn_8018EB8C();
 BOOL fn_8018ECA0();
-void *fn_8006996C();
-BOOL fn_80069308(void *obj);
 BOOL fn_800FA724();
 u32 fn_800827A8(mVec3_c *out, int arg);
 void fn_801B961C();
@@ -1639,7 +1638,7 @@ BOOL fn_800FEC60(const dItem::Item *acc) {
     equip.setFromPlayer();
     equip.mAcc = *acc;
     if (!equip.fn_8013A9C8()) {
-        equip.mHat.mId = dItem::ITEM_ID_NONE;
+        equip.mHat = dItem::ITEM_ID_NONE;
     }
     return fn_800FF444(&equip, 3, 0);
 }
@@ -1963,7 +1962,7 @@ BOOL fn_800FF840() {
     if (player->mState == 0x8C) {
         return TRUE;
     }
-    if ((player->_2270 & 0x200000) && fn_80069308(fn_8006996C())) {
+    if ((player->_2270 & 0x200000) && dBG::getMdlBank()->isReady()) {
         return TRUE;
     }
     return FALSE;

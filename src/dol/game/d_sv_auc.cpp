@@ -129,7 +129,7 @@ void dSvAuc_c::getNextCloseDate(int *year, int *month, int *day) {
 
 // 8010A758
 void dSvAucItem_c::clear() {
-    mItem.mId = dItem::ITEM_ID_NONE;
+    mItem = dItem::ITEM_ID_NONE;
     mSeller.clear();
     mMinPrice = 1;
     for (int *bid = mBids; bid < mBids + PLAYER_NUM; bid++) {
@@ -637,7 +637,7 @@ int dSvAuc_c::findSlot(const dItem::Item *item) const {
 BOOL dSvAuc_c::list(u32 idx, const dItem::Item *item, int price, const dPersonalID_c *seller) {
     dSvAucItem_c *slot = getItem(idx);
     slot->clear();
-    slot->mItem.mId = item->mId;
+    slot->mItem = *item;
     slot->mMinPrice = price;
     dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayerRaw();
     seller = seller != NULL ? seller : &current->mPID;

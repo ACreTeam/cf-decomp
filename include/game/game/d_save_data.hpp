@@ -171,6 +171,11 @@ public:
     BOOL isExtraGood(int arg);            // 8010E0F8: dSaveExtra_c CRC, buildings CRC, item version
     static dSaveDLItemList_c *getDLData(); // 8010E1B8: mDLItems, after isDLDataTransferComplete
     static dSaveTown_c *getTown();        // 8010E1E4 (after isTownTransferComplete)
+    // Room `room` of player house `home`.
+    static dHomeRoom_c *getHomeRoom(const int &home, int room) {
+        dSaveTown_c *town = getTown();
+        return town->mHomes.getHome(home & 3)->getRoom(room & 3);
+    }
     static dSaveExtra_c *getExtra();      // 8010E208
     static dSaveData_c *getRaw2();        // 8010E234
     static u32 getSize();                 // 8010E23C

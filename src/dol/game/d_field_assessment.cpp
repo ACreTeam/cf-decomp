@@ -3366,7 +3366,7 @@ void dFgMngProc_c::spoilRecycleBinKabu() {
     dRecycleBin_c *bin = &dSaveData_c::getTown()->mRecycleBin;
     dItem::Item item;
     for (int i = 0; i < RECYCLE_BIN_ITEM_NUM; i++) {
-        item.mId = bin->get(i);
+        item = bin->get(i);
         if (item.isKabu()) {
             dItem::Item spoiled(dItem::ITEM_IDX_SPOILED_TURNIPS);
             bin->set(i, spoiled.mId);
@@ -3379,7 +3379,7 @@ void dFgMngProc_c::spoilPoliceBoxKabu() {
     dPoliceBox_c *box = &dSaveData_c::getTown()->mPoliceBox;
     dItem::Item item;
     for (int i = 0; i < POLICE_BOX_ITEM_NUM; i++) {
-        item.mId = box->get(i);
+        item = box->get(i);
         if (item.isKabu()) {
             dItem::Item spoiled(dItem::ITEM_IDX_SPOILED_TURNIPS);
             box->set(i, spoiled.mId);

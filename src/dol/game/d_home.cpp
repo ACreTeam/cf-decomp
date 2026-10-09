@@ -11,8 +11,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-dItem::Item fn_80077730(const dHomeRoom_c *room); // room->mWallpaper
-dItem::Item fn_80077748(const dHomeRoom_c *room); // room->mCarpet
 void *fn_801683D8();
 void *fn_80167BAC(void *);
 void fn_801911AC(void *);
@@ -66,7 +64,7 @@ static const int sMainRoomIds[HOME_SIZE_NUM] = {0xB8, 0xB9, 0xBA, 0xBB, 0xBC};
 void dHomeLayer_c::clear() {
     dItem::Item *p = &mItems[0][0];
     for (int i = 0; i < 16 * 16; i++) {
-        p[i].mId = dItem::ITEM_ID_NONE;
+        p[i] = dItem::ITEM_ID_NONE;
     }
 }
 
@@ -80,7 +78,7 @@ void dHomeRoom_c::clear() {
     _454 = 1;
     mCarpet = dItem::Item(dItem::ITEM_IDX_EXOTIC_RUG);
     _455 = 2;
-    mSong.mId = dItem::ITEM_ID_NONE;
+    mSong = dItem::ITEM_ID_NONE;
     _456 = 0;
 }
 
@@ -100,11 +98,11 @@ void dHomeRoom_c::recycleItems() {
                     case dItem::KIND_GOLD_PACHINKO:
                         dItem::Item item = *p;
                         dSaveData_c::addToRecycleBin(item);
-                        p->mId = dItem::ITEM_ID_NONE;
+                        *p = dItem::ITEM_ID_NONE;
                         break;
                     }
                 } else {
-                    p->mId = dItem::ITEM_ID_NONE;
+                    *p = dItem::ITEM_ID_NONE;
                 }
             }
         }
@@ -123,11 +121,11 @@ void dHomeRoom_c::recycleItems() {
                     case dItem::KIND_SILVER_PACHINKO:
                         dItem::Item item = *p;
                         dSaveData_c::addToRecycleBin(item);
-                        p->mId = dItem::ITEM_ID_NONE;
+                        *p = dItem::ITEM_ID_NONE;
                         break;
                     }
                 } else {
-                    p->mId = dItem::ITEM_ID_NONE;
+                    *p = dItem::ITEM_ID_NONE;
                 }
             }
         }
@@ -141,10 +139,10 @@ void dHomeRoom_c::recycleItems() {
                     if (bitm != NULL && bitm->m_noPurchase) {
                         dItem::Item item = *p;
                         dSaveData_c::addToRecycleBin(item);
-                        p->mId = dItem::ITEM_ID_NONE;
+                        *p = dItem::ITEM_ID_NONE;
                     }
                 } else {
-                    p->mId = dItem::ITEM_ID_NONE;
+                    *p = dItem::ITEM_ID_NONE;
                 }
             }
         }
@@ -158,10 +156,10 @@ void dHomeRoom_c::recycleItems() {
                     if (bitm != NULL && !bitm->m_noPurchase) {
                         dItem::Item item = *p;
                         dSaveData_c::addToRecycleBin(item);
-                        p->mId = dItem::ITEM_ID_NONE;
+                        *p = dItem::ITEM_ID_NONE;
                     }
                 } else {
-                    p->mId = dItem::ITEM_ID_NONE;
+                    *p = dItem::ITEM_ID_NONE;
                 }
             }
         }
@@ -170,7 +168,7 @@ void dHomeRoom_c::recycleItems() {
         mLayers[i].clear();
     }
     mMap.clear();
-    mSong.mId = dItem::ITEM_ID_NONE;
+    mSong = dItem::ITEM_ID_NONE;
     _456 = 0;
 }
 
@@ -201,8 +199,8 @@ void dHomeRoom_c::init(int style, int room) {
     items[2] = dItem::ITEM_ID_NONE;
     getDefaultItems(items, style, room);
     if ((u32)room < HOME_ROOM_NUM) {
-        mWallpaper.mId = items[1];
-        mCarpet.mId = items[2];
+        mWallpaper = items[1];
+        mCarpet = items[2];
         if (room == 0) {
             dHomeLayer_c *floor = getLayer(0);
             dHomeLayer_c *top = getLayer(1);
@@ -245,11 +243,11 @@ const dHomeLayer_c *dHomeRoom_c::getLayer(int layer) const {
 
 // 8013D260
 BOOL dHomeRoom_c::hasInvalidItem() const {
-    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(fn_80077730(this));
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(getWallpaper());
     if (bitm == NULL) {
         return TRUE;
     }
-    bitm = dItem::infoBank_c::get()->getBITM(fn_80077748(this));
+    bitm = dItem::infoBank_c::get()->getBITM(getCarpet());
     if (bitm == NULL) {
         return TRUE;
     }
@@ -321,7 +319,7 @@ void dHome_c::clear() {
     mSize = 0;
     _15B7 = 0;
     _15B6 = 0;
-    _15B8.mId = dItem::ITEM_ID_NONE;
+    _15B8 = dItem::ITEM_ID_NONE;
     _15BB.mRaw = 0;
 }
 

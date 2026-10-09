@@ -1563,13 +1563,13 @@ void dAnimal_c::init(u16 npcIdx, u8 arg, const dLandID_c *land, const dAnimalTem
     mID.set(npcIdx, tmpl->mLooks, land, tmpl->mNames[0], tmpl->mNames[1], tmpl->mNames[2], tmpl->mNames[3],
             tmpl->mNames[4], tmpl->mNames[5], tmpl->mNames[6], tmpl->mNames[7]);
     mJoinType = arg;
-    mCloth.mId = (int)tmpl->mCloth;
+    mCloth = (int)tmpl->mCloth;
 
     dItem::Item item0;
-    item0.mId = (int)tmpl->mWall;
+    item0 = (int)tmpl->mWall;
     setWall(&item0);
     dItem::Item item1;
-    item1.mId = (int)tmpl->mCarpet;
+    item1 = (int)tmpl->mCarpet;
     setCarpet(&item1);
 
     memcpy(&mTemplate, tmpl, sizeof(dAnimalTemplate_c));
@@ -1906,16 +1906,16 @@ dItem::Item getTemplateFtr(u32 idx, const dAnimalTemplate_c *tmpl) {
     dItem::Item item;
     if (idx < 10) {
         switch (idx) {
-        case 0: item.mId = (int)tmpl->mFurniture[0]; break;
-        case 1: item.mId = (int)tmpl->mFurniture[1]; break;
-        case 2: item.mId = (int)tmpl->mFurniture[2]; break;
-        case 3: item.mId = (int)tmpl->mFurniture[3]; break;
-        case 4: item.mId = (int)tmpl->mFurniture[4]; break;
-        case 5: item.mId = (int)tmpl->mFurniture[5]; break;
-        case 6: item.mId = (int)tmpl->mFurniture[6]; break;
-        case 7: item.mId = (int)tmpl->mFurniture[7]; break;
-        case 8: item.mId = (int)tmpl->mFurniture[8]; break;
-        case 9: item.mId = (int)tmpl->mFurniture[9]; break;
+        case 0: item = (int)tmpl->mFurniture[0]; break;
+        case 1: item = (int)tmpl->mFurniture[1]; break;
+        case 2: item = (int)tmpl->mFurniture[2]; break;
+        case 3: item = (int)tmpl->mFurniture[3]; break;
+        case 4: item = (int)tmpl->mFurniture[4]; break;
+        case 5: item = (int)tmpl->mFurniture[5]; break;
+        case 6: item = (int)tmpl->mFurniture[6]; break;
+        case 7: item = (int)tmpl->mFurniture[7]; break;
+        case 8: item = (int)tmpl->mFurniture[8]; break;
+        case 9: item = (int)tmpl->mFurniture[9]; break;
         }
     }
     return item;
@@ -2349,7 +2349,7 @@ void dAnimal_c::applyRoomFtr(dItem::Item *room) {
             }
 
             if (isFurnitureSlotId(room->mId)) {
-                room->mId = dItem::ITEM_ID_NONE;
+                *room = dItem::ITEM_ID_NONE;
             }
         }
     }
@@ -3724,7 +3724,7 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
         return 3;
     }
 
-    item->mId = dItem::ITEM_ID_NONE;
+    *item = dItem::ITEM_ID_NONE;
     *price = 0;
     u32 ret = 3;
     int r = cM::rndF(100.0f);
@@ -3895,7 +3895,7 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
         b = 2;
     }
 
-    item->mId = dItem::ITEM_ID_NONE;
+    *item = dItem::ITEM_ID_NONE;
     *price = 0;
     int ret = sKinds[a][b];
 
@@ -5004,7 +5004,7 @@ BOOL dAnimal_c::sendTunekichiLetter(const dPersonalID_c *to, BOOL invite, BOOL f
     if (invite) {
         paper.setFromIndex(dItem::ITEM_IDX_INVITE_CARD);
     } else {
-        paper.mId = fn_800FABF4(looks, season);
+        paper = fn_800FABF4(looks, season);
     }
 
     fn_800F46CC(&mID, 0);
@@ -6177,7 +6177,7 @@ dItem::Item dAnimalBlock_c::getAnimalKey(const dAnmPersonalID_c *animal) {
     u32 idx = (u32)findAnimalIdx((dAnmPersonalID_c *)animal, mAnimals, ANIMAL_NUM);
     dItem::Item item;
     if (idx < ANIMAL_NUM) {
-        item.mId = (idx & 0x3FF) + 0xE000;
+        item = (idx & 0x3FF) + 0xE000;
     }
     return item;
 }
@@ -8473,7 +8473,7 @@ dItem::Item *allocRoomItems(u32 *outNum, dPrivateData_c *player, EGG::Heap *heap
     dItem::Item *p = buf;
     for (int i = 0; i < 0x200; i++, p++) {
         if (p != NULL) {
-            p->mId = dItem::ITEM_ID_NONE;
+            *p = dItem::ITEM_ID_NONE;
         }
     }
 
@@ -9038,7 +9038,7 @@ int dAnimalBlock_c::pickHideAndSeekPresent(dItem::Item *out, dAnimal_c *animal) 
         }
     }
     if (itemId(item) != dItem::ITEM_ID_NONE) {
-        out->mId = itemId(item);
+        *out = itemId(item);
     }
     return result;
 }
@@ -10446,7 +10446,7 @@ dItem::Item dMovedAnimalList_c::getAnimalKey(const dAnmPersonalID_c *id) {
     u32 idx = findAnimalIdx((dAnmPersonalID_c *)id, mAnimals, ANIMAL_NUM);
     dItem::Item key;
     if (idx < ANIMAL_NUM) {
-        key.mId = 0xE000 + ((idx & 0x3FF) | 0x800);
+        key = 0xE000 + ((idx & 0x3FF) | 0x800);
     }
     return key;
 }

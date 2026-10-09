@@ -232,7 +232,7 @@ void dSaveItemLayer_c::clear() {
     dItem::Item *item = getItems();
     dItem::Item *end = item + UT_TOTAL_NUM;
     for (; item != end; item++) {
-        item->mId = dItem::ITEM_ID_NONE;
+        *item = dItem::ITEM_ID_NONE;
     }
 }
 

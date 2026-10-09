@@ -147,7 +147,7 @@ dQuestBase_c::~dQuestBase_c() {}
 // 8013F7A0
 void dQuestBase_c::clear() {
     mKind = QUEST_KIND_NONE;
-    mItem.mId = dItem::ITEM_ID_NONE;
+    mItem = dItem::ITEM_ID_NONE;
     mTimeLimit.reset();
     mDeadline = QUEST_DEADLINE_LIMIT;
 }
@@ -1316,7 +1316,7 @@ void dQuestPlayerItem_c::clear() {
     mHour = 0;
     mAnimalIdx = -1;
     mMinute = 0;
-    mItem.mId = dItem::ITEM_ID_NONE;
+    mItem = dItem::ITEM_ID_NONE;
     mFlags = 0;
 }
 
@@ -1388,7 +1388,7 @@ void dQuestPlayerAnimal_c::clearInfo() {
     mMinutes = 0;
     _E9 = 0;
     mFoundFlags = 0;
-    mItem.mId = dItem::ITEM_ID_NONE;
+    mItem = dItem::ITEM_ID_NONE;
 }
 
 // 80142F5C

@@ -156,7 +156,7 @@ u16 dMail_c::setPresent(u16 item, u8 hi) {
     if (hi == 0xFF) {
         hi = 0;
     }
-    mPresent.mId = item;
+    mPresent = item;
     set38C_hi(hi);
     return old;
 }
@@ -209,7 +209,7 @@ BOOL dMail_c::hasToAnimal() {
 // 801178F8
 void dMail_c::clear() {
     memset(static_cast<void*>(this), 0, sizeof(dMail_c));
-    mPresent.mId = dItem::ITEM_ID_NONE;
+    mPresent = dItem::ITEM_ID_NONE;
 }
 
 // 80117938

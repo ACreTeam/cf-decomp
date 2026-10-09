@@ -113,8 +113,8 @@ void msgMemory_c::set(const char *group, u16 msgId, u8 a, u8 b, u8 c) {
 
 // 800ECEF4
 msgMemorySecond_c::msgMemorySecond_c() {
-    mItem0.mId = dItem::ITEM_ID_NONE;
-    mItem1.mId = dItem::ITEM_ID_NONE;
+    mItem0 = dItem::ITEM_ID_NONE;
+    mItem1 = dItem::ITEM_ID_NONE;
 }
 
 // 800ECF40
@@ -128,8 +128,8 @@ void msgMemorySecond_c::clear() {
     mPlayer.clear();
     mLand.clear();
     _A4 = -1;
-    mItem0.mId = dItem::ITEM_ID_NONE;
-    mItem1.mId = dItem::ITEM_ID_NONE;
+    mItem0 = dItem::ITEM_ID_NONE;
+    mItem1 = dItem::ITEM_ID_NONE;
     memset(mText, 0, sizeof(mText));
     _A8 = -1;
     _AC = 50;

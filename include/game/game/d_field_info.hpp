@@ -43,6 +43,15 @@
 #define mFI_BK_WORLDSIZE_X_F ((f32)mFI_BK_WORLDSIZE_X)
 #define mFI_BK_WORLDSIZE_Z_F ((f32)mFI_BK_WORLDSIZE_Z)
 
+// The same as variables (.sdata2 80750520..80750530, owner not split yet; C linkage keeps the
+// target names). d_field_info and d_bg read them.
+extern "C" {
+extern const f32 lbl_80750520; // 80750520: block world size in x (512)
+extern const f32 lbl_80750524; // 80750524: block world size in z (512)
+extern const f32 lbl_80750528; // 80750528: half a block in x (256)
+extern const f32 lbl_8075052C; // 8075052C: half a block in z (256)
+}
+
 // ---------------------------------------------------------------------------------------------
 // Field info objects (src/dol/game/d_field_info.cpp, .text 8008BD2C..8008EDEC). Class names are
 // from the RTTI; method names are inferred. See notes/d_field_info.txt.
@@ -90,6 +99,7 @@ struct dFdBlock_c {
     void release(EGG::Heap *heap, BOOL items, BOOL data);                    // 80080E88: frees mItems[] / mBgData
     void set(int type, dItem::Item *items0, dItem::Item *items1, u16 *buried, u16 *watered, void *bgData,
              int blockX, int blockZ, int flag, int bg);                      // 80080F38: then dBGCF::setBlock
+    int getType() const { return mType; }
     BOOL hasFlag(int mask) const;                                            // 80080F80: flags of mType
     BOOL fn_80080FC0() const;                                                // 80080FC0: mType has a pond (dRF::isPondType)
     BOOL setItem(const dItem::Item *item, int unitX, int unitZ, int layer);  // 80080FC8
@@ -107,7 +117,7 @@ struct dFdBlock_c {
     /* 0x04 */ dItem::Item *mItems[2]; // 16 x 16 items per layer
     /* 0x0C */ u16 *mBuried;           // dSaveMainField_c::mBuried: an item is buried in the unit
     /* 0x10 */ u16 *mWatered;          // dSaveMainField_c::mWater: watered today (cleared daily)
-    /* 0x14 */ void *mBgData;          // 0xA00 bytes loaded by fn_80069680
+    /* 0x14 */ void *mBgData;          // the unit data (0xA00 bytes, dBG::alwaysBank_c::copyBlockCol)
     /* 0x18 */ int mBlockX;
     /* 0x1C */ int mBlockZ;
     /* 0x20 */ int mFlag;              // the save's block flag

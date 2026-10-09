@@ -89,6 +89,10 @@ public:
     ResAnmScn GetResAnmScn(int idx) const;
     ResAnmScn GetResAnmScn(ulong idx) const;
 
+    // The "External" folder (names inferred; 80234A44 / 80234810).
+    bool HasExternal() const;
+    void* GetExternal(const char* pName) const;
+
     ulong GetResMdlNumEntries() const;
     ulong GetResPlttNumEntries() const;
     ulong GetResTexNumEntries() const;

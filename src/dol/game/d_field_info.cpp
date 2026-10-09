@@ -50,17 +50,11 @@ class dFdFtr_c : public dFdFtrPad_c, public dFdFtrIf_c {};
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-extern const f32 lbl_80750520; // 80750520: block world size in x (512)
-extern const f32 lbl_80750524; // 80750524: block world size in z (512)
-extern const f32 lbl_80750528; // 80750528: half a block in x (256)
-extern const f32 lbl_8075052C; // 8075052C: half a block in z (256)
 extern EGG::Heap *lbl_8074E3F4; // 8074E3F4
 
 int fn_80081514(int type);                                             // 80081514: the bridge variant of a block type
 void *fn_800A9058();                                                   // 800A9058
 dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
-void *fn_80069978();                                                   // 80069978: BG data loader
-void fn_80069680(void *loader, void *buf, int id);                     // 80069680: loads a BG into buf
 dFdUnitAttr_c *fn_801683D8();                                          // 801683D8
 }
 
@@ -738,7 +732,7 @@ dItem::Item dFdBase_c::getUnitItem(int unitX, int unitZ) const {
         } else {
             u16 id = item->mId;
             if (dItem::isRealItemId(id)) {
-                result.mId = id;
+                result = id;
             }
         }
     }
@@ -779,7 +773,7 @@ BOOL dFdInfo_c::create(const dFdBlockId_c *blockIds, int blockW, int blockH, EGG
                 if (block->mBgData == NULL) {
                     data = heap->alloc(0xA00, 4);
                     if (data != NULL) {
-                        fn_80069680(fn_80069978(), data, blockIds->mId);
+                        dBG::getAlwaysBank()->copyBlockCol(data, blockIds->mId);
                     }
                     items = NULL;
                     if (block->getItem(0, 0, 0) == NULL) {
@@ -847,7 +841,7 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
                 if (block->mBgData == NULL) {
                     data = heap->alloc(0xA00, 4);
                     if (data != NULL) {
-                        fn_80069680(fn_80069978(), data, blockIds->mId);
+                        dBG::getAlwaysBank()->copyBlockCol(data, blockIds->mId);
                     }
                     block->set(blockIds->mId, field->getBlockItems(x, z), NULL, (u16 *)field->getBlockBuried(x, z),
                                (u16 *)field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
@@ -876,7 +870,7 @@ BOOL dFdInfo_c::updateTown() {
             for (x = 0; x < mBlockW; x++) {
                 data = block->mBgData;
                 if (data != NULL) {
-                    fn_80069680(fn_80069978(), data, blockIds->mId);
+                    dBG::getAlwaysBank()->copyBlockCol(data, blockIds->mId);
                 }
                 block->set(blockIds->mId, field->getBlockItems(x, z), NULL, (u16 *)field->getBlockBuried(x, z),
                            (u16 *)field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
@@ -926,7 +920,7 @@ BOOL dFdBase_c::buildHomeRoom(u32 home, int room, EGG::Heap *heap) {
         roomData = homeData->getRoom(room);
         buf = heap->alloc(0xA00, 4);
         if (buf != NULL) {
-            fn_80069680(fn_80069978(), buf, roomId);
+            dBG::getAlwaysBank()->copyBlockCol(buf, roomId);
         }
         block->set(roomId, (dItem::Item *)roomData->getLayer(0), (dItem::Item *)roomData->getLayer(1), 0, 0, buf, 0, 0, 0, mBg);
     }
@@ -943,7 +937,7 @@ void dFdBase_c::reloadHomeRoom(u32 home, int room) {
         block->mType = room;
         void *buf = block->mBgData;
         if (buf != NULL) {
-            fn_80069680(fn_80069978(), buf, room);
+            dBG::getAlwaysBank()->copyBlockCol(buf, room);
         }
     }
 }
@@ -962,7 +956,7 @@ void *dFdInfoNpcHs_c::getBgData(int bgId) {
         void *buf = lbl_8074E3F4->alloc(0xA00, 4);
         sNpcHsBgData = buf;
         if (buf != NULL) {
-            fn_80069680(fn_80069978(), buf, bgId);
+            dBG::getAlwaysBank()->copyBlockCol(buf, bgId);
         }
     }
     return sNpcHsBgData;
@@ -1109,7 +1103,7 @@ BOOL dFdInfoSvMdlRm_c::build(dHomeRoom_c *room, int bgId, EGG::Heap *heap) {
             int roomId = static_cast<dModelRoom_c *>(room)->getBgId(); // room is a model room
             void *buf = heap->alloc(0xA00, 4);
             if (buf != NULL) {
-                fn_80069680(fn_80069978(), buf, roomId);
+                dBG::getAlwaysBank()->copyBlockCol(buf, roomId);
             } else {
                 ok = FALSE;
             }

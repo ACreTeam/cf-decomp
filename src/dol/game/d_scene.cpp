@@ -5,6 +5,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_actor.hpp>
 #include <game/game/d_base.hpp>
+#include <game/game/d_bg.hpp>
 #include <game/game/d_date.hpp>
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_field_assessment.hpp>
@@ -95,7 +96,6 @@ extern u16 lbl_8074B1B0;
 extern int lbl_8074E804;
 extern int lbl_8074E808;
 extern u8 lbl_8074EACD;
-extern const f32 lbl_807503F0; // the city's ground height
 
 // 80479BB0: the house attribute per player house
 static const u32 sHomeScenes[] = {
@@ -975,7 +975,7 @@ static BOOL getBuildingExit(u16 building, u8 *scene, mVec3_c *pos, u32 *type, s1
             fn_801681B8(&p, bld, building, 1, 32.0f);
             *pos = p;
             if (flags & 2) {
-                pos->y = lbl_807503F0;
+                pos->y = dBG::cGroundY;
             }
             *type = 0xB;
             *angle = (u16)bld->mAngle;

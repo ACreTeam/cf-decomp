@@ -1818,7 +1818,7 @@ BOOL isDlBlockUsed(void *block) {
 // 800C49A4
 BOOL markDlItem(u8 *mask, u16 id) {
     Item item;
-    item.mId = id;
+    item = id;
     s32 slot = dSaveDLItemList_c::getRaw()->getSlot(&item);
     if (slot >= 0) {
         mask[(slot >> 3) & 0x1F] |= 1 << (slot & 7);
@@ -1830,7 +1830,7 @@ BOOL markDlItem(u8 *mask, u16 id) {
 // 800C4A0C
 BOOL isDlItemMarked(const u8 *mask, u16 id) {
     Item item;
-    item.mId = id;
+    item = id;
     s32 slot = dSaveDLItemList_c::getRaw()->getSlot(&item);
     if (slot >= 0) {
         return (mask[(slot >> 3) & 0x1F] >> (slot & 7)) & 1;

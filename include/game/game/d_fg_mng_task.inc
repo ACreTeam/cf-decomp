@@ -290,7 +290,7 @@ void dFgMngTask_c::apply() {
 void dFgMngTask_c::notify(BOOL keep) {
     if (!keep) {
         dItem::Item item;
-        item.mId = mNewItem;
+        item = mNewItem;
         switch (item.getKind()) {
         case dItem::KIND_BAD_KABU:
             sFgMngLitterFlags.mHasBadKabu = 1;
