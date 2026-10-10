@@ -107,6 +107,10 @@ public:
     BOOL calcTalkDays(const dTime_c *now); // 8011CCE8
     s8 addTalkFriendship(); // 8011CF38
     s8 getFriendship(); // 8011CF58
+    // Read by d_a_npc_nml (talk_c::recordMemoryTalk) as inline results: non-const (const ones change
+    // its register allocation).
+    u8 getImpression() { return mImpression; }
+    u8 getTalkDays() { return mFlags.mTalkDays; }
     void setFriendship(s8 value); // 8011CF64
     s8 addFriendship(s8 delta); // 8011CF6C
     int getFriendshipLevel(s8 value); // 8011CFE0
@@ -191,6 +195,7 @@ public:
 // Per-species template record, copied whole into dAnimal_c+0x1824 by fn_8011E688.
 struct dAnimalTemplate_c {
     s16 getUmbrella() const { return mUmbrella; }
+    s8 getLikedStyle() const { return mLikedStyle; }
 
     /* 0x000 */ s16 mNpcIdx; // npc index
     /* 0x002 */ s16 mCloth; // -> dAnimal_c::_2FFA
@@ -199,7 +204,7 @@ struct dAnimalTemplate_c {
     /* 0x008 */ s16 mUmbrella;      // getUmbrella / setUmbrella
     /* 0x00A */ s16 mFurniture[10]; // house furniture slots (getTemplateFtr)
     /* 0x01E */ s16 mMusic;           // music (getMusic / setMusic)
-    /* 0x020 */ u8 _020[2];
+    /* 0x020 */ s16 mSoundId;        // the voice (dAcNpcNml_c::getSoundId)
     /* 0x022 */ wchar_t mNames[REGION_NUM][ANIMAL_NAME_LEN + 1];
     /* 0x0B2 */ wchar_t mHabits[LANGUAGE_NUM][ANIMAL_HABIT_LEN + 1]; // getHabit / setHabit
     /* 0x18E */ u8 mSpecies;
@@ -362,7 +367,7 @@ public:
     int pickSickReward(dItem::Item *item, dPrivateData_c *player); // 80126238
     BOOL sendSickThanksLetter(const dPersonalID_c *to, const dItem::Item *present, BOOL tryDirect); // 80126354
     BOOL sendSickReward(dItem::Item *item, dPrivateData_c *player, int arg); // 80126544
-    BOOL isRequestMatch(const dItem::Item *item, int kind, u8 a, u8 b, const dItem::Item *questItem); // 80126698
+    BOOL isRequestMatch(const dItem::Item *item, int kind, u8 mode, u8 param, const dItem::Item *questItem); // 80126698
     BOOL isRequestedItem(const dItem::Item *item); // 80126764
     BOOL updateQuests(dLostQuest_c *lost, dPrivateData_c *player, int arg2); // 8012689C
     BOOL sendTunekichiLetter(const dPersonalID_c *to, BOOL invite, BOOL flag); // 80126950
@@ -374,6 +379,7 @@ public:
     wchar_t *getHabit(int language); // 80127330
     void setHabit(const wchar_t *habit, int language); // 801273D4
     u32 getSpecies(); // 8012808C
+    int getSoundId() const { return mTemplate.mSoundId; } // the voice (dAcNpcNml_c::getSoundId)
     u32 getBirthMonth(); // 80128094
     u32 getBirthDay(); // 801280A4
     dItem::Item getUmbrella(); // 801280AC
@@ -668,3 +674,5 @@ public:
 // Random set bit of mask (count bits set, num bits wide), or -1. 80134CD4
 u32 pickRandomBit(u32 mask, int count, u32 num);
 BOOL isHoldableItem(const dItem::Item *item); // 80128B90: an item an npc can hold up as a tool
+BOOL isFossilRequestMatch(const dItem::Item *item, int mode, const dItem::Item *other); // 801254DC
+u32 getRoomFtrSlot(const dItem::Item *room, u32 x, u32 z); // 8011F8B8: furniture slot of the room item at (x, z) (16x16 grid)

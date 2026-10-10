@@ -65,6 +65,19 @@ enum dQuestErrandType_e {
     QUEST_ERRAND_TYPE_NONE,     // 2: anything else
 };
 
+// dQuestVillager_c::mMatchMode: which items fulfil a request (dAnimal_c::isRequestMatch and the per-kind
+// matchers); mMatchParam is the wanted value of the furniture modes. Also the word kind of the q04/q05
+// request talk (dAcNpcNml_c::talk_c::setQ4Word / setQ5Word).
+enum dQuestMatchMode_e {
+    QUEST_MATCH_ITEM,         // 0 the quest item (mBase.mItem) itself
+    QUEST_MATCH_ANY,          // 1 fossil: any fossil; clothing: any but the disliked style and the villager's own
+    QUEST_MATCH_LIKED_STYLE,  // 2 clothing of the villager's liked style (not its own)
+    QUEST_MATCH_FTR_CATEGORY, // 3 furniture of Q5 category mMatchParam (getCategoryQ5)
+    QUEST_MATCH_FTR_COLOR,    // 4 furniture with colour mMatchParam (STR_Q05_Color)
+    QUEST_MATCH_FTR_IMAGE,    // 5 furniture image mMatchParam: 0/1 adult/kiddy kind 1/2, 2/3 new/old kind 1/2 (STR_Q05_Image)
+    QUEST_MATCH_FTR_SERIES,   // 6 furniture of series mMatchParam
+};
+
 // dQuestPlayerPair_c::mTopic, picked from STR_Q13 by dQuestPlayerPair_c::start
 enum dQuestStyleTopic_e {
     QUEST_STYLE_TOPIC_CLOTHES,     // STR_Q13 1-3
@@ -123,6 +136,7 @@ public:
 
     void clear();                                                // 8013F7A0
     BOOL isActive() const;                                       // 8013F7E8: isValidKind(mKind)
+    int getKind() const { return mKind; }                        // inline (d_a_npc_nml msgPendingQuest compares it as int)
     void set(int kind, const dItem::Item *item, dTime_c *limit, u8 deadline, u8 state); // 8013F7F0
     int getType() const;                                         // 8013F848
     int getSubType() const;                                      // 8013F850: dQuestErrandType_e
@@ -169,7 +183,7 @@ public:
     BOOL start(int kind, const dAnmPersonalID_c *animal0, const dAnmPersonalID_c *animal1,
                const dItem::Item *item, dTime_c *limit, u8 deadline, u8 state); // 8014073C
     dAnmPersonalID_c *getAnimal(int i);             // 80140840
-    const dAnmPersonalID_c *getAnimal(int i) const; // 80140850
+    dAnmPersonalID_c *getAnimal(int i) const;       // 80140850 (hands back a non-const pointer, like dQuestErrandList_c::get)
 
     /* 0x000 */ dQuestBase_c mBase;
     /* 0x00E */ dAnmPersonalID_c mAnimals[2]; // recipient, sender
@@ -252,8 +266,8 @@ public:
     /* 0x0E */ dPlayerID_c mRequester;
     /* 0x24 */ dPlayerID_c mPlayers[4];
     /* 0x7C */ u8 mPlayerFlags; // bit i for mPlayers[i]
-    /* 0x7D */ u8 mMatchMode;
-    /* 0x7E */ u8 mMatchParam;
+    /* 0x7D */ u8 mMatchMode;  // dQuestMatchMode_e
+    /* 0x7E */ u8 mMatchParam; // wanted category / colour / image / series
 }; // size 0x80
 
 // 0x0A at dAnimalBlock_c+0x1E2CA. Lost-item quest; mKeyIdx is one of the 8 "key" items

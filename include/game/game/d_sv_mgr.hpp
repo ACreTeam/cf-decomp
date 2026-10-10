@@ -229,7 +229,7 @@ public:
     virtual int execute(); // 801BBE94
     static dSvMgr_c *createMgr(); // 801BB7C4
     typedef dState::base_c<dSvMgr_c>::Method Method;
-    virtual void rcptHook14(); // 801BBF64; receiver completion callback
+    virtual void onMessageEnd(int kind); // 801BBF64; receiver completion callback
     void requestMessage(u16 code);
     void lockMessage();
     void *getMessageController() { return mpController; }

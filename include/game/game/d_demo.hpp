@@ -1,6 +1,8 @@
 #pragma once
 
 #include <types.h>
+#include <game/game/d_analog_select.hpp>
+#include <game/game/d_select.hpp>
 
 class dDemoActor_c;
 class dLandID_c;
@@ -45,16 +47,22 @@ public:
     void setItemName(int idx, const dItem::Item *item);            // 801A566C
     void clearWord(int idx);                                       // 801A56D0
     void setWord(int idx, const dScript::Word_c *word);            // 801A57D8
+    void fn_801A5874(int idx, u16 msgId, const char *group);       // 801A5874: word idx = BMG string msgId of group
 
     typedef void (dDemo_c::*StateFunc)();
     bool isState(StateFunc state) const { return mStateFunc == state; }
+    dMsgSelect_c *getSelect() { return &mSelect; }
+    dMsgAnalogSelect_c *getAnalogSelect() { return &mAnalogSelect; }
 
     /* 0x0000 */ u8 _0000[0x70];
     /* 0x0070 */ void (dDemo_c::*mStateFunc)();     // current state (fn_801A334C, fn_801A4D74 ...)
-    /* 0x007C */ u8 _007C[0x6C60 - 0x7C];
+    /* 0x007C */ u8 _007C[0x5610 - 0x7C];
+    /* 0x5610 */ dMsgSelect_c mSelect;
+    /* 0x5FC4 */ dMsgAnalogSelect_c mAnalogSelect;
+    /* 0x5FCC */ u8 _5FCC[0x6C60 - 0x5FCC];
     /* 0x6C60 */ int _6C60;                         // request (1 menu, 2 change speaker, ...)
     /* 0x6C64 */ void (dDemo_c::*mNextStateFunc)(); // set by fn_801A316C
-    /* 0x6C70 */ u8 _6C70[4];
+    /* 0x6C70 */ void *mpCurSelect;                 // &mSelect or &mAnalogSelect (fn_801A5A00 / fn_801A5A4C)
     /* 0x6C74 */ dMsg::Rcpt_c *mpRcpt;
     /* 0x6C78 */ u8 _6C78[0x6C7F - 0x6C78];
     /* 0x6C7F */ u8 mLock;                          // 1 while an npc action / player turn runs
@@ -62,7 +70,8 @@ public:
     /* 0x6C81 */ u8 mMouthOpen;                     // lip sync (dAcNpc_c::recept_c::isMouthOpen)
     /* 0x6C82 */ u8 _6C82[2];
     /* 0x6C84 */ u16 _6C84;
-    /* 0x6C86 */ u8 _6C86[0x6C98 - 0x6C86];
+    /* 0x6C86 */ u16 _6C86;                         // message code to remember (talk_c::onMessageEnd -> rememberMsg)
+    /* 0x6C88 */ u8 _6C88[0x6C98 - 0x6C88];
     /* 0x6C98 */ int _6C98;                         // fn_801A316C mode
     /* 0x6C9C */ u8 _6C9C[0x9414 - 0x6C9C];
 }; // size 0x9414

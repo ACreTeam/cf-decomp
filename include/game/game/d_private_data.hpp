@@ -346,6 +346,12 @@ public:
 
     // Items.
     void setPocket(const dItem::Item *item, int idx, BOOL flag);  // 80137F58
+    // Empties a pocket (d_a_npc_nml talk_c 800315D4 / 800319F4: the inlined local takes the stack
+    // slot below the caller's own Item locals).
+    void clearPocket(int idx) {
+        dItem::Item none;
+        setPocket(&none, idx, FALSE);
+    }
     int findEmptyPocket(int start);                               // 801380EC
     BOOL pickUp(const dItem::Item *item, BOOL flag);              // 8013812C
     int countPockets(BOOL (*fn)(const dItem::Item *), u16 *mask); // 801381B4

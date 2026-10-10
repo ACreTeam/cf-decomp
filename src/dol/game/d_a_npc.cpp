@@ -52,7 +52,7 @@
 // ---- top-of-file data (.rodata 804659F0..8046B0B0, .sdata2 8074FDE0..8074FE58, __sinit globals) ----
 
 // .sdata2 8074FDE0..8074FE38 (in this order, before the table counts). The f32 constants are declared in
-// d_a_npc.hpp: default arguments of the request functions, also used by d_a_npc_sp, d_npc_quest_q08,
+// d_a_npc.hpp: default arguments of the request functions, also used by d_a_npc_sp, d_npc_talk_quest_q08,
 // d_npc_talk_fmarket and d_npc_talk_birthday (a default argument keeps the reference to the object).
 const f32 cNpcMorphFrames = 12.0f; // default morph frames
 const f32 l_8074FDE4 = 1.0f;  // default anm rate (action_c::request)
@@ -1945,7 +1945,7 @@ int dAcNpc_c::preCreate() {
     }
 
     mNpcItem = (u16)mParam;
-    _DC = vtB8();
+    _DC = addToNpcList();
     setRecept(NULL);
     mTalk.init();
     mFrontChk.init();
@@ -1992,12 +1992,12 @@ int dAcNpc_c::preCreate() {
 
 int dAcNpc_c::create() {
     setDemoID(mNpcItem.mId & 0xFFF);
-    if (mpRes != NULL && !mpRes->vt0C(this)) {
+    if (mpRes != NULL && !mpRes->create(this)) {
         return NOT_READY;
     }
 
     clothBase_c *cloth = getCloth();
-    if (cloth != NULL && !cloth->vt14(this)) {
+    if (cloth != NULL && !cloth->create(this)) {
         return NOT_READY;
     }
 
@@ -2011,7 +2011,7 @@ int dAcNpc_c::create() {
     int anmId = mModel.mAnm.mAnmId;
     mFace.setAnmTex(&mModel.mMdl, texFile, anmId, m3d::PLAYMODE_INHERIT);
     if (cloth != NULL) {
-        cloth->vt18(mdl);
+        cloth->bindCloth(mdl);
     }
     mLookAt.init(mModel.mMdl.getResMdl());
     mAction.init(this);
@@ -2047,7 +2047,7 @@ int dAcNpc_c::doDelete() {
         mHeap::destroyFrmHeap(m_heap_p);
         m_heap_p = NULL;
     }
-    vtBC();
+    removeFromNpcList();
     return SUCCEEDED;
 }
 
@@ -2175,7 +2175,7 @@ int dAcNpc_c::execute() {
         getTool()->execute(this);
     }
     if (getCloth() != NULL) {
-        getCloth()->vt20(this);
+        getCloth()->execute(this);
     }
 
     mRecvDaubAsOwner = false;
@@ -2255,7 +2255,7 @@ BOOL dAcNpc_c::texAnm_c::setTexAnm(m3d::bmdl_c &mdl, nw4r::g3d::ResFile file, ul
         return FALSE;
     }
     if (playMode == m3d::PLAYMODE_INHERIT) {
-        playMode = (m3d::playMode_e)fn_800B7E4C(texId);
+        playMode = (m3d::playMode_e)dHmnFaceAnmMng_c::getPlayMode(texId);
     }
     releaseTexAnm(idx);
     mFace.setTex(idx, texId);
@@ -2482,9 +2482,9 @@ BOOL dAcNpc_c::face_c::setTex(m3d::mdlEx_c *mdl, nw4r::g3d::ResFile file, int id
 }
 
 BOOL dAcNpc_c::face_c::setAnmTex(m3d::mdlEx_c *mdl, nw4r::g3d::ResFile file, int anmId, m3d::playMode_e playMode) {
-    int eyeTex = fn_800B7890(anmId);
+    int eyeTex = dHmnFaceAnmMng_c::getEyeTexId(anmId);
     if (setTex(mdl, file, 0, eyeTex, playMode)) {
-        int mouthTex = fn_800B78B4(anmId);
+        int mouthTex = dHmnFaceAnmMng_c::getMouthTexId(anmId);
         return setTex(mdl, file, 1, mouthTex, playMode);
     }
     return FALSE;
@@ -2524,7 +2524,7 @@ int dAcNpc_c::face_c::getRandomIdx() {
 }
 
 int dAcNpc_c::face_c::getMouthKind(dAcNpc_c *npc) {
-    return fn_800B7E48(fn_800B78B4(npc->getModel()->mAnm.mAnmId));
+    return dHmnFaceAnmMng_c::getMouthKind(dHmnFaceAnmMng_c::getMouthTexId(npc->getModel()->mAnm.mAnmId));
 }
 
 int dAcNpc_c::face_c::getTalkMouthTex(dAcNpc_c *npc) {
@@ -4687,7 +4687,7 @@ BOOL dAcNpc_c::toolBase_c::change(f32 scale) {
     if (!isNextReady()) {
         return FALSE;
     }
-    mBank.fn_800BAD74();
+    mBank.change();
     mItem = mNextItem;
     mNextItem = dItem::ITEM_ID_NONE;
     mLoadState = 2;
@@ -4698,7 +4698,7 @@ BOOL dAcNpc_c::toolBase_c::change(f32 scale) {
 
 void dAcNpc_c::toolBase_c::putAway() {
     if (isEnable()) {
-        mBank.fn_800BB63C();
+        mBank.putAway();
         mItem = dItem::ITEM_ID_NONE;
         mScale = 0.0f;
     }
@@ -4714,7 +4714,7 @@ BOOL dAcNpc_c::toolBase_c::loadNext(dAcNpc_c *npc) {
     if (!mNextItem.isValid()) {
         return TRUE;
     }
-    if (mBank.fn_800BA474(&mNextItem, 0, 0)) {
+    if (mBank.request(&mNextItem, NULL, NULL)) {
         mLoadState = 1;
         return TRUE;
     }
@@ -4731,14 +4731,14 @@ void dAcNpc_c::toolBase_c::execute(dAcNpc_c *npc) {
             mMtx_c scaleMtx;
             PSMTXScale(scaleMtx, mScale, mScale, mScale);
             PSMTXConcat(mtx, scaleMtx, mtx);
-            mBank.fn_800BAA00(&mtx);
+            mBank.calc(&mtx);
         }
     }
 }
 
 void dAcNpc_c::toolBase_c::draw() {
     if (isEnable() && mScale > 0.0f && mItem.isValid()) {
-        mBank.fn_800BAC9C();
+        mBank.draw();
     }
 }
 
@@ -6303,7 +6303,7 @@ BOOL dAcNpc_c::action_c::updateChangeAnm(dAcNpc_c *npc, dItem::Item item, int an
                 clothBase_c *cloth = npc->getCloth();
                 if (cloth != NULL) {
                     nw4r::g3d::ResFile file(npc->getMdlResFile());
-                    cloth->vt1C(file.GetResMdl(0));
+                    cloth->swapCloth(file.GetResMdl(0));
                 }
             } else if (anm->checkFrame(38.0f)) {
                 createChangeEffect(npc->mPos, npc->mAngle.y);
@@ -6317,7 +6317,7 @@ BOOL dAcNpc_c::action_c::updateChangeAnm(dAcNpc_c *npc, dItem::Item item, int an
 void dAcNpc_c::action_c::handItemWaitCloth(dAcNpc_c *npc) {
     clothBase_c *cloth = npc->getCloth();
     actionPrm_c *prm = getPrm();
-    if (cloth->vt24(npc)) {
+    if (cloth->isLoaded(npc)) {
         fn_80194CB0(npc);
         npc->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         npc->mLookAt.mReset = true;
@@ -6605,7 +6605,7 @@ void dAcNpc_c::action_c::createChangeEffect(const mVec3_c &pos, mAng angY) {
 void dAcNpc_c::action_c::changeClothWaitCloth(dAcNpc_c *npc) {
     clothBase_c *cloth = npc->getCloth();
     actionPrm_c *prm = getPrm();
-    if (cloth->vt24(npc)) {
+    if (cloth->isLoaded(npc)) {
         fn_80194CB0(npc);
         if (npc->getModel()->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE)) {
             if (npc->mFace.isValid()) {
@@ -7088,7 +7088,7 @@ int dAcNpc_c::action_c::initChangeCloth2(dAcNpc_c *npc) {
 void dAcNpc_c::action_c::changeCloth2WaitCloth(dAcNpc_c *npc) {
     clothBase_c *cloth = npc->getCloth();
     actionPrm_c *prm = getPrm();
-    if (cloth->vt24(npc)) {
+    if (cloth->isLoaded(npc)) {
         if (npc->getModel()->setAnm(0xFA, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
             npc->mFace.setAnmTex(npc, 0xFA, m3d::PLAYMODE_INHERIT);
         }
@@ -8346,7 +8346,7 @@ void dAcNpc_c::recept_c::restoreDemoFlag(dDemoActor_c *actor) {
     }
 }
 
-int dAcNpc_c::recept_c::rcptHook88() {
+int dAcNpc_c::recept_c::getVoiceMode() {
     return 0;
 }
 
@@ -8486,30 +8486,30 @@ dAcNpc_c *dAcNpc_c::recept_c::getNpc(int idx) const {
     return npc;
 }
 
-void dAcNpc_c::recept_c::rcptHook4C() {
+void dAcNpc_c::recept_c::setSpeakerPlayer() {
     mSpeaker = 2;
 }
 
-void dAcNpc_c::recept_c::rcptHook50() {
+void dAcNpc_c::recept_c::setSpeakerNpc() {
     mSpeaker = 0;
 }
 
-void dAcNpc_c::recept_c::rcptHook54() {
+void dAcNpc_c::recept_c::setSpeakerPartner() {
     mSpeaker = 1;
 }
 
-void dAcNpc_c::recept_c::rcptHook58() {
+void dAcNpc_c::recept_c::speakerLookAtPlayer() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
         npc->mLookAt.setPlayerNo(1, getPlayerNo(), false, l_8074E16C, l_8074E164, 0.0f);
     }
 }
 
-void dAcNpc_c::recept_c::rcptHook5C() {
+void dAcNpc_c::recept_c::speakerTurnToPlayer() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
         if (npc->mpRecept != NULL) {
-            npc->mpRecept->rcptHook34(0);
+            npc->mpRecept->setSpeakerFeel(0);
         }
         int playerNo = getPlayerNo();
         mAng angle = npc->getAngleYToPlayer(playerNo);
@@ -8554,7 +8554,7 @@ int dAcNpc_c::recept_c::getTurnFrame() {
     return 500;
 }
 
-void dAcNpc_c::recept_c::rcptHook60() {
+void dAcNpc_c::recept_c::speakerLookAtNpc() {
     dAcNpc_c *npc0 = getNpc(0);
     if (npc0 != NULL) {
         switch (mSpeaker) {
@@ -8572,7 +8572,7 @@ void dAcNpc_c::recept_c::rcptHook60() {
     }
 }
 
-void dAcNpc_c::recept_c::rcptHook64() {
+void dAcNpc_c::recept_c::speakerTurnToNpc() {
     dAcNpc_c *npc0 = getNpc(0);
     if (npc0 != NULL) {
         switch (mSpeaker) {
@@ -8580,9 +8580,9 @@ void dAcNpc_c::recept_c::rcptHook64() {
             dAcNpc_c *npc1 = getNpc(1);
             if (npc1 != NULL) {
                 if (npc1->mpRecept != NULL) {
-                    npc1->mpRecept->rcptHook34(0);
+                    npc1->mpRecept->setSpeakerFeel(0);
                 }
-                rcptHook60();
+                speakerLookAtNpc();
                 mAng angle = dActor_c::targetAngleY(npc1->getPosP(), npc0->getPosP());
                 npc1->mAction.requestTurn(1, angle, l_turnSpeed, 0);
             }
@@ -8595,7 +8595,7 @@ void dAcNpc_c::recept_c::rcptHook64() {
     }
 }
 
-void dAcNpc_c::recept_c::rcptHook68() {
+void dAcNpc_c::recept_c::speakerLookAtPartner() {
     dAcNpc_c *npc1 = getNpc(1);
     if (npc1 != NULL) {
         switch (mSpeaker) {
@@ -8613,7 +8613,7 @@ void dAcNpc_c::recept_c::rcptHook68() {
     }
 }
 
-void dAcNpc_c::recept_c::rcptHook6C() {
+void dAcNpc_c::recept_c::speakerTurnToPartner() {
     dAcNpc_c *npc1 = getNpc(1);
     if (npc1 != NULL) {
         switch (mSpeaker) {
@@ -8621,9 +8621,9 @@ void dAcNpc_c::recept_c::rcptHook6C() {
             dAcNpc_c *npc0 = getNpc(0);
             if (npc0 != NULL) {
                 if (npc0->mpRecept != NULL) {
-                    npc0->mpRecept->rcptHook34(0);
+                    npc0->mpRecept->setSpeakerFeel(0);
                 }
-                rcptHook68();
+                speakerLookAtPartner();
                 mAng angle = dActor_c::targetAngleY(npc0->getPosP(), npc1->getPosP());
                 npc0->mAction.requestTurn(1, angle, l_turnSpeed, 0);
             }
@@ -8636,7 +8636,7 @@ void dAcNpc_c::recept_c::rcptHook6C() {
     }
 }
 
-void dAcNpc_c::recept_c::rcptHook70() {
+void dAcNpc_c::recept_c::changeSpeaker() {
     requestChangeSpeaker(1);
 }
 
@@ -8787,7 +8787,7 @@ void dAcNpc_c::recept_c::setFeel(u32 feel, u32 who, f32 frame) {
     }
 }
 
-void dAcNpc_c::recept_c::rcptHook34(u32 feel) {
+void dAcNpc_c::recept_c::setSpeakerFeel(u32 feel) {
     setFeel(feel, mSpeaker);
 }
 
@@ -9620,7 +9620,7 @@ int dAcNpc_c::recept_c::stepItemActStart() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else {
             mActing = 1;
             if (act->requestCatch(1, mpActActor, mReq.mItem, mReq._1C, mReq._24)) {
@@ -9691,7 +9691,7 @@ int dAcNpc_c::recept_c::stepItemActExStart() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestHandItem(1, mpActActor, mReq._20, mReq.mItem, mReq._1C, mReq._24, mReq._28, mReq._3C)) {
             mActing = 1;
             mReqStep = 1;
@@ -9744,7 +9744,7 @@ int dAcNpc_c::recept_c::stepHandActCStart() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestChangeCloth()) {
             mActing = 1;
             mReqStep = 1;
@@ -9797,7 +9797,7 @@ int dAcNpc_c::recept_c::stepHandActDStart() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestReceive()) {
             mActing = 1;
             mReqStep = 1;
@@ -9850,7 +9850,7 @@ int dAcNpc_c::recept_c::stepHandActEStart() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestGive()) {
             mActing = 1;
             mReqStep = 1;
@@ -9903,7 +9903,7 @@ int dAcNpc_c::recept_c::stepHandActFStart() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestHandOver()) {
             mReqStep = 1;
         }
@@ -9958,7 +9958,7 @@ int dAcNpc_c::recept_c::stepHandAct10Start() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestEat(mReq._3C)) {
             mActing = 1;
             mReqStep = 1;
@@ -10011,7 +10011,7 @@ int dAcNpc_c::recept_c::stepHandAct11Start() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else if (act->requestInspect()) {
             mActing = 1;
             mReqStep = 1;
@@ -10193,7 +10193,7 @@ int dAcNpc_c::recept_c::stepChangeSpeakerTalk() {
                     u8 kind = next->getNameKind();
                     next->getName(&name, 10);
                     setSpeakerName((const u16 *)static_cast<dScript::Word_c &>(name).getBuffer(), kind);
-                    setField58(next->vtA8());
+                    setVoiceType(next->getVoiceType());
                     fn_801A316C(getController(), 0);
                     mReqStep = 3;
                     return 1;
@@ -10241,7 +10241,7 @@ int dAcNpc_c::recept_c::stepAct09Start() {
         }
         action_c *act = &npc->mAction;
         if (act->mActionId == ACTION_EMOTION && !act->mCanChange) {
-            rcptHook34(0);
+            setSpeakerFeel(0);
         } else {
             mActing = 1;
             if (act->requestAnm(1, mReq._2C, mReq._34, mReq._30, mReq._38, 0)) {
@@ -10432,7 +10432,7 @@ void dAcNpc_c::talk_c::startTalk(dAcNpc_c *npc) {
         recept->setMessageLabel(info.mLabel);
     }
     recept->setMessageCode(info.mCode);
-    recept->setField58(speaker->vtA8());
+    recept->setVoiceType(speaker->getVoiceType());
     fn_801A316C(recept->getController(), 0);
 }
 
@@ -10527,7 +10527,7 @@ void dAcNpc_c::talk_c::stepTurnTalkMsg(dAcNpc_c *npc) {
         return;
     }
     if (ctrl->isState(&dDemo_c::fn_801A334C)) {
-        recept->vt98();
+        recept->onTalkEnd();
         flag = recept->mLangFlag;
         if (flag < 6) {
             dSaveExtra_c *extra = dSaveData_c::getExtra();
@@ -10647,7 +10647,7 @@ void dAcNpc_c::talk_c::stepTalkMsg(dAcNpc_c *npc) {
         return;
     }
     if (ctrl->isState(&dDemo_c::fn_801A334C)) {
-        recept->vt98();
+        recept->onTalkEnd();
         flag = recept->mLangFlag;
         if (flag < 6) {
             dSaveExtra_c *extra = dSaveData_c::getExtra();

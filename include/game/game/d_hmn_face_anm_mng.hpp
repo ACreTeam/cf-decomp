@@ -40,17 +40,15 @@ public:
     void resetBlink();                                      // 800B7E28: mBlinkTimer = 0, mBlinkCount = 0
     int getType() const { return mType; }
 
+    static int getEyeTexId(int anmId);   // 800B7890: eye texture anim of a body anim (anmId > 0x1BB -> 0x1D3)
+    static int getMouthTexId(int anmId); // 800B78B4: mouth texture anim of a body anim (-> 0x1D3)
     static u32 getWorkSize(); // 800B7E38
     static BOOL load();       // 800B7E3C
+    static int getMouthKind(u32 texId);  // 800B7E48: mouth kind of a texture anim (< 0x1D3, else 2)
+    static int getPlayMode(u32 texId);   // 800B7E4C: default play mode of a texture anim (else 4)
 
     /* 0x0 */ u32 mBlinkTimer; // frames to the next blink (90 + rnd(270))
     /* 0x4 */ u8 mBlinkCount;
     /* 0x5 */ u8 mType;
 }; // size 0x8
 
-extern "C" {
-int fn_800B7890(int anmId); // 800B7890: eye texture anim id of a body anim (anmId > 0x1BB -> 0x1D3)
-int fn_800B78B4(int anmId); // 800B78B4: mouth texture anim id of a body anim (-> 0x1D3)
-int fn_800B7E48(u32 texId); // 800B7E48: mouth kind of a texture anim (< 0x1D3, else 2)
-int fn_800B7E4C(u32 texId);  // 800B7E4C: default play mode of a texture anim (else 4)
-}

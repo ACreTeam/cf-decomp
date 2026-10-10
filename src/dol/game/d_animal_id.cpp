@@ -69,7 +69,7 @@ u8 dAnmPersonalID_c::getLooks(int unused) {
 }
 
 // 80136078
-int dAnmPersonalID_c::looksToGender(u8 looks) {
+u8 dAnmPersonalID_c::looksToGender(u8 looks) {
     int gender = GENDER_OTHER;
     if (looks <= LOOKS_TYPE_CRANKY) {
         gender = GENDER_MALE;
@@ -88,7 +88,7 @@ void dAnmPersonalID_c::makeResName(char *buf, u32 size, const char *name, u32 lo
 }
 
 // 80136138
-int dAnmPersonalID_c::getGender(int unused) {
+u8 dAnmPersonalID_c::getGender(int unused) {
     return looksToGender(getLooks(unused));
 }
 

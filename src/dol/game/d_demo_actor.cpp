@@ -119,7 +119,7 @@ mVec3_c *dDemoActor_c::demoHook58() {
 int dDemoActor_c::demoHook5C() {
     return 0;
 }
-int dDemoActor_c::demoHook60() {
+int dDemoActor_c::demoHook60(dDemoActor_c *actor) {
     return 0;
 }
 int dDemoActor_c::demoHook64(mVec3_c *pos) {

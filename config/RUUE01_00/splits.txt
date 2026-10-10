@@ -66,6 +66,9 @@ dol/game/d_a_npc_nml.cpp:
 	.ctors      start:0x8046562C end:0x80465630
 	.rodata     start:0x8046BCD0 end:0x8046C088
 	.data       start:0x804A0768 end:0x804A1BF0
+	.bss        start:0x80565060 end:0x80565428
+	.sdata      start:0x80749908 end:0x80749970
+	.sbss       start:0x8074E188 end:0x8074E198
 	.sdata2     start:0x8074FF30 end:0x8074FF80
 
 dol/game/d_npc_talk_approach.cpp:
@@ -115,46 +118,46 @@ dol/game/d_npc_talk_fmarket.cpp:
 dol/game/d_npc_talk_birthday.cpp:
 	.text       start:0x8004902C end:0x80049FDC
 
-dol/game/d_npc_quest_q04.cpp:
+dol/game/d_npc_talk_quest_q04.cpp:
 	.text       start:0x80049FDC end:0x8004B75C
 
-dol/game/d_npc_quest_q02.cpp:
+dol/game/d_npc_talk_quest_q02.cpp:
 	.text       start:0x8004B75C end:0x8004CBCC
 
-dol/game/d_npc_quest_q03.cpp:
+dol/game/d_npc_talk_quest_q03.cpp:
 	.text       start:0x8004CBCC end:0x8004E31C
 
-dol/game/d_npc_quest_q05.cpp:
+dol/game/d_npc_talk_quest_q05.cpp:
 	.text       start:0x8004E31C end:0x8004FADC
 
-dol/game/d_npc_quest_q01.cpp:
+dol/game/d_npc_talk_quest_q01.cpp:
 	.text       start:0x8004FADC end:0x80050F4C
 
-dol/game/d_npc_quest_q12.cpp:
+dol/game/d_npc_talk_quest_q12.cpp:
 	.text       start:0x80050F4C end:0x80051C68
 
-dol/game/d_npc_quest_q11.cpp:
+dol/game/d_npc_talk_quest_q11.cpp:
 	.text       start:0x80051C68 end:0x80052EB0
 
-dol/game/d_npc_quest_delivery.cpp:
+dol/game/d_npc_talk_quest_delivery.cpp:
 	.text       start:0x80052EB0 end:0x800546F4
 
-dol/game/d_npc_quest_q07.cpp:
+dol/game/d_npc_talk_quest_q07.cpp:
 	.text       start:0x800546F4 end:0x80056024
 
-dol/game/d_npc_quest_q06.cpp:
+dol/game/d_npc_talk_quest_q06.cpp:
 	.text       start:0x80056024 end:0x800573D0
 
-dol/game/d_npc_quest_q10.cpp:
+dol/game/d_npc_talk_quest_q10.cpp:
 	.text       start:0x800573D0 end:0x80058990
 
-dol/game/d_npc_quest_q13.cpp:
+dol/game/d_npc_talk_quest_q13.cpp:
 	.text       start:0x80058990 end:0x8005A3C4
 
-dol/game/d_npc_quest_q09.cpp:
+dol/game/d_npc_talk_quest_q09.cpp:
 	.text       start:0x8005A3C4 end:0x8005C82C
 
-dol/game/d_npc_quest_q08.cpp:
+dol/game/d_npc_talk_quest_q08.cpp:
 	.text       start:0x8005C82C end:0x8005E584
 
 dol/game/d_npc_talk_reaction.cpp:

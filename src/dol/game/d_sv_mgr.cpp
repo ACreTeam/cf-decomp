@@ -192,7 +192,7 @@ void dSvMgr_c::requestMessage(u16 code) {
     fn_801A316C(demo, 0);
 }
 
-void dSvMgr_c::rcptHook14() {
+void dSvMgr_c::onMessageEnd(int kind) {
     switch (mMessageCode) {
     case 0x0D:
         mMessageCallback = &dSvMgr_c::lockMessage;

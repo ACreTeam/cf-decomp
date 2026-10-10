@@ -176,7 +176,7 @@ void dHmnToolBank_c::create(int slot) {
 }
 
 // 800BA474
-BOOL dHmnToolBank_c::fn_800BA474(const dItem::Item *item, int a, int b) {
+BOOL dHmnToolBank_c::request(const dItem::Item *item, dPrivateData_c *priv, dDesign_c *design) {
     if (mType >= dHmnToolMng_c::SLOT_NUM) {
         return TRUE;
     }
@@ -242,8 +242,7 @@ BOOL dHmnToolBank_c::fn_800BA474(const dItem::Item *item, int a, int b) {
         }
         break;
     case dHmnToolMng_c::STATE_LOAD:
-        // TODO: a/b are really dPrivateData_c * / dDesign_c * (header signature kept for d_a_npc).
-        if (l_toolMng.load(data, (dPrivateData_c *)a, (dDesign_c *)b)) {
+        if (l_toolMng.load(data, priv, design)) {
             if (item->mId == data->mReqItem.mId) {
                 int buf = l_toolMng.getLoadBuffer(data);
                 if (data->mLocked == data->mCur) {
@@ -371,7 +370,7 @@ void dHmnToolBank_c::remove() {
 }
 
 // 800BAA00
-void dHmnToolBank_c::fn_800BAA00(const mMtx_c *mtx) {
+void dHmnToolBank_c::calc(const mMtx_c *mtx) {
     if (mMdlCreated && mtx != NULL) {
         if (mAnmCreated) {
             mMdl.play();
@@ -426,7 +425,7 @@ void dHmnToolBank_c::fn_800BAA00(const mMtx_c *mtx) {
 }
 
 // 800BAC9C
-void dHmnToolBank_c::fn_800BAC9C() {
+void dHmnToolBank_c::draw() {
     if (mMdlCreated) {
         mMdl.entry();
         if (mpBalloon != NULL) {
@@ -446,7 +445,7 @@ void dHmnToolBank_c::fn_800BAC9C() {
 }
 
 // 800BAD74
-void dHmnToolBank_c::fn_800BAD74() {
+void dHmnToolBank_c::change() {
     int type = getToolType();
     if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {
         mFloat.fn_8016E7E4();
@@ -638,7 +637,7 @@ void dHmnToolBank_c::setupDig(nw4r::g3d::ResFile *file) {
 }
 
 // 800BB63C
-void dHmnToolBank_c::fn_800BB63C() {
+void dHmnToolBank_c::putAway() {
     mWindSpeed = 0.0f;
     int type = getToolType();
     if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {

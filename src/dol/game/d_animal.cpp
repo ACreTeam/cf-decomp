@@ -1047,7 +1047,7 @@ BOOL dAnimalMemory_c::setPresent(const dItem::Item *item) {
 
 // 8011D3B4
 void dAnimalMemory_c::updateLetterCond(int value) {
-    u32 r = getImpression((dPrivateData_c *)value);
+    u32 r = ::getImpression((dPrivateData_c *)value);
     if (r < 50) {
         mImpression = r;
     }
@@ -4357,12 +4357,12 @@ BOOL isFossilRequestMatch(const dItem::Item *item, int mode, const dItem::Item *
 
     BOOL ret = FALSE;
     switch (mode) {
-    case 0:
+    case QUEST_MATCH_ITEM:
         if (item->isSame(*other)) {
             ret = TRUE;
         }
         break;
-    case 1:
+    case QUEST_MATCH_ANY:
         ret = TRUE;
         break;
     }
@@ -4464,12 +4464,12 @@ BOOL dAnimal_c::isClothRequestMatch(const dItem::Item *item, int mode, const dIt
     const dItem::Item &favorite = mCloth;
     BOOL ret = FALSE;
     switch (mode) {
-    case 0:
+    case QUEST_MATCH_ITEM:
         if (item->isSame(*other)) {
             ret = TRUE;
         }
         break;
-    case 1: {
+    case QUEST_MATCH_ANY: {
         int style = mTemplate.mDislikedStyle;
         BOOL other = !item->isSame(favorite);
         if (other && style != getBITMStyle(bitm)) {
@@ -4477,7 +4477,7 @@ BOOL dAnimal_c::isClothRequestMatch(const dItem::Item *item, int mode, const dIt
         }
         break;
     }
-    case 2: {
+    case QUEST_MATCH_LIKED_STYLE: {
         int style = mTemplate.mLikedStyle;
         BOOL other = !item->isSame(favorite);
         if (other && style == getBITMStyle(bitm)) {
@@ -4574,7 +4574,7 @@ u32 dAnimal_c::checkFtrRequest(const dItem::Item *item, int mode, int value) {
 
     u32 ret = 4;
     switch (mode) {
-    case 3:
+    case QUEST_MATCH_FTR_CATEGORY:
         int category = getCategoryQ5(*item);
         if (category == value) {
             if (findFtr(item) == -1) {
@@ -4586,7 +4586,7 @@ u32 dAnimal_c::checkFtrRequest(const dItem::Item *item, int mode, int value) {
             ret = 1;
         }
         break;
-    case 4: {
+    case QUEST_MATCH_FTR_COLOR: {
         int colorA;
         if (bitm->m_ftrColorA < 15) {
             colorA = bitm->resolveColor(bitm->m_ftrColorA, TRUE);
@@ -4610,7 +4610,7 @@ u32 dAnimal_c::checkFtrRequest(const dItem::Item *item, int mode, int value) {
         }
         break;
     }
-    case 5:
+    case QUEST_MATCH_FTR_IMAGE:
         switch (value) {
         case 0:
             if (bitm->getAdultKiddy() == 1) {
@@ -4641,7 +4641,7 @@ u32 dAnimal_c::checkFtrRequest(const dItem::Item *item, int mode, int value) {
             ret = 2;
         }
         break;
-    case 6:
+    case QUEST_MATCH_FTR_SERIES:
         int series = getBITMSeries(bitm);
         if (series == value) {
             if (findFtr(item) == -1) {
@@ -4891,27 +4891,27 @@ BOOL dAnimal_c::sendSickReward(dItem::Item *item, dPrivateData_c *player, int ar
 }
 
 // 80126698
-BOOL dAnimal_c::isRequestMatch(const dItem::Item *item, int kind, u8 a, u8 b, const dItem::Item *questItem) {
+BOOL dAnimal_c::isRequestMatch(const dItem::Item *item, int kind, u8 mode, u8 param, const dItem::Item *questItem) {
     if (item->mId == dItem::ITEM_ID_NONE) {
         return FALSE;
     }
 
     BOOL ret = FALSE;
     switch (kind) {
-    case 0:
-    case 1:
+    case QUEST_KIND_REQUEST_INSECT:
+    case QUEST_KIND_REQUEST_FISH:
         if (item->isSame(*questItem)) {
             ret = TRUE;
         }
         break;
-    case 2:
-        ret = isFossilRequestMatch(item, a, questItem);
+    case QUEST_KIND_REQUEST_FOSSIL:
+        ret = isFossilRequestMatch(item, mode, questItem);
         break;
-    case 3:
-        ret = isClothRequestMatch(item, a, questItem);
+    case QUEST_KIND_REQUEST_CLOTH:
+        ret = isClothRequestMatch(item, mode, questItem);
         break;
-    case 4:
-        if (!checkFtrRequest(item, a, b)) {
+    case QUEST_KIND_REQUEST_FTR:
+        if (!checkFtrRequest(item, mode, param)) {
             ret = TRUE;
         }
         break;
@@ -4935,27 +4935,27 @@ BOOL dAnimal_c::isRequestedItem(const dItem::Item *item) {
     }
 
     switch (quest->mBase.mKind) {
-    case 0:
+    case QUEST_KIND_REQUEST_INSECT:
         if (quest->mBase.mState == 1) {
             return FALSE;
         }
         break;
-    case 1:
+    case QUEST_KIND_REQUEST_FISH:
         if (quest->mBase.mState == 1) {
             return FALSE;
         }
         break;
-    case 2:
+    case QUEST_KIND_REQUEST_FOSSIL:
         if (quest->mBase.mState >= 1) {
             return FALSE;
         }
         break;
-    case 3:
+    case QUEST_KIND_REQUEST_CLOTH:
         if (quest->mBase.mState >= 1) {
             return FALSE;
         }
         break;
-    case 4:
+    case QUEST_KIND_REQUEST_FTR:
         if (quest->mBase.mState >= 1) {
             return FALSE;
         }
@@ -5685,7 +5685,7 @@ BOOL dAnimal_c::wantsParasol() {
     if (kind == 3 && p != NULL) {
         int mode = p->_5884;
         BOOL ok = (mode == 0 || mode == 1) ? TRUE : FALSE;
-        if (ok && (u8)mID.getGender(1) == 1) {
+        if (ok && mID.getGender(1) == 1) {
             dTime_c *now = dTime_c::getCurrent();
             if (now->getSeason() == 1 && now->hour >= 7 && now->hour < 17) {
                 return TRUE;
@@ -5999,7 +5999,7 @@ BOOL dAnimal_c::pickUmbrella() {
 
     dItem::Item item;
     if ((int)mQuest.mWish.mKind == 3) {
-        if ((u8)id->getGender(1) == GENDER_FEMALE) {
+        if (id->getGender(1) == GENDER_FEMALE) {
             dItem::Item tmp = getUmbrella();
             if (!isFancyUmbrella(&tmp)) {
                 item = pickFancyUmbrella();
@@ -10204,7 +10204,7 @@ void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
 
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
         dAnmPersonalID_c *id = getAnimalID(animal);
-        if (i == skip || !id->isValid() || gender == (u8)id->getGender(1) || animal->isMoving()) {
+        if (i == skip || !id->isValid() || gender == id->getGender(1) || animal->isMoving()) {
             continue;
         }
 

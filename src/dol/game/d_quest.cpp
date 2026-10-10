@@ -415,8 +415,8 @@ dAnmPersonalID_c *dQuestErrand_c::getAnimal(int i) {
 }
 
 // 80140850
-const dAnmPersonalID_c *dQuestErrand_c::getAnimal(int i) const {
-    return &mAnimals[i];
+dAnmPersonalID_c *dQuestErrand_c::getAnimal(int i) const {
+    return (dAnmPersonalID_c *)&mAnimals[i];
 }
 
 // ---------------------------------------------------------------------------

@@ -752,7 +752,7 @@ const char *getStringGroup(int kind, u8 gender) {
 
 // 8015A05C
 const char *Word_c::getGenderedGroup(int kind, dAnmPersonalID_c *id) {
-    int gender = id->getGender(1);
+    u8 gender = id->getGender(1);
     return getStringGroup(kind, gender);
 }
 
@@ -1108,8 +1108,8 @@ int Word_c::procAnimalGender(int pos) {
 
 // 8015A990
 int Word_c::procByAnimalGender(int pos, dAnmPersonalID_c *id) {
-    int gender = id->getGender(0);
-    return procSelect2(pos, (u8)gender);
+    u8 gender = id->getGender(0);
+    return procSelect2(pos, gender);
 }
 
 // 8015A9E4

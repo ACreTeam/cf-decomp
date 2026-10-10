@@ -87,9 +87,9 @@ msgMemory_c::~msgMemory_c() {}
 void msgMemory_c::clear() {
     mMsgId = 0;
     memset(mGroup, 0, sizeof(mGroup));
-    _43 = 0;
-    _44 = 0;
-    _45 = 0;
+    mKind = KIND_NONE;
+    mTopicGroup = 0;
+    mTopicIdx = 0;
 }
 
 // 800ECE34
@@ -102,13 +102,13 @@ BOOL msgMemory_c::isValid() {
 }
 
 // 800ECE80
-void msgMemory_c::set(const char *group, u16 msgId, u8 a, u8 b, u8 c) {
+void msgMemory_c::set(const char *group, u16 msgId, u32 kind, u8 topicGroup, u8 topicIdx) {
     clear();
     strncpy(mGroup, group, sizeof(mGroup) - 1);
     mMsgId = msgId;
-    _43 = a;
-    _44 = b;
-    _45 = c;
+    mKind = kind;
+    mTopicGroup = topicGroup;
+    mTopicIdx = topicIdx;
 }
 
 // 800ECEF4
@@ -401,7 +401,7 @@ dNpcEntry_c::~dNpcEntry_c() {}
 
 // 800EDA6C
 void dNpcEntry_c::clear() {
-    memset(_28C, 0, sizeof(_28C));
+    memset(&_28C, 0, sizeof(_28C));
     mMsg.clear();
     mMsg2.clear();
     _120.clear();

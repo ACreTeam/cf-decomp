@@ -626,6 +626,7 @@ config.libs = [
             Object(Matching, "dol/game/d_m3d.cpp"),
             Object(Matching, "dol/game/d_actor.cpp"),
             Object(Matching, "dol/game/d_a_npc.cpp", shift_jis=False),
+            Object(Matching, "dol/game/d_a_npc_nml.cpp"),
             Object(Matching, "dol/game/d_base.cpp"),
             Object(Matching, "dol/game/d_bg.cpp"),
             Object(Matching, "dol/game/d_bgc.cpp"),

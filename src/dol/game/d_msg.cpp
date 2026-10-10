@@ -17,16 +17,16 @@ typedef char dMsgRcptSizeCheck[sizeof(dMsg::Rcpt_c) == 0x64 ? 1 : -1];
 namespace dMsg {
 void Rcpt_c::init() {
     mpController = NULL;
-    mField60 = 0;
+    mpBmgData = NULL;
     std::memset(mMessageLabel, 0, sizeof(mMessageLabel));
     clearSpeakerName();
     mMessageCode = 0;
-    mField58 = 1;
+    mVoiceType = 1;
 }
 
-int Rcpt_c::rcptHook88() { return 3; }
-int Rcpt_c::rcptHook90() { return 3; }
-int Rcpt_c::rcptHook8C() { return 0; }
+int Rcpt_c::getVoiceMode() { return 3; }
+int Rcpt_c::getForcedVoiceMode() { return 3; }
+int Rcpt_c::getVoiceMood() { return 0; }
 
 void Rcpt_c::setSpeakerName(const u16 *name, u8 nameKind) {
     int length = dScript::getStringLength((const wchar_t *)name, 0, 0);
@@ -45,38 +45,38 @@ void Rcpt_c::setMessageCode(u16 code) { mMessageCode = code; }
 void Rcpt_c::setMessageLabel(const char *label) {
     if (std::strlen(label) != 0) {
         std::strncpy(mMessageLabel, label, 60);
-        mField60 = 0;
+        mpBmgData = NULL;
     }
 }
 
 void Rcpt_c::attachController(Comp_c *controller) { mpController = controller; }
 void Rcpt_c::detachController() { mpController = NULL; }
 
-void Rcpt_c::rcptHook0C() {}
-void Rcpt_c::rcptHook10() {}
-void Rcpt_c::rcptHook14() {}
-void Rcpt_c::rcptHook18() {}
-void Rcpt_c::rcptHook1C() {}
-void Rcpt_c::rcptHook20() {}
-void Rcpt_c::rcptHook24() {}
-void Rcpt_c::rcptHook28() {}
-void Rcpt_c::rcptHook2C() {}
-void Rcpt_c::rcptHook78() {}
-void Rcpt_c::rcptHook34(u32 tag) {}
-void Rcpt_c::rcptHook38() {}
-void Rcpt_c::rcptHook3C() {}
-void Rcpt_c::rcptHook40() {}
-void Rcpt_c::rcptHook44() {}
-void Rcpt_c::rcptHook48() {}
-void Rcpt_c::rcptHook4C() {}
-void Rcpt_c::rcptHook50() {}
-void Rcpt_c::rcptHook54() {}
-void Rcpt_c::rcptHook58() {}
-void Rcpt_c::rcptHook5C() {}
-void Rcpt_c::rcptHook60() {}
-void Rcpt_c::rcptHook64() {}
-void Rcpt_c::rcptHook68() {}
-void Rcpt_c::rcptHook6C() {}
-void Rcpt_c::rcptHook70() {}
-void Rcpt_c::rcptHook74() {}
+void Rcpt_c::selectMessage(const void *bmg) {}
+void Rcpt_c::onMessageStart(int arg) {}
+void Rcpt_c::onMessageEnd(int kind) {}
+void Rcpt_c::onAnswer(int arg) {}
+void Rcpt_c::onKeyWait() {}
+void Rcpt_c::onPageWait() {}
+void Rcpt_c::onTextEnd() {}
+void Rcpt_c::onSelectStart() {}
+void Rcpt_c::onTypeStart() {}
+void Rcpt_c::onCustomTag(int no) {}
+void Rcpt_c::setSpeakerFeel(u32 tag) {}
+void Rcpt_c::resetMood() {}
+void Rcpt_c::setMood1(int hours) {}
+void Rcpt_c::setMood2(int hours) {}
+void Rcpt_c::setMood3(int hours) {}
+void Rcpt_c::setMood4(int hours) {}
+void Rcpt_c::setSpeakerPlayer() {}
+void Rcpt_c::setSpeakerNpc() {}
+void Rcpt_c::setSpeakerPartner() {}
+void Rcpt_c::speakerLookAtPlayer() {}
+void Rcpt_c::speakerTurnToPlayer() {}
+void Rcpt_c::speakerLookAtNpc() {}
+void Rcpt_c::speakerTurnToNpc() {}
+void Rcpt_c::speakerLookAtPartner() {}
+void Rcpt_c::speakerTurnToPartner() {}
+void Rcpt_c::changeSpeaker() {}
+void Rcpt_c::playTownTune() {}
 } // namespace dMsg

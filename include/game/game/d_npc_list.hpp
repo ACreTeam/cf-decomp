@@ -9,6 +9,8 @@ class dDemoActor_c;
 extern "C" {
 u32 fn_800F97FC();                  // 800F97FC: number of entries of list A (lbl_805CE9E0)
 u32 fn_800F980C();                  // 800F980C: number of entries of list B (lbl_805CEA20)
+u32 fn_800F981C(dDemoActor_c *actor, const u16 *key); // 800F981C: adds the actor to list A (dAcNpcNml_c::addToNpcList)
+void fn_800F9834(dDemoActor_c *actor);                // 800F9834: removes it from list A (dAcNpcNml_c::removeFromNpcList)
 dDemoActor_c *fn_800F9850(u32 idx); // 800F9850: entry of list A
 dDemoActor_c *fn_800F98BC(u32 idx); // 800F98BC: entry of list B
 }

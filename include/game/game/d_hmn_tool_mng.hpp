@@ -6,8 +6,6 @@
 // the models/animations from its slot.
 // Class names from the heap strings "dHmnToolMng_c::createHeap::data", "dHmnToolBank_c::m_heap_p" and
 // the RTTI "dHmnToolBank_c::myMdlCallback_c"; every other name here is inferred.
-// d_a_npc uses the fn_800BA474/fn_800BAA00/fn_800BAC9C/fn_800BAD74/fn_800BB63C names (kept until the
-// symbols are renamed).
 
 #include <types.h>
 #include <game/game/d_fg_item.hpp>
@@ -123,19 +121,19 @@ public:
     ~dHmnToolBank_c(); // 800BA2C4
 
     void create(int slot);                                   // 800BA3C8
-    BOOL fn_800BA474(const dItem::Item *item, int a, int b); // 800BA474: load the tool of item (a, b: dPrivateData_c *, dDesign_c *)
+    BOOL request(const dItem::Item *item, dPrivateData_c *priv, dDesign_c *design); // 800BA474: load the tool of item; TRUE when ready
     void lock();                                             // 800BA798
     void *getResFile(BOOL locked);                           // 800BA7C0
     BOOL isAnmLoop();                                        // 800BA84C
     int getToolType();                                       // 800BA888
     void remove();                                           // 800BA9AC
-    void fn_800BAA00(const mMtx_c *mtx);                     // 800BAA00: calc at mtx (the balloon writes it back)
-    void fn_800BAC9C();                                      // 800BAC9C: draw
-    void fn_800BAD74();                                      // 800BAD74 (toolBase_c::change): build the models
+    void calc(const mMtx_c *mtx);                            // 800BAA00: at mtx (the balloon writes it back)
+    void draw();                                             // 800BAC9C
+    void change();                                           // 800BAD74: build the models
     void setupAnm(int type, nw4r::g3d::ResFile *file, nw4r::g3d::ResMdl *mdl); // 800BAFB4
     void setupAxe(nw4r::g3d::ResFile *file, nw4r::g3d::ResMdl *mdl);         // 800BB2E4
     void setupDig(nw4r::g3d::ResFile *file);                                  // 800BB410
-    void fn_800BB63C();                                      // 800BB63C (toolBase_c::putAway)
+    void putAway();                                          // 800BB63C
     void setAnmRate(f32 rate);                               // 800BB690
     f32 getAnmRate();                                        // 800BB6A8
     void setAnmFrame(f32 frame);                             // 800BB6C8

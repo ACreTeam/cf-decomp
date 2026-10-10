@@ -45,14 +45,15 @@ class dPlayerID_c;
 class dAnmPersonalID_c;
 class dMail_c;
 class dEquip_c;
+class dDesign_c;
 
 // .sdata2 constants defined at the top of d_a_npc.cpp (8074FDE0.., in this order). The target references
-// them from the request functions (and from d_a_npc_sp, d_npc_quest_q08, d_npc_talk_fmarket,
+// them from the request functions (and from d_a_npc_sp, d_npc_talk_quest_q08, d_npc_talk_fmarket,
 // d_npc_talk_birthday) instead of pooled literals: they are default arguments (morph frames / anm rates /
 // ranges) of action_c / lookAt_c / recept_c request functions. Placeholder names.
 extern const f32 cNpcMorphFrames; // 12.0f default morph frames
 extern const f32 l_8074FDE4; // 1.0f default anm rate (action_c::request)
-extern const f32 l_8074FDE8; // 1.0f default anm rate (d_a_npc_sp, d_npc_quest_q08, d_npc_talk_fmarket)
+extern const f32 l_8074FDE8; // 1.0f default anm rate (d_a_npc_sp, d_npc_talk_quest_q08, d_npc_talk_fmarket)
 extern const f32 l_8074FDEC; // 2.0f
 extern const f32 cNpcAnmRateMax; // 1.05f action_c::calcAnmRate
 extern const f32 cNpcAnmRateMin; // 0.44f action_c::calcAnmRate
@@ -1104,7 +1105,7 @@ public:
         // dDemo_c methods (state functions fn_801A334C, fn_801A4D74 ...) work on; both names are in
         // Matching units' symbols, so they cannot be merged: d_a_npc views the controller as dDemo_c.
         dDemo_c *getController() const { return reinterpret_cast<dDemo_c *>(mpController); }
-        void setField58(int value) { mField58 = value; }
+        void setVoiceType(int value) { mVoiceType = value; }
 
         // The message to start (getMsgInfo).
         struct msgInfo_s {
@@ -1117,7 +1118,7 @@ public:
         virtual void init();                                                                    // 80028DA4
         void saveDemoFlag(dDemoActor_c *actor);                                                 // 80028DF8
         void restoreDemoFlag(dDemoActor_c *actor);                                              // 80028E54
-        virtual int rcptHook88();                                                               // 80028EB8
+        virtual int getVoiceMode();                                                               // 80028EB8
         void setLandName(const dLandID_c *land, int idx);                                       // 80028EC0
         void setPersonalName(const dPersonalID_c *id, int idx);                                 // 80028ED4
         void setPlayerName(const dPlayerID_c *id, int idx);                                     // 80028EE8
@@ -1140,18 +1141,18 @@ public:
         void setPartner(dAcNpc_c *npc);                                                         // 80029220
         dAcNpc_c *getNpc(int idx);                                                              // 80029284
         dAcNpc_c *getNpc(int idx) const;                                                        // 800292B4
-        virtual void rcptHook4C();                                                              // 800292E4
-        virtual void rcptHook50();                                                              // 800292F0
-        virtual void rcptHook54();                                                              // 800292FC
-        virtual void rcptHook58();                                                              // 80029308
-        virtual void rcptHook5C();                                                              // 80029374
+        virtual void setSpeakerPlayer();                                                              // 800292E4
+        virtual void setSpeakerNpc();                                                              // 800292F0
+        virtual void setSpeakerPartner();                                                              // 800292FC
+        virtual void speakerLookAtPlayer();                                                              // 80029308
+        virtual void speakerTurnToPlayer();                                                              // 80029374
         void playerLookAt(dAcNpc_c *target);                                                    // 80029434
         void playerTurnTo(dAcNpc_c *target);                                                    // 800294D4
-        virtual void rcptHook60();                                                              // 800295B0
-        virtual void rcptHook64();                                                              // 8002966C
-        virtual void rcptHook68();                                                              // 8002975C
-        virtual void rcptHook6C();                                                              // 80029824
-        virtual void rcptHook70();                                                              // 80029920
+        virtual void speakerLookAtNpc();                                                              // 800295B0
+        virtual void speakerTurnToNpc();                                                              // 8002966C
+        virtual void speakerLookAtPartner();                                                              // 8002975C
+        virtual void speakerTurnToPartner();                                                              // 80029824
+        virtual void changeSpeaker();                                                              // 80029920
         static BOOL isMenuInvalid();                                                            // 80029928
         static void *getMenuWork();                                                             // 80029940
         static int getMenuSelSlot();                                                            // 80029944
@@ -1173,7 +1174,7 @@ public:
         static u32 fn_80029CDC();                                                               // 80029CDC
         static u16 fn_80029CE0();                                                               // 80029CE0
         void setFeel(u32 feel, u32 who, f32 frame = cNpcMorphFrames);                                             // 80029CE4
-        virtual void rcptHook34(u32 feel);                                                      // 80029D80
+        virtual void setSpeakerFeel(u32 feel);                                                      // 80029D80
         void clearRequest();                                                                    // 80029D8C
         void initReqParam(reqParam_s *param);                                                   // 80029DA8
         BOOL setRequest(int kind);                                                              // 80029E24
@@ -1297,7 +1298,7 @@ public:
         int procNone();                                                                         // 8002D0F0
         // new virtuals, in vtable order
         virtual void preExecute() {}                   // +0x94 (weak 8002EA08; called by execute)
-        virtual void vt98() {}                         // +0x98 (weak 8002EA14; message end)
+        virtual void onTalkEnd() {}                         // +0x98 (weak 8002EA14; message end)
         virtual void getMsgInfo(msgInfo_s *info) = 0;  // +0x9C (talk_c::startTalk)
         virtual void onRequestEnd(int kind);           // +0xA0 80029F38
         virtual int getTurnFrame();                    // +0xA4 800295A8 (500)
@@ -1323,7 +1324,7 @@ public:
     public:
         resBase_c();          // 8002DDF0
         virtual ~resBase_c(); // 8002DE00
-        virtual BOOL vt0C(dAcNpc_c *npc) = 0; // create: FALSE -> not ready
+        virtual BOOL create(dAcNpc_c *npc) = 0; // FALSE -> not ready
         virtual void *getMdlRes() = 0;        // the model ResFile data (getMdlResFile)
         virtual void *getTexRes() = 0;        // the texture/face ResFile data (getTexResFile)
     }; // size 0x4
@@ -1334,13 +1335,13 @@ public:
     public:
         clothBase_c();          // 8002DE40
         virtual ~clothBase_c(); // 8002DE50
-        virtual void vt0C() = 0;
-        virtual void vt10() = 0;
-        virtual BOOL vt14(dAcNpc_c *npc) = 0;            // create: FALSE -> not ready
-        virtual void vt18(nw4r::g3d::ResMdl mdl) = 0;    // create
-        virtual void vt1C(nw4r::g3d::ResMdl mdl) = 0;    // change anm frame 24: model swap
-        virtual void vt20(dAcNpc_c *npc) = 0;            // execute
-        virtual BOOL vt24(dAcNpc_c *npc) = 0;            // ready to change clothes?
+        virtual BOOL requestNpcCloth(dAcNpc_c *npc) = 0; // request the wearer's current cloth
+        virtual BOOL requestCloth(const dItem::Item *item, dDesign_c *design) = 0; // request a cloth
+        virtual BOOL create(dAcNpc_c *npc) = 0;            // create: FALSE -> not ready
+        virtual void bindCloth(nw4r::g3d::ResMdl mdl) = 0;    // create
+        virtual void swapCloth(nw4r::g3d::ResMdl mdl) = 0;    // change anm frame 24: model swap
+        virtual BOOL execute(dAcNpc_c *npc) = 0;            // execute (result unused by d_a_npc)
+        virtual BOOL isLoaded(const dAcNpc_c *npc) const = 0; // ready to change clothes? (const: d_a_npc_nml 80030848 / 8003004C)
     }; // size 0x4
 
     // ---- vtable 804A0200 (0xC4: 2 header words + 47 slots) ----
@@ -1367,18 +1368,18 @@ public:
     virtual void vt84() {}                                 // 8002EA10 (+0x84) (talk_c::finish, on the partner)
     virtual void getName(dHmnName::Word_c *name, int len) = 0; // (+0x88)
     virtual u8 getNameKind() = 0;                          // (+0x8C)
-    virtual f32 vt90() { return 0.0f; }                    // 8002E9F8 (+0x90)
-    virtual f32 vt94() { return 0.0f; }                    // 8002EA00 (+0x94)
+    virtual f32 vt90() const { return 0.0f; }                    // 8002E9F8 (+0x90)
+    virtual f32 vt94() const { return 0.0f; }                    // 8002EA00 (+0x94)
     virtual int getEarType() = 0;                          // (+0x98) 0..59, 60 = no ears
     virtual const dItem::Item *getHoldItem() { return NULL; } // 8002E9B0 (+0x9C)
     virtual int getSoundId();                              // 800156F0 (+0xA0)
     virtual void playSound();                              // 800156F8 (+0xA4)
-    virtual int vtA8() = 0;                                // (+0xA8) -> Rcpt_c::mField58
+    virtual int getVoiceType() const = 0;                                // (+0xA8) -> Rcpt_c::mVoiceType
     virtual void getManpuOfs(mVec3_c *ofs, mVec3_c *ofsL, mVec3_c *ofsR, u8 type); // 80015734 (+0xAC)
     virtual int vtB0() { return 1; }                       // 8002E998 (+0xB0) execute hook
     virtual u32 getHeapSize() = 0;                         // (+0xB4)
-    virtual u32 vtB8() = 0;                                // (+0xB8) stored at _DC
-    virtual void vtBC() = 0;                               // (+0xBC) doDelete hook
+    virtual u32 addToNpcList() = 0;                                // (+0xB8) stored at _DC
+    virtual void removeFromNpcList() = 0;                               // (+0xBC) doDelete hook
     virtual int getFaceType() = 0;                          // (+0xC0)
 
     BOOL loadRes(void **pData, const char *path);                                                        // 800128A0
@@ -1456,7 +1457,7 @@ public:
     // ---- data (offsets from the dtor 8002EA18 and preCreate 80015808) ----
     /* 0x00BC */ EGG::FrmHeap *m_heap_p;      // "dAcNpc_c::m_heap_p : NPC actor heap"
     /* 0x00C0 */ mAllocator_c mAllocator;
-    /* 0x00DC */ u32 _DC;                     // = vtB8() (preCreate)
+    /* 0x00DC */ u32 _DC;                     // = addToNpcList() (preCreate)
     /* 0x00E0 */ dItem::Item mNpcItem;        // the npc's id as an item code (0xE000|i, 0x8011 ...)
     /* 0x00E2 */ u8 _E2[2];
     /* 0x00E4 */ resBase_c *mpRes;
@@ -1522,7 +1523,7 @@ extern const int l_8074FEE0; // 13
 extern const int l_8074FEE4; // 13
 extern const int l_8074FEE8; // 18
 extern const int l_8074FEEC; // 7
-// Globals initialized by __sinit (in this order; several are used by d_a_npc_sp, d_npc_quest_q08,
+// Globals initialized by __sinit (in this order; several are used by d_a_npc_sp, d_npc_talk_quest_q08,
 // d_npc_talk_fmarket):
 extern dAcNpc_c::moveParam_c l_moveParamStop; // 80564B6C (0, 0, 0)
 extern mAng l_walkTurnSpeed;                  // 8074E150 0x170

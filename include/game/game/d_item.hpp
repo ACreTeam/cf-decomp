@@ -1140,29 +1140,32 @@ public:
 
 // Category-specific names (RTTI-only so far). Each adds nothing but its
 // own destructor on top of dString::Word_c.
+// The Q4/Q5/Fashion/Look ones are used only by d_a_npc_nml (inline dtors: weak copies kept there, its
+// .data has their vtables in reverse definition order: SeriesQ5, CategoryQ5, LookQ4, Look, Fashion, so
+// keep nameCategoryQ5_c defined before nameSeriesQ5_c).
 class nameFashion_c : public dString::Word_c {
 public:
-    virtual ~nameFashion_c(); // 80036274
+    virtual ~nameFashion_c() {} // weak 80036274 (d_a_npc_nml)
 };
 class nameLook_c : public dString::Word_c {
 public:
-    virtual ~nameLook_c(); // 800362CC
+    virtual ~nameLook_c() {} // weak 800362CC (d_a_npc_nml)
 };
 class nameLookQ4_c : public dString::Word_c {
 public:
-    virtual ~nameLookQ4_c(); // 8003616C
+    virtual ~nameLookQ4_c() {} // weak 8003616C (d_a_npc_nml)
 };
 class nameSeries_c : public dString::Word_c {
 public:
     virtual ~nameSeries_c(); // 800B4D48
 };
-class nameSeriesQ5_c : public dString::Word_c {
-public:
-    virtual ~nameSeriesQ5_c(); // 8003621C
-};
 class nameCategoryQ5_c : public dString::Word_c {
 public:
-    virtual ~nameCategoryQ5_c(); // 800361C4
+    virtual ~nameCategoryQ5_c() {} // weak 800361C4 (d_a_npc_nml)
+};
+class nameSeriesQ5_c : public dString::Word_c {
+public:
+    virtual ~nameSeriesQ5_c() {} // weak 8003621C (d_a_npc_nml)
 };
 
 static inline int Item_getIdxInKind(const Item &item) {
@@ -1175,3 +1178,10 @@ static inline const dItem::BITM *getBITM(u16 id) {
 }
 
 } // namespace dItem
+
+// Word setters of d_item.cpp (global scope).
+void setFashionName(dScript::Word_c *name, u32 fashion); // 800C116C
+void setLookName(dScript::Word_c *name, int look);      // 800C1244
+void setQ4LookName(dScript::Word_c *name, int look);    // 800C12A4
+void setSeriesName(dScript::Word_c *name, u32 series);  // 800C1328
+void setQ5PartName(dScript::Word_c *name, u32 part);    // 800C13B4

@@ -62,7 +62,7 @@ dHmnCloth_c::dHmnCloth_c() {
 dHmnCloth_c::~dHmnCloth_c() {}
 
 // 800B6FAC
-void dHmnCloth_c::setSlot(u8 slot) {
+void dHmnCloth_c::setSlot(int slot) {
     mSlot = slot;
 }
 

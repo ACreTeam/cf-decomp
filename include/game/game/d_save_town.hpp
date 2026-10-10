@@ -34,8 +34,19 @@ extern "C" {
 void fn_80150140(void *obj); // 80150140
 void fn_80150B94(void *obj); // 80150B94
 }
+// An entry of dSaveUnk72D1A_c (8 x 0x18): another town and its 2 jinx bytes (the own town's are
+// dSaveTown_c::_05EC76). Read by the d_a_npc_nml / d_npc_talk_free jinx topic.
+struct dSaveTownJinx_c {
+    /* 0x00 */ dLandID_c mLand;
+    /* 0x16 */ u8 mJinx[2];
+}; // size 0x18
+struct dSaveUnk72D1A_c;
+extern "C" {
+dSaveTownJinx_c *fn_80150308(dSaveUnk72D1A_c *list, int idx); // 80150308 (d_sv_town_list): entry idx, NULL if its land is invalid
+}
 struct dSaveUnk72D1A_c {
     dSaveUnk72D1A_c() { fn_80150140(this); }
+    dSaveTownJinx_c *getTown(int idx) { return fn_80150308(this, idx); }
     u8 _00[0xC0];
 };
 struct dSaveUnk72E0A_c {

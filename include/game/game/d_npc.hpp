@@ -30,18 +30,28 @@ enum holeCheck_e {
 // 0x48. A remembered message (group label + index).
 class msgMemory_c {
 public:
+    // Who set the topic (talk_c::setTopic callers).
+    enum kind_e {
+        KIND_NONE,
+        KIND_REACTION, // d_a_npc_nml msgReaction (group = reaction index)
+        KIND_FREE,     // d_npc_talk_free
+        KIND_ARBEIT,   // d_npc_talk_arbeit
+        KIND_QUEST,    // d_a_npc_nml quest talk and the d_npc_talk_quest_* units (group = quest)
+        KIND_ANY       // talk_c's reset value; matches every kind in getRememberedLabel
+    };
+
     msgMemory_c();                                                   // 800ECD90
     virtual ~msgMemory_c();                                          // 800ECDA0
     virtual void clear();                                            // 800ECDE0
 
     BOOL isValid();                                                  // 800ECE34
-    void set(const char *group, u16 msgId, u8 a, u8 b, u8 c);        // 800ECE80
+    void set(const char *group, u16 msgId, u32 kind, u8 topicGroup, u8 topicIdx); // 800ECE80
 
     /* 0x04 */ u16 mMsgId;
     /* 0x06 */ char mGroup[0x3D];
-    /* 0x43 */ u8 _43;
-    /* 0x44 */ u8 _44;
-    /* 0x45 */ u8 _45;
+    /* 0x43 */ u8 mKind; // kind_e
+    /* 0x44 */ u8 mTopicGroup;
+    /* 0x45 */ u8 mTopicIdx;
 }; // size 0x48
 
 // 0xD8. A message plus who it's about.
@@ -147,7 +157,11 @@ public:
     /* 0x289 */ u8 _289;
     /* 0x28A */ u8 _28A;
     /* 0x28B */ u8 _28B;
-    /* 0x28C */ u8 _28C[2];
+    /* 0x28C */ struct {
+        u16 mFlag15 : 1; // 0x8000: read by the d_a_npc_nml talk code (fewer quest offers when set)
+        u16 mFlag14 : 1; // 0x4000
+        u16 _bits : 14;
+    } _28C;               // cleared by memset in clear(); both flags cleared by dAcNpcNml_c create
     /* 0x28E */ u8 _28E[2];
 }; // size 0x290
 

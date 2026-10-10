@@ -211,7 +211,7 @@ BOOL dHmnFaceAnmMng_c::setMouthTex(int texId) {
 }
 
 BOOL dHmnFaceAnmMng_c::setEyeTexByAnm(int anmId) {
-    int texId = fn_800B7890(anmId);
+    int texId = getEyeTexId(anmId);
     if (texId == 0x1D3) {
         return TRUE;
     }
@@ -219,21 +219,21 @@ BOOL dHmnFaceAnmMng_c::setEyeTexByAnm(int anmId) {
 }
 
 BOOL dHmnFaceAnmMng_c::setMouthTexByAnm(int anmId) {
-    int texId = fn_800B78B4(anmId);
+    int texId = getMouthTexId(anmId);
     if (texId == 0x1D3) {
         return TRUE;
     }
     return setTex(1, texId);
 }
 
-extern "C" int fn_800B7890(int anmId) {
+int dHmnFaceAnmMng_c::getEyeTexId(int anmId) {
     if (anmId >= 0x1BC) {
         return 0x1D3;
     }
     return l_eyeTexId[anmId];
 }
 
-extern "C" int fn_800B78B4(int anmId) {
+int dHmnFaceAnmMng_c::getMouthTexId(int anmId) {
     if (anmId >= 0x1BC) {
         return 0x1D3;
     }
@@ -378,10 +378,10 @@ BOOL dHmnFaceAnmMng_c::load() {
     return l_data.load();
 }
 
-extern "C" int fn_800B7E48(u32 texId) {
+int dHmnFaceAnmMng_c::getMouthKind(u32 texId) {
     return faceAnmData_c::getMouthKind(texId);
 }
 
-extern "C" int fn_800B7E4C(u32 texId) {
+int dHmnFaceAnmMng_c::getPlayMode(u32 texId) {
     return faceAnmData_c::getPlayMode(texId);
 }

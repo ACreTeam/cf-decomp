@@ -82,7 +82,7 @@ public:
     dHmnCloth_c();  // 800B6F60
     ~dHmnCloth_c(); // 800B6F6C
 
-    void setSlot(u8 slot);                                                     // 800B6FAC
+    void setSlot(int slot);                                                    // 800B6FAC
     BOOL request(const dItem::Item *item, dPrivateData_c *priv, dDesign_c *design); // 800B6FB4: TRUE when done
     void lock();                                                               // 800B71C4
     BOOL syncLoad();                                                           // 800B71EC

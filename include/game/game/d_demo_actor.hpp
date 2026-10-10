@@ -40,7 +40,7 @@ public:
     virtual mVec3_c *getDemoPosition();
     virtual mVec3_c *demoHook58(); // a position of the actor (dAcNpc_c: look/talk target)
     virtual int demoHook5C();
-    virtual int demoHook60();
+    virtual int demoHook60(dDemoActor_c *actor); // dAcNpcNml_c: like canInteract
     virtual int demoHook64(mVec3_c *pos); // dAcNpc_c: writes a position of the npc
 
     static void initActorList();
