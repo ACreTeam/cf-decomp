@@ -18,6 +18,10 @@ class dPrivateData_c;
 
 // One 16x16 layer of a room (floor items, then items placed on top).
 struct dHomeLayer_c {
+    // Declared (not implicit): their weak copies, kept in d_hr with dHomeRoom_c's and dSvMdlRm_c's implicit
+    // dtors, then sit in d_home.hpp's weak section (d_hr's tail) instead of mid-file after fn_800B12F4.
+    dHomeLayer_c() {}
+    ~dHomeLayer_c() {}
     void clear(); // 8013CB30: every slot to ITEM_ID_NONE
 
     // The getter goes through a byte offset: indexing mItems directly makes MWCC
@@ -71,7 +75,8 @@ struct dHomeGyroids_c {
     /* 0x0 */ Pos mPos[8];
     /* 0x8 */ u8 mActive[1]; // bit per entry
     /* 0x9 */ u8 mValues[4]; // a nibble per entry
-}; // size 0xD
+    /* 0xD */ u8 _D; // copied by the implicit copy constructor (d_hr fn_800B2740)
+}; // size 0xE
 
 // Per-room furniture state, written by the furniture-state handler fn_800A9718 when
 // the room is not the current scene: active bits per layer plus the gyroids. The out-of-line copy of the
@@ -88,7 +93,7 @@ struct dHomeRoomMap_c {
 }; // size 0x4E
 
 // A room of a house. The save data also keeps two standalone rooms
-// (dSaveData_c::_0636F0 / _0641F0).
+// (dSaveTown_c::mModelRoom and _0640C8.mModelRoomCandidate).
 struct dHomeRoom_c {
     void clear(); // 8013CBCC
     void recycleItems(); // 8013CC78: sends the room's items to the town's recycle bin, then clears it

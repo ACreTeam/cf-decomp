@@ -14,6 +14,8 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_npc_notice.hpp>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_hr.hpp>
+#include <game/game/d_letter.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -28,7 +30,6 @@ void fn_80101514();
 void fn_8013EE54(void *);
 
 // dMail_c.
-int fn_800CBE0C(int, int, int, int);
 
 // dDesign_c.
 
@@ -38,7 +39,6 @@ void fn_80150AD4(dUnk5560_c *obj);
 // Misc.
 BOOL fn_800E593C(void *);
 BOOL fn_800DCEDC();
-void fn_800B0954(BOOL, int);
 BOOL fn_8019B864();
 
 // Letters and events.
@@ -293,7 +293,7 @@ BOOL dPrivateData_c::isChecksumValid(int) {
 
 // 80136D1C
 u32 dPrivateData_c::calcChecksum() const {
-    return sCrc::calcCRC32(&mDates, sizeof(dPrivateData_c) - sizeof(mChecksum) - ((u8 *)&mChecksum - (u8 *)this), -1, -1);
+    return sCrc::calcCRC32(&mHRAInfo, sizeof(dPrivateData_c) - sizeof(mChecksum) - ((u8 *)&mChecksum - (u8 *)this), -1, -1);
 }
 
 // 80136D40
@@ -379,7 +379,7 @@ void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
     _8604.clear();
     mMotherMail.clear();
     mFriends.clear();
-    mDates.init();
+    mHRAInfo.init();
     _869A = -1;
     _869B = -1;
     _869C = 0;
@@ -668,7 +668,7 @@ void dPrivateData_c::dailyUpdate(int days) {
     _8628 += days;
     _8630 += days;
     if (dPlayerMgr_c::getCurrentPlayer() == this) {
-        fn_800B0954(_8628 != 0, 1);
+        dHR::rateCurrentPlayer(_8628 != 0, 1);
         updateLooks(_8628);
         fn_80137898(_8628);
         fn_801371DC();
@@ -1417,24 +1417,24 @@ BOOL dPrivateData_c::fn_80139948(int arg) {
 }
 
 // 80139A14
-void dPrivateDates_c::init() {
-    mDate0.set(2000, 0, 1);
-    mDate1.set(2000, 0, 1);
-    _08 = 0;
-    _0C = 0;
+void dPrivateHRAInfo_c::init() {
+    mRatingDate.set(2000, 0, 1);
+    mModelRoomDate.set(2000, 0, 1);
+    mLastScore = 0;
+    mLastRemark = 0;
 }
 
 // 80139A6C
-BOOL dPrivateDates_c::fn_80139A6C() {
-    if (mDate0.year == 0) {
-        mDate0.set(2000, 0, 1);
+BOOL dPrivateHRAInfo_c::isNewRatingWeek(dYMD_c *out) {
+    if (mRatingDate.year == 0) {
+        mRatingDate.set(2000, 0, 1);
     }
     dTime_c now = *dTime_c::getCurrent();
     if (now.hour < 6) {
         now.add(-1, 0, 0, 0);
     }
     u16 today = dTheater::getWeek(now);
-    dTime_c last = mDate0.get();
+    dTime_c last = mRatingDate.get();
     u16 last_day = dTheater::getWeek(last);
     if (today != last_day) {
         return TRUE;
@@ -1443,12 +1443,12 @@ BOOL dPrivateDates_c::fn_80139A6C() {
 }
 
 // 80139C30
-BOOL dPrivateDates_c::fn_80139C30(dYMD_c *out) {
-    if (mDate1.year == 0) {
-        mDate1.set(2000, 0, 1);
+BOOL dPrivateHRAInfo_c::isNewModelRoomMonth(dYMD_c *out) {
+    if (mModelRoomDate.year == 0) {
+        mModelRoomDate.set(2000, 0, 1);
     }
     dTime_c cal = getModelRoomDate();
-    if (cal.year != mDate1.year || cal.month != mDate1.month || cal.mday != mDate1.day) {
+    if (cal.year != mModelRoomDate.year || cal.month != mModelRoomDate.month || cal.mday != mModelRoomDate.day) {
         if (out != NULL) {
             out->set(cal.year, cal.month, cal.mday);
         }

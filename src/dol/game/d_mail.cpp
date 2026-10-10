@@ -11,18 +11,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-
-// dLetter text builders (fill the header/body/footer words).
-void fn_800CB638(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 kind, const char *label);
-void fn_800CB66C(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 a, u16 b, u16 c, int d,
-                 int e, int f);
-void fn_800CB760(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 a, u16 b, u16 c, u16 d,
-                 u16 e, int f, int g);
-void fn_800CC0C8(const dPersonalID_c *to);
-void fn_800CC1AC(const dAnmPersonalID_c *sender);
-void fn_800CBC70(int slot, const dAnmPersonalID_c *sender);
-void fn_800CBC10(int slot, const dAnmPersonalID_c *sender);
-
 void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 void fn_8016B15C(int slot, dScript::Word_c *word); // script tag word
 void fn_8016B050(int slot, const dPersonalID_c *pid); // script tag player
@@ -272,7 +260,7 @@ void dMail_c::setup(const dAnmPersonalID_c *sender, const dPersonalID_c *to, con
     fn_800CC0C8(to);
     fn_800CC1AC(sender);
     fn_800CBC70(0, sender);
-    fn_800CBC10(8, sender);
+    fn_800CBC10(8, &sender->mLand);
 }
 
 // 80117AE8

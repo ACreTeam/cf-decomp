@@ -12,14 +12,11 @@
 #include <game/game/d_mail.hpp>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
+#include <game/game/d_letter.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 // Letter words (d_letter).
-void fn_800CBBB0(int slot, const dPersonalID_c *pid);   // player name
-void fn_800CBC10(int slot, const dLandID_c *land);      // town name
-void fn_800CBDA0(int slot, const dItem::Item *item);    // item name
-void fn_800CBE0C(int slot, int value, int a, int b);     // number
 
 BOOL fn_80177D24();                                     // WiiConnect24 off
 }

@@ -10,6 +10,7 @@
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <cstring>
+#include <game/game/d_heap.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -18,7 +19,6 @@ void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a
 // Downloaded item blocks (Ghidra: DLC_Item).
 }
 
-extern EGG::ExpHeap *lbl_8074E440;
 
 // 8010F124
 dDesign_c::dDesign_c() {

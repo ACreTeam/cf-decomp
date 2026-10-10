@@ -22,6 +22,27 @@
 #define PRIVATE_FLAGS1_NUM 128
 #define PRIVATE_FLAGS2_NUM 128
 #define PRIVATE_FLAGS3_NUM 128
+
+// Bit indices of the per-player flag tables (dPrivateData_c::isFlag0 / setFlag0 / clearFlag0 on mFlags0, and
+// the Flag1 functions on mFlags1). Shared by many systems; most indices are still literals, named here as
+// their meanings are found.
+enum dPrivateFlag0_e {
+    PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
+    PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
+    PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
+    PRIVATE_FLAG0_HRA_JOINED = 0x27,            // the HRA's welcome letter was delivered
+    PRIVATE_FLAG0_HRA_HOUSE_MODEL = 0x2A,       // the HRA's house model present was sent (70000 points)
+    PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
+    PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
+    PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
+    PRIVATE_FLAG0_BUG_OFF_LETTER_HELD = 0x72,   // the Bug-Off result letter waits in mFutureSelfLetter
+};
+enum dPrivateFlag1_e {
+    PRIVATE_FLAG1_BUG_OFF_TALK_0 = 0x35, // 0x35..0x38: Bug-Off talk flags, cleared by its setup
+    PRIVATE_FLAG1_BUG_OFF_TALK_1 = 0x36,
+    PRIVATE_FLAG1_BUG_OFF_TALK_2 = 0x37,
+    PRIVATE_FLAG1_BUG_OFF_TALK_3 = 0x38,
+};
 #define PRIVATE_SAVINGS_MAX 999999999
 #define PRIVATE_BELLS_MAX 99999
 #define PRIVATE_NOOK_POINTS_MAX 50000
@@ -37,16 +58,17 @@ public:
 
 
 // 0x0E at dPrivateData_c+0x1124. Play dates (dYMD_c).
-struct dPrivateDates_c {
+// The Happy Room Academy's per-player state (dPrivateData_c::mHRAInfo).
+struct dPrivateHRAInfo_c {
     void init(); // 80139A14
-    BOOL fn_80139A6C(); // 80139A6C; uses mDate0
-    BOOL fn_80139C30(dYMD_c *out); // 80139C30; uses mDate1
+    BOOL isNewRatingWeek(dYMD_c *out); // 80139A6C: this game week differs from mRatingDate's (out is unused; the HRA passes NULL)
+    BOOL isNewModelRoomMonth(dYMD_c *out); // 80139C30: this month's model room date (*out) differs from mModelRoomDate
 
-    /* 0x00 */ dYMD_c mDate0;
-    /* 0x04 */ dYMD_c mDate1;
-    /* 0x08 */ u32 _08;
-    /* 0x0C */ u8 _0C;
-    /* 0x0D */ u8 _0D;
+    /* 0x00 */ dYMD_c mRatingDate;    // the last HRA rating (game day)
+    /* 0x04 */ dYMD_c mModelRoomDate; // the last model room month handled
+    /* 0x08 */ u32 mLastScore;        // the last rating's points
+    /* 0x0C */ u8 mLastRemark;         // the last rating's remark (message - 12)
+    /* 0x0D */ u8 mLastSeries;         // the last rating's series
 };
 
 // 8 bytes at +0x4400 of dDesignList_c: display order of the designs.
@@ -485,7 +507,7 @@ public:
 
     /* 0x0000 */ dFriendList_c mFriends;
     /* 0x1120 */ u32 mChecksum;
-    /* 0x1124 */ dPrivateDates_c mDates;
+    /* 0x1124 */ dPrivateHRAInfo_c mHRAInfo;
     /* 0x1134 */ s32 mBells;
     /* 0x1138 */ s32 mDebt;
     /* 0x113C */ s32 mSavings;

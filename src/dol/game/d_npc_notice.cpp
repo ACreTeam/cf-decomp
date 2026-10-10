@@ -15,14 +15,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-// dLetter word helpers (TU around 800CB638).
-void fn_800CB720(dScript::Word_c *word, u16 msgId, const char *group);
-void fn_800CBAF0(int slot, int value);
-void fn_800CBB50(int slot, u8 value);
-void fn_800CBBB0(int slot, const dPersonalID_c *pid);
-void fn_800CBC70(int slot, const dAnmPersonalID_c *animal);
-void fn_800CBD30(int slot, u16 msgId, const char *group);
-
 // dTimeStamp_c -> dTime_c (unsplit TU 8014BD88..80153818).
 
 // Event schedule (unsplit TU 80088AD4..8008BCCC).

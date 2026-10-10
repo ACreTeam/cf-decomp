@@ -711,7 +711,7 @@ void dAcNpcNml_c::talk_c::selInvitePresent() {
     appt = &dSaveData_c::getTown()->mAnimals.mTown.mAppointment;
     idx = appt->mAnimalIdx;
     rank = 0;
-    fn_800B24BC(idx, &rank);
+    dHR::getAnimalRank(idx, &rank);
     if (rank == 0) {
         rank = 1;
     } else if (rank > 5) {
@@ -748,7 +748,7 @@ int dAcNpcNml_c::talk_c::msgInvitePresent(msgInfo_s *info) {
     getAnimal();
     s8 idx = dSaveData_c::getTown()->mAnimals.mTown.mAppointment.mAnimalIdx;
     u32 rank = 0;
-    fn_800B24BC(idx, &rank);
+    dHR::getAnimalRank(idx, &rank);
     if (rank == 0) {
         rank = 1;
     } else if (rank > 5) {

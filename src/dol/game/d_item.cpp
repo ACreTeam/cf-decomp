@@ -1438,7 +1438,6 @@ BOOL adultKiddyCandCB_c::check(const BITM *bitm, Item *item) const {
     return bitm->getAdultKiddy() == mValue;
 }
 
-int getCategoryQ5(const Item &item);
 
 // 800C3A1C
 BOOL categoryQ5CandCB_c::check(const BITM *bitm, Item *item) const {
@@ -2321,12 +2320,12 @@ int getCategoryQ5(const Item &item) {
         }
 
         s8 partB = bitm->m_ftrPartB;
-        switch (static_cast<u32>(partB) < 6 ? partB : 1) {
-        case 0:
+        switch (static_cast<u32>(partB) < FTR_PART_B_COUNT ? partB : FTR_PART_B_ART) {
+        case FTR_PART_B_INSTRUMENT:
             return 5;
-        case 3:
+        case FTR_PART_B_PLANT:
             return 6;
-        case 4:
+        case FTR_PART_B_DOLL:
             return 0xA;
         }
 

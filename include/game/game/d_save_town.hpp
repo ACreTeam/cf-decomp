@@ -153,14 +153,20 @@ enum {
 // fn_8014F030, fn_8014F0A4, fn_8014F248). Holds the auction's featured downloaded item: one object,
 // since the target reaches the flag byte and mDLItem from one base.
 struct dSaveTown640C8_c {
+    // The house rating's model room candidate (d_hr fn_800B0ABC); flag 0x4 marks it set.
+    void setModelRoom(const dSvMdlRm_c &room) {
+        mModelRoomCandidate = room;
+        mFlags |= 4;
+    }
+
     /* 0x000 */ u8 _000;
-    /* 0x001 */ u8 mFlags;                // 0x20: dSvAuc_c::pickDLItem set mDLItem
+    /* 0x001 */ u8 mFlags;                // 0x04: mModelRoomCandidate set (setModelRoom); 0x20: dSvAuc_c::pickDLItem set mDLItem
     /* 0x002 */ dOutfit_c _002;
     /* 0x00E */ u8 _00E[0x116];
     /* 0x124 */ u8 _124;                  // bitfield byte, cleared by the ctor
     /* 0x125 */ u8 _125;
     /* 0x126 */ u8 _126[2];
-    /* 0x128 */ dModelRoom_c _128;
+    /* 0x128 */ dSvMdlRm_c mModelRoomCandidate; // the HRA's next model room (dHR::selectModelRooms)
     /* 0x674 */ dSaveDLItem_c mDLItem;
 }; // size 0x2674
 
@@ -199,7 +205,7 @@ public:
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
     /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
     /* 0x0634F0 */ dBugOff_c mBugOff;          // Bug-Off standings (d_bug_off)
-    /* 0x0636F0 */ dModelRoom_c _0636F0;
+    /* 0x0636F0 */ dSvMdlRm_c mModelRoom;   // the HRA's model room of the month
     /* 0x063C3C */ u8 _063C3C[4];
     // The auction (d_sv_auc): items, their senders, day and day type; dSvAuc_c describes the whole
     // block (getAuction). Kept as plain members: a wrapper member adds a destructor to our d_save_data.

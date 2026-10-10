@@ -12,7 +12,7 @@
 //     5 maps in .bss
 //   - the tailor, Gracie's and the auction house (SCENE_RM_TAILOR, SCENE_RM_GRACE, SCENE_RM_AUCTION):
 //     one map each in .bss
-//   - the model room (SCENE_RM_HAPPY_MDL): dSaveData_c::_0636F0's map
+//   - the model room (SCENE_RM_HAPPY_MDL): dSaveTown_c::mModelRoom's map
 // The .bss maps other than the villager houses are cleared every day (clearShopRoomMaps).
 
 void clearAllRoomMaps(); // 80111478

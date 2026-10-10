@@ -9,18 +9,12 @@
 #include <game/game/d_event.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_insect_info.hpp>
+#include <game/game/d_letter.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_post_office.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_800CBF34(int slot, int value, int digits, int format); // 800CBF34: number message word
-void fn_800CBDA0(int slot, const dItem::Item *item);           // 800CBDA0: item name word
-void fn_800CBAF0(int slot, int month);                         // 800CBAF0: month name word
-void fn_800CBB50(int slot, u8 day);                            // 800CBB50: day word
-void fn_800CBC10(int slot, const dLandID_c *land);             // 800CBC10: town name word
-void fn_800CBBB0(int slot, const dPersonalID_c *pid);          // 800CBBB0: player name word
-void fn_800CBC70(int slot, const dAnmPersonalID_c *animal);    // 800CBC70: villager name word
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter,
                 const dItem::Item *exclude, int excludeNum, int); // 800C60B4: random item
 extern u8 lbl_8059FF80[];
@@ -81,7 +75,7 @@ void dBugOff_c::reset() {
     mEnd.reset();
     for (int i = 0; i < PLAYER_NUM; i++) {
         if (getTownPlayer(i)->mPID.isValid()) {
-            getTownPlayer(i)->clearFlag0(BUG_OFF_FLAG0_ENTERED);
+            getTownPlayer(i)->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
         }
     }
     mLettersSent = FALSE;
@@ -129,7 +123,7 @@ void dBugOff_c::sendResultLetters() {
             fn_800CBAF0(1, date.month);
             fn_800CBB50(2, date.mday);
             fn_800CBC10(3, getLandID());
-            if (getTownPlayer(i)->mPID.isValid() && getTownPlayer(i)->isFlag0(BUG_OFF_FLAG0_ENTERED)) {
+            if (getTownPlayer(i)->mPID.isValid() && getTownPlayer(i)->isFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED)) {
                 if (mPlayer[0].isValid() && mPlayer[0] == getTownPlayer(i)->mPID) {
                     dPrivateData_c *player = getTownPlayer(i);
                     setupMail(&sMail, cM::rndInt(3) + 1, 12, &player->mPID, 0x14C);
@@ -138,20 +132,20 @@ void dBugOff_c::sendResultLetters() {
                     fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
                     sMail.setPresent(present.mId, 0xFF);
                     if (dPostOffice::add(&sMail)) {
-                        getTownPlayer(i)->clearFlag0(BUG_OFF_FLAG0_ENTERED);
+                        getTownPlayer(i)->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
                     } else {
                         getTownPlayer(i)->mFutureSelfLetter.copy(&sMail);
-                        getTownPlayer(i)->setFlag0(BUG_OFF_FLAG0_LETTER_HELD);
+                        getTownPlayer(i)->setFlag0(PRIVATE_FLAG0_BUG_OFF_LETTER_HELD);
                     }
                     sentWinner = TRUE;
                 } else {
                     dPrivateData_c *player = getTownPlayer(i);
                     setupMail(&sMail, cM::rndInt(3) + 4, 12, &player->mPID, 0x14C);
                     if (dPostOffice::add(&sMail)) {
-                        getTownPlayer(i)->clearFlag0(BUG_OFF_FLAG0_ENTERED);
+                        getTownPlayer(i)->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
                     } else {
                         getTownPlayer(i)->mFutureSelfLetter.copy(&sMail);
-                        getTownPlayer(i)->setFlag0(BUG_OFF_FLAG0_LETTER_HELD);
+                        getTownPlayer(i)->setFlag0(PRIVATE_FLAG0_BUG_OFF_LETTER_HELD);
                     }
                 }
             }
@@ -254,11 +248,11 @@ void dBugOff_c::setup() {
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
             if (player->mPID.isValid()) {
-                player->clearFlag0(BUG_OFF_FLAG0_ENTERED);
-                player->clearFlag1(BUG_OFF_FLAG1_TALK_0);
-                player->clearFlag1(BUG_OFF_FLAG1_TALK_1);
-                player->clearFlag1(BUG_OFF_FLAG1_TALK_2);
-                player->clearFlag1(BUG_OFF_FLAG1_TALK_3);
+                player->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_0);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_1);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_2);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_3);
             }
         }
         mCursor.set(mStart.getTicks());
@@ -273,7 +267,7 @@ void dBugOff_c::setup() {
 BOOL dBugOff_c::entryPlayer(const dPersonalID_c *pid, const dItem::Item *item, int *score, int *size) {
     int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, pid);
     if (idx >= 0 && idx < PLAYER_NUM) {
-        getTownPlayer(idx)->setFlag0(BUG_OFF_FLAG0_ENTERED);
+        getTownPlayer(idx)->setFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
     }
     if (!judge(TRUE, item, score, size)) {
         return FALSE;

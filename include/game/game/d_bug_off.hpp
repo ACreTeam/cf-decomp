@@ -14,13 +14,6 @@
 
 class dAnimal_c;
 
-// dPrivateData_c flag0 / flag1 bits used here.
-#define BUG_OFF_FLAG0_ENTERED 0x6E      // the player entered this Bug-Off (cleared once the letter is sent)
-#define BUG_OFF_FLAG0_LETTER_HELD 0x72  // the result letter waits in dPrivateData_c::mFutureSelfLetter
-#define BUG_OFF_FLAG1_TALK_0 0x35       // 0x35..0x38: cleared by setup
-#define BUG_OFF_FLAG1_TALK_1 0x36
-#define BUG_OFF_FLAG1_TALK_2 0x37
-#define BUG_OFF_FLAG1_TALK_3 0x38
 
 // Places in the standings: [0] the leader, [1] the runner-up. A villager entry has an empty mPlayer,
 // a player entry an empty mAnimal.

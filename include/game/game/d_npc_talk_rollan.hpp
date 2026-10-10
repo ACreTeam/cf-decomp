@@ -4,7 +4,7 @@
 // .sdata2 807502D8..807502E0). The villager's "Ev_Rollan" talk: the npc offers the player a present
 // (old flooring / old wallpaper into mItem0, by the npc's state 1 / 2 in the save) as one answer of a
 // two-choice menu, with a chance that grows with two bytes of the player's house rating record
-// (dHomeList_c::findOwner, fn_800AC28C).
+// (dHomeList_c::findOwner, dHR::getRate).
 // getRollanChoice is also used by the quest talk TUs (d_npc_talk_quest_*) to add the Rollan answer to
 // their own choice menus. Per-npc state at +0x72CC0 of the save (fn_8015112C on getRaw(),
 // fn_801510EC on getTown()).

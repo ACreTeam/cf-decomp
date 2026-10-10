@@ -469,7 +469,7 @@ int dAcNpcNml_c::talk_c::msgVisitLayout(msgInfo_s *info) {
     }
     int home = dSaveData_c::getRaw()->mHomes.findCurrentPlayer();
     u32 rank = 0;
-    int flags = fn_800B2480(home, &rank);
+    int flags = dHR::getPlayerRank(home, &rank);
     if (flags == 0) {
         return FALSE;
     }
@@ -479,15 +479,15 @@ int dAcNpcNml_c::talk_c::msgVisitLayout(msgInfo_s *info) {
         rank = 5;
     }
     u16 code;
-    if (flags & 1) {
+    if (flags & HR_LAYOUT_MESSY) {
         code = cM::rndInt(2) + 1;
-    } else if (flags & 2) {
+    } else if (flags & HR_LAYOUT_FACING_WALL) {
         code = cM::rndInt(2) + 3;
-    } else if (!(flags & 4)) {
+    } else if (!(flags & HR_LAYOUT_COMFY)) {
         code = cM::rndInt(2) + 5;
-    } else if (flags & 0x10) {
+    } else if (flags & HR_LAYOUT_SERIES) {
         code = 7;
-    } else if (flags & 0x20) {
+    } else if (flags & HR_LAYOUT_SERIES_PARTS) {
         code = cM::rndInt(2) + 8;
     } else {
         code = cM::rndInt(2) + 10;

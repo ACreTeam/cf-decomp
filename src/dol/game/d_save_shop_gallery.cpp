@@ -5,14 +5,13 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
+#include <game/game/d_hr.hpp>
 
 extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
 extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const int *range, int rangeNum, const void *filter, const dItem::Item *exclude,
                 int excludeNum, int); // 800C60B4: random items
-int fn_800AC5F8();                    // 800AC5F8
-int fn_800AC6B4();                    // 800AC6B4
 }
 
 // 801483D8
@@ -168,12 +167,12 @@ int dSaveShopGallery_c::getUnsoldNum() {
 
 // 80148A40
 int dSaveShopGallery_c::getPictureRate() {
-    return fn_800AC5F8() + 50;
+    return dHR::getPictureRate() + 50;
 }
 
 // 80148A64
 int dSaveShopGallery_c::getFtrRate() {
-    return fn_800AC6B4() + 50;
+    return dHR::getFtrRate() + 50;
 }
 
 // 80148A88

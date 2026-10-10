@@ -9,10 +9,10 @@
 #include <game/sLib/s_lib.hpp>
 #include <revolution/MTX.h>
 #include <math.h>
+#include <game/game/d_heap.hpp>
 
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
-extern EGG::ExpHeap *lbl_8074E440;    // 8074E440
 
 void fn_80197414(mColor *color, int idx); // 80197414: a sky color for the time of day
 u8 fn_801977BC();                         // 801977BC: the star color's alpha

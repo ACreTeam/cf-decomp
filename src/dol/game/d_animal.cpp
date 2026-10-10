@@ -23,6 +23,8 @@
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/game/d_hmn_tool_mng.hpp>
+#include <game/game/d_hr.hpp>
+#include <game/game/d_letter.hpp>
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -287,7 +289,6 @@ extern "C" {
 
 // Other TUs.
 }
-BOOL isFurnitureKind(int kind);
 
 // 8011B6AC
 // Bit idx of a bit array, if idx <= max.
@@ -2807,11 +2808,6 @@ struct dNpcPair_c;
 u32 fn_800DCF30();
 u16 fn_8016AF68(const char *group);
 BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
-u16 fn_800CBA14(const char *label);
-u16 fn_800CBA40(const char *label);
-u16 fn_800CBA6C(const char *label);
-u16 fn_800CBA98(const char *label);
-u16 fn_800CBAC4(const char *label);
 int fn_801017B8();
 }
 
@@ -3632,14 +3628,9 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-u8 *fn_800AC28C();
-u16 fn_800CBA14(const char *label);
-u16 fn_800CBA40(const char *label);
-u16 fn_800CBA6C(const char *label);
 extern u8 lbl_8059FF80[];
 }
 
-int getCategoryQ5(const dItem::Item &item);
 
 // {a, b} pairs passed to fn_800C60B4 (cf. dNpcPair_c in d_npc.cpp).
 struct dAnimalPair_c {
@@ -3749,8 +3740,9 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
         break;
     }
     default:
-        if ((u32)dSaveData_c::getTown()->mHomes.findOwner(player) < 4) {
-            int rate = *fn_800AC28C();
+        u32 home = dSaveData_c::getTown()->mHomes.findOwner(player);
+        if (home < 4) {
+            int rate = *dHR::getRate(home);
             int room = player->getMoneyRoom(0);
             int amount = rate * 4 + 500;
             if (amount <= room) {
@@ -3917,8 +3909,9 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
         break;
     }
     default:
-        if ((u32)dSaveData_c::getTown()->mHomes.findOwner(player) < 4) {
-            int rate = *fn_800AC28C();
+        u32 home = dSaveData_c::getTown()->mHomes.findOwner(player);
+        if (home < 4) {
+            int rate = *dHR::getRate(home);
             int room = player->getMoneyRoom(0);
             int amount = rate * 4 + 500;
             if (amount <= room) {
@@ -4325,7 +4318,7 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
         f32 r = cM::rndF(100.0f);
         int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
-            int rate = *fn_800AC28C();
+            int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
             if (amount <= room) {
@@ -4431,7 +4424,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
         f32 r = cM::rndF(100.0f);
         int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
-            int rate = *fn_800AC28C();
+            int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
             if (amount <= room) {
@@ -4541,7 +4534,7 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
         f32 r = cM::rndF(100.0f);
         int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
-            int rate = *fn_800AC28C();
+            int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
             if (amount <= room) {
@@ -4701,7 +4694,7 @@ u32 dAnimal_c::pickFtrReward(dItem::Item *item, int *price, dPrivateData_c *play
         f32 r = cM::rndF(100.0f);
         int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
-            int rate = *fn_800AC28C();
+            int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
             if (amount <= room) {
@@ -4844,10 +4837,6 @@ extern "C" {
 // Other chunks of this TU.
 
 // Other TUs.
-u16 fn_800CBA14(const char *label); // letter part counts
-u16 fn_800CBA40(const char *label);
-u16 fn_800CBA6C(const char *label);
-void fn_800CBEB4(int slot, int value);
 u32 fn_800DCF30();
 u32 fn_80169298();
 }
@@ -8099,10 +8088,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-u16 fn_800CBA14(const char *label); // header variants of a mail label
-u16 fn_800CBA40(const char *label); // body variants
-u16 fn_800CBA6C(const char *label); // footer variants
-void fn_800CBCD4(int slot, dScript::Word_c *word);
 extern u8 lbl_8059FF80[];
 }
 
@@ -10256,8 +10241,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-u16 fn_800CBA98(const char *label);
-u16 fn_800CBAC4(const char *label);
 
 // This chunk, used before their definitions.
 }

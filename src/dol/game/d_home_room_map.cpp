@@ -188,7 +188,7 @@ dHomeRoomMap_c *getRoomMap(u8 scene) {
     } else if (scene == SCENE_RM_AUCTION) {
         return &sAuctionMap;
     } else if (scene == SCENE_RM_HAPPY_MDL) {
-        return &dSaveData_c::getTown()->_0636F0.mMap;
+        return &dSaveData_c::getTown()->mModelRoom.mMap;
     }
     return NULL;
 }

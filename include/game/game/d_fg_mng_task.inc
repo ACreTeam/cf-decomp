@@ -715,7 +715,7 @@ void dFgMngStone_c::hit(dFdAsPos_c pos) {
     u8 *townFlags;
     if (mTimer < 0) {
         mPos.set(pos.mX, pos.mZ);
-        mTimer = ((u32)(*fn_800AC28C(4) * 0x898) >> 12) + 0x1D1;
+        mTimer = ((u32)(*dHR::getRate(4) * 0x898) >> 12) + 0x1D1;
     }
     int max = HIT_MAX;
     if (mHit == 0) {

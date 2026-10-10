@@ -20,6 +20,8 @@
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_hr.hpp>
+#include <game/game/d_letter.hpp>
 
 extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
@@ -34,12 +36,6 @@ void fn_800DD588(int type, int arg);  // 800DD588
 void *fn_800A9058();                  // 800A9058
 int fn_800A8F98(void *, int unitX, int unitZ, int); // 800A8F98: -1 when none
 void fn_800ABAF4(int);                // 800ABAF4
-u8 *fn_800AC320();                    // 800AC320
-void fn_800CBD30(int slot, u16 msgId, const char *group); // 800CBD30: message word
-void fn_800CBAF0(int slot, int month);                    // 800CBAF0: month name word
-void fn_800CBB50(int slot, u8 day);                       // 800CBB50: day word
-void fn_800CBDA0(int slot, const dItem::Item *item);      // 800CBDA0: item name word
-void fn_800CBFE0(u8 hour, int slot, int);                 // 800CBFE0: hour word
 void *fn_801683D8();                                      // 801683D8
 void fn_80167BAC(void *);                                 // 80167BAC: reloads the structures' unit attributes
 }
@@ -585,7 +581,7 @@ void dSaveShop_c::update() {
         fn_800C60B4(ftrs, num, range, 1, lbl_8059FF80, NULL, 0, 0);
     }
 
-    u8 rate = fn_800AC320()[1];
+    u8 rate = dHR::getAverageRate()[1];
     BOOL extra = FALSE;
     if (dSaveData_c::getRaw()->isFlag(0x15) && !isUpgradingToday()) {
         if (*(u16 *)((u8 *)dSaveData_c::getTown() + 0x5EC74) & 0x20) {

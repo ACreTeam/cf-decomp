@@ -1,4 +1,4 @@
-// Happy Room Academy model rooms (dModelRoom_c) and the theme of the month. .text 80111A2C..80112BB8,
+// Happy Room Academy model rooms (dSvMdlRm_c) and the theme of the month. .text 80111A2C..80112BB8,
 // .rodata 80475CF8..80475D10, .bss 805ECB58..805ED1D0, .sbss 8074E6E8..8074E6F0, .sdata2 80750AD8..80750AE0.
 #include <game/game/d_model_room.hpp>
 #include <game/game/d_animal.hpp>
@@ -9,12 +9,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/core/eggHeap.h>
-
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-void fn_800A8B28(dNpcFtrShape_c *shape, dItem::Item item);
-u32 fn_800A8BB8(dNpcFtrShape_c *shape);
-}
+#include <game/game/d_ftr.hpp>
 
 // 80475CF8: BG per room type
 static const u32 sBgIds[] = {0xD3, 0xD4, 0xD5, 0xD5, 0xD5, 0};
@@ -52,12 +47,12 @@ int getModelRoomTheme() {
 }
 
 // 80111CEC
-void dModelRoom_c::clearFlags() {
+void dSvMdlRm_c::clearFlags() {
     mFlags = 0;
 }
 
 // 80111CF8
-void dModelRoom_c::clear() {
+void dSvMdlRm_c::clear() {
     clearFlags();
     mScore = 0;
     mRoomType = 0;
@@ -69,21 +64,21 @@ void dModelRoom_c::clear() {
 }
 
 // 80111D58
-void dModelRoom_c::setOwner(const dPersonalID_c *pid) {
+void dSvMdlRm_c::setOwner(const dPersonalID_c *pid) {
     mPlayerID = *pid;
     mFlags |= MODEL_ROOM_OWNED;
     mFlags &= ~MODEL_ROOM_VILLAGER;
 }
 
 // 80111E44
-void dModelRoom_c::setOwner(const dAnmPersonalID_c *aid) {
+void dSvMdlRm_c::setOwner(const dAnmPersonalID_c *aid) {
     mAnimalID = *aid;
     mFlags |= MODEL_ROOM_OWNED;
     mFlags |= MODEL_ROOM_VILLAGER;
 }
 
 // 80111F38
-int dModelRoom_c::getBgId() {
+int dSvMdlRm_c::getBgId() {
     if (mRoomType < 5) {
         return sBgIds[mRoomType];
     }
@@ -91,7 +86,7 @@ int dModelRoom_c::getBgId() {
 }
 
 // 80111F60
-BOOL dModelRoom_c::isFromThisTown() {
+BOOL dSvMdlRm_c::isFromThisTown() {
     const dPersonalID_c *pid = getPlayerID();
     if (pid != NULL) {
         return pid->land == dSaveData_c::getTown()->mLandID;
@@ -104,7 +99,7 @@ BOOL dModelRoom_c::isFromThisTown() {
 }
 
 // 80112114
-BOOL dModelRoom_c::setFromAnimal(u32 animalIdx) {
+BOOL dSvMdlRm_c::setFromAnimal(u32 animalIdx) {
     if (animalIdx < ANIMAL_NUM) {
         dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(animalIdx);
         if (animal != NULL) {
@@ -150,7 +145,7 @@ BOOL dModelRoom_c::setFromAnimal(u32 animalIdx) {
 }
 
 // 80112640
-BOOL dModelRoom_c::setFromHome(u32 home, int room) {
+BOOL dSvMdlRm_c::setFromHome(u32 home, int room) {
     if (home < PLAYER_NUM) {
         // A signed copy: using home directly moves its register copy into the prologue.
         int idx = home;
@@ -177,7 +172,7 @@ BOOL dModelRoom_c::setFromHome(u32 home, int room) {
 }
 
 // 801129A8
-dItem::Item dModelRoom_c::getRandomRoomItem(dModelRoomItemCheck_c &check) {
+dItem::Item dSvMdlRm_c::getRandomRoomItem(dSvMdlRm_c::searchCB_c &check) {
     static dItem::Item sItems[256];
     dItem::Item *dst = sItems;
     u32 num = 0;
@@ -200,7 +195,7 @@ dItem::Item dModelRoom_c::getRandomRoomItem(dModelRoomItemCheck_c &check) {
 }
 
 // 80112B08
-int dModelRoom_c::countRoomFtrTiles() {
+int dSvMdlRm_c::countRoomFtrTiles() {
     dNpcFtrShape_c shape;
     int num = 0;
     dItem::Item *item = getLayerItems(0)->mItems[0];

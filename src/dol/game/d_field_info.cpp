@@ -1100,7 +1100,7 @@ BOOL dFdInfoSvMdlRm_c::build(dHomeRoom_c *room, int bgId, EGG::Heap *heap) {
     BOOL ok = TRUE;
     if (block != NULL) {
         if (block->mBgData == NULL) {
-            int roomId = static_cast<dModelRoom_c *>(room)->getBgId(); // room is a model room
+            int roomId = static_cast<dSvMdlRm_c *>(room)->getBgId(); // room is a model room
             void *buf = heap->alloc(0xA00, 4);
             if (buf != NULL) {
                 dBG::getAlwaysBank()->copyBlockCol(buf, roomId);

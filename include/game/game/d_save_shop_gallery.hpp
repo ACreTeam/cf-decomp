@@ -26,8 +26,8 @@ public:
     void sell(int slot);       // 80148998
     BOOL isSold(int slot);     // 801489D0: TRUE for slots out of range
     int getUnsoldNum();        // 80148A04
-    int getPictureRate();      // 80148A40: 50 + fn_800AC5F8
-    int getFtrRate();          // 80148A64: 50 + fn_800AC6B4
+    int getPictureRate();      // 80148A40: 50 + dHR::getPictureRate
+    int getFtrRate();          // 80148A64: 50 + dHR::getFtrRate
     BOOL isChecked(int slot);  // 80148A88
     void check(int slot);      // 80148ABC: every unsold slot unless the player has flag0 0x14
     void clearChecked();       // 80148B70

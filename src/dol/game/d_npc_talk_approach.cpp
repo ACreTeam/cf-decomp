@@ -642,7 +642,7 @@ void dAcNpcNml_c::talk_c::endApSell(int arg) {
             u32 rating = 0;
             u32 home = dSaveData_c::getTown()->mHomes.findOwner(player);
             if (home < 4) {
-                const u8 value = *fn_800AC28C(home);
+                const u8 value = *dHR::getRate(home);
                 rating = value;
             }
             rating *= 3;
@@ -699,7 +699,7 @@ void dAcNpcNml_c::talk_c::endApWant(int arg) {
             u32 rating = 0;
             u32 home = dSaveData_c::getTown()->mHomes.findOwner(player);
             if (home < 4) {
-                const u8 value = *fn_800AC28C(home);
+                const u8 value = *dHR::getRate(home);
                 rating = value;
             }
             mPrice = (int)price + rating * 3;

@@ -17,6 +17,7 @@
 #include <game/cLib/c_math.hpp>
 #include <game/cLib/c_counter.hpp>
 #include <game/sLib/s_lib.hpp>
+#include <game/game/d_heap.hpp>
 
 extern "C" {
 BOOL fn_800DCEDC();                            // net play
@@ -36,7 +37,6 @@ void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3
                  int arg);                         // d_fgobj_managerNP
 }
 
-extern EGG::ExpHeap *lbl_8074E440;
 extern nw4r::math::VEC3 lbl_80623FEC; // the camera's target (the view center)
 
 void *dFishField_c_classInit();

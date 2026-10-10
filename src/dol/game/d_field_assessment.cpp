@@ -45,6 +45,7 @@
 #include <revolution/OS/OSTime.h>
 #include <nw4r/math.h>
 #include <string.h>
+#include <game/game/d_hr.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -114,7 +115,6 @@ void fn_8018EE7C();
 nw4r::math::VEC3 *fn_8016A28C();
 void fn_800D16E8();
 int fn_801017B8();
-const u8 *fn_800AC28C(int idx);
 void fn_800C77E8(void *obj);
 void fn_800C7800(void *obj);
 void fn_800C7830(void *obj);
@@ -4385,7 +4385,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     if (!save->mTownInfo.canRollMoneyTree()) {
         return;
     }
-    v = *fn_800AC28C(4);
+    v = *dHR::getRate(4);
     f32 rate = (10.0f * (4.0f * v) + item.getPrice()) / 1000.0f;
     if (dPlayerMgr_c::getCurrentPlayer()->mFortune == FORTUNE_MONEY) {
         rate *= 2.0f;

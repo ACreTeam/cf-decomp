@@ -1466,7 +1466,7 @@ public:
         void endRollan(int arg);                    // 80060D28 F8: msgMemory set, talk count 0x44
         BOOL stepRollan(int kind);                  // 80060DB8 104: two choices: getRollanChoice's answer and nml selResumeTalk (804A4B60)
         // Present roll: needs a free pocket and no private flag 0xD; percent chance 20 + (sum of two bytes
-        // of the player's home entry, fn_800AC28C) / 10, +5 when the player's fortune (+0x83F9) is 4, max 100.
+        // of the player's home entry, dHR::getRate) / 10, +5 when the player's fortune (+0x83F9) is 4, max 100.
         static BOOL rollRollanGift();               // 80060ED8
         void clearRollanFlag();                     // 80060FCC fn_801510EC(getTown() +0x72CC0, npc's dAnimalBlock_c index): clears this npc's bit
         void selRollanFloor();                      // 80061034 choice: EC = msgRollanFloorGift (present) or msgRollanFloorNone by rollRollanGift

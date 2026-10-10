@@ -13,12 +13,11 @@
 #include <game/game/d_dvd.hpp>
 #include <revolution/OS/OSTime.h>
 #include <cstring>
+#include <game/game/d_ftr.hpp>
+#include <game/game/d_letter.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_800CBBB0(int slot, const dPersonalID_c *pid);
-void fn_800CBC70(int slot, const dAnmPersonalID_c *animal);
-void fn_800CBD30(int slot, u16 msgId, const char *group);
 
 // Save sync (unsplit TU 800CCC54..800DE0E4).
 void fn_800DD4C8();
@@ -40,14 +39,9 @@ mVec3_c fn_801506F8(const void *data);
 // Field map / actors.
 dActor_c *fn_800F9860(int x, int z);
 dActor_c *fn_800F98CC(int x, int z);
-void fn_800A8B28(dNpcFtrShape_c *shape, dItem::Item item);
-u32 fn_800A8BB8(dNpcFtrShape_c *shape);
-const int *fn_800A8BE4(dNpcFtrShape_c *shape, u32 i);
 BOOL fn_80169FA4(mVec3_c *out, const dItem::Item *item, int i);
 BOOL fn_80013550();
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
-void fn_800CBC10(int slot, const dAnmPersonalID_c *animal);
-void fn_800CBDA0(int slot, const dItem::Item *item);
 BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 u16 fn_800F88AC(const dItem::Item *key);
 dActor_c *fn_800F9878(const dItem::Item *key);
@@ -3257,7 +3251,7 @@ void fn_800F4718(const dPersonalID_c *pid, int slot) {
 
 // 800F4764
 void fn_800F4764(const dAnmPersonalID_c *animal, int slot) {
-    fn_800CBC10(slot, animal);
+    fn_800CBC10(slot, &animal->mLand);
 }
 
 // 800F4774

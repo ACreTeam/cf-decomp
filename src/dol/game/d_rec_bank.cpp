@@ -4,9 +4,9 @@
 #include <lib/egg/core/eggExpHeap.h>
 #include <game/mLib/m_heap.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
+#include <game/game/d_heap.hpp>
 
 // The heap the entry array comes from (not identified yet; also used by d_dsn).
-extern EGG::ExpHeap *lbl_8074E440;
 
 namespace dRecBank {
 

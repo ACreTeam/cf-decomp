@@ -375,6 +375,19 @@ enum FtrPartA {
     FTR_PART_A_COUNT = 6,
 };
 
+// Furniture part B (BITM::m_ftrPartB; out of range reads as FTR_PART_B_ART): the categories the Happy Room
+// Academy counts (names from its remarks, NPC_honma.bmg).
+enum FtrPartB {
+    FTR_PART_B_INSTRUMENT, // 0x00
+    FTR_PART_B_ART,        // 0x01: paintings
+    FTR_PART_B_MODEL,      // 0x02
+    FTR_PART_B_PLANT,      // 0x03
+    FTR_PART_B_DOLL,       // 0x04
+    FTR_PART_B_NONE,       // 0x05
+
+    FTR_PART_B_COUNT, // 0x06
+};
+
 // Furniture lamp type (BITM::m_ftrLamp); 0 is none (getCategoryQ5).
 enum FtrLamp {
     FTR_LAMP_NONE, // 0x00
@@ -530,6 +543,16 @@ enum SeriesId {
     SERIES_EXTRA_SET_10,         // 0x83 set:   追加セット１０
 
     SERIES_COUNT
+};
+
+// series.bin group of a series (Series::mGroup, BITM::getSeriesGroup, Item::getSeriesGroup).
+enum SeriesGroup {
+    SERIES_GROUP_BASIC,
+    SERIES_GROUP_THEME,
+    SERIES_GROUP_SET,
+    SERIES_GROUP_OTHER,
+
+    SERIES_GROUP_COUNT
 };
 
 // Item source groups (BITM::m_from). Names follow the game's own string table
@@ -688,8 +711,10 @@ struct BITM {
         return static_cast<u32>(size) < FTR_SIZE_COUNT ? static_cast<FtrSize>(size) : FTR_SIZE_1x1;
     }
 
+    // s8 like getFtrSize: d_hr fn_800B2740 sign-extends a reused value (the extsb after a clrlwi is
+    // dropped only within one block).
     int getFtrPartA() const {
-        int part = m_ftrPartA;
+        int part = static_cast<s8>(m_ftrPartA);
         return static_cast<u32>(part) < FTR_PART_A_COUNT ? static_cast<FtrPartA>(part) : FTR_PART_A_NONE;
     }
 
@@ -835,6 +860,12 @@ struct KindInfo {
 
 // series.bin entry.
 struct Series {
+    // mGroup as 0..3 (3 for anything out of range); d_hr.
+    int getGroup() const {
+        s8 group = mGroup;
+        return static_cast<u32>(group) < 4 ? group : 3;
+    }
+
     s8 mId; // 0x00
     u8 _01[0x21];
     u8 mGroup : 4; // 0x22
@@ -1155,10 +1186,7 @@ class nameLookQ4_c : public dString::Word_c {
 public:
     virtual ~nameLookQ4_c() {} // weak 8003616C (d_a_npc_nml)
 };
-class nameSeries_c : public dString::Word_c {
-public:
-    virtual ~nameSeries_c(); // 800B4D48
-};
+// nameSeries_c (d_hr only) is in d_item_name.hpp.
 class nameCategoryQ5_c : public dString::Word_c {
 public:
     virtual ~nameCategoryQ5_c() {} // weak 800361C4 (d_a_npc_nml)
@@ -1179,7 +1207,11 @@ static inline const dItem::BITM *getBITM(u16 id) {
 
 } // namespace dItem
 
+// Furniture category of an item (d_item.cpp, global scope).
+int getCategoryQ5(const dItem::Item &item); // 800C52DC
+
 // Word setters of d_item.cpp (global scope).
+void setFurnitureName(dScript::Word_c *name, u32 series); // 800C10B0
 void setFashionName(dScript::Word_c *name, u32 fashion); // 800C116C
 void setLookName(dScript::Word_c *name, int look);      // 800C1244
 void setQ4LookName(dScript::Word_c *name, int look);    // 800C12A4
@@ -1189,3 +1221,4 @@ void setQ5PartName(dScript::Word_c *name, u32 part);    // 800C13B4
 int getNpcMsgFlagged(const dItem::Item &item, int looks, BOOL a); // 800C5454 (callers pass the item's address: a reference)
 // Npc remark of an item for the villager looks (index), 0 if none (d_item.cpp, global scope).
 int getNpcMsgBullfest(const dItem::Item &item, int index); // 800C54EC (callers pass the item's address: a reference)
+BOOL isFurnitureKind(int kind); // 800C2288

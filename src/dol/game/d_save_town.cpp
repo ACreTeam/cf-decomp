@@ -77,7 +77,7 @@ void dSaveTown_c::clearTown() {
     mBuilding.clear();
     dPrivateData_c::clearAll(mPlayers);
     mHomes.initAll();
-    _0636F0.clear();
+    mModelRoom.clear();
     mShops.clear();
     mMuseum.init();
     fn_801503E4(&_0683F8);

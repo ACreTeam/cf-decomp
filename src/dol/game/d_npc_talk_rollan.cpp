@@ -151,7 +151,7 @@ BOOL dAcNpcNml_c::talk_c::rollRollanGift() {
     u32 rating1 = 0;
     int home = dSaveData_c::getTown()->mHomes.findOwner(player);
     if ((u32)home < 4) {
-        const u8 *rating = fn_800AC28C(home);
+        const u8 *rating = dHR::getRate(home);
         rating2 = rating[2];
         rating1 = rating[1];
     }
