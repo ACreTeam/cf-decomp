@@ -332,6 +332,8 @@ struct Item {
         mId = id;
         return *this;
     }
+    bool operator==(u16 o) const { return getId() == o; }
+    // friend bool operator==(u16 id, const Item& item) { return item.getId() == id; }
     // From an item index (not an id); leaves mId to setFromIndex.
     explicit Item(int index); // 800A5D3C
     Item(int base, int offset, BOOL skipCheck); // 800A5D6C

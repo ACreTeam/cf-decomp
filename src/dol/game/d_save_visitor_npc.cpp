@@ -129,9 +129,9 @@ void dSaveVisitorNpc_c::update() {
         }
 
         // Wisp's lamp date (month, day): none.
-        u8 *lampDate = dSaveData_c::getTown()->_0683C4;
-        lampDate[0] = 12;
-        lampDate[1] = 0;
+        dMD_c *lampDate = &dSaveData_c::getTown()->mTownInfo.mLampDate;
+        lampDate->month = 12;
+        lampDate->day = 0;
     }
 }
 

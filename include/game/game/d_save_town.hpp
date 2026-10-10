@@ -24,6 +24,7 @@
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_land.hpp>
 #include <game/game/d_sv_auc.hpp>
+#include <game/game/d_sv_town_info.hpp>
 #include <game/game/d_save_building.hpp>
 
 #include <game/game/d_sv_time_offset.hpp>
@@ -214,9 +215,7 @@ public:
     /* 0x066745 */ u8 mHarvestSpot[5];     // d_sv_npc_pos record: the Harvest Festival spot
     /* 0x06674A */ dSaveOtherTown_c mOtherTowns[4];
     /* 0x066B62 */ dNoticeBoard_c mNoticeBoard;
-    /* 0x068372 */ u8 _068372[0x50];        // ctor 8014D0BC
-    /* 0x0683C2 */ u16 _0683C2;             // an item id (d_fg_item)
-    /* 0x0683C4 */ u8 _0683C4[4];
+    /* 0x068372 */ dSaveTownInfo_c mTownInfo;
     /* 0x0683C8 */ dSaveVisitorNpc_c mVisitorNpc;
     /* 0x0683DF */ u8 _0683DF;
     /* 0x0683E0 */ u16 _0683E0;

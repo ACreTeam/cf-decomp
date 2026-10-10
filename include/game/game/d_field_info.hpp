@@ -69,9 +69,7 @@ struct dHomeRoom_c;
 
 #include <game/game/d_bgcf.hpp> // dBGCF::clmcb_c
 
-namespace dItem {
-struct Item;
-}
+#include <game/game/d_fg_item.hpp>
 namespace nw4r {
 namespace math {
 struct VEC3;
@@ -247,6 +245,12 @@ public:
     BOOL buildHomeRoom(u32 home, int room, EGG::Heap *heap);                             // 8008E0B8
     void reloadHomeRoom(u32 home, int room);                                             // 8008E238
     static int getBgDataSize();                                                          // 8008E2D0
+
+    inline void setItemFromId(u16 id, int ux, int uz, int layer) {
+        dItem::Item fg;
+        fg.mId = id;
+        setItem(&fg, ux, uz, layer);
+    }
 
     /* 0x04 */ dFdBlock_c *mBlocks; // mBlockW * mBlockH
     /* 0x08 */ int mBlockW;

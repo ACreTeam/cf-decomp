@@ -101,7 +101,7 @@ void dSaveCafeGuest_c::update() {
 
 // 801498DC
 u8 dSaveCafeGuest_c::getCurrentGuest() {
-    dTimeStamp_c rolled = *(dTimeStamp_c *)dSaveData_c::getTown()->_068372;
+    dTimeStamp_c rolled = dSaveData_c::getTown()->mTownInfo.mLastDay;
     if (!rolled.isToday(TRUE)) {
         return CAFE_GUEST_NONE;
     }
@@ -127,7 +127,7 @@ u8 dSaveCafeGuest_c::getCurrentGuest() {
 
 // 80149A8C
 u8 dSaveCafeGuest_c::getGuest(int slot) {
-    dTimeStamp_c rolled = *(dTimeStamp_c *)dSaveData_c::getTown()->_068372;
+    dTimeStamp_c rolled = dSaveData_c::getTown()->mTownInfo.mLastDay;
     if (!rolled.isToday(TRUE)) {
         return CAFE_GUEST_NONE;
     }

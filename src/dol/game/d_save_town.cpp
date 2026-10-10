@@ -87,7 +87,7 @@ void dSaveTown_c::clearTown() {
     fn_801505E4(_066741);
     fn_80150628(mHarvestSpot);
     fn_801510A0(_072CC0);
-    ((dTimeStamp_c *)_068372)->reset();
+    mTownInfo.mLastDay.reset();
     mNoticeBoard.clear();
     fn_80150BDC(&_072E0A);
     mVillageMelody.clear();

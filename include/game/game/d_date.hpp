@@ -25,6 +25,7 @@ struct dYMD_c {
     BOOL isDate(int year, u8 month, u8 day) const {
         return this->year == year && this->month == month && this->day == day;
     }
+    inline BOOL isDate(const dTime_c *time) const; // after dTime_c
 
     dTime_c get() const;                              // 8014CBFC: 0:00:00 of the date
     void set(const dTime_c *time);                    // 8014CC98
@@ -182,3 +183,7 @@ public:
     static u8 sFlags;          // 8074E8C0: TIME_FLAG_*
     static dTime_c sCurrent;   // 80600898
 }; // size 0x28
+
+inline BOOL dYMD_c::isDate(const dTime_c *time) const {
+    return isDate(time->year, time->month, time->mday);
+}

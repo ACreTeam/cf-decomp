@@ -74,8 +74,6 @@ BOOL fn_800DCF90();
 void fn_800DD4C8();
 void fn_800DD518(void *data, int size);
 void fn_800DD588(int a, int b);
-void fn_8014D3F4(void *obj, int rank, int days);
-int fn_8014D844(void *obj, int id);
 void fn_80169ED8();
 void fn_80169C38();
 void fn_80169BF4();
@@ -92,14 +90,11 @@ void fn_80169B3C();
 void fn_80169B54();
 void fn_80169B64();
 void fn_80169BB4();
-void fn_8014D89C(void *events, int id);
 int fn_800812C8(int blockType);
 void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
 void fn_8014FD48(void *obj, dTime_c last, dTime_c *now, int *days);
 void fn_80151CF0(void *obj);
-BOOL fn_8014D740(void *obj);
-void fn_8014D69C(void *obj);
 void fn_800F5AE8();
 void fn_80150524(void *obj);
 void fn_801505E4(void *obj);
@@ -1199,7 +1194,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     sFdAssess.assessTown(fd, w, h);
     int rank = sFdAssess.mRank;
     dSaveTown_c *town = dSaveData_c::getTown();
-    fn_8014D3F4(town->_068372, rank, days);
+    town->mTownInfo.updatePerfectDays(rank, days);
     fgMngProc_seedRandom(now, seed + 0x2221);
     int num = days;
     if (days > 5) {
@@ -1214,7 +1209,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     createHeap();
     dFgMngProc_c::setupUnitMask(fd, (u16 *)mBuffer);
     procDay(fd, last);
-    if (fn_8014D844(dSaveData_c::getTown()->_068372, EVENT_BUNNY_DAY) >= 0) {
+    if (dSaveData_c::getTown()->mTownInfo.findEndEvent(EVENT_BUNNY_DAY) >= 0) {
         updateEggs();
     }
     fgMngProc_seedRandom(now, seed + 0x2222);
@@ -1596,8 +1591,7 @@ void dFgMngProc_c::checkSapling(dFdBase_c *fd, dItem::Item *item, int *size, int
 // count of its block quarter.
 void killTree(dFdBase_c *fd, dItem::Item *item, int x, int z) {
     int deadId = *(s16 *)&item->getFgInfo()->_04;
-    dItem::Item dead((u16)deadId);
-    fd->setItem(&dead, x, z, 0);
+    fd->setItemFromId(deadId, x, z, 0);
     int blockX = x >> 4;
     int blockZ = z >> 4;
     sFdAssess.getBlock(blockX - 1, blockZ - 1)->mTreeNum[(x - (blockX << 4)) >> 3][(z - (blockZ << 4)) >> 3]--;
@@ -1730,8 +1724,7 @@ void growTree(dFdBase_c *fd, const dItem::Item *item, int x, int z) {
     } else if (info->mTreeStage < 4) {
         id += 1;
     }
-    dItem::Item next(id);
-    fd->setItem(&next, x, z, 0);
+    fd->setItemFromId(id, x, z, 0);
 }
 
 // 80750660: the 8 units around one, ((dx + 8) << 4) | (dz + 8).
@@ -2479,11 +2472,11 @@ void dFgMngProc_c::procEvents(dFdBase_c *fd, const dTime_c *time) {
     }
     if (dEvent::getTodayVisitor() == VISITOR_WISP) {
         dTime_c *now = dTime_c::getCurrent();
-        u8 *date = dSaveData_c::getTown()->_0683C4;
+        dMD_c *date = &dSaveData_c::getTown()->mTownInfo.mLampDate;
         u8 month = now->month;
         u8 day = now->mday;
         BOOL same = FALSE;
-        if (date[0] == month && date[1] == day) {
+        if (date->month == month && date->day == day) {
             same = TRUE;
         }
         if (same) {
@@ -2494,20 +2487,13 @@ void dFgMngProc_c::procEvents(dFdBase_c *fd, const dTime_c *time) {
     }
 }
 
-// The town's event object (dSaveData_c+0x68372, ctor 8014D0BC; fn_8014D89C adds an event).
-struct dFgSaveEvents_c {
-    /* 0x00 */ u8 _00[0x44];
-    /* 0x44 */ dYMD_c mStamp;  // last processed day
-    /* 0x48 */ u16 mEnd[4];    // events to end the next day (0xFFFF: none)
-};
-
 // 80097568
 void dFgMngProc_c::endEvents(dFdBase_c *fd) {
     dSaveTown_c *save = dSaveData_c::getTown();
-    dFgSaveEvents_c *events = (dFgSaveEvents_c *)save->_068372;
+    dSaveTownInfo_c *events = &save->mTownInfo;
     for (int i = 0; i < 4; i++) {
-        int id = events->mEnd[i];
-        if (id != 0xFFFF) {
+        int id = events->mEndEvents[i];
+        if (id != TOWN_INFO_END_EVENT_NONE) {
             switch (id) {
             case EVENT_BUNNY_DAY:
                 endEggs(fd);
@@ -2532,7 +2518,7 @@ void dFgMngProc_c::endEvents(dFdBase_c *fd) {
                 removeLamps(fd);
                 break;
             }
-            events->mEnd[i] = 0xFFFF;
+            events->mEndEvents[i] = TOWN_INFO_END_EVENT_NONE;
         }
     }
 }
@@ -2542,7 +2528,7 @@ void dFgMngProc_c::procDay(dFdBase_c *fd, dTime_c *time) {
     dSaveTown_c *save = dSaveData_c::getTown();
     dTime_c t = *time;
     t.add(0, -TIME_DAY_START_HOUR, 0, 0);
-    dYMD_c *stamp = (dYMD_c *)(save->_068372 + 0x44);
+    dYMD_c *stamp = &save->mTownInfo.mEventDay;
     if (stamp->isNone() || stamp->compare(&t)) {
         endEvents(fd);
         procEvents(fd, &t);
@@ -2552,7 +2538,7 @@ void dFgMngProc_c::procDay(dFdBase_c *fd, dTime_c *time) {
 
 // 80097760
 void dFgMngProc_c::addEvent(int id) {
-    fn_8014D89C(dSaveData_c::getTown()->_068372, id);
+    dSaveData_c::getTown()->mTownInfo.addEndEvent(id);
 }
 
 // 8009779C
@@ -3268,8 +3254,7 @@ void dFgMngProc_c::setUnitItem(dFdBase_c *fd, int blockX, int blockZ, int unitX,
 
 // 80099538
 void dFgMngProc_c::setUnitItem(dFdBase_c *fd, int unitX, int unitZ, u16 id, BOOL buried) {
-    dItem::Item item(id);
-    fd->setItem(&item, unitX, unitZ, 0);
+    fd->setItemFromId(id, unitX, unitZ, 0);
     if (buried) {
         fd->setBuried(unitX, unitZ);
     } else {
@@ -3485,7 +3470,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
             }
         }
     }
-    owner = (dPersonalID_c *)&dSaveData_c::getTown()->_068372[8];
+    owner = &dSaveData_c::getTown()->mTownInfo.mEggPlayer;
     for (i = 0; i < PLAYER_NUM; i++) {
         p = dPlayerMgr_c::getPlayer(i);
         if (p->mPID.isValid()) {
@@ -4037,7 +4022,7 @@ void fgMngProc_procDayChange(BOOL arg) {
             dSaveData_c::getTown()->clearFlag(0x19);
             fn_80169C38();
         }
-        if (fn_8014D844(dSaveData_c::getTown()->_068372, EVENT_BUNNY_DAY) >= 0) {
+        if (dSaveData_c::getTown()->mTownInfo.findEndEvent(EVENT_BUNNY_DAY) >= 0) {
             sFgMngProc.updateEggs();
         }
         sFgMngUnitMask = 0;
@@ -4081,7 +4066,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     dSaveData_c::getExtra()->mTheater.update();
     fn_801541D8(dSaveData_c::getTown()->_0735B7);
     dSaveData_c::getTown()->mShops.mStalkMarket.checkDate();
-    ((dTimeStamp_c *)save->_068372)->set(OSCalendarTimeToTicks(&today));
+    save->mTownInfo.mLastDay.set(OSCalendarTimeToTicks(&today));
     sFgMngProcFlags = 0;
     int lastWeekday = dTime_c::getWeekday(last.year, last.month, last.mday);
     int weekday = dTime_c::getWeekday(today.year, today.month, today.mday);
@@ -4103,7 +4088,7 @@ void fgMngProc_procDayChange(BOOL arg) {
             player->dailyUpdate(days);
         }
     }
-    if (fn_8014D844(dSaveData_c::getTown()->_068372, EVENT_BUNNY_DAY) >= 0) {
+    if (dSaveData_c::getTown()->mTownInfo.findEndEvent(EVENT_BUNNY_DAY) >= 0) {
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
         if (player != NULL && !player->isFlag0(0x28)) {
             player->setFlag1(0x43);
@@ -4282,7 +4267,7 @@ void fgMngProc_collectFg56Units() {
 
 // 8009C244: one-off field setup with the date-seeded random: removes trees in water, assesses,
 // buries fossils / pitfalls, plants trees, changes stones, stamps _05EC64; only caller
-// fn_8014D27C (likely new-town creation).
+// dSaveTownInfo_c::init (new-town creation).
 void fgMngProc_initTownField() {
     int salt = (int)dSaveData_c::getTown()->mTownChecksum;
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
@@ -4397,7 +4382,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
         return;
     }
     save = dSaveData_c::getTown();
-    if (!fn_8014D740(save->_068372)) {
+    if (!save->mTownInfo.canRollMoneyTree()) {
         return;
     }
     v = *fn_800AC28C(4);
@@ -4411,7 +4396,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     if (cM::rndF(100.0f) < rate) {
         *outFg = dItem::FG_MONEY_TREE_SAPLING;
     }
-    fn_8014D69C(save->_068372);
+    save->mTownInfo.setMoneyTreeRolled();
 }
 
 // 8009C7FC: field object (and base fg) an item plants as, by BITM kind (saplings, flower
@@ -4795,7 +4780,7 @@ BOOL fgMngProc_isUnitSpecialGround(int x, int z) {
 }
 
 static inline dTimeStamp_c getLastStamp() {
-    return *(dTimeStamp_c *)dSaveData_c::getTown()->_068372;
+    return dSaveData_c::getTown()->mTownInfo.mLastDay;
 }
 
 static inline int diffDaysFromToday(const dTimeStamp_c &stamp) {
@@ -4812,7 +4797,7 @@ static inline BOOL isUpToDate(dTimeStamp_c stamp) {
     return diffDaysFromToday(stamp) <= 0;
 }
 
-// 8009D6F4: TRUE when the last day-change stamp (_068372) is unset or not before today 6:00;
+// 8009D6F4: TRUE when the last day-change stamp (mTownInfo.mLastDay) is unset or not before today 6:00;
 // d_s_stage runs fgMngProc_procDayChange when FALSE.
 BOOL fgMngProc_isDayUpToDate() {
     return isUpToDate(getLastStamp());
@@ -5039,10 +5024,10 @@ void fgMngProc_unblockDayChange() {
     sDayChangeBlocked = 0;
 }
 
-// 8009DFF0: the last processed day (save stamp _068372) at 6:00 as dTime_c; also used by
+// 8009DFF0: the last processed day (mTownInfo.mLastDay) at 6:00 as dTime_c; also used by
 // fn_801442F0 / fn_8014435C / fn_80144548.
 dTime_c fgMngProc_getLastDayTime() {
-    dTimeStamp_c stamp = *(dTimeStamp_c *)dSaveData_c::getTown()->_068372;
+    dTimeStamp_c stamp = dSaveData_c::getTown()->mTownInfo.mLastDay;
     dTime_c t;
     OSTicksToCalendarTime(stamp.getTicks(), &t);
     t.hour = TIME_DAY_START_HOUR;

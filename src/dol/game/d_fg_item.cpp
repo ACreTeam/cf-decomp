@@ -312,7 +312,7 @@ int Item::getPrice() const {
             case KIND_KABU:
                 return bitm->m_price;
             case KIND_FRUIT:
-                if (isSame(Item(dSaveData_c::getTown()->_0683C2))) {
+                if (isSame(Item(dSaveData_c::getTown()->mTownInfo.mFruit))) {
                     return bitm->m_price / 5;
                 }
                 return bitm->m_price;
