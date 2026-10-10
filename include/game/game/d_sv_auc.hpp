@@ -134,34 +134,3 @@ public:
     /* 0x484 */ u8 mDayType;
 }; // size 0x488
 
-// Debug tuning (RTTI "dSvAuc_hostIO_c", 805EC1B8). MWCC puts the vtable pointer where the first
-// virtual is declared, here after the fields.
-class dSvAuc_hostIO_c {
-public:
-    dSvAuc_hostIO_c() {
-        _00 = 0;
-        _04 = 0;
-        _06.clear();
-        _38 = 0;
-        _3C = 1000;
-        _34 = 0;
-        _40 = 5;
-        _42 = -1;
-        _44 = 5;
-        _48 = dSvAuc_c::sToday;
-    }
-
-    /* 0x00 */ int _00;
-    /* 0x04 */ u8 _04;
-    /* 0x06 */ dPersonalID_c _06;
-    /* 0x34 */ int _34;
-    /* 0x38 */ int _38;
-    /* 0x3C */ int _3C;
-    /* 0x40 */ s16 _40;
-    /* 0x42 */ s16 _42;
-    /* 0x44 */ s16 _44;
-    /* 0x48 */ int _48;
-
-    virtual ~dSvAuc_hostIO_c() {}                            // 8010D710
-    /* 0x4C vtable */
-}; // size 0x50
