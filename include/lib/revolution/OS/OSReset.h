@@ -33,8 +33,11 @@ void OSRegisterShutdownFunction(OSShutdownFunctionInfo* info);
 BOOL __OSCallShutdownFunctions(u32 pass, u32 event);
 void __OSShutdownDevices(u32 event);
 void __OSGetDiscState(u8* out);
+void OSRebootSystem(void);
 void OSShutdownSystem(void);
+void OSRestart(u32 resetCode);
 void OSReturnToMenu(void);
+void OSReturnToDataManager(void);
 u32 OSGetResetCode(void);
 void OSResetSystem(u32 arg0, u32 arg1, u32 arg2);
 

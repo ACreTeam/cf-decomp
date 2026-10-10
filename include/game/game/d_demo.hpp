@@ -79,6 +79,7 @@ public:
 }; // size 0x9414
 
 extern "C" {
+void fn_8018E674(); // 8018E674 (d_demo): (d_reset soft reset)
 BOOL fn_8018F438(int type); // 8018F438 (d_demo): a demo of this type is running
 // 801A309C (d_msg): offers word as a new nickname (controller +0x9394..), with the suffix of personality
 // looks (< 6; table 8047DA38). d_npc_talk_approach ApB_Nickname.

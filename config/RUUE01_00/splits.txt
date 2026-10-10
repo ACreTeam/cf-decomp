@@ -982,7 +982,7 @@ dol/game/d_s_boot_static.cpp:
 	.text       start:0x80107F00 end:0x8010A120
 	.ctors      start:0x8046570C end:0x80465710
 	.data       start:0x804EDA08 end:0x804EE300 align:4
-	.bss        start:0x805EBD90 end:0x805EC1A8 align:4
+	.bss        start:0x805EBD90 end:0x805EC1A8
 	.sdata      start:0x8074AF48 end:0x8074AFF8 align:4
 	.sbss       start:0x8074E648 end:0x8074E6C0 align:4
 	.sdata2     start:0x80750AC0 end:0x80750AD0 align:4
@@ -4860,9 +4860,13 @@ lib/egg/math/eggVector.cpp:
 lib/egg/gfx/eggCamera.cpp:
 	.text       start:0x804459FC end:0x80445D18
 
+lib/egg/gfx/eggDrawHelper.cpp:
+	.text       start:0x80445D18 end:0x80445F80
+	.ctors      start:0x8046593C end:0x80465940
+
 lib/egg/gfx/eggDrawGX.cpp:
-	.text       start:0x80445D18 end:0x804475A0
-	.ctors      start:0x8046593C end:0x80465944
+	.text       start:0x80445F80 end:0x804475A0
+	.ctors      start:0x80465940 end:0x80465944
 
 lib/egg/gfx/eggFog.cpp:
 	.text       start:0x804475A0 end:0x80447798

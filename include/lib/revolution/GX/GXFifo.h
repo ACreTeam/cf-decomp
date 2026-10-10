@@ -26,6 +26,7 @@ u8 GXGetFifoWrap(GXFifoObj*);
 void GXEnableBreakPt(void* writePtr);
 void GXDisableBreakPt(void);
 
+OSThread* GXSetCurrentGXThread(void);
 OSThread* GXGetCurrentGXThread(void);
 
 #ifdef __cplusplus

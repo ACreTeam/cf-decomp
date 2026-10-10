@@ -707,6 +707,7 @@ config.libs = [
             Object(Matching, "dol/game/d_random_field.cpp"),
             Object(Matching, "dol/game/d_rec_bank.cpp"),
             Object(Matching, "dol/game/d_region.cpp"),
+            Object(Matching, "dol/game/d_reset.cpp"),
             Object(Matching, "dol/game/d_random.cpp"),
             Object(Matching, "dol/game/d_sv_auc.cpp"),
             Object(NonMatching, "dol/game/d_save_data.cpp"),
@@ -1147,6 +1148,7 @@ config.libs = [
             Object(NonMatching, "lib/egg/core/eggAssertHeap.cpp"),
             Object(Matching, "lib/egg/core/eggDisposer.cpp"),
             Object(NonMatching, "lib/egg/core/eggColorFader.cpp"),
+            Object(NonMatching, "lib/egg/gfx/eggDrawHelper.cpp"),
         ],
     },
     {

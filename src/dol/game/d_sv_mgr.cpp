@@ -1421,8 +1421,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::createDownloadBox() {
 // 801C38B4
 void dSvMgr_c::stepSaveInterruptNetVst_c::disableHomeAndReset() {
     field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    fn_80106988();
-    fn_80106F18();
+    dReset::Manage_c::GetInstance()->SetResetDisable();
     nextStep();
 }
 
@@ -1499,8 +1498,7 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::createDownloadBox() {
 // 801C3E4C
 void dSvMgr_c::stepSaveInterruptNetHst_c::disableHomeAndReset() {
     field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    fn_80106988();
-    fn_80106F18();
+    dReset::Manage_c::GetInstance()->SetResetDisable();
     nextStep();
 }
 
@@ -1742,8 +1740,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::createDownloadBox() {
 // 801C4F1C
 void dSvMgr_c::stepSaveRetireNetVst_c::disableHomeAndReset() {
     field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    fn_80106988();
-    fn_80106F18();
+    dReset::Manage_c::GetInstance()->SetResetDisable();
     nextStep();
 }
 
@@ -1818,8 +1815,7 @@ void dSvMgr_c::stepSaveNormal_c::createDownloadBox() {
 // 801C54B4
 void dSvMgr_c::stepSaveNormal_c::disableHomeAndReset() {
     field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    fn_80106988();
-    fn_80106F18();
+    dReset::Manage_c::GetInstance()->SetResetDisable();
     nextStep();
 }
 

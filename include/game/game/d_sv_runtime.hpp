@@ -3,6 +3,7 @@
 #include <types.h>
 #include <game/game/d_demo.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/game/d_reset.hpp>
 #include <cstring>
 
 // Narrow ABI boundary for dependencies whose class interfaces are unrecovered.
@@ -52,9 +53,6 @@ extern const char *lbl_8074B010;
 dSceneChange_c *fn_801BB7B8(); // 801BB7B8: &gSceneChange
 void fn_801A4E44(void *, u16);
 void fn_801A4E34(void *, const char *);
-void fn_80106988();
-void fn_80106F18();
-void fn_80106F24();
 bool fn_800DCEDC();
 int fn_800DCDFC(int);
 bool fn_800DCF30();
@@ -106,8 +104,7 @@ inline void showSaveError(void *controller, u16 code, const char *label) {
 }
 inline void enableReset() {
     field<u32>(fn_8017D8E8(), 0x1AC) &= ~0x200;
-    fn_80106988();
-    fn_80106F24();
+    dReset::Manage_c::GetInstance()->SetResetEnable();
 }
 
 } // namespace dSvRuntime

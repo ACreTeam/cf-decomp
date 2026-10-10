@@ -16,6 +16,7 @@ void *fn_800A93BC();                                       // 800A93BC: the furn
 BOOL fn_800A9354(void *work, int handle);                  // 800A9354: furniture handle still busy
 void *fn_800A900C(void *mgr, const mVec3_c *pos, int arg); // 800A900C: the furniture at pos (fn_800A8FC4 by unit)
 void *fn_800A9058();                                       // 800A9058: the furniture manager
+void fn_800AB3CC();                                        // 800AB3CC: (d_reset soft reset)
 f32 fn_800AA7F0(int x, int z);                             // 800AA7F0: ground height of a 32-unit cell (indoors)
 // Furniture footprint (dNpcFtrShape_c, d_npc.hpp): fill from an item, tile count, offset {x, z} of tile i.
 void fn_800A8B28(dNpcFtrShape_c *shape, dItem::Item item); // 800A8B28

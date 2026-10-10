@@ -20,6 +20,7 @@ extern "C" {
 BOOL fn_801A6748(int state);                  // 801A6748
 BOOL fn_801A8134(mVec3_c *pos, int a, int b); // 801A8134: adjusts the player's return position (q10 game start/end)
 void fn_801AD168();                           // 801AD168: sets lbl_8074EACC
+void fn_801A6564();                           // 801A6564: (d_reset soft reset) resets the hide-and-seek state
 }
 
 namespace dItem {

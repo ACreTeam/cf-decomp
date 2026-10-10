@@ -36,6 +36,7 @@ public:
     virtual void endFrame();
 
     void sceneReset();
+    void stopRumbleMgr(); // 80443574
     // > 0 while the pointer is valid (the first status's dpd_valid_fg).
     s32 getDpdValidFlag() const;
     void startPatternRumble(const char *, int, bool);

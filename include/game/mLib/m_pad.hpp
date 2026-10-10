@@ -11,7 +11,7 @@ extern int g_currentCoreId;
 extern EGG::CoreController *g_currentCore;
 extern EGG::CoreController *g_core[4];
 
-inline EGG::CoreController *getCore(const int i) {
+inline EGG::CoreController *getCore(u32 i) {
     return g_core[i];
 }
 inline EGG::CoreController *getCore() {
