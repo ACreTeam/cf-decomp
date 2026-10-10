@@ -295,9 +295,10 @@ cflags_game = [
     "-sym on",
 ]
 
-# REL flags: the game's flags, without small data (RELs have no .sdata / .sbss).
+# REL flags: the game's flags (with -sym on, like cflags_game), without small data (RELs have no
+# .sdata / .sbss).
 cflags_rel = [
-    *cflags_identified_game,
+    *cflags_game,
     "-sdata 0",
     "-sdata2 0",
 ]
@@ -1131,7 +1132,7 @@ config.libs = [
             # __global_destructor_chain (force_active in config.yml) is the REL's whole .bss.
             Object(Matching, "d_fish_fieldNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(Matching, "d_fish_fieldNP/d_fish_field.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "d_fish_fieldNP/d_fish_field.cpp"),
         ],
     ),
     Rel(
@@ -1140,7 +1141,7 @@ config.libs = [
             Object(Matching, "d_skyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_skyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(Matching, "d_skyNP/d_sky.cpp", extra_cflags=["-sym on"]),
+            Object(Matching, "d_skyNP/d_sky.cpp"),
         ],
     ),
 ]
