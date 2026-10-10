@@ -105,6 +105,29 @@ enum dQuestDeadline_e {
     QUEST_DEADLINE_NUM = QUEST_DEADLINE_LIMIT,
 };
 
+// dQuestBase_c::mState of a villager request (dQuestVillager_c, QUEST_KIND_REQUEST_INSECT..FTR; the talk in
+// d_npc_talk_quest_q01..q05). RETURN..COMPLETE are only used by the fossil and furniture requests, whose item
+// ends up in the villager's house. (Kinds 5/6, the sick and lost-item quests, use mState differently.)
+enum dQuestRequestState_e {
+    QUEST_REQUEST_OPEN,      // 0 asking; players join (addPlayer) and may bring the item
+    QUEST_REQUEST_WON,       // 1 a player brought it (mRequester = that player)
+    QUEST_REQUEST_RETURN,    // 2 the winner was told to come back ("Q03_Return" / "Q05_Return")
+    QUEST_REQUEST_DISPLAYED, // 3 the item is now in the house (dAnimal_c::applyNewItems, from WON / RETURN)
+    QUEST_REQUEST_COMPLETE,  // 4 the winner saw it ("Q03_Comp" / "Q05_Comp")
+    QUEST_REQUEST_NUM,
+};
+
+// dQuestBase_c::mState of the errand request steps (dQuestErrand_c, d_npc_talk_quest_delivery / q06 / q07).
+// QUEST_KIND_ERRAND_REQUEST (package): DELIVERING, then DONE or LATE when the recipient takes it.
+// QUEST_KIND_ERRAND_REQUEST_FINAL (clothes): DELIVERING, then 1 + dAnimal_c::getStyleMatch (1..3) or
+// QUEST_ERRAND_FINAL_LATE.
+enum dQuestErrandState_e {
+    QUEST_ERRAND_DELIVERING, // 0 the player still has to hand the item over
+    QUEST_ERRAND_DONE,       // 1 handed over in time
+    QUEST_ERRAND_LATE,       // 2 handed over after the deadline (package)
+    QUEST_ERRAND_FINAL_LATE = 4, // clothes handed over after the deadline
+};
+
 #define QUEST_ERRAND_HANDLER_NUM 10 // lbl_805F2680, one per errand kind
 
 // 0x02. What a villager currently wants (mKind < 8) and how much (0-100).
@@ -137,12 +160,13 @@ public:
     void clear();                                                // 8013F7A0
     BOOL isActive() const;                                       // 8013F7E8: isValidKind(mKind)
     int getKind() const { return mKind; }                        // inline (d_a_npc_nml msgPendingQuest compares it as int)
+    u8 getState() const { return mState; }                       // inline (d_npc_talk_quest_q13 msgStyleQuest)
     void set(int kind, const dItem::Item *item, dTime_c *limit, u8 deadline, u8 state); // 8013F7F0
     int getType() const;                                         // 8013F848
     int getSubType() const;                                      // 8013F850: dQuestErrandType_e
     static BOOL isDaytime(const dTime_c &time);                  // 8013F858: 5:00 <= hour < 22:00
     static BOOL isBeforeNight(const dTime_c &time);              // 8013F87C: hour < 22:00
-    static int pickKind(const int *kinds, u32 num, dTime_c *time); // 8013F898
+    static int pickDeadline(const int *deadlines, u32 num, dTime_c *time); // 8013F898: picks a dQuestDeadline_e
     void setTimeLimit(const dTime_c &time);                      // 8013F9D8
     dTime_c getTimeLimit() const;                                // 8013F9DC
 
@@ -186,7 +210,7 @@ public:
     dAnmPersonalID_c *getAnimal(int i) const;       // 80140850 (hands back a non-const pointer, like dQuestErrandList_c::get)
 
     /* 0x000 */ dQuestBase_c mBase;
-    /* 0x00E */ dAnmPersonalID_c mAnimals[2]; // recipient, sender
+    /* 0x00E */ dAnmPersonalID_c mAnimals[2]; // requester (the villager who gives the errand), recipient
     /* 0x18E */ u8 _18E;
 }; // size 0x190
 
@@ -207,7 +231,7 @@ public:
     dQuestErrand_c *get(u32 i);                                  // 801409C4: NULL when out of range
     dQuestErrand_c *get(u32 i) const;                            // 801409E0
     BOOL isActive() const;                                       // 801409FC: an active part-time job step
-    u8 getKind() const;                                          // 80140A54
+    int getKind() const;                                         // 80140A54
     BOOL isState(u8 state) const;                                // 80140AA0
     BOOL setState(u8 state);                                     // 80140B04
     void resetState(u8 state);                                   // 80140B60

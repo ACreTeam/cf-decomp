@@ -142,7 +142,7 @@ BOOL isWaterfallBlock(int blockX, int blockZ, void *user) {
 
 // 0x228
 BOOL isPondBlock(int blockX, int blockZ, void *user) {
-    return fn_80190C44(0)->getBlock(blockX, blockZ)->fn_80080FC0();
+    return fn_80190C44(0)->getBlock(blockX, blockZ)->hasPond();
 }
 
 // 0x274

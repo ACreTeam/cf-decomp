@@ -1,7 +1,7 @@
 #pragma once
 
-// d_npc_talk_town.cpp (.text 800613BC..80061ADC, .rodata 8046CD60..8046CDAB, .data 804A4BB8..804A4C0F,
-// .sdata 80749B20..80749B4D, .sdata2 807502E0..807502E7). Not decompiled yet. The villager's small talk
+// d_npc_talk_town.cpp (.text 800613BC..80061ADC, .rodata 8046CD60..8046CDB0, .data 804A4BB8..804A4C10,
+// .sdata 80749B20..80749B50, .sdata2 807502E0..807502E8). The villager's small talk
 // about the town (message files "Town_Rumor", "Town_Always", "Town_Theater", "Town_Grace") and the
 // "3P_*" remarks about another villager (one label per personality).
 //
@@ -19,13 +19,13 @@
 // Data of the TU (file-local statics in the .cpp):
 //   8046CD60 .rodata 0xB   "Town_Rumor"
 //   8046CD6C .rodata 0xC   "Town_Always"
-//   8046CD78 .rodata 0x18  PTMF table, 2 x {0,-1,fn}: fn_800613BC, fn_80061670 (choices of fn_800616D0)
+//   8046CD78 .rodata 0x18  PTMF table, 2 x {0,-1,fn}: msgTownRumor, msgTownAlways (choices of msgTown)
 //   8046CD90 .rodata 0xD   "Town_Theater"
 //   8046CDA0 .rodata 0xB   "Town_Grace"
 //   804A4BB8 .data   0x14  "sys_STRING/STR_Unit"
-//   804A4BCC .data   0x28  jump table of fn_800613BC (switch on the memory kind 0..9)
+//   804A4BCC .data   0x28  jump table of msgTownRumor (switch on the memory kind 0..9)
 //   804A4BF4 .data   0x4   padding (zero)
 //   804A4BF8 .data   0x18  label table, 6 x const char *: "3P_Bo", "3P_Ha", "3P_Ko", "3P_Fu", "3P_Ge",
-//                          "3P_Ta" (fn_80061934)
+//                          "3P_Ta" (get3PLabel)
 //   80749B20 .sdata  0x2E  the six "3P_*" strings (8 bytes apart)
-//   807502E0 .sdata2 0x8   u8[2] {20, 80} odds of fn_800616D0 (+ padding)
+//   807502E0 .sdata2 0x8   u8[2] {20, 80} odds of msgTown (+ padding)

@@ -1,6 +1,7 @@
 #pragma once
 
-// Villager talk for appointment quest 9. DOL TU d_npc_talk_quest_q09.cpp (.text 8005A3C4..8005C82C), not
+// Villager talk for appointment quest 9. DOL TU d_npc_talk_quest_q09.cpp (.text 8005A3C4..8005C82C,
+// .rodata 8046CAE8..8046CC60, .data 804A4498..804A4708, .sdata2 80750270..807502A0), not
 // decompiled. QUEST_KIND_APPOINTMENT_0 (kind 17, labels "Q09_*"): a villager invites the player to their house
 // ("Q09_Req"), the player enters a time ("Q09_Reserve", time menu, "Q09_Reserved" / "Q09_Error1-3", "Q09_No");
 // then in the villager's house: "Q09_Welcome", room talk ("Q09_First", "Q_Roomtalk", "Q09_Furniture"), a
@@ -22,52 +23,52 @@
 // The functions of this TU are members of dAcNpcNml_c::talk_c (d_a_npc_nml.hpp, section
 // "d_npc_talk_quest_q09"): its procedures are stored in talk_c's member-function pointers.
 
-// Data of the TU (not split yet; file-local statics in the .cpp later). The {0, -1, fn} records are the
+// Data of the TU (split in splits.txt; file-local statics in the .cpp). The {0, -1, fn} records are the
 // member-function pointer constants of the code above.
 // .data 804A4498..804A4708:
-//   804A4498 0x0C PTMF {0, -1, fn_80053224}
-//   804A44A4 0x0C PTMF {0, -1, fn_8005A4E8}
-//   804A44B0 0x0C PTMF {0, -1, fn_8005A560}
-//   804A44BC 0x0C PTMF {0, -1, fn_8005A5C0}
-//   804A44C8 0x0C PTMF {0, -1, fn_8005A6C0}
-//   804A44D4 0x0C PTMF {0, -1, fn_8005AF74}
-//   804A44E0 0x0C PTMF {0, -1, fn_8005A714}
-//   804A44EC 0x0C PTMF {0, -1, fn_8005A778}
-//   804A44F8 0x54 PTMF x7: fn_8005A7E8 (_128 of fn_8005A778), then the _0EC results of the time menu:
-//                 fn_8005AEAC, fn_8005AC64, fn_8005AEAC, fn_8005AE48, fn_8005AF10, fn_8005AEAC
-//   804A454C 0x0C PTMF {0, -1, fn_8005ACC8}
-//   804A4558 0x0C PTMF {0, -1, fn_8005A778}
-//   804A4564 0x0C PTMF {0, -1, fn_8005A778}
-//   804A4570 0x0C PTMF {0, -1, fn_8005A778}
-//   804A457C 0x0C PTMF {0, -1, fn_8005AFC8}
+//   804A4498 0x0C PTMF {0, -1, endQuestCommon}
+//   804A44A4 0x0C PTMF {0, -1, stepInviteOffer}
+//   804A44B0 0x0C PTMF {0, -1, msgInviteReq}
+//   804A44BC 0x0C PTMF {0, -1, stepInviteChoice}
+//   804A44C8 0x0C PTMF {0, -1, selInviteYes}
+//   804A44D4 0x0C PTMF {0, -1, selInviteNo}
+//   804A44E0 0x0C PTMF {0, -1, msgInviteReserve}
+//   804A44EC 0x0C PTMF {0, -1, stepInviteTimeMenu}
+//   804A44F8 0x54 PTMF x7: resInviteTime (_128 of stepInviteTimeMenu), then the _0EC results of the time menu:
+//                 msgInviteTooLate, msgInviteReserved, msgInviteTooLate, msgInviteTooSoon, msgInviteSleeping, msgInviteTooLate
+//   804A454C 0x0C PTMF {0, -1, endInviteReserved}
+//   804A4558 0x0C PTMF {0, -1, stepInviteTimeMenu}
+//   804A4564 0x0C PTMF {0, -1, stepInviteTimeMenu}
+//   804A4570 0x0C PTMF {0, -1, stepInviteTimeMenu}
+//   804A457C 0x0C PTMF {0, -1, msgInviteNo}
 //   804A4588 0x0A string "Q09_Leave"
 //   804A4598 0x10 labels by state {"Ai_Quest", "Q09_Leave" x3} (getMsgLabel)
-//   804A45A8 0x0C PTMF {0, -1, fn_8005B2E4}
-//   804A45B4 0x0C PTMF {0, -1, fn_8005B58C}
-//   804A45C0 0x0C PTMF {0, -1, fn_8005B4B8}
-//   804A45CC 0x0C PTMF {0, -1, fn_8005B538}
-//   804A45D8 0x0C PTMF {0, -1, fn_8005B50C}
-//   804A45E4 0x0C PTMF {0, -1, fn_80053224}
-//   804A45F0 0x0C PTMF {0, -1, fn_8005B674}
+//   804A45A8 0x0C PTMF {0, -1, stepInviteTalkMenu}
+//   804A45B4 0x0C PTMF {0, -1, stepInviteClear}
+//   804A45C0 0x0C PTMF {0, -1, selInviteCon}
+//   804A45CC 0x0C PTMF {0, -1, selInviteResume}
+//   804A45D8 0x0C PTMF {0, -1, msgInviteCon}
+//   804A45E4 0x0C PTMF {0, -1, endQuestCommon}
+//   804A45F0 0x0C PTMF {0, -1, stepInviteWelcome}
 //   804A45FC 0x0B string "Q_Roomtalk"
-//   804A4608 0x30 PTMF x4: fn_8005BC04, fn_8005BBD0, fn_80053224, fn_80053224
-//   804A4638 0x0C PTMF {0, -1, fn_8005BC98}
-//   804A4644 0x0C PTMF {0, -1, fn_8005BFC0}
-//   804A4650 0x0C PTMF {0, -1, fn_80053224}
-//   804A465C 0x0C PTMF {0, -1, fn_8005C098}
-//   804A4668 0x0C PTMF {0, -1, fn_8005C340}
-//   804A4674 0x0C PTMF {0, -1, fn_8005C0EC}
-//   804A4680 0x0C PTMF {0, -1, fn_8005C178}
-//   804A468C 0x0C PTMF {0, -1, fn_8005C284}
-//   804A4698 0x0C PTMF {0, -1, fn_8005C2C8}
-//   804A46A4 0x0C PTMF {0, -1, fn_8005C394}
-//   804A46B0 0x0C PTMF {0, -1, fn_80053224}
-//   804A46BC 0x0C PTMF {0, -1, fn_80053224}
-//   804A46C8 0x0C PTMF {0, -1, fn_8005C4B4}
-//   804A46D4 0x0C PTMF {0, -1, fn_8005C544}
-//   804A46E0 0x0C PTMF {0, -1, fn_8005C698}
-//   804A46EC 0x0C PTMF {0, -1, fn_8005C788}
-//   804A46F8 0x10 PTMF {0, -1, fn_8005C800} + 4 bytes of padding
+//   804A4608 0x30 PTMF x4: stepInviteTradeOffer, endInviteFirst, endQuestCommon, endQuestCommon
+//   804A4638 0x0C PTMF {0, -1, selInviteTradeOffer}
+//   804A4644 0x0C PTMF {0, -1, stepInviteTradeChoice}
+//   804A4650 0x0C PTMF {0, -1, endQuestCommon}
+//   804A465C 0x0C PTMF {0, -1, selInviteTradeYes}
+//   804A4668 0x0C PTMF {0, -1, selInviteTradeNo}
+//   804A4674 0x0C PTMF {0, -1, msgInviteTradeYes}
+//   804A4680 0x0C PTMF {0, -1, endInviteTradeYes}
+//   804A468C 0x0C PTMF {0, -1, stepInviteTradeYes}
+//   804A4698 0x0C PTMF {0, -1, actInviteTradeWait}
+//   804A46A4 0x0C PTMF {0, -1, msgInviteTradeNo}
+//   804A46B0 0x0C PTMF {0, -1, endQuestCommon}
+//   804A46BC 0x0C PTMF {0, -1, endQuestCommon}
+//   804A46C8 0x0C PTMF {0, -1, stepInvitePresentChoice}
+//   804A46D4 0x0C PTMF {0, -1, selInvitePresent}
+//   804A46E0 0x0C PTMF {0, -1, msgInvitePresent}
+//   804A46EC 0x0C PTMF {0, -1, stepInviteBye}
+//   804A46F8 0x10 PTMF {0, -1, msgInviteBye} + 4 bytes of padding
 // .rodata 8046CAE8..8046CC60:
 //   8046CAE8 0x0C string "Q09_Reserve"
 //   8046CAF4 0x0D string "Q09_Reserved"
@@ -77,25 +78,25 @@
 //   8046CB28 0x0C string "Q09_Welcome"
 //   8046CB34 0x0E string "Q09_Furniture"
 //   8046CB44 0x48 char[3][12] {"Q09_Trade1", "Q09_First", "Q09_Trade2"}, then PTMF x3 (random room talk):
-//                 fn_8005B6C8, fn_8005B858, fn_8005B940
+//                 msgInviteRoomtalk, msgInviteFurniture, msgInviteTradeOffer
 //   8046CB8C 0x0B string "Q09_Trade3"
 //   8046CB98 0x0B string "Q09_Trade4"
 //   8046CBA4 0x0D string "Q09_TradeYes"
 //   8046CBB4 0x0C string "Q09_TradeNo"
 //   8046CBC0 0x09 string "Q09_Wait"
 //   8046CBCC 0x0B string "Q09_Analog"
-//   8046CBD8 0x28 u8[0x28] flag table for pickAppointmentPresent2 (fn_8005C544)
+//   8046CBD8 0x28 u8[0x28] flag table for pickAppointmentPresent2 (selInvitePresent)
 //   8046CC00 0x0B string "Q09_Analog"
-//   8046CC10 0x50 u16[0x28] message numbers for "Q09_Analog" (fn_8005C698)
+//   8046CC10 0x50 u16[0x28] message numbers for "Q09_Analog" (msgInvitePresent)
 // .sdata2 80750270..807502A0:
 //   80750270 0x08 string "Q09_Req"
 //   80750278 0x07 string "Q09_No"
 //   80750280 0x08 string "Q09_Con"
-//   80750288 0x04 f32 100.0 (fn_8005B6F8)
-//   80750290 0x08 f64 4503599627370496.0 (int->float magic, fn_8005B6F8)
+//   80750288 0x04 f32 100.0 (pickHouseFtrMsg)
+//   80750290 0x08 f64 4503599627370496.0 (int->float magic, pickHouseFtrMsg)
 //   80750298 0x08 string "Q09_Bye"
-// External: fn_80053224 (d_npc_talk_quest_delivery), lbl_804A0784 entries [5..9] (nml talk states), lbl_804A0E48;
-// fn_8005BCCC / fn_8005BD4C are called from d_npc_talk_fmarket.
+// External: endQuestCommon (d_npc_talk_quest_delivery), lbl_804A0784 entries [5..9] (nml talk states), lbl_804A0E48;
+// getSellPrice / getBuyPrice are called from d_npc_talk_fmarket.
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest
 // descriptors are typed by their label part only).

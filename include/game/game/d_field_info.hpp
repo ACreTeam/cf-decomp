@@ -101,7 +101,7 @@ struct dFdBlock_c {
              int blockX, int blockZ, int flag, int bg);                      // 80080F38: then dBGCF::setBlock
     int getType() const { return mType; }
     BOOL hasFlag(int mask) const;                                            // 80080F80: flags of mType
-    BOOL fn_80080FC0() const;                                                // 80080FC0: mType has a pond (dRF::isPondType)
+    BOOL hasPond() const;                                                    // 80080FC0: mType has a pond (dRF::isPondType)
     BOOL setItem(const dItem::Item *item, int unitX, int unitZ, int layer);  // 80080FC8
     dItem::Item *getItemP(int unitX, int unitZ, int layer);                  // 8008101C
     dItem::Item *getItemP(int unitX, int unitZ, int layer) const;            // 80081074

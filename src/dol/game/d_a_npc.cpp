@@ -8760,8 +8760,8 @@ bool dAcNpc_c::recept_c::isMenuSel80() {
     return false;
 }
 
-void dAcNpc_c::recept_c::getMenuResult(void *out) {
-    fn_8019B494(out);
+dTime_c dAcNpc_c::recept_c::getMenuResult() {
+    return fn_8019B494();
 }
 
 u32 dAcNpc_c::recept_c::fn_80029CDC() {

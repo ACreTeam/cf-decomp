@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <game/mLib/m_vec.hpp>
 
 // Play helpers next to the scene manager: weather time windows, actor / player list searches and
 // the net sync of 8 shared records. Source: src/dol/game/d_play_util.cpp (.text
@@ -17,10 +18,14 @@ public:
     virtual void vf14();
     virtual BOOL isActive(); // 0x20
 
-    /* 0x004 */ u8 _004[0x1EC - 0x4];
+    /* 0x004 */ u8 _004[0x1A0 - 0x4];
+    /* 0x1A0 */ mVec3_c mPos; // (d_npc_talk_reaction findNearItemCb)
+    /* 0x1AC */ u8 _1AC[0x1EC - 0x1AC];
     /* 0x1EC */ dPlayActor_c *mNext;
     /* 0x1F0 */ u8 _1F0[0x23B - 0x1F0];
     /* 0x23B */ u8 m23B; // players: not in the play
+    /* 0x23C */ u8 _23C[0x2F0 - 0x23C];
+    /* 0x2F0 */ int m2F0; // item actors: item offset (d_npc_talk_reaction getActorItem: dItem::Item(0x192, m2F0, 0))
 };
 
 typedef BOOL (*dPlayActorFunc)(dPlayActor_c *actor, void *arg);

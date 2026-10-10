@@ -1185,3 +1185,7 @@ void setLookName(dScript::Word_c *name, int look);      // 800C1244
 void setQ4LookName(dScript::Word_c *name, int look);    // 800C12A4
 void setSeriesName(dScript::Word_c *name, u32 series);  // 800C1328
 void setQ5PartName(dScript::Word_c *name, u32 part);    // 800C13B4
+// The npc message code of an item (BITM npc message, getNpcMsgA when a, else getNpcMsgB); 0 = none.
+int getNpcMsgFlagged(const dItem::Item &item, int looks, BOOL a); // 800C5454 (callers pass the item's address: a reference)
+// Npc remark of an item for the villager looks (index), 0 if none (d_item.cpp, global scope).
+int getNpcMsgBullfest(const dItem::Item &item, int index); // 800C54EC (callers pass the item's address: a reference)

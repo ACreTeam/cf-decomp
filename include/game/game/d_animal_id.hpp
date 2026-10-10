@@ -38,11 +38,11 @@ public:
     const wchar_t *getName(int language);                     // 80136160; LANGUAGE_NUM or more uses the console language
     void setWord(dScript::Word_c *word, int language);        // 801361AC
 
-    inline bool operator==(const dAnmPersonalID_c& other) {
+    inline bool operator==(const dAnmPersonalID_c& other) const {
         return mLand == other.mLand && mLand2 == other.mLand2 && mNpcIdx == other.mNpcIdx;
     }
 
-    inline bool operator!=(const dAnmPersonalID_c& other) {
+    inline bool operator!=(const dAnmPersonalID_c& other) const {
         return !(*this == other);
     }
 

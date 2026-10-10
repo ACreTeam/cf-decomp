@@ -83,7 +83,7 @@ BOOL dFdBlock_c::hasFlag(int mask) const {
 }
 
 // 80080FC0
-BOOL dFdBlock_c::fn_80080FC0() const {
+BOOL dFdBlock_c::hasPond() const {
     return dRF::isPondType(mType);
 }
 

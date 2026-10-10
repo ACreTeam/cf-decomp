@@ -304,6 +304,15 @@ struct dBirthday_c {
     u8 mDay;
 };
 
+// dPrivateData_c::mFortune (the fortune teller's reading; villagers comment on it, d_npc_talk_approach).
+enum dFortune_e {
+    FORTUNE_NONE,
+    FORTUNE_LOVE,       // 1 approach: villagers of the other gender
+    FORTUNE_FRIENDSHIP, // 2 approach: villagers of the same gender
+    FORTUNE_MONEY,      // 3 field assessment doubles the money-tree chance
+    FORTUNE_ITEM,       // 4 approach / rollan: item luck
+};
+
 class dPrivateData_c {
 public:
     // Static helpers on the current player (fn_80101770).
@@ -422,7 +431,7 @@ public:
     dMail_c *fn_8013967C();                                       // 8013967C
     BOOL fn_801396F4();                                           // 801396F4
 
-    void inc_8696();                                              // 8013974C
+    void incNewcomerTip();                                        // 8013974C: next newcomer tip, wraps after 9
 
     // Errand.
     dQuestErrand_c *findErrand(dAnmPersonalID_c *animal, int which, u32 idx); // 80139770
@@ -518,7 +527,7 @@ public:
     /* 0x83F6 */ u8 mShoeColor;
     /* 0x83F7 */ u8 _83F7;
     /* 0x83F8 */ u8 mTan;
-    /* 0x83F9 */ u8 _83F9;
+    /* 0x83F9 */ u8 mFortune;     // dFortune_e: today's fortune (reset daily by d_field_assessment)
     /* 0x83FA */ dCatalog_c mCatalog;
     /* 0x85FA */ dPrivateBits85FA_c _85FA;
     /* 0x8604 */ dPrivateBits8604_c _8604;
@@ -542,7 +551,7 @@ public:
     /* 0x8693 */ u8 _8693;
     /* 0x8694 */ u8 _8694;
     /* 0x8695 */ u8 _8695;
-    /* 0x8696 */ u8 _8696;
+    /* 0x8696 */ u8 mNewcomerTip; // next newcomer tip (Ev_Arbeit message 6 + mNewcomerTip, 0..8)
     /* 0x8697 */ u8 _8697;
     /* 0x8698 */ u8 _8698;
     /* 0x8699 */ u8 _8699;

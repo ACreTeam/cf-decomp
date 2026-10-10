@@ -69,7 +69,9 @@ public:
     /* 0x6C80 */ u8 _6C80;
     /* 0x6C81 */ u8 mMouthOpen;                     // lip sync (dAcNpc_c::recept_c::isMouthOpen)
     /* 0x6C82 */ u8 _6C82[2];
-    /* 0x6C84 */ u16 _6C84;
+    /* 0x6C84 */ u16 mNextMsgCode;                  // queued message code (fn_801A4E44 sets it, fn_801A3350 hands it
+                                                    // to mpRcpt->setMessageCode and clears it; 0xFFFE detach); the
+                                                    // talk procedures wait until it is 0
     /* 0x6C86 */ u16 _6C86;                         // message code to remember (talk_c::onMessageEnd -> rememberMsg)
     /* 0x6C88 */ u8 _6C88[0x6C98 - 0x6C88];
     /* 0x6C98 */ int _6C98;                         // fn_801A316C mode
@@ -78,4 +80,7 @@ public:
 
 extern "C" {
 BOOL fn_8018F438(int type); // 8018F438 (d_demo): a demo of this type is running
+// 801A309C (d_msg): offers word as a new nickname (controller +0x9394..), with the suffix of personality
+// looks (< 6; table 8047DA38). d_npc_talk_approach ApB_Nickname.
+void fn_801A309C(dDemo_c *demo, dScript::Word_c *word, u8 looks);
 }

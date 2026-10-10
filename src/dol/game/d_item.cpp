@@ -2354,7 +2354,7 @@ int getCategoryQ5(const Item &item) {
 }
 
 // 800C5454
-int getNpcMsgFlagged(Item item, int index, BOOL first) {
+int getNpcMsgFlagged(const Item &item, int index, BOOL first) {
     const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         NpcMsg *msg = infoBank_c::get()->getNpcMsg(static_cast<int>(bitm->m_ftrKind));
@@ -2369,7 +2369,7 @@ int getNpcMsgFlagged(Item item, int index, BOOL first) {
 }
 
 // 800C54EC
-int getNpcMsgBullfest(Item item, int index) {
+int getNpcMsgBullfest(const Item &item, int index) {
     const BITM *bitm = infoBank_c::get()->getBITM(item);
     if (bitm != NULL) {
         NpcMsgBullfest *msg = infoBank_c::get()->getNpcMsgBullfest(static_cast<int>(bitm->_E));

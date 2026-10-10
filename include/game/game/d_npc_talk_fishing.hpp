@@ -1,7 +1,8 @@
 #pragma once
 
-// d_npc_talk_fishing.cpp (.text 800470E4..800476E0; its data is still in the unsplit auto_06 .rodata /
-// auto_07 .data / auto_09 .sdata / auto_11 .sdata2). Not decompiled yet. The villager talk during the
+// d_npc_talk_fishing.cpp (.text 800470E4..800476E0, .rodata 8046C7A8..8046C7B8, .data
+// 804A2CA0..804A2CD0, .sdata 80749A78..80749A80, .sdata2 80750088..80750090). The
+// villager talk during the
 // fishing tourney (EVENT_FISHING_TOURNEY, message file "Ev_Fishing"): before the npc's first talk of
 // the event (with / without a fish entered yet), then by who leads the contest (rank 0: this npc /
 // another villager / the current player / another player), with the leading fish, its size and the
@@ -20,7 +21,7 @@
 // The functions of this TU are members of dAcNpcNml_c::talk_c (d_a_npc_nml.hpp, section
 // "d_npc_talk_fishing"): its procedures are stored in talk_c's member-function pointers.
 
-// Data of the TU (file-local statics in the .cpp; not split yet):
+// Data of the TU (file-local statics in the .cpp; split in splits.txt):
 //   8046C7A8 .rodata 0xB   "Ev_Fishing" (+5 padding)
 //   804A2CA0 .data   0x1C  const char *[7]: "Ev_Fishing" x7, message label per state (getMsgLabel kind 0xB)
 //   804A2CBC .data   0x14  "sys_STRING/STR_Unit" (fn_801A5874, unit word of the leader's looks)
@@ -29,4 +30,16 @@
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest
 // descriptors are typed by their label part only).
-extern const char *l_fishingLabels[7]; // "Ev_Fishing" x7
+// The fishing tourney talk state of getFishingTalkState (label index; message code = state + 1).
+enum fishingState_e {
+    FISHING_STATE_FIRST,             // 0 the npc's first talk of the event (memory event flag 0 not set), no fish yet
+    FISHING_STATE_FIRST_FISH,        // 1 the same, a fish is recorded
+    FISHING_STATE_NPC_LEADS,         // 2 this npc leads (sets getEntry() _28C.mEventTalked)
+    FISHING_STATE_NPC_LEADS_AGAIN,   // 3 this npc leads, already said (mEventTalked set)
+    FISHING_STATE_PLAYER_LEADS,      // 4 the current player leads
+    FISHING_STATE_OTHER_PLAYER_LEADS, // 5 another player leads
+    FISHING_STATE_OTHER_NPC_LEADS,   // 6 another villager leads
+    FISHING_STATE_NONE               // 7 no tourney talk (not in the event, or no leader yet)
+};
+
+extern const char *l_fishingLabels[FISHING_STATE_NONE]; // "Ev_Fishing" x7

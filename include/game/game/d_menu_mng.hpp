@@ -6,6 +6,7 @@
 #include <types.h>
 
 class dMail_c;
+class dTime_c;
 namespace dItem {
 class Item;
 }
@@ -47,7 +48,7 @@ BOOL fn_8019B358();                                       // 8019B358: mask & 0x
 int fn_8019B360();                                        // 8019B360: number of fn_8019B3B8(0..3)
 BOOL fn_8019B3B8(int slot);                               // 8019B3B8: mask & (2 << slot)
 BOOL fn_8019B3DC();                                       // 8019B3DC: mask & 0x40
-void fn_8019B494(void *out);                              // 8019B494: copies the 0x28-byte result (80624EE0)
+dTime_c fn_8019B494();                                    // 8019B494: the time entered in the time menu (copy of 80624EE0)
 BOOL fn_8019B4EC();                                       // 8019B4EC
 BOOL fn_8019B4F8();                                       // 8019B4F8
 BOOL fn_8019B504();                                       // 8019B504

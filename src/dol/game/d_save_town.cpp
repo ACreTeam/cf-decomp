@@ -84,8 +84,8 @@ void dSaveTown_c::clearTown() {
     mAnimals.clear();
     fn_8014EB3C(&_0640C8);
     fn_80150524(_06673C);
-    fn_801505E4(&_066740[1]);
-    fn_80150628(&_066740[5]);
+    fn_801505E4(_066741);
+    fn_80150628(mHarvestSpot);
     fn_801510A0(_072CC0);
     ((dTimeStamp_c *)_068372)->reset();
     mNoticeBoard.clear();

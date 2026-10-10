@@ -1,10 +1,12 @@
 #pragma once
 
-// d_npc_talk_halloween.cpp (.text 80043EBC..80045154; its data is still in the unsplit
-// auto_07_804A2A90 .data / auto_06_8046C6C0 .rodata). Not decompiled yet. The villager talk on
-// Halloween (EVENT_HALLOWEEN, message file "Ev_Halloween"): the npc asks for candy (item select),
-// takes it from the pockets, plays tricks when the player has none (replaces a pocket item, changes the
-// player's clothes), reacts to the player's costume (fn_800447EC) and hands out a present.
+// d_npc_talk_halloween.cpp (.text 80043EBC..80045154, .rodata 8046C6D0..8046C6F0, .data
+// 804A2AB0..804A2BB0, .sdata 80749A48..80749A50). The villager talk on
+// Halloween (EVENT_HALLOWEEN, message file "Ev_Halloween"), in the villager's house: the npc asks for
+// candy (item select, msgCandyAsk), takes it from the pockets, plays tricks when the player gives
+// something else or has none (trickClothes: pumpkin head, moldy / patched shirt; trickPockets: a pocket
+// item becomes a jack-in-the-box), reacts to the player's costume (isInCostume: hat or accessory with
+// the shirt's fashion theme) and hands out a present (stepHalloweenPresent).
 //
 // Its functions are talk procedures stored in dAcNpcNml_c::talk_c's member-function pointers. Slot
 // conventions (provisional, see d_npc_talk_arbeit.hpp): EC = message select (fills msgInfo_s via
@@ -18,16 +20,16 @@
 // The functions of this TU are members of dAcNpcNml_c::talk_c (d_a_npc_nml.hpp, section
 // "d_npc_talk_halloween"): its procedures are stored in talk_c's member-function pointers.
 
-// Data of the TU (file-local statics in the .cpp; not split yet):
+// Data of the TU (file-local statics in the .cpp; split in splits.txt):
 //   8046C6D0 .rodata 0xD   "Ev_Halloween"
-//   8046C6E0 .rodata 0xD   "Ev_Halloween" (second copy, used by fn_80044B9C)
-//   804A2AB0..804A2AD4 .data 0xC each, PTMF {0,-1,fn}: fn_80043F48, fn_80043FDC, fn_8004409C, fn_80044B48
-//   804A2AE0 .data   0x30  PTMF x4: fn_80044120, fn_800442A8, fn_80044480, fn_80044A34 (fn_80044120
+//   8046C6E0 .rodata 0xD   "Ev_Halloween" (second copy, used by msgHalloweenCostume)
+//   804A2AB0..804A2AD4 .data 0xC each, PTMF {0,-1,fn}: endCandyAsk, stepCandyChoice, selCandyGive, selCandyNone
+//   804A2AE0 .data   0x30  PTMF x4: resCandyGive, resCandyGiven, resCandyWrong, msgCandyNone (resCandyGive
 //                          reads entries 1..3 off the 804A2AB0 base: probably separate constants)
-//   804A2B10..804A2B94 .data 0xC each, PTMF {0,-1,fn}: fn_80044304, fn_80044368, fn_800443EC,
-//                          fn_800444DC, fn_80044540, fn_80044A00, fn_80044A04, fn_80044A98,
-//                          fn_80044B18, fn_80044A34, fn_80044C50, fn_80044FBC
-//   804A2BA0 .data   0x10  PTMF {0,-1,fn_80045038} + 4 bytes padding
+//   804A2B10..804A2B94 .data 0xC each, PTMF {0,-1,fn}: msgCandyThanks, stepCandyThanks, msgCandyCostume,
+//                          msgCandyWrong, stepCandyWrong, resCandyTrick, msgCandyTrick, stepCandyNone,
+//                          msgCandyNoneTrick, msgCandyNone, endHalloweenCostume, stepHalloweenFirst
+//   804A2BA0 .data   0x10  PTMF {0,-1,stepHalloweenPresent} + 4 bytes padding
 //   80749A48 .sdata  0x8   dQuestEvent_e EVENT_HALLOWEEN (0x15) for dEvent::isOngoing (+4 padding)
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest

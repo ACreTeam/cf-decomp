@@ -72,18 +72,18 @@ struct dAnimalMemoryFlags_c {
     u32 mHasGreeting : 1;         // mGreeting is set (setGreeting)
     u32 mHasNickname : 1;         // mNickname is set (setNickname)
     u32 mSameTown : 1;            // player is from this town
-    u32 _24 : 1;                  // set by event talks; cleared at event start/end
-    u32 _23 : 1;                  // set after a once-only talk; cleared on move-out
+    u32 mEventTalked : 1;         // talked about the current event (countdown, holidays); cleared at event start/end
+    u32 mMoveOutTold : 1;         // the villager told the player it's moving out (ApA_Moving); cleared on move-out
     u32 mTunekichiInvite : 1;     // pending Tunekichi invite letter
-    u32 _21 : 1;                  // cleared daily
-    u32 _20 : 1;                  // cleared daily
+    u32 mTunekichiTalked : 1;     // talked about K.K. (FreeI topics); cleared daily
+    u32 mFortuneTold : 1;         // commented on the player's fortune (approach); cleared daily
     u32 mNicknameWait : 4;        // days before asking for a nickname again (decNicknameWait)
     u32 mGreetingWait : 3;        // days before asking for a greeting again (decGreetingWait)
     u32 mBirthdayLetterSent : 1;  // birthday letter sent
     u32 mBirthdayDone : 1;        // birthday present given
-    u32 _10 : 1;                  // set with _86 by the talk code; cleared daily
-    u32 _9 : 1;
-    u32 _8 : 1;                   // cleared on move-out
+    u32 mClothesTalked : 1;       // commented on the player's shirt (mLastClothes); cleared daily
+    u32 mBeeFaceTalked : 1;       // reacted to the player's stung face
+    u32 mMoveoutTalked : 1;       // gave the move-out reaction; cleared on move-out
     u32 _lo : 8;
 }; // size 0x4
 
@@ -109,6 +109,7 @@ public:
     s8 getFriendship(); // 8011CF58
     // Read by d_a_npc_nml (talk_c::recordMemoryTalk) as inline results: non-const (const ones change
     // its register allocation).
+    const dLandID_c *getPlayerLand() const { return &mPlayer.land; }
     u8 getImpression() { return mImpression; }
     u8 getTalkDays() { return mFlags.mTalkDays; }
     void setFriendship(s8 value); // 8011CF64
@@ -140,7 +141,7 @@ public:
     /* 0x50 */ wchar_t mNickname[PLAYER_NAME_LEN + 1]; // player name
     /* 0x62 */ wchar_t mGreeting[17];          // 0x22 bytes, memset by clear
     /* 0x84 */ dItem::Item mPresent;
-    /* 0x86 */ dItem::Item _86;
+    /* 0x86 */ dItem::Item mLastClothes; // the shirt the villager last commented on
     /* 0x88 */ u8 mFriendship;
     /* 0x89 */ u8 mImpression;                  // '1' when cleared
     /* 0x8A */ u8 mEventFlags;
@@ -404,6 +405,7 @@ public:
     BOOL isHeldItemChangeMinute(u32 minute); // 80128C20
     BOOL isHeldItemChangeDue(u32 minute); // 80128C4C
     BOOL wantsParasol(); // 80128D1C
+    dQuestWish_c *getWish() { return &mQuest.mWish; }
     dItem::Item getWishTool(); // 80128DF0
     BOOL recordImpression(const dPersonalID_c *pid); // 80128F34
     BOOL setVisitorLetter(dPrivateData_c *player); // 80129100
@@ -674,5 +676,12 @@ public:
 // Random set bit of mask (count bits set, num bits wide), or -1. 80134CD4
 u32 pickRandomBit(u32 mask, int count, u32 num);
 BOOL isHoldableItem(const dItem::Item *item); // 80128B90: an item an npc can hold up as a tool
+u8 calcHeldItemChangeMinute(int minute, BOOL soon); // 80128CA8: the next held-item change minute (0-59)
 BOOL isFossilRequestMatch(const dItem::Item *item, int mode, const dItem::Item *other); // 801254DC
 u32 getRoomFtrSlot(const dItem::Item *room, u32 x, u32 z); // 8011F8B8: furniture slot of the room item at (x, z) (16x16 grid)
+// 8011F19C: a random non-empty demo word differing from def (else def) into out; flag picks the word group.
+// looks (the villager's looks, passed by d_npc_talk_approach 8003791C) is unused.
+void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks);
+// Presents of the appointment quests (d_npc_talk_quest_q08 / q09).
+dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag); // 8012F2F8
+int pickAppointmentPresent2(dItem::Item *out, dPrivateData_c *player, dAnimal_c *animal, BOOL flag); // 8012FA64: 1 = from the villager's new items

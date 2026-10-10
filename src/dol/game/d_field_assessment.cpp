@@ -4057,14 +4057,14 @@ void fgMngProc_procDayChange(BOOL arg) {
                 player->_55CE.clear();
             }
         }
-        fn_801505E4(&dSaveData_c::getTown()->_066740[1]);
-        fn_80150628(&dSaveData_c::getTown()->_066740[5]);
+        fn_801505E4(dSaveData_c::getTown()->_066741);
+        fn_80150628(dSaveData_c::getTown()->mHarvestSpot);
         fn_801510A0(dSaveData_c::getTown()->_072CC0);
         ((dPersonalID_c *)&dSaveData_c::getTown()->_072CC0[0x2E])->clear();
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
             if (player != NULL && player->mPID.isValid()) {
-                player->_83F9 = 0;
+                player->mFortune = FORTUNE_NONE;
             }
         }
         u16 arg2 = 0;
@@ -4332,7 +4332,7 @@ void fgMngProc_initOnCreate() {
     }
 }
 
-// 8009C520: wrapper for sFdAssess.assessLiveTown(); used by the day change, fn_8003B3B4 and
+// 8009C520: wrapper for sFdAssess.assessLiveTown(); used by the day change, talk msgFreeRumor and
 // Pelly (d_a_npc_sp_periko).
 int fgMngProc_assessLiveTown() {
     return sFdAssess.assessLiveTown();
@@ -4380,7 +4380,7 @@ u16 fgMngProc_getMemberHeldItem(int member) {
 }
 
 // 8009C678: with the golden shovel held, buried money becomes fg 0x11 and, by a price/luck-based
-// chance (doubled when _83F9 == 3), fg 0x49 (FG_MONEY_TREE_SAPLING).
+// chance (doubled when mFortune == FORTUNE_MONEY), fg 0x49 (FG_MONEY_TREE_SAPLING).
 void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     u8 v;
     dSaveTown_c *save;
@@ -4402,7 +4402,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     }
     v = *fn_800AC28C(4);
     f32 rate = (10.0f * (4.0f * v) + item.getPrice()) / 1000.0f;
-    if (dPlayerMgr_c::getCurrentPlayer()->_83F9 == 3) {
+    if (dPlayerMgr_c::getCurrentPlayer()->mFortune == FORTUNE_MONEY) {
         rate *= 2.0f;
     }
     if (rate > 100.0f) {
@@ -4485,8 +4485,8 @@ void fgMngProc_getBuryFg(void *obj, u16 *outFg, u16 *outBase, u8 *outFlag, u16 i
     }
 }
 
-// 8009CAE0: returns sFgMngProc.mBusy; caller fn_8005E888.
-u8 fgMngProc_isBusy() {
+// 8009CAE0: returns sFgMngProc.mBusy; caller talk_c::msgReRun.
+BOOL fgMngProc_isBusy() {
     return sFgMngProc.mBusy;
 }
 

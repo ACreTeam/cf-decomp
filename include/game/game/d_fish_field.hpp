@@ -97,7 +97,7 @@ typedef dFdBkSearchCandCb_c::Func dFishPlaceCheck; // user: the dFishSpawn_c
 BOOL isRiverBlock(int blockX, int blockZ, void *user);      // 0x134: BLOCK_KIND_FLAG_RIVER
 BOOL isPoolBlock(int blockX, int blockZ, void *user);       // 0x188: BLOCK_KIND_FLAG_RACCO
 BOOL isWaterfallBlock(int blockX, int blockZ, void *user);  // 0x1D8: BLOCK_KIND_FLAG_FALL
-BOOL isPondBlock(int blockX, int blockZ, void *user);       // 0x228: dFdBlock_c::fn_80080FC0
+BOOL isPondBlock(int blockX, int blockZ, void *user);       // 0x228: dFdBlock_c::hasPond
 BOOL isRiverMouthBlock(int blockX, int blockZ, void *user); // 0x274: river S0/S1/S2 on the beach
 BOOL isOffingBlock(int blockX, int blockZ, void *user);     // 0x2F4: beach, in rainy/snowy weather only
 BOOL isSeaBlock(int blockX, int blockZ, void *user);        // 0x39C: BLOCK_KIND_FLAG_BEACH

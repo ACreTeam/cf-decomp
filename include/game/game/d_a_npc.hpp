@@ -44,6 +44,7 @@ class dPersonalID_c;
 class dPlayerID_c;
 class dAnmPersonalID_c;
 class dMail_c;
+class dTime_c;
 class dEquip_c;
 class dDesign_c;
 
@@ -1170,7 +1171,7 @@ public:
         static bool isMenuSelSlot(int slot);                                                    // 80029C08
         static bool isMenuSel40();                                                              // 80029C58
         static bool isMenuSel80();                                                              // 80029C98
-        static void getMenuResult(void *out);                                                   // 80029CD8
+        static dTime_c getMenuResult();                                                         // 80029CD8: the time entered in the time menu (reqMenu27)
         static u32 fn_80029CDC();                                                               // 80029CDC
         static u16 fn_80029CE0();                                                               // 80029CE0
         void setFeel(u32 feel, u32 who, f32 frame = cNpcMorphFrames);                                             // 80029CE4

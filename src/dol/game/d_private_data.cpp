@@ -1326,13 +1326,13 @@ BOOL dPrivateData_c::fn_801396F4() {
 }
 
 // 8013974C
-void dPrivateData_c::inc_8696() {
-    u32 value = _8696;
+void dPrivateData_c::incNewcomerTip() {
+    u32 value = mNewcomerTip;
     value++;
     if (value >= 9) {
         value = 0;
     }
-    _8696 = value;
+    mNewcomerTip = value;
 }
 
 // 80139770

@@ -154,14 +154,30 @@ public:
     /* 0x250 */ dNpcTimer_c mTimer;
     /* 0x260 */ dTime_c mTime;
     /* 0x288 */ dNpcUnk288_c _288;
-    /* 0x289 */ u8 _289;
-    /* 0x28A */ u8 _28A;
+    /* 0x289 */ u8 mStallBuyCount;    // the npc bought at the player's flea market stall
+    /* 0x28A */ u8 mStallRefuseCount; // the player refused the npc's offer at the stall
     /* 0x28B */ u8 _28B;
     /* 0x28C */ struct {
-        u16 mFlag15 : 1; // 0x8000: read by the d_a_npc_nml talk code (fewer quest offers when set)
-        u16 mFlag14 : 1; // 0x4000
-        u16 _bits : 14;
-    } _28C;               // cleared by memset in clear(); both flags cleared by dAcNpcNml_c create
+        u16 mTalked : 1;      // 0x8000: a talk ended since the actor was created (talk_c::onTalkEnd; cleared by
+                              //         dAcNpcNml_c::create). Read by msgGreeting (first-talk
+                              //         greeting), the quest offer talk and q13; quest offers are rarer.
+        u16 mEventTalked : 1; // 0x4000: the event's first message was given since the actor was created
+                              //         (bug, fishing, carnival, fmarket; cleared by dAcNpcNml_c::create)
+        u16 mFmarketSale : 1; // 0x2000: a flea-market sale was agreed (selFmarketAsk) and not finished yet
+        u16 mBirthdayDone : 1; // 0x1000: this player congratulated the npc on its birthday (d_npc_talk_birthday)
+        u16 mFlag11 : 1; // 0x0800
+        u16 mPoisonDone : 1;  // 0x0400: the poison reaction was given (d_npc_talk_reaction stepPoison)
+        u16 mFlag9 : 1;  // 0x0200
+        u16 mFlag8 : 1;  // 0x0100
+        u16 mFlag7 : 1;  // 0x0080
+        u16 mFlag6 : 1;  // 0x0040
+        u16 mFlag5 : 1;  // 0x0020
+        u16 mFlag4 : 1;  // 0x0010
+        u16 mFlag3 : 1;  // 0x0008
+        u16 mFlag2 : 1;  // 0x0004
+        u16 mFlag1 : 1;  // 0x0002
+        u16 mFlag0 : 1;  // 0x0001
+    } _28C;              // cleared by memset in clear(); mTalked / mEventTalked also by dAcNpcNml_c create
     /* 0x28E */ u8 _28E[2];
 }; // size 0x290
 

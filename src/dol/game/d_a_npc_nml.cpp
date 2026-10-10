@@ -363,7 +363,7 @@ BOOL dAcNpcNml_c::isSessionFlag(u32 bit) {
 int dAcNpcNml_c::getSoundId() {
     dAnimal_c *animal = mpAnimal;
     int id = 0xFFFF;
-    if (animal != NULL && animal->mID.isValid() && mpEntry != NULL && !mpEntry->_28C.mFlag15) {
+    if (animal != NULL && animal->mID.isValid() && mpEntry != NULL && !mpEntry->_28C.mTalked) {
         id = (u16)animal->getSoundId();
     }
     return id;
@@ -444,8 +444,8 @@ int dAcNpcNml_c::create() {
     }
     dNpcEntry_c *entry = mpEntry;
     if (entry != NULL) {
-        entry->_28C.mFlag15 = 0;
-        entry->_28C.mFlag14 = 0;
+        entry->_28C.mTalked = 0;
+        entry->_28C.mEventTalked = 0;
         entry->mMsg2.clear();
         entry->mTimer.update();
     }
@@ -828,7 +828,7 @@ dAcNpcNml_c::clothMng_c::~clothMng_c() {}
 void dAcNpcNml_c::clothMng_c::init(dAcNpcNml_c *npc) {
     mHmnCloth.setSlot(npc->_DC + 4);
     if (!mCloth.isValid()) {
-        dItem::Item cloth(0x373);
+        dItem::Item cloth(dItem::ITEM_IDX_ONE_BALL_SHIRT);
         if (npc->mpAnimal != NULL) {
             cloth = npc->mpAnimal->mCloth;
         }
@@ -850,7 +850,7 @@ BOOL dAcNpcNml_c::clothMng_c::requestCloth(const dItem::Item *item, dDesign_c *d
 
     dItem::Item cloth(*item);
     if (!dHmnClothMng_c::isCloth(&cloth) && (!dHmnClothMng_c::isOrgCloth(NULL, &cloth) || design == NULL)) {
-        cloth.setFromIndex(0x373);
+        cloth.setFromIndex(dItem::ITEM_IDX_ONE_BALL_SHIRT);
     }
     mReqCloth = cloth;
     if (mHmnCloth.request(&cloth, NULL, design)) {
@@ -952,40 +952,40 @@ static dMail_c l_80565070;
 mVec3_c l_walkTargetPos(256.0f, 0.0f, 464.0f);
 
 // 804A0784: procedure sets of the talk TUs (NULL slots: __ptmf_null copies in __sinit)
-dAcNpcNml_c::talk_c::procSet_s l_talkProcSets[33] = {
+dAcNpcNml_c::talk_c::procSet_s l_talkProcSets[dAcNpcNml_c::talk_c::TALK_PROC_NUM] = {
     {&dAcNpcNml_c::talk_c::msgEntry, NULL, NULL}, // 0 talk
-    {&dAcNpcNml_c::talk_c::fn_8005DA1C, NULL, NULL}, // 1 QuestQ08
-    {&dAcNpcNml_c::talk_c::fn_8005E178, NULL, NULL}, // 2 QuestQ08
-    {&dAcNpcNml_c::talk_c::fn_8005E2F0, NULL, NULL}, // 3 QuestQ08
-    {&dAcNpcNml_c::talk_c::fn_8005E480, NULL, NULL}, // 4 QuestQ08
-    {&dAcNpcNml_c::talk_c::fn_8005B5DC, NULL, NULL}, // 5 QuestQ09
-    {&dAcNpcNml_c::talk_c::fn_8005BA28, NULL, NULL}, // 6 QuestQ09
-    {&dAcNpcNml_c::talk_c::fn_8005BE04, NULL, NULL}, // 7 QuestQ09
-    {&dAcNpcNml_c::talk_c::fn_8005C3C4, NULL, NULL}, // 8 QuestQ09
-    {&dAcNpcNml_c::talk_c::fn_8005C428, NULL, NULL}, // 9 QuestQ09
-    {&dAcNpcNml_c::talk_c::fn_80057CB8, NULL, NULL}, // 10 QuestQ10
-    {&dAcNpcNml_c::talk_c::fn_80057EA8, NULL, NULL}, // 11 QuestQ10
-    {&dAcNpcNml_c::talk_c::fn_8005844C, NULL, NULL}, // 12 QuestQ10
-    {&dAcNpcNml_c::talk_c::fn_800587F8, NULL, NULL}, // 13 QuestQ10
-    {&dAcNpcNml_c::talk_c::fn_80043EBC, NULL, NULL}, // 14 Halloween
-    {&dAcNpcNml_c::talk_c::fn_80044B9C, NULL, NULL}, // 15 Halloween
-    {&dAcNpcNml_c::talk_c::fn_800374DC, &dAcNpcNml_c::talk_c::fn_8003759C, NULL}, // 16 Approach
-    {&dAcNpcNml_c::talk_c::fn_800616D0, NULL, NULL}, // 17 Town
-    {&dAcNpcNml_c::talk_c::fn_80061790, NULL, NULL}, // 18 Town
-    {&dAcNpcNml_c::talk_c::fn_80061844, NULL, NULL}, // 19 Town
-    {&dAcNpcNml_c::talk_c::fn_80061958, NULL, NULL}, // 20 Town
-    {&dAcNpcNml_c::talk_c::fn_800476E0, &dAcNpcNml_c::talk_c::fn_800479C4, NULL}, // 21 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_80047B38, &dAcNpcNml_c::talk_c::fn_800479C4, NULL}, // 22 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_800480E0, NULL, NULL}, // 23 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_80048468, NULL, NULL}, // 24 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_800485E8, NULL, NULL}, // 25 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_800486EC, &dAcNpcNml_c::talk_c::fn_8004874C, NULL}, // 26 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_800487DC, &dAcNpcNml_c::talk_c::fn_8004874C, &dAcNpcNml_c::talk_c::fn_800488B0}, // 27 Fmarket
-    {&dAcNpcNml_c::talk_c::fn_8004902C, &dAcNpcNml_c::talk_c::fn_80049128, &dAcNpcNml_c::talk_c::fn_800491B8}, // 28 Birthday
-    {&dAcNpcNml_c::talk_c::fn_800492B8, &dAcNpcNml_c::talk_c::fn_80049344, NULL}, // 29 Birthday
-    {&dAcNpcNml_c::talk_c::fn_8003F1D8, &dAcNpcNml_c::talk_c::fn_8003F224, NULL}, // 30 Free
-    {&dAcNpcNml_c::talk_c::fn_8003F2B4, &dAcNpcNml_c::talk_c::fn_8003F224, NULL}, // 31 Free
-    {&dAcNpcNml_c::talk_c::fn_8003F304, &dAcNpcNml_c::talk_c::fn_8003F224, NULL}, // 32 Free
+    {&dAcNpcNml_c::talk_c::msgVisitCall, NULL, NULL}, // 1 QuestQ08
+    {&dAcNpcNml_c::talk_c::msgVisitFirst, NULL, NULL}, // 2 QuestQ08
+    {&dAcNpcNml_c::talk_c::msgVisitWait, NULL, NULL}, // 3 QuestQ08
+    {&dAcNpcNml_c::talk_c::msgVisitBack, NULL, NULL}, // 4 QuestQ08
+    {&dAcNpcNml_c::talk_c::msgInviteWelcome, NULL, NULL}, // 5 QuestQ09
+    {&dAcNpcNml_c::talk_c::msgInviteFirst, NULL, NULL}, // 6 QuestQ09
+    {&dAcNpcNml_c::talk_c::msgInviteTrade, NULL, NULL}, // 7 QuestQ09
+    {&dAcNpcNml_c::talk_c::msgInviteWait, NULL, NULL}, // 8 QuestQ09
+    {&dAcNpcNml_c::talk_c::msgInviteAnalog, NULL, NULL}, // 9 QuestQ09
+    {&dAcNpcNml_c::talk_c::msgHideExplain, NULL, NULL}, // 10 QuestQ10
+    {&dAcNpcNml_c::talk_c::msgHideHider, NULL, NULL}, // 11 QuestQ10
+    {&dAcNpcNml_c::talk_c::msgHideReward, NULL, NULL}, // 12 QuestQ10
+    {&dAcNpcNml_c::talk_c::msgHideLose, NULL, NULL}, // 13 QuestQ10
+    {&dAcNpcNml_c::talk_c::msgCandyAsk, NULL, NULL}, // 14 Halloween
+    {&dAcNpcNml_c::talk_c::msgHalloweenCostume, NULL, NULL}, // 15 Halloween
+    {&dAcNpcNml_c::talk_c::msgApproach, &dAcNpcNml_c::talk_c::endApproach, NULL}, // 16 Approach
+    {&dAcNpcNml_c::talk_c::msgTown, NULL, NULL}, // 17 Town
+    {&dAcNpcNml_c::talk_c::msgTownTheater, NULL, NULL}, // 18 Town
+    {&dAcNpcNml_c::talk_c::msgTownGrace, NULL, NULL}, // 19 Town
+    {&dAcNpcNml_c::talk_c::msgTown3P, NULL, NULL}, // 20 Town
+    {&dAcNpcNml_c::talk_c::msgFmarket, &dAcNpcNml_c::talk_c::endFmarket, NULL}, // 21 Fmarket
+    {&dAcNpcNml_c::talk_c::msgSale, &dAcNpcNml_c::talk_c::endFmarket, NULL}, // 22 Fmarket
+    {&dAcNpcNml_c::talk_c::msgStallCall, NULL, NULL}, // 23 Fmarket
+    {&dAcNpcNml_c::talk_c::msgStallWait, NULL, NULL}, // 24 Fmarket
+    {&dAcNpcNml_c::talk_c::msgStallBack, NULL, NULL}, // 25 Fmarket
+    {&dAcNpcNml_c::talk_c::msgStallNoItem, &dAcNpcNml_c::talk_c::endStallBuy, NULL}, // 26 Fmarket
+    {&dAcNpcNml_c::talk_c::msgStallItem, &dAcNpcNml_c::talk_c::endStallBuy, &dAcNpcNml_c::talk_c::stepStallItem}, // 27 Fmarket
+    {&dAcNpcNml_c::talk_c::msgPlayerBirthday, &dAcNpcNml_c::talk_c::endPlayerBirthday, &dAcNpcNml_c::talk_c::stepPlayerBirthday}, // 28 Birthday
+    {&dAcNpcNml_c::talk_c::msgNpcBirthday, &dAcNpcNml_c::talk_c::endNpcBirthday, NULL}, // 29 Birthday
+    {&dAcNpcNml_c::talk_c::msgEtcHit, &dAcNpcNml_c::talk_c::endEtc, NULL}, // 30 Free
+    {&dAcNpcNml_c::talk_c::msgEtcPush, &dAcNpcNml_c::talk_c::endEtc, NULL}, // 31 Free
+    {&dAcNpcNml_c::talk_c::msgEtcFlea, &dAcNpcNml_c::talk_c::endEtc, NULL}, // 32 Free
 };
 
 // 800308A8
@@ -1032,26 +1032,26 @@ void dAcNpcNml_c::talk_c::init() {
     mItem0 = dItem::ITEM_ID_NONE;
     mItem1 = dItem::ITEM_ID_NONE;
     mItem2 = dItem::ITEM_ID_NONE;
-    mQuestKind = 0;
+    mErrandDeadline = QUEST_DEADLINE_NEXT_HOUR;
     mAnswer = 0xFF;
     mFtrPosX = -1;
     mFtrPosZ = -1;
-    _200 = -1;
+    mFtrHandle = -1;
     mName.clear();
     mHadNickname = 0;
     mIsAnimalItem = 0;
-    _32F[0] = 0;
-    _32F[1] = 0;
+    mGameCount[0] = 0;
+    mGameCount[1] = 0;
     mMsgPersonal.clear();
     mMsgPlayer.clear();
     mMsgLand.clear();
-    _32F[2] = 0;
+    mGameCount[2] = 0;
     mItem3 = dItem::ITEM_ID_NONE;
     mItem4 = dItem::ITEM_ID_NONE;
     mItem5 = dItem::ITEM_ID_NONE;
-    _32F[3] = 0;
-    _333[0] = 0;
-    _333[1] = 0;
+    mGameCount[3] = 0;
+    mGameShown[0] = 0;
+    mGameShown[1] = 0;
     mGiveFlag = 0;
     memset(mMemoryText, 0, sizeof(mMemoryText));
     mMsgYear = -1;
@@ -1245,7 +1245,7 @@ void dAcNpcNml_c::talk_c::start(dAcNpc_c *npc, dActor_c *actor, const procSet_s 
     mMemoryIdx = -1;
     setTopic(dNpc::msgMemory_c::KIND_ANY, 0, 0);
     mCountTalk = 0;
-    _1EC = NULL;
+    mStylePlayer = NULL;
     mEquip.clear();
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     const dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
@@ -1329,7 +1329,7 @@ BOOL dAcNpcNml_c::talk_c::reqSell() {
     if (player->pickUp(&mItem0, FALSE)) {
         player->payMoney(mPrice, FALSE);
     }
-    dItem::Item money(0x53);
+    dItem::Item money(dItem::ITEM_IDX_100_BELLS);
     requestItemActEx(6, &money, 0, 0, 0, 2);
     mResultProc = &talk_c::resSell;
     return TRUE;
@@ -1377,7 +1377,7 @@ BOOL dAcNpcNml_c::talk_c::reqBuy() {
             fn_800F1514(getNpcIdx(), mMemoryIdx, &mItem0);
         }
     }
-    dItem::Item money(0x53);
+    dItem::Item money(dItem::ITEM_IDX_100_BELLS);
     requestItemAct(&money, 0, 0);
     mResultProc = &talk_c::resBuy;
     return TRUE;
@@ -1795,13 +1795,13 @@ void dAcNpcNml_c::talk_c::onTalkEnd() {
     }
     dNpcEntry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->_28C.mFlag15 = 1;
+        entry->_28C.mTalked = 1;
     }
 }
 
 // 8003267C
 const dAcNpcNml_c::talk_c::procSet_s *dAcNpcNml_c::talk_c::getProcSet(int idx) {
-    if (idx < 33) {
+    if (idx < TALK_PROC_NUM) {
         return &l_talkProcSets[idx];
     }
     return NULL;
@@ -1987,40 +1987,40 @@ int dAcNpcNml_c::talk_c::getVoiceMood() {
 }
 
 // 80032D7C
-BOOL dAcNpcNml_c::talk_c::startBirthdayMood(int mood, int hours) {
+BOOL dAcNpcNml_c::talk_c::startMood(int mood, int hours) {
     if (fn_800DCEDC() && fn_800DCF30() > 1) {
         return FALSE;
     }
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(getNpc(mSpeaker));
     if (npc != NULL) {
-        npc->mBirthdayMood.fn_800496F0(mood, hours);
+        npc->mMood.startTimer(mood, hours);
     }
     return TRUE;
 }
 
 // 80032E04
 void dAcNpcNml_c::talk_c::resetMood() {
-    startBirthdayMood(0, 0);
+    startMood(0, 0);
 }
 
 // 80032E10
 void dAcNpcNml_c::talk_c::setMood1(int hours) {
-    startBirthdayMood(1, hours);
+    startMood(1, hours);
 }
 
 // 80032E1C
 void dAcNpcNml_c::talk_c::setMood2(int hours) {
-    startBirthdayMood(2, hours);
+    startMood(2, hours);
 }
 
 // 80032E28
 void dAcNpcNml_c::talk_c::setMood3(int hours) {
-    startBirthdayMood(3, hours);
+    startMood(3, hours);
 }
 
 // 80032E34
 void dAcNpcNml_c::talk_c::setMood4(int hours) {
-    startBirthdayMood(4, hours);
+    startMood(4, hours);
 }
 
 // 80032E40
@@ -2080,10 +2080,10 @@ const char *dAcNpcNml_c::talk_c::getLabelByTable(int table, u32 kind, u32 idx, u
         label = getMsgLabel(kind, idx, sub);
         break;
     case 0x10:
-        label = fn_80036324(kind, idx, sub);
+        label = getApproachLabel(kind, idx, sub);
         break;
     case 0x14:
-        label = fn_80061934(kind);
+        label = get3PLabel(kind);
         break;
     }
     return label;
@@ -2382,21 +2382,21 @@ BOOL dAcNpcNml_c::talk_c::setMemoryText(const wchar_t *name) {
 // jumptables and the static l_filterItem, before setQ5Word) for the .data / __sinit order.
 const dAcNpcNml_c::talk_c::procSet_s l_talkEntrySets[dAcNpcNml_c::talk_c::TALK_NUM] = {
     {&dAcNpcNml_c::talk_c::msgReaction, &dAcNpcNml_c::talk_c::endReaction, NULL}, // 0 talk
-    {&dAcNpcNml_c::talk_c::fn_800386A0, &dAcNpcNml_c::talk_c::fn_80038738, NULL}, // 1 Arbeit
-    {&dAcNpcNml_c::talk_c::fn_80044CC8, &dAcNpcNml_c::talk_c::fn_80044F2C, NULL}, // 2 Halloween
-    {&dAcNpcNml_c::talk_c::fn_80043C34, &dAcNpcNml_c::talk_c::fn_80043E2C, NULL}, // 3 Countdown
-    {&dAcNpcNml_c::talk_c::fn_8003F354, &dAcNpcNml_c::talk_c::fn_8003F6A0, NULL}, // 4 Carnival
-    {&dAcNpcNml_c::talk_c::fn_80052EB0, &dAcNpcNml_c::talk_c::fn_80053224, NULL}, // 5 QuestDelivery
+    {&dAcNpcNml_c::talk_c::msgArbeit, &dAcNpcNml_c::talk_c::endArbeit, NULL}, // 1 Arbeit
+    {&dAcNpcNml_c::talk_c::msgHalloween, &dAcNpcNml_c::talk_c::endHalloween, NULL}, // 2 Halloween
+    {&dAcNpcNml_c::talk_c::msgCountdown, &dAcNpcNml_c::talk_c::endCountdown, NULL}, // 3 Countdown
+    {&dAcNpcNml_c::talk_c::msgCarnival, &dAcNpcNml_c::talk_c::endCarnival, NULL}, // 4 Carnival
+    {&dAcNpcNml_c::talk_c::msgDelivery, &dAcNpcNml_c::talk_c::endQuestCommon, NULL}, // 5 QuestDelivery
     {&dAcNpcNml_c::talk_c::msgQuestTalk, &dAcNpcNml_c::talk_c::endQuestTalk, NULL}, // 6 talk
-    {&dAcNpcNml_c::talk_c::fn_80060C44, &dAcNpcNml_c::talk_c::fn_80060D28, &dAcNpcNml_c::talk_c::fn_80060DB8}, // 7 Rollan
+    {&dAcNpcNml_c::talk_c::msgRollan, &dAcNpcNml_c::talk_c::endRollan, &dAcNpcNml_c::talk_c::stepRollan}, // 7 Rollan
     {&dAcNpcNml_c::talk_c::msgQuestOffer, &dAcNpcNml_c::talk_c::endQuestOffer, NULL}, // 8 talk
     {&dAcNpcNml_c::talk_c::msgRecall, &dAcNpcNml_c::talk_c::endRecall, NULL}, // 9 talk
-    {&dAcNpcNml_c::talk_c::fn_800452B0, &dAcNpcNml_c::talk_c::fn_80045390, &dAcNpcNml_c::talk_c::fn_80045420}, // 10 Harvest
-    {&dAcNpcNml_c::talk_c::fn_800473A4, &dAcNpcNml_c::talk_c::fn_80047628, NULL}, // 11 Fishing
-    {&dAcNpcNml_c::talk_c::fn_800468EC, &dAcNpcNml_c::talk_c::fn_80046B18, NULL}, // 12 Bug
-    {&dAcNpcNml_c::talk_c::fn_80046F98, &dAcNpcNml_c::talk_c::fn_80047054, NULL}, // 13 Fireworks
+    {&dAcNpcNml_c::talk_c::msgHarvest, &dAcNpcNml_c::talk_c::endHarvest, &dAcNpcNml_c::talk_c::stepHarvest}, // 10 Harvest
+    {&dAcNpcNml_c::talk_c::msgFishing, &dAcNpcNml_c::talk_c::endFishing, NULL}, // 11 Fishing
+    {&dAcNpcNml_c::talk_c::msgBugOff, &dAcNpcNml_c::talk_c::endBugOff, NULL}, // 12 Bug
+    {&dAcNpcNml_c::talk_c::msgFireworks, &dAcNpcNml_c::talk_c::endFireworks, NULL}, // 13 Fireworks
     {&dAcNpcNml_c::talk_c::msgGreeting, &dAcNpcNml_c::talk_c::endGreeting, &dAcNpcNml_c::talk_c::stepGreeting}, // 14 talk
-    {&dAcNpcNml_c::talk_c::fn_8003EC4C, &dAcNpcNml_c::talk_c::fn_8003EDEC, NULL}, // 15 Free
+    {&dAcNpcNml_c::talk_c::msgFree, &dAcNpcNml_c::talk_c::endFree, NULL}, // 15 Free
 };
 
 // 800337F8
@@ -2417,9 +2417,9 @@ int dAcNpcNml_c::talk_c::msgEntry(msgInfo_s *info) {
 // 80033880
 const dAcNpcNml_c::talk_c::procSet_s *dAcNpcNml_c::talk_c::getEventProcSet() {
     static setFunc const l_setFuncs[3] = {
-        &talk_c::fn_8004736C,
-        &talk_c::fn_800468B4,
-        &talk_c::fn_80046F60,
+        &talk_c::getFishingProcSet,
+        &talk_c::getBugOffProcSet,
+        &talk_c::getFireworksProcSet,
     };
     for (u32 i = 0; i < 3; i++) {
         if (l_setFuncs[i] != NULL) {
@@ -2435,34 +2435,34 @@ const dAcNpcNml_c::talk_c::procSet_s *dAcNpcNml_c::talk_c::getEventProcSet() {
 // 80033904
 const dAcNpcNml_c::talk_c::msgFunc dAcNpcNml_c::talk_c::getReactionMsg(int idx) {
     static const msgFunc l_reactions[28] = {
-        &talk_c::fn_8005E5DC,
-        &talk_c::fn_8005E740,
-        &talk_c::fn_8005E7CC,
-        &talk_c::fn_8005E7D4,
-        &talk_c::fn_8005E888,
-        &talk_c::fn_8005E944,
-        &talk_c::fn_8005EE18,
-        &talk_c::fn_8005EE58,
-        &talk_c::fn_8005EEF4,
-        &talk_c::fn_8005EF78,
-        &talk_c::fn_8005F024,
-        &talk_c::fn_8005F0A8,
-        &talk_c::fn_8005F1C4,
-        &talk_c::fn_8005F320,
-        &talk_c::fn_8005F4B4,
-        &talk_c::fn_8005F7C4,
-        &talk_c::fn_8005F83C,
-        &talk_c::fn_8005F8B4,
-        &talk_c::fn_8005F980,
-        &talk_c::fn_8005FA4C,
-        &talk_c::fn_8005FB18,
-        &talk_c::fn_8005FE7C,
-        &talk_c::fn_8005FFE4,
-        &talk_c::fn_800601F8,
-        &talk_c::fn_80060304,
-        &talk_c::fn_80060450,
-        &talk_c::fn_800605A8,
-        &talk_c::fn_8006071C,
+        &talk_c::msgReMoveout,
+        &talk_c::msgReCafe,
+        &talk_c::msgReFishing,
+        &talk_c::msgReFall,
+        &talk_c::msgReRun,
+        &talk_c::msgEvFirst,
+        &talk_c::msgReFirstA1,
+        &talk_c::msgReFirstA2,
+        &talk_c::msgReFirstB1,
+        &talk_c::msgReFirstB2,
+        &talk_c::msgReFirstC1,
+        &talk_c::msgReFirstC2,
+        &talk_c::msgReFirstV,
+        &talk_c::msgReMovein,
+        &talk_c::msgReBirthday,
+        &talk_c::msgRe30days,
+        &talk_c::msgRe7days,
+        &talk_c::msgReTire,
+        &talk_c::msgReAnger,
+        &talk_c::msgReSad,
+        &talk_c::msgReBeeFace,
+        &talk_c::msgRePoison,
+        &talk_c::msgReXmas,
+        &talk_c::msgReNewyear,
+        &talk_c::msgReHarvest,
+        &talk_c::msgReHalloween,
+        &talk_c::msgReFireworks,
+        &talk_c::msgReDownload,
     };
 
     if ((u32)idx < 28) {
@@ -2511,13 +2511,13 @@ void dAcNpcNml_c::talk_c::endReaction(int arg) {
 // 80033ADC
 BOOL dAcNpcNml_c::talk_c::stepReaction(int kind) {
     dDemo_c *ctrl = getController();
-    if (ctrl != NULL && ctrl->_6C84 == 0) {
+    if (ctrl != NULL && ctrl->mNextMsgCode == 0) {
         dNpcEntry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
         }
-        fn_80060898(kind);
+        stepBeeFaceSeen(kind);
     }
     return FALSE;
 }
@@ -2604,13 +2604,13 @@ typedef dAcNpcNml_c::talk_c talk_c;
 // 80033E68
 int dAcNpcNml_c::talk_c::msgQuestTalk(msgInfo_s *info) {
     static const msgFunc l_questTalk[QUEST_TALK_NUM] = {
-        &talk_c::fn_800565D8, &talk_c::fn_80054CEC,
-        &talk_c::fn_8004FB84, &talk_c::fn_8004B804,
-        &talk_c::fn_8004CCC8, &talk_c::fn_8004A0D8,
-        &talk_c::fn_8004E3C4, &talk_c::fn_80050F4C,
-        &talk_c::fn_80051C68, &talk_c::fn_80058F18,
-        &talk_c::fn_8005D45C, &talk_c::fn_8005AFF4,
-        &talk_c::fn_80057A90,
+        &talk_c::msgErrandQuest, &talk_c::msgErrandFinalQuest,
+        &talk_c::msgInsectQuest, &talk_c::msgFishQuest,
+        &talk_c::msgFossilQuest, &talk_c::msgClothQuest,
+        &talk_c::msgFtrQuest, &talk_c::msgLostKeyQuest,
+        &talk_c::msgSickQuest, &talk_c::msgStyleQuest,
+        &talk_c::msgVisitQuest, &talk_c::msgInviteQuest,
+        &talk_c::msgHideQuest,
     };
     for (int i = 0; i < QUEST_TALK_NUM; i++) {
         if (l_questTalk[i] && (this->*l_questTalk[i])(info)) {
@@ -2641,7 +2641,7 @@ void dAcNpcNml_c::talk_c::endQuestTalk(int arg) {
 
 // 80033FA4
 BOOL dAcNpcNml_c::talk_c::stepErrandOver(int kind) {
-    if (getController() != NULL && getController()->_6C84 == 0) {
+    if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         dQuestBase_c *quest = errand != NULL ? &errand->mBase : NULL;
@@ -2690,7 +2690,7 @@ int dAcNpcNml_c::talk_c::msgTimeover2(msgInfo_s *info) {
 
 // 80034224
 BOOL dAcNpcNml_c::talk_c::stepClearErrand(int kind) {
-    if (getController() != NULL && getController()->_6C84 == 0) {
+    if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         if (errand != NULL) {
@@ -2734,7 +2734,7 @@ int dAcNpcNml_c::talk_c::startQuestOffer(msgInfo_s *info, int labelIdx, endFunc 
         if (mpMemory != NULL && mpMemory->mTalkCount.mCount == 0) {
             sub = 1;
         } else {
-            BOOL flag = entry != NULL ? entry->_28C.mFlag15 != 0 : TRUE;
+            BOOL flag = entry != NULL ? entry->_28C.mTalked != 0 : TRUE;
             if (flag) {
                 sub = 2;
             }
@@ -2756,7 +2756,7 @@ int dAcNpcNml_c::talk_c::startQuestOffer(msgInfo_s *info, int labelIdx, endFunc 
     }
     default:
         if (entry != NULL) {
-            entry->_28C.mFlag15 = 0;
+            entry->_28C.mTalked = 0;
         }
         msgGreeting(info);
         setTopic(dNpc::msgMemory_c::KIND_QUEST, labelIdx, 0);
@@ -2816,7 +2816,7 @@ int dAcNpcNml_c::talk_c::startErrandOffer(msgInfo_s *info, int questKind, int la
     dSaveTown_c *town = dSaveData_c::getTown();
     dAnimal_c *other = town->mAnimals.mTown.pickRandomAvailableAnimal(&exclude, 1);
     if (other != NULL && other->mID.isValid()) {
-        return startQuestOffer(info, labelIdx, &talk_c::fn_80053224, step, TRUE);
+        return startQuestOffer(info, labelIdx, &talk_c::endQuestCommon, step, TRUE);
     }
     return FALSE;
 }
@@ -2850,7 +2850,7 @@ int dAcNpcNml_c::talk_c::startRequestOffer(msgInfo_s *info, int labelIdx, int qu
     if (!dQuestBase_c::checkTodayEvents(questKind)) {
         return FALSE;
     }
-    return startQuestOffer(info, labelIdx, &talk_c::fn_80053224, step, TRUE);
+    return startQuestOffer(info, labelIdx, &talk_c::endQuestCommon, step, TRUE);
 }
 
 // 800348C0
@@ -2860,12 +2860,12 @@ int dAcNpcNml_c::talk_c::msgPendingQuest(msgInfo_s *info, f32 chance) {
         u8 mKind;
     };
     static const questTalk_s l_questOffer[11] = {
-        {&talk_c::fn_80056024, 0x07}, {&talk_c::fn_800546F4, 0x08},
-        {&talk_c::fn_8004FADC, 0x00}, {&talk_c::fn_8004B75C, 0x01},
-        {&talk_c::fn_8004CBCC, 0x02}, {&talk_c::fn_80049FDC, 0x03},
-        {&talk_c::fn_8004E31C, 0x04}, {&talk_c::fn_80058990, 0x13},
-        {&talk_c::fn_8005C82C, 0x12}, {&talk_c::fn_8005A3C4, 0x11},
-        {&talk_c::fn_800573D0, 0x14},
+        {&talk_c::msgErrandOffer, 0x07}, {&talk_c::msgErrandFinalOffer, 0x08},
+        {&talk_c::msgInsectOffer, 0x00}, {&talk_c::msgFishOffer, 0x01},
+        {&talk_c::msgFossilOffer, 0x02}, {&talk_c::msgClothOffer, 0x03},
+        {&talk_c::msgFtrOffer, 0x04}, {&talk_c::msgStyleOffer, 0x13},
+        {&talk_c::msgVisitOffer, 0x12}, {&talk_c::msgInviteOffer, 0x11},
+        {&talk_c::msgHideOffer, 0x14},
     };
     if (cM::rndF(100.0f) < chance) {
         dNpcEntry_c *entry = getEntry();
@@ -2887,7 +2887,7 @@ int dAcNpcNml_c::talk_c::msgPendingQuest(msgInfo_s *info, f32 chance) {
 // 800349C0
 int dAcNpcNml_c::talk_c::msgQuestOffer(msgInfo_s *info) {
     dNpcEntry_c *entry = getEntry();
-    f32 chance = (entry != NULL ? entry->_28C.mFlag15 != 0 : TRUE) ? 10.0f : 20.0f;
+    f32 chance = (entry != NULL ? entry->_28C.mTalked != 0 : TRUE) ? 10.0f : 20.0f;
     return msgPendingQuest(info, chance);
 }
 
@@ -2910,11 +2910,11 @@ void dAcNpcNml_c::talk_c::endQuestOffer(int arg) {
 // 80034ACC
 int dAcNpcNml_c::talk_c::msgYes(msgInfo_s *info) {
     u16 code = 4;
-    switch (mQuestKind) {
-    case 1:
+    switch (mErrandDeadline) {
+    case QUEST_DEADLINE_NEXT_PERIOD:
         code = 5;
         break;
-    case 2:
+    case QUEST_DEADLINE_MIDNIGHT:
         code = 6;
         break;
     }
@@ -2961,7 +2961,7 @@ int dAcNpcNml_c::talk_c::msgRequestNo(msgInfo_s *info) {
 
 // 80034C78
 BOOL dAcNpcNml_c::talk_c::stepRequestChoice(int kind) {
-    if (getController() != NULL && getController()->_6C84 == 0) {
+    if (getController() != NULL && getController()->mNextMsgCode == 0) {
         clearChoice();
         setChoice(0, 0x15, 10, &talk_c::selRequestYes);
         setChoice(1, 0x1F, 10, &talk_c::selRequestNo);
@@ -3013,16 +3013,16 @@ BOOL dAcNpcNml_c::talk_c::stepRequestYes(int kind) {
     return TRUE;
 }
 
-inline dSaveTownJinx_c *dAcNpcNml_c::talk_c::getJinxTown() {
-    if ((u32)mJinxTown < 8) {
+inline dSaveTownListEntry_c *dAcNpcNml_c::talk_c::getJinxTown() {
+    if ((u32)mJinxTown < SAVE_TOWN_LIST_NUM) {
         dSaveTown_c *town = dSaveData_c::getTown();
-        return town->_072D1A.getTown(mJinxTown);
+        return town->mTownList.getTown(mJinxTown);
     }
     return NULL;
 }
 
-static inline const u8 *getJinx(dSaveTownJinx_c *town) {
-    return town != NULL ? town->mJinx : &dSaveData_c::getTown()->_05EC76;
+static inline const dSaveJinx_c *getJinx(dSaveTownListEntry_c *town) {
+    return town != NULL ? &town->mJinx : &dSaveData_c::getTown()->mJinx;
 }
 
 // 80034F08
@@ -3064,7 +3064,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                     break;
                 }
                 case 12:
-                    fn_8005F154();
+                    setPlayerLandWord();
                     break;
                 }
                 break;
@@ -3073,17 +3073,17 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                 case 0:
                     switch (sub) {
                     case 4:
-                        fn_8003B018(&mem->mPersonal, &mem->mLand, mem->_AC, &mem->mItem0, animal);
+                        setMemoryWords(&mem->mPersonal, &mem->mLand, mem->_AC, &mem->mItem0, animal);
                         break;
                     case 6: {
                         mJinxTown = mem->_A0;
-                        dSaveTownJinx_c *town = getJinxTown();
-                        const u8 *jinx = getJinx(town);
+                        dSaveTownListEntry_c *town = getJinxTown();
+                        const dSaveJinx_c *jinx = getJinx(town);
                         const dLandID_c *land = town != NULL ? &town->mLand : NULL;
                         if (jinx != NULL) {
-                            fn_8003B858(jinx, land);
+                            setJinxWords(jinx, land);
                         }
-                        setStepProc(&talk_c::fn_8003EE44);
+                        setStepProc(&talk_c::stepJinx);
                         break;
                     }
                     case 5: {
@@ -3106,8 +3106,8 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                         }
                                     }
                                 }
-                                if (otherTown->_102 < 0x31) {
-                                    getController()->fn_801A5874(3, otherTown->_102 + 1, "sys_STRING/STR_Impress");
+                                if (otherTown->mImpression < 0x31) {
+                                    getController()->fn_801A5874(3, otherTown->mImpression + 1, "sys_STRING/STR_Impress");
                                 }
                                 dAnmPersonalID_c *villager = (dAnmPersonalID_c *)otherTown->mVillager;
                                 if (villager->isValid()) {
@@ -3128,7 +3128,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                     case 0: {
                         dAnimalMemory_c *memory = mpMemory;
                         if (memory != NULL) {
-                            const dItem::Item *item = &memory->_86;
+                            const dItem::Item *item = &memory->mLastClothes;
                             if (item->isValid()) {
                                 setItemName(item, 0);
                                 fashion = item->getFashion();
@@ -3148,7 +3148,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                             creator = &mem->mPersonal;
                             design = mem->mText;
                             if (creator->isValid()) {
-                                fn_8003A894(creator, design, animal);
+                                setDesignWords(creator, design, animal);
                             }
                         }
                         break;
@@ -3157,15 +3157,15 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                 case 8:
                     switch (sub) {
                     case 2: {
-                        const u8 *jinx = getJinx(NULL);
+                        const dSaveJinx_c *jinx = getJinx(NULL);
                         if (jinx != NULL) {
-                            fn_8003B858(jinx, NULL);
+                            setJinxWords(jinx, NULL);
                         }
-                        setStepProc(&talk_c::fn_8003EE44);
+                        setStepProc(&talk_c::stepJinx);
                         break;
                     }
                     case 1:
-                        fn_8003DD5C();
+                        setHostWords();
                         break;
                     }
                     break;
@@ -3317,12 +3317,12 @@ static inline BOOL isWeatherIn(int mode, int want) {
 
 int dAcNpcNml_c::talk_c::msgGreeting(msgInfo_s *info) {
     dNpcEntry_c *entry = getEntry();
-    BOOL flag = entry != NULL ? entry->_28C.mFlag15 != 0 : TRUE;
+    BOOL flag = entry != NULL ? entry->_28C.mTalked != 0 : TRUE;
     if (!flag) {
         dAnimalMemory_c *memory = mpMemory;
         if (memory != NULL) {
             u8 scene = getCurrentScene();
-            BOOL inTown = isSceneAttr(scene, 5);
+            BOOL inTown = isSceneAttr(scene, SCENE_ATTR_TOWN);
             u8 count = memory->mTalkCount.get(scene);
             dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
             BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
@@ -3404,7 +3404,7 @@ void dAcNpcNml_c::talk_c::endGreeting(int arg) {
 
 // 80035AA0
 BOOL dAcNpcNml_c::talk_c::stepGreeting(int kind) {
-    if (getController() != NULL && getController()->_6C84 == 0) {
+    if (getController() != NULL && getController()->mNextMsgCode == 0) {
         setProcSet(&l_talkEntrySets[TALK_FREE]);
         startMsg();
         return TRUE;
@@ -3427,7 +3427,7 @@ void dAcNpcNml_c::talk_c::addFriendship(int delta) {
 // 80035B88
 u32 dAcNpcNml_c::calcHeapSize(BOOL withFrm) {
     u32 size = fn_800F9D8C();
-    size += ROUND_UP(isCurrentSceneAttr(5) ? 0x5000 : 0x2800, 4);
+    size += ROUND_UP(isCurrentSceneAttr(SCENE_ATTR_TOWN) ? 0x5000 : 0x2800, 4);
     size += 0x9CC0;
     if (withFrm) {
         size += mHeap::frmHeapCost(0, 0x20);

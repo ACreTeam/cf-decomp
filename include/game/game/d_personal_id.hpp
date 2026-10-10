@@ -24,6 +24,7 @@ struct dPlayerID_c {
     void setName(const wchar_t *name);                // 8013EA98
     void setWord(dScript::Word_c *word) const;        // 8013EAA4: name and gender
     BOOL fn_8013EB28(const dPlayerID_c *other) const; // 8013EB28
+    u8 getGender() const { return mGender; }
 
     static const u16 ID_UNSET; // 80750BF0: 0xFFFF (defined out of line, so callers load it)
 

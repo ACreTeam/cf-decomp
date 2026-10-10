@@ -1,7 +1,7 @@
 #pragma once
 
 // d_npc_talk_quest_q12.cpp (.text 80050F4C..80051C68, .rodata 8046C8E0..8046C920, .data 804A38F0..804A3A20,
-// .sdata 80749AA8). Not decompiled yet. Villager talk for the lost-key request ("Q12_*" messages,
+// .sdata 80749AA8..80749AB0). Villager talk for the lost-key request ("Q12_*" messages,
 // QUEST_KIND_REQUEST_6 = dQuestVillager_c kind 6 at dAnimal_c+0x2BE6): the player hands back the key
 // the villager asked for (item select limited to BITM kind 0x35 = keys), gets a reward
 // (dAnimal_c::pickLostItemReward), and the quest is closed (dLostQuest_c::setTime at
@@ -37,12 +37,12 @@
 //   804A3920 .data   0xA   "Q12_Visit"
 //   804A392C .data   0x54  label table, 7 x const char *: "Q12_Con1", "Q12_Report2", "Q12_Report1",
 //                          "Q12_Con2", "Q12_Con2", "Q12_Req" (80749AA8), "Q12_Visit"; then PTMF x3
-//                          (104 procs of fn_80050F4C): fn_80051B38, fn_8005125C, fn_80051BF0; then
+//                          (104 procs of msgLostKeyQuest): stepLostKeyReport, stepLostKeyChoice, stepLostKeyVisit; then
 //                          "sys_STRING/STR_Unit" (merged literal, fn_801A5874 argument)
-//   804A3980 .data   0xC   PTMF {0,-1,fn_800512F0}
-//   804A398C .data   0x30  PTMF x4: fn_80051380, fn_800514E0, fn_80051A04, fn_80051B08
-//   804A39BC..804A3A10 .data 0xC each, PTMF {0,-1,fn}: fn_8005153C, fn_800515A0, fn_8005162C,
-//                          fn_800516B8, fn_80051810, fn_800519D4, fn_80051A60, fn_80051AC4 (+ pad to 804A3A20)
+//   804A3980 .data   0xC   PTMF {0,-1,selLostKeyGive}
+//   804A398C .data   0x30  PTMF x4: resLostKeyGive, resLostKeyOK, resLostKeyNG, msgLostKeyCancel
+//   804A39BC..804A3A10 .data 0xC each, PTMF {0,-1,fn}: msgLostKeyOK, stepLostKeyOK, msgLostKeyItem,
+//                          endLostKeyItem, stepLostKeyItem, msgLostKeyItemEnd, msgLostKeyNG, stepLostKeyNG (+ pad to 804A3A20)
 //   80749AA8 .sdata  0x8   "Q12_Req" (entry 5 of the label table; probably this TU's)
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest

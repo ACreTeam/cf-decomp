@@ -192,7 +192,7 @@ BOOL dQuestBase_c::isBeforeNight(const dTime_c &time) {
 }
 
 // 8013F898: picks one of kinds at random among those allowed at this time.
-int dQuestBase_c::pickKind(const int *kinds, u32 num, dTime_c *time) {
+int dQuestBase_c::pickDeadline(const int *deadlines, u32 num, dTime_c *time) {
     static BOOL (*const sChecks[7])(const dTime_c &) = {NULL, isDaytime, isBeforeNight, NULL, NULL, NULL, NULL};
     static const int sDefault[3] = {0, 1, 2};
 
@@ -203,20 +203,20 @@ int dQuestBase_c::pickKind(const int *kinds, u32 num, dTime_c *time) {
         time = dTime_c::getCurrent();
     }
 
-    if (kinds == NULL || num == 0) {
-        kinds = sDefault;
+    if (deadlines == NULL || num == 0) {
+        deadlines = sDefault;
         num = 3;
     }
 
-    if (kinds != NULL && num != 0) {
-        for (u32 i = 0; i < num; i++, kinds++) {
-            u32 kind = *kinds;
-            if (kind < 7) {
-                BOOL (*check)(const dTime_c &) = sChecks[kind];
+    if (deadlines != NULL && num != 0) {
+        for (u32 i = 0; i < num; i++, deadlines++) {
+            u32 deadline = *deadlines;
+            if (deadline < QUEST_DEADLINE_NUM) {
+                BOOL (*check)(const dTime_c &) = sChecks[deadline];
                 if (check == NULL || check(*time)) {
                     f32 chance = 100.0f / (count + 1);
                     if (cM::rndF(100.0f) <= chance) {
-                        result = *kinds;
+                        result = *deadlines;
                     }
                     count++;
                 }
@@ -487,7 +487,7 @@ BOOL dQuestErrandList_c::isActive() const {
 }
 
 // 80140A54
-u8 dQuestErrandList_c::getKind() const {
+int dQuestErrandList_c::getKind() const {
     if (isActive()) {
         return getErrand(0)->mBase.mKind;
     }

@@ -113,6 +113,10 @@ extern "C" void fn_80117118(void *obj); // 80117118
 struct dSaveUnk1CE_c;
 // d_sv_lang_flag: clears bit `bit` (< 6) of player `player` (< 4) in the flags at extra+0x1CE.
 extern "C" void fn_801172C0(dSaveUnk1CE_c *flags, u32 player, u32 bit); // 801172C0
+// d_sv_lang_flag: the downloaded message record of personality `looks` (< 6) in language `lang` (< 10;
+// 10 = getLanguage()) when player `player`'s flag `looks` is set; NULL otherwise. The message data
+// (bmg) follows the first word (d_npc_talk_reaction msgReDownload).
+extern "C" const u32 *fn_80117318(dSaveUnk1CE_c *flags, u32 player, u32 looks, u32 lang); // 80117318
 struct dSaveUnk1CE_c {
     dSaveUnk1CE_c() { fn_80117118(this); }
     u8 _00[0x12];
@@ -162,6 +166,11 @@ struct dSaveExtra_c {
     /* 0x189C38 */ u8 _189C38[0x12108];     // ctor 8013F098; used by the mail code at 8010263C
 }; // size 0x19BD40
 
+// 80116A74 (d_sv_extra): picks a random entry of the 8 visiting-player records at extra+0x46
+// (dPersonalID_c, 0x2C each) with a nonzero kind (u32 at extra+0x1A8 + i * 4), skipping `exclude`;
+// copies it to out / kind. FALSE when there is none. Used by d_npc_talk_town ("Town_Rumor").
+extern "C" BOOL fn_80116A74(dSaveExtra_c *extra, dPersonalID_c *out, u32 *kind, const dPersonalID_c *exclude);
+
 class dSaveData_c : public dSaveTown_c {
 public:
     static u32 getDLDataOffset();         // 8010DC04: offsetof mDLItems
@@ -194,6 +203,10 @@ public:
     }
 
     static dSaveExtra_c *getRawExtra() { return &getRaw()->mExtra; }
+    // The town's id and its villagers. Inline results (not plain expressions): their temps get the
+    // registers d_npc_talk_reaction msgFirstMeeting needs.
+    static dLandID_c *getTownLand() { return &getTown()->mLandID; }
+    static dAnimalBlock_c *getAnimalBlock() { return &getRaw()->mAnimals.mTown; }
 
     // The region the town was made in (getRegion() value); dPrcMng_c ignores downloaded patterns otherwise.
     static int getTownRegion() { return dSaveData_c::getRaw()->_0735C2 & 0xF; }

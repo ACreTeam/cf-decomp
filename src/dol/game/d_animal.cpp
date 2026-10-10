@@ -90,7 +90,7 @@ BOOL FE000(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getRandomSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL isMovedOutPlayer(const dPersonalID_c *pid, const dLandID_c *land, dPrivateData_c *players);
 BOOL isOtherTownPlayer(const dPersonalID_c *pid, const dLandID_c *land, dPrivateData_c *players);
-void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag);
+void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks);
 dItem::Item getTemplateFtr(u32 idx, const dAnimalTemplate_c *tmpl);
 u32 getFtrSlotOfPlaceholder(const dItem::Item *item);
 BOOL isHouseItem(const dItem::Item *item);
@@ -759,7 +759,7 @@ void dAnimalMemory_c::clear() {
     mImpression = '1';
     mTalkCount.clear();
     mEventFlags = 0;
-    _86 = dItem::ITEM_ID_NONE;
+    mLastClothes = dItem::ITEM_ID_NONE;
 }
 
 // 8011C8A8
@@ -1846,8 +1846,8 @@ void dAnimal_c::getPlayerCallName(dScript::Word_c *word, const dPersonalID_c *pi
 }
 
 // 8011F19C
-// Random non-empty demo word that differs from def, else def.
-void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag) {
+// Random non-empty demo word that differs from def, else def. looks is unused.
+void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks) {
     u32 mask = 0xF;
 
     if (flag == FALSE) {

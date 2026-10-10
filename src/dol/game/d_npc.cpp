@@ -408,8 +408,8 @@ void dNpcEntry_c::clear() {
     mQuest.clear();
     mTimer.clear();
     mTime.init();
-    _289 = 0;
-    _28A = 0;
+    mStallBuyCount = 0;
+    mStallRefuseCount = 0;
     _288.clear();
 }
 

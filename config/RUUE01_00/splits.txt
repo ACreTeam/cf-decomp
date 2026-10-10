@@ -75,6 +75,7 @@ dol/game/d_npc_talk_approach.cpp:
 	.text       start:0x80036324 end:0x80038134
 	.rodata     start:0x8046C088 end:0x8046C178
 	.data       start:0x804A1BF0 end:0x804A1D58
+	.sdata      start:0x80749970 end:0x80749978
 	.sdata2     start:0x8074FF80 end:0x8074FFB0
 
 dol/game/d_npc_talk_arbeit.cpp:
@@ -86,93 +87,184 @@ dol/game/d_npc_talk_free.cpp:
 	.text       start:0x80039B38 end:0x8003F354
 	.rodata     start:0x8046C1C0 end:0x8046C630
 	.data       start:0x804A1F20 end:0x804A2308
+	.sdata      start:0x80749978 end:0x80749A30
 	.sdata2     start:0x8074FFB0 end:0x80750060
 
 dol/game/d_npc_talk_carnival.cpp:
 	.text       start:0x8003F354 end:0x80043C34
 	.rodata     start:0x8046C630 end:0x8046C6C0
 	.data       start:0x804A2308 end:0x804A2A90
+	.bss        start:0x80565428 end:0x80565488
+	.sdata      start:0x80749A30 end:0x80749A38
+	.sbss       start:0x8074E198 end:0x8074E1B8
 	.sdata2     start:0x80750060 end:0x80750080
 
 dol/game/d_npc_talk_countdown.cpp:
 	.text       start:0x80043C34 end:0x80043EBC
+	.rodata     start:0x8046C6C0 end:0x8046C6D0
+	.data       start:0x804A2A90 end:0x804A2AB0
+	.sdata      start:0x80749A38 end:0x80749A48
 
 dol/game/d_npc_talk_halloween.cpp:
 	.text       start:0x80043EBC end:0x80045154
+	.rodata     start:0x8046C6D0 end:0x8046C6F0
+	.data       start:0x804A2AB0 end:0x804A2BB0
+	.sdata      start:0x80749A48 end:0x80749A50
 
 dol/game/d_npc_talk_harvest.cpp:
 	.text       start:0x80045154 end:0x8004664C
+	.rodata     start:0x8046C6F0 end:0x8046C798
+	.data       start:0x804A2BB0 end:0x804A2C60
+	.sdata      start:0x80749A50 end:0x80749A58
 
 dol/game/d_npc_talk_bug.cpp:
 	.text       start:0x8004664C end:0x80046BD0
+	.data       start:0x804A2C60 end:0x804A2C90
+	.sdata      start:0x80749A58 end:0x80749A60
+	.sdata2     start:0x80750080 end:0x80750088
 
 dol/game/d_npc_talk_fireworks.cpp:
 	.text       start:0x80046BD0 end:0x800470E4
+	.rodata     start:0x8046C798 end:0x8046C7A8
+	.data       start:0x804A2C90 end:0x804A2CA0
+	.sdata      start:0x80749A60 end:0x80749A78
 
 dol/game/d_npc_talk_fishing.cpp:
 	.text       start:0x800470E4 end:0x800476E0
+	.rodata     start:0x8046C7A8 end:0x8046C7B8
+	.data       start:0x804A2CA0 end:0x804A2CD0
+	.sdata      start:0x80749A78 end:0x80749A80
+	.sdata2     start:0x80750088 end:0x80750090
 
 dol/game/d_npc_talk_fmarket.cpp:
 	.text       start:0x800476E0 end:0x8004902C
+	.rodata     start:0x8046C7B8 end:0x8046C828
+	.data       start:0x804A2CD0 end:0x804A2F00
 
 dol/game/d_npc_talk_birthday.cpp:
-	.text       start:0x8004902C end:0x80049FDC
+	.text       start:0x8004902C end:0x800493EC
+	.rodata     start:0x8046C828 end:0x8046C838
+	.data       start:0x804A2F00 end:0x804A2F10
+
+dol/game/d_npc_talk_mood.cpp:
+	.text       start:0x800493EC end:0x80049FDC
+	.rodata     start:0x8046C838 end:0x8046C8B0
+	.data       start:0x804A2F10 end:0x804A2F70
+	.sbss       start:0x8074E1B8 end:0x8074E1C0
 
 dol/game/d_npc_talk_quest_q04.cpp:
 	.text       start:0x80049FDC end:0x8004B75C
+	.rodata     start:0x8046C8B0 end:0x8046C8E0
+	.data       start:0x804A2F70 end:0x804A3290
+	.sdata      start:0x80749A80 end:0x80749A88
+	.sdata2     start:0x80750090 end:0x807500C8
 
 dol/game/d_npc_talk_quest_q02.cpp:
 	.text       start:0x8004B75C end:0x8004CBCC
+	.data       start:0x804A3290 end:0x804A3400
+	.sdata      start:0x80749A88 end:0x80749A90
+	.sdata2     start:0x807500C8 end:0x80750100
 
 dol/game/d_npc_talk_quest_q03.cpp:
 	.text       start:0x8004CBCC end:0x8004E31C
+	.data       start:0x804A3400 end:0x804A35A8
+	.sdata      start:0x80749A90 end:0x80749A98
+	.sdata2     start:0x80750100 end:0x80750140
 
 dol/game/d_npc_talk_quest_q05.cpp:
 	.text       start:0x8004E31C end:0x8004FADC
+	.data       start:0x804A35A8 end:0x804A3780
+	.sdata      start:0x80749A98 end:0x80749AA0
+	.sdata2     start:0x80750140 end:0x80750180
 
 dol/game/d_npc_talk_quest_q01.cpp:
 	.text       start:0x8004FADC end:0x80050F4C
+	.data       start:0x804A3780 end:0x804A38F0
+	.sdata      start:0x80749AA0 end:0x80749AA8
+	.sdata2     start:0x80750180 end:0x807501B8
 
 dol/game/d_npc_talk_quest_q12.cpp:
 	.text       start:0x80050F4C end:0x80051C68
+	.rodata     start:0x8046C8E0 end:0x8046C920
+	.data       start:0x804A38F0 end:0x804A3A20
+	.sdata      start:0x80749AA8 end:0x80749AB0
 
 dol/game/d_npc_talk_quest_q11.cpp:
 	.text       start:0x80051C68 end:0x80052EB0
+	.rodata     start:0x8046C920 end:0x8046C958
+	.data       start:0x804A3A20 end:0x804A3BC8
+	.sdata2     start:0x807501B8 end:0x807501C8
 
 dol/game/d_npc_talk_quest_delivery.cpp:
 	.text       start:0x80052EB0 end:0x800546F4
+	.rodata     start:0x8046C958 end:0x8046C9D0
+	.data       start:0x804A3BC8 end:0x804A3DA8
+	.sdata2     start:0x807501C8 end:0x807501D8
 
 dol/game/d_npc_talk_quest_q07.cpp:
 	.text       start:0x800546F4 end:0x80056024
+	.rodata     start:0x8046C9D0 end:0x8046CA00
+	.data       start:0x804A3DA8 end:0x804A3F88
+	.sdata2     start:0x807501D8 end:0x80750208
 
 dol/game/d_npc_talk_quest_q06.cpp:
 	.text       start:0x80056024 end:0x800573D0
+	.rodata     start:0x8046CA00 end:0x8046CA18
+	.data       start:0x804A3F88 end:0x804A40F8
+	.sdata2     start:0x80750208 end:0x80750220
 
 dol/game/d_npc_talk_quest_q10.cpp:
 	.text       start:0x800573D0 end:0x80058990
+	.rodata     start:0x8046CA18 end:0x8046CA90
+	.data       start:0x804A40F8 end:0x804A4268
+	.sdata      start:0x80749AB0 end:0x80749AB8
+	.sdata2     start:0x80750220 end:0x80750248
 
 dol/game/d_npc_talk_quest_q13.cpp:
 	.text       start:0x80058990 end:0x8005A3C4
+	.rodata     start:0x8046CA90 end:0x8046CAE8
+	.data       start:0x804A4268 end:0x804A4498
+	.sdata      start:0x80749AB8 end:0x80749AC0
+	.sdata2     start:0x80750248 end:0x80750270
 
 dol/game/d_npc_talk_quest_q09.cpp:
 	.text       start:0x8005A3C4 end:0x8005C82C
+	.rodata     start:0x8046CAE8 end:0x8046CC60
+	.data       start:0x804A4498 end:0x804A4708
+	.sdata2     start:0x80750270 end:0x807502A0
 
 dol/game/d_npc_talk_quest_q08.cpp:
 	.text       start:0x8005C82C end:0x8005E584
+	.rodata     start:0x8046CC60 end:0x8046CD20
+	.data       start:0x804A4708 end:0x804A4938
+	.sdata      start:0x80749AC0 end:0x80749AD8
+	.sdata2     start:0x807502A0 end:0x807502D0
 
 dol/game/d_npc_talk_reaction.cpp:
 	.text       start:0x8005E584 end:0x80060980
+	.data       start:0x804A4938 end:0x804A4B60
+	.bss        start:0x80565488 end:0x805654A0
+	.sdata      start:0x80749AD8 end:0x80749B20
+	.sbss       start:0x8074E1C0 end:0x8074E1D0
+	.sdata2     start:0x807502D0 end:0x807502D8
 
 dol/game/d_npc_talk_rollan.cpp:
 	.text       start:0x80060980 end:0x800613BC
+	.rodata     start:0x8046CD20 end:0x8046CD60
+	.data       start:0x804A4B60 end:0x804A4BB8
+	.sdata2     start:0x807502D8 end:0x807502E0
 
 dol/game/d_npc_talk_town.cpp:
 	.text       start:0x800613BC end:0x80061ADC
+	.rodata     start:0x8046CD60 end:0x8046CDB0
+	.data       start:0x804A4BB8 end:0x804A4C10
+	.sdata      start:0x80749B20 end:0x80749B50
+	.sdata2     start:0x807502E0 end:0x807502E8
 
 dol/game/d_a_npc_sp.cpp:
 	.text       start:0x80061ADC end:0x80063438
 	.ctors      start:0x80465630 end:0x80465634 align:8
-	.sdata2     start:0x807502E8 end:0x80750318 align:4
+	.sdata2     start:0x807502E8 end:0x80750318
 
 dol/game/d_a_rmobj.cpp:
 	.text       start:0x80063438 end:0x80065230
