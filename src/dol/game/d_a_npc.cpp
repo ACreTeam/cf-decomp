@@ -56,7 +56,7 @@
 // d_npc_talk_fmarket and d_npc_talk_birthday (a default argument keeps the reference to the object).
 const f32 cNpcMorphFrames = 12.0f; // default morph frames
 const f32 l_8074FDE4 = 1.0f;  // default anm rate (action_c::request)
-const f32 l_8074FDE8 = 1.0f;  // default anm rate (other TUs)
+const f32 l_defaultAnmRate = 1.0f;  // default anm rate (other TUs)
 const f32 l_8074FDEC = 2.0f;
 const f32 cNpcAnmRateMax = 1.05f; // action_c::calc -> calcAnmRate
 const f32 cNpcAnmRateMin = 0.44f;
@@ -74,7 +74,7 @@ const char l_804659F0[0x10] = "Lear\0Rear"; // ear node names, indexed i * 5 (ea
 const int l_80465A00[2][2] = {{0x84, 0x82}, {0x85, 0x83}}; // [2][2] talking mouth textures (face_c)
 
 // 80465A10: ear parameters [getEarType()][ear] (earCtrl_c::getParam; index 0 is the fallback).
-const dAcNpc_c::earCtrl_c::param_s l_80465A10[60][2] = {
+const dAcNpc_c::earCtrl_c::param_s l_earParams[NPC_EAR_TYPE_NUM][2] = {
     {{{0.6f, 0.8f}, {0.9f, 0.4f}, 10.0f, 0.43f, 0.4f}, {{0.8f, 0.6f}, {0.9f, 0.4f}, 10.0f, 0.43f, 0.4f}},
     {{{0.6f, 0.8f}, {0.9f, 0.4f}, 10.0f, 0.43f, 0.4f}, {{0.8f, 0.6f}, {0.9f, 0.4f}, 10.0f, 0.43f, 0.4f}},
     {{{0.6f, 0.8f}, {0.9f, 0.4f}, 10.0f, 0.43f, 0.4f}, {{0.8f, 0.6f}, {0.9f, 0.4f}, 10.0f, 0.43f, 0.4f}},
@@ -138,7 +138,7 @@ const dAcNpc_c::earCtrl_c::param_s l_80465A10[60][2] = {
 };
 
 // 80466730 / 80467090 / 80467540: tables of {key, 33 positions} (used by d_a_npc_nml).
-const dAcNpc_c::posTable33_s l_80466730[6] = {
+const dAcNpc_c::posTable33_s l_manpuOfsAnimal[6] = {
     {0x12, {
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 5.0f}, {0.0f, 2.0f, 2.0f}, {0.0f, 0.0f, 5.0f},
         {0.0f, 4.0f, 3.0f}, {0.0f, 2.0f, 0.0f}, {0.0f, 3.0f, 3.0f}, {0.0f, 0.0f, 3.0f},
@@ -207,7 +207,7 @@ const dAcNpc_c::posTable33_s l_80466730[6] = {
     }},
 };
 
-const dAcNpc_c::posTable33_s l_80467090[3] = {
+const dAcNpc_c::posTable33_s l_manpuOfsAnimalL[3] = {
     {0x12, {
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
@@ -243,7 +243,7 @@ const dAcNpc_c::posTable33_s l_80467090[3] = {
     }},
 };
 
-const dAcNpc_c::posTable33_s l_80467540[3] = {
+const dAcNpc_c::posTable33_s l_manpuOfsAnimalR[3] = {
     {0x12, {
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
@@ -280,7 +280,7 @@ const dAcNpc_c::posTable33_s l_80467540[3] = {
 };
 
 // 804679F0 / 80469550 / 8046A300: tables of {key, 97 positions} (used by d_a_npc_sp).
-const dAcNpc_c::posTable97_s l_804679F0[6] = {
+const dAcNpc_c::posTable97_s l_manpuOfsSp[6] = {
     {0x12, {
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 2.0f},
         {0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 0.0f},
@@ -445,7 +445,7 @@ const dAcNpc_c::posTable97_s l_804679F0[6] = {
     }},
 };
 
-const dAcNpc_c::posTable97_s l_80469550[3] = {
+const dAcNpc_c::posTable97_s l_manpuOfsSpL[3] = {
     {0x12, {
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
@@ -529,7 +529,7 @@ const dAcNpc_c::posTable97_s l_80469550[3] = {
     }},
 };
 
-const dAcNpc_c::posTable97_s l_8046A300[3] = {
+const dAcNpc_c::posTable97_s l_manpuOfsSpR[3] = {
     {0x12, {
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
         {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f},
@@ -613,14 +613,14 @@ const dAcNpc_c::posTable97_s l_8046A300[3] = {
     }},
 };
 
-const int l_8074FE38 = 6; // number of entries of l_80466730
-const int l_8074FE3C = 3; // l_80467090
-const int l_8074FE40 = 3; // l_80467540
-const int l_8074FE44 = 6; // l_804679F0
-const int l_8074FE48 = 3; // l_80469550
-const int l_8074FE4C = 3; // l_8046A300
-const f32 l_8074FE50 = 32.0f; // d_a_npc_sp
-const f32 l_8074FE54 = 64.0f; // d_a_npc_sp
+const int l_manpuOfsAnimalNum = 6; // number of entries of l_manpuOfsAnimal
+const int l_manpuOfsAnimalLNum = 3; // l_manpuOfsAnimalL
+const int l_manpuOfsAnimalRNum = 3; // l_manpuOfsAnimalR
+const int l_manpuOfsSpNum = 6; // l_manpuOfsSp
+const int l_manpuOfsSpLNum = 3; // l_manpuOfsSpL
+const int l_manpuOfsSpRNum = 3; // l_manpuOfsSpR
+const f32 l_pointDist = 32.0f; // d_a_npc_sp
+const f32 l_pointRange = 64.0f; // d_a_npc_sp
 
 // Globals constructed by __sinit (in this order).
 dAcNpc_c::moveParam_c l_moveParamStop(0.0f, 0.0f, 0.0f);
@@ -629,15 +629,15 @@ dAcNpc_c::moveParam_c l_moveParamWalk(0.4f, 0.04f, 0.07f);
 mAng l_runTurnSpeed(0x270);
 dAcNpc_c::moveParam_c l_moveParamRun(0.6f, 0.14f, 0.2f);
 mAng l_turnSpeed(0x300);
-mAng l_8074E15C(0x2DFF);
-mAng l_8074E160(0x37FF);
-mAng l_8074E164(0x17F);
-mAng l_8074E168(0xFFF);
-mAng l_8074E16C(0x7F);
-mVec3_c l_80564BC0[2] = {mVec3_c(10.0f, 0.0f, 16.0f), mVec3_c(-10.0f, 0.0f, 16.0f)};
-mAng l_8074E170(0x4000);
+mAng l_lookYawMax(0x2DFF);
+mAng l_lookFov(0x37FF);
+mAng l_lookYawStep(0x17F);
+mAng l_lookPitchMax(0xFFF);
+mAng l_lookPitchStep(0x7F);
+mVec3_c l_sidePos[2] = {mVec3_c(10.0f, 0.0f, 16.0f), mVec3_c(-10.0f, 0.0f, 16.0f)};
+mAng l_frontAngle(0x4000);
 dAcNpc_c::viewArea_c l_80564BE8;
-mAng l_8074E174(0x4000);
+mAng l_pointAngle(0x4000);
 
 // ---- dAcNpc_c::mdlCallback_c (800120A8..800128A0) ----
 
@@ -897,14 +897,14 @@ int dAcNpc_c::getSidePos(mVec3_c *out) {
         ret = 1;
         break;
     case 1:
-        if (calcOfsPos(out, &l_80564BC0[1])) {
+        if (calcOfsPos(out, &l_sidePos[1])) {
             ret = 2;
         } else {
             ret = 1;
         }
         break;
     case 2: {
-        BOOL ok = calcOfsPos(out, &l_80564BC0[0]);
+        BOOL ok = calcOfsPos(out, &l_sidePos[0]);
         ret = 1;
         if (ok) {
             ret = 2;
@@ -1456,12 +1456,12 @@ static inline const dItem::Item *ptrTo(const dItem::Item &item) {
 
 static inline bool isFreePos(const mVec3_c *pos, BOOL checkA) {
     dItem::Item item((u16)0xFFF1);
-    return fn_800F20D0(pos, &item, NULL, 0x44, TRUE, checkA);
+    return canPutItemAt(pos, &item, NULL, SCENE_NUM, TRUE, checkA);
 }
 
 static inline bool isFreeUnit(int x, int z) {
     dItem::Item item((u16)0xFFF1);
-    return fn_800F1DF0(x, z, &item, NULL, 0x44, TRUE, TRUE);
+    return canPutItemOnUnit(x, z, &item, NULL, SCENE_NUM, TRUE, TRUE);
 }
 
 BOOL dAcNpc_c::searchFreeSideAngle(mAng *pAngle, const mVec3_c *pCenter, BOOL twoPass) {
@@ -1630,7 +1630,7 @@ BOOL dAcNpc_c::searchPosNear(mVec3_c *pPos, const mVec3_c *pCenter, f32 minDist,
             if (std::fabs(pCenter->y - p.y) < 48.0f) {
                 dItem::Item item((u16)0xFFF1);
                 dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                if (fn_800F20D0(&p, &item, NULL, 0x44, holeCheck, checkA)) {
+                if (canPutItemAt(&p, &item, NULL, SCENE_NUM, holeCheck, checkA)) {
                     ok = true;
                 }
             }
@@ -1696,7 +1696,7 @@ BOOL dAcNpc_c::searchPosInCircle(mVec3_c *pPos, const mVec3_c *pBase, const mVec
                 bool ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (fn_800F20D0(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, 0x44, holeCheck, checkA)) {
+                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, SCENE_NUM, holeCheck, checkA)) {
                         ok = true;
                     }
                 }
@@ -1766,7 +1766,7 @@ BOOL dAcNpc_c::searchPosInRect(mVec3_c *pPos, const mVec3_c *pTarget, f32 x0, f3
                 ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (fn_800F20D0(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, 0x44, holeCheck, checkA)) {
+                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, SCENE_NUM, holeCheck, checkA)) {
                         ok = true;
                     }
                 }
@@ -1945,7 +1945,7 @@ int dAcNpc_c::preCreate() {
     }
 
     mNpcItem = (u16)mParam;
-    _DC = addToNpcList();
+    mNpcListSlot = addToNpcList();
     setRecept(NULL);
     mTalk.init();
     mFrontChk.init();
@@ -3482,8 +3482,8 @@ BOOL dAcNpc_c::manpu_c::isActive() const {
     return FALSE;
 }
 
-// 8049F070: manpu types (manpuMgr_c::isValidType: < 78)
-static dAcNpc_c::manpuData_s l_manpuData[78] = {
+// 8049F070: manpu types (manpuMgr_c::isValidType: < MANPU_TYPE_NUM)
+static dAcNpc_c::manpuData_s l_manpuData[MANPU_TYPE_NUM] = {
     /* 0x00 */ { { &dAcNpc_c::manpu_c::start00, &dAcNpc_c::manpu_c::exec00, NULL } },
     /* 0x01 */ { { &dAcNpc_c::manpu_c::start01, &dAcNpc_c::manpu_c::exec01, NULL } },
     /* 0x02 */ { { &dAcNpc_c::manpu_c::start02, &dAcNpc_c::manpu_c::exec02, NULL } },
@@ -4560,7 +4560,7 @@ void dAcNpc_c::manpuMgr_c::init() {
 }
 
 BOOL dAcNpc_c::manpuMgr_c::isValidType(u32 type) {
-    return type < 0x4E;
+    return type < MANPU_TYPE_NUM;
 }
 
 BOOL dAcNpc_c::manpuMgr_c::start(u32 type, u32 anmId, BOOL stopOthers, const mVec3_c *pos0,
@@ -5524,7 +5524,7 @@ void dAcNpc_c::action_c::execTurnRun(dAcNpc_c *npc) {
 // 8002061C
 int dAcNpc_c::action_c::initFaceMove(dAcNpc_c *npc, initFunc_t moveInit) {
     mAng angle;
-    if (npc->checkTargetAngle(&angle, &getPrm()->mTarget, &l_8074E170)) {
+    if (npc->checkTargetAngle(&angle, &getPrm()->mTarget, &l_frontAngle)) {
         (this->*moveInit)(npc);
         mStep = 1;
     } else {
@@ -5543,7 +5543,7 @@ void dAcNpc_c::action_c::execFaceMoveTurn(dAcNpc_c *npc, initFunc_t moveInit) {
     int walkAnm = npc->mAnmSet.mWalkAnm;
     setAngle(work->mAngle);
     setTurnSpeed(work->mTurnSpeed);
-    if (labs((s16)(mTargetAngle.mAngle - npc->mAngle.y.mAngle)) < l_8074E170.mAngle) {
+    if (labs((s16)(mTargetAngle.mAngle - npc->mAngle.y.mAngle)) < l_frontAngle.mAngle) {
         (this->*moveInit)(npc);
         mStep = 1;
     } else if (walkAnm != npc->getModel()->mAnm.mAnmId) {
@@ -5569,7 +5569,7 @@ void dAcNpc_c::action_c::execFaceMoveMove(dAcNpc_c *npc, initFunc_t moveInit) {
         }
     } else {
         mAng angle;
-        if (!npc->checkTargetAngle(&angle, &mGoal, &l_8074E170)) {
+        if (!npc->checkTargetAngle(&angle, &mGoal, &l_frontAngle)) {
             setTargetAngle(angle);
             setAngle(angle);
             initTurn(npc);
@@ -5849,9 +5849,9 @@ int dAcNpc_c::action_c::initCatch(dAcNpc_c *npc) {
         type = 0;
     }
     int member = fn_800DCF58();
-    f32 f1 = npc->vt90();
+    f32 f1 = npc->getHandItemOfsX();
     f32 f2 = fn_80100548();
-    f32 f3 = npc->vt94();
+    f32 f3 = npc->getHandItemOfsZ();
     f32 f5;
     f32 zero = 0.0f;
     f5 = zero;
@@ -6047,8 +6047,8 @@ int dAcNpc_c::action_c::initHandItem(dAcNpc_c *npc) {
     if ((u32)variant >= 2) {
         variant = 0;
     }
-    f32 f1 = npc->vt90();
-    f32 f2 = npc->vt94();
+    f32 f1 = npc->getHandItemOfsX();
+    f32 f2 = npc->getHandItemOfsZ();
     f32 f3 = 0.0f;
     if (npc->mNpcItem.isSame(dItem::Item((u16)0x8005))) {
         f3 = 2.0f;
@@ -6075,8 +6075,8 @@ int dAcNpc_c::action_c::initHandItem(dAcNpc_c *npc) {
 // 80021FBC
 void dAcNpc_c::action_c::handItemStartA(dAcNpc_c *npc) {
     actionPrm_c *prm = getPrm();
-    f32 f1 = npc->vt90();
-    f32 f2 = npc->vt94();
+    f32 f1 = npc->getHandItemOfsX();
+    f32 f2 = npc->getHandItemOfsZ();
     f32 f3 = 0.0f;
     if (npc->mNpcItem.isSame(dItem::Item((u16)0x8005))) {
         f3 = 2.0f;
@@ -6412,9 +6412,9 @@ void dAcNpc_c::action_c::handItemRelease(dAcNpc_c *npc) {
 // 8002355C
 void dAcNpc_c::action_c::handItemStartB(dAcNpc_c *npc) {
     actionPrm_c *prm = getPrm();
-    // vt90 twice (initHandItem uses vt90 and vt94)
-    f32 f1 = npc->vt90();
-    f32 f2 = npc->vt90();
+    // getHandItemOfsX twice (initHandItem uses getHandItemOfsX and getHandItemOfsZ)
+    f32 f1 = npc->getHandItemOfsX();
+    f32 f2 = npc->getHandItemOfsX();
     if (fn_80100550((int)&prm->mItem, prm->_50, prm->_48, prm->mVariant, (int)npc, f1, f2)) {
         mStep = 0x10;
     }
@@ -7141,7 +7141,7 @@ int dAcNpc_c::action_c::initMoveDest(dAcNpc_c *npc) {
             }
         } else {
             mAng dir = cM::atan2s(pos.x - npc->mPos.x, pos.z - npc->mPos.z);
-            if (labs((s16)(dir.mAngle - npc->mAngle.y.mAngle)) < l_8074E170.mAngle) {
+            if (labs((s16)(dir.mAngle - npc->mAngle.y.mAngle)) < l_frontAngle.mAngle) {
                 if (mGait == 2) {
                     prm->mTarget = pos;
                     prm->mGoal = pos;
@@ -7211,7 +7211,7 @@ void dAcNpc_c::action_c::moveDestIdle(dAcNpc_c *npc) {
             }
         } else {
             mAng dir = cM::atan2s(dx, dz);
-            if (labs((s16)(dir.mAngle - npc->mAngle.y.mAngle)) < l_8074E170.mAngle) {
+            if (labs((s16)(dir.mAngle - npc->mAngle.y.mAngle)) < l_frontAngle.mAngle) {
                 if (mGait == 2) {
                     prm->mTarget = pos;
                     prm->mGoal = pos;
@@ -7277,7 +7277,7 @@ void dAcNpc_c::action_c::moveDestWalk(dAcNpc_c *npc) {
             }
         } else {
             mAng dir = cM::atan2s(dx, dz);
-            if (labs((s16)(dir.mAngle - npc->mAngle.y.mAngle)) >= l_8074E170.mAngle) {
+            if (labs((s16)(dir.mAngle - npc->mAngle.y.mAngle)) >= l_frontAngle.mAngle) {
                 prm->mAngle = angle;
                 prm->mTurnSpeed = l_turnSpeed;
                 prm->mTurnMode = 0;
@@ -7336,7 +7336,7 @@ void dAcNpc_c::action_c::moveDestTurn(dAcNpc_c *npc) {
         } else {
             mAng dir = cM::atan2s(dx, dz);
             s16 cur = npc->mAngle.y.mAngle;
-            if (labs((s16)(dir.mAngle - cur)) < l_8074E170.mAngle) {
+            if (labs((s16)(dir.mAngle - cur)) < l_frontAngle.mAngle) {
                 if (mGait == 2) {
                     prm->mTarget = pos;
                     prm->mGoal = pos;
@@ -7412,7 +7412,7 @@ void dAcNpc_c::action_c::moveDestTurnInPlace(dAcNpc_c *npc) {
             mAng dir = cM::atan2s(dx, dz);
             s16 cur = npc->mAngle.y.mAngle;
             s16 diff = dir.mAngle - cur;
-            if (dist >= 0.1f && labs(diff) < l_8074E170.mAngle) {
+            if (dist >= 0.1f && labs(diff) < l_frontAngle.mAngle) {
                 if (mGait == 2) {
                     prm->mTarget = pos;
                     prm->mGoal = pos;
@@ -7508,10 +7508,10 @@ dAcNpc_c::lookAt_c::lookAt_c() {
     mTimer = 0;
     mType = LOOK_PLAYER;
     mPrio = 0;
-    mPitch.mStep = l_8074E16C.mAngle;
-    mPitch.mMax = l_8074E168.mAngle;
-    mYaw.mStep = l_8074E164.mAngle;
-    mYaw.mMax = l_8074E15C.mAngle;
+    mPitch.mStep = l_lookPitchStep.mAngle;
+    mPitch.mMax = l_lookPitchMax.mAngle;
+    mYaw.mStep = l_lookYawStep.mAngle;
+    mYaw.mMax = l_lookYawMax.mAngle;
     mPlayerNo = 0;
     mTargetPos = mVec3_c::Zero;
     mHeadPos = mVec3_c::Zero;
@@ -7528,7 +7528,7 @@ dAcNpc_c::lookAt_c::lookAt_c() {
     mHeadMtx._22 = 0.0f;
     mHeadMtx._23 = 0.0f;
     mRange = 104.0f;
-    mFov = l_8074E160;
+    mFov = l_lookFov;
     mIsLooking = false;
     mCheckFov = true;
     mLocked = false;
@@ -7989,10 +7989,10 @@ void dAcNpc_c::earCtrl_c::init(nw4r::g3d::ResMdl mdl, int type) {
 }
 
 const dAcNpc_c::earCtrl_c::param_s *dAcNpc_c::earCtrl_c::getParam(int type, int idx) {
-    if (type < 60 && idx < 2) {
-        return &l_80465A10[type][idx];
+    if (type < NPC_EAR_TYPE_NUM && idx < 2) {
+        return &l_earParams[type][idx];
     }
-    return &l_80465A10[0][0];
+    return &l_earParams[0][0];
 }
 
 int dAcNpc_c::earCtrl_c::searchNode(u32 nodeId) const {
@@ -8501,7 +8501,7 @@ void dAcNpc_c::recept_c::setSpeakerPartner() {
 void dAcNpc_c::recept_c::speakerLookAtPlayer() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        npc->mLookAt.setPlayerNo(1, getPlayerNo(), false, l_8074E16C, l_8074E164, 0.0f);
+        npc->mLookAt.setPlayerNo(1, getPlayerNo(), false, l_lookPitchStep, l_lookYawStep, 0.0f);
     }
 }
 
@@ -8513,7 +8513,7 @@ void dAcNpc_c::recept_c::speakerTurnToPlayer() {
         }
         int playerNo = getPlayerNo();
         mAng angle = npc->getAngleYToPlayer(playerNo);
-        npc->mLookAt.setPlayerNo(1, playerNo, false, l_8074E16C, l_8074E164, 0.0f);
+        npc->mLookAt.setPlayerNo(1, playerNo, false, l_lookPitchStep, l_lookYawStep, 0.0f);
         npc->mAction.requestTurn(1, angle, l_turnSpeed, 0);
     }
 }
@@ -8561,7 +8561,7 @@ void dAcNpc_c::recept_c::speakerLookAtNpc() {
         case 1: {
             dAcNpc_c *npc1 = getNpc(1);
             if (npc1 != NULL) {
-                npc1->mLookAt.setPos(1, *npc0->demoHook58(), false, l_8074E16C, l_8074E164, 0.0f);
+                npc1->mLookAt.setPos(1, *npc0->demoHook58(), false, l_lookPitchStep, l_lookYawStep, 0.0f);
             }
             break;
         }
@@ -8602,7 +8602,7 @@ void dAcNpc_c::recept_c::speakerLookAtPartner() {
         case 0: {
             dAcNpc_c *npc0 = getNpc(0);
             if (npc0 != NULL) {
-                npc0->mLookAt.setPos(1, *npc1->demoHook58(), false, l_8074E16C, l_8074E164, 0.0f);
+                npc0->mLookAt.setPos(1, *npc1->demoHook58(), false, l_lookPitchStep, l_lookYawStep, 0.0f);
             }
             break;
         }

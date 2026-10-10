@@ -30,6 +30,12 @@
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <revolution/MTX.h>
+
+#define NPC_SPECIES_NUM 33                 // villager species (per-species npc tables)
+#define NPC_SPECIAL_NUM 97                 // special npcs: item ids 0x8000 + 0..96, /Npc/Special/Model/0..96
+#define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
+#define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears
+#define MANPU_TYPE_NUM 78                  // manpu (emotion mark) types (manpuMgr_c::isValidType)
 #include <cstring>
 
 namespace EGG {
@@ -54,7 +60,7 @@ class dDesign_c;
 // ranges) of action_c / lookAt_c / recept_c request functions. Placeholder names.
 extern const f32 cNpcMorphFrames; // 12.0f default morph frames
 extern const f32 l_8074FDE4; // 1.0f default anm rate (action_c::request)
-extern const f32 l_8074FDE8; // 1.0f default anm rate (d_a_npc_sp, d_npc_talk_quest_q08, d_npc_talk_fmarket)
+extern const f32 l_defaultAnmRate; // 1.0f default anm rate (d_a_npc_sp, d_npc_talk_quest_q08, d_npc_talk_fmarket)
 extern const f32 l_8074FDEC; // 2.0f
 extern const f32 cNpcAnmRateMax; // 1.05f action_c::calcAnmRate
 extern const f32 cNpcAnmRateMin; // 0.44f action_c::calcAnmRate
@@ -102,9 +108,10 @@ public:
         ACTION_NUM           // 21: no action / no request
     };
 
-    // Element types of the top-of-file .rodata position tables (placeholder names).
-    struct posTable33_s { int mKey; Vec mPos[33]; };   // 0x190
-    struct posTable97_s { int mKey; Vec mPos[97]; };   // 0x490
+    // Element types of the manpu offset tables (l_manpuOfsAnimal* / l_manpuOfsSp*): a manpu type key and one
+    // offset per villager species / per special npc.
+    struct posTable33_s { int mKey; Vec mPos[NPC_SPECIES_NUM]; }; // 0x190
+    struct posTable97_s { int mKey; Vec mPos[NPC_SPECIAL_NUM]; }; // 0x490
 
     // Speed set of move_c: target speed and the chase steps of npc->mSpeedF. The statics
     // l_moveParamStop / l_moveParamWalk / l_moveParamRun (__sinit) are of this type. Size 0xC.
@@ -411,6 +418,8 @@ public:
     // calc(). RTTI dAcNpc_c::action_c, vtable 804A0428 = {dtor}.
     class action_c : public move_c {
     public:
+        enum emotion_e { EMOTION_NONE = 0x53 };
+
         typedef int (action_c::*initFunc_t)(dAcNpc_c *npc);
         typedef void (action_c::*execFunc_t)(dAcNpc_c *npc);
         struct actionFunc_s {
@@ -575,6 +584,10 @@ public:
         void execMoveParam(dAcNpc_c *npc);                                                                   // 800269B0
 
         void setGait(u32 gait) { mPrevGait = mGait; mGait = gait; }
+        emotion_e getEmotion() const {
+            emotion_e emotion = (emotion_e)mEmotion;
+            return emotion;
+        }
 
         /* 0x000 */ // move_c
         /* 0x038 */ dAcNpc_c *mpNpc;                 // set by init(); used by request()
@@ -925,7 +938,7 @@ public:
     }; // size 0x7C
 
     // Swinging ears (npc+0x195C): two spring-damped joints ("Lear"/"Rear" nodes) applied in
-    // mdlCallback_c::timingB. Per-npc-type parameters from l_80465A10[60][2] (type = getEarType()).
+    // mdlCallback_c::timingB. Per-npc-type parameters from l_earParams[NPC_EAR_TYPE_NUM][2] (type = getEarType()).
     class earCtrl_c {
     public:
         struct param_s {
@@ -1369,9 +1382,9 @@ public:
     virtual void vt84() {}                                 // 8002EA10 (+0x84) (talk_c::finish, on the partner)
     virtual void getName(dHmnName::Word_c *name, int len) = 0; // (+0x88)
     virtual u8 getNameKind() = 0;                          // (+0x8C)
-    virtual f32 vt90() const { return 0.0f; }                    // 8002E9F8 (+0x90)
-    virtual f32 vt94() const { return 0.0f; }                    // 8002EA00 (+0x94)
-    virtual int getEarType() = 0;                          // (+0x98) 0..59, 60 = no ears
+    virtual f32 getHandItemOfsX() const { return 0.0f; }                    // 8002E9F8 (+0x90)
+    virtual f32 getHandItemOfsZ() const { return 0.0f; }                    // 8002EA00 (+0x94)
+    virtual int getEarType() = 0;                          // (+0x98) < NPC_EAR_TYPE_NUM, NPC_EAR_TYPE_NONE = no ears
     virtual const dItem::Item *getHoldItem() { return NULL; } // 8002E9B0 (+0x9C)
     virtual int getSoundId();                              // 800156F0 (+0xA0)
     virtual void playSound();                              // 800156F8 (+0xA4)
@@ -1379,7 +1392,7 @@ public:
     virtual void getManpuOfs(mVec3_c *ofs, mVec3_c *ofsL, mVec3_c *ofsR, u8 type); // 80015734 (+0xAC)
     virtual int vtB0() { return 1; }                       // 8002E998 (+0xB0) execute hook
     virtual u32 getHeapSize() = 0;                         // (+0xB4)
-    virtual u32 addToNpcList() = 0;                                // (+0xB8) stored at _DC
+    virtual u32 addToNpcList() = 0;                                // (+0xB8) stored at mNpcListSlot
     virtual void removeFromNpcList() = 0;                               // (+0xBC) doDelete hook
     virtual int getFaceType() = 0;                          // (+0xC0)
 
@@ -1458,7 +1471,7 @@ public:
     // ---- data (offsets from the dtor 8002EA18 and preCreate 80015808) ----
     /* 0x00BC */ EGG::FrmHeap *m_heap_p;      // "dAcNpc_c::m_heap_p : NPC actor heap"
     /* 0x00C0 */ mAllocator_c mAllocator;
-    /* 0x00DC */ u32 _DC;                     // = addToNpcList() (preCreate)
+    /* 0x00DC */ u32 mNpcListSlot;                     // = addToNpcList() (preCreate)
     /* 0x00E0 */ dItem::Item mNpcItem;        // the npc's id as an item code (0xE000|i, 0x8011 ...)
     /* 0x00E2 */ u8 _E2[2];
     /* 0x00E4 */ resBase_c *mpRes;
@@ -1502,45 +1515,48 @@ public:
     /* 0x1C3E */ u8 _1C3E[2];
     /* 0x1C40 */ int mPermitState;            // 1 force local owner, 2 force remote, 0 ask permit; 3 after postCreate
     /* 0x1C44 */ u8 mRecvDaubAsOwner;                    // receive the daub even as local owner
-    /* 0x1C45 */ u8 _1C45[3];
+    /* 0x1C45 */ u8 mWandering;                       // d_a_npc_sp: wander mode running (executeWander)
+    /* 0x1C46 */ u8 _1C46[2];
 }; // size 0x1C48
 
-// ---- top-of-file data of d_a_npc.cpp used by other TUs (d_a_npc_nml, d_a_npc_sp); placeholder names ----
-extern const dAcNpc_c::posTable33_s l_80466730[6];
-extern const dAcNpc_c::posTable33_s l_80467090[3];
-extern const dAcNpc_c::posTable33_s l_80467540[3];
-extern const dAcNpc_c::posTable97_s l_804679F0[6];
-extern const dAcNpc_c::posTable97_s l_80469550[3];
-extern const dAcNpc_c::posTable97_s l_8046A300[3];
-extern const int l_8074FE38; // 6: number of entries of l_80466730
-extern const int l_8074FE3C; // 3
-extern const int l_8074FE40; // 3
-extern const int l_8074FE44; // 6
-extern const int l_8074FE48; // 3
-extern const int l_8074FE4C; // 3
-extern const f32 l_8074FE50; // 32.0f (d_a_npc_sp)
-extern const f32 l_8074FE54; // 64.0f (d_a_npc_sp)
-extern const int l_8074FEE0; // 13
-extern const int l_8074FEE4; // 13
-extern const int l_8074FEE8; // 18
-extern const int l_8074FEEC; // 7
+// ---- top-of-file data of d_a_npc.cpp used by other TUs (d_a_npc_nml, d_a_npc_sp) ----
+// Manpu (emotion mark) offsets: per villager species (Animal) and per special npc (Sp), for the mark itself
+// and its left / right parts, each with its entry count (searchPosTable).
+extern const dAcNpc_c::posTable33_s l_manpuOfsAnimal[6];
+extern const dAcNpc_c::posTable33_s l_manpuOfsAnimalL[3];
+extern const dAcNpc_c::posTable33_s l_manpuOfsAnimalR[3];
+extern const dAcNpc_c::posTable97_s l_manpuOfsSp[6];
+extern const dAcNpc_c::posTable97_s l_manpuOfsSpL[3];
+extern const dAcNpc_c::posTable97_s l_manpuOfsSpR[3];
+extern const int l_manpuOfsAnimalNum;          // 6: number of entries of l_manpuOfsAnimal
+extern const int l_manpuOfsAnimalLNum;         // 3
+extern const int l_manpuOfsAnimalRNum;         // 3
+extern const int l_manpuOfsSpNum;              // 6
+extern const int l_manpuOfsSpLNum;             // 3
+extern const int l_manpuOfsSpRNum;             // 3
+extern const f32 l_pointDist;                  // 32.0f getPointedUnit distance (d_a_npc_sp getPointedShopItem)
+extern const f32 l_pointRange;                 // 64.0f getPointedUnit range (d_a_npc_sp getPointedShopItem)
+extern const int l_8074FEE0;                   // 13
+extern const int l_8074FEE4;                   // 13
+extern const int l_8074FEE8;                   // 18
+extern const int l_8074FEEC;                   // 7
 // Globals initialized by __sinit (in this order; several are used by d_a_npc_sp, d_npc_talk_quest_q08,
 // d_npc_talk_fmarket):
-extern dAcNpc_c::moveParam_c l_moveParamStop; // 80564B6C (0, 0, 0)
-extern mAng l_walkTurnSpeed;                  // 8074E150 0x170
-extern dAcNpc_c::moveParam_c l_moveParamWalk; // 80564B84 (0.4, 0.04, 0.07)
-extern mAng l_runTurnSpeed;                   // 8074E154 0x270
-extern dAcNpc_c::moveParam_c l_moveParamRun;  // 80564B9C (0.6, 0.14, 0.2)
-extern mAng l_turnSpeed;                      // 8074E158 0x300
-extern mAng l_8074E15C;                       // 0x2DFF look yaw max
-extern mAng l_8074E160;                       // 0x37FF look fov
-extern mAng l_8074E164;                       // 0x17F look yaw step
-extern mAng l_8074E168;                       // 0xFFF look pitch max
-extern mAng l_8074E16C;                       // 0x7F look pitch step
-extern mVec3_c l_80564BC0[2];                 // {(10, 0, 16), (-10, 0, 16)} getSidePos
-extern mAng l_8074E170;                       // 0x4000 "in front" half angle
-extern dAcNpc_c::viewArea_c l_80564BE8;       // ctor 80028330
-extern mAng l_8074E174;                       // 0x4000
+extern dAcNpc_c::moveParam_c l_moveParamStop;  // 80564B6C (0, 0, 0)
+extern mAng l_walkTurnSpeed;                   // 8074E150 0x170
+extern dAcNpc_c::moveParam_c l_moveParamWalk;  // 80564B84 (0.4, 0.04, 0.07)
+extern mAng l_runTurnSpeed;                    // 8074E154 0x270
+extern dAcNpc_c::moveParam_c l_moveParamRun;   // 80564B9C (0.6, 0.14, 0.2)
+extern mAng l_turnSpeed;                       // 8074E158 0x300
+extern mAng l_lookYawMax;                      // 0x2DFF look yaw max
+extern mAng l_lookFov;                         // 0x37FF look fov
+extern mAng l_lookYawStep;                     // 0x17F look yaw step
+extern mAng l_lookPitchMax;                    // 0xFFF look pitch max
+extern mAng l_lookPitchStep;                   // 0x7F look pitch step
+extern mVec3_c l_sidePos[2];                   // {(10, 0, 16), (-10, 0, 16)} getSidePos
+extern mAng l_frontAngle;                      // 0x4000 "in front" half angle
+extern dAcNpc_c::viewArea_c l_80564BE8;        // ctor 80028330
+extern mAng l_pointAngle;                      // 0x4000 getPointedUnit angle (d_a_npc_sp getPointedShopItem)
 
 // Shared with the NPC RELs (d_a_npc_out etc.).
 struct emotionData_s {

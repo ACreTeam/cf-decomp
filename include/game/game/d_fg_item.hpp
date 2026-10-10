@@ -301,6 +301,7 @@ enum FgId {
 };
 
 #define ITEM_NAME_TYPE(id) (((id) >> 12) & 0xF)
+#define ITEM_NAME_INDEX(id) ((id) & 0xFFF) // index within ITEM_NAME_TYPE(id)
 
 inline bool isRealItemId(u16 id) {
     int category = ITEM_NAME_TYPE(id);

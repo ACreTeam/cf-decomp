@@ -493,11 +493,11 @@ typedef BOOL (*dNpcSpotFunc)(int x, int z, int arg);
 // Spot pickers.
 class dActor_c;
 class dPlayerActor_c;
-dPlayerActor_c *fn_800F1AE0(int x, int z);                           // 800F1AE0
-dActor_c *fn_800F1B7C(int x, int z);                                 // 800F1B7C
+dPlayerActor_c *getPlayerOnUnit(int x, int z);                           // 800F1AE0
+dActor_c *getActorOnUnit(int x, int z);                                 // 800F1B7C
 dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 kind); // 800F1BE4
-BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F1DF0
-BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
+BOOL canPutItemOnUnit(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F1DF0
+BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
 BOOL fn_800F2138(mVec3_c *out, const mVec3_c *pos, u32 radius);      // 800F2138
 BOOL fn_800F22FC(const mVec3_c *pos, int x, int z, f32 dist);        // 800F22FC
 BOOL fn_800F23C0(int *outX, int *outZ, dFdBase_c *map, u8 kind, int x0, int x1, int z0, int z1,
@@ -524,7 +524,7 @@ BOOL fn_800F3D20(const mVec3_c *pos);                                // 800F3D20
 namespace dScript {
 class Word_c;
 }
-BOOL fn_800F3D68(dScript::Word_c *word, const dItem::Item *key, int language); // 800F3D68
+BOOL getNpcName(dScript::Word_c *word, const dItem::Item *key, int language); // 800F3D68
 void fn_800F3E24();                                                  // 800F3E24
 dTime_c *fn_800F3E38();                                              // 800F3E38
 void fn_800F3E48();                                                  // 800F3E48
@@ -569,8 +569,8 @@ BOOL fn_800F4A34(dAnimal_c *animal);                                 // 800F4A34
 BOOL fn_800F4AB8(dAnimal_c **animals);                               // 800F4AB8
 BOOL fn_800F4C08(dAnimal_c *animal, int arg);                        // 800F4C08
 BOOL fn_800F4D08();                                                  // 800F4D08
-f32 fn_800F4D84(u8 idx, u32 axis);                                   // 800F4D84
-f32 fn_800F4DB8(const dItem::Item *key, u32 axis);                   // 800F4DB8
+f32 getAnimalHandItemOfs(u8 idx, u32 axis);                                   // 800F4D84
+f32 getSpHandItemOfs(const dItem::Item *key, u32 axis);                   // 800F4DB8
 
 // Per-NPC communication permit. 3 bytes.
 class dNpcPermit_c {

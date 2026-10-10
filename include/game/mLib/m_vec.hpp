@@ -201,6 +201,8 @@ public:
     /// @brief Inequality operator.
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
+    float xzDistTo(const mVec3_c &other) const { return (*this - other).xzLen(); }
+
     float xzLen() const {
         return EGG::Mathf::sqrt(x * x + z * z);
     }

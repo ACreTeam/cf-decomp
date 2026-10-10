@@ -312,7 +312,7 @@ void dAcNpcNml_c::talk_c::actStallWalk() {
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
     if (npc != NULL) {
         npc->mIsActive = 1;
-        if (npc->mAction.requestWalk(1, l_walkTargetPos, l_walkTurnSpeed, 0, l_moveParamWalk, l_8074FDE8,
+        if (npc->mAction.requestWalk(1, l_walkTargetPos, l_walkTurnSpeed, 0, l_moveParamWalk, l_defaultAnmRate,
                                      cNpcMorphFrames)) {
             npc->mPos.y = dBGCF::getGroundY(&npc->mPos, FALSE);
             setActProc(&talk_c::actStallArrive);

@@ -1615,8 +1615,8 @@ public:
     virtual int demoHook60(dDemoActor_c *actor);   // 8002EDE4 (+0x60)
     virtual void getName(dHmnName::Word_c *name, int len); // 8002EF5C (+0x88)
     virtual u8 getNameKind();                      // 8002EF74 (+0x8C): gender, 2 = no animal
-    virtual f32 vt90() const;                          // 8002EF94 (+0x90)
-    virtual f32 vt94() const;                          // 8002EFD4 (+0x94)
+    virtual f32 getHandItemOfsX() const;                          // 8002EF94 (+0x90)
+    virtual f32 getHandItemOfsZ() const;                          // 8002EFD4 (+0x94)
     virtual int getEarType();                      // 8002F038 (+0x98)
     virtual int getSoundId();                          // 8002F604 (+0xA0)
     virtual int getVoiceType() const;                          // 8002F090 (+0xA8)

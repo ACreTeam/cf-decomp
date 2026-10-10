@@ -266,6 +266,12 @@ enum {
     FD_ID_TOWN = 1,
 };
 
+// World coordinate -> unit index (units of mFI_UNIT_BASE_SIZE = 32): truncates to int, then shifts, so
+// small negative values map to 0 (unlike dBGCF::posToUnit).
+inline int worldToUnit(f32 value) { return (int)value >> 5; }
+
+inline dFdBase_c *getCurrentField() { return fn_80190C44(FD_ID_CURRENT); }
+
 // Scenes (getCurrentScene()) and their attributes (isSceneAttr()) are in d_scene.hpp.
 
 class dFdInfo_c : public dFdBase_c {

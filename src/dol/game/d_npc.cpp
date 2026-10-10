@@ -2317,7 +2317,7 @@ static inline int getFtrFunc(const dItem::BITM *bitm) {
 }
 
 // 800F1AE0: the player standing on unit (x, z).
-dPlayerActor_c *fn_800F1AE0(int x, int z) {
+dPlayerActor_c *getPlayerOnUnit(int x, int z) {
     for (int i = 0; i < 4; i++) {
         dPlayerActor_c *player = fn_800FBC7C(i);
         if (player != NULL) {
@@ -2332,8 +2332,8 @@ dPlayerActor_c *fn_800F1AE0(int x, int z) {
 }
 
 // 800F1B7C: any actor standing on unit (x, z).
-dActor_c *fn_800F1B7C(int x, int z) {
-    dActor_c *actor = fn_800F1AE0(x, z);
+dActor_c *getActorOnUnit(int x, int z) {
+    dActor_c *actor = getPlayerOnUnit(x, z);
     if (actor != NULL) {
         return actor;
     }
@@ -2394,7 +2394,7 @@ dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 k
 }
 
 // 800F1DF0: whether `item` can be placed on unit (x, z).
-BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
+BOOL canPutItemOnUnit(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
     BOOL result = FALSE;
     if (map == NULL) {
         map = fn_80190C44(0);
@@ -2440,7 +2440,7 @@ BOOL fn_800F1DF0(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind,
     }
 
 free:
-    dActor_c *actor = fn_800F1B7C(x, z);
+    dActor_c *actor = getActorOnUnit(x, z);
     if (actor != NULL) {
         if (item->mId == dItem::ITEM_ID_NONE || item->mId != actor->mParam) {
             return result;
@@ -2460,8 +2460,8 @@ free:
 }
 
 // 800F20D0
-BOOL fn_800F20D0(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
-    return fn_800F1DF0((int)pos->x >> 5, (int)pos->z >> 5, item, map, kind, allowFg94, checkA);
+BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
+    return canPutItemOnUnit((int)pos->x >> 5, (int)pos->z >> 5, item, map, kind, allowFg94, checkA);
 }
 
 // 800F2138: a random free unit closest to `pos`, searching up to `radius` rings out.
@@ -2482,7 +2482,7 @@ BOOL fn_800F2138(mVec3_c *out, const mVec3_c *pos, u32 radius) {
         for (u32 z = cz - r; z <= maxZ; z++) {
             for (u32 x = cx - r; x <= maxX; x++) {
                 dItem::Item none;
-                if (fn_800F1DF0(x, z, &none, map, 0x44, TRUE, TRUE) != FALSE) {
+                if (canPutItemOnUnit(x, z, &none, map, SCENE_NUM, TRUE, TRUE) != FALSE) {
                     f32 chance = 100.0f / (num + 1);
                     if (cM::rndF(100.0f) <= chance) {
                         bestX = x;
@@ -2535,7 +2535,7 @@ BOOL fn_800F23C0(int *outX, int *outZ, dFdBase_c *map, u8 kind, int x0, int x1, 
             BOOL free = FALSE;
             if (!fn_800F22FC(exclude, x, z, dist)) {
                 dItem::Item none;
-                if (fn_800F1DF0(x, z, &none, map, kind, TRUE, TRUE)) {
+                if (canPutItemOnUnit(x, z, &none, map, kind, TRUE, TRUE)) {
                     free = TRUE;
                 }
             }
@@ -2606,7 +2606,7 @@ BOOL fn_800F26C8(int *outX, int *outZ) {
                 for (int i = 4; i < 12; i++) {
                     int x = x0 + i;
                     dItem::Item none;
-                    if (fn_800F1DF0(x, z, &none, map, 0, TRUE, TRUE) != FALSE) {
+                    if (canPutItemOnUnit(x, z, &none, map, 0, TRUE, TRUE) != FALSE) {
                         dItem::Item a = fg->getAt(x, z - 1, 1);
                         dItem::Item b = fg->getAt(x, z - 2, 1);
                         if (a.mId == dItem::ITEM_ID_NONE && b.mId == dItem::ITEM_ID_NONE) {
@@ -2715,7 +2715,7 @@ u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
                         mVec3_c pos = mVec3_c::Zero;
                         if (fn_80169FA4(&pos, &item, i)) {
                             dItem::Item none;
-                            if (fn_800F1DF0((int)pos.x >> 5, (int)pos.z >> 5, &none, map, 0, allowFg94, TRUE) != FALSE) {
+                            if (canPutItemOnUnit((int)pos.x >> 5, (int)pos.z >> 5, &none, map, 0, allowFg94, TRUE) != FALSE) {
                                 f32 chance = 100.0f / (num + 1);
                                 if (cM::rndF(100.0f) <= chance) {
                                     *outX = (int)pos.x >> 5;
@@ -2730,7 +2730,7 @@ u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
                 BOOL ok = FALSE;
                 if (fg->isBuildSite(x, z)) {
                     dItem::Item none;
-                    if (fn_800F1DF0(x, z - 1, &none, map, 0, allowFg94, TRUE)) {
+                    if (canPutItemOnUnit(x, z - 1, &none, map, 0, allowFg94, TRUE)) {
                         ok = TRUE;
                     }
                 }
@@ -2779,7 +2779,7 @@ u32 fn_800F2F8C(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
             }
             if (tree) {
                 dItem::Item none;
-                if (fn_800F1DF0(x, z - 1, &none, map, 0, allowFg94, TRUE)) {
+                if (canPutItemOnUnit(x, z - 1, &none, map, 0, allowFg94, TRUE)) {
                     ok = TRUE;
                 }
             }
@@ -2959,11 +2959,11 @@ BOOL fn_800F3830(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclud
         mVec3_c rightHalf(out->x + 14.4f, out->y, out->z);
         mVec3_c right(out->x + 32.0f, out->y, out->z);
         dItem::Item none;
-        if (fn_800F20D0(&left, &none, NULL, 0x44, TRUE, TRUE)) {
+        if (canPutItemAt(&left, &none, NULL, SCENE_NUM, TRUE, TRUE)) {
             *out = leftHalf;
             BOOL useRight = FALSE;
             dItem::Item none2;
-            if (fn_800F20D0(&right, &none2, NULL, 0x44, TRUE, TRUE) && cM::rndInt(2) == 0) {
+            if (canPutItemAt(&right, &none2, NULL, SCENE_NUM, TRUE, TRUE) && cM::rndInt(2) == 0) {
                 useRight = TRUE;
             }
             if (useRight) {
@@ -2971,7 +2971,7 @@ BOOL fn_800F3830(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclud
             }
         } else {
             dItem::Item none2;
-            if (fn_800F20D0(&right, &none2, NULL, 0x44, TRUE, TRUE)) {
+            if (canPutItemAt(&right, &none2, NULL, SCENE_NUM, TRUE, TRUE)) {
                 *out = rightHalf;
             } else if (!fn_80013550()) {
                 dItem::Item *l = map->getItem(x - 1, z, 0);
@@ -3025,7 +3025,7 @@ BOOL fn_800F3D20(const mVec3_c *pos) {
 // Names and words
 
 // 800F3D68: sets `word` to the name of the NPC with key `key`.
-BOOL fn_800F3D68(dScript::Word_c *word, const dItem::Item *key, int language) {
+BOOL getNpcName(dScript::Word_c *word, const dItem::Item *key, int language) {
     int type = (key->mId >> 12) & 0xF;
     BOOL result = FALSE;
     word->clear();
@@ -3464,8 +3464,8 @@ struct dNpcOffset_c {
     /* 0x4 */ f32 mZ;
 };
 
-// 800F4D84: talk offset of villager species `idx`.
-f32 fn_800F4D84(u8 idx, u32 axis) {
+// 800F4D84: hand item offset of villager species `idx` (axis 0: x, 1: z; dAcNpc_c::getHandItemOfsX/Z).
+f32 getAnimalHandItemOfs(u8 idx, u32 axis) {
     static const dNpcOffset_c sOffsets[33] = {
         {-4.0f, 0.0f}, {-8.0f, 0.0f}, {-10.0f, 0.0f}, {-8.0f, 0.0f}, {-7.0f, 0.0f}, {0.0f, 3.0f}, {-5.0f, 2.0f},
         {-8.0f, 0.0f}, {-7.0f, 2.0f}, {-7.0f, 0.0f}, {-4.0f, 6.0f}, {-6.0f, 0.0f}, {-6.0f, 0.0f}, {-8.0f, 0.0f},
@@ -3480,8 +3480,8 @@ f32 fn_800F4D84(u8 idx, u32 axis) {
     return 0.0f;
 }
 
-// 800F4DB8: talk offset of special NPC `key`.
-f32 fn_800F4DB8(const dItem::Item *key, u32 axis) {
+// 800F4DB8: hand item offset of special NPC `key` (axis 0: x, 1: z).
+f32 getSpHandItemOfs(const dItem::Item *key, u32 axis) {
     static const dNpcOffset_c sOffsets[97] = {
         {0.0f, 0.0f},  {-8.0f, 0.0f}, {-6.0f, 0.0f}, {0.0f, 0.0f},  {0.0f, 0.0f},  {-8.0f, 0.0f},  {-6.0f, 0.0f},
         {0.0f, 0.0f},  {0.0f, 0.0f},  {0.0f, 0.0f},  {0.0f, 0.0f},  {0.0f, 0.0f},  {0.0f, 0.0f},   {0.0f, 0.0f},

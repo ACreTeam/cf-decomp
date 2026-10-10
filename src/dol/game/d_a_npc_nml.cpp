@@ -65,9 +65,10 @@
 // 8046BCD0 (the ear-type table l_speciesEarType) must be defined right here, ABOVE the labels: the labels
 // follow it in .rodata, while in .sdata2 they precede the 0.0f literal of fn_8002EF94.
 // 8046BCD0: ear type of each species (dAcNpcNml_c::getSpeciesEarType; 60 = no ears)
-static const int l_speciesEarType[33] = {
-    0, 8, 16, 3, 7, 6, 1, 60, 19, 14, 10, 20, 60, 22, 23, 60, 60,
-    60, 21, 5, 25, 9, 13, 60, 17, 4, 24, 60, 15, 2, 18, 11, 12,
+static const int l_speciesEarType[NPC_SPECIES_NUM] = {
+    0, 8, 16, 3, 7, 6, 1, NPC_EAR_TYPE_NONE, 19, 14, 10, 20, NPC_EAR_TYPE_NONE, 22, 23, NPC_EAR_TYPE_NONE,
+    NPC_EAR_TYPE_NONE, NPC_EAR_TYPE_NONE, 21, 5, 25, 9, 13, NPC_EAR_TYPE_NONE, 17, 4, 24, NPC_EAR_TYPE_NONE, 15, 2,
+    18, 11, 12,
 };
 const char l_Ai_Quest[] = "Ai_Quest";       // 8046BD54
 const char l_Q_Cancel[] = "Q_Cancel";       // 8046BD60
@@ -128,7 +129,7 @@ void dAcNpcNml_c::removeFromNpcList() {
 
 // 8002EE58
 int dAcNpcNml_c::getFaceType() {
-    return _DC + 4;
+    return mNpcListSlot + 4;
 }
 
 // 8002EE64
@@ -142,7 +143,7 @@ void dAcNpcNml_c::setAnimal() {
 // 8002EEB8
 int dAcNpcNml_c::getNpcIdx() const {
 if (isVillagerItem(mNpcItem)) {
-return mNpcItem.mId & 0xFFF;
+return ITEM_NAME_INDEX(mNpcItem.mId);
 }
 if (isSpNpcItem(mNpcItem)) {
 return mNpcItem.mId - 0xE800;
@@ -162,42 +163,42 @@ u8 dAcNpcNml_c::getNameKind() {
     if (mpAnimal != NULL) {
         return mpAnimal->mID.getGender(1);
     }
-    return 2;
+    return GENDER_OTHER;
 }
 
 // 8002EF94
-f32 dAcNpcNml_c::vt90() const {
+f32 dAcNpcNml_c::getHandItemOfsX() const {
     if (mpAnimal != NULL) {
-        return fn_800F4D84(mpAnimal->getSpecies(), 0);
+        return getAnimalHandItemOfs(mpAnimal->getSpecies(), 0);
     }
     return 0.0f;
 }
 
 // 8002EFD4
-f32 dAcNpcNml_c::vt94() const {
+f32 dAcNpcNml_c::getHandItemOfsZ() const {
     if (mpAnimal != NULL) {
-        return fn_800F4D84(mpAnimal->getSpecies(), 1);
+        return getAnimalHandItemOfs(mpAnimal->getSpecies(), 1);
     }
     return 0.0f;
 }
 
 // 8002F014
 int dAcNpcNml_c::getSpeciesEarType(u8 species) {
-    if (species < 33) {
+    if (species < NPC_SPECIES_NUM) {
         return l_speciesEarType[species];
     }
-    return 60;
+    return NPC_EAR_TYPE_NONE;
 }
 
 // 8002F038
 int dAcNpcNml_c::getEarType() {
     if (mpAnimal != NULL) {
         u8 species = mpAnimal->getSpecies();
-        if (species < 33) {
+        if (species < NPC_SPECIES_NUM) {
             return getSpeciesEarType(species);
         }
     }
-    return 60;
+    return NPC_EAR_TYPE_NONE;
 }
 
 // 8002F090
@@ -374,7 +375,7 @@ const Vec *dAcNpcNml_c::searchPosTable(const posTable33_s *table, int num, int k
     if (table == NULL || num == 0) {
         return NULL;
     }
-    if (idx >= 33) {
+    if (idx >= NPC_SPECIES_NUM) {
         return NULL;
     }
     for (u32 i = 0; i < num; i++, table++) {
@@ -389,20 +390,20 @@ const Vec *dAcNpcNml_c::searchPosTable(const posTable33_s *table, int num, int k
 void dAcNpcNml_c::getManpuOfs(mVec3_c *ofs, mVec3_c *ofsL, mVec3_c *ofsR, u8 type) {
     if (ofs != NULL && ofsL != NULL && ofsR != NULL && type < 0x4E && mpAnimal != NULL) {
         u32 species = mpAnimal->getSpecies();
-        if ((u8)species < 33) {
-            const Vec *pos = searchPosTable(l_80466730, l_8074FE38, type, species);
+        if ((u8)species < NPC_SPECIES_NUM) {
+            const Vec *pos = searchPosTable(l_manpuOfsAnimal, l_manpuOfsAnimalNum, type, species);
             if (pos != NULL) {
                 ofs->x = pos->x;
                 ofs->y = pos->y;
                 ofs->z = pos->z;
             }
-            pos = searchPosTable(l_80467090, l_8074FE3C, type, species);
+            pos = searchPosTable(l_manpuOfsAnimalL, l_manpuOfsAnimalLNum, type, species);
             if (pos != NULL) {
                 ofsL->x = pos->x;
                 ofsL->y = pos->y;
                 ofsL->z = pos->z;
             }
-            pos = searchPosTable(l_80467540, l_8074FE40, type, species);
+            pos = searchPosTable(l_manpuOfsAnimalR, l_manpuOfsAnimalRNum, type, species);
             if (pos != NULL) {
                 ofsR->x = pos->x;
                 ofsR->y = pos->y;
@@ -826,7 +827,7 @@ dAcNpcNml_c::clothMng_c::~clothMng_c() {}
 
 // 80030484
 void dAcNpcNml_c::clothMng_c::init(dAcNpcNml_c *npc) {
-    mHmnCloth.setSlot(npc->_DC + 4);
+    mHmnCloth.setSlot(npc->mNpcListSlot + 4);
     if (!mCloth.isValid()) {
         dItem::Item cloth(dItem::ITEM_IDX_ONE_BALL_SHIRT);
         if (npc->mpAnimal != NULL) {

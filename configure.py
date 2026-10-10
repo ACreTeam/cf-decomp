@@ -640,6 +640,7 @@ config.libs = [
             Object(Matching, "dol/game/d_npc_talk_fmarket.cpp"),
             Object(Matching, "dol/game/d_npc_talk_birthday.cpp"),
             Object(Matching, "dol/game/d_npc_talk_mood.cpp"),
+            Object(Matching, "dol/game/d_a_npc_sp.cpp"),
             Object(Matching, "dol/game/d_npc_talk_quest_q04.cpp"),
             Object(Matching, "dol/game/d_npc_talk_quest_q02.cpp"),
             Object(Matching, "dol/game/d_npc_talk_quest_q03.cpp"),
