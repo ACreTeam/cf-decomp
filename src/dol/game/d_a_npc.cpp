@@ -682,8 +682,8 @@ void dAcNpc_c::mdlCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anm
         trans.y = data.translate.y;
         trans.z = data.translate.z;
         mtx._13 += trans.y - 8.0f;
-        if (mpNpc != NULL && fn_800B6558(mAnmId)) {
-            fn_800B6580(&mtx, &mtx, mpNpc->mPos.y);
+        if (mpNpc != NULL && dHmnAnm_c::isCurve(mAnmId)) {
+            dHmnAnm_c::curveMtx(&mtx, &mtx, mpNpc->mPos.y);
         }
         anmRes->SetRotTrans(&mtx);
     } else if (nodeId >= 2) {
@@ -2337,10 +2337,10 @@ BOOL dAcNpc_c::chrPartAnm_c::setPartAnm(m3d::mdlEx_c &mdl, int anmId, int partId
         return TRUE;
     }
     if (playMode == m3d::PLAYMODE_INHERIT) {
-        playMode = (m3d::playMode_e)fn_800B66C8(anmId);
+        playMode = (m3d::playMode_e)dHmnAnm_c::getPlayMode(anmId);
     }
     releasePartAnm(mdl, partIdx, blend);
-    m3d::anmChrPart_c::setAnm(mdl, fn_800B63EC(anmId), playMode);
+    m3d::anmChrPart_c::setAnm(mdl, dHmnAnm_c::getResAnmChr(anmId), playMode);
     setFrame(frame);
     setRate(rate);
     mdl.setPartAnm(partIdx, this, blend);
@@ -2367,7 +2367,7 @@ void dAcNpc_c::chrPartAnm_c::setPartNode(m3d::mdlEx_c &mdl, u8 partIdx, ulong no
 
 void dAcNpc_c::chrPartAnm_c::createAnm(nw4r::g3d::ResMdl mdl, int anmId, mAllocator_c *allocator) {
     if (anmId < 0x1BC) {
-        m3d::anmChr_c::create(mdl, fn_800B63EC(anmId), allocator, NULL);
+        m3d::anmChr_c::create(mdl, dHmnAnm_c::getResAnmChr(anmId), allocator, NULL);
     }
 }
 
@@ -2861,13 +2861,13 @@ BOOL dAcNpc_c::anm_c::changeAnm(m3d::mdlEx_c &mdl, mdlCallback_c *callback, int 
         return FALSE;
     }
     if (playMode == m3d::PLAYMODE_INHERIT) {
-        playMode = (m3d::playMode_e)fn_800B66C8(anmId);
+        playMode = (m3d::playMode_e)dHmnAnm_c::getPlayMode(anmId);
     }
     if (!force && anmId == mAnmId && playMode == mPlayMode) {
         setRate(rate);
         return TRUE;
     }
-    m3d::anmChr_c::setAnm(mdl, fn_800B63EC(anmId), playMode);
+    m3d::anmChr_c::setAnm(mdl, dHmnAnm_c::getResAnmChr(anmId), playMode);
     setRate(rate);
     mdl.setAnm(*this, blend);
     if (playMode == m3d::REVERSE_LOOP || playMode == m3d::REVERSE_ONCE) {
@@ -2881,7 +2881,7 @@ BOOL dAcNpc_c::anm_c::changeAnm(m3d::mdlEx_c &mdl, mdlCallback_c *callback, int 
 
 void dAcNpc_c::anm_c::createAnm(nw4r::g3d::ResMdl mdl, int anmId, mAllocator_c *allocator) {
     if (anmId < 0x1BC) {
-        m3d::anmChr_c::create(mdl, fn_800B63EC(anmId), allocator, NULL);
+        m3d::anmChr_c::create(mdl, dHmnAnm_c::getResAnmChr(anmId), allocator, NULL);
     }
 }
 
@@ -4743,7 +4743,7 @@ void dAcNpc_c::toolBase_c::draw() {
 }
 
 u32 dAcNpc_c::toolBase_c::getToolAnmId(int toolType) {
-    u32 anmId = fn_800B64DC(toolType);
+    u32 anmId = dHmnAnm_c::getToolAnmId(toolType);
     switch (toolType) {
     case 1:
         anmId = 0xD8;
@@ -4753,7 +4753,7 @@ u32 dAcNpc_c::toolBase_c::getToolAnmId(int toolType) {
 }
 
 u32 dAcNpc_c::toolBase_c::getAnmId() const {
-    return getToolAnmId(fn_800BA890(&mItem));
+    return getToolAnmId(dHmnToolBank_c::getItemToolType(&mItem));
 }
 
 // ---- dAcNpc_c::move_c (8001DF6C..8001E5FC) ----

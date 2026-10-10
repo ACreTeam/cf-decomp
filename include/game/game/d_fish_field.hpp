@@ -35,6 +35,7 @@
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
+#include <game/game/d_uki.hpp>
 
 class dFishFldShadow_c;
 struct dEffectTarget_c;
@@ -53,16 +54,6 @@ struct dFishSizeParam_c {
     /* 0x10 */ s16 mHookTimeMin; // initHooked: frames before the catch (cM::rndRange<s16>)
     /* 0x12 */ s16 mHookTimeMax;
 }; // size 0x14
-
-// A player's fishing float (DOL, not split yet; fn_801710A4(player, fish) returns it while it is
-// free for that fish, fn_801710BC(player, fish) reserves it). Only what this TU uses.
-struct dFishingFloat_c {
-    /* 0x000 */ u8 _000[0x270];
-    /* 0x270 */ mVec3_c mPos;
-    /* 0x27C */ u8 _27C[0x446 - 0x27C];
-    /* 0x446 */ u8 mCastState; // 1, 2: in the water (2: cast long, a longer bite window)
-    /* 0x447 */ u8 _447;       // 9: the fish escapes instead of biting (executeNibble)
-};
 
 // What the players hold up (DOL manager lbl_8074E9E8, not split yet, around 80190970):
 // fn_80190970 requests player idx's held item model, fn_801909D4 releases it. Only what this TU uses.

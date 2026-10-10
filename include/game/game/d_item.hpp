@@ -882,7 +882,7 @@ public:
     BOOL bindTexture(void *tex, void *pltt, void *heap, s16 width, s16 height); // 800C3F1C
     BOOL loadItem(Item item, void *heap); // 800C4054
     BOOL loadIndex(u16 index, void *heap); // 800C40B4
-    BOOL release(); // 800C43B8
+    bool release(); // 800C43B8
     s32 getDataSize(); // 800C4488
     void replaceTexture(void *tex, void *pltt, u32 texIdx, u32 plttIdx, u16 width, u16 height); // 800C44C0
 

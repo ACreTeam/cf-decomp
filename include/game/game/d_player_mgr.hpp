@@ -5,6 +5,8 @@
 #include <game/game/d_private_data.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
 
+class dHmnToolBank_c;
+
 // Player manager. Source: src/dol/game/d_player_mgr.cpp (.text 800FBB58..8010263C).
 // Notes: notes/d_player_mgr.txt. Names are inferred; fn_ ones are not understood yet.
 //
@@ -29,7 +31,7 @@ public:
     /* 0x0660 */ u8 _0660[0x90];
     /* 0x06F0 */ u8 _06F0[0x4];
     /* 0x06F4 */ u8 _06F4[0x540];
-    /* 0x0C34 */ void *_0C34;
+    /* 0x0C34 */ dHmnToolBank_c *_0C34;
     /* 0x0C38 */ u8 _0C38[0x1430];
     /* 0x2068 */ mVec3_c _2068;
     /* 0x2074 */ mVec3_c _2074;

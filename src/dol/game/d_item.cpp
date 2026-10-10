@@ -1680,7 +1680,7 @@ void reportFtrSeError() {
 }
 
 // 800C43B8
-BOOL resLoader_c::release() {
+bool resLoader_c::release() {
     if (unload(FALSE)) {
         unlink();
         reset();

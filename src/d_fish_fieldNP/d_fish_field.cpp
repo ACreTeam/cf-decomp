@@ -25,12 +25,6 @@ int fn_800DCF58();                             // net: own member index
 void *fn_800DD64C(int id);                     // net: shared record id
 void fn_800DD5F8(int id, void *data, int arg); // net: send shared record id
 dItem::Item fn_80153410(const void *obj);           // the item at obj + 0x1F8
-// The player's fishing float while it is free for fish (or fish is on it), NULL if none.
-dFishingFloat_c *fn_801710A4(int player, dFishFldShadow_c *fish);
-void fn_801710BC(int player, dFishFldShadow_c *fish); // put fish on the player's float (NULL: off)
-BOOL fn_8016FED4(const dFishingFloat_c *fl);          // the float just hit the water
-void fn_8016FD60(dFishingFloat_c *fl);                // the float bobs (ripple)
-void fn_8016FC44(dFishingFloat_c *fl, int state);
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
@@ -986,7 +980,7 @@ int dFishFldShadow_c::searchFloat() {
         return -1;
     }
     for (int i = 0; i <= 3; i++) {
-        dFishingFloat_c *fl = fn_801710A4(i, this);
+        dUki_c *fl = dUki_c::fn_801710A4(i, this);
         if (fl == NULL) {
             continue;
         }
@@ -1003,7 +997,7 @@ int dFishFldShadow_c::searchFloat() {
         f32 range = 32.0f * (inWater ? &sTurnParam1[mParam._1] : &sTurnParam0[mParam._1])->mSpeed;
         f32 dist = PSVECMag(diff);
         static const f32 cSplashR = 16.0f;
-        if (dist < cSplashR && fn_8016FED4(fl)) {
+        if (dist < cSplashR && fl->fn_8016FED4()) {
             initSwim();
             mTurnTimer = 30;
             if (diff.normalizeRS()) {
@@ -1282,8 +1276,8 @@ void dFishFldShadow_c::initApproach() {
     mNibbling = 1;
     mTimer = cM::rndRange<s16>(30, 90);
     mNibbleNum = 0;
-    dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
-    fn_801710BC(mPlayer, this);
+    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+    dUki_c::fn_801710BC(mPlayer, this);
     if (fl != NULL) {
         mVec3_c pos = fl->mPos;
         mSpeed = cM::rndRange(1.25f, 2.0f);
@@ -1302,7 +1296,7 @@ void dFishFldShadow_c::executeApproach() {
             setState(STATE_SWIM);
         }
     } else {
-        dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+        dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
         if (fl != NULL) {
             flPos = &fl->mPos;
             if (isMine() && isInFallBasin(flPos)) {
@@ -1322,9 +1316,9 @@ void dFishFldShadow_c::executeApproach() {
                 mVec3_c d2 = *flPos - mPos;
                 f32 reach = 17.6f;
                 if (d2.x * d2.x + d2.z * d2.z < reach) {
-                    fn_8016FD60(fl);
+                    fl->fn_8016FD60();
                     mSound.startSound(0x180C);
-                    fn_801710BC(mPlayer, NULL);
+                    dUki_c::fn_801710BC(mPlayer, NULL);
                     mPlayer = -1;
                     mTimer = cM::rndRange<s16>(30, 90);
                 }
@@ -1357,7 +1351,7 @@ void dFishFldShadow_c::executeApproach() {
 // 0x4130
 void dFishFldShadow_c::endApproach() {
     if (mPlayer >= 0) {
-        fn_801710BC(mPlayer, NULL);
+        dUki_c::fn_801710BC(mPlayer, NULL);
         mPlayer = -1;
     }
     if (isMine() && getRec()->mRec.getMember() != 4) {
@@ -1380,9 +1374,9 @@ void dFishFldShadow_c::initNibble() {
         getRec()->mRec.setDir(mNibbling);
     }
     mTimer = cM::rndRange(70, 220);
-    if (fn_801710A4(mPlayer, this) != NULL) {
+    if (dUki_c::fn_801710A4(mPlayer, this) != NULL) {
         mSpeed *= 0.5f;
-        fn_801710BC(mPlayer, this);
+        dUki_c::fn_801710BC(mPlayer, this);
     }
 }
 
@@ -1390,7 +1384,7 @@ void dFishFldShadow_c::initNibble() {
 void dFishFldShadow_c::executeNibble() {
     const mVec3_c *flPos;
     u8 prev;
-    dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
     BOOL mine = isMine();
     if (fl != NULL) {
         flPos = &fl->mPos;
@@ -1418,7 +1412,7 @@ void dFishFldShadow_c::executeNibble() {
                         mSpeed = -mSpeed;
                     }
                 } else {
-                    fn_8016FD60(fl);
+                    fl->fn_8016FD60();
                     mSound.startSound(0x180C);
                     sLib::chase(&mNibbleNum, 5, 1);
                     mTimer = cM::rndRange(70, 220);
@@ -1438,13 +1432,13 @@ void dFishFldShadow_c::executeNibble() {
                 f32 chance = 100.0f - 100.0f / n;
                 if (cM::rndRange(0.0f, 100.0f) > chance || sLib::chase(&mNibbleNum, 5, 1)) {
                     if (fl->_447 == 9) {
-                        fn_801710BC(mPlayer, NULL);
+                        dUki_c::fn_801710BC(mPlayer, NULL);
                         setState(STATE_ESCAPE);
                     } else {
                         setState(STATE_BITE);
                     }
                 } else {
-                    fn_8016FD60(fl);
+                    fl->fn_8016FD60();
                     mSound.startSound(0x180C);
                     mTimer = cM::rndRange(70, 220);
                     mSpeed = -0.5f;
@@ -1499,10 +1493,10 @@ void dFishFldShadow_c::initBite() {
     if (!isMine() || getRec()->mRemote) {
         mPlayer = getRec()->mRec.getMember();
     }
-    dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
     BOOL longCast = FALSE;
     if (fl != NULL) {
-        fn_8016FC44(fl, 7);
+        fl->fn_8016FC44(7);
         longCast = fl->mCastState == 2;
     }
     mCourse = mTargetAngle.y;
@@ -1517,11 +1511,11 @@ void dFishFldShadow_c::initBite() {
 
 // 0x4934
 void dFishFldShadow_c::executeBite() {
-    dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
     if (fl != NULL) {
         if (sLib::calcTimer(&mTimer) == 0 && isMine()) {
-            fn_8016FC44(fl, 5);
-            fn_801710BC(mPlayer, NULL);
+            fl->fn_8016FC44(5);
+            dUki_c::fn_801710BC(mPlayer, NULL);
             setState(STATE_ESCAPE);
         }
     } else if (isMine()) {
@@ -1533,7 +1527,7 @@ void dFishFldShadow_c::executeBite() {
 // 0x49E8
 void dFishFldShadow_c::initEscape() {
     if (mPlayer >= 0) {
-        fn_801710BC(mPlayer, NULL);
+        dUki_c::fn_801710BC(mPlayer, NULL);
     }
     if (isFinFish()) {
         mTimer = 120;
@@ -1579,7 +1573,7 @@ void dFishFldShadow_c::initHooked() {
         mPlayer = getRec()->mRec.getMember();
     }
     mAnmRate = 1.0f;
-    fn_801710BC(mPlayer, this);
+    dUki_c::fn_801710BC(mPlayer, this);
     const dFishSizeParam_c *size = &sSizeParams[mParam.mSize];
     mTimer = cM::rndRange(size->mHookTimeMin, size->mHookTimeMax);
     int kind = mKind;
@@ -1604,7 +1598,7 @@ void dFishFldShadow_c::executeHooked() {
     if (sLib::calcTimer(&mTimer) == 0 && held && isMine()) {
         setState(STATE_CATCH);
     } else {
-        dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+        dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
         if (fl != NULL) {
             mVec3_c pos = fl->mPos;
             mPos.set(pos.x, mPos.y, pos.z);
@@ -1619,7 +1613,7 @@ void dFishFldShadow_c::initCatch() {
     if (!isMine() || getRec()->mRemote) {
         mPlayer = getRec()->mRec.getMember();
     }
-    fn_801710BC(mPlayer, this);
+    dUki_c::fn_801710BC(mPlayer, this);
     mTimer = 45;
     mDestPos = mPos;
     mStartPos = mPos;
@@ -1651,7 +1645,7 @@ void dFishFldShadow_c::executeCatch() {
         }
     }
     sLib::calcTimer(&mTimer);
-    dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
     const mVec3_c *hand = (const mVec3_c *)fn_800FBDD4(mPlayer);
     if (fl != NULL && hand != NULL) {
         f32 t = mTimer / 45.0f;
@@ -1903,19 +1897,19 @@ BOOL dFishFldShadow_c::pull() {
         if (ok) {
             setState(STATE_HOOKED);
         } else {
-            dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+            dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
             if (fl != NULL) {
-                fn_8016FC44(fl, 5);
-                fn_801710BC(mPlayer, NULL);
+                fl->fn_8016FC44(5);
+                dUki_c::fn_801710BC(mPlayer, NULL);
             }
             setState(STATE_ESCAPE);
         }
         return ok;
     }
-    dFishingFloat_c *fl = fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
     if (fl != NULL) {
-        fn_8016FC44(fl, 5);
-        fn_801710BC(mPlayer, NULL);
+        fl->fn_8016FC44(5);
+        dUki_c::fn_801710BC(mPlayer, NULL);
     }
     return FALSE;
 }
@@ -1941,7 +1935,7 @@ void dFishFldShadow_c::throwBack(const mVec3_c *pos) {
     }
     if (mState != STATE_HOLD) {
         if (mPlayer >= 0) {
-            fn_801710BC(mPlayer, NULL);
+            dUki_c::fn_801710BC(mPlayer, NULL);
             mPlayer = -1;
         }
         setState(STATE_RELEASE);
@@ -1951,7 +1945,7 @@ void dFishFldShadow_c::throwBack(const mVec3_c *pos) {
 // 0x5C44
 void dFishFldShadow_c::requestDelete() {
     if (mPlayer >= 0) {
-        fn_801710BC(mPlayer, 0);
+        dUki_c::fn_801710BC(mPlayer, 0);
         mPlayer = -1;
     }
     if (mHeld) {
@@ -2204,7 +2198,7 @@ BOOL dFishFldShadow_c::isDeleteOk() {
         mHoldPlayer = -1;
     }
     if (mPlayer >= 0) {
-        fn_801710BC(mPlayer, 0);
+        dUki_c::fn_801710BC(mPlayer, 0);
         mPlayer = -1;
     }
     if (_20C != NULL) {

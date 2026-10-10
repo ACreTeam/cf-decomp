@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_weather.hpp>
+#include <game/game/d_hmn_tool_mng.hpp>
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -4847,7 +4848,6 @@ u16 fn_800CBA14(const char *label); // letter part counts
 u16 fn_800CBA40(const char *label);
 u16 fn_800CBA6C(const char *label);
 void fn_800CBEB4(int slot, int value);
-int fn_800BA890(const dItem::Item *item);
 u32 fn_800DCF30();
 u32 fn_80169298();
 }
@@ -5633,7 +5633,7 @@ int dAnimal_c::countBoxedFtr() {
 
 // 80128B90
 BOOL isHoldableItem(const dItem::Item *item) {
-    return fn_800BA890(item) != 0;
+    return dHmnToolBank_c::getItemToolType(item) != 0;
 }
 
 // 80128BBC
@@ -9114,7 +9114,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-int fn_800BA890(const dItem::Item *item);
 void *fn_800F9F64(u32 *num);
 
 }
@@ -9737,7 +9736,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
         changed = TRUE;
         flag = TRUE;
     } else if (animal->isHeldItemChangeMinute(min) || (cur->mId != dItem::ITEM_ID_NONE && isItemDiff(cur, fav)) ||
-               (!special && !animal->wantsParasol() && fn_800BA890(cur) == 10)) {
+               (!special && !animal->wantsParasol() && dHmnToolBank_c::getItemToolType(cur) == 10)) {
         changed = TRUE;
         give = (cM::rndInt(4) & 1) ? fav.mId : (u16)dItem::ITEM_ID_NONE;
         set = TRUE;

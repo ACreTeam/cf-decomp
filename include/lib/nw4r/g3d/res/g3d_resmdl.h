@@ -132,6 +132,9 @@ public:
 
     bool Bind(const ResFile file);
     void Release();
+    // City Folk additions (names unofficial): ResMat::ReleaseTexByName / ReleasePlttByName on every material.
+    void ReleaseTexByName(const char *texName);   // 80235BEC
+    void ReleasePlttByName(const char *plttName); // 80235CDC
 
     ulong GetRevision() const {
         return ref().revision;

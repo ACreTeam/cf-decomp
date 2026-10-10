@@ -7,6 +7,10 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_item.hpp>
+#include <game/game/d_hmn_cloth_mng.hpp>
+#include <game/game/d_hmn_head_item_mng.hpp>
+#include <game/game/d_hmn_tool_mng.hpp>
+#include <game/game/d_effect.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_mtx.hpp>
@@ -24,32 +28,19 @@ extern u8 lbl_8074EA7D;
 
 int fn_800DCF58(); // index of the current player
 u32 fn_8019AFE4();
-int fn_800BA890(const dItem::Item *item);
-int fn_800BA888(void *obj);
 void fn_801B910C(int idx, int part, u16 item);
 void fn_801B8898(int idx, int part, u16 item);
 void fn_801B8FD8(int idx, int type);
-BOOL fn_800B7310(void *out, const dItem::Item *item);
-BOOL fn_800B89CC(void *out, const dItem::Item *item);
-BOOL fn_800B72A4(const dItem::Item *item);
-BOOL fn_800BD134(const dItem::Item *item);
 u8 *fn_800F5BA8();
 BOOL fn_8018F438(int type);
 BOOL fn_802C4404(dUnk83ED_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
-void fn_801710BC(int idx, int a);
 BOOL fn_8018EB8C();
 BOOL fn_8018ECA0();
 BOOL fn_800FA724();
 void fn_801B961C();
 void fn_801B9658(int value);
-void fn_800BD2D8();
-void fn_800BD2E4(u8 value);
-void fn_800B8E7C();
-void fn_800B8E88(u8 value);
-void fn_800B7658();
-void fn_800B7664(u8 value);
 void fn_801B7C10();
 BOOL fn_80194A2C(int a, int b, int c, int d, dPlayerActor_c *player, int e, f32 f1, f32 f2, f32 f3, f32 f4, f32 f5,
                  f32 f6);
@@ -62,7 +53,6 @@ void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 void fn_801B9304();
-void fn_80087790(const char *name, const mVec3_c *pos, int a, int b);
 void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarget_c *, u32), u32 kind);
 void fn_80285110(void *obj, dEffectTarget_c *target);
 u8 fn_800A8850(const mVec3_c *pos);
@@ -393,7 +383,7 @@ void fn_800FC404() {
     if (!fn_80101584(fn_8019AFE4() & 7, &held)) {
         return;
     }
-    if (fn_800BA890(&held) == 0xA && isCurrentSceneAttr(SCENE_ATTR_ROOM)) {
+    if (dHmnToolBank_c::getItemToolType(&held) == 0xA && isCurrentSceneAttr(SCENE_ATTR_ROOM)) {
         fn_801B910C(fn_800DCF58(), 3, held.mId);
         fn_801B8898(fn_800DCF58(), 3, held.mId);
     }
@@ -437,7 +427,7 @@ void fn_800FC580() {
 void fn_800FC598() {
     dPlayerActor_c *player = fn_801019C4(4);
     if (player != NULL && (player->_2270 & 0x10)) {
-        int kind = fn_800BA888(player->_0C34);
+        int kind = player->_0C34->getToolType();
         if (kind != 0xA && kind != 0xB && kind != 0xC) {
             lbl_805D2440._194AA = TRUE;
         }
@@ -725,8 +715,8 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
     }
 
     if (shirt != NULL && shirt->mId != dItem::ITEM_ID_NONE) {
-        u8 tmp[0x10];
-        if (fn_800B7310(tmp, shirt)) {
+        int tmp;
+        if (dHmnClothMng_c::isOrgCloth(&tmp, shirt)) {
             player->_22B4 |= 0x100;
             fn_801B910C(fn_800DCF58(), 0, shirt->mId);
             fn_801B8898(fn_800DCF58(), 0, shirt->mId);
@@ -897,7 +887,7 @@ BOOL fn_800FD17C() {
                 return TRUE;
             }
         } else {
-            int state = fn_800BA888(player->_0C34) == 0xA ? 0x7B : 0x21;
+            int state = player->_0C34->getToolType() == 0xA ? 0x7B : 0x21;
             if (fn_80101A74(state, 4)) {
                 fn_80100410(player);
                 return TRUE;
@@ -1124,7 +1114,7 @@ void fn_800FDBDC(u32 mode) {
         fn_800FC604();
         return;
     }
-    int kind = fn_800BA888(player->_0C34);
+    int kind = player->_0C34->getToolType();
     if ((u32)(kind - 0xA) <= 2) {
         if (mode == 0) {
             if (kind == 0xA) {
@@ -1641,7 +1631,7 @@ BOOL fn_800FECF8(const dItem::Item *held) {
         return FALSE;
     }
     if (held->mId == dItem::ITEM_ID_NONE) {
-        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && fn_800BD134(held))) {
+        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
             player->_22DA = 2;
             player->_223C = 1;
         }
@@ -1653,7 +1643,7 @@ BOOL fn_800FECF8(const dItem::Item *held) {
         if (getHideBone(bitm) != 9) {
             return FALSE;
         }
-        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && fn_800BD134(held))) {
+        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
             player->_22DA = 1;
             player->_223C = 1;
         }
@@ -1815,7 +1805,7 @@ BOOL fn_800FF354(int *outState) {
     }
     int state = player->mState;
     if (state == 0x1A) {
-        fn_801710BC(fn_800DCF58(), 0);
+        dUki_c::fn_801710BC(fn_800DCF58(), NULL);
         *outState = 0x1D;
         fn_80101A74(0x1D, 4);
         return FALSE;
@@ -1856,17 +1846,17 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
         return FALSE;
     }
 
-    u8 tmp[0x10];
+    int tmp;
     BOOL changeShirt = FALSE;
     BOOL changeHat = FALSE;
     BOOL changeAcc = FALSE;
 
     dItem::Item shirt = equip->mShirt;
-    if (!shirt.isSame(current->mEquipment.mShirt) || ((mode == 1 || mode == 5) && fn_800B7310(tmp, &shirt))) {
+    if (!shirt.isSame(current->mEquipment.mShirt) || ((mode == 1 || mode == 5) && dHmnClothMng_c::isOrgCloth(&tmp, &shirt))) {
         changeShirt = TRUE;
     }
     dItem::Item hat = equip->mHat;
-    if (!hat.isSame(current->mEquipment.mHat) || ((mode == 2 || mode == 5) && fn_800B89CC(tmp, &hat))) {
+    if (!hat.isSame(current->mEquipment.mHat) || ((mode == 2 || mode == 5) && dHmnHeadItemMng_c::isOrgCap(&tmp, &hat))) {
         changeHat = TRUE;
     }
     dItem::Item acc = equip->mAcc;
@@ -1875,8 +1865,8 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
     }
 
     if (changeShirt && shirt.mId != dItem::ITEM_ID_NONE) {
-        u8 tmp2[0x4];
-        if (fn_800B72A4(&shirt) || fn_800B7310(tmp2, &shirt)) {
+        int tmp2;
+        if (dHmnClothMng_c::isCloth(&shirt) || dHmnClothMng_c::isOrgCloth(&tmp2, &shirt)) {
             player->_22B4 |= 0x100;
             fn_801B910C(fn_800DCF58(), 0, shirt.mId);
             fn_801B8898(fn_800DCF58(), 0, shirt.mId);
@@ -1965,7 +1955,7 @@ BOOL fn_800FF8B0() {
     if (current != NULL && current->mEquipment.mHeld.mId == dItem::ITEM_ID_NONE) {
         return FALSE;
     }
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && fn_800BD134(&current->mEquipment.mHeld))) {
+    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(&current->mEquipment.mHeld))) {
         return TRUE;
     }
     return FALSE;
@@ -2166,17 +2156,17 @@ u16 fn_800FFFCC(int gender) {
 // 8010003C
 void fn_8010003C() {
     fn_801B961C();
-    fn_800BD2D8();
-    fn_800B8E7C();
-    fn_800B7658();
+    dHmnToolMng_c::clearPlayers();
+    dHmnHeadItemMng_c::clearPlayers();
+    dHmnClothMng_c::clearPlayers();
 }
 
 // 80100068
 void fn_80100068(int value) {
     fn_801B9658(value);
-    fn_800BD2E4((u8)value);
-    fn_800B8E88((u8)value);
-    fn_800B7664((u8)value);
+    dHmnToolMng_c::clear((u8)value);
+    dHmnHeadItemMng_c::clear((u8)value);
+    dHmnClothMng_c::clear((u8)value);
 }
 
 // 801000AC
@@ -2420,7 +2410,7 @@ BOOL fn_80100860() {
     }
     int state = player->mState;
     if (state == 0x1A) {
-        fn_801710BC(fn_800DCF58(), 0);
+        dUki_c::fn_801710BC(fn_800DCF58(), NULL);
         fn_80101A74(0x1D, 4);
         return FALSE;
     }
@@ -2439,7 +2429,7 @@ BOOL fn_801008E4(int idx) {
     if (!(player->_2270 & 0x20)) {
         return FALSE;
     }
-    if (player->_0C34 != NULL && fn_800BA888(player->_0C34) == 4) {
+    if (player->_0C34 != NULL && player->_0C34->getToolType() == 4) {
         return TRUE;
     }
     return FALSE;
@@ -3325,7 +3315,7 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
     if (check.mWater != BG_WATER_NONE) {
         if (check.isUnderWater(pos.y)) {
             pos.y = check.mWaterY;
-            fn_80087790("afi_hny_watersplash_b", &pos, 0, 0);
+            fn_80087790("afi_hny_watersplash_b", &pos, NULL, NULL);
             if (obj->_C8 != NULL) {
                 fn_80285110(obj->_C8, obj);
             }
@@ -3336,7 +3326,7 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
             const char *name = kind == 3 ? "afi_hny_snowbreak" : "afi_hny_watersplash_a";
             if (fabsf(ground - pos.y) <= 5.0f) {
                 pos.y = ground;
-                fn_80087790(name, &pos, 0, 0);
+                fn_80087790(name, &pos, NULL, NULL);
                 if (obj->_C8 != NULL) {
                     fn_80285110(obj->_C8, obj);
                 }
@@ -3374,7 +3364,8 @@ int fn_80102434(const mVec3_c *pos) {
 // 801024F8
 void fn_801024F8(const char *const *names, const mVec3_c *pos, int b, int c, int d) {
     u32 kind = fn_80102434(pos);
-    fn_80087790(names[kind], pos, b, 0);
+    // b is the effect angle (fn_801024F8 keeps int parameters, see d_player_mgr.hpp).
+    fn_80087790(names[kind], pos, (const mAng3_c *)b, NULL);
     if (kind == 0 || kind == 4) {
         return;
     }

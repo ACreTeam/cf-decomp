@@ -39,6 +39,7 @@ public:
 
     BOOL load(const char *path, void *heap, u8 entry); // 80086134
     BOOL unload(BOOL wait); // 8008620C
+    BOOL fn_800862C8(); // 800862C8: finishes a pending load (TRUE once loaded)
 
 protected:
     u8 mLoading; // 0x14
