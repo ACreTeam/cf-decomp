@@ -6,9 +6,9 @@
 #include <revolution/OS.h>
 #include <cstdio>
 #include <cstring>
+#include <game/game/d_heap.hpp>
 
 // 8074E3BC: dHeap::hmnHeadHeap_p (d_heap, not decompiled; name from its debug string).
-extern EGG::Heap *lbl_8074E3BC;
 
 // One double-buffered head model buffer (inferred).
 class headBuf_c {
@@ -60,7 +60,7 @@ void *headData_c::getHead(u32 *size, int no, int kind) {
 }
 
 BOOL headData_c::load() {
-    EGG::Heap *heap = lbl_8074E3BC;
+    EGG::Heap *heap = dHeap::hmnHeadHeap_p;
     if (heap == NULL) {
         return TRUE;
     }

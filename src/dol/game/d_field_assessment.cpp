@@ -46,6 +46,9 @@
 #include <nw4r/math.h>
 #include <string.h>
 #include <game/game/d_hr.hpp>
+#include <game/game/d_heap.hpp>
+#include <game/game/d_thunder.hpp>
+#include <game/mLib/m_perf.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -65,8 +68,6 @@ static const u8 sAround5[5] = {
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 void fn_8018EF28();
-int fn_8016CF08(int idx);
-void fn_802B8D30(OSThread *thread, int arg);
 void fn_802B8D90(OSThread *thread);
 BOOL fn_800DCEDC();
 int fn_800DCF58();
@@ -129,7 +130,6 @@ extern void *lbl_8074E9A0[2];
 extern u16 *lbl_8074E800;
 }
 
-extern EGG::Heap *lbl_8074E478;
 
 typedef BOOL (*dFgMngAroundFunc)(dFdBase_c *fd, const int *pos, int x, int z, int *size);
 struct dFgMngGroundCheck_c;
@@ -150,7 +150,7 @@ int getFlowerColor(const dItem::Item *item);
 void *sFgObjMgr;                          // 8074E338: the d_fgobj_managerNP actor (set by its create)
 u8 sDayChangeBlocked;                     // 8074E33C: fgMngProc_blockDayChange
 static u8 sFgMngProcFlags;                // 8074E33D: 1 save flag 6 deferred, 2 day change, 4 thread
-static void *sFgMngProcThreadStack;       // 8074E340: 0x3000 bytes from lbl_8074E478
+static void *sFgMngProcThreadStack;       // 8074E340: 0x3000 bytes from dHeap::growUpHeap_p
 dFgMngLitterFlags_c sFgMngLitterFlags;    // 8074E344
 u8 sFgMngCmdRetryBits[FG_MNG_CMD_NUM / 8];          // 8074E348: a retry bit per command
 u16 *sFgMngUnitMask;                      // 8074E350: blocked-unit bit rows
@@ -331,13 +331,13 @@ dSceneChange_c *fn_80091AF8() {
     return &gSceneChange;
 }
 
-// 80091B04: returns 0x3400: size of the "createGrowUpHeap" EGG::ExpHeap lbl_8074E478 (created at
+// 80091B04: returns 0x3400: size of the "createGrowUpHeap" EGG::ExpHeap dHeap::growUpHeap_p (created at
 // 800B6270); the FG manager thread's 0x3000-byte stack comes from it.
 int fgMngProc_getGrowUpHeapSize() {
     return 0x3400;
 }
 
-// 80091B0C: returns 0x2617C0: size of the "createFgHeap" FrmHeap lbl_8074E3F8 (created at
+// 80091B0C: returns 0x2617C0: size of the "createFgHeap" FrmHeap dHeap::fgHeap_p (created at
 // 800B54B4); dFgMngProc_c::m_heap is made from it.
 int fgMngProc_getFgHeapSize() {
     return 0x2617C0;
@@ -387,7 +387,7 @@ void startFgMngProcThread(OSThreadFunc func) {
         dSaveData_c::getTown()->clearFlag(6);
     }
     sFgMngProcFlags |= FG_MNG_PROC_FLAG_THREAD;
-    sFgMngProcThreadStack = lbl_8074E478->alloc(FG_MNG_THREAD_STACK_SIZE, 0x20);
+    sFgMngProcThreadStack = dHeap::growUpHeap_p->alloc(FG_MNG_THREAD_STACK_SIZE, 0x20);
     OSCreateThread(&sFgMngProcThread, func, NULL, (u8 *)sFgMngProcThreadStack + FG_MNG_THREAD_STACK_SIZE, FG_MNG_THREAD_STACK_SIZE, 0x19, 1);
     fn_802B8D30(&sFgMngProcThread, fn_8016CF08(0xC));
     OSResumeThread(&sFgMngProcThread);
@@ -396,7 +396,7 @@ void startFgMngProcThread(OSThreadFunc func) {
 
 static inline void freeThreadStack() {
     if (sFgMngProcThreadStack != NULL) {
-        lbl_8074E478->free(sFgMngProcThreadStack);
+        dHeap::growUpHeap_p->free(sFgMngProcThreadStack);
         sFgMngProcThreadStack = NULL;
         fn_802B8D90(&sFgMngProcThread);
     }

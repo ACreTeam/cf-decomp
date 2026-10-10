@@ -4,9 +4,9 @@
 #include <cstdio>
 #include <cstring>
 #include <game/cLib/c_math.hpp>
+#include <game/game/d_heap.hpp>
 
 // 8074E3CC: the face animation heap (d_heap, not decompiled).
-extern "C" EGG::Heap *lbl_8074E3CC;
 
 // The texture animation buffers of one face type (inferred).
 class faceAnmBuf_c {
@@ -265,7 +265,7 @@ faceAnmData_c::faceAnmData_c() {}
 faceAnmData_c::~faceAnmData_c() {}
 
 BOOL faceAnmData_c::load() {
-    EGG::Heap *heap = lbl_8074E3CC;
+    EGG::Heap *heap = dHeap::hmnFaceAnmHeap_p;
     if (heap == NULL) {
         return TRUE;
     }

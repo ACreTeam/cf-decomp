@@ -6,11 +6,11 @@
 #include <lib/egg/core/eggFrmHeap.h>
 #include <lib/revolution/OS/OSThread.h>
 #include <string.h>
+#include <game/game/d_heap.hpp>
+#include <game/game/d_thunder.hpp>
+#include <game/mLib/m_perf.hpp>
 
 // dHeap (unsplit): ngwordHeap_p, prcWorkHeap_p, prcHeap_p (their heap name strings).
-extern EGG::FrmHeap *lbl_8074E428;
-extern EGG::FrmHeap *lbl_8074E42C;
-extern EGG::FrmHeap *lbl_8074E430;
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -18,8 +18,6 @@ int fn_801F7FC4(void *work, size_t workSize, const void *data, s32 dataSize); //
 int fn_801F83D0(const u16 **words, int num, u8 *results, int *hits);         // run it
 void fn_801F8958();
 void fn_8010EEB4(dSaveDistBlock_c *block); // clear the downloaded patterns
-int fn_8016CF08(int idx);
-void fn_802B8D30(OSThread *thread, int arg);
 void fn_802B8D90(OSThread *thread);
 }
 
@@ -45,7 +43,7 @@ void dPrcMng_c::clear() {
 
 // 8010479C
 void *dPrcMng_c::setupProc(void *arg) {
-    EGG::FrmHeap *heap = lbl_8074E42C;
+    EGG::FrmHeap *heap = dHeap::prcWorkHeap_p;
     heap->free(3);
     size_t size = heap->getAllocatableSize(4);
     void *work = heap->alloc(size, 4);
@@ -107,7 +105,7 @@ BOOL dPrcMng_c::startThread(void *(*func)(void *), void *arg) {
         endThread();
         return FALSE;
     }
-    l_stack = lbl_8074E430->alloc(0xA000, 4);
+    l_stack = dHeap::prcHeap_p->alloc(0xA000, 4);
     if (arg != NULL) {
         memcpy(&l_param, arg, sizeof(param_c));
     }
@@ -125,7 +123,7 @@ BOOL dPrcMng_c::endThread() {
     }
     if (OSIsThreadTerminated(&l_thread)) {
         if (l_stack != NULL) {
-            lbl_8074E430->free(3);
+            dHeap::prcHeap_p->free(3);
             l_stack = NULL;
             fn_802B8D90(&l_thread);
         }
@@ -144,7 +142,7 @@ BOOL dPrcMng_c::load() {
     if (l_prcMng.mData != NULL) {
         return TRUE;
     }
-    void *data = l_prcMng.mLoader.request(l_fileNames[getRegion()], 0, lbl_8074E428);
+    void *data = l_prcMng.mLoader.request(l_fileNames[getRegion()], 0, dHeap::ngwordHeap_p);
     if (data == NULL) {
         return FALSE;
     }

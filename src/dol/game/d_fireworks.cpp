@@ -10,10 +10,10 @@
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <revolution/MTX.h>
+#include <game/game/d_snd_util.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_8000F828(int se);                                        // 8000F828: play a sound effect
 BOOL fn_80199BBC(void *glow, const GXColor *color, const nw4r::math::VEC3 *pos, f32 size); // 80199BBC: queue a glow
 
 extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: town center the show is above
@@ -72,12 +72,12 @@ void dFireWork_c::launch(BOOL withEffect) {
             effect.EGG::Effect::update();
         }
         if (lbl_8074E538[0x3671]) {
-            fn_8000F828(0x19A1);
+            playSe(0x19A1);
         } else {
-            fn_8000F828(0x199E);
+            playSe(0x199E);
         }
     } else if (lbl_8074EA60 != NULL) {
-        fn_8000F828(0x19A4);
+        playSe(0x19A4);
     }
 }
 
@@ -132,9 +132,9 @@ void dFireWork_c::execute(BOOL withEffect) {
                         se = 0x199F;
                     }
                 }
-                fn_8000F828(se);
+                playSe(se);
             } else if (lbl_8074EA60 != NULL) {
-                fn_8000F828(mScale > 1.0f ? 0x19A6 : 0x19A5);
+                playSe(mScale > 1.0f ? 0x19A6 : 0x19A5);
             }
         }
         break;

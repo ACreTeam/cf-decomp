@@ -5,9 +5,9 @@
 #include <game/game/d_hmn_tool_mng.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_world.hpp>
+#include <game/game/d_heap.hpp>
 
 // Not split yet (C linkage keeps the target name).
-extern "C" void *lbl_8074E3B8; // 8074E3B8: dHeap::hmnAnmHeap_p (name from d_heap's strings)
 
 // 8046F450: per-animation type (getType)
 static const u32 l_anmType[HMN_ANM_NUM] = {
@@ -161,8 +161,8 @@ nw4r::g3d::ResAnmChr dHmnAnm_c::getResAnmChr(int anmId) {
 // 800B643C
 BOOL dHmnAnm_c::load() {
     dHmnAnm_c *anm = &l_hmnAnm;
-    if (anm->mData == NULL && lbl_8074E3B8 != NULL) {
-        anm->mData = anm->mLoader.request("/Anm/Anm.brcha", 0, lbl_8074E3B8);
+    if (anm->mData == NULL && dHeap::hmnAnmHeap_p != NULL) {
+        anm->mData = anm->mLoader.request("/Anm/Anm.brcha", 0, dHeap::hmnAnmHeap_p);
         if (anm->mData == NULL) {
             return FALSE;
         }

@@ -247,4 +247,3 @@ public:
 }; // size 0x71C
 
 // The bank heaps' parent (d_hmn's heap, not identified).
-extern EGG::Heap *lbl_8074E468;

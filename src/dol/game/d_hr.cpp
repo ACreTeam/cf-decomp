@@ -1784,7 +1784,7 @@ void dHR::makeModelRoomRemarks(dHR::remark_c *outTheme, dHR::remark_c *outSeries
     if (theme == 0) {
         outTheme->mMsg = HR_REMARK_THEME_NONE;
     } else if (theme == 1) {
-        EGG::Heap *heap = lbl_8074E440;
+        EGG::Heap *heap = dHeap::localHeap_p;
         dFdInfoSvMdlRm_c *fd = dFdInfoSvMdlRm_c::createWithBg15(mdlRm, heap);
         if (fd != NULL) {
             dHR::fnShui_c fs;

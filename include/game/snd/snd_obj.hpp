@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <lib/nw4r/snd/snd_SoundThread.h>
 
 // The sound library's positional sound objects (DOL, not split yet, around 801D5548..801DF45C).
 // Class names are from the RTTI:
@@ -43,3 +44,19 @@ public:
     SoundHaniwa();          // 801D5548
     virtual ~SoundHaniwa(); // 801D5648
 };
+
+// RTTI "SoundAudioFrameCallback" (vtable 80503C90; methods in dol/sound/SoundObj.cpp): calls a
+// function at the start of each sound frame while registered with the sound thread.
+class SoundAudioFrameCallback : public nw4r::snd::detail::SoundThread::SoundFrameCallback {
+public:
+    typedef void (*Callback)();
+
+    SoundAudioFrameCallback() : mCallback(NULL) {}
+    virtual ~SoundAudioFrameCallback() {} // 8001047C (weak copy in d_snd_util)
+    virtual void OnBeginSoundFrame();     // 801E1BD4
+
+    void set(Callback callback); // 801E1BEC: registers with the sound thread
+    void clear();                // 801E1C30
+
+    /* 0x0C */ Callback mCallback;
+}; // size 0x10

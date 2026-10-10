@@ -231,6 +231,7 @@ BOOL formatNumber(Word_c *word, int value, int digits, NumberFormat_e format, in
 u8 getTagLength(const wchar_t *tag);
 int to12Hour(int hour); // 80156A8C
 BOOL setAmPm(Word_c *word, int hour); // 80156B00
+u16 getSortKey(wchar_t c); // 80155B70: a character's sort key (d_snd_util passes two to SoundSystem)
 BOOL isHiragana(wchar_t c); // 80155D9C
 BOOL isKatakana(wchar_t c); // 80155DD0
 BOOL isAlpha(wchar_t c); // 80155E6C
@@ -238,5 +239,6 @@ bool toLower(wchar_t *c); // 80156368
 int getLineLength(const u16 *text, u32 maxSize); // 801579C0
 Bank_c *getBank(); // 80157B30
 void *getBmgFile(Bank_c *bank, const char *name); // 80157BA0
+u32 getBankHeapSize(); // 80157BEC: size of the script heap (dHeap::createScriptHeap)
 
 } // namespace dScript

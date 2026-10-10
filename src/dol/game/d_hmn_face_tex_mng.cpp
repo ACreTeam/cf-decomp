@@ -3,9 +3,9 @@
 #include <game/game/d_hmn_face_tex_mng.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <cstdio>
+#include <game/game/d_heap.hpp>
 
 // 8074E3C4: dHeap::hmnFaceTexHeap_p (d_heap, not decompiled; name from its debug string).
-extern EGG::Heap *lbl_8074E3C4;
 
 // The face texture archive (one file-local instance; inferred).
 class faceTexData_c {
@@ -37,7 +37,7 @@ void *faceTexData_c::getTex(u32 *size, int no) {
 }
 
 BOOL faceTexData_c::load() {
-    EGG::Heap *heap = lbl_8074E3C4;
+    EGG::Heap *heap = dHeap::hmnFaceTexHeap_p;
     if (heap == NULL) {
         return TRUE;
     }

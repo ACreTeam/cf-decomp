@@ -59,7 +59,7 @@ BOOL dDesign_c::setFromDlItem(void *dlItem) {
         return FALSE;
     }
 
-    EGG::Heap *heap = lbl_8074E440;
+    EGG::Heap *heap = dHeap::localHeap_p;
     void *data = ((dSaveDLItem_c *)dlItem)->loadArchive(heap); // the .brres
     if (data != NULL) {
         nw4r::g3d::ResFile file(data);

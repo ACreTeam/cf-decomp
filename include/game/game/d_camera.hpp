@@ -3,6 +3,7 @@
 // The game camera (RTTI "dCamera_c"); not decompiled yet. Only what the sky, the star field, the drum
 // (d_drum) and d_objc use.
 
+#include <egg/gfxe/eggCamera.h>
 #include <egg/gfxe/eggFrustum.h>
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
@@ -22,7 +23,7 @@ public:
     }
 
     // 801B0194 (weak copy kept in d_objc). Non-const: a const version stores y before x.
-    mVec3_c getEyePos() { return mVec3_c(mEyePos); }
+    mVec3_c getEyePos() { return mVec3_c(mCamera.mPos); }
 
     // Talk camera (d_a_npc talk_c; names provisional).
     bool fn_8018A748() const;                                // 8018A748: (f240 <= f248)
@@ -33,10 +34,9 @@ public:
 
     /* 0x000 */ u8 _000[0x64];
     /* 0x064 */ EGG::Frustum mFrustum;
-    /* 0x0A0 */ u8 _0A0[0x130 - 0xA0];
-
-    /* 0x130 */ nw4r::math::VEC3 mEyePos;
-    /* 0x13C */ u8 _13C[0x16C - 0x13C];
+    /* 0x0A0 */ u8 _0A0[0xCC - 0xA0];
+    /* 0x0CC */ EGG::LookAtCamera mCamera; // mPos (0x130): the eye position
+    /* 0x154 */ u8 _154[0x16C - 0x154];
     /* 0x16C */ mMtx_c mViewMtx;
     /* 0x19C */ u8 _19C[0x1A4 - 0x19C];
     /* 0x1A4 */ int _1A4;

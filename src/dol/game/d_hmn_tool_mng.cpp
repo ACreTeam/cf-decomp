@@ -8,6 +8,7 @@
 #include <game/sLib/s_lib.hpp>
 #include <lib/egg/math/eggMath.h>
 #include <string.h>
+#include <game/game/d_heap.hpp>
 
 // Tilt of the windmill's wheel (sbss 8074E480).
 static s16 l_windmillTilt = mAng::fromDegree(-22.5f);
@@ -160,7 +161,7 @@ dHmnToolBank_c::~dHmnToolBank_c() {}
 // 800BA3C8
 void dHmnToolBank_c::create(int slot) {
     if (mpHeap == NULL) {
-        mpHeap = mHeap::createFrmHeap(0x1200, lbl_8074E468, "dHmnToolBank_c::m_heap_p", 0x20, mHeap::OPT_NONE);
+        mpHeap = mHeap::createFrmHeap(0x1200, dHeap::hmnToolHeap_p, "dHmnToolBank_c::m_heap_p", 0x20, mHeap::OPT_NONE);
         mAllocator.attach(mpHeap, 0x20);
         mType = slot;
         mMdlCreated = FALSE;

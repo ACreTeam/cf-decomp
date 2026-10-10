@@ -2035,13 +2035,13 @@ void dAcNpcNml_c::talk_c::playTownTune() {
 
 // 80032E94
 void dAcNpcNml_c::talk_c::actPlayTune() {
-    if (!fn_8000FBF4()) {
+    if (!isTownTunePlaying()) {
         const recept_c *self = this; // the target calls the const getNpc overload (800292B4)
         dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(self->getNpc(mTalkIdx));
         BOOL started = FALSE;
         if (npc != NULL && npc->mpAnimal != NULL) {
             u8 *notes = npc->mpAnimal->mMelody.getNotes();
-            fn_8000FC98(npc->getSoundId(), notes);
+            playVoiceMelody(npc->getSoundId(), notes);
             setActProc(&talk_c::actWaitTuneStart);
             started = TRUE;
         }
@@ -2057,14 +2057,14 @@ void dAcNpcNml_c::talk_c::actPlayTune() {
 
 // 80032F7C
 void dAcNpcNml_c::talk_c::actWaitTuneStart() {
-    if (fn_8000FBF4()) {
+    if (isTownTunePlaying()) {
         setActProc(&talk_c::actWaitTuneEnd);
     }
 }
 
 // 80032FD8
 void dAcNpcNml_c::talk_c::actWaitTuneEnd() {
-    if (!fn_8000FBF4()) {
+    if (!isTownTunePlaying()) {
         dDemo_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;

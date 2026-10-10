@@ -45,4 +45,7 @@ BOOL fn_80087790(const char *name, const mVec3_c *pos, const mAng3_c *angle, con
 bool fn_80087B40(dLevelEffect_c *effect, const char *name, const mMtx_c *mtx, int flag); // 80087B40
 // Footprint effect (side 0 left / 1 right).
 void fn_80087B5C(const mVec3_c *pos, const mAng3_c *angle, int arg, int side); // 80087B5C
+u32 fn_800887DC(); // 800887DC: size of the effect resource heap (0xFA000)
+u32 fn_800887E8(); // 800887E8: size of the effect manager heap (0x73000)
+u32 fn_800887F4(); // 800887F4: size of the effect callback heap (0x1000)
 }

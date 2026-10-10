@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstddef>
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_heap.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -20,7 +21,6 @@ void fn_800CAC20();
 }
 
 // Game heap (owner not recovered).
-extern EGG::Heap *lbl_8074E3D8;
 
 // 8074E6D8
 dSaveOption_c dSaveData_c::sOption;
@@ -337,7 +337,7 @@ u32 dSaveData_c::getSize() {
 // The ctor is inlined here. Skeleton members (u8 arrays) don't run their ctors yet.
 void dSaveData_c::create() {
     if (sSaveData == NULL) {
-        sSaveData = (dSaveData_c *)lbl_8074E3D8->alloc(sizeof(dSaveData_c), 32);
+        sSaveData = (dSaveData_c *)dHeap::saveHeap_p->alloc(sizeof(dSaveData_c), 32);
         memset((void*)sSaveData, 0, sizeof(dSaveData_c));
         new (sSaveData) dSaveData_c();
         sSaveData->initialize();

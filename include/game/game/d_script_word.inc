@@ -70,7 +70,6 @@ const u8 *getTagParams(const wchar_t *tag);
 Bank_c *getBank();
 BOOL loadBank(Bank_c *bank, void *heap);
 void *getBmgFile(Bank_c *bank, const char *name);
-u32 getBankHeapSize();
 const char *getStringGroup(int kind, u8 gender);
 
 // Dependencies whose owners are not recovered yet.

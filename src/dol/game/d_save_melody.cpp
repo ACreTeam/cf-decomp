@@ -1,10 +1,10 @@
 // The town tune (dSaveMelody_c). .text 8011927C..80119444.
 #include <game/game/d_save_melody.hpp>
 #include <cstring>
+#include <game/game/d_snd_util.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-const u8 *fn_8000F9A0(); // 8000F9A0: the default tune
 }
 
 // 8011927C
@@ -22,7 +22,7 @@ dSaveMelody_c *dSaveMelody_c::copy(const dSaveMelody_c *other) {
 // 801192F4
 void dSaveMelody_c::clear() {
     memset(this, 0, sizeof(dSaveMelody_c));
-    set(fn_8000F9A0());
+    set(getDefaultTownTune());
 }
 
 // 80119338

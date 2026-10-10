@@ -267,6 +267,8 @@ public:
 extern "C" dFdBase_c *fn_80190C44(int idx);
 // 80191178 (d_field): the field of room room of player house home, or NULL.
 extern "C" dFdBase_c *fn_80191178(u32 home, int room);
+// 8019112C (d_field): size of the field heap (dFdInfo_c::getHeapSize() and more).
+extern "C" u32 fn_8019112C();
 enum {
     FD_ID_CURRENT = 0,
     FD_ID_TOWN = 1,

@@ -43,7 +43,9 @@ dol/game/d_analog_select.cpp:
 
 dol/game/d_snd_util.cpp:
 	.text       start:0x8000DE5C end:0x800107AC
+	.data       start:0x8049E5F8 end:0x8049E630 align:4
 	.bss        start:0x80562EA0 end:0x80564B60 align:32
+	.sdata      start:0x80749810 end:0x80749818 align:4
 	.sbss       start:0x8074E148 end:0x8074E150
 	.sdata2     start:0x8074FDD0 end:0x8074FDD8
 

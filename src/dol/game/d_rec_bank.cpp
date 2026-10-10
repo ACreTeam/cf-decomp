@@ -90,7 +90,7 @@ int bankTbl_c::create(EGG::Heap *heap, int size, int num) {
     if (mHeap == NULL) {
         mNum = 0;
         mUsedNum = 0;
-        EGG::Heap *defaultHeap = lbl_8074E440;
+        EGG::Heap *defaultHeap = dHeap::localHeap_p;
         mHeap = heap != NULL ? heap : defaultHeap;
         mDefaultHeap = defaultHeap;
         u32 bytes = num * sizeof(entry_c);

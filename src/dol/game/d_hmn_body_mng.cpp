@@ -6,9 +6,9 @@
 #include <revolution/OS.h>
 #include <cstdio>
 #include <cstring>
+#include <game/game/d_heap.hpp>
 
 // 8074E3C8: dHeap::hmnBodyHeap_p (d_heap, not decompiled; name from its debug string).
-extern EGG::Heap *lbl_8074E3C8;
 
 // One body model buffer (inferred).
 class bodyBuf_c {
@@ -54,7 +54,7 @@ void *bodyData_c::getBody(u32 *size, int idx) {
 }
 
 BOOL bodyData_c::load() {
-    EGG::Heap *heap = lbl_8074E3C8;
+    EGG::Heap *heap = dHeap::hmnBodyHeap_p;
     if (heap == NULL) {
         return TRUE;
     }

@@ -7,14 +7,14 @@
 #include <lib/revolution/OS/OSThread.h>
 #include <cstdio>
 #include <string.h>
+#include <game/game/d_thunder.hpp>
+#include <game/mLib/m_perf.hpp>
 
 using namespace dScreenshot;
 
 extern "C" {
 u8 *fn_800FADCC();                  // the JPEG
 u32 fn_800FADD4();                  // its size
-int fn_8016CF08(int idx);
-void fn_802B8D30(OSThread *thread, int arg);
 void fn_802B8D90(OSThread *thread);
 
 // The SD card library (wrappers return 0 / -1 unless noted).

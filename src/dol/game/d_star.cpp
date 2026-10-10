@@ -3,10 +3,10 @@
 #include <game/game/d_effect.hpp>
 #include <game/game/d_sky.hpp>
 #include <revolution/MTX.h>
+#include <game/game/d_snd_util.hpp>
 
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
-void fn_8000F828(int se); // 8000F828: play a sound effect
 bool fn_80087A30(const char *name, const mMtx_c *mtx); // 80087A30: likely a static dEffect_c member
 }
 
@@ -18,7 +18,7 @@ void dStar_c::execute() {
         // The original constructs this local, but does not pass it to fn_80087A30.
         dEffect_c effect;
         fn_80087A30("af_fld_star", &mtx);
-        fn_8000F828(0x17CE);
+        playSe(0x17CE);
         mActive = false;
     }
 }

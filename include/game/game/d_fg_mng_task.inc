@@ -17,7 +17,6 @@ struct dFgMngItemFilter_c {
     /* 0x8 */ int mNum;
 };
 extern "C" dFgMngItemFilter_c lbl_8059FF80;
-extern "C" EGG::Heap *lbl_8074E3F8;
 
 // Actor fields read here (fBase_c / dActor_c).
 struct dFgMngActor_c {
@@ -1391,7 +1390,7 @@ BOOL dFgMngCmd_c::isPlanned(int x, int z) {
 // 800A5900
 void dFgMngProc_c::createHeap() {
     if (m_heap == NULL) {
-        m_heap = mHeap::createFrmHeap(FG_MNG_BUFFER_SIZE, lbl_8074E3F8, "dFgMngProc_c::m_heap", 0x20, mHeap::OPT_NONE);
+        m_heap = mHeap::createFrmHeap(FG_MNG_BUFFER_SIZE, dHeap::fgHeap_p, "dFgMngProc_c::m_heap", 0x20, mHeap::OPT_NONE);
         mBuffer = m_heap->alloc(FG_MNG_BUFFER_SIZE, 0x20);
     }
 }

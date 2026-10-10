@@ -245,7 +245,7 @@ int dFishField_c::create() {
     int num;
     BOOL ok;
     int n;
-    heap = lbl_8074E440;
+    heap = dHeap::localHeap_p;
     if (m_ResHeap == NULL) {
         m_ResHeap = mHeap::createFrmHeap(0x8000, heap, "dFishField_c::m_ResHeap", 0x20, mHeap::OPT_NONE);
     }

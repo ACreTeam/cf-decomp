@@ -3,9 +3,9 @@
 #include <revolution/OS/OSCache.h>
 #include <cstdio>
 #include <cstring>
+#include <game/game/d_heap.hpp>
 
 // 8074E3C0: the palette heap (d_heap, not decompiled).
-extern "C" EGG::Heap *lbl_8074E3C0;
 
 // The palette buffers of one palette type (inferred).
 class plttBuf_c {
@@ -52,7 +52,7 @@ void *plttData_c::getPltt(u32 *size, int plttId) {
 }
 
 BOOL plttData_c::load() {
-    EGG::Heap *heap = lbl_8074E3C0;
+    EGG::Heap *heap = dHeap::hmnPaletteHeap_p;
     if (heap == NULL) {
         return TRUE;
     }

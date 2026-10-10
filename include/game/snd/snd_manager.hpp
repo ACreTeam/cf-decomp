@@ -3,6 +3,8 @@
 #include <lib/nw4r/snd.h>
 #include <lib/nw4r/snd/snd_FxReverbHiDpl2.h>
 #include <lib/nw4r/snd/snd_SoundThread.h>
+#include <game/snd/snd_effect_reverb.hpp>
+#include <game/snd/snd_obj.hpp> // SoundAudioFrameCallback
 
 // The game's sound manager: the 0x784-byte object built by the inline SoundManager::getInstance
 // (static local 805641E0, guard 8074E148; the first copy is in d_snd_util, the dtor 800104BC is
@@ -19,33 +21,6 @@ public:
 
     /* 0x04 */ u8 _04[0x24 - 0x04];
 }; // size 0x24
-
-// RTTI "SoundEffectReverb" (dol/sound/SoundEffectReverb.cpp), vtable 80500678.
-class SoundEffectReverb : public nw4r::snd::FxReverbHiDpl2 {
-public:
-    SoundEffectReverb() {}
-    virtual ~SoundEffectReverb() {} // 800103F8 (weak copy in d_snd_util)
-    virtual bool StartUp();         // 801D00E8
-    virtual void Shutdown();        // 801D013C
-
-    /* 0x308 */ bool mStarted;
-}; // size 0x30C
-
-// RTTI "SoundAudioFrameCallback" (vtable 80503C90; methods in dol/sound/SoundObj.cpp): calls a
-// function at the start of each sound frame while registered with the sound thread.
-class SoundAudioFrameCallback : public nw4r::snd::detail::SoundThread::SoundFrameCallback {
-public:
-    typedef void (*Callback)();
-
-    SoundAudioFrameCallback() : mCallback(NULL) {}
-    virtual ~SoundAudioFrameCallback() {} // 8001047C (weak copy in d_snd_util)
-    virtual void OnBeginSoundFrame();     // 801E1BD4
-
-    void set(Callback callback); // 801E1BEC: registers with the sound thread
-    void clear();                // 801E1C30
-
-    /* 0x0C */ Callback mCallback;
-}; // size 0x10
 
 class SoundManager {
 public:
@@ -81,9 +56,25 @@ public:
         return &instance;
     }
 
+    // Methods of the unsplit TU keep their fn_ names.
+    void fn_801CE58C(int arg1, int arg2, void *heapBuf, u32 heapSize); // 801CE58C: init with the sound heap
+    void fn_801CE978();                 // 801CE978: per frame (d_sys)
+    void fn_801CEB70(int frames);       // 801CEB70: (d_reset)
+    void fn_801CEC90();                 // 801CEC90: (scene start)
+    void fn_801CED38();                 // 801CED38: (d_reset)
+    void fn_801CED88();                 // 801CED88: (scene change)
+    void fn_801CEE24(int arg);          // 801CEE24
+    void fn_801CF6A4(f32 arg, int frames); // 801CF6A4: (d_wifi_err)
+    void fn_801CFF40();                 // 801CFF40: (d_caution)
+    void fn_801CFF4C();                 // 801CFF4C: (d_caution)
+
     // The function the sound thread calls each frame (one at a time).
     void setFrameCallback(SoundAudioFrameCallback::Callback callback); // 801CFA68
     void clearFrameCallback();                                         // 801CFA70
+
+    void setVolume(f32 volume, int frames); // 801CF714: clamps volume to [0, 1], fades the fader at 0x6B8
+    void stopReverb();  // 801CFA78: fades out _764, shuts down the AUX A effect (mReverb)
+    void startReverb(); // 801CFAD8: fades in _764, appends mReverb to AUX A
 
     /* 0x000 */ nw4r::snd::SoundHeap mHeap;
     /* 0x02C */ nw4r::snd::DvdSoundArchive mArchive;

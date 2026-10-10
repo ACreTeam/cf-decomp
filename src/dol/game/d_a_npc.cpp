@@ -1912,7 +1912,7 @@ int dAcNpc_c::getSoundId() {
 void dAcNpc_c::playSound() {
     u16 id = getSoundId();
     if (id != 0xFFFF) {
-        fn_8000FC1C(id);
+        playTune(id);
     }
 }
 

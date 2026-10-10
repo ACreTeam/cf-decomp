@@ -16,6 +16,7 @@
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/math.h>
+#include <game/game/d_heap.hpp>
 
 // Ext item data (0xD000 ids), see d_fg_item.cpp.
 // The furniture interface the unit's furniture object exposes (base at +0x158 of fn_800A8FC4's result).
@@ -50,7 +51,6 @@ class dFdFtr_c : public dFdFtrPad_c, public dFdFtrIf_c {};
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-extern EGG::Heap *lbl_8074E3F4; // 8074E3F4
 
 int fn_80081514(int type);                                             // 80081514: the bridge variant of a block type
 void *fn_800A9058();                                                   // 800A9058
@@ -953,7 +953,7 @@ static u32 sNpcHsCount;    // 8074E30C: live dFdInfoNpcHs_c objects
 // 8008E2D8
 void *dFdInfoNpcHs_c::getBgData(int bgId) {
     if (sNpcHsBgData == NULL) {
-        void *buf = lbl_8074E3F4->alloc(0xA00, 4);
+        void *buf = dHeap::fieldHeap_p->alloc(0xA00, 4);
         sNpcHsBgData = buf;
         if (buf != NULL) {
             dBG::getAlwaysBank()->copyBlockCol(buf, bgId);

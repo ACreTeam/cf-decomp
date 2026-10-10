@@ -6,6 +6,7 @@
 #include <types.h>
 
 extern "C" {
+u32 fn_800DCB68();                             // 800DCB68: size of the net game heap
 bool fn_800DCEDC();                            // 800DCEDC: an online session is active (returns a u8 flag)
 u32 fn_800DCF30();                             // 800DCF30: number of members
 int fn_800DCF58();                             // 800DCF58: this console's member index (0..3)

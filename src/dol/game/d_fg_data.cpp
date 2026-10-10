@@ -2,9 +2,9 @@
 // .text 8009176C..80091AF8, .ctors 8046566C..80465670, .data 804E17F0..804E1808,
 // .bss 80588D10..80588D58.
 #include <game/game/d_fg_data.hpp>
+#include <game/game/d_heap.hpp>
 
 // Not split yet (C linkage keeps the target name).
-extern "C" void *lbl_8074E3F0; // 8074E3F0: heap the file is loaded into
 
 // 80588D1C
 static dFgData_c sFgData;
@@ -17,8 +17,8 @@ int dFgData_c::getFileSize() {
 // 80091774
 BOOL dFgData_c::load() {
     dFgData_c *fgData = &sFgData;
-    if (fgData->mData == NULL && lbl_8074E3F0 != NULL) {
-        fgData->mData = fgData->mLoader.request("/FgData/fgdata.bin", 0, lbl_8074E3F0);
+    if (fgData->mData == NULL && dHeap::fgDataHeap_p != NULL) {
+        fgData->mData = fgData->mLoader.request("/FgData/fgdata.bin", 0, dHeap::fgDataHeap_p);
         if (fgData->mData == NULL) {
             return FALSE;
         }

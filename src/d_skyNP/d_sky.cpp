@@ -83,7 +83,7 @@ int dSky_c::create() {
     }
 
     BOOL ok = TRUE;
-    EGG::Heap *heap = lbl_8074E440;
+    EGG::Heap *heap = dHeap::localHeap_p;
     if (!mResCloud.load("/Sky/bg_cloud.brres", heap, 0)) {
         ok = FALSE;
     }

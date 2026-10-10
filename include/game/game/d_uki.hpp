@@ -9,6 +9,8 @@
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
 
+extern "C" u32 fn_801710DC(); // 801710DC: size of the float heap
+
 class dFishFldShadow_c;
 namespace dItem {
 class Item;

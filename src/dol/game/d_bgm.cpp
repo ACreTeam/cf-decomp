@@ -16,31 +16,10 @@
 #include <game/mLib/m_fader.hpp>
 #include <lib/egg/math/eggMath.h>
 #include <revolution/MTX.h>
+#include <game/game/d_snd_util.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-// The sound layer (around 8000ED00).
-void fn_8000EDD0(const mVec3_c *src, mVec3_c *dst); // 8000EDD0
-void fn_8000EF30();                                 // 8000EF30
-void fn_8000EF98();                                 // 8000EF98
-void fn_8000F000();                                 // 8000F000
-void fn_8000F068();                                 // 8000F068
-void fn_8000F0D0(u32 id, int fadeIn);               // 8000F0D0: start the BGM
-void fn_8000F158(int fade);                         // 8000F158: stop the BGM
-void fn_8000F1D0(int weather);                      // 8000F1D0
-void fn_8000F248();                                 // 8000F248
-void fn_8000F2B0();                                 // 8000F2B0
-u32 fn_8000F318(int song);                          // 8000F318: a music player song's BGM id
-BOOL fn_8000F390();                                 // 8000F390
-u32 fn_8000F3F8(int song);                          // 8000F3F8: a K.K. song's BGM id
-const s8 *fn_8000F470();                            // 8000F470
-int fn_8000F4D8();                                  // 8000F4D8
-void fn_8000F540(f32 volume, int frames);           // 8000F540
-void fn_8000F6C0(const mVec3_c *pos);               // 8000F6C0
-void fn_8000F738(int arg);                          // 8000F738
-void fn_8000F7B0(int arg);                          // 8000F7B0
-void fn_8000FD24();                                 // 8000FD24: the hourly chime
-
 BOOL fn_800DCEDC();                // 800DCEDC: an online session is active
 u32 fn_800DCF30();                 // 800DCF30
 BOOL fn_800F98E4(const u16 *item); // 800F98E4
@@ -636,7 +615,7 @@ void StgRoom_c::start(u32 param) {
         }
     }
     if (type == 0 || type - 2 <= 1) {
-        u32 id = fn_8000F318(0);
+        u32 id = getMusicPlayerBgm(0);
         mRoomBgm = id;
         l_mgr.play(0x19, id, 0x2D, 0);
     }
@@ -661,7 +640,7 @@ void StgRoom_c::playMusic(int song) {
     if (mMusicBgm != -1) {
         stopMusic();
     }
-    u32 id = fn_8000F318(song);
+    u32 id = getMusicPlayerBgm(song);
     mMusicBgm = id;
     l_mgr.playRoom(id);
 }
@@ -675,7 +654,7 @@ void StgRoom_c::stopMusic() {
 
 void StgRoom_c::setMusicPos(const mVec3_c *pos) {
     mMusicPosSet = 1;
-    fn_8000EDD0(pos, &mMusicPos);
+    getSoundPos(pos, &mMusicPos);
 }
 
 void StgRoom_c::fn_800792AC(int arg) {
@@ -903,7 +882,7 @@ void StgCafe_c::playKK(int song, int fadeIn, u8 arg) {
     if (mKKBgm != -1) {
         stopKK();
     }
-    u32 id = fn_8000F3F8(song);
+    u32 id = getKKSongBgm(song);
     mKKBgm = id;
     l_mgr.playKK(id, fadeIn, arg);
 }
@@ -916,7 +895,7 @@ void StgCafe_c::stopKK() {
 }
 
 BOOL StgCafe_c::isKKStopped() {
-    return fn_8000F390() == 0;
+    return sndIsKKPlaying() == 0;
 }
 
 void StgCafe_c::muteCafe() {
@@ -943,47 +922,47 @@ BOOL StgCafe_c::isKKPlaying() const {
 }
 
 int StgCafe_c::getKKInfo0() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? info[0] : -1;
 }
 
 int StgCafe_c::getKKInfo1() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? info[1] : -1;
 }
 
 int StgCafe_c::getKKInfo2() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? info[2] : -1;
 }
 
 int StgCafe_c::getKKInfo3() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? info[3] : -1;
 }
 
 int StgCafe_c::getKKInfo4() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? info[4] : -1;
 }
 
 f32 StgCafe_c::getKKInfo8() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? *(const f32 *)(info + 8) : 0.0f;
 }
 
 f32 StgCafe_c::getKKInfoC() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? *(const f32 *)(info + 0xC) : 0.0f;
 }
 
 f32 StgCafe_c::getKKInfo10() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? *(const f32 *)(info + 0x10) : 0.0f;
 }
 
 int StgCafe_c::getKKInfo5() {
-    const s8 *info = fn_8000F470();
+    const s8 *info = sndGetKKInfo();
     return info != NULL ? info[5] : -1;
 }
 
@@ -1203,7 +1182,7 @@ void StgTown_c::play1AB7() {
 
 void StgTown_c::setMusicPos(const mVec3_c *pos) {
     mMusicPosSet = 1;
-    fn_8000EDD0(pos, &mMusicPos);
+    getSoundPos(pos, &mMusicPos);
 }
 
 void StgTown_c::fn_8007A790() {
@@ -1297,7 +1276,7 @@ void StgTown_c::stopBgm20() {
 }
 
 void StgTown_c::checkBgm20() {
-    if (mBgm20 != -1 && l_mgr.mQueue.isCurrent(mBgm20) && !fn_8000F390()) {
+    if (mBgm20 != -1 && l_mgr.mQueue.isCurrent(mBgm20) && !sndIsKKPlaying()) {
         stopBgm20();
     }
 }
@@ -1542,7 +1521,7 @@ void StgTheater_c::playEncoreEnd() {
 }
 
 void StgTheater_c::checkShowEnd() {
-    if (mShowEndBgm != -1 && l_mgr.mQueue.isCurrent(mShowEndBgm) && !fn_8000F390()) {
+    if (mShowEndBgm != -1 && l_mgr.mQueue.isCurrent(mShowEndBgm) && !sndIsKKPlaying()) {
         l_mgr.stop(mShowEndBgm);
         mShowEndBgm = -1;
     }
@@ -1663,7 +1642,7 @@ void StgTitle_c::updatePlay() {
 
 BOOL StgTitle_c::isEnd() const {
     BOOL end = FALSE;
-    if (mBgm != -1 && l_mgr.mQueue.isCurrent(mBgm) && !fn_8000F390()) {
+    if (mBgm != -1 && l_mgr.mQueue.isCurrent(mBgm) && !sndIsKKPlaying()) {
         end = TRUE;
     }
     return end;
@@ -1957,7 +1936,7 @@ void State_c::checkChime() {
             chime = FALSE;
         }
         if (chime) {
-            fn_8000FD24();
+            playHourlyChime();
         }
         bool noChime = !chime;
         l_mgr.mStgField.setNoChime(noChime);
@@ -2355,11 +2334,11 @@ void Player_c::init() {
 void Player_c::execute() {
     if (mStopReq) {
         mStopReq = 0;
-        fn_8000F158(mStopFade);
+        sndStopBgm(mStopFade);
     }
     if (mStartReq) {
         mStartReq = 0;
-        fn_8000F0D0(mId, mFadeIn);
+        sndStartBgm(mId, mFadeIn);
         if (mWeatherReq) {
             mWeatherReq = 0;
             setWeather(l_mgr.mWeather.getKind());
@@ -2367,15 +2346,15 @@ void Player_c::execute() {
     }
     if (mWeatherSet) {
         mWeatherSet = 0;
-        fn_8000F1D0(mWeather);
+        sndSetWeather(mWeather);
     }
     if (mVolumeReq) {
         mVolumeReq = 0;
-        fn_8000F540(mVolume, mVolumeFrames);
+        setSoundVolume(mVolume, mVolumeFrames);
     }
     if (mPos != NULL) {
         if (l_mgr.mQueue.isCurrentPos()) {
-            fn_8000F6C0(mPos);
+            setAmbientPos(mPos);
         }
         mPos = NULL;
     }
@@ -2797,11 +2776,11 @@ void VolStateMenu_c::execute() {
     if (mState == 1) {
         mState = 2;
         l_mgr.mVolCtrl.nominate(this, sMenuVolume[mKind], 0xF);
-        fn_8000EF30();
+        sndMenuOpen();
     } else if (mState == 3) {
         mState = 0;
         l_mgr.mVolCtrl.denominate(this, 0xF);
-        fn_8000EF98();
+        sndMenuClose();
     }
 }
 
@@ -2839,13 +2818,13 @@ void VolStateTalk_c::execute() {
     if (mState == 1) {
         mState = 2;
         l_mgr.mVolCtrl.nominate(this, 0.3125f, 0xF);
-        fn_8000F000();
+        sndTalkStart();
     } else if (mState == 3) {
         if (!mKeep) {
             mState = 0;
             l_mgr.mVolCtrl.denominate(this, 0xF);
         }
-        fn_8000F068();
+        sndTalkEnd();
     }
 }
 
