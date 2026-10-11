@@ -4,11 +4,7 @@
 #include <game/game/d_side_wipe_fader.hpp>
 #include <game/game/d_wipe_fader.hpp>
 #include <revolution/MTX.h>
-
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-void fn_802466E8(u32 mask);
-}
+#include <lib/nw4r/g3d/g3d_state.h>
 
 static dShutterFader_c *sShutterFader; // 8074E828
 
@@ -37,7 +33,7 @@ void calcShutterFader() {
 
 // 80160BDC
 void drawShutterFader() {
-    fn_802466E8(0x7FF);
+    nw4r::g3d::G3DState::Invalidate();
     sShutterFader->draw();
 }
 

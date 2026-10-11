@@ -1326,7 +1326,7 @@ dol/game/d_shutdown_fader.cpp:
 dol/game/d_shutter_fader.cpp:
 	.text       start:0x801603A0 end:0x80160AE4
 	.ctors      start:0x80465750 end:0x80465754
-	.data       start:0x804F06A0 end:0x804F0710 align:4
+	.data       start:0x804F06A0 end:0x804F0710
 	.bss        start:0x805F2F20 end:0x805FAF38 align:4
 	.sdata      start:0x8074B2A8 end:0x8074B2B8 align:4
 	.sbss       start:0x8074E820 end:0x8074E828 align:4

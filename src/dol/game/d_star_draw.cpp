@@ -11,12 +11,12 @@
 #include <revolution/MTX.h>
 #include <cmath>
 #include <string.h>
+#include <lib/nw4r/g3d/g3d_state.h>
 
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
 BOOL fn_80150D3C(dSaveUnk72E0A_c *signs, int idx);         // 80150D3C: the constellation has an owner
 dStarSign_c *fn_80150D24(dSaveUnk72E0A_c *signs, int idx); // 80150D24: a constellation
-void fn_802466E8(u32 mask);                                 // 802466E8: invalidate the cached GX state
 }
 
 // 80163AA0
@@ -398,7 +398,7 @@ int dStarDraw_c::findSign(const mVec2_c *pos, f32 radius) {
 void dStarDraw_c::drawXlu() {
     if (mMode == 2) {
         m3d::resetMaterial();
-        fn_802466E8(0x7FF);
+        nw4r::g3d::G3DState::Invalidate();
         drawBackground();
     }
 
@@ -437,7 +437,7 @@ void dStarDraw_c::drawXlu() {
     }
 
     m3d::resetMaterial();
-    fn_802466E8(0x7FF);
+    nw4r::g3d::G3DState::Invalidate();
     GXSetNumChans(1);
     GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_CLAMP, GX_AF_NONE);
     GXSetNumTexGens(1);
@@ -534,7 +534,7 @@ void dStarDraw_c::drawBackground() {
     bottom.Set(0x00, 0x00, 0x20, 0xFF);
 
     m3d::resetMaterial();
-    fn_802466E8(0x7FF);
+    nw4r::g3d::G3DState::Invalidate();
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     GXSetZCompLoc(GX_TRUE);

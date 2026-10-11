@@ -6,7 +6,7 @@
 // The circle wipe fader (dWipeFader_c) and its wipe texture. Source: src/dol/game/d_wipe_fader.cpp
 // (.text 8017CD3C..8017D09C). The class name is from the RTTI; the others are inferred.
 
-// A wipe fader whose circle is centered on (mCenterX, mCenterY). Created by the fader setup at 8008B930.
+// A wipe fader whose circle is centered on (mCenterX, mCenterY). Created by dFader::create (d_fader).
 class dWipeFader_c : public mWipeFader_c {
 public:
     dWipeFader_c(mColor col, mFaderBase_c::EStatus status); // 8017CD58

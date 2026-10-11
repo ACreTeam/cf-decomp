@@ -15,6 +15,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_world.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_fader.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -29,8 +30,6 @@ void fn_801A670C();
 void fn_80186708();
 void fn_80186260();
 void *fn_80100234(int player, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle);
-int fn_8008B91C();
-int fn_8008B924();
 void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
 }
 
@@ -869,7 +868,7 @@ BOOL dSceneChange_c::request(u8 scene, int wipeIn, int wipeOut, BOOL force) {
         u16 outType = 0x1E;
         u16 inType = 0x1E;
         mUseDefaultPos = TRUE;
-        if (fn_8008B91C() == 0) {
+        if (dFader::getOutType() == 0) {
             switch (wipeIn) {
             case 2:
                 outType = 0x26;
@@ -889,9 +888,9 @@ BOOL dSceneChange_c::request(u8 scene, int wipeIn, int wipeOut, BOOL force) {
                 break;
             }
         } else {
-            outType = fn_8008B91C();
+            outType = dFader::getOutType();
         }
-        if (fn_8008B924() == 0) {
+        if (dFader::getInType() == 0) {
             switch (wipeOut) {
             case 2:
                 inType = 0x26;
@@ -911,7 +910,7 @@ BOOL dSceneChange_c::request(u8 scene, int wipeIn, int wipeOut, BOOL force) {
                 break;
             }
         } else {
-            inType = fn_8008B924();
+            inType = dFader::getInType();
         }
         lbl_8074B1B6 = outType;
         lbl_8074B1B4 = inType;

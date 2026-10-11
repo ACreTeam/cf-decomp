@@ -2,10 +2,6 @@
 #include <revolution/VI.h>
 #include <revolution/SC.h>
 
-mColorFader_c::mColorFader_c(mColor col, mFaderBase_c::EStatus status) : mFaderBase_c(col, status) {
-    mAspectRatio = SCGetAspectRatio();
-}
-
 mColorFader_c::~mColorFader_c() {}
 
 void mColorFader_c::setStatus(EStatus status) {
@@ -42,7 +38,7 @@ int mColorFader_c::calc() {
 }
 
 void mColorFader_c::draw() {
-    float h = (mAspectRatio == 1) ? VI_VIRTUAL_HALF_WIDTH_WIDE : VI_VIRTUAL_HALF_WIDTH_STD;
+    float h = (SCGetAspectRatio() == 1) ? VI_VIRTUAL_HALF_WIDTH_WIDE : VI_VIRTUAL_HALF_WIDTH_STD;
 
     if (mFaderColor.a == 0) {
         return;
