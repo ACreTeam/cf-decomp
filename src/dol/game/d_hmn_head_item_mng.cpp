@@ -194,7 +194,7 @@ BOOL dHmnHeadItem_c::syncLoad() {
         return TRUE;
     }
     int buf = l_headItemMng.getLoadBuffer(data);
-    if (data->mLoader[buf].fn_800862C8() && data->mTexLoader[buf].fn_800862C8()) {
+    if (data->mLoader[buf].checkLoaded() && data->mTexLoader[buf].checkLoaded()) {
         capDone = TRUE;
     }
 
@@ -203,7 +203,7 @@ BOOL dHmnHeadItem_c::syncLoad() {
         return TRUE;
     }
     buf = l_headItemMng.getLoadBuffer(data);
-    if (data->mLoader[buf].fn_800862C8() && data->mTexLoader[buf].fn_800862C8()) {
+    if (data->mLoader[buf].checkLoaded() && data->mTexLoader[buf].checkLoaded()) {
         accDone = TRUE;
     }
 

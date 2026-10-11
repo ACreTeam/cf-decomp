@@ -1368,7 +1368,7 @@ BOOL dHmnToolBank_c::syncLoad() {
         return TRUE;
     }
     int buf = l_toolMng.getLoadBuffer(data);
-    if (data->mModel[buf].fn_800862C8() && data->mDesign[buf].fn_800862C8()) {
+    if (data->mModel[buf].checkLoaded() && data->mDesign[buf].checkLoaded()) {
         return TRUE;
     }
     return FALSE;

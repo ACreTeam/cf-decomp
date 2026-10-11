@@ -668,6 +668,7 @@ config.libs = [
             Object(Matching, "dol/game/d_bg_util.cpp"),
             Object(Matching, "dol/game/d_bgm.cpp"),
             Object(Matching, "dol/game/d_ds_player_data.cpp"),
+            Object(Matching, "dol/game/d_dvd.cpp"),
             Object(Matching, "dol/game/d_nand.cpp"),
             Object(Matching, "dol/game/d_caution.cpp"),
             Object(Matching, "dol/game/d_drum.cpp"),

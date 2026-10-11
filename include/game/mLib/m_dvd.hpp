@@ -9,14 +9,14 @@ public:
     virtual void execute();
     virtual void init();
 
-    void destroy();
+    void destroy(); // 802AD79C
     void waitDone() const;
 
     bool isDone() const { return mDone; }
 
-    int mReadLength;
-    bool mDone;
-};
+    /* 0x04 */ bool mDone;
+    /* 0x08 */ int mReadLength;
+}; // size 0xC
 
 class mDvd_callback_c : public mDvd_command_c {
 public:
@@ -40,8 +40,12 @@ public:
 
 class mDvd_toMainRam_c : public mDvd_command_c {
 public:
-    static mDvd_toMainRam_c *create(const char *path, u8 allocDirection, EGG::Heap *heap);
+    static mDvd_toMainRam_c *create(const char *path, u8 allocDirection, EGG::Heap *heap); // 802AD9B8
 
-    u8 mPad[0x4];
-    void *mpData;
-};
+    /* 0x0C */ u8 mAllocDirection;
+    /* 0x10 */ s32 mEntryNum;
+    /* 0x14 */ void *mpData;
+    /* 0x18 */ s32 mSize;
+    /* 0x1C */ u32 _1C;
+    /* 0x20 */ EGG::Heap *mpHeap;
+}; // size 0x24

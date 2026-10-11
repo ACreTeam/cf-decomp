@@ -3,10 +3,10 @@
 #include <types.h>
 #include <lib/revolution/ARC/arc.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
+#include <game/mLib/m_dvd.hpp>
 
-// Archive/resource loaders. The implementation TU (around 80085E8C) is not
-// recovered yet; layouts come from the constructors and their derived users.
-// MWCC places the vtable pointer where the first virtual is declared, which is
+// Archive/resource loaders (d_dvd, src/dol/game/d_dvd.cpp, .text 80085E8C..80086558). Class names from RTTI;
+// member names are inferred. MWCC places the vtable pointer where the first virtual is declared, which is
 // after mStatus here.
 namespace dDvd {
 
@@ -24,9 +24,10 @@ public:
     void *getData() const { return mpData; }
     s32 getStatus() const { return mStatus; } // the file size once loaded
     BOOL release(); // 80085FAC: finishes the command, forgets data and heap, status -1; returns TRUE
+    BOOL cancelRequest(); // 8008605C: FALSE while the command runs; frees what it loaded
 
 protected:
-    void *mpCommand; // 0x08
+    mDvd_toMainRam_c *mpCommand; // 0x08
     void *mpHeap; // 0x0C
     void *mpData; // 0x10
 }; // sizeof = 0x14
@@ -39,7 +40,7 @@ public:
 
     BOOL load(const char *path, void *heap, u8 entry); // 80086134
     BOOL unload(BOOL wait); // 8008620C
-    BOOL fn_800862C8(); // 800862C8: finishes a pending load (TRUE once loaded)
+    BOOL checkLoaded(); // 800862C8: retries a pending load (TRUE once loaded)
 
 protected:
     u8 mLoading; // 0x14
@@ -69,10 +70,11 @@ public:
         ARCInitHandle(mpData, &mHandle);
         mArcReady = 1;
     }
-    virtual u32 getFileSize(const char *name); // 80086398
+    virtual u32 getFileSize(const char *name); // 80086398: getArcFileSize(name, mpData)
     virtual BOOL copyFile(void *dst, const char *name); // 80086474
-    virtual BOOL bindFile(void *dst); // 800864D8
+    virtual BOOL bindFile(void *dst, const char *name); // 800864D8: copyFile, then binds it as a .brres
 
+    s32 getArcFileSize(const char *name, void *arc); // 80086330: -1 without data, -2 if not found
     void *getFile(const char *name, u32 *size); // 800863A0
     BOOL closeArc(); // 80086544: mArcReady = 0, then unload(FALSE)
 

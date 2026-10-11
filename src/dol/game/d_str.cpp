@@ -308,8 +308,8 @@ BOOL brresBank_c::load(void *heap) {
 // 80166FF0
 BOOL brresBank_c::isLoaded() {
     bool ok = true;
-    ok &= fn_800862C8();
-    ok &= mTownTex.fn_800862C8();
+    ok &= checkLoaded();
+    ok &= mTownTex.checkLoaded();
     return ok;
 }
 

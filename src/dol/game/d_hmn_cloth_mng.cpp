@@ -145,7 +145,7 @@ BOOL dHmnCloth_c::syncLoad() {
         return TRUE;
     }
     dHmnClothMng_c::data_c *data = l_clothMng.getData(mSlot);
-    return data->mLoader[l_clothMng.getLoadBuffer(data)].fn_800862C8();
+    return data->mLoader[l_clothMng.getLoadBuffer(data)].checkLoaded();
 }
 
 // 800B7248
