@@ -5,7 +5,7 @@
 #include <game/game/d_main.hpp>
 #include <game/game/d_nand.hpp>
 #include <game/game/d_net.hpp>
-#include <game/game/d_pad_speaker.hpp>
+#include <game/game/d_rumble.hpp>
 #include <game/game/d_region.hpp>
 #include <game/game/d_reset_save.hpp>
 #include <game/game/d_snd_util.hpp>
@@ -154,7 +154,7 @@ u8 Caution_c::check() {
             g_wifiErr.mForce = TRUE;
             fn_80107CF4();
         }
-        fn_800FAB60();
+        dRumble::stop();
         fn_8000EB20();
     }
     if (mActive && mDriveStatus == DVD_STATE_IDLE && dNand::isIdle()) {

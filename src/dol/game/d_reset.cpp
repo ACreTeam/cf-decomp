@@ -14,7 +14,7 @@
 #include <game/game/d_home_room_map.hpp>
 #include <game/game/d_nand.hpp>
 #include <game/game/d_npc_mng.hpp>
-#include <game/game/d_pad_speaker.hpp>
+#include <game/game/d_rumble.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_prc_mng.hpp>
 #include <game/game/d_reset_save.hpp>
@@ -386,14 +386,14 @@ void Manage_c::SetNextMode(int mode) {
 void Manage_c::SetSafetyWait(int exec) {
     mExec = exec;
     SetNextMode(MODE_SAFETY_WAIT);
-    StopControllers();
+    StopRumble();
 }
 
 // 80107230
 void Manage_c::SetSoftReset() {
     mSoftResetRequest = true;
     SetNextMode(MODE_SOFT_RESET);
-    StopControllers();
+    StopRumble();
 }
 
 // 80107270
@@ -434,7 +434,7 @@ void Manage_c::ModeProc_SoftReset() {
     if (IsFadeOutDone() && mSoftResetStep == SOFT_RESET_FINISH) {
         mpFader->setStatus(EGG::Fader::HIDDEN);
         VISetBlack(FALSE);
-        ResumePadSpeaker();
+        ResumeRumble();
         Reinit();
     }
 }
@@ -578,16 +578,16 @@ void Manage_c::FinalizeCache() {
 }
 
 // 80107838
-void Manage_c::StopControllers() {
+void Manage_c::StopRumble() {
     for (int i = 0; i < 4; i++) {
         mPad::getCore(i)->stopRumbleMgr();
     }
-    fn_800FABDC();
+    dRumble::disable();
 }
 
 // 80107898
-void Manage_c::ResumePadSpeaker() {
-    fn_800FABE8();
+void Manage_c::ResumeRumble() {
+    dRumble::enable();
 }
 
 // 8010789C

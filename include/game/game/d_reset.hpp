@@ -124,8 +124,8 @@ public:
     void StartDiskCheck();                    // 801076F4
     void FinalizeGraphics();                  // 801077AC
     void FinalizeCache();                     // 80107834
-    void StopControllers();                   // 80107838
-    void ResumePadSpeaker();                  // 80107898
+    void StopRumble();                        // 80107838: stops every controller's rumble, dRumble::disable
+    void ResumeRumble();                      // 80107898: dRumble::enable
     void RequestFadeOut();                    // 8010789C
     void FadeOutCalc();                       // 801078A8
     static bool IsFatalError();                   // 80107948

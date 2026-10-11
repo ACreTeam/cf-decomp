@@ -901,7 +901,7 @@ dol/game/d_pad.cpp:
 	.sbss       start:0x8074E5A8 end:0x8074E5D8
 	.sdata2     start:0x80750988 end:0x807509C0
 
-dol/game/d_pad_speaker.cpp:
+dol/game/d_rumble.cpp:
 	.text       start:0x800FAB0C end:0x800FABF4
 	.data       start:0x804ED1F0 end:0x804ED830
 	.sbss       start:0x8074E5D8 end:0x8074E5E0

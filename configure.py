@@ -709,6 +709,7 @@ config.libs = [
             Object(NonMatching, "dol/game/d_npc_notice.cpp"),
             Object(NonMatching, "dol/game/d_npc.cpp"),
             Object(NonMatching, "dol/game/d_player_mgr.cpp"),
+            Object(Matching, "dol/game/d_rumble.cpp"),
             Object(Matching, "dol/game/d_post_office.cpp"),
             Object(Matching, "dol/game/d_prc_mng.cpp"),
             Object(Matching, "dol/game/d_random_field.cpp"),

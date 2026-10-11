@@ -6,7 +6,7 @@
 #include <game/game/d_main.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_net_mgr.hpp>
-#include <game/game/d_pad_speaker.hpp>
+#include <game/game/d_rumble.hpp>
 #include <game/game/d_reset.hpp>
 #include <game/game/d_reset_save.hpp>
 #include <game/game/d_screenshot.hpp>
@@ -79,7 +79,7 @@ u8 dWifiErr_c::check() {
         create();
         mActive = TRUE;
         fn_8000E9C0();
-        fn_800FAB60();
+        dRumble::stop();
     }
     return mActive;
 }

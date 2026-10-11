@@ -39,7 +39,8 @@ public:
     void stopRumbleMgr(); // 80443574
     // > 0 while the pointer is valid (the first status's dpd_valid_fg).
     s32 getDpdValidFlag() const;
-    void startPatternRumble(const char *, int, bool);
+    void createRumbleMgr(u8 num); // 80443508
+    void startPatternRumble(const char *pattern, int frames, bool force); // 80443560
 
     bool isConnected() const { return mFlag.onBit(0); }
     CoreStatus *getCoreStatus() { return mCoreStatus; }
