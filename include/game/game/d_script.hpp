@@ -362,9 +362,10 @@ public:
 }; // sizeof = 0x24
 
 
-// The script.arc bank (global at 805F2E94). Name from RTTI; vtable 804EFCE0.
-// Its destructor, vtable and RTTI are not in d_script: they follow it, right
-// after fn_8015B618 (8015B618..8015B680, data 804EFCE0..804EFD30).
+// The script.arc bank (global at 805F2E94). Name from RTTI. Its destructor, vtable and RTTI are in d_script_bank
+// (src/dol/game/d_script_bank.cpp, .text 8015B618..8015B680, .data 804EFCE0..804EFD30).
+int fn_8015B618(); // 8015B618 (d_script_bank): returns 0 (d_s_boot_static)
+
 class Bank_c : public dDvd::arcBank_c {
 public:
     virtual ~Bank_c(); // 8015B620

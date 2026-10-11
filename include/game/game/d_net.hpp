@@ -15,6 +15,7 @@
 
 #include <string.h>
 #include <types.h>
+#include <game/game/d_net_player_info.hpp>
 
 namespace EGG {
 class Heap;
@@ -260,7 +261,7 @@ enum dNetPacket_e {
     // d_npc_info fn_800F66AC: the Harvest Festival spot mHarvestSpot
     // (fn_80150648)
     NET_PACKET_HARVEST_SPOT = 0x50,
-    // d_sv_daily_rand fn_80153858: a daily random byte dSaveTown_c::_0735AE
+    // d_sv_daily_rand dSvDailyRand::Rand_c::change: dSaveTown_c::mDailyRand
     NET_PACKET_DAILY_RAND = 0x51,
     // d_obj_chat fn_801B122C: chat text (1 byte + u16 chars) -> fn_801B12B0
     NET_PACKET_CHAT = 0x52,
@@ -1177,14 +1178,7 @@ class dNetFlag_c {
     /* 0x0 */ u8 mStarted;
 }; // size 0x1
 
-// +0x5B8: this console's player / town names (0x66 bytes), filled by
-// d_sys_heap.cpp (fn_800AC154 clear, fn_800AC160 set from
-// dPlayerMgr_c::getCurrentPlayer()).
-struct dNetPlayerInfo_c {
-    /* 0x00 */ wchar_t mPlayerName[9];    // dPrivateData_c +0x7EDA
-    /* 0x12 */ wchar_t mTownName[9];      // dPrivateData_c +0x7EC4
-    /* 0x24 */ wchar_t mFriendName[0x21]; // dFriendList_c::mName
-}; // size 0x66
+// +0x5B8: this console's names: dNetPlayerInfo::Info_c (d_net_player_info).
 
 // --------------------------------------------------------------------------------------------------
 // The state (805B2160). The accessors are getNetMyNo..getNetPlayerInfo.
@@ -1219,7 +1213,7 @@ struct dNet_c {
     // an online session is active (isSessionActive)
     /* 0x5B5 */ bool mActive;
     /* 0x5B6 */ u8 mJoined; // mMyNo is valid (getMyNo)
-    /* 0x5B8 */ dNetPlayerInfo_c mPlayerInfo;
+    /* 0x5B8 */ dNetPlayerInfo::Info_c mPlayerInfo;
     // dTime_c::applyPending on the next postNetStage
     /* 0x61E */ u8 mTimePending;
     // 7 = none; fn_801017B8 error bits (getNetError / setNetError)
@@ -1409,11 +1403,11 @@ bool isMemberIn(int member);
 BOOL isStayingMember(int member);
 void setJoined(u8 joined); // 800DC288: g_dNet.mJoined
 BOOL isJoined(); // 800DC298: g_dNet.mJoined (getMyNo returns 0 unless set)
-// 800DC2A8: d_sys_heap fn_800AC160(&mPlayerInfo): the current player's names
+// 800DC2A8: mPlayerInfo.set(): the current player's names
 void setNetPlayerInfo();
-void clearNetPlayerInfo(); // 800DC2B8: d_sys_heap fn_800AC154(&mPlayerInfo)
+void clearNetPlayerInfo(); // 800DC2B8: mPlayerInfo.clear()
 // 800DC2C8: &g_dNet.mPlayerInfo (given to d_net_mgr)
-dNetPlayerInfo_c *getNetPlayerInfo();
+dNetPlayerInfo::Info_c *getNetPlayerInfo();
 
 // The session and the frame stages (800DC2D8..800DCAE0).
 // 800DC2D8: allocates the sub-objects' buffers from heap, then resetNetState(1)

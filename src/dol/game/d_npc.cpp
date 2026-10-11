@@ -18,6 +18,7 @@
 #include <game/game/d_ftr.hpp>
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_npc_setup.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -35,7 +36,6 @@ int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, cons
 u16 fn_800F88AC(const dItem::Item *key);
 dActor_c *fn_800F9878(const dItem::Item *key);
 BOOL fn_80013F98(int x, int z, int arg);
-void *fn_800F9F64(int *arg);
 }
 
 // Villager hours (first file-scope data, so they lead .rodata).
@@ -3434,8 +3434,8 @@ BOOL fn_800F4D08() {
     dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
     dLandID_c *land = &dSaveData_c::getTown()->mLandID;
     if (block->getAnimalNum() < 6) {
-        int arg = 0;
-        void *data = fn_800F9F64(&arg);
+        u32 arg = 0;
+        dAnimalTemplate_c *data = dNpcSetup::getList(&arg);
         block->initNewTown(data, arg, land);
     }
     return TRUE;

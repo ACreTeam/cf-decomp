@@ -1456,7 +1456,7 @@ public:
         static dItem::Item getActorItem(dPlayActor_c *actor); // 8006096C
         // ---- d_npc_talk_rollan (.text 80060980..800613BC) ----
         // The Rollan answer for this npc: one of the 4 choices of 8046CD30 (selRollanFloor /
-        // selRollanFloorFull / selRollanWall / selRollanWallFull) by the npc's state (fn_8015112C: 1 old
+        // selRollanFloorFull / selRollanWall / selRollanWallFull) by the npc's state (dSvPlayerFlag::Flag_c::get: 1 old
         // flooring, 2 old wallpaper) and a free pocket, with its menu code (807502D8: 7, 7, 10, 10) in *code
         // and 3 in *flag (both may be NULL). Null when the player is not from this town, has private flag
         // 0xD, a visitor is here (dEvent::isVisitorHere(9)), the npc is moving / sick / has a lost item, ...
@@ -1468,7 +1468,7 @@ public:
         // Present roll: needs a free pocket and no private flag 0xD; percent chance 20 + (sum of two bytes
         // of the player's home entry, dHR::getRate) / 10, +5 when the player's fortune (+0x83F9) is 4, max 100.
         static BOOL rollRollanGift();               // 80060ED8
-        void clearRollanFlag();                     // 80060FCC fn_801510EC(getTown() +0x72CC0, npc's dAnimalBlock_c index): clears this npc's bit
+        void clearRollanFlag();                     // 80060FCC dSaveTown_c::mPlayerFlag.clear(npc's dAnimalBlock_c index): clears this npc's bit
         void selRollanFloor();                      // 80061034 choice: EC = msgRollanFloorGift (present) or msgRollanFloorNone by rollRollanGift
         int msgRollanFloorGift(msgInfo_s *info);    // 800610C4 EC: present ITEM_IDX_OLD_FLOORING to mItem0, "Ev_Rollan" code 4..6
         int msgRollanFloorNone(msgInfo_s *info);    // 80061140 EC: "Ev_Rollan" code 1..3 (no present)

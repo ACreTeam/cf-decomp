@@ -51,7 +51,6 @@
 #include <game/game/d_reset_save.hpp>
 #include <game/game/d_shop_layout.hpp>
 #include <game/game/d_sv_npc_pos.hpp>
-#include <game/game/d_sys_heap.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <string.h>
 
@@ -4544,14 +4543,14 @@ BOOL isJoined() {
 }
 
 void setNetPlayerInfo() {
-    fn_800AC160(&g_dNet.mPlayerInfo);
+    g_dNet.mPlayerInfo.set();
 }
 
 void clearNetPlayerInfo() {
-    fn_800AC154(&g_dNet.mPlayerInfo);
+    g_dNet.mPlayerInfo.clear();
 }
 
-dNetPlayerInfo_c *getNetPlayerInfo() {
+dNetPlayerInfo::Info_c *getNetPlayerInfo() {
     return &g_dNet.mPlayerInfo;
 }
 
@@ -4666,7 +4665,7 @@ void setupNetMgr() {
         NET_RECV_BUF_SIZE);
     dNetMgr_c::sInstance->setCallbacks(onNetMgrRecv, onNetMgrJoin,
                                        onNetMgrEvent, NULL, getNetPlayerInfo(),
-                                       sizeof(dNetPlayerInfo_c), onNetMgrLeave);
+                                       sizeof(dNetPlayerInfo::Info_c), onNetMgrLeave);
 }
 
 void setNetMyNo(int myNo) {

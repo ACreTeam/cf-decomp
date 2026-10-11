@@ -11,6 +11,8 @@
 #include <game/game/d_block_kind.hpp>
 #include <types.h>
 
+class dFdUnitFlags_c;
+
 // Units per block.
 #define UT_BASE_NUM 16
 #define UT_X_NUM UT_BASE_NUM // units per block in x
@@ -95,7 +97,7 @@ struct dFdBlock_c {
     static u32 getAllocSize(int num, int align);                             // 80080DDC: ROUND_UP(num * 0x24, align)
     static dFdBlock_c *create(int num, EGG::Heap *heap, int align);          // 80080DF4: heap array, each constructed
     void release(EGG::Heap *heap, BOOL items, BOOL data);                    // 80080E88: frees mItems[] / mBgData
-    void set(int type, dItem::Item *items0, dItem::Item *items1, u16 *buried, u16 *watered, void *bgData,
+    void set(int type, dItem::Item *items0, dItem::Item *items1, dFdUnitFlags_c *buried, dFdUnitFlags_c *watered, void *bgData,
              int blockX, int blockZ, int flag, int bg);                      // 80080F38: then dBGCF::setBlock
     int getType() const { return mType; }
     BOOL hasFlag(int mask) const;                                            // 80080F80: flags of mType
@@ -113,8 +115,8 @@ struct dFdBlock_c {
 
     /* 0x00 */ int mType;              // block (acre) type, or the room's BG id
     /* 0x04 */ dItem::Item *mItems[2]; // 16 x 16 items per layer
-    /* 0x0C */ u16 *mBuried;           // dSaveMainField_c::mBuried: an item is buried in the unit
-    /* 0x10 */ u16 *mWatered;          // dSaveMainField_c::mWater: watered today (cleared daily)
+    /* 0x0C */ dFdUnitFlags_c *mBuried;           // dSaveMainField_c::mBuried: an item is buried in the unit
+    /* 0x10 */ dFdUnitFlags_c *mWatered;          // dSaveMainField_c::mWater: watered today (cleared daily)
     /* 0x14 */ void *mBgData;          // the unit data (0xA00 bytes, dBG::alwaysBank_c::copyBlockCol)
     /* 0x18 */ int mBlockX;
     /* 0x1C */ int mBlockZ;

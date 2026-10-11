@@ -27,6 +27,8 @@
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_paper.hpp>
+#include <game/game/d_npc_setup.hpp>
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -43,7 +45,6 @@ struct dAnimalEvent_c {
 // Callees in other TUs declared with differing signatures by the first-pass chunks.
 extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
-u16 fn_800FABF4(int looks, int season);
 }
 
 // Free functions of this TU.
@@ -3410,7 +3411,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         if (bodyIdx >= num) {
             bodyIdx = rndCount(num);
         }
-        dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+        dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
         fn_800F46CC(&mID, 0);
         sMail.clear();
         sMail.setupFromAnimal(&header, &bodyIdx, &footer, (int)label, (int)body, (int)label, &mID, pid,
@@ -3430,7 +3431,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         u16 footer = rndCount(fn_800CBA6C(label));
         u16 header = rndCount(fn_800CBA14(label));
         u16 body = rndCount(fn_800CBA40(label));
-        dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+        dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
         fn_800F46CC(&mID, 0);
         sMail.clear();
         sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, &mID, pid,
@@ -3472,7 +3473,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         u16 b = rndCount(num2);
         u16 c = rndCount(num2);
         u16 d = rndCount(num2);
-        dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+        dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
         fn_800F46CC(&mID, 0);
         sMail.clear();
         sMail.setupFromAnimal(&a, &b, &c, &d, &e, (int)body, (int)label, &mID, pid, &paper);
@@ -3788,7 +3789,7 @@ BOOL dAnimal_c::sendErrandThanksLetter(const dPersonalID_c *to, dAnmPersonalID_c
     u16 b = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
     n = fn_800CBA6C(label);
     u16 c = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(&mID, 0);
     fn_800F46CC(other, 1);
@@ -4810,7 +4811,7 @@ BOOL dAnimal_c::sendSickThanksLetter(const dPersonalID_c *to, const dItem::Item 
     u16 b = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
     n = fn_800CBA6C(label);
     u16 c = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(&mID, 0);
 
@@ -4987,7 +4988,7 @@ BOOL dAnimal_c::sendTunekichiLetter(const dPersonalID_c *to, BOOL invite, BOOL f
     if (invite) {
         paper.setFromIndex(dItem::ITEM_IDX_INVITE_CARD);
     } else {
-        paper = fn_800FABF4(looks, season);
+        paper = dPaper::getPaper(looks, season);
     }
 
     fn_800F46CC(&mID, 0);
@@ -5185,7 +5186,7 @@ BOOL dAnimal_c::sendMoveLetter(const dPersonalID_c *to) {
         b = cM::rndInt(2) + 3;
         c = cM::rndInt(2) + 3;
     }
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     sMail.clear();
@@ -8254,7 +8255,7 @@ BOOL dAnimalBlock_c::sendStyleLetter(const dPersonalID_c *pid0, const dPersonalI
     u16 header = fn_800CBA14(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
     u16 body = fn_800CBA40(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
     u16 footer = fn_800CBA6C(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     fn_800F4774(present, 1);
@@ -8592,7 +8593,7 @@ BOOL sendPresentLetter(const char *label, const dPersonalID_c *to, dAnmPersonalI
     u16 header = pickMailPart(fn_800CBA14(label));
     u16 body = pickMailPart(fn_800CBA40(label));
     u16 footer = pickMailPart(fn_800CBA6C(label));
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     sMail.clear();
@@ -9053,7 +9054,7 @@ BOOL sendQ10Letter(const dPersonalID_c *to, dAnmPersonalID_c *id, const dItem::I
     u16 header = pickMailPart(fn_800CBA14(label));
     u16 body = pickMailPart(fn_800CBA40(label));
     u16 footer = pickMailPart(fn_800CBA6C(label));
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     sMail.clear();
@@ -9094,7 +9095,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-void *fn_800F9F64(u32 *num);
 
 }
 
@@ -9280,7 +9280,7 @@ int dAnimalBlock_c::moveInNewAnimal() {
     }
 
     u32 listNum = 0;
-    void *list = fn_800F9F64(&listNum);
+    dAnimalTemplate_c *list = dNpcSetup::getList(&listNum);
     u32 skip = 0;
     u32 mask = 0;
     u32 total = 0;
@@ -9291,7 +9291,7 @@ int dAnimalBlock_c::moveInNewAnimal() {
     while (skip != 0x3F && total < 6) {
         mask = 0;
         num = getRarestLooksMask(&mask, getAnimal(0), ANIMAL_NUM, skip, total);
-        tmpl = pickTemplate((dAnimalTemplate_c *)list, listNum, mask, num, 6, getAnimal(0), ANIMAL_NUM, mAppearedFlags,
+        tmpl = pickTemplate(list, listNum, mask, num, 6, getAnimal(0), ANIMAL_NUM, mAppearedFlags,
                            sizeof(mAppearedFlags), 0xD1, 0);
         if (tmpl != NULL) {
             found = tmpl;
@@ -9307,7 +9307,7 @@ int dAnimalBlock_c::moveInNewAnimal() {
 
     mask = 0;
     num = getRarestLooksMask(&mask, getAnimal(0), ANIMAL_NUM, skip, total);
-    tmpl = pickTemplate((dAnimalTemplate_c *)list, listNum, mask, num, 6, getAnimal(0), ANIMAL_NUM, mAppearedFlags,
+    tmpl = pickTemplate(list, listNum, mask, num, 6, getAnimal(0), ANIMAL_NUM, mAppearedFlags,
                        sizeof(mAppearedFlags), 0xD1, 0);
     if (tmpl == NULL) {
         return -1;
@@ -11467,7 +11467,7 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
     u16 part1 = rndPart(num);
     u16 part2 = rndPart(num);
 
-    dItem::Item paper(fn_800FABF4(looks, dTime_c::getCurrent()->getSeason()));
+    dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
     fn_800F46CC(&gift->mAnimal, 0);
     fn_800F4764(&gift->mAnimal, 8);
     sMail.clear();

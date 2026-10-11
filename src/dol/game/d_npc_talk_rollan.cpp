@@ -59,7 +59,7 @@ const talk_c::hookFunc dAcNpcNml_c::talk_c::getRollanChoice(u16 *code, u8 *flag)
     if (animal != NULL) {
         u32 idx = block->getAnimalIdx(&animal->mID);
         if (idx < 10) {
-            state = fn_8015112C(dSaveData_c::getRaw()->_072CC0, idx);
+            state = dSaveData_c::getRaw()->mPlayerFlag.get(idx);
         }
     }
     BOOL full = TRUE;
@@ -174,7 +174,7 @@ void dAcNpcNml_c::talk_c::clearRollanFlag() {
     if (animal != NULL) {
         u32 idx = dSaveData_c::getRaw()->mAnimals.mTown.getAnimalIdx(&animal->mID);
         if (idx < 10) {
-            fn_801510EC(dSaveData_c::getTown()->_072CC0, idx);
+            dSaveData_c::getTown()->mPlayerFlag.clear(idx);
         }
     }
 }

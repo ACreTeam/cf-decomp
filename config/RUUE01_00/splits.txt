@@ -562,8 +562,11 @@ dol/game/d_ftr.cpp:
 	.sbss       start:0x8074E388 end:0x8074E398
 	.sdata2     start:0x80750730 end:0x80750758 align:4
 
-dol/game/d_sys_heap.cpp:
-	.text       start:0x800AC154 end:0x800AC260
+dol/game/d_net_player_info.cpp:
+	.text       start:0x800AC154 end:0x800AC1CC
+
+dol/game/d_sys_gfx.cpp:
+	.text       start:0x800AC1CC end:0x800AC260
 	.sbss       start:0x8074E398 end:0x8074E3A0
 
 dol/game/d_hr.cpp:
@@ -881,7 +884,7 @@ dol/game/d_npc_list.cpp:
 	.sdata      start:0x8074AEF0 end:0x8074AF08
 
 dol/game/d_npc_mdl_mng.cpp:
-	.text       start:0x800F9B88 end:0x800F9E94
+	.text       start:0x800F9B88 end:0x800F9EF4
 	.ctors      start:0x804656E8 end:0x804656EC align:8
 	.rodata     start:0x80475728 end:0x80475748
 	.data       start:0x804ED190 end:0x804ED1F0
@@ -889,13 +892,13 @@ dol/game/d_npc_mdl_mng.cpp:
 	.sdata      start:0x8074AF08 end:0x8074AF10
 
 dol/game/d_npc_setup.cpp:
-	.text       start:0x800F9E94 end:0x800FA030
+	.text       start:0x800F9EF4 end:0x800FA08C
 	.ctors      start:0x804656EC end:0x804656F0
 	.rodata     start:0x80475748 end:0x80475768
 	.bss        start:0x805CEAC8 end:0x805CEAF0
 
 dol/game/d_pad.cpp:
-	.text       start:0x800FA030 end:0x800FAB0C
+	.text       start:0x800FA08C end:0x800FAB0C
 	.ctors      start:0x804656F0 end:0x804656F4 align:8
 	.bss        start:0x805CEAF0 end:0x805CEB20
 	.sbss       start:0x8074E5A8 end:0x8074E5D8
@@ -1785,6 +1788,10 @@ dol/game/d_player_mngr.cpp:
 
 dol/game/d_root.cpp:
 	.text       start:0x801B96A4 end:0x801B97B4
+	.data       start:0x804FC9A0 end:0x804FC9F8 align:4
+	.sdata      start:0x8074C330 end:0x8074C348 align:4
+	.sbss       start:0x8074EB88 end:0x8074EB90 align:4
+	.sdata2     start:0x807519A0 end:0x807519A8 align:4
 
 dol/game/d_sv_demo.cpp:
 	.text       start:0x801B97B4 end:0x801BB7C4

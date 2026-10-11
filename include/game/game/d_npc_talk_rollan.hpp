@@ -6,8 +6,7 @@
 // two-choice menu, with a chance that grows with two bytes of the player's house rating record
 // (dHomeList_c::findOwner, dHR::getRate).
 // getRollanChoice is also used by the quest talk TUs (d_npc_talk_quest_*) to add the Rollan answer to
-// their own choice menus. Per-npc state at +0x72CC0 of the save (fn_8015112C on getRaw(),
-// fn_801510EC on getTown()).
+// their own choice menus. Per-npc state: dSaveTown_c::mPlayerFlag (get on getRaw(), clear on getTown()).
 //
 // Its functions are talk procedures stored in dAcNpcNml_c::talk_c's member-function pointers (record 7
 // of the d_a_npc_nml table 804A0E48 = {msgRollan, endRollan, stepRollan}). See

@@ -843,8 +843,8 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
                     if (data != NULL) {
                         dBG::getAlwaysBank()->copyBlockCol(data, blockIds->mId);
                     }
-                    block->set(blockIds->mId, field->getBlockItems(x, z), NULL, (u16 *)field->getBlockBuried(x, z),
-                               (u16 *)field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
+                    block->set(blockIds->mId, field->getBlockItems(x, z), NULL, field->getBlockBuried(x, z),
+                               field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
                 }
                 block++;
                 blockIds++;
@@ -872,8 +872,8 @@ BOOL dFdInfo_c::updateTown() {
                 if (data != NULL) {
                     dBG::getAlwaysBank()->copyBlockCol(data, blockIds->mId);
                 }
-                block->set(blockIds->mId, field->getBlockItems(x, z), NULL, (u16 *)field->getBlockBuried(x, z),
-                           (u16 *)field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
+                block->set(blockIds->mId, field->getBlockItems(x, z), NULL, field->getBlockBuried(x, z),
+                           field->getBlockWater(x, z), data, x, z, blockIds->mFlag, mBg);
                 block++;
                 blockIds++;
             }

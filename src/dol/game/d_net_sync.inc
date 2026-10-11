@@ -1153,7 +1153,7 @@ void recvDemoSync(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 // 800E0064: NET_PACKET_DAILY_RAND (0x51)
 void recvDailyRand(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 value = *data;
-    dSaveData_c::getTown()->_0735AE = value;
+    dSaveData_c::getTown()->mDailyRand.mValue = value;
 }
 
 // 800E0098: NET_PACKET_NPC_SPOT_A_FLAG (0x4B)

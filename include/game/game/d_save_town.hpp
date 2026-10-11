@@ -29,6 +29,9 @@
 #include <game/game/d_save_building.hpp>
 
 #include <game/game/d_sv_time_offset.hpp>
+#include <game/game/d_sv_daily_rand.hpp>
+#include <game/game/d_sv_player_flag.hpp>
+#include <game/game/d_sv_daily.hpp>
 
 // Skeleton members whose classes live in unsplit TUs. Their constructors keep the target's C names
 // until those TUs are split; the inline ctors reproduce the calls dSaveData_c::create makes.
@@ -280,15 +283,13 @@ public:
     /* 0x0683E3 */ u8 _0683E3;
     /* 0x0683E4 */ u8 _0683E4[4];
     /* 0x0683E8 */ u8 _0683E8[2][8];        // {u16, u8, u8, pad}, zeroed by the ctor
-    /* 0x0683F8 */ u16 _0683F8;
-    /* 0x0683FA */ u8 _0683FA;
-    /* 0x0683FB */ u8 _0683FB;
-    /* 0x0683FC */ u8 _0683FC[2];
+    /* 0x0683F8 */ dSvDaily::Daily_c mDaily;
     /* 0x0683FE */ dLandID_c mLandID;       // this town
     /* 0x068414 */ dSaveMainField_c mMainField; // the town field
     /* 0x06D5BC */ u8 _06D5BC[4];
     /* 0x06D5C0 */ dHomeList_c mHomes;
-    /* 0x072CC0 */ u8 _072CC0[2];          // d_sv_player_flag's state byte
+    /* 0x072CC0 */ dSvPlayerFlag::Flag_c mPlayerFlag;
+    /* 0x072CC1 */ u8 _072CC1;
     /* 0x072CC2 */ dPersonalID_c _072CC2;   // a random player of a friend town (d_wifi receiveTown, TOWN_640C8_FLAG_PLAYER_BITS)
     /* 0x072CEE */ dPersonalID_c _072CEE;   // cleared by clearTown
     /* 0x072D1A */ dSaveTownList_c mTownList; // other towns and their jinxes
@@ -300,7 +301,7 @@ public:
     /* 0x073522 */ dTimeStamp_c mSaveTime;  // now, when saving (fn_8010DCF0); later than now = the clock went back
     /* 0x07352A */ dMuseum_c mMuseum;
     /* 0x07359E */ dSaveMelody_c mVillageMelody; // the town tune
-    /* 0x0735AE */ u8 _0735AE;               // fn_8015384C's object starts here
+    /* 0x0735AE */ dSvDailyRand::Rand_c mDailyRand;
     /* 0x0735AF */ dItem::dSaveItemRarity_c mItemRarity;
     /* 0x0735B7 */ u8 _0735B7[0xB];         // fn_801541D8
     /* 0x0735C2 */ u8 _0735C2;              // low nibble: region (getRegion() value, dSaveData_c::getTownRegion);

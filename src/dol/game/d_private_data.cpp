@@ -20,6 +20,7 @@
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_wifi.hpp>
+#include <game/game/d_paper.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -44,7 +45,6 @@ void fn_80150AD4(dUnk5560_c *obj);
 BOOL fn_8019B864();
 
 // Letters and events.
-u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
 BOOL fn_80013550();
@@ -472,7 +472,7 @@ void dPrivateData_c::fn_8013760C() {
         u16 a;
 
         mail.clear();
-        b = fn_800FABF4(3, dTime_c::getCurrentSeason());
+        b = dPaper::getPaper(3, dTime_c::getCurrentSeason());
         a = cM::rndInt(3) + 1;
         mail.setupSystem(&a, "MAIL_NPC_maigo", &lbl_8074B098, &mPID, (const dItem::Item *)&b);
         dItem::Item present;

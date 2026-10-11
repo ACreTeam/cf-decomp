@@ -5,11 +5,10 @@
 #include <game/game/d_fg_item.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <string.h>
+#include <game/game/d_save_main_field.hpp>
 
 extern "C" {
 u32 fn_80081324(int type);                                             // 80081324: flags of a block type
-BOOL fn_80081238(u16 *flags, int x, int z);                            // 80081238: set a unit's flag
-BOOL fn_80081280(u16 *flags, int x, int z);                            // 80081280: clear a unit's flag
 }
 
 static inline BOOL isUnitInBlock(int unitX, int unitZ) {
@@ -63,7 +62,7 @@ void dFdBlock_c::release(EGG::Heap *heap, BOOL items, BOOL data) {
 }
 
 // 80080F38
-void dFdBlock_c::set(int type, dItem::Item *items0, dItem::Item *items1, u16 *buried, u16 *watered, void *bgData,
+void dFdBlock_c::set(int type, dItem::Item *items0, dItem::Item *items1, dFdUnitFlags_c *buried, dFdUnitFlags_c *watered, void *bgData,
                      int blockX, int blockZ, int flag, int bg) {
     mType = type;
     mItems[0] = items0;
@@ -121,7 +120,7 @@ dItem::Item *dFdBlock_c::getItem(int unitX, int unitZ, int layer) const {
 // 800810D0
 BOOL dFdBlock_c::setBuried(int unitX, int unitZ) {
     if (mBuried != NULL) {
-        return fn_80081238(mBuried, unitX, unitZ);
+        return mBuried->set(unitX, unitZ);
     }
     return FALSE;
 }
@@ -129,7 +128,7 @@ BOOL dFdBlock_c::setBuried(int unitX, int unitZ) {
 // 800810E8
 BOOL dFdBlock_c::clearBuried(int unitX, int unitZ) {
     if (mBuried != NULL) {
-        return fn_80081280(mBuried, unitX, unitZ);
+        return mBuried->reset(unitX, unitZ);
     }
     return FALSE;
 }
@@ -138,7 +137,7 @@ BOOL dFdBlock_c::clearBuried(int unitX, int unitZ) {
 BOOL dFdBlock_c::isBuried(int unitX, int unitZ) const {
     if (mBuried != NULL) {
         if (isUnitInBlock(unitX, unitZ)) {
-            u16 row = mBuried[unitZ];
+            u16 row = mBuried->mRows[unitZ];
             return (row & (1 << unitX)) != 0;
         }
         return FALSE;
@@ -149,7 +148,7 @@ BOOL dFdBlock_c::isBuried(int unitX, int unitZ) const {
 // 80081160
 BOOL dFdBlock_c::setWatered(int unitX, int unitZ) {
     if (mWatered != NULL) {
-        return fn_80081238(mWatered, unitX, unitZ);
+        return mWatered->set(unitX, unitZ);
     }
     return FALSE;
 }
@@ -158,7 +157,7 @@ BOOL dFdBlock_c::setWatered(int unitX, int unitZ) {
 BOOL dFdBlock_c::isWatered(int unitX, int unitZ) const {
     if (mWatered != NULL) {
         if (isUnitInBlock(unitX, unitZ)) {
-            u16 row = mWatered[unitZ];
+            u16 row = mWatered->mRows[unitZ];
             return (row & (1 << unitX)) != 0;
         }
         return FALSE;

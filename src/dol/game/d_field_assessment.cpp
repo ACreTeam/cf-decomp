@@ -72,7 +72,6 @@ extern "C" {
 void fn_8018EF28();
 void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
-void fn_80081238(u16 *flags, int x, int z);
 u32 fn_80081324(int type);
 int fn_800812C8(int blockType);
 void fn_8014F248(void *obj, int days);
@@ -83,8 +82,6 @@ void fn_800F5AE8();
 void fn_80150524(void *obj);
 void fn_801505E4(void *obj);
 void fn_80150628(void *obj);
-void fn_801510A0(void *obj);
-void fn_8015384C(void *obj);
 void fn_801541D8(void *obj);
 void fn_8014F998(void *obj, dTime_c *now);
 void fn_8014F96C(void *obj);
@@ -1483,15 +1480,15 @@ void dFgMngProc_c::markFlowerUnits(dFdBase_c *fd, int w, int h) {
     int unitZ;
     int blockX;
     int blockZ;
-    u16 *flags;
+    dFdUnitFlags_c *flags;
     for (blockZ = 1; blockZ < h + 1; blockZ++) {
         for (blockX = 1; blockX < w + 1; blockX++) {
-            flags = (u16 *)dSaveData_c::getTown()->mMainField.getBlockWater(blockX, blockZ);
+            flags = dSaveData_c::getTown()->mMainField.getBlockWater(blockX, blockZ);
             if (flags != NULL) {
                 for (unitZ = 0; unitZ < UT_Z_NUM; unitZ++) {
                     for (unitX = 0; unitX < UT_X_NUM; unitX++) {
                         if (isFlowerOrRedKabu(fd->getItem(blockX, blockZ, unitX, unitZ, 0))) {
-                            fn_80081238(flags, unitX, unitZ);
+                            flags->set(unitX, unitZ);
                         }
                     }
                 }
@@ -4024,8 +4021,8 @@ void fgMngProc_procDayChange(BOOL arg) {
         }
         fn_801505E4(dSaveData_c::getTown()->_066741);
         fn_80150628(dSaveData_c::getTown()->mHarvestSpot);
-        fn_801510A0(dSaveData_c::getTown()->_072CC0);
-        ((dPersonalID_c *)&dSaveData_c::getTown()->_072CC0[0x2E])->clear();
+        dSaveData_c::getTown()->mPlayerFlag.init();
+        dSaveData_c::getTown()->_072CEE.clear();
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
             if (player != NULL && player->mPID.isValid()) {
@@ -4041,7 +4038,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         fn_80190C44(FD_ID_TOWN)->clearWatered();
         dSaveData_c::getTown()->mTownHost.decrease(days);
         dSaveData_c::getTown()->mMuseum.sendCompleteMail();
-        fn_8015384C(&dSaveData_c::getTown()->_0735AE);
+        dSaveData_c::getTown()->mDailyRand.reset();
     }
     dSaveData_c::getExtra()->mTheater.update();
     fn_801541D8(dSaveData_c::getTown()->_0735B7);

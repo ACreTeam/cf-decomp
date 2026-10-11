@@ -30,6 +30,10 @@ public:
     dFdUnitFlags_c(); // 800811F4
     ~dFdUnitFlags_c(); // 800811F8
 
+    static BOOL isValid(u32 unitX, u32 unitZ) { return unitX < UT_X_NUM && unitZ < UT_Z_NUM; }
+    BOOL set(u32 unitX, u32 unitZ);   // 80081238: FALSE when out of range
+    BOOL reset(u32 unitX, u32 unitZ); // 80081280: FALSE when out of range
+
     void clear() { memset(this, 0, sizeof(dFdUnitFlags_c)); }
 
     /* 0x00 */ u16 mRows[UT_Z_NUM];

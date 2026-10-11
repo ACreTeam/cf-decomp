@@ -236,7 +236,7 @@ BOOL dAcNpcNml_c::talk_c::setStakeMsg(msgInfo_s *info, const char *label, stepFu
         if (num != 0 && mask != 0) {
             // the player has candies: the stake is one of the colour the player has most of (ties broken at
             // random), never of the town's colour of the day (town byte 0x735AE)
-            u32 today = dSaveData_c::getRaw()->_0735AE;
+            u32 today = dSaveData_c::getRaw()->mDailyRand.mValue;
             if (today < 4) {
                 dItem::Item todayCandy(l_candyIdx[today]);
                 u8 counts[4];

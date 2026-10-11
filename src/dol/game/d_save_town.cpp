@@ -9,12 +9,10 @@
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_801503E4(void *obj);
 void fn_8014EB3C(void *obj);
 void fn_80150524(void *obj);
 void fn_801505E4(void *obj);
 void fn_80150628(void *obj);
-void fn_801510A0(void *obj);
 void fn_80150BDC(void *obj);
 void fn_80150E74(void *obj, int player);
 void fn_80150088(void *obj, int player);
@@ -80,13 +78,13 @@ void dSaveTown_c::clearTown() {
     mModelRoom.clear();
     mShops.clear();
     mMuseum.init();
-    fn_801503E4(&_0683F8);
+    mDaily.clear();
     mAnimals.clear();
     fn_8014EB3C(&_0640C8);
     fn_80150524(_06673C);
     fn_801505E4(_066741);
     fn_80150628(mHarvestSpot);
-    fn_801510A0(_072CC0);
+    mPlayerFlag.init();
     mTownInfo.mLastDay.reset();
     mNoticeBoard.clear();
     fn_80150BDC(&_072E0A);
