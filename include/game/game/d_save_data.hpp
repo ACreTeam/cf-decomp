@@ -7,6 +7,7 @@
 // notes/save_file_layout.txt for where each unknown member's code lives.
 
 #include <types.h>
+#include <game/game/d_sv_wc24.hpp>
 #include <game/game/d_save_town.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_quest.hpp>
@@ -154,11 +155,7 @@ struct dSaveExtra_c {
     /* 0x08991C */ dSvAucItem_c mAucBids[4];
     /* 0x089AFC */ u8 _089AFC[4];
     /* 0x089B00 */ dSvAucItem_c mAucSales[4];
-    /* 0x089CE0 */ u8 _089CE0[0x360];       // received-message manager (fn_8014DD14, fn_8014E920, ...)
-    /* 0x08A040 */ dLandID_c mSenderLands[100]; // fn_801795C4
-    /* 0x08A8D8 */ u8 _08A8D8[0x64];
-    /* 0x08A93C */ u8 _08A93C[6][4];        // {u16, u8, u8}, zeroed by the ctor
-    /* 0x08A954 */ u8 _08A954[0xC];
+    /* 0x089CE0 */ dSaveWc24_c mWc24;          // the WiiConnect24 friend roster and send state (d_sv_wc24)
     /* 0x08A960 */ dSaveDistBlock_c _08A960;
     /* 0x097164 */ dSaveDistContentList_c mDistContent;
     /* 0x0F1258 */ dSaveMailBox_c mSavedLetters[PLAYER_NUM];

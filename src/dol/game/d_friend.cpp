@@ -10,7 +10,6 @@
 extern "C" {
 BOOL fn_8017BA1C(int idx);                          // WiiConnect24 friend slot in use
 u64 fn_8017BAB0(int idx);                           // WiiConnect24 friend key
-void fn_8014EB20(u16 *value);                       // unsplit TU 8014BD88..80153818
 }
 
 // 8011A6C4
@@ -147,7 +146,7 @@ void dFriendList_c::update(int idx, const dPersonalID_c *pid, const wchar_t *mes
 void dFriend_c::clear() {
     mKey = 0;
     mPID.clear();
-    fn_8014EB20(&_34);
+    mWc24Flag.clear();
     memset(mMessage, 0, sizeof(mMessage));
 }
 

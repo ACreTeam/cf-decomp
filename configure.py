@@ -750,6 +750,7 @@ config.libs = [
             Object(Matching, "dol/game/d_ymd.cpp"),
             Object(Matching, "dol/game/d_sv_time_offset.cpp"),
             Object(Matching, "dol/game/d_sv_town_info.cpp"),
+            Object(Matching, "dol/game/d_sv_wc24.cpp"),
             Object(Matching, "dol/game/d_search_cand.cpp"),
             Object(Matching, "dol/game/d_shop_layout.cpp"),
             Object(NonMatching, "dol/game/d_shutdown_fader.cpp"),

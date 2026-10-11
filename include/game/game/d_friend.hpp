@@ -6,6 +6,7 @@
 #include <types.h>
 #include <game/game/d_personal_id.hpp>
 #include <lib/dwc/dwc.h>
+#include <game/game/d_sv_wc24.hpp>
 
 #define FRIEND_NUM 32
 
@@ -17,7 +18,8 @@ public:
 
     /* 0x00 */ u64 mKey;            // WiiConnect24 friend key (0 = unregistered)
     /* 0x08 */ dPersonalID_c mPID;  // the friend's player and town
-    /* 0x34 */ u16 _34;             // cleared by fn_8014EB20
+    /* 0x34 */ dSaveWc24Flag_c mWc24Flag; // only SEND is used
+    /* 0x35 */ u8 _35;
     /* 0x36 */ wchar_t mMessage[0x21];
 }; // size 0x78
 
@@ -25,6 +27,7 @@ public:
 class dFriendList_c {
 public:
     const dFriend_c *getFriend(u32 idx) const { return &mFriends[idx]; }
+    dFriend_c *getFriend(u32 idx) { return &mFriends[idx]; }
     void updateChecksum();                                           // 8011A6C4
     BOOL isChecksumOK() const;                                        // 8011A6F4
     u32 calcChecksum() const;                                         // 8011A738

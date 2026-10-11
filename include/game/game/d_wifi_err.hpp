@@ -5,6 +5,8 @@
 
 #include <types.h>
 
+class dPrivateData_c;
+
 class dWifiErr_c {
 public:
     /* 0x0 */ bool mActive;        // the error window is shown
@@ -14,6 +16,7 @@ public:
 }; // size 0x198
 
 extern "C" {
+int fn_8017BDEC(const u64 *key, const dPrivateData_c *player); // 8017BDEC: the friend index with this key, -1
 void fn_8017C35C(); // 8017C35C: d_net_mgr execute, after copying the friend data
 int fn_8017C478(); // 8017C478: 1 unless a network error is pending (0 while it is being shown) (d_net)
 extern dWifiErr_c lbl_80621670; // the instance (in an unsplit .bss)

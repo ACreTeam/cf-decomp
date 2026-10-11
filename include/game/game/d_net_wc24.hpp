@@ -7,6 +7,8 @@
 // The WiiConnect24 state (805BE940; size unknown).
 class dNetWc24_c {
 public:
+    BOOL getFriendKey(u32 idx, u64 *key); // 800E997C: entry idx of the NWC24 friend list, FALSE if unused
+
     /* 0x000 */ u8 _000[0x400];
     /* 0x400 */ u64 mUserId; // this console's user id (sent by d_net)
 };
