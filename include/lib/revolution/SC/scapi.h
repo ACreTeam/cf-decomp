@@ -75,6 +75,7 @@ u8 SCGetProgressiveMode(void);
 u8 SCGetScreenSaverMode(void);
 u8 SCGetSoundMode(void);
 u32 SCGetCounterBias(void);
+BOOL fn_803AD87C(void); // 803AD87C: TRUE blocks online play (d_net_mgr start)
 void SCGetBtDeviceInfoArray(SCBtDeviceInfoArray* info);
 BOOL SCSetBtDeviceInfoArray(const SCBtDeviceInfoArray* info);
 u32 SCGetBtDpdSensibility(void);

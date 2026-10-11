@@ -9,7 +9,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_save_shop_grace.hpp>
 #include <game/game/d_theater_common.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -97,7 +97,7 @@ int dAcNpcNml_c::talk_c::msgTownRumor(msgInfo_s *info) {
         if (unit == 0) {
             clearWord(2);
         } else {
-            getController()->fn_801A5874(2, unit, "sys_STRING/STR_Unit");
+            getController()->setStringWord(2, unit, "sys_STRING/STR_Unit");
         }
     }
     if (code != 0) {

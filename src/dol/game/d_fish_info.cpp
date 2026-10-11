@@ -6,9 +6,7 @@
 #include <game/cLib/c_math.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/sLib/s_lib.hpp>
-
-// Not split yet (C linkage keeps the target name).
-extern "C" BOOL fn_800DCEDC(); // 800DCEDC: an online session is active (spawn rolls use 0..95 then)
+#include <game/game/d_net.hpp>
 
 // 8046EEF0: length in cm.
 static const s16 sLength[FISH_NUM] = {
@@ -1873,7 +1871,7 @@ const dFishSpawn_c *getRandomSpawn(int water) {
     f32 range = 100.0f;
     int num = lists[water].mNum;
     dFishSpawn_c *list = lists[water].mList;
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         range -= 5.0f;
     }
     f32 roll = cM::rndF(range);
@@ -1902,7 +1900,7 @@ const dFishSpawn_c *getRandomSpawnBoosted(int water, int type) {
         prev = list[i].mRate;
     }
     f32 range = 100.0f + bonus;
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         range -= 5.0f;
     }
     f32 roll = cM::rndF(range);

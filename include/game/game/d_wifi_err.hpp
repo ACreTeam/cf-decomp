@@ -14,5 +14,7 @@ public:
 }; // size 0x198
 
 extern "C" {
+void fn_8017C35C(); // 8017C35C: d_net_mgr execute, after copying the friend data
+int fn_8017C478(); // 8017C478: 1 unless a network error is pending (0 while it is being shown) (d_net)
 extern dWifiErr_c lbl_80621670; // the instance (in an unsplit .bss)
 }

@@ -1,4 +1,6 @@
 #include <game/game/d_field_info.hpp>
+#include <game/game/d_str.hpp>
+#include <game/game/d_net_mgr.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <game/game/d_save_data.hpp>
@@ -16,6 +18,7 @@
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
+#include <game/game/d_net.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -37,22 +40,14 @@ void fn_8013EE54(void *);
 void fn_80150AD4(dUnk5560_c *obj);
 
 // Misc.
-BOOL fn_800E593C(void *);
-BOOL fn_800DCEDC();
 BOOL fn_8019B864();
 
 // Letters and events.
 u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
-void fn_80169C48();
-void fn_80169F20();
-void fn_80169F4C();
-void fn_80169F78();
 BOOL fn_80177C90();
 BOOL fn_80013550();
-void fn_800DD4C8();
-void fn_800DD588(int, int);
 }
 
 struct SavingsLetter {
@@ -88,7 +83,7 @@ BOOL dPrivateData_c::fn_80136244() {
     if (!player->mPID.isFromTown()) {
         return FALSE;
     }
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
     if (player->mHost.mFlagA) {
@@ -112,7 +107,7 @@ BOOL dPrivateData_c::fn_80136310() {
     if (!player->mPID.isFromTown()) {
         return FALSE;
     }
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
 
@@ -188,7 +183,7 @@ BOOL dPrivateData_c::fn_80136694() {
     if (!player->mPID.isFromTown()) {
         return FALSE;
     }
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
     dSaveExtra_c *extra = dSaveData_c::getExtra();
@@ -324,7 +319,7 @@ BOOL dPrivateData_c::fn_80136E10(dPrivateData_c *players) {
     dPrivateData_c *player = players;
     BOOL result = TRUE;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        if (player->mPID.isValid() && !fn_800E593C(player->mFriends._0004)) {
+        if (player->mPID.isValid() && !dNetMgr_c::isUserDataValid(&player->mFriends.mUserData)) {
             result = FALSE;
             break;
         }
@@ -2148,7 +2143,7 @@ void dPrivateData_c::fn_8013B848() {
 // 8013B9F8
 void dPrivateData_c::fn_8013B9F8() {
     fn_800EBB24(3, "BBS_office", 0, 0);
-    fn_80169F78();
+    dSTR::requestFountain();
     dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
     fn_8013B7A4();
     setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
@@ -2169,7 +2164,7 @@ void dPrivateData_c::fn_8013BA50() {
                 fn_800EBB24(6, "BBS_office", 0, 0);
             }
             clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6B);
-            fn_80169F20();
+            dSTR::requestWindmill();
         }
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         fn_8013B7A4();
@@ -2182,7 +2177,7 @@ void dPrivateData_c::fn_8013BA50() {
                 fn_800EBB24(5, "BBS_office", 0, 0);
             }
             clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6A);
-            fn_80169F4C();
+            dSTR::requestLighthouse();
         }
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         fn_8013B7A4();
@@ -2206,7 +2201,7 @@ void dPrivateData_c::fn_8013BBCC() {
             break;
         }
     }
-    fn_80169C48();
+    dSTR::buildPublicWorks();
 }
 
 // 8013BC38
@@ -2333,8 +2328,8 @@ void dItemPairRing_c::push(const dItem::Item *a, const dItem::Item *b) {
     dSaveTown_c *town = dSaveData_c::getTown();
     town->_06673F = 1;
     if (fn_80013550()) {
-        fn_800DD4C8();
-        fn_800DD588(0x4B, 4);
+        dNet::beginPacket();
+        dNet::sendPacket(NET_PACKET_NPC_SPOT_A_FLAG, NET_MEMBER_NONE);
     }
 }
 

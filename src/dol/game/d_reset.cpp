@@ -5,6 +5,7 @@
 #include <game/mLib/m_video.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <game/game/d_bgm.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_demo.hpp>
 #include <game/game/d_ds_dl.hpp>
 #include <game/game/d_field_assessment.hpp>
@@ -222,12 +223,12 @@ void Manage_c::PostDeleteScene() {
         dSvMgr_c::cancelRequest();
         fgMngProc_resetSync();
         fn_80107CD4();
-        fn_80168B90();
-        fn_80166E08(fn_801683C0());
+        dSTR::resetLocks();
+        dSTR::getBrresBank()->clear();
         clearAllRoomMaps();
         fn_800AB3CC();
-        int *p = fn_801699CC();
-        *p = 0;
+        dSTR::busInfo_c *bus = dSTR::getBusInfo();
+        bus->mType = 0;
         fn_801A6564();
         fn_8010D83C(&dSaveData_c::sOption);
         fn_80101424();

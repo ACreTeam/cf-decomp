@@ -146,6 +146,10 @@ public:
         STR_INS = 1 << 3, // BG STR_INS (5) only; never tested on its own
     };
 
+    dFdUnitAttr_c(int field);                     // 80167968: clear(), then mField
+    void clear();                                 // 8016795C: no attributes
+    BOOL setBuilding(u16 building);               // 801679A8: a building's units, from its collision data
+    void setAll();                                // 80167BAC: clear(), then every building
     void setAttr(int unitX, int unitZ, u32 attr); // 80167C08
     u32 getAttr(int unitX, int unitZ);            // 80167CD8
     BOOL isGroundFree(int unitX, int unitZ);      // 80167D8C: neither STR_COL nor STR_ENT
@@ -153,7 +157,8 @@ public:
     BOOL isNoPlantUnit(int unitX, int unitZ);     // 80167DE4: STR_DEL
 
     /* 0x0000 */ dFdUnitAttrBlock_c mBlocks[BLOCK_Z_NUM][BLOCK_X_NUM];
-}; // size 0x1880
+    /* 0x1880 */ int mField; // dSaveBuildingList_c::getPos mask: 1 the town, 2 the city
+}; // size 0x1884
 
 class dFdBase_c : public dBGCF::clmcb_c {
 public:

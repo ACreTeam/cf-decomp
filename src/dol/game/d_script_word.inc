@@ -329,7 +329,7 @@ int Word_c::procBlockTag(int pos) {
     static TagFunc sFuncs[] = {
         NULL, NULL, NULL, NULL, NULL, NULL, &Word_c::procGreeting, &Word_c::procGreetingEnd, &Word_c::procAnimalFlagBegin,
         &Word_c::procAnimalFlagEnd, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &Word_c::vfA0,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &Word_c::procPageEnd,
     };
     const wchar_t *tag = getBuffer() + pos;
     u16 id = getTagId(tag);
@@ -343,8 +343,8 @@ int Word_c::procBlockTag(int pos) {
 
 // 80476C04
 static const Word_c::TagFunc lbl_80476C04[] = {
-    &Word_c::vfA4, &Word_c::vfA4, &Word_c::vfA4, &Word_c::vfA4, &Word_c::vfA4,
-    &Word_c::vfA4, &Word_c::vfA4, &Word_c::vfA4, &Word_c::vfA4,
+    &Word_c::procSelect, &Word_c::procSelect, &Word_c::procSelect, &Word_c::procSelect, &Word_c::procSelect,
+    &Word_c::procSelect, &Word_c::procSelect, &Word_c::procSelect, &Word_c::procSelect,
 };
 
 // 80158AA8
@@ -931,12 +931,12 @@ int Word_c::procAnimalFlagEnd(int pos) {
 }
 
 // 8015A46C
-int Word_c::vfA0(int pos) {
+int Word_c::procPageEnd(int pos) {
     return removeTag(pos);
 }
 
 // 8015A470
-int Word_c::vfA4(int pos) {
+int Word_c::procSelect(int pos) {
     return removeTag(pos);
 }
 

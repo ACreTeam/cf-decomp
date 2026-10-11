@@ -213,7 +213,7 @@ void dAcNpcNml_c::talk_c::endSaleYes(int arg) {
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
     mFtrHandle = fn_800A8F98(fn_800A9058(), mFtrPosX, mFtrPosZ, 0);
     if (npc != NULL && npc->removeRoomFtr(mFtrHandle, mFtrPosX, mFtrPosZ)) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -246,7 +246,7 @@ BOOL dAcNpcNml_c::talk_c::stepSaleYes(int kind) {
 // 80047FE4
 void dAcNpcNml_c::talk_c::actSaleWait() {
     if (!fn_800A9354(fn_800A93BC(), mFtrHandle)) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -497,7 +497,7 @@ BOOL dAcNpcNml_c::talk_c::stepStallBuy(int kind) {
             dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
             mFtrHandle = fn_800A8F98(fn_800A9058(), mFtrPosX, mFtrPosZ, 0);
             if (npc != NULL && npc->removeRoomFtr(mFtrHandle, mFtrPosX, mFtrPosZ)) {
-                dDemo_c *ctrl = getController();
+                dMsg::Comp_c *ctrl = getController();
                 if (ctrl != NULL) {
                     ctrl->mLock = 1;
                 }
@@ -527,7 +527,7 @@ BOOL dAcNpcNml_c::talk_c::stepStallBuy(int kind) {
 // 80048D3C
 void dAcNpcNml_c::talk_c::actStallBuyWait() {
     if (!fn_800A9354(fn_800A93BC(), mFtrHandle)) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }

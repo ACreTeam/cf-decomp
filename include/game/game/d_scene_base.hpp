@@ -9,7 +9,7 @@
 class dScene_c : public dBase_c {
 public:
     // vtable 0x4C: the scene's kind; 0 for the boot / title scenes (dScBoot_c returns 0), 2 for an
-    // online scene (postCreate then calls fn_800DDE80).
+    // online scene (postCreate then calls dNet::fn_800DDE80).
     virtual int getKind();
 };
 

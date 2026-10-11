@@ -9,6 +9,8 @@
 #include <lib/nw4r/ut/ut_list.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 
+void setItemName(dScript::Word_c *word, dItem::Item item); // 800C0FF4: the item's name (d_item.cpp)
+
 // Item definition tables loaded from /Item/item.arc.
 // RTTI names place these under the dItem namespace.
 namespace dItem {
@@ -1162,9 +1164,13 @@ struct dlBlockList_c {
 // Vtable 8049E4EC; its functions live in the TU around 8000C14C.
 class name_c : public dScript::Word_c {
 public:
-    virtual ~name_c(); // 8000DDF4
-    virtual u32 getBufferSize(); // 8000DE54: returns sizeof(mBuffer)
-    virtual wchar_t *getBuffer(); // 8000DE4C
+    // Inline, but never inlined (a by-value Item): d_msg emits a weak copy, and with it the weak vtable.
+    name_c(Item item) { ::setItemName(this, item); } // 8000DD98: the item's name
+    // Inline (weak, kept in the TU around 8000C14C): d_msg's setItemName inlines the dtor (a call of the
+    // dScript::Word_c dtor) and emits a weak vtable copy.
+    virtual ~name_c() {} // 8000DDF4
+    virtual u32 getBufferSize() { return sizeof(mBuffer); } // 8000DE54
+    virtual wchar_t *getBuffer() { return mBuffer; } // 8000DE4C
 
     wchar_t mBuffer[17]; // 0x24
 }; // sizeof = 0x48
@@ -1222,3 +1228,12 @@ int getNpcMsgFlagged(const dItem::Item &item, int looks, BOOL a); // 800C5454 (c
 // Npc remark of an item for the villager looks (index), 0 if none (d_item.cpp, global scope).
 int getNpcMsgBullfest(const dItem::Item &item, int index); // 800C54EC (callers pass the item's address: a reference)
 BOOL isFurnitureKind(int kind); // 800C2288
+
+// The items sent online (d_net).
+u32 countPlEquipSendable();                 // 800C47B0
+void *getPlEquipSendable(u32 n);            // 800C4804
+u32 countToCstmSendable(u8 *exclude);       // 800C4910
+void *getToCstmSendable(u32 n, u8 *exclude); // 800C4950
+void buildDlItemMask(u8 *mask);             // 800C4A68: 0x20 bytes
+BOOL hasDlItem(void *block);     // 800C4868: adds the DL item block to dSaveDLItemList_c (d_net)
+BOOL isDlBlockUsed(void *block); // 800C49A0: hasDlItem

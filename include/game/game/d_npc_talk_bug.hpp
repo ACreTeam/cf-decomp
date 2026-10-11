@@ -21,7 +21,7 @@
 // Data of the TU (file-local statics in the .cpp; split in splits.txt):
 //   80750080 .sdata2 0x7   "Ev_Bug" (+1 padding)
 //   804A2C60 .data   0x18  const char *[6]: "Ev_Bug" x6, message label per state (getMsgLabel kind 0xC)
-//   804A2C78 .data   0x14  "sys_STRING/STR_Unit" (fn_801A5874, unit word of the leader's looks)
+//   804A2C78 .data   0x14  "sys_STRING/STR_Unit" (setStringWord, unit word of the leader's looks)
 //   80749A58 .sdata  0x8   dQuestEvent_e EVENT_BUG_OFF (0xF) for dEvent::isOngoing (+4 padding)
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest

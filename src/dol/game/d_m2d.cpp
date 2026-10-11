@@ -2,6 +2,7 @@
 // layout helpers), m2d::tagProcessor_c and the m2d words (text shown in text boxes), m2d::AnmEx_c /
 // AnmEx2_c (animation tables), the post-draw lists and m2d::moveCalc_c. City Folk only.
 // .text 800075C0..8000AD84. See include/game/game/d_m2d.hpp and notes/d_m2d.txt.
+#include <game/game/d_font.hpp>
 #include <game/game/d_m2d.hpp>
 #include <game/game/d_script.hpp>
 #include <game/mLib/m_allocator.hpp>
@@ -23,7 +24,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-extern nw4r::ut::ResFont lbl_8058B6FC; // the system font
 BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // loads a BMG string
 u32 fn_8008B90C(); // the current capture source
 BOOL fn_802C406C(u16 id); // id is a valid capture texture
@@ -57,13 +57,13 @@ bool ResAccLoader_c::load(const char *path) {
 }
 
 // 800076EC
-void ResAccLoader_c::remove() {
+BOOL ResAccLoader_c::remove() {
     if (mpArc != nullptr) {
         detach();
         l_resAllocator->free(mpArc);
         mpArc = nullptr;
     }
-    mLoader.release();
+    return mLoader.release();
 }
 
 // 8000774C
@@ -230,7 +230,7 @@ bool SimpleEx_c::build(ResAccIf_c *resAcc, const char *lytName) {
     if (!build(lytName, nullptr)) {
         return false;
     }
-    setFont(&lbl_8058B6FC);
+    setFont(&g_mainFont);
     return true;
 }
 
@@ -1348,7 +1348,6 @@ void moveCalc_c::set(const mVec2_c *from, const mVec2_c *to, int maxSteps, int m
     mStep.y = step.y;
 }
 
-// 8000AA5C
-SimpleEx_c::~SimpleEx_c() {}
+// 8000AA5C: SimpleEx_c's implicit dtor (generated here, before __sinit)
 
 } // namespace m2d

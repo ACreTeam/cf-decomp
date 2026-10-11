@@ -46,7 +46,7 @@ public:
 };
 
 #define PLAY_SYNC_REC_NUM 8
-#define PLAY_SYNC_REC_ID 0x1C // the shared record id of record 0 (fn_800DD64C / fn_800DD5F8)
+#define PLAY_SYNC_REC_ID 0x1C // the shared record id of record 0 (getRecord / setRecord)
 
 enum {
     PLAY_SYNC_STATE_NONE,
@@ -161,28 +161,31 @@ struct dPlaySyncMsg_c {
     dPlaySyncMsg_c() {
         b0 = 0;
         b1 = 0;
-        mMember = 0;
         b2 = 0;
+        mMember = 0;
     }
 
     u32 getIdx() const { return b0 & 0xF; }
     u32 getA() const { return ((b0 >> 4) & 0xF) + (b1 & 7) * 0x10; }
     u32 getC() const { return ((b1 >> 3) & 0x1F) + (b2 & 0xF) * 0x20; }
+    u32 getType() const { return (b2 >> 4) & 0xF; }
     int getMember() const { return mMember & 0xF; }
-    void setIdx(u32 idx) { b0 = (b0 & 0xF0) | (idx & 0xF); }
+    static void putBits(u8 *dst, u32 value, u32 mask) {
+        *dst &= ~mask;
+        *dst |= value & mask;
+    }
+
+    void setIdx(u32 idx) { putBits(&b0, idx, 0x0F); }
     void setA(u32 a) {
-        b0 = (b0 & 0x0F) | ((a & 0xF) << 4);
-        b1 = (b1 & 0xF8) | ((a >> 4) & 7);
+        putBits(&b0, a << 4, 0xF0);
+        putBits(&b1, a >> 4, 7);
     }
     void setC(u32 c) {
-        b1 = (b1 & 0x07) | ((c & 0x1F) << 3);
-        b2 = (b2 & 0xF0) | ((c >> 5) & 0xF);
+        putBits(&b1, c << 3, 0xF8);
+        putBits(&b2, c >> 5, 0x0F);
     }
-    void setType(u32 type) { b2 = (b2 & 0x0F) | (type << 4); }
-    void setMember(int member) {
-        mMember &= 0xF0;
-        mMember |= member & 0xF;
-    }
+    void setType(u32 type) { putBits(&b2, type << 4, 0xF0); }
+    void setMember(int member) { putBits(&mMember, member, 0x0F); }
 
     /* 0x0 */ u8 b0;
     /* 0x1 */ u8 b1;
@@ -192,6 +195,7 @@ struct dPlaySyncMsg_c {
 
 extern dPlayActorMng_c *lbl_8074E838;
 extern dFishField_c *lbl_8074E840;
+extern u8 lbl_8074E83C; // set: the insect field spawns again (net; like lbl_8074E844 for the fish)
 extern u8 lbl_8074E844; // set: the fish field spawns again on its next initSpawn (net)
 
 // getWeatherPhaseA / getWeatherPhaseB results.

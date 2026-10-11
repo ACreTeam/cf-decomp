@@ -1,6 +1,7 @@
 // NPC / villager management. .text 800EBB24..800F59C8 (sinit 800F5768), built with -sym on.
 // First-pass scaffold; see include/game/game/d_npc.hpp and notes/d_npc.txt.
 #include <game/game/d_npc.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_random_field.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
@@ -15,31 +16,19 @@
 #include <cstring>
 #include <game/game/d_ftr.hpp>
 #include <game/game/d_letter.hpp>
+#include <game/game/d_net.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 
-// Save sync (unsplit TU 800CCC54..800DE0E4).
-void fn_800DD4C8();
-void fn_800DD518(const void *data, u32 size);
-void fn_800DD588(int type, int arg);
-
 // dAnimalBlock_c / dAnimal_c (d_animal).
 
-// Save sync / net state (unsplit TU 800CCC54..800DE0E4).
-BOOL fn_800DCEDC();
-u32 fn_800DCF30();
-BOOL fn_800DCF2C(int player);
-int fn_800DCF58(); // own player index
-void fn_800DD5F8(int id, int a, int b);
-void *fn_800DD64C(int id);
-u32 fn_800DD680(int id);
+// Other TUs.
 mVec3_c fn_801506F8(const void *data);
 
 // Field map / actors.
 dActor_c *fn_800F9860(int x, int z);
 dActor_c *fn_800F98CC(int x, int z);
-BOOL fn_80169FA4(mVec3_c *out, const dItem::Item *item, int i);
 BOOL fn_80013550();
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
@@ -47,7 +36,6 @@ u16 fn_800F88AC(const dItem::Item *key);
 dActor_c *fn_800F9878(const dItem::Item *key);
 BOOL fn_80013F98(int x, int z, int arg);
 void *fn_800F9F64(int *arg);
-BOOL fn_800DD960();
 }
 
 // Villager hours (first file-scope data, so they lead .rodata).
@@ -276,7 +264,7 @@ void dNpcTimer_c::tick() {
 
 // 800ED544
 int dNpcTimer_c::getMode() {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         return 0;
     }
     return mMode;
@@ -735,7 +723,7 @@ BOOL dNpcAnimalBuf_c::fn_800EE5C4(const dAnimal_c *src, u32 idx) {
     u32 pick = 4;
     u32 count = 0;
     for (int i = 0; i < 4; i++) {
-        if (i != idx && fn_800DCF2C(i)) {
+        if (i != idx && dNet::isMember(i)) {
             f32 chance = 100.0f / (count + 1);
             if (cM::rndF(100.0f) <= chance) {
                 pick = i;
@@ -1295,7 +1283,7 @@ dNpc::daubMng_c *fn_800EFC54(int id) {
 void fn_800EFCCC() {
     sDaubNormal.init();
     sDaubSpecial.init();
-    fn_800DCEDC();
+    dNet::isSessionActive();
 }
 
 // 800EFD04
@@ -1311,12 +1299,12 @@ dNpcDaub_c *fn_800EFD04(const u16 *key) {
 void fn_800EFD48() {
     dNpc::daubMngNormal_c *mng = &sDaubNormal;
     mng->fn_800EF4B8();
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         for (int i = 0; i < 10; i++) {
             u16 key = (i & 0x3FF) + 0xE000;
             int id = mng->keyToId(&key);
             if (id != 0xBA) {
-                fn_800DD5F8(id, 0, 0);
+                dNet::setRecord(id, 0, 0);
             }
         }
     }
@@ -1331,13 +1319,13 @@ void fn_800EFDD0(void *dst, int id) {
 void fn_800EFDD4() {
     dNpc::daubMngSpecial_c *mng = &sDaubSpecial;
     mng->fn_800EF768();
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         u32 num = mng->mNum;
         for (u32 i = 0; i < num; i++) {
             u16 key = (i & 0xFFF) | 0x8000;
             int id = mng->keyToId(&key);
             if (id != 0xBA) {
-                fn_800DD5F8(id, 0, 0);
+                dNet::setRecord(id, 0, 0);
             }
         }
     }
@@ -1350,7 +1338,7 @@ void fn_800EFE68(void *dst, int id) {
 
 // 800EFE6C
 const dNpcDaub_c *fn_800EFE6C(const u16 *key) {
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         return NULL;
     }
     dNpc::daubMng_c *mng = fn_800EFBDC(key);
@@ -1361,7 +1349,7 @@ const dNpcDaub_c *fn_800EFE6C(const u16 *key) {
     if (id == 0xBA) {
         return NULL;
     }
-    return (const dNpcDaub_c *)fn_800DD64C(id);
+    return (const dNpcDaub_c *)dNet::getRecord(id);
 }
 
 // 800EFEDC
@@ -1371,7 +1359,7 @@ void fn_800EFEDC(void *dst, int id) {
         dNpcDaub_c *daub = mng->getById(id);
         if (daub != NULL) {
             daub->mFlag = 1;
-            cLib::memCpy(dst, daub, fn_800DD680(id));
+            cLib::memCpy(dst, daub, dNet::getRecordSize(id));
         }
     }
 }
@@ -1394,12 +1382,12 @@ void fn_800EFF8C(u8 *dst, int idx, const void *src) {
 
 // 800EFFA0
 void fn_800EFFA0(u32 idx, const void *data) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10) {
         u8 buf[3];
         fn_800EFF8C(buf, idx, data);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x55, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_HELD_ITEM, NET_MEMBER_NONE);
     }
 }
 
@@ -1425,12 +1413,12 @@ void fn_800F0048(u8 *dst, int idx, int value) {
 
 // 800F0054
 void fn_800F0054(u32 idx, u8 value) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10) {
         u8 buf[2];
         fn_800F0048(buf, idx, value);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x56, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_ANIMAL_HELD_ITEM_TIME, NET_MEMBER_NONE);
     }
 }
 
@@ -1452,12 +1440,12 @@ void fn_800F00FC(u8 *dst, int idx, int value) {
 
 // 800F0108
 void fn_800F0108(u32 idx, u8 value) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10) {
         u8 buf[2];
         fn_800F00FC(buf, idx, value);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x57, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_ANIMAL_EVENT_FLAGS, NET_MEMBER_NONE);
     }
 }
 
@@ -1493,23 +1481,23 @@ void fn_800F01F0(u8 *dst, int idx, int kind, int count, int msg, int flag) {
 
 // 800F0208
 void fn_800F0208(u32 idx, u32 kind, u8 count, u8 msg, s8 flag) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10 && kind < 16) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10 && kind < 16) {
         u8 buf[5];
         fn_800F01F0(buf, idx, kind, count, msg, flag);
-        fn_800DD4C8();
-        fn_800DD518(buf, 5);
-        fn_800DD588(0x59, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 5);
+        dNet::sendPacket(NET_PACKET_ANIMAL_MEMORY_INIT, NET_MEMBER_NONE);
     }
 }
 
 // 800F02A8
 void fn_800F02A8(u32 idx, u32 kind, u8 count, u8 msg, s8 flag) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10 && kind < 16) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10 && kind < 16) {
         u8 buf[5];
         fn_800F01F0(buf, idx, kind, count, msg, flag);
-        fn_800DD4C8();
-        fn_800DD518(buf, 5);
-        fn_800DD588(0x5A, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 5);
+        dNet::sendPacket(NET_PACKET_ANIMAL_MEMORY_SET, NET_MEMBER_NONE);
     }
 }
 
@@ -1537,12 +1525,12 @@ void fn_800F038C(u8 *dst, int idx, int kind, int value) {
 
 // 800F039C
 void fn_800F039C(u32 idx, u32 kind, s8 value) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10 && kind < 16) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10 && kind < 16) {
         u8 buf[3];
         fn_800F038C(buf, idx, kind, value);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x5B, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_FRIENDSHIP, NET_MEMBER_NONE);
     }
 }
 
@@ -1575,12 +1563,12 @@ void fn_800F04D8(u8 *dst, int idx, int kind, int value) {
 
 // 800F04E8
 void fn_800F04E8(u32 idx, u32 kind, u8 value) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10 && kind < 16) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10 && kind < 16) {
         u8 buf[3];
         fn_800F04D8(buf, idx, kind, value);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x5C, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_MEMORY_FLAG_ON, NET_MEMBER_NONE);
     }
 }
 
@@ -1606,42 +1594,42 @@ void fn_800F05BC(u8 *dst, int idx, int kind) {
 
 // 800F05C8
 void fn_800F05C8(u32 idx, u32 kind) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && idx < 10 && kind < 16) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && idx < 10 && kind < 16) {
         u8 buf[2];
         fn_800F05BC(buf, idx, kind);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x5E, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_ANIMAL_EVENT_TALKED, NET_MEMBER_NONE);
     }
 }
 
 // 800F0650
 void fn_800F0650() {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 value = 1;
-        fn_800DD4C8();
-        fn_800DD518(&value, 1);
-        fn_800DD588(0x64, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&value, 1);
+        dNet::sendPacket(NET_PACKET_HIDE_AND_SEEK_CLEAR, NET_MEMBER_NONE);
     }
 }
 
 // 800F06A8
 void fn_800F06A8(u8 value) {
     u8 buf = value;
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && buf < 5) {
-        fn_800DD4C8();
-        fn_800DD518(&buf, 1);
-        fn_800DD588(0x65, 4);
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && buf < 5) {
+        dNet::beginPacket();
+        dNet::addPacket(&buf, 1);
+        dNet::sendPacket(NET_PACKET_HIDE_AND_SEEK_STATE, NET_MEMBER_NONE);
     }
 }
 
 // 800F0708
 void fn_800F0708(int value) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && value < 3) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && value < 3) {
         u8 buf = value;
-        fn_800DD4C8();
-        fn_800DD518(&buf, 1);
-        fn_800DD588(0x66, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&buf, 1);
+        dNet::sendPacket(NET_PACKET_HIDE_AND_SEEK_FLAG, NET_MEMBER_NONE);
     }
 }
 
@@ -1673,12 +1661,12 @@ void fn_800F080C(u8 *dst, int kind, int x, int z) {
 
 // 800F0864
 void fn_800F0864(int kind, int x, int z) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F080C(buf, kind, x, z);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x69, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_FTR_TOUCH, NET_MEMBER_NONE);
     }
 }
 
@@ -1706,12 +1694,12 @@ void fn_800F0968(u8 *dst, int idx, const void *item, int count) {
 
 // 800F09B4
 void fn_800F09B4(int idx, const void *item, int count) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[4];
         fn_800F0968(buf, idx, item, count);
-        fn_800DD4C8();
-        fn_800DD518(buf, 4);
-        fn_800DD588(0x6A, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 4);
+        dNet::sendPacket(NET_PACKET_ANIMAL_FTR, NET_MEMBER_NONE);
     }
 }
 
@@ -1737,12 +1725,12 @@ void fn_800F0A78(u8 *dst, int idx, int mode) {
 
 // 800F0A84
 void fn_800F0A84(int idx, int mode) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[2];
         fn_800F0A78(buf, idx, mode);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x6B, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_ANIMAL_PLACE, NET_MEMBER_NONE);
     }
 }
 
@@ -1773,12 +1761,12 @@ void fn_800F0B50(u8 *dst, int idx, int a, int b, int c) {
 
 // 800F0B64
 void fn_800F0B64(int idx, int a, int b, int c) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[4];
         fn_800F0B50(buf, idx, a, b, c);
-        fn_800DD4C8();
-        fn_800DD518(buf, 4);
-        fn_800DD588(0x6C, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 4);
+        dNet::sendPacket(NET_PACKET_ANIMAL_SPOT, NET_MEMBER_NONE);
     }
 }
 
@@ -1807,12 +1795,12 @@ void fn_800F0C44(u8 *dst, int idx, int kind, const void *data) {
 
 // 800F0C5C
 void fn_800F0C5C(int idx, int kind, const void *data) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[10];
         fn_800F0C44(buf, idx, kind, data);
-        fn_800DD4C8();
-        fn_800DD518(buf, 10);
-        fn_800DD588(0x6D, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 10);
+        dNet::sendPacket(NET_PACKET_ANIMAL_SPOT_TIME, NET_MEMBER_NONE);
     }
 }
 
@@ -1832,12 +1820,12 @@ void fn_800F0D04(u8 *dst, int idx) {
 
 // 800F0D0C
 void fn_800F0D0C(int idx) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf;
         fn_800F0D04(&buf, idx);
-        fn_800DD4C8();
-        fn_800DD518(&buf, 1);
-        fn_800DD588(0x6E, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&buf, 1);
+        dNet::sendPacket(NET_PACKET_ANIMAL_SPOT_CLEAR, NET_MEMBER_NONE);
     }
 }
 
@@ -1865,12 +1853,12 @@ void fn_800F0DBC(u8 *dst, int idx, int count, const void *item) {
 
 // 800F0DD4
 void fn_800F0DD4(int idx, int count, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[4];
         fn_800F0DBC(buf, idx, count, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 4);
-        fn_800DD588(0x6F, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 4);
+        dNet::sendPacket(NET_PACKET_ANIMAL_FTR_SET, NET_MEMBER_NONE);
     }
 }
 
@@ -1892,12 +1880,12 @@ void fn_800F0E88(u8 *dst, int idx, const void *item) {
 
 // 800F0E9C
 void fn_800F0E9C(int idx, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F0E88(buf, idx, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x70, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_NEW_ITEM_ADD, NET_MEMBER_NONE);
     }
 }
 
@@ -1917,12 +1905,12 @@ void fn_800F0F34(u8 *dst, int idx) {
 
 // 800F0F3C
 void fn_800F0F3C(int idx) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf;
         fn_800F0F34(&buf, idx);
-        fn_800DD4C8();
-        fn_800DD518(&buf, 1);
-        fn_800DD588(0x71, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&buf, 1);
+        dNet::sendPacket(NET_PACKET_ANIMAL_NEW_ITEM_CLEAR, NET_MEMBER_NONE);
     }
 }
 
@@ -1944,12 +1932,12 @@ void fn_800F0FD0(u8 *dst, int idx, const void *item) {
 
 // 800F0FE4
 void fn_800F0FE4(int idx, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F0FD0(buf, idx, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x72, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_NEW_ITEM_REMOVE, NET_MEMBER_NONE);
     }
 }
 
@@ -1971,12 +1959,12 @@ void fn_800F1088(u8 *dst, int idx, const void *item) {
 
 // 800F109C
 void fn_800F109C(int idx, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F1088(buf, idx, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x73, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_WALL, NET_MEMBER_NONE);
     }
 }
 
@@ -1998,12 +1986,12 @@ void fn_800F1140(u8 *dst, int idx, const void *item) {
 
 // 800F1154
 void fn_800F1154(int idx, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F1140(buf, idx, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x74, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_CARPET, NET_MEMBER_NONE);
     }
 }
 
@@ -2025,12 +2013,12 @@ void fn_800F11F8(u8 *dst, int idx, const void *item) {
 
 // 800F120C
 void fn_800F120C(int idx, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F11F8(buf, idx, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x75, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_MUSIC, NET_MEMBER_NONE);
     }
 }
 
@@ -2058,12 +2046,12 @@ void fn_800F12C8(u8 *dst, int idx, int kind, int value) {
 
 // 800F12D8
 void fn_800F12D8(int idx, int kind, int value) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F12C8(buf, idx, kind, value);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x76, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_QUEST_STATE, NET_MEMBER_NONE);
     }
 }
 
@@ -2083,12 +2071,12 @@ void fn_800F1380(u8 *dst, int idx) {
 
 // 800F1388
 void fn_800F1388(int idx) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf;
         fn_800F1380(&buf, idx);
-        fn_800DD4C8();
-        fn_800DD518(&buf, 1);
-        fn_800DD588(0x77, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&buf, 1);
+        dNet::sendPacket(NET_PACKET_ANIMAL_QUEST_CLEAR, NET_MEMBER_NONE);
     }
 }
 
@@ -2108,12 +2096,12 @@ void fn_800F1410(u8 *dst, int idx) {
 
 // 800F1418
 void fn_800F1418(int idx) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf;
         fn_800F1410(&buf, idx);
-        fn_800DD4C8();
-        fn_800DD518(&buf, 1);
-        fn_800DD588(0x78, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&buf, 1);
+        dNet::sendPacket(NET_PACKET_ANIMAL_PLACE_TIME_CLEAR, NET_MEMBER_NONE);
     }
 }
 
@@ -2141,12 +2129,12 @@ void fn_800F14FC(u8 *dst, int idx, int kind, const void *item) {
 
 // 800F1514
 void fn_800F1514(int idx, int kind, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[4];
         fn_800F14FC(buf, idx, kind, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 4);
-        fn_800DD588(0x79, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 4);
+        dNet::sendPacket(NET_PACKET_ANIMAL_PRESENT, NET_MEMBER_NONE);
     }
 }
 
@@ -2168,23 +2156,23 @@ void fn_800F15F8(u8 *dst, const void *item, int mode) {
 
 // 800F1638
 void fn_800F1638(const void *item, int mode) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F15F8(buf, item, mode);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x7A, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_PERMIT_STATE, NET_MEMBER_NONE);
     }
 }
 
 // 800F16B0
 void fn_800F16B0(const void *item, int mode) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F15F8(buf, item, mode);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x7B, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_PERMIT_SET_STATE, NET_MEMBER_NONE);
     }
 }
 
@@ -2200,67 +2188,67 @@ void fn_800F1730(void *dst, const void *item) {
 
 // 800F1738: sends to one other connected player.
 void fn_800F1738(const void *item, u32 player) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && player < 4 && (int)player != fn_800DCF58() && fn_800DCF2C(player)) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && player < 4 && (int)player != dNet::getMyNo() && dNet::isMember(player)) {
         u8 buf[2];
         fn_800F1730(buf, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x7C, player);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_PERMIT_FLAG, player);
     }
 }
 
 // 800F17D0
 void fn_800F17D0(const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[2];
         fn_800F1730(buf, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x7D, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_PERMIT_QUERY, NET_MEMBER_NONE);
     }
 }
 
 // 800F1838
 void fn_800F1838(const void *item, u32 player) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && player < 4 && (int)player != fn_800DCF58() && fn_800DCF2C(player)) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && player < 4 && (int)player != dNet::getMyNo() && dNet::isMember(player)) {
         u8 buf[2];
         fn_800F1730(buf, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x7E, player);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_PERMIT_ANSWER, player);
     }
 }
 
 // 800F18D0
 void fn_800F18D0(const void *item, int mode) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F15F8(buf, item, mode);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x7F, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_PERMIT_CLEAR_STATE, NET_MEMBER_NONE);
     }
 }
 
 // 800F1948
 void fn_800F1948(const void *item, int mode) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F15F8(buf, item, mode);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x80, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_PERMIT_SET2, NET_MEMBER_NONE);
     }
 }
 
 // 800F19C0
 void fn_800F19C0(const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[2];
         fn_800F1730(buf, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 2);
-        fn_800DD588(0x81, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 2);
+        dNet::sendPacket(NET_PACKET_PERMIT_CLEAR, NET_MEMBER_NONE);
     }
 }
 
@@ -2282,12 +2270,12 @@ void fn_800F1A54(u8 *dst, int idx, const void *item) {
 
 // 800F1A68
 void fn_800F1A68(int idx, const void *item) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         u8 buf[3];
         fn_800F1A54(buf, idx, item);
-        fn_800DD4C8();
-        fn_800DD518(buf, 3);
-        fn_800DD588(0x82, 4);
+        dNet::beginPacket();
+        dNet::addPacket(buf, 3);
+        dNet::sendPacket(NET_PACKET_ANIMAL_CLOTH, NET_MEMBER_NONE);
     }
 }
 
@@ -2707,7 +2695,7 @@ u32 fn_800F2C94(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
                 if (fn_800F2A48(&item)) {
                     for (int i = 0; i < 2; i++) {
                         mVec3_c pos = mVec3_c::Zero;
-                        if (fn_80169FA4(&pos, &item, i)) {
+                        if (dSTR::getEntranceSidePos(&pos, item, i)) {
                             dItem::Item none;
                             if (canPutItemOnUnit((int)pos.x >> 5, (int)pos.z >> 5, &none, map, 0, allowFg94, TRUE) != FALSE) {
                                 f32 chance = 100.0f / (num + 1);
@@ -3290,7 +3278,7 @@ BOOL fn_800F47F4() {
 
 // 800F4800
 void fn_800F4800() {
-    if (fn_800DCEDC() && fn_800DCF30() == 2) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() == 2) {
         sAnimalBuf.fn_800EE514();
     }
 }
@@ -3525,7 +3513,7 @@ void dNpcPermit_c::clear() {
 
 // 800F4E94
 void dNpcPermit_c::setState(u32 state) {
-    if (!fn_800DCEDC() || fn_800DCF30() <= 1) {
+    if (!dNet::isSessionActive() || dNet::getMemberNum() <= 1) {
         return;
     }
     if (state >= 4) {
@@ -3536,7 +3524,7 @@ void dNpcPermit_c::setState(u32 state) {
 
 // 800F4EF4
 BOOL dNpcPermit_c::hasState() {
-    if (!fn_800DCEDC() || fn_800DCF30() <= 1) {
+    if (!dNet::isSessionActive() || dNet::getMemberNum() <= 1) {
         return TRUE;
     }
     return (u32)mState < 4;
@@ -3559,7 +3547,7 @@ void dNpcPermit_c::setFlag(u32 i) {
 
 // 800F4F94
 void dNpcPermit_c::set2(u32 value) {
-    if (!fn_800DCEDC() || fn_800DCF30() <= 1) {
+    if (!dNet::isSessionActive() || dNet::getMemberNum() <= 1) {
         return;
     }
     if (value >= 4) {
@@ -3575,15 +3563,15 @@ void dNpcPermit_c::reset2() {
 
 // 800F5000
 BOOL dNpcPermit_c::fn_800F5000() {
-    if (!fn_800DCEDC() || fn_800DCF30() <= 1) {
+    if (!dNet::isSessionActive() || dNet::getMemberNum() <= 1) {
         return TRUE;
     }
     int state = mState;
     if (state == 4) {
-        if (fn_800DD960()) {
+        if (dNet::isSceneOwner()) {
             return TRUE;
         }
-    } else if (mFlags == 0 && fn_800DCF58() == state) {
+    } else if (mFlags == 0 && dNet::getMyNo() == state) {
         return TRUE;
     }
     return FALSE;
@@ -3591,14 +3579,14 @@ BOOL dNpcPermit_c::fn_800F5000() {
 
 // 800F5094
 BOOL dNpcPermit_c::fn_800F5094() {
-    if (!fn_800DCEDC() || fn_800DCF30() <= 1) {
+    if (!dNet::isSessionActive() || dNet::getMemberNum() <= 1) {
         return TRUE;
     }
     if (fn_800F5000()) {
         return TRUE;
     }
     for (int i = 0; i < 4; i++) {
-        if (fn_800DCF2C(i) && !isFlag(i)) {
+        if (dNet::isMember(i) && !isFlag(i)) {
             return FALSE;
         }
     }
@@ -3731,8 +3719,8 @@ void fn_800F5548() {
 
 // 800F5550
 BOOL fn_800F5550() {
-    if (fn_800DD960()) {
-        if (!fn_800DCEDC() || fn_800DCF30() <= 1) {
+    if (dNet::isSceneOwner()) {
+        if (!dNet::isSessionActive() || dNet::getMemberNum() <= 1) {
             return TRUE;
         }
         if (fn_800F552C()) {

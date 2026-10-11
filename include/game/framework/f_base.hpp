@@ -62,6 +62,9 @@ public:
     u32 mParam; ///< A bitfield that configures the base's behaviour. Its usage varies from profile to profile.
     ProfileName mProfName; ///< The base's profile name.
 
+public:
+    u8 getLifecycleState() const { return mLifecycleState; }
+
 protected:
     u8 mLifecycleState; ///< The base's lifecycle state. Value is a LIFECYCLE_e.
 

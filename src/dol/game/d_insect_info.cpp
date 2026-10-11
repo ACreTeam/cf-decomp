@@ -8,9 +8,7 @@
 #include <game/cLib/c_math.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/sLib/s_lib.hpp>
-
-// Not split yet (C linkage keeps the target name).
-extern "C" BOOL fn_800DCEDC(); // 800DCEDC: an online session is active
+#include <game/game/d_net.hpp>
 
 // 80471A00: the time slots each insect is active in, INSECT_TIME_MASK bits (e.g. 0x0C for 8:00..16:59,
 // 0x21 for 19:00..3:59, 0x3F all day). Read by the insect museum (d_insect_museumNP).
@@ -1129,7 +1127,7 @@ dInsectSpawnList_c *getSpawnList() {
 
 // 800BD58C
 BOOL isFleaSpawn() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
     dInsectSpawn_c *spawn = getRandomSpawn();

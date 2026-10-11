@@ -3,6 +3,7 @@
 // .ctors 80465754, .rodata 80479BB0..80479F70, .data 804F0768..804F0C50, .bss 805FAF58..805FB008,
 // .sdata 8074B2C0..8074B340, .sbss 8074E848..8074E858, .sdata2 80750EB8..80750EE0.
 #include <game/game/d_scene.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_actor.hpp>
 #include <game/game/d_base.hpp>
 #include <game/game/d_bg.hpp>
@@ -13,6 +14,7 @@
 #include <game/game/d_home.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_world.hpp>
+#include <game/game/d_net.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -20,12 +22,6 @@ BOOL fn_800CCDA4(void *data, int num);
 BOOL fn_80086DD0(u16 id);
 BOOL fn_80086E00(u16 id);
 int fn_80086E20(u16 id);
-BOOL fn_800DCEDC();
-BOOL fn_800DCEE0();
-u32 fn_800DCF30();
-int fn_800DCF58();
-BOOL fn_800DD6B4();
-void fn_800DD6D8(int arg);
 void fn_800C7704();
 void fn_800C7708();
 void fn_801A6584();
@@ -35,15 +31,7 @@ void fn_80186260();
 void *fn_80100234(int player, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle);
 int fn_8008B91C();
 int fn_8008B924();
-int fn_80169124();
 void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
-void *fn_801683CC();
-struct dSceneBuilding_c {
-    u8 _00[0x1A];
-    u16 mAngle; // 0x1A
-};
-dSceneBuilding_c *fn_80167734(void *mgr, u16 id);
-void fn_801681B8(mVec3_c *out, dSceneBuilding_c *bld, u16 id, int arg, f32 dist);
 }
 
 // The creation steps of each scene (other TUs' .sdata), named after the first scene using them.
@@ -397,7 +385,7 @@ static BOOL createSceneActors(dSceneDataEntry_c *entry) {
 // 80161E1C
 static BOOL createScenePlayer(dSceneDataEntry_c *entry) {
     u8 scene = getCurrentScene();
-    if (fn_800DCEDC() && isCurrentSceneAttr(SCENE_ATTR_CHKP_ROOM) && scene != SCENE_DM_CHKP_MISS) {
+    if (dNet::isSessionActive() && isCurrentSceneAttr(SCENE_ATTR_CHKP_ROOM) && scene != SCENE_DM_CHKP_MISS) {
         return TRUE;
     }
 
@@ -427,14 +415,14 @@ static BOOL createScenePlayer(dSceneDataEntry_c *entry) {
         type = getSceneChange()->mType;
         if (!isCityScene(scene) && !isSceneAttr(scene, SCENE_ATTR_OUTDOOR) && type != 0xB && type != 0x2E &&
             type != 0x38) {
-            mVec3_c offset(-4.0f + 2.0f * (fn_800DCF58() & 3), 0.0f, 0.0f);
+            mVec3_c offset(-4.0f + 2.0f * (dNet::getMyNo() & 3), 0.0f, 0.0f);
             offset.rotY(angle.y);
             pos += offset;
         }
     }
 
     sPlayerPos = pos;
-    sPlayer = fn_80100234(fn_800DCF58(), 1, type, &pos, &angle);
+    sPlayer = fn_80100234(dNet::getMyNo(), 1, type, &pos, &angle);
     if (sPlayer == NULL) {
         return FALSE;
     }
@@ -526,7 +514,7 @@ void updateCurrentScene() {
 BOOL createScene(fBase_c *parent) {
     getSceneChange()->setChanging(FALSE);
     BOOL skipSeason = FALSE;
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         skipSeason = TRUE;
     }
     if (!skipSeason) {
@@ -754,8 +742,8 @@ u32 getCurrentSeasonBres() {
 
 // 801629CC
 s8 getSeasonType() {
-    if (fn_80169124() != -1) {
-        return (fn_80169124() & 1) ? 'W' : 'S';
+    if (dSTR::getDebugHouseType() != -1) {
+        return (dSTR::getDebugHouseType() & 1) ? 'W' : 'S';
     }
     return getCurrentSeasonBres() == SCENE_SEASON_BRES_SNOW ? 'W' : 'S';
 }
@@ -856,9 +844,9 @@ dSceneChange_c::dSceneChange_c() {
 
 // 80162D34
 static u8 adjustChkpScene(u8 scene) {
-    BOOL online = fn_800DCEDC();
+    BOOL online = dNet::isSessionActive();
     if (scene == SCENE_RM_CHKP) {
-        if (online && !fn_800DCEE0()) {
+        if (online && !dNet::isNetStopped()) {
             scene = SCENE_RM_CHKP_NET;
         }
     } else if (scene == SCENE_RM_CHKP_NET) {
@@ -876,7 +864,7 @@ u8 dSceneChange_c::getScene() {
 
 // 80162DA4
 BOOL dSceneChange_c::request(u8 scene, int wipeIn, int wipeOut, BOOL force) {
-    if ((!fn_800DD6B4() && mScene == SCENE_NONE) || force) {
+    if ((dNet::getSceneChangeState() == NET_SCENE_STATE_NONE && mScene == SCENE_NONE) || force) {
         mScene = adjustChkpScene(scene);
         u16 outType = 0x1E;
         u16 inType = 0x1E;
@@ -930,8 +918,8 @@ BOOL dSceneChange_c::request(u8 scene, int wipeIn, int wipeOut, BOOL force) {
         lbl_8074B1B0 = 1;
         lbl_8074E804 = wipeOut;
         lbl_8074E808 = wipeIn;
-        if (fn_800DCEDC() && !fn_800DCEE0()) {
-            fn_800DD6D8(1);
+        if (dNet::isSessionActive() && !dNet::isNetStopped()) {
+            dNet::setSceneChangeState(NET_SCENE_STATE_REQUEST);
         }
         getSceneChange()->setChanging(TRUE);
         return TRUE;
@@ -956,21 +944,20 @@ static BOOL getBuildingExit(u16 building, u8 *scene, mVec3_c *pos, u32 *type, s1
                             int *blockZ) {
     u8 flags = 1;
     if (dItem::Item(building).isExtId()) {
-        flags = fn_80167FB4(dItem::Item(building).getExtIndex())->mField;
+        flags = dSTR::getBuildingInfo(dItem::Item(building).getExtIndex())->mField;
     }
     dItem::Item item(building);
     int x, z;
     dSaveTown_c *save = dSaveData_c::getTown();
     if (save->mBuilding.mList.getPos(&x, &z, &item, flags)) {
-        dSceneBuilding_c *bld = fn_80167734(fn_801683CC(), building);
+        dSTR::entArea_c *bld = dSTR::getColBank()->getEntArea(building);
         if (bld != NULL) {
             if (flags & 1) {
                 *scene = SCENE_FIELD;
             } else if (flags & 2) {
                 *scene = SCENE_TOWN;
             }
-            mVec3_c p;
-            fn_801681B8(&p, bld, building, 1, 32.0f);
+            mVec3_c p = bld->calcFrontPos(building, 1, 32.0f);
             *pos = p;
             if (flags & 2) {
                 pos->y = dBG::cGroundY;

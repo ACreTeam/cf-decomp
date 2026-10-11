@@ -25,7 +25,7 @@ public:
     virtual ~ResAccLoader_c(); // 8000760C
 
     bool load(const char *path); // 80007674: requests the archive and attaches it once loaded
-    void remove(); // 800076EC: detaches and frees the archive, releases the loader
+    BOOL remove(); // 800076EC: detaches and frees the archive, releases the loader (its result)
 
     // Creates the 2D resource heap ("2D resource heap (d2d::ResAccLoader_c::create)") and its allocator.
     static bool create(EGG::Heap *heap, size_t size); // 8000774C
@@ -38,7 +38,8 @@ public:
 // A layout with helpers for the game's menus.
 class SimpleEx_c : public Simple_c {
 public:
-    virtual ~SimpleEx_c(); // 8000AA5C
+    // No declared dtor: the implicit one (8000AA5C) is generated at the end of d_m2d, before __sinit,
+    // and other TUs (d_msg, d_select, ...) inline it (Simple_c dtor with 0).
     virtual bool build(const char *lytName, ResAccIf_c *resAcc); // 80007BE4
 
     void setVisible(const char *name, bool visible); // 80007BE8

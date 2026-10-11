@@ -25,7 +25,7 @@ void __register_global_object(void *object, void *dtor, void *node);
 
 
 // Loads entry `index` of a message group into a word (TU near 8016AC58).
-void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
+BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 
 
 // Item debug TU (empty in release).

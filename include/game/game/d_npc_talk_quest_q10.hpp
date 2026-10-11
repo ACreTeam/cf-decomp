@@ -44,7 +44,7 @@
 //   80750230 .sdata2 0x8   "Q10_No"
 //   80750238 .sdata2 0x8   0.0f
 //   80750240 .sdata2 0x8   "Q10_End"
-// Not this TU's: lbl_8074EBE8 (.sbss, weather manager, d_weather.hpp; msgHideOffer reads its _5884).
+// Not this TU's: 8074EBE8 (dWeather_c::sInstance, d_weather.hpp; msgHideOffer reads its _5884).
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest
 // descriptors are typed by their label part only).

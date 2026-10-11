@@ -371,7 +371,7 @@ void dTime_c::setTermDate(const int *term, dTime_c *time) {
 }
 
 // 8016DD48
-u8 dTime_c::getStarSign(int month, int day) {
+int dTime_c::getStarSign(int month, int day) {
     // 8047B198: last (month, day) of each star sign, starting with Capricorn.
     static const dMD_c sStarSignEnds[] = {
         {MONTH_JANUARY, 19},
@@ -396,5 +396,5 @@ u8 dTime_c::getStarSign(int month, int day) {
             break;
         }
     }
-    return sign;
+    return (u8)sign;
 }

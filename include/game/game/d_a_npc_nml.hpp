@@ -18,7 +18,7 @@
 
 #include <types.h>
 #include <game/game/d_a_npc.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_event.hpp>
 #include <game/game/d_hmn_cloth_mng.hpp>
 #include <game/game/d_item.hpp>
@@ -313,7 +313,7 @@ public:
         const char *getRememberedLabel(u16 *code, int kind) const; // 80032708 remembered label (KIND_ANY: any)
         BOOL rememberMsg(const char *label, u16 code); // 80032798 remembers the message in mMsg2
         void setLooksMsg(msgInfo_s *info, const char *label, u16 code); // 800328EC label + looks into mLabel
-        virtual void selectMessage(const void *bmg);  // 80032988 (+0x0C): picks a message code at random
+        virtual void selectMessage(const EGG::MsgRes::MessageHeader *bmg);  // 80032988 (+0x0C): picks a message code at random
         virtual dAnimal_c *getSpeakerAnimal();           // 80032BD8 (+0x7C): the speaker's dAnimal_c
         virtual dAnimal_c *getListenerAnimal();           // 80032C50 (+0x80): the listener's dAnimal_c
         virtual int isSpeakerItchy();                  // 80032CCC (+0x84): the speaker's isItchy
@@ -1481,7 +1481,7 @@ public:
         // EC (via 8046CD78): "Town_Rumor": a memory of a player from another town (save list at dSaveData_c::getRaw()
         // +0x735E0, fn_80116A74) that is not the current player; land / personal name as words 0 / 1,
         // code from the memory kind (jumptable 804A4BCC, dAnimal_c::findMemory2), unit word 2
-        // ("sys_STRING/STR_Unit", fn_801A5874) or clearWord(2). FALSE when there is no such memory.
+        // ("sys_STRING/STR_Unit", setStringWord) or clearWord(2). FALSE when there is no such memory.
         int msgTownRumor(msgInfo_s *info);          // 800613BC
         int msgTownAlways(msgInfo_s *info);         // 80061670 EC: (via 8046CD78): "Town_Always", code 0; reloads record 17 (setProcSet)
         int msgTown(msgInfo_s *info);               // 800616D0 EC (record 17): rumor / always by the odds 807502E0 ({20, 80}), table 8046CD78; falls back to msgTownAlways

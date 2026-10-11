@@ -14,6 +14,151 @@ class dPersonalID_c;
 // RTTI lists no bases, so these are not base classes).
 namespace dScript {
 
+// BMG message tags: TAG_ESCAPE, then the tag size in bytes (high byte) and the group (low byte) in one
+// wchar_t, a u16 id and the parameters (getTagLength / getTagGroup / getTagId / getTagParams).
+#define TAG_ESCAPE 0x1A
+#define TAG_HEAD(size, group) (((size) << 8) | (group))
+
+// Tag groups (handlers in Word_c::procTag and dMsg::Seq_c::procTag). Names are inferred from the
+// handlers and the BMG texts.
+enum TagGroup_e {
+    TAG_GROUP_ICON = 0,     // button icons
+    TAG_GROUP_ICON2 = 1,    // button icons
+    TAG_GROUP_FEEL = 2,     // the speaker's expression (dMsg::Rcpt_c::setSpeakerFeel(id))
+    TAG_GROUP_TIME = 3,     // date/time, number slots
+    TAG_GROUP_WORD = 4,     // word slots
+    TAG_GROUP_NAME = 5,
+    TAG_GROUP_BLOCK = 6,    // TagBlock_e: typing control (waits, timers, ...), Word_c's text blocks
+    TAG_GROUP_SELECT = 7,   // TagSelect_e: answers
+    TAG_GROUP_JUMP = 8,     // TagJump_e: conditional / random jumps to another message
+    TAG_GROUP_MOOD = 9,     // TagMood_e: the speaker's mood
+    TAG_GROUP_SPEAKER = 10, // TagSpeaker_e: who speaks, who looks at whom
+    TAG_GROUP_SOUND = 11,   // TagSound_e: sound effects, the town tune, the voice
+    TAG_GROUP_GRAMMAR = 12,
+    TAG_GROUP_SYSTEM = 0xFF, // TagSystem_e: nw4r-style system tags (dTagProcessor_c)
+};
+
+// TAG_GROUP_BLOCK tag ids. Parameters in brackets.
+enum TagBlock_e {
+    TAG_BLOCK_WAIT = 0,              // [u16 frames] pause typing
+    TAG_BLOCK_KEY_WAIT = 1,          // wait for a key
+    TAG_BLOCK_NO_WAIT_ON = 2,        // the following text appears at once
+    TAG_BLOCK_NO_WAIT_OFF = 3,
+    TAG_BLOCK_NO_SKIP_ON = 4,        // the skip key doesn't speed up typing
+    TAG_BLOCK_NO_SKIP_OFF = 5,
+    TAG_BLOCK_GREETING = 6,          // Word_c: the speaker's greeting replaces the text up to 6:7
+    TAG_BLOCK_GREETING_END = 7,
+    TAG_BLOCK_ANIMAL_FLAG_BEGIN = 8, // Word_c: text up to 6:9 kept only if the speaker talked before
+    TAG_BLOCK_ANIMAL_FLAG_END = 9,
+    TAG_BLOCK_TIMER = 10,            // [u16 frames] advance the page after the timer
+    TAG_BLOCK_TIMER_AUTO = 11,       // [u16 frames] same, the key doesn't advance
+    TAG_BLOCK_VIBRATION_1 = 12,      // window vibration "msg_win_00_msgWinVib1.brlan"
+    TAG_BLOCK_VIBRATION_2 = 13,
+    TAG_BLOCK_VIBRATION_3 = 14,
+    TAG_BLOCK_PAY = 15,              // [u16 bells] pay, if the player has them
+    TAG_BLOCK_CUSTOM_0 = 21,         // 21..25: dMsg::Rcpt_c::onCustomTag(0..4)
+    TAG_BLOCK_CUSTOM_1 = 22,
+    TAG_BLOCK_CUSTOM_2 = 23,
+    TAG_BLOCK_CUSTOM_3 = 24,
+    TAG_BLOCK_CUSTOM_4 = 25,
+    TAG_BLOCK_PAGE_END = 26,         // the next new line ends the page
+};
+
+// TAG_GROUP_SELECT tag ids: [u16 message code per answer]; the answers are the following lines.
+enum TagSelect_e {
+    TAG_SELECT_2 = 0, // 0..3: 2..5 answers
+    TAG_SELECT_3 = 1,
+    TAG_SELECT_4 = 2,
+    TAG_SELECT_5 = 3,
+    TAG_SELECT_2_CANCEL = 4, // 4..7: 2..5 answers, the last one is also the cancel (B) answer
+    TAG_SELECT_3_CANCEL = 5,
+    TAG_SELECT_4_CANCEL = 6,
+    TAG_SELECT_5_CANCEL = 7,
+    TAG_SELECT_ANALOG = 8, // two answers, [u16 x 8] codes over the stick range (dMsgAnalogSelect_c)
+};
+
+// TAG_GROUP_JUMP tag ids: [condition parameters] then u16 message codes, one per choice.
+enum TagJump_e {
+    TAG_JUMP_RND_2 = 0,         // random, not the choice taken last time (dMsg::RndJump_c)
+    TAG_JUMP_RND_3 = 1,
+    TAG_JUMP_FRIENDSHIP = 2,    // [u8 min] the speaker's friendship with the player >= min
+    TAG_JUMP_PLAYER_GENDER = 3,
+    TAG_JUMP_HOUSE_SIZE = 4,    // 5 choices
+    TAG_JUMP_INSECT_CATALOG = 5, // none / >= 60% / complete
+    TAG_JUMP_FISH_CATALOG = 6,
+    TAG_JUMP_ANIMAL_NUM = 7,    // <= 6 .. >= 10 villagers
+    TAG_JUMP_TIME_OF_DAY = 8,
+    TAG_JUMP_WEATHER = 9,
+    TAG_JUMP_PLAYER_NUM = 10,
+    TAG_JUMP_WEEKDAY = 11,      // Monday first
+    TAG_JUMP_VISITOR = 12,      // the player is from another town
+    TAG_JUMP_SPECIES = 13,      // [u16 species] the speaker's species
+    TAG_JUMP_MONEY = 14,        // [u32 price] the player can't pay it
+    TAG_JUMP_POCKET_FULL = 15,
+    TAG_JUMP_TAN = 16,
+    TAG_JUMP_ONLINE = 17,
+    TAG_JUMP_MEMBER_NUM = 18,
+    TAG_JUMP_RND_4 = 19,
+    TAG_JUMP_RND_5 = 20,
+    TAG_JUMP_RND_6 = 21,
+    TAG_JUMP_RND_7 = 22,
+    TAG_JUMP_RND_8 = 23,
+    TAG_JUMP_SEASON = 24,
+    TAG_JUMP_SHOP_STAGE = 25,
+    TAG_JUMP_MII_MASK = 26,     // the player wears a Mii mask (inferred)
+    TAG_JUMP_BEE_STING = 27,    // the player's face is stung
+    TAG_JUMP_SCENE = 28,        // town / not
+    TAG_JUMP_HOUR = 29,         // [u8 from, u8 to]
+    TAG_JUMP_HELD_ITEM = 30,    // [u8 JumpHeldItem_e]
+    TAG_JUMP_HAIR = 31,         // [u8 mode, u8 hair]
+    TAG_JUMP_BUILDING = 32,     // [u8 JumpBuilding_e]
+    TAG_JUMP_KICKS = 33,        // Kicks (the shoe-shine) is in the city
+    TAG_JUMP_PHINEAS = 34,      // Phineas (the balloon sea lion) is in the city
+    TAG_JUMP_FLAG0_28 = 35,     // player flag0 0x28 (meaning unknown)
+};
+
+// TAG_GROUP_MOOD tag ids.
+enum TagMood_e {
+    TAG_MOOD_RESET = 0,
+    TAG_MOOD_1 = 1, // 1..4: [u8 hours] dMsg::Rcpt_c::setMood1..4
+    TAG_MOOD_2 = 2,
+    TAG_MOOD_3 = 3,
+    TAG_MOOD_4 = 4,
+};
+
+// TAG_GROUP_SPEAKER tag ids (dMsg::Rcpt_c speaker hooks).
+enum TagSpeaker_e {
+    TAG_SPEAKER_PLAYER = 0,
+    TAG_SPEAKER_NPC = 1,
+    TAG_SPEAKER_PARTNER = 2,
+    TAG_SPEAKER_LOOK_AT_PLAYER = 3,
+    TAG_SPEAKER_TURN_TO_PLAYER = 4,
+    TAG_SPEAKER_LOOK_AT_NPC = 5,
+    TAG_SPEAKER_TURN_TO_NPC = 6,
+    TAG_SPEAKER_LOOK_AT_PARTNER = 7,
+    TAG_SPEAKER_TURN_TO_PARTNER = 8,
+    TAG_SPEAKER_CHANGE = 9,
+};
+
+// TAG_GROUP_SOUND tag ids.
+enum TagSound_e {
+    TAG_SOUND_SE = 0,           // plays SE 0x179C (the parameter is ignored)
+    TAG_SOUND_TOWN_TUNE = 3,    // 1, 2: no-ops
+    TAG_SOUND_VOICE_TYPE = 4,   // [u8 0..7] voice type 5..12 (the commentator voices)
+    TAG_SOUND_VOICE_TYPE_RESET = 5,
+    TAG_SOUND_VOICE_MOOD = 6,   // [u8 0..4] voice mood 0, 4, 1, 2, 3
+    TAG_SOUND_VOICE_MOOD_RESET = 7,
+};
+
+// TAG_GROUP_SYSTEM tag ids (dTagProcessor_c::Process).
+enum TagSystem_e {
+    TAG_SYSTEM_COLOR = 0,    // [u8 color] 0 default; 4: grey (thoughts: no voice)
+    TAG_SYSTEM_SCALE = 1,    // [u16 percent]
+    TAG_SYSTEM_RUBY = 2,     // [u8 base length, ruby text] (Japanese furigana)
+    TAG_SYSTEM_LINE_OFFSET = 3, // [s16] moves the line's y (Word_c)
+    TAG_SYSTEM_TYPE_END = 4, // the tag processor stops drawing here (dMsg::Seq_c: end of the typed text)
+};
+
 // Number formats for formatNumber. The odd values add thousands separators.
 // Names are inferred.
 enum NumberFormat_e {
@@ -36,7 +181,7 @@ public:
     virtual ~Res_c(); // 80157888
 
     const wchar_t *getMessage(int id); // 801578E0
-    void *getEntry(int id); // 801578E8
+    const MessageInfoDataBlock::Entry *getEntry(int id); // 801578E8: INF1 entry (game attributes follow)
     u16 getCount(); // 801578F0: number of INF1 entries
 };
 
@@ -117,8 +262,8 @@ public:
     virtual int procAnimalStarSign(int pos); // 8015A458: name 13: villager's star sign
     virtual int procGreeting(int pos); // 8015A45C: block 6: villager's custom greeting, replaces text up to block 7
     virtual int procAnimalFlagBegin(int pos); // 8015A464: block 8: keeps or drops text up to block 9 by a villager flag
-    virtual int vfA0(int pos); // 8015A46C: block 26
-    virtual int vfA4(int pos); // 8015A470: group 7 (all ids)
+    virtual int procPageEnd(int pos); // 8015A46C: block 26
+    virtual int procSelect(int pos); // 8015A470: group 7 (all ids)
     virtual int procPlayerGender(int pos); // 8015A49C: grammar 4: one of two strings by the player's gender
     virtual int procWordGender(int pos); // 8015A580: grammar 5: one of three strings by a word slot's gender
     virtual int procAnimalGender(int pos); // 8015A98C: grammar 8: one of two strings by the villager's gender
@@ -228,7 +373,21 @@ public:
 int getStringLength(const wchar_t *text, u32 maxSize, int breakOnNewLine); // 8015790C
 BOOL setNumber(Word_c *word, int value, int digits, NumberFormat_e format); // 8015665C
 BOOL formatNumber(Word_c *word, int value, int digits, NumberFormat_e format, int sep); // 801566E8
+// Builds a nickname from base with the BMG suffix string suffixIdx; FALSE if it doesn't fit. [D d_msg]
+BOOL makeNickname(Word_c *word, const Word_c *base, u16 suffixIdx); // 80156C5C
 u8 getTagLength(const wchar_t *tag);
+u8 getTagGroup(const wchar_t *tag);
+u16 getTagId(const wchar_t *tag);
+const u8 *getTagParams(const wchar_t *tag);
+BOOL isSeparator(wchar_t c);
+const char *getScriptDir(); // 80155D38
+BOOL setNumber4(Word_c *word, int value); // 80156554
+BOOL setNumber2(Word_c *word, int value); // 80156564
+BOOL setMinute(Word_c *word, int value); // 80156574
+BOOL setDecimal(Word_c *word, int decimals, f64 value); // 80156928
+BOOL setMonthName(Word_c *word, int month); // 80156BC0
+BOOL setDayName(Word_c *word, int day); // 80156BD4
+bool toUpper(wchar_t *c);
 int to12Hour(int hour); // 80156A8C
 BOOL setAmPm(Word_c *word, int hour); // 80156B00
 u16 getSortKey(wchar_t c); // 80155B70: a character's sort key (d_snd_util passes two to SoundSystem)

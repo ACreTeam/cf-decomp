@@ -5,7 +5,7 @@
 // (.text 80149B70..8014BD88).
 //
 // Town and city buildings: the item ids 0xD000..0xD044 (dItem::Item::isExtId). Each indexes the
-// 0x40-byte building table at 80479FC8 (fn_80167FB4) by its low 12 bits. The names come from that
+// 0x40-byte building table at 80479FC8 (dSTR::getBuildingInfo) by its low 12 bits. The names come from that
 // table: the model name and the Japanese name (quoted, so no line ends on a Shift-JIS lead byte:
 // MWCC reads the sources as SJIS).
 
@@ -92,19 +92,39 @@ enum {
     BUILDING_NUM = BUILDING_END - BUILDING_BUILD_SITE,
 };
 
-// An entry of the 0xD000 building table (fn_80167FB4; 0x45 entries of 0x40 bytes at 80479FC8).
+// dBuildingInfo_c::mField: the field(s) a building stands in.
+enum {
+    BUILDING_FIELD_TOWN = 1,
+    BUILDING_FIELD_CITY = 2,
+};
+
+// dBuildingInfo_c::_0A (dSTR::getCurBuildingType / getCurBuildingKind); the meaning is unknown. The
+// shop is 2 as the cranny, else 1; the player / villager houses are 2.
+enum {
+    BUILDING_TYPE_0,
+    BUILDING_TYPE_1,
+    BUILDING_TYPE_2,
+    BUILDING_TYPE_3,
+};
+
+// An entry of the 0xD000 building table (dSTR::getBuildingInfo; 0x45 entries of 0x40 bytes at 80479FC8).
 struct dBuildingInfo_c {
     /* 0x00 */ const char *mModel;  // obj_*
     /* 0x04 */ const char *mName;   // the Japanese name
-    /* 0x08 */ u8 _08[6];
-    /* 0x0E */ u8 mField;           // 1: the town, 2: the city
+    /* 0x08 */ u16 _08;             // in dSTR::getCurBuildingCode
+    /* 0x0A */ u8 _0A;              // BUILDING_TYPE_* (dSTR::getCurBuildingType)
+    /* 0x0B */ u8 _0B;
+    /* 0x0C */ u8 _0C;
+    /* 0x0D */ u8 _0D;
+    /* 0x0E */ u8 mField;           // BUILDING_FIELD_* bits
     /* 0x0F */ u8 mValueA;          // dItem::Item::getExtValueA (the collision height)
     /* 0x10 */ u8 mValueB;          // dItem::Item::getExtValueB
     /* 0x11 */ u8 mFlag;            // dItem::Item::getExtFlag
-    /* 0x12 */ u8 _12[0x2E];
+    /* 0x14 */ const char *mPolygons[10]; // polygon* names (city buildings)
+    /* 0x3C */ u8 _3C[4];
 }; // size 0x40
 
-extern "C" dBuildingInfo_c *fn_80167FB4(int idx); // the table entry of a building index (not split yet)
+
 
 // A building's unit position; (0, 0) = none.
 struct dSaveBuildingPos_c {
@@ -137,7 +157,7 @@ public:
     BOOL hasNpcHouse(u32 no) const;                              // 8014A5B8
     BOOL setFountain();                                    // 8014A5E4: in the plaza block
     BOOL setAtLighthouseSpot(const dItem::Item &id);       // 8014A660: lighthouse / windmill
-    BOOL setAtUfoSpot(const dItem::Item &id);              // 8014A770
+    BOOL setAtUfoSpot(dItem::Item id);              // 8014A770
     BOOL setAtReserveSpot(const dItem::Item &id);          // 8014A880: any free build site
     void create();                                         // 8014A978: a new town's layout
     void setCityBuildings();                               // 8014A9D4: the city's fixed layout

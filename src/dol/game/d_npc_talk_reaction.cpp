@@ -115,7 +115,7 @@ int dAcNpcNml_c::talk_c::msgReFall(msgInfo_s *info) {
 // 8005E888
 int dAcNpcNml_c::talk_c::msgReRun(msgInfo_s *info) {
     BOOL busy = FALSE;
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         busy = fgMngProc_isBusy() != 0;
     }
     if (busy) {
@@ -828,7 +828,7 @@ int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
         valid = TRUE;
     }
     u8 looks = valid ? animal->mID.getLooks(1) : 6;
-    if ((!fn_800DCEDC() || fn_800DCF30() <= 1) && player != NULL && player->mPID.isFromTown() && looks < 6 &&
+    if ((!dNet::isSessionActive() || dNet::getMemberNum() <= 1) && player != NULL && player->mPID.isFromTown() && looks < 6 &&
         (u32)getLanguage() < LANGUAGE_NUM) {
         msg = fn_80117318(&dSaveData_c::getRawExtra()->_0001CE, fn_801017B8(), looks, 10);
     }
@@ -840,7 +840,7 @@ int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
             return TRUE;
         }
         mLangFlag = looks;
-        mpBmgData = msg + 1;
+        mpBmgData = reinterpret_cast<const EGG::MsgRes::MessageHeader *>(msg + 1); // a BMG follows the header word
         setLooksMsg(info, NULL, 0);
         mCountTalk = 1;
         return TRUE;

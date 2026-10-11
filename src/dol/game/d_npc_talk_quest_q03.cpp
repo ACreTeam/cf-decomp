@@ -3,7 +3,7 @@
 #include <game/game/d_npc_talk_quest_q03.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_animal.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_quest.hpp>
@@ -30,7 +30,7 @@ static inline void setPlayerUnit(talk_c *talk, const dPlayerID_c *player, int id
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
-        talk->getController()->fn_801A5874(idx + 1, unit, l_strUnit);
+        talk->getController()->setStringWord(idx + 1, unit, l_strUnit);
     }
 }
 
@@ -169,7 +169,7 @@ int dAcNpcNml_c::talk_c::msgFossilQuest(msgInfo_s *info) {
             setPlayerUnit(this, requester, 2, animal);
         }
         if ((dQuestMatchMode_e)quest->mMatchMode == QUEST_MATCH_ANY) {
-            getController()->fn_801A5874(5, 0x63, l_strUnit);
+            getController()->setStringWord(5, 0x63, l_strUnit);
         } else if (quest->mBase.mItem.isValid()) {
             setItemName(&quest->mBase.mItem, 5);
         }
@@ -320,7 +320,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilWin(int kind) {
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
             animal->mQuest.mWish.addValue(5);
-            if (!fn_800DCEDC() && isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+            if (!dNet::isSessionActive() && isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
                 animal->setQuestStarted();
             }
         }
@@ -508,7 +508,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilAccept(int kind) {
                 }
             }
             if ((dQuestMatchMode_e)quest->mMatchMode == QUEST_MATCH_ANY) {
-                getController()->fn_801A5874(5, 0x63, l_strUnit);
+                getController()->setStringWord(5, 0x63, l_strUnit);
             } else {
                 dItem::Item *item = &quest->mBase.mItem;
                 if (item->isValid()) {

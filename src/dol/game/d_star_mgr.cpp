@@ -20,7 +20,7 @@ void dStarMgr_c::execute() {
         return;
     }
     dTime_c now = *dTime_c::getCurrent();
-    dUnk8074EBE8_c *weather = lbl_8074EBE8;
+    dWeather_c *weather = dWeather_c::sInstance;
     if (weather != NULL && fn_801C98CC(weather) == 0 && (now.hour >= 19 || now.hour <= 4) && now.sec < mLastSec) {
         dRandom_c rnd(0x9D);
         dTime_c time = *dTime_c::getCurrent();

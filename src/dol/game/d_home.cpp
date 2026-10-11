@@ -1,6 +1,7 @@
 // Player houses: rooms, the house itself and the four houses in the save data.
 // .text 8013CB30..8013E618. Notes: notes/d_home.txt.
 #include <game/game/d_home.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_catalog.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -11,9 +12,7 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void *fn_801683D8();
-void *fn_80167BAC(void *);
-void fn_801911AC(void *);
+void fn_801911AC();
 void fn_801911E8(int home);
 }
 
@@ -432,7 +431,8 @@ void dHome_c::update(int days, BOOL isCurrent) {
         }
         if (mSize != mNextSize && mNextSize < HOME_SIZE_NUM) {
             mSize = mNextSize;
-            fn_801911AC(fn_80167BAC(fn_801683D8()));
+            dSTR::getTownUnitAttr()->setAll();
+            fn_801911AC();
         }
         _15B6 = _15B7;
     }

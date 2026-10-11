@@ -6,6 +6,8 @@ CompileFlags:
     - -Iinclude/lib
     - -Iinclude/lib/MSL
     - -Iinclude/lib/MSL/internal
+    # The #included .inc sources live next to their .cpp (configure.py: -cwd source).
+    - -Isrc/dol/game
     # Imported CodeWarrior headers use __declspec attributes.
     - -fdeclspec
     - -fshort-wchar

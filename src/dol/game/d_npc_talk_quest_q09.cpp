@@ -607,7 +607,7 @@ void dAcNpcNml_c::talk_c::endInviteTradeYes(int arg) {
     int handle = fn_800A8F98(fn_800A9058(), mFtrPosX, mFtrPosZ, 0);
     mFtrHandle = handle;
     if (npc != NULL && npc->removeRoomFtr(handle, mFtrPosX, mFtrPosZ)) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -637,7 +637,7 @@ BOOL dAcNpcNml_c::talk_c::stepInviteTradeYes(int kind) {
 // 8005C2C8
 void dAcNpcNml_c::talk_c::actInviteTradeWait() {
     if (!fn_800A9354(fn_800A93BC(), mFtrHandle)) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }

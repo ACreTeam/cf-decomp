@@ -8,7 +8,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_quest.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_string.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
@@ -64,7 +64,7 @@ void dAcNpcNml_c::talk_c::endStyleReq(int arg) {
             if (unit == 0) {
                 clearWord(1);
             } else {
-                getController()->fn_801A5874(1, unit, "sys_STRING/STR_Unit");
+                getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
             }
         }
     }
@@ -182,7 +182,7 @@ int dAcNpcNml_c::talk_c::msgStyleQuest(msgInfo_s *info) {
         if (unit == 0) {
             clearWord(1);
         } else {
-            getController()->fn_801A5874(1, unit, "sys_STRING/STR_Unit");
+            getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
         }
     }
     if (player0->isValid()) {
@@ -192,7 +192,7 @@ int dAcNpcNml_c::talk_c::msgStyleQuest(msgInfo_s *info) {
         if (unit == 0) {
             clearWord(3);
         } else {
-            getController()->fn_801A5874(3, unit, "sys_STRING/STR_Unit");
+            getController()->setStringWord(3, unit, "sys_STRING/STR_Unit");
         }
         mMsgPlayer.copy(player0);
     }

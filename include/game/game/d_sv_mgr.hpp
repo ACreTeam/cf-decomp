@@ -232,7 +232,7 @@ public:
     virtual void onMessageEnd(int kind); // 801BBF64; receiver completion callback
     void requestMessage(u16 code);
     void lockMessage();
-    void *getMessageController() { return mpController; }
+    dMsg::Comp_c *getMessageController() { return mpController; }
     void setLoadFailed() { mLoadFailed = true; }
     static void setLoadErrorMessage(u16 code);
     void finishLoad();

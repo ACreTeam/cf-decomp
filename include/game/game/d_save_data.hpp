@@ -50,16 +50,16 @@ void fn_8010D83C(dSaveOption_c *opt);                 // defaults + clear flags
 void fn_8010D870(dSaveOption_c *opt);
 int fn_8010D944();       // static copy getters/setters
 void fn_8010D950(u8 v);
-u8 fn_8010D970();
+int fn_8010D970();
 void fn_8010D97C(u8 v);
 u8 fn_8010D99C();
 void fn_8010D9A8(u8 v);
 u8 fn_8010D9C8();
 void fn_8010D9D4(u8 v);
 int fn_8010D9F4();
-u8 fn_8010D9FC();
+BOOL fn_8010D9FC();
 void fn_8010DA08(u8 v);
-u8 fn_8010DA28();
+BOOL fn_8010DA28();
 void fn_8010DA34(u8 v);
 u8 fn_8010DA54();        // current player's option _1
 void fn_8010DA8C(u8 v);
@@ -131,6 +131,7 @@ struct dSaveExtra_c {
     dSvAucList_c *getAucListings() { return (dSvAucList_c *)_089734; }
     dSvAucList_c *getAucBids() { return (dSvAucList_c *)_089918; }
     dSvAucList_c *getAucSales() { return (dSvAucList_c *)_089AFC; }
+    void setVoiceSetting(u16 value) { mVoiceSetting = value; }
 
     /* 0x000000 */ u8 _000000[4];
     /* 0x000004 */ u8 mNetEnabled;          // gates all distribution handling
@@ -163,7 +164,10 @@ struct dSaveExtra_c {
     /* 0x0F1258 */ dSaveMailBox_c mSavedLetters[PLAYER_NUM];
     /* 0x17FA58 */ dSaveItemBox_c mSavedLetterItems[PLAYER_NUM];
     /* 0x17FF58 */ u8 _17FF58[PLAYER_NUM][0x2738]; // ctor 8013ED24, dtor 8013ED88
-    /* 0x189C38 */ u8 _189C38[0x12108];     // ctor 8013F098; used by the mail code at 8010263C
+    /* 0x189C38 */ u8 _189C38[0x120FC];     // ctor 8013F098; used by the mail code at 8010263C (dPostBox_c)
+    /* 0x19BD34 */ u16 mVoiceSetting;        // voice chat: dVoiceChat::fn_80171C08 accepted it (d_net_mgr)
+    /* 0x19BD36 */ u16 mVoiceLevel;          // voice chat: given to dVoiceChat::fn_80171C10 (d_net_mgr)
+    /* 0x19BD38 */ u8 _19BD38[8];
 }; // size 0x19BD40
 
 // 80116A74 (d_sv_extra): picks a random entry of the 8 visiting-player records at extra+0x46

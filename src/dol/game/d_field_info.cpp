@@ -5,6 +5,7 @@
 // .bss 80587818..80587840, .sdata 80749EE0..80749F20, .sbss 8074E300..8074E310,
 // .sdata2 807505A0..807505C0.
 #include <game/game/d_field_info.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_search_cand.hpp>
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_item.hpp>
@@ -55,7 +56,6 @@ extern "C" {
 int fn_80081514(int type);                                             // 80081514: the bridge variant of a block type
 void *fn_800A9058();                                                   // 800A9058
 dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
-dFdUnitAttr_c *fn_801683D8();                                          // 801683D8
 }
 
 // Units where Racco can appear (RTTI raccoCand_c; vtable 804DF990): units of BG attribute
@@ -640,7 +640,7 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
         } else if (getCurrentScene() == SCENE_TOWN) {
             fg = dSaveBuildingList_c::get()->getAt(x, z, 2);
             if (fg.isExtId()) {
-                dBuildingInfo_c *info = fn_80167FB4(fg.getExtIndex());
+                const dBuildingInfo_c *info = dSTR::getBuildingInfo(fg.getExtIndex());
                 f32 value = (int)info->mValueA;
                 if (value != 0.0f) {
                     f32 p = (int)info->mValueB;
@@ -851,7 +851,7 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
             }
         }
     }
-    _24 = fn_801683D8();
+    _24 = dSTR::getTownUnitAttr();
     return TRUE;
 }
 
@@ -879,7 +879,7 @@ BOOL dFdInfo_c::updateTown() {
             }
         }
     }
-    _24 = fn_801683D8();
+    _24 = dSTR::getTownUnitAttr();
     setBorderUnits();
     return TRUE;
 }

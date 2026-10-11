@@ -152,8 +152,7 @@ BOOL dSaveMainField_c::buildBridge() {
             int newType = fn_80081514(type);
             blockId->mId = newType;
             if (newType != type) {
-                dSaveTown_c *town = dSaveData_c::getTown();
-                *(u32 *)&town->_05EC78[4] = 0;
+                dSaveData_c::getTown()->clearPublicWorksBells();
                 dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_BRIDGE, mBridgeBlockX, mBridgeBlockZ);
                 mBridgeBlockX = mBridgeBlockZ = -1;
                 fn_8014F0A4(&dSaveData_c::getTown()->_0640C8);

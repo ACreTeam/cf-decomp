@@ -14,7 +14,7 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
+BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 
 // Downloaded item blocks (Ghidra: DLC_Item).
 }

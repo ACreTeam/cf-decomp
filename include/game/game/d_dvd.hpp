@@ -74,6 +74,7 @@ public:
     virtual BOOL bindFile(void *dst); // 800864D8
 
     void *getFile(const char *name, u32 *size); // 800863A0
+    BOOL closeArc(); // 80086544: mArcReady = 0, then unload(FALSE)
 
 protected:
     u8 mArcReady; // 0x56

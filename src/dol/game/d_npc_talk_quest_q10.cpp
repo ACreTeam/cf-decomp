@@ -8,7 +8,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_quest.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_weather.hpp>
@@ -51,10 +51,10 @@ int dAcNpcNml_c::talk_c::msgHideOffer(msgInfo_s *info) {
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
-    dUnk8074EBE8_c *weather = lbl_8074EBE8;
+    dWeather_c *weather = dWeather_c::sInstance;
     if (weather != NULL) {
         int mode = weather->_5884;
         if (isRainMode(mode) || isSnowMode(mode)) {
@@ -333,7 +333,7 @@ int dAcNpcNml_c::talk_c::msgHideHider(msgInfo_s *info) {
                     if (unit == 0) {
                         clearWord(1);
                     } else {
-                        getController()->fn_801A5874(1, unit, "sys_STRING/STR_Unit");
+                        getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
                     }
                 }
             }
@@ -357,7 +357,7 @@ BOOL dAcNpcNml_c::talk_c::stepHideFind(int kind) {
             fn_800F0708(slot);
         }
         if (game->countUnfound() == 0) {
-            if (fn_800DCEDC()) {
+            if (dNet::isSessionActive()) {
                 setProcSet(&l_talkProcSets[TALK_PROC_HIDE_REWARD]);
                 startMsg();
             } else {
@@ -409,7 +409,7 @@ BOOL dAcNpcNml_c::talk_c::stepHideOver(int kind) {
         dQuestPlayerAnimal_c *game = &dSaveData_c::getTown()->mAnimals.mTown.mHideAndSeek;
         game->mBase.mState = 2;
         fn_800F06A8(2);
-        if (fn_800DCEDC()) {
+        if (dNet::isSessionActive()) {
             setProcSet(&l_talkProcSets[TALK_PROC_HIDE_LOSE]);
             startMsg();
         } else {
@@ -518,7 +518,7 @@ int dAcNpcNml_c::talk_c::msgHideLose(msgInfo_s *info) {
 // 8005885C
 void dAcNpcNml_c::talk_c::endHideLose(int arg) {
     dQuestPlayerAnimal_c *game = &dSaveData_c::getTown()->mAnimals.mTown.mHideAndSeek;
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         game->clearInfo();
         fn_800F0650();
     } else {

@@ -1,8 +1,13 @@
 #pragma once
 
 #include <types.h>
+#include <lib/egg/core/eggMsgRes.h>
 
 class dAnimal_c;
+
+// getVoiceMode / getForcedVoiceMode: no override (Voice_c::calc keeps its own mode). The modes 0..2 follow
+// the talk sound option (fn_8010D970: 0 = the receiver's mode, 1, 2); their meaning is not confirmed.
+#define VOICE_MODE_NONE 3
 
 namespace dMsg {
 class Comp_c;
@@ -13,7 +18,7 @@ class Rcpt_c {
 public:
     Rcpt_c() { init(); }
     virtual ~Rcpt_c() {} // 8002ECF4, shared weak definition
-    virtual void selectMessage(const void *bmg); // vtable +0xC
+    virtual void selectMessage(const EGG::MsgRes::MessageHeader *bmg); // vtable +0xC
     virtual void onMessageStart(int arg); // vtable +0x10
     virtual void onMessageEnd(int kind); // vtable +0x14
     virtual void onAnswer(int arg); // vtable +0x18
@@ -56,14 +61,20 @@ public:
     void detachController(); // 801A230C
 
     Comp_c *getController() const { return mpController; }
+    u16 getMessageCode() { return mMessageCode; }
+    const char *getMessageLabel() const { return mMessageLabel; }
+    const u16 *getSpeakerName() const { return mSpeakerName; }
+    u8 getSpeakerNameKind() const { return mSpeakerNameKind; }
+    const EGG::MsgRes::MessageHeader *getBmgData() const { return mpBmgData; }
+    int getVoiceType() const { return mVoiceType; } // the voice type (Comp_c::updateVoiceType -> fn_8000FE18)
 
 protected:
     char mMessageLabel[61]; // 0x04; copy limit 60, extra terminator byte
     u16 mMessageCode; // 0x42
     u16 mSpeakerName[9]; // 0x44
-    u8 mSpeakerNameKind; // 0x56; clear initializes to 2
+    u8 mSpeakerNameKind; // 0x56; the name frame: 0/1 = the npc's gender, 2 = other (clear); dAcNpc_c::getNameKind
     int mVoiceType; // 0x58; initialized to 1, meaning not yet established
     Comp_c *mpController; // 0x5C; controller keeps the reciprocal link
-    const void *mpBmgData; // 0x60; cleared on init and nonempty message-label changes
+    const EGG::MsgRes::MessageHeader *mpBmgData; // 0x60; cleared on init and nonempty message-label changes
 };
 } // namespace dMsg

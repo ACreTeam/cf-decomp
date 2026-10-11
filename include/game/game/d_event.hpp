@@ -6,6 +6,7 @@
 
 #include <types.h>
 #include <game/game/d_date.hpp>
+#include <game/game/d_net.hpp>
 
 // Event id: index into the event info table (sEventInfo, EVENT_NUM entries).
 // Taken by const reference everywhere, so literal ids become anonymous .sdata temporaries.
@@ -191,8 +192,4 @@ int fn_8008AEE8();                                             // 8008AEE8: retu
 
 } // namespace dEvent
 
-// Other TUs used here, not split yet (C linkage keeps the target names).
 struct dTimeStamp_c;
-extern "C" {
-int fn_800DCF90();                               // 800DCF90
-}

@@ -5,6 +5,7 @@
 
 #include <types.h>
 #include <game/game/d_personal_id.hpp>
+#include <lib/dwc/dwc.h>
 
 #define FRIEND_NUM 32
 
@@ -29,7 +30,7 @@ public:
     u32 calcChecksum() const;                                         // 8011A738
     void clear();                                                    // 8011A750
     void clearFriends();                                             // 8011A794
-    void clearInfo();                                                // 8011A7F4: fn_800E5858(_04, mKeys, FRIEND_NUM)
+    void clearInfo();                                                // 8011A7F4: dNetMgr_c::initFriendList
     void set(int idx, const void *key, const dFriend_c *data);       // 8011A804: NULL data clears the entry
     void clearEntry(int idx);                                        // 8011A88C
     void set2(int idx, const void *key, const dFriend_c *data);      // 8011A8E8: same as set
@@ -40,8 +41,8 @@ public:
     void update(int idx, const dPersonalID_c *pid, const wchar_t *message); // 8011AABC
 
     /* 0x0000 */ u32 mChecksum; // CRC32 over 0x0004..0x1120
-    /* 0x0004 */ u8 _0004[0x40];
-    /* 0x0044 */ u8 mKeys[FRIEND_NUM][0xC];
+    /* 0x0004 */ DWCUserData mUserData;           // the Wi-Fi Connection account
+    /* 0x0044 */ DWCFriendData mKeys[FRIEND_NUM]; // the friends' Wi-Fi Connection data
     /* 0x01C8 */ dFriend_c mFriends[FRIEND_NUM];
     /* 0x10C8 */ wchar_t mName[0x21];
     /* 0x110A */ u8 _110A[0x16];

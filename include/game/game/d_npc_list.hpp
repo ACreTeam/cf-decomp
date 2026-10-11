@@ -15,4 +15,5 @@ dDemoActor_c *fn_800F9850(u32 idx); // 800F9850: entry of list A
 u32 fn_800F9888(dDemoActor_c *actor, const u16 *key); // 800F9888: adds the actor to list B (dAcNpcSp_c::addToNpcList)
 void fn_800F98A0(dDemoActor_c *actor);                // 800F98A0: removes it from list B (dAcNpcSp_c::removeFromNpcList)
 dDemoActor_c *fn_800F98BC(u32 idx); // 800F98BC: entry of list B
+BOOL fn_800F98E4(const u16 *key);    // 800F98E4: an actor with this key is in list B (d_bgm, d_msg)
 }

@@ -18,13 +18,9 @@
 #include <game/cLib/c_counter.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/game/d_heap.hpp>
+#include <game/game/d_net.hpp>
 
 extern "C" {
-BOOL fn_800DCEDC();                            // net play
-BOOL fn_800DD960();                            // net: this machine is the host
-int fn_800DCF58();                             // net: own member index
-void *fn_800DD64C(int id);                     // net: shared record id
-void fn_800DD5F8(int id, void *data, int arg); // net: send shared record id
 dItem::Item fn_80153410(const void *obj);           // the item at obj + 0x1F8
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
@@ -157,11 +153,11 @@ BOOL isRiverMouthBlock(int blockX, int blockZ, void *user) {
     return ret;
 }
 
-static inline BOOL isWeatherIn(const dUnk8074EBE8_c *weather, int want) {
+static inline BOOL isWeatherIn(const dWeather_c *weather, int want) {
     return weather->_5884 == want;
 }
 
-static inline BOOL isRainWeather(const dUnk8074EBE8_c *weather) {
+static inline BOOL isRainWeather(const dWeather_c *weather) {
     BOOL ret = FALSE;
     if (isWeatherIn(weather, 4) || isWeatherIn(weather, 3)) {
         ret = TRUE;
@@ -169,7 +165,7 @@ static inline BOOL isRainWeather(const dUnk8074EBE8_c *weather) {
     return ret;
 }
 
-static inline BOOL isSnowWeather(const dUnk8074EBE8_c *weather) {
+static inline BOOL isSnowWeather(const dWeather_c *weather) {
     BOOL ret = FALSE;
     if (isWeatherIn(weather, 6) || isWeatherIn(weather, 5)) {
         ret = TRUE;
@@ -179,7 +175,7 @@ static inline BOOL isSnowWeather(const dUnk8074EBE8_c *weather) {
 
 // 0x2F4
 BOOL isOffingBlock(int blockX, int blockZ, void *user) {
-    if (isRainWeather(lbl_8074EBE8) || isSnowWeather(lbl_8074EBE8)) {
+    if (isRainWeather(dWeather_c::sInstance) || isSnowWeather(dWeather_c::sInstance)) {
         return fn_80190C44(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
     }
     return FALSE;
@@ -454,7 +450,7 @@ BOOL dBkAttrSearchCand_c::check(int x, int z) {
 
 // 0x10D0
 void dFishField_c::calcSpawn() {
-    if ((!fn_800DCEDC() || fn_800DD960()) && sLib::calcTimer(&mSpawnTimer) == 0) {
+    if ((!dNet::isSessionActive() || dNet::isSceneOwner()) && sLib::calcTimer(&mSpawnTimer) == 0) {
         mSpawnTimer = 300;
         int river = 0;
         int sea = 0;
@@ -472,7 +468,7 @@ void dFishField_c::calcSpawn() {
             spawn(river, sea, TRUE);
         }
     }
-    if (fn_800DCEDC() && !fn_800DD960()) {
+    if (dNet::isSessionActive() && !dNet::isSceneOwner()) {
         respawnFromRecs();
     }
 }
@@ -682,12 +678,12 @@ dFishFldShadow_c *dFishField_c::addPlayerFish(int type, int mode, const mVec3_c 
 
 // 0x1DF4
 void dFishField_c::initSpawn() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         clearRecs();
         initRecs();
         respawnFromRecs();
     }
-    if (!fn_800DCEDC() || lbl_8074E844) {
+    if (!dNet::isSessionActive() || lbl_8074E844) {
         int river = 0;
         int sea = 0;
         for (int i = 0; i < 4; i++) {
@@ -838,7 +834,7 @@ static inline BOOL isNearUnit(int x, int z, int cx, int cz) {
 }
 
 BOOL dFishField_c::isAwayFromPlayers(int blockX, int blockZ, int unitX, int unitZ) {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         int x = (blockX << 4) + unitX;
         int z = (blockZ << 4) + unitZ;
         for (int i = 0; i < 4; i++) {
@@ -2509,12 +2505,12 @@ void dFishFldShadow_c::setEscapeEffect() {
 
 // 0x7518
 BOOL dFishField_c::isRecMine(int idx) {
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         return TRUE;
     }
     dPlaySyncRec_c *rec = &mRecs[idx].mRec;
     int member = rec->getMember();
-    if (member == fn_800DCF58()) {
+    if (member == dNet::getMyNo()) {
         return TRUE;
     }
     BOOL free = FALSE;
@@ -2522,7 +2518,7 @@ BOOL dFishField_c::isRecMine(int idx) {
         free = TRUE;
     }
     BOOL ret = FALSE;
-    if (free && fn_800DD960()) {
+    if (free && dNet::isSceneOwner()) {
         ret = TRUE;
     }
     return ret;
@@ -2539,7 +2535,7 @@ void dFishField_c::clearRecs() {
 
 // 0x7698
 void dFishField_c::sendRecs() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
             if (isRecMine(i) && mRecs[i].mRec.getState() != PLAY_SYNC_STATE_CLAIMED) {
                 if (mRecs[i].mReleasePending) {
@@ -2552,7 +2548,7 @@ void dFishField_c::sendRecs() {
                     sendSyncRecClaim(&mRecs[i].mRec, i);
                     mRecs[i].mClaimMember = -1;
                 }
-                fn_800DD5F8(i + PLAY_SYNC_REC_ID, &mRecs[i].mRec, 0);
+                dNet::setRecord(i + PLAY_SYNC_REC_ID, &mRecs[i].mRec, 0);
             }
         }
     }
@@ -2560,7 +2556,7 @@ void dFishField_c::sendRecs() {
 
 // 0x7788
 void dFishField_c::recvRecs() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
             if (isRecMine(i)) {
                 if (mRecs[i].mRemote && mFish[i] != NULL) {
@@ -2569,7 +2565,7 @@ void dFishField_c::recvRecs() {
                 mRecs[i].mRemote = 0;
             } else {
                 mRecs[i].mRemote = 1;
-                cLib::memCpy(&mRecs[i].mRec, fn_800DD64C(i + PLAY_SYNC_REC_ID), sizeof(dPlaySyncRec_c));
+                cLib::memCpy(&mRecs[i].mRec, dNet::getRecord(i + PLAY_SYNC_REC_ID), sizeof(dPlaySyncRec_c));
             }
         }
     }
@@ -2577,14 +2573,14 @@ void dFishField_c::recvRecs() {
 
 // 0x7848
 void dFishField_c::initRecs() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
             if (isRecMine(i)) {
                 mRecs[i].mRemote = 0;
             } else {
                 mRecs[i].mRemote = 1;
             }
-            cLib::memCpy(&mRecs[i].mRec, fn_800DD64C(i + PLAY_SYNC_REC_ID), sizeof(dPlaySyncRec_c));
+            cLib::memCpy(&mRecs[i].mRec, dNet::getRecord(i + PLAY_SYNC_REC_ID), sizeof(dPlaySyncRec_c));
         }
     }
 }

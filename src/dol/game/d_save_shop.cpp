@@ -2,6 +2,7 @@
 // .data 804EF318..804EF360, .bss 805F2720..805F2AC0, .sdata 8074B0F8..8074B130, .sbss 8074E7C8..8074E7D0,
 // .sdata2 80750C40..80750C68.
 #include <game/game/d_save_shop.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_shop_layout.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -22,22 +23,16 @@
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
+#include <game/game/d_net.hpp>
 
 extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
 extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const int *range, int rangeNum, const void *filter, const dItem::Item *exclude,
                 int excludeNum, int); // 800C60B4: random items
-BOOL fn_800DCEDC();                   // 800DCEDC: an online session is active
-u32 fn_800DCF30();                    // 800DCF30: players in the session
-void fn_800DD4C8();                   // 800DD4C8
-void fn_800DD518(const void *data, u32 size); // 800DD518
-void fn_800DD588(int type, int arg);  // 800DD588
 void *fn_800A9058();                  // 800A9058
 int fn_800A8F98(void *, int unitX, int unitZ, int); // 800A8F98: -1 when none
 void fn_800ABAF4(int);                // 800ABAF4
-void *fn_801683D8();                                      // 801683D8
-void fn_80167BAC(void *);                                 // 80167BAC: reloads the structures' unit attributes
 }
 
 static const int sTools[8] = {
@@ -124,7 +119,7 @@ void dSaveShop_c::setStage(int stage) {
         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
     }
 
-    fn_80167BAC(fn_801683D8());
+    dSTR::getTownUnitAttr()->setAll();
     u16 msg = mStage + 10;
     dTime_c date = mStageDate.get();
     date.add(1, 0, 0, 0);
@@ -263,7 +258,7 @@ void dSaveShop_c::updateStage(int days) {
                         } else {
                             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
                         }
-                        fn_80167BAC(fn_801683D8());
+                        dSTR::getTownUnitAttr()->setAll();
                         u16 msg = mStage + 10;
                         dTime_c date = mStageDate.get();
                         date.add(1, 0, 0, 0);
@@ -744,7 +739,7 @@ void dSaveShop_c::sellAndNotify(int scene, int slot, int unitX, int unitZ, int p
         sell(scene, slot, unitX, unitZ);
     }
     addSales(price, flag);
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         dShopSale_c sale;
         sale.mSlot = slot;
         sale.mUnitX = unitX;
@@ -752,9 +747,9 @@ void dSaveShop_c::sellAndNotify(int scene, int slot, int unitX, int unitZ, int p
         sale.mPrice = price;
         sale.mFlag = flag;
         sale.mScene = scene;
-        fn_800DD4C8();
-        fn_800DD518(&sale, sizeof(dShopSale_c));
-        fn_800DD588(0x42, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&sale, sizeof(dShopSale_c));
+        dNet::sendPacket(NET_PACKET_SHOP_SALE, NET_MEMBER_NONE);
     }
 }
 

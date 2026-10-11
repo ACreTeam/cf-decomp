@@ -27,4 +27,4 @@ int dShopLayout_getSlot(int unitX, int unitZ);                  // 8015F930: -1 
 BOOL dShopLayout_isSlotSold(int unitX, int unitZ);              // 8015FBF8
 BOOL fn_8015FD10();                                             // 8015FD10: always FALSE
 BOOL fn_8015FD18();                                             // 8015FD18: always FALSE
-void dShopLayout_applySale(dShopSale_c sale);                    // 8015FD20
+void dShopLayout_applySale(dShopSale_c sale, int member, u8 curScene); // 8015FD20 (member / curScene unused; d_net passes its receiver arguments)

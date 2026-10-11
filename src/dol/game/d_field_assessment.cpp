@@ -4,6 +4,7 @@
 // See notes/d_field_assessment.txt.
 //
 // .text 80091AF8..800A5D3C (__sinit 8009FFEC; built with -sym on, so the code of the #included
+#include <game/game/d_str.hpp>
 // d_fg_mng_task.inc lands after it, 800A2220..), .ctors 80465670..80465674, .rodata
 // 8046EFA0..8046F1E8, .data 804E1808..804E3C40, .bss 80588D58..8058B5F8, .sdata 80749FB8..8074A3C8,
 // .sbss 8074E338..8074E378, .sdata2 80750658..80750708. d_search_cand.hpp first: vtables come out
@@ -49,6 +50,7 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
+#include <game/game/d_net.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -69,29 +71,9 @@ static const u8 sAround5[5] = {
 extern "C" {
 void fn_8018EF28();
 void fn_802B8D90(OSThread *thread);
-BOOL fn_800DCEDC();
-int fn_800DCF58();
-BOOL fn_800DCF2C(int player);
-BOOL fn_800DCF90();
-void fn_800DD4C8();
-void fn_800DD518(void *data, int size);
-void fn_800DD588(int a, int b);
-void fn_80169ED8();
-void fn_80169C38();
-void fn_80169BF4();
 void fn_800D11C8(dTime_c *last, int days);
 void fn_80081238(u16 *flags, int x, int z);
 u32 fn_80081324(int type);
-void fn_80169AC4();
-void fn_80169ADC();
-void fn_80169AEC();
-void fn_80169B04();
-void fn_80169B14();
-void fn_80169B2C();
-void fn_80169B3C();
-void fn_80169B54();
-void fn_80169B64();
-void fn_80169BB4();
 int fn_800812C8(int blockType);
 void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
@@ -102,7 +84,6 @@ void fn_80150524(void *obj);
 void fn_801505E4(void *obj);
 void fn_80150628(void *obj);
 void fn_801510A0(void *obj);
-void fn_800DD5F8(int a, void *b, int c);
 void fn_8015384C(void *obj);
 void fn_801541D8(void *obj);
 void fn_8014F998(void *obj, dTime_c *now);
@@ -113,7 +94,6 @@ void fn_8014EFC0(void *obj, u8 a);
 BOOL fn_8018EEEC();
 void fn_8018EEF4();
 void fn_8018EE7C();
-nw4r::math::VEC3 *fn_8016A28C();
 void fn_800D16E8();
 int fn_801017B8();
 void fn_800C77E8(void *obj);
@@ -323,7 +303,7 @@ static dFgCBRate_c *sCBCarnation[CBCarnationBaseHostIO_c::CARNATION_COLOR_NUM][C
     {(dFgCBRate_c *)&sCBCarnationRedWhiteHostIO, (dFgCBRate_c *)&sCBCarnationPinkWhiteHostIO, (dFgCBRate_c *)&sCBCarnationWhiteWhiteHostIO},
 };
 
-#include <game/game/d_fg_mng_task.inc>
+#include "d_fg_mng_task.inc"
 
 // 80091AF8: returns &gSceneChange, like getSceneChange (80161CC4); identical 3-insn getters exist
 // in 6+ other TUs: 800573C4, 800D3584, 80166990, 8018DABC, 801B97A8.
@@ -1080,7 +1060,7 @@ dFgMngLock_c *fgMngLock_get(int idx) {
 void fgMngCmd_apply(dFgMngCmd_c *cmd, u32 arg) {
     dFgMngPlayerState_c *slot = &sFgMngState.mPlayers[cmd->mReqPlayer];
     if (!cmd->mLocal) {
-        if (cmd->getPlayer() == fn_800DCF58()) {
+        if (cmd->getPlayer() == dNet::getMyNo()) {
             slot->mState = dFgMngPlayerState_c::STATE_REJECTED;
         }
     } else {
@@ -1090,7 +1070,7 @@ void fgMngCmd_apply(dFgMngCmd_c *cmd, u32 arg) {
         if (!cmd->exec()) {
             fgMngCmd_setRetry(idx);
         }
-        if (cmd->getPlayer() == fn_800DCF58()) {
+        if (cmd->getPlayer() == dNet::getMyNo()) {
             slot->mState = dFgMngPlayerState_c::STATE_ACCEPTED;
             switch (kind) {
             case FG_MNG_KIND_BLOCKED:
@@ -1106,9 +1086,9 @@ void fgMngCmd_apply(dFgMngCmd_c *cmd, u32 arg) {
                 break;
             default:
                 if (arg <= dFgMngCmd_c::SEND_SIZE_FULL) {
-                    fn_800DD4C8();
-                    fn_800DD518(cmd, arg);
-                    fn_800DD588(FG_MNG_PACKET_CMD, FG_MNG_NET_ALL);
+                    dNet::beginPacket();
+                    dNet::addPacket(cmd, arg);
+                    dNet::sendPacket(NET_PACKET_FG_MNG_CMD, NET_MEMBER_NONE);
                 }
                 break;
             }
@@ -1127,11 +1107,11 @@ void fgMngLock_add(u32 scene, dFdAsPos_c *pos, u32 layer) {
     int l = layer;
     if (fgMngLock_find(s, pos, l) < 0 || fgMngTask_find(s, pos, l) < -1) {
         dFgMngLock_c *lock = fgMngLock_get(fgMngLock_findFree());
-        if (!fn_800DCEDC()) {
+        if (!dNet::isSessionActive()) {
             lock->mPendingPlayers |= 1;
         } else {
             for (int i = 0; i < 4; i++) {
-                if (fn_800DCF2C(i)) {
+                if (dNet::isMember(i)) {
                     lock->mPendingPlayers |= 1 << i;
                 }
             }
@@ -1204,7 +1184,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     for (int i = 0; i < num; i++) {
         updateTrees(fd, w, h);
     }
-    fn_80169ED8();
+    dSTR::updateFlag14();
     dSaveData_c::getTown()->mHomes.updateAll(days);
     createHeap();
     dFgMngProc_c::setupUnitMask(fd, (u16 *)mBuffer);
@@ -1244,10 +1224,10 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
         dSaveData_c::getTown()->setFlag(0x13);
     }
     dSaveData_c::getTown()->clearFlag(0x12);
-    fn_80169C38();
+    dSTR::removeUfo();
     dSaveData_c::getTown()->clearFlag(0x19);
     if (dSaveData_c::getRaw()->isFlag(0x13)) {
-        fn_80169BF4();
+        dSTR::putUfo();
     }
     dSaveData_c::getTown()->clearFlag(0x16);
     fgMngProc_seedRandom(now, seed + 0x2232);
@@ -1433,10 +1413,10 @@ void dFgMngProc_c::trySpawnShellOffline() {
     }
 }
 
-// 800944B8: online (if fn_800DCF90): once per minute ending in 3, puts a shell on a random beach
+// 800944B8: online (if isHost): once per minute ending in 3, puts a shell on a random beach
 // block unless some player is on the beach.
 void dFgMngProc_c::trySpawnShellOnline() {
-    if (fn_800DCF90()) {
+    if (dNet::isHost()) {
         dTime_c now = *dTime_c::getCurrent();
         if (!isLastTime(now.hour, now.min)) {
             switch (now.min % 10) {
@@ -1469,10 +1449,10 @@ void dFgMngProc_c::trySpawnShellOnline() {
     }
 }
 
-// 80094658: runs the online or local shell spawn depending on fn_800DCEDC (online session
+// 80094658: runs the online or local shell spawn depending on isSessionActive (online session
 // active).
 void dFgMngProc_c::updateShellSpawn() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         trySpawnShellOnline();
     } else {
         trySpawnShellOffline();
@@ -2454,20 +2434,20 @@ void dFgMngProc_c::procEvents(dFdBase_c *fd, const dTime_c *time) {
         removeEggs(fd);
         addEvent(EVENT_BUNNY_DAY);
     } else if (dEvent::isEventOn(EVENT_COUNTDOWN, time)) {
-        fn_80169AC4();
+        dSTR::putCountdownBoard();
         addEvent(EVENT_COUNTDOWN);
     } else if (dEvent::isEventOn(EVENT_HARVEST_FESTIVAL, time)) {
-        fn_80169B64();
+        dSTR::putHarvest();
         addEvent(EVENT_HARVEST_FESTIVAL);
     } else if (dEvent::isEventOn(EVENT_FESTIVALE, time)) {
-        fn_80169AEC();
+        dSTR::putCarnival();
         addEvent(EVENT_FESTIVALE);
     }
     if (dEvent::isEventOn(EVENT_FISHING_TOURNEY, time)) {
-        fn_80169B14();
+        dSTR::putFishTent();
         addEvent(EVENT_FISHING_TOURNEY);
     } else if (dEvent::isEventOn(EVENT_BUG_OFF, time)) {
-        fn_80169B3C();
+        dSTR::putInsectTent();
         addEvent(EVENT_BUG_OFF);
     }
     if (dEvent::getTodayVisitor() == VISITOR_WISP) {
@@ -2499,19 +2479,19 @@ void dFgMngProc_c::endEvents(dFdBase_c *fd) {
                 endEggs(fd);
                 break;
             case EVENT_COUNTDOWN:
-                fn_80169ADC();
+                dSTR::removeCountdownBoard();
                 break;
             case EVENT_FISHING_TOURNEY:
-                fn_80169B2C();
+                dSTR::removeFishTent();
                 break;
             case EVENT_BUG_OFF:
-                fn_80169B54();
+                dSTR::removeInsectTent();
                 break;
             case EVENT_HARVEST_FESTIVAL:
-                fn_80169BB4();
+                dSTR::removeHarvest();
                 break;
             case EVENT_FESTIVALE:
-                fn_80169B04();
+                dSTR::removeCarnival();
                 break;
             case EVENT_LAMP_BURIED:
             case EVENT_LAMP_SAME_DAY:
@@ -4020,7 +4000,7 @@ void fgMngProc_procDayChange(BOOL arg) {
             dSaveData_c::getTown()->clearFlag(0x12);
             dSaveData_c::getTown()->clearFlag(0x13);
             dSaveData_c::getTown()->clearFlag(0x19);
-            fn_80169C38();
+            dSTR::removeUfo();
         }
         if (dSaveData_c::getTown()->mTownInfo.findEndEvent(EVENT_BUNNY_DAY) >= 0) {
             sFgMngProc.updateEggs();
@@ -4053,7 +4033,7 @@ void fgMngProc_procDayChange(BOOL arg) {
             }
         }
         u16 arg2 = 0;
-        fn_800DD5F8(0x2A, &arg2, 0);
+        dNet::setRecord(0x2A, &arg2, 0);
         save->clearFlag(6);
         if (sFgMngProcFlags & FG_MNG_PROC_FLAG_SAVE_FLAG6) {
             dSaveData_c::getTown()->setFlag(6);
@@ -4150,7 +4130,7 @@ void fgMngProc_updateFrame() {
         sFgMngProc.updateShellSpawn();
         return;
     }
-    if (!fn_800DCEDC() && fgMngProc_getElapsedDays() >= 1) {
+    if (!dNet::isSessionActive() && fgMngProc_getElapsedDays() >= 1) {
         sFgMngProcFlags |= FG_MNG_PROC_FLAG_DAY_CHANGE;
         if (fn_8018EEEC()) {
             fn_8018EEF4();
@@ -4158,7 +4138,7 @@ void fgMngProc_updateFrame() {
             fn_80091AF8()->setReturnExitHere(0.0f);
             nw4r::math::VEC3 pos;
             if (inside) {
-                nw4r::math::VEC3 *p = fn_8016A28C();
+                mVec3_c *p = dSTR::getCityReturnPos();
                 f32 z = p->z;
                 f32 y = p->y;
                 f32 x = p->x;
@@ -4209,7 +4189,7 @@ void fgMngProc_threadMain() {
         sFgMngRandom = NULL;
     }
     fgMngProc_collectFg56Units();
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         if (fgMngProc_isClockSetBack()) {
             sFgMngProc.spoilAllKabu();
             fn_800D16E8();
@@ -4305,7 +4285,7 @@ void fgMngProc_initOnCreate() {
     fgMngProc_assessLiveTown();
     fgMngProc_getLitterFlags(&sFgMngLitterFlags);
     fgMngTask_setBusy();
-    if (!fn_800DCEDC() && dPlayerMgr_c::getCurrentPlayer() != NULL) {
+    if (!dNet::isSessionActive() && dPlayerMgr_c::getCurrentPlayer() != NULL) {
         dLandID_c *town = &dSaveData_c::getTown()->mLandID;
         BOOL home = dPlayerMgr_c::getCurrentPlayer()->mPID.land == *town;
         if (home && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
@@ -4336,10 +4316,10 @@ u16 fgMngProc_getWeedNum() {
     return sFdAssess.mGrassNum;
 }
 
-// 8009C568: TRUE offline, else whether net member `member` is this console (fn_800DCF58); used
+// 8009C568: TRUE offline, else whether net member `member` is this console (getMyNo); used
 // by d_fgobj_manager and the task code.
 BOOL fgMngProc_isSelfMember(int member) {
-    return !fn_800DCEDC() ? TRUE : fn_800DCF58() == member;
+    return !dNet::isSessionActive() ? TRUE : dNet::getMyNo() == member;
 }
 
 // 8009C5B4: TRUE when offline, the player lacks flag0 0xD, the FG manager is not busy and town
@@ -4347,7 +4327,7 @@ BOOL fgMngProc_isSelfMember(int member) {
 BOOL fgMngProc_canEditField() {
     BOOL ok = FALSE;
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    if (!fn_800DCEDC() && !player->isFlag0(0xD) && sFgMngProc.mBusy == 0 &&
+    if (!dNet::isSessionActive() && !player->isFlag0(0xD) && sFgMngProc.mBusy == 0 &&
         !(*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 1)) {
         ok = TRUE;
     }
@@ -4369,7 +4349,7 @@ u16 fgMngProc_getMemberHeldItem(int member) {
 void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     u8 v;
     dSaveTown_c *save;
-    if (fgMngProc_getMemberHeldItem(fn_800DCF58()) != dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).getId()) {
+    if (fgMngProc_getMemberHeldItem(dNet::getMyNo()) != dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).getId()) {
         return;
     }
     dItem::Item item(itemId);
@@ -4488,7 +4468,7 @@ void fgMngProc_clearBusy() {
 // 8009CB0C: offline only: clears the per-unit state flags and removes all fg 0x94 (clearFg94);
 // called at the end of fgMngProc_initTownField.
 void fgMngProc_resetUnitState() {
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         fgMngState_clearUnitFlags(&sFgMngState);
         dFgMngProc_c::clearFg94();
     }
@@ -4838,7 +4818,7 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     int x, z;
     int i;
     u16 held;
-    held = fgMngProc_getMemberHeldItem(fn_800DCF58());
+    held = fgMngProc_getMemberHeldItem(dNet::getMyNo());
     if (!(held == dItem::Item(dItem::ITEM_IDX_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).mId)) {
         return FALSE;
     }
@@ -4939,7 +4919,7 @@ BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, int member) {
 
 // 8009DD40: sets the town unit's fg and, online, sends it to the other consoles (packet 0x2B).
 void fgMngProc_setUnitFgSync(int x, int z, u16 fg) {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         struct {
             u8 x;
             u8 z;
@@ -4948,9 +4928,9 @@ void fgMngProc_setUnitFgSync(int x, int z, u16 fg) {
         data.x = x;
         data.z = z;
         data.fg = fg;
-        fn_800DD4C8();
-        fn_800DD518(&data, 4);
-        fn_800DD588(FG_MNG_PACKET_UNIT_FG, FG_MNG_NET_ALL);
+        dNet::beginPacket();
+        dNet::addPacket(&data, 4);
+        dNet::sendPacket(NET_PACKET_FG_MNG_UNIT_FG, NET_MEMBER_NONE);
     }
     dFgMngProc_c::setUnitItem(fn_80190C44(FD_ID_TOWN), x, z, fg, 0);
 }
@@ -4963,7 +4943,7 @@ void fgMngProc_recvUnitFg(const u16 *data) {
     dFdAsPos_c unit;
     unit.mX = data[0] >> 8;
     unit.mZ = data[0] & 0xFF;
-    if (fn_800DCF90() && fgMngLock_find(0, &unit, 0) >= 0) {
+    if (dNet::isHost() && fgMngLock_find(0, &unit, 0) >= 0) {
         return;
     }
     if (fg == dItem::ITEM_ID_NONE) {
@@ -5015,7 +4995,7 @@ BOOL fgMngProc_canCheckDayChange() {
 // 8009DFBC: sets sDayChangeBlocked = 1 so fgMngProc_updateFrame does nothing; used by special NPCs'
 // events (resetsan, seiichi, perio, op_tanukichi, golditem_soncho, npc_out).
 void fgMngProc_blockDayChange() {
-    fn_800DCEDC();
+    dNet::isSessionActive();
     sDayChangeBlocked = 1;
 }
 
@@ -5093,7 +5073,7 @@ void fgMngProc_getLitterFlags(dFgMngLitterFlags_c *flags) {
 // 8009E238: offline outdoors: turnips/candy attract ants, turnips/trash flies (flags
 // d_insect_field reads; likely ants / flies), then clears the flags.
 void fgMngProc_attractInsects(dFgMngLitterFlags_c *flags) {
-    if (!fn_800DCEDC() && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
+    if (!dNet::isSessionActive() && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
         if (flags->mHasBadKabu || flags->mHasCandy) {
             dInsectInfo::setAntsAttracted();
         }

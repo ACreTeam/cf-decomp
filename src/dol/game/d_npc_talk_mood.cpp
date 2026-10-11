@@ -44,7 +44,7 @@ BOOL dNpcMood_c::isEnabled() {
     if (mDisabled) {
         return FALSE;
     }
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         return FALSE;
     }
     return TRUE;

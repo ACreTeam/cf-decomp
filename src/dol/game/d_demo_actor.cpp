@@ -1,4 +1,4 @@
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_demo_actor.hpp>
 #include <game/game/d_msg_rcpt.hpp>
 
@@ -173,9 +173,9 @@ void dDemoActor_c::clearDemoFlags(u32 flags) {
     mDemoFlags &= ~flags;
 }
 void dDemoActor_c::attachDemoActor(dMsg::Rcpt_c *rcpt) {
-    dDemo_c::mInstance->attachActor(rcpt);
+    dMsg::Comp_c::mInstance->attachActor(rcpt);
 }
 void dDemoActor_c::detachDemoActor(dMsg::Rcpt_c *rcpt) {
-    // Rcpt_c::mpController is the dMsg::Comp_c controller, which this code calls dDemo_c.
-    reinterpret_cast<dDemo_c *>(rcpt->getController())->detachActor();
+    // Rcpt_c::mpController is the dMsg::Comp_c controller, which this code calls dMsg::Comp_c.
+    reinterpret_cast<dMsg::Comp_c *>(rcpt->getController())->detachActor();
 }

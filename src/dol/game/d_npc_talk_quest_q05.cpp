@@ -9,7 +9,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_quest.hpp>
 #include <game/game/d_scene.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -31,7 +31,7 @@ static inline void setPlayerUnit(talk_c *talk, dAnimal_c *animal, const dPlayerI
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
-        talk->getController()->fn_801A5874(idx + 1, unit, l_strUnit);
+        talk->getController()->setStringWord(idx + 1, unit, l_strUnit);
     }
 }
 
@@ -315,7 +315,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrWin(int kind) {
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
             animal->mQuest.mWish.addValue(5);
-            if (!fn_800DCEDC() && isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+            if (!dNet::isSessionActive() && isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
                 animal->setQuestStarted();
             }
         }

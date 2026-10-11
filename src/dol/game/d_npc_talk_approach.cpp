@@ -3,7 +3,7 @@
 #include <game/game/d_npc_talk_approach.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_animal.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_hr.hpp>
 #include <game/game/d_item_sel.hpp>
@@ -224,7 +224,7 @@ int dAcNpcNml_c::talk_c::msgApNickname(msgInfo_s *info) {
                 if (player != NULL && animal != NULL) {
                     dHmnName::Word_c name;
                     player->mPID.setWord(&name);
-                    fn_801A309C(getController(), &name, animal->mID.getLooks(1));
+                    getController()->offerNickname(&name, animal->mID.getLooks(1));
                 }
             }
             setProcSet(&l_talkProcSets[TALK_PROC_APPROACH]);

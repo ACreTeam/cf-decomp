@@ -16,7 +16,7 @@ extern int lbl_8074EAC8;          // theater message code (1..0x1D), set by a RE
 
 extern "C" {
 // Hide-and-seek scene state (0 start, 1 running, 2 end; < 3) -> lbl_8074C180. FALSE while online
-// (fn_800DCEDC) or out of range.
+// (isSessionActive) or out of range.
 BOOL fn_801A6748(int state);                  // 801A6748
 BOOL fn_801A8134(mVec3_c *pos, int a, int b); // 801A8134: adjusts the player's return position (q10 game start/end)
 void fn_801AD168();                           // 801AD168: sets lbl_8074EACC

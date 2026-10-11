@@ -149,7 +149,9 @@ enum {
 };
 
 class dFdBase_c;
-class dDemo_c;
+namespace dMsg {
+class Comp_c;
+}
 struct dNpcFtrShape_c;
 
 // Vtables are emitted in reverse class-completion order: the target's .data has searchCat_c,
@@ -317,7 +319,7 @@ struct remark_c {
     remark_c(); // 800B24F8
     void clear(); // 800B2514: item ITEM_IDX_APPLE (the placeholder)
     dItem::Item getItem() const; // 800B255C: the item, ITEM_IDX_APPLE if it is not a real item
-    void setWords(dDemo_c *demo) const; // 800B25C4: word 0 the series name (if any), word 1 the item name
+    void setWords(dMsg::Comp_c *demo) const; // 800B25C4: word 0 the series name (if any), word 1 the item name
 
     /* 0x0 */ dItem::Item mItem;
     /* 0x4 */ u32 mSeries;

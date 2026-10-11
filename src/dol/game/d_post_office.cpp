@@ -13,19 +13,10 @@
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
+#include <game/game/d_net.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-// Visit (Wi-Fi) session.
-BOOL fn_800DCEDC();                             // in a session
-u32 fn_800DCF30();                              // members
-int fn_800DCF58();                              // this console's member index (0 = host)
-BOOL fn_800DCF90();
-BOOL fn_800DCF2C(int player);                   // member present
-void fn_800DD4C8();                             // start a packet
-void fn_800DD518(const void *data, u32 size);   // add data
-void fn_800DD588(int type, int player);         // send it
-
 int fn_8017BF90(const dPersonalID_c *pid, dPrivateData_c *player); // friend index
 
 // A player's mail box (dPrivateData_c::fn_80139408).
@@ -185,7 +176,7 @@ void deliverAll() {
 
 // 80102B38
 BOOL hasMail() {
-    if (fn_800DCF58() != 0) {
+    if (dNet::getMyNo() != 0) {
         return FALSE;
     }
     void *box = dPlayerMgr_c::getCurrentPlayer()->fn_80139408();
@@ -218,7 +209,7 @@ void holdMail(dMail_c *mail) {
 
 // 80102C60
 void update() {
-    if (!isSceneAttr(getCurrentScene(), 0x20) && (!fn_800DCEDC() || fn_800DCF30() <= 1)) {
+    if (!isSceneAttr(getCurrentScene(), 0x20) && (!dNet::isSessionActive() || dNet::getMemberNum() <= 1)) {
         if (dPostBox_c::get()->checkDelivery(TRUE)) {
             deliverAll();
         }
@@ -251,8 +242,8 @@ void setFutureLetterTime(const dTime_c *time) {
 
 // 80102D64
 BOOL checkFull() {
-    if (fn_800DCEDC()) {
-        if (fn_800DCF90()) {
+    if (dNet::isSessionActive()) {
+        if (dNet::isHost()) {
             return isFull();
         }
         return TRUE;
@@ -431,9 +422,9 @@ void onSyncPacket(int player, const u8 *data) {
 // 80103234
 void sendMail(dMail_c *mail) {
     setSyncState(3);
-    fn_800DD4C8();
-    fn_800DD518(mail, sizeof(dMail_c));
-    fn_800DD588(0x2E, 0);
+    dNet::beginPacket();
+    dNet::addPacket(mail, sizeof(dMail_c));
+    dNet::sendPacket(NET_PACKET_MAIL, 0);
 }
 
 // 80103280
@@ -450,9 +441,9 @@ void onMailPacket(int player, const void *data) {
 // 8010330C
 void sendSyncState(u8 state, int player) {
     u8 data = state;
-    fn_800DD4C8();
-    fn_800DD518(&data, 1);
-    fn_800DD588(0x2D, player);
+    dNet::beginPacket();
+    dNet::addPacket(&data, 1);
+    dNet::sendPacket(NET_PACKET_POST_SYNC, player);
 }
 
 // 80103354
@@ -760,21 +751,21 @@ BOOL isRecycleSyncDone() {
 
 // 80103EB4
 void sendRecycleBin(int player) {
-    fn_800DD4C8();
-    fn_800DD518(dSaveData_c::getTown()->mRecycleBin.getItems(), sizeof(dRecycleBin_c));
-    fn_800DD588(0x62, player);
+    dNet::beginPacket();
+    dNet::addPacket(dSaveData_c::getTown()->mRecycleBin.getItems(), sizeof(dRecycleBin_c));
+    dNet::sendPacket(NET_PACKET_RECYCLE_BIN, player);
 }
 
 // 80103F04
 void broadcastRecycleBin() {
     BOOL online = FALSE;
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         online = TRUE;
     }
     if (online) {
-        int self = fn_800DCF58();
+        int self = dNet::getMyNo();
         for (int i = 0; i < PLAYER_NUM; i++) {
-            if (i != self && fn_800DCF2C(i)) {
+            if (i != self && dNet::isMember(i)) {
                 l_recycleSync[i] = 1;
                 sendRecycleBin(i);
             }
@@ -790,8 +781,8 @@ void onRecycleBin(int player, const void *data) {
     for (int i = 0; i < RECYCLE_BIN_ITEM_NUM; i++, item++) {
         bin->set(i, *item);
     }
-    fn_800DD4C8();
-    fn_800DD588(0x63, player);
+    dNet::beginPacket();
+    dNet::sendPacket(NET_PACKET_RECYCLE_BIN_ACK, player);
 }
 
 // 80104044
@@ -818,21 +809,21 @@ BOOL isMelodySyncDone() {
 
 // 801040CC
 void sendMelody(int player) {
-    fn_800DD4C8();
-    fn_800DD518(dSaveData_c::getTown()->mVillageMelody.getNotes(), sizeof(dSaveMelody_c));
-    fn_800DD588(0x67, player);
+    dNet::beginPacket();
+    dNet::addPacket(dSaveData_c::getTown()->mVillageMelody.getNotes(), sizeof(dSaveMelody_c));
+    dNet::sendPacket(NET_PACKET_MELODY, player);
 }
 
 // 8010411C
 void broadcastMelody() {
     BOOL online = FALSE;
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         online = TRUE;
     }
     if (online) {
-        int self = fn_800DCF58();
+        int self = dNet::getMyNo();
         for (int i = 0; i < PLAYER_NUM; i++) {
-            if (i != self && fn_800DCF2C(i)) {
+            if (i != self && dNet::isMember(i)) {
                 l_melodySync[i] = 1;
                 sendMelody(i);
             }
@@ -844,8 +835,8 @@ void broadcastMelody() {
 void onMelody(int player, const void *data) {
     cLib::memCpy(l_melodyBuf, data, sizeof(l_melodyBuf));
     dSaveData_c::getTown()->mVillageMelody.set(l_melodyBuf);
-    fn_800DD4C8();
-    fn_800DD588(0x68, player);
+    dNet::beginPacket();
+    dNet::sendPacket(NET_PACKET_MELODY_ACK, player);
 }
 
 // 8010422C

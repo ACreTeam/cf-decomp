@@ -4,6 +4,8 @@
 // .sdata2 80751800..80751848.
 // See include/game/game/d_objc.hpp and notes/d_objc.txt.
 #include <game/game/d_objc.hpp>
+#include <game/game/d_str.hpp>
+#include <game/game/d_a_str.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/framework/f_manager.hpp>
 #include <game/framework/f_profile.hpp>
@@ -30,10 +32,6 @@ extern "C" {
 void fn_800FA6AC(mVec2_c *pos);
 // 8018A080 (d_camera): a screen position to a world position
 void fn_8018A080(mVec3_c *pos, const dCamera_c *cam, const mVec2_c *screen);
-// 801692A0 (d_str): the structure manager
-void *fn_801692A0();
-// 80169424 (d_str): the structure standing on a unit
-fBase_c *fn_80169424(void *mgr, int unitX, int unitZ, int);
 }
 
 // The process that runs the collision every frame (RTTI "dObjc_c").
@@ -727,11 +725,11 @@ void calc() {
                                     hit = TRUE;
                                 } else if (id == 0x7003) {
                                     l_dpdHit.set(pos, HIT_STR,
-                                                 fn_80169424(fn_801692A0(), x, z, 1), 0);
+                                                 dSTR::getAcList()->search(x, z, TRUE), 0);
                                     hit = TRUE;
-                                } else if (fn_80169424(fn_801692A0(), x, z, 1) != NULL) {
+                                } else if (dSTR::getAcList()->search(x, z, TRUE) != NULL) {
                                     l_dpdHit.set(pos, HIT_STR,
-                                                 fn_80169424(fn_801692A0(), x, z, 1), 0);
+                                                 dSTR::getAcList()->search(x, z, TRUE), 0);
                                     hit = TRUE;
                                 }
                             }

@@ -380,7 +380,7 @@ BOOL fn_8015FD18() {
 }
 
 // 8015FD20
-void dShopLayout_applySale(dShopSale_c sale) {
+void dShopLayout_applySale(dShopSale_c sale, int member, u8 curScene) {
     int scene = sale.mScene;
     switch (scene) {
     case SCENE_RM_SHOP0:

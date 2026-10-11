@@ -3,7 +3,7 @@
 #include <game/game/d_npc_talk_quest_q12.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/game/d_date.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -21,7 +21,7 @@ static inline void setPlayerUnit(talk_c *talk, const dPlayerID_c *player, int id
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
-        talk->getController()->fn_801A5874(idx + 1, unit, "sys_STRING/STR_Unit");
+        talk->getController()->setStringWord(idx + 1, unit, "sys_STRING/STR_Unit");
     }
 }
 
@@ -244,7 +244,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyItem(int kind) {
             fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_6, 2);
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
-            if (!fn_800DCEDC() && isCurrentSceneAttr(SCENE_ATTR_TOWN) && animal != NULL) {
+            if (!dNet::isSessionActive() && isCurrentSceneAttr(SCENE_ATTR_TOWN) && animal != NULL) {
                 animal->setQuestStarted();
             }
             u8 minute = calcHeldItemChangeMinute((u8)dTime_c::getCurrent()->min, FALSE);

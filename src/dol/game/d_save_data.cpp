@@ -115,7 +115,7 @@ void fn_8010D950(u8 v) {
 }
 
 // 8010D970
-u8 fn_8010D970() {
+int fn_8010D970() {
     return dSaveData_c::sOption.mBit65;
 }
 
@@ -153,7 +153,7 @@ int fn_8010D9F4() {
 }
 
 // 8010D9FC
-u8 fn_8010D9FC() {
+BOOL fn_8010D9FC() {
     return dSaveData_c::sOption.mBit1;
 }
 
@@ -164,7 +164,7 @@ void fn_8010DA08(u8 v) {
 }
 
 // 8010DA28
-u8 fn_8010DA28() {
+BOOL fn_8010DA28() {
     return dSaveData_c::sOption.mBit0;
 }
 

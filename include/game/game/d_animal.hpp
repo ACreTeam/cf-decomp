@@ -421,6 +421,7 @@ public:
     /* 0x19C0 */ dDesign_c mClothDesign;
     /* 0x2240 */ dTimeStamp_c mPlaceChangeTime;
     /* 0x2248 */ s32 mVersion; // getVersion / initVersion
+    dAnmPersonalID_c *getID() { return &mID; } // dMsg::Word_c::procRandomWordTag needs the inline temporary
     /* 0x224C */ dAnmPersonalID_c mID;
     /* 0x230C */ dLandID_c mPrevLand;
     /* 0x2322 */ u8 _2322[2];
@@ -672,6 +673,10 @@ public:
     /* 0x3C720 */ u32 mChecksum; // CRC of the rest (calcChecksum)
     /* 0x3C724 */ u8 _3C724[0x1C];
 }; // size 0x3C740
+
+dAnimal_c *getBestCompatAnimal(dAnimal_c *animals, dAnimal_c *animal); // 8012A068
+dAnimal_c *getWorstCompatAnimal(dAnimal_c *animals, dAnimal_c *animal); // 8012A078
+int getImpression(dPrivateData_c *player); // 80135AC8: the player's impression (STR_Impress index - 1)
 
 // Random set bit of mask (count bits set, num bits wide), or -1. 80134CD4
 u32 pickRandomBit(u32 mask, int count, u32 num);

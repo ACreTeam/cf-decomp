@@ -817,6 +817,7 @@ public:
 
     void start();                                     // 8007E7B0
     void end(u8 keep);                                // 8007E7BC
+    BOOL isState(int state) const { return mState == state; } // [D] d_msg (dMsg::Comp_c::doDelete)
 
     /* 0x24 */ int mState;
     /* 0x28 */ u8 mKeep;

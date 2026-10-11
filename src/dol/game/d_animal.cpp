@@ -1,6 +1,7 @@
 // Villager (animal) save data TU. Draft: only the class anchors are written so far.
 // .text 8011B400..80135E88 (sinit fn_80135E40). See notes/d_animal.txt.
 #include <game/game/d_event.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <game/cLib/c_lib.hpp>
@@ -10,7 +11,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_home.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_string.hpp>
 #include <lib/egg/core/eggHeap.h>
@@ -25,6 +26,7 @@
 #include <game/game/d_hmn_tool_mng.hpp>
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
+#include <game/game/d_net.hpp>
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -41,7 +43,6 @@ struct dAnimalEvent_c {
 // Callees in other TUs declared with differing signatures by the first-pass chunks.
 extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
-BOOL fn_800DCEDC();
 u16 fn_800FABF4(int looks, int season);
 }
 
@@ -1622,8 +1623,7 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-dScript::Word_c *fn_801A3158(dDemo_c *demo, int idx);
-u32 fn_800DCF30();
+dScript::Word_c *fn_801A3158(dMsg::Comp_c *demo, int idx);
 extern u8 lbl_8059FF80[];
 }
 
@@ -1856,7 +1856,7 @@ void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks
     } else {
         mask |= 0x380;
     }
-    dDemo_c *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
 
     if (demo != NULL) {
         while (mask != 0) {
@@ -2661,7 +2661,7 @@ void dAnimal_c::applyNewItems(u8 idx, BOOL notify) {
 
     dRecycleBin_c *bin = &dSaveData_c::getTown()->mRecycleBin;
     BOOL noBin = FALSE;
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         noBin = TRUE;
     }
 
@@ -2805,7 +2805,6 @@ extern "C" {
 // Other TUs.
 extern u8 lbl_8059FF80[0x10];
 struct dNpcPair_c;
-u32 fn_800DCF30();
 u16 fn_8016AF68(const char *group);
 BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 int fn_801017B8();
@@ -2944,7 +2943,7 @@ BOOL dAnimal_c::updateOwnItems() {
     if (isMoving()) {
         return FALSE;
     }
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         return FALSE;
     }
 
@@ -4837,8 +4836,6 @@ extern "C" {
 // Other chunks of this TU.
 
 // Other TUs.
-u32 fn_800DCF30();
-u32 fn_80169298();
 }
 
 
@@ -5362,7 +5359,7 @@ u8 dAnimal_c::fn_801281AC() {
     u8 ret = 0;
     if (mID.isValid()) {
         u16 idx = mID.mNpcIdx;
-        ret = idx % fn_80169298();
+        ret = idx % dSTR::getNpcHouseTypeNum();
     }
     return ret;
 }
@@ -5443,7 +5440,7 @@ BOOL dAnimal_c::fn_80128440() {
         return FALSE;
     }
 
-    if (fn_800DCF30() <= 1 && player->mPID.isFromTown()) {
+    if (dNet::getMemberNum() <= 1 && player->mPID.isFromTown()) {
         return FALSE;
     }
     return TRUE;
@@ -5670,7 +5667,7 @@ u8 calcHeldItemChangeMinute(int minute, BOOL soon) {
 BOOL dAnimal_c::wantsParasol() {
     dQuestWish_c *wish = &mQuest.mWish;
     int kind = wish->isValid() ? wish->mKind : 8;
-    dUnk8074EBE8_c *p = lbl_8074EBE8;
+    dWeather_c *p = dWeather_c::sInstance;
     if (kind == 3 && p != NULL) {
         int mode = p->_5884;
         BOOL ok = (mode == 0 || mode == 1) ? TRUE : FALSE;
@@ -6954,7 +6951,7 @@ BOOL dAnimalBlock_c::isHomeStayTime(const dAnmPersonalID_c *id, dPrivateData_c *
     dAnimal_c *animal;
     dAnimalHomeStay_c *unk;
     int idx;
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
 
@@ -8386,7 +8383,7 @@ BOOL dAnimalBlock_c::canStartAppointment(dPrivateData_c *player, dTime_c *time, 
     if (player == NULL || !player->mPID.isValid() || player->isFlag0(0xD) || !player->mPID.isFromTown()) {
         return FALSE;
     }
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         return FALSE;
     }
     if (!dQuestBase_c::checkEventSchedule(kind, time)) {
@@ -9584,7 +9581,7 @@ static inline BOOL isRequestDoneOngoing(dAnimal_c *animal, int kind, int want) {
     return isInWantedOngoing(animal, kind, want) && animal->isLostItemRequestDone(0, 1);
 }
 
-static inline BOOL isWeatherIn(const dUnk8074EBE8_c *p, int want) {
+static inline BOOL isWeatherIn(const dWeather_c *p, int want) {
     return p->_5884 == want;
 }
 
@@ -9600,7 +9597,7 @@ static inline dQuestPlayerAnimal_c *getQuestAnimal(dAnimalBlock_c *b) {
     return &b->mHideAndSeek;
 }
 
-static inline BOOL isRainWeatherIn(const dUnk8074EBE8_c *unk) {
+static inline BOOL isRainWeatherIn(const dWeather_c *unk) {
     BOOL special = FALSE;
     if (unk != NULL) {
         BOOL is = FALSE;
@@ -9634,7 +9631,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
         isKind43 = false;
     }
 
-    dUnk8074EBE8_c *unk = lbl_8074EBE8;
+    dWeather_c *unk = dWeather_c::sInstance;
     u8 min = dTime_c::getCurrent()->min;
     dItem::Item give;
     BOOL set = FALSE;
@@ -9649,7 +9646,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
     dItem::Item item99E(dItem::ITEM_IDX_NET);
     dItem::Item item99F(dItem::ITEM_IDX_FISHING_ROD);
 
-    if (!fn_800DCEDC() && (u8)getPrevScene() == SCENE_DM_PL_SEL &&
+    if (!dNet::isSessionActive() && (u8)getPrevScene() == SCENE_DM_PL_SEL &&
         isBirthdayHost(&animal->mID, fn_801017B8(), TRUE, TRUE, TRUE) && special) {
         give = animal->getUmbrella();
         set = TRUE;
@@ -11182,9 +11179,9 @@ BOOL isWearingRegentWig(const dPrivateData_c *player) {
 }
 
 static inline BOOL isRainWeather() {
-    if (lbl_8074EBE8 != NULL) {
+    if (dWeather_c::sInstance != NULL) {
         BOOL result = FALSE;
-        if (isWeatherIn(lbl_8074EBE8, 4) || isWeatherIn(lbl_8074EBE8, 3)) {
+        if (isWeatherIn(dWeather_c::sInstance, 4) || isWeatherIn(dWeather_c::sInstance, 3)) {
             result = TRUE;
         }
         return result;
@@ -11193,9 +11190,9 @@ static inline BOOL isRainWeather() {
 }
 
 static inline BOOL isSnowWeather() {
-    if (lbl_8074EBE8 != NULL) {
+    if (dWeather_c::sInstance != NULL) {
         BOOL result = FALSE;
-        if (isWeatherIn(lbl_8074EBE8, 6) || isWeatherIn(lbl_8074EBE8, 5)) {
+        if (isWeatherIn(dWeather_c::sInstance, 6) || isWeatherIn(dWeather_c::sInstance, 5)) {
             result = TRUE;
         }
         return result;

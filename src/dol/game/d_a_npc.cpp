@@ -12,6 +12,7 @@
 #include <game/game/d_bg_attr.hpp>
 #include <game/game/d_bgcf.hpp>
 #include <game/game/d_camera.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_demo.hpp>
 #include <game/game/d_effect.hpp>
 #include <game/game/d_field_info.hpp>
@@ -990,14 +991,14 @@ int dAcNpc_c::requestPermit(int type, u32 player, BOOL arg) {
             setPermitOwner(player);
             ret = 0;
         } else if (isLocalOwner()) {
-            setPermitOwner(fn_800DCF58());
+            setPermitOwner(dNet::getMyNo());
             ret = 1;
         }
         break;
     case 1:
     case 2:
     case 3:
-        if (player != 4 && (int)player != fn_800DCF58()) {
+        if (player != 4 && (int)player != dNet::getMyNo()) {
             setPermitState(player);
             ret = 2;
         } else if (isLocalOwner()) {
@@ -1071,7 +1072,7 @@ BOOL dAcNpc_c::setPermitStateSelf() {
     if (permit == NULL) {
         return FALSE;
     }
-    int self = fn_800DCF58();
+    int self = dNet::getMyNo();
     fn_800F16B0(&mNpcItem, self);
     permit->setState(self);
     return TRUE;
@@ -1079,7 +1080,7 @@ BOOL dAcNpc_c::setPermitStateSelf() {
 
 // 80013348
 BOOL dAcNpc_c::setPermitFlagSelf() {
-    int self = fn_800DCF58();
+    int self = dNet::getMyNo();
     if (!isMultiPlay() || !isNetSync()) {
         return TRUE;
     }
@@ -1107,7 +1108,7 @@ BOOL dAcNpc_c::isPermitSelf() const {
     if (!permit->fn_800F5000()) {
         return FALSE;
     }
-    BOOL self = fn_800DCF58() == permit->mState;
+    BOOL self = dNet::getMyNo() == permit->mState;
     return self;
 }
 
@@ -1124,7 +1125,7 @@ void dAcNpc_c::fn_800134A4() {}
 
 // 800134A8
 BOOL dAcNpc_c::isLocalOwnerHost() const {
-    if (isLocalOwner() && fn_800DD960()) {
+    if (isLocalOwner() && dNet::isSceneOwner()) {
         return TRUE;
     }
     return FALSE;
@@ -1142,13 +1143,13 @@ mVec3_c *dAcNpc_c::demoHook58() {
 
 // 8001354C
 BOOL dAcNpc_c::isNetActive() {
-    return fn_800DCEDC();
+    return dNet::isSessionActive();
 }
 
 // 80013550
 BOOL dAcNpc_c::isMultiPlay() {
     BOOL ret = FALSE;
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         ret = TRUE;
     }
     return ret;
@@ -1191,7 +1192,7 @@ void dAcNpc_c::saveDaub() {
         if (mng != NULL) {
             int id = mng->keyToId(&mNpcItem.mId);
             if (id != 0xBA) {
-                fn_800DD5F8(id, NULL, 0);
+                dNet::setRecord(id, NULL, 0);
             }
         }
     }
@@ -2022,7 +2023,7 @@ int dAcNpc_c::create() {
 
 void dAcNpc_c::postCreate(MAIN_STATE_e state) {
     if (state == SUCCESS) {
-        if (!fn_800DD960()) {
+        if (!dNet::isSceneOwner()) {
             mObjc.setTempWeight(0xFF);
         }
         mRecvDaubAsOwner = false;
@@ -2141,17 +2142,17 @@ int dAcNpc_c::execute() {
     mManpu.execute(&mNodeMtx12, anmId, &mAngle.y, &mAudioObj, model->mAnm.getFrame());
 
     if (isInUse(NULL)) {
-        if (fn_800DD960()) {
+        if (dNet::isSceneOwner()) {
             mObjc.setTempWeight(0xFF);
         }
-    } else if (mObjc.isTempWeight() && fn_800DD960()) {
+    } else if (mObjc.isTempWeight() && dNet::isSceneOwner()) {
         mObjc.resetTempWeight();
     }
 
     if (mIsActive) {
         mObjc.regist();
         if (mCheckGround) {
-            if (fn_800DD960()) {
+            if (dNet::isSceneOwner()) {
                 mPos.y -= 1.0f;
                 mAcch.check(13.0f, &mPos, &mLastPos, mAngle.y, (int)this, 0x217, TRUE);
             } else {
@@ -5848,7 +5849,7 @@ int dAcNpc_c::action_c::initCatch(dAcNpc_c *npc) {
     if ((u32)type >= 2) {
         type = 0;
     }
-    int member = fn_800DCF58();
+    int member = dNet::getMyNo();
     f32 f1 = npc->getHandItemOfsX();
     f32 f2 = fn_80100548();
     f32 f3 = npc->getHandItemOfsZ();
@@ -7825,7 +7826,7 @@ void dAcNpc_c::lookAt_c::execute(dAcNpc_c *npc) {
     int playerNo = 4;
     mAng pitch(mPitch.mCur.mAngle);
     mAng yaw(mYaw.mCur.mAngle);
-    if (npc->isNetSync() && npc->mAcceptMoveReq && npc->isInUse(&playerNo) && playerNo != fn_800DCF58() &&
+    if (npc->isNetSync() && npc->mAcceptMoveReq && npc->isInUse(&playerNo) && playerNo != dNet::getMyNo() &&
         npc->getDaubHeadAngle(&pitch, &yaw)) {
         yaw = clampYaw(yaw);
         pitch = clampYaw(pitch);
@@ -8097,7 +8098,7 @@ BOOL dAcNpc_c::viewArea_c::isOutsideAll(u32 playerNo, const mVec3_c *pos) const 
     if (no == 4) {
         end = 4;
     }
-    int me = fn_800DCF58();
+    int me = dNet::getMyNo();
     for (int i = start; i < end; i++) {
         BOOL out = TRUE;
         if (i == me) {
@@ -8449,7 +8450,7 @@ int dAcNpc_c::recept_c::getPlayerNo() const {
     if (getCurrentScene() == 0x41) {
         return dSvMgr_c::mCurrentVisitor;
     }
-    return fn_800DCF58();
+    return dNet::getMyNo();
 }
 
 void dAcNpc_c::recept_c::setPartner(dAcNpc_c *npc) {
@@ -8848,16 +8849,16 @@ BOOL dAcNpc_c::recept_c::setRequest1(int arg) {
 
 BOOL dAcNpc_c::recept_c::req1Start() {
     if (getController() != NULL) {
-        getController()->_6C60 = mReq.mReq1Arg;
+        getController()->mSuspendReq = mReq.mReq1Arg;
         mReqStep = 1;
     }
     return FALSE;
 }
 
 BOOL dAcNpc_c::recept_c::req1Wait() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        if (ctrl->isState(&dDemo_c::fn_801A4D74)) {
+        if (ctrl->isState(&dMsg::Comp_c::executeSuspend)) {
             mReqStep = 2;
             return TRUE;
         }
@@ -8884,11 +8885,11 @@ BOOL dAcNpc_c::recept_c::reqMsgClose() {
 }
 
 int dAcNpc_c::recept_c::procMsgClose() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        void (dDemo_c::*waitState)() = &dDemo_c::fn_801A4D74;
+        void (dMsg::Comp_c::*waitState)() = &dMsg::Comp_c::executeSuspend;
         if (ctrl->isState(waitState)) {
-            fn_801A316C(getController(), 0);
+            getController()->requestStart(0);
             return 1;
         }
     }
@@ -9353,9 +9354,9 @@ BOOL dAcNpc_c::recept_c::reqTextInput34(u16 *buf, int keepMsg) {
 
 // 8002B3C4
 int dAcNpc_c::recept_c::stepMenuInit() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        ctrl->_6C60 = 1;
+        ctrl->mSuspendReq = dMsg::SUSPEND_REQ_MENU;
         mReqStep = 1;
     }
     return 0;
@@ -9363,9 +9364,9 @@ int dAcNpc_c::recept_c::stepMenuInit() {
 
 // 8002B3E4
 int dAcNpc_c::recept_c::stepMenuOpen() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        if (ctrl->isState(&dDemo_c::fn_801A4D74)) {
+        if (ctrl->isState(&dMsg::Comp_c::executeSuspend)) {
             bool ok = false;
             switch (mReq.mMenuKind) {
             case 0x00: {
@@ -9555,7 +9556,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
 int dAcNpc_c::recept_c::stepMenuWait() {
     if (getController() != NULL && fn_8019A76C()) {
         if (mReq.mKeepMsg != 1) {
-            fn_801A316C(getController(), 0);
+            getController()->requestStart(0);
         }
         mReqStep = 4;
         return 1;
@@ -9565,10 +9566,10 @@ int dAcNpc_c::recept_c::stepMenuWait() {
 
 // 8002BA18
 int dAcNpc_c::recept_c::stepMenuEnd() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
         if (mReq.mKeepMsg != 1) {
-            fn_801A316C(ctrl, 0);
+            ctrl->requestStart(0);
         }
         mReqStep = 4;
         return 1;
@@ -9614,7 +9615,7 @@ BOOL dAcNpc_c::recept_c::requestItemAct(const dItem::Item *item, int a, int b) {
 int dAcNpc_c::recept_c::stepItemActStart() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9635,7 +9636,7 @@ int dAcNpc_c::recept_c::stepItemActStart() {
 int dAcNpc_c::recept_c::stepItemActWait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -9685,7 +9686,7 @@ BOOL dAcNpc_c::recept_c::requestItemActEx(int a4, const dItem::Item *item, int a
 int dAcNpc_c::recept_c::stepItemActExStart() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9704,7 +9705,7 @@ int dAcNpc_c::recept_c::stepItemActExStart() {
 int dAcNpc_c::recept_c::stepItemActExWait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -9738,7 +9739,7 @@ BOOL dAcNpc_c::recept_c::requestHandActC() {
 int dAcNpc_c::recept_c::stepHandActCStart() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9757,7 +9758,7 @@ int dAcNpc_c::recept_c::stepHandActCStart() {
 int dAcNpc_c::recept_c::stepHandActCWait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -9791,7 +9792,7 @@ BOOL dAcNpc_c::recept_c::requestHandActD() {
 int dAcNpc_c::recept_c::stepHandActDStart() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9810,7 +9811,7 @@ int dAcNpc_c::recept_c::stepHandActDStart() {
 int dAcNpc_c::recept_c::stepHandActDWait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -9844,7 +9845,7 @@ BOOL dAcNpc_c::recept_c::requestHandActE() {
 int dAcNpc_c::recept_c::stepHandActEStart() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9863,7 +9864,7 @@ int dAcNpc_c::recept_c::stepHandActEStart() {
 int dAcNpc_c::recept_c::stepHandActEWait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -9897,7 +9898,7 @@ BOOL dAcNpc_c::recept_c::requestHandActF() {
 int dAcNpc_c::recept_c::stepHandActFStart() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9915,7 +9916,7 @@ int dAcNpc_c::recept_c::stepHandActFStart() {
 int dAcNpc_c::recept_c::stepHandActFWait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -9952,7 +9953,7 @@ BOOL dAcNpc_c::recept_c::requestHandAct10(int param) {
 int dAcNpc_c::recept_c::stepHandAct10Start() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -9971,7 +9972,7 @@ int dAcNpc_c::recept_c::stepHandAct10Start() {
 int dAcNpc_c::recept_c::stepHandAct10Wait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -10005,7 +10006,7 @@ BOOL dAcNpc_c::recept_c::requestHandAct11() {
 int dAcNpc_c::recept_c::stepHandAct11Start() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -10024,7 +10025,7 @@ int dAcNpc_c::recept_c::stepHandAct11Start() {
 int dAcNpc_c::recept_c::stepHandAct11Wait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -10063,7 +10064,7 @@ BOOL dAcNpc_c::recept_c::requestEquip(const dEquip_c *equip, int mode, int kind)
 // 8002C894
 int dAcNpc_c::recept_c::stepEquipStart() {
     if (mpNpc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -10077,7 +10078,7 @@ int dAcNpc_c::recept_c::stepEquipStart() {
 // 8002C900
 int dAcNpc_c::recept_c::stepEquipWait() {
     if (!fn_800FEEB0()) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -10144,9 +10145,9 @@ BOOL dAcNpc_c::recept_c::requestChangeSpeaker(u8 moveCamera) {
 
 // 8002CB08
 int dAcNpc_c::recept_c::stepChangeSpeakerInit() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        ctrl->_6C60 = 2;
+        ctrl->mSuspendReq = dMsg::SUSPEND_REQ_CHANGE_SPEAKER;
         if (mReq.mMoveCamera) {
             mReqStep = 1;
         } else {
@@ -10158,9 +10159,9 @@ int dAcNpc_c::recept_c::stepChangeSpeakerInit() {
 
 // 8002CB40
 int dAcNpc_c::recept_c::stepChangeSpeakerCamera() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        if (ctrl->isState(&dDemo_c::fn_801A4D74)) {
+        if (ctrl->isState(&dMsg::Comp_c::executeSuspend)) {
             // The target calls the const getNpc overload (800292B4) here.
             const recept_c *self = this;
             dAcNpc_c *npc = self->getNpc((mTalkIdx + 1) & 1);
@@ -10175,9 +10176,9 @@ int dAcNpc_c::recept_c::stepChangeSpeakerCamera() {
 
 // 8002CBEC
 int dAcNpc_c::recept_c::stepChangeSpeakerTalk() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
-        if (ctrl->isState(&dDemo_c::fn_801A4D74)) {
+        if (ctrl->isState(&dMsg::Comp_c::executeSuspend)) {
             if (lbl_8074E9B0 != NULL && (lbl_8074E9B0->fn_8018A748() || lbl_8074E9B0->fn_8018A460() < 17.0f)) {
                 // The target calls the const getNpc overload (800292B4) here.
                 const recept_c *self = this;
@@ -10194,7 +10195,7 @@ int dAcNpc_c::recept_c::stepChangeSpeakerTalk() {
                     next->getName(&name, 10);
                     setSpeakerName((const u16 *)static_cast<dScript::Word_c &>(name).getBuffer(), kind);
                     setVoiceType(next->getVoiceType());
-                    fn_801A316C(getController(), 0);
+                    getController()->requestStart(0);
                     mReqStep = 3;
                     return 1;
                 }
@@ -10235,7 +10236,7 @@ BOOL dAcNpc_c::recept_c::requestAct09(int b0, f32 b8, f32 b4, int bc) {
 int dAcNpc_c::recept_c::stepAct09Start() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -10256,7 +10257,7 @@ int dAcNpc_c::recept_c::stepAct09Start() {
 int dAcNpc_c::recept_c::stepAct09Wait() {
     dAcNpc_c *npc = getNpc(mSpeaker);
     if (npc != NULL && npc->mAction.mCanChange) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -10289,7 +10290,7 @@ bool dAcNpc_c::recept_c::requestPlayerTurn() {
 // 8002CFF4
 int dAcNpc_c::recept_c::stepPlayerTurnStart() {
     if (fn_800FC958()) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
@@ -10301,7 +10302,7 @@ int dAcNpc_c::recept_c::stepPlayerTurnStart() {
 // 8002D048
 int dAcNpc_c::recept_c::stepPlayerTurnWait() {
     if (fn_800FC9AC()) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -10433,7 +10434,7 @@ void dAcNpc_c::talk_c::startTalk(dAcNpc_c *npc) {
     }
     recept->setMessageCode(info.mCode);
     recept->setVoiceType(speaker->getVoiceType());
-    fn_801A316C(recept->getController(), 0);
+    recept->getController()->requestStart(0);
 }
 
 // 8046BC58: {init, exec} per talk kind
@@ -10522,11 +10523,11 @@ void dAcNpc_c::talk_c::stepTurnTalkMsg(dAcNpc_c *npc) {
     if (recept == NULL) {
         return;
     }
-    dDemo_c *const ctrl = recept->getController();
+    dMsg::Comp_c *const ctrl = recept->getController();
     if (ctrl == NULL) {
         return;
     }
-    if (ctrl->isState(&dDemo_c::fn_801A334C)) {
+    if (ctrl->isState(&dMsg::Comp_c::executeHidden)) {
         recept->onTalkEnd();
         flag = recept->mLangFlag;
         if (flag < 6) {
@@ -10642,11 +10643,11 @@ void dAcNpc_c::talk_c::stepTalkMsg(dAcNpc_c *npc) {
     if (recept == NULL) {
         return;
     }
-    dDemo_c *const ctrl = recept->getController();
+    dMsg::Comp_c *const ctrl = recept->getController();
     if (ctrl == NULL) {
         return;
     }
-    if (ctrl->isState(&dDemo_c::fn_801A334C)) {
+    if (ctrl->isState(&dMsg::Comp_c::executeHidden)) {
         recept->onTalkEnd();
         flag = recept->mLangFlag;
         if (flag < 6) {

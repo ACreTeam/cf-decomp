@@ -111,7 +111,7 @@ int dAcNpcNml_c::talk_c::msgBugOff(msgInfo_s *info) {
                 if (unit == 0) {
                     clearWord(3);
                 } else {
-                    getController()->fn_801A5874(3, unit, "sys_STRING/STR_Unit");
+                    getController()->setStringWord(3, unit, "sys_STRING/STR_Unit");
                 }
             }
 

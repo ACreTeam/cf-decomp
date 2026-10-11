@@ -6,13 +6,12 @@
 #include <game/cLib/c_math.hpp>
 #include <cstring>
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_net.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 int fn_801017EC(const dPersonalID_c *pid);
 int fn_801018DC(const dPlayerID_c *id);
-BOOL fn_800DCEDC();
-u32 fn_800DCF30();
 int fn_8017BF90(const dPersonalID_c *pid, dPrivateData_c *player);
 int fn_8017C04C(const dPlayerID_c *id, dPrivateData_c *player);
 }
@@ -79,7 +78,7 @@ BOOL dPersonalID_c::fn_8013E740(const dPersonalID_c *other) const {
     }
 
     int n = fn_801017EC(other);
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && n < 7) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && n < 7) {
         return FALSE;
     }
 
@@ -188,7 +187,7 @@ BOOL dPlayerID_c::fn_8013EB28(const dPlayerID_c *other) const {
     }
 
     int n = fn_801018DC(other);
-    if (fn_800DCEDC() && fn_800DCF30() > 1 && n < 7) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && n < 7) {
         return FALSE;
     }
 

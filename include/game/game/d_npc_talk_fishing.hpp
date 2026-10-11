@@ -24,7 +24,7 @@
 // Data of the TU (file-local statics in the .cpp; split in splits.txt):
 //   8046C7A8 .rodata 0xB   "Ev_Fishing" (+5 padding)
 //   804A2CA0 .data   0x1C  const char *[7]: "Ev_Fishing" x7, message label per state (getMsgLabel kind 0xB)
-//   804A2CBC .data   0x14  "sys_STRING/STR_Unit" (fn_801A5874, unit word of the leader's looks)
+//   804A2CBC .data   0x14  "sys_STRING/STR_Unit" (setStringWord, unit word of the leader's looks)
 //   80749A78 .sdata  0x8   dQuestEvent_e EVENT_FISHING_TOURNEY (0xE) for dEvent::isOngoing (+4 padding)
 //   80750088 .sdata2 0x8   f64 4503601774854144.0 (s32 -> float conversion of the fish size)
 

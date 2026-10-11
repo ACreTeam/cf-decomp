@@ -8,7 +8,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_quest.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_item_sel.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
@@ -98,7 +98,7 @@ void dAcNpcNml_c::talk_c::endErrandFinalYes(int arg) {
             if (unit == 0) {
                 clearWord(1);
             } else {
-                getController()->fn_801A5874(1, unit, "sys_STRING/STR_Unit");
+                getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
             }
             if (player != NULL && player->pickUp(&mItem0, 2)) {
                 errand->start(QUEST_KIND_ERRAND_REQUEST_FINAL, self, &other->mID, &mItem0, now, mErrandDeadline, QUEST_ERRAND_DELIVERING);
@@ -188,7 +188,7 @@ int dAcNpcNml_c::talk_c::msgErrandFinalQuest(msgInfo_s *info) {
         if (unit == 0) {
             clearWord(1);
         } else {
-            getController()->fn_801A5874(1, unit, "sys_STRING/STR_Unit");
+            getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
         }
         dAnmPersonalID_c *requester = errand->getAnimal(0);
         if (requester->isValid()) {
@@ -197,7 +197,7 @@ int dAcNpcNml_c::talk_c::msgErrandFinalQuest(msgInfo_s *info) {
             if (unit2 == 0) {
                 clearWord(3);
             } else {
-                getController()->fn_801A5874(3, unit2, "sys_STRING/STR_Unit");
+                getController()->setStringWord(3, unit2, "sys_STRING/STR_Unit");
             }
         }
         setItemName(&errand->mBase.mItem, 4);

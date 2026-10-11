@@ -4,11 +4,10 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/cLib/c_math.hpp>
 #include <cstring>
+#include <game/game/d_net.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-BOOL fn_800DCEDC();
-u32 fn_800DCF30();
 int fn_8017C0CC(const dLandID_c *land, dPrivateData_c *player);
 }
 
@@ -80,7 +79,7 @@ BOOL dLandID_c::isNewTown(const dLandID_c *other) const {
     if (*this == *other) {
         return FALSE;
     }
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         return FALSE;
     }
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();

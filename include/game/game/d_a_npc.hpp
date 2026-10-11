@@ -44,7 +44,9 @@ class FrmHeap;
 namespace dHmnName {
 class Word_c;
 }
-class dDemo_c;
+namespace dMsg {
+class Comp_c;
+}
 class dLandID_c;
 class dPersonalID_c;
 class dPlayerID_c;
@@ -1083,7 +1085,7 @@ public:
         struct reqParam_s {
 
             /* 0x00 0x84 */ int mMenuKind;               // menu sub-kind 0..0x34 (init 0x35)
-            /* 0x04 0x88 */ u32 mReq1Arg;                // request 1 argument (setRequest1) -> controller+0x6C60
+            /* 0x04 0x88 */ u32 mReq1Arg;                // request 1 argument (setRequest1) -> Comp_c::mSuspendReq (SuspendReq_e)
             /* 0x08 0x8C */ u8 _08[4];
             /* 0x0C 0x90 */ const dMail_c *mpMail;       // reqMailMenu
             /* 0x10 0x94 */ const dEquip_c *mpEquip;     // requestEquip
@@ -1116,9 +1118,9 @@ public:
         }; // size 0x64
 
         // The message controller. dMsg::Comp_c (Rcpt_c::mpController) is the object the d_msg TU's
-        // dDemo_c methods (state functions fn_801A334C, fn_801A4D74 ...) work on; both names are in
-        // Matching units' symbols, so they cannot be merged: d_a_npc views the controller as dDemo_c.
-        dDemo_c *getController() const { return reinterpret_cast<dDemo_c *>(mpController); }
+        // dMsg::Comp_c methods (state functions executeHidden, executeSuspend ...) work on; both names are in
+        // Matching units' symbols, so they cannot be merged: d_a_npc views the controller as dMsg::Comp_c.
+        dMsg::Comp_c *getController() const { return mpController; }
         void setVoiceType(int value) { mVoiceType = value; }
 
         // The message to start (getMsgInfo).

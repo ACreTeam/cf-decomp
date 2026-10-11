@@ -2,19 +2,13 @@
 // and house looks, and the building positions (dSaveBuildingList_c), with the search candidates that pick
 // a new building's spot. .text 80149B70..8014BD88.
 #include <game/game/d_save_building.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_search_cand.hpp>
 #include <game/game/d_field_info.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_crc.hpp>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-void *fn_801683D8(); // the town's building registry
-void *fn_801683E4(); // the city's
-void fn_801679A8(void *registry, u16 id);
-void fn_80167BAC(void *registry);
-}
 
 static inline bool isBuildingId(u16 id) {
     return id >= BUILDING_BUILD_SITE && id < BUILDING_END;
@@ -350,7 +344,7 @@ BOOL dSaveBuildingList_c::setAtLighthouseSpot(const dItem::Item &id) {
 }
 
 // 8014A770
-BOOL dSaveBuildingList_c::setAtUfoSpot(const dItem::Item &id) {
+BOOL dSaveBuildingList_c::setAtUfoSpot(dItem::Item id) {
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
     if (fd == NULL) {
         return FALSE;
@@ -499,7 +493,7 @@ dItem::Item dSaveBuildingList_c::getAt(int x, int z, int mask) const {
 BOOL dSaveBuildingList_c::getPos(int *x, int *z, const dItem::Item *id, int mask) const {
     if (id->isExtId()) {
         int idx = id->getExtIndex();
-        if (mask & fn_80167FB4(idx)->mField) {
+        if (mask & dSTR::getBuildingInfo(idx)->mField) {
             const dSaveBuildingPos_c *pos = &mPos[idx];
             if (pos->mX != 0 && pos->mZ != 0) {
                 *x = pos->mX;
@@ -515,15 +509,15 @@ BOOL dSaveBuildingList_c::getPos(int *x, int *z, const dItem::Item *id, int mask
 BOOL dSaveBuildingList_c::setPos(int x, int z, dItem::Item id, BOOL updateCrc) {
     int idx = id.getExtIndex();
     if ((u32)idx < BUILDING_NUM) {
-        int field = fn_80167FB4(idx)->mField;
+        int field = dSTR::getBuildingInfo(idx)->mField;
         dItem::Item item = getAt(x, z, field);
         if (item.mId == dItem::ITEM_ID_NONE || item.mId == id.mId) {
             mPos[idx].mX = x;
             mPos[idx].mZ = z;
             if (field == 1) {
-                fn_801679A8(fn_801683D8(), id.mId);
+                dSTR::getTownUnitAttr()->setBuilding(id.mId);
             } else {
-                fn_801679A8(fn_801683E4(), id.mId);
+                dSTR::getCityUnitAttr()->setBuilding(id.mId);
             }
             if (updateCrc) {
                 mChecksum = calcChecksum();
@@ -544,15 +538,15 @@ BOOL dSaveBuildingList_c::setPos(int x, int z, dItem::Item id) {
 BOOL dSaveBuildingList_c::remove(dItem::Item id) {
     int idx = id.getExtIndex();
     if ((u32)idx < BUILDING_NUM) {
-        int field = fn_80167FB4(idx)->mField;
+        int field = dSTR::getBuildingInfo(idx)->mField;
         dSaveBuildingPos_c *pos = &mPos[idx];
         if (pos->mX != 0 || pos->mZ != 0) {
             pos->mX = 0;
             pos->mZ = 0;
             if (field == 1) {
-                fn_80167BAC(fn_801683D8());
+                dSTR::getTownUnitAttr()->setAll();
             } else {
-                fn_80167BAC(fn_801683E4());
+                dSTR::getCityUnitAttr()->setAll();
             }
             mChecksum = calcChecksum();
             return TRUE;

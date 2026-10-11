@@ -117,7 +117,7 @@ struct dSaveOtherTown_c {
 
 // dSaveTown_c::getPublicWorks: the town hall's public works so far, in the order they're built: the extra
 // bridge (dSaveMainField_c::buildBridge), the fountain, then the windmill or the lighthouse
-// (BUILDING_FOUNTAIN / WINDMILL / LIGHTHOUSE, built by fn_80169C48 from SAVE_FLAG_BUILD_*).
+// (BUILDING_FOUNTAIN / WINDMILL / LIGHTHOUSE, built by dSTR::buildPublicWorks from SAVE_FLAG_BUILD_*).
 enum {
     PUBLIC_WORKS_NONE = 0,
     PUBLIC_WORKS_BRIDGE = 1, // the extra bridge is built (dSaveMainField_c::mBridgeBlockX/Z == -1)
@@ -138,9 +138,9 @@ enum {
 // Town flags: 64 bits at dSaveTown_c::mFlags, indexed 0..63. Most indices are not named yet.
 enum {
     SAVE_FLAG_TURNIPS_SPOILED = 1, // set when the clock is changed or goes back within the week, cleared each new week (inferred)
-    SAVE_FLAG_BUILD_WINDMILL = 7,    // fn_80169C48 builds it (in place of the lighthouse)
-    SAVE_FLAG_BUILD_LIGHTHOUSE = 8,  // fn_80169C48 builds it (in place of the windmill)
-    SAVE_FLAG_BUILD_FOUNTAIN = 9,    // fn_80169C48 builds it
+    SAVE_FLAG_BUILD_WINDMILL = 7,    // dSTR::buildPublicWorks builds it (in place of the lighthouse)
+    SAVE_FLAG_BUILD_LIGHTHOUSE = 8,  // dSTR::buildPublicWorks builds it (in place of the windmill)
+    SAVE_FLAG_BUILD_FOUNTAIN = 9,    // dSTR::buildPublicWorks builds it
     SAVE_FLAG_PUBLIC_WORKS_FUNDED = 10, // the next public work is paid for; the vote starts on the next day
     SAVE_FLAG_PUBLIC_WORKS_VOTE = 11,   // the vote is on (BBS_office 1 / 4 / 7 / 8) until mPublicWorksDays runs out
     SAVE_FLAG_LIGHTHOUSE_BUILT = 12, // setNewConstruction(NEW_CONSTRUCTION_LIGHTHOUSE) only once
@@ -170,6 +170,12 @@ struct dSaveTown640C8_c {
     /* 0x674 */ dSaveDLItem_c mDLItem;
 }; // size 0x2674
 
+extern "C" {
+void fn_8014F10C(dSaveTown640C8_c *obj); // 8014F10C: (d_str dSTR::buildPublicWorks: the fountain is built)
+void fn_8014F178(dSaveTown640C8_c *obj); // 8014F178: (the windmill is built)
+void fn_8014F1E4(dSaveTown640C8_c *obj); // 8014F1E4: (the lighthouse is built)
+}
+
 class dSaveTown_c {
 public:
     BOOL isHeaderVersionOK();             // 80115CDC
@@ -186,6 +192,7 @@ public:
     BOOL isFlag(int idx) const;           // 801164D0: out-of-range indices are FALSE
     void setFlag(int idx);                // 80116510
     void clearFlag(int idx);              // 80116540
+    void clearPublicWorksBells() { mPublicWorksBells = 0; } // d_str dSTR::buildPublicWorks
     static BOOL isBusNetEventPending();   // 80116570: WiiConnect24 connected and SAVE_FLAG_BUS_NET_EVENT_DONE not set
     void backupFlag6();                   // 801165B8: SAVE_FLAG_FLAG6_BACKUP = flag 6
     dSvAuc_c *getAuction() { return (dSvAuc_c *)mAuctionItems; }
@@ -200,7 +207,8 @@ public:
     /* 0x05EC67 */ u8 _05EC67;
     /* 0x05EC68 */ u8 _05EC68[0xE];
     /* 0x05EC76 */ dSaveJinx_c mJinx;       // this town's jinx (talk topic FreeG_JinxV)
-    /* 0x05EC78 */ u8 _05EC78[8];
+    /* 0x05EC78 */ u8 _05EC78[4];
+    /* 0x05EC7C */ u32 mPublicWorksBells; // inferred: donated so far; cleared when a public work is built
     /* 0x05EC80 */ dSaveShops_c mShops;
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
     /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC

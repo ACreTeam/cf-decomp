@@ -11,13 +11,13 @@
 #include <game/sLib/s_lib.hpp>
 #include <revolution/MTX.h>
 #include <game/game/d_snd_util.hpp>
+#include <game/game/d_net_mgr.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 BOOL fn_80199BBC(void *glow, const GXColor *color, const nw4r::math::VEC3 *pos, f32 size); // 80199BBC: queue a glow
 
 extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: town center the show is above
-extern u8 *lbl_8074E538;        // 8074E538: [0x3671] picks the alternative sounds
 extern void *lbl_8074EA60;      // 8074EA60: glow drawer (NULL: no sounds / glow without the effect)
 extern f32 lbl_8074EA1C;        // 8074EA1C..8074EA28: burst light color
 extern f32 lbl_8074EA20;
@@ -71,7 +71,7 @@ void dFireWork_c::launch(BOOL withEffect) {
             effect.setRegisterColor(sEffectColor0[mColor], sEffectColor1[mColor], 0);
             effect.EGG::Effect::update();
         }
-        if (lbl_8074E538[0x3671]) {
+        if (dNetMgr_c::sInstance->mInfo.m1A31) {
             playSe(0x19A1);
         } else {
             playSe(0x199E);
@@ -118,7 +118,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         } else if (mTimer == 12) {
             if (withEffect) {
                 int se;
-                u8 alt = lbl_8074E538[0x3671];
+                u8 alt = dNetMgr_c::sInstance->mInfo.m1A31;
                 if (mScale > 1.0f) {
                     if (alt) {
                         se = 0x19A3;

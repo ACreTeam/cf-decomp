@@ -335,8 +335,14 @@ enum dFortune_e {
     FORTUNE_ITEM,       // 4 approach / rollan: item luck
 };
 
+struct dSaveOption_c;
+
 class dPrivateData_c {
 public:
+    // The player's option bits (_83E8, the first byte of a dSaveOption_c; d_save_data getOption).
+    dSaveOption_c *getOption() { return (dSaveOption_c *)&_83E8; }
+    const dItem::Item *getHeldItem() const { return &mEquipment.mHeld; }
+
     // Static helpers on the current player (fn_80101770).
     static BOOL fn_80136244();                                    // 80136244
     static BOOL fn_80136310();                                    // 80136310

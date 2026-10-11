@@ -20,13 +20,13 @@
 #include <lib/nw4r/math/math_triangular.h>
 #include <cstring>
 #include <cmath>
+#include <game/game/d_net.hpp>
 
 // Dependencies whose owners are not recovered yet.
 
 extern "C" {
 extern u8 lbl_8074EA7D;
 
-int fn_800DCF58(); // index of the current player
 u32 fn_8019AFE4();
 void fn_801B910C(int idx, int part, u16 item);
 void fn_801B8898(int idx, int part, u16 item);
@@ -46,13 +46,13 @@ BOOL fn_80194A2C(int a, int b, int c, int d, dPlayerActor_c *player, int e, f32 
                  f32 f6);
 BOOL fn_80194AA0(int type, dPlayerActor_c *player, f32 f);
 int fn_80194B30();
-void fn_801B91B8();
-void fn_801B90C0();
-void fn_801B835C();
+void fn_801B91B8(int idx, int a, int b);
+void fn_801B90C0(int idx, int a);
+void fn_801B835C(int idx, int a, int b);
 void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
-void fn_801B9304();
+BOOL fn_801B9304(void *info, u8 *scene, u8 *b, u32 idx);
 void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarget_c *, u32), u32 kind);
 void fn_80285110(void *obj, dEffectTarget_c *target);
 u8 fn_800A8850(const mVec3_c *pos);
@@ -384,8 +384,8 @@ void fn_800FC404() {
         return;
     }
     if (dHmnToolBank_c::getItemToolType(&held) == 0xA && isCurrentSceneAttr(SCENE_ATTR_ROOM)) {
-        fn_801B910C(fn_800DCF58(), 3, held.mId);
-        fn_801B8898(fn_800DCF58(), 3, held.mId);
+        fn_801B910C(dNet::getMyNo(), 3, held.mId);
+        fn_801B8898(dNet::getMyNo(), 3, held.mId);
     }
 }
 
@@ -718,8 +718,8 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
         int tmp;
         if (dHmnClothMng_c::isOrgCloth(&tmp, shirt)) {
             player->_22B4 |= 0x100;
-            fn_801B910C(fn_800DCF58(), 0, shirt->mId);
-            fn_801B8898(fn_800DCF58(), 0, shirt->mId);
+            fn_801B910C(dNet::getMyNo(), 0, shirt->mId);
+            fn_801B8898(dNet::getMyNo(), 0, shirt->mId);
         }
     }
 
@@ -733,10 +733,10 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
         }
         if (fn_80100358(bone, player)) {
             if (current->_83F5 != 0) {
-                fn_801B8FD8(fn_800DCF58(), 0x12);
+                fn_801B8FD8(dNet::getMyNo(), 0x12);
             }
-            fn_801B910C(fn_800DCF58(), 1, hat->mId);
-            fn_801B8898(fn_800DCF58(), 1, hat->mId);
+            fn_801B910C(dNet::getMyNo(), 1, hat->mId);
+            fn_801B8898(dNet::getMyNo(), 1, hat->mId);
         }
     }
 
@@ -745,16 +745,16 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
             if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR)) {
                 player->_22DA = 2;
             }
-            fn_801B910C(fn_800DCF58(), 3, held->mId);
-            fn_801B8898(fn_800DCF58(), 3, held->mId);
+            fn_801B910C(dNet::getMyNo(), 3, held->mId);
+            fn_801B8898(dNet::getMyNo(), 3, held->mId);
         } else {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
             if (bitm != NULL && getHideBone(bitm) == 9) {
                 if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR)) {
                     player->_22DA = 1;
                 }
-                fn_801B910C(fn_800DCF58(), 3, held->mId);
-                fn_801B8898(fn_800DCF58(), 3, held->mId);
+                fn_801B910C(dNet::getMyNo(), 3, held->mId);
+                fn_801B8898(dNet::getMyNo(), 3, held->mId);
             }
         }
     }
@@ -795,7 +795,7 @@ BOOL fn_800FD130() {
     if (fn_801019C4(4) == NULL) {
         return FALSE;
     }
-    fn_801B8FD8(fn_800DCF58(), 0x10);
+    fn_801B8FD8(dNet::getMyNo(), 0x10);
     return fn_80101A74(0x79, 4);
 }
 
@@ -1173,7 +1173,7 @@ BOOL fn_800FDD8C(u32 hair, u32 color) {
     current->mHair = hair;
     current->mHairColor = color;
     if (current->_83F5 != 0) {
-        fn_801B8FD8(fn_800DCF58(), 0x12);
+        fn_801B8FD8(dNet::getMyNo(), 0x12);
     }
     return fn_80101A74(0x4F, 4);
 }
@@ -1244,11 +1244,11 @@ BOOL fn_800FDF7C() {
         }
     }
     player->_22B6 = mii;
-    fn_801B8FD8(fn_800DCF58(), 0x11);
-    fn_801B910C(fn_800DCF58(), 1, dItem::ITEM_ID_NONE);
-    fn_801B8898(fn_800DCF58(), 1, dItem::ITEM_ID_NONE);
-    fn_801B910C(fn_800DCF58(), 2, dItem::ITEM_ID_NONE);
-    fn_801B8898(fn_800DCF58(), 2, dItem::ITEM_ID_NONE);
+    fn_801B8FD8(dNet::getMyNo(), 0x11);
+    fn_801B910C(dNet::getMyNo(), 1, dItem::ITEM_ID_NONE);
+    fn_801B8898(dNet::getMyNo(), 1, dItem::ITEM_ID_NONE);
+    fn_801B910C(dNet::getMyNo(), 2, dItem::ITEM_ID_NONE);
+    fn_801B8898(dNet::getMyNo(), 2, dItem::ITEM_ID_NONE);
     return TRUE;
 }
 
@@ -1270,7 +1270,7 @@ BOOL fn_800FE0D0() {
         return FALSE;
     }
     if (current->_83F5 != 0) {
-        fn_801B8FD8(fn_800DCF58(), 0x12);
+        fn_801B8FD8(dNet::getMyNo(), 0x12);
     }
     return fn_80101A74(0x4C, 4);
 }
@@ -1308,9 +1308,9 @@ BOOL fn_800FE17C(u16 mii) {
     }
     memcpy(&current->_83ED, data._2C, sizeof(data._2C));
     player->_22B6 = mii;
-    fn_801B8FD8(fn_800DCF58(), 0x11);
-    fn_801B910C(fn_800DCF58(), 1, dItem::ITEM_ID_NONE);
-    fn_801B910C(fn_800DCF58(), 2, dItem::ITEM_ID_NONE);
+    fn_801B8FD8(dNet::getMyNo(), 0x11);
+    fn_801B910C(dNet::getMyNo(), 1, dItem::ITEM_ID_NONE);
+    fn_801B910C(dNet::getMyNo(), 2, dItem::ITEM_ID_NONE);
     return fn_80101A74(0x50, 4);
 }
 
@@ -1330,7 +1330,7 @@ BOOL fn_800FE2D4() {
     if (current->_83F5 == 0) {
         return FALSE;
     }
-    fn_801B8FD8(fn_800DCF58(), 0x12);
+    fn_801B8FD8(dNet::getMyNo(), 0x12);
     return fn_80101A74(0x4B, 4);
 }
 
@@ -1648,8 +1648,8 @@ BOOL fn_800FECF8(const dItem::Item *held) {
             player->_223C = 1;
         }
     }
-    fn_801B910C(fn_800DCF58(), 3, held->mId);
-    fn_801B8898(fn_800DCF58(), 3, held->mId);
+    fn_801B910C(dNet::getMyNo(), 3, held->mId);
+    fn_801B8898(dNet::getMyNo(), 3, held->mId);
     player->_2234 = 8;
     player->_2270 |= 0x1000000;
     return fn_80101A74(0x6, 4);
@@ -1805,7 +1805,7 @@ BOOL fn_800FF354(int *outState) {
     }
     int state = player->mState;
     if (state == 0x1A) {
-        dUki_c::fn_801710BC(fn_800DCF58(), NULL);
+        dUki_c::fn_801710BC(dNet::getMyNo(), NULL);
         *outState = 0x1D;
         fn_80101A74(0x1D, 4);
         return FALSE;
@@ -1868,8 +1868,8 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
         int tmp2;
         if (dHmnClothMng_c::isCloth(&shirt) || dHmnClothMng_c::isOrgCloth(&tmp2, &shirt)) {
             player->_22B4 |= 0x100;
-            fn_801B910C(fn_800DCF58(), 0, shirt.mId);
-            fn_801B8898(fn_800DCF58(), 0, shirt.mId);
+            fn_801B910C(dNet::getMyNo(), 0, shirt.mId);
+            fn_801B8898(dNet::getMyNo(), 0, shirt.mId);
         }
     }
 
@@ -1883,27 +1883,27 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
         }
         if (fn_80100358(bone, player)) {
             if (current->_83F5 != 0) {
-                fn_801B8FD8(fn_800DCF58(), 0x12);
+                fn_801B8FD8(dNet::getMyNo(), 0x12);
             }
-            fn_801B910C(fn_800DCF58(), 1, hat.mId);
-            fn_801B8898(fn_800DCF58(), 1, hat.mId);
+            fn_801B910C(dNet::getMyNo(), 1, hat.mId);
+            fn_801B8898(dNet::getMyNo(), 1, hat.mId);
         }
     }
 
     if (changeAcc) {
         if (acc.mId == dItem::ITEM_ID_NONE) {
             player->_22B4 = (player->_22B4 & ~0x40) | 0x80;
-            fn_801B910C(fn_800DCF58(), 2, acc.mId);
-            fn_801B8898(fn_800DCF58(), 2, acc.mId);
+            fn_801B910C(dNet::getMyNo(), 2, acc.mId);
+            fn_801B8898(dNet::getMyNo(), 2, acc.mId);
         } else {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
             if (bitm != NULL && getHideBone(bitm) == 8) {
                 player->_22B4 = (player->_22B4 & ~0x80) | 0x40;
                 if (current->_83F5 != 0) {
-                    fn_801B8FD8(fn_800DCF58(), 0x12);
+                    fn_801B8FD8(dNet::getMyNo(), 0x12);
                 }
-                fn_801B910C(fn_800DCF58(), 2, acc.mId);
-                fn_801B8898(fn_800DCF58(), 2, acc.mId);
+                fn_801B910C(dNet::getMyNo(), 2, acc.mId);
+                fn_801B8898(dNet::getMyNo(), 2, acc.mId);
             }
         }
     }
@@ -2410,7 +2410,7 @@ BOOL fn_80100860() {
     }
     int state = player->mState;
     if (state == 0x1A) {
-        dUki_c::fn_801710BC(fn_800DCF58(), NULL);
+        dUki_c::fn_801710BC(dNet::getMyNo(), NULL);
         fn_80101A74(0x1D, 4);
         return FALSE;
     }
@@ -2698,8 +2698,8 @@ BOOL fn_80101060(const dItem::Item *held) {
         }
         player->_22DA = 1;
         player->_223C = 1;
-        fn_801B910C(fn_800DCF58(), 3, held->mId);
-        fn_801B8898(fn_800DCF58(), 3, held->mId);
+        fn_801B910C(dNet::getMyNo(), 3, held->mId);
+        fn_801B8898(dNet::getMyNo(), 3, held->mId);
     }
     return fn_80101A74(0x98, 4);
 }
@@ -2946,17 +2946,17 @@ dPrivateData_c *dPlayerMgr_c::getNetPlayerRaw(int member) {
 
 // 80101770
 dPrivateData_c *dPlayerMgr_c::getCurrentPlayer() {
-    return getNetPlayer(fn_800DCF58());
+    return getNetPlayer(dNet::getMyNo());
 }
 
 // 80101794
 dPrivateData_c *dPlayerMgr_c::getCurrentPlayerRaw() {
-    return getNetPlayerRaw(fn_800DCF58());
+    return getNetPlayerRaw(dNet::getMyNo());
 }
 
 // 801017B8
 int fn_801017B8() {
-    return fn_80100330(fn_800DCF58());
+    return fn_80100330(dNet::getMyNo());
 }
 
 // 801017DC
@@ -3025,7 +3025,7 @@ dPlayerActor_c *fn_801019C4(int idx) {
         return NULL;
     }
     if (idx == 4) {
-        idx = fn_800DCF58();
+        idx = dNet::getMyNo();
     }
     dPlayerActor_c *actor = lbl_805D2440.mActors[idx];
     if (actor != NULL && (actor->_2270 & 0x2000000)) {
@@ -3040,7 +3040,7 @@ dPlayerActor_c *fn_80101A28(int idx) {
         return NULL;
     }
     if (idx == 4) {
-        idx = fn_800DCF58();
+        idx = dNet::getMyNo();
     }
     return lbl_805D2440.mActors[idx];
 }
@@ -3051,7 +3051,7 @@ BOOL fn_80101A74(int state, int idx) {
         return FALSE;
     }
     if (idx == 4) {
-        idx = fn_800DCF58();
+        idx = dNet::getMyNo();
     }
     dPlayerMgr_c::ChangeStateFn fn = lbl_805D2440.mChangeState[idx];
     if (fn == NULL) {
@@ -3105,18 +3105,18 @@ dPrivateData_c *dGuestPlayers_c::getRaw(int slot) {
 }
 
 // 80101CB4
-void fn_80101CB4() {
-    fn_801B91B8();
+void fn_80101CB4(int idx, int a, int b) {
+    fn_801B91B8(idx, a, b);
 }
 
 // 80101CB8
-void fn_80101CB8() {
-    fn_801B90C0();
+void fn_80101CB8(int idx, int a) {
+    fn_801B90C0(idx, a);
 }
 
 // 80101CBC
-void fn_80101CBC() {
-    fn_801B835C();
+void fn_80101CBC(int idx, int a, int b) {
+    fn_801B835C(idx, a, b);
 }
 
 // 80101CC0
@@ -3165,8 +3165,8 @@ void fn_80101DC0() {
 }
 
 // 80101DC4
-void fn_80101DC4() {
-    fn_801B9304();
+BOOL fn_80101DC4(void *info, u8 *scene, u8 *b, u32 idx) {
+    return fn_801B9304(info, scene, b, idx);
 }
 
 // 80101DC8
@@ -3342,8 +3342,8 @@ int fn_80102434(const mVec3_c *pos) {
         return 1;
     }
     int attr = check.mAttr;
-    if (lbl_8074EBE8 != NULL) {
-        int mode = lbl_8074EBE8->_5884;
+    if (dWeather_c::sInstance != NULL) {
+        int mode = dWeather_c::sInstance->_5884;
         BOOL special = FALSE;
         if (mode == 4 || mode == 3) {
             special = TRUE;

@@ -113,7 +113,7 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
                 if (unit == 0) {
                     clearWord(4);
                 } else {
-                    getController()->fn_801A5874(4, unit, "sys_STRING/STR_Unit");
+                    getController()->setStringWord(4, unit, "sys_STRING/STR_Unit");
                 }
             }
             dItem::Item fish = fn_8015341C(record, 0);

@@ -7,7 +7,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_quest.hpp>
 #include <game/game/d_save_data.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -19,7 +19,7 @@ static inline void setPlayerUnit(talk_c *talk, dAnimal_c *animal, const dPlayerI
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
-        talk->getController()->fn_801A5874(idx + 1, unit, "sys_STRING/STR_Unit");
+        talk->getController()->setStringWord(idx + 1, unit, "sys_STRING/STR_Unit");
     }
 }
 

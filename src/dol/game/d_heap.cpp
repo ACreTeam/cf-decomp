@@ -387,7 +387,7 @@ EGG::FrmHeap *dHeap::createSoundHeap(EGG::Heap *parent) {
 
 // 800B5D84
 EGG::FrmHeap *dHeap::createNetGameHeap(EGG::Heap *parent) {
-    u32 size = mHeap::frmHeapCost(fn_800DCB68(), 4);
+    u32 size = mHeap::frmHeapCost(dNet::getNetHeapSize(), 4);
     netGameHeap_p = EGG::FrmHeap::create(size, parent, 0);
     netGameHeap_p->setName("通信ゲーム処理用ヒープ");
     report(__FUNCTION__, "通信ゲーム処理用ヒープ", size);

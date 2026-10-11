@@ -1,13 +1,13 @@
 // The player's registered friends (dFriendList_c at dPrivateData_c+0, 32 x dFriend_c).
 // .text 8011A6C4..8011ACB4, no data. Notes: notes/d_friend.txt.
 #include <game/game/d_friend.hpp>
+#include <game/game/d_net_mgr.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <cstring>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_800E5858(void *info, void *keys, int num);  // unsplit TU 800DE0E4..
 BOOL fn_8017BA1C(int idx);                          // WiiConnect24 friend slot in use
 u64 fn_8017BAB0(int idx);                           // WiiConnect24 friend key
 void fn_8014EB20(u16 *value);                       // unsplit TU 8014BD88..80153818
@@ -60,12 +60,12 @@ void dFriendList_c::clearFriends() {
 
 // 8011A7F4
 void dFriendList_c::clearInfo() {
-    fn_800E5858(_0004, mKeys, FRIEND_NUM);
+    dNetMgr_c::initFriendList(&mUserData, mKeys, FRIEND_NUM);
 }
 
 // 8011A804
 void dFriendList_c::set(int idx, const void *key, const dFriend_c *data) {
-    memcpy(mKeys[idx], key, sizeof(mKeys[idx]));
+    memcpy(&mKeys[idx], key, sizeof(mKeys[idx]));
     if (data != NULL) {
         mFriends[idx].copy(data);
     } else {
@@ -75,7 +75,7 @@ void dFriendList_c::set(int idx, const void *key, const dFriend_c *data) {
 
 // 8011A88C
 void dFriendList_c::clearEntry(int idx) {
-    memset(mKeys[idx], 0, sizeof(mKeys[idx]));
+    memset(&mKeys[idx], 0, sizeof(mKeys[idx]));
     mFriends[idx].clear();
 }
 
@@ -86,14 +86,14 @@ void dFriendList_c::set2(int idx, const void *key, const dFriend_c *data) {
 
 // 8011A8EC
 void dFriendList_c::remove(u32 idx) {
-    u8 *srcKey = mKeys[idx + 1];
-    u8 *dstKey = mKeys[idx];
+    DWCFriendData *srcKey = &mKeys[idx + 1];
+    DWCFriendData *dstKey = &mKeys[idx];
     dFriend_c *src = &mFriends[idx + 1];
     dFriend_c *dst = &mFriends[idx];
-    for (u32 i = idx + 1; i < FRIEND_NUM; i++, dstKey += sizeof(mKeys[0]), dst++) {
+    for (u32 i = idx + 1; i < FRIEND_NUM; i++, dstKey++, dst++) {
         memcpy(dstKey, srcKey, sizeof(mKeys[0]));
         dst->copy(src);
-        srcKey += sizeof(mKeys[0]);
+        srcKey++;
         src++;
     }
     clearEntry(FRIEND_NUM - 1);

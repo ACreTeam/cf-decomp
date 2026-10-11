@@ -2,7 +2,7 @@
 
 // Field object tasks of the FG manager: pending changes to field units (planting, digging,
 // cross-breeding, ...), each a 0x10-byte record in a fixed list of 32, plus the per-player state
-// and the 2-bit unit grid of the usable field. The code is in include/game/game/d_fg_mng_task.inc,
+// and the 2-bit unit grid of the usable field. The code is in src/dol/game/d_fg_mng_task.inc,
 // which d_field_assessment.cpp #includes (built with -sym on, so it lands in the TU's tail,
 // 800A2220..). All names are inferred.
 
@@ -10,6 +10,7 @@
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_field_assessment.hpp>
 #include <game/game/d_fg_item.hpp>
+#include <game/game/d_net.hpp> // the NET_PACKET_FG_MNG_* packet ids, NET_MEMBER_NONE
 
 #define FG_MNG_TASK_NUM 32
 
@@ -64,18 +65,6 @@ enum dFgMngKind_e {
     FG_MNG_KIND_NONE,                 // 0x1C dFgMngCmd_c::init (a free command)
 };
 
-// Net packet ids passed to fn_800DD588 (handlers in the table 80473E44, by id).
-enum dFgMngPacket_e {
-    FG_MNG_PACKET_REQ = 0x28,       // dFgMngReq_c to the host (fgobj fn_111_8D8C); handler fn_800DF7A0 (isChangeRequestValid + send)
-    FG_MNG_PACKET_CMD = 0x29,       // dFgMngCmd_c (dFgMngReq_c::send, fgMngCmd_apply); handler fn_800DF804 (fgMngCmd_apply)
-    FG_MNG_PACKET_TASK_DONE = 0x2A, // dFgMngTaskMsg_c (dFgMngTask_c::finish); handler fn_800DF860 (clears the lock's pending bit)
-    FG_MNG_PACKET_UNIT_FG = 0x2B,   // fgMngProc_setUnitFgSync; handler fn_800DF8E4 (fgMngProc_recvUnitFg)
-};
-
-// fn_800DD588's destination meaning "every member" (members are 0..3; the per-member sends
-// pass a member number, finish sends to member 0). Hedged.
-#define FG_MNG_NET_ALL 4
-
 // A unit position packed as (x << 8) | z, built byte by byte.
 struct dFgMngTaskPos_c {
     dFgMngTaskPos_c(u16 pos) : mPos(pos) {}
@@ -87,7 +76,7 @@ struct dFgMngTaskPos_c {
     /* 0x0 */ u16 mPos;
 }; // size 0x2
 
-// The message sent when a task finishes on a client (fn_800DD518, 4 bytes).
+// The message sent when a task finishes on a client (addPacket, 4 bytes).
 struct dFgMngTaskMsg_c {
     /* 0x0 */ u16 mPos;
     /* 0x2 */ u8 mPlayer : 2;

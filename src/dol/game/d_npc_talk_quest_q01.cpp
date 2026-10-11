@@ -3,7 +3,7 @@
 #include <game/game/d_npc_talk_quest_q01.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_animal.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_quest.hpp>
@@ -28,7 +28,7 @@ static inline void setPlayerUnit(talk_c *talk, const dPlayerID_c *player, int id
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
-        talk->getController()->fn_801A5874(idx + 1, unit, l_strUnit);
+        talk->getController()->setStringWord(idx + 1, unit, l_strUnit);
     }
 }
 

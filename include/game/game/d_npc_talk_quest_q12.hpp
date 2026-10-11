@@ -38,7 +38,7 @@
 //   804A392C .data   0x54  label table, 7 x const char *: "Q12_Con1", "Q12_Report2", "Q12_Report1",
 //                          "Q12_Con2", "Q12_Con2", "Q12_Req" (80749AA8), "Q12_Visit"; then PTMF x3
 //                          (104 procs of msgLostKeyQuest): stepLostKeyReport, stepLostKeyChoice, stepLostKeyVisit; then
-//                          "sys_STRING/STR_Unit" (merged literal, fn_801A5874 argument)
+//                          "sys_STRING/STR_Unit" (merged literal, setStringWord argument)
 //   804A3980 .data   0xC   PTMF {0,-1,selLostKeyGive}
 //   804A398C .data   0x30  PTMF x4: resLostKeyGive, resLostKeyOK, resLostKeyNG, msgLostKeyCancel
 //   804A39BC..804A3A10 .data 0xC each, PTMF {0,-1,fn}: msgLostKeyOK, stepLostKeyOK, msgLostKeyItem,

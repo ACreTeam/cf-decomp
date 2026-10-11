@@ -58,6 +58,9 @@ block_relocations:
 # 8046C438: u16 pair 804A 0012 in d_npc_talk_free's table lbl_8046C428 that looks like a pointer into
 # d_a_npc's function-local request table (804A0000). Not a pointer.
 - source: 0x8046C438
+# 80515130: a word inside lbl_80509320 (binary data) that reads 805B3926, inside d_net_mgr's g_netMgr.
+# Not a pointer.
+- source: 0x80515130
 modules:
 - object: files/rels/d_profileNP.rel
   hash: d54fb2da838201b0feded746aa62f3728e904c2e

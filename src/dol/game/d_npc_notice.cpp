@@ -12,17 +12,13 @@
 #include <game/cLib/c_math.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <cstring>
+#include <game/game/d_net.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 // dTimeStamp_c -> dTime_c (unsplit TU 8014BD88..80153818).
 
 // Event schedule (unsplit TU 80088AD4..8008BCCC).
-
-// Save sync (unsplit TU 800CCC54..800DE0E4).
-void fn_800DD4C8();
-void fn_800DD518(const void *data, u32 size);
-void fn_800DD588(int type, int arg);
 
 // dAnimalBlock_c / dAnimal_c (d_animal).
 
@@ -315,9 +311,9 @@ void fn_800ECCB4(int unused, const void *data) {
 
 // 800ECD08
 void fn_800ECD08(const void *data) {
-    fn_800DD4C8();
-    fn_800DD518(data, 0x19A);
-    fn_800DD588(0x2F, 4);
+    dNet::beginPacket();
+    dNet::addPacket(data, 0x19A);
+    dNet::sendPacket(NET_PACKET_NOTICE_ADD, NET_MEMBER_NONE);
 }
 
 // 800ECD4C
@@ -328,7 +324,7 @@ void fn_800ECD4C(int unused, const u8 *data) {
 // 800ECD54
 void fn_800ECD54(u8 idx) {
     u8 data = idx;
-    fn_800DD4C8();
-    fn_800DD518(&data, 1);
-    fn_800DD588(0x30, 4);
+    dNet::beginPacket();
+    dNet::addPacket(&data, 1);
+    dNet::sendPacket(NET_PACKET_NOTICE_REMOVE, NET_MEMBER_NONE);
 }

@@ -485,7 +485,7 @@ int dAcNpcSp_c::executeWander(wanderDaub_s *daub) {
             }
         }
 
-        if (lookAt_c::searchPlayer(fn_800DCF58(), this, l_lookFov, cNpcLookRange) == fn_800DCF58()) {
+        if (lookAt_c::searchPlayer(dNet::getMyNo(), this, l_lookFov, cNpcLookRange) == dNet::getMyNo()) {
             mLookAt.setPlayer(0, true, l_lookPitchStep, l_lookYawStep, cNpcLookRange);
             mLookTimer = SP_LOOK_WAIT_MIN + cM::rndF(SP_LOOK_WAIT_RAND);
         } else {
@@ -583,7 +583,7 @@ int dAcNpcSp_c::getWanderWaitRand() {
 
 // 800630D4
 void dAcNpcSp_c::moveFtrToPoliceBox() {
-    if (fn_800DCEDC() == 1 && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() == 1 && dNet::getMemberNum() > 1) {
         return;
     }
     if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_OUTDOOR | SCENE_ATTR_MY_TOWN)) {

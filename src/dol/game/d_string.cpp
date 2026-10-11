@@ -3,7 +3,7 @@
 // (8016B7A8) is followed by dString::Comp_c's destructor. It has to be
 // strong (an inline one makes Comp_c's vtable weak, which moves it from the
 // start of .data to the end) and come from another source file to land after
-// the initializer, so it lives in include/game/game/d_string_comp.inc.
+// the initializer, so it lives in src/dol/game/d_string_comp.inc.
 // Notes: notes/d_string.txt.
 #include <game/game/d_string.hpp>
 #include <game/game/d_land.hpp>
@@ -230,4 +230,4 @@ wchar_t *Word_c::getBuffer() {
 // dtor in d_string.hpp, with a second virtual (stripped; vtable +0x0C is NULL)
 // as the key function. That layout compiles right, but our link keeps the
 // stripped function, so the dtor is defined out of line in this .inc instead.
-#include <game/game/d_string_comp.inc>
+#include "d_string_comp.inc"

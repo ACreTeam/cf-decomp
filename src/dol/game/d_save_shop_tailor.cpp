@@ -6,17 +6,13 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_field_info.hpp>
 #include <string.h>
+#include <game/game/d_net.hpp>
 
 extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
 extern "C" {
 int fn_800C60B4(dItem::Item *out, int num, const int *range, int rangeNum, const void *filter, const dItem::Item *exclude,
                 int excludeNum, int); // 800C60B4: random items
-BOOL fn_800DCEDC();                   // 800DCEDC: an online session is active
-u32 fn_800DCF30();                    // 800DCF30: players in the session
-void fn_800DD4C8();                   // 800DD4C8
-void fn_800DD518(const void *data, u32 size); // 800DD518
-void fn_800DD588(int type, int arg);  // 800DD588
 void *fn_800A9058();                  // 800A9058
 int fn_800A8F98(void *, int unitX, int unitZ, int); // 800A8F98: -1 when none
 void fn_800ABAF4(int);                // 800ABAF4
@@ -105,7 +101,7 @@ void dSaveShopTailor_c::sellAndNotify(int scene, int slot, int unitX, int unitZ,
     if ((u32)slot != 0xFF) {
         sell(scene, slot, unitX, unitZ);
     }
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         dShopSale_c sale;
         sale.mSlot = slot;
         sale.mUnitX = unitX;
@@ -113,9 +109,9 @@ void dSaveShopTailor_c::sellAndNotify(int scene, int slot, int unitX, int unitZ,
         sale.mPrice = price;
         sale.mFlag = flag;
         sale.mScene = scene;
-        fn_800DD4C8();
-        fn_800DD518(&sale, sizeof(dShopSale_c));
-        fn_800DD588(0x42, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&sale, sizeof(dShopSale_c));
+        dNet::sendPacket(NET_PACKET_SHOP_SALE, NET_MEMBER_NONE);
     }
 }
 

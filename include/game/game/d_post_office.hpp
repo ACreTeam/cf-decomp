@@ -15,7 +15,7 @@ namespace dScript {
 class Word_c;
 }
 
-// The letters held at the post office (dSaveExtra_c::_189C38, 0x12108). It is delivered at 9:00
+// The letters held at the post office (dSaveExtra_c::_189C38, 0x120FC). It is delivered at 9:00
 // and 17:00. Its methods are in the unsplit code at 8013F098; the save field stays raw bytes (its
 // constructor isn't modelled), so get() casts it.
 struct dPostBox_c {
@@ -35,8 +35,8 @@ struct dPostBox_c {
     /* 0x12090 */ u8 _12090[8];        // last delivery time
     /* 0x12098 */ u8 _12098[8];        // next delivery time
     /* 0x120A0 */ u16 mFlags;          // bit 0: a delivery is scheduled
-    /* 0x120A2 */ u8 _120A2[0x66];
-}; // size 0x12108
+    /* 0x120A2 */ u8 _120A2[0x5A];
+}; // size 0x120FC
 
 // A WiiConnect24 message to send (fn_80178048): up to 4 attachments, the friend it goes to and the
 // player sending it.

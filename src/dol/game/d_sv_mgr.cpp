@@ -1,5 +1,6 @@
 #include <cstring>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_str.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_sv_runtime.hpp>
@@ -42,7 +43,7 @@ void dSvMgr_c::requestSaveNormal() {
 }
 
 void dSvMgr_c::requestSaveRetireNetVst() {
-    fn_800DCF58();
+    dNet::getMyNo();
     mPlayerIndex = fn_801017B8();
     mRequestedMode = &dSvMgr_c::executeSaveRetireNetVst;
 }
@@ -68,7 +69,7 @@ void dSvMgr_c::requestSaveInterruptNetHst() {
 }
 
 void dSvMgr_c::requestSaveInterruptNetVst() {
-    fn_800DCF58();
+    dNet::getMyNo();
     mPlayerIndex = fn_801017B8();
     mRequestedMode = &dSvMgr_c::executeSaveInterruptNetVst;
 }
@@ -185,11 +186,11 @@ int dSvMgr_c::execute() {
 }
 
 void dSvMgr_c::requestMessage(u16 code) {
-    dDemo_c *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     setMessageLabel(mMessageLabel);
     setMessageCode(code);
     demo->attachActor(this);
-    fn_801A316C(demo, 0);
+    demo->requestStart(0);
 }
 
 void dSvMgr_c::onMessageEnd(int kind) {
@@ -208,10 +209,10 @@ void dSvMgr_c::onMessageEnd(int kind) {
 }
 
 void dSvMgr_c::lockMessage() {
-    void *controller = mpController;
-    field<u8>(controller, 0x6C7F) = 1;
-    field<u8>(controller, 0x6C7D) = 0;
-    field<u8>(controller, 0x6C7C) = 1;
+    dMsg::Comp_c *controller = mpController;
+    controller->mLock = 1;
+    controller->mWaitIconSe = 0;
+    controller->mWaitIcon = 1;
 }
 
 void dSvMgr_c::initializeWait() {
@@ -265,7 +266,7 @@ void dSvMgr_c::executeSaveNormal() {
 // Save/load step callbacks. Nonvirtual helper ownership is provisional.
 // 801BC58C
 void dSvMgr_c::stepSaveNormal_c::closeGate() {
-    if (fn_800DCEDC() == 1) {
+    if (dNet::isSessionActive() == 1) {
         dSvMgr_c::closeGateForSave();
     }
     nextStep();
@@ -273,7 +274,7 @@ void dSvMgr_c::stepSaveNormal_c::closeGate() {
 
 // 801BC634
 void dSvMgr_c::stepSaveNormal_c::disconnectWiFi() {
-    if (fn_800DCDFC(0)) {
+    if (dNet::disconnectNet(0)) {
         nextStep();
     }
 }
@@ -311,7 +312,7 @@ void dSvMgr_c::stepSaveNormal_c::waitVillageMail() {
 void dSvMgr_c::stepSaveNormal_c::finish() {
     dSaveData_c::get();
     fn_8010DED0();
-    fn_801A4E44(mpOwner->getMessageController(), 0x0E);
+    mpOwner->getMessageController()->setNextMsgCode(0x0E);
     nextStep();
 }
 
@@ -376,7 +377,7 @@ void dSvMgr_c::executeSaveConnectNetHst() {
 
 // 801BD098
 void dSvMgr_c::stepSaveConnectNetHst_c::initializeSave() {
-    if (fn_800DCF30() == 1) {
+    if (dNet::getMemberNum() == 1) {
         dPostOffice::deliverAll();
         dPostOffice::deliverAll();
         dSvMgr_c::clearVisitors();
@@ -435,12 +436,12 @@ void dSvMgr_c::executeSaveContinueNetHst() {
 
 // 801BD6C8
 void dSvMgr_c::stepSaveContinueNetHst_c::waitAllMachinesSaved() {
-    if (fn_800DDA7C()) {
-        fn_800DD4C8();
-        fn_800DD588(0x1D, 4);
-        fn_800DDAE4();
-        fn_800DD4A0();
-        fn_800DDE4C();
+    if (dNet::isSaveEndAllSaved()) {
+        dNet::beginPacket();
+        dNet::sendPacket(NET_PACKET_SAVE_DONE_ALL, NET_MEMBER_NONE);
+        dNet::resetSaveEnd();
+        dNet::clearRequestMember();
+        dNet::releaseRequest();
         nextStep();
     }
 }
@@ -471,17 +472,17 @@ void dSvMgr_c::executeSaveContinueNetVst() {
 
 // 801BDA48
 void dSvMgr_c::stepSaveContinueNetVst_c::notifyHostSaveComplete() {
-    fn_800DD4C8();
-    fn_800DD588(0x1C, 0);
+    dNet::beginPacket();
+    dNet::sendPacket(NET_PACKET_SAVE_DONE, 0);
     nextStep();
 }
 
 // 801BDAF0
 void dSvMgr_c::stepSaveContinueNetVst_c::waitSaveDemoEnd() {
-    if (fn_800DDAA4()) {
-        fn_800DDAE4();
-        fn_800DD4A0();
-        fn_800DDE4C();
+    if (dNet::isSaveEndSaved()) {
+        dNet::resetSaveEnd();
+        dNet::clearRequestMember();
+        dNet::releaseRequest();
         nextStep();
     }
 }
@@ -517,11 +518,10 @@ void dSvMgr_c::executeSaveInterruptNetHst() {
 
 // 801BDED0
 void dSvMgr_c::stepSaveInterruptNetHst_c::initializeSave() {
-    u16 item[2];
-    item[0] = 0xFFF1;
-    fn_80168DC0(item, 1);
-    fn_80168DC0(item, 2);
-    fn_80168DC0(item, 3);
+    dItem::Item item((u16)0xFFF1);
+    dSTR::unlock(&item, 1);
+    dSTR::unlock(&item, 2);
+    dSTR::unlock(&item, 3);
     fn_800A949C(1, 0);
     fn_800A949C(2, 0);
     fn_800A949C(3, 0);
@@ -716,10 +716,10 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::requestSaveMessage() {
 
 // 801BED80
 void dSvMgr_c::stepSaveInterruptNetVst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -732,10 +732,10 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::releaseMessageLock() {
 
 // 801BEF18
 void dSvMgr_c::stepSaveInterruptNetVst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
@@ -753,28 +753,28 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::finish() {
 
 // 801BF0A4
 void dSvMgr_c::stepSaveInterruptNetVst_c::waitCanSave() {
-    if (fn_800DDBA8()) {
+    if (dNet::canSaveInterrupt()) {
         nextStep();
     }
 }
 
 // 801BF148
 void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     switch (fn_800D2A44()) {
     case 1:
         if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
         } else if (!dSaveData_c::get()->isGood()) {
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
         } else {
-            fn_800DCF58();
+            dNet::getMyNo();
             int index = mPlayerIndex;
             fn_801017B8();
             void *player = dPlayerMgr_c::getPlayer(index);
@@ -789,14 +789,14 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
         break;
     case 2:
         releaseMessage(demo);
-        fn_801A4E44(demo, 0x0C);
-        fn_801A4E34(demo, mMessageLabel);
+        demo->setNextMsgCode(0x0C);
+        demo->setNextMsgLabel(mMessageLabel);
         mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
         break;
     default:
         releaseMessage(demo);
-        fn_801A4E44(demo, 0x13);
-        fn_801A4E34(demo, mMessageLabel);
+        demo->setNextMsgCode(0x13);
+        demo->setNextMsgLabel(mMessageLabel);
         mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
     }
 }
@@ -822,10 +822,10 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::requestNetworkSaveMessage() {
 
 // 801BF58C
 void dSvMgr_c::stepSaveInterruptNetHst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -838,10 +838,10 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::releaseMessageLock() {
 
 // 801BF724
 void dSvMgr_c::stepSaveInterruptNetHst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
@@ -859,7 +859,7 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::finish() {
 
 // 801BF8B0
 void dSvMgr_c::stepSaveInterruptNetHst_c::waitCanSave() {
-    if (fn_800DDBA8()) {
+    if (dNet::canSaveInterrupt()) {
         nextStep();
     }
 }
@@ -885,10 +885,10 @@ void dSvMgr_c::stepSaveContinueNetVst_c::requestNetworkSaveMessage() {
 
 // 801BFB44
 void dSvMgr_c::stepSaveContinueNetVst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -901,10 +901,10 @@ void dSvMgr_c::stepSaveContinueNetVst_c::releaseMessageLock() {
 
 // 801BFCDC
 void dSvMgr_c::stepSaveContinueNetVst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
@@ -922,7 +922,7 @@ void dSvMgr_c::stepSaveContinueNetVst_c::finish() {
 
 // 801BFE68
 void dSvMgr_c::stepSaveContinueNetVst_c::waitCanSave() {
-    if (fn_800DDB58()) {
+    if (dNet::canSaveContinue()) {
         nextStep();
     }
 }
@@ -935,10 +935,10 @@ void dSvMgr_c::stepSaveContinueNetHst_c::requestNetworkSaveMessage() {
 
 // 801BFFB0
 void dSvMgr_c::stepSaveContinueNetHst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -951,10 +951,10 @@ void dSvMgr_c::stepSaveContinueNetHst_c::releaseMessageLock() {
 
 // 801C0148
 void dSvMgr_c::stepSaveContinueNetHst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
@@ -972,7 +972,7 @@ void dSvMgr_c::stepSaveContinueNetHst_c::finish() {
 
 // 801C02D4
 void dSvMgr_c::stepSaveContinueNetHst_c::waitCanSave() {
-    if (fn_800DDB58()) {
+    if (dNet::canSaveContinue()) {
         nextStep();
     }
 }
@@ -985,10 +985,10 @@ void dSvMgr_c::stepSaveConnectNetVst_c::requestNetworkSaveMessage() {
 
 // 801C041C
 void dSvMgr_c::stepSaveConnectNetVst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -1001,17 +1001,17 @@ void dSvMgr_c::stepSaveConnectNetVst_c::releaseMessageLock() {
 
 // 801C05B4
 void dSvMgr_c::stepSaveConnectNetVst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
 
 // 801C068C
 void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
-    if (fn_800DCEDC() && mCurrentVisitor < 4) {
+    if (dNet::isSessionActive() && mCurrentVisitor < 4) {
         bool returning = false;
         void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
@@ -1021,7 +1021,7 @@ void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
                 player = &dSaveData_c::getTown()->mTownHost;
                 ((dPersonalID_c *)player)->clear();
                 field<IdentityFlags>(player, 0x2C).state = 0;
-                if (fn_800DCF90()) {
+                if (dNet::isHost()) {
                     player = &field<u8>(dPlayerMgr_c::getCurrentPlayer(), 0x7FA8);
                     ((dPersonalID_c *)player)->clear();
                     field<IdentityFlags>(player, 0x2C).state = 0;
@@ -1044,19 +1044,19 @@ void dSvMgr_c::stepSaveConnectNetVst_c::finish() {
 
 // 801C082C
 void dSvMgr_c::stepSaveConnectNetVst_c::waitNewPlayer() {
-    if (fn_800DD2A4()) {
-        fn_800D3E14();
+    if (dNet::isNewPlayerReady()) {
+        dNet::setSaveVisitor();
         nextStep();
     }
 }
 
 // 801C08D4
 void dSvMgr_c::stepSaveConnectNetVst_c::findFriend() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
         void *player = dPlayerMgr_c::getNetPlayer(visitor);
-        u64 friendCode = fn_800DDDAC(visitor);
+        u64 friendCode = dNet::getMemberTime(visitor);
         int index = fn_8017BBB8(&field<u8>(player, 4));
         if (index >= 0 || index == -1) {
             if (index >= 0) {
@@ -1070,7 +1070,7 @@ void dSvMgr_c::stepSaveConnectNetVst_c::findFriend() {
 
 // 801C09D0
 void dSvMgr_c::stepSaveConnectNetVst_c::waitSavePermission() {
-    if (fn_800DDB08()) {
+    if (dNet::isConnectSavePermitted()) {
         nextStep();
     }
 }
@@ -1083,10 +1083,10 @@ void dSvMgr_c::stepSaveConnectNetHst_c::requestNetworkSaveMessage() {
 
 // 801C0B18
 void dSvMgr_c::stepSaveConnectNetHst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -1099,17 +1099,17 @@ void dSvMgr_c::stepSaveConnectNetHst_c::releaseMessageLock() {
 
 // 801C0CB0
 void dSvMgr_c::stepSaveConnectNetHst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
 
 // 801C0D88
 void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
-    if (fn_800DCEDC() && mCurrentVisitor < 4) {
+    if (dNet::isSessionActive() && mCurrentVisitor < 4) {
         bool returning = false;
         void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
@@ -1119,7 +1119,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
                 player = &dSaveData_c::getTown()->mTownHost;
                 ((dPersonalID_c *)player)->clear();
                 field<IdentityFlags>(player, 0x2C).state = 0;
-                if (fn_800DCF90()) {
+                if (dNet::isHost()) {
                     player = &field<u8>(dPlayerMgr_c::getCurrentPlayer(), 0x7FA8);
                     ((dPersonalID_c *)player)->clear();
                     field<IdentityFlags>(player, 0x2C).state = 0;
@@ -1142,19 +1142,19 @@ void dSvMgr_c::stepSaveConnectNetHst_c::finish() {
 
 // 801C0F28
 void dSvMgr_c::stepSaveConnectNetHst_c::waitNewPlayer() {
-    if (fn_800DD2A4()) {
-        fn_800D3E14();
+    if (dNet::isNewPlayerReady()) {
+        dNet::setSaveVisitor();
         nextStep();
     }
 }
 
 // 801C0FD0
 void dSvMgr_c::stepSaveConnectNetHst_c::findFriend() {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
         void *player = dPlayerMgr_c::getNetPlayer(visitor);
-        u64 friendCode = fn_800DDDAC(visitor);
+        u64 friendCode = dNet::getMemberTime(visitor);
         int index = fn_8017BBB8(&field<u8>(player, 4));
         if (index >= 0 || index == -1) {
             if (index >= 0) {
@@ -1168,7 +1168,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::findFriend() {
 
 // 801C10CC
 void dSvMgr_c::stepSaveConnectNetHst_c::waitSavePermission() {
-    if (fn_800DDB08()) {
+    if (dNet::isConnectSavePermitted()) {
         nextStep();
     }
 }
@@ -1181,10 +1181,10 @@ void dSvMgr_c::stepSaveRetireNetVst_c::requestNetworkSaveMessage() {
 
 // 801C1214
 void dSvMgr_c::stepSaveRetireNetVst_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -1197,10 +1197,10 @@ void dSvMgr_c::stepSaveRetireNetVst_c::releaseMessageLock() {
 
 // 801C13AC
 void dSvMgr_c::stepSaveRetireNetVst_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
@@ -1218,21 +1218,21 @@ void dSvMgr_c::stepSaveRetireNetVst_c::finish() {
 
 // 801C1538
 void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     switch (fn_800D2A44()) {
     case 1:
         if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
         } else if (!dSaveData_c::get()->isGood()) {
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
         } else {
-            fn_800DCF58();
+            dNet::getMyNo();
             int index = mPlayerIndex;
             fn_801017B8();
             void *player = dPlayerMgr_c::getPlayer(index);
@@ -1247,14 +1247,14 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
         break;
     case 2:
         releaseMessage(demo);
-        fn_801A4E44(demo, 0x0C);
-        fn_801A4E34(demo, mMessageLabel);
+        demo->setNextMsgCode(0x0C);
+        demo->setNextMsgLabel(mMessageLabel);
         mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
         break;
     default:
         releaseMessage(demo);
-        fn_801A4E44(demo, 0x13);
-        fn_801A4E34(demo, mMessageLabel);
+        demo->setNextMsgCode(0x13);
+        demo->setNextMsgLabel(mMessageLabel);
         mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
     }
 }
@@ -1280,10 +1280,10 @@ void dSvMgr_c::stepSaveNormal_c::requestSaveMessage() {
 
 // 801C197C
 void dSvMgr_c::stepSaveNormal_c::waitMessageLock() {
-    void *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dDemo_c::fn_801A4518;
+    dMsg::Comp_c *controller = mpOwner->getMessageController();
+    DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        field<u8>(mpOwner->getMessageController(), 0x6C7F)) {
+        mpOwner->getMessageController()->mLock) {
         nextStep();
     }
 }
@@ -1296,10 +1296,10 @@ void dSvMgr_c::stepSaveNormal_c::releaseMessageLock() {
 
 // 801C1B14
 void dSvMgr_c::stepSaveNormal_c::waitMessageEnd() {
-    void *demo = dDemo_c::mInstance;
-    DemoMethod expected = &dDemo_c::fn_801A334C;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
-        static_cast<dDemo_c *>(demo)->detachActor();
+        static_cast<dMsg::Comp_c *>(demo)->detachActor();
         nextStep();
     }
 }
@@ -1392,21 +1392,21 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::createDownloadBox() {
     if (fn_800D34C4(lbl_8074B010) == 1) {
         nextStep();
     } else {
-        void *demo = dDemo_c::mInstance;
+        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
         switch (fn_80178374()) {
         case -1:
             break;
         case 0:
             if (fn_80178448() == 0x0C) {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x0C);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x0C);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod =
                     &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
             } else {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x13);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x13);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod =
                     &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
             }
@@ -1469,21 +1469,21 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::createDownloadBox() {
     if (fn_800D34C4(lbl_8074B010) == 1) {
         nextStep();
     } else {
-        void *demo = dDemo_c::mInstance;
+        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
         switch (fn_80178374()) {
         case -1:
             break;
         case 0:
             if (fn_80178448() == 0x0C) {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x0C);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x0C);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod =
                     &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
             } else {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x13);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x13);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod =
                     &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
             }
@@ -1568,21 +1568,21 @@ void dSvMgr_c::stepSaveContinueNetHst_c::createDownloadBox() {
     if (fn_800D34C4(lbl_8074B010) == 1) {
         nextStep();
     } else {
-        void *demo = dDemo_c::mInstance;
+        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
         switch (fn_80178374()) {
         case -1:
             break;
         case 0:
             if (fn_80178448() == 0x0C) {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x0C);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x0C);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod =
                     &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
             } else {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x13);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x13);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod =
                     &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
             }
@@ -1713,20 +1713,20 @@ void dSvMgr_c::stepSaveRetireNetVst_c::createDownloadBox() {
     if (fn_800D34C4(lbl_8074B010) == 1) {
         nextStep();
     } else {
-        void *demo = dDemo_c::mInstance;
+        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
         switch (fn_80178374()) {
         case -1:
             break;
         case 0:
             if (fn_80178448() == 0x0C) {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x0C);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x0C);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
             } else {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x13);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x13);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
             }
             break;
@@ -1788,20 +1788,20 @@ void dSvMgr_c::stepSaveNormal_c::createDownloadBox() {
     if (fn_800D34C4(lbl_8074B010) == 1) {
         nextStep();
     } else {
-        void *demo = dDemo_c::mInstance;
+        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
         switch (fn_80178374()) {
         case -1:
             break;
         case 0:
             if (fn_80178448() == 0x0C) {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x0C);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x0C);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
             } else {
                 releaseMessage(demo);
-                fn_801A4E44(demo, 0x13);
-                fn_801A4E34(demo, mMessageLabel);
+                demo->setNextMsgCode(0x13);
+                demo->setNextMsgLabel(mMessageLabel);
                 mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
             }
             break;
@@ -1835,7 +1835,7 @@ inline void dSvMgr_c::setLoadErrorMessage(u16 code) {
 
 // 801C5618
 void dSvMgr_c::stepSaveInterruptNetVst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -1843,29 +1843,29 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
             break;
         }
@@ -1874,7 +1874,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::checkSaveResult() {
 
 // 801C5864
 void dSvMgr_c::stepSaveInterruptNetHst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -1882,29 +1882,29 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
             break;
         }
@@ -1913,7 +1913,7 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::checkSaveResult() {
 
 // 801C5AB0
 void dSvMgr_c::stepSaveContinueNetVst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -1921,29 +1921,29 @@ void dSvMgr_c::stepSaveContinueNetVst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
             break;
         }
@@ -1952,7 +1952,7 @@ void dSvMgr_c::stepSaveContinueNetVst_c::checkSaveResult() {
 
 // 801C5CFC
 void dSvMgr_c::stepSaveContinueNetHst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -1960,29 +1960,29 @@ void dSvMgr_c::stepSaveContinueNetHst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
             break;
         }
@@ -1991,7 +1991,7 @@ void dSvMgr_c::stepSaveContinueNetHst_c::checkSaveResult() {
 
 // 801C5F48
 void dSvMgr_c::stepSaveConnectNetVst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -1999,29 +1999,29 @@ void dSvMgr_c::stepSaveConnectNetVst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
             break;
         }
@@ -2030,7 +2030,7 @@ void dSvMgr_c::stepSaveConnectNetVst_c::checkSaveResult() {
 
 // 801C6194
 void dSvMgr_c::stepSaveConnectNetHst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -2038,29 +2038,29 @@ void dSvMgr_c::stepSaveConnectNetHst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
             break;
         }
@@ -2069,7 +2069,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::checkSaveResult() {
 
 // 801C63E0
 void dSvMgr_c::stepSaveRetireNetVst_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -2077,29 +2077,29 @@ void dSvMgr_c::stepSaveRetireNetVst_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
             break;
         }
@@ -2108,7 +2108,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::checkSaveResult() {
 
 // 801C662C
 void dSvMgr_c::stepSaveNormal_c::checkSaveResult() {
-    void *demo = dDemo_c::mInstance;
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (fn_800D2A4C()) {
         switch (fn_800D2A44()) {
         case 1:
@@ -2116,29 +2116,29 @@ void dSvMgr_c::stepSaveNormal_c::checkSaveResult() {
             break;
         case 2:
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x0C);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
             break;
         case 7:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 8);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(8);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
             break;
         case 8:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 9);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(9);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
             break;
         default:
             enableReset();
             releaseMessage(demo);
-            fn_801A4E44(demo, 0x13);
-            fn_801A4E34(demo, mMessageLabel);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(mMessageLabel);
             mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
             break;
         }
@@ -2149,5 +2149,3 @@ dSvMgr_c::~dSvMgr_c() {
 }
 
 // Original demo callbacks; only their addresses are used here.
-extern "C" {
-}

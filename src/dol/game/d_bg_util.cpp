@@ -13,14 +13,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
-
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-BOOL fn_800DCEDC();
-void fn_800DD4C8();
-void fn_800DD518(void *data, int size);
-void fn_800DD588(int a, int b);
-}
+#include <game/game/d_net.hpp>
 
 namespace dBgUtil {
 
@@ -115,7 +108,7 @@ void setBgiDraw(dBgiDraw_c *draw) {
 
 // 80076A6C
 void sendRoomItem(dItem::Item item, int type, int flag0, BOOL isWallpaper, int flag1) {
-    if (fn_800DCEDC()) {
+    if (dNet::isSessionActive()) {
         roomItemMsg_c msg;
         msg.mItem = item.mId;
         msg.mScene = getCurrentScene();
@@ -123,9 +116,9 @@ void sendRoomItem(dItem::Item item, int type, int flag0, BOOL isWallpaper, int f
         msg.mType = type;
         msg.mFlag1 = flag1;
         msg.mFlag0 = flag0;
-        fn_800DD4C8();
-        fn_800DD518(&msg, sizeof(msg));
-        fn_800DD588(0x3D, 4);
+        dNet::beginPacket();
+        dNet::addPacket(&msg, sizeof(msg));
+        dNet::sendPacket(NET_PACKET_ROOM_ITEM, NET_MEMBER_NONE);
     }
 }
 

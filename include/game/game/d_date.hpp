@@ -176,7 +176,7 @@ public:
     int getSeason();                               // 8016DC84
     static int getCurrentSeason();                 // 8016DCF8
     static void setTermDate(const int *term, dTime_c *time); // 8016DD1C
-    static u8 getStarSign(int month, int day);     // 8016DD48
+    static int getStarSign(int month, int day);    // 8016DD48: 0 Capricorn .. 11 (callers use it unextended)
 
     static s64 sOffset;        // 8074E8B0: game time - console time, in ticks
     static s64 sPendingOffset; // 8074E8B8

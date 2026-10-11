@@ -11,7 +11,7 @@ class dHmnToolBank_c;
 // Notes: notes/d_player_mgr.txt. Names are inferred; fn_ ones are not understood yet.
 //
 // Player index arguments: 0-3 are local controllers, 4 means "the current one"
-// (fn_800DCF58). Player slots (mSlots): 0-3 town players (dSaveData_c::mPlayers),
+// (getMyNo). Player slots (mSlots): 0-3 town players (dSaveData_c::mPlayers),
 // 4-6 visiting players (dGuestPlayers_c), 7 none.
 
 // The player actor (lives in the d_a_player REL). Only the fields this TU uses.
@@ -379,9 +379,9 @@ void fn_801019A4(dPlayerActor_c *actor, u32 idx); // 801019A4
 dPlayerActor_c *fn_801019C4(int idx); // 801019C4
 dPlayerActor_c *fn_80101A28(int idx); // 80101A28
 BOOL fn_80101A74(int state, int idx); // 80101A74
-void fn_80101CB4(); // 80101CB4
-void fn_80101CB8(); // 80101CB8
-void fn_80101CBC(); // 80101CBC
+void fn_80101CB4(int idx, int a, int b); // 80101CB4: d_net packet 0x25
+void fn_80101CB8(int idx, int a); // 80101CB8: d_net packet 0x24
+void fn_80101CBC(int idx, int a, int b); // 80101CBC: d_net packet 0x26
 void fn_80101CC0(int idx, const mVec3_c *value); // 80101CC0
 void fn_80101D0C(int idx, int a, int b); // 80101D0C
 void fn_80101D70(int idx, int value); // 80101D70
@@ -389,7 +389,7 @@ void fn_80101DA8(int idx, int value); // 80101DA8
 void fn_80101DAC(int idx, const u8 *value); // 80101DAC
 BOOL fn_80101DB0(int idx, int state); // 80101DB0
 void fn_80101DC0(); // 80101DC0
-void fn_80101DC4(); // 80101DC4
+BOOL fn_80101DC4(void *info, u8 *scene, u8 *b, u32 idx); // 80101DC4
 BOOL fn_80101DC8(int idx, u8 b, int state, const u8 *param); // 80101DC8
 BOOL fn_80101E3C(int idx, u8 b, int state, const u8 *param); // 80101E3C
 BOOL fn_80101EB0(int idx, u8 b, int state, const u8 *param); // 80101EB0

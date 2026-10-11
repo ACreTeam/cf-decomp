@@ -44,7 +44,7 @@ public:
 // The global word slots used by the tag handlers (lbl_805FF398). Name from RTTI.
 class Comp_c {
 public:
-    virtual ~Comp_c(); // 8016B820 (include/game/game/d_string_comp.inc)
+    virtual ~Comp_c(); // 8016B820 (src/dol/game/d_string_comp.inc)
 
     /* 0x0004 */ Word_c mWords[20]; // word slots (fn_8016B15C / fn_8016B1B8)
     /* 0x12C4 */ Word_c mPlayerName; // source for procPlayerChar
@@ -52,3 +52,7 @@ public:
 }; // sizeof = 0x13B8
 
 } // namespace dString
+
+extern "C" {
+BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // 8016AE68: loads string index of a BMG group
+}

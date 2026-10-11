@@ -2,7 +2,7 @@
 // .text 8015593C..8015B680, compiled with -sym on. The main .text section ends
 // with the static initializer at 80157CE0 (the global dScript::Bank_c at
 // 805F2E94). Everything after it (80157D3C..) comes from
-// include/game/game/d_script_word.inc: MWCC puts functions whose source is an
+// src/dol/game/d_script_word.inc: MWCC puts functions whose source is an
 // included file in a second .text section that links after the main one. The
 // data of both parts is interleaved, which is why this is one TU.
 // Notes: notes/d_script.txt.
@@ -638,7 +638,7 @@ BOOL makeNickname(Word_c *out, const Word_c *name, u16 index) {
 
 // Word_c's code. It sits here in the original source: its data (PTMF tables,
 // strings) comes between makeNickname's and loadBank's.
-#include <game/game/d_script_word.inc>
+#include "d_script_word.inc"
 
 namespace dScript {
 
@@ -771,16 +771,16 @@ const wchar_t *Res_c::getMessage(int id) {
 }
 
 // 801578E8
-void *Res_c::getEntry(int id) {
+const EGG::MsgRes::MessageInfoDataBlock::Entry *Res_c::getEntry(int id) {
     return getMsgEntry(id, 0);
 }
 
 // 801578F0
 u16 Res_c::getCount() {
-    if (mpInf1 == NULL) {
+    if (mMsgInfoDataBlk == NULL) {
         return 0;
     }
-    return *(const u16 *)((const u8 *)mpInf1 + 8);
+    return mMsgInfoDataBlk->mNumEntries;
 }
 
 // 8015790C: length in characters (a tag counts as its full size); 0 if it exceeds maxSize

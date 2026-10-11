@@ -1,4 +1,5 @@
 #include <game/game/d_fg_item.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -10,7 +11,7 @@ void __register_global_object(void *object, void *dtor, void *node);
 
 }
 
-// The 0xD000 ids index the building table (dBuildingInfo_c, fn_80167FB4; d_save_building.hpp).
+// The 0xD000 ids index the building table (dBuildingInfo_c, dSTR::getBuildingInfo; d_save_building.hpp).
 
 static FgInfo sFgInfoTable[FG_COUNT] = {
     {0x0000, 0xFFF1, 0x0000, (s16)0xFFF1, {0x00, 0x00, 0x00, 0x00, 0x00}, -1, 0x00, "fg_apple"}, // 0x00
@@ -396,7 +397,7 @@ u16 Item::getMoneyItem(int amount, BOOL roundUp, int *remainder) {
 // 800A6370
 f32 Item::getExtValueA() const {
     if (isExtId()) {
-        int value = fn_80167FB4(getExtIndex())->mValueA;
+        int value = dSTR::getBuildingInfo(getExtIndex())->mValueA;
         return value;
     }
     return 0.0f;
@@ -405,7 +406,7 @@ f32 Item::getExtValueA() const {
 // 800A6404
 f32 Item::getExtValueB() const {
     if (isExtId()) {
-        int value = fn_80167FB4(getExtIndex())->mValueB;
+        int value = dSTR::getBuildingInfo(getExtIndex())->mValueB;
         return value;
     }
     return 0.0f;
@@ -414,7 +415,7 @@ f32 Item::getExtValueB() const {
 // 800A6498
 BOOL Item::getExtFlag() const {
     if (isExtId()) {
-        return fn_80167FB4(getExtIndex())->mFlag != 0;
+        return dSTR::getBuildingInfo(getExtIndex())->mFlag != 0;
     }
     return FALSE;
 }

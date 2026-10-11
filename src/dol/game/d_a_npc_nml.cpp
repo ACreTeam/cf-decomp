@@ -19,7 +19,7 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_quest.hpp>
 #include <game/game/d_string.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_npc_talk_approach.hpp>
 #include <game/game/d_npc_talk_arbeit.hpp>
 #include <game/game/d_npc_talk_birthday.hpp>
@@ -1167,9 +1167,9 @@ BOOL dAcNpcNml_c::talk_c::startMsg() {
         (this->*mMsgProc)(&info);
         if (mpController != NULL) {
             fixMsgCode(&info.mCode);
-            fn_801A4E44(mpController, info.mCode);
+            mpController->setNextMsgCode(info.mCode);
             if (info.mLabel != NULL) {
-                fn_801A4E34(mpController, info.mLabel);
+                mpController->setNextMsgLabel(info.mLabel);
             }
             return TRUE;
         }
@@ -1640,9 +1640,9 @@ void dAcNpcNml_c::talk_c::onMessageEnd(int kind) {
             mStepProc = NULL;
         }
     }
-    dDemo_c *ctrl = getController();
-    if (ctrl != NULL && ctrl->_6C86 != 0) {
-        rememberMsg(mMessageLabel, ctrl->_6C86);
+    dMsg::Comp_c *ctrl = getController();
+    if (ctrl != NULL && ctrl->mMemoryCode != 0) {
+        rememberMsg(mMessageLabel, ctrl->mMemoryCode);
     }
 }
 
@@ -1705,7 +1705,7 @@ void dAcNpcNml_c::talk_c::showChoice() const {
         }
         sel->mNum = mChoice.mNum;
         sel->mCancel = mChoice.mCancel;
-        fn_801A5A00(getController());
+        getController()->openSelect();
     }
 }
 
@@ -1751,7 +1751,7 @@ void dAcNpcNml_c::talk_c::showNpcChoice() const {
                     "sys_SELECT/SYS_SelectNPC");
         sel->fn_8000D340(1, mNpcChoice.mEntry[1].mCode + (u16)cM::rndInt(mNpcChoice.mEntry[1].mRange),
                     "sys_SELECT/SYS_SelectNPC");
-        fn_801A5A4C(getController());
+        getController()->openAnalogSelect();
     }
 }
 
@@ -1767,7 +1767,7 @@ bool dAcNpcNml_c::talk_c::hasNpcChoice() const {
 
 // 800324DC
 void dAcNpcNml_c::talk_c::onAnswer(int) {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl == NULL) {
         return;
     }
@@ -1887,7 +1887,7 @@ void dAcNpcNml_c::talk_c::setLooksMsg(msgInfo_s *info, const char *label, u16 co
 }
 
 // 80032988
-void dAcNpcNml_c::talk_c::selectMessage(const void *bmg) {
+void dAcNpcNml_c::talk_c::selectMessage(const EGG::MsgRes::MessageHeader *bmg) {
     if (mPickCode != 0) {
         return;
     }
@@ -1989,7 +1989,7 @@ int dAcNpcNml_c::talk_c::getVoiceMood() {
 
 // 80032D7C
 BOOL dAcNpcNml_c::talk_c::startMood(int mood, int hours) {
-    if (fn_800DCEDC() && fn_800DCF30() > 1) {
+    if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         return FALSE;
     }
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(getNpc(mSpeaker));
@@ -2026,7 +2026,7 @@ void dAcNpcNml_c::talk_c::setMood4(int hours) {
 
 // 80032E40
 void dAcNpcNml_c::talk_c::playTownTune() {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
         ctrl->mLock = 1;
     }
@@ -2046,7 +2046,7 @@ void dAcNpcNml_c::talk_c::actPlayTune() {
             started = TRUE;
         }
         if (!started) {
-            dDemo_c *ctrl = getController();
+            dMsg::Comp_c *ctrl = getController();
             if (ctrl != NULL) {
                 ctrl->mLock = 0;
             }
@@ -2065,7 +2065,7 @@ void dAcNpcNml_c::talk_c::actWaitTuneStart() {
 // 80032FD8
 void dAcNpcNml_c::talk_c::actWaitTuneEnd() {
     if (!isTownTunePlaying()) {
-        dDemo_c *ctrl = getController();
+        dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
         }
@@ -2511,7 +2511,7 @@ void dAcNpcNml_c::talk_c::endReaction(int arg) {
 
 // 80033ADC
 BOOL dAcNpcNml_c::talk_c::stepReaction(int kind) {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL && ctrl->mNextMsgCode == 0) {
         dNpcEntry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
@@ -3103,12 +3103,12 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                         if (unit == 0) {
                                             clearWord(2);
                                         } else {
-                                            getController()->fn_801A5874(2, unit, "sys_STRING/STR_Unit");
+                                            getController()->setStringWord(2, unit, "sys_STRING/STR_Unit");
                                         }
                                     }
                                 }
                                 if (otherTown->mImpression < 0x31) {
-                                    getController()->fn_801A5874(3, otherTown->mImpression + 1, "sys_STRING/STR_Impress");
+                                    getController()->setStringWord(3, otherTown->mImpression + 1, "sys_STRING/STR_Impress");
                                 }
                                 dAnmPersonalID_c *villager = (dAnmPersonalID_c *)otherTown->mVillager;
                                 if (villager->isValid()) {
@@ -3118,7 +3118,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                         if (unit == 0) {
                                             clearWord(5);
                                         } else {
-                                            getController()->fn_801A5874(5, unit, "sys_STRING/STR_Unit");
+                                            getController()->setStringWord(5, unit, "sys_STRING/STR_Unit");
                                         }
                                     }
                                 }
@@ -3182,7 +3182,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                 if (unit == 0) {
                                     clearWord(1);
                                 } else {
-                                    getController()->fn_801A5874(1, unit, "sys_STRING/STR_Unit");
+                                    getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
                                 }
                             }
                             mMsgPersonal.copy(personal);
@@ -3255,7 +3255,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                             if (unit == 0) {
                                 clearWord(3);
                             } else {
-                                getController()->fn_801A5874(3, unit, "sys_STRING/STR_Unit");
+                                getController()->setStringWord(3, unit, "sys_STRING/STR_Unit");
                             }
                         }
                         mMsgPlayer.copy(playerID);
@@ -3278,7 +3278,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                     if (unit == 0) {
                                         clearWord(3);
                                     } else {
-                                        getController()->fn_801A5874(3, unit, "sys_STRING/STR_Unit");
+                                        getController()->setStringWord(3, unit, "sys_STRING/STR_Unit");
                                     }
                                 }
                             }
@@ -3329,7 +3329,7 @@ int dAcNpcNml_c::talk_c::msgGreeting(msgInfo_s *info) {
             BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
             int idx;
             if (inTown) {
-                dUnk8074EBE8_c *weatherMgr = lbl_8074EBE8;
+                dWeather_c *weatherMgr = dWeather_c::sInstance;
                 if (fromTown && count >= 5) {
                     idx = 6;
                 } else {

@@ -66,7 +66,7 @@ void dFgMngTask_c::update() {
         case FG_MNG_KIND_PICK_UP_SPECIAL_FULL:
             break;
         case FG_MNG_KIND_PITFALL:
-            if (!fn_800DCEDC()) {
+            if (!dNet::isSessionActive()) {
                 mNewItem = dItem::ITEM_ID_NONE;
                 apply();
                 clear();
@@ -249,7 +249,7 @@ void dFgMngTask_c::finish() {
     if (idx >= 0) {
         fgMngCmd_get(idx)->init();
     }
-    if (fn_800DCF90()) {
+    if (dNet::isHost()) {
         dFdAsPos_c pos2(getX(), getZ());
         int i = fgMngLock_find(mScene, (dFdAsPos_c *)&pos2, mLayer);
         if (i >= 0) {
@@ -263,9 +263,9 @@ void dFgMngTask_c::finish() {
         msg.mLayer = mLayer;
         msg.mPos = mPos;
         msg.mScene = mScene;
-        fn_800DD4C8();
-        fn_800DD518(&msg, sizeof(msg));
-        fn_800DD588(FG_MNG_PACKET_TASK_DONE, 0);
+        dNet::beginPacket();
+        dNet::addPacket(&msg, sizeof(msg));
+        dNet::sendPacket(NET_PACKET_FG_MNG_TASK_DONE, 0);
         clear();
     }
 }
@@ -340,7 +340,7 @@ BOOL fgMngTask_add(u8 player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u16 ite
     } else {
         ok = fgMngTask_new(player, scene, pos, pos2, item, item2, kind, stage, b2, idx, layer, day);
     }
-    if (ok == TRUE && fn_800DCF90()) {
+    if (ok == TRUE && dNet::isHost()) {
         fgMngLock_add(scene, (dFdAsPos_c *)&pos, layer);
     }
     return ok;
@@ -403,7 +403,7 @@ BOOL fgMngTask_replace(int player, u8 scene, dFdAsPos_c pos, dFdAsPos_c pos2, u1
     } else {
         fgMngTask_new(player, scene, pos, pos2, item, item2, kind, stage, b2, idx, layer, day);
     }
-    if (fn_800DCF90()) {
+    if (dNet::isHost()) {
         fgMngLock_add(scene, (dFdAsPos_c *)&pos, layer);
     }
     return TRUE;
@@ -594,7 +594,7 @@ int fgMngTask_findActive(u8 player) {
 int fgMngTask_findGroup(u32 player, u8 idx, BOOL notHeld) {
     int i;
     int found = -1;
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         player = 0;
     }
     for (i = 0; i < FG_MNG_TASK_NUM; i++) {
@@ -619,7 +619,7 @@ dFgMngTask_c *fgMngTask_get(int idx) {
 u16 *fgMngTask_getActive(int player) {
     int i;
     u16 *found = NULL;
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         player = 0;
     }
     for (i = 0; i < FG_MNG_TASK_NUM; i++) {
@@ -686,7 +686,7 @@ void dFgMngStone_c::init() {
 
 // 800A3D24
 void dFgMngStone_c::update() {
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         if (mTimer > 0) {
             mTimer--;
         }
@@ -771,7 +771,7 @@ BOOL dFgMngStone_c::drop(dFdBase_c *fd, const dFdAsPos_c *pos) {
     dItem::Item *cur = fd->getItem(pos->mX, pos->mZ, 0);
     if (cur != NULL && cur->mId == dItem::ITEM_ID_NONE && fd->canPutItem(pos->mX, pos->mZ)) {
         dItem::Item shovel(dItem::ITEM_IDX_SILVER_SHOVEL);
-        BOOL gold = fgMngProc_getMemberHeldItem(fn_800DCF58()) == shovel.getId() && cM::rndF(100.0f) < 10.0f;
+        BOOL gold = fgMngProc_getMemberHeldItem(dNet::getMyNo()) == shovel.getId() && cM::rndF(100.0f) < 10.0f;
         u16 item;
         u8 stage;
         if (gold) {
@@ -869,7 +869,7 @@ BOOL fgMngState_isPlayerLeftOf(int player, const f32 *dist) {
 
 // 800A4478
 BOOL fgMngState_isFreeOfPlayers(int x, int z, int exclude) {
-    if (!fn_800DCEDC()) {
+    if (!dNet::isSessionActive()) {
         return TRUE;
     }
     nw4r::math::VEC3 pos;
@@ -925,7 +925,7 @@ BOOL fgMngState_isFreeOfNpcs(int x, int z) {
 
 // 800A46B4
 BOOL fgMngState_isFree(int x, int z) {
-    return fgMngState_isFreeOfPlayers(x, z, fn_800DCF58());
+    return fgMngState_isFreeOfPlayers(x, z, dNet::getMyNo());
 }
 
 // 800A46FC
@@ -1031,9 +1031,9 @@ BOOL dFgMngCmd_c::exec() {
     u8 stage = mStage;
     u16 prev = item->mId;
     ok = fgMngTask_replace(mPlayer, mScene, pos, pos2, mNewItem, prev, kind, stage, b2, dFgMngTask_c::DROP_IDX_MAIN, layer, -1);
-    if (fn_800DCF90()) {
+    if (dNet::isHost()) {
         int player = mPlayer;
-        if (player == fn_800DCF58()) {
+        if (player == dNet::getMyNo()) {
             goto done;
         }
     }
@@ -1117,15 +1117,15 @@ void dFgMngReq_c::send(BOOL local, int player, u8 scene) {
     }
     fgMngCmd_apply(&cmd, size);
     if (!mSend) {
-        if (player != fn_800DCF58()) {
-            fn_800DD4C8();
-            fn_800DD518(&cmd, size);
-            fn_800DD588(FG_MNG_PACKET_CMD, player);
+        if (player != dNet::getMyNo()) {
+            dNet::beginPacket();
+            dNet::addPacket(&cmd, size);
+            dNet::sendPacket(NET_PACKET_FG_MNG_CMD, player);
         }
     } else {
-        fn_800DD4C8();
-        fn_800DD518(&cmd, size);
-        fn_800DD588(FG_MNG_PACKET_CMD, FG_MNG_NET_ALL);
+        dNet::beginPacket();
+        dNet::addPacket(&cmd, size);
+        dNet::sendPacket(NET_PACKET_FG_MNG_CMD, NET_MEMBER_NONE);
     }
 }
 
@@ -1253,7 +1253,7 @@ BOOL dFgMngCmd_c::planFruit(int player, u16 id) {
             mDropPos[i].mPos = FG_MNG_POS_NONE;
             break;
         case SPOT_FOUND:
-            if (player == fn_800DCF58()) {
+            if (player == dNet::getMyNo()) {
                 fgMngTask_add(player, 0, pos[i], none, fruit, dItem::ITEM_ID_NONE, FG_MNG_KIND_DROP, 0, 0, i, 0, -1);
             }
             mDropPos[i].set(pos[i].mX, pos[i].mZ);
@@ -1324,7 +1324,7 @@ BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
         mDropPos[0].mPos = FG_MNG_POS_NONE;
         break;
     case SPOT_FOUND:
-        if (player == fn_800DCF58()) {
+        if (player == dNet::getMyNo()) {
             fgMngTask_add(player, 0, pos, none, item, dItem::ITEM_ID_NONE, FG_MNG_KIND_DROP, 0, 0, 0, 0, -1);
         }
         mDropPos[0].set(pos.mX, pos.mZ);

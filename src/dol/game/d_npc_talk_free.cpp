@@ -136,7 +136,7 @@ BOOL dAcNpcNml_c::talk_c::isEventDay(BOOL withMoon) {
 
 static inline BOOL isVisitor(dPrivateData_c *player) {
     BOOL visitor = TRUE;
-    bool online = (fn_800DCEDC() && fn_800DCF30() > 1) || player == NULL;
+    bool online = (dNet::isSessionActive() && dNet::getMemberNum() > 1) || player == NULL;
     if (!online && player->mPID.isFromTown()) {
         visitor = FALSE;
     }
@@ -254,7 +254,7 @@ const u8 *dAcNpcNml_c::talk_c::getGeneralWeights() {
     static const u8 l_offline[8] = {10, 30, 30, 20, 10, 0, 0, 0};
     static const u8 l_visitor[8] = {15, 35, 35, 15, 0, 0, 0, 0};
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    bool visitor = (fn_800DCEDC() && fn_800DCF30() > 1) || player == NULL || !player->mPID.isFromTown();
+    bool visitor = (dNet::isSessionActive() && dNet::getMemberNum() > 1) || player == NULL || !player->mPID.isFromTown();
     if (visitor) {
         return l_visitor;
     }
@@ -379,7 +379,7 @@ static inline void setUnitMsg(talk_c *talk, int idx, u16 unit) {
     if (unit == 0) {
         talk->clearWord(idx);
     } else {
-        talk->getController()->fn_801A5874(idx, unit, "sys_STRING/STR_Unit");
+        talk->getController()->setStringWord(idx, unit, "sys_STRING/STR_Unit");
     }
 }
 
@@ -608,7 +608,7 @@ void dAcNpcNml_c::talk_c::setMemoryWords(const dPersonalID_c *pid, const dLandID
         mMsgLand.copy(land);
     }
     u16 level = impress < 49 ? impress + 1 : 100;
-    getController()->fn_801A5874(3, level, "sys_STRING/STR_Impress");
+    getController()->setStringWord(3, level, "sys_STRING/STR_Impress");
     if (level != 100) {
         mImpression = impress;
     }
@@ -782,7 +782,7 @@ int dAcNpcNml_c::talk_c::msgFreeRumor(msgInfo_s *info) {
                 }
             }
             if (impress < 49) {
-                getController()->fn_801A5874(3, impress + 1, "sys_STRING/STR_Impress");
+                getController()->setStringWord(3, impress + 1, "sys_STRING/STR_Impress");
             }
             if (villager != NULL) {
                 setAnmPersonalName(villager, 4);
@@ -913,7 +913,7 @@ int dAcNpcNml_c::talk_c::msgFree0401(msgInfo_s *info) {
         if (found != NULL) {
             setLandName(found, 0);
         } else {
-            getController()->fn_801A5874(0, 101, "sys_STRING/STR_Unit");
+            getController()->setStringWord(0, 101, "sys_STRING/STR_Unit");
         }
         return TRUE;
     }
@@ -2080,7 +2080,7 @@ void dAcNpcNml_c::talk_c::endFree(int arg) {
 
 // 8003EE44
 BOOL dAcNpcNml_c::talk_c::stepJinx(int kind) {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL && ctrl->mNextMsgCode == 0) {
         setProcs(&talk_c::msgJinx, NULL, &talk_c::stepJinx2);
         startMsg();
@@ -2114,7 +2114,7 @@ int dAcNpcNml_c::talk_c::msgJinx(msgInfo_s *info) {
 
 // 8003EFF8
 BOOL dAcNpcNml_c::talk_c::stepJinx2(int kind) {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL && ctrl->mNextMsgCode == 0) {
         setProcs(&talk_c::msgJinx2, NULL, NULL);
         startMsg();
@@ -2148,7 +2148,7 @@ int dAcNpcNml_c::talk_c::msgJinx2(msgInfo_s *info) {
 
 // 8003F184
 BOOL dAcNpcNml_c::talk_c::stepFreeClothes(int kind) {
-    dDemo_c *ctrl = getController();
+    dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL && ctrl->mNextMsgCode == 0) {
         if (mpMemory != NULL) {
             mpMemory->mFlags.mClothesTalked = TRUE;

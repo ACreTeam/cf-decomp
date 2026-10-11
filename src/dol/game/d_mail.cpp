@@ -11,7 +11,7 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
+BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 void fn_8016B15C(int slot, dScript::Word_c *word); // script tag word
 void fn_8016B050(int slot, const dPersonalID_c *pid); // script tag player
 }

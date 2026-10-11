@@ -17,11 +17,10 @@
 #include <lib/egg/math/eggMath.h>
 #include <revolution/MTX.h>
 #include <game/game/d_snd_util.hpp>
+#include <game/game/d_net.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-BOOL fn_800DCEDC();                // 800DCEDC: an online session is active
-u32 fn_800DCF30();                 // 800DCF30
 BOOL fn_800F98E4(const u16 *item); // 800F98E4
 BOOL fn_8018A978(dCamera_c *camera); // 8018A978
 BOOL fn_8018EF30();                // 8018EF30
@@ -510,7 +509,7 @@ void StgField_c::checkHome() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     u32 id = -1;
     if (player != NULL) {
-        if ((!fn_800DCEDC() || fn_800DCF30() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
+        if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
             id = 0x1A7A;
         } else if (player->isFlag0(0xD)) {
             id = 0x1A7C;
@@ -2658,17 +2657,17 @@ void Weather_c::init() {
 }
 
 void Weather_c::set() {
-    if (lbl_8074EBE8 == NULL) {
+    if (dWeather_c::sInstance == NULL) {
         return;
     }
-    int weather = lbl_8074EBE8->_5884;
+    int weather = dWeather_c::sInstance->_5884;
     mWeather = weather;
     mPrevWeather = weather;
 }
 
 void Weather_c::update() {
     if (l_mgr.mTime.isHourChanged()) {
-        dUnk8074EBE8_c *weather = lbl_8074EBE8;
+        dWeather_c *weather = dWeather_c::sInstance;
         if (weather != NULL) {
             mPrevWeather = mWeather;
             mWeather = weather->_5884;

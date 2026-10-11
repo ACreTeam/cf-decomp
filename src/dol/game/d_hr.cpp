@@ -9,7 +9,7 @@
 #include <game/game/d_home.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_mail.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -1695,7 +1695,7 @@ dItem::Item dHR::remark_c::getItem() const {
 }
 
 // 800B25C4
-void dHR::remark_c::setWords(dDemo_c *demo) const {
+void dHR::remark_c::setWords(dMsg::Comp_c *demo) const {
     if (demo != NULL) {
         if (!dHR::isExtraSeries(mSeries)) {
             u32 series = mSeries;

@@ -1707,6 +1707,7 @@ dol/game/d_hand_item.cpp:
 dol/game/d_environment.cpp:
 	.text       start:0x80195290 end:0x8019A264
 	.ctors      start:0x80465834 end:0x80465838
+	.sdata2     start:0x80751728 end:0x80751730
 
 dol/game/d_menu_mng.cpp:
 	.text       start:0x8019A264 end:0x8019BD78
@@ -1719,7 +1720,10 @@ dol/game/d_msg.cpp:
 	.text       start:0x8019C414 end:0x801A6468
 	.rodata     start:0x8047D5E8 end:0x8047DB98 align:4
 	.data       start:0x804FAC60 end:0x804FB7C8 align:4
-	.sdata2     start:0x80751728 end:0x80751780
+	.sdata      start:0x8074C128 end:0x8074C178
+	.sbss       start:0x8074EAB0 end:0x8074EAB8
+	.sdata2     start:0x80751730 end:0x80751780
+	.sbss2      start:0x807539F0 end:0x807539F8
 
 dol/game/d_npc_mng.cpp:
 	.text       start:0x801A6468 end:0x801AD6E0

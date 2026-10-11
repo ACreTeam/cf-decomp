@@ -7,7 +7,7 @@
 #include <game/game/d_npc.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_quest.hpp>
-#include <game/game/d_demo.hpp>
+#include <game/game/d_msg_comp.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -67,7 +67,7 @@ int dAcNpcNml_c::talk_c::msgDelivery(msgInfo_s *info) {
             if (unit == 0) {
                 clearWord(3);
             } else {
-                getController()->fn_801A5874(3, unit, "sys_STRING/STR_Unit");
+                getController()->setStringWord(3, unit, "sys_STRING/STR_Unit");
             }
             setItemName(&errand->mBase.mItem, 4);
             setLooksMsg(info, label, 0);

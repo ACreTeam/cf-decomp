@@ -900,7 +900,7 @@ void buildSchedule(const dTime_c &now, BOOL reset) {
 // 80089ED0
 void updateSchedule(const dTime_c &now, BOOL reset) {
     buildSchedule(now, reset);
-    if (fn_800DCF90()) {
+    if (dNet::isHost()) {
         dSaveData_c::getTown()->mVisitorNpc.update();
     }
 }
