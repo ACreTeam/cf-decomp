@@ -22,6 +22,7 @@ struct dLandID_c {
     /* 0x00 */ u16 mId;
     /* 0x02 */ wchar_t mName[LAND_NAME_SIZE + 1];
     /* 0x14 */ u8 mRegion;
+    /* 0x15 */ u8 _15;   // a real member: d_wifi receiveTown's dLandID_c copy also copies this byte
 
     inline bool operator==(const dLandID_c& other) const {
         return mId == other.mId && mRegion == other.mRegion && memcmp(mName, other.mName, sizeof(mName)) == 0;

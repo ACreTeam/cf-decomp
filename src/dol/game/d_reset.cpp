@@ -55,7 +55,7 @@ const Manage_c::ModeFunc Manage_c::sModeProc[] = {
 // NAND, screenshots and WiiConnect24 are idle.
 static inline bool isSystemIdle() {
     bool idle = false;
-    if (fn_800D2360() && dScreenshot::isIdle() && fn_80177D6C()) {
+    if (dNand::isReady() && dScreenshot::isIdle() && dWifi::isIdle()) {
         idle = true;
     }
     return idle;
@@ -164,7 +164,7 @@ bool Manage_c::IsSafeToChangeScene() const {
     bool idle = false;
     bool safe = false;
     bool allIdle = false;
-    if (!mFadeOutRequest && fn_800D2360() && dScreenshot::isIdle() && fn_80177D6C()) {
+    if (!mFadeOutRequest && dNand::isReady() && dScreenshot::isIdle() && dWifi::isIdle()) {
         idle = true;
     }
     if (idle && fn_80084738(&lbl_80584B94)) {
@@ -218,7 +218,7 @@ bool Manage_c::SetSoftResetScene() {
 void Manage_c::PostDeleteScene() {
     if (mMode == MODE_SOFT_RESET && mSoftResetPending) {
         fn_8018E674();
-        fn_800D23A0();
+        dNand::reset();
         dPrcMng_c::clear();
         dSvMgr_c::cancelRequest();
         fgMngProc_resetSync();
@@ -233,7 +233,7 @@ void Manage_c::PostDeleteScene() {
         fn_8010D83C(&dSaveData_c::sOption);
         fn_80101424();
         dBgm::l_mgr.init();
-        fn_80177DAC();
+        dWifi::reset();
         mSoftResetPending = false;
     }
 }
@@ -406,8 +406,8 @@ void Manage_c::ModeInit_Normal() {
 void Manage_c::ModeProc_Normal() {
     if (mPowerButton) {
         SetSafetyWait(EXEC_SHUTDOWN);
-    } else if (lbl_80621670.mActive && mResetButton) {
-        lbl_80621670.mResetRequest = true;
+    } else if (g_wifiErr.mActive && mResetButton) {
+        g_wifiErr.mResetRequest = TRUE;
     } else if (mReturnMenu) {
         SetSafetyWait(EXEC_RETURN_MENU);
     } else if (mDataManager) {
@@ -597,7 +597,7 @@ void Manage_c::RequestFadeOut() {
 
 // 801078A8
 void Manage_c::FadeOutCalc() {
-    if (mFadeOutRequest && !mResetDisable && fn_800D2360() && dScreenshot::isIdle()) {
+    if (mFadeOutRequest && !mResetDisable && dNand::isReady() && dScreenshot::isIdle()) {
         mpFader->setFrame(30);
         mpFader->fadeOut();
         sndResetStart(30);
@@ -609,7 +609,7 @@ void Manage_c::FadeOutCalc() {
 // 80107948
 bool Manage_c::IsFatalError() {
     s32 status = DVDGetDriveStatus();
-    bool nandFatal = fn_800D2A44() == 2;
+    bool nandFatal = dNand::getResult() == 2;
     bool fatal = false;
     if (status == DVD_STATE_FATAL || nandFatal) {
         fatal = true;

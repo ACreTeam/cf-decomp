@@ -7,5 +7,5 @@
 extern "C" {
 void fn_80107CD4(); // 80107CD4: clears its state (d_reset soft reset)
 BOOL fn_80107CF4(); // 80107CF4: (d_reset ModeInit_SoftReset)
-void fn_80107D24(); // 80107D24: (d_net, a session error was reported)
+BOOL fn_80107D24(); // 80107D24: (d_net, a session error was reported; d_wifi_err before closing its window)
 }

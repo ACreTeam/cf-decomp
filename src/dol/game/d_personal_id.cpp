@@ -7,13 +7,12 @@
 #include <cstring>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_wifi.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 int fn_801017EC(const dPersonalID_c *pid);
 int fn_801018DC(const dPlayerID_c *id);
-int fn_8017BF90(const dPersonalID_c *pid, dPrivateData_c *player);
-int fn_8017C04C(const dPlayerID_c *id, dPrivateData_c *player);
 }
 
 // 80750BF0
@@ -83,7 +82,7 @@ BOOL dPersonalID_c::fn_8013E740(const dPersonalID_c *other) const {
     }
 
     dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayer();
-    if (current != NULL && fn_8017BF90(other, current) >= 0) {
+    if (current != NULL && dWifi::findFriend(other, current) >= 0) {
         return FALSE;
     }
     return TRUE;
@@ -192,7 +191,7 @@ BOOL dPlayerID_c::fn_8013EB28(const dPlayerID_c *other) const {
     }
 
     dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayer();
-    if (current != NULL && fn_8017C04C(other, current) >= 0) {
+    if (current != NULL && dWifi::findFriend(other, current) >= 0) {
         return FALSE;
     }
     return TRUE;

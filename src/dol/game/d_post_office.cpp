@@ -14,10 +14,10 @@
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 #include <game/game/d_net.hpp>
+#include <game/game/d_wifi.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-int fn_8017BF90(const dPersonalID_c *pid, dPrivateData_c *player); // friend index
 
 // A player's mail box (dPrivateData_c::fn_80139408).
 int fn_8013EE8C(void *box);
@@ -28,8 +28,6 @@ BOOL fn_8013F06C(void *box);                    // has a letter to the future
 void fn_8013F064(const dTime_c *time, void *box); // its delivery time
 
 // WiiConnect24.
-BOOL fn_80178048(dPostRequest_c *req);          // start sending
-int fn_80178374();                              // 0 busy?, 1 sent, -1 error
 
 void fn_8010F114(dSaveDistMail_c *mail, int player); // mark the downloaded letter as received
 }
@@ -76,7 +74,7 @@ dPrivateData_c *getSender(dMail_c *mail) {
     }
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
-        if (player->mPID.isValid() && fn_8017BF90(to, player) >= 0) {
+        if (player->mPID.isValid() && dWifi::findFriend(to, player) >= 0) {
             return player;
         }
     }
@@ -99,7 +97,7 @@ int getFriendIdx(dMail_c *mail) {
     if (sender == NULL) {
         return -3;
     }
-    int idx = fn_8017BF90(to, sender);
+    int idx = dWifi::findFriend(to, sender);
     if (idx < 0) {
         idx = -4;
     }
@@ -361,10 +359,10 @@ BOOL updateSend() {
         findNextSend();
     }
     if (l_sendState == 1) {
-        l_sendState = fn_80178048(&l_request) ? 2 : 3;
+        l_sendState = dWifi::startSendLetter(&l_request) ? 2 : 3;
     }
     if (l_sendState == 2) {
-        int result = fn_80178374();
+        int result = dWifi::getThreadResult();
         if (result == 1) {
             removeSent();
         } else if (result != 0) {

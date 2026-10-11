@@ -258,7 +258,7 @@ const u8 *dAcNpcNml_c::talk_c::getGeneralWeights() {
     if (visitor) {
         return l_visitor;
     }
-    bool wifi = fn_80177D24();
+    bool wifi = dWifi::isNetOn();
     bool friendTown = pickFriendTown() != -1;
     bool memory = pickOtherMemory() != NULL;
     bool rumor = dSaveData_c::getRaw()->getRandomOtherTown() != -1;
@@ -685,11 +685,11 @@ int dAcNpcNml_c::talk_c::msgFreeRumor(msgInfo_s *info) {
             land = &other->mLand;
             u32 mask = 0;
             int num = 0;
-            if (other->mPlayer.isValid() && ((dAnmPersonalID_c *)other->mVillager)->isValid() && other->mImpression < 49) {
+            if (other->mPlayer.isValid() && other->mVillager.isValid() && other->mImpression < 49) {
                 impress = other->mImpression;
                 mask |= 1;
                 player = &other->mPlayer;
-                villager = (dAnmPersonalID_c *)other->mVillager;
+                villager = &other->mVillager;
                 num = 1;
             }
             stage = other->mShopStage;

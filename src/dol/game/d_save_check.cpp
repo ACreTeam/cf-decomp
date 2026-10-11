@@ -1,12 +1,9 @@
 // The save file's check block (dSaveCheck_c, save + 0). .text 8011524C..80115380.
 #include <game/game/d_save_check.hpp>
+#include <game/game/d_banner.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/sLib/s_crc.hpp>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-extern const u32 lbl_80750334; // 80750334 (.sdata2 of another TU)
-}
 
 // 8011524C
 void dSaveCheck_c::updateChecksum() {
@@ -41,7 +38,7 @@ u32 dSaveCheck_c::calcChecksum() {
 void dSaveCheck_c::init() {
     mVersion = dSaveData_c::getVersion();
     mState = 0;
-    if (lbl_80750334 == 1) {
+    if (dBanner_c::sFlags == 1) {
         mFlags = 0;
     } else {
         mFlags = 1;

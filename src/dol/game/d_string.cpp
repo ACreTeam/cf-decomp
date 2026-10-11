@@ -13,28 +13,13 @@
 #include <game/cLib/c_math.hpp>
 #include <cstring>
 
-namespace dScript {
-Bank_c *getBank();
-void *getBmgFile(Bank_c *bank, const char *name);
-const u8 *getTagParams(const wchar_t *tag);
-} // namespace dScript
-
-// Callers still use these names.
-extern "C" {
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
-u16 fn_8016AF68(const char *group);
-u16 fn_8016AFD4(const char *group);
-void fn_8016B050(int slot, const dPersonalID_c *pid);
-void fn_8016B0B0(int slot, dLandID_c *land);
-void fn_8016B15C(int slot, dScript::Word_c *word);
-dScript::Word_c *fn_8016B1B8(int slot);
-}
+namespace dString {
 
 // 805FF398 (static initializer 8016B7A8)
-dString::Comp_c lbl_805FF398;
+Comp_c g_comp;
 
 // 8016AE68: loads string `index` of a BMG group into word
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group) {
+BOOL loadString(dScript::Word_c *word, u16 index, const char *group) {
     void *bmg = dScript::getBmgFile(dScript::getBank(), group);
     if (bmg == NULL) {
         return FALSE;
@@ -53,7 +38,7 @@ BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group) {
 }
 
 // 8016AF68: number of strings in a BMG group
-u16 fn_8016AF68(const char *group) {
+u16 getStringNum(const char *group) {
     void *bmg = dScript::getBmgFile(dScript::getBank(), group);
     if (bmg == NULL) {
         return 0;
@@ -63,7 +48,7 @@ u16 fn_8016AF68(const char *group) {
 }
 
 // 8016AFD4: random string index (1-based) in a BMG group
-u16 fn_8016AFD4(const char *group) {
+u16 getRandomStringNo(const char *group) {
     void *bmg = dScript::getBmgFile(dScript::getBank(), group);
     if (bmg == NULL) {
         return 0;
@@ -74,41 +59,35 @@ u16 fn_8016AFD4(const char *group) {
 }
 
 // 8016B050: puts a player name into a word slot
-void fn_8016B050(int slot, const dPersonalID_c *pid) {
+void setPlayerWord(int slot, const dPersonalID_c *pid) {
     dHmnName::Word_c name;
     pid->setWord(&name);
-    fn_8016B15C(slot, &name);
+    setWord(slot, &name);
 }
 
 // 8016B0B0: puts a town name into a word slot
-void fn_8016B0B0(int slot, dLandID_c *land) {
+void setTownWord(int slot, dLandID_c *land) {
     dLandNameWord_c name;
     land->setWord(&name);
-    fn_8016B15C(slot, &name);
+    setWord(slot, &name);
 }
-
-namespace dString {
 
 // 8016B110
 int WordBase_c::procPlayer(int pos) {
     return procPlayerName(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
 }
 
-} // namespace dString
-
 // 8016B15C: copies word into a slot
-void fn_8016B15C(int slot, dScript::Word_c *word) {
-    dScript::Word_c *dst = &lbl_805FF398.mWords[slot];
+void setWord(int slot, dScript::Word_c *word) {
+    dScript::Word_c *dst = &g_comp.mWords[slot];
     dst->clear();
     dst->copy(word, 0);
 }
 
 // 8016B1B8: word slot
-dScript::Word_c *fn_8016B1B8(int slot) {
-    return &lbl_805FF398.mWords[slot];
+dScript::Word_c *getWord(int slot) {
+    return &g_comp.mWords[slot];
 }
-
-namespace dString {
 
 // 8016B1D0
 WordBase_c::WordBase_c() {}
@@ -121,7 +100,7 @@ int WordBase_c::procWord(int pos) {
     const u8 *params = dScript::getTagParams(getBuffer() + pos);
     u8 slot = 0;
     memcpy(&slot, params, 1);
-    dScript::Word_c *word = fn_8016B1B8(slot);
+    dScript::Word_c *word = getWord(slot);
     _18 = 0;
     return setTagWord(pos, word);
 }
@@ -129,8 +108,8 @@ int WordBase_c::procWord(int pos) {
 // 8016B2FC
 int WordBase_c::procPlayerChar(int pos, int index) {
     wchar_t c = 0;
-    if (!lbl_805FF398.mPlayerName.getChar(&c, index)) {
-        lbl_805FF398.mNoChar = 1;
+    if (!g_comp.mPlayerName.getChar(&c, index)) {
+        g_comp.mNoChar = 1;
         return removeTag(pos);
     }
     removeTag(pos);
@@ -178,7 +157,7 @@ int WordBase_c::procWordGender(int pos) {
     const u8 *params = dScript::getTagParams(getBuffer() + pos);
     u8 slot = 0;
     memcpy(&slot, params, 1);
-    return procByWordGender(pos, fn_8016B1B8(slot));
+    return procByWordGender(pos, getWord(slot));
 }
 
 // 8016B54C
@@ -191,7 +170,7 @@ int WordBase_c::procWordElision(int pos) {
     const u8 *params = dScript::getTagParams(getBuffer() + pos);
     u8 slot = 0;
     memcpy(&slot, params, 1);
-    return procElision(pos, 1, *fn_8016B1B8(slot)->getBuffer());
+    return procElision(pos, 1, *getWord(slot)->getBuffer());
 }
 
 // 8016B630
@@ -208,7 +187,7 @@ Word_c::Word_c(const wchar_t *str) {
 // 8016B6D4
 Word_c::Word_c(u16 index, const char *group) {
     clear();
-    fn_8016AE68(this, index, group);
+    loadString(this, index, group);
 }
 
 // 8016B740

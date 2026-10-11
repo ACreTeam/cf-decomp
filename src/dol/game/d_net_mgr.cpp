@@ -12,7 +12,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_voice_chat.hpp>
-#include <game/game/d_wifi_err.hpp>
+#include <game/game/d_wifi.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <revolution/SC.h>
 
@@ -199,13 +199,13 @@ BOOL dNetMgr_c::close() {
 
 void dNetMgr_c::execute() {
     if (sInstance->mState > NET_MGR_STATE_SETUP) {
-        if (fn_800D2404()) {
+        if (dNand::isWriting()) {
             mData.get(&mInfo, NULL, NULL);
         } else {
             mData.get(&mInfo,
                       &dPlayerMgr_c::getCurrentPlayer()->mFriends.mUserData,
                       dPlayerMgr_c::getCurrentPlayer()->mFriends.mKeys);
-            fn_8017C35C();
+            dWifi::updateReq();
         }
         if (mState == NET_MGR_STATE_2 && mInfo.mState < 1) {
             mState = NET_MGR_STATE_SETUP;
@@ -438,7 +438,7 @@ u32 dNetMgr_c::getFriend08(int idx) {
     return sInstance->mInfo.mFriends[idx].m08;
 }
 
-u8 dNetMgr_c::getFriendFlag(int idx) {
+BOOL dNetMgr_c::getFriendFlag(int idx) {
     return sInstance->mInfo.mFriends[idx].mFlags & 1;
 }
 

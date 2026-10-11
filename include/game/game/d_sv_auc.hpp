@@ -75,6 +75,12 @@ struct dSvAucList_c {
     /* 0x04 */ dSvAucItem_c mItems[PLAYER_NUM];
 }; // size 0x1E4
 
+extern "C" {
+const dPersonalID_c *fn_8014F804(const dSvAucList_c *list); // 8014F804: the first valid mSeller, else NULL
+const dPersonalID_c *fn_8014F880(const dSvAucList_c *list); // 8014F880: the first valid mHighBidder, else NULL
+void fn_8014F2F0(dSvAucList_c *list); // 8014F2F0: frees every slot (mMask = 0, clears the items)
+}
+
 // The auction (dSaveTown_c::mAuction).
 class dSvAuc_c {
 public:

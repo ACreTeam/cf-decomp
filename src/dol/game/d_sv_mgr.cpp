@@ -8,6 +8,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_wifi.hpp>
 
 // TODO: Not linkable yet; every function matches, but the section layout does not.
 // - The target is likely two TUs. .text/.ctors/.bss put the boundary after
@@ -32,7 +33,7 @@ const char *dSvMgr_c::mMessageLabel = "SYS_MESS/SYS_Save_and_Load";
 // Unreferenced in the DOL and RELs; its original name is unknown.
 const char *lbl_8074C3CC = "SYS_MESS/SYS_NetworkError";
 
-static u16 sLoadErrorMessage;
+u16 sLoadErrorMessage;
 
 dSvMgr_c *dSvMgr_c::createMgr() {
     return new dSvMgr_c;
@@ -82,11 +83,11 @@ void dSvMgr_c::cancelRequest() {
 }
 
 int dSvMgr_c::isTransferComplete(int offset, int size) {
-    if (fn_800D2404() &&
+    if (dNand::isWriting() &&
         static_cast<unsigned int>(offset) ==
-            static_cast<unsigned int>(fn_800D240C()) &&
+            static_cast<unsigned int>(dNand::getRequestOffset()) &&
         static_cast<unsigned int>(size) ==
-            static_cast<unsigned int>(fn_800D241C())) {
+            static_cast<unsigned int>(dNand::getRequestSize())) {
         return 1;
     }
     return 0;
@@ -162,7 +163,7 @@ int dSvMgr_c::create() {
 }
 
 int dSvMgr_c::doDelete() {
-    if (!fn_800D2A4C()) {
+    if (!dNand::isIdle()) {
         return NOT_READY;
     }
     if (getCurrentScene() == SCENE_DM_LOAD) {
@@ -281,14 +282,14 @@ void dSvMgr_c::stepSaveNormal_c::disconnectWiFi() {
 
 // 801BC6DC
 void dSvMgr_c::stepSaveNormal_c::startWC24Send() {
-    if (fn_801782EC()) {
+    if (dWifi::startDaily()) {
         nextStep();
     }
 }
 
 // 801BC780
 void dSvMgr_c::stepSaveNormal_c::waitWC24Send() {
-    if (fn_80178374() != -1) {
+    if (dWifi::getThreadResult() != -1) {
         nextStep();
     }
 }
@@ -631,7 +632,7 @@ void dSvMgr_c::executeLoad() {
 
 // 801BE938
 void dSvMgr_c::stepLoad_c::processLoadedSave() {
-    switch (fn_800D2A44()) {
+    switch (dNand::getResult()) {
     case 1:
         if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             mpOwner->setLoadFailed();
@@ -662,9 +663,9 @@ void dSvMgr_c::stepLoad_c::processLoadedSave() {
 }
 
 static inline int requiredSaveSize() {
-    int auxiliary = fn_8017B190();
-    int resource = fn_8017B18C();
-    return (resource + lbl_80750AD0) + (auxiliary + lbl_80750330);
+    int auxiliary = dWifi::getNandAuxSize();
+    int resource = dWifi::getNandResourceSize();
+    return (resource + lbl_80750AD0) + (auxiliary + dBanner_c::sFileSize);
 }
 int dSvMgr_c::getRequiredBlocks() {
     static int blocks = blocksForSize(requiredSaveSize());
@@ -673,9 +674,9 @@ int dSvMgr_c::getRequiredBlocks() {
 
 int dSvMgr_c::getRequiredInodes() {
     static int save = inodesForSize(lbl_80750AD0);
-    static int extra = inodesForSize(lbl_80750330);
-    static int resource = inodesForSize(fn_8017B18C());
-    static int auxiliary = inodesForSize(fn_8017B190());
+    static int extra = inodesForSize(dBanner_c::sFileSize);
+    static int resource = inodesForSize(dWifi::getNandResourceSize());
+    static int auxiliary = inodesForSize(dWifi::getNandAuxSize());
     static int total = auxiliary + resource + save + extra;
     return total;
 }
@@ -761,7 +762,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::waitCanSave() {
 // 801BF148
 void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    switch (fn_800D2A44()) {
+    switch (dNand::getResult()) {
     case 1:
         if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
@@ -1055,13 +1056,12 @@ void dSvMgr_c::stepSaveConnectNetVst_c::findFriend() {
     if (dNet::isSessionActive()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
-        void *player = dPlayerMgr_c::getNetPlayer(visitor);
+        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(visitor);
         u64 friendCode = dNet::getMemberTime(visitor);
-        int index = fn_8017BBB8(&field<u8>(player, 4));
+        int index = dWifi::findUser(&player->mFriends.mUserData);
         if (index >= 0 || index == -1) {
             if (index >= 0) {
-                fn_8017C3EC(index, &field<u8>(player, 0x7EC2),
-                            &field<u8>(player, 0x10C8), &friendCode);
+                dWifi::updateFriend(index, &player->mPID, player->mFriends.mName, &friendCode);
             }
             nextStep();
         }
@@ -1153,13 +1153,12 @@ void dSvMgr_c::stepSaveConnectNetHst_c::findFriend() {
     if (dNet::isSessionActive()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
-        void *player = dPlayerMgr_c::getNetPlayer(visitor);
+        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(visitor);
         u64 friendCode = dNet::getMemberTime(visitor);
-        int index = fn_8017BBB8(&field<u8>(player, 4));
+        int index = dWifi::findUser(&player->mFriends.mUserData);
         if (index >= 0 || index == -1) {
             if (index >= 0) {
-                fn_8017C3EC(index, &field<u8>(player, 0x7EC2),
-                            &field<u8>(player, 0x10C8), &friendCode);
+                dWifi::updateFriend(index, &player->mPID, player->mFriends.mName, &friendCode);
             }
             nextStep();
         }
@@ -1219,7 +1218,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::finish() {
 // 801C1538
 void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    switch (fn_800D2A44()) {
+    switch (dNand::getResult()) {
     case 1:
         if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
@@ -1327,14 +1326,14 @@ void dSvMgr_c::stepLoad_c::initializeLoad() {
 
 // 801C3158
 void dSvMgr_c::stepLoad_c::startLoad() {
-    if (fn_800D27E0()) {
+    if (dNand::loadAll()) {
         nextStep();
     }
 }
 
 // 801C31FC
 void dSvMgr_c::stepLoad_c::waitLoad() {
-    if (fn_800D2A4C()) {
+    if (dNand::isIdle()) {
         nextStep();
     }
 }
@@ -1346,14 +1345,14 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::initializeLoad() {
 
 // 801C3338
 void dSvMgr_c::stepSaveInterruptNetVst_c::startLoad() {
-    if (fn_800D27E0()) {
+    if (dNand::loadAll()) {
         nextStep();
     }
 }
 
 // 801C33DC
 void dSvMgr_c::stepSaveInterruptNetVst_c::waitLoad() {
-    if (fn_800D2A4C()) {
+    if (dNand::isIdle()) {
         nextStep();
     }
 }
@@ -1362,13 +1361,13 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::waitLoad() {
 void dSvMgr_c::stepSaveInterruptNetVst_c::initializeFullSave() {
     fn_8010DCF0(dSaveData_c::get());
     dTime_c::saveOffset();
-    fn_800D22F8();
+    dNand::updateCheckFlags();
     nextStep();
 }
 
 // 801C3528
 void dSvMgr_c::stepSaveInterruptNetVst_c::startFullSave() {
-    if (fn_800D2780()) {
+    if (dNand::saveAll()) {
         nextStep();
     }
 }
@@ -1380,24 +1379,24 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::waitFullSave() {
 
 // 801C35D0
 void dSvMgr_c::stepSaveInterruptNetVst_c::initializeDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
-    } else if (fn_801781D8()) {
+    } else if (dWifi::startSetupDownload()) {
         nextStep();
     }
 }
 
 // 801C36E8
 void dSvMgr_c::stepSaveInterruptNetVst_c::createDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
     } else {
         dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (fn_80178374()) {
+        switch (dWifi::getThreadResult()) {
         case -1:
             break;
         case 0:
-            if (fn_80178448() == 0x0C) {
+            if (dWifi::getNetErrorMessage() == 0x0C) {
                 releaseMessage(demo);
                 demo->setNextMsgCode(0x0C);
                 demo->setNextMsgLabel(mMessageLabel);
@@ -1439,13 +1438,13 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed() {
 void dSvMgr_c::stepSaveInterruptNetHst_c::initializeFullSave() {
     fn_8010DCF0(dSaveData_c::get());
     dTime_c::saveOffset();
-    fn_800D22F8();
+    dNand::updateCheckFlags();
     nextStep();
 }
 
 // 801C3AC0
 void dSvMgr_c::stepSaveInterruptNetHst_c::startFullSave() {
-    if (fn_800D2780()) {
+    if (dNand::saveAll()) {
         nextStep();
     }
 }
@@ -1457,24 +1456,24 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::waitFullSave() {
 
 // 801C3B68
 void dSvMgr_c::stepSaveInterruptNetHst_c::initializeDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
-    } else if (fn_801781D8()) {
+    } else if (dWifi::startSetupDownload()) {
         nextStep();
     }
 }
 
 // 801C3C80
 void dSvMgr_c::stepSaveInterruptNetHst_c::createDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
     } else {
         dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (fn_80178374()) {
+        switch (dWifi::getThreadResult()) {
         case -1:
             break;
         case 0:
-            if (fn_80178448() == 0x0C) {
+            if (dWifi::getNetErrorMessage() == 0x0C) {
                 releaseMessage(demo);
                 demo->setNextMsgCode(0x0C);
                 demo->setNextMsgLabel(mMessageLabel);
@@ -1520,7 +1519,7 @@ void dSvMgr_c::stepSaveContinueNetVst_c::initializeVisitorSave() {
 
 // 801C404C
 void dSvMgr_c::stepSaveContinueNetVst_c::startVisitorSave() {
-    if (fn_800D25D8()) {
+    if (dNand::savePlayer()) {
         nextStep();
     }
 }
@@ -1538,13 +1537,13 @@ void dSvMgr_c::stepSaveContinueNetVst_c::saveFailed() {
 void dSvMgr_c::stepSaveContinueNetHst_c::initializeFullSave() {
     fn_8010DCF0(dSaveData_c::get());
     dTime_c::saveOffset();
-    fn_800D22F8();
+    dNand::updateCheckFlags();
     nextStep();
 }
 
 // 801C41A0
 void dSvMgr_c::stepSaveContinueNetHst_c::startFullSave() {
-    if (fn_800D2780()) {
+    if (dNand::saveAll()) {
         nextStep();
     }
 }
@@ -1556,24 +1555,24 @@ void dSvMgr_c::stepSaveContinueNetHst_c::waitFullSave() {
 
 // 801C4248
 void dSvMgr_c::stepSaveContinueNetHst_c::initializeDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
-    } else if (fn_801781D8()) {
+    } else if (dWifi::startSetupDownload()) {
         nextStep();
     }
 }
 
 // 801C4360
 void dSvMgr_c::stepSaveContinueNetHst_c::createDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
     } else {
         dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (fn_80178374()) {
+        switch (dWifi::getThreadResult()) {
         case -1:
             break;
         case 0:
-            if (fn_80178448() == 0x0C) {
+            if (dWifi::getNetErrorMessage() == 0x0C) {
                 releaseMessage(demo);
                 demo->setNextMsgCode(0x0C);
                 demo->setNextMsgLabel(mMessageLabel);
@@ -1606,7 +1605,7 @@ void dSvMgr_c::stepSaveConnectNetVst_c::initializeVisitorSave() {
 
 // 801C45CC
 void dSvMgr_c::stepSaveConnectNetVst_c::startVisitorSave() {
-    if (fn_800D25D8()) {
+    if (dNand::savePlayer()) {
         nextStep();
     }
 }
@@ -1628,7 +1627,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::initializeHostSave() {
 
 // 801C4714
 void dSvMgr_c::stepSaveConnectNetHst_c::startHostSave() {
-    if (fn_800D25D8()) {
+    if (dNand::savePlayer()) {
         nextStep();
     }
 }
@@ -1646,7 +1645,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::initializeTownSave() {
 
 // 801C485C
 void dSvMgr_c::stepSaveConnectNetHst_c::startTownSave() {
-    if (fn_800D2720()) {
+    if (dNand::saveTown()) {
         nextStep();
     }
 }
@@ -1667,14 +1666,14 @@ void dSvMgr_c::stepSaveRetireNetVst_c::initializeLoad() {
 
 // 801C49A0
 void dSvMgr_c::stepSaveRetireNetVst_c::startLoad() {
-    if (fn_800D27E0()) {
+    if (dNand::loadAll()) {
         nextStep();
     }
 }
 
 // 801C4A44
 void dSvMgr_c::stepSaveRetireNetVst_c::waitLoad() {
-    if (fn_800D2A4C()) {
+    if (dNand::isIdle()) {
         nextStep();
     }
 }
@@ -1683,13 +1682,13 @@ void dSvMgr_c::stepSaveRetireNetVst_c::waitLoad() {
 void dSvMgr_c::stepSaveRetireNetVst_c::initializeFullSave() {
     fn_8010DCF0(dSaveData_c::get());
     dTime_c::saveOffset();
-    fn_800D22F8();
+    dNand::updateCheckFlags();
     nextStep();
 }
 
 // 801C4B90
 void dSvMgr_c::stepSaveRetireNetVst_c::startFullSave() {
-    if (fn_800D2780()) {
+    if (dNand::saveAll()) {
         nextStep();
     }
 }
@@ -1701,24 +1700,24 @@ void dSvMgr_c::stepSaveRetireNetVst_c::waitFullSave() {
 
 // 801C4C38
 void dSvMgr_c::stepSaveRetireNetVst_c::initializeDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
-    } else if (fn_801781D8()) {
+    } else if (dWifi::startSetupDownload()) {
         nextStep();
     }
 }
 
 // 801C4D50
 void dSvMgr_c::stepSaveRetireNetVst_c::createDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
     } else {
         dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (fn_80178374()) {
+        switch (dWifi::getThreadResult()) {
         case -1:
             break;
         case 0:
-            if (fn_80178448() == 0x0C) {
+            if (dWifi::getNetErrorMessage() == 0x0C) {
                 releaseMessage(demo);
                 demo->setNextMsgCode(0x0C);
                 demo->setNextMsgLabel(mMessageLabel);
@@ -1758,13 +1757,13 @@ void dSvMgr_c::stepSaveRetireNetVst_c::saveFailed() {
 void dSvMgr_c::stepSaveNormal_c::initializeFullSave() {
     fn_8010DCF0(dSaveData_c::get());
     dTime_c::saveOffset();
-    fn_800D22F8();
+    dNand::updateCheckFlags();
     nextStep();
 }
 
 // 801C5128
 void dSvMgr_c::stepSaveNormal_c::startFullSave() {
-    if (fn_800D2780()) {
+    if (dNand::saveAll()) {
         nextStep();
     }
 }
@@ -1776,24 +1775,24 @@ void dSvMgr_c::stepSaveNormal_c::waitFullSave() {
 
 // 801C51D0
 void dSvMgr_c::stepSaveNormal_c::initializeDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
-    } else if (fn_801781D8()) {
+    } else if (dWifi::startSetupDownload()) {
         nextStep();
     }
 }
 
 // 801C52E8
 void dSvMgr_c::stepSaveNormal_c::createDownloadBox() {
-    if (fn_800D34C4(lbl_8074B010) == 1) {
+    if (dNand::getType(lbl_8074B010) == 1) {
         nextStep();
     } else {
         dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (fn_80178374()) {
+        switch (dWifi::getThreadResult()) {
         case -1:
             break;
         case 0:
-            if (fn_80178448() == 0x0C) {
+            if (dWifi::getNetErrorMessage() == 0x0C) {
                 releaseMessage(demo);
                 demo->setNextMsgCode(0x0C);
                 demo->setNextMsgLabel(mMessageLabel);
@@ -1836,8 +1835,8 @@ inline void dSvMgr_c::setLoadErrorMessage(u16 code) {
 // 801C5618
 void dSvMgr_c::stepSaveInterruptNetVst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -1875,8 +1874,8 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::checkSaveResult() {
 // 801C5864
 void dSvMgr_c::stepSaveInterruptNetHst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -1914,8 +1913,8 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::checkSaveResult() {
 // 801C5AB0
 void dSvMgr_c::stepSaveContinueNetVst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -1953,8 +1952,8 @@ void dSvMgr_c::stepSaveContinueNetVst_c::checkSaveResult() {
 // 801C5CFC
 void dSvMgr_c::stepSaveContinueNetHst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -1992,8 +1991,8 @@ void dSvMgr_c::stepSaveContinueNetHst_c::checkSaveResult() {
 // 801C5F48
 void dSvMgr_c::stepSaveConnectNetVst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -2031,8 +2030,8 @@ void dSvMgr_c::stepSaveConnectNetVst_c::checkSaveResult() {
 // 801C6194
 void dSvMgr_c::stepSaveConnectNetHst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -2070,8 +2069,8 @@ void dSvMgr_c::stepSaveConnectNetHst_c::checkSaveResult() {
 // 801C63E0
 void dSvMgr_c::stepSaveRetireNetVst_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;
@@ -2109,8 +2108,8 @@ void dSvMgr_c::stepSaveRetireNetVst_c::checkSaveResult() {
 // 801C662C
 void dSvMgr_c::stepSaveNormal_c::checkSaveResult() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (fn_800D2A4C()) {
-        switch (fn_800D2A44()) {
+    if (dNand::isIdle()) {
+        switch (dNand::getResult()) {
         case 1:
             nextStep();
             break;

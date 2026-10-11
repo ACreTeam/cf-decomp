@@ -2,10 +2,24 @@
 
 #include <game/game/d_script.hpp>
 
-// String words built on dScript::Word_c. Defined in src/dol/game/d_string.cpp.
+class dPersonalID_c;
+class dLandID_c;
+
+// BMG string loading, the global word slots and the string words built on dScript::Word_c. Defined in
+// src/dol/game/d_string.cpp. The free function and global names are inferred.
 // Names and the hierarchy come from RTTI: dString::Word_c :
 // dString::WordBase_c : dScript::Word_c.
 namespace dString {
+
+class Comp_c;
+
+BOOL loadString(dScript::Word_c *word, u16 index, const char *group); // 8016AE68: string index of a BMG group
+u16 getStringNum(const char *group);                                  // 8016AF68: number of strings in a BMG group
+u16 getRandomStringNo(const char *group);                             // 8016AFD4: random string index (1-based)
+void setPlayerWord(int slot, const dPersonalID_c *pid);               // 8016B050: a player name into a word slot
+void setTownWord(int slot, dLandID_c *land);                          // 8016B0B0: a town name into a word slot
+void setWord(int slot, dScript::Word_c *word);                        // 8016B15C: copies word into a word slot
+dScript::Word_c *getWord(int slot);                                   // 8016B1B8
 
 // Abstract: still leaves the buffer accessors pure. Resolves the player and
 // word-slot tags from the current player and the global word slots (Comp_c).
@@ -33,7 +47,7 @@ class Word_c : public WordBase_c {
 public:
     Word_c(); // 8016B630
     Word_c(const wchar_t *str); // 8016B674
-    Word_c(u16 index, const char *group); // 8016B6D4: loads a BMG string (fn_8016AE68)
+    Word_c(u16 index, const char *group); // 8016B6D4: loads a BMG string (loadString)
     virtual ~Word_c(); // 8016B740
     virtual u32 getBufferSize(); // 8016B798: returns sizeof(mBuffer)
     virtual wchar_t *getBuffer(); // 8016B7A0
@@ -41,18 +55,16 @@ public:
     wchar_t mBuffer[0x65]; // 0x24
 }; // sizeof = 0xF0
 
-// The global word slots used by the tag handlers (lbl_805FF398). Name from RTTI.
+// The global word slots used by the tag handlers (g_comp). Name from RTTI.
 class Comp_c {
 public:
     virtual ~Comp_c(); // 8016B820 (src/dol/game/d_string_comp.inc)
 
-    /* 0x0004 */ Word_c mWords[20]; // word slots (fn_8016B15C / fn_8016B1B8)
+    /* 0x0004 */ Word_c mWords[20]; // word slots (setWord / getWord)
     /* 0x12C4 */ Word_c mPlayerName; // source for procPlayerChar
     /* 0x13B4 */ u8 mNoChar; // set when procPlayerChar runs past the name
 }; // sizeof = 0x13B8
 
-} // namespace dString
+extern Comp_c g_comp; // 805FF398
 
-extern "C" {
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // 8016AE68: loads string index of a BMG group
-}
+} // namespace dString

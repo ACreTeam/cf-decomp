@@ -72,14 +72,6 @@ BOOL loadBank(Bank_c *bank, void *heap);
 void *getBmgFile(Bank_c *bank, const char *name);
 const char *getStringGroup(int kind, u8 gender);
 
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-BOOL fn_8016AE68(Word_c *word, u16 index, const char *group); // loads a BMG string
-u16 fn_8016AF68(const char *group); // number of strings in a group
-u16 fn_8016AFD4(const char *group); // random string index
-extern u8 lbl_805FF398[];
-}
-
 }
 
 #endif
@@ -624,11 +616,11 @@ int Word_c::setTagWord(int pos, Word_c *word) {
     dString::Word_c article;
     if (_1C == 0) {
         if (word->mInflect.mIndefArticle != 0) {
-            hasArticle = fn_8016AE68(&article, word->mInflect.mIndefArticle, "sys_STRING/STR_Article");
+            hasArticle = dString::loadString(&article, word->mInflect.mIndefArticle, "sys_STRING/STR_Article");
         }
     } else if (_1C == 1) {
         if (word->mInflect.mDefArticle != 0) {
-            hasArticle = fn_8016AE68(&article, word->mInflect.mDefArticle, "sys_STRING/STR_Article");
+            hasArticle = dString::loadString(&article, word->mInflect.mDefArticle, "sys_STRING/STR_Article");
         }
     }
     removeTag(pos);
@@ -1146,12 +1138,12 @@ int Word_c::procElisionWord(int pos, int offset, Word_c *word) {
     const wchar_t *first = word->getBuffer();
     if (_1C == 0) {
         if (word->mInflect.mIndefArticle != 0) {
-            fn_8016AE68(&article, word->mInflect.mIndefArticle, "sys_STRING/STR_Article");
+            dString::loadString(&article, word->mInflect.mIndefArticle, "sys_STRING/STR_Article");
             first = static_cast<Word_c &>(article).getBuffer();
         }
     } else if (_1C == 1) {
         if (word->mInflect.mDefArticle != 0) {
-            fn_8016AE68(&article, word->mInflect.mDefArticle, "sys_STRING/STR_Article");
+            dString::loadString(&article, word->mInflect.mDefArticle, "sys_STRING/STR_Article");
             first = static_cast<Word_c &>(article).getBuffer();
         }
     }
@@ -1384,7 +1376,7 @@ int Word_c::procRandomWord(int pos, int kind, dAnmPersonalID_c *id, u16 *used) {
     u8 slot = 0;
     memcpy(&slot, params, 1);
     const char *group = getGenderedGroup(kind, id);
-    u16 count = fn_8016AF68(group) - 1;
+    u16 count = dString::getStringNum(group) - 1;
     u16 index = used[slot];
     if (index == 0) {
         int num = count >= 20 ? 20 : count;
@@ -1396,7 +1388,7 @@ int Word_c::procRandomWord(int pos, int kind, dAnmPersonalID_c *id, u16 *used) {
             }
         }
         if (hasFree) {
-            index = fn_8016AFD4(group);
+            index = dString::getRandomStringNo(group);
             for (int i = 0; i < 20; i++) {
                 if (index == used[i]) {
                     index++;

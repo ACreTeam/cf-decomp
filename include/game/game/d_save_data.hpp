@@ -40,6 +40,12 @@ struct dSaveOption_c {
     /* 0x2 */ u8 _2_0 : 1;
 };
 
+// The save file's name and size (d_save_data .sdata / .sdata2; used by d_nand and d_sv_mgr).
+extern "C" {
+extern const char *lbl_8074B010; // 8074B010: the save file's name (804EE330)
+extern const int lbl_80750AD0;   // 80750AD0: the save file's size (0x40F340, SAVE_DATA_SIZE)
+}
+
 // Option helpers (free functions in the target).
 extern "C" {
 void fn_8010D7E8(dSaveOption_c *opt);                 // set defaults
@@ -82,6 +88,8 @@ struct dSaveDistPattern_c {
     /* 0x04 */ u8 _04[0x1C];
     /* 0x20 */ dDesign_c mDesign;
 }; // size 0x8A0
+// Sets the pattern from a downloaded design.bin of `size` (0x2000) bytes.
+extern "C" void fn_8010F018(dSaveDistPattern_c *pattern, const void *data, u32 size, u32 version); // 8010F018
 
 // Downloaded letter with its version (dSaveExtra_c+0x893A0; clear fn_8010F060,
 // set fn_8010F070 from an ltr_<lang>.bmg message).
@@ -89,6 +97,8 @@ struct dSaveDistMail_c {
     /* 0x0 */ u32 mVersion;
     /* 0x4 */ dMail_c mMail;
 }; // size 0x394
+// Sets the letter from a downloaded bmg; present (by value) is attached unless ITEM_ID_NONE.
+extern "C" void fn_8010F070(dSaveDistMail_c *mail, const void *bmg, dItem::Item present, u32 version); // 8010F070
 
 // Downloaded NG-word patterns, up to 0xC800 bytes (dSaveExtra_c+0x8A960; clear fn_8010EEB4,
 // set fn_8010EF10). dPrcMng_c prefers them to the disc's /PRC/<region>.bin.
@@ -96,12 +106,16 @@ struct dSaveDistBlock_c {
     /* 0x0000 */ s32 mSize; // 0 = none
     /* 0x0004 */ u8 mData[0xC800];
 }; // size 0xC804
+// Copies `size` (< 0xC800) bytes of downloaded data.
+extern "C" void fn_8010EF10(dSaveDistBlock_c *block, const void *data, u32 size); // 8010EF10
 
 // One downloaded per-language file (clear fn_8010EFD8, set fn_8010EFF0).
 struct dSaveDistContent_c {
     /* 0x0000 */ u32 _0000;
     /* 0x0004 */ u8 mData[0x1800];
 }; // size 0x1804
+extern "C" void fn_8010EFD8(dSaveDistContent_c *content);                          // 8010EFD8: clears it
+extern "C" void fn_8010EFF0(dSaveDistContent_c *content, const void *data, u32 size); // 8010EFF0: sets it
 
 // Downloaded files: 10 languages x 6 slots (clear fn_8010EF58; loaded by fn_80177AE0).
 struct dSaveDistContentList_c {
@@ -122,24 +136,39 @@ struct dSaveUnk1CE_c {
     dSaveUnk1CE_c() { fn_80117118(this); }
     u8 _00[0x12];
 };
+// d_sv_lang_flag: (d_wifi fn_8017B274, after reloading the downloaded per-language files).
+extern "C" void fn_80117244(dSaveUnk1CE_c *flags); // 80117244
+
+// Two flags of the post office's letters to other towns (d_wifi updateDaily, fn_8017A484).
+struct dSavePostSend_c {
+    /* 0x00 */ u8 mSending; // 1 while fn_8017A484 runs
+    /* 0x01 */ u8 mPending; // fn_8017A484 is called on new days until it succeeds
+    /* 0x02 */ dPersonalID_c mTo;     // a registered friend of a player of this town
+    /* 0x2E */ dPersonalID_c mSender; // goes to that player's dPrivateData_c::_7EEE (receivePostPid)
+}; // size 0x5A: the whole block is what dWifi::sendPostPid sends
 
 // Second half of the file (base+0x735E0), returned by dSaveData_c::getExtra().
 // Has its own CRC at +0x20 over +0x24..end (fn_80117078 updates it, fn_801170B0
 // checks it, fn_80116900 initializes the block). Holds per-player storage
 // (saved patterns, saved letters) and WiiConnect24 / distribution data, mostly
 // used by the code at 801769B4..8017B858. The name is inferred.
+struct dSaveExtra_c;
+extern "C" void fn_80117078(dSaveExtra_c *extra); // 80117078 (d_sv_extra): updates the extra block's CRC
+
 struct dSaveExtra_c {
     dSvAucList_c *getAucListings() { return (dSvAucList_c *)_089734; }
     dSvAucList_c *getAucBids() { return (dSvAucList_c *)_089918; }
     dSvAucList_c *getAucSales() { return (dSvAucList_c *)_089AFC; }
+    // An inline result: keeps the block's address in a register (d_wifi updateRoster, the sends).
+    dSaveWc24_c *getWc24() { return &mWc24; }
     void setVoiceSetting(u16 value) { mVoiceSetting = value; }
 
     /* 0x000000 */ u8 _000000[4];
     /* 0x000004 */ u8 mNetEnabled;          // gates all distribution handling
     /* 0x000005 */ u8 _000005[0x1B];
     /* 0x000020 */ u32 mChecksum;
-    /* 0x000024 */ u8 _000024[0x16];
-    /* 0x00003A */ dOutfit_c mOutfit;
+    /* 0x000024 */ dLandID_c mOutfitLand;  // the town of mOutfit (d_wifi receiveTown)
+    /* 0x00003A */ dOutfit_c mOutfit;      // an outfit received from a friend town (d_wifi receiveTown)
     /* 0x000046 */ u8 _000046[0x182];
     /* 0x0001C8 */ dTheater::dSchedule_c mTheater; // the theater's weekly programs
     /* 0x0001CE */ dSaveUnk1CE_c _0001CE;
@@ -161,7 +190,9 @@ struct dSaveExtra_c {
     /* 0x0F1258 */ dSaveMailBox_c mSavedLetters[PLAYER_NUM];
     /* 0x17FA58 */ dSaveItemBox_c mSavedLetterItems[PLAYER_NUM];
     /* 0x17FF58 */ u8 _17FF58[PLAYER_NUM][0x2738]; // ctor 8013ED24, dtor 8013ED88
-    /* 0x189C38 */ u8 _189C38[0x120FC];     // ctor 8013F098; used by the mail code at 8010263C (dPostBox_c)
+    /* 0x189C38 */ u8 _189C38[0x120A2];     // ctor 8013F098; used by the mail code at 8010263C (dPostBox_c, 0x120FC)
+    // dPostBox_c+0x120A2 (inside its 0x120FC; the target reaches it from the extra block's base).
+    /* 0x19BCDA */ dSavePostSend_c mPostSend;
     /* 0x19BD34 */ u16 mVoiceSetting;        // voice chat: dVoiceChat::fn_80171C08 accepted it (d_net_mgr)
     /* 0x19BD36 */ u16 mVoiceLevel;          // voice chat: given to dVoiceChat::fn_80171C10 (d_net_mgr)
     /* 0x19BD38 */ u8 _19BD38[8];
@@ -171,6 +202,8 @@ struct dSaveExtra_c {
 // (dPersonalID_c, 0x2C each) with a nonzero kind (u32 at extra+0x1A8 + i * 4), skipping `exclude`;
 // copies it to out / kind. FALSE when there is none. Used by d_npc_talk_town ("Town_Rumor").
 extern "C" BOOL fn_80116A74(dSaveExtra_c *extra, dPersonalID_c *out, u32 *kind, const dPersonalID_c *exclude);
+// 80116D08 (d_sv_extra): records a visiting player (one of the 8 records at extra+0x46) with its kind.
+extern "C" void fn_80116D08(dSaveExtra_c *extra, dPersonalID_c player, int kind);
 
 class dSaveData_c : public dSaveTown_c {
 public:
@@ -204,9 +237,17 @@ public:
     }
 
     static dSaveExtra_c *getRawExtra() { return &getRaw()->mExtra; }
+    // Distribution / WiiConnect24 data handling is on (dSaveExtra_c::mNetEnabled). Returns bool: d_wifi
+    // onReceive tests the converted value.
+    static bool isNetEnabled() { return getRaw()->mExtra.mNetEnabled; }
     // The town's id and its villagers. Inline results (not plain expressions): their temps get the
     // registers d_npc_talk_reaction msgFirstMeeting needs.
     static dLandID_c *getTownLand() { return &getTown()->mLandID; }
+    // Inline results: a constant stored through them is loaded after the call (d_wifi updateDaily).
+    static dSaveTown640C8_c *getTown640C8() { return &getTown()->_0640C8; }
+    static dUnkDesignBoard_c *getDesignBoard() { return &getExtra()->mDesignBoard; }
+    static dSavePostSend_c *getPostSend() { return &getExtra()->mPostSend; }
+    static dSaveWc24_c *getWc24() { return &getExtra()->mWc24; }
     static dAnimalBlock_c *getAnimalBlock() { return &getRaw()->mAnimals.mTown; }
 
     // The region the town was made in (getRegion() value); dPrcMng_c ignores downloaded patterns otherwise.

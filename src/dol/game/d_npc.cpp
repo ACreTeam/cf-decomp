@@ -1,6 +1,7 @@
 // NPC / villager management. .text 800EBB24..800F59C8 (sinit 800F5768), built with -sym on.
 // First-pass scaffold; see include/game/game/d_npc.hpp and notes/d_npc.txt.
 #include <game/game/d_npc.hpp>
+#include <game/game/d_string.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_random_field.hpp>
 #include <game/game/d_save_data.hpp>
@@ -31,7 +32,6 @@ dActor_c *fn_800F9860(int x, int z);
 dActor_c *fn_800F98CC(int x, int z);
 BOOL fn_80013550();
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 u16 fn_800F88AC(const dItem::Item *key);
 dActor_c *fn_800F9878(const dItem::Item *key);
 BOOL fn_80013F98(int x, int z, int arg);
@@ -3021,7 +3021,7 @@ BOOL getNpcName(dScript::Word_c *word, const dItem::Item *key, int language) {
             break;
         }
         case 8:
-            return fn_8016AE68(word, fn_800F88AC(key), "sys_STRING/STR_SPNpc_name");
+            return dString::loadString(word, fn_800F88AC(key), "sys_STRING/STR_SPNpc_name");
     }
     return result;
 }

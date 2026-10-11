@@ -17,6 +17,7 @@
 #include <game/game/d_save_dl_item.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_catalog.hpp>
+#include <game/game/d_string.hpp>
 
 using namespace dItem;
 
@@ -25,7 +26,6 @@ void __register_global_object(void *object, void *dtor, void *node);
 
 
 // Loads entry `index` of a message group into a word (TU near 8016AC58).
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 
 
 // Item debug TU (empty in release).
@@ -166,7 +166,7 @@ void setItemName(dScript::Word_c *name, Item item) {
 void setFurnitureName(dScript::Word_c *name, u32 index) {
     name->clear();
     if (index < 0x84) {
-        fn_8016AE68(name, index + 1, "sys_STRING/STR_Furniture");
+        dString::loadString(name, index + 1, "sys_STRING/STR_Furniture");
     }
 }
 
@@ -197,7 +197,7 @@ void setFashionName(dScript::Word_c *name, u32 fashion) {
     if (fashion == 0) {
         memcpy(name->getBuffer(), sNone, sizeof(sNone));
     } else if (fashion < 0x39) {
-        fn_8016AE68(name, fashion, "sys_STRING/STR_Fashion");
+        dString::loadString(name, fashion, "sys_STRING/STR_Fashion");
     }
 }
 
@@ -205,7 +205,7 @@ void setFashionName(dScript::Word_c *name, u32 fashion) {
 void setColorName(dScript::Word_c *name, u32 color) {
     name->clear();
     if (color < 0xF) {
-        fn_8016AE68(name, color + 1, "sys_STRING/STR_Color");
+        dString::loadString(name, color + 1, "sys_STRING/STR_Color");
     }
 }
 
@@ -213,7 +213,7 @@ void setColorName(dScript::Word_c *name, u32 color) {
 void setLookName(dScript::Word_c *name, int look) {
     name->clear();
     if ((u32)look < 0xB && look != 0xA) {
-        fn_8016AE68(name, look + 1, "sys_STRING/STR_Look");
+        dString::loadString(name, look + 1, "sys_STRING/STR_Look");
     }
 }
 
@@ -223,7 +223,7 @@ void setQ4LookName(dScript::Word_c *name, int look) {
     if (look >= 0xA) {
         memcpy(name->getBuffer(), sNone, sizeof(sNone));
     } else if (static_cast<u32>(look) < 0xB) {
-        fn_8016AE68(name, look + 1, "sys_STRING/STR_Q04_Look");
+        dString::loadString(name, look + 1, "sys_STRING/STR_Q04_Look");
     }
 }
 
@@ -232,7 +232,7 @@ void setSeriesName(dScript::Word_c *name, u32 series) {
     name->clear();
     Series *entry = infoBank_c::get()->getSeries(series);
     if (entry != NULL) {
-        fn_8016AE68(name, (s8)entry->mId, "sys_STRING/STR_Q05_Series");
+        dString::loadString(name, (s8)entry->mId, "sys_STRING/STR_Q05_Series");
     } else {
         memcpy(name->getBuffer(), sNone, sizeof(sNone));
     }
@@ -242,7 +242,7 @@ void setSeriesName(dScript::Word_c *name, u32 series) {
 void setQ5PartName(dScript::Word_c *name, u32 part) {
     name->clear();
     if (part < 0xB) {
-        fn_8016AE68(name, part, "sys_STRING/STR_Q05_Part");
+        dString::loadString(name, part, "sys_STRING/STR_Q05_Part");
     } else {
         memcpy(name->getBuffer(), sNone, sizeof(sNone));
     }

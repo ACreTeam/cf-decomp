@@ -47,6 +47,9 @@ class dNetError_c {
     int getState() const {
         return mState;
     }
+    int getKind() const {
+        return mKind;
+    }
 
     /* 0x0 */ int mCode;
     /* 0x4 */ int mDetail;
@@ -172,6 +175,8 @@ class dNetFriendReq_c {
     void setResult(int kind, int result);                    // 800E6F98
     void setResultData(int kind, const DWCFriendData *data); // 800E7004
     void setResultKey(int kind, u64 key);                    // 800E705C
+    // 800E70B8: TRUE once the current request is no longer `kind` (done); *result = its result
+    BOOL takeResult(int kind, int *result);
     BOOL fn_800E723C(u8 memberNum, int arg);                 // NET_FRIEND_REQ_2
     BOOL fn_800E726C(u8 memberNum, u32 arg);                 // NET_FRIEND_REQ_3
     BOOL fn_800E729C();                                      // NET_FRIEND_REQ_6

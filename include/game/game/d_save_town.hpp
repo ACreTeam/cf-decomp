@@ -13,6 +13,7 @@
 #include <game/game/d_recycle_bin.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_animal.hpp>
+#include <game/game/d_animal_id.hpp>
 #include <game/game/d_museum.hpp>
 #include <game/game/d_notice.hpp>
 #include <game/game/d_save_check.hpp>
@@ -81,6 +82,8 @@ struct dSaveTownList_c;
 extern "C" {
 dSaveTownListEntry_c *fn_80150308(dSaveTownList_c *list, int idx); // 80150308 (d_sv_town_list): entry idx, NULL if its land is invalid
 const dSaveTownListEntry_c *fn_80150350(const dSaveTownList_c *list, int idx); // 80150350 (d_sv_town_list): same body (const)
+// 801501F0 (d_sv_town_list): records land's jinx: its entry, else a free one, else (sometimes) a random one.
+void fn_801501F0(dSaveTownList_c *list, const dLandID_c *land, dSaveJinx_c jinx);
 }
 #define SAVE_TOWN_LIST_NUM 8
 
@@ -102,7 +105,7 @@ struct dSaveUnk72E0A_c {
 struct dSaveOtherTown_c {
     /* 0x000 */ dLandID_c mLand;
     /* 0x016 */ dPersonalID_c mPlayer;
-    /* 0x042 */ u8 mVillager[0xC0];    // the villager's core data
+    /* 0x042 */ dAnmPersonalID_c mVillager; // one of its villagers
     /* 0x102 */ u8 mImpression;         // < 0x31: shown as STR_Impress + 1
     /* 0x103 */ u8 _103;
     /* 0x104 */ u8 mValid : 1;          // getRandomOtherTown
@@ -112,8 +115,7 @@ struct dSaveOtherTown_c {
     /* 0x104 */ u8 mHasWindmill : 1;
     /* 0x104 */ u8 mHasLighthouse : 1;
     /* 0x104 */ u8 _104_0 : 1;
-    /* 0x105 */ u8 _105;
-}; // size 0x106
+}; // size 0x106 (struct copies skip the padding byte at 0x105)
 
 // dSaveTown_c::getPublicWorks: the town hall's public works so far, in the order they're built: the extra
 // bridge (dSaveMainField_c::buildBridge), the fountain, then the windmill or the lighthouse
@@ -159,21 +161,62 @@ struct dSaveTown640C8_c {
         mFlags |= 4;
     }
 
-    /* 0x000 */ u8 _000;
-    /* 0x001 */ u8 mFlags;                // 0x04: mModelRoomCandidate set (setModelRoom); 0x20: dSvAuc_c::pickDLItem set mDLItem
-    /* 0x002 */ dOutfit_c _002;
-    /* 0x00E */ u8 _00E[0x116];
-    /* 0x124 */ u8 _124;                  // bitfield byte, cleared by the ctor
-    /* 0x125 */ u8 _125;
+    // It is also what this town sends to its friends over WiiConnect24 (d_wifi dWifiTownMsg_c), and mFlags
+    // says which parts the receiver (dWifi::receiveTown) takes over.
+    /* 0x000 */ u8 mVersion;              // TOWN_640C8_VERSION (fn_8014EB3C); a received one must match
+    /* 0x001 */ u8 mFlags;                // TOWN_640C8_FLAG_*
+    /* 0x002 */ dOutfit_c _002;           // fn_8014ECA4 sets it (TOWN_640C8_FLAG_OUTFIT), fn_8014ECE0 reads it
+    /* 0x00E */ u8 mPlayerBits;           // one bit per player (fn_8014EC40 / fn_8014EC84; TOWN_640C8_FLAG_PLAYER_BITS)
+    /* 0x00F */ s8 mCatherinePlayer;      // fn_8014EBF8: the player, category and sub-category for
+    /* 0x010 */ s8 mCatherineCategory;    //   dSaveCatherine_c::set (-1 = none; TOWN_640C8_FLAG_CATHERINE)
+    /* 0x011 */ s8 mCatherineSub;
+    /* 0x012 */ s8 mPlayerCategory[4];    // per player, for dSaveCatherine_c::count (-1 = none)
+    /* 0x016 */ s8 mPlayerSub[4];
+    /* 0x01A */ u8 mPlayerValue[4];       // fn_8014ED24 / fn_8014EE28: per player, < 10 (TOWN_640C8_FLAG_PLAYER_VALUE)
+    /* 0x01E */ dSaveOtherTown_c mOtherTown; // this town as another town sees it (fn_8014EE50; TOWN_640C8_FLAG_OTHER_TOWN)
+    /* 0x124 */ dSaveJinx_c mJinx;        // TOWN_640C8_FLAG_JINX
     /* 0x126 */ u8 _126[2];
     /* 0x128 */ dSvMdlRm_c mModelRoomCandidate; // the HRA's next model room (dHR::selectModelRooms)
     /* 0x674 */ dSaveDLItem_c mDLItem;
 }; // size 0x2674
 
+// A town message (d_wifi WIFI_MSG_TOWN, 0x2724 bytes): the sending town's players and its dSaveTown640C8_c
+// (built by d_wifi fn_80179C14, taken over by dWifi::receiveTown).
+struct dWifiTownMsg_c {
+    // The first valid player (the sender), else mPlayers[0].
+    dPersonalID_c *getSender() {
+        for (int i = 0; i < PLAYER_NUM; i++) {
+            if (mPlayers[i].isValid()) {
+                return &mPlayers[i];
+            }
+        }
+        return &mPlayers[0];
+    }
+
+    /* 0x0000 */ dPersonalID_c mPlayers[PLAYER_NUM];
+    /* 0x00B0 */ dSaveTown640C8_c mTown;
+}; // size 0x2724
+
+#define TOWN_640C8_VERSION 10
+enum {
+    TOWN_640C8_FLAG_CATHERINE = 0x01,    // mCatherine* / mPlayerCategory / mPlayerSub
+    TOWN_640C8_FLAG_OUTFIT = 0x02,       // _002
+    TOWN_640C8_FLAG_MODEL_ROOM = 0x04,   // mModelRoomCandidate (setModelRoom)
+    TOWN_640C8_FLAG_JINX = 0x08,         // mJinx
+    TOWN_640C8_FLAG_PLAYER_BITS = 0x10,  // mPlayerBits
+    TOWN_640C8_FLAG_DL_ITEM = 0x20,      // mDLItem (dSvAuc_c::pickDLItem)
+    TOWN_640C8_FLAG_PLAYER_VALUE = 0x40, // mPlayerValue
+    TOWN_640C8_FLAG_OTHER_TOWN = 0x80,   // mOtherTown
+};
+
 extern "C" {
+BOOL fn_8014EC84(const dSaveTown640C8_c *obj, int player);        // 8014EC84: player's mPlayerBits bit
+BOOL fn_8014ECE0(const dSaveTown640C8_c *obj, dOutfit_c *outfit); // 8014ECE0: copies _002 out if it is valid
+int fn_8014EE28(const dSaveTown640C8_c *obj, int player);         // 8014EE28: mPlayerValue[player], 0 if not < 10
 void fn_8014F10C(dSaveTown640C8_c *obj); // 8014F10C: (d_str dSTR::buildPublicWorks: the fountain is built)
 void fn_8014F178(dSaveTown640C8_c *obj); // 8014F178: (the windmill is built)
 void fn_8014F1E4(dSaveTown640C8_c *obj); // 8014F1E4: (the lighthouse is built)
+void fn_8014EBE8(dSaveTown640C8_c *obj); // 8014EBE8: clears mFlags bit 0x02 (d_wifi fn_8017A708, after fn_80179C14)
 }
 
 class dSaveTown_c {
@@ -245,7 +288,8 @@ public:
     /* 0x068414 */ dSaveMainField_c mMainField; // the town field
     /* 0x06D5BC */ u8 _06D5BC[4];
     /* 0x06D5C0 */ dHomeList_c mHomes;
-    /* 0x072CC0 */ u8 _072CC0[0x2E];
+    /* 0x072CC0 */ u8 _072CC0[2];          // d_sv_player_flag's state byte
+    /* 0x072CC2 */ dPersonalID_c _072CC2;   // a random player of a friend town (d_wifi receiveTown, TOWN_640C8_FLAG_PLAYER_BITS)
     /* 0x072CEE */ dPersonalID_c _072CEE;   // cleared by clearTown
     /* 0x072D1A */ dSaveTownList_c mTownList; // other towns and their jinxes
     /* 0x072DDA */ dPoliceBox_c mPoliceBox;

@@ -9,13 +9,6 @@
 #include <cstring>
 #include <game/game/d_player_mgr.hpp>
 
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
-void fn_8016B15C(int slot, dScript::Word_c *word); // script tag word
-void fn_8016B050(int slot, const dPersonalID_c *pid); // script tag player
-}
-
 dItem::Item makeItemFromBaseId(u16 baseId);
 
 // 80475D10: "from" message per mSenderKind value (getListWord).
@@ -504,22 +497,22 @@ void dMail_c::getListWord(dScript::Word_c *word) {
 
     if (status == MAIL_STATUS_WRITTEN) {
         if (isToFutureSelf()) {
-            fn_8016AE68(word, 0x79, "sys_2D/SYS_2D_menu");
+            dString::loadString(word, 0x79, "sys_2D/SYS_2D_menu");
         } else {
             mTo.setWord(&name, FALSE);
-            fn_8016B15C(0, &name);
-            fn_8016AE68(word, 0x6E, "sys_2D/SYS_2D_menu");
+            dString::setWord(0, &name);
+            dString::loadString(word, 0x6E, "sys_2D/SYS_2D_menu");
         }
     } else if (isFromText()) {
         mFrom.setWord(&text, FALSE);
-        fn_8016B15C(0, &text);
-        fn_8016AE68(word, 0x6F, "sys_2D/SYS_2D_menu");
+        dString::setWord(0, &text);
+        dString::loadString(word, 0x6F, "sys_2D/SYS_2D_menu");
     } else {
         if (sender == MAIL_FROM_NAMED) {
             mFrom.setWord(&name, FALSE);
-            fn_8016B15C(0, &name);
+            dString::setWord(0, &name);
         }
-        fn_8016AE68(word, sFromMsgIds[sender], "sys_2D/SYS_2D_menu");
+        dString::loadString(word, sFromMsgIds[sender], "sys_2D/SYS_2D_menu");
     }
 }
 
@@ -653,18 +646,18 @@ void dLetterStyle_c::init() {
     mNamePos = 0;
 
     sMenuWord.clear();
-    fn_8016AE68(&sMenuWord, 0x7A, "sys_2D/SYS_2D_menu");
+    dString::loadString(&sMenuWord, 0x7A, "sys_2D/SYS_2D_menu");
     memcpy(mHeader, static_cast<dScript::Word_c &>(sMenuWord).getBuffer(), sizeof(mHeader));
     dMail_c::findNamePos(mHeader, &mNamePos);
 
     sMenuWord.clear();
-    fn_8016AE68(&sMenuWord, 0x7B, "sys_2D/SYS_2D_menu");
+    dString::loadString(&sMenuWord, 0x7B, "sys_2D/SYS_2D_menu");
     memcpy(mFutureHeader, static_cast<dScript::Word_c &>(sMenuWord).getBuffer(), sizeof(mFutureHeader));
     dMail_c::findNamePos(mFutureHeader, &mFutureNamePos);
 
-    fn_8016B050(0, &player->mPID);
+    dString::setPlayerWord(0, &player->mPID);
     sMenuWord.clear();
-    fn_8016AE68(&sMenuWord, 0x7C, "sys_2D/SYS_2D_menu");
+    dString::loadString(&sMenuWord, 0x7C, "sys_2D/SYS_2D_menu");
     memcpy(mFooter, static_cast<dScript::Word_c &>(sMenuWord).getBuffer(), sizeof(mFooter));
 }
 

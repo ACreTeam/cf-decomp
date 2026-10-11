@@ -163,7 +163,7 @@ EGG::FrmHeap *dHeap::createFontHeap(EGG::Heap *parent) {
 
 // 800B5220
 EGG::FrmHeap *dHeap::createBannerHeap(EGG::Heap *parent) {
-    u32 size = ROUND_UP(fn_80065244(), 0x20);
+    u32 size = ROUND_UP(dBanner_c::getHeapSize(), 0x20);
     bannerHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::bannerHeap_p : セーブバナー", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "セーブバナー", size);
     return bannerHeap_p;
@@ -307,7 +307,7 @@ EGG::FrmHeap *dHeap::createEnvLightHeap(EGG::Heap *parent) {
 
 // 800B5970
 EGG::FrmHeap *dHeap::createNandHeap(EGG::Heap *parent) {
-    u32 size = fn_800D2840();
+    u32 size = dNand::getStackSize();
     nandHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::nandHeap_p", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "NANDライブラリ用ヒープ", size);
     return nandHeap_p;

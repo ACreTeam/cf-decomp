@@ -12,7 +12,6 @@
 extern "C" {
 
 void fn_80116900(dSaveExtra_c *extra);
-void fn_80117078(dSaveExtra_c *extra); // update checksum
 BOOL fn_801170B0(dSaveExtra_c *extra, int arg);
 
 void fn_800FADE4();

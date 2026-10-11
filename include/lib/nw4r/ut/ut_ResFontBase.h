@@ -105,6 +105,7 @@ protected:
     }
 
     void SetResourceBuffer(void* pBuffer, FontInformation* pInfo);
+    void* RemoveResourceBuffer(); // 8022BC68: clears the resource, returns the buffer
 
 private:
     u16 GetGlyphIndex(u16 ch) const;
@@ -121,6 +122,8 @@ private:
 private:
     void* mResource;            // at 0x10
     FontInformation* mFontInfo; // at 0x14
+    u16 mLastCharCode;          // at 0x18
+    u16 mLastGlyphIndex;        // at 0x1A
 };
 
 } // namespace detail

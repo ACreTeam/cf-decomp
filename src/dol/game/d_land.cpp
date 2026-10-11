@@ -5,10 +5,10 @@
 #include <game/cLib/c_math.hpp>
 #include <cstring>
 #include <game/game/d_net.hpp>
+#include <game/game/d_wifi.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-int fn_8017C0CC(const dLandID_c *land, dPrivateData_c *player);
 }
 
 // 8011660C
@@ -83,7 +83,7 @@ BOOL dLandID_c::isNewTown(const dLandID_c *other) const {
         return FALSE;
     }
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    if (player != NULL && fn_8017C0CC(other, player) >= 0) {
+    if (player != NULL && dWifi::findFriend(other, player) >= 0) {
         return FALSE;
     }
     return TRUE;

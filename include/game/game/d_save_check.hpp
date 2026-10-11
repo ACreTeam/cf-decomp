@@ -16,6 +16,6 @@ struct dSaveCheck_c {
     /* 0x00 */ u32 mChecksum;
     /* 0x04 */ u16 mVersion; // SAVE_VERSION
     /* 0x06 */ u8 mState;
-    /* 0x07 */ u8 mFlags;    // init: 0 when lbl_80750334 is 1, else 1
+    /* 0x07 */ u8 mFlags;    // init: 0 when dBanner_c::sFlags is 1, else 1
     /* 0x08 */ u8 _08[0x18];
 }; // size 0x20

@@ -29,7 +29,7 @@
 #include <game/game/d_scene_check.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_sv_mgr.hpp>
-#include <game/game/d_wifi_err.hpp>
+#include <game/game/d_wifi.hpp>
 
 // used by d_net_sync.inc [D]
 #include <game/cLib/c_counter.hpp>
@@ -2006,7 +2006,7 @@ void dNetRequest_c::execute() {
             }
         } else if (step == 7) {
             if (mSaveKind.get() != 3) {
-                fn_800D3584()->setReturnExitHere(0.0f);
+                dNand::getSceneChange()->setReturnExitHere(0.0f);
             }
             fn_800DDE7C();
             if (mSaveKind.get() == 1) {
@@ -4965,7 +4965,7 @@ void startJoinTransfer() {
 
 void startSaveEnd(BOOL interrupt) {
     if (!dReset::Manage_c::GetInstance()->isResetting()) {
-        fn_800D3584()->setReturnExitHere(0.0f);
+        dNand::getSceneChange()->setReturnExitHere(0.0f);
         requestSceneChange(SCENE_DM_SAVE, 0, 5);
         fn_800DDE7C();
         if (interrupt) {
@@ -5293,7 +5293,7 @@ void fn_800DDE80() {
     }
 }
 
-u8 isNetMgrStarted() {
+BOOL isNetMgrStarted() {
     return getNetMgrStart()->mStarted;
 }
 

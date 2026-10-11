@@ -19,6 +19,7 @@
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_wifi.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -46,7 +47,6 @@ BOOL fn_8019B864();
 u16 fn_800FABF4(int, int);
 void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
 extern u8 lbl_8059FF80[];
-BOOL fn_80177C90();
 BOOL fn_80013550();
 }
 
@@ -210,7 +210,7 @@ void dUnkDesignBoard_c::fn_8013677C() {
     if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
         return;
     }
-    if (!fn_80177C90()) {
+    if (!dWifi::hasSend()) {
         return;
     }
     if (_882 != 0) {
@@ -242,7 +242,7 @@ void dUnkDesignBoard_c::fn_80136868() {
     if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
         reset = TRUE;
     }
-    if (!fn_80177C90()) {
+    if (!dWifi::hasSend()) {
         reset = TRUE;
     }
     if (reset) {

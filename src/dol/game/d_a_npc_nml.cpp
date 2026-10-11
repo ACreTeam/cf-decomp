@@ -3110,7 +3110,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                 if (otherTown->mImpression < 0x31) {
                                     getController()->setStringWord(3, otherTown->mImpression + 1, "sys_STRING/STR_Impress");
                                 }
-                                dAnmPersonalID_c *villager = (dAnmPersonalID_c *)otherTown->mVillager;
+                                dAnmPersonalID_c *villager = &otherTown->mVillager;
                                 if (villager->isValid()) {
                                     setAnmPersonalName(villager, 4);
                                     if (animal != NULL) {

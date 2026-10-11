@@ -11,10 +11,10 @@
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <cstring>
 #include <game/game/d_heap.hpp>
+#include <game/game/d_string.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // load a BMG string
 
 // Downloaded item blocks (Ghidra: DLC_Item).
 }
@@ -198,10 +198,10 @@ BOOL dDesign_c::setFromBITM(const dItem::BITM *bitm) {
         creator.clear();
 
         if ((s8)bitm->m_designCreatorName != 0) {
-            fn_8016AE68(&landName, (s8)bitm->m_designCreatorName, "sys_STRING/STR_Unit");
+            dString::loadString(&landName, (s8)bitm->m_designCreatorName, "sys_STRING/STR_Unit");
         }
         if ((s8)bitm->m_designCreatorFrom != 0) {
-            fn_8016AE68(&creatorName, (s8)bitm->m_designCreatorFrom, "sys_STRING/STR_Unit");
+            dString::loadString(&creatorName, (s8)bitm->m_designCreatorFrom, "sys_STRING/STR_Unit");
         }
 
         const wchar_t *landStr = static_cast<dScript::Word_c &>(landName).getBuffer();

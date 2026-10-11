@@ -13,12 +13,12 @@
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 #include <game/game/d_letter.hpp>
+#include <game/game/d_wifi.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 // Letter words (d_letter).
 
-BOOL fn_80177D24();                                     // WiiConnect24 off
 }
 
 // Debug tuning (RTTI "dSvAuc_hostIO_c", 805EC1B8). Local to this file: its inline dtor is in the
@@ -264,7 +264,7 @@ void dSvAucItem_c::updateDay(const dLandID_c *land, u32 day) {
 
 // 8010B0A0
 BOOL dSvAucItem_c::isSellerOffline(const dLandID_c *land) const {
-    if (!fn_80177D24() && isFromOtherTown(land)) {
+    if (!dWifi::isNetOn() && isFromOtherTown(land)) {
         return FALSE;
     }
     return TRUE;
@@ -272,7 +272,7 @@ BOOL dSvAucItem_c::isSellerOffline(const dLandID_c *land) const {
 
 // 8010B100
 BOOL dSvAucItem_c::isHighBidderFrom(const dLandID_c *land) const {
-    if (!fn_80177D24() && mHighBidder.isValid()) {
+    if (!dWifi::isNetOn() && mHighBidder.isValid()) {
         if (mHighBidder.land != *land) {
             return FALSE;
         }

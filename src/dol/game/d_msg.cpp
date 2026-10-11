@@ -1500,11 +1500,11 @@ int Word_c::setTagWord(int pos, dScript::Word_c *word) {
     dString::Word_c article;
     if (_1C == 0) {
         if (word->mInflect.mIndefArticle != 0) {
-            hasArticle = fn_8016AE68(&article, word->mInflect.mIndefArticle, "sys_STRING/STR_Article");
+            hasArticle = dString::loadString(&article, word->mInflect.mIndefArticle, "sys_STRING/STR_Article");
         }
     } else if (_1C == 1) {
         if (word->mInflect.mDefArticle != 0) {
-            hasArticle = fn_8016AE68(&article, word->mInflect.mDefArticle, "sys_STRING/STR_Article");
+            hasArticle = dString::loadString(&article, word->mInflect.mDefArticle, "sys_STRING/STR_Article");
         }
     }
     removeTag(pos);

@@ -2805,8 +2805,6 @@ extern "C" {
 // Other TUs.
 extern u8 lbl_8059FF80[0x10];
 struct dNpcPair_c;
-u16 fn_8016AF68(const char *group);
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group);
 int fn_801017B8();
 }
 
@@ -3245,9 +3243,9 @@ void dAnimal_c::setHabitFromWord(dScript::Word_c *word, int arg) {
 void dAnimal_c::getHabitWord(dScript::Word_c *word, int arg, BOOL itchy) {
     static const char sItchy[] = "sys_STRING/STR_Itchy";
     if (itchy) {
-        u16 num = fn_8016AF68(sItchy);
+        u16 num = dString::getStringNum(sItchy);
         u16 idx = num >= 1 ? (u16)(cM::rndInt(num - 1) + 1) : 1;
-        fn_8016AE68(word, idx, sItchy);
+        dString::loadString(word, idx, sItchy);
     } else {
         const wchar_t *str = getHabit(arg);
         if (str != NULL) {

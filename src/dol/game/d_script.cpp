@@ -82,14 +82,6 @@ void *getBmgFile(Bank_c *bank, const char *name);
 u32 getBankHeapSize();
 const char *getStringGroup(int kind, u8 gender);
 
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-BOOL fn_8016AE68(Word_c *word, u16 index, const char *group); // loads a BMG string
-u16 fn_8016AF68(const char *group); // number of strings in a group
-u16 fn_8016AFD4(const char *group); // random string index
-extern u8 lbl_805FF398[];
-}
-
 // 8015593C: TRUE if c starts with a vowel sound (used to pick elided articles)
 BOOL isVowelSound(int c) {
     switch (c) {
@@ -559,7 +551,7 @@ BOOL setAmPm(Word_c *word, int hour) {
             idx = 4;
         }
 
-        ret = fn_8016AE68(word, idx, "sys_STRING/STR_Unit");
+        ret = dString::loadString(word, idx, "sys_STRING/STR_Unit");
         break;
     default:
         word->clear();
@@ -570,17 +562,17 @@ BOOL setAmPm(Word_c *word, int hour) {
 
 // 80156B98: weekday name (short form if abbrev)
 BOOL setWeekdayName(Word_c *word, int day, BOOL abbrev) {
-    return fn_8016AE68(word, day + (abbrev ? 7 : 0) + 1, "sys_STRING/STR_Week");
+    return dString::loadString(word, day + (abbrev ? 7 : 0) + 1, "sys_STRING/STR_Week");
 }
 
 // 80156BC0: month name
 BOOL setMonthName(Word_c *word, int month) {
-    return fn_8016AE68(word, month + 1, "sys_STRING/STR_Month");
+    return dString::loadString(word, month + 1, "sys_STRING/STR_Month");
 }
 
 // 80156BD4: day of the month
 BOOL setDayName(Word_c *word, int day) {
-    return fn_8016AE68(word, day, "sys_STRING/STR_Day");
+    return dString::loadString(word, day, "sys_STRING/STR_Day");
 }
 
 // 80476948
@@ -589,9 +581,9 @@ static const u16 lbl_80476948[] = {2, 2, 1, 2, 1, 1, 2, 1, 2, 1};
 // 80156BE4: JP counter word (singular for 1)
 BOOL setCounter(Word_c *word, int type, int count) {
     if (count == 1 && type == 0) {
-        return fn_8016AE68(word, 1, "sys_STRING/STR_Unit");
+        return dString::loadString(word, 1, "sys_STRING/STR_Unit");
     }
-    return fn_8016AE68(word, lbl_80476948[type], "sys_STRING/STR_Unit");
+    return dString::loadString(word, lbl_80476948[type], "sys_STRING/STR_Unit");
 }
 
 // 8047695C
@@ -600,29 +592,28 @@ static const u16 lbl_8047695C[] = {0x10, 0x10, 0x11, 0x12, 0x11, 0x11, 0x10, 0x1
 // 80156C20
 BOOL setCounter2(Word_c *word, int type, int count) {
     if (count == 1 && type == 0) {
-        return fn_8016AE68(word, 0x11, "sys_STRING/STR_Unit");
+        return dString::loadString(word, 0x11, "sys_STRING/STR_Unit");
     }
-    return fn_8016AE68(word, lbl_8047695C[type], "sys_STRING/STR_Unit");
+    return dString::loadString(word, lbl_8047695C[type], "sys_STRING/STR_Unit");
 }
 
 // 80156C5C: builds a nickname word; FALSE if the nickname is unusable
 BOOL makeNickname(Word_c *out, const Word_c *name, u16 index) {
     dNicknameWord_c word;
     dString::Word_c nickname;
-    // TODO: owner of this global (a Word_c at +0x12C4, a flag at +0x13B4)
-    ((Word_c *)(lbl_805FF398 + 0x12C4))->copy(name, 0);
-    lbl_805FF398[0x13B4] = 0;
-    if (!fn_8016AE68(&nickname, index, "sys_STRING/STR_Nickname")) {
+    dString::g_comp.mPlayerName.copy(name, 0);
+    dString::g_comp.mNoChar = 0;
+    if (!dString::loadString(&nickname, index, "sys_STRING/STR_Nickname")) {
         return FALSE;
     }
-    if (lbl_805FF398[0x13B4]) {
+    if (dString::g_comp.mNoChar) {
         return FALSE;
     }
     if (nickname.getLength(0) >= 9) {
         return FALSE;
     }
     word.set(static_cast<Word_c &>(nickname).getBuffer(), 0);
-    if (word.isSame((Word_c *)(lbl_805FF398 + 0x12C4))) {
+    if (word.isSame(&dString::g_comp.mPlayerName)) {
         return FALSE;
     }
     if (word.hasNoLetters()) {
@@ -886,7 +877,7 @@ void Inflect_c::setGender(u8 gender) {
 
 // 80157C00
 void Inflect_c::setIndefArticle(u8 article) {
-    u16 count = fn_8016AF68("sys_STRING/STR_Article");
+    u16 count = dString::getStringNum("sys_STRING/STR_Article");
     if (article == 0xFF) {
         mIndefArticle = 0;
     } else if ((u32)article > count) {
@@ -898,7 +889,7 @@ void Inflect_c::setIndefArticle(u8 article) {
 
 // 80157C70
 void Inflect_c::setDefArticle(u8 article) {
-    u16 count = fn_8016AF68("sys_STRING/STR_Article");
+    u16 count = dString::getStringNum("sys_STRING/STR_Article");
     if (article == 0xFF) {
         mDefArticle = 0;
     } else if ((u32)article > count) {

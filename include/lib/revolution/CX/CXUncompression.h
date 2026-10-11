@@ -18,7 +18,8 @@ typedef enum {
 } CXCompressionType;
 
 void CXUncompressLZ(const void *orig, void *dest);
-int CXGetUncompressedSize(void *data);
+u32 CXGetUncompressedSize(const void *data);
+int CXSecureUncompressRL(const void *src, u32 srcSize, void *dst);
 
 #ifdef __cplusplus
 }

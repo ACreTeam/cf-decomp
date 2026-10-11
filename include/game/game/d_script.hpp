@@ -278,6 +278,8 @@ public:
     virtual int procColor(int pos); // 8015B12C: system 0: text color (u8 param)
     virtual int procScale(int pos); // 8015B130: system 1: text scale (u16 param)
 
+    // The text (a virtual getBuffer call through the word; d_wifi_err setMessage).
+    wchar_t *getText() { return getBuffer(); }
     void clear(); // 80157DCC: zeroes the buffer and resets the word state
     void preParse(); // pre-scan: group 4 tags
     void parse(); // parse

@@ -8,4 +8,5 @@
 
 extern "C" {
 void fn_802B8D30(OSThread *thread, int arg); // 802B8D30: called after OSCreateThread with fn_8016CF08(idx)
+void fn_802B8D90(OSThread *thread);          // 802B8D90: called once that thread has terminated
 }

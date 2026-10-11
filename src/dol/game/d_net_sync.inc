@@ -2937,14 +2937,14 @@ void onDisconnect(int, const dNetMemberMask_c *) {
 }
 
 BOOL isDisconnectDone(int, const dNetMemberMask_c *) {
-    return fn_8017C478() != 0;
+    return dWifi::updateSave() != 0;
 }
 
 void onMemberLeaving(int, const dNetMemberMask_c *) {
 }
 
 BOOL isMemberLeaveDone(int, const dNetMemberMask_c *) {
-    return fn_8017C478() != 0;
+    return dWifi::updateSave() != 0;
 }
 
 // Channel lbl_80474BF0 / lbl_80474BFC / lbl_80474C08.

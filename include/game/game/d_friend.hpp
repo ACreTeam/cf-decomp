@@ -28,6 +28,7 @@ class dFriendList_c {
 public:
     const dFriend_c *getFriend(u32 idx) const { return &mFriends[idx]; }
     dFriend_c *getFriend(u32 idx) { return &mFriends[idx]; }
+    const DWCFriendData *getKey(u32 idx) const { return &mKeys[idx]; }
     void updateChecksum();                                           // 8011A6C4
     BOOL isChecksumOK() const;                                        // 8011A6F4
     u32 calcChecksum() const;                                         // 8011A738

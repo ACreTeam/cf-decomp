@@ -8,6 +8,7 @@
 #include <types.h>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_net_wc24.hpp>
 
 class dPrivateData_c;
 class dTime_c;
@@ -35,24 +36,17 @@ struct dPostBox_c {
     /* 0x12090 */ u8 _12090[8];        // last delivery time
     /* 0x12098 */ u8 _12098[8];        // next delivery time
     /* 0x120A0 */ u16 mFlags;          // bit 0: a delivery is scheduled
-    /* 0x120A2 */ u8 _120A2[0x5A];
+    /* 0x120A2 */ u8 _120A2[0x5A];     // +0: dSaveExtra_c::mPostSend (d_wifi)
 }; // size 0x120FC
 
 // A WiiConnect24 message to send (fn_80178048): up to 4 attachments, the friend it goes to and the
 // player sending it.
-struct dPostRequest_c {
+// mData: [2] the present's download data, [3] the letter; mFriend: the friend index of the sender.
+struct dPostRequest_c : public dNetWc24Data_c {
     dPostRequest_c() {
-        for (int i = 0; i < 4; i++) {
-            mData[i] = NULL;
-            mSize[i] = 0;
-        }
-        mFriend = -1;
         mSender = NULL;
     }
 
-    /* 0x00 */ const void *mData[4];  // [2] the present's download data, [3] the letter
-    /* 0x10 */ u32 mSize[4];
-    /* 0x20 */ int mFriend;           // friend index of the sender
     /* 0x24 */ dPrivateData_c *mSender;
 }; // size 0x28
 

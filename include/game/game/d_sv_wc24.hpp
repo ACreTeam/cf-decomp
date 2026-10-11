@@ -69,8 +69,8 @@ public:
     /* 0xC60 */ dYMD_c _C60;                         // only cleared by init: nothing in the DOL reads it
     /* 0xC64 */ dYMD_c mBoardSendDate;
     /* 0xC68 */ dYMD_c mLetterSendDate;
-    /* 0xC6C */ dYMD_c _C6C;                         // only cleared by init: nothing in the DOL reads it
-    /* 0xC70 */ dYMD_c _C70;                         // only cleared by init: nothing in the DOL reads it
+    /* 0xC6C */ dYMD_c _C6C;                         // d_wifi updateDaily: the day fn_8017A5DC last ran (villager)
+    /* 0xC70 */ dYMD_c _C70;                         // d_wifi updateDaily: the day fn_8017A364 last ran (design board)
     /* 0xC74 */ u32 mNextSend;                       // getNextSend's first send index
     /* 0xC78 */ u8 mBoardSendLimit;                  // sends to the marked keys per day (default 1)
     /* 0xC79 */ u8 mLetterSendLimit;                 // single letters to a registered friend per day (default 1)

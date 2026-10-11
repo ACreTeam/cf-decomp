@@ -5,6 +5,7 @@
 #include <game/game/d_font.hpp>
 #include <game/game/d_m2d.hpp>
 #include <game/game/d_script.hpp>
+#include <game/game/d_string.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_color.hpp>
 #include <game/mLib/m_vec.hpp>
@@ -24,7 +25,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-BOOL fn_8016AE68(dScript::Word_c *word, u16 index, const char *group); // loads a BMG string
 u32 fn_8008B90C(); // the current capture source
 BOOL fn_802C406C(u16 id); // id is a valid capture texture
 void fn_802C2538(void *buffer, int format, u32 source, u16 id, int, void *params); // copies the frame buffer
@@ -262,7 +262,7 @@ void SimpleEx_c::setMessage(const char *name, u16 index, const char *group) {
     if (group == nullptr) {
         group = "sys_2D/SYS_2D_menu";
     }
-    fn_8016AE68(&word, index, group);
+    dString::loadString(&word, index, group);
     word.update();
 }
 

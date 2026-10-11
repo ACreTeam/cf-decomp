@@ -5,6 +5,7 @@
 #include <game/game/d_fg_item.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_crc.hpp>
+#include <game/game/d_wifi.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -17,7 +18,6 @@ void fn_801510A0(void *obj);
 void fn_80150BDC(void *obj);
 void fn_80150E74(void *obj, int player);
 void fn_80150088(void *obj, int player);
-int fn_80177C0C();
 }
 
 // 80115CDC
@@ -258,7 +258,7 @@ void dSaveTown_c::clearFlag(int idx) {
 
 // 80116570
 BOOL dSaveTown_c::isBusNetEventPending() {
-    if (fn_80177C0C() == 1 && !dSaveData_c::getRaw()->isFlag(SAVE_FLAG_BUS_NET_EVENT_DONE)) {
+    if (dWifi::getWc24State() == 1 && !dSaveData_c::getRaw()->isFlag(SAVE_FLAG_BUS_NET_EVENT_DONE)) {
         return TRUE;
     }
     return FALSE;

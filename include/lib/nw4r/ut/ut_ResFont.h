@@ -16,6 +16,7 @@ public:
     virtual ~ResFont(); // at 0x8
 
     bool SetResource(void* pBuffer);
+    void* RemoveResource(); // 8022C654: RemoveResourceBuffer()
 
 private:
     static FontInformation* Rebuild(BinaryFileHeader* pHeader);

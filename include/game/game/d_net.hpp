@@ -1611,7 +1611,7 @@ void setMemberTime(int member, s64 time);
 void releaseRequest();
 // 800DDF54: dNetFlag_c::mStarted (openNetConnection .. closeNetConnection);
 // d_caution
-u8 isNetMgrStarted();
+BOOL isNetMgrStarted();
 // 800DDF78: dNetRequest_c::mBusy empty; dNetMgr_c::isRequestIdle (tail call)
 BOOL isRequestIdle();
 
@@ -1646,11 +1646,11 @@ void onLeave(int member, const dNetMemberMask_c *mask);
 void onMemberLeft(int member, const dNetMemberMask_c *mask);
 // 800E3858: hook (empty) after the connection is closed
 void onDisconnect(int member, const dNetMemberMask_c *mask);
-// 800E385C: hook: fn_8017C478() != 0
+// 800E385C: hook: dWifi::updateSave() != 0
 BOOL isDisconnectDone(int member, const dNetMemberMask_c *mask);
 // 800E3888: hook (empty)
 void onMemberLeaving(int member, const dNetMemberMask_c *mask);
-// 800E388C: hook: fn_8017C478() != 0
+// 800E388C: hook: dWifi::updateSave() != 0
 BOOL isMemberLeaveDone(int member, const dNetMemberMask_c *mask);
 
 // Placeholders (meaning unclear).

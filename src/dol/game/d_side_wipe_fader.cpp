@@ -2,14 +2,12 @@
 // .data 804F0710..804F0768, .sdata 8074B2B8..8074B2C0, .sbss 8074E828..8074E830,
 // .sdata2 80750E78..80750E98.
 #include <game/game/d_side_wipe_fader.hpp>
+#include <game/game/d_wipe_fader.hpp>
 #include <revolution/MTX.h>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 void fn_802466E8(u32 mask);
-void *fn_8017CD3C(); // the wipe texture
-int fn_8017CD48(); // its width
-int fn_8017CD50(); // its height
 }
 
 static dShutterFader_c *sShutterFader; // 8074E828
@@ -58,7 +56,7 @@ dSideWipeFader_c::dSideWipeFader_c(mColor col, mFaderBase_c::EStatus status) : m
 
 // 80160CC0
 void dSideWipeFader_c::setDefaultTexture() {
-    setTexture(fn_8017CD3C(), fn_8017CD48(), fn_8017CD50());
+    setTexture(getWipeTexture(), getWipeTextureWidth(), getWipeTextureHeight());
 }
 
 // 80160D2C

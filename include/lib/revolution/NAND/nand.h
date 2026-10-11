@@ -10,6 +10,20 @@ extern "C" {
 #define NAND_BANNER_TITLE_MAX 32
 #define NAND_BANNER_ICON_MAX_FRAME 8
 
+#define NAND_BANNER_FLAG_NOCOPY 0x00000001
+#define NAND_BANNER_FLAG_ANIM_BOUNCE 0x00000010
+
+#define NAND_BANNER_ICON_ANIM_SPEED_END 0
+#define NAND_BANNER_ICON_ANIM_SPEED_FAST 1
+#define NAND_BANNER_ICON_ANIM_SPEED_NORMAL 2
+#define NAND_BANNER_ICON_ANIM_SPEED_SLOW 3
+#define NAND_BANNER_ICON_ANIM_SPEED_MASK 3
+
+// Sets the animation speed of icon frame n (two bits per frame in iconSpeed).
+#define NANDSetIconSpeed(banner, n, speed) \
+    ((banner)->iconSpeed = (u16)(((banner)->iconSpeed & ~(NAND_BANNER_ICON_ANIM_SPEED_MASK << (2 * (n)))) | \
+                                 ((NAND_BANNER_ICON_ANIM_SPEED_MASK & (speed)) << (2 * (n)))))
+
 // Forward declarations
 typedef struct NANDCommandBlock NANDCommandBlock;
 
@@ -134,7 +148,7 @@ typedef struct NANDBanner {
     wchar_t title[NAND_BANNER_TITLE_MAX];               // at 0x20
     wchar_t subtitle[NAND_BANNER_TITLE_MAX];            // at 0x60
     u8 bannerTexture[0x6000];                           // at 0xA0
-    u8 iconTexture[0x1200][NAND_BANNER_ICON_MAX_FRAME]; // at 0x60A0
+    u8 iconTexture[NAND_BANNER_ICON_MAX_FRAME][0x1200]; // at 0x60A0
 } NANDBanner;
 
 s32 NANDCreate(const char* path, u8 perm, u8 attr);

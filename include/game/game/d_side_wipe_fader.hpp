@@ -15,7 +15,7 @@ public:
 
     virtual void calcMtx(); // 80160D2C
 
-    void setDefaultTexture(); // 80160CC0: the wipe texture of 8017CD3C
+    void setDefaultTexture(); // 80160CC0: the wipe texture (getWipeTexture, d_wipe_fader)
 
     /* 0x58 */ f32 mCenterX; // in texture coordinates
     /* 0x5C */ f32 mCenterY;

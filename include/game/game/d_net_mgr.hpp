@@ -87,7 +87,7 @@ class dNetMgr_c {
     static u32 getInfo1A28();
     static s64 getFriend00(int idx);
     static u32 getFriend08(int idx);
-    static u8 getFriendFlag(int idx);
+    static BOOL getFriendFlag(int idx);
     static BOOL isUserDataValid(const DWCUserData *userData);
     static void getMyFriendData(const DWCUserData *userData,
                                 DWCFriendData *friendData);

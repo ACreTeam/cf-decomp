@@ -58,6 +58,17 @@ block_relocations:
 # 8046C438: u16 pair 804A 0012 in d_npc_talk_free's table lbl_8046C428 that looks like a pointer into
 # d_a_npc's function-local request table (804A0000). Not a pointer.
 - source: 0x8046C438
+# 8049AD9C / 80482E5C: words in two unsplit .rodata tables (80497D28.., 8047FDE8..) reading 805A805F, and
+# 80516130: a word inside lbl_80509320 (binary data) reading 805AAD43. Odd values inside d_nand's sBannerBuffer.
+# Not pointers.
+- source: 0x8049AD9C
+- source: 0x80482E5C
+- source: 0x80516130
+# 8047CF14 (805719FF, among 807C3EFF-style colour words), 8048120C / 8049914C (805658F0, among u16 pixel data):
+# words in unsplit .rodata that look like pointers into d_banner's g_banner. Not pointers.
+- source: 0x8047CF14
+- source: 0x8048120C
+- source: 0x8049914C
 # 80515130: a word inside lbl_80509320 (binary data) that reads 805B3926, inside d_net_mgr's g_netMgr.
 # Not a pointer.
 - source: 0x80515130

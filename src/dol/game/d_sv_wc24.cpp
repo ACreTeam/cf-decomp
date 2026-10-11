@@ -5,7 +5,7 @@
 #include <game/game/d_net_wc24.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>
-#include <game/game/d_wifi_err.hpp>
+#include <game/game/d_wifi.hpp>
 #include <revolution/OS.h>
 #include <string.h>
 
@@ -217,7 +217,7 @@ void dSaveWc24_c::setSend(const u64 *key, BOOL send) {
     dPrivateData_c *player;
     for (int p = 0; p < PLAYER_NUM; p++) {
         player = dPlayerMgr_c::getPlayer(p);
-        int idx = fn_8017BDEC(key, player);
+        int idx = dWifi::findFriendKey(key, player);
         if (idx >= 0) {
             dFriend_c *fr = player->mFriends.getFriend(idx);
             if (send) {

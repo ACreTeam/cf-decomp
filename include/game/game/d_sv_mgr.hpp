@@ -306,3 +306,5 @@ protected:
     stepSaveInterruptNetHst_c mSaveInterruptNetHst; // 0x24C
     stepSaveInterruptNetVst_c mSaveInterruptNetVst; // 0x27C
 }; // sizeof = 0x2AC
+
+extern u16 sLoadErrorMessage; // 8074EB98 (d_nand clears it after deleting the save)

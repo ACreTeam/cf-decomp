@@ -279,6 +279,10 @@ dol/game/d_a_rmobj.cpp:
 dol/game/d_banner.cpp:
 	.text       start:0x80065230 end:0x80065524
 	.ctors      start:0x80465634 end:0x80465638
+	.data       start:0x804A4FC8 end:0x804A50B0 align:4
+	.bss        start:0x805655A0 end:0x805746E0 align:4
+	.sdata      start:0x80749B70 end:0x80749B98 align:4
+	.sdata2     start:0x80750330 end:0x80750338 align:4
 
 dol/game/d_balloon.cpp:
 	.text       start:0x80065524 end:0x80066018
@@ -1424,15 +1428,26 @@ dol/game/d_weather_confetti.cpp:
 	.text       start:0x801769B4 end:0x80177A7C
 
 dol/game/d_wifi.cpp:
-	.text       start:0x80177A7C end:0x8017B894
+	.text       start:0x80177A7C end:0x8017C4EC
 	.ctors      start:0x8046577C end:0x80465780
+	.data       start:0x804F48A8 end:0x804F4A08 align:4
+	.bss        start:0x8061E460 end:0x80621660 align:4
+	.sdata      start:0x8074B580 end:0x8074B5D8 align:4
+	.sbss       start:0x8074E938 end:0x8074E960 align:4
 
 dol/game/d_wifi_err.cpp:
-	.text       start:0x8017B894 end:0x8017CD3C
+	.text       start:0x8017C4EC end:0x8017CD3C
 	.ctors      start:0x80465780 end:0x80465784 align:8
+	.data       start:0x804F4A08 end:0x804F4B60 align:4
+	.bss        start:0x80621660 end:0x80621A30 align:4
+	.sdata      start:0x8074B5D8 end:0x8074B5E8 align:4
 
 dol/game/d_wipe_fader.cpp:
 	.text       start:0x8017CD3C end:0x8017D09C
+	.data       start:0x804F4B60 end:0x804F4BB0 align:4
+	.bss        start:0x80621A40 end:0x80623A40 align:4
+	.sdata      start:0x8074B5E8 end:0x8074B5F0 align:4
+	.sdata2     start:0x80751380 end:0x807513A8 align:4
 
 dol/game/sc_data/d_sc_data_dm_bus_pl_crt.cpp:
 	.text       start:0x8017D09C end:0x8017D0C8

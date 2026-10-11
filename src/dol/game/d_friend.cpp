@@ -5,11 +5,10 @@
 #include <game/sLib/s_crc.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <cstring>
+#include <game/game/d_wifi.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-BOOL fn_8017BA1C(int idx);                          // WiiConnect24 friend slot in use
-u64 fn_8017BAB0(int idx);                           // WiiConnect24 friend key
 }
 
 // 8011A6C4
@@ -111,13 +110,13 @@ void dFriendList_c::removeFriend(u32 idx) {
 
 // 8011AA20
 int dFriendList_c::getState(int idx) {
-    if (!fn_8017BA1C(idx)) {
+    if (!dWifi::isFriendValid(idx)) {
         return 0;
     }
     if (mFriends[idx].mPID.isValid()) {
         return 1;
     }
-    if (fn_8017BAB0(idx) == 0) {
+    if (dWifi::getFriendKey(idx) == 0) {
         return 2;
     }
     return 3;
