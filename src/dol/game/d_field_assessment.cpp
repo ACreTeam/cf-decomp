@@ -4,6 +4,7 @@
 // See notes/d_field_assessment.txt.
 //
 // .text 80091AF8..800A5D3C (__sinit 8009FFEC; built with -sym on, so the code of the #included
+#include <game/game/d_demo.hpp>
 #include <game/game/d_str.hpp>
 // d_fg_mng_task.inc lands after it, 800A2220..), .ctors 80465670..80465674, .rodata
 // 8046EFA0..8046F1E8, .data 804E1808..804E3C40, .bss 80588D58..8058B5F8, .sdata 80749FB8..8074A3C8,
@@ -72,14 +73,10 @@ static const u8 sAround5[5] = {
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_8018EF28();
 void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
 void fn_800F5AE8();
 void fn_80186838();
-BOOL fn_8018EEEC();
-void fn_8018EEF4();
-void fn_8018EE7C();
 void fn_800D16E8();
 int fn_801017B8();
 BOOL fn_80087820(dEffect_c *effect, const char *name, const mVec3_c *pos, const mAng3_c *ang, const mVec3_c *scale);
@@ -323,11 +320,11 @@ void *fgMngProc_getFgObjMgr() {
     return sFgObjMgr;
 }
 
-// 80091C2C: clears bit 2 of lbl_8074E9D0 (fn_8018EF28), clears sDayChangeBlocked
+// 80091C2C: clears dDemo::FLAG_DAY_CHANGE_WARP (dDemo::offDayChangeWarp), clears sDayChangeBlocked
 // (fgMngProc_unblockDayChange) and resets the unit locks / commands (fgMngSync_reset). Called from
 // 80106DF0 right after dSvMgr_c::cancelRequest.
 void fgMngProc_resetSync() {
-    fn_8018EF28();
+    dDemo::offDayChangeWarp();
     fgMngProc_unblockDayChange();
     fgMngSync_reset();
 }
@@ -4111,8 +4108,8 @@ void fgMngProc_updateFrame() {
     }
     if (!dNet::isSessionActive() && fgMngProc_getElapsedDays() >= 1) {
         sFgMngProcFlags |= FG_MNG_PROC_FLAG_DAY_CHANGE;
-        if (fn_8018EEEC()) {
-            fn_8018EEF4();
+        if (dDemo::isDayChangeReady()) {
+            dDemo::startDayChangeWarp();
             BOOL inside = isCityScene(getCurrentScene());
             fn_80091AF8()->setReturnExitHere(0.0f);
             nw4r::math::VEC3 pos;
@@ -4135,7 +4132,7 @@ void fgMngProc_updateFrame() {
                 fn_80091AF8()->request(SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
             }
         } else {
-            fn_8018EE7C();
+            dDemo::requestDayChange();
             return;
         }
     }

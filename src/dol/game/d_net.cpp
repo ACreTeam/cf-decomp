@@ -1972,7 +1972,7 @@ void dNetRequest_c::execute() {
             if (++mSaveTimer > 600) {
                 mMsgOn = 0;
                 setSaveStep(3);
-            } else if (fn_8018ED3C()) {
+            } else if (dDemo::startNetSave()) {
                 setSaveStep(4);
             }
         } else if (step == 3 || step == 4) {
@@ -1990,7 +1990,7 @@ void dNetRequest_c::execute() {
             }
             setSaveStep(0);
         } else if (step == 5) {
-            fn_8018EDE4();
+            dDemo::endNetSave();
             mMsgEndTimer = 300;
             if (self == 0) {
                 getNetRequest()->setMemberStep(0, 0);

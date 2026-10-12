@@ -42,10 +42,13 @@ public:
 
     bool Bind(const ResFile file);
 
-    // City Folk additions (unnamed): group checks used by d_hmn_tool_mng.
-    bool fn_8023487C() const; // has "3DModels"
-    bool fn_802348C8() const; // has "AnmChr"
-    bool fn_80234914() const; // has "AnmVis"
+    // City Folk additions (names inferred): the file has the group (d_hmn_tool_mng, d_a_rmobj).
+    bool HasResMdl() const;       // 8023487C: "3DModels(NW4R)"
+    bool HasResAnmChr() const;    // 802348C8: "AnmChr(NW4R)"
+    bool HasResAnmVis() const;    // 80234914: "AnmVis(NW4R)"
+    bool HasResAnmClr() const;    // 80234960: "AnmClr(NW4R)"
+    bool HasResAnmTexPat() const; // 802349AC: "AnmTexPat(NW4R)"
+    bool HasResAnmTexSrt() const; // 802349F8: "AnmTexSrt(NW4R)"
     void Release();
 
     bool Bind() {

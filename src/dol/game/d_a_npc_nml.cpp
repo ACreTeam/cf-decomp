@@ -102,7 +102,7 @@ bool dAcNpcNml_c::canInteract(dDemoActor_c *actor) {
 }
 
 // 8002EDE4
-int dAcNpcNml_c::demoHook60(dDemoActor_c *actor) {
+int dAcNpcNml_c::canSpeak(dDemoActor_c *actor) {
     if (actor == NULL) {
         return 0;
     }

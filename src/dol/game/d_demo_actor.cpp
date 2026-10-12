@@ -108,7 +108,7 @@ bool dDemoActor_c::checkInteraction(dDemoActor_c *actor) {
     return false;
 }
 
-void dDemoActor_c::demoHook50(int cmd, u8 member) {
+void dDemoActor_c::onDemoCmd(int cmd, u8 member) {
 }
 mVec3_c *dDemoActor_c::getDemoPosition() {
     return &mPos;
@@ -116,10 +116,10 @@ mVec3_c *dDemoActor_c::getDemoPosition() {
 mVec3_c *dDemoActor_c::demoHook58() {
     return 0;
 }
-int dDemoActor_c::demoHook5C() {
+int dDemoActor_c::canSpeech(dDemoActor_c *actor) {
     return 0;
 }
-int dDemoActor_c::demoHook60(dDemoActor_c *actor) {
+int dDemoActor_c::canSpeak(dDemoActor_c *actor) {
     return 0;
 }
 int dDemoActor_c::demoHook64(mVec3_c *pos) {
@@ -142,11 +142,14 @@ void dDemoActor_c::setDemoState2() {
 void dDemoActor_c::clearDemoState() {
     clearDemoFlags(3);
 }
-int dDemoActor_c::getDemoState() {
+u8 dDemoActor_c::getDemoState() {
     if (hasDemoFlags(1)) {
         return 0;
     }
-    return hasDemoFlags(2) ? 1 : 2;
+    if (hasDemoFlags(2)) {
+        return 1;
+    }
+    return 2;
 }
 void dDemoActor_c::setDemoFlag8() {
     setDemoFlags(8);
@@ -157,10 +160,10 @@ void dDemoActor_c::clearDemoFlag8() {
 bool dDemoActor_c::hasDemoFlag8() {
     return hasDemoFlags(8);
 }
-void dDemoActor_c::setDemoFlag4() {
+void dDemoActor_c::setDemoNetSync() {
     setDemoFlags(4);
 }
-bool dDemoActor_c::hasDemoFlag4() {
+bool dDemoActor_c::isDemoNetSync() {
     return hasDemoFlags(4);
 }
 bool dDemoActor_c::hasDemoFlags(u32 flags) {

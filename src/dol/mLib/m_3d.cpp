@@ -195,8 +195,8 @@ void m3d::scnLeaf_c::remove() {
     mpScn = nullptr;
 }
 
-void m3d::scnLeaf_c::entry() {
-    m3d::pushBack(mpScn);
+bool m3d::scnLeaf_c::entry() {
+    return m3d::pushBack(mpScn);
 }
 
 void m3d::scnLeaf_c::setOption(ulong option, ulong value) {

@@ -51,7 +51,7 @@ public:
     virtual int preCreate();                       // 80062280
     virtual int doDelete();                        // 8006237C
     virtual bool canInteract(dDemoActor_c *actor); // 800623AC (+0x4C)
-    virtual void demoHook50(int cmd, u8 member);   // 800623A8 (+0x50)
+    virtual void onDemoCmd(int cmd, u8 member);   // 800623A8 (+0x50)
     virtual void getName(dHmnName::Word_c *name, int len); // 80061AFC (+0x88)
     virtual u8 getNameKind();                      // 80061B0C (+0x8C): 2 (none)
     virtual f32 getHandItemOfsX() const;                      // 80061B14 (+0x90)

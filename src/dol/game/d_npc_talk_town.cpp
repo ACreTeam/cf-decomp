@@ -146,8 +146,8 @@ int dAcNpcNml_c::talk_c::msgTownTheater(msgInfo_s *info) {
     if (dTheater::g_common.mOpen != 0) {
         if (dTheater::g_common.isKyosyoProgram()) {
             code = 0x1E;
-        } else if (lbl_8074EAC8 > 0 && lbl_8074EAC8 < 0x1E) {
-            code = lbl_8074EAC8;
+        } else if (dNpcMng_c::sTheaterMsg > 0 && dNpcMng_c::sTheaterMsg < 0x1E) {
+            code = dNpcMng_c::sTheaterMsg;
         }
     }
     setProcSet(&l_talkProcSets[TALK_PROC_TOWN_THEATER]);

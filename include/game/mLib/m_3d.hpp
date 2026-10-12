@@ -26,7 +26,7 @@ namespace m3d {
 
         virtual leafType_e getType() const = 0;
         virtual void remove();
-        virtual void entry();
+        virtual bool entry(); // m3d::pushBack's result
 
         void setOption(ulong option, ulong value);
         bool getOption(ulong option, ulong *value) const;
@@ -299,6 +299,8 @@ namespace m3d {
 
         /// @brief Checks whether the animation is stopped.
         bool isStop() const;
+
+        m3d::playMode_e getPlayMode() const { return (m3d::playMode_e)mPlayMode; }
 
         /// @brief Checks whether the animation has reached the specified frame.
         /// @param frame The frame to check.

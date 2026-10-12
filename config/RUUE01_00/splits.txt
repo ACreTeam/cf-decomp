@@ -272,9 +272,20 @@ dol/game/d_a_npc_sp.cpp:
 	.sdata      start:0x80749B50 end:0x80749B68
 	.sdata2     start:0x807502E8 end:0x80750318
 
+dol/game/d_a_npc_town.cpp:
+	.text       start:0x80063438 end:0x800636C4
+
 dol/game/d_a_rmobj.cpp:
-	.text       start:0x80063438 end:0x80065230
+	.text       start:0x800636C4 end:0x80064FB4
+	.data       start:0x804A4E60 end:0x804A4FB8
+	.bss        start:0x80565500 end:0x805655A0
+	.sdata      start:0x80749B68 end:0x80749B70
+	.sbss       start:0x8074E1D0 end:0x8074E1D8
 	.sdata2     start:0x80750318 end:0x80750330
+
+dol/game/d_a_rmobj_model.cpp:
+	.text       start:0x80064FB4 end:0x80065230
+	.data       start:0x804A4FB8 end:0x804A4FC8
 
 dol/game/d_banner.cpp:
 	.text       start:0x80065230 end:0x80065524
@@ -1759,6 +1770,10 @@ dol/game/d_cd.cpp:
 dol/game/d_demo.cpp:
 	.text       start:0x8018DAC8 end:0x8018F588
 	.ctors      start:0x8046582C end:0x80465830
+	.rodata     start:0x8047BF40 end:0x8047C050
+	.data       start:0x804F98D8 end:0x804F9930
+	.sdata      start:0x8074BF18 end:0x8074BF30
+	.sbss       start:0x8074E9D0 end:0x8074E9E8 align:4
 
 dol/game/d_event_mng.cpp:
 	.text       start:0x8018F588 end:0x8018FE10
@@ -1800,6 +1815,12 @@ dol/game/d_msg.cpp:
 dol/game/d_npc_mng.cpp:
 	.text       start:0x801A6468 end:0x801AD6E0
 	.ctors      start:0x8046583C end:0x80465840
+	.rodata     start:0x8047DB98 end:0x8047E1F0
+	.data       start:0x804FB7C8 end:0x804FB8A0
+	.bss        start:0x80625190 end:0x80625370
+	.sdata      start:0x8074C178 end:0x8074C1E0
+	.sbss       start:0x8074EAB8 end:0x8074EAD8
+	.sdata2     start:0x80751780 end:0x80751800
 
 dol/game/d_objc.cpp:
 	.text       start:0x801AD6E0 end:0x801B0230

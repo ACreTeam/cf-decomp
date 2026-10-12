@@ -978,7 +978,7 @@ bool dAcNpc_c::canInteract(dDemoActor_c *actor) {
 }
 
 // 80012FE4
-void dAcNpc_c::demoHook50(int cmd, u8 member) {}
+void dAcNpc_c::onDemoCmd(int cmd, u8 member) {}
 
 // ---- dAcNpc_c net permit / daub sync (80012FE8..80013F1C) ----
 
@@ -1815,7 +1815,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
     if (pUnitX == NULL || pUnitZ == NULL) {
         return FALSE;
     }
-    if (fn_8018F438(0x11)) {
+    if (dDemo::isType(dDemo::TYPE_ANY)) {
         return FALSE;
     }
     if (!fn_800FA748()) {
@@ -1968,7 +1968,7 @@ int dAcNpc_c::preCreate() {
     mAcceptMoveReq = true;
     mWarpDist = 96.0f;
     mFootstep.init();
-    setDemoFlag4();
+    setDemoNetSync();
 
     if (isNetSync() && mPermitState == 0) {
         if (fn_800F5550()) {
@@ -1985,7 +1985,7 @@ int dAcNpc_c::preCreate() {
     }
 
     if (m_heap_p == NULL) {
-        m_heap_p = mHeap::createFrmHeap(getHeapSize(), lbl_8074EABC, "dAcNpc_c::m_heap_p : NPCアクターヒープ", 0x20, mHeap::OPT_NONE);
+        m_heap_p = mHeap::createFrmHeap(getHeapSize(), dNpcMng_c::m_stageHeap_p, "dAcNpc_c::m_heap_p : NPCアクターヒープ", 0x20, mHeap::OPT_NONE);
         mAllocator.attach(m_heap_p, 0x20);
     }
     return SUCCEEDED;

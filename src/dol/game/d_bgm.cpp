@@ -6,6 +6,7 @@
 #include <game/framework/f_manager.hpp>
 #include <game/game/d_bgcf.hpp>
 #include <game/game/d_camera.hpp>
+#include <game/game/d_demo.hpp>
 #include <game/game/d_event.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -23,7 +24,6 @@
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 BOOL fn_8018A978(dCamera_c *camera); // 8018A978
-BOOL fn_8018EF30();                // 8018EF30
 }
 
 namespace dBgm {
@@ -2009,7 +2009,7 @@ void Silence_c::init() {
 }
 
 void Silence_c::execute() {
-    if (fn_8018EF30()) {
+    if (dDemo::isSilence()) {
         if (!mOn) {
             mOn = 1;
             l_mgr.mute(9, 0x2D, 0);

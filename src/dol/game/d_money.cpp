@@ -16,7 +16,6 @@
 #define MONEY_ANM_NUM 2
 #define MONEY_ANM_IN 0
 #define MONEY_ANM_OUT 1
-#define MONEY_DEMO_TYPE 0x11
 #define MONEY_DIGITS 12
 #define MONEY_COUNT_FRAMES 30
 #define MONEY_SE_COUNT 0x16DB
@@ -114,7 +113,7 @@ BOOL dMoney_c::isShow() {
     if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_FACILITY)) {
         return FALSE;
     }
-    if (fn_8018F438(MONEY_DEMO_TYPE) && fn_8018F4A8()) {
+    if (dDemo::isType(dDemo::TYPE_ANY) && dDemo::isTalking()) {
         return TRUE;
     }
     if (fn_801B3D70()) {

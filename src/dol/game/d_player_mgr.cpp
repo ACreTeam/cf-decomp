@@ -1,6 +1,7 @@
 // Player manager: player actor and player data access for the local players
 // and visitors. .text 800FBB58..8010263C.
 // First pass: every function is written for equivalence; matching has not started.
+#include <game/game/d_demo.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_bg.hpp>
 #include <game/game/d_bgcf.hpp>
@@ -33,12 +34,9 @@ void fn_801B910C(int idx, int part, u16 item);
 void fn_801B8898(int idx, int part, u16 item);
 void fn_801B8FD8(int idx, int type);
 u8 *fn_800F5BA8();
-BOOL fn_8018F438(int type);
 BOOL fn_802C4404(dMiiCreateID_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
-BOOL fn_8018EB8C();
-BOOL fn_8018ECA0();
 BOOL fn_800FA724();
 void fn_801B961C();
 void fn_801B9658(int value);
@@ -1146,7 +1144,7 @@ BOOL fn_800FDD04() {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x8 && (fn_8018F438(4) || fn_8018F438(5))) {
+    if (state == 0x8 && (dDemo::isType(dDemo::TYPE_SCENE_START) || dDemo::isType(dDemo::TYPE_EXITSCENE))) {
         return TRUE;
     }
     if ((u32)(state - 0x49) <= 1) {
@@ -1813,7 +1811,7 @@ BOOL fn_800FF354(int *outState) {
     if (state != 0x0 && state != 0x1) {
         return FALSE;
     }
-    if (!fn_8018EB8C()) {
+    if (!dDemo::request9()) {
         return FALSE;
     }
     dPlayerMgr_c::getCurrentPlayer()->setFlag0(2);
@@ -2560,7 +2558,7 @@ BOOL fn_80100C84(BOOL a) {
     if (state != 0x0 && state != 0x1) {
         return FALSE;
     }
-    if (!fn_8018ECA0()) {
+    if (!dDemo::request10()) {
         return FALSE;
     }
     if (!a) {
@@ -2584,7 +2582,7 @@ BOOL fn_80100D44() {
     if (player->_2270 & 1) {
         return TRUE;
     }
-    return fn_8018F438(9) != 0;
+    return dDemo::isType(dDemo::TYPE_9) != 0;
 }
 
 // 80100DD0

@@ -453,7 +453,7 @@ void dHmnToolBank_c::change() {
     }
     resetHeap();
     nw4r::g3d::ResFile file(getResFile(FALSE));
-    if (file.IsValid() && file.fn_8023487C()) {
+    if (file.IsValid() && file.HasResMdl()) {
         mItem = l_toolMng.getData(mType)->mItemId;
         type = getToolType();
         nw4r::g3d::ResMdl mdl = file.GetResMdl(0);
@@ -474,7 +474,7 @@ void dHmnToolBank_c::change() {
             bodyAnm = TRUE;
         }
         if (type != HMN_TOOL_WINDMILL && type != HMN_TOOL_BALLOON && type != HMN_TOOL_SCOOP &&
-            (bodyAnm || file.fn_802348C8()))
+            (bodyAnm || file.HasResAnmChr()))
         {
             if (!bodyAnm) {
                 anm = file.GetResAnmChr(0);
@@ -573,7 +573,7 @@ void dHmnToolBank_c::setupAnm(int type, nw4r::g3d::ResFile *file, nw4r::g3d::Res
 // 800BB2E4
 void dHmnToolBank_c::setupAxe(nw4r::g3d::ResFile *file, nw4r::g3d::ResMdl *mdl) {
     if (mItem.getKind() == dItem::KIND_AXE) {
-        if (file->fn_80234914()) {
+        if (file->HasResAnmVis()) {
             nw4r::g3d::ResAnmVis vis = file->GetResAnmVis(0);
             if (vis.IsValid()) {
                 mVis.create(*mdl, vis, &mAllocator, NULL);
@@ -732,10 +732,10 @@ void dHmnToolBank_c::setAnm(const char *name, m3d::playMode_e mode, f32 blend) {
         return;
     }
     nw4r::g3d::ResFile file(getResFile(TRUE));
-    if (!file.IsValid() || !file.fn_8023487C()) {
+    if (!file.IsValid() || !file.HasResMdl()) {
         return;
     }
-    if (!file.fn_802348C8()) {
+    if (!file.HasResAnmChr()) {
         return;
     }
     nw4r::g3d::ResAnmChr anm = file.GetResAnmChr(name);
@@ -1131,7 +1131,7 @@ void dHmnToolBank_c::setDigAnm(const mVec3_c *pos, const mAng3_c *angle, int anm
         return;
     }
     nw4r::g3d::ResFile file(getResFile(TRUE));
-    if (!file.IsValid() || !file.fn_8023487C()) {
+    if (!file.IsValid() || !file.HasResMdl()) {
         return;
     }
     const char *name = sAnmNames[anm];
@@ -1191,7 +1191,7 @@ BOOL dHmnToolBank_c::hasResMdl() {
     nw4r::g3d::ResFile file(getResFile(FALSE));
     BOOL ret = FALSE;
     BOOL valid = FALSE;
-    if (file.IsValid() && file.fn_8023487C()) {
+    if (file.IsValid() && file.HasResMdl()) {
         valid = TRUE;
     }
     if (valid) {
@@ -1240,7 +1240,7 @@ void dHmnToolBank_c::removeModels() {
                 mDigMdl0.getResMdl().ReleaseTexByName("tex_grass");
                 mDigMdl0.getResMdl().ReleaseTexByName("tex_soil");
                 nw4r::g3d::ResFile file(getResFile(TRUE));
-                if (file.IsValid() && file.fn_8023487C()) {
+                if (file.IsValid() && file.HasResMdl()) {
                     file.Release();
                     file.Bind();
                 }

@@ -1505,15 +1505,14 @@ int dAcNpcNml_c::talk_c::msgFreeSnpc(msgInfo_s *info) {
     u16 code = 0;
     const freeSnpc_s *npc = l_townNpcs;
     for (u32 i = 0; i < 6; i++, npc++) {
-        bool here = fn_801AD174(dItem::Item(npc->mNpc));
+        bool here = dNpcMng_c::isEventNpcHere(dItem::Item(npc->mNpc));
         if (here) {
             code = npc->mCode;
             break;
         }
     }
     if (code == 0) {
-        dItem::Item any;
-        bool here = fn_801AD228(any);
+        bool here = dNpcMng_c::isHolidayNpcHere(dItem::Item()); // any holiday npc
         if (here) {
             code = 12;
         }
@@ -1521,7 +1520,7 @@ int dAcNpcNml_c::talk_c::msgFreeSnpc(msgInfo_s *info) {
     if (code == 0) {
         npc = l_visitorNpcs;
         for (u32 i = 0; i < 10; i++, npc++) {
-            bool here = fn_801AD304(dItem::Item(npc->mNpc));
+            bool here = dNpcMng_c::isVisitorNpcHere(dItem::Item(npc->mNpc));
             if (here) {
                 code = npc->mCode;
                 break;

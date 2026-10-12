@@ -29,11 +29,55 @@ block_relocations:
 # 804F8348: d_sc_data_rm_theater_show's scene3 kind 0x0B record starts with the colour 806840FF, which looks like an
 # address inside d_snd's l_soundSystemWorkMem bss. Not a pointer.
 - source: 0x804F8348
-# 8047DD54 / 8047DD70: words in an unsplit .rodata table (8047DB98..) whose field always holds 80XX0000
-# (80250000, 80060000, 801E0000, 804C0000, ...); 804A0000 and 804D0000 just happen to be data addresses
-# (804A0000 is d_a_npc's recept_c request table). Not pointers.
+# 8047DCCC / 8047DD90 / 8047E04C + 0x1C * n + 0x18: d_npc_mng's spawn tables (dNpcMng_c::Spawn_c); the npc
+# item id (u16 80XX) and its padding read as 80XX0000, inside .text or data. Not pointers.
+- source: 0x8047DCE4
+- source: 0x8047DD00
+- source: 0x8047DD1C
+- source: 0x8047DD38
 - source: 0x8047DD54
 - source: 0x8047DD70
+- source: 0x8047DD8C
+- source: 0x8047DDA8
+- source: 0x8047DDC4
+- source: 0x8047DDE0
+- source: 0x8047DDFC
+- source: 0x8047DE18
+- source: 0x8047DE34
+- source: 0x8047DE50
+- source: 0x8047DE6C
+- source: 0x8047DE88
+- source: 0x8047DEA4
+- source: 0x8047DEC0
+- source: 0x8047DEDC
+- source: 0x8047DEF8
+- source: 0x8047DF14
+- source: 0x8047DF30
+- source: 0x8047DF4C
+- source: 0x8047DF68
+- source: 0x8047DF84
+- source: 0x8047DFA0
+- source: 0x8047DFBC
+- source: 0x8047DFD8
+- source: 0x8047DFF4
+- source: 0x8047E010
+- source: 0x8047E02C
+- source: 0x8047E048
+- source: 0x8047E064
+- source: 0x8047E080
+- source: 0x8047E09C
+- source: 0x8047E0B8
+- source: 0x8047E0D4
+- source: 0x8047E0F0
+- source: 0x8047E10C
+- source: 0x8047E128
+- source: 0x8047E144
+- source: 0x8047E160
+- source: 0x8047E17C
+- source: 0x8047E198
+- source: 0x8047E1B4
+- source: 0x8047E1D0
+- source: 0x8047E1EC
 # 80514A80: a word inside lbl_80509320 (binary data) that looks like 8046E62A, inside d_event's
 # sJpAutumnMoonDates. Not a pointer.
 - source: 0x80514A80

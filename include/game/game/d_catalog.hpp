@@ -22,7 +22,7 @@ public:
     BOOL registerItem(u16 item, BOOL force);                     // 8013A044; unless force, skips BITM kinds 7 and 8
     u32 countRegistered(int kind);                               // 8013A10C; kind 5 also counts kind 6
     u32 countAll(int kind);                                      // 8013A1B4
-    BOOL isComplete(int kind);                                   // 8013A25C
+    bool isComplete(int kind);                                   // 8013A25C
 
     u16 getBit(u16 idx) { return (mBits[(idx >> 3) & 0x1FF] >> (idx & 7)) & 1; }
     void setBit(u16 idx) { mBits[(idx >> 3) & 0x1FF] |= 1 << (idx & 7); }

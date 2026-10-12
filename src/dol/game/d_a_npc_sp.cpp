@@ -293,8 +293,8 @@ int dAcNpcSp_c::doDelete() {
 }
 
 // 800623A8
-void dAcNpcSp_c::demoHook50(int cmd, u8 member) {
-    dAcNpc_c::demoHook50(cmd, member);
+void dAcNpcSp_c::onDemoCmd(int cmd, u8 member) {
+    dAcNpc_c::onDemoCmd(cmd, member);
 }
 
 // 800623AC

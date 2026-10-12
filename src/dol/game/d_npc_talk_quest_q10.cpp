@@ -168,10 +168,10 @@ void dAcNpcNml_c::talk_c::resHideSetup() {
     int state;
     mVec3_c pos;
     fn_800FE688(&state, &pos, &angle);
-    fn_801A8134(&pos, -1, 6);
+    dNpcMng_c::getTownHallPos(&pos, -1, 6);
     getSceneChange()->setReturnExit(0, &pos, state, 0);
     getSceneChange()->requestExit(0, 2, 2);
-    fn_801A6748(0);
+    dNpcMng_c::setHideAndSeekState(0);
     fgMngProc_blockDayChange();
     dBgm::l_mgr.mStgField.set3A();
 }
@@ -280,12 +280,12 @@ void dAcNpcNml_c::talk_c::resHideStart() {
     fn_800FC604();
     getSceneChange()->setReturnExitHere(0.0f);
     getSceneChange()->requestExit(0, 2, 2);
-    fn_801A6748(1);
+    dNpcMng_c::setHideAndSeekState(1);
     fgMngProc_unblockDayChange();
     dQuestPlayerAnimal_c *game = &dSaveData_c::getTown()->mAnimals.mTown.mHideAndSeek;
     game->mBase.mState = 1;
     game->mBase.setTimeLimit(*dTime_c::getCurrent());
-    fn_801AD168();
+    dNpcMng_c::setShowTelop();
     dBgm::l_mgr.mStgField.set3A();
 }
 
@@ -381,10 +381,10 @@ void dAcNpcNml_c::talk_c::resHideEnd() {
     int state;
     mVec3_c pos;
     fn_800FE688(&state, &pos, &angle);
-    fn_801A8134(&pos, -1, 6);
+    dNpcMng_c::getTownHallPos(&pos, -1, 6);
     getSceneChange()->setReturnExit(0, &pos, state, 0);
     getSceneChange()->requestExit(0, 2, 2);
-    fn_801A6748(2);
+    dNpcMng_c::setHideAndSeekState(2);
     fgMngProc_blockDayChange();
     dBgm::l_mgr.mStgField.set3A();
 }

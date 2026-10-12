@@ -11,7 +11,7 @@
 class dBalloonString_c : public m3d::proc_c {
 public:
     virtual ~dBalloonString_c();                         // 80066018
-    virtual void entry();                                // 80067C0C
+    virtual bool entry();                                // 80067C0C: scnLeaf_c::entry once set up, else false
     virtual void drawXlu();                              // 80067C24
     virtual const mMtx_c *calc(const mMtx_c *mtx);       // 80067BA0: the hand matrix to use
     virtual const mMtx_c *calcInit(const mMtx_c *mtx);   // 80066358

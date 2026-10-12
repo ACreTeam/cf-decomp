@@ -1,5 +1,5 @@
-// The New Year's Eve countdown process (dCd_c). .text 8018D778..8018DAC8; its data (.rodata 8047BEF8 scene
-// table, .data 804F9880 vtable, .sdata 8074BF00 profile/RTTI) is not split yet. See include/game/game/d_cd.hpp.
+// The New Year's Eve countdown process (dCd_c). .text 8018D778..8018DAC8, .rodata 8047BEF8 (scene table),
+// .data 804F9880 (vtable), .sdata 8074BF00 (profile / RTTI). See include/game/game/d_cd.hpp.
 #include <game/game/d_cd.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_date.hpp>

@@ -20,20 +20,16 @@
 #include <game/game/d_activity_log.hpp>
 #include <game/game/d_scene_base.hpp>
 #include <game/game/d_dylink.hpp>
+#include <game/game/d_npc_mng.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 BOOL fn_800CCDA4(void *data, int num);
-void fn_801A6584();
-void fn_801A670C();
 void fn_80186708();
 void fn_80186260();
 void *fn_80100234(int player, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle);
 void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
 }
-
-// The scene wipe (other TUs' data).
-extern u8 lbl_8074EACD;
 
 // 80479BB0: the house attribute per player house
 static const u32 sHomeScenes[] = {
@@ -477,7 +473,7 @@ BOOL createScene(fBase_c *parent) {
     dWorld::setCurve(isOutdoorScene(sCurScene));
     dFgMngProc_c::create();
     dActivityLog::create();
-    fn_801A6584();
+    dNpcMng_c::createStageHeap();
 
     int i;
     dSceneData_c *data = getSceneData(SCENE_NUM);
@@ -494,7 +490,7 @@ BOOL createScene(fBase_c *parent) {
     fn_80186708();
     fn_80186260();
     if (getCurrentScene() != SCENE_FIELD && getCurrentScene() != SCENE_RM_OFFICE) {
-        lbl_8074EACD = 0;
+        dNpcMng_c::_8074EACD = 0;
     }
     return ok;
 }
@@ -507,7 +503,7 @@ void destroyScene() {
     dWorld::clearCurve();
     dFgMngProc_c::destroy();
     dActivityLog::destroy();
-    fn_801A670C();
+    dNpcMng_c::destroyStageHeap();
     getSceneChange()->setChanging(FALSE);
 }
 

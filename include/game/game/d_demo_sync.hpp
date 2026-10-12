@@ -15,8 +15,8 @@ enum dDemoSyncCmd_e {
     DEMO_SYNC_ACCEPT,  // answer: accepted
     DEMO_SYNC_REJECT,  // answer: rejected
     DEMO_SYNC_RELEASE, // guest -> host: free the slot
-    DEMO_SYNC_START,   // -> scene owner: run the demo actor's start check (argument: which check)
-    DEMO_SYNC_COMMAND, // -> scene owner: pass a command to the demo actor (dDemoActor_c::demoHook50)
+    DEMO_SYNC_START,   // -> scene owner: run the demo actor's start check (argument: the dDemoCmd_e talk kind)
+    DEMO_SYNC_COMMAND, // -> scene owner: pass a command (dDemoCmd_e) to the demo actor (dDemoActor_c::onDemoCmd)
     DEMO_SYNC_IDLE,
 };
 
@@ -29,7 +29,7 @@ enum dDemoSyncCheck_e {
 
 #define DEMO_SYNC_MEMBER_NUM 4
 #define DEMO_SYNC_PACKET_SIZE 6
-#define DEMO_SYNC_MEMBER_SELF 4 // demoHook50 member argument: this console
+#define DEMO_SYNC_MEMBER_SELF 4 // onDemoCmd member argument: this console
 
 namespace dDemoSync {
 
@@ -52,7 +52,7 @@ u8 getState();                                      // 80082224: dDemoSyncCmd_e
 BOOL canStart(u8 member, u32 demoId);               // 8008222C: host: the member's slot is free, no slot runs demoId
 void releaseSlot(u8 member);                        // 800822A8
 BOOL isRemote();                                    // 800822C0: online and not the scene owner
-void sendStart(u32 demoId, u8 check);               // 800822FC
+void sendStart(u32 demoId, u8 check);               // 800822FC: check: dDemoCmd_e talk kind
 void sendCommand(u32 demoId, u8 cmd);               // 80082304
 void send(u32 demoId, u8 arg, u8 cmd);              // 8008230C
 void receive(int member, const u8 *data, u32 size); // 8008239C: NET_PACKET_DEMO_SYNC
@@ -60,6 +60,6 @@ u32 readDemoId(const u8 *data);                     // 80082600
 void sendCmd(u8 cmd, int member);                   // 80082624: a 1-byte packet
 void reply(u8 cmd, int member);                     // 8008266C
 void storePending(int member, const u8 *data);      // 800826D4
-void update();                                      // 800826EC: d_demo: forwards / runs the pending commands
+void update();                                      // 800826EC: dDemo_c::execute: forwards / runs the pending commands
 
 } // namespace dDemoSync

@@ -167,30 +167,30 @@ void receive(int member, const u8 *data, u32 size) {
                 storePending(member, data);
             }
         } else if (cmd == DEMO_SYNC_COMMAND) {
-            actor->demoHook50(arg, member);
+            actor->onDemoCmd(arg, member);
         } else {
             int ok = FALSE;
             switch (arg) {
-            case 1:
+            case DEMO_CMD_TALK:
                 ok = actor->canInteract(player);
                 break;
-            case 3:
-                ok = actor->demoHook5C();
+            case DEMO_CMD_SPEECH:
+                ok = actor->canSpeech(player);
                 break;
-            case 2:
-                ok = actor->demoHook60(player);
+            case DEMO_CMD_SPEAK:
+                ok = actor->canSpeak(player);
                 break;
             }
             if (member != dNet::getMyNo()) {
                 if (ok) {
-                    actor->demoHook50(DEMO_SYNC_START, member);
+                    actor->onDemoCmd(DEMO_CMD_START, member);
                     reply(DEMO_SYNC_ACCEPT, member);
                 } else {
                     reply(DEMO_SYNC_REJECT, member);
                 }
             } else {
                 if (ok) {
-                    actor->demoHook50(DEMO_SYNC_START, DEMO_SYNC_MEMBER_SELF);
+                    actor->onDemoCmd(DEMO_CMD_START, DEMO_SYNC_MEMBER_SELF);
                     s_state = DEMO_SYNC_ACCEPT;
                 } else {
                     s_state = DEMO_SYNC_REJECT;

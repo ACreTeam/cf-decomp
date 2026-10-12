@@ -1565,7 +1565,7 @@ u32 dCatalog_c::countAll(int kind) {
 }
 
 // 8013A25C
-BOOL dCatalog_c::isComplete(int kind) {
+bool dCatalog_c::isComplete(int kind) {
     return countAll(kind) == countRegistered(kind);
 }
 

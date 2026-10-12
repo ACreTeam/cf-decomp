@@ -217,7 +217,7 @@ bool Manage_c::SetSoftResetScene() {
 // 80106DF0
 void Manage_c::PostDeleteScene() {
     if (mMode == MODE_SOFT_RESET && mSoftResetPending) {
-        fn_8018E674();
+        dDemo::reset();
         dNand::reset();
         dPrcMng_c::clear();
         dSvMgr_c::cancelRequest();
@@ -229,7 +229,7 @@ void Manage_c::PostDeleteScene() {
         fn_800AB3CC();
         dSTR::busInfo_c *bus = dSTR::getBusInfo();
         bus->mType = 0;
-        fn_801A6564();
+        dNpcMng_c::reset();
         dSaveOption::reset(&dSaveData_c::sOption);
         fn_80101424();
         dBgm::l_mgr.init();

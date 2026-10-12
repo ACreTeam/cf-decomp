@@ -8,6 +8,20 @@ namespace dMsg {
 class Rcpt_c;
 }
 
+// Commands a demo actor receives (onDemoCmd), here and, for net-synced actors, on the scene owner's console
+// (dDemoSync). The talk kinds are also the start check a talk demo asks for (dNetReqPool::Req_c::mCheck,
+// dDemoSync::sendStart); the names follow the GC game's m_demo talk types.
+enum dDemoCmd_e {
+    DEMO_CMD_TALK = 1,   // the player talks to the actor (check: canInteract)
+    DEMO_CMD_SPEAK = 2,  // the actor speaks to the player (check: canSpeak)
+    DEMO_CMD_SPEECH = 3, // check: canSpeech
+    DEMO_CMD_START = 4,  // the start check passed (DEMO_SYNC_START)
+    DEMO_CMD_EXIT = 5,   // the player leaves the scene (dDemo TYPE_EXITSCENE)
+    DEMO_CMD_ENTER = 7,  // the player arrives in the actor's building (dDemo TYPE_ENTER)
+    DEMO_CMD_REPORT = 8, // no actor check
+    DEMO_CMD_END = 9,    // the talk demo ended
+};
+
 // Demo actors use their own ID-bearing nodes, independent of fBase's lists.
 // Node/list names and behavioral method names are inferred from the binary.
 class dDemoActorNode_c : public cLineNd_c {
@@ -35,12 +49,12 @@ public:
 
     // Additional vtable slots, in binary order. Unknown hooks retain slot names;
     // their signatures are provisional where only a zero-return stub is known.
-    virtual bool canInteract(dDemoActor_c *actor);
-    virtual void demoHook50(int cmd, u8 member); // demo sync command (dDemoSync::receive, d_demo); member 4 = this console
+    virtual bool canInteract(dDemoActor_c *actor); // DEMO_CMD_TALK start check (in range and facing: checkInteraction)
+    virtual void onDemoCmd(int cmd, u8 member); // dDemoCmd_e (dDemoSync::receive, d_demo); member 4 = this console
     virtual mVec3_c *getDemoPosition();
     virtual mVec3_c *demoHook58(); // a position of the actor (dAcNpc_c: look/talk target)
-    virtual int demoHook5C();
-    virtual int demoHook60(dDemoActor_c *actor); // dAcNpcNml_c: like canInteract
+    virtual int canSpeech(dDemoActor_c *actor); // DEMO_CMD_SPEECH start check (dDemo TYPE_SPEECH)
+    virtual int canSpeak(dDemoActor_c *actor); // DEMO_CMD_SPEAK start check (dDemo TYPE_SPEAK): no range check
     virtual int demoHook64(mVec3_c *pos); // dAcNpc_c: writes a position of the npc
 
     static void initActorList();
@@ -57,12 +71,12 @@ public:
     void setDemoState1();
     void setDemoState2();
     void clearDemoState();
-    int getDemoState();
+    u8 getDemoState();
     void setDemoFlag8();
     void clearDemoFlag8();
     bool hasDemoFlag8();
-    void setDemoFlag4();
-    bool hasDemoFlag4();
+    void setDemoNetSync(); // flag 4: run by the scene owner's console (dAcNpc_c); dDemo asks it to start demos
+    bool isDemoNetSync();
     bool hasDemoFlags(u32 flags);
     void setDemoFlags(u32 flags);
     void clearDemoFlags(u32 flags);

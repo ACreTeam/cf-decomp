@@ -7,12 +7,12 @@ namespace dNetReqPool {
 // 80081F04
 void Req_c::clear() {
     mState = 0;
-    _0C = 0;
-    _10 = 0;
-    _15 = 0;
-    _16 = 0;
-    _17 = 0;
-    _18 = 0;
+    mSrcID = 0;
+    mTargetID = 0;
+    mType = 0;
+    mStep = 0;
+    mParam = 0;
+    mCheck = 0;
 }
 
 // 80081F28
