@@ -8,7 +8,7 @@
 // object). Source: src/dol/game/d_save_money.cpp (.text 80119444..80119478).
 class dSaveMoney_c { // 0x4
 public:
-    dSaveMoney_c() {}
+    dSaveMoney_c() : mMoney(0) {}
     dSaveMoney_c(int money) { set(money); }
     dSaveMoney_c &operator=(const dSaveMoney_c &other) {
         set(other.get());

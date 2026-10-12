@@ -83,7 +83,7 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     s64 time;
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(time));
     setMemberTime(member, time);
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mBit1) {
+    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     u8 dlNum;
@@ -160,7 +160,7 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     s64 time;
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(time));
     setMemberTime(member, time);
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mBit1) {
+    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     const u8 *dl = data + prefix;
@@ -263,7 +263,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
     }
     cLib::memCpy((u8 *)dSaveData_c::getTown() + offset, data, size);
     if (offset + size >= sizeof(dSaveTown_c)) {
-        if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mBit1) {
+        if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
             dNetMgr_c::connect(member);
         }
         getNetTransfer()->mReady[0] = 1;
@@ -339,7 +339,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
     cLib::memCpy((u8 *)dSaveData_c::getTown() + townOffset, data, townLength);
     transfer->mTownRecv += size;
     if (townOffset + townLength == townSize) {
-        if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mBit1) {
+        if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
             dNetMgr_c::connect(member);
         }
         transfer->mReady[0] = 1;
@@ -363,7 +363,7 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     } else {
         fn_8008B89C(NULL, member);
     }
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mBit1) {
+    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     getNetTransfer()->mReady[member] = 1;
@@ -389,7 +389,7 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     } else {
         fn_8008B89C(NULL, member);
     }
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mBit1) {
+    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     getNetTransfer()->mReady[member] = 1;
@@ -1250,7 +1250,7 @@ void recvNpcEventCount2(int member, const u8 *data, u32 size, u32 arg,
 void recvFishingRecord(int member, const u8 *data, u32 size, u32 arg,
                        u8 scene) {
     dSaveTown_c *town = dSaveData_c::getTown();
-    memcpy(town->_0632F0, data, sizeof(town->_0632F0));
+    memcpy(&town->mFishing, data, sizeof(town->mFishing));
 }
 
 // 800E03A4: NET_PACKET_BUG_OFF (0x44)
@@ -2020,7 +2020,7 @@ BOOL isNetBlockPayloadValid(int id, const u8 *data, u32 size) {
         minimum = sizeof(dNotice_c);
         break;
     case NET_PACKET_FISHING_RECORD:
-        minimum = sizeof(((dSaveTown_c *)0)->_0632F0);
+        minimum = sizeof(((dSaveTown_c *)0)->mFishing);
         break;
     case NET_PACKET_BUG_OFF:
         minimum = sizeof(((dSaveTown_c *)0)->mBugOff);

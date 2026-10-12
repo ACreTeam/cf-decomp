@@ -24,7 +24,7 @@ public:
     /* 0x0 */ dSaveJinx_c mJinx;          // the jinx being attempted
     /* 0x4 */ int mCount;                 // JINX_COND_CUT_TREE..PLANT_FLOWERS: count so far
     /* 0x8 */ u8 mDone;                   // the jinx condition is fulfilled
-    /* 0xA */ u16 mTownBits;              // backup of the town's jinx results +0xC while travelling
+    /* 0xA */ u16 mTownBits;              // backup of the town's dSvActivity_c::mToday.mOutcomes while travelling
 }; // size 0xC
 
 void create();                            // 800C7704 (dScene create)

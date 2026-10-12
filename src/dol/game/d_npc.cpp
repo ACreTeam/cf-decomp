@@ -3224,26 +3224,26 @@ int fn_800F4668(dItem::Item *out, int num, const void *filter, const dItem::Item
 // 800F46CC
 void fn_800F46CC(const dAnmPersonalID_c *animal, int slot) {
     if (animal->isValid()) {
-        fn_800CBC70(slot, animal);
+        dLetter::setAnmPersonalName(slot, animal);
     }
 }
 
 // 800F4718
 void fn_800F4718(const dPersonalID_c *pid, int slot) {
     if (pid->isValid()) {
-        fn_800CBBB0(slot, pid);
+        dLetter::setPersonalName(slot, pid);
     }
 }
 
 // 800F4764
 void fn_800F4764(const dAnmPersonalID_c *animal, int slot) {
-    fn_800CBC10(slot, &animal->mLand);
+    dLetter::setLandName(slot, &animal->mLand);
 }
 
 // 800F4774
 void fn_800F4774(const dItem::Item *item, int slot) {
     if (item->mId != dItem::ITEM_ID_NONE) {
-        fn_800CBDA0(slot, item);
+        dLetter::setItemName(slot, item);
     }
 }
 
@@ -3251,7 +3251,7 @@ void fn_800F4774(const dItem::Item *item, int slot) {
 void fn_800F4794(u8 gender, u8 looks, int slot) {
     u16 msg = fn_800F3F38(gender, looks);
     if (msg != 0) {
-        fn_800CBD30(slot, msg, "sys_STRING/STR_Unit");
+        dLetter::setStringWord(slot, msg, "sys_STRING/STR_Unit");
     }
 }
 

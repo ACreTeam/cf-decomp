@@ -250,10 +250,10 @@ void dMail_c::setup(const dAnmPersonalID_c *sender, const dPersonalID_c *to, con
     mTo.setPlayer(to);
     mFrom.setAnimal(sender);
     setStatus(MAIL_STATUS_UNREAD);
-    fn_800CC0C8(to);
-    fn_800CC1AC(sender);
-    fn_800CBC70(0, sender);
-    fn_800CBC10(8, &sender->mLand);
+    dLetter::setTo(to);
+    dLetter::setFrom(sender);
+    dLetter::setAnmPersonalName(0, sender);
+    dLetter::setLandName(8, &sender->mLand);
 }
 
 // 80117AE8
@@ -289,32 +289,34 @@ void dMail_c::setTextFromLabel(const u16 *kind, const char *label) {
     sHeaderWord.clear();
     sBodyWord.clear();
     sFooterWord.clear();
-    fn_800CB638(&sHeaderWord, &sBodyWord, &sFooterWord, *kind, label);
-    memcpy(mHeader, static_cast<dScript::Word_c &>(sHeaderWord).getBuffer(), sizeof(mHeader));
-    memcpy(mBody, static_cast<dScript::Word_c &>(sBodyWord).getBuffer(), sizeof(mBody));
-    memcpy(mFooter, static_cast<dScript::Word_c &>(sFooterWord).getBuffer(), sizeof(mFooter));
+    dLetter::loadText(&sHeaderWord, &sBodyWord, &sFooterWord, *kind, label);
+    memcpy(mHeader, sHeaderWord.getText(), sizeof(mHeader));
+    memcpy(mBody, sBodyWord.getText(), sizeof(mBody));
+    memcpy(mFooter, sFooterWord.getText(), sizeof(mFooter));
 }
 
 // 80117D94
-void dMail_c::setTextFromParts(const u16 *a, const u16 *b, const u16 *c, int d, int e, int f) {
+void dMail_c::setTextFromParts(const u16 *header, const u16 *body, const u16 *footer, const char *headerLabel,
+                               const char *bodyLabel, const char *footerLabel) {
     sHeaderWord.clear();
     sBodyWord.clear();
     sFooterWord.clear();
-    fn_800CB66C(&sHeaderWord, &sBodyWord, &sFooterWord, *a, *b, *c, d, e, f);
-    memcpy(mHeader, static_cast<dScript::Word_c &>(sHeaderWord).getBuffer(), sizeof(mHeader));
-    memcpy(mBody, static_cast<dScript::Word_c &>(sBodyWord).getBuffer(), sizeof(mBody));
-    memcpy(mFooter, static_cast<dScript::Word_c &>(sFooterWord).getBuffer(), sizeof(mFooter));
+    dLetter::loadTextParts(&sHeaderWord, &sBodyWord, &sFooterWord, *header, *body, *footer, headerLabel, bodyLabel, footerLabel);
+    memcpy(mHeader, sHeaderWord.getText(), sizeof(mHeader));
+    memcpy(mBody, sBodyWord.getText(), sizeof(mBody));
+    memcpy(mFooter, sFooterWord.getText(), sizeof(mFooter));
 }
 
 // 80117E90
-void dMail_c::setTextFromParts(u16 a, u16 b, u16 c, u16 d, u16 e, int f, int g) {
+void dMail_c::setTextFromParts(u16 header, u16 bodyA, u16 bodyB, u16 bodyC, u16 footer, const char *bodyLabel,
+                               const char *label) {
     sHeaderWord.clear();
     sBodyWord.clear();
     sFooterWord.clear();
-    fn_800CB760(&sHeaderWord, &sBodyWord, &sFooterWord, a, b, c, d, e, f, g);
-    memcpy(mHeader, static_cast<dScript::Word_c &>(sHeaderWord).getBuffer(), sizeof(mHeader));
-    memcpy(mBody, static_cast<dScript::Word_c &>(sBodyWord).getBuffer(), sizeof(mBody));
-    memcpy(mFooter, static_cast<dScript::Word_c &>(sFooterWord).getBuffer(), sizeof(mFooter));
+    dLetter::loadText2(&sHeaderWord, &sBodyWord, &sFooterWord, header, bodyA, bodyB, bodyC, footer, bodyLabel, label);
+    memcpy(mHeader, sHeaderWord.getText(), sizeof(mHeader));
+    memcpy(mBody, sBodyWord.getText(), sizeof(mBody));
+    memcpy(mFooter, sFooterWord.getText(), sizeof(mFooter));
 }
 
 // 80117F94
@@ -370,15 +372,15 @@ BOOL dMail_c::setFromBMG(const void *bmg) {
         return FALSE;
     }
 
-    memcpy(mHeader, static_cast<dScript::Word_c &>(sHeaderWord).getBuffer(), sizeof(mHeader));
-    memcpy(mBody, static_cast<dScript::Word_c &>(sBodyWord).getBuffer(), sizeof(mBody));
-    memcpy(mFooter, static_cast<dScript::Word_c &>(sFooterWord).getBuffer(), sizeof(mFooter));
+    memcpy(mHeader, sHeaderWord.getText(), sizeof(mHeader));
+    memcpy(mBody, sBodyWord.getText(), sizeof(mBody));
+    memcpy(mFooter, sFooterWord.getText(), sizeof(mFooter));
     mNamePos = 0;
     findNamePos(mHeader, &mNamePos);
 
     sFooterWord.clear();
     sFooterWord.set(res.getMessage(4), 0);
-    mFrom.setText(static_cast<dScript::Word_c &>(sFooterWord).getBuffer());
+    mFrom.setText(sFooterWord.getText());
 
     dItem::Item paper = makeItemFromBaseId(parseIndex(res.getMessage(5)));
     setPaper(&paper);
@@ -408,18 +410,20 @@ void dMail_c::setupFromAnimal(const u16 *kind, const char *label, const dAnmPers
 }
 
 // 80118488
-void dMail_c::setupFromAnimal(const u16 *a, const u16 *b, const u16 *c, int d, int e, int f,
+void dMail_c::setupFromAnimal(const u16 *header, const u16 *body, const u16 *footer, const char *headerLabel,
+                              const char *bodyLabel, const char *footerLabel,
                           const dAnmPersonalID_c *sender, const dPersonalID_c *to, const dItem::Item *paper) {
     setup(sender, to, paper);
-    setTextFromParts(a, b, c, d, e, f);
+    setTextFromParts(header, body, footer, headerLabel, bodyLabel, footerLabel);
     prepareHeader();
 }
 
 // 80118508
-void dMail_c::setupFromAnimal(const u16 *a, const u16 *b, const u16 *c, const u16 *d, const u16 *e, int f, int g,
+void dMail_c::setupFromAnimal(const u16 *header, const u16 *bodyA, const u16 *bodyB, const u16 *bodyC,
+                              const u16 *footer, const char *bodyLabel, const char *label,
                           const dAnmPersonalID_c *sender, const dPersonalID_c *to, const dItem::Item *paper) {
     setup(sender, to, paper);
-    setTextFromParts(*a, *b, *c, *d, *e, f, g);
+    setTextFromParts(*header, *bodyA, *bodyB, *bodyC, *footer, bodyLabel, label);
     prepareHeader();
 }
 
@@ -432,7 +436,7 @@ void dMail_c::setupSystem(const u16 *kind, const char *label, const u8 *senderKi
     mTo.setPlayer(to);
     mFrom.hideName();
     setStatus(MAIL_STATUS_UNREAD);
-    fn_800CC0C8(to);
+    dLetter::setTo(to);
     setTextFromLabel(kind, label);
     prepareHeader();
 }
@@ -550,7 +554,7 @@ void dMailAddress_c::getName(wchar_t *out, BOOL skipNoName) {
     dHmnName::Word_c name;
     memset(out, 0, (PLAYER_NAME_LEN + 1) * sizeof(wchar_t));
     setWord(&name, skipNoName);
-    memcpy(out, static_cast<dScript::Word_c &>(name).getBuffer(), (PLAYER_NAME_LEN + 1) * sizeof(wchar_t));
+    memcpy(out, name.getText(), (PLAYER_NAME_LEN + 1) * sizeof(wchar_t));
 }
 
 // 80118B70
@@ -647,18 +651,18 @@ void dLetterStyle_c::init() {
 
     sMenuWord.clear();
     dString::loadString(&sMenuWord, 0x7A, "sys_2D/SYS_2D_menu");
-    memcpy(mHeader, static_cast<dScript::Word_c &>(sMenuWord).getBuffer(), sizeof(mHeader));
+    memcpy(mHeader, sMenuWord.getText(), sizeof(mHeader));
     dMail_c::findNamePos(mHeader, &mNamePos);
 
     sMenuWord.clear();
     dString::loadString(&sMenuWord, 0x7B, "sys_2D/SYS_2D_menu");
-    memcpy(mFutureHeader, static_cast<dScript::Word_c &>(sMenuWord).getBuffer(), sizeof(mFutureHeader));
+    memcpy(mFutureHeader, sMenuWord.getText(), sizeof(mFutureHeader));
     dMail_c::findNamePos(mFutureHeader, &mFutureNamePos);
 
     dString::setPlayerWord(0, &player->mPID);
     sMenuWord.clear();
     dString::loadString(&sMenuWord, 0x7C, "sys_2D/SYS_2D_menu");
-    memcpy(mFooter, static_cast<dScript::Word_c &>(sMenuWord).getBuffer(), sizeof(mFooter));
+    memcpy(mFooter, sMenuWord.getText(), sizeof(mFooter));
 }
 
 // 80119098

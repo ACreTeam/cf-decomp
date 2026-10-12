@@ -10,7 +10,8 @@ namespace dSvDailyRand {
 #define DAILY_RAND_NUM 4 // values 0..3; DAILY_RAND_NUM: none yet
 
 struct Rand_c {
-    Rand_c() : mValue(DAILY_RAND_NUM) {}
+    Rand_c() {}
+    Rand_c(u8 value) : mValue(value) {}
 
     void init();   // 80153818: a random value (d_sv_proc)
     void reset();  // 8015384C: none, then change (d_field_assessment)

@@ -513,15 +513,15 @@ BOOL dSvAucItem_c::sendResult(u32 player, u16 kind, int money, const dItem::Item
         if (data->mPID.isValid()) {
             if (money > 0 || dItem::isRealItemId(present->mId)) {
                 sMail.clear();
-                fn_800CBC10(0, &mSeller.land);
-                fn_800CBBB0(1, &mSeller);
+                dLetter::setLandName(0, &mSeller.land);
+                dLetter::setPersonalName(1, &mSeller);
                 if (dItem::isRealItemId(mItem.mId)) {
-                    fn_800CBDA0(2, &mItem);
+                    dLetter::setItemName(2, &mItem);
                 }
-                fn_800CBC10(3, &mHighBidder.land);
-                fn_800CBBB0(4, &mHighBidder);
-                fn_800CBE0C(0, mHighBid, 5, 9);
-                fn_800CBE0C(1, mBids[player & 3], 5, 9);
+                dLetter::setLandName(3, &mHighBidder.land);
+                dLetter::setPersonalName(4, &mHighBidder);
+                dLetter::setNumber(0, mHighBid, 5, dScript::NUM_FORMAT_REGION);
+                dLetter::setNumber(1, mBids[player & 3], 5, dScript::NUM_FORMAT_REGION);
                 u16 label = kind;
                 sMail.setupSystem(&label, "MAIL_ETC_Auction", &l_senderKind, &data->mPID, &l_paper);
                 if (dItem::isRealItemId(present->mId)) {

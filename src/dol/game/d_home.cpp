@@ -1,5 +1,6 @@
 // Player houses: rooms, the house itself and the four houses in the save data.
 // .text 8013CB30..8013E618. Notes: notes/d_home.txt.
+#include <game/game/d_field.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_catalog.hpp>
@@ -10,11 +11,6 @@
 #include <game/game/d_scene.hpp>
 #include <cstring>
 
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-void fn_801911AC();
-void fn_801911E8(int home);
-}
 
 // 80476258: house scene attribute per house (getSceneAttrTableIndex)
 static const u32 sHomeScenes[] = {

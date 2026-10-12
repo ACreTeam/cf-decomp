@@ -128,9 +128,11 @@ public:
     void setup(const dAnmPersonalID_c *sender, const dPersonalID_c *to, const dItem::Item *paper); // 80117A38
     static BOOL findNamePos(wchar_t *header, u8 *pos); // 80117AE8: removes the first newline, stores its index
     void prepareHeader();                               // 80117C5C
-    void setTextFromLabel(const u16 *kind, const char *label); // 80117CA8: dLetter text (fn_800CB638)
-    void setTextFromParts(const u16 *a, const u16 *b, const u16 *c, int d, int e, int f); // 80117D94: fn_800CB66C
-    void setTextFromParts(u16 a, u16 b, u16 c, u16 d, u16 e, int f, int g);              // 80117E90: fn_800CB760
+    void setTextFromLabel(const u16 *kind, const char *label); // 80117CA8: dLetter text (dLetter::loadText)
+    void setTextFromParts(const u16 *header, const u16 *body, const u16 *footer, const char *headerLabel,
+                          const char *bodyLabel, const char *footerLabel); // 80117D94: dLetter::loadTextParts
+    void setTextFromParts(u16 header, u16 bodyA, u16 bodyB, u16 bodyC, u16 footer, const char *bodyLabel,
+                          const char *label); // 80117E90: dLetter::loadText2
     void setPaper(const dItem::Item *paper);            // 80117F94
     void setupFromPlayer(const dItem::Item *paper);     // 80117FD4: from the current player, with their letter style
     BOOL setFromBMG(const void *bmg);                   // 8011804C: header/body/footer/sender/paper/present
@@ -138,9 +140,11 @@ public:
                          const dPersonalID_c *to, const dItem::Item *paper); // 801183B8
     void setupFromAnimal(const u16 *kind, const char *label, const dAnmPersonalID_c *sender,
                          const dPersonalID_c *to, const int *paperIdx); // 80118420
-    void setupFromAnimal(const u16 *a, const u16 *b, const u16 *c, int d, int e, int f,
+    void setupFromAnimal(const u16 *header, const u16 *body, const u16 *footer, const char *headerLabel,
+                         const char *bodyLabel, const char *footerLabel,
                          const dAnmPersonalID_c *sender, const dPersonalID_c *to, const dItem::Item *paper); // 80118488
-    void setupFromAnimal(const u16 *a, const u16 *b, const u16 *c, const u16 *d, const u16 *e, int f, int g,
+    void setupFromAnimal(const u16 *header, const u16 *bodyA, const u16 *bodyB, const u16 *bodyC, const u16 *footer,
+                         const char *bodyLabel, const char *label,
                          const dAnmPersonalID_c *sender, const dPersonalID_c *to, const dItem::Item *paper); // 80118508
     void setupSystem(const u16 *kind, const char *label, const u8 *senderKind, const dPersonalID_c *to,
                      const dItem::Item *paper); // 80118590

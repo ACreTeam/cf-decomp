@@ -1391,17 +1391,17 @@ static inline void setupMail(const u16 &kind, const u8 &sender, const dPersonalI
 
 // 800B04F8
 BOOL dHR::sendRatingLetter(const dHR::area_c *area, int kind, int points, u32 series, u32 category, BOOL hold) {
-    fn_800CBF34(0, points, 7, 9);
+    dLetter::formatNumber(0, points, 7, dScript::NUM_FORMAT_REGION);
     dItem::nameSeries_c name;
     if (!dHR::isExtraSeries(series)) {
         setFurnitureName(&name, series);
     }
     if (kind == HR_MAIL_MODEL_ROOM_THEME) {
-        fn_800CBD30(0, getModelRoomTheme() + HR_THEME_UNIT_MSG, "sys_STRING/STR_Unit");
+        dLetter::setStringWord(0, getModelRoomTheme() + HR_THEME_UNIT_MSG, "sys_STRING/STR_Unit");
     } else {
-        fn_800CBCD4(0, &name);
+        dLetter::setWord(0, &name);
     }
-    fn_800CBCD4(1, &name);
+    dLetter::setWord(1, &name);
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL && player->mPID.isValid()) {
         l_mail.clear();
@@ -1449,7 +1449,7 @@ BOOL dHR::sendModelPresent(const dHR::area_c *area, int points) {
             }
         }
         if (kind != -1) {
-            fn_800CBF34(0, points, 7, 9);
+            dLetter::formatNumber(0, points, 7, dScript::NUM_FORMAT_REGION);
             l_mail.clear();
             setupMail(kind, 2, &player->mPID, 0x15B);
             l_mail.setPresent(present, 0xFF);

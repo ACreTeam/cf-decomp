@@ -95,13 +95,13 @@ static inline void setLetterWords(dBugOff_c *bugOff) {
     dTimeStamp_c stamp(bugOff->mStart.getTicks());
     stamp.toDayStart();
     dTime_c date = stamp.get();
-    fn_800CBF34(0, date.year, 4, 0);
-    fn_800CBF34(3, bugOff->getScore(0), 4, 9);
+    dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
+    dLetter::formatNumber(3, bugOff->getScore(0), 4, dScript::NUM_FORMAT_REGION);
     dItem::Item item = bugOff->getItem(0);
-    fn_800CBDA0(0, &item);
-    fn_800CBAF0(1, date.month);
-    fn_800CBB50(2, date.mday);
-    fn_800CBC10(3, getLandID());
+    dLetter::setItemName(0, &item);
+    dLetter::setMonthName(1, date.month);
+    dLetter::setDayName(2, date.mday);
+    dLetter::setLandName(3, getLandID());
 }
 
 // 80113270. &getItem(0) takes the address of the returned temporary, as the target does.
@@ -117,12 +117,12 @@ void dBugOff_c::sendResultLetters() {
             dTimeStamp_c stamp(mStart.getTicks());
             stamp.toDayStart();
             dTime_c date = stamp.get();
-            fn_800CBF34(0, date.year, 4, 0);
-            fn_800CBF34(3, getScore(0), 4, 9);
-            fn_800CBDA0(0, &getItem(0));
-            fn_800CBAF0(1, date.month);
-            fn_800CBB50(2, date.mday);
-            fn_800CBC10(3, getLandID());
+            dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
+            dLetter::formatNumber(3, getScore(0), 4, dScript::NUM_FORMAT_REGION);
+            dLetter::setItemName(0, &getItem(0));
+            dLetter::setMonthName(1, date.month);
+            dLetter::setDayName(2, date.mday);
+            dLetter::setLandName(3, getLandID());
             if (getTownPlayer(i)->mPID.isValid() && getTownPlayer(i)->isFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED)) {
                 if (mPlayer[0].isValid() && mPlayer[0] == getTownPlayer(i)->mPID) {
                     dPrivateData_c *player = getTownPlayer(i);
@@ -135,7 +135,7 @@ void dBugOff_c::sendResultLetters() {
                         getTownPlayer(i)->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
                     } else {
                         getTownPlayer(i)->mFutureSelfLetter.copy(&sMail);
-                        getTownPlayer(i)->setFlag0(PRIVATE_FLAG0_BUG_OFF_LETTER_HELD);
+                        getTownPlayer(i)->setFlag0(PRIVATE_FLAG0_EVENT_LETTER_HELD);
                     }
                     sentWinner = TRUE;
                 } else {
@@ -145,7 +145,7 @@ void dBugOff_c::sendResultLetters() {
                         getTownPlayer(i)->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
                     } else {
                         getTownPlayer(i)->mFutureSelfLetter.copy(&sMail);
-                        getTownPlayer(i)->setFlag0(PRIVATE_FLAG0_BUG_OFF_LETTER_HELD);
+                        getTownPlayer(i)->setFlag0(PRIVATE_FLAG0_EVENT_LETTER_HELD);
                     }
                 }
             }
@@ -155,12 +155,12 @@ void dBugOff_c::sendResultLetters() {
             dTimeStamp_c stamp(mStart.getTicks());
             stamp.toDayStart();
             dTime_c date = stamp.get();
-            fn_800CBF34(0, date.year, 4, 0);
-            fn_800CBF34(3, getScore(0), 4, 9);
-            fn_800CBDA0(0, &getItem(0));
-            fn_800CBAF0(1, date.month);
-            fn_800CBB50(2, date.mday);
-            fn_800CBC10(3, getLandID());
+            dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
+            dLetter::formatNumber(3, getScore(0), 4, dScript::NUM_FORMAT_REGION);
+            dLetter::setItemName(0, &getItem(0));
+            dLetter::setMonthName(1, date.month);
+            dLetter::setDayName(2, date.mday);
+            dLetter::setLandName(3, getLandID());
             setupMail(&sMail, cM::rndInt(3) + 7, 12, &mPlayer[0], 0x14C);
             dItem::Item present;
             dBugOffItemRange_c range(3, 0x1E);
@@ -185,17 +185,17 @@ void dBugOff_c::postResultNotice() {
     dTime_c date = stamp.get();
     stamp.addDays(1);
     dTime_c postDate = stamp.get();
-    fn_800CBF34(0, date.month + 1, 2, 0);
-    fn_800CBF34(1, date.mday, 2, 0);
-    fn_800CBF34(2, getScore(0), 4, 0);
-    fn_800CBC10(2, &dSaveData_c::getRaw()->mBugOff.getPlayer(0)->land);
+    dLetter::formatNumber(0, date.month + 1, 2, dScript::NUM_FORMAT_PLAIN);
+    dLetter::formatNumber(1, date.mday, 2, dScript::NUM_FORMAT_PLAIN);
+    dLetter::formatNumber(2, getScore(0), 4, dScript::NUM_FORMAT_PLAIN);
+    dLetter::setLandName(2, &dSaveData_c::getRaw()->mBugOff.getPlayer(0)->land);
     if (dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isValid()) {
-        fn_800CBBB0(0, dSaveData_c::getRaw()->mBugOff.getPlayer(0));
+        dLetter::setPersonalName(0, dSaveData_c::getRaw()->mBugOff.getPlayer(0));
     } else {
-        fn_800CBC70(0, dSaveData_c::getRaw()->mBugOff.getAnimal(0));
+        dLetter::setAnmPersonalName(0, dSaveData_c::getRaw()->mBugOff.getAnimal(0));
     }
     dItem::Item item = getItem(0);
-    fn_800CBDA0(1, &item);
+    dLetter::setItemName(1, &item);
     if (dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isValid() &&
         !dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isFromTown()) {
         fn_800EBB24(cM::rndInt(3) + 4, "BBS_insect", &postDate, NULL);

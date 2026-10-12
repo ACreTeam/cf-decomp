@@ -155,7 +155,7 @@ BOOL dPrivateData_c::isRelayDesignVisitReady() {
     if (player == NULL) {
         return FALSE;
     }
-    if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
+    if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled == 0) {
         return FALSE;
     }
     if (player->isFlag0(0xD)) {
@@ -188,7 +188,7 @@ void dRelayDesign_c::update() {
     if (dSaveData_c::getRaw()->mTownHost.mCount != 0) {
         return;
     }
-    if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
+    if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled == 0) {
         return;
     }
     if (!dWifi::hasSend()) {
@@ -220,7 +220,7 @@ void dRelayDesign_c::validate() {
     if (mActive == 0) {
         keep = mDays;
     }
-    if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
+    if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled == 0) {
         reset = TRUE;
     }
     if (!dWifi::hasSend()) {
@@ -351,7 +351,7 @@ BOOL dPrivateData_c::isFlag0Any(dPrivateData_c *players, u32 flag) {
 // 80137000
 void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
     mPID.setPlayer(name, id, gender);
-    fn_8010D7E8((dSaveOption_c *)&_83E8);
+    dSaveOption::setDefaults((dSaveOption_c *)&_83E8);
     mOrgDesigns.init(&mPID);
     mCatalog.clear();
     mSongs.clear();
@@ -478,7 +478,7 @@ BOOL dPrivateData_c::sendLetter(u16 kind, const dItem::Item *present, dPrivateDa
     static u8 lbl_8074B099 = MAIL_FROM_ABD;
     static u32 lbl_8074B09C = 0x17D;
     mail.clear();
-    fn_800CBE0C(0, amount, 5, 9);
+    dLetter::setNumber(0, amount, 5, dScript::NUM_FORMAT_REGION);
     u16 msg = kind;
     mail.setupSystem(&msg, "MAIL_ETC_ATM", &lbl_8074B099, &player->mPID, (const int *)&lbl_8074B09C);
     dItem::Item item = *present;
@@ -1231,12 +1231,12 @@ BOOL dPrivateData_c::isNookLoyaltyLetterDue() {
 }
 
 // 80139408
-void *dPrivateData_c::getPostBox() {
+dPlayerPostBox_c *dPrivateData_c::getPostBox() {
     int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
     }
-    return dSaveData_c::getExtra()->_17FF58[idx];
+    return &dSaveData_c::getExtra()->mPlayerPostBoxes[idx];
 }
 
 // 80139468
@@ -1861,7 +1861,7 @@ void dPrivateData_c::clearPlayer(dPrivateData_c *players, int idx) {
     dSaveData_c::getExtra()->mSavedLetters[idx].clear();
     dSaveData_c::getExtra()->mSavedLetterItems[idx].clear();
     dSaveData_c::getExtra()->mSavedPatterns[idx].init();
-    fn_8013EE54(dSaveData_c::getExtra()->_17FF58[idx]);
+    dSaveData_c::getExtra()->mPlayerPostBoxes[idx].clear();
 }
 
 // 8013AFB8

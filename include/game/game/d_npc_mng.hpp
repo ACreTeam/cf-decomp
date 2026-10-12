@@ -12,6 +12,7 @@ class mVec3_c;
 extern "C" {
 extern EGG::FrmHeap *lbl_8074EABC; // the npc manager heap (801A658C); parent of dAcNpc_c::m_heap_p (no split yet)
 extern int lbl_8074EAC8;          // theater message code (1..0x1D), set by a REL, cleared by 801AA56C (d_npc_talk_town "Town_Theater")
+extern u8 lbl_8074EAD0;           // cleared by 801AB568 and dSaveData_c::refreshTown
 }
 
 extern "C" {

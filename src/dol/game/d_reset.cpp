@@ -230,7 +230,7 @@ void Manage_c::PostDeleteScene() {
         dSTR::busInfo_c *bus = dSTR::getBusInfo();
         bus->mType = 0;
         fn_801A6564();
-        fn_8010D83C(&dSaveData_c::sOption);
+        dSaveOption::reset(&dSaveData_c::sOption);
         fn_80101424();
         dBgm::l_mgr.init();
         dWifi::reset();

@@ -6,9 +6,7 @@
 // fishing tourney (EVENT_FISHING_TOURNEY, message file "Ev_Fishing"): before the npc's first talk of
 // the event (with / without a fish entered yet), then by who leads the contest (rank 0: this npc /
 // another villager / the current player / another player), with the leading fish, its size and the
-// leader's name. The tourney record is at dSaveData_c::getRaw() + 0x632F0 (class not named yet; its
-// accessors are fn_801533C8 player, fn_801533E0 villager, fn_801533F8 size, fn_80153410 / fn_8015341C
-// item, fn_8015343C size conversion).
+// leader's name, from the tourney record dSaveData_c::getRaw()->mFishing (dEvFishing_c, d_ev_fishing).
 //
 // Its functions are talk procedures stored in dAcNpcNml_c::talk_c's member-function pointers. Slot
 // conventions (provisional, see d_npc_talk_arbeit.hpp): EC = message select (fills msgInfo_s via

@@ -204,7 +204,7 @@ void dSaveShop_c::updateStage(int days) {
         }
     }
 
-    fn_800CBD30(0, mStage + 0x2E, "sys_STRING/STR_Unit");
+    dLetter::setStringWord(0, mStage + 0x2E, "sys_STRING/STR_Unit");
     if ((u8)mCountdown != 0x7F) {
         if (days > 0) {
             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 9);
@@ -232,8 +232,8 @@ void dSaveShop_c::updateStage(int days) {
                         dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 9);
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6D);
-                        fn_800CBAF0(2, mStageDate.get().month);
-                        fn_800CBB50(3, mStageDate.get().mday);
+                        dLetter::setMonthName(2, mStageDate.get().month);
+                        dLetter::setDayName(3, mStageDate.get().mday);
                         dTime_c date = mStageDate.get();
                         date.add(-1, 0, 0, 0);
                         fn_800EBB24(10, "BBS_tanukichi", &date, NULL);
@@ -313,8 +313,8 @@ void dSaveShop_c::updateStage(int days) {
             dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 9);
             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
             u16 msg = mStage + 7;
-            fn_800CBAF0(2, mStageDate.get().month);
-            fn_800CBB50(3, mStageDate.get().mday);
+            dLetter::setMonthName(2, mStageDate.get().month);
+            dLetter::setDayName(3, mStageDate.get().mday);
             dTime_c date = mStageDate.get();
             date.add(-1, 0, 0, 0);
             fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
@@ -383,7 +383,7 @@ void dSaveShop_c::updateMail(int days) {
             static const int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKS_CRANNY);
-            fn_800CBDA0(0, &gift);
+            dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x33);
@@ -395,7 +395,7 @@ void dSaveShop_c::updateMail(int days) {
             static const int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOK_N_GO);
-            fn_800CBDA0(0, &gift);
+            dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x34);
@@ -407,7 +407,7 @@ void dSaveShop_c::updateMail(int days) {
             static const int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKWAY);
-            fn_800CBDA0(0, &gift);
+            dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x35);
@@ -419,7 +419,7 @@ void dSaveShop_c::updateMail(int days) {
             static const int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKINGTONS);
-            fn_800CBDA0(0, &gift);
+            dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x36);
@@ -431,7 +431,7 @@ void dSaveShop_c::updateMail(int days) {
             static const int paper = 0x157;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_SILVER_CAN);
-            fn_800CBDA0(0, &gift);
+            dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x18);
@@ -769,8 +769,8 @@ void dSaveShop_c::addSales(int price, int flag) {
         dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 9);
         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
         u16 msg = mStage + 7;
-        fn_800CBAF0(2, mStageDate.get().month);
-        fn_800CBB50(3, mStageDate.get().mday);
+        dLetter::setMonthName(2, mStageDate.get().month);
+        dLetter::setDayName(3, mStageDate.get().mday);
         fn_800EBB24(msg, "BBS_tanukichi", dTime_c::getCurrent(), NULL);
     }
 }
@@ -1016,14 +1016,14 @@ void dSaveShop_c::postNotices() {
         return;
     }
 
-    fn_800CBD30(0, mStage + 0x2E, "sys_STRING/STR_Unit");
+    dLetter::setStringWord(0, mStage + 0x2E, "sys_STRING/STR_Unit");
     dTimeStamp_c today(dTime_c::getCurrent());
     today.toDayStart();
     dTime_c date = today.get();
 
     if (isSaleToday()) {
         u16 msg = cM::rndInt(2) + 3;
-        fn_800CBFE0(mSaleDate.get().hour, 4, 0);
+        dLetter::setHour(mSaleDate.get().hour, 4, 0);
         fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
     }
 
@@ -1033,7 +1033,7 @@ void dSaveShop_c::postNotices() {
             if (!isSold(i)) {
                 dItem::Item item = *(dItem::Item *)&mStock[i].mItem;
                 if (item.getFrom() == 6) {
-                    fn_800CBDA0(1, &item);
+                    dLetter::setItemName(1, &item);
                     break;
                 }
             }

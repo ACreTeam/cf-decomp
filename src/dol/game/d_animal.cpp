@@ -3378,8 +3378,8 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
     switch (kind) {
     case 3: {
         const char *label = sReSP[looks];
-        u16 footer = rndCount(fn_800CBA6C(label));
-        u16 header = rndCount(fn_800CBA14(label));
+        u16 footer = rndCount(dLetter::getFromNum(label));
+        u16 header = rndCount(dLetter::getToNum(label));
         dItem::Item present;
         if (mail->getPresent() != dItem::ITEM_ID_NONE) {
             switch (dPostOffice::getLengthType(mail)) {
@@ -3406,7 +3406,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
 
         const char *body = present.mId != dItem::ITEM_ID_NONE ? sReSP2[looks] : sReSP1[looks];
         int idx = dPostOffice::findSpecial(mail);
-        u16 num = fn_800CBA40(body);
+        u16 num = dLetter::getMsgNum(body);
         u16 bodyIdx = idx;
         if (bodyIdx >= num) {
             bodyIdx = rndCount(num);
@@ -3414,7 +3414,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
         fn_800F46CC(&mID, 0);
         sMail.clear();
-        sMail.setupFromAnimal(&header, &bodyIdx, &footer, (int)label, (int)body, (int)label, &mID, pid,
+        sMail.setupFromAnimal(&header, &bodyIdx, &footer, label, body, label, &mID, pid,
                               &paper);
         dItem::Item copy = present;
         if (present.mId != dItem::ITEM_ID_NONE) {
@@ -3428,20 +3428,20 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
     }
     case 1: {
         const char *label = sReBad[looks];
-        u16 footer = rndCount(fn_800CBA6C(label));
-        u16 header = rndCount(fn_800CBA14(label));
-        u16 body = rndCount(fn_800CBA40(label));
+        u16 footer = rndCount(dLetter::getFromNum(label));
+        u16 header = rndCount(dLetter::getToNum(label));
+        u16 body = rndCount(dLetter::getMsgNum(label));
         dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
         fn_800F46CC(&mID, 0);
         sMail.clear();
-        sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, &mID, pid,
+        sMail.setupFromAnimal(&header, &body, &footer, label, label, label, &mID, pid,
                               &paper);
         send = TRUE;
         break;
     }
     case 2: {
         const char *label = sReply[looks];
-        u16 num = fn_800CBAC4(label);
+        u16 num = dLetter::getTo2Num(label);
         u16 e = rndCount(num);
         u16 a = rndCount(num);
         dItem::Item present;
@@ -3469,14 +3469,14 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         }
 
         const char *body = present.mId != dItem::ITEM_ID_NONE ? sPresent[looks] : sReply[looks];
-        u16 num2 = fn_800CBA98(body);
+        u16 num2 = dLetter::getMsg2ANum(body);
         u16 b = rndCount(num2);
         u16 c = rndCount(num2);
         u16 d = rndCount(num2);
         dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
         fn_800F46CC(&mID, 0);
         sMail.clear();
-        sMail.setupFromAnimal(&a, &b, &c, &d, &e, (int)body, (int)label, &mID, pid, &paper);
+        sMail.setupFromAnimal(&a, &b, &c, &d, &e, body, label, &mID, pid, &paper);
         dItem::Item copy = present;
         if (present.mId != dItem::ITEM_ID_NONE) {
             sMail.setPresent(copy.mId, 0xFF);
@@ -3783,11 +3783,11 @@ BOOL dAnimal_c::sendErrandThanksLetter(const dPersonalID_c *to, dAnmPersonalID_c
 
     const char *label = sErrandThanksLabels[looks];
     u16 n;
-    n = fn_800CBA14(label);
+    n = dLetter::getToNum(label);
     u16 a = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
-    n = fn_800CBA40(label);
+    n = dLetter::getMsgNum(label);
     u16 b = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
-    n = fn_800CBA6C(label);
+    n = dLetter::getFromNum(label);
     u16 c = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
@@ -3797,7 +3797,7 @@ BOOL dAnimal_c::sendErrandThanksLetter(const dPersonalID_c *to, dAnmPersonalID_c
     fn_800F4794(other->getGender(1), looks, 2);
 
     sMail.clear();
-    sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, &mID, to, &paper);
+    sMail.setupFromAnimal(&a, &b, &c, label, label, label, &mID, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present->mId, 0xFF);
     }
@@ -4805,18 +4805,18 @@ BOOL dAnimal_c::sendSickThanksLetter(const dPersonalID_c *to, const dItem::Item 
 
     const char *label = sSickThanksLabels[looks];
     u16 n;
-    n = fn_800CBA14(label);
+    n = dLetter::getToNum(label);
     u16 a = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
-    n = fn_800CBA40(label);
+    n = dLetter::getMsgNum(label);
     u16 b = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
-    n = fn_800CBA6C(label);
+    n = dLetter::getFromNum(label);
     u16 c = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(&mID, 0);
 
     sMail.clear();
-    sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present->mId, 0xFF);
     }
@@ -5034,14 +5034,14 @@ BOOL dAnimal_c::sendBirthdayLetter(const dPersonalID_c *to, const dItem::Item *p
     }
 
     const char *label = sBirthdayLabels[looks];
-    u16 a = pickLetterPart(fn_800CBA14(label));
-    u16 b = pickLetterPart(fn_800CBA40(label));
-    u16 c = pickLetterPart(fn_800CBA6C(label));
+    u16 a = pickLetterPart(dLetter::getToNum(label));
+    u16 b = pickLetterPart(dLetter::getMsgNum(label));
+    u16 c = pickLetterPart(dLetter::getFromNum(label));
     dItem::Item paper(dItem::ITEM_IDX_BIRTHDAY_CARD);
 
     fn_800F46CC(&mID, 0);
     sMail.clear();
-    sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present->mId, hi);
     }
@@ -5077,9 +5077,9 @@ BOOL dAnimal_c::sendValentineLetter(const dPersonalID_c *to, const dItem::Item *
     }
 
     const char *label = sValentineLabels[looks];
-    u16 a = fn_800CBA14(label) > 1 ? (u16)(cM::rndInt(3) + 1) : (u16)1;
-    u16 b = fn_800CBA40(label) > 1 ? (u16)(cM::rndInt(3) + 1) : (u16)1;
-    u16 c = fn_800CBA6C(label) > 1 ? (u16)(cM::rndInt(3) + 1) : (u16)1;
+    u16 a = dLetter::getToNum(label) > 1 ? (u16)(cM::rndInt(3) + 1) : (u16)1;
+    u16 b = dLetter::getMsgNum(label) > 1 ? (u16)(cM::rndInt(3) + 1) : (u16)1;
+    u16 c = dLetter::getFromNum(label) > 1 ? (u16)(cM::rndInt(3) + 1) : (u16)1;
     if (present->mId == dItem::ITEM_ID_NONE) {
         a += 3;
         b += 3;
@@ -5089,7 +5089,7 @@ BOOL dAnimal_c::sendValentineLetter(const dPersonalID_c *to, const dItem::Item *
 
     fn_800F46CC(&mID, 0);
     sMail.clear();
-    sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present->mId, hi);
     }
@@ -5125,15 +5125,15 @@ BOOL dAnimal_c::sendNewYearLetter(const dPersonalID_c *to, int year) {
     }
 
     const char *label = sNewyearLabels[looks];
-    u16 a = pickLetterPart(fn_800CBA14(label));
-    u16 b = pickLetterPart(fn_800CBA40(label));
-    u16 c = pickLetterPart(fn_800CBA6C(label));
+    u16 a = pickLetterPart(dLetter::getToNum(label));
+    u16 b = pickLetterPart(dLetter::getMsgNum(label));
+    u16 c = pickLetterPart(dLetter::getFromNum(label));
     dItem::Item paper(dItem::ITEM_IDX_NEW_YEARS_CARDS);
 
     fn_800F46CC(&mID, 0);
-    fn_800CBEB4(0, year);
+    dLetter::setNumber4(0, year);
     sMail.clear();
-    sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
 
     if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
@@ -5190,7 +5190,7 @@ BOOL dAnimal_c::sendMoveLetter(const dPersonalID_c *to) {
 
     fn_800F46CC(id, 0);
     sMail.clear();
-    sMail.setupFromAnimal(&a, &b, &c, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
 
     if (dPostOffice::deliverToPlayer(&sMail)) {
         return TRUE;
@@ -8239,15 +8239,15 @@ BOOL dAnimalBlock_c::sendStyleLetter(const dPersonalID_c *pid0, const dPersonalI
     }
 
     const char *label = sQ13MailLabels[looks];
-    u16 header = fn_800CBA14(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
-    u16 body = fn_800CBA40(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
-    u16 footer = fn_800CBA6C(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
+    u16 header = dLetter::getToNum(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
+    u16 body = dLetter::getMsgNum(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
+    u16 footer = dLetter::getFromNum(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     fn_800F4774(present, 1);
     dString::Word_c word(topic);
-    fn_800CBCD4(2, &word);
+    dLetter::setWord(2, &word);
     fn_800F4718(pid0, 3);
     u8 gender0 = pid0->player.mGender;
     fn_800F4794(gender0, id->getLooks(1), 4);
@@ -8256,7 +8256,7 @@ BOOL dAnimalBlock_c::sendStyleLetter(const dPersonalID_c *pid0, const dPersonalI
     fn_800F4794(gender1, id->getLooks(1), 6);
 
     sMail.clear();
-    sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&header, &body, &footer, label, label, label, id, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present->mId, 0xFF);
     }
@@ -8577,14 +8577,14 @@ BOOL sendPresentLetter(const char *label, const dPersonalID_c *to, dAnmPersonalI
         return FALSE;
     }
 
-    u16 header = pickMailPart(fn_800CBA14(label));
-    u16 body = pickMailPart(fn_800CBA40(label));
-    u16 footer = pickMailPart(fn_800CBA6C(label));
+    u16 header = pickMailPart(dLetter::getToNum(label));
+    u16 body = pickMailPart(dLetter::getMsgNum(label));
+    u16 footer = pickMailPart(dLetter::getFromNum(label));
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     sMail.clear();
-    sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&header, &body, &footer, label, label, label, id, to, &paper);
     dItem::Item item = *present;
     sMail.setPresent(item.mId, 0xFF);
     if (dPostOffice::deliverToPlayer(&sMail)) {
@@ -9038,14 +9038,14 @@ BOOL sendQ10Letter(const dPersonalID_c *to, dAnmPersonalID_c *id, const dItem::I
     }
 
     const char *label = sQ10MailLabels[looks];
-    u16 header = pickMailPart(fn_800CBA14(label));
-    u16 body = pickMailPart(fn_800CBA40(label));
-    u16 footer = pickMailPart(fn_800CBA6C(label));
+    u16 header = pickMailPart(dLetter::getToNum(label));
+    u16 body = pickMailPart(dLetter::getMsgNum(label));
+    u16 footer = pickMailPart(dLetter::getFromNum(label));
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
     fn_800F46CC(id, 0);
     sMail.clear();
-    sMail.setupFromAnimal(&header, &body, &footer, (int)label, (int)label, (int)label, id, to, &paper);
+    sMail.setupFromAnimal(&header, &body, &footer, label, label, label, id, to, &paper);
     dItem::Item item = *present;
     sMail.setPresent(item.mId, 0xFF);
     if (flag && dPostOffice::deliverToPlayer(&sMail)) {
@@ -11440,7 +11440,7 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
 
     const char *bodyLabel;
     const char *replyLabel = sVisitorReplyLabels[looks];
-    u16 num = fn_800CBAC4(replyLabel);
+    u16 num = dLetter::getTo2Num(replyLabel);
     u16 header = rndPart(num);
     u16 body = rndPart(num);
 
@@ -11449,7 +11449,7 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
     } else {
         bodyLabel = sVisitorReplyLabels[looks];
     }
-    num = fn_800CBA98(bodyLabel);
+    num = dLetter::getMsg2ANum(bodyLabel);
     u16 part0 = rndPart(num);
     u16 part1 = rndPart(num);
     u16 part2 = rndPart(num);
@@ -11458,7 +11458,7 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
     fn_800F46CC(&gift->mAnimal, 0);
     fn_800F4764(&gift->mAnimal, 8);
     sMail.clear();
-    sMail.setupFromAnimal(&body, &part0, &part1, &part2, &header, (int)bodyLabel, (int)replyLabel, &gift->mAnimal,
+    sMail.setupFromAnimal(&body, &part0, &part1, &part2, &header, bodyLabel, replyLabel, &gift->mAnimal,
                           pid, &paper);
     if (present != dItem::ITEM_ID_NONE) {
         sMail.setPresent(present, 0xFF);

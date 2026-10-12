@@ -230,7 +230,7 @@ enum dNetPacket_e {
     // dShopSale_c (dSaveShop_c / dSaveShopTailor_c::sellAndNotify) ->
     // dShopLayout_applySale
     NET_PACKET_SHOP_SALE = 0x42,
-    // uomasa REL (Chip): fishing tourney record dSaveTown_c::_0632F0
+    // uomasa REL (Chip): fishing tourney record dSaveTown_c::mFishing
     NET_PACKET_FISHING_RECORD = 0x43,
     NET_PACKET_BUG_OFF = 0x44, // bug REL (Nat): dSaveTown_c::mBugOff
     // d_npc_info fn_800F81B8: dNpcInfoNet_c on (fn_800F8700(1), _03 = 0);

@@ -21,6 +21,7 @@ int fn_801C987C(dWeather_c *weather); // 801C987C: weather kind for message jump
 // Weather check by time (d_npc_talk_free isWeatherTopic: 0 allows the weather topic by the hour).
 int fn_801C9C08(const dTime_c *time); // 801C9C08
 void fn_801C95CC(); // 801C95CC: resets the weather dTimeStamp_c (8074EBF0) and the byte 8074EBF8
+void fn_801C95F8(); // 801C95F8: sets dWeather_c::sInstance->_5899, or fn_801C95CC without one
 }
 
 #endif

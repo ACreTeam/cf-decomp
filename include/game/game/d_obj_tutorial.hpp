@@ -38,7 +38,7 @@ public:
     // 801B6E90: a new request (a, b); FALSE if it is the current one or (check) the tutorials are off.
     static BOOL request(int a, int b, BOOL check);
     static void setPriority(u8 priority); // 801B6F14: the balloon's draw priority, applied at the next update
-    static BOOL isEnabled();              // 801B6F1C: the tutorial option bit (fn_8010D9C8) is clear
+    static BOOL isEnabled();              // 801B6F1C: the tutorial option (dSaveOption::isTutorialOff) is clear
 
     /* 0x064 */ dBalloon_c mBalloon;
     /* 0x334 */ int mShownA;

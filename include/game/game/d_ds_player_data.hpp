@@ -21,7 +21,7 @@ u16 convertKrChar(u16 c);                                 // 80085400
 
 // One player of a save (the pointer from getPlayer).
 void getPlayerName(const u8 *player, dScript::Word_c *word); // 80085484
-u8 getOption(const u8 *player);                           // 800855C8: option bit 0 (dSaveOption_c::mBit7)
+u8 getOption(const u8 *player);                           // 800855C8: option bit 0 (dSaveOption_c::mKana)
 u8 getHairColor(const u8 *player);                        // 80085610
 u8 getHair(const u8 *player);                             // 80085658: converted to a City Folk hair style
 u8 getFace(const u8 *player);                             // 80085734

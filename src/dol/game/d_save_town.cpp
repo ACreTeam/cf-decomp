@@ -7,11 +7,6 @@
 #include <game/sLib/s_crc.hpp>
 #include <game/game/d_wifi.hpp>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-void fn_80150088(void *obj, int player);
-}
-
 // 80115CDC
 BOOL dSaveTown_c::isHeaderVersionOK() {
     return mHeader.isVersionOK();
@@ -101,7 +96,7 @@ void dSaveTown_c::deletePlayer(int player) {
     dPrivateData_c::clearPlayer(mPlayers, player);
     getAuction()->deletePlayer(player);
     mNoticeBoard.clearRead(player);
-    fn_80150088(&_05EC64, player);
+    mActivity.removePlayer(player);
 
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
     if (fd != NULL) {

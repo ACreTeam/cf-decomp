@@ -1819,7 +1819,7 @@ void Voice_c::calc() {
             if (mpOwner->mVoiceMood != MSG_VOICE_MOOD_NONE) {
                 mood = mpOwner->mVoiceMood;
             }
-            switch (fn_8010D970()) {
+            switch (dSaveOption::getVoiceMode()) {
             case 0:
                 if (rcpt->getVoiceMode() != VOICE_MODE_NONE) {
                     mode = rcpt->getVoiceMode();

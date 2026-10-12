@@ -36,7 +36,7 @@ void fn_800EBB24(u16 msgId, const char *group, const dTime_c *date, const void *
     static dLetter::Word_c sWord;
 
     sWord.clear();
-    fn_800CB720(&sWord, msgId, group);
+    dLetter::loadBbsText(&sWord, msgId, group);
     dNotice_c note;
 
     dTime_c time = *dTime_c::getCurrent();
@@ -152,7 +152,7 @@ void fn_800EC060(const dTime_c *day) {
     for (int i = 0; i < 4; i++) {
         dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
         if (player->isBirthday(*day)) {
-            fn_800CBBB0(1, &player->mPID);
+            dLetter::setPersonalName(1, &player->mPID);
             fn_800EBB24(cM::rndInt(4) + 0x1C, "BBS_event", day, NULL);
         }
     }
@@ -161,7 +161,7 @@ void fn_800EC060(const dTime_c *day) {
         dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(i);
         if (animal != NULL && animal->mID.isValid() && day->month == (u8)animal->getBirthMonth() &&
             day->mday == (u8)animal->getBirthDay()) {
-            fn_800CBC70(0, &animal->mID);
+            dLetter::setAnmPersonalName(0, &animal->mID);
             fn_800EBB24(cM::rndInt(3) + 0x19, "BBS_event", day, NULL);
         }
     }
@@ -218,8 +218,8 @@ void fn_800EC19C(const dTime_c *day) {
                 msgId = 0;
             }
             if (msgId != 0) {
-                fn_800CBAF0(2, sDays[notice->mDay]->month);
-                fn_800CBB50(3, sDays[notice->mDay]->mday);
+                dLetter::setMonthName(2, sDays[notice->mDay]->month);
+                dLetter::setDayName(3, sDays[notice->mDay]->mday);
                 fn_800EBB24(msgId, "BBS_event", day, NULL);
             }
         }
@@ -240,11 +240,11 @@ void fn_800EC4F8(const dTime_c *day) {
         dTime_c date = time->get();
         date.add(-3, 0, 0, 0);
         if (dTime_c::isSameDay(date, *day)) {
-            fn_800CBD30(0, *(u32 *)((u8 *)dSaveData_c::getTown() + 0x630C0) + 0x2E, "sys_STRING/STR_Unit");
+            dLetter::setStringWord(0, *(u32 *)((u8 *)dSaveData_c::getTown() + 0x630C0) + 0x2E, "sys_STRING/STR_Unit");
             u16 msgId = cM::rndInt(2) + 1;
             dTime_c when = time->get();
-            fn_800CBAF0(2, when.month);
-            fn_800CBB50(3, when.mday);
+            dLetter::setMonthName(2, when.month);
+            dLetter::setDayName(3, when.mday);
             fn_800EBB24(msgId, "BBS_tanukichi", day, NULL);
         }
     }

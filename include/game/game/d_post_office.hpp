@@ -8,6 +8,7 @@
 #include <types.h>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_post_box.hpp>
 #include <game/game/d_net_wc24.hpp>
 
 class dPrivateData_c;
@@ -15,29 +16,6 @@ class dTime_c;
 namespace dScript {
 class Word_c;
 }
-
-// The letters held at the post office (dSaveExtra_c::_189C38, 0x120FC). It is delivered at 9:00
-// and 17:00. Its methods are in the unsplit code at 8013F098; the save field stays raw bytes (its
-// constructor isn't modelled), so get() casts it.
-struct dPostBox_c {
-    static dPostBox_c *get() { return (dPostBox_c *)dSaveData_c::getExtra()->_189C38; }
-
-    void set(int idx, dMail_c *mail);           // 8013F120
-    void setHeld(dMail_c *mail);                // 8013F134
-    int findEmpty();                            // 8013F1A0: -1 when full
-    int pack();                                 // 8013F1A8: moves the letters to the front; returns the count
-    void clear(int idx);                        // 8013F1B0
-    void clearHeld();                           // 8013F1BC
-    BOOL checkDelivery(BOOL reschedule);        // 8013F1C8: a delivery time has passed
-    void scheduleDelivery();                    // 8013F354: the next 9:00 / 17:00
-
-    /* 0x00000 */ dMail_c mMails[80];
-    /* 0x11D00 */ dMail_c mHeld;       // index -1 in the send loop
-    /* 0x12090 */ u8 _12090[8];        // last delivery time
-    /* 0x12098 */ u8 _12098[8];        // next delivery time
-    /* 0x120A0 */ u16 mFlags;          // bit 0: a delivery is scheduled
-    /* 0x120A2 */ u8 _120A2[0x5A];     // +0: dSaveExtra_c::mPostSend (d_wifi)
-}; // size 0x120FC
 
 // A WiiConnect24 message to send (fn_80178048): up to 4 attachments, the friend it goes to and the
 // player sending it.
@@ -67,7 +45,7 @@ BOOL add(dMail_c *mail);                       // 80102BBC
 void holdMail(dMail_c *mail);                  // 80102C24: into dPostBox_c::mHeld
 void update();                                 // 80102C60
 BOOL hasFutureLetter();                        // 80102CE8: the current player has a letter to the future
-void setFutureLetterTime(const dTime_c *time); // 80102D28
+dTime_c getFutureLetterTime();                 // 80102D28: when the current player's letter to the future arrives
 BOOL checkFull();                              // 80102D64
 
 // Visit sync of the post office (packets 0x2D / 0x2E).

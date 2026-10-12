@@ -31,7 +31,7 @@ int dAcNpcNml_c::talk_c::msgTownRumor(msgInfo_s *info) {
     u16 code = 0;
     dPersonalID_c pid;
     pid.clear();
-    if (fn_80116A74(dSaveData_c::getRawExtra(), &pid, &kind, self) && pid.isValid() && kind < 10 &&
+    if (dSaveData_c::getRawExtra()->pickRumor(&pid, &kind, self) && pid.isValid() && kind < 10 &&
         !(pid == *self)) {
         dAnimalMemory_c *memory = animal->findMemory2(&pid);
         switch (kind) {

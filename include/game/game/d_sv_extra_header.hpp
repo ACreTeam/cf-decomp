@@ -1,7 +1,7 @@
 #pragma once
 
 // d_sv_extra_header (DOL TU d_sv_extra_header.cpp, .text 80143E78..80143ECC): the check block at the start of the
-// save's extra block (dSaveExtra_c + 0, d_sv_extra): a CRC32 over +0x04..+0x20. No RTTI: names inferred.
+// save's extra block (dSaveExtra_c::mHeader, d_sv_extra): a CRC32 over +0x04..+0x20. No RTTI: names inferred.
 
 #include <types.h>
 

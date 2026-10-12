@@ -34,8 +34,9 @@ void List_c::set(const dLandID_c *land, dSaveJinx_c jinx) {
         return;
     }
     int idx = cM::rndInt(TOWN_LIST_NUM);
+
     mTowns[idx].mLand.copy(land);
-    mTowns[idx].mJinx = jinx;
+    mTowns[idx].mJinx.copy(jinx);
 }
 
 // 80150308

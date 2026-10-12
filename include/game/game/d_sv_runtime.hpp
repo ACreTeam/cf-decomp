@@ -44,11 +44,8 @@ void fn_80154358(void *process);
 int fn_8015436C(void *process, int mode);
 extern unsigned char lbl_8074E7F8[8];
 dSceneChange_c *fn_801BB7B8(); // 801BB7B8: &gSceneChange
-void fn_8010DDE0();
 void fn_8010DED0();
-void fn_8010DCF0(void *);
 void fn_800A949C(int, int);
-void fn_8010DFC0();
 }
 
 inline void releaseMessage(dMsg::Comp_c *controller) {

@@ -22,6 +22,9 @@ struct Entry_c {
         mJinx.mValue = 0;
     }
 
+    dLandID_c& getLand() { return mLand; }
+    dSaveJinx_c& getJinx() { return mJinx; }
+
     /* 0x00 */ dLandID_c mLand;
     /* 0x16 */ dSaveJinx_c mJinx;
 }; // size 0x18

@@ -19,17 +19,8 @@
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 
-// A player's mail box (dPrivateData_c::getPostBox).
-int fn_8013EE8C(void *box);
-void fn_8013EDFC(void *box, int idx, dMail_c *mail, int arg);
-BOOL fn_8013EE94(void *box);
-void fn_8013EF50(void *box);                    // deliver the letter to the future when due
-BOOL fn_8013F06C(void *box);                    // has a letter to the future
-void fn_8013F064(const dTime_c *time, void *box); // its delivery time
-
 // WiiConnect24.
 
-void fn_8010F114(dSaveDistMail_c *mail, int player); // mark the downloaded letter as received
 }
 
 static dPostRequest_c l_request;
@@ -137,12 +128,12 @@ BOOL deliverToPlayer(dMail_c *mail) {
     if (idx < 0) {
         return FALSE;
     }
-    void *box = dPlayerMgr_c::getPlayer(idx)->getPostBox();
-    int slot = fn_8013EE8C(box);
+    dPlayerPostBox_c *box = dPlayerMgr_c::getPlayer(idx)->getPostBox();
+    int slot = box->findEmpty();
     if (slot < 0) {
         return FALSE;
     }
-    fn_8013EDFC(box, slot, mail, 0);
+    box->set(slot, mail, FALSE);
     return TRUE;
 }
 
@@ -177,11 +168,11 @@ BOOL hasMail() {
     if (dNet::getMyNo() != 0) {
         return FALSE;
     }
-    void *box = dPlayerMgr_c::getCurrentPlayer()->getPostBox();
+    dPlayerPostBox_c *box = dPlayerMgr_c::getCurrentPlayer()->getPostBox();
     if (box == NULL) {
         return FALSE;
     }
-    return fn_8013EE94(box);
+    return box->hasMail();
 }
 
 // 80102B84
@@ -213,9 +204,9 @@ void update() {
         }
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
         if (player != NULL) {
-            void *box = player->getPostBox();
+            dPlayerPostBox_c *box = player->getPostBox();
             if (box != NULL) {
-                fn_8013EF50(box);
+                box->deliverFutureMail();
             }
         }
     }
@@ -225,17 +216,17 @@ void update() {
 BOOL hasFutureLetter() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL) {
-        void *box = player->getPostBox();
+        dPlayerPostBox_c *box = player->getPostBox();
         if (box != NULL) {
-            return fn_8013F06C(box);
+            return box->hasFutureMail();
         }
     }
     return 0;
 }
 
 // 80102D28
-void setFutureLetterTime(const dTime_c *time) {
-    fn_8013F064(time, dPlayerMgr_c::getCurrentPlayer()->getPostBox());
+dTime_c getFutureLetterTime() {
+    return dPlayerMgr_c::getCurrentPlayer()->getPostBox()->getFutureMailDate();
 }
 
 // 80102D64
@@ -879,7 +870,7 @@ BOOL getDistMail() {
     mail.setToPlayer(idx, TRUE);
     mail.clearFlags();
     player->setLetter(&mail, slot);
-    fn_8010F114(dist, idx);
+    dist->setReceived(idx);
     return TRUE;
 }
 

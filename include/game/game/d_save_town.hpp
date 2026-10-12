@@ -19,6 +19,7 @@
 #include <game/game/d_save_check.hpp>
 #include <game/game/d_save_dl_item.hpp>
 #include <game/game/d_bug_off.hpp>
+#include <game/game/d_ev_fishing.hpp>
 #include <game/game/d_save_main_field.hpp>
 #include <game/game/d_save_shops.hpp>
 #include <game/game/d_save_visitor_npc.hpp>
@@ -110,32 +111,22 @@ public:
     void clearPublicWorksBells() { mPublicWorksBells = 0; } // d_str dSTR::buildPublicWorks
     static BOOL isBusNetEventPending();   // 80116570: WiiConnect24 connected and SAVE_FLAG_BUS_NET_EVENT_DONE not set
     void backupFlag6();                   // 801165B8: SAVE_FLAG_FLAG6_BACKUP = flag 6
-    dSvAuc_c *getAuction() { return (dSvAuc_c *)mAuctionItems; }
+    dSvAuc_c *getAuction() { return &mAuction; }
 
     /* 0x000000 */ dSaveCheck_c mHeader;
     /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
     /* 0x021B20 */ dAnimalSave_c mAnimals;
     /* 0x05E260 */ dSaveBuilding_c mBuilding;  // the town flag, the gate and the building positions
     /* 0x05EC60 */ u32 mTownChecksum;     // calcTownChecksum: +0x5EC64 up to mExtra (also a random seed)
-    /* 0x05EC64 */ u16 _05EC64;
-    /* 0x05EC66 */ u8 _05EC66;
-    /* 0x05EC67 */ u8 _05EC67;
-    /* 0x05EC68 */ u8 _05EC68[0xE];
-    /* 0x05EC76 */ dSaveJinx_c mJinx;       // this town's jinx (talk topic FreeG_JinxV)
-    /* 0x05EC78 */ u8 _05EC78[4];
+    /* 0x05EC64 */ dSvActivity_c mActivity; // this town's jinx and the day's jinx results (d_sv_activity)
     /* 0x05EC7C */ u32 mPublicWorksBells; // inferred: donated so far; cleared when a public work is built
     /* 0x05EC80 */ dSaveShops_c mShops;
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
-    /* 0x0632F0 */ u8 _0632F0[0x200];       // 3 dTimeStamp_c, Items at +0x1F8..; fn_80152428, fn_80151CBC
+    /* 0x0632F0 */ dEvFishing_c mFishing;    // fishing tourney standings (d_ev_fishing)
     /* 0x0634F0 */ dBugOff_c mBugOff;          // Bug-Off standings (d_bug_off)
     /* 0x0636F0 */ dSvMdlRm_c mModelRoom;   // the HRA's model room of the month
     /* 0x063C3C */ u8 _063C3C[4];
-    // The auction (d_sv_auc): items, their senders, day and day type; dSvAuc_c describes the whole
-    // block (getAuction). Kept as plain members: a wrapper member adds a destructor to our d_save_data.
-    // The target's town constructor builds the items then calls dSvAuc_c::clear here, so the original
-    // may well have had a dSvAuc_c member (see notes/d_sv_auc.txt).
-    /* 0x063C40 */ dSvAucItem_c mAuctionItems[9];
-    /* 0x064078 */ u8 mAuctionData[0x50];      // dSvAuc_c::mTags, mDay, mDayType
+    /* 0x063C40 */ dSvAuc_c mAuction;          // the auction house (d_sv_auc)
     /* 0x0640C8 */ dSvVillagerMove::Info_c mVillagerMove; // this town's news for its friends (d_sv_villager_move)
     /* 0x06673C */ dSvNpcPos::KindPos_c mNpcSpotA;
     /* 0x066741 */ dSvNpcPos::Pos_c mNpcSpotB;
@@ -162,7 +153,7 @@ public:
     /* 0x072E0A */ dSvStarSign::List_c mStarSigns; // the town's constellations (d_sv_star_sign)
     /* 0x0734F2 */ dPrivateHost_c mTownHost; // copied to/from dPrivateData_c::mHost
     /* 0x073520 */ u16 mItemVersion;        // dItem::BITM version, checked by isExtraGood
-    /* 0x073522 */ dTimeStamp_c mSaveTime;  // now, when saving (fn_8010DCF0); later than now = the clock went back
+    /* 0x073522 */ dTimeStamp_c mSaveTime;  // now, when saving (dSaveData_c::prepareSave); later than now = the clock went back
     /* 0x07352A */ dMuseum_c mMuseum;
     /* 0x07359E */ dSaveMelody_c mVillageMelody; // the town tune
     /* 0x0735AE */ dSvDailyRand::Rand_c mDailyRand;

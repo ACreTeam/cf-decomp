@@ -158,10 +158,10 @@ BOOL dNetMgr_c::start() {
     memcpy(&mUserData, mUserDataSrc, sizeof(DWCUserData));
     memcpy(mFriends, mFriendSrc, mFriendNum * sizeof(DWCFriendData));
     mStarted = 1;
-    setVolume(fn_8010DA54());
-    dVoiceChat::setMute(fn_8010DA28() ? 0 : 1);
+    setVolume(dSaveOption::getPlayerVoiceVolume());
+    dVoiceChat::setMute(dSaveOption::getVoiceSound() ? 0 : 1);
     dVoiceChat::fn_80171C10(dSaveData_c::getRawExtra()->mVoiceLevel);
-    if (!fn_8010D9FC()) {
+    if (!dSaveOption::getVoiceChat()) {
         mVoiceOff = 1;
     } else {
         mVoiceOff = 0;
@@ -656,7 +656,7 @@ void dNetMgr_c::procDwcRequest() {
         for (int i = 0; i < sInstance->mMemberNum; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getNetPlayerRaw(i);
             if (player != NULL && player->mPID.isValid() &&
-                !player->getOption()->mBit1) {
+                !player->getOption()->mVoiceChat) {
                 sInstance->mReq.connect(i);
             }
         }

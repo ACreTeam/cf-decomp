@@ -1,4 +1,4 @@
-// The whole save file in memory. Skeleton: .text 8010D7E8..8010F124.
+// The whole save file in memory. .text 8010DC04..8010F124, .sbss 8074E6E0..8074E6E8.
 // See notes/save_file_layout.txt.
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_sv_mgr.hpp>
@@ -7,12 +7,25 @@
 #include <cstddef>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_heap.hpp>
+#include <game/game/d_activity_log.hpp>
+#include <game/game/d_clock.hpp>
+#include <game/game/d_event.hpp>
+#include <game/game/d_field.hpp>
+#include <game/game/d_field_assessment.hpp>
+#include <game/game/d_field_info.hpp>
+#include <game/game/d_footmark.hpp>
+#include <game/game/d_home_room_map.hpp>
+#include <game/game/d_net.hpp>
+#include <game/game/d_npc.hpp>
+#include <game/game/d_npc_mng.hpp>
+#include <game/game/d_prc_mng.hpp>
+#include <game/game/d_str.hpp>
+#include <game/game/d_weather.hpp>
+#include <lib/revolution/OS/OSTime.h>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 
-void fn_80116900(dSaveExtra_c *extra);
-BOOL fn_801170B0(dSaveExtra_c *extra, int arg);
 
 void fn_800FADE4();
 void fn_80101424();
@@ -21,213 +34,8 @@ void fn_800CAC20();
 
 // Game heap (owner not recovered).
 
-// 8074E6D8
-dSaveOption_c dSaveData_c::sOption;
 // 8074E6E0
 dSaveData_c *dSaveData_c::sSaveData;
-
-static inline dSaveOption_c *getOption(dPrivateData_c *player) {
-    return (dSaveOption_c *)&player->_83E8;
-}
-
-// 8010D7E8
-void fn_8010D7E8(dSaveOption_c *opt) {
-    opt->mBit7 = 1;
-    opt->_1 = 6;
-    opt->mBit65 = 0;
-    opt->mBit4 = 0;
-    opt->mBit3 = 0;
-    opt->mBit2 = 0;
-    opt->mBit1 = 0;
-    opt->mBit0 = 1;
-}
-
-// 8010D808
-void fn_8010D808(dSaveOption_c *opt, u8 value) {
-    opt->_1 = value;
-}
-
-// 8010D810
-void fn_8010D810(const dSaveOption_c *opt, void *dst) {
-    memcpy(dst, opt, 1);
-}
-
-// 8010D824
-void fn_8010D824(dSaveOption_c *opt, const void *src) {
-    memcpy(opt, src, 1);
-}
-
-// 8010D82C
-void fn_8010D82C(dSaveOption_c *opt) {
-    opt->mDirty7 = 0;
-    opt->mDirty65 = 0;
-    opt->mDirty4 = 0;
-    opt->mDirty3 = 0;
-    opt->mDirty2 = 0;
-    opt->mDirty1 = 0;
-    opt->mDirty0 = 0;
-}
-
-// 8010D83C
-void fn_8010D83C(dSaveOption_c *opt) {
-    fn_8010D7E8(opt);
-    fn_8010D82C(opt);
-}
-
-// 8010D870
-void fn_8010D870(dSaveOption_c *opt) {
-    BOOL flag = TRUE;
-
-    if (dSaveData_c::getTown()->isHeaderState2()) {
-        for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
-            if (player->mPID.isValid() && getOption(player)->mBit7 == 1) {
-                flag = FALSE;
-            }
-        }
-    } else {
-        flag = FALSE;
-    }
-
-    if (flag) {
-        opt->mBit7 = 0;
-    } else {
-        opt->mBit7 = 1;
-    }
-    opt->mBit65 = 0;
-    opt->mBit4 = 0;
-    opt->mBit3 = 0;
-    opt->mBit2 = 0;
-    opt->mBit1 = 0;
-    opt->mBit0 = 1;
-}
-
-// 8010D944
-int fn_8010D944() {
-    return dSaveData_c::sOption.mBit7;
-}
-
-// 8010D950
-void fn_8010D950(u8 v) {
-    dSaveData_c::sOption.mBit7 = v;
-    dSaveData_c::sOption.mDirty7 = 1;
-}
-
-// 8010D970
-int fn_8010D970() {
-    return dSaveData_c::sOption.mBit65;
-}
-
-// 8010D97C
-void fn_8010D97C(u8 v) {
-    dSaveData_c::sOption.mBit65 = v;
-    dSaveData_c::sOption.mDirty65 = 1;
-}
-
-// 8010D99C
-u8 fn_8010D99C() {
-    return dSaveData_c::sOption.mBit4;
-}
-
-// 8010D9A8
-void fn_8010D9A8(u8 v) {
-    dSaveData_c::sOption.mBit4 = v;
-    dSaveData_c::sOption.mDirty4 = 1;
-}
-
-// 8010D9C8
-BOOL fn_8010D9C8() {
-    return dSaveData_c::sOption.mBit3;
-}
-
-// 8010D9D4
-void fn_8010D9D4(u8 v) {
-    dSaveData_c::sOption.mBit3 = v;
-    dSaveData_c::sOption.mDirty3 = 1;
-}
-
-// 8010D9F4
-int fn_8010D9F4() {
-    return 0;
-}
-
-// 8010D9FC
-BOOL fn_8010D9FC() {
-    return dSaveData_c::sOption.mBit1;
-}
-
-// 8010DA08
-void fn_8010DA08(u8 v) {
-    dSaveData_c::sOption.mBit1 = v;
-    dSaveData_c::sOption.mDirty1 = 1;
-}
-
-// 8010DA28
-BOOL fn_8010DA28() {
-    return dSaveData_c::sOption.mBit0;
-}
-
-// 8010DA34
-void fn_8010DA34(u8 v) {
-    dSaveData_c::sOption.mBit0 = v;
-    dSaveData_c::sOption.mDirty0 = 1;
-}
-
-// 8010DA54
-u8 fn_8010DA54() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    if (player == NULL) {
-        return 0;
-    }
-    return getOption(player)->_1;
-}
-
-// 8010DA8C
-void fn_8010DA8C(u8 v) {
-    fn_8010D808(getOption(dPlayerMgr_c::getCurrentPlayer()), v);
-}
-
-// 8010DAC8
-void fn_8010DAC8() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    if (player != NULL) {
-        fn_8010DAFC(getOption(player));
-    }
-}
-
-// 8010DAFC
-void fn_8010DAFC(dSaveOption_c *opt) {
-    dSaveOption_c *s = &dSaveData_c::sOption;
-    u8 byte;
-
-    if (s->mDirty7) {
-        opt->mBit7 = fn_8010D944();
-    }
-    if (s->mDirty65) {
-        opt->mBit65 = fn_8010D970();
-    }
-    if (s->mDirty4) {
-        opt->mBit4 = fn_8010D99C();
-    }
-    if (s->mDirty3) {
-        opt->mBit3 = fn_8010D9C8();
-    }
-    if (s->mDirty1) {
-        opt->mBit1 = fn_8010D9FC();
-    }
-    if (s->mDirty0) {
-        opt->mBit0 = fn_8010DA28();
-    }
-
-    fn_8010D810(opt, &byte);
-    fn_8010D82C(s);
-    fn_8010D824(s, &byte);
-}
-
-// 8010DBFC
-extern "C" int fn_8010DBFC() {
-    return 0;
-}
 
 // 8010DC04
 u32 dSaveData_c::getDLDataOffset() {
@@ -258,17 +66,55 @@ BOOL dSaveData_c::isGood() {
     if (!isHeaderState2()) {
         return FALSE;
     }
-    return isHeaderVersionOK() != FALSE;
+    BOOL ok = isHeaderVersionOK() != FALSE;
+    return ok;
 }
 
 // 8010DCB0
 void dSaveData_c::initialize() {
     clearTown();
     dSaveDLItemList_c::get()->updateChecksum();
-    fn_80116900(&mExtra);
+    mExtra.init();
 }
 
-// TODO: 8010DCF0 (new-game setup from the current player), 8010DDE0, 8010DEF8, 8010DFC0
+// 8010DCF0
+void dSaveData_c::prepareSave() {
+    dSaveTown_c *town = getTown();
+    dPrivateData_c *player = dPrivateData_c::getChecked(town->mPlayers, fn_801017B8());
+    if (player != NULL) {
+        mTownInfo.mEggPlayer.copy(&player->mPID);
+        if (player->mPID.isFromTown()) {
+            getTown()->backupFlag6();
+        }
+    }
+    dSaveOption::storeToCurrentPlayer();
+    dTime_c now = *dTime_c::getCurrent();
+    mSaveTime.set(OSCalendarTimeToTicks(&now));
+}
+
+// 8010DDE0
+void dSaveData_c::updateOnSave() {
+    mFishing.advance(TRUE);
+    mBugOff.advance(TRUE);
+    mFishing.update();
+    mFishing.checkDay();
+    mBugOff.update();
+    mBugOff.checkDay();
+    mExtra.mDesignBoard.validate();
+    fn_801002BC();
+    fn_800F47F4();
+    fgMngProc_clearFg94();
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    if (player != NULL) {
+        player->clearFlag0(0x29);
+        if (player->isFlag1(0x44)) {
+            player->mDistPatternVersion = getExtra()->mDistPattern.mVersion;
+            player->setFlag1(0x3B);
+            player->clearFlag1(0x44);
+        }
+        player->mDaysPassed = 0;
+    }
+}
 
 // 8010DED0
 extern "C" void fn_8010DED0() {
@@ -277,12 +123,54 @@ extern "C" void fn_8010DED0() {
     fn_800CAC20();
 }
 
+// 8010DEF8
+void dSaveData_c::refreshTown() {
+    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    if (fd != NULL) {
+        ((dFdInfo_c *)fd)->updateTown();
+    }
+    fn_801C95F8();
+    dSTR::getTownUnitAttr()->setAll();
+    dFootmark::getEditor()->loadSave();
+    dActivityLog::setJinx(&dSaveData_c::getTown()->mActivity.mJinx);
+    fn_801911AC();
+    dTimeStamp_c lastDay = dSaveData_c::getTown()->mTownInfo.mLastDay;
+    dEvent::buildSchedule(lastDay.get(), TRUE);
+    fn_8018CB40();
+    lbl_8074EAD0 = 0;
+    fn_8010003C();
+}
+
+// 8010DFC0
+void dSaveData_c::setupAfterLoad() {
+    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    if (fd != NULL) {
+        ((dFdInfo_c *)fd)->updateTown();
+    }
+    dTime_c::loadOffset();
+    fn_801C95CC();
+    dSTR::getTownUnitAttr()->setAll();
+    dFootmark::getEditor()->loadSave();
+    dActivityLog::applyResult();
+    fn_801911AC();
+    dTimeStamp_c lastDay = getTown()->mTownInfo.mLastDay;
+    dEvent::buildSchedule(lastDay.get(), TRUE);
+    u16 none = 0;
+    dNet::setRecord(0x2A, &none, 0);
+    dPrivateData_c::saveHostToTown();
+    fn_800F47F4();
+    dPlayerMgr_c::getCurrentPlayer()->clearFlag1(0x3D);
+    clearAllRoomMaps();
+    dSTR::resetLocks();
+    fn_8010003C();
+}
+
 // 8010E0A8
 void dSaveData_c::updateChecksum() {
     updateTownChecksum();
     dSaveDLItemList_c *items = dSaveDLItemList_c::get();
     items->mChecksum = items->calcChecksum();
-    fn_80117078(&mExtra);
+    mExtra.updateChecksum();
 }
 
 // 8010E0F8
@@ -290,7 +178,7 @@ BOOL dSaveData_c::isExtraGood(int arg) {
     if (!isTownChecksumOK(arg)) {
         return FALSE;
     }
-    if (!fn_801170B0(&mExtra, arg)) {
+    if (!mExtra.isChecksumOK(arg)) {
         return FALSE;
     }
     u16 version = mItemVersion;
@@ -298,10 +186,12 @@ BOOL dSaveData_c::isExtraGood(int arg) {
         return FALSE;
     }
     u32 stamp = mBuilding.mList.mChecksum;
-    if (!(mBuilding.mList.calcChecksum() == stamp)) {
+    BOOL same = mBuilding.mList.calcChecksum() == stamp;
+    if (!same) {
         return FALSE;
     }
-    return dSaveDLItemList_c::getRaw()->isChecksumOK() != FALSE;
+    BOOL ok = dSaveDLItemList_c::getRaw()->isChecksumOK() != FALSE;
+    return ok;
 }
 
 // 8010E1B8
@@ -333,7 +223,7 @@ u32 dSaveData_c::getSize() {
 }
 
 // 8010E248
-// The ctor is inlined here. Skeleton members (u8 arrays) don't run their ctors yet.
+// The ctor is inlined here.
 void dSaveData_c::create() {
     if (sSaveData == NULL) {
         sSaveData = (dSaveData_c *)dHeap::saveHeap_p->alloc(sizeof(dSaveData_c), 32);
@@ -348,6 +238,19 @@ void dSaveData_c::clear() {
     memset((void *)this, 0, sizeof(dSaveData_c));
 }
 
-// TODO: 8010EA98 (sets up a player via dPrivateData_c::setup)
-// TODO: 8010EB50..8010EE74 weak member ctors/dtors (records, house, design box, mailbox)
-// TODO: 8010EEB4..8010F11C small wrapper classes (0xC800 / 0x1804 / design / mail records)
+// 8010EA98
+dPrivateData_c *dSaveData_c::setupPlayer(const wchar_t *name, u8 gender, u32 idx) {
+    dPrivateData_c *player = dPlayerMgr_c::getPlayer(idx);
+    u16 ids[PLAYER_NUM];
+    u16 num = 0;
+    for (int i = 0; i < PLAYER_NUM; i++) {
+        dPrivateData_c *other = dPlayerMgr_c::getPlayer(i);
+        if (i != idx && other->mPID.isValid() == 1U) {
+            ids[num++] = other->mPID.player.mId;
+        }
+    }
+    player->setup(name, dPersonalID_c::generateId(ids, num), gender);
+    return player;
+}
+
+#include "d_save_data_dist.inc"

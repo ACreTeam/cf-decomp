@@ -1312,7 +1312,7 @@ int Word_c::procRubyJP(int pos) {
         memcpy(&baseLen, params, sizeof(baseLen));
         const wchar_t *reading = (const wchar_t *)(params + 1);
         int n = len - 4;
-        if (fn_8010D944() == 1) {
+        if (dSaveOption::getKana() == 1) {
             if (n != 0) {
                 insert(reading, n, len + pos + baseLen);
                 erase(len + baseLen, pos);
@@ -1336,7 +1336,7 @@ int Word_c::procRuby(int pos) {
     memcpy(&baseLen, params, 1);
     const wchar_t *reading = (const wchar_t *)(params + 1);
     int n = len - 4;
-    if (fn_8010D944() == 1) {
+    if (dSaveOption::getKana() == 1) {
         insert(reading, n, len + pos + baseLen);
         erase(len + baseLen, pos);
     } else {

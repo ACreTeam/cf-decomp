@@ -156,7 +156,7 @@ void dObjTutorial_c::setPriority(u8 priority) {
 
 // 801B6F1C
 BOOL dObjTutorial_c::isEnabled() {
-    return fn_8010D9C8() == 0;
+    return dSaveOption::isTutorialOff() == 0;
 }
 
 // 801B6F44

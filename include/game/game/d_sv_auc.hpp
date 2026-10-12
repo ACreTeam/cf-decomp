@@ -23,6 +23,9 @@ struct dLandID_c;
 // mItem to none and calls clear().
 class dSvAucItem_c {
 public:
+    dSvAucItem_c() { clear(); }  // 8010EB50 (weak, d_save_data)
+    ~dSvAucItem_c() {}           // 8010EB8C (weak, d_save_data)
+
     void clear();                                            // 8010A758
     void deletePlayer(u32 player);                           // 8010A7E8: drops the player's bid
     void receive(const dSvAucItem_c *other);                 // 8010A978: a listing from another town, without its bids
@@ -86,6 +89,9 @@ struct dSvAucList_c {
 // The auction (dSaveTown_c::mAuction).
 class dSvAuc_c {
 public:
+    // Inline: dSaveTown_c's constructor builds the items, then calls clear().
+    dSvAuc_c() { clear(); }
+
     static BOOL create();                                    // 8010A120
     static BOOL resetChanged();                              // 8010A128
     static u32 getDay(dTime_c time);                         // 8010A154: weeks since 2000, days from 6:00

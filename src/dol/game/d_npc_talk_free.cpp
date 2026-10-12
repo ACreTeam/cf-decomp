@@ -1751,7 +1751,7 @@ int dAcNpcNml_c::talk_c::msgFreeJinxV(msgInfo_s *info) {
         mJinxTown = -1;
         setStepProc(&talk_c::stepJinx);
         dSaveTown_c *town = dSaveData_c::getTown();
-        setJinxWords(&town->mJinx, NULL);
+        setJinxWords(&town->mActivity.mJinx, NULL);
         return TRUE;
     }
     return FALSE;
@@ -2098,7 +2098,7 @@ int dAcNpcNml_c::talk_c::msgJinx(msgInfo_s *info) {
         jinx = &town->mJinx;
     } else {
         dSaveTown_c *ownTown = dSaveData_c::getTown();
-        jinx = &ownTown->mJinx;
+        jinx = &ownTown->mActivity.mJinx;
     }
     const char *label = town != NULL ? getMsgLabel(TALK_FREE, FREE_GROUP_A, FREE_A_JINX)
                                      : getMsgLabel(TALK_FREE, FREE_GROUP_G, FREE_G_JINXV);
@@ -2132,7 +2132,7 @@ int dAcNpcNml_c::talk_c::msgJinx2(msgInfo_s *info) {
         jinx = &town->mJinx;
     } else {
         dSaveTown_c *ownTown = dSaveData_c::getTown();
-        jinx = &ownTown->mJinx;
+        jinx = &ownTown->mActivity.mJinx;
     }
     const char *label = town != NULL ? getMsgLabel(TALK_FREE, FREE_GROUP_A, FREE_A_JINX)
                                      : getMsgLabel(TALK_FREE, FREE_GROUP_G, FREE_G_JINXV);

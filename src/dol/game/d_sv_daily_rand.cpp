@@ -37,6 +37,6 @@ void Rand_c::change() {
     }
 }
 
-static Rand_c sRand; // 8074E7F0
+static Rand_c sRand(DAILY_RAND_NUM); // 8074E7F0
 
 } // namespace dSvDailyRand

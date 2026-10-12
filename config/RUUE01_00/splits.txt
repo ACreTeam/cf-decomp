@@ -745,9 +745,14 @@ dol/game/d_line_draw.cpp:
 	.sdata      start:0x8074AAA0 end:0x8074AAA8
 
 dol/game/d_main.cpp:
-	.text       start:0x800CDD2C end:0x800CE43C
-	.bss        start:0x805A20F8 end:0x805A24E8
-	.sbss       start:0x8074E4D8 end:0x8074E4E8
+	.text       start:0x800CDD2C end:0x800CDEA0
+	.bss        start:0x805A20F8 end:0x805A2410
+	.sbss       start:0x8074E4D8 end:0x8074E4E0
+
+dol/game/d_map.cpp:
+	.text       start:0x800CDEA0 end:0x800CE43C
+	.bss        start:0x805A2410 end:0x805A24E8
+	.sbss       start:0x8074E4E0 end:0x8074E4E8
 	.sdata2     start:0x80750870 end:0x80750890
 
 dol/game/d_menu_base.cpp:
@@ -1009,9 +1014,13 @@ dol/game/d_sv_auc.cpp:
 	.sdata      start:0x8074AFF8 end:0x8074B010 align:4
 	.sbss       start:0x8074E6C0 end:0x8074E6D8 align:4
 
+dol/game/d_save_option.cpp:
+	.text       start:0x8010D7E8 end:0x8010DC04
+	.sbss       start:0x8074E6D8 end:0x8074E6E0 align:4
+
 dol/game/d_save_data.cpp:
-	.text       start:0x8010D7E8 end:0x8010F124
-	.sbss       start:0x8074E6D8 end:0x8074E6E8 align:4
+	.text       start:0x8010DC04 end:0x8010F124
+	.sbss       start:0x8074E6E0 end:0x8074E6E8
 
 dol/game/d_dsn.cpp:
 	.text       start:0x8010F124 end:0x8010FB6C

@@ -198,7 +198,7 @@ BOOL saveTown() {
     dSaveData_c::getRaw();
     request.mSize = dSaveData_c::getDLDataOffset();
     dSaveData_c::getTown()->updateTownChecksum();
-    fn_80117078(dSaveData_c::getExtra());
+    dSaveData_c::getExtra()->updateChecksum();
     return startThread(writeTownThread, &request);
 }
 

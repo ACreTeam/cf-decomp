@@ -94,9 +94,9 @@ void dWifi::loadDistContent(EGG::Archive *arc, int lang, u8 slot) {
     if (data != NULL) {
         size = info.mFileSize;
         dSaveDistContent_c *content = &dSaveData_c::getExtra()->mDistContent.mContents[lang][slot];
-        fn_8010EFF0(content, data, size);
+        content->set(data, size);
     } else {
-        fn_8010EFD8(&dSaveData_c::getExtra()->mDistContent.mContents[lang][slot]);
+        dSaveData_c::getExtra()->mDistContent.mContents[lang][slot].clear();
     }
 }
 
@@ -144,7 +144,7 @@ BOOL dWifi::hasSend() {
 BOOL dWifi::enableNet() {
     if (sWc24State == WC24_STATE_ON) {
         dSaveExtra_c *extra = dSaveData_c::getExtra();
-        extra->mNetEnabled = TRUE;
+        extra->mHeader.mNetEnabled = TRUE;
         return TRUE;
     }
     return FALSE;
@@ -153,12 +153,12 @@ BOOL dWifi::enableNet() {
 // 80177CFC
 void dWifi::disableNet() {
     dSaveExtra_c *extra = dSaveData_c::getExtra();
-    extra->mNetEnabled = FALSE;
+    extra->mHeader.mNetEnabled = FALSE;
 }
 
 // 80177D24
 BOOL dWifi::isNetOn() {
-    if (dWifi::isWc24On() && dSaveData_c::getRawExtra()->mNetEnabled) {
+    if (dWifi::isWc24On() && dSaveData_c::getRawExtra()->mHeader.mNetEnabled) {
         return TRUE;
     }
     return FALSE;
@@ -280,7 +280,7 @@ BOOL dWifi::startStartThread() {
 
 // 801782EC
 int dWifi::startDaily() {
-    BOOL enabled = dSaveData_c::getRawExtra()->mNetEnabled != 0;
+    BOOL enabled = dSaveData_c::getRawExtra()->mHeader.mNetEnabled != 0;
     dSaveWc24_c *wc24 = &dSaveData_c::getExtra()->mWc24;
     wc24->updateClearSend(enabled);
     return start(dWifi::dailyThread, NULL);
@@ -675,7 +675,7 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
             if (player->isValid()) {
                 value = msg->mTown.getPlayerValue(i);
                 if (value != 0) {
-                    fn_80116D08(dSaveData_c::getExtra(), *player, value);
+                    dSaveData_c::getExtra()->addRumor(*player, value);
                 }
             }
         }
@@ -1111,7 +1111,7 @@ void updateDaily() {
     if (!lbl_805BE940.canSendMessages()) {
         return;
     }
-    if (dSaveData_c::getRaw()->mExtra.mNetEnabled) {
+    if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled) {
         updateRoster();
         dSaveWc24_c *wc24 = &dSaveData_c::getExtra()->mWc24;
         u8 sendNum = wc24->startBoardSendDay();
@@ -1464,7 +1464,7 @@ void onDistDownload(void *data, u32 size, BOOL arg) {
             if (letter != NULL) {
                 dSaveDistMail_c *mail = &dSaveData_c::getExtra()->mDistMail;
                 if (letterVersion != mail->mVersion) {
-                    fn_8010F070(mail, letter, present, letterVersion);
+                    mail->set(letter, present, letterVersion);
                 }
             }
 
@@ -1490,7 +1490,7 @@ void onDistDownload(void *data, u32 size, BOOL arg) {
             if (design != NULL) {
                 dSaveDistPattern_c *pattern = &dSaveData_c::getExtra()->mDistPattern;
                 if (designVersion != pattern->mVersion) {
-                    fn_8010F018(pattern, design, fileInfo.mFileSize, designVersion);
+                    pattern->set(design, fileInfo.mFileSize, designVersion);
                 }
             }
 
@@ -1511,7 +1511,7 @@ void onDistDownload(void *data, u32 size, BOOL arg) {
 
 // 8017B584: the downloaded NG-word patterns (task 1).
 void onNgWordDownload(void *data, u32 size, BOOL arg) {
-    fn_8010EF10(&dSaveData_c::getExtra()->_08A960, data, size);
+    dSaveData_c::getExtra()->mDistNgWords.set(data, size);
 }
 
 // 8017B5D0: the first WiiConnect24 run: the friend records, the roster, the received messages and the
@@ -1542,7 +1542,7 @@ void *startThread(void *arg) {
             if (!lbl_805BE940.download(1, onNgWordDownload)) {
                 lbl_8074B580 = 0;
             }
-            if (dSaveData_c::getRaw()->mExtra.mNetEnabled && (lbl_8074B580 == 1 || getNetErrorMessage() != 12)) {
+            if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled && (lbl_8074B580 == 1 || getNetErrorMessage() != 12)) {
                 if (!lbl_805BE940.download(0, onDistDownload)) {
                     lbl_8074B580 = 0;
                 }

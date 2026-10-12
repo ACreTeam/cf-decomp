@@ -711,17 +711,17 @@ void dFgMngStone_c::update() {
 
 // 800A3E30
 void dFgMngStone_c::hit(dFdAsPos_c pos) {
-    u8 *townFlags;
+    dSvActivity_c *activity;
     if (mTimer < 0) {
         mPos.set(pos.mX, pos.mZ);
         mTimer = ((u32)(*dHR::getRate(4) * 0x898) >> 12) + 0x1D1;
     }
     int max = HIT_MAX;
     if (mHit == 0) {
-        townFlags = dSaveData_c::getTown()->_05EC68;
-        if (*(u16 *)&townFlags[0xC] & 0x100) {
+        activity = &dSaveData_c::getTown()->mActivity;
+        if (activity->mActive & (1 << JINX_OUTCOME_MONEY)) {
             int player = fn_801017B8();
-            u8 players = townFlags[0x11];
+            u8 players = activity->mMoneyPlayers;
             if (players & (1 << player)) {
                 max = HIT_MAX_BONUS;
                 mHit++;
@@ -1289,7 +1289,7 @@ BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
         dItem::Item got;
         dFgMngItemFilter_c filter;
         filter = lbl_8059FF80;
-        if (*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 0x10) {
+        if (dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_TREE_LUCK)) {
             filter.mNum = 8;
         }
         int range[2];

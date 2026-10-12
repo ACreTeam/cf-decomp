@@ -303,8 +303,7 @@ void dSvMgr_c::stepSaveNormal_c::startVillageMail() {
 // 801BC8C0
 void dSvMgr_c::stepSaveNormal_c::waitVillageMail() {
     if (dPostOffice::updateSend()) {
-        dSaveData_c::get();
-        fn_8010DDE0();
+        dSaveData_c::get()->updateOnSave();
         nextStep();
     }
 }
@@ -779,10 +778,9 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             int index = mPlayerIndex;
             fn_801017B8();
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
-            fn_8010DAFC(player->getOption());
+            dSaveOption::store(player->getOption());
             dPlayerMgr_c::getCurrentPlayer()->copy(player);
-            dSaveData_c::get();
-            fn_8010DFC0();
+            dSaveData_c::get()->setupAfterLoad();
             dSaveData_c *save = dSaveData_c::getRaw();
             save->mSaveTime.get();
             nextStep();
@@ -1235,10 +1233,9 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             int index = mPlayerIndex;
             fn_801017B8();
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
-            fn_8010DAFC(player->getOption());
+            dSaveOption::store(player->getOption());
             dPlayerMgr_c::getCurrentPlayer()->copy(player);
-            dSaveData_c::get();
-            fn_8010DFC0();
+            dSaveData_c::get()->setupAfterLoad();
             dSaveData_c *save = dSaveData_c::getRaw();
             save->mSaveTime.get();
             nextStep();
@@ -1359,7 +1356,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::waitLoad() {
 
 // 801C3480
 void dSvMgr_c::stepSaveInterruptNetVst_c::initializeFullSave() {
-    fn_8010DCF0(dSaveData_c::get());
+    dSaveData_c::get()->prepareSave();
     dTime_c::saveOffset();
     dNand::updateCheckFlags();
     nextStep();
@@ -1436,7 +1433,7 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed() {
 
 // 801C3A18
 void dSvMgr_c::stepSaveInterruptNetHst_c::initializeFullSave() {
-    fn_8010DCF0(dSaveData_c::get());
+    dSaveData_c::get()->prepareSave();
     dTime_c::saveOffset();
     dNand::updateCheckFlags();
     nextStep();
@@ -1513,7 +1510,7 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed() {
 
 // 801C3FB0
 void dSvMgr_c::stepSaveContinueNetVst_c::initializeVisitorSave() {
-    fn_8010DAC8();
+    dSaveOption::storeToCurrentPlayer();
     nextStep();
 }
 
@@ -1535,7 +1532,7 @@ void dSvMgr_c::stepSaveContinueNetVst_c::saveFailed() {
 
 // 801C40F8
 void dSvMgr_c::stepSaveContinueNetHst_c::initializeFullSave() {
-    fn_8010DCF0(dSaveData_c::get());
+    dSaveData_c::get()->prepareSave();
     dTime_c::saveOffset();
     dNand::updateCheckFlags();
     nextStep();
@@ -1599,7 +1596,7 @@ void dSvMgr_c::stepSaveContinueNetHst_c::saveFailed() {
 
 // 801C4530
 void dSvMgr_c::stepSaveConnectNetVst_c::initializeVisitorSave() {
-    fn_8010DAC8();
+    dSaveOption::storeToCurrentPlayer();
     nextStep();
 }
 
@@ -1621,7 +1618,7 @@ void dSvMgr_c::stepSaveConnectNetVst_c::saveFailed() {
 
 // 801C4678
 void dSvMgr_c::stepSaveConnectNetHst_c::initializeHostSave() {
-    fn_8010DAC8();
+    dSaveOption::storeToCurrentPlayer();
     nextStep();
 }
 
@@ -1639,7 +1636,7 @@ void dSvMgr_c::stepSaveConnectNetHst_c::waitHostSave() {
 
 // 801C47BC
 void dSvMgr_c::stepSaveConnectNetHst_c::initializeTownSave() {
-    fn_8010DCF0(dSaveData_c::get());
+    dSaveData_c::get()->prepareSave();
     nextStep();
 }
 
@@ -1680,7 +1677,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::waitLoad() {
 
 // 801C4AE8
 void dSvMgr_c::stepSaveRetireNetVst_c::initializeFullSave() {
-    fn_8010DCF0(dSaveData_c::get());
+    dSaveData_c::get()->prepareSave();
     dTime_c::saveOffset();
     dNand::updateCheckFlags();
     nextStep();
@@ -1755,7 +1752,7 @@ void dSvMgr_c::stepSaveRetireNetVst_c::saveFailed() {
 
 // 801C5080
 void dSvMgr_c::stepSaveNormal_c::initializeFullSave() {
-    fn_8010DCF0(dSaveData_c::get());
+    dSaveData_c::get()->prepareSave();
     dTime_c::saveOffset();
     dNand::updateCheckFlags();
     nextStep();

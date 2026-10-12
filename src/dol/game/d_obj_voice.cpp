@@ -95,7 +95,7 @@ BOOL dObjVoice_c::isActive() {
     if (isSceneAttr(getCurrentScene(), SCENE_ATTR_DEMO)) {
         return FALSE;
     }
-    if (fn_8010D9FC() == TRUE) {
+    if (dSaveOption::getVoiceChat() == TRUE) {
         return FALSE;
     }
     if (!dNet::isSessionActive()) {
@@ -118,7 +118,7 @@ void dObjVoice_c::queryStatus() {
         if (i == myNo) {
             l_status[i] = VOICE_MSG_NONE;
         } else if (dNet::isMember(i)) {
-            if (getOption(dPlayerMgr_c::getNetPlayer(i))->isBit1() == TRUE) {
+            if (getOption(dPlayerMgr_c::getNetPlayer(i))->isVoiceChat() == TRUE) {
                 l_status[i] = VOICE_MSG_NONE;
             } else {
                 sendReply(VOICE_MSG_QUERY, i);
@@ -159,7 +159,7 @@ void dObjVoice_c::receive(int member, const void *data) {
             break;
         case VOICE_MSG_QUERY:
             int reply;
-            if (fn_8010D9FC() == TRUE) {
+            if (dSaveOption::getVoiceChat() == TRUE) {
                 reply = VOICE_MSG_NONE;
             } else {
                 reply = dNetMgr_c::sInstance->mInfo.m1A31 != 0 ? VOICE_MSG_READY : VOICE_MSG_NOT_READY;
@@ -196,10 +196,10 @@ void dObjVoice_c::setVoice(int member, int msg) {
         if (player != NULL) {
             if (msg == VOICE_MSG_ON) {
                 dNetMgr_c::connect(member);
-                getOption(player)->mBit1 = 0;
+                getOption(player)->mVoiceChat = 0;
             } else {
                 dNetMgr_c::disconnect(member);
-                getOption(player)->mBit1 = 1;
+                getOption(player)->mVoiceChat = 1;
             }
         }
     }

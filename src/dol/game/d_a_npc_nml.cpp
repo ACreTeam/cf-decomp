@@ -3023,7 +3023,7 @@ inline dSvTownList::Entry_c *dAcNpcNml_c::talk_c::getJinxTown() {
 }
 
 static inline const dSaveJinx_c *getJinx(dSvTownList::Entry_c *town) {
-    return town != NULL ? &town->mJinx : &dSaveData_c::getTown()->mJinx;
+    return town != NULL ? &town->mJinx : &dSaveData_c::getTown()->mActivity.mJinx;
 }
 
 // 80034F08

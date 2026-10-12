@@ -75,12 +75,7 @@ extern "C" {
 void fn_8018EF28();
 void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
-void fn_80151CBC(void *obj);
-void fn_8014FD48(void *obj, dTime_c last, dTime_c *now, int *days);
-void fn_80151CF0(void *obj);
 void fn_800F5AE8();
-void fn_8014F998(void *obj, dTime_c *now);
-void fn_8014F96C(void *obj);
 void fn_80186838();
 BOOL fn_8018EEEC();
 void fn_8018EEF4();
@@ -2565,7 +2560,7 @@ void dFgMngProc_c::buryFossils(dFdBase_c *fd, int blockW, int blockH) {
     int max;
     int n;
     max = 3;
-    if (*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 8) {
+    if (dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_FOSSILS)) {
         max = 5;
     }
     n = max - sFdAssess.mFossilNum;
@@ -2727,7 +2722,7 @@ void dFgMngProc_c::buryGyroids(dFdBase_c *fd, int blockW, int blockH, BOOL bury)
     if (bury) {
         n = 3;
     }
-    if (*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 4) {
+    if (dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_GYROIDS)) {
         n += 2;
     }
     if (n != 0) {
@@ -3943,9 +3938,9 @@ void fgMngProc_procDayChange(BOOL arg) {
     if (days != 0) {
         fn_800EC7C8(&today);
     }
-    fn_80151CBC(dSaveData_c::getTown()->_0632F0);
+    dSaveData_c::getTown()->mFishing.update();
     dSaveData_c::getTown()->mBugOff.update();
-    fn_8014FD48(&dSaveData_c::getTown()->_05EC64, last, &today, &days);
+    dSaveData_c::getTown()->mActivity.advanceDays(last, &today, &days);
     if (days != 0) {
         dPrivateData_c::expireErrandAll(dSaveData_c::getTown()->mPlayers, &now);
     }
@@ -3963,7 +3958,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     fn_800EFDD4();
     dPrivateData_c::updatePublicWorks(days);
     sFgMngProc.updateFg56();
-    fn_80151CF0(dSaveData_c::getTown()->_0632F0);
+    dSaveData_c::getTown()->mFishing.checkDay();
     dSaveData_c::getTown()->mBugOff.checkDay();
     dSaveData_c::getTown()->mShops.processDays(days);
     if (days != 0) {
@@ -4069,7 +4064,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         }
     }
     if (days != 0) {
-        fn_8014F998(&dSaveData_c::getTown()->_05EC64, &today);
+        dSaveData_c::getTown()->mActivity.updateMonth(&today);
     }
     fn_80186838();
     u32 v = dSaveData_c::getTown()->mShops.mShop.mStage;
@@ -4230,7 +4225,7 @@ void fgMngProc_collectFg56Units() {
 }
 
 // 8009C244: one-off field setup with the date-seeded random: removes trees in water, assesses,
-// buries fossils / pitfalls, plants trees, changes stones, stamps _05EC64; only caller
+// buries fossils / pitfalls, plants trees, changes stones, stamps mActivity; only caller
 // dSaveTownInfo_c::init (new-town creation).
 void fgMngProc_initTownField() {
     int salt = (int)dSaveData_c::getTown()->mTownChecksum;
@@ -4255,8 +4250,8 @@ void fgMngProc_initTownField() {
         fgMngProc_seedRandom(&last, salt + 0x2CCA81E);
         sFgMngProc.changeStones(fd, w, h);
         fgMngProc_resetUnitState();
-        fn_8014F96C(&dSaveData_c::getTown()->_05EC64);
-        fn_8014F998(&dSaveData_c::getTown()->_05EC64, &last);
+        dSaveData_c::getTown()->mActivity.clear();
+        dSaveData_c::getTown()->mActivity.updateMonth(&last);
         sFgMngUnitMask = 0;
         sFgMngRandom = NULL;
     }
@@ -4307,12 +4302,12 @@ BOOL fgMngProc_isSelfMember(int member) {
 }
 
 // 8009C5B4: TRUE when offline, the player lacks flag0 0xD, the FG manager is not busy and town
-// bit _05EC74&1 is clear; gate used by d_fgobj_manager and the task code (hedged name).
+// jinx outcome JINX_OUTCOME_NO_BEES is not in effect; gate used by d_fgobj_manager and the task code (hedged name).
 BOOL fgMngProc_canEditField() {
     BOOL ok = FALSE;
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (!dNet::isSessionActive() && !player->isFlag0(0xD) && sFgMngProc.mBusy == 0 &&
-        !(*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 1)) {
+        !(dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_NO_BEES))) {
         ok = TRUE;
     }
     return ok;

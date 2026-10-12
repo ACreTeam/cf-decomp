@@ -13,8 +13,8 @@
 #define SAVE_DESIGNBOX_PAGE_SLOTS 4
 #define SAVE_DESIGNBOX_NUM 64
 
-// One item id per stored-letter slot, same paging as dSaveMailBox_c (ctor/dtor fn_8010EE70 /
-// fn_8010EE74, both empty). Read by the letter menu REL for the inventory's letter slots.
+// One item id per stored-letter slot, same paging as dSaveMailBox_c (ctor/dtor 8010EE70 /
+// 8010EE74, both empty, weak in d_save_data). Read by the letter menu REL for the inventory's letter slots.
 struct dSaveItemBox_c {
     dSaveItemBox_c() {}
     ~dSaveItemBox_c() {}
@@ -26,8 +26,11 @@ struct dSaveItemBox_c {
     /* 0x000 */ u16 mItems[SAVE_MAILBOX_NUM];
 }; // size 0x140
 
-// Stored letters (ctor fn_8010EDC4, dtor fn_8010EE0C).
+// Stored letters (ctor / dtor: weak copies 8010EDC4 / 8010EE0C in d_save_data).
 struct dSaveMailBox_c {
+    dSaveMailBox_c() {}
+    ~dSaveMailBox_c() {}
+
     void clear();                                        // 80112CA8
     void set(int page, int slot, const dMail_c *mail);   // 80112CF4
     dMail_c *get(int page, int slot);                    // 80112D10
@@ -35,8 +38,11 @@ struct dSaveMailBox_c {
     /* 0x0000 */ dMail_c mMails[SAVE_MAILBOX_NUM];
 }; // size 0x23A00
 
-// Stored designs with a used bit per slot (ctor fn_8010ED28).
+// Stored designs with a used bit per slot.
 struct dSaveDesignBox_c {
+    dSaveDesignBox_c() {}  // 8010ED28 (weak, d_save_data)
+    ~dSaveDesignBox_c() {} // 8010ED84 (weak, d_save_data)
+
     void init();                                           // 80112D24: default designs, none used
     void remove(int page, int slot);                       // 80112D8C
     void set(int page, int slot, const dDesign_c *design); // 80112DF0

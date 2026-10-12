@@ -19,7 +19,7 @@ const char *l_fishingLabels[FISHING_STATE_NONE] = {
 // 800470E4
 int dAcNpcNml_c::talk_c::getFishingTalkState() {
     dAnimalSave_c *animals;
-    u8 *record;
+    dEvFishing_c *record;
     dPersonalID_c *pid;
     BOOL active = dEvent::isOngoing(EVENT_FISHING_TOURNEY) != FALSE;
     if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
@@ -35,14 +35,14 @@ int dAcNpcNml_c::talk_c::getFishingTalkState() {
     }
 
     int state = FISHING_STATE_NONE;
-    record = dSaveData_c::getRaw()->_0632F0;
-    dAnmPersonalID_c *leaderAnimal = fn_801533E0(record, 0);
-    dPersonalID_c *leaderPlayer = fn_801533C8(record, 0);
+    record = &dSaveData_c::getRaw()->mFishing;
+    dAnmPersonalID_c *leaderAnimal = record->getAnimal(0);
+    dPersonalID_c *leaderPlayer = record->getPlayer(0);
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dNpcEntry_c *entry = getEntry();
     if (active) {
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
-            if (!fn_80153410(record).isValid()) {
+            if (!record->getFish().isValid()) {
                 state = FISHING_STATE_FIRST;
             } else {
                 state = FISHING_STATE_FIRST_FISH;
@@ -78,13 +78,13 @@ const dAcNpcNml_c::talk_c::procSet_s *dAcNpcNml_c::talk_c::getFishingProcSet() {
 
 // 800473A4
 int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
-    u8 *record;
+    dEvFishing_c *record;
     int state = getFishingTalkState();
     u8 gender;
-    record = dSaveData_c::getRaw()->_0632F0;
-    dItem::Item item = fn_80153410(record);
-    dAnmPersonalID_c *leaderAnimal = fn_801533E0(record, 0);
-    dPersonalID_c *leaderPlayer = fn_801533C8(record, 0);
+    record = &dSaveData_c::getRaw()->mFishing;
+    dItem::Item item = record->getFish();
+    dAnmPersonalID_c *leaderAnimal = record->getAnimal(0);
+    dPersonalID_c *leaderPlayer = record->getPlayer(0);
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dNpcEntry_c *entry = getEntry();
     dSaveTown_c *town = dSaveData_c::getTown();
@@ -116,13 +116,13 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
                     getController()->setStringWord(4, unit, "sys_STRING/STR_Unit");
                 }
             }
-            dItem::Item fish = fn_8015341C(record, 0);
+            dItem::Item fish = record->getItem(0);
             if (fish.isValid()) {
                 setItemName(&fish, 5);
             } else if (item.isValid()) {
                 setItemName(&item, 5);
             }
-            setDecimal(fn_8015343C(fn_801533F8(record, 0)), 1, 1);
+            setDecimal(dEvFishing_c::toDisplaySize(record->getSize(0)), 1, 1);
 
             dNpc::msgMemorySecond_c *mem = getRememberedMsg();
             if (mem != NULL) {

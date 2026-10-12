@@ -35,10 +35,14 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_HOUSE_MODEL = 0x2A,       // the HRA's house model present was sent (70000 points)
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
+    PRIVATE_FLAG0_FISHING_ENTERED = 0x2D,       // the player entered this fishing tourney (d_ev_fishing)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
-    PRIVATE_FLAG0_BUG_OFF_LETTER_HELD = 0x72,   // the Bug-Off result letter waits in mFutureSelfLetter
+    PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
 };
 enum dPrivateFlag1_e {
+    PRIVATE_FLAG1_FISHING_TALK_0 = 0x11, // 0x11..0x13: fishing tourney talk flags, cleared by its setup
+    PRIVATE_FLAG1_FISHING_TALK_1 = 0x12,
+    PRIVATE_FLAG1_FISHING_TALK_2 = 0x13,
     PRIVATE_FLAG1_BUG_OFF_TALK_0 = 0x35, // 0x35..0x38: Bug-Off talk flags, cleared by its setup
     PRIVATE_FLAG1_BUG_OFF_TALK_1 = 0x36,
     PRIVATE_FLAG1_BUG_OFF_TALK_2 = 0x37,
@@ -330,6 +334,7 @@ struct dSaveOption_c;
 struct dSaveMailBox_c;
 struct dSaveItemBox_c;
 struct dSaveDesignBox_c;
+class dPlayerPostBox_c;
 
 class dPrivateData_c {
 public:
@@ -445,7 +450,7 @@ public:
     BOOL isNookLoyaltyLetterDue(); // 801393AC: 50 purchases and its "MAIL_ETC_TPS" letter not sent (d_save_shop)
 
     // This player's blocks in the extra save data (by its index in the save, found by mPID).
-    void *getPostBox();               // 80139408: its post box (dSaveExtra_c::_17FF58, d_post_office)
+    dPlayerPostBox_c *getPostBox();   // 80139408: its house mailbox (dSaveExtra_c::mPlayerPostBoxes)
     dSaveMailBox_c *getMailBox();     // 80139468: its saved letters
     dSaveItemBox_c *getItemBox();     // 801394D0: its saved letter presents
     dSaveDesignBox_c *getDesignBox(); // 80139530: its saved designs

@@ -17,13 +17,12 @@ extern "C" {
 int fn_801F7FC4(void *work, size_t workSize, const void *data, s32 dataSize); // build the matcher
 int fn_801F83D0(const u16 **words, int num, u8 *results, int *hits);         // run it
 void fn_801F8958();
-void fn_8010EEB4(dSaveDistBlock_c *block); // clear the downloaded patterns
 void fn_802B8D90(OSThread *thread);
 }
 
 static OSThread l_thread;
 static dPrcMng_c::param_c l_param;
-dPrcMng_c l_prcMng; // also read by fn_8010EEB4 (d_save_data: resets the downloaded patterns)
+dPrcMng_c l_prcMng; // also read by dSaveDistBlock_c::clear (d_save_data: resets the downloaded patterns)
 static void *l_stack;
 static bool l_running;
 static int l_result;
@@ -47,8 +46,8 @@ void *dPrcMng_c::setupProc(void *arg) {
     heap->free(3);
     size_t size = heap->getAllocatableSize(4);
     void *work = heap->alloc(size, 4);
-    const void *data = dSaveData_c::getRawExtra()->_08A960.mData;
-    s32 dataSize = dSaveData_c::getRawExtra()->_08A960.mSize;
+    const void *data = dSaveData_c::getRawExtra()->mDistNgWords.mData;
+    s32 dataSize = dSaveData_c::getRawExtra()->mDistNgWords.mSize;
     if (dataSize == 0) {
         data = l_prcMng.mData;
         dataSize = l_prcMng.mSize;
@@ -59,7 +58,7 @@ void *dPrcMng_c::setupProc(void *arg) {
     }
     l_result = fn_801F7FC4(work, size, data, dataSize);
     if (l_result == -8) {
-        fn_8010EEB4(&dSaveData_c::getExtra()->_08A960);
+        dSaveData_c::getExtra()->mDistNgWords.clear();
         l_result = fn_801F7FC4(work, size, l_prcMng.mData, l_prcMng.mSize);
     }
     fn_801F8958();

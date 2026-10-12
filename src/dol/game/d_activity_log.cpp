@@ -12,9 +12,6 @@ namespace dActivityLog {
 
 // 800C76C0
 Log_c::Log_c() {
-    mJinx.mCondition = 0;
-    mJinx.mOutcome = 0;
-    mJinx.mValue = 0;
     mJinx.clear();
 }
 
@@ -29,9 +26,6 @@ void destroy() {}
 // 800C770C
 void clear() {
     dSaveJinx_c jinx;
-    jinx.mCondition = 0;
-    jinx.mOutcome = 0;
-    jinx.mValue = 0;
     jinx.clear();
     g_log.set(&jinx);
 }
@@ -148,22 +142,20 @@ void Log_c::count(int cond, int player, int value) {
 // 800C7994
 void applyVisitorDone(BOOL done) {
     if (dNet::isHost()) {
-        fn_8014FBF0(&dSaveData_c::getTown()->_05EC64, done);
+        dSaveData_c::getTown()->mActivity.setVisitorDone(done);
     }
 }
 
 // 800C79DC
 void applyResult() {
-    // Assign through a fixed source pointer to preserve the byte-wise copy.
-    dSaveJinx_c jinx;
+    // Copy through a fixed source pointer to preserve the byte-wise copy.
     const dSaveJinx_c* source = g_log.getJinx();
-
-    jinx = *source;
+    dSaveJinx_c jinx = *source;
     if (jinx.mCondition < JINX_COND_NUM) {
         dSaveTown_c *town = dSaveData_c::getTown();
         dPrivateData_c *me = dPlayerMgr_c::getCurrentPlayer();
         u8 done = g_log.mDone;
-        fn_8014FCA0(&town->_05EC64, jinx.mOutcome, done, me->findInSave());
+        town->mActivity.setDone(jinx.mOutcome, done, me->findInSave());
         clear();
     }
 }
@@ -172,13 +164,13 @@ void applyResult() {
 void applyTravelResult(int outcome) {
     dSaveTown_c *town = dSaveData_c::getTown();
     dPrivateData_c *me = dPlayerMgr_c::getCurrentPlayer();
-    fn_8014FCA0(&town->_05EC64, outcome, outcome != JINX_OUTCOME_NUM, me->findInSave());
+    town->mActivity.setDone(outcome, outcome != JINX_OUTCOME_NUM, me->findInSave());
 }
 
 // 800C7AC0
 void backupTownBits() {
     dSaveTown_c *town = dSaveData_c::getTown();
-    g_log.setTownBits(*(u16 *)&town->_05EC68[8]);
+    g_log.setTownBits(town->mActivity.mToday.mOutcomes);
 }
 
 // 800C7AF8
@@ -194,7 +186,7 @@ u16 getTownBits() {
 // 800C7B10
 void restoreTownBits() {
     dSaveTown_c *town = dSaveData_c::getTown();
-    fn_80150080(&town->_05EC64, getTownBits());
+    town->mActivity.setTodayOutcomes(getTownBits());
 }
 
 } // namespace dActivityLog

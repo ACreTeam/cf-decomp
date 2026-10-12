@@ -21,7 +21,6 @@
 #include <game/game/d_net.hpp>
 
 extern "C" {
-dItem::Item fn_80153410(const void *obj);           // the item at obj + 0x1F8
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
@@ -737,7 +736,7 @@ void dFishField_c::spawn(int riverNum, int seaNum, bool awayFromPlayers) {
         }
         for (int n = 0; n < num; n++) {
             dSaveTown_c *town = dSaveData_c::getTown();
-            dItem::Item item = fn_80153410(town->_0632F0);
+            dItem::Item item = town->mFishing.getFish();
             const dFishSpawn_c *spawn;
             if (event && item.isValid()) {
                 spawn = dFishInfo::getRandomSpawnBoosted(water, dItem::Item_getIdxInKind(item));

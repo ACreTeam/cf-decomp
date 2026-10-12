@@ -92,7 +92,7 @@ void dSaveStalkMarket_c::decidePrices() {
         break;
     }
 
-    if ((*(u16 *)&dSaveData_c::getTown()->_05EC68[0xC] & 2) && mTrend == STALK_MARKET_TREND_DECREASING) {
+    if ((dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_TOWN_IMPROVES)) && mTrend == STALK_MARKET_TREND_DECREASING) {
         mTrend = STALK_MARKET_TREND_RANDOM;
     }
 

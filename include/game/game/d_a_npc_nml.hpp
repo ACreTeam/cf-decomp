@@ -1480,8 +1480,8 @@ public:
         int msgRollanWallNone(msgInfo_s *info);     // 80061304 EC: "Ev_Rollan" code 0xB..0xD (no present)
         void selRollanWallFull();                   // 80061368 choice (pockets full): EC = msgRollanWallNone
         // ---- d_npc_talk_town (.text 800613BC..80061ADC) ----
-        // EC (via 8046CD78): "Town_Rumor": a memory of a player from another town (save list at dSaveData_c::getRaw()
-        // +0x735E0, fn_80116A74) that is not the current player; land / personal name as words 0 / 1,
+        // EC (via 8046CD78): "Town_Rumor": a rumor about a player from another town (dSaveExtra_c::pickRumor) that
+        // is not the current player; land / personal name as words 0 / 1,
         // code from the memory kind (jumptable 804A4BCC, dAnimal_c::findMemory2), unit word 2
         // ("sys_STRING/STR_Unit", setStringWord) or clearWord(2). FALSE when there is no such memory.
         int msgTownRumor(msgInfo_s *info);          // 800613BC

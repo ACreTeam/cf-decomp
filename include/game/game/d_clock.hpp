@@ -5,5 +5,6 @@
 #include <types.h>
 
 extern "C" {
+void fn_8018CB40(); // 8018CB40: fn_8018CECC on the clock (80624010)
 void fn_8018CE28(int member, const void *data); // 8018CE28: net receive (d_net packet 0x54)
 }
