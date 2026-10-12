@@ -2,6 +2,7 @@
 // .sdata 80749F20..80749F60, .sbss 8074E310..8074E330.
 #include <game/game/d_screenshot.hpp>
 #include <game/game/d_m2d.hpp>
+#include <game/game/d_photo.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <lib/revolution/OS/OSThread.h>
@@ -13,8 +14,6 @@
 using namespace dScreenshot;
 
 extern "C" {
-u8 *fn_800FADCC();                  // the JPEG
-u32 fn_800FADD4();                  // its size
 void fn_802B8D90(OSThread *thread);
 
 // The SD card library (wrappers return 0 / -1 unless noted).
@@ -423,8 +422,8 @@ static void *writeProc(void *arg) {
         l_result = getErrorResult(l_errno);
         return NULL;
     }
-    u8 *data = fn_800FADCC();
-    if (fn_8021C868(data, fn_800FADD4(), 1, file) == 0) {
+    u8 *data = dPhoto::getJpeg();
+    if (fn_8021C868(data, dPhoto::getJpegSize(), 1, file) == 0) {
         l_errno = fn_8021C7A4();
         l_result = getErrorResult(l_errno);
         fn_8021C7E4(file);

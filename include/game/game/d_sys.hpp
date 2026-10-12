@@ -4,6 +4,9 @@
 // what other TUs use.
 
 #include <types.h>
+#include <lib/egg/core/eggSystem.h>
+
+extern EGG::TSystem<>::Configuration *lbl_8074E880; // 8074E880: the system configuration (80600750)
 
 extern "C" {
 void fn_8016B9FC(u8 value); // 8016B9FC: sets a byte (+8) of the object at lbl_8074E880 +0x4C, if any (d_sys boot, d_s_boot create)

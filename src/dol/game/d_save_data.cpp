@@ -18,6 +18,7 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_npc_mng.hpp>
+#include <game/game/d_photo.hpp>
 #include <game/game/d_prc_mng.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_weather.hpp>
@@ -27,7 +28,6 @@
 extern "C" {
 
 
-void fn_800FADE4();
 void fn_80101424();
 void fn_800CAC20();
 }
@@ -118,7 +118,7 @@ void dSaveData_c::updateOnSave() {
 
 // 8010DED0
 extern "C" void fn_8010DED0() {
-    fn_800FADE4();
+    dPhoto::clear();
     fn_80101424();
     fn_800CAC20();
 }
