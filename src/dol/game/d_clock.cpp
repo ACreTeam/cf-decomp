@@ -22,6 +22,7 @@
 #include <lib/nw4r/lyt/lyt_pane.h>
 #include <lib/nw4r/lyt/lyt_textBox.h>
 #include <lib/revolution/WPAD/WPAD.h>
+#include <game/snd/snd_id.hpp>
 
 CUSTOM_BASE_PROFILE(CLOCK, dClock_c, 5, 0x124);
 
@@ -42,11 +43,6 @@ CUSTOM_BASE_PROFILE(CLOCK, dClock_c, 5, 0x124);
 #define TIMER_COUNT_SECONDS 11  // the count sound plays for the last 10 seconds
 #define COUNT_MAX 99
 
-#define SE_TIMER_COUNT 0x1724
-#define SE_TIMER_END 0x1725
-#define SE_TIMER_START 0x1726
-#define SE_TIMER_STOP 0x1727
-#define SE_TIMER_TICK 0x176F
 
 #define MSG_WEEKDAY_GROUP "sys_2D/SYS_2D" // weekday names, Monday 1 .. Sunday 7
 #define MSG_TIMER_TIME 199                // "mm:ss" from word slots 0 and 1
@@ -588,22 +584,22 @@ void receive(int member, const void *data) {
 
 // 8018CEAC
 static void playEndSe() {
-    playSe(SE_TIMER_END);
+    playSe(SE_timer_countdown_hi);
 }
 
 // 8018CEB4
 static void playCountSe() {
-    playSe(SE_TIMER_COUNT);
+    playSe(SE_timer_countdown_low);
 }
 
 // 8018CEBC
 static void playStartSe() {
-    playSe(SE_TIMER_START);
+    playSe(SE_timer_start);
 }
 
 // 8018CEC4
 static void playStopSe() {
-    playSe(SE_TIMER_STOP);
+    playSe(SE_timer_stop);
 }
 
 // 8018CECC
@@ -657,7 +653,7 @@ void Timer_c::stateRun() {
         mTickTimer--;
     } else {
         mTickTimer = TIMER_TICK_FRAMES;
-        playSe(SE_TIMER_TICK);
+        playSe(SE_TimerDrive);
     }
     if (mFlags & FLAG_SEC) {
         int remain = getRemain();

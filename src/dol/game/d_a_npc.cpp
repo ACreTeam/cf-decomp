@@ -49,6 +49,7 @@
 #include <lib/egg/math/eggMath.h>
 #include <lib/egg/math/eggQuat.h>
 #include <string.h>
+#include <game/snd/snd_id.hpp>
 
 // ---- top-of-file data (.rodata 804659F0..8046B0B0, .sdata2 8074FDE0..8074FE58, __sinit globals) ----
 
@@ -1961,7 +1962,7 @@ int dAcNpc_c::preCreate() {
     mNodeMtx07 = identity;
     mIsActive = true;
     mCheckGround = true;
-    mAudioObj.setMaxDist(l_moveParamRun.mSpeed);
+    mAudioObj.setMaxSpeed(l_moveParamRun.mSpeed);
     mDrawShadow = true;
     _1C3C = false;
     _1B70 = 4;
@@ -3659,7 +3660,7 @@ BOOL dAcNpc_c::manpu_c::startHatena(const mMtx_c *mtx, int anmId, u8 frame, cons
 // ---- dAcNpc_c::manpu_c handlers (8001B014..8001D56C) ----
 
 int dAcNpc_c::manpu_c::start00(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18DE);
+    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_11);
 }
 
 int dAcNpc_c::manpu_c::exec00(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -3683,7 +3684,7 @@ int dAcNpc_c::manpu_c::startA(const mMtx_c *mtx, int anmId, u8 frame, const mAng
 }
 
 int dAcNpc_c::manpu_c::start01(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18F0);
+    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_29);
 }
 
 int dAcNpc_c::manpu_c::exec01(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -3701,7 +3702,7 @@ int dAcNpc_c::manpu_c::start02(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    startSound(audio, 0x18D5);
+    startSound(audio, SE_manpu_02);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -3727,7 +3728,7 @@ int dAcNpc_c::manpu_c::startSmile(const mMtx_c *mtx, int anmId, u8 frame, const 
 }
 
 int dAcNpc_c::manpu_c::start03(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D6);
+    return startSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_03);
 }
 
 int dAcNpc_c::manpu_c::execSmile(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2, u32 se) {
@@ -3737,7 +3738,7 @@ int dAcNpc_c::manpu_c::execSmile(const mMtx_c *mtx, int anmId, u8 frame, const m
 }
 
 int dAcNpc_c::manpu_c::exec03(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D6);
+    return execSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_03);
 }
 
 int dAcNpc_c::manpu_c::startAseru(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2, u32 se) {
@@ -3763,11 +3764,11 @@ int dAcNpc_c::manpu_c::execAseru(const mMtx_c *mtx, int anmId, u8 frame, const m
 }
 
 int dAcNpc_c::manpu_c::start04(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D9);
+    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_06);
 }
 
 int dAcNpc_c::manpu_c::exec04(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D9);
+    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_06);
 }
 
 int dAcNpc_c::manpu_c::startLove(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2, u32 se) {
@@ -3787,7 +3788,7 @@ int dAcNpc_c::manpu_c::startLove(const mMtx_c *mtx, int anmId, u8 frame, const m
 }
 
 int dAcNpc_c::manpu_c::start05(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startLove(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18E6);
+    return startLove(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_19);
 }
 
 int dAcNpc_c::manpu_c::exec05(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -3795,17 +3796,17 @@ int dAcNpc_c::manpu_c::exec05(const mMtx_c *mtx, int anmId, u8 frame, const mAng
 }
 
 int dAcNpc_c::manpu_c::start24(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18E7);
+    startSound(audio, SE_manpu_20);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start25(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18E8);
+    startSound(audio, SE_manpu_21);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start26(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18E9);
+    startSound(audio, SE_manpu_22);
     return FALSE;
 }
 
@@ -3823,7 +3824,7 @@ int dAcNpc_c::manpu_c::start06(const mMtx_c *mtx, int anmId, u8 frame, const mAn
         r = mEf[1].callCreate(mtx, pos, v1, v2);
         if (r) {
             mState = STATE_EXEC;
-            holdSound(audio, 0x18DB);
+            holdSound(audio, SE_manpu_08);
         }
     }
     return r;
@@ -3834,7 +3835,7 @@ int dAcNpc_c::manpu_c::exec06(const mMtx_c *mtx, int anmId, u8 frame, const mAng
     if (r) {
         r = mEf[1].callExecute(mtx, pos, v1, v2);
     }
-    holdSound(audio, 0x18DB);
+    holdSound(audio, SE_manpu_08);
     return r;
 }
 
@@ -3855,7 +3856,7 @@ int dAcNpc_c::manpu_c::startPikon(const mMtx_c *mtx, int anmId, u8 frame, const 
 }
 
 int dAcNpc_c::manpu_c::start07(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startPikon(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18DF);
+    return startPikon(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_12);
 }
 
 int dAcNpc_c::manpu_c::exec07(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -3870,7 +3871,7 @@ int dAcNpc_c::manpu_c::start23(const mMtx_c *mtx, int anmId, u8 frame, const mAn
         name = nameR;
     }
     createOneShot(mtx, anmId, frame, angY, name, 0);
-    startSound(audio, 0x18E0);
+    startSound(audio, SE_manpu_13);
     return FALSE;
 }
 
@@ -3885,7 +3886,7 @@ int dAcNpc_c::manpu_c::start08(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     BOOL r = mEf[0].callCreate(mtx, pos, v1, v2);
     if (r) {
         mState = STATE_EXEC;
-        startSound(audio, 0x18E2);
+        startSound(audio, SE_manpu_15);
     }
     return r;
 }
@@ -3905,14 +3906,14 @@ int dAcNpc_c::manpu_c::start09(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     BOOL r = mEf[0].callCreate(mtx, pos, v1, v2);
     if (r) {
         mState = STATE_EXEC;
-        holdSound(audio, 0x18DA);
+        holdSound(audio, SE_manpu_07);
     }
     return r;
 }
 
 int dAcNpc_c::manpu_c::exec09(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
     BOOL r = mEf[0].callExecute(mtx, pos, v1, v2);
-    holdSound(audio, 0x18DA);
+    holdSound(audio, SE_manpu_07);
     return r;
 }
 
@@ -3937,7 +3938,7 @@ int dAcNpc_c::manpu_c::startPun(const mMtx_c *mtx, int anmId, u8 frame, const mA
 }
 
 int dAcNpc_c::manpu_c::start10(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startPun(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D8);
+    return startPun(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_05);
 }
 
 int dAcNpc_c::manpu_c::execPun(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2, u32 se) {
@@ -3970,7 +3971,7 @@ int dAcNpc_c::manpu_c::execPun(const mMtx_c *mtx, int anmId, u8 frame, const mAn
 }
 
 int dAcNpc_c::manpu_c::exec10(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execPun(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D8);
+    return execPun(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_05);
 }
 
 int dAcNpc_c::manpu_c::start11(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -3988,7 +3989,7 @@ int dAcNpc_c::manpu_c::start11(const mMtx_c *mtx, int anmId, u8 frame, const mAn
             return FALSE;
         }
     }
-    startSound(audio, 0x18D4);
+    startSound(audio, SE_manpu_01);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4014,7 +4015,7 @@ int dAcNpc_c::manpu_c::start12(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    startSound(audio, 0x18EB);
+    startSound(audio, SE_manpu_24);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4024,47 +4025,47 @@ int dAcNpc_c::manpu_c::exec12(const mMtx_c *mtx, int anmId, u8 frame, const mAng
 }
 
 int dAcNpc_c::manpu_c::start27(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18EC);
+    startSound(audio, SE_manpu_25);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start28(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
     if (frame == 0) {
-        startSound(audio, 0x18ED);
+        startSound(audio, SE_manpu_26);
     }
     return TRUE;
 }
 
 int dAcNpc_c::manpu_c::start29(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18EE);
+    startSound(audio, SE_manpu_27);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start30(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18F5);
+    startSound(audio, SE_manpu_34);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start31(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18F6);
+    startSound(audio, SE_manpu_35);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start32(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18F7);
+    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_36);
 }
 
 int dAcNpc_c::manpu_c::start33(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18F8);
+    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_37);
 }
 
 int dAcNpc_c::manpu_c::start34(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    holdSound(audio, 0x18F9);
+    holdSound(audio, SE_manpu_38);
     return TRUE;
 }
 
 int dAcNpc_c::manpu_c::start35(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startNeboke(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18FB);
+    return startNeboke(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_40);
 }
 
 int dAcNpc_c::manpu_c::exec35(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -4072,113 +4073,113 @@ int dAcNpc_c::manpu_c::exec35(const mMtx_c *mtx, int anmId, u8 frame, const mAng
 }
 
 int dAcNpc_c::manpu_c::start36(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startPun(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18FC);
+    return startPun(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_41);
 }
 
 int dAcNpc_c::manpu_c::exec36(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execPun(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18FC);
+    return execPun(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_41);
 }
 
 int dAcNpc_c::manpu_c::start37(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x18FD);
+    startSound(audio, SE_manpu_42);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start38(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHyu(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18FE);
+    return startHyu(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_43);
 }
 
 int dAcNpc_c::manpu_c::start39(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18FF);
+    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_44);
 }
 
 int dAcNpc_c::manpu_c::start40(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1900);
+    startSound(audio, SE_manpu_45);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start41(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1901);
+    startSound(audio, SE_manpu_46);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start42(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1902);
+    startSound(audio, SE_manpu_47);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start43(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1903);
+    startSound(audio, SE_manpu_48);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start44(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1904);
+    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_49);
 }
 
 int dAcNpc_c::manpu_c::start45(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1905);
+    return startSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_50);
 }
 
 int dAcNpc_c::manpu_c::exec45(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1905);
+    return execSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_50);
 }
 
 int dAcNpc_c::manpu_c::start46(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startLove(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1906);
+    return startLove(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_51);
 }
 
 int dAcNpc_c::manpu_c::start47(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1907);
+    startSound(audio, SE_manpu_52);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start48(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1908);
+    startSound(audio, SE_manpu_53);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start49(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1909);
+    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_54);
 }
 
 int dAcNpc_c::manpu_c::exec49(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1909);
+    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_54);
 }
 
 int dAcNpc_c::manpu_c::start50(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x190A);
+    startSound(audio, SE_manpu_55);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start51(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x190B);
+    startSound(audio, SE_manpu_56);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start52(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x190C);
+    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_57);
 }
 
 int dAcNpc_c::manpu_c::start53(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    holdSound(audio, 0x190D);
+    holdSound(audio, SE_manpu_58);
     return TRUE;
 }
 
 int dAcNpc_c::manpu_c::start54(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x190E);
+    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_59);
 }
 
 int dAcNpc_c::manpu_c::exec54(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x190E);
+    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_59);
 }
 
 int dAcNpc_c::manpu_c::start55(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
     if (anmId == 0x17C) {
         if (frame == 0) {
-            startSound(audio, 0x190F);
+            startSound(audio, SE_manpu_60);
         } else if (frame == 40) {
-            startSound(audio, 0x1984);
+            startSound(audio, SE_KyoshoEriOpen);
         }
     }
     return TRUE;
@@ -4187,96 +4188,96 @@ int dAcNpc_c::manpu_c::start55(const mMtx_c *mtx, int anmId, u8 frame, const mAn
 int dAcNpc_c::manpu_c::start56(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
     static const char name[] = "af_npc_hakke_bg";
     createOneShot(mtx, anmId, frame, angY, name, 0);
-    startSound(audio, 0x1910);
+    startSound(audio, SE_manpu_61);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start57(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1911);
+    startSound(audio, SE_manpu_62);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start58(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1912);
+    return startAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_63);
 }
 
 int dAcNpc_c::manpu_c::exec58(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1912);
+    return execAseru(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_63);
 }
 
 int dAcNpc_c::manpu_c::start59(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1913);
+    startSound(audio, SE_manpu_64);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start60(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1914);
+    return startSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_65);
 }
 
 int dAcNpc_c::manpu_c::exec60(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1914);
+    return execSmile(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_65);
 }
 
 int dAcNpc_c::manpu_c::start61(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1915);
+    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_66);
 }
 
 int dAcNpc_c::manpu_c::start62(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1916);
+    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_67);
 }
 
 int dAcNpc_c::manpu_c::start63(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startPikon(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1917);
+    return startPikon(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_68);
 }
 
 int dAcNpc_c::manpu_c::start64(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1918);
+    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_69);
 }
 
 int dAcNpc_c::manpu_c::start65(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1919);
+    startSound(audio, SE_manpu_70);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start66(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x191A);
+    startSound(audio, SE_manpu_71);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start67(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x191B);
+    startSound(audio, SE_manpu_72);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start68(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x191C);
+    startSound(audio, SE_manpu_73);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start69(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x191D);
+    return startA(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_74);
 }
 
 int dAcNpc_c::manpu_c::start70(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x191E);
+    startSound(audio, SE_manpu_75);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start71(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x191F);
+    startSound(audio, SE_manpu_76);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start72(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startPun(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1920);
+    return startPun(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_77);
 }
 
 int dAcNpc_c::manpu_c::exec72(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return execPun(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1920);
+    return execPun(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_77);
 }
 
 int dAcNpc_c::manpu_c::start73(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1921);
+    startSound(audio, SE_manpu_78);
     return FALSE;
 }
 
@@ -4291,14 +4292,14 @@ int dAcNpc_c::manpu_c::start13(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    holdSound(audio, 0x18DD);
+    holdSound(audio, SE_manpu_10);
     mState = STATE_EXEC;
     return TRUE;
 }
 
 int dAcNpc_c::manpu_c::exec13(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
     BOOL r = mEf[0].callExecute(mtx, pos, v1, v2);
-    holdSound(audio, 0x18DD);
+    holdSound(audio, SE_manpu_10);
     return r;
 }
 
@@ -4327,7 +4328,7 @@ int dAcNpc_c::manpu_c::startHa(const mMtx_c *mtx, int anmId, u8 frame, const mAn
 }
 
 int dAcNpc_c::manpu_c::start14(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18D7);
+    return startHa(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_04);
 }
 
 int dAcNpc_c::manpu_c::exec14(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -4349,7 +4350,7 @@ int dAcNpc_c::manpu_c::start15(const mMtx_c *mtx, int anmId, u8 frame, const mAn
             return FALSE;
         }
     }
-    startSound(audio, 0x18EF);
+    startSound(audio, SE_manpu_28);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4375,7 +4376,7 @@ int dAcNpc_c::manpu_c::start16(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    startSound(audio, 0x18E1);
+    startSound(audio, SE_manpu_14);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4399,7 +4400,7 @@ int dAcNpc_c::manpu_c::start17(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    startSound(audio, 0x18E3);
+    startSound(audio, SE_manpu_16);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4423,7 +4424,7 @@ int dAcNpc_c::manpu_c::start18(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    startSound(audio, 0x18E4);
+    startSound(audio, SE_manpu_17);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4452,7 +4453,7 @@ int dAcNpc_c::manpu_c::startHyu(const mMtx_c *mtx, int anmId, u8 frame, const mA
 }
 
 int dAcNpc_c::manpu_c::start19(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHyu(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18DC);
+    return startHyu(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_09);
 }
 
 int dAcNpc_c::manpu_c::start20(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -4470,13 +4471,13 @@ int dAcNpc_c::manpu_c::start20(const mMtx_c *mtx, int anmId, u8 frame, const mAn
             return FALSE;
         }
     }
-    holdSound(audio, 0x18EA);
+    holdSound(audio, SE_manpu_23);
     mState = STATE_EXEC;
     return TRUE;
 }
 
 int dAcNpc_c::manpu_c::exec20(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    holdSound(audio, 0x18EA);
+    holdSound(audio, SE_manpu_23);
     manpuEf_c *ef = mEf;
     for (int i = 0; i < 3; i++, ef++) {
         if (!ef->callExecute(mtx, pos, v1, v2)) {
@@ -4503,7 +4504,7 @@ int dAcNpc_c::manpu_c::startNeboke(const mMtx_c *mtx, int anmId, u8 frame, const
 }
 
 int dAcNpc_c::manpu_c::start21(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startNeboke(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x18E5);
+    return startNeboke(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_18);
 }
 
 int dAcNpc_c::manpu_c::exec21(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
@@ -4521,7 +4522,7 @@ int dAcNpc_c::manpu_c::start22(const mMtx_c *mtx, int anmId, u8 frame, const mAn
     if (!mEf[0].callCreate(mtx, pos, v1, v2)) {
         return FALSE;
     }
-    startSound(audio, 0x18FA);
+    startSound(audio, SE_manpu_39);
     mState = STATE_EXEC;
     return TRUE;
 }
@@ -4531,21 +4532,21 @@ int dAcNpc_c::manpu_c::exec22(const mMtx_c *mtx, int anmId, u8 frame, const mAng
 }
 
 int dAcNpc_c::manpu_c::start74(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1922);
+    startSound(audio, SE_manpu_79);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start75(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1923);
+    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_80);
 }
 
 int dAcNpc_c::manpu_c::start76(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    startSound(audio, 0x1924);
+    startSound(audio, SE_manpu_81);
     return FALSE;
 }
 
 int dAcNpc_c::manpu_c::start77(const mMtx_c *mtx, int anmId, u8 frame, const mAng *angY, dAudioObjNpc_c *audio, const mVec3_c *pos, const mVec3_c *v1, const mVec3_c *v2) {
-    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, 0x1925);
+    return startHatena(mtx, anmId, frame, angY, audio, pos, v1, v2, SE_manpu_82);
 }
 
 // ---- dAcNpc_c::manpuMgr_c (8001D56C..8001D9B4) ----
@@ -5884,7 +5885,7 @@ void dAcNpc_c::action_c::catchStep0(dAcNpc_c *npc) {
         actionPrm_c *prm = getPrm();
         int anm = prm->mItem.isFish() ? 0x62 : 0x57;
         npc->setAnm(anm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-        npc->mAudioObj.startSound(0x170F);
+        npc->mAudioObj.startSound(SE_gasagoso);
         mStep = 1;
     }
 }
@@ -5945,7 +5946,7 @@ void dAcNpc_c::action_c::catchStep6(dAcNpc_c *npc) {
         npc->setAnm(0x6E, m3d::REVERSE_ONCE, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 7;
     } else if (anm->checkFrame(41.0f)) {
-        npc->mAudioObj.startSound(0x170F);
+        npc->mAudioObj.startSound(SE_gasagoso);
     }
 }
 
@@ -6233,7 +6234,7 @@ void dAcNpc_c::action_c::handItemUseA(dAcNpc_c *npc) {
                     prm->mEffectIdx = 2;
                 }
             }
-            npc->mAudioObj.startSound(0x1738);
+            npc->mAudioObj.startSound(SE_eat);
             mStep = 0xD;
             npc->mLookAt.mReset = true;
         }
@@ -6272,11 +6273,11 @@ void dAcNpc_c::action_c::handItemActA(dAcNpc_c *npc) {
         mStep = 0x18;
     } else if (anm->mAnmId == 0x6F) {
         if (anm->checkFrame(30.0f)) {
-            npc->mAudioObj.startSound(0x170F);
+            npc->mAudioObj.startSound(SE_gasagoso);
         }
     } else {
         if (anm->checkFrame(20.0f)) {
-            npc->mAudioObj.startSound(0x170F);
+            npc->mAudioObj.startSound(SE_gasagoso);
         }
     }
 }
@@ -6706,10 +6707,10 @@ void dAcNpc_c::action_c::receiveWaitAnm(dAcNpc_c *npc) {
         mStep = 2;
     } else if (anm->mAnmId == 0x6F) {
         if (anm->checkFrame(30.0f)) {
-            npc->mAudioObj.startSound(0x170F);
+            npc->mAudioObj.startSound(SE_gasagoso);
         }
     } else if (anm->checkFrame(20.0f)) {
-        npc->mAudioObj.startSound(0x170F);
+        npc->mAudioObj.startSound(SE_gasagoso);
     }
 }
 
@@ -6909,7 +6910,7 @@ int dAcNpc_c::action_c::initEat(dAcNpc_c *npc) {
                     prm->mEffectIdx = 2;
                 }
             }
-            npc->mAudioObj.startSound(0x1738);
+            npc->mAudioObj.startSound(SE_eat);
             npc->mLookAt.mReset = true;
             mStep = 1;
         } else {
@@ -6941,7 +6942,7 @@ void dAcNpc_c::action_c::eatReq(dAcNpc_c *npc) {
                 prm->mEffectIdx = 2;
             }
         }
-        npc->mAudioObj.startSound(0x1738);
+        npc->mAudioObj.startSound(SE_eat);
         npc->mLookAt.mReset = true;
         mStep = 1;
     }
@@ -8249,7 +8250,7 @@ void dAcNpc_c::footstep_c::playSound(dAcNpc_c *npc) {
         int id;
         dItem::Item item = npc->mNpcItem;
         if (item.isSame(dItem::Item((u16)0x8029))) {
-            id = 0x193E;
+            id = SE_walk_pyoko1;
         } else {
             id = dGroundAttr::getFootstepSe(&npc->mPos, &attr);
         }

@@ -31,26 +31,30 @@ public:
     NW4R_UT_RTTI_DECL(SeqSound);
 
 public:
-    explicit SeqSound(SoundInstanceManager<SeqSound>* pManager);
+    SeqSound(SoundInstanceManager<SeqSound>* pManager, int priority, int ambientPriority);
 
-    virtual void Shutdown(); // at 0x28
+    virtual void Shutdown(); // at 0x10
     virtual bool IsPrepared() const {
         return mPreparedFlag;
-    } // at 0x2C
+    } // at 0x14
 
-    virtual void SetPlayerPriority(int priority); // at 0x4C
+    virtual void OnUpdatePlayerPriority(); // at 0x2C
 
-    virtual bool IsAttachedTempSpecialHandle(); // at 0x5C
-    virtual void DetachTempSpecialHandle();     // at 0x60
+    virtual bool IsAttachedTempSpecialHandle(); // at 0x18
+    virtual void DetachTempSpecialHandle();     // at 0x1C
 
-    virtual void InitParam(); // at 0x64
+    virtual void InitParam(); // at 0x20
 
     virtual BasicPlayer& GetBasicPlayer() {
         return mSeqPlayer;
-    } // at 0x68
+    } // at 0x24
     virtual const BasicPlayer& GetBasicPlayer() const {
         return mSeqPlayer;
-    } // at 0x6C
+    } // at 0x28
+
+    SeqPlayer& GetSeqPlayer() {
+        return mSeqPlayer;
+    }
 
     SeqPlayer::SetupResult Setup(SeqTrackAllocator* pAllocator,
                                  u32 allocTrackFlags, int voices,
@@ -111,22 +115,22 @@ private:
                                           void* pCallbackArg);
 
 private:
-    SeqPlayer mSeqPlayer;                     // at 0xD8
-    SeqSoundHandle* mTempSpecialHandle;       // at 0x1F4
-    SoundInstanceManager<SeqSound>* mManager; // at 0x1F8
+    SeqPlayer mSeqPlayer;                     // at 0x10C
+    SeqSoundHandle* mTempSpecialHandle;       // at 0x228
+    SoundInstanceManager<SeqSound>* mManager; // at 0x22C
 
-    s32 mSeqOffset;                         // at 0x1FC
-    SeqPlayer::OffsetType mStartOffsetType; // at 0x200
-    int mStartOffset;                       // at 0x204
+    s32 mSeqOffset;                         // at 0x230
+    SeqPlayer::OffsetType mStartOffsetType; // at 0x234
+    int mStartOffset;                       // at 0x238
 
-    bool mLoadingFlag;           // at 0x208
-    volatile bool mPreparedFlag; // at 0x209
+    bool mLoadingFlag;           // at 0x23C
+    volatile bool mPreparedFlag; // at 0x23D
 
-    ut::FileStream* mFileStream;                     // at 0x20C
-    char mFileStreamBuffer[FILE_STREAM_BUFFER_SIZE]; // at 0x210
+    ut::FileStream* mFileStream;                     // at 0x240
+    char mFileStreamBuffer[FILE_STREAM_BUFFER_SIZE]; // at 0x244
 
-    SeqLoadTask mSeqLoadTask; // at 0x410
-    mutable OSMutex mMutex;   // at 0x434
+    SeqLoadTask mSeqLoadTask; // at 0x444
+    mutable OSMutex mMutex;   // at 0x468
 };
 
 } // namespace detail

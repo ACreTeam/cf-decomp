@@ -7,6 +7,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_snd_util.hpp>
+#include <game/snd/snd_id.hpp>
 
 CUSTOM_BASE_PROFILE(CD, dCd_c, 0xB, 4);
 
@@ -50,20 +51,20 @@ int dCd_c::execute() {
         if (mDigit != mPrevDigit && hours == 0) {
             if (mins == 1 && secs == 0) {
                 if (!mMuted) {
-                    playSe(0x1722);
+                    playSe(SE_countdown_small);
                 }
             } else if (mins == 0) {
                 if (secs == 0) {
                     if (!mMuted) {
-                        playSe(0x1721);
+                        playSe(SE_countdown_hi);
                     }
                 } else if (secs <= 10) {
                     if (!mMuted) {
-                        playSe(0x1720);
+                        playSe(SE_countdown_low);
                     }
                 } else {
                     if (!mMuted) {
-                        playSe(0x1722);
+                        playSe(SE_countdown_small);
                     }
                 }
             }
@@ -72,7 +73,7 @@ int dCd_c::execute() {
         mPrevDigit = mDigit;
     } else if (now.month == MONTH_JANUARY && now.mday == 1 && now.hour == 0 && now.min == 0 && now.sec == 0) {
         if (!mNewYearDone) {
-            playSe(0x1721);
+            playSe(SE_countdown_hi);
             mNewYearDone = TRUE;
         }
     }

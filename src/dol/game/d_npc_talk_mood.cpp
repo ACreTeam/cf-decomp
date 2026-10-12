@@ -8,6 +8,7 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_player_mgr.hpp>
+#include <game/snd/snd_id.hpp>
 
 // 8046C838: wait anm of each mood (0 = normal)
 static const int l_moodWaitAnm[5] = {0, 0xC4, 0xC6, 0xC8, 0xC6};
@@ -207,7 +208,7 @@ BOOL dNpcMood_c::enterHappy(dAcNpcNml_c *npc) {
 void dNpcMood_c::procHappy(dAcNpcNml_c *npc) {
     if (isMoodAnm(npc)) {
         if ((u8)npc->getModel()->mAnm.getFrame() == 0) {
-            npc->mAudioObj.startSound(0x18CF);
+            npc->mAudioObj.startSound(SE_default_manpu_tanoshii);
         }
         if (mShowEffects) {
             const mMtx_c *mtx = &npc->mNodeMtx12;
@@ -228,7 +229,7 @@ BOOL dNpcMood_c::enterAngry(dAcNpcNml_c *npc) {
 void dNpcMood_c::procAngry(dAcNpcNml_c *npc) {
     if (isMoodAnm(npc)) {
         if ((u8)npc->getModel()->mAnm.getFrame() == 0) {
-            npc->mAudioObj.startSound(0x18D1);
+            npc->mAudioObj.startSound(SE_default_manpu_ikari);
         }
         if (mShowEffects) {
             const mMtx_c *mtx = &npc->mNodeMtx12;
@@ -256,7 +257,7 @@ BOOL dNpcMood_c::enterSad(dAcNpcNml_c *npc) {
 void dNpcMood_c::procSad(dAcNpcNml_c *npc) {
     if (isMoodAnm(npc)) {
         if ((u8)npc->getModel()->mAnm.getFrame() == 0) {
-            npc->mAudioObj.startSound(0x18D0);
+            npc->mAudioObj.startSound(SE_default_manpu_kanashii);
         }
         if (mShowEffects) {
             fn_80087B40(&mEffectL, l_sad, &npc->mNodeMtx12, 0);

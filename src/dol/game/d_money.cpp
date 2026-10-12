@@ -12,14 +12,13 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <lib/revolution/WPAD/WPAD.h>
+#include <game/snd/snd_id.hpp>
 
 #define MONEY_ANM_NUM 2
 #define MONEY_ANM_IN 0
 #define MONEY_ANM_OUT 1
 #define MONEY_DIGITS 12
 #define MONEY_COUNT_FRAMES 30
-#define MONEY_SE_COUNT 0x16DB
-#define MONEY_SE_COUNT_END 0x16DC
 
 CUSTOM_BASE_PROFILE(MONEY, dMoney_c, 6, 0x125);
 
@@ -151,7 +150,7 @@ void dMoney_c::updateMoney() {
         if (--mCountTimer == 0) {
             mDispMoney = money;
             if (l_flags & FLAG_SHOW) {
-                playSe(MONEY_SE_COUNT_END);
+                playSe(SE_Register);
             }
         } else {
             if (mDispMoney < money) {
@@ -160,7 +159,7 @@ void dMoney_c::updateMoney() {
                 mDispMoney -= mCountStep;
             }
             if (l_flags & FLAG_SHOW) {
-                fn_8000F928(MONEY_SE_COUNT);
+                fn_8000F928(SE_Lev_MONEY_DISP_MOVE);
             }
         }
         setNumber();

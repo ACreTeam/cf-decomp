@@ -7,6 +7,7 @@
 #include <game/cLib/c_math.hpp>
 #include <game/mLib/m_color.hpp>
 #include <game/sLib/s_lib.hpp>
+#include <game/snd/snd_id.hpp>
 
 // 8016CEF8
 void fn_8016CEF8(EGG::Heap *heap) {}
@@ -26,11 +27,6 @@ int fn_8016CF08(int idx) {
 }
 
 namespace dThunder {
-
-enum {
-    SE_THUNDER_OUTDOOR = 0x1976,
-    SE_THUNDER_INDOOR = 0x1977,
-};
 
 static mColor l_glowColor(0x50, 0xC0, 0x90, 0xFF);  // 8074E8A8
 static mColor l_lightColor(0x20, 0x18, 0x10, 0xFF); // 8074E8AC
@@ -88,9 +84,9 @@ void Thunder_c::calc(BOOL outdoor) {
             reset();
             int se;
             if (outdoor) {
-                se = SE_THUNDER_OUTDOOR;
+                se = SE_Kaminari;
             } else {
-                se = SE_THUNDER_INDOOR;
+                se = SE_Kaminari_room;
             }
             playSe(se);
         }

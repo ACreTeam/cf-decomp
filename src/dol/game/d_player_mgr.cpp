@@ -23,6 +23,7 @@
 #include <cmath>
 #include <game/game/d_net.hpp>
 #include <game/game/d_ground_attr.hpp>
+#include <game/snd/snd_id.hpp>
 
 // Dependencies whose owners are not recovered yet.
 
@@ -3276,23 +3277,23 @@ static inline BOOL isSpecialFashion(const dItem::Item *item) {
 // 801021D0
 int fn_801021D0(const dItem::Item *a, const dItem::Item *b) {
     if (a->mId != dItem::ITEM_ID_NONE && isSpecialFashion(a)) {
-        return 0x1773;
+        return SE_WearHero;
     }
     if (b->mId == dItem::ITEM_ID_NONE) {
-        return 0x1744;
+        return SE_wear;
     }
     if (isSpecialFashion(b)) {
-        return 0x1773;
+        return SE_WearHero;
     }
     dItem::Item item(dItem::ITEM_IDX_PUMPKIN_HEAD);
     if (b->isSame(item)) {
-        return 0x1772;
+        return SE_WearPumpkin;
     }
     item.setFromIndex(dItem::ITEM_IDX_KING_TUT_MASK);
     if (b->isSame(item)) {
-        return 0x1746;
+        return SE_Tutankhamen;
     }
-    return 0x1744;
+    return SE_wear;
 }
 
 // 801022B8: splash/snow effect callback for fn_801024F8.

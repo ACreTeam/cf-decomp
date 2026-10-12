@@ -1353,6 +1353,14 @@ BOOL getRandomSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
     return TRUE;
 }
 
+// 80475D38
+static const dAnimalEvent_c sEventHandlers[] = {
+    {EVENT_HARVEST_FESTIVAL, (dAnimalEventFunc)initHarvestFestival}, {EVENT_HALLOWEEN, (dAnimalEventFunc)initHalloween}, {EVENT_FISHING_TOURNEY, (dAnimalEventFunc)initFishingTourney}, {EVENT_BUG_OFF, (dAnimalEventFunc)initBugOff}, {EVENT_COUNTDOWN, (dAnimalEventFunc)initCountdown},
+    {EVENT_FIREWORKS, (dAnimalEventFunc)initFireworks}, {EVENT_FLEA_MARKET, (dAnimalEventFunc)initFleaMarket}, {EVENT_FESTIVALE, (dAnimalEventFunc)initFestivale}, {EVENT_TOY_DAY, (dAnimalEventFunc)initToyDay},
+};
+
+static const int sFancyUmbrellas[] = {dItem::ITEM_IDX_LACY_PARASOL, dItem::ITEM_IDX_LEAF_UMBRELLA, dItem::ITEM_IDX_RIBBON_UMBRELLA, dItem::ITEM_IDX_PETAL_PARASOL, dItem::ITEM_IDX_ELEGANT_UMBRELLA, 0};
+
 // 80475D98: chance (percent) of each spot per wish kind.
 static const u8 sSpotChance[8][15] = {
     {5, 3, 5, 5, 3, 3, 5, 5, 3, 3, 10, 10, 10, 20, 10},
@@ -2020,7 +2028,14 @@ BOOL isHouseItem(const dItem::Item *item) {
     }
 
     const dItem::BITM *bitm = dItem::getBITM(item->mId);
-    int kind = bitm != NULL ? bitm->getKind() : dItem::KIND_COUNT;
+    int kind;
+    int value;
+    if (bitm != NULL) {
+        value = bitm->m_kind;
+        kind = dItem::clampField(value, dItem::KIND_COUNT, dItem::KIND_NONE);
+    } else {
+        kind = dItem::KIND_COUNT;
+    }
     BOOL res = FALSE;
 
     switch (kind) {
@@ -3354,12 +3369,16 @@ static const char *sPresent[] = {"MAIL_BO_Present", "MAIL_HA_Present", "MAIL_KO_
 
 // 80122A60
 // Writes the villager's reply to a player's letter into sMail.
+static inline dPersonalID_c *getPlayerPID(dPrivateData_c *player) {
+    return &player->mPID;
+}
+
 BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
     if (!mID.isValid()) {
         return FALSE;
     }
 
-    dPersonalID_c *pid = &player->mPID;
+    dPersonalID_c *pid = getPlayerPID(player);
     if (!pid->isValid() || !pid->isFromTown()) {
         return FALSE;
     }
@@ -5863,7 +5882,7 @@ BOOL dAnimal_c::isItemInMyBlock(const dItem::Item *item) {
     return isSameBlock(bx, bz, px, pz);
 }
 
-static const int sFancyUmbrellas[] = {dItem::ITEM_IDX_LACY_PARASOL, dItem::ITEM_IDX_LEAF_UMBRELLA, dItem::ITEM_IDX_RIBBON_UMBRELLA, dItem::ITEM_IDX_PETAL_PARASOL, dItem::ITEM_IDX_ELEGANT_UMBRELLA, 0};
+
 
 // 80129364
 dItem::Item pickFancyUmbrella() {
@@ -6037,16 +6056,13 @@ static inline BOOL isUnk1E452Value(dAnimalHomeStay_c *obj, u8 value) {
     return FALSE;
 }
 
-static inline u8 lookupHour(const dHomeStayPeriod_c *hours, int hour) {
+static inline u8 lookupHour(int hour, const dHomeStayPeriod_c *hours) {
     u8 value = 3;
-    if (hour < hours[0].mHourEnd) {
-        value = hours[0].mValue;
-    } else if (hour < hours[1].mHourEnd) {
-        value = hours[1].mValue;
-    } else if (hour < hours[2].mHourEnd) {
-        value = hours[2].mValue;
-    } else if (hour < hours[3].mHourEnd) {
-        value = hours[3].mValue;
+    for (int i = 0; i < 4; i++, hours++) {
+        if (hour < hours->mHourEnd) {
+            value = hours->mValue;
+            break;
+        }
     }
     return value;
 }
@@ -6063,7 +6079,7 @@ BOOL dAnimalHomeStay_c::isPeriod(const dTime_c *time) {
         time = dTime_c::getCurrent();
     }
 
-    u8 value = lookupHour(sHours, time->hour);
+    u8 value = lookupHour(time->hour, sHours);
 
     if (isUnk1E452Value(this, value)) {
         return TRUE;
@@ -6789,6 +6805,10 @@ void dAnimalBlock_c::decideOutdoorAnimals(BOOL flag) {
     memcpy(mOutdoorQueue, order, sizeof(order));
 }
 
+static inline BOOL hasReachedTime(const dTime_c &time, const dTime_c &end) {
+    return dTime_c::isSameOrAfter(time, end);
+}
+
 // 8012B35C
 BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
     if (flag) {
@@ -6819,7 +6839,7 @@ BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
     dTime_c *now = dTime_c::getCurrent();
     BOOL ret = TRUE;
     if (dTime_c::isSameOrAfter(*now, start)) {
-        if (!dTime_c::isSameOrAfter(*now, end)) {
+        if (!hasReachedTime(*now, end)) {
             ret = FALSE;
         }
     }
@@ -7041,12 +7061,6 @@ void dAnimalBlock_c::resetDailyTalkCounts() {
         stampTalkCountTime();
     }
 }
-
-// 80475D38
-static const dAnimalEvent_c sEventHandlers[] = {
-    {EVENT_HARVEST_FESTIVAL, (dAnimalEventFunc)initHarvestFestival}, {EVENT_HALLOWEEN, (dAnimalEventFunc)initHalloween}, {EVENT_FISHING_TOURNEY, (dAnimalEventFunc)initFishingTourney}, {EVENT_BUG_OFF, (dAnimalEventFunc)initBugOff}, {EVENT_COUNTDOWN, (dAnimalEventFunc)initCountdown},
-    {EVENT_FIREWORKS, (dAnimalEventFunc)initFireworks}, {EVENT_FLEA_MARKET, (dAnimalEventFunc)initFleaMarket}, {EVENT_FESTIVALE, (dAnimalEventFunc)initFestivale}, {EVENT_TOY_DAY, (dAnimalEventFunc)initToyDay},
-};
 
 // 8012BF70
 const dAnimalEvent_c *findTodayEvent() {
@@ -9102,10 +9116,6 @@ static inline int getTmplNpcIdx(const dAnimalTemplate_c *tmpl) {
     return tmpl->mNpcIdx;
 }
 
-static inline dPersonalID_c *getPlayerPID(dPrivateData_c *player) {
-    return &player->mPID;
-}
-
 static inline BOOL isPlayerSelectScene() {
     return (u8)getCurrentScene() == SCENE_DM_PL_SEL;
 }
@@ -9204,10 +9214,11 @@ BOOL dAnimalBlock_c::hasErrandFromResident(dPrivateData_c *player) {
         return FALSE;
     }
 
+    dAnmPersonalID_c *id;
     dAnimal_c *animal = getAnimalConst(0);
     int i;
     for (i = 0; i < ANIMAL_NUM; i++, animal++) {
-        dAnmPersonalID_c *id = getAnimalID(animal);
+        id = &animal->mID;
         if (id->isValid() && errand->isSender(id)) {
             return TRUE;
         }
@@ -9369,7 +9380,7 @@ int dAnimalBlock_c::getMovingOutIdx() {
 }
 
 // 8013146C
-BOOL dAnimalBlock_c::shouldPickMoveOut() {
+BOOL dAnimalBlock_c::shouldPickMoveOut() const {
     if ((u32)mMoveOutIdx < ANIMAL_NUM) {
         return FALSE;
     }
@@ -9575,7 +9586,9 @@ static inline BOOL isItemDiff(const dItem::Item *a, const dItem::Item &b) {
 }
 
 static inline const dItem::Item *getCurItem(const dAnimal_c *a) {
-    return &a->mHeldItem;
+    const dItem::Item *item;
+    item = &a->mHeldItem;
+    return item;
 }
 
 static inline dQuestPlayerAnimal_c *getQuestAnimal(dAnimalBlock_c *b) {
@@ -9942,7 +9955,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
     if (player == NULL) {
         return;
     }
-    dPersonalID_c *pid = &player->mPID;
+    dPersonalID_c *pid = getPlayerPID(player);
     if (!pid->isValid()) {
         return;
     }
@@ -9951,7 +9964,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
     }
 
     s32 year = dTime_c::getCurrent()->year;
-    BOOL inScene = isPlayerSelectScene();
+    bool inScene = getCurrentScene() == SCENE_DM_PL_SEL;
     if (player->isFlag0(0xD)) {
         player->mBirthdayHost.mLetterYear = year;
         return;
@@ -9992,7 +10005,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
             if (mem == NULL) {
                 continue;
             }
-            if (memFlags(mem)->mBirthdayLetterSent) {
+            if (((const dAnimalMemoryFlags8_c *)&mem->mFlags)->mBirthdayLetterSent) {
                 memFlags(mem)->mBirthdayDone = 1;
                 memFlags(mem)->mBirthdayLetterSent = 0;
             }
@@ -10164,7 +10177,7 @@ void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
 
     animal = getAnimal(0);
     skip = getSickAnimalIdx();
-    gender = pid->player.mGender;
+    gender = pid->player.getGender();
     u32 num = 0;
     s8 best = 20;
     int sel = -1;
@@ -11163,31 +11176,23 @@ BOOL isWearingRegentWig(const dPrivateData_c *player) {
     return FALSE;
 }
 
-static inline BOOL isRainWeather() {
+static inline void checkWeather(BOOL *out, int first, int second) {
     if (dWeather_c::sInstance != NULL) {
         BOOL result = FALSE;
-        if (isWeatherIn(dWeather_c::sInstance, 4) || isWeatherIn(dWeather_c::sInstance, 3)) {
+        if (isWeatherIn(dWeather_c::sInstance, first) || isWeatherIn(dWeather_c::sInstance, second)) {
             result = TRUE;
         }
-        return result;
+        *out = result;
+        return;
     }
-    return FALSE;
-}
-
-static inline BOOL isSnowWeather() {
-    if (dWeather_c::sInstance != NULL) {
-        BOOL result = FALSE;
-        if (isWeatherIn(dWeather_c::sInstance, 6) || isWeatherIn(dWeather_c::sInstance, 5)) {
-            result = TRUE;
-        }
-        return result;
-    }
-    return FALSE;
+    *out = FALSE;
 }
 
 // 801356C0
 BOOL isRaining(const dPrivateData_c *player) {
-    if (isRainWeather()) {
+    BOOL rain;
+    checkWeather(&rain, 4, 3);
+    if (rain) {
         return TRUE;
     }
     return FALSE;
@@ -11195,7 +11200,9 @@ BOOL isRaining(const dPrivateData_c *player) {
 
 // 80135708
 BOOL isSnowing(const dPrivateData_c *player) {
-    if (isSnowWeather()) {
+    BOOL snow;
+    checkWeather(&snow, 6, 5);
+    if (snow) {
         return TRUE;
     }
     return FALSE;

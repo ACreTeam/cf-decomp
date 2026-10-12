@@ -10,6 +10,7 @@
 #include <game/game/d_quest.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/snd/snd_id.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -261,7 +262,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyItem(int kind) {
         if (mItem0.isValid()) {
             requestItemAct(&mItem0, 0, 0);
         }
-        mpNpc->mAudioObj.startSound(0x171F);
+        mpNpc->mAudioObj.startSound(SE_otsukai_end);
         return TRUE;
     }
     return FALSE;

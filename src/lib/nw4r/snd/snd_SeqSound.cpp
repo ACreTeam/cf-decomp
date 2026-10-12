@@ -7,9 +7,11 @@ namespace detail {
 
 NW4R_UT_RTTI_DEF_DERIVED(SeqSound, BasicSound);
 
-SeqSound::SeqSound(SoundInstanceManager<SeqSound>* pManager)
+SeqSound::SeqSound(SoundInstanceManager<SeqSound>* pManager, int priority,
+                    int ambientPriority)
     // TODO(kiwi) Fakematch
-    : mTempSpecialHandle(reinterpret_cast<SeqSoundHandle*>(
+    : BasicSound(priority, ambientPriority),
+      mTempSpecialHandle(reinterpret_cast<SeqSoundHandle*>(
           mPreparedFlag = mLoadingFlag = false)),
       mManager(pManager),
       mStartOffset(0),
@@ -101,8 +103,7 @@ void SeqSound::SetReleasePriorityFix(bool flag) {
     mSeqPlayer.SetReleasePriorityFix(flag);
 }
 
-void SeqSound::SetPlayerPriority(int priority) {
-    BasicSound::SetPlayerPriority(priority);
+void SeqSound::OnUpdatePlayerPriority() {
     mManager->UpdatePriority(this, BasicSound::CalcCurrentPlayerPriority());
 }
 

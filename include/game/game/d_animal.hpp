@@ -577,7 +577,7 @@ public:
     void addMoveDays(int delta); // 8013135C
     void finishMovingIn(); // 80131380
     int getMovingOutIdx(); // 801313F4
-    BOOL shouldPickMoveOut(); // 8013146C
+    BOOL shouldPickMoveOut() const; // 8013146C
     void pickMoveOutAnimal(); // 801314E0
     BOOL isMoveOutAnimal(const dAnmPersonalID_c *id); // 801315F4
     void clearMovedOut(); // 80131704

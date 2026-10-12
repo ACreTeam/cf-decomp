@@ -95,6 +95,8 @@ public:
 
     int ParseNextTick(bool doNoteOn);
 
+    int GetChannelCount() const; // CF 802688E0
+
     void StopAllChannel();
     void ReleaseAllChannel(int release);
     void PauseAllChannel(bool flag);

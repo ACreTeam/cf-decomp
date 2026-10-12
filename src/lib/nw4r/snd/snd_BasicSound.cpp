@@ -8,21 +8,40 @@ namespace detail {
 
 NW4R_UT_RTTI_DEF_BASE(BasicSound);
 
-BasicSound::BasicSound()
+// CF 8025EB04
+BasicSound::BasicSound(int priority, int ambientPriority)
     : mHeap(NULL),
       mGeneralHandle(NULL),
       mTempGeneralHandle(NULL),
       mSoundPlayer(NULL),
+      mSoundActor(NULL),
       mExtSoundPlayer(NULL),
       mAmbientParamUpdateCallback(NULL),
       mAmbientArgUpdateCallback(NULL),
       mAmbientArgAllocaterCallback(NULL),
       mAmbientArg(NULL),
-      mId(INVALID_ID) {}
+      mAmbientArgSize(0),
+      mPriority(priority),
+      mVoiceOutCount(1),
+      mId(INVALID_ID) {
+    mAmbientParam.volume = 1.0f;
+    mAmbientParam.pitch = 1.0f;
+    mAmbientParam.pan = 0.0f;
+    mAmbientParam.surroundPan = 0.0f;
+    mAmbientParam.fxSend = 0.0f;
+    mAmbientParam.lpf = 0.0f;
+    mAmbientParam.biquadFilterValue = 0.0f;
+    mAmbientParam.biquadFilterType = 0;
+    mAmbientParam.priority = ambientPriority;
+
+    mActorParam.volume = 1.0f;
+    mActorParam.pitch = 1.0f;
+    mActorParam.pan = 0.0f;
+}
 
 void BasicSound::InitParam() {
-    mPauseFlag = false;
-    mPauseFadeFlag = false;
+    mPauseState = PAUSE_STATE_NORMAL;
+    mUnPauseFlag = false;
     mStartFlag = false;
     mStartedFlag = false;
     mAutoStopFlag = false;
@@ -40,11 +59,16 @@ void BasicSound::InitParam() {
     mExtPan = 0.0f;
     mExtSurroundPan = 0.0f;
     mExtMoveVolume.InitValue(1.0f);
+    mLpfFreq = 0.0f;
+    mBiquadFilterType = 0;
+    mBiquadFilterValue = 0.0f;
 
     mOutputLineFlag = OUTPUT_LINE_MAIN;
-    mOutputLineFlagEnable = false;
-
     mMainOutVolume = 1.0f;
+    mMainSend = 0.0f;
+    for (int i = 0; i < AUX_BUS_NUM; i++) {
+        mFxSend[i] = 0.0f;
+    }
     for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
         mRemoteOutVolume[i] = 1.0f;
     }
@@ -55,6 +79,8 @@ void BasicSound::InitParam() {
     mAmbientParam.surroundPan = 0.0f;
     mAmbientParam.fxSend = 0.0f;
     mAmbientParam.lpf = 0.0f;
+    mAmbientParam.biquadFilterValue = 0.0f;
+    mAmbientParam.biquadFilterType = 0;
     mAmbientParam.priority = 0;
 }
 
@@ -78,39 +104,46 @@ void BasicSound::Stop(int frames) {
 
     SetPlayerPriority(0);
     mAutoStopFlag = false;
-    mPauseFlag = false;
-    mPauseFadeFlag = false;
+    mPauseState = PAUSE_STATE_NORMAL;
+    mUnPauseFlag = false;
     mFadeOutFlag = true;
 }
 
+// CF 8025EF34
 void BasicSound::Pause(bool flag, int frames) {
     BasicPlayer& rPlayer = GetBasicPlayer();
 
     if (flag) {
-        int t = frames * mPauseFadeVolume.GetValue();
-        mPauseFadeFlag = true;
+        if (mPauseState == PAUSE_STATE_PAUSED) {
+            return;
+        }
 
+        int t = frames * mPauseFadeVolume.GetValue();
         if (t <= 0) {
             t = 1;
         }
 
         mPauseFadeVolume.SetTarget(0.0f, t);
+        mPauseState = PAUSE_STATE_PAUSING;
+        mUnPauseFlag = false;
     } else {
-        if (mPauseFlag != flag) {
+        if (mPauseState == PAUSE_STATE_NORMAL) {
+            return;
+        }
+
+        if (mPauseState == PAUSE_STATE_PAUSED) {
             rPlayer.Pause(false);
         }
 
         int t = frames * (1.0f - mPauseFadeVolume.GetValue());
-        mPauseFadeFlag = true;
-
         if (t <= 0) {
             t = 1;
         }
 
         mPauseFadeVolume.SetTarget(1.0f, t);
+        mPauseState = PAUSE_STATE_UNPAUSING;
+        mUnPauseFlag = true;
     }
-
-    mPauseFlag = flag;
 }
 
 void BasicSound::SetAutoStopCounter(int count) {
@@ -128,7 +161,7 @@ void BasicSound::FadeIn(int frames) {
 }
 
 bool BasicSound::IsPause() const {
-    return mPauseFlag;
+    return mPauseState == PAUSE_STATE_PAUSING || mPauseState == PAUSE_STATE_PAUSED;
 }
 
 void BasicSound::Update() {
@@ -169,11 +202,10 @@ void BasicSound::Update() {
         return;
     }
 
-    if (mPauseFadeFlag) {
+    if (mPauseState == PAUSE_STATE_PAUSING || mPauseState == PAUSE_STATE_UNPAUSING) {
         mPauseFadeVolume.Update();
     } else {
-        mFadeVolume.Update();
-        mExtMoveVolume.Update();
+        UpdateMoveValue();
     }
 
     if (mAmbientArgUpdateCallback != NULL) {
@@ -221,9 +253,7 @@ void BasicSound::Update() {
     if (mSoundPlayer->detail_IsEnabledOutputLine()) {
         outputLine = mSoundPlayer->detail_GetOutputLine();
     }
-    if (mOutputLineFlagEnable) {
-        outputLine = GetOutputLine();
-    }
+    outputLine |= GetOutputLine();
 
     f32 remoteOutVol[WPAD_MAX_CONTROLLERS];
     for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
@@ -249,12 +279,12 @@ void BasicSound::Update() {
         return;
     }
 
-    if (mPauseFadeFlag && mPauseFadeVolume.IsFinished()) {
-        mPauseFadeFlag = false;
-
-        if (mPauseFlag) {
-            rPlayer.Pause(mPauseFlag);
-        }
+    if (mPauseState == PAUSE_STATE_PAUSING && mPauseFadeVolume.IsFinished()) {
+        mPauseState = PAUSE_STATE_PAUSED;
+        rPlayer.Pause(true);
+    } else if (mPauseState == PAUSE_STATE_UNPAUSING && mPauseFadeVolume.IsFinished()) {
+        mPauseState = PAUSE_STATE_NORMAL;
+        mUnPauseFlag = false;
     }
 
     if (startPlayer && rPlayer.Start()) {
@@ -315,7 +345,21 @@ void BasicSound::SetPlayerPriority(int priority) {
         mSoundPlayer->detail_RemovePriorityList(this);
         mSoundPlayer->detail_InsertPriorityList(this);
     }
+
+    OnUpdatePlayerPriority();
 }
+
+// CF 8025FDEC
+void BasicSound::OnUpdatePlayerPriority() {}
+
+// CF 8025F7CC
+void BasicSound::UpdateMoveValue() {
+    mFadeVolume.Update();
+    mExtMoveVolume.Update();
+}
+
+// CF 8025F800 (the parameter part of Update is still inline there)
+void BasicSound::UpdateParam() {}
 
 void BasicSound::SetInitialVolume(f32 vol) {
     mInitVolume = ut::Clamp(vol, 0.0f, 1.0f);
@@ -338,17 +382,19 @@ void BasicSound::SetSurroundPan(f32 pan) {
     mExtSurroundPan = pan;
 }
 
+// CF 8025FED8
 void BasicSound::SetLpfFreq(f32 freq) {
-    GetBasicPlayer().SetLpfFreq(freq);
+    mLpfFreq = freq;
+}
+
+// CF 8025FEE0
+void BasicSound::SetBiquadFilter(int type, f32 value) {
+    mBiquadFilterType = type;
+    mBiquadFilterValue = value;
 }
 
 void BasicSound::SetOutputLine(int flag) {
     mOutputLineFlag = flag;
-    mOutputLineFlagEnable = true;
-}
-
-bool BasicSound::IsEnabledOutputLine() const {
-    return mOutputLineFlagEnable;
 }
 
 int BasicSound::GetOutputLine() const {
@@ -363,8 +409,9 @@ void BasicSound::SetRemoteOutVolume(int remote, f32 vol) {
     mRemoteOutVolume[remote] = ut::Clamp(vol, 0.0f, 1.0f);
 }
 
+// CF 8025FEEC
 void BasicSound::SetFxSend(AuxBus bus, f32 send) {
-    GetBasicPlayer().SetFxSend(bus, send);
+    mFxSend[bus] = send;
 }
 
 void BasicSound::SetRemoteFilter(int filter) {

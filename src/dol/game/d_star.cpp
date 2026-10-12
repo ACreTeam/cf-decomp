@@ -4,6 +4,7 @@
 #include <game/game/d_sky.hpp>
 #include <revolution/MTX.h>
 #include <game/game/d_snd_util.hpp>
+#include <game/snd/snd_id.hpp>
 
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
@@ -18,7 +19,7 @@ void dStar_c::execute() {
         // The original constructs this local, but does not pass it to fn_80087A30.
         dEffect_c effect;
         fn_80087A30("af_fld_star", &mtx);
-        playSe(0x17CE);
+        playSe(SE_sky_NAGAREBOSHI);
         mActive = false;
     }
 }

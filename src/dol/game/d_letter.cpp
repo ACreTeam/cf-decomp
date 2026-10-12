@@ -10,156 +10,301 @@
 #include <game/game/d_snd_util.hpp>
 #include <cstdio>
 #include <cstring>
+#include <game/snd/snd_id.hpp>
 
 // Key SE tables, per SE set (getKeySeSet). Digits: three rows of ten (playDigitKeySe); letters: A..Z.
 // 80472E50
 static const int sDigitSeUs[] = {
-    0x1E8F, 0x1E90, 0x1E91, 0x1E92, 0x1E93, 0x1E94, 0x1E95, 0x1E96, 0x1E97, 0x1E98,
-    0x1E51, 0x1E52, 0x1E53, 0x1E54, 0x1E55, 0x1E56, 0x1E57, 0x1E58, 0x1E59, 0x1E5A,
-    0x1E99, 0x1E9A, 0x1E9B, 0x1E9C, 0x1E9D, 0x1E9E, 0x1E9F, 0x1EA0, 0x1EA1, 0x1EA2,
+    SE_Keyboard_ENG_Boy_s00, SE_Keyboard_ENG_Boy_s01, SE_Keyboard_ENG_Boy_s02, SE_Keyboard_ENG_Boy_s03,
+    SE_Keyboard_ENG_Boy_s04, SE_Keyboard_ENG_Boy_s05, SE_Keyboard_ENG_Boy_s06, SE_Keyboard_ENG_Boy_s07,
+    SE_Keyboard_ENG_Boy_s08, SE_Keyboard_ENG_Boy_s09,
+    SE_Keyboard_ENG_Boy_00, SE_Keyboard_ENG_Boy_01, SE_Keyboard_ENG_Boy_02, SE_Keyboard_ENG_Boy_03,
+    SE_Keyboard_ENG_Boy_04, SE_Keyboard_ENG_Boy_05, SE_Keyboard_ENG_Boy_06, SE_Keyboard_ENG_Boy_07,
+    SE_Keyboard_ENG_Boy_08, SE_Keyboard_ENG_Boy_09,
+    SE_Keyboard_ENG_Boy_00_fix, SE_Keyboard_ENG_Boy_01_fix, SE_Keyboard_ENG_Boy_02_fix,
+    SE_Keyboard_ENG_Boy_03_fix, SE_Keyboard_ENG_Boy_04_fix, SE_Keyboard_ENG_Boy_05_fix,
+    SE_Keyboard_ENG_Boy_06_fix, SE_Keyboard_ENG_Boy_07_fix, SE_Keyboard_ENG_Boy_08_fix,
+    SE_Keyboard_ENG_Boy_09_fix,
 };
 
 static const int sUpperSeUs[] = {
-    0x1E5B, 0x1E5C, 0x1E5D, 0x1E5E, 0x1E5F, 0x1E60, 0x1E61, 0x1E62, 0x1E63, 0x1E64,
-    0x1E65, 0x1E66, 0x1E67, 0x1E68, 0x1E69, 0x1E6A, 0x1E6B, 0x1E6C, 0x1E6D, 0x1E6E,
-    0x1E6F, 0x1E70, 0x1E71, 0x1E72, 0x1E73, 0x1E74,
+    SE_Keyboard_ENG_Boy_1a, SE_Keyboard_ENG_Boy_1b, SE_Keyboard_ENG_Boy_1c, SE_Keyboard_ENG_Boy_1d,
+    SE_Keyboard_ENG_Boy_1e, SE_Keyboard_ENG_Boy_1f, SE_Keyboard_ENG_Boy_1g, SE_Keyboard_ENG_Boy_1h,
+    SE_Keyboard_ENG_Boy_1i, SE_Keyboard_ENG_Boy_1j,
+    SE_Keyboard_ENG_Boy_1k, SE_Keyboard_ENG_Boy_1l, SE_Keyboard_ENG_Boy_1m, SE_Keyboard_ENG_Boy_1n,
+    SE_Keyboard_ENG_Boy_1o, SE_Keyboard_ENG_Boy_1p, SE_Keyboard_ENG_Boy_1q, SE_Keyboard_ENG_Boy_1r,
+    SE_Keyboard_ENG_Boy_1s, SE_Keyboard_ENG_Boy_1t,
+    SE_Keyboard_ENG_Boy_1u, SE_Keyboard_ENG_Boy_1v, SE_Keyboard_ENG_Boy_1w, SE_Keyboard_ENG_Boy_1x,
+    SE_Keyboard_ENG_Boy_1y, SE_Keyboard_ENG_Boy_1z,
 };
 
 static const int sLowerSeUs[] = {
-    0x1E75, 0x1E76, 0x1E77, 0x1E78, 0x1E79, 0x1E7A, 0x1E7B, 0x1E7C, 0x1E7D, 0x1E7E,
-    0x1E7F, 0x1E80, 0x1E81, 0x1E82, 0x1E83, 0x1E84, 0x1E85, 0x1E86, 0x1E87, 0x1E88,
-    0x1E89, 0x1E8A, 0x1E8B, 0x1E8C, 0x1E8D, 0x1E8E,
+    SE_Keyboard_ENG_Boy_2a, SE_Keyboard_ENG_Boy_2b, SE_Keyboard_ENG_Boy_2c, SE_Keyboard_ENG_Boy_2d,
+    SE_Keyboard_ENG_Boy_2e, SE_Keyboard_ENG_Boy_2f, SE_Keyboard_ENG_Boy_2g, SE_Keyboard_ENG_Boy_2h,
+    SE_Keyboard_ENG_Boy_2i, SE_Keyboard_ENG_Boy_2j,
+    SE_Keyboard_ENG_Boy_2k, SE_Keyboard_ENG_Boy_2l, SE_Keyboard_ENG_Boy_2m, SE_Keyboard_ENG_Boy_2n,
+    SE_Keyboard_ENG_Boy_2o, SE_Keyboard_ENG_Boy_2p, SE_Keyboard_ENG_Boy_2q, SE_Keyboard_ENG_Boy_2r,
+    SE_Keyboard_ENG_Boy_2s, SE_Keyboard_ENG_Boy_2t,
+    SE_Keyboard_ENG_Boy_2u, SE_Keyboard_ENG_Boy_2v, SE_Keyboard_ENG_Boy_2w, SE_Keyboard_ENG_Boy_2x,
+    SE_Keyboard_ENG_Boy_2y, SE_Keyboard_ENG_Boy_2z,
 };
 
 static const int sAltSeUs[] = {
-    0x1EA3, 0x1EA4, 0x1EA5, 0x1EA6, 0x1EA7, 0x1EA8, 0x1EA9, 0x1EAA, 0x1EAB, 0x1EAC,
-    0x1EAD, 0x1EAE, 0x1EAF, 0x1EB0, 0x1EB1, 0x1EB2, 0x1EB3, 0x1EB4, 0x1EB5, 0x1EB6,
-    0x1EB7, 0x1EB8, 0x1EB9, 0x1EBA, 0x1EBB, 0x1EBC,
+    SE_Keyboard_ENG_Boy_1a_fix, SE_Keyboard_ENG_Boy_1b_fix, SE_Keyboard_ENG_Boy_1c_fix,
+    SE_Keyboard_ENG_Boy_1d_fix, SE_Keyboard_ENG_Boy_1e_fix, SE_Keyboard_ENG_Boy_1f_fix,
+    SE_Keyboard_ENG_Boy_1g_fix, SE_Keyboard_ENG_Boy_1h_fix, SE_Keyboard_ENG_Boy_1i_fix,
+    SE_Keyboard_ENG_Boy_1j_fix,
+    SE_Keyboard_ENG_Boy_1k_fix, SE_Keyboard_ENG_Boy_1l_fix, SE_Keyboard_ENG_Boy_1m_fix,
+    SE_Keyboard_ENG_Boy_1n_fix, SE_Keyboard_ENG_Boy_1o_fix, SE_Keyboard_ENG_Boy_1p_fix,
+    SE_Keyboard_ENG_Boy_1q_fix, SE_Keyboard_ENG_Boy_1r_fix, SE_Keyboard_ENG_Boy_1s_fix,
+    SE_Keyboard_ENG_Boy_1t_fix,
+    SE_Keyboard_ENG_Boy_1u_fix, SE_Keyboard_ENG_Boy_1v_fix, SE_Keyboard_ENG_Boy_1w_fix,
+    SE_Keyboard_ENG_Boy_1x_fix, SE_Keyboard_ENG_Boy_1y_fix, SE_Keyboard_ENG_Boy_1z_fix,
 };
 
 // 80473000
 static const int sDigitSeUsF[] = {
-    0x1EFB, 0x1EFC, 0x1EFD, 0x1EFE, 0x1EFF, 0x1F00, 0x1F01, 0x1F02, 0x1F03, 0x1F04,
-    0x1EBD, 0x1EBE, 0x1EBF, 0x1EC0, 0x1EC1, 0x1EC2, 0x1EC3, 0x1EC4, 0x1EC5, 0x1EC6,
-    0x1F05, 0x1F06, 0x1F07, 0x1F08, 0x1F09, 0x1F0A, 0x1F0B, 0x1F0C, 0x1F0D, 0x1F0E,
+    SE_Keyboard_ENG_Gal_s00, SE_Keyboard_ENG_Gal_s01, SE_Keyboard_ENG_Gal_s02, SE_Keyboard_ENG_Gal_s03,
+    SE_Keyboard_ENG_Gal_s04, SE_Keyboard_ENG_Gal_s05, SE_Keyboard_ENG_Gal_s06, SE_Keyboard_ENG_Gal_s07,
+    SE_Keyboard_ENG_Gal_s08, SE_Keyboard_ENG_Gal_s09,
+    SE_Keyboard_ENG_Gal_00, SE_Keyboard_ENG_Gal_01, SE_Keyboard_ENG_Gal_02, SE_Keyboard_ENG_Gal_03,
+    SE_Keyboard_ENG_Gal_04, SE_Keyboard_ENG_Gal_05, SE_Keyboard_ENG_Gal_06, SE_Keyboard_ENG_Gal_07,
+    SE_Keyboard_ENG_Gal_08, SE_Keyboard_ENG_Gal_09,
+    SE_Keyboard_ENG_Gal_00_fix, SE_Keyboard_ENG_Gal_01_fix, SE_Keyboard_ENG_Gal_02_fix,
+    SE_Keyboard_ENG_Gal_03_fix, SE_Keyboard_ENG_Gal_04_fix, SE_Keyboard_ENG_Gal_05_fix,
+    SE_Keyboard_ENG_Gal_06_fix, SE_Keyboard_ENG_Gal_07_fix, SE_Keyboard_ENG_Gal_08_fix,
+    SE_Keyboard_ENG_Gal_09_fix,
 };
 
 static const int sUpperSeUsF[] = {
-    0x1EC7, 0x1EC8, 0x1EC9, 0x1ECA, 0x1ECB, 0x1ECC, 0x1ECD, 0x1ECE, 0x1ECF, 0x1ED0,
-    0x1ED1, 0x1ED2, 0x1ED3, 0x1ED4, 0x1ED5, 0x1ED6, 0x1ED7, 0x1ED8, 0x1ED9, 0x1EDA,
-    0x1EDB, 0x1EDC, 0x1EDD, 0x1EDE, 0x1EDF, 0x1EE0,
+    SE_Keyboard_ENG_Gal_1a, SE_Keyboard_ENG_Gal_1b, SE_Keyboard_ENG_Gal_1c, SE_Keyboard_ENG_Gal_1d,
+    SE_Keyboard_ENG_Gal_1e, SE_Keyboard_ENG_Gal_1f, SE_Keyboard_ENG_Gal_1g, SE_Keyboard_ENG_Gal_1h,
+    SE_Keyboard_ENG_Gal_1i, SE_Keyboard_ENG_Gal_1j,
+    SE_Keyboard_ENG_Gal_1k, SE_Keyboard_ENG_Gal_1l, SE_Keyboard_ENG_Gal_1m, SE_Keyboard_ENG_Gal_1n,
+    SE_Keyboard_ENG_Gal_1o, SE_Keyboard_ENG_Gal_1p, SE_Keyboard_ENG_Gal_1q, SE_Keyboard_ENG_Gal_1r,
+    SE_Keyboard_ENG_Gal_1s, SE_Keyboard_ENG_Gal_1t,
+    SE_Keyboard_ENG_Gal_1u, SE_Keyboard_ENG_Gal_1v, SE_Keyboard_ENG_Gal_1w, SE_Keyboard_ENG_Gal_1x,
+    SE_Keyboard_ENG_Gal_1y, SE_Keyboard_ENG_Gal_1z,
 };
 
 static const int sAltSeUsF[] = {
-    0x1F0F, 0x1F10, 0x1F11, 0x1F12, 0x1F13, 0x1F14, 0x1F15, 0x1F16, 0x1F17, 0x1F18,
-    0x1F19, 0x1F1A, 0x1F1B, 0x1F1C, 0x1F1D, 0x1F1E, 0x1F1F, 0x1F20, 0x1F21, 0x1F22,
-    0x1F23, 0x1F24, 0x1F25, 0x1F26, 0x1F27, 0x1F28,
+    SE_Keyboard_ENG_Gal_1a_fix, SE_Keyboard_ENG_Gal_1b_fix, SE_Keyboard_ENG_Gal_1c_fix,
+    SE_Keyboard_ENG_Gal_1d_fix, SE_Keyboard_ENG_Gal_1e_fix, SE_Keyboard_ENG_Gal_1f_fix,
+    SE_Keyboard_ENG_Gal_1g_fix, SE_Keyboard_ENG_Gal_1h_fix, SE_Keyboard_ENG_Gal_1i_fix,
+    SE_Keyboard_ENG_Gal_1j_fix,
+    SE_Keyboard_ENG_Gal_1k_fix, SE_Keyboard_ENG_Gal_1l_fix, SE_Keyboard_ENG_Gal_1m_fix,
+    SE_Keyboard_ENG_Gal_1n_fix, SE_Keyboard_ENG_Gal_1o_fix, SE_Keyboard_ENG_Gal_1p_fix,
+    SE_Keyboard_ENG_Gal_1q_fix, SE_Keyboard_ENG_Gal_1r_fix, SE_Keyboard_ENG_Gal_1s_fix,
+    SE_Keyboard_ENG_Gal_1t_fix,
+    SE_Keyboard_ENG_Gal_1u_fix, SE_Keyboard_ENG_Gal_1v_fix, SE_Keyboard_ENG_Gal_1w_fix,
+    SE_Keyboard_ENG_Gal_1x_fix, SE_Keyboard_ENG_Gal_1y_fix, SE_Keyboard_ENG_Gal_1z_fix,
 };
 
 static const int sLowerSeUsF[] = {
-    0x1EE1, 0x1EE2, 0x1EE3, 0x1EE4, 0x1EE5, 0x1EE6, 0x1EE7, 0x1EE8, 0x1EE9, 0x1EEA,
-    0x1EEB, 0x1EEC, 0x1EED, 0x1EEE, 0x1EEF, 0x1EF0, 0x1EF1, 0x1EF2, 0x1EF3, 0x1EF4,
-    0x1EF5, 0x1EF6, 0x1EF7, 0x1EF8, 0x1EF9, 0x1EFA,
+    SE_Keyboard_ENG_Gal_2a, SE_Keyboard_ENG_Gal_2b, SE_Keyboard_ENG_Gal_2c, SE_Keyboard_ENG_Gal_2d,
+    SE_Keyboard_ENG_Gal_2e, SE_Keyboard_ENG_Gal_2f, SE_Keyboard_ENG_Gal_2g, SE_Keyboard_ENG_Gal_2h,
+    SE_Keyboard_ENG_Gal_2i, SE_Keyboard_ENG_Gal_2j,
+    SE_Keyboard_ENG_Gal_2k, SE_Keyboard_ENG_Gal_2l, SE_Keyboard_ENG_Gal_2m, SE_Keyboard_ENG_Gal_2n,
+    SE_Keyboard_ENG_Gal_2o, SE_Keyboard_ENG_Gal_2p, SE_Keyboard_ENG_Gal_2q, SE_Keyboard_ENG_Gal_2r,
+    SE_Keyboard_ENG_Gal_2s, SE_Keyboard_ENG_Gal_2t,
+    SE_Keyboard_ENG_Gal_2u, SE_Keyboard_ENG_Gal_2v, SE_Keyboard_ENG_Gal_2w, SE_Keyboard_ENG_Gal_2x,
+    SE_Keyboard_ENG_Gal_2y, SE_Keyboard_ENG_Gal_2z,
 };
 
 // 804731B0
 static const int sDigitSeQc[] = {
-    0x1F29, 0x1F2A, 0x1F2B, 0x1F2C, 0x1F2D, 0x1F2E, 0x1F2F, 0x1F30, 0x1F31, 0x1F32,
-    0x1F29, 0x1F2A, 0x1F2B, 0x1F2C, 0x1F2D, 0x1F2E, 0x1F2F, 0x1F30, 0x1F31, 0x1F32,
-    0x1F71, 0x1F72, 0x1F73, 0x1F74, 0x1F75, 0x1F76, 0x1F77, 0x1F78, 0x1F79, 0x1F7A,
+    SE_Keyboard_FRN_Boy_00, SE_Keyboard_FRN_Boy_01, SE_Keyboard_FRN_Boy_02, SE_Keyboard_FRN_Boy_03,
+    SE_Keyboard_FRN_Boy_04, SE_Keyboard_FRN_Boy_05, SE_Keyboard_FRN_Boy_06, SE_Keyboard_FRN_Boy_07,
+    SE_Keyboard_FRN_Boy_08, SE_Keyboard_FRN_Boy_09,
+    SE_Keyboard_FRN_Boy_00, SE_Keyboard_FRN_Boy_01, SE_Keyboard_FRN_Boy_02, SE_Keyboard_FRN_Boy_03,
+    SE_Keyboard_FRN_Boy_04, SE_Keyboard_FRN_Boy_05, SE_Keyboard_FRN_Boy_06, SE_Keyboard_FRN_Boy_07,
+    SE_Keyboard_FRN_Boy_08, SE_Keyboard_FRN_Boy_09,
+    SE_Keyboard_FRN_Boy_00_fix, SE_Keyboard_FRN_Boy_01_fix, SE_Keyboard_FRN_Boy_02_fix,
+    SE_Keyboard_FRN_Boy_03_fix, SE_Keyboard_FRN_Boy_04_fix, SE_Keyboard_FRN_Boy_05_fix,
+    SE_Keyboard_FRN_Boy_06_fix, SE_Keyboard_FRN_Boy_07_fix, SE_Keyboard_FRN_Boy_08_fix,
+    SE_Keyboard_FRN_Boy_09_fix,
 };
 
 static const int sUpperSeQc[] = {
-    0x1F34, 0x1F36, 0x1F38, 0x1F3A, 0x1F3C, 0x1F3E, 0x1F40, 0x1F42, 0x1F44, 0x1F46,
-    0x1F48, 0x1F4A, 0x1F4C, 0x1F4E, 0x1F50, 0x1F52, 0x1F54, 0x1F56, 0x1F58, 0x1F5A,
-    0x1F5C, 0x1F5E, 0x1F60, 0x1F62, 0x1F64, 0x1F66,
+    SE_Keyboard_FRN_Boy_1a, SE_Keyboard_FRN_Boy_1b, SE_Keyboard_FRN_Boy_1c, SE_Keyboard_FRN_Boy_1d,
+    SE_Keyboard_FRN_Boy_1e, SE_Keyboard_FRN_Boy_1f, SE_Keyboard_FRN_Boy_1g, SE_Keyboard_FRN_Boy_1h,
+    SE_Keyboard_FRN_Boy_1i, SE_Keyboard_FRN_Boy_1j,
+    SE_Keyboard_FRN_Boy_1k, SE_Keyboard_FRN_Boy_1l, SE_Keyboard_FRN_Boy_1m, SE_Keyboard_FRN_Boy_1n,
+    SE_Keyboard_FRN_Boy_1o, SE_Keyboard_FRN_Boy_1p, SE_Keyboard_FRN_Boy_1q, SE_Keyboard_FRN_Boy_1r,
+    SE_Keyboard_FRN_Boy_1s, SE_Keyboard_FRN_Boy_1t,
+    SE_Keyboard_FRN_Boy_1u, SE_Keyboard_FRN_Boy_1v, SE_Keyboard_FRN_Boy_1w, SE_Keyboard_FRN_Boy_1x,
+    SE_Keyboard_FRN_Boy_1y, SE_Keyboard_FRN_Boy_1z,
 };
 
 static const int sAltSeQc[] = {
-    0x1F7B, 0x1F7C, 0x1F7D, 0x1F7E, 0x1F7F, 0x1F80, 0x1F81, 0x1F82, 0x1F83, 0x1F84,
-    0x1F85, 0x1F86, 0x1F87, 0x1F88, 0x1F89, 0x1F8A, 0x1F8B, 0x1F8C, 0x1F8D, 0x1F8E,
-    0x1F8F, 0x1F90, 0x1F91, 0x1F92, 0x1F93, 0x1F94,
+    SE_Keyboard_FRN_Boy_1a_fix, SE_Keyboard_FRN_Boy_1b_fix, SE_Keyboard_FRN_Boy_1c_fix,
+    SE_Keyboard_FRN_Boy_1d_fix, SE_Keyboard_FRN_Boy_1e_fix, SE_Keyboard_FRN_Boy_1f_fix,
+    SE_Keyboard_FRN_Boy_1g_fix, SE_Keyboard_FRN_Boy_1h_fix, SE_Keyboard_FRN_Boy_1i_fix,
+    SE_Keyboard_FRN_Boy_1j_fix,
+    SE_Keyboard_FRN_Boy_1k_fix, SE_Keyboard_FRN_Boy_1l_fix, SE_Keyboard_FRN_Boy_1m_fix,
+    SE_Keyboard_FRN_Boy_1n_fix, SE_Keyboard_FRN_Boy_1o_fix, SE_Keyboard_FRN_Boy_1p_fix,
+    SE_Keyboard_FRN_Boy_1q_fix, SE_Keyboard_FRN_Boy_1r_fix, SE_Keyboard_FRN_Boy_1s_fix,
+    SE_Keyboard_FRN_Boy_1t_fix,
+    SE_Keyboard_FRN_Boy_1u_fix, SE_Keyboard_FRN_Boy_1v_fix, SE_Keyboard_FRN_Boy_1w_fix,
+    SE_Keyboard_FRN_Boy_1x_fix, SE_Keyboard_FRN_Boy_1y_fix, SE_Keyboard_FRN_Boy_1z_fix,
 };
 
 static const int sLowerSeQc[] = {
-    0x1F33, 0x1F35, 0x1F37, 0x1F39, 0x1F3B, 0x1F3D, 0x1F3F, 0x1F41, 0x1F43, 0x1F45,
-    0x1F47, 0x1F49, 0x1F4B, 0x1F4D, 0x1F4F, 0x1F51, 0x1F53, 0x1F55, 0x1F57, 0x1F59,
-    0x1F5B, 0x1F5D, 0x1F5F, 0x1F61, 0x1F63, 0x1F65,
+    SE_Keyboard_FRN_Boy_2a, SE_Keyboard_FRN_Boy_2b, SE_Keyboard_FRN_Boy_2c, SE_Keyboard_FRN_Boy_2d,
+    SE_Keyboard_FRN_Boy_2e, SE_Keyboard_FRN_Boy_2f, SE_Keyboard_FRN_Boy_2g, SE_Keyboard_FRN_Boy_2h,
+    SE_Keyboard_FRN_Boy_2i, SE_Keyboard_FRN_Boy_2j,
+    SE_Keyboard_FRN_Boy_2k, SE_Keyboard_FRN_Boy_2l, SE_Keyboard_FRN_Boy_2m, SE_Keyboard_FRN_Boy_2n,
+    SE_Keyboard_FRN_Boy_2o, SE_Keyboard_FRN_Boy_2p, SE_Keyboard_FRN_Boy_2q, SE_Keyboard_FRN_Boy_2r,
+    SE_Keyboard_FRN_Boy_2s, SE_Keyboard_FRN_Boy_2t,
+    SE_Keyboard_FRN_Boy_2u, SE_Keyboard_FRN_Boy_2v, SE_Keyboard_FRN_Boy_2w, SE_Keyboard_FRN_Boy_2x,
+    SE_Keyboard_FRN_Boy_2y, SE_Keyboard_FRN_Boy_2z,
 };
 
 // 80473360
 static const int sDigitSeQcF[] = {
-    0x1F95, 0x1F96, 0x1F97, 0x1F98, 0x1F99, 0x1F9A, 0x1F9B, 0x1F9C, 0x1F9D, 0x1F9E,
-    0x1F95, 0x1F96, 0x1F97, 0x1F98, 0x1F99, 0x1F9A, 0x1F9B, 0x1F9C, 0x1F9D, 0x1F9E,
-    0x1FDD, 0x1FDE, 0x1FDF, 0x1FE0, 0x1FE1, 0x1FE2, 0x1FE3, 0x1FE4, 0x1FE5, 0x1FE6,
+    SE_Keyboard_FRN_Gal_00, SE_Keyboard_FRN_Gal_01, SE_Keyboard_FRN_Gal_02, SE_Keyboard_FRN_Gal_03,
+    SE_Keyboard_FRN_Gal_04, SE_Keyboard_FRN_Gal_05, SE_Keyboard_FRN_Gal_06, SE_Keyboard_FRN_Gal_07,
+    SE_Keyboard_FRN_Gal_08, SE_Keyboard_FRN_Gal_09,
+    SE_Keyboard_FRN_Gal_00, SE_Keyboard_FRN_Gal_01, SE_Keyboard_FRN_Gal_02, SE_Keyboard_FRN_Gal_03,
+    SE_Keyboard_FRN_Gal_04, SE_Keyboard_FRN_Gal_05, SE_Keyboard_FRN_Gal_06, SE_Keyboard_FRN_Gal_07,
+    SE_Keyboard_FRN_Gal_08, SE_Keyboard_FRN_Gal_09,
+    SE_Keyboard_FRN_Gal_00_fix, SE_Keyboard_FRN_Gal_01_fix, SE_Keyboard_FRN_Gal_02_fix,
+    SE_Keyboard_FRN_Gal_03_fix, SE_Keyboard_FRN_Gal_04_fix, SE_Keyboard_FRN_Gal_05_fix,
+    SE_Keyboard_FRN_Gal_06_fix, SE_Keyboard_FRN_Gal_07_fix, SE_Keyboard_FRN_Gal_08_fix,
+    SE_Keyboard_FRN_Gal_09_fix,
 };
 
 static const int sUpperSeQcF[] = {
-    0x1F9F, 0x1FA0, 0x1FA1, 0x1FA2, 0x1FA3, 0x1FA4, 0x1FA5, 0x1FA6, 0x1FA7, 0x1FA8,
-    0x1FA9, 0x1FAA, 0x1FAB, 0x1FAC, 0x1FAD, 0x1FAE, 0x1FAF, 0x1FB0, 0x1FB1, 0x1FB2,
-    0x1FB3, 0x1FB4, 0x1FB5, 0x1FB6, 0x1FB7, 0x1FB8,
+    SE_Keyboard_FRN_Gal_1a, SE_Keyboard_FRN_Gal_1b, SE_Keyboard_FRN_Gal_1c, SE_Keyboard_FRN_Gal_1d,
+    SE_Keyboard_FRN_Gal_1e, SE_Keyboard_FRN_Gal_1f, SE_Keyboard_FRN_Gal_1g, SE_Keyboard_FRN_Gal_1h,
+    SE_Keyboard_FRN_Gal_1i, SE_Keyboard_FRN_Gal_1j,
+    SE_Keyboard_FRN_Gal_1k, SE_Keyboard_FRN_Gal_1l, SE_Keyboard_FRN_Gal_1m, SE_Keyboard_FRN_Gal_1n,
+    SE_Keyboard_FRN_Gal_1o, SE_Keyboard_FRN_Gal_1p, SE_Keyboard_FRN_Gal_1q, SE_Keyboard_FRN_Gal_1r,
+    SE_Keyboard_FRN_Gal_1s, SE_Keyboard_FRN_Gal_1t,
+    SE_Keyboard_FRN_Gal_1u, SE_Keyboard_FRN_Gal_1v, SE_Keyboard_FRN_Gal_1w, SE_Keyboard_FRN_Gal_1x,
+    SE_Keyboard_FRN_Gal_1y, SE_Keyboard_FRN_Gal_1z,
 };
 
 static const int sAltSeQcF[] = {
-    0x1FE7, 0x1FE8, 0x1FE9, 0x1FEA, 0x1FEB, 0x1FEC, 0x1FED, 0x1FEE, 0x1FEF, 0x1FF0,
-    0x1FF1, 0x1FF2, 0x1FF3, 0x1FF4, 0x1FF5, 0x1FF6, 0x1FF7, 0x1FF8, 0x1FF9, 0x1FFA,
-    0x1FFB, 0x1FFC, 0x1FFD, 0x1FFE, 0x1FFF, 0x2000,
+    SE_Keyboard_FRN_Gal_1a_fix, SE_Keyboard_FRN_Gal_1b_fix, SE_Keyboard_FRN_Gal_1c_fix,
+    SE_Keyboard_FRN_Gal_1d_fix, SE_Keyboard_FRN_Gal_1e_fix, SE_Keyboard_FRN_Gal_1f_fix,
+    SE_Keyboard_FRN_Gal_1g_fix, SE_Keyboard_FRN_Gal_1h_fix, SE_Keyboard_FRN_Gal_1i_fix,
+    SE_Keyboard_FRN_Gal_1j_fix,
+    SE_Keyboard_FRN_Gal_1k_fix, SE_Keyboard_FRN_Gal_1l_fix, SE_Keyboard_FRN_Gal_1m_fix,
+    SE_Keyboard_FRN_Gal_1n_fix, SE_Keyboard_FRN_Gal_1o_fix, SE_Keyboard_FRN_Gal_1p_fix,
+    SE_Keyboard_FRN_Gal_1q_fix, SE_Keyboard_FRN_Gal_1r_fix, SE_Keyboard_FRN_Gal_1s_fix,
+    SE_Keyboard_FRN_Gal_1t_fix,
+    SE_Keyboard_FRN_Gal_1u_fix, SE_Keyboard_FRN_Gal_1v_fix, SE_Keyboard_FRN_Gal_1w_fix,
+    SE_Keyboard_FRN_Gal_1x_fix, SE_Keyboard_FRN_Gal_1y_fix, SE_Keyboard_FRN_Gal_1z_fix,
 };
 
 static const int sLowerSeQcF[] = {
-    0x1FB9, 0x1FBA, 0x1FBB, 0x1FBC, 0x1FBD, 0x1FBE, 0x1FBF, 0x1FC0, 0x1FC1, 0x1FC2,
-    0x1FC3, 0x1FC4, 0x1FC5, 0x1FC6, 0x1FC7, 0x1FC8, 0x1FC9, 0x1FCA, 0x1FCB, 0x1FCC,
-    0x1FCD, 0x1FCE, 0x1FCF, 0x1FD0, 0x1FD1, 0x1FD2,
+    SE_Keyboard_FRN_Gal_2a, SE_Keyboard_FRN_Gal_2b, SE_Keyboard_FRN_Gal_2c, SE_Keyboard_FRN_Gal_2d,
+    SE_Keyboard_FRN_Gal_2e, SE_Keyboard_FRN_Gal_2f, SE_Keyboard_FRN_Gal_2g, SE_Keyboard_FRN_Gal_2h,
+    SE_Keyboard_FRN_Gal_2i, SE_Keyboard_FRN_Gal_2j,
+    SE_Keyboard_FRN_Gal_2k, SE_Keyboard_FRN_Gal_2l, SE_Keyboard_FRN_Gal_2m, SE_Keyboard_FRN_Gal_2n,
+    SE_Keyboard_FRN_Gal_2o, SE_Keyboard_FRN_Gal_2p, SE_Keyboard_FRN_Gal_2q, SE_Keyboard_FRN_Gal_2r,
+    SE_Keyboard_FRN_Gal_2s, SE_Keyboard_FRN_Gal_2t,
+    SE_Keyboard_FRN_Gal_2u, SE_Keyboard_FRN_Gal_2v, SE_Keyboard_FRN_Gal_2w, SE_Keyboard_FRN_Gal_2x,
+    SE_Keyboard_FRN_Gal_2y, SE_Keyboard_FRN_Gal_2z,
 };
 
 // 80473510
 static const int sDigitSeMx[] = {
-    0x2205, 0x2206, 0x2207, 0x2208, 0x2209, 0x220A, 0x220B, 0x220C, 0x220D, 0x220E,
-    0x21C7, 0x21C8, 0x21C9, 0x21CA, 0x21CB, 0x21CC, 0x21CD, 0x21CE, 0x21CF, 0x21D0,
-    0x220F, 0x2210, 0x2211, 0x2212, 0x2213, 0x2214, 0x2215, 0x2216, 0x2217, 0x2218,
+    SE_Keyboard_SPN_Boy_s00, SE_Keyboard_SPN_Boy_s01, SE_Keyboard_SPN_Boy_s02, SE_Keyboard_SPN_Boy_s03,
+    SE_Keyboard_SPN_Boy_s04, SE_Keyboard_SPN_Boy_s05, SE_Keyboard_SPN_Boy_s06, SE_Keyboard_SPN_Boy_s07,
+    SE_Keyboard_SPN_Boy_s08, SE_Keyboard_SPN_Boy_s09,
+    SE_Keyboard_SPN_Boy_00, SE_Keyboard_SPN_Boy_01, SE_Keyboard_SPN_Boy_02, SE_Keyboard_SPN_Boy_03,
+    SE_Keyboard_SPN_Boy_04, SE_Keyboard_SPN_Boy_05, SE_Keyboard_SPN_Boy_06, SE_Keyboard_SPN_Boy_07,
+    SE_Keyboard_SPN_Boy_08, SE_Keyboard_SPN_Boy_09,
+    SE_Keyboard_SPN_Boy_00_fix, SE_Keyboard_SPN_Boy_01_fix, SE_Keyboard_SPN_Boy_02_fix,
+    SE_Keyboard_SPN_Boy_03_fix, SE_Keyboard_SPN_Boy_04_fix, SE_Keyboard_SPN_Boy_05_fix,
+    SE_Keyboard_SPN_Boy_06_fix, SE_Keyboard_SPN_Boy_07_fix, SE_Keyboard_SPN_Boy_08_fix,
+    SE_Keyboard_SPN_Boy_09_fix,
 };
 
 static const int sUpperSeMx[] = {
-    0x21D1, 0x21D2, 0x21D3, 0x21D4, 0x21D5, 0x21D6, 0x21D7, 0x21D8, 0x21D9, 0x21DA,
-    0x21DB, 0x21DC, 0x21DD, 0x21DE, 0x21DF, 0x21E0, 0x21E1, 0x21E2, 0x21E3, 0x21E4,
-    0x21E5, 0x21E6, 0x21E7, 0x21E8, 0x21E9, 0x21EA,
+    SE_Keyboard_SPN_Boy_1a, SE_Keyboard_SPN_Boy_1b, SE_Keyboard_SPN_Boy_1c, SE_Keyboard_SPN_Boy_1d,
+    SE_Keyboard_SPN_Boy_1e, SE_Keyboard_SPN_Boy_1f, SE_Keyboard_SPN_Boy_1g, SE_Keyboard_SPN_Boy_1h,
+    SE_Keyboard_SPN_Boy_1i, SE_Keyboard_SPN_Boy_1j,
+    SE_Keyboard_SPN_Boy_1k, SE_Keyboard_SPN_Boy_1l, SE_Keyboard_SPN_Boy_1m, SE_Keyboard_SPN_Boy_1n,
+    SE_Keyboard_SPN_Boy_1o, SE_Keyboard_SPN_Boy_1p, SE_Keyboard_SPN_Boy_1q, SE_Keyboard_SPN_Boy_1r,
+    SE_Keyboard_SPN_Boy_1s, SE_Keyboard_SPN_Boy_1t,
+    SE_Keyboard_SPN_Boy_1u, SE_Keyboard_SPN_Boy_1v, SE_Keyboard_SPN_Boy_1w, SE_Keyboard_SPN_Boy_1x,
+    SE_Keyboard_SPN_Boy_1y, SE_Keyboard_SPN_Boy_1z,
 };
 
 static const int sAltSeMx[] = {
-    0x2219, 0x221A, 0x221B, 0x221C, 0x221D, 0x221E, 0x221F, 0x2220, 0x2221, 0x2222,
-    0x2223, 0x2224, 0x2225, 0x2226, 0x2227, 0x2228, 0x2229, 0x222A, 0x222B, 0x222C,
-    0x222D, 0x222E, 0x222F, 0x2230, 0x2231, 0x2232,
+    SE_Keyboard_SPN_Boy_1a_fix, SE_Keyboard_SPN_Boy_1b_fix, SE_Keyboard_SPN_Boy_1c_fix,
+    SE_Keyboard_SPN_Boy_1d_fix, SE_Keyboard_SPN_Boy_1e_fix, SE_Keyboard_SPN_Boy_1f_fix,
+    SE_Keyboard_SPN_Boy_1g_fix, SE_Keyboard_SPN_Boy_1h_fix, SE_Keyboard_SPN_Boy_1i_fix,
+    SE_Keyboard_SPN_Boy_1j_fix,
+    SE_Keyboard_SPN_Boy_1k_fix, SE_Keyboard_SPN_Boy_1l_fix, SE_Keyboard_SPN_Boy_1m_fix,
+    SE_Keyboard_SPN_Boy_1n_fix, SE_Keyboard_SPN_Boy_1o_fix, SE_Keyboard_SPN_Boy_1p_fix,
+    SE_Keyboard_SPN_Boy_1q_fix, SE_Keyboard_SPN_Boy_1r_fix, SE_Keyboard_SPN_Boy_1s_fix,
+    SE_Keyboard_SPN_Boy_1t_fix,
+    SE_Keyboard_SPN_Boy_1u_fix, SE_Keyboard_SPN_Boy_1v_fix, SE_Keyboard_SPN_Boy_1w_fix,
+    SE_Keyboard_SPN_Boy_1x_fix, SE_Keyboard_SPN_Boy_1y_fix, SE_Keyboard_SPN_Boy_1z_fix,
 };
 
 static const int sLowerSeMx[] = {
-    0x21EB, 0x21EC, 0x21ED, 0x21EE, 0x21EF, 0x21F0, 0x21F1, 0x21F2, 0x21F3, 0x21F4,
-    0x21F5, 0x21F6, 0x21F7, 0x21F8, 0x21F9, 0x21FA, 0x21FB, 0x21FC, 0x21FD, 0x21FE,
-    0x21FF, 0x2200, 0x2201, 0x2202, 0x2203, 0x2204,
+    SE_Keyboard_SPN_Boy_2a, SE_Keyboard_SPN_Boy_2b, SE_Keyboard_SPN_Boy_2c, SE_Keyboard_SPN_Boy_2d,
+    SE_Keyboard_SPN_Boy_2e, SE_Keyboard_SPN_Boy_2f, SE_Keyboard_SPN_Boy_2g, SE_Keyboard_SPN_Boy_2h,
+    SE_Keyboard_SPN_Boy_2i, SE_Keyboard_SPN_Boy_2j,
+    SE_Keyboard_SPN_Boy_2k, SE_Keyboard_SPN_Boy_2l, SE_Keyboard_SPN_Boy_2m, SE_Keyboard_SPN_Boy_2n,
+    SE_Keyboard_SPN_Boy_2o, SE_Keyboard_SPN_Boy_2p, SE_Keyboard_SPN_Boy_2q, SE_Keyboard_SPN_Boy_2r,
+    SE_Keyboard_SPN_Boy_2s, SE_Keyboard_SPN_Boy_2t,
+    SE_Keyboard_SPN_Boy_2u, SE_Keyboard_SPN_Boy_2v, SE_Keyboard_SPN_Boy_2w, SE_Keyboard_SPN_Boy_2x,
+    SE_Keyboard_SPN_Boy_2y, SE_Keyboard_SPN_Boy_2z,
 };
 
 // 804736C0
 static const int sDigitSeMxF[] = {
-    0x2271, 0x2272, 0x2273, 0x2274, 0x2275, 0x2276, 0x2277, 0x2278, 0x2279, 0x227A,
-    0x2233, 0x2234, 0x2235, 0x2236, 0x2237, 0x2238, 0x2239, 0x223A, 0x223B, 0x223C,
-    0x227B, 0x227C, 0x227D, 0x227E, 0x227F, 0x2280, 0x2281, 0x2282, 0x2283, 0x2284,
+    SE_Keyboard_SPN_Gal_s00, SE_Keyboard_SPN_Gal_s01, SE_Keyboard_SPN_Gal_s02, SE_Keyboard_SPN_Gal_s03,
+    SE_Keyboard_SPN_Gal_s04, SE_Keyboard_SPN_Gal_s05, SE_Keyboard_SPN_Gal_s06, SE_Keyboard_SPN_Gal_s07,
+    SE_Keyboard_SPN_Gal_s08, SE_Keyboard_SPN_Gal_s09,
+    SE_Keyboard_SPN_Gal_00, SE_Keyboard_SPN_Gal_01, SE_Keyboard_SPN_Gal_02, SE_Keyboard_SPN_Gal_03,
+    SE_Keyboard_SPN_Gal_04, SE_Keyboard_SPN_Gal_05, SE_Keyboard_SPN_Gal_06, SE_Keyboard_SPN_Gal_07,
+    SE_Keyboard_SPN_Gal_08, SE_Keyboard_SPN_Gal_09,
+    SE_Keyboard_SPN_Gal_00_fix, SE_Keyboard_SPN_Gal_01_fix, SE_Keyboard_SPN_Gal_02_fix,
+    SE_Keyboard_SPN_Gal_03_fix, SE_Keyboard_SPN_Gal_04_fix, SE_Keyboard_SPN_Gal_05_fix,
+    SE_Keyboard_SPN_Gal_06_fix, SE_Keyboard_SPN_Gal_07_fix, SE_Keyboard_SPN_Gal_08_fix,
+    SE_Keyboard_SPN_Gal_09_fix,
 };
 
 static const int sUpperSeMxF[] = {
-    0x223D, 0x223E, 0x223F, 0x2240, 0x2241, 0x2242, 0x2243, 0x2244, 0x2245, 0x2246,
-    0x2247, 0x2248, 0x2249, 0x224A, 0x224B, 0x224C, 0x224D, 0x224E, 0x224F, 0x2250,
-    0x2251, 0x2252, 0x2253, 0x2254, 0x2255, 0x2256,
+    SE_Keyboard_SPN_Gal_1a, SE_Keyboard_SPN_Gal_1b, SE_Keyboard_SPN_Gal_1c, SE_Keyboard_SPN_Gal_1d,
+    SE_Keyboard_SPN_Gal_1e, SE_Keyboard_SPN_Gal_1f, SE_Keyboard_SPN_Gal_1g, SE_Keyboard_SPN_Gal_1h,
+    SE_Keyboard_SPN_Gal_1i, SE_Keyboard_SPN_Gal_1j,
+    SE_Keyboard_SPN_Gal_1k, SE_Keyboard_SPN_Gal_1l, SE_Keyboard_SPN_Gal_1m, SE_Keyboard_SPN_Gal_1n,
+    SE_Keyboard_SPN_Gal_1o, SE_Keyboard_SPN_Gal_1p, SE_Keyboard_SPN_Gal_1q, SE_Keyboard_SPN_Gal_1r,
+    SE_Keyboard_SPN_Gal_1s, SE_Keyboard_SPN_Gal_1t,
+    SE_Keyboard_SPN_Gal_1u, SE_Keyboard_SPN_Gal_1v, SE_Keyboard_SPN_Gal_1w, SE_Keyboard_SPN_Gal_1x,
+    SE_Keyboard_SPN_Gal_1y, SE_Keyboard_SPN_Gal_1z,
 };
 
 static const int sAltSeMxF[] = {
-    0x2285, 0x2286, 0x2287, 0x2288, 0x2289, 0x228A, 0x228B, 0x228C, 0x228D, 0x228E,
-    0x228F, 0x2290, 0x2291, 0x2292, 0x2293, 0x2294, 0x2295, 0x2296, 0x2297, 0x2298,
-    0x2299, 0x229A, 0x229B, 0x229C, 0x229D, 0x229E,
+    SE_Keyboard_SPN_Gal_1a_fix, SE_Keyboard_SPN_Gal_1b_fix, SE_Keyboard_SPN_Gal_1c_fix,
+    SE_Keyboard_SPN_Gal_1d_fix, SE_Keyboard_SPN_Gal_1e_fix, SE_Keyboard_SPN_Gal_1f_fix,
+    SE_Keyboard_SPN_Gal_1g_fix, SE_Keyboard_SPN_Gal_1h_fix, SE_Keyboard_SPN_Gal_1i_fix,
+    SE_Keyboard_SPN_Gal_1j_fix,
+    SE_Keyboard_SPN_Gal_1k_fix, SE_Keyboard_SPN_Gal_1l_fix, SE_Keyboard_SPN_Gal_1m_fix,
+    SE_Keyboard_SPN_Gal_1n_fix, SE_Keyboard_SPN_Gal_1o_fix, SE_Keyboard_SPN_Gal_1p_fix,
+    SE_Keyboard_SPN_Gal_1q_fix, SE_Keyboard_SPN_Gal_1r_fix, SE_Keyboard_SPN_Gal_1s_fix,
+    SE_Keyboard_SPN_Gal_1t_fix,
+    SE_Keyboard_SPN_Gal_1u_fix, SE_Keyboard_SPN_Gal_1v_fix, SE_Keyboard_SPN_Gal_1w_fix,
+    SE_Keyboard_SPN_Gal_1x_fix, SE_Keyboard_SPN_Gal_1y_fix, SE_Keyboard_SPN_Gal_1z_fix,
 };
 
 static const int sLowerSeMxF[] = {
-    0x2257, 0x2258, 0x2259, 0x225A, 0x225B, 0x225C, 0x225D, 0x225E, 0x225F, 0x2260,
-    0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2266, 0x2267, 0x2268, 0x2269, 0x226A,
-    0x226B, 0x226C, 0x226D, 0x226E, 0x226F, 0x2270,
+    SE_Keyboard_SPN_Gal_2a, SE_Keyboard_SPN_Gal_2b, SE_Keyboard_SPN_Gal_2c, SE_Keyboard_SPN_Gal_2d,
+    SE_Keyboard_SPN_Gal_2e, SE_Keyboard_SPN_Gal_2f, SE_Keyboard_SPN_Gal_2g, SE_Keyboard_SPN_Gal_2h,
+    SE_Keyboard_SPN_Gal_2i, SE_Keyboard_SPN_Gal_2j,
+    SE_Keyboard_SPN_Gal_2k, SE_Keyboard_SPN_Gal_2l, SE_Keyboard_SPN_Gal_2m, SE_Keyboard_SPN_Gal_2n,
+    SE_Keyboard_SPN_Gal_2o, SE_Keyboard_SPN_Gal_2p, SE_Keyboard_SPN_Gal_2q, SE_Keyboard_SPN_Gal_2r,
+    SE_Keyboard_SPN_Gal_2s, SE_Keyboard_SPN_Gal_2t,
+    SE_Keyboard_SPN_Gal_2u, SE_Keyboard_SPN_Gal_2v, SE_Keyboard_SPN_Gal_2w, SE_Keyboard_SPN_Gal_2x,
+    SE_Keyboard_SPN_Gal_2y, SE_Keyboard_SPN_Gal_2z,
 };
 
 static const int *sDigitSe[] = {sDigitSeUs, sDigitSeQc, sDigitSeMx, sDigitSeUsF, sDigitSeQcF, sDigitSeMxF};
@@ -253,7 +398,7 @@ void playKeySe(wchar_t c, BOOL a, BOOL b) {
             playLowerKeySe(c - L'a');
         }
     } else {
-        playSe(0x16DA);
+        playSe(SE_pupupu);
     }
 }
 

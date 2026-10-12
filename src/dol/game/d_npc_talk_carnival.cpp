@@ -9,6 +9,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <cstring>
+#include <game/snd/snd_id.hpp>
 
 // The prizes and stakes are the four candies (ITEM_IDX_BLUE_CANDY..ITEM_IDX_GREEN_CANDY, BITM kind
 // dItem::KIND_CANDY).
@@ -438,14 +439,14 @@ int dAcNpcNml_c::talk_c::msgCarnival1Result(msgInfo_s *info) {
 // 800403E4
 void dAcNpcNml_c::talk_c::endCarnivalWin(int arg) {
     if (mpNpc != NULL) {
-        mpNpc->mAudioObj.startSound(0x17A1); // the player won
+        mpNpc->mAudioObj.startSound(SE_Seikai); // the player won
     }
 }
 
 // 80040408
 void dAcNpcNml_c::talk_c::endCarnivalLose(int arg) {
     if (mpNpc != NULL) {
-        mpNpc->mAudioObj.startSound(0x17A2); // the player lost
+        mpNpc->mAudioObj.startSound(SE_Fuseikai); // the player lost
     }
 }
 

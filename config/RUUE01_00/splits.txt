@@ -1936,7 +1936,17 @@ dol/sound/SoundVoice.cpp:
 	.text       start:0x801D8618 end:0x801DC544
 
 dol/sound/SoundObj.cpp:
-	.text       start:0x801DC544 end:0x801E1C78
+	.text       start:0x801DC544 end:0x801E1BD4
+	.data       start:0x80503930 end:0x80503C90 align:4
+	.bss        start:0x80625DB0 end:0x80625DC8 align:4
+	.sdata      start:0x8074C6B0 end:0x8074C700 align:4
+	.sbss       start:0x8074EC60 end:0x8074EC68 align:4
+	.sdata2     start:0x80751C80 end:0x80751D00 align:4
+
+dol/sound/SoundAudioFrameCallback.cpp:
+	.text       start:0x801E1BD4 end:0x801E1C78
+	.data       start:0x80503C90 end:0x80503CD0
+	.sdata      start:0x8074C700 end:0x8074C708
 
 dol/sound/SoundObjFurniture.cpp:
 	.text       start:0x801E1C78 end:0x801E2C3C

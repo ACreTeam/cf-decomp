@@ -9,6 +9,7 @@
 #include <game/game/d_quest.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/snd/snd_id.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -110,7 +111,7 @@ BOOL dAcNpcNml_c::talk_c::stepErrandYes(int kind) {
         setMsgProc(&talk_c::msgYes);
         startMsg();
         requestItemAct(&mItem0, 2, 0);
-        mpNpc->mAudioObj.startSound(0x171E);
+        mpNpc->mAudioObj.startSound(SE_otsukai_start);
         return TRUE;
     }
     return FALSE;
@@ -314,7 +315,7 @@ BOOL dAcNpcNml_c::talk_c::stepErrandReward(int kind) {
         if (mItem0 != dItem::ITEM_ID_NONE) {
             requestItemAct(&mItem0, 0, 0);
         }
-        mpNpc->mAudioObj.startSound(0x171F);
+        mpNpc->mAudioObj.startSound(SE_otsukai_end);
         return TRUE;
     }
     return FALSE;
@@ -347,7 +348,7 @@ BOOL dAcNpcNml_c::talk_c::stepErrandRewardFull(int kind) {
                 animal->completeErrandRequest(getNpcIdx(), player, FALSE);
             }
         }
-        mpNpc->mAudioObj.startSound(0x171F);
+        mpNpc->mAudioObj.startSound(SE_otsukai_end);
         setMsgProc(&talk_c::msgErrandEnd);
         startMsg();
         return TRUE;

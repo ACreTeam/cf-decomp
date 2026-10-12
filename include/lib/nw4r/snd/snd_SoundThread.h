@@ -65,6 +65,9 @@ public:
     bool Create(s32 priority, void* pStack, u32 stackSize);
     void Shutdown();
 
+    void RegisterSoundFrameCallback(SoundFrameCallback* pCallback);   // CF 8026E7D8
+    void UnregisterSoundFrameCallback(SoundFrameCallback* pCallback); // CF 8026E840
+
     void RegisterPlayerCallback(PlayerCallback* pCallback);
     void UnregisterPlayerCallback(PlayerCallback* pCallback);
 

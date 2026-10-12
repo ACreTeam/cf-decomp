@@ -28,7 +28,8 @@ public:
         mPool.Destroy(pBuffer, size);
     }
 
-    T* Alloc(int priority) {
+    T* Alloc(int priority, int ambientPriority) {
+        int allocPriority = ut::Clamp(priority + ambientPriority, 0, T::PRIORITY_MAX);
         ut::detail::AutoLock<OSMutex> lock(mMutex);
         T* pSound = NULL;
 
@@ -36,7 +37,7 @@ public:
             void* pBuffer = mPool.Alloc();
 
             if (pBuffer != NULL) {
-                pSound = new (pBuffer) T(this);
+                pSound = new (pBuffer) T(this, priority, ambientPriority);
             } else {
                 T* pLowest = GetLowestPrioritySound();
 
@@ -44,7 +45,7 @@ public:
                     return NULL;
                 }
 
-                if (priority < pLowest->CalcCurrentPlayerPriority()) {
+                if (allocPriority < pLowest->CalcCurrentPlayerPriority()) {
                     return NULL;
                 }
 
@@ -54,7 +55,7 @@ public:
             }
         }
 
-        InsertPriorityList(pSound, priority);
+        InsertPriorityList(pSound, allocPriority);
         return pSound;
     }
 

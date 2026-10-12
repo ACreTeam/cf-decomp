@@ -7,8 +7,9 @@ namespace detail {
 
 NW4R_UT_RTTI_DEF_DERIVED(StrmSound, BasicSound);
 
-StrmSound::StrmSound(SoundInstanceManager<StrmSound>* pManager)
-    : mManager(pManager), mTempSpecialHandle(NULL) {}
+StrmSound::StrmSound(SoundInstanceManager<StrmSound>* pManager, int priority,
+                      int ambientPriority)
+    : BasicSound(priority, ambientPriority), mManager(pManager), mTempSpecialHandle(NULL) {}
 
 bool StrmSound::Prepare(StrmBufferPool* pPool,
                         StrmPlayer::StartOffsetType offsetType, s32 offset,
@@ -36,8 +37,7 @@ void StrmSound::Shutdown() {
     mManager->Free(this);
 }
 
-void StrmSound::SetPlayerPriority(int priority) {
-    BasicSound::SetPlayerPriority(priority);
+void StrmSound::OnUpdatePlayerPriority() {
     mManager->UpdatePriority(this, CalcCurrentPlayerPriority());
 }
 

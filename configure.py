@@ -926,6 +926,16 @@ config.libs = [
         ],
     },
     {
+        "lib": "sound",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_game,
+        "progress_category": "game",
+        "objects": [
+            Object(Matching, "dol/sound/SoundObj.cpp"),
+            Object(Matching, "dol/sound/SoundAudioFrameCallback.cpp"),
+        ],
+    },
+    {
         "lib": "keyboard",
         "mw_version": "GC/3.0a5.2",
         "cflags": cflags_identified_game,

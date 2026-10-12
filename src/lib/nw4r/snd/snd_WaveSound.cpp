@@ -7,8 +7,9 @@ namespace detail {
 
 NW4R_UT_RTTI_DEF_DERIVED(WaveSound, BasicSound);
 
-WaveSound::WaveSound(SoundInstanceManager<WaveSound>* pManager)
-    : mManager(pManager), mTempSpecialHandle(NULL), mPreparedFlag(false) {}
+WaveSound::WaveSound(SoundInstanceManager<WaveSound>* pManager, int priority,
+                      int ambientPriority)
+    : BasicSound(priority, ambientPriority), mManager(pManager), mTempSpecialHandle(NULL), mPreparedFlag(false) {}
 
 bool WaveSound::Prepare(const void* pWsdData, s32 wsdOffset,
                         WsdPlayer::StartOffsetType startType, s32 startOffset,
@@ -38,8 +39,7 @@ void WaveSound::SetReleasePriorityFix(bool flag) {
     mWsdPlayer.SetReleasePriorityFix(flag);
 }
 
-void WaveSound::SetPlayerPriority(int priority) {
-    BasicSound::SetPlayerPriority(priority);
+void WaveSound::OnUpdatePlayerPriority() {
     mManager->UpdatePriority(this, CalcCurrentPlayerPriority());
 }
 

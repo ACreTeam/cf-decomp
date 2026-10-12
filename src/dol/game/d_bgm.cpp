@@ -20,6 +20,7 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc_list.hpp>
+#include <game/snd/snd_id.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -64,10 +65,10 @@ void FieldEvent_c::init() {}
 
 void FieldEvent_c::execute() {
     if (l_mgr.mTime.isSecChanged()) {
-        checkEvent(&mEventBgm[0], EVENT_HALLOWEEN, 0x1A89, 0x26);
-        checkEvent(&mEventBgm[1], EVENT_FIREWORKS, 0x1A99, 0x26);
-        checkEvent(&mEventBgm[2], EVENT_FESTIVALE, 0x1AB1, 0x26);
-        checkEvent(&mEventBgm[3], EVENT_HARVEST_FESTIVAL, 0x1AB2, 0x26);
+        checkEvent(&mEventBgm[0], EVENT_HALLOWEEN, BGM_HELLOWEEN, 0x26);
+        checkEvent(&mEventBgm[1], EVENT_FIREWORKS, BGM_FIREWORKS, 0x26);
+        checkEvent(&mEventBgm[2], EVENT_FESTIVALE, BGM_CARNIVAL, 0x26);
+        checkEvent(&mEventBgm[3], EVENT_HARVEST_FESTIVAL, BGM_HARVEST, 0x26);
         checkToyDay();
         checkCountdown();
         checkNewYear();
@@ -113,8 +114,8 @@ void FieldEvent_c::checkToyDay() {
     bool on = (date && morning) != FALSE && active;
     if (mToyDayBgm == -1) {
         if (on) {
-            mToyDayBgm = 0x1AB3;
-            l_mgr.play(0x26, 0x1AB3, 0x2D, 0);
+            mToyDayBgm = BGM_CHRISTMAS;
+            l_mgr.play(0x26, BGM_CHRISTMAS, 0x2D, 0);
         }
     } else if (!on) {
         l_mgr.stop(mToyDayBgm);
@@ -138,13 +139,13 @@ void FieldEvent_c::checkCountdown() {
         BOOL t3 = time->isTime(23, 55, 0, 0, 0, 0);
         u32 id = -1;
         if (t0) {
-            id = 0x1A9A;
+            id = BGM_COWNTDOWN_2300;
         } else if (t1) {
-            id = 0x1A9B;
+            id = BGM_COWNTDOWN_2330;
         } else if (t2) {
-            id = 0x1A9C;
+            id = BGM_COWNTDOWN_2350;
         } else if (t3) {
-            id = 0x1A9D;
+            id = BGM_COWNTDOWN_2355;
         }
         if (mCountdownBgm != -1 && mCountdownBgm != id) {
             l_mgr.stop(mCountdownBgm);
@@ -188,8 +189,8 @@ void FieldEvent_c::checkNewYear() {
     Time_c *time = &l_mgr.mTime;
     if (time->isDate(0, 1)) {
         if (mNewYearBgm == -1) {
-            mNewYearBgm = 0x1AA0;
-            l_mgr.play(0x26, 0x1AA0, 0x2D, 0);
+            mNewYearBgm = BGM_NEWYEAR_ALLDAY;
+            l_mgr.play(0x26, BGM_NEWYEAR_ALLDAY, 0x2D, 0);
         }
     } else if (mNewYearBgm != -1) {
         l_mgr.stop(mNewYearBgm);
@@ -199,12 +200,12 @@ void FieldEvent_c::checkNewYear() {
     if (dEvent::isOngoing(l_countdown2) && time->isTime(0, 0, 0, 2, 0, 0)) {
         if (mNewYearBgm2 == -1) {
             if (time->isYearChanged() && time->isMinSec(0, 0, 0, 1)) {
-                mNewYearBgm2 = 0x1A9E;
+                mNewYearBgm2 = BGM_NEWYEAR_INTRO;
             } else {
-                mNewYearBgm2 = 0x1A9F;
+                mNewYearBgm2 = BGM_NEWYEAR_LOOP;
             }
             l_mgr.play(0x22, mNewYearBgm2, 0x2D, 0);
-        } else if (mNewYearBgm2 == 0x1A9E && !l_mgr.mQueue.isCurrent(mNewYearBgm2)) {
+        } else if (mNewYearBgm2 == BGM_NEWYEAR_INTRO && !l_mgr.mQueue.isCurrent(mNewYearBgm2)) {
             l_mgr.stop(mNewYearBgm2);
             mNewYearBgm2 = -1;
         }
@@ -257,9 +258,12 @@ StgNon_c::~StgNon_c() {}
 
 // 8046D2C8: the hourly town BGM.
 static const u32 sHourBgm[24] = {
-    0x1A11, 0x1A12, 0x1A13, 0x1A14, 0x1A15, 0x1A16, 0x1A17, 0x1A18,
-    0x1A19, 0x1A1A, 0x1A1B, 0x1A1C, 0x1A1D, 0x1A1E, 0x1A1F, 0x1A20,
-    0x1A21, 0x1A22, 0x1A23, 0x1A24, 0x1A25, 0x1A26, 0x1A27, 0x1A28,
+    BGM_OUTDOOR_00, BGM_OUTDOOR_01, BGM_OUTDOOR_02, BGM_OUTDOOR_03, BGM_OUTDOOR_04, BGM_OUTDOOR_05,
+    BGM_OUTDOOR_06, BGM_OUTDOOR_07,
+    BGM_OUTDOOR_08, BGM_OUTDOOR_09, BGM_OUTDOOR_10, BGM_OUTDOOR_11, BGM_OUTDOOR_12, BGM_OUTDOOR_13,
+    BGM_OUTDOOR_14, BGM_OUTDOOR_15,
+    BGM_OUTDOOR_16, BGM_OUTDOOR_17, BGM_OUTDOOR_18, BGM_OUTDOOR_19, BGM_OUTDOOR_20, BGM_OUTDOOR_21,
+    BGM_OUTDOOR_22, BGM_OUTDOOR_23,
 };
 
 StgField_c::StgField_c()
@@ -306,8 +310,8 @@ void StgField_c::reset() {
 }
 
 void StgField_c::play18() {
-    mBgm18 = 0x1A78;
-    l_mgr.play(4, 0x1A78, 0x2D, 1);
+    mBgm18 = BGM_OPENING_ARRIVE;
+    l_mgr.play(4, BGM_OPENING_ARRIVE, 0x2D, 1);
     l_mgr.mute(3, 0, 0xF);
     l_mgr.mState.mFlags |= State_c::FLAG_4;
 }
@@ -336,8 +340,8 @@ void StgField_c::set25() {
 }
 
 void StgField_c::play20() {
-    mBgm20 = 0x1AB8;
-    l_mgr.play(0xE, 0x1AB8, 0x2D, 1);
+    mBgm20 = BGM_MYHOME;
+    l_mgr.play(0xE, BGM_MYHOME, 0x2D, 1);
 }
 
 void StgField_c::play1C() {
@@ -349,13 +353,13 @@ void StgField_c::play1C() {
         l_mgr.unmute(0x1C);
         mMute24 = 0;
     }
-    mBgm1C = 0x1A7B;
-    l_mgr.play(0x1B, 0x1A7B, 0x2D, 1);
+    mBgm1C = BGM_OPENING_TANUKICHI;
+    l_mgr.play(0x1B, BGM_OPENING_TANUKICHI, 0x2D, 1);
 }
 
 void StgField_c::play28() {
-    mBgm28 = 0x1A98;
-    l_mgr.play(0x1B, 0x1A98, 0x2D, 1);
+    mBgm28 = BGM_BIRTHDAY;
+    l_mgr.play(0x1B, BGM_BIRTHDAY, 0x2D, 1);
     l_mgr.mute(0x1A, 0, 0xF);
 }
 
@@ -392,9 +396,9 @@ void StgField_c::play34() {
     l_mgr.mute(0x1C, 0x2D, 0);
     mMute39 = 1;
     if (m30 == 0) {
-        mBgm34 = 0x1A93;
+        mBgm34 = BGM_RESET;
     } else {
-        mBgm34 = 0x1AB0;
+        mBgm34 = BGM_RACKETSAN;
     }
     l_mgr.play(0x1B, mBgm34, 0x2D, 1);
 }
@@ -510,9 +514,9 @@ void StgField_c::checkHome() {
     u32 id = -1;
     if (player != NULL) {
         if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
-            id = 0x1A7A;
+            id = BGM_ARBEIT_PRE;
         } else if (player->isFlag0(0xD)) {
-            id = 0x1A7C;
+            id = BGM_ARBEIT;
         }
     }
     if (mHomeBgm != id) {
@@ -608,8 +612,8 @@ void StgRoom_c::start(u32 param) {
         int home = dHomeList_c::getHomeFromScene(&room, getCurrentScene());
         if (home != -1 && room == 3) {
             if (dSaveData_c::getRaw()->mHomes.getPlayerOfHome(home) != -1) {
-                mHomeBgm = 0x1A7D;
-                l_mgr.play(0x18, 0x1A7D, 0x2D, 0);
+                mHomeBgm = BGM_ATTIC;
+                l_mgr.play(0x18, BGM_ATTIC, 0x2D, 0);
             }
         }
     }
@@ -681,9 +685,9 @@ void StgOffice_c::start(u32 param) {
     StgBase_c::start(param);
     dItem::Item item((u16)0x800A);
     if (dNpcList::getSpByKey(item) != NULL) {
-        mBgm = 0x1A79;
+        mBgm = BGM_PUBLICOFFICE_DAY;
     } else {
-        mBgm = 0x1A8C;
+        mBgm = BGM_PUBLICOFFICE_NIGHT;
     }
     l_mgr.play(0x18, mBgm, 0x2D, 0);
 }
@@ -704,8 +708,8 @@ StgChkp_c::~StgChkp_c() {}
 void StgChkp_c::start(u32 param) {
     StgBase_c::start(param);
     if (!l_mgr.mChange.mKeep) {
-        mBgm = 0x1A88;
-        l_mgr.play(0x18, 0x1A88, 0x2D, 0);
+        mBgm = BGM_BARRIER;
+        l_mgr.play(0x18, BGM_BARRIER, 0x2D, 0);
     }
 }
 
@@ -756,8 +760,8 @@ void StgMuseum_c::start(u32 param) {
     if (l_mgr.mChange.mKeep) {
         checkRoomChange();
     } else {
-        mBgm = 0x1A86;
-        l_mgr.play(0x18, 0x1A86, 0x2D, 0);
+        mBgm = BGM_MUSEUM;
+        l_mgr.play(0x18, BGM_MUSEUM, 0x2D, 0);
     }
     if (getType() == 2) {
         l_mgr.mVolCtrl.mStage.start();
@@ -860,13 +864,13 @@ StgCafe_c::~StgCafe_c() {}
 
 void StgCafe_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1A87, 0x2D, 0);
+    l_mgr.play(0x18, BGM_CAFE, 0x2D, 0);
 }
 
 void StgCafe_c::execute() {}
 
 void StgCafe_c::end() {
-    l_mgr.stop(0x1A87);
+    l_mgr.stop(BGM_CAFE);
     if (mBgm10 != -1) {
         l_mgr.stop(mBgm10);
         mBgm10 = -1;
@@ -980,8 +984,8 @@ void StgCafe_c::muteKK() {
 
 void StgCafe_c::play1A92(int fade) {
     if (!isKKPlaying()) {
-        mBgm10 = 0x1A92;
-        l_mgr.play(0x13, 0x1A92, 0x2D, 1);
+        mBgm10 = BGM_FANFARE_COMPLETE_COFFEE;
+        l_mgr.play(0x13, BGM_FANFARE_COMPLETE_COFFEE, 0x2D, 1);
     }
     if (fade > 0) {
         l_mgr.mute(0x12, 0, fade);
@@ -1016,7 +1020,9 @@ static const ShopTime_s sShopTime[4] = {
 };
 
 // 8046D3B8
-static const u32 sShopBgm[4] = {0x1A7F, 0x1A80, 0x1A81, 0x1A82};
+static const u32 sShopBgm[4] = {
+    BGM_TANUKICHI_SHOUTEN, BGM_TANUKICHI_CONVENIENCE, BGM_TANUKICHI_SUPER, BGM_TANUKICHI_DEPARTMENT,
+};
 
 StgShop_c::StgShop_c() {
     mType = 0;
@@ -1100,8 +1106,8 @@ void StgShop_c::playClosing() {
     if (mClosingBgm != -1) {
         return;
     }
-    mClosingBgm = 0x1A83;
-    l_mgr.play(0x11, 0x1A83, 0x2D, 0);
+    mClosingBgm = BGM_TANUKICHI_CLOSE;
+    l_mgr.play(0x11, BGM_TANUKICHI_CLOSE, 0x2D, 0);
 }
 
 void StgShop_c::stopClosing() {
@@ -1137,13 +1143,13 @@ StgTailor_c::~StgTailor_c() {}
 
 void StgTailor_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1A85, 0x2D, 0);
+    l_mgr.play(0x18, BGM_ABLESISTERS, 0x2D, 0);
 }
 
 void StgTailor_c::execute() {}
 
 void StgTailor_c::end() {
-    l_mgr.stop(0x1A85);
+    l_mgr.stop(BGM_ABLESISTERS);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1214,13 +1220,13 @@ void StgTown_c::checkHour() {
     int hour = dTime_c::getCurrent()->hour;
     u32 id;
     if (hour < 4) {
-        id = 0x1AA6;
+        id = BGM_TOWN_MIDNIGHT;
     } else if (hour < 9) {
-        id = 0x1AA3;
+        id = BGM_TOWN_EARLY;
     } else if (hour < 19) {
-        id = 0x1AA4;
+        id = BGM_TOWN_DAY;
     } else {
-        id = 0x1AA5;
+        id = BGM_TOWN_NIGHT;
     }
     if (id != mBgm) {
         stopTown();
@@ -1262,8 +1268,8 @@ void StgTown_c::checkChime() {
 }
 
 void StgTown_c::playBgm20() {
-    mBgm20 = 0x1AB7;
-    l_mgr.play(4, 0x1AB7, 0x2D, 0);
+    mBgm20 = BGM_TOWN_FIRST;
+    l_mgr.play(4, BGM_TOWN_FIRST, 0x2D, 0);
     l_mgr.mute(3, 0, 0x3C);
 }
 
@@ -1297,13 +1303,13 @@ StgBroker_c::~StgBroker_c() {}
 
 void StgBroker_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1A8A, 0x2D, 0);
+    l_mgr.play(0x18, BGM_TSUNEKITCHI, 0x2D, 0);
 }
 
 void StgBroker_c::execute() {}
 
 void StgBroker_c::end() {
-    l_mgr.stop(0x1A8A);
+    l_mgr.stop(BGM_TSUNEKITCHI);
 }
 
 StgBarber_c::StgBarber_c() {
@@ -1314,13 +1320,13 @@ StgBarber_c::~StgBarber_c() {}
 
 void StgBarber_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1A84, 0x2D, 0);
+    l_mgr.play(0x18, BGM_CUTRINE, 0x2D, 0);
 }
 
 void StgBarber_c::execute() {}
 
 void StgBarber_c::end() {
-    l_mgr.stop(0x1A84);
+    l_mgr.stop(BGM_CUTRINE);
     unmute();
 }
 
@@ -1349,13 +1355,13 @@ StgFortune_c::~StgFortune_c() {}
 
 void StgFortune_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1A8B, 0x2D, 1);
+    l_mgr.play(0x18, BGM_HACKEME, 0x2D, 1);
 }
 
 void StgFortune_c::execute() {}
 
 void StgFortune_c::end() {
-    l_mgr.stop(0x1A8B);
+    l_mgr.stop(BGM_HACKEME);
     unmute();
 }
 
@@ -1381,13 +1387,13 @@ StgGrace_c::~StgGrace_c() {}
 
 void StgGrace_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1AAC, 0x2D, 0);
+    l_mgr.play(0x18, BGM_GRACE, 0x2D, 0);
 }
 
 void StgGrace_c::execute() {}
 
 void StgGrace_c::end() {
-    l_mgr.stop(0x1AAC);
+    l_mgr.stop(BGM_GRACE);
 }
 
 StgHappy_c::StgHappy_c() {}
@@ -1396,13 +1402,13 @@ StgHappy_c::~StgHappy_c() {}
 
 void StgHappy_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1AAB, 0x2D, 0);
+    l_mgr.play(0x18, BGM_HRA, 0x2D, 0);
 }
 
 void StgHappy_c::execute() {}
 
 void StgHappy_c::end() {
-    l_mgr.stop(0x1AAB);
+    l_mgr.stop(BGM_HRA);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1422,8 +1428,8 @@ StgTheater_c::~StgTheater_c() {}
 void StgTheater_c::start(u32 param) {
     StgBase_c::start(param);
     if (!l_mgr.mChange.mKeep) {
-        mBgm = 0x1AAD;
-        l_mgr.play(0x18, 0x1AAD, 0x2D, 0);
+        mBgm = BGM_CABARET_ENTRANCE;
+        l_mgr.play(0x18, BGM_CABARET_ENTRANCE, 0x2D, 0);
     }
 }
 
@@ -1485,9 +1491,9 @@ void StgTheater_c::unmute() {
 void StgTheater_c::playShow(int type) {
     mShowType = type;
     if (type == 0) {
-        mShowBgm = 0x1AA7;
+        mShowBgm = BGM_CABARET_OPEN;
     } else {
-        mShowBgm = 0x1AAE;
+        mShowBgm = BGM_CABARET_OPEN_KYOSHOW;
     }
     l_mgr.play(0x11, mShowBgm, 10, 1);
 }
@@ -1499,24 +1505,24 @@ void StgTheater_c::stopShow() {
 
 void StgTheater_c::playShowEnd() {
     if (mShowType == 0) {
-        mShowEndBgm = 0x1AA8;
+        mShowEndBgm = BGM_CABARET_CLOSE;
     } else {
-        mShowEndBgm = 0x1AAF;
+        mShowEndBgm = BGM_CABARET_CLOSE_KYOSHOW;
     }
     l_mgr.play(0x11, mShowEndBgm, 0, 1);
 }
 
 void StgTheater_c::playEncore() {
     l_mgr.mute(0x15, 0, 0x61);
-    mShowBgm = 0x1AA9;
-    l_mgr.play(0x16, 0x1AA9, 10, 1);
+    mShowBgm = BGM_CABARET_FIRST_KAISETSU;
+    l_mgr.play(0x16, BGM_CABARET_FIRST_KAISETSU, 10, 1);
 }
 
 void StgTheater_c::playEncoreEnd() {
     l_mgr.stop(mShowBgm);
     mShowBgm = -1;
-    mShowEndBgm = 0x1AAA;
-    l_mgr.play(0x11, 0x1AAA, 0, 1);
+    mShowEndBgm = BGM_CABARET_FIRST_SHIME;
+    l_mgr.play(0x11, BGM_CABARET_FIRST_SHIME, 0, 1);
 }
 
 void StgTheater_c::checkShowEnd() {
@@ -1543,13 +1549,13 @@ StgAuction_c::~StgAuction_c() {}
 
 void StgAuction_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1AA1, 0x2D, 0);
+    l_mgr.play(0x18, BGM_AUCTION, 0x2D, 0);
 }
 
 void StgAuction_c::execute() {}
 
 void StgAuction_c::end() {
-    l_mgr.stop(0x1AA1);
+    l_mgr.stop(BGM_AUCTION);
 }
 
 StgReset_c::StgReset_c() {
@@ -1569,8 +1575,8 @@ void StgReset_c::end() {
 }
 
 void StgReset_c::play() {
-    mBgm = 0x1AB4;
-    l_mgr.play(0x11, 0x1AB4, 0x14, 1);
+    mBgm = BGM_RESET_SCRAMBLE;
+    l_mgr.play(0x11, BGM_RESET_SCRAMBLE, 0x14, 1);
 }
 
 void StgReset_c::stop2() {
@@ -1632,8 +1638,8 @@ void StgTitle_c::unmute() {
 void StgTitle_c::updatePlay() {
     if (mPlayReq) {
         if (mFader_c::isStatus(mFaderBase_c::FADE_IN) || mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
-            mBgm = 0x19C3;
-            l_mgr.play(2, 0x19C3, 0x2D, 0);
+            mBgm = STRM_TITLE;
+            l_mgr.play(2, STRM_TITLE, 0x2D, 0);
             mPlayReq = 0;
         }
     }
@@ -1683,13 +1689,13 @@ StgPlSel_c::~StgPlSel_c() {}
 
 void StgPlSel_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1AB5, 0x2D, 1);
+    l_mgr.play(0x18, BGM_PLAYER_SELECT, 0x2D, 1);
 }
 
 void StgPlSel_c::execute() {}
 
 void StgPlSel_c::end() {
-    l_mgr.stop(0x1AB5);
+    l_mgr.stop(BGM_PLAYER_SELECT);
     unmute();
 }
 
@@ -1709,7 +1715,7 @@ StgBus_c::~StgBus_c() {}
 
 void StgBus_c::start(u32 param) {
     StgBase_c::start(param);
-    l_mgr.play(0x18, 0x1AB6, 0x2D, 1);
+    l_mgr.play(0x18, BGM_KAPPEIBUS, 0x2D, 1);
     mMuteReq = 0;
     mMute = 0;
 }
@@ -1726,7 +1732,7 @@ void StgBus_c::execute() {
 }
 
 void StgBus_c::end() {
-    l_mgr.stop(0x1AB6);
+    l_mgr.stop(BGM_KAPPEIBUS);
     mMuteReq = 0;
     unmute();
 }
@@ -2025,7 +2031,10 @@ void Silence_c::execute() {
 // ---------------------------------------------------------------------------------------------
 
 // 8046D404
-static const u32 sEventBgm[5] = {0x1A8E, 0x1A8F, 0x1A90, 0x1A91, 0x1A8F};
+static const u32 sEventBgm[5] = {
+    BGM_FANFARE_COMPLETE_FISH, BGM_FANFARE_COMPLETE_INSECT, BGM_FANFARE_COMPLETE_MONEY, BGM_FANFARE_COMPLETE_ARBEIT,
+    BGM_FANFARE_COMPLETE_INSECT,
+};
 
 Event_c::Event_c() {
     mBgm0 = -1;
@@ -2081,8 +2090,8 @@ void Event_c::mute0() {
 }
 
 void Event_c::play0(int fade) {
-    mBgm0 = 0x1A8D;
-    l_mgr.play(0xE, 0x1A8D, 0x2D, 1);
+    mBgm0 = BGM_FANFARE_GET;
+    l_mgr.play(0xE, BGM_FANFARE_GET, 0x2D, 1);
     if (fade > 0) {
         l_mgr.mute(0xD, 0, fade);
     }
@@ -2123,8 +2132,8 @@ void Event_c::mute18() {
 }
 
 void Event_c::play14() {
-    mBgm14 = 0x1A94;
-    l_mgr.play(0x1E, 0x1A94, 0x2D, 0);
+    mBgm14 = BGM_BEE_CHACE;
+    l_mgr.play(0x1E, BGM_BEE_CHACE, 0x2D, 0);
 }
 
 void Event_c::stop14() {
@@ -2153,8 +2162,8 @@ void Event_c::mute20() {
 }
 
 void Event_c::play1C() {
-    mBgm1C = 0x1A95;
-    l_mgr.play(0xE, 0x1A95, 0x2D, 1);
+    mBgm1C = BGM_BEE_STING;
+    l_mgr.play(0xE, BGM_BEE_STING, 0x2D, 1);
 }
 
 void Event_c::stop1C() {
@@ -2168,8 +2177,8 @@ void Event_c::mute28() {
 }
 
 void Event_c::play24() {
-    mBgm24 = 0x1A96;
-    l_mgr.play(6, 0x1A96, 0x2D, 1);
+    mBgm24 = BGM_SPIDER_STING;
+    l_mgr.play(6, BGM_SPIDER_STING, 0x2D, 1);
 }
 
 void Event_c::stop24() {
@@ -2199,8 +2208,8 @@ void Event_c::mute30() {
 }
 
 void Event_c::play2C() {
-    mBgm2C = 0x1A97;
-    l_mgr.play(0xE, 0x1A97, 0x2D, 1);
+    mBgm2C = BGM_AX_BROKEN;
+    l_mgr.play(0xE, BGM_AX_BROKEN, 0x2D, 1);
 }
 
 void Event_c::stop2CFade() {

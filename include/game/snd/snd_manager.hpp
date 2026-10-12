@@ -72,6 +72,13 @@ public:
     void setFrameCallback(SoundAudioFrameCallback::Callback callback); // 801CFA68
     void clearFrameCallback();                                         // 801CFA70
 
+    bool startSound(nw4r::snd::SoundHandle *handle, u32 id); // 801CF820: when the archive is available
+    bool holdSound(nw4r::snd::SoundHandle *handle, u32 id);  // 801CF8D8
+    bool startSound(nw4r::snd::SoundHandle *handle, u32 id,
+                    const nw4r::snd::SoundStartable::StartInfo *startInfo); // 801CF990
+    int getSoundPriority(u32 id); // 801CFE98: the archive's player priority of the sound (0: unknown)
+    bool isFixedVolume(u32 id);   // 801D0070: user param bit 0, or bit 2 in scenes 0x25/0x27..0x2B
+
     void setVolume(f32 volume, int frames); // 801CF714: clamps volume to [0, 1], fades the fader at 0x6B8
     void stopReverb();  // 801CFA78: fades out _764, shuts down the AUX A effect (mReverb)
     void startReverb(); // 801CFAD8: fades in _764, appends mReverb to AUX A

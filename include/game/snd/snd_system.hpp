@@ -17,6 +17,7 @@
 #include <game/snd/snd_voice.hpp>
 
 class mVec3_c;
+class SoundObjBase;
 
 extern "C" {
 u32 fn_801CE584(); // 801CE584: size of the sound heap (0xE00000)
@@ -57,6 +58,12 @@ public:
         /* 0x10 */ f32 _10;
     }; // size 0x14
 
+    enum State_e {
+        STATE_WAIT = 0,    // until the title stream (STRM_TITLE) plays
+        STATE_LOADING = 1, // until fn_801CC124 returns 0
+        STATE_READY = 2,   // sounds may start
+    };
+
     SoundSystem(); // 801CA0F4
     // declared inline (800105AC, first copy in d_snd_util): an implicit dtor would join the open weak
     // section (snd_obj.hpp's, after ~SoundManager) and ~SystemLevHandle would then follow
@@ -69,6 +76,7 @@ public:
     }
 
     void fn_801CA264(); // 801CA264: init (after SoundManager::fn_801CE58C)
+    int getRandom(int max); // 801CAE00: cM::rndInt(max)
     void fn_801CB31C(u32 id, int fadeIn); // 801CB31C: start the BGM
     void fn_801CBC90(int fade);           // 801CBC90: stop the BGM
     BOOL fn_801CBDE8();                   // 801CBDE8
@@ -98,6 +106,8 @@ public:
     void fn_801CC8F8();                         // 801CC8F8: the hourly chime (0xEB1)
     void fn_801CC900(const mVec3_c *pos, int arg); // 801CC900
     void fn_801CC998(int a, int b, u16 key1, u16 key2, f32 f); // 801CC998
+    void appendAmbientObj(SoundObjBase *obj); // 801CCA38: into mLists by kind (4 river, 5 pond, 6 fall)
+    void removeAmbientObj(SoundObjBase *obj); // 801CCA80
     void fn_801CCA30(int idx);                  // 801CCA30: sets _198 (0..12), clears _18C/_18D
     void fn_801CD374(f32 value);                // 801CD374: sets _1AC._10
     void fn_801CDD5C(f32 value);                // 801CDD5C: updates handles 0x1F4/0x1F8 (sounds 0x1978/0x1979)
@@ -105,7 +115,9 @@ public:
     /* 0x000 */ nw4r::snd::SoundHandle mHandle;
     /* 0x004 */ SystemLevHandle mLevHandles[4];
     /* 0x044 */ nw4r::snd::SoundHandle mHandle44;
-    /* 0x048 */ u8 _048[0x0C0 - 0x048];
+    /* 0x048 */ u8 _048[0x088 - 0x048];
+    /* 0x088 */ u32 mState; // State_e
+    /* 0x08C */ u8 _08C[0x0C0 - 0x08C];
     /* 0x0C0 */ FadePair_c mFades;
     /* 0x134 */ SoundConductorKK mConductorKK;
     /* 0x16C */ SoundConductor mConductor;

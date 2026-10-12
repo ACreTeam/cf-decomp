@@ -41,6 +41,7 @@
 #include <game/game/d_save_building.hpp>
 
 #include <game/game/d_msg_rcpt.hpp> // last: see above
+#include <game/snd/snd_id.hpp>
 
 typedef char dMsgRcptSizeCheck[sizeof(dMsg::Rcpt_c) == 0x64 ? 1 : -1];
 
@@ -1362,7 +1363,7 @@ void Seq_c::procRuby() {
 }
 
 void Seq_c::procSe() {
-    playSe(0x179C);
+    playSe(SE_Eat_Gokun);
 }
 
 void Seq_c::fn_8019F80C() {}

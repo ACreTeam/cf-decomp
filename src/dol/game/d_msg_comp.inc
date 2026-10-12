@@ -1071,7 +1071,7 @@ void dMsg::Comp_c::initializeAppear() {
     mLyt.changeAnm(&mAnmWin, "msg_win_00_msgWinIn.brlan", NULL);
     mAnmWin.mFrameCtrl.mFlags = m2d::FrameCtrl_c::NO_LOOP;
     mAnmWin.setFrame(0.0f);
-    playSe(0x16BC);
+    playSe(SE_text_window_open);
 }
 
 void dMsg::Comp_c::executeAppear() {
@@ -1261,7 +1261,7 @@ void dMsg::Comp_c::executeComplete() {
         }
         mPageDone = 1;
         if (mNextMsgCode != MSG_CODE_NONE && mSuspendReq == SUSPEND_REQ_NONE && mSeq.mTyped) {
-            playSe(0x16C3);
+            playSe(SE_page_okuri);
         }
         return;
     }
@@ -1284,7 +1284,7 @@ void dMsg::Comp_c::initializeExit() {
     mpPageCursor->SetVisible(false);
     mpWaitIcon->SetVisible(false);
     if (!mNoCloseSe) {
-        playSe(0x16BD);
+        playSe(SE_text_window_close);
     }
     if (mSuspendReq == SUSPEND_REQ_NONE) {
         dBgm::l_mgr.mVolCtrl.mTalk.end(mBgmKeep);
@@ -1683,9 +1683,9 @@ void dMsg::Comp_c::updateCursor() {
         if (isState(&dMsg::Comp_c::executeComplete)) {
             if (mWaitIcon) {
                 if (mWaitIconSe) {
-                    fn_8000F928(0x16B8);
+                    fn_8000F928(SE_PLEASE_WAIT_TSUUSHIN);
                 } else {
-                    fn_8000F928(0x16B7);
+                    fn_8000F928(SE_PLEASE_WAIT);
                 }
                 showWaitIcon();
             } else if (mLock) {

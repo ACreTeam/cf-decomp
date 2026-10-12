@@ -140,7 +140,7 @@ detail::SeqSound* SoundPlayer::detail_AllocSeqSound(
         return NULL;
     }
 
-    detail::SeqSound* pSound = pManager->Alloc(startPriority);
+    detail::SeqSound* pSound = pManager->Alloc(priority, priorityReduction);
     if (pSound == NULL) {
         return NULL;
     }
@@ -150,9 +150,6 @@ detail::SeqSound* SoundPlayer::detail_AllocSeqSound(
     if (pArgInfo != NULL) {
         InitAmbientArg(pSound, pArgInfo);
     }
-
-    pSound->SetPriority(priority);
-    pSound->GetAmbientParam().priority = priorityReduction;
 
     detail_InsertSoundList(pSound);
 
@@ -186,7 +183,7 @@ detail::StrmSound* SoundPlayer::detail_AllocStrmSound(
         return NULL;
     }
 
-    detail::StrmSound* pSound = pManager->Alloc(startPriority);
+    detail::StrmSound* pSound = pManager->Alloc(priority, priorityReduction);
     if (pSound == NULL) {
         return NULL;
     }
@@ -196,9 +193,6 @@ detail::StrmSound* SoundPlayer::detail_AllocStrmSound(
     if (pArgInfo != NULL) {
         InitAmbientArg(pSound, pArgInfo);
     }
-
-    pSound->SetPriority(priority);
-    pSound->GetAmbientParam().priority = priorityReduction;
 
     detail_InsertSoundList(pSound);
 
@@ -232,7 +226,7 @@ detail::WaveSound* SoundPlayer::detail_AllocWaveSound(
         return NULL;
     }
 
-    detail::WaveSound* pSound = pManager->Alloc(startPriority);
+    detail::WaveSound* pSound = pManager->Alloc(priority, priorityReduction);
     if (pSound == NULL) {
         return NULL;
     }
@@ -242,9 +236,6 @@ detail::WaveSound* SoundPlayer::detail_AllocWaveSound(
     if (pArgInfo != NULL) {
         InitAmbientArg(pSound, pArgInfo);
     }
-
-    pSound->SetPriority(priority);
-    pSound->GetAmbientParam().priority = priorityReduction;
 
     detail_InsertSoundList(pSound);
 

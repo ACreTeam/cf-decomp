@@ -30,15 +30,24 @@ enum OutputMode {
     OUTPUT_MODE_MONO
 };
 
+// CF (SND Sep 2008) layout: the newer SoundParam with the biquad filter (BasicSound ctor/InitParam).
 struct SoundParam {
-    f32 volume;      // at 0x0
-    f32 pitch;       // at 0x4
-    f32 pan;         // at 0x8
-    f32 surroundPan; // at 0xC
-    f32 fxSend;      // at 0x10
-    f32 lpf;         // at 0x14
-    int priority;    // at 0x18
-};
+    f32 volume;            // at 0x0
+    f32 pitch;             // at 0x4
+    f32 pan;               // at 0x8
+    f32 surroundPan;       // at 0xC
+    f32 fxSend;            // at 0x10
+    f32 lpf;               // at 0x14
+    f32 biquadFilterValue; // at 0x18
+    int biquadFilterType;  // at 0x1C
+    int priority;          // at 0x20
+}; // size 0x24
+
+struct SoundActorParam {
+    f32 volume; // at 0x0
+    f32 pitch;  // at 0x4
+    f32 pan;    // at 0x8
+}; // size 0xC
 
 namespace detail {
 

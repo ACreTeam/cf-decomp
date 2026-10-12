@@ -59,6 +59,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/mLib/m_heap.hpp>
+#include <game/snd/snd_id.hpp>
 
 
 // ---- file-top data (before the first function; order = .rodata 8046BCD0.., .sdata2 8074FF30..) ----
@@ -3010,7 +3011,7 @@ int dAcNpcNml_c::talk_c::msgRequestYes(msgInfo_s *info) {
 
 // 80034ED0
 BOOL dAcNpcNml_c::talk_c::stepRequestYes(int kind) {
-    mpNpc->mAudioObj.startSound(0x171E);
+    mpNpc->mAudioObj.startSound(SE_otsukai_start);
     return TRUE;
 }
 

@@ -26,23 +26,23 @@ public:
     NW4R_UT_RTTI_DECL(WaveSound);
 
 public:
-    explicit WaveSound(SoundInstanceManager<WaveSound>* pManager);
+    WaveSound(SoundInstanceManager<WaveSound>* pManager, int priority, int ambientPriority);
 
-    virtual void Shutdown(); // at 0x28
+    virtual void Shutdown(); // at 0x10
     virtual bool IsPrepared() const {
         return mPreparedFlag;
-    } // at 0x2C
+    } // at 0x14
 
-    virtual void SetPlayerPriority(int priority); // at 0x4C
-    virtual bool IsAttachedTempSpecialHandle();   // at 0x5C
-    virtual void DetachTempSpecialHandle();       // at 0x60
+    virtual void OnUpdatePlayerPriority(); // at 0x2C
+    virtual bool IsAttachedTempSpecialHandle();   // at 0x18
+    virtual void DetachTempSpecialHandle();       // at 0x1C
 
     virtual BasicPlayer& GetBasicPlayer() {
         return mWsdPlayer;
-    } // at 0x68
+    } // at 0x24
     virtual const BasicPlayer& GetBasicPlayer() const {
         return mWsdPlayer;
-    } // at 0x6C
+    } // at 0x28
 
     bool Prepare(const void* pWsdData, s32 wsdOffset,
                  WsdPlayer::StartOffsetType startType, s32 startOffset,
@@ -53,10 +53,10 @@ public:
     void SetReleasePriorityFix(bool flag);
 
 private:
-    WsdPlayer mWsdPlayer;                      // at 0xD8
-    WaveSoundHandle* mTempSpecialHandle;       // at 0x1B0
-    SoundInstanceManager<WaveSound>* mManager; // at 0x1B4
-    bool mPreparedFlag;                        // at 0x1B8
+    WsdPlayer mWsdPlayer;                      // at 0x10C
+    WaveSoundHandle* mTempSpecialHandle;       // at 0x1E4
+    SoundInstanceManager<WaveSound>* mManager; // at 0x1E8
+    bool mPreparedFlag;                        // at 0x1EC
 };
 
 } // namespace detail

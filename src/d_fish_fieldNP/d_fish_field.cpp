@@ -19,6 +19,7 @@
 #include <game/sLib/s_lib.hpp>
 #include <game/game/d_heap.hpp>
 #include <game/game/d_net.hpp>
+#include <game/snd/snd_id.hpp>
 
 extern "C" {
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
@@ -1311,7 +1312,7 @@ void dFishFldShadow_c::executeApproach() {
                 f32 reach = 17.6f;
                 if (d2.x * d2.x + d2.z * d2.z < reach) {
                     fl->fn_8016FD60();
-                    mSound.startSound(0x180C);
+                    mSound.startSound(SE_PushByFish);
                     dUki_c::fn_801710BC(mPlayer, NULL);
                     mPlayer = -1;
                     mTimer = cM::rndRange<s16>(30, 90);
@@ -1407,7 +1408,7 @@ void dFishFldShadow_c::executeNibble() {
                     }
                 } else {
                     fl->fn_8016FD60();
-                    mSound.startSound(0x180C);
+                    mSound.startSound(SE_PushByFish);
                     sLib::chase(&mNibbleNum, 5, 1);
                     mTimer = cM::rndRange(70, 220);
                     mSpeed = -0.5f;
@@ -1433,7 +1434,7 @@ void dFishFldShadow_c::executeNibble() {
                     }
                 } else {
                     fl->fn_8016FD60();
-                    mSound.startSound(0x180C);
+                    mSound.startSound(SE_PushByFish);
                     mTimer = cM::rndRange(70, 220);
                     mSpeed = -0.5f;
                     mNibbling = 0;
@@ -1598,7 +1599,7 @@ void dFishFldShadow_c::executeHooked() {
             mPos.set(pos.x, mPos.y, pos.z);
         }
         mTargetAngle.y.mAngle += 0x71C;
-        mSound.holdSound(0x17C2);
+        mSound.holdSound(SE_LEV_FishRool);
     }
 }
 
@@ -1649,7 +1650,7 @@ void dFishFldShadow_c::executeCatch() {
         mPos = *hand;
     }
     if (mTimer == 0 && mKind < FISH_NUM) {
-        mSound.holdSound(0x180F);
+        mSound.holdSound(SE_FishPikupiku_Lev);
     }
 }
 
@@ -1684,7 +1685,7 @@ void dFishFldShadow_c::executeShow() {
         mPos = *hand;
     }
     if (sLib::calcTimer(&mTimer) == 0) {
-        mSound.holdSound(0x180F);
+        mSound.holdSound(SE_FishPikupiku_Lev);
     }
 }
 
@@ -1729,7 +1730,7 @@ void dFishFldShadow_c::initRelease() {
         mTimer = 60;
         mStartPos = mPos;
         fn_8019022C(mdl, "swim");
-        mSound.startSound(0x17B0);
+        mSound.startSound(SE_FishFall);
         setHeldScale(&mScale);
     }
 }
@@ -1763,18 +1764,18 @@ void dFishFldShadow_c::executeRelease() {
             switch (mParam.mSize) {
             case 0:
             case 1:
-                se = 0x17B1;
+                se = SE_fish_fall_river_s;
                 break;
             case 2:
             case 7:
-                se = 0x17B2;
+                se = SE_fish_fall_river_m;
                 break;
             case 3:
             case 4:
-                se = 0x17B3;
+                se = SE_fish_fall_river_l;
                 break;
             default:
-                se = 0x17B4;
+                se = SE_fish_fall_river_xl;
                 break;
             }
             mSound.startSound(se);
@@ -2308,7 +2309,7 @@ void dFishFrog_c::execNear(dFishFldShadow_c *fish) {
 void dFishFrog_c::execCroak(dFishFldShadow_c *fish) {
     if (mCroakTimer != 0) {
         mCroakTimer--;
-        fish->mSound.holdSound(0x18C5);
+        fish->mSound.holdSound(SE_kaeru);
     } else {
         mCroakWait = cM::rndRange<s16>(60, 240);
         mState = 1;

@@ -24,6 +24,10 @@ public:
 
     void DetachSound();
 
+    detail::SeqSound* detail_GetAttachedSound() {
+        return mSound;
+    }
+
     void SetTempoRatio(f32 tempo) {
         if (IsAttachedSound()) {
             mSound->SetTempoRatio(tempo);

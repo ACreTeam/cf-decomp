@@ -14,6 +14,7 @@
 #include <game/game/d_net_mgr.hpp>
 #include <game/game/d_environment.hpp>
 #include <game/game/d_camera.hpp>
+#include <game/snd/snd_id.hpp>
 
 
 // 8046EEC0 / 8046EECC: the effect's two register colors per shell color.
@@ -62,12 +63,12 @@ void dFireWork_c::launch(BOOL withEffect) {
             effect.EGG::Effect::update();
         }
         if (dNetMgr_c::sInstance->mInfo.m1A31) {
-            playSe(0x19A1);
+            playSe(SE_VCT_sky_HANABI_hyuu);
         } else {
-            playSe(0x199E);
+            playSe(SE_sky_HANABI_hyuu);
         }
     } else if (lbl_8074EA60 != NULL) {
-        playSe(0x19A4);
+        playSe(SE_sky_HANABI_hyuu_Indoor);
     }
 }
 
@@ -111,20 +112,20 @@ void dFireWork_c::execute(BOOL withEffect) {
                 u8 alt = dNetMgr_c::sInstance->mInfo.m1A31;
                 if (mScale > 1.0f) {
                     if (alt) {
-                        se = 0x19A3;
+                        se = SE_VCT_sky_HANABI_BIG;
                     } else {
-                        se = 0x19A0;
+                        se = SE_sky_HANABI_BIG;
                     }
                 } else {
                     if (alt) {
-                        se = 0x19A2;
+                        se = SE_VCT_sky_HANABI_SMALL;
                     } else {
-                        se = 0x199F;
+                        se = SE_sky_HANABI_SMALL;
                     }
                 }
                 playSe(se);
             } else if (lbl_8074EA60 != NULL) {
-                playSe(mScale > 1.0f ? 0x19A6 : 0x19A5);
+                playSe(mScale > 1.0f ? SE_sky_HANABI_BIG_Indoor : SE_sky_HANABI_SMALL_Indoor);
             }
         }
         break;
