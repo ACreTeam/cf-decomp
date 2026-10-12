@@ -376,7 +376,7 @@ void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
     mCafeCounts[3] = 0;
     mCafeCounts[4] = 0;
     memset(mBunnyEggs, 0, sizeof(mBunnyEggs));
-    _83CA = dItem::Item();
+    mSonchoPresent = dItem::Item();
 }
 
 // 80137110
@@ -643,7 +643,7 @@ void dPrivateData_c::dailyUpdate(int days) {
     if (isFlag0(0x72) && dPostOffice::add(&mFutureSelfLetter)) {
         clearFlag0(0x72);
     }
-    _83CA = dItem::Item();
+    mSonchoPresent = dItem::Item();
     mDaysAway += days;
     mDaysPassed += days;
     if (dPlayerMgr_c::getCurrentPlayer() == this) {
@@ -2273,41 +2273,41 @@ BOOL dPrivateData_c::startHostVisit(int chance, int count, int flag) {
 // 8013C054
 void dItemPairRing_c::clear() {
     for (int i = 0; i < 8; i++) {
-        mA[i] = 0xFFFF;
-        mB[i] = 0xFFFF;
+        mHats[i] = 0xFFFF;
+        mAccs[i] = 0xFFFF;
     }
     mCount = 0;
     mIndex = -1;
-    _22_7 = 0;
-    _22_6 = 0;
-    _22_5 = 0;
-    _21_5 = 0;
-    _21_4 = 0;
-    _21_3 = 0;
-    _21_2 = 0;
-    _21_1 = 0;
+    mFirstGift = 0;
+    mFirstGiftDone = 0;
+    mGreetedNewLook = 0;
+    mMet = 0;
+    mGiven = 0;
+    mMoved = 0;
+    mTalked = 0;
+    mGivenHere = 0;
 }
 
 // 8013C0C0
-void dItemPairRing_c::begin() {
-    _21_5 = 1;
-    _21_2 = 1;
+void dItemPairRing_c::meet() {
+    mMet = 1;
+    mTalked = 1;
 }
 
 // 8013C0D0
-void dItemPairRing_c::push(const dItem::Item *a, const dItem::Item *b) {
+void dItemPairRing_c::push(dItem::Item hat, dItem::Item acc) {
     mIndex++;
     if (mIndex >= 8) {
         mIndex = 0;
     }
-    mA[mIndex] = *a;
-    mB[mIndex] = *b;
-    _21_4 = 1;
-    _21_1 = 1;
-    if (!_22_6) {
-        _22_7 = 1;
+    mHats[mIndex] = hat;
+    mAccs[mIndex] = acc;
+    mGiven = 1;
+    mGivenHere = 1;
+    if (!mFirstGiftDone) {
+        mFirstGift = 1;
     }
-    _22_6 = 1;
+    mFirstGiftDone = 1;
     mCount = 0;
     dSaveTown_c *town = dSaveData_c::getTown();
     town->mNpcSpotA.mFlag = 1;
@@ -2325,12 +2325,12 @@ void dItemPairRing_c::incCount() {
 }
 
 // 8013C1C0
-BOOL dItemPairRing_c::contains(const dItem::Item *a, const dItem::Item *b) {
+BOOL dItemPairRing_c::contains(dItem::Item hat, dItem::Item acc) {
     if (mIndex < 0) {
         return FALSE;
     }
     for (int i = 0; i < 8; i++) {
-        if (mA[i].isSame(*a) && mB[i].isSame(*b)) {
+        if (mHats[i].isSame(hat) && mAccs[i].isSame(acc)) {
             return TRUE;
         }
     }
@@ -2338,18 +2338,18 @@ BOOL dItemPairRing_c::contains(const dItem::Item *a, const dItem::Item *b) {
 }
 
 // 8013C25C
-void dItemPairRing_c::end() {
-    _21_3 = 1;
-    _21_1 = 0;
-    _22_7 = 0;
-    resetState();
+void dItemPairRing_c::move() {
+    mMoved = 1;
+    mGivenHere = 0;
+    mFirstGift = 0;
+    resetEncounter();
 }
 
 // 8013C27C
-void dItemPairRing_c::resetState() {
-    _21_2 = 0;
-    _21_0 = 0;
-    _22_5 = 0;
+void dItemPairRing_c::resetEncounter() {
+    mTalked = 0;
+    mRefusedNewLook = 0;
+    mGreetedNewLook = 0;
     mCount = 0;
 }
 

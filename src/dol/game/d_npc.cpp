@@ -18,6 +18,7 @@
 #include <game/game/d_ftr.hpp>
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_npc_info.hpp>
 #include <game/game/d_npc_setup.hpp>
 #include <game/game/d_npc_list.hpp>
 #include <game/game/d_demo_actor.hpp>
@@ -32,7 +33,6 @@ extern "C" {
 // Field map / actors.
 BOOL fn_80013550();
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
-u16 fn_800F88AC(const dItem::Item *key);
 BOOL fn_80013F98(int x, int z, int arg);
 }
 
@@ -3019,7 +3019,7 @@ BOOL getNpcName(dScript::Word_c *word, const dItem::Item *key, int language) {
             break;
         }
         case 8:
-            return dString::loadString(word, fn_800F88AC(key), "sys_STRING/STR_SPNpc_name");
+            return dString::loadString(word, dNpcInfo::getSpNameStr(key), "sys_STRING/STR_SPNpc_name");
     }
     return result;
 }

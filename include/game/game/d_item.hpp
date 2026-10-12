@@ -1030,6 +1030,7 @@ public:
 
 class musicCandCB_c : public seeker_c::candCB_c {
 public:
+    musicCandCB_c(u8 *owned) : mpOwned(owned) {}
     virtual BOOL check(const BITM *bitm, Item *item) const; // 800C34D0
 
     int mExcludeFrom; // 0x04
