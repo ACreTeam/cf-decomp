@@ -567,7 +567,7 @@ void dAcNpcNml_c::talk_c::selApNicknameNew() {
         mpMemory->getNickname(&mName);
         dHmnName::Word_c nickname;
         u8 gender = player->mPID.player.getGender();
-        fn_8011F19C(&nickname, &mName, gender, animal->mID.getLooks(1));
+        pickNickname(&nickname, &mName, gender, animal->mID.getLooks(1));
         mHadNickname = mpMemory->mFlags.mHasNickname;
         mpMemory->setNickname(&nickname);
         setStepProc(&talk_c::stepApNicknameChoice);

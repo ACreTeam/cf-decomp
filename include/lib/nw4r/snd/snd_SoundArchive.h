@@ -26,11 +26,12 @@ public:
     struct SoundInfo {
         u32 fileId;                // at 0x0
         u32 playerId;              // at 0x4
-        int playerPriority;        // at 0x8
-        int volume;                // at 0xC
-        int remoteFilter;          // at 0x10
-        detail::PanMode panMode;   // at 0x14
-        detail::PanCurve panCurve; // at 0x18
+        int actorPlayerId;         // at 0x8
+        int playerPriority;        // at 0xC
+        int volume;                // at 0x10
+        int remoteFilter;          // at 0x14
+        detail::PanMode panMode;   // at 0x18
+        detail::PanCurve panCurve; // at 0x1C
     };
 
     struct SeqSoundInfo {

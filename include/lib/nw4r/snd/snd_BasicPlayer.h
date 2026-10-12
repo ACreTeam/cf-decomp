@@ -139,7 +139,10 @@ private:
     u8 mRemoteFilter;                           // at 0x68
     PanMode mPanMode;                           // at 0x6C
     PanCurve mPanCurve;                         // at 0x70
-};
+    // City Folk's (newer) BasicPlayer is 0xD4 bytes (ctor 8025E7F4); the fields above are still the
+    // older layout. The padding keeps the derived players' members at CF's offsets.
+    u8 mUnknownCF[0xD4 - 0x74];
+}; // size 0xD4
 
 } // namespace detail
 } // namespace snd

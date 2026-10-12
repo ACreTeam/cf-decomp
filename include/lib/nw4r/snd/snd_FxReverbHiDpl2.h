@@ -19,12 +19,40 @@ public:
         f32 damping;      // at 0xC
         f32 crossTalk;    // at 0x10
         f32 outGain;      // at 0x14
-        // City Folk's version has five more words (ctor 80262D10 sets 5, f, 0, f, f).
-        int field_0x18; // at 0x18
-        f32 field_0x1C; // at 0x1C
-        int field_0x20; // at 0x20
-        f32 field_0x24; // at 0x24
-        f32 field_0x28; // at 0x28
+        // Newer nw4r (City Folk) has the early reflection and fused settings.
+        int earlyMode;        // at 0x18
+        f32 preDelayTimeMax;  // at 0x1C
+        int fusedMode;        // at 0x20
+        f32 earlyGain;        // at 0x24
+        f32 fusedGain;        // at 0x28
+
+        ReverbHiDpl2Param()
+            : preDelayTime(0.02f),
+              fusedTime(3.0f),
+              coloration(0.6f),
+              damping(0.4f),
+              crossTalk(0.1f),
+              outGain(1.0f),
+              earlyMode(5),
+              preDelayTimeMax(0.02f),
+              fusedMode(0),
+              earlyGain(0.0f),
+              fusedGain(1.0f) {}
+
+        ReverbHiDpl2Param(f32 preDelay, f32 fused) {
+            coloration = 0.6f;
+            damping = 0.4f;
+            crossTalk = 0.1f;
+            outGain = 1.0f;
+            preDelayTime = preDelay;
+            fusedTime = fused;
+            earlyMode = 5;
+            preDelayTimeMax = preDelay;
+            fusedMode = 0;
+            earlyGain = 0.0f;
+            fusedGain = 1.0f;
+        }
+
     }; // size 0x2C
 
 public:

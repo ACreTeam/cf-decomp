@@ -136,6 +136,7 @@ bool SoundArchiveFileReader::ReadSoundInfo(
 
     pSoundInfo->fileId = pCmnInfo->fileId;
     pSoundInfo->playerId = pCmnInfo->playerId;
+    pSoundInfo->actorPlayerId = pCmnInfo->actorPlayerId;
     pSoundInfo->playerPriority = pCmnInfo->playerPriority;
     pSoundInfo->volume = pCmnInfo->volume;
     pSoundInfo->remoteFilter = pCmnInfo->remoteFilter;

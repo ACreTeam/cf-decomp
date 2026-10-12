@@ -737,7 +737,7 @@ void dMsg::Comp_c::updateVoiceType() {
         type = mVoiceType;
     }
     if (mCurVoiceType != type) {
-        fn_8000FE18(type);
+        sndSetVoiceType(type);
     }
     mCurVoiceType = type;
 }
@@ -1844,7 +1844,7 @@ void Voice_c::calc() {
                           mPrevChar != 0xFF01 && mPrevChar != 0x3000 && mPrevChar != 0x3001 &&
                           mPrevChar != 0x3002 && mPrevChar != 0x2C && mPrevChar != 0x2E)) {
             if (mPrevChar != 0 && mCharSet) {
-                fn_8000FE90(mode, mood, mPrevChar, mChar, mScale);
+                sndSpeakVoice(mode, mood, mPrevChar, mChar, mScale);
                 mCharSet = 0;
             }
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-// dol/sound/SoundEffectReverb.cpp (801D00E8..801D0550, not decompiled).
+// dol/sound/SoundEffectReverb.cpp (801D00E8..801D0550).
 // Its own header: with -sym on each header's inlines get their own weak .text section, and the
 // d_snd_util tail has SoundFrameCallback's OnEndSoundFrame between ~SoundEffectReverb and
 // ~SoundAudioFrameCallback, so the two classes can't share a header.
@@ -15,6 +15,8 @@ public:
     virtual ~SoundEffectReverb() {} // 800103F8 (weak copy in d_snd_util)
     virtual bool StartUp();         // 801D00E8
     virtual void Shutdown();        // 801D013C
+
+    void setPreset(u32 preset); // 801D017C: 0..11, others keep the defaults
 
     /* 0x308 */ bool mStarted;
 }; // size 0x30C

@@ -111,6 +111,7 @@ public:
     s16 GetLocalVariable(int idx) const; // CF 80266524
     void SetLocalVariable(int idx, s16 value);
     static void SetGlobalVariable(int idx, s16 value);
+    static s16 GetGlobalVariable(int idx); // CF 80266534
 
     void SetTrackVolume(u32 trackFlags, f32 volume);
     void SetTrackPitch(u32 trackFlags, f32 pitch);
@@ -158,6 +159,9 @@ public:
     ParserPlayerParam& GetParserPlayerParam() {
         return mParserParam;
     }
+    const ParserPlayerParam& GetParserPlayerParam() const {
+        return mParserParam;
+    }
 
 private:
     static const int DEFAULT_TEMPO = 120;
@@ -181,22 +185,24 @@ private:
     static void InitGlobalVariable();
 
 private:
-    bool mActiveFlag;             // at 0x8C
-    bool mStartedFlag;            // at 0x8D
-    bool mPauseFlag;              // at 0x8E
-    bool mReleasePriorityFixFlag; // at 0x8F
+    bool mActiveFlag;             // at 0xEC
+    bool mStartedFlag;            // at 0xED
+    bool mPauseFlag;              // at 0xEE
+    bool mReleasePriorityFixFlag; // at 0xEF
 
-    f32 mPanRange;                                   // at 0x90
-    f32 mTempoRatio;                                 // at 0x94
-    f32 mTickFraction;                               // at 0x98
-    u32 mSkipTickCounter;                            // at 0x9C
-    f32 mSkipTimeCounter;                            // at 0xA0
-    int mVoiceOutCount;                              // at 0xA4
-    ParserPlayerParam mParserParam;                  // at 0xA8
-    SeqTrackAllocator* mSeqTrackAllocator;           // at 0xB4
-    SeqTrack* mTracks[TRACK_NUM];                    // at 0xB8
-    volatile s16 mLocalVariable[LOCAL_VARIABLE_NUM]; // at 0xF8
-    u32 mTickCounter;                                // at 0x118
+    f32 mPanRange;                                   // at 0xF0
+    f32 mTempoRatio;                                 // at 0xF4
+    f32 mTickFraction;                               // at 0xF8
+    u32 mSkipTickCounter;                            // at 0xFC
+    f32 mSkipTimeCounter;                            // at 0x100
+    int mVoiceOutCount;                              // at 0x104
+    ParserPlayerParam mParserParam;                  // at 0x108
+    SeqTrackAllocator* mSeqTrackAllocator;           // at 0x114
+    u32 mUnknown118;                                 // at 0x118 (CF; cleared by the ctor)
+    u32 mUnknown11C;                                 // at 0x11C (CF; cleared by the ctor)
+    SeqTrack* mTracks[TRACK_NUM];                    // at 0x120
+    volatile s16 mLocalVariable[LOCAL_VARIABLE_NUM]; // at 0x160
+    u32 mTickCounter;                                // at 0x180
 
     static volatile s16 mGlobalVariable[LOCAL_VARIABLE_NUM];
     static bool mGobalVariableInitialized; // @typo

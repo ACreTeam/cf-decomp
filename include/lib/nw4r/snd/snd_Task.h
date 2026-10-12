@@ -22,8 +22,8 @@ public:
 public:
     NW4R_UT_LINKLIST_NODE_DECL(); // at 0x4
 
-private:
-    bool mBusyFlag; // at 0xC
+protected:
+    volatile bool mBusyFlag; // at 0xC
 };
 
 NW4R_UT_LINKLIST_TYPEDEF_DECL(Task);

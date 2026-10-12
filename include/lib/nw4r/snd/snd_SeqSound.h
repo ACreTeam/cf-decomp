@@ -55,6 +55,9 @@ public:
     SeqPlayer& GetSeqPlayer() {
         return mSeqPlayer;
     }
+    const SeqPlayer& GetSeqPlayer() const {
+        return mSeqPlayer;
+    }
 
     SeqPlayer::SetupResult Setup(SeqTrackAllocator* pAllocator,
                                  u32 allocTrackFlags, int voices,
@@ -73,12 +76,15 @@ public:
     void SetReleasePriorityFix(bool flag);
 
     void SetTrackVolume(u32 trackFlags, f32 volume);
+    void SetTrackPan(u32 trackFlags, f32 pan);
     void SetTrackPitch(u32 trackFlags, f32 pitch);
 
     void SetTrackMute(u32 trackFlags, bool mute);   // CF 8026775C
     bool ReadVariable(int idx, s16* pValue) const; // CF 80267784: -1 before the sequence started
     bool WriteVariable(int idx, s16 value);
+    static bool ReadGlobalVariable(int idx, s16* pValue); // CF 802677D4
     static bool WriteGlobalVariable(int idx, s16 value);
+    u32 GetTick() const; // CF 8026785C: 0 before the sequence started
 
     void* GetFileStreamBuffer() {
         return mFileStreamBuffer;

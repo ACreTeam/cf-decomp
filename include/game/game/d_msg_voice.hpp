@@ -30,7 +30,7 @@ public:
     /* 0x11 */ u8 mTagNoWait; // Seq_c tags 6:2 / 6:3 (no-wait mode); cleared by Seq_c::start
     /* 0x12 */ u8 mPaused; // paused by the wait tag 6:0 (mouth closed); cleared by each typed character
     /* 0x13 */ u8 mCharSet;    // setChar: mPrevChar not voiced yet
-    /* 0x14 */ f32 mScale;         // text scale (system tag 0xFF:1 / 100, Seq_c), passed to the voice (fn_8000FE90); reset to 1.0f
+    /* 0x14 */ f32 mScale;         // text scale (system tag 0xFF:1 / 100, Seq_c), passed to the voice (sndSpeakVoice); reset to 1.0f
 }; // size 0x18
 
 } // namespace dMsg

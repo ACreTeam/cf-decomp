@@ -27,6 +27,9 @@ public:
     detail::SeqSound* detail_GetAttachedSound() {
         return mSound;
     }
+    const detail::SeqSound* detail_GetAttachedSound() const {
+        return mSound;
+    }
 
     void SetTempoRatio(f32 tempo) {
         if (IsAttachedSound()) {
@@ -37,6 +40,12 @@ public:
     void SetTrackVolume(u32 trackFlags, f32 volume) {
         if (IsAttachedSound()) {
             mSound->SetTrackVolume(trackFlags, volume);
+        }
+    }
+
+    void SetTrackPan(u32 trackFlags, f32 pan) {
+        if (IsAttachedSound()) {
+            mSound->SetTrackPan(trackFlags, pan);
         }
     }
 
@@ -64,6 +73,17 @@ public:
         if (IsAttachedSound()) {
             mSound->WriteVariable(idx, value);
         }
+    }
+
+    u32 GetTick() const {
+        if (IsAttachedSound()) {
+            return mSound->GetTick();
+        }
+        return 0;
+    }
+
+    static bool ReadGlobalVariable(int idx, s16* pValue) {
+        return detail::SeqSound::ReadGlobalVariable(idx, pValue);
     }
 
     static void WriteGlobalVariable(int idx, s16 value) {

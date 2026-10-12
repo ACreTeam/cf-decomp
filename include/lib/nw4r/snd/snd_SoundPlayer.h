@@ -3,6 +3,7 @@
 #include <nw4r/types_nw4r.h>
 
 #include <nw4r/snd/snd_BasicSound.h>
+#include <nw4r/snd/snd_SoundHandle.h>
 #include <nw4r/snd/snd_PlayerHeap.h>
 
 #include <revolution/OS.h>
@@ -32,6 +33,16 @@ public:
     void PauseAllSound(bool flag, int frames);
 
     void SetVolume(f32 volume);
+    void SetLpfFreq(f32 freq);
+
+    template <class Func> void ForEachSound(Func func) {
+        NW4R_UT_LINKLIST_FOREACH_SAFE(it, mSoundList, {
+            SoundHandle handle;
+            handle.detail_AttachSoundAsTempHandle(&*it);
+            func(handle);
+        })
+    }
+
 
     int detail_GetOutputLine() const;
     bool detail_IsEnabledOutputLine() const;

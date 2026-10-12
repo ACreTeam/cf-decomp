@@ -71,6 +71,12 @@ public:
             mSound->SetPitch(pitch);
         }
     }
+
+    void SetBiquadFilter(int type, f32 value) {
+        if (IsAttachedSound()) {
+            mSound->SetBiquadFilter(type, value);
+        }
+    }
     void SetPan(f32 pan) {
         if (IsAttachedSound()) {
             mSound->SetPan(pan);

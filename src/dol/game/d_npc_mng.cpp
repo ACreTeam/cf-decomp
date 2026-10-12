@@ -511,7 +511,7 @@ BOOL dNpcMng_c::createVillagers() {
             block->getHouseFrontPos(&pos, i);
         }
         if (online) {
-            block->updateEvent15Flag(i);
+            block->updateHalloweenFlag(i);
             block->updateHeldItem(i);
         }
         dActor_c::construct(0x4C, this, key, &pos, &angle);
@@ -653,7 +653,7 @@ BOOL dNpcMng_c::createPlayerHouseGuest() {
     }
     BOOL fromTown = isSceneAttr(getPrevScene(), SCENE_ATTR_TOWN);
     dAnimalBlock_c *block = dSaveData_c::getAnimalBlock();
-    int idx = block->pickEvent11Animal(fromTown, NULL, NULL);
+    int idx = block->pickFleaMarketAnimal(fromTown, NULL, NULL);
     dAnimal_c *animal = block->getAnimalConst(idx);
     if (animal != NULL && animal->mID.isValid()) {
         mVec3_c pos(256.0f, 0.0f, 464.0f);

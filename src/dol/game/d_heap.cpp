@@ -379,7 +379,7 @@ EGG::ExpHeap *dHeap::createLocalHeap(EGG::Heap *parent) {
 
 // 800B5D10
 EGG::FrmHeap *dHeap::createSoundHeap(EGG::Heap *parent) {
-    u32 size = fn_801CE584();
+    u32 size = SoundSystem::getSoundHeapSize();
     soundHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::soundHeap_p : サウンドヒープ", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "サウンドヒープ", size);
     return soundHeap_p;

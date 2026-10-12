@@ -1,5 +1,5 @@
 // Villager (animal) save data TU. Draft: only the class anchors are written so far.
-// .text 8011B400..80135E88 (sinit fn_80135E40). See notes/d_animal.txt.
+// .text 8011B400..80135E88 (sinit 80135E40). See notes/d_animal.txt.
 #include <game/game/d_event.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_animal.hpp>
@@ -12,6 +12,7 @@
 #include <game/game/d_npc.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_msg_comp.hpp>
+#include <game/game/d_personal_id.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_string.hpp>
 #include <lib/egg/core/eggHeap.h>
@@ -29,6 +30,17 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_paper.hpp>
 #include <game/game/d_npc_setup.hpp>
+#include <game/game/d_block_kind.hpp>
+#include <game/game/d_save_building.hpp>
+
+struct dHomeStayPeriod_c {
+    u8 mValue;
+    u8 mHourEnd;
+};
+
+// dAnimalHomeStay_c::isPeriod: the period of the day by the hour it ends (3 until 6, 0 until 12, 1 until
+// 17, 2 until 22). Defined first: it leads the TU's .sdata2.
+static const dHomeStayPeriod_c sHours[4] = {{3, 6}, {0, 12}, {1, 17}, {2, 22}};
 
 struct dEventId_c {
     dEventId_c(int id) : mId(id) {}
@@ -56,13 +68,13 @@ dAnimalTemplate_c *pickTemplateByLooks(dAnimalTemplate_c *tmpls, u32 num, u32 lo
 dAnimalTemplate_c *pickTemplate(dAnimalTemplate_c *tmpls, u32 num, u32 mask, u32 count, u32 looksNum,
                                            dAnimal_c *animals, u32 animalNum, const u8 *bits, u32 size, u32 max,
                                            u8 flag);
-dAnimal_c *fn_8011B910(dAnimal_c *animals, u32 num, u32 idx);
-dAnimal_c *fn_8011B92C(dAnimal_c *animals, u32 num, u32 idx);
+dAnimal_c *getAnimalAt(dAnimal_c *animals, u32 num, u32 idx);
+dAnimal_c *getAnimalAt2(dAnimal_c *animals, u32 num, u32 idx);
 int findFreeAnimalIdx(dAnimal_c *animals, u32 num, BOOL flag);
 dAnimal_c *getFreeAnimal(dAnimal_c *animals, u32 num, BOOL flag);
 u32 countAnimals(dAnimal_c *animals, u32 num);
-dAnimal_c *fn_8011BA8C(u16 npcIdx, dAnimal_c *animals, u32 num);
-dAnimal_c *fn_8011BB0C(u16 npcIdx, dAnimal_c *animals, u32 num);
+dAnimal_c *findAnimalInList(u16 npcIdx, dAnimal_c *animals, u32 num);
+dAnimal_c *findAnimalInList2(u16 npcIdx, dAnimal_c *animals, u32 num);
 int findAnimalIdx(dAnmPersonalID_c *id, dAnimal_c *animals, u32 num);
 int pickAnimalIdx(dAnmPersonalID_c **exclude, u32 numExclude, dAnimal_c *animals, u32 num, BOOL flag);
 void initHarvestFestival(dAnimal_c *animals, u32 num);
@@ -80,21 +92,21 @@ BOOL getPlayerHouseSpot(int *x, int *z, u32 player);
 BOOL getCurPlayerHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getOtherPlayerHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getStructSpot(int *x, int *z, const dItem::Item *item);
-BOOL getStructSpotD013(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL D016(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL D017(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL D015(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL D014(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getTownHallSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getTailorSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getMuseumSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getShopSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getGateSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getBlockTypeSpot(int *x, int *z, u32 type);
-BOOL getBlockSpot0FE00000(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getCliffBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getBottomRowSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL fn_8011DD5C(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL fn_8011DD64(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
-BOOL FE000(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getFallBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getRaccoBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
+BOOL getRiverBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL getRandomSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block);
 BOOL isMovedOutPlayer(const dPersonalID_c *pid, const dLandID_c *land, dPrivateData_c *players);
 BOOL isOtherTownPlayer(const dPersonalID_c *pid, const dLandID_c *land, dPrivateData_c *players);
-void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks);
+void pickNickname(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks);
 dItem::Item getTemplateFtr(u32 idx, const dAnimalTemplate_c *tmpl);
 u32 getFtrSlotOfPlaceholder(const dItem::Item *item);
 BOOL isHouseItem(const dItem::Item *item);
@@ -140,8 +152,8 @@ int getBirthdayHostIdxIn(dAnimal_c *animals, u32 num, int playerNo, BOOL checkEv
                            BOOL checkPocket);
 BOOL isBirthdayHostIn(const dAnmPersonalID_c *id, dAnimal_c *animals, u32 num, int playerNo,
                             BOOL checkEvent, BOOL checkFlag, BOOL checkPocket);
-BOOL fn_80134D54(const dPrivateData_c *player);
-BOOL fn_80134DA8(const dPrivateData_c *player);
+BOOL hasFlag2NoMii(const dPrivateData_c *player);
+BOOL isTownEventActive(const dPrivateData_c *player);
 BOOL isHoldingNet(const dPrivateData_c *player);
 BOOL isHoldingFishingrod(const dPrivateData_c *player);
 BOOL isHoldingWatering(const dPrivateData_c *player);
@@ -177,12 +189,12 @@ BOOL isFullyTanned(const dPrivateData_c *player);
 BOOL hasNoPocketMoney(const dPrivateData_c *player);
 BOOL hasSavings100k(const dPrivateData_c *player);
 BOOL isNever(const dPrivateData_c *player);
-BOOL fn_8013585C(const dPrivateData_c *player);
-BOOL fn_80135908(const dPrivateData_c *player);
-BOOL fn_80135948(const dPrivateData_c *player);
+BOOL hasAccHair358NoHat(const dPrivateData_c *player);
+BOOL hasHair9NoHat(const dPrivateData_c *player);
+BOOL hasHair6Bare(const dPrivateData_c *player);
 BOOL hasFemaleHairNoHat(const dPrivateData_c *player);
-BOOL fn_801359DC(const dPrivateData_c *player);
-BOOL fn_80135A40(const dPrivateData_c *player);
+BOOL hasHair17_19_20_22NoHat(const dPrivateData_c *player);
+BOOL wearsAcc187(const dPrivateData_c *player);
 BOOL hasMaleHairNoHat(const dPrivateData_c *player);
 int getImpression(dPrivateData_c *player);
 BOOL sendVisitorLetter(dPrivateData_c *player);
@@ -322,7 +334,7 @@ dAnimalTemplate_c *pickTemplateByLooks(dAnimalTemplate_c *tmpls, u32 num, u32 lo
         }
 
         u16 npcIdx = (int)tmpls->mNpcIdx;
-        if (fn_8011BA8C(npcIdx, animals, animalNum) != NULL) {
+        if (findAnimalInList(npcIdx, animals, animalNum) != NULL) {
             continue;
         }
 
@@ -368,7 +380,7 @@ dAnimalTemplate_c *pickTemplate(dAnimalTemplate_c *tmpls, u32 num, u32 mask, u32
 }
 
 // 8011B910
-dAnimal_c *fn_8011B910(dAnimal_c *animals, u32 num, u32 idx) {
+dAnimal_c *getAnimalAt(dAnimal_c *animals, u32 num, u32 idx) {
     if (idx < num) {
         return &animals[idx];
     }
@@ -376,7 +388,7 @@ dAnimal_c *fn_8011B910(dAnimal_c *animals, u32 num, u32 idx) {
 }
 
 // 8011B92C
-dAnimal_c *fn_8011B92C(dAnimal_c *animals, u32 num, u32 idx) {
+dAnimal_c *getAnimalAt2(dAnimal_c *animals, u32 num, u32 idx) {
     if (idx < num) {
         return &animals[idx];
     }
@@ -400,7 +412,7 @@ int findFreeAnimalIdx(dAnimal_c *animals, u32 num, BOOL flag) {
 
 // 8011B9CC
 dAnimal_c *getFreeAnimal(dAnimal_c *animals, u32 num, BOOL flag) {
-    return fn_8011B910(animals, num, findFreeAnimalIdx(animals, num, flag));
+    return getAnimalAt(animals, num, findFreeAnimalIdx(animals, num, flag));
 }
 
 // 8011BA14
@@ -417,7 +429,7 @@ u32 countAnimals(dAnimal_c *animals, u32 num) {
 }
 
 // 8011BA8C
-dAnimal_c *fn_8011BA8C(u16 npcIdx, dAnimal_c *animals, u32 num) {
+dAnimal_c *findAnimalInList(u16 npcIdx, dAnimal_c *animals, u32 num) {
     dAnmPersonalID_c *id;
     dAnimal_c *result = NULL;
 
@@ -433,7 +445,7 @@ dAnimal_c *fn_8011BA8C(u16 npcIdx, dAnimal_c *animals, u32 num) {
 }
 
 // 8011BB0C
-dAnimal_c *fn_8011BB0C(u16 npcIdx, dAnimal_c *animals, u32 num) {
+dAnimal_c *findAnimalInList2(u16 npcIdx, dAnimal_c *animals, u32 num) {
     dAnmPersonalID_c *id;
     dAnimal_c *result = NULL;
 
@@ -506,7 +518,7 @@ void initHarvestFestival(dAnimal_c *animals, u32 num) {
 }
 
 static inline BOOL isPlayerIdx(int idx) {
-    return idx >= 0 && idx < 4;
+    return idx >= 0 && idx < PLAYER_NUM;
 }
 
 // 8011BE34
@@ -520,7 +532,7 @@ void initHalloween(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 s
         if (isPlayerIdx(player)) {
             u32 idx = getBirthdayHostIdxIn(animals, num, player, 0, 0, 0);
             if (idx < num) {
-                dAnimal_c *animal = fn_8011B910(animals, num, idx);
+                dAnimal_c *animal = getAnimalAt(animals, num, idx);
                 if (animal != NULL && animal->mID.isValid()) {
                     dAnimalEventState_c *obj = &animal->mEvent;
                     if ((int)obj->mPlace == 3) {
@@ -542,7 +554,7 @@ void initHalloween(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 s
 
                 u32 idx = getBirthdayHostIdxIn(animals, num, p, 0, 0, 0);
                 if (idx < num) {
-                    dAnimal_c *animal = fn_8011B910(animals, num, idx);
+                    dAnimal_c *animal = getAnimalAt(animals, num, idx);
                     if (animal != NULL && animal->mID.isValid()) {
                         dAnimalEventState_c *obj = &animal->mEvent;
                         if ((int)obj->mPlace == 3) {
@@ -562,7 +574,7 @@ void initHalloween(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 s
 
     if (left != 0) {
         for (u32 i = 0; i < num; i++) {
-            dAnimal_c *animal = fn_8011B910(animals, num, i);
+            dAnimal_c *animal = getAnimalAt(animals, num, i);
             if (animal != NULL && animal->mID.isValid() && (int)animal->mEvent.mPlace == 3) {
                 switch (animal->getDayPlace(0, i == special, 0)) {
                     case 3:
@@ -581,7 +593,7 @@ void initHalloween(dAnimal_c *animals, u32 num, const s8 *order, u32 want, u32 s
     if (left != 0) {
         for (u32 i = 0; i < num; i++, order++) {
             int idx = *order;
-            dAnimal_c *animal = fn_8011B910(animals, num, idx);
+            dAnimal_c *animal = getAnimalAt(animals, num, idx);
             if (animal != NULL && animal->mID.isValid() && (int)animal->mEvent.mPlace == 3) {
                 switch (animal->getDayPlace(0, idx == special, 0)) {
                     case 3:
@@ -1139,7 +1151,7 @@ void dAnimalSpot_c::clear() {
     mType = 4;
 }
 
-// setD013Spot fills a dAnimalSpot_c.
+// setTownHallSpot fills a dAnimalSpot_c.
 // 8011D61C
 BOOL dAnimalSpot_c::isValid() {
     BOOL valid = FALSE;
@@ -1211,7 +1223,7 @@ BOOL getOtherHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block)
 
 // 8011D8B0
 BOOL getPlayerHouseSpot(int *x, int *z, u32 player) {
-    if (player >= 4) {
+    if (player >= PLAYER_NUM) {
         return FALSE;
     }
     return dSaveData_c::getTown()->mBuilding.mList.getPlayerHousePos(x, z, player) != 0;
@@ -1251,32 +1263,32 @@ BOOL getStructSpot(int *x, int *z, const dItem::Item *item) {
 }
 
 // 8011DAB0
-BOOL getStructSpotD013(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    dItem::Item item((u16)0xD013);
+BOOL getTownHallSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    dItem::Item item((u16)BUILDING_TOWN_HALL);
     return getStructSpot(x, z, &item);
 }
 
 // 8011DAE0
-BOOL D016(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    dItem::Item item((u16)0xD016);
+BOOL getTailorSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    dItem::Item item((u16)BUILDING_TAILOR);
     return getStructSpot(x, z, &item);
 }
 
 // 8011DB10
-BOOL D017(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    dItem::Item item((u16)0xD017);
+BOOL getMuseumSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    dItem::Item item((u16)BUILDING_MUSEUM);
     return getStructSpot(x, z, &item);
 }
 
 // 8011DB40
-BOOL D015(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    dItem::Item item((u16)0xD015);
+BOOL getShopSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    dItem::Item item((u16)BUILDING_SHOP);
     return getStructSpot(x, z, &item);
 }
 
 // 8011DB70
-BOOL D014(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    dItem::Item item((u16)0xD014);
+BOOL getGateSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    dItem::Item item((u16)BUILDING_GATE);
     return getStructSpot(x, z, &item);
 }
 
@@ -1317,8 +1329,8 @@ BOOL getBlockTypeSpot(int *x, int *z, u32 type) {
 }
 
 // 8011DCFC
-BOOL getBlockSpot0FE00000(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    return getBlockTypeSpot(x, z, 0x0FE00000);
+BOOL getCliffBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    return getBlockTypeSpot(x, z, BLOCK_KIND_FLAG_CLIFF);
 }
 
 // 8011DD04
@@ -1329,18 +1341,18 @@ BOOL getBottomRowSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) 
 }
 
 // 8011DD5C
-BOOL fn_8011DD5C(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    return getBlockTypeSpot(x, z, 0x100000);
+BOOL getFallBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    return getBlockTypeSpot(x, z, BLOCK_KIND_FLAG_FALL);
 }
 
 // 8011DD64
-BOOL fn_8011DD64(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    return getBlockTypeSpot(x, z, 0x200);
+BOOL getRaccoBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    return getBlockTypeSpot(x, z, BLOCK_KIND_FLAG_RACCO);
 }
 
 // 8011DD6C
-BOOL FE000(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
-    return getBlockTypeSpot(x, z, 0xFE000);
+BOOL getRiverBlockSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
+    return getBlockTypeSpot(x, z, BLOCK_KIND_FLAG_RIVER);
 }
 
 // 8011DD78
@@ -1375,8 +1387,8 @@ static const u8 sSpotChance[8][15] = {
 
 // 80475E10
 static dAnimalSpotFunc const sSpotFuncs[15] = {
-    getOwnHouseSpot, getOtherHouseSpot, getCurPlayerHouseSpot, getOtherPlayerHouseSpot, getStructSpotD013, D016, D017, D015,
-    D014, getBlockSpot0FE00000, getBottomRowSpot, fn_8011DD5C, fn_8011DD64, FE000, getRandomSpot,
+    getOwnHouseSpot, getOtherHouseSpot, getCurPlayerHouseSpot, getOtherPlayerHouseSpot, getTownHallSpot, getTailorSpot, getMuseumSpot, getShopSpot,
+    getGateSpot, getCliffBlockSpot, getBottomRowSpot, getFallBlockSpot, getRaccoBlockSpot, getRiverBlockSpot, getRandomSpot,
 };
 
 static inline void setSpot(dAnimalSpot_c *obj, int x, int z, u8 type) {
@@ -1448,7 +1460,7 @@ BOOL dAnimalSpot_c::setHomeSpot1(dAnimal_c *animal, dAnimalBlock_c *block) {
 }
 
 // 8011E080
-BOOL dAnimalSpot_c::fn_8011E080(dAnimal_c *animal, dAnimalBlock_c *block) {
+BOOL dAnimalSpot_c::setHomeSpot2(dAnimal_c *animal, dAnimalBlock_c *block) {
     int x = -1;
     int z = -1;
     if (!getOwnHouseSpot(&x, &z, animal, block)) {
@@ -1466,7 +1478,7 @@ BOOL dAnimalSpot_c::fn_8011E080(dAnimal_c *animal, dAnimalBlock_c *block) {
 }
 
 // 8011E140
-BOOL dAnimalSpot_c::fn_8011E140(dAnimal_c *animal, dAnimalBlock_c *block) {
+BOOL dAnimalSpot_c::setHomeSpot3(dAnimal_c *animal, dAnimalBlock_c *block) {
     int x = -1;
     int z = -1;
     if (!getOwnHouseSpot(&x, &z, animal, block)) {
@@ -1484,10 +1496,10 @@ BOOL dAnimalSpot_c::fn_8011E140(dAnimal_c *animal, dAnimalBlock_c *block) {
 }
 
 // 8011E200
-BOOL dAnimalSpot_c::setD013Spot(dAnimal_c *animal, dAnimalBlock_c *block) {
+BOOL dAnimalSpot_c::setTownHallSpot(dAnimal_c *animal, dAnimalBlock_c *block) {
     int x = -1;
     int z = -1;
-    if (!getStructSpotD013(&x, &z, animal, block)) {
+    if (!getTownHallSpot(&x, &z, animal, block)) {
         return FALSE;
     }
 
@@ -1632,7 +1644,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-dScript::Word_c *fn_801A3158(dMsg::Comp_c *demo, int idx);
 extern u8 lbl_8059FF80[];
 }
 
@@ -1857,7 +1868,7 @@ void dAnimal_c::getPlayerCallName(dScript::Word_c *word, const dPersonalID_c *pi
 
 // 8011F19C
 // Random non-empty demo word that differs from def, else def. looks is unused.
-void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks) {
+void pickNickname(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks) {
     u32 mask = 0xF;
 
     if (flag == FALSE) {
@@ -1886,8 +1897,8 @@ void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks
                 break;
             }
 
-            if (fn_801A3158(demo, pick)->getLength(0) != 0 && !fn_801A3158(demo, pick)->isSame(def)) {
-                out->copy(fn_801A3158(demo, pick), 0);
+            if (demo->getNickname(pick)->getLength(0) != 0 && !demo->getNickname(pick)->isSame(def)) {
+                out->copy(demo->getNickname(pick), 0);
                 break;
             }
 
@@ -2443,7 +2454,7 @@ void dAnimal_c::clearNewItems() {
 }
 
 // 801205A0
-dItem::Item *dAnimal_c::fn_801205A0(u32 idx) {
+dItem::Item *dAnimal_c::getNewItem(u32 idx) {
     if (idx < 4) {
         return &mNewItems[idx];
     }
@@ -2451,7 +2462,7 @@ dItem::Item *dAnimal_c::fn_801205A0(u32 idx) {
 }
 
 // 801205C0
-dItem::Item *dAnimal_c::fn_801205C0(u32 idx) {
+dItem::Item *dAnimal_c::getNewItem2(u32 idx) {
     if (idx < 4) {
         return &mNewItems[idx];
     }
@@ -2480,7 +2491,7 @@ void dAnimal_c::packNewItems() {
 
 // 80120664
 int dAnimal_c::findNewItem(const dItem::Item *item) {
-    dItem::Item *p = fn_801205C0(0);
+    dItem::Item *p = getNewItem2(0);
     for (int i = 0; i < 4; i++, p++) {
         if (item->isSame(*p)) {
             return i;
@@ -2573,7 +2584,7 @@ void dAnimal_c::validateNewItems() {
 // Random _2FFC item not in exclude.
 dItem::Item *dAnimal_c::pickNewItem(const dItem::Item *exclude, u32 num, BOOL all) {
     const dItem::Item *e;
-    dItem::Item *p = fn_801205C0(0);
+    dItem::Item *p = getNewItem2(0);
     int count = 0;
     u32 mask = 0;
     for (int i = 0; i < 4; i++, p++) {
@@ -2595,7 +2606,7 @@ dItem::Item *dAnimal_c::pickNewItem(const dItem::Item *exclude, u32 num, BOOL al
             }
         }
     }
-    return fn_801205C0(pickRandomBit(mask, count, 4));
+    return getNewItem2(pickRandomBit(mask, count, 4));
 }
 
 // 80120A50
@@ -2603,7 +2614,7 @@ dItem::Item *dAnimal_c::pickNewItem(const dItem::Item *exclude, u32 num, BOOL al
 dItem::Item *dAnimal_c::pickPricedNewItem(const dItem::Item *exclude, u32 num, BOOL all) {
     const dItem::Item *e;
     dItem::Item *res = NULL;
-    dItem::Item *p = fn_801205C0(0);
+    dItem::Item *p = getNewItem2(0);
     u32 count = 0;
     for (int i = 0; i < 4; i++, p++) {
         if (p->mId != dItem::ITEM_ID_NONE) {
@@ -2647,7 +2658,7 @@ dItem::Item dAnimal_c::pickNewItemOfKind(int kind, const dItem::Item *exclude) {
     dItem::Item res;
     u32 count = 0;
     for (int i = 0; i < 4; i++) {
-        dItem::Item *p = fn_801205C0(i);
+        dItem::Item *p = getNewItem2(i);
         if (p != NULL && p->mId != dItem::ITEM_ID_NONE && isNotSame(p, exclude)) {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item(p->mId));
             if (bitm != NULL && kind == bitm->getKind()) {
@@ -2665,10 +2676,7 @@ dItem::Item dAnimal_c::pickNewItemOfKind(int kind, const dItem::Item *exclude) {
 // 80120D00
 // Daily update of the villager's wallpaper, carpet, music and furniture from the _2FFC items.
 void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
-    if (!mID.isValid()) {
-        return;
-    }
-    if (idx >= ANIMAL_NUM) {
+    if (!mID.isValid() || idx >= ANIMAL_NUM) {
         return;
     }
     if (isMoving()) {
@@ -2719,7 +2727,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
     dQuestBase_c *quest;
     dItem::Item best[dItem::FTR_SIZE_COUNT];
     for (int i = 0; i < 4; i++) {
-        dItem::Item *p = fn_801205A0(i);
+        dItem::Item *p = getNewItem(i);
         if (p != NULL && p->mId != dItem::ITEM_ID_NONE) {
             dItem::Item got;
             placeFtr(p, idx, notify, &got);
@@ -2794,19 +2802,19 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
     if (quest->isActive()) {
         u8 state = quest->mState;
         switch (quest->mKind) {
-        case 2:
-            if (state == 1 || state == 2) {
-                quest->mState = 3;
+        case QUEST_KIND_REQUEST_FOSSIL:
+            if (state == QUEST_REQUEST_WON || state == QUEST_REQUEST_RETURN) {
+                quest->mState = QUEST_REQUEST_DISPLAYED;
                 if (notify) {
-                    fn_800F12D8(idx, 2, 3);
+                    fn_800F12D8(idx, QUEST_KIND_REQUEST_FOSSIL, QUEST_REQUEST_DISPLAYED);
                 }
             }
             break;
-        case 4:
-            if (state == 1 || state == 2) {
-                quest->mState = 3;
+        case QUEST_KIND_REQUEST_FTR:
+            if (state == QUEST_REQUEST_WON || state == QUEST_REQUEST_RETURN) {
+                quest->mState = QUEST_REQUEST_DISPLAYED;
                 if (notify) {
-                    fn_800F12D8(idx, 4, 3);
+                    fn_800F12D8(idx, QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_DISPLAYED);
                 }
             }
             break;
@@ -2846,7 +2854,7 @@ static inline u32 &memFlagWord(dAnimalMemory_c *mem) {
 
 // 80121234
 u32 dAnimal_c::countNewItems() {
-    dItem::Item *items = fn_801205C0(0);
+    dItem::Item *items = getNewItem2(0);
     u32 num = 0;
     for (int i = 0; i < 4; i++) {
         if (items[i].mId != dItem::ITEM_ID_NONE) {
@@ -2898,7 +2906,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
     case 2: {
         f32 rnd = cM::rndF(100.0f);
         if (rnd < 30.0f) {
-            static dNpcPair_c sPair(0xB, 0x5C);
+            static dNpcPair_c sPair(dItem::KIND_FOSSIL, 0x5C);
             // Integer select: the target computes this branchless.
             const dItem::Item *exclude = (const dItem::Item *)(prev.mId != dItem::ITEM_ID_NONE ? (int)&prev : 0);
             fn_800C60B4(&item, 1, &sPair, 1, lbl_8059FF80, exclude, exclude != NULL, 0);
@@ -2906,7 +2914,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
                 item = dItem::ITEM_ID_NONE;
             }
         } else if (rnd < 50.0f) {
-            static dNpcPair_c sPair(0xC, 0x5C);
+            static dNpcPair_c sPair(dItem::KIND_HANIWA, 0x5C);
             fn_800C60B4(&item, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
             if (item.isSame(prev)) {
                 item = dItem::ITEM_ID_NONE;
@@ -2917,7 +2925,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
     case 4:
         if (cM::rndF(100.0f) < 50.0f) {
             dItem::seriesCandCB_c cb(mTemplate.mFavFtrSeries, prev, TRUE);
-            dItem::seeker_c::get()->search(3, 6, &cb);
+            dItem::seeker_c::get()->search(dItem::KIND_FTR, 6, &cb);
             item = dItem::seeker_c::get()->getRandom();
             if (item.isSame(prev)) {
                 item = dItem::ITEM_ID_NONE;
@@ -2928,7 +2936,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
         if (cM::rndF(100.0f) < 30.0f) {
             int style = mTemplate.mLikedStyle;
             dItem::clothCandCB_c cb(mCloth, style, 10, TRUE);
-            dItem::seeker_c::get()->search(4, 6, &cb);
+            dItem::seeker_c::get()->search(dItem::KIND_CLOTH, 6, &cb);
             item = dItem::seeker_c::get()->getRandom();
             if (item.isSame(prev)) {
                 item = dItem::ITEM_ID_NONE;
@@ -2937,7 +2945,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
         break;
     }
 
-    static dNpcPair_c sDefault(3, 0);
+    static dNpcPair_c sDefault(dItem::KIND_FTR, 0);
     if (item.mId == dItem::ITEM_ID_NONE) {
         if (!fn_800C60B4(&item, 1, &sDefault, 1, lbl_8059FF80, NULL, FALSE, 0)) {
             item = dItem::ITEM_ID_NONE;
@@ -3403,7 +3411,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         if (mail->getPresent() != dItem::ITEM_ID_NONE) {
             switch (dPostOffice::getLengthType(mail)) {
             case 1: {
-                static dNpcPair_c sPair(3, 0);
+                static dNpcPair_c sPair(dItem::KIND_FTR, 0);
                 fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
                 break;
             }
@@ -3411,7 +3419,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
                 fn_800F45A4(&present, 1, lbl_8059FF80, NULL, 0);
                 break;
             default: {
-                static dNpcPair_c sPair(4, 0);
+                static dNpcPair_c sPair(dItem::KIND_CLOTH, 0);
                 if (cM::rndF(100.0f) < 50.0f) {
                     fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
                 }
@@ -3467,7 +3475,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         if (mail->getPresent() != dItem::ITEM_ID_NONE) {
             switch (dPostOffice::getLengthType(mail)) {
             case 1: {
-                static dNpcPair_c sPair(3, 0);
+                static dNpcPair_c sPair(dItem::KIND_FTR, 0);
                 fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
                 break;
             }
@@ -3475,7 +3483,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
                 fn_800F45A4(&present, 1, lbl_8059FF80, NULL, 0);
                 break;
             default: {
-                static dNpcPair_c sPair(4, 0);
+                static dNpcPair_c sPair(dItem::KIND_CLOTH, 0);
                 if (cM::rndF(100.0f) < 50.0f) {
                     fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
                 }
@@ -3543,7 +3551,7 @@ int dAnimal_c::getDayPlace(BOOL checkPlayer, BOOL arg2, BOOL useDefault) {
         result = 0;
     } else if (isMoving()) {
         result = 1;
-    } else if ((int)mQuest.mQuest.mBase.mKind == 5) {
+    } else if ((int)mQuest.mQuest.mBase.mKind == QUEST_KIND_REQUEST_5) {
         result = 1;
     }
 
@@ -3593,7 +3601,7 @@ void dAnimal_c::clearMemoryFlag23() {
 }
 
 // 801235F8
-void dAnimal_c::fn_801235F8() {
+void dAnimal_c::clearMemoryFlag8() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++) {
         memFlagWord(&mem[i]) &= ~0x00000100;
@@ -3601,7 +3609,7 @@ void dAnimal_c::fn_801235F8() {
 }
 
 // 801236DC
-void dAnimal_c::fn_801236DC() {
+void dAnimal_c::clearMemoryFlag21() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++) {
         memFlagWord(&mem[i]) &= ~0x00200000;
@@ -3609,7 +3617,7 @@ void dAnimal_c::fn_801236DC() {
 }
 
 // 801237C0
-void dAnimal_c::fn_801237C0() {
+void dAnimal_c::clearMemoryFlag20() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++) {
         memFlagWord(&mem[i]) &= ~0x00100000;
@@ -3617,7 +3625,7 @@ void dAnimal_c::fn_801237C0() {
 }
 
 // 801238A4
-void dAnimal_c::fn_801238A4() {
+void dAnimal_c::clearMemoryFlag11() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++) {
         memFlagWord(&mem[i]) &= ~0x00000800;
@@ -3625,7 +3633,7 @@ void dAnimal_c::fn_801238A4() {
 }
 
 // 80123988
-void dAnimal_c::fn_80123988() {
+void dAnimal_c::clearMemoryFlag10() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++) {
         memFlagWord(&mem[i]) &= ~0x00000400;
@@ -3633,7 +3641,7 @@ void dAnimal_c::fn_80123988() {
 }
 
 // 80123A6C
-void dAnimal_c::fn_80123A6C() {
+void dAnimal_c::clearMemoryFlag9() {
     dAnimalMemory_c *mem = getMemory(0);
     for (int i = 0; i < ANIMAL_MEMORY_NUM; i++) {
         memFlagWord(&mem[i]) &= ~0x00000200;
@@ -3750,7 +3758,7 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
     }
     default:
         u32 home = dSaveData_c::getTown()->mHomes.findOwner(player);
-        if (home < 4) {
+        if (home < PLAYER_NUM) {
             int rate = *dHR::getRate(home);
             int room = player->getMoneyRoom(0);
             int amount = rate * 4 + 500;
@@ -3904,8 +3912,8 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
     switch (ret) {
     case 0: {
         static dAnimalPair_c sPairs[6] = {
-            dAnimalPair_c(1, 4), dAnimalPair_c(3, 4), dAnimalPair_c(2, 4),
-            dAnimalPair_c(1, 5), dAnimalPair_c(3, 5), dAnimalPair_c(2, 5),
+            dAnimalPair_c(dItem::KIND_WALL, 4), dAnimalPair_c(dItem::KIND_FTR, 4), dAnimalPair_c(dItem::KIND_CARPET, 4),
+            dAnimalPair_c(dItem::KIND_WALL, 5), dAnimalPair_c(dItem::KIND_FTR, 5), dAnimalPair_c(dItem::KIND_CARPET, 5),
         };
         fn_800C60B4(item, 1, sPairs, 6, lbl_8059FF80, 0, 0, 0);
         break;
@@ -3919,7 +3927,7 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
     }
     default:
         u32 home = dSaveData_c::getTown()->mHomes.findOwner(player);
-        if (home < 4) {
+        if (home < PLAYER_NUM) {
             int rate = *dHR::getRate(home);
             int room = player->getMoneyRoom(0);
             int amount = rate * 4 + 500;
@@ -4114,7 +4122,7 @@ u32 dAnimal_c::pickClothRequestItemNotDisliked(dItem::Item *item, u8 *arg) const
     int style = mTemplate.mDislikedStyle;
     dItem::Item exclude = mCloth;
     dItem::clothCandCB_c cb(exclude, 10, style, TRUE);
-    dItem::seeker_c::get()->search(4, 6, &cb);
+    dItem::seeker_c::get()->search(dItem::KIND_CLOTH, 6, &cb);
     *item = dItem::seeker_c::get()->getRandom();
     if (item->mId == dItem::ITEM_ID_NONE) {
         item->setFromIndex(dItem::ITEM_IDX_WORK_UNIFORM, 2, FALSE);
@@ -4127,7 +4135,7 @@ u32 dAnimal_c::pickClothRequestItemLikedStyle(dItem::Item *item, u8 *arg) const 
     int style = mTemplate.mLikedStyle;
     dItem::Item exclude = mCloth;
     dItem::clothCandCB_c cb(exclude, style, 10, TRUE);
-    dItem::seeker_c::get()->search(4, 6, &cb);
+    dItem::seeker_c::get()->search(dItem::KIND_CLOTH, 6, &cb);
     *item = dItem::seeker_c::get()->getRandom();
     if (item->mId == dItem::ITEM_ID_NONE) {
         item->setFromIndex(dItem::ITEM_IDX_WORK_UNIFORM, 2, FALSE);
@@ -4330,7 +4338,7 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
         int owner = getTownHomes(dSaveData_c::getTown())->findOwner(player);
-        if (r < 30.0f && (u32)owner < 4) {
+        if (r < 30.0f && (u32)owner < PLAYER_NUM) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
@@ -4436,7 +4444,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
         int owner = getTownHomes(dSaveData_c::getTown())->findOwner(player);
-        if (r < 30.0f && (u32)owner < 4) {
+        if (r < 30.0f && (u32)owner < PLAYER_NUM) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
@@ -4546,7 +4554,7 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
         int owner = getTownHomes(dSaveData_c::getTown())->findOwner(player);
-        if (r < 30.0f && (u32)owner < 4) {
+        if (r < 30.0f && (u32)owner < PLAYER_NUM) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
@@ -4706,7 +4714,7 @@ u32 dAnimal_c::pickFtrReward(dItem::Item *item, int *price, dPrivateData_c *play
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
         int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
-        if (r < 30.0f && (u32)owner < 4) {
+        if (r < 30.0f && (u32)owner < PLAYER_NUM) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
             int amount = base + rate * 4;
@@ -4754,7 +4762,7 @@ u32 dAnimal_c::pickLostItemReward(dItem::Item *item, int *price, dPrivateData_c 
             ret = 2;
         }
     } else if (r < 70.0f) {
-        dItem::seeker_c::get()->search(0xC, 6, NULL);
+        dItem::seeker_c::get()->search(dItem::KIND_HANIWA, 6, NULL);
         dItem::Item random = dItem::seeker_c::get()->getRandom();
         dItem::Item tmp = random;
         if (random.mId != dItem::ITEM_ID_NONE) {
@@ -4792,7 +4800,7 @@ int dAnimal_c::pickSickReward(dItem::Item *item, dPrivateData_c *player) {
     }
 
     static dAnimalPair_c sPairs[1] = {
-        dAnimalPair_c(3, 0),
+        dAnimalPair_c(dItem::KIND_FTR, 0),
     };
     fn_800C60B4(item, 1, sPairs, 1, lbl_8059FF80, 0, 0, 0);
     return 0;
@@ -4875,7 +4883,7 @@ BOOL dAnimal_c::sendSickReward(dItem::Item *item, dPrivateData_c *player, int ar
     u8 state = mQuest.mQuest.mBase.mState;
     dQuestVillager_c *quest = &mQuest.mQuest;
     dPlayerID_c *requester = &quest->mRequester;
-    if (!quest->mBase.isActive() || (int)quest->mBase.mKind != 5 || (state != 1 && state != 2) ||
+    if (!quest->mBase.isActive() || (int)quest->mBase.mKind != QUEST_KIND_REQUEST_5 || (state != 1 && state != 2) ||
         !requester->isValid() || !requester->isSame(&player->mPID.player)) {
         return FALSE;
     }
@@ -4936,27 +4944,27 @@ BOOL dAnimal_c::isRequestedItem(const dItem::Item *item) {
 
     switch (quest->mBase.mKind) {
     case QUEST_KIND_REQUEST_INSECT:
-        if (quest->mBase.mState == 1) {
+        if (quest->mBase.mState == QUEST_REQUEST_WON) {
             return FALSE;
         }
         break;
     case QUEST_KIND_REQUEST_FISH:
-        if (quest->mBase.mState == 1) {
+        if (quest->mBase.mState == QUEST_REQUEST_WON) {
             return FALSE;
         }
         break;
     case QUEST_KIND_REQUEST_FOSSIL:
-        if (quest->mBase.mState >= 1) {
+        if (quest->mBase.mState >= QUEST_REQUEST_WON) {
             return FALSE;
         }
         break;
     case QUEST_KIND_REQUEST_CLOTH:
-        if (quest->mBase.mState >= 1) {
+        if (quest->mBase.mState >= QUEST_REQUEST_WON) {
             return FALSE;
         }
         break;
     case QUEST_KIND_REQUEST_FTR:
-        if (quest->mBase.mState >= 1) {
+        if (quest->mBase.mState >= QUEST_REQUEST_WON) {
             return FALSE;
         }
         break;
@@ -5360,7 +5368,7 @@ void dAnimal_c::setUmbrella(const dItem::Item *item) {
 }
 
 // 8012813C
-u8 dAnimal_c::fn_8012813C() {
+u8 dAnimal_c::getHouseVariant() {
     u8 ret = 0;
     if (mID.isValid()) {
         ret = mID.mNpcIdx % 5;
@@ -5369,7 +5377,7 @@ u8 dAnimal_c::fn_8012813C() {
 }
 
 // 801281AC
-u8 dAnimal_c::fn_801281AC() {
+u8 dAnimal_c::getHouseType() {
     u8 ret = 0;
     if (mID.isValid()) {
         u16 idx = mID.mNpcIdx;
@@ -5433,19 +5441,19 @@ BOOL dAnimal_c::isLostItemRequestDone(dPrivateData_c *player, BOOL checkFlag) {
     }
 
     dQuestVillager_c *quest = &mQuest.mQuest;
-    if (quest->mBase.isActive() && (int)quest->mBase.mKind == 6 && quest->mBase.mState != 2) {
+    if (quest->mBase.isActive() && (int)quest->mBase.mKind == QUEST_KIND_REQUEST_6 && quest->mBase.mState != 2) {
         return FALSE;
     }
     return TRUE;
 }
 
 // 80128440
-BOOL dAnimal_c::fn_80128440() {
+BOOL dAnimal_c::isSickForVisitors() {
     if (!mID.isValid()) {
         return FALSE;
     }
 
-    if ((int)mQuest.mQuest.mBase.mKind != 5) {
+    if ((int)mQuest.mQuest.mBase.mKind != QUEST_KIND_REQUEST_5) {
         return FALSE;
     }
 
@@ -5904,7 +5912,7 @@ struct dItemRange_c {
 
 // 8012942C
 dItem::Item pickRandomUmbrella() {
-    static dItemRange_c range(0x38, 8);
+    static dItemRange_c range(dItem::KIND_UMBRELLA, 8);
     dItem::Item result;
     dItem::Item item;
     if (fn_800C60B4(&item, 1, &range.mKind, 1, lbl_8059FF80, 0, 0, 0)) {
@@ -6040,11 +6048,6 @@ void dAnimalHomeStay_c::set(u32 idx, u8 looks) {
     }
 }
 
-struct dHomeStayPeriod_c {
-    u8 mValue;
-    u8 mHourEnd;
-};
-
 static inline BOOL isUnk1E452Value(dAnimalHomeStay_c *obj, u8 value) {
     if (value == obj->mPeriod) {
         return TRUE;
@@ -6065,8 +6068,6 @@ static inline u8 lookupHour(int hour, const dHomeStayPeriod_c *hours) {
 
 // 80129918
 BOOL dAnimalHomeStay_c::isPeriod(const dTime_c *time) {
-    static dHomeStayPeriod_c sHours[4] = {{3, 6}, {0, 12}, {1, 17}, {2, 22}};
-
     if (!isValid()) {
         return FALSE;
     }
@@ -6172,12 +6173,12 @@ u32 dAnimalBlock_c::getAnimalIdx(const dAnmPersonalID_c *animal) {
 
 // 80129D90
 dAnimal_c *dAnimalBlock_c::getAnimal(int idx) {
-    return fn_8011B910(mAnimals, ANIMAL_NUM, idx);
+    return getAnimalAt(mAnimals, ANIMAL_NUM, idx);
 }
 
 // 80129D9C
 dAnimal_c *dAnimalBlock_c::getAnimalConst(int idx) {
-    return fn_8011B92C(mAnimals, ANIMAL_NUM, idx);
+    return getAnimalAt2(mAnimals, ANIMAL_NUM, idx);
 }
 
 // Villager key items: type 0xE ids without the 0x800 / 0x400 bits; the low 12 bits are the index.
@@ -6223,7 +6224,7 @@ dAnimal_c *dAnimalBlock_c::getAnimalByKeyConst(const dItem::Item *key) {
 
 // 80129EA0
 dAnimal_c *dAnimalBlock_c::findAnimalByNpcIdx(u16 npcIdx) {
-    return fn_8011BB0C(npcIdx, mAnimals, ANIMAL_NUM);
+    return findAnimalInList2(npcIdx, mAnimals, ANIMAL_NUM);
 }
 
 // 80129EB4
@@ -6447,7 +6448,7 @@ dAnimal_c *dAnimalBlock_c::pickRandomAnimalNotMoving(const dAnmPersonalID_c **ex
     }
 
     if (count > 0) {
-        result = fn_8011B910(animals, ANIMAL_NUM, pickRandomBit(mask, count, ANIMAL_NUM));
+        result = getAnimalAt(animals, ANIMAL_NUM, pickRandomBit(mask, count, ANIMAL_NUM));
     }
     return result;
 }
@@ -6498,7 +6499,7 @@ dAnimal_c *dAnimalBlock_c::pickRandomAvailableAnimal(const dAnmPersonalID_c **ex
     }
 
     if (count > 0) {
-        result = fn_8011B910(animals, ANIMAL_NUM, pickRandomBit(mask, count, ANIMAL_NUM));
+        result = getAnimalAt(animals, ANIMAL_NUM, pickRandomBit(mask, count, ANIMAL_NUM));
     }
     return result;
 }
@@ -7111,12 +7112,12 @@ void dAnimalBlock_c::updateEvent(BOOL force) {
         dTime_c *now = dTime_c::getCurrent();
 
         switch (mEventId) {
-        case 0x0E:
-        case 0x0F:
-        case 0x10:
-        case 0x11:
-        case 0x15:
-        case 0x16:
+        case EVENT_FISHING_TOURNEY:
+        case EVENT_BUG_OFF:
+        case EVENT_FIREWORKS:
+        case EVENT_FLEA_MARKET:
+        case EVENT_HALLOWEEN:
+        case EVENT_HARVEST_FESTIVAL:
             if (dEvent::isNotStarted((dQuestEvent_e)mEventId)) {
                 for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
                     animal->clearMemoryFlag24();
@@ -7128,7 +7129,7 @@ void dAnimalBlock_c::updateEvent(BOOL force) {
                 }
             }
             break;
-        case 0x13:
+        case EVENT_COUNTDOWN:
             if (dEvent::isNotStarted((dQuestEvent_e)mEventId)) {
                 for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
                     animal->clearMemoryFlag24();
@@ -7382,7 +7383,7 @@ void dAnimalBlock_c::sendTunekichiInvites() {
 
         for (int j = 0; j < PLAYER_NUM; j++) {
             dPrivateData_c *player = dPrivateData_c::getRaw(players, j);
-            if (player == NULL || !player->mPID.isValid() || (u32)homes->findOwner(player) >= 4) {
+            if (player == NULL || !player->mPID.isValid() || (u32)homes->findOwner(player) >= PLAYER_NUM) {
                 continue;
             }
 
@@ -7409,10 +7410,10 @@ void dAnimalBlock_c::updateDaily(int arg) {
             animal->updateOwnItems();
             animal->clearMemoryFlag24();
             animal->clearEventFlags();
-            animal->fn_801236DC();
-            animal->fn_801237C0();
-            animal->fn_801238A4();
-            animal->fn_80123988();
+            animal->clearMemoryFlag21();
+            animal->clearMemoryFlag20();
+            animal->clearMemoryFlag11();
+            animal->clearMemoryFlag10();
             animal->decNicknameWait(arg);
             animal->decGreetingWait(arg);
             animal->decHabitCooldown(arg);
@@ -7713,11 +7714,11 @@ void dAnimalBlock_c::updateQuestCandidates() {
 }
 
 // 8012D6E8
-int dAnimalBlock_c::pickEvent16Animal() {
+int dAnimalBlock_c::pickHarvestFestivalAnimal() {
     dAnimalEventState_c *unk;
     int sel = -1;
 
-    if ((int)mEventId == 0x16) {
+    if ((int)mEventId == EVENT_HARVEST_FESTIVAL) {
         dAnimal_c *animal = getAnimalConst(0);
         u32 num = 0;
         for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
@@ -7740,7 +7741,7 @@ int dAnimalBlock_c::pickEvent16Animal() {
 }
 
 // 8012D80C
-void dAnimalBlock_c::setEvent16Done(int idx) {
+void dAnimalBlock_c::setHarvestFestivalDone(int idx) {
     dAnimal_c *animal = getAnimal(idx);
     if (animal != NULL) {
         animal->mEvent.setFlag(0);
@@ -7848,12 +7849,12 @@ int dAnimalBlock_c::getLostItemLikeIdx(dPrivateData_c *player) {
         if (item.mId != dItem::ITEM_ID_NONE) {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
             if (bitm != NULL) {
-                int kind = 0x29;
+                int kind = dItem::KIND_NONE;
                 int k = bitm->m_kind;
-                if ((u32)k < 0x57) {
+                if ((u32)k < dItem::KIND_COUNT) {
                     kind = k;
                 }
-                if (kind == 0x35) {
+                if (kind == dItem::KIND_KEY) {
                     result = dItem::seeker_c::get()->findLike(item);
                 }
             }
@@ -8108,7 +8109,7 @@ dPlayerID_c *dAnimalBlock_c::pickStyleOtherPlayer(dAnimal_c *animal, dPrivateDat
 
     dPlayerID_c *result = NULL;
     u32 count = 0;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = dPrivateData_c::getRaw(players, i);
         if (player != NULL) {
             pid = &player->mPID;
@@ -8137,10 +8138,10 @@ BOOL dAnimalBlock_c::canStartStyle(dAnimal_c *animal, dPrivateData_c *players, d
     if ((u32)getStyleAnimalIdx() < ANIMAL_NUM) {
         return FALSE;
     }
-    if (!dQuestBase_c::checkEventSchedule(0x13, NULL)) {
+    if (!dQuestBase_c::checkEventSchedule(QUEST_KIND_STYLE, NULL)) {
         return FALSE;
     }
-    if (!dQuestBase_c::checkTodayEvents(0x13)) {
+    if (!dQuestBase_c::checkTodayEvents(QUEST_KIND_STYLE)) {
         return FALSE;
     }
     BOOL ret = pickStyleOtherPlayer(animal, players, self) != NULL;
@@ -8176,7 +8177,7 @@ dItem::Item dAnimalBlock_c::pickStylePresent(dPrivateData_c *player) {
 
     switch (mStyle.mTopic) {
     case 0: {
-        dAnmItemRange_c range(4, 0);
+        dAnmItemRange_c range(dItem::KIND_CLOTH, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
         u16 id = player->mEquipment.mShirt.mId;
         if (id != dItem::ITEM_ID_NONE) {
@@ -8188,7 +8189,7 @@ dItem::Item dAnimalBlock_c::pickStylePresent(dPrivateData_c *player) {
         break;
     }
     case 1: {
-        dAnmItemRange_c range(6, 8);
+        dAnmItemRange_c range(dItem::KIND_ACC, 8);
         dAnmItemFilter_c filter(NULL, 0, 1);
         u16 id = player->mEquipment.mAcc.mId;
         if (id != dItem::ITEM_ID_NONE) {
@@ -8200,19 +8201,19 @@ dItem::Item dAnimalBlock_c::pickStylePresent(dPrivateData_c *player) {
         break;
     }
     case 2: {
-        dAnmItemRange_c range(3, 0);
+        dAnmItemRange_c range(dItem::KIND_FTR, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
         fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
         break;
     }
     case 3: {
-        dAnmItemRange_c range(1, 0);
+        dAnmItemRange_c range(dItem::KIND_WALL, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
         fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
         break;
     }
     case 4: {
-        dAnmItemRange_c range(2, 0);
+        dAnmItemRange_c range(dItem::KIND_CARPET, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
         fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
         break;
@@ -8286,7 +8287,7 @@ dPrivateData_c *findPlayerByID(dPrivateData_c *players, const dPlayerID_c *pid) 
         return NULL;
     }
     dPlayerID_c *id;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = dPrivateData_c::getRaw(players, i);
         if (player != NULL) {
             id = &player->mPID.player;
@@ -8432,7 +8433,7 @@ dItem::Item *allocRoomItems(u32 *outNum, dPrivateData_c *player, EGG::Heap *heap
 
     dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
     u32 h = homes->findOwner(player);
-    if (h >= 4) {
+    if (h >= PLAYER_NUM) {
         return NULL;
     }
     dHome_c *home = homes->getHome(h);
@@ -8490,13 +8491,13 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
     switch (kind) {
     case 1:
         if (flag) {
-            dAnmItemRange_c range(3, 1);
+            dAnmItemRange_c range(dItem::KIND_FTR, 1);
             fn_800C60B4(&result, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
         } else {
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
             if (items != NULL) {
-                dAnmItemRange_c range(3, 2);
+                dAnmItemRange_c range(dItem::KIND_FTR, 2);
                 dAnmItemFilter_c filter(NULL, 0, 0x11);
                 fn_800C60B4(&result, 1, &range, 1, &filter, items, num, 0);
                 heap->free(items);
@@ -8510,7 +8511,7 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
             if (items != NULL) {
-                dAnmItemRange_c range(3, 2);
+                dAnmItemRange_c range(dItem::KIND_FTR, 2);
                 dAnmItemFilter_c filter(NULL, 0, 0x11);
                 fn_800C60B4(&result, 1, &range, 1, &filter, items, num, 0);
                 heap->free(items);
@@ -8519,14 +8520,14 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
         break;
     case 3:
         if (flag) {
-            dAnmItemRange_c range(3, 1);
+            dAnmItemRange_c range(dItem::KIND_FTR, 1);
             dAnmItemFilter_c filter(NULL, 0, 1);
             fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
         } else {
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
             if (items != NULL) {
-                dAnmItemRange_c range(3, 2);
+                dAnmItemRange_c range(dItem::KIND_FTR, 2);
                 dAnmItemFilter_c filter(&player->mCatalog, 0, 0x11);
                 fn_800C60B4(&result, 1, &range, 1, &filter, items, num, 0);
                 heap->free(items);
@@ -8739,12 +8740,12 @@ void dAnimalBlock_c::updateAppointmentFlags() {
     }
 
     switch (base->mKind) {
-    case 0x12:
+    case QUEST_KIND_APPOINTMENT_1:
         if (base->mState == 0 && (quest->isFlag(0) || quest->isFlag(1))) {
             base->mState = 2;
         }
         break;
-    case 0x11:
+    case QUEST_KIND_APPOINTMENT_0:
         if (base->mState == 0 && quest->isFlag(0)) {
             base->mState = 2;
         }
@@ -8766,13 +8767,13 @@ BOOL dAnimalBlock_c::updateAppointmentDaily(BOOL arg) {
 
     if (quest->mItem.mId != dItem::ITEM_ID_NONE) {
         switch (base->mKind) {
-        case 0x12:
+        case QUEST_KIND_APPOINTMENT_1:
             if (sendAppointment1Letter()) {
                 quest->clear();
                 return TRUE;
             }
             break;
-        case 0x11:
+        case QUEST_KIND_APPOINTMENT_0:
             if (sendAppointment0Letter()) {
                 quest->clear();
                 return TRUE;
@@ -8844,6 +8845,14 @@ static inline BOOL isAppointmentIdx(dAnimalBlock_c *blk, int idx) {
     return FALSE;
 }
 
+// HACK: Preserve the target's unreachable branches at 80130334 and 80130338.
+// The explicit const-pointer cast delays constant propagation until late PCode
+// folding, which removes the loop condition but leaves its unreachable body.
+// TODO: Replace this matching workaround once the original source pattern is known.
+static inline BOOL makeHideResult(BOOL value) {
+    return *static_cast<const BOOL*>(&value);
+}
+
 // Whether villager idx can hide in a hide and seek game with the player.
 BOOL dAnimalBlock_c::canHide(int idx, dPrivateData_c *player) {
     dPersonalID_c *pid;
@@ -8871,13 +8880,20 @@ BOOL dAnimalBlock_c::canHide(int idx, dPrivateData_c *player) {
     if (!animal->findMemory2(pid)) {
         return FALSE;
     }
+
     BOOL active = animal->mQuest.mQuest.mBase.isActive();
     if (active) {
         return FALSE;
     }
-    if (active) {
+
+    // HACK: Always false at runtime; retain this shape for the dead branch pair.
+    while (!makeHideResult(TRUE)) {
+        if (active) {
+            break;
+        }
         return active;
     }
+
     if (isAppointmentIdx(this, idx)) {
         return FALSE;
     }
@@ -8917,10 +8933,10 @@ BOOL dAnimalBlock_c::canStartHideAndSeek(dPrivateData_c *player) {
     if (player == NULL || !player->mPID.isValid() || player->isFlag0(0xD) || !player->mPID.isFromTown()) {
         return FALSE;
     }
-    if (!dQuestBase_c::checkEventSchedule(0x14, NULL)) {
+    if (!dQuestBase_c::checkEventSchedule(QUEST_KIND_HIDE_AND_SEEK, NULL)) {
         return FALSE;
     }
-    if (!dQuestBase_c::checkTodayEvents(0x14)) {
+    if (!dQuestBase_c::checkTodayEvents(QUEST_KIND_HIDE_AND_SEEK)) {
         return FALSE;
     }
     BOOL ret = (u32)getHiderIdx(0) >= ANIMAL_NUM;
@@ -9638,8 +9654,8 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
     int kind = mEventId;
     quest = getQuestAnimal(this);
     dTime_c *now = dTime_c::getCurrent();
-    dItem::Item item99E(dItem::ITEM_IDX_NET);
-    dItem::Item item99F(dItem::ITEM_IDX_FISHING_ROD);
+    dItem::Item net(dItem::ITEM_IDX_NET);
+    dItem::Item rod(dItem::ITEM_IDX_FISHING_ROD);
 
     if (!dNet::isSessionActive() && (u8)getPrevScene() == SCENE_DM_PL_SEL &&
         isBirthdayHost(&animal->mID, fn_801017B8(), TRUE, TRUE, TRUE) && special) {
@@ -9692,13 +9708,13 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
             changed = TRUE;
         }
     } else if (isRequestDoneOngoing(animal, kind, EVENT_FISHING_TOURNEY)) {
-        give = item99F;
+        give = rod;
         set = TRUE;
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
     } else if (isRequestDoneOngoing(animal, kind, EVENT_BUG_OFF)) {
-        give = item99E;
+        give = net;
         set = TRUE;
         if (isItemChanged(give, cur)) {
             changed = TRUE;
@@ -9736,7 +9752,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
 }
 
 // 80132268
-BOOL dAnimalBlock_c::updateEvent15Flag(int idx) {
+BOOL dAnimalBlock_c::updateHalloweenFlag(int idx) {
     dAnimalEventState_c *obj;
     dAnimal_c *animal = getAnimal(idx);
     if (animal == NULL || !animal->mID.isValid() || !animal->mEvent.isInEvent() || animal->isMoving()) {
@@ -9744,7 +9760,7 @@ BOOL dAnimalBlock_c::updateEvent15Flag(int idx) {
     }
 
     int kind = mEventId;
-    if (kind != 0x15) {
+    if (kind != EVENT_HALLOWEEN) {
         return FALSE;
     }
 
@@ -9769,12 +9785,12 @@ BOOL dAnimalBlock_c::updateEvent15Flag(int idx) {
 }
 
 // 801323A4
-int dAnimalBlock_c::pickEvent11Animal(BOOL any, const dPersonalID_c *pid, const dLandID_c *land) {
+int dAnimalBlock_c::pickFleaMarketAnimal(BOOL any, const dPersonalID_c *pid, const dLandID_c *land) {
     if (!isEventOngoing(reinterpret_cast<const dEventId_c &>(lbl_8074B060))) {
         return -1;
     }
     int kind = mEventId;
-    if (kind != 0x11) {
+    if (kind != EVENT_FLEA_MARKET) {
         return -1;
     }
 
@@ -10101,7 +10117,7 @@ int getBirthdayHostIdxIn(dAnimal_c *animals, u32 num, int playerNo, BOOL checkEv
         return -1;
     }
 
-    int event = playerNo + 10;
+    int event = playerNo + EVENT_PLAYER_BIRTHDAY_0;
     if (!isEventActive(event)) {
         return -1;
     }
@@ -10110,7 +10126,7 @@ int getBirthdayHostIdxIn(dAnimal_c *animals, u32 num, int playerNo, BOOL checkEv
         return -1;
     }
 
-    dAnimal_c *animal = fn_8011B92C(animals, num, sel);
+    dAnimal_c *animal = getAnimalAt2(animals, num, sel);
     if (animal == NULL || !animal->mID.isValid()) {
         return -1;
     }
@@ -10272,7 +10288,7 @@ static int s_801335CC_event = EVENT_NEW_YEARS_DAY; // 8074B070
 
 static inline BOOL isValidPlayerIdx(int idx) {
     BOOL valid = FALSE;
-    if (idx >= 0 && idx < 4) {
+    if (idx >= 0 && idx < PLAYER_NUM) {
         valid = TRUE;
     }
     return valid;
@@ -10298,7 +10314,7 @@ void dAnimalBlock_c::clearSpots() {
 }
 
 // 801336B0
-void dAnimalBlock_c::fn_801336B0() {
+void dAnimalBlock_c::clearAllQuestStarted() {
     dAnimal_c *animal = getAnimal(0);
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
         animal->clearQuestStarted();
@@ -10306,7 +10322,7 @@ void dAnimalBlock_c::fn_801336B0() {
 }
 
 // 80133704
-void dAnimalBlock_c::fn_80133704() {
+void dAnimalBlock_c::clearAllQuestStarted2() {
     dAnimal_c *animal = getAnimal(0);
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
         animal->clearQuestStarted();
@@ -10314,10 +10330,10 @@ void dAnimalBlock_c::fn_80133704() {
 }
 
 // 80133758
-void dAnimalBlock_c::clearMemoryFlag200() {
+void dAnimalBlock_c::clearAllMemoryFlag9() {
     dAnimal_c *animal = getAnimal(0);
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
-        animal->fn_80123A6C();
+        animal->clearMemoryFlag9();
     }
 }
 
@@ -10439,12 +10455,12 @@ dAnimal_c *dMovedAnimalList_c::getAnimalByKey(const dItem::Item *key) {
 
 // 80133C14
 dAnimal_c *dMovedAnimalList_c::getAnimal(int idx) {
-    return fn_8011B910(mAnimals, ANIMAL_NUM, idx);
+    return getAnimalAt(mAnimals, ANIMAL_NUM, idx);
 }
 
 // 80133C20
 dAnimal_c *dMovedAnimalList_c::getAnimalConst(int idx) {
-    return fn_8011B92C(mAnimals, ANIMAL_NUM, idx);
+    return getAnimalAt2(mAnimals, ANIMAL_NUM, idx);
 }
 
 // 80133C2C
@@ -10648,7 +10664,7 @@ u32 dMovedAnimalList_c::addAnimal(dAnimal_c *animal, const dLandID_c *land, cons
     }
 
     u16 npcIdx = id->mNpcIdx;
-    if (fn_8011BA8C(npcIdx, getAnimal(0), ANIMAL_NUM)) {
+    if (findAnimalInList(npcIdx, getAnimal(0), ANIMAL_NUM)) {
         return -1;
     }
 
@@ -10792,7 +10808,7 @@ BOOL dAnimalSave_c::updateMoves(int days) {
     if (animal != NULL) {
         if (block->mMoveDays >= 2) {
             animal->clearMemoryFlag23();
-            animal->fn_801235F8();
+            animal->clearMemoryFlag8();
             list->addAnimal(animal, land, arg);
             block->pushMovedOut(animal->mID.mNpcIdx);
             animal->sendMoveLetters();
@@ -10913,7 +10929,7 @@ u32 pickRandomBit(u32 mask, int num, u32 max) {
 // Letter conditions, one per entry of sImpressionTable.
 
 // 80134D54
-BOOL fn_80134D54(const dPrivateData_c *player) {
+BOOL hasFlag2NoMii(const dPrivateData_c *player) {
     if (player->isFlag0(2) && player->mMiiMask == 0) {
         return TRUE;
     }
@@ -10921,7 +10937,7 @@ BOOL fn_80134D54(const dPrivateData_c *player) {
 }
 
 // 80134DA8
-BOOL fn_80134DA8(const dPrivateData_c *player) {
+BOOL isTownEventActive(const dPrivateData_c *player) {
     return dEvent::getActiveOfKind(EVENT_KIND_TOWN) < EVENT_NUM;
 }
 
@@ -11225,12 +11241,12 @@ BOOL isLateNight(const dPrivateData_c *player) {
 
 // 801357D0
 BOOL isInsectCatalogComplete(const dPrivateData_c *player) {
-    return const_cast<dCatalog_c &>(player->mCatalog).isComplete(7);
+    return const_cast<dCatalog_c &>(player->mCatalog).isComplete(dItem::KIND_INSECT);
 }
 
 // 801357E0
 BOOL isFishCatalogComplete(const dPrivateData_c *player) {
-    return const_cast<dCatalog_c &>(player->mCatalog).isComplete(8);
+    return const_cast<dCatalog_c &>(player->mCatalog).isComplete(dItem::KIND_FISH);
 }
 
 // 801357F0
@@ -11254,7 +11270,7 @@ BOOL isNever(const dPrivateData_c *player) {
 }
 
 // 8013585C
-BOOL fn_8013585C(const dPrivateData_c *player) {
+BOOL hasAccHair358NoHat(const dPrivateData_c *player) {
     dItem::Item acc = player->mEquipment.mAcc;
     if (acc.mId == dItem::ITEM_ID_NONE) {
         return FALSE;
@@ -11274,7 +11290,7 @@ BOOL fn_8013585C(const dPrivateData_c *player) {
 }
 
 // 80135908
-BOOL fn_80135908(const dPrivateData_c *player) {
+BOOL hasHair9NoHat(const dPrivateData_c *player) {
     if (player->mMiiMask != 0) {
         return FALSE;
     }
@@ -11285,7 +11301,7 @@ BOOL fn_80135908(const dPrivateData_c *player) {
 }
 
 // 80135948
-BOOL fn_80135948(const dPrivateData_c *player) {
+BOOL hasHair6Bare(const dPrivateData_c *player) {
     if (player->mMiiMask != 0) {
         return FALSE;
     }
@@ -11308,7 +11324,7 @@ BOOL hasFemaleHairNoHat(const dPrivateData_c *player) {
 }
 
 // 801359DC
-BOOL fn_801359DC(const dPrivateData_c *player) {
+BOOL hasHair17_19_20_22NoHat(const dPrivateData_c *player) {
     if (player->mMiiMask != 0) {
         return FALSE;
     }
@@ -11325,7 +11341,7 @@ BOOL fn_801359DC(const dPrivateData_c *player) {
 }
 
 // 80135A40
-BOOL fn_80135A40(const dPrivateData_c *player) {
+BOOL wearsAcc187(const dPrivateData_c *player) {
     dItem::Item acc = player->mEquipment.mAcc;
     if (acc.mId == dItem::ITEM_ID_NONE) {
         return FALSE;
@@ -11344,7 +11360,7 @@ BOOL hasMaleHairNoHat(const dPrivateData_c *player) {
     return FALSE;
 }
 
-// Letter conditions take the player as const (fn_8013585C only matches that way).
+// Letter conditions take the player as const (hasAccHair358NoHat only matches that way).
 struct dImpressionCond_c {
     u8 mGender; // 2 = any
     BOOL (*mFunc)(const dPrivateData_c *player);
@@ -11354,7 +11370,7 @@ struct dImpressionCond_c {
 
 // 80475F48
 static const dImpressionCond_c sImpressionTable[IMPRESSION_NUM] = {
-    {2, fn_80134D54}, {0, fn_80134DA8}, {1, fn_80134DA8}, {2, isHoldingNet}, {2, isHoldingFishingrod},
+    {2, hasFlag2NoMii}, {0, isTownEventActive}, {1, isTownEventActive}, {2, isHoldingNet}, {2, isHoldingFishingrod},
     {2, isHoldingWatering}, {2, isHoldingAxe}, {0, isWearingKingOutfit}, {0, isWearingRoyalCrown}, {1, isWearingCrown},
     {2, isWearingChefsHat}, {1, isWearingBridalVeil}, {0, isWearingSwimCapGoggles}, {2, isWearingOutbackHat}, {2, isWearingHalo},
     {2, isWearingJesterCap}, {1, isWearingWitchHat}, {2, isWearingBabyOutfit}, {2, isWearingAfroWig}, {0, isWearingBunnyHood},
@@ -11362,8 +11378,8 @@ static const dImpressionCond_c sImpressionTable[IMPRESSION_NUM] = {
     {1, isWearingNinjaHood}, {2, isWearingWrestlingMask}, {2, isWearingDressing}, {0, isWearingMohawkWig}, {0, isWearingRegentWig},
     {0, isRaining}, {1, isRaining}, {0, isSnowing}, {1, isSnowing}, {2, isMorning},
     {2, isLateNight}, {2, isInsectCatalogComplete}, {2, isFishCatalogComplete}, {2, isFullyTanned}, {2, hasNoPocketMoney},
-    {2, hasSavings100k}, {2, isNever}, {0, fn_8013585C}, {0, fn_80135908}, {0, fn_80135948},
-    {0, hasFemaleHairNoHat}, {1, fn_801359DC}, {1, fn_80135A40}, {1, hasMaleHairNoHat}, {2, NULL},
+    {2, hasSavings100k}, {2, isNever}, {0, hasAccHair358NoHat}, {0, hasHair9NoHat}, {0, hasHair6Bare},
+    {0, hasFemaleHairNoHat}, {1, hasHair17_19_20_22NoHat}, {1, wearsAcc187}, {1, hasMaleHairNoHat}, {2, NULL},
 };
 
 // 80135AC8

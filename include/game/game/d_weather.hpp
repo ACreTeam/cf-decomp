@@ -13,6 +13,8 @@ public:
 
     u8 _0000[0x5884];
     int _5884; // the weather: 3/4 rain, 5/6 snow
+    u8 _5888[0x5890 - 0x5888];
+    f32 mRainLevel; // 0..1 (SoundAmbient: up to 0.5 the light rain sound, then the heavy one)
 
     static BOOL isRainKind(int weather) { return weather == 4 || weather == 3; } // _5884 is rain
 };

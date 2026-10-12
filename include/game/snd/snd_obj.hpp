@@ -23,6 +23,8 @@
 // pointing into this header, so with -sym on and -ipa file the TU's first generated function that creates
 // a string literal is filed into this header's .text section (d_npc_talk_quest_delivery's msgDelivery).
 
+class SoundConductor;
+
 // Base of the positional sound objects (vtable 80503C60). The position is relative to the listener;
 // calcParam turns it into a volume, pan and surround pan.
 class SoundObjBase {
@@ -212,11 +214,153 @@ public:
     /* 0x30 */ f32 _30;
 }; // size 0x34
 
+// A furniture item's sounds (dol/sound/SoundObjFurniture.cpp, vtable 80503CF8): switching it on and off,
+// a loop while on, and sounds at frames of its animation (FrameSound). Some items play labels "se0".."se9"
+// of their own sequence data.
+class SoundObjFurniture : public SoundObj<1> {
+public:
+    // mFlags
+    enum {
+        FLAG_LOOP_ONCE = 0x0001,  // plays its loop sound only while on
+        FLAG_RESTART = 0x0002,    // restarts a sound that is already playing
+        FLAG_OFF_AFTER = 0x0004,  // switches off after a frame sound
+        FLAG_LOOP_ALWAYS = 0x0008,
+        FLAG_TYPE = 0x00F0,       // getType
+        FLAG_FRAMES = 0x7F00,     // the row of sFrameSounds (0: none)
+    };
+
+    // A sound at an animation frame. mFrame: 0x1FFF the frame; 0x8000 not when playing forward,
+    // 0x4000 not backward, 0x2000 not while a sound plays. mSound: 0x8000 a label of the sequence data.
+    struct FrameSound {
+        u16 mFrame;
+        u16 mSound;
+    };
+
+    struct Data {
+        u16 mOnSound;
+        u16 mOffSound;
+        u16 mFlags;
+        u16 mLoopSound;
+    };
+
+    // A furniture's own sequence (setupSeq).
+    struct SeqData {
+        u16 _00;
+        Data mData;
+        u16 mSeqId;
+        FrameSound mFrames[1]; // up to 10
+    };
+
+    // mDir
+    enum Dir_e {
+        DIR_NONE,
+        DIR_FORWARD,
+        DIR_WRAP_FORWARD,
+        DIR_BACKWARD,
+        DIR_WRAP_BACKWARD,
+        DIR_JUMP,
+    };
+
+    SoundObjFurniture();          // 801E1C78
+    virtual ~SoundObjFurniture(); // 801E1D30
+    virtual void startSound(u32 id, const nw4r::snd::SoundStartable::StartInfo *startInfo); // 801E1DC4: not in the house rooms
+    virtual void holdSound(u32 id); // 801E1F48: not in the house rooms
+
+    void setup(u8 item, bool on);                              // 801E20D4
+    void setupSeq(const SeqData *data, const void *seq, bool on); // 801E2148
+    void update(const nw4r::math::VEC3 *pos, f32 frame);       // 801E21AC
+    void turnOn();                                             // 801E2744
+    void turnOff();                                            // 801E29E8
+    int getType();                                             // 801E2AA8
+    int calcDir(f32 prevFrame, f32 frame);                     // 801E2AC4
+    void playLabel(int label);                                 // 801E2B60
+
+    /* 0x30 */ bool mOn;
+    /* 0x31 */ bool mLoopOnce;
+    /* 0x34 */ int mCount;
+    /* 0x38 */ int mCycles;
+    /* 0x3C */ int mDir; // Dir_e
+    /* 0x40 */ f32 mFrame;
+    /* 0x44 */ u16 mSeqId;
+    /* 0x46 */ u16 mLabel;
+    /* 0x48 */ const Data *mData;
+    /* 0x4C */ const FrameSound *mFrames;
+    /* 0x50 */ const void *mSeq;
+}; // size 0x54
+
+// An instrument that plays the town tune (dol/sound/SoundBgm.cpp, vtable 80501090): the notes of
+// SoundMelody one per step, in time with SoundSystem::mConductor.
+// The base is private (the RTTI base list flags it).
+class SoundObjInst : private SoundObj<1> {
+public:
+    SoundObjInst();          // 801D7D40
+    virtual ~SoundObjInst(); // 801D7DA8
+
+    static void incPlaying(); // 801D7CB4
+    static void decPlaying(); // 801D7CC4: the melody is free again after the last one
+
+    void setup(int inst);                 // 801D7E38: inst 0..19
+    void stop();                          // 801D8044
+    void play();                          // 801D80A4
+    void calc(const nw4r::math::VEC3 *pos); // 801D81A0
+    void readParams();                    // 801D8390
+    void playNote();                      // 801D841C
+    BOOL checkEnd();                      // 801D854C
+
+    static const u8 *sNotes;  // 8074EC28
+    static int sPlayingNum;   // 8074EC2C
+
+    /* 0x30 */ u32 mSoundId;
+    /* 0x34 */ s8 mNote;
+    /* 0x35 */ u8 mTick;
+    /* 0x36 */ s8 mTempo;     // variable 4: 100 = one note per beat
+    /* 0x37 */ s8 mHold;      // variable 3
+    /* 0x38 */ bool mPlaying;
+    /* 0x39 */ u8 mNoteTicks;
+}; // size 0x3C
+
+// A gyroid (dol/sound/SoundHaniwa.cpp): plays its sequence (SEQ_HNW_*) in time with the music player's song,
+// starting at a bar of SoundSystem::mConductor. The sequence's variables describe its loop: 0 the kind,
+// 1..4 the bars it plays (mBarMask), 5 the mode, 6, 7 the start bar, 8 and 12 the current part.
 class SoundHaniwa : public SoundObj<1> {
 public:
     SoundHaniwa();          // 801D5548
     virtual ~SoundHaniwa(); // 801D5648
-};
+
+    static s16 getStartBar(); // 801D5390: the next bar, or the one after if the next starts too soon
+    static s16 getNextBar();  // 801D54C4
+
+    void setup(u32 kind, s8 startBar); // 801D56F4: kind 0..0x7E (SEQ_HNW_BCN_DKA + kind)
+    void restart();                    // 801D5940: stops; starts again with the song
+    void reset();                      // 801D598C
+    void play();                       // 801D59F4: from the next start bar
+    void stop();                       // 801D5A64
+    int getWaitFrames();               // 801D5A90: frames until the sound starts (>= 1)
+    f32 calc(const nw4r::math::VEC3 *pos); // 801D5B84: per frame; returns the loop progress 0..1 (-1: off)
+    void calcPart();                   // 801D5CDC
+    void readVariables();              // 801D5E34
+    void readLoop();                   // 801D5EE0
+    void updateTempo();                // 801D6020
+    f32 calcProgress();                // 801D6148
+    static s16 getGlobalBar();         // 801D646C: global sequence variable 2
+    static s16 getGlobalBeat();        // 801D64A0: global sequence variable 1
+
+    /* 0x30 */ SoundConductor *mConductor;
+    /* 0x34 */ u32 mSoundId;
+    /* 0x38 */ int mInHouse; // > 0: the sound is placed at a fixed point in the house
+    /* 0x3C */ u32 _3C;
+    /* 0x40 */ s8 mStartBar; // -1: not playing
+    /* 0x41 */ bool mWaiting; // waiting for the start bar
+    /* 0x42 */ u16 mBarMask;
+    /* 0x44 */ s8 mLoopKind;  // variable 0 (-1: not read yet)
+    /* 0x45 */ s8 mLoopMode;  // variable 5
+    /* 0x46 */ s8 mPart;      // variable 8
+    /* 0x47 */ s8 mNextPart;  // variable 12 (-1: none)
+    /* 0x48 */ s8 mLoopLen;   // variable 6
+    /* 0x49 */ bool mLoopDone;
+    /* 0x4C */ SoundHaniwa *mNext; // SoundConductor::mHaniwaList
+    /* 0x50 */ SoundHaniwa *mPrev;
+}; // size 0x54
 
 // RTTI "SoundAudioFrameCallback" (vtable 80503C90; DOL TU dol/sound/SoundAudioFrameCallback.cpp,
 // 801E1BD4..801E1C78, file name inferred): calls a function at the start of each sound frame while

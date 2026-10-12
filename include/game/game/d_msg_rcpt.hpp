@@ -66,7 +66,7 @@ public:
     const u16 *getSpeakerName() const { return mSpeakerName; }
     u8 getSpeakerNameKind() const { return mSpeakerNameKind; }
     const EGG::MsgRes::MessageHeader *getBmgData() const { return mpBmgData; }
-    int getVoiceType() const { return mVoiceType; } // the voice type (Comp_c::updateVoiceType -> fn_8000FE18)
+    int getVoiceType() const { return mVoiceType; } // the voice type (Comp_c::updateVoiceType -> sndSetVoiceType)
 
 protected:
     char mMessageLabel[61]; // 0x04; copy limit 60, extra terminator byte

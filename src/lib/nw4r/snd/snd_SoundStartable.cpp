@@ -4,11 +4,10 @@ namespace nw4r {
 namespace snd {
 
 SoundStartable::StartResult SoundStartable::detail_StartSound(
-    SoundHandle* pHandle, u32 id, detail::BasicSound::AmbientArgInfo* pArgInfo,
-    detail::ExternalSoundPlayer* pPlayer, const StartInfo* pStartInfo) {
+    SoundHandle* pHandle, u32 id, const StartInfo* pStartInfo) {
 
     StartResult result =
-        detail_SetupSound(pHandle, id, pArgInfo, pPlayer, false, pStartInfo);
+        detail_SetupSound(pHandle, id, NULL, NULL, false, pStartInfo);
 
     if (result != START_SUCCESS) {
         return result;
@@ -19,8 +18,7 @@ SoundStartable::StartResult SoundStartable::detail_StartSound(
 }
 
 SoundStartable::StartResult SoundStartable::detail_HoldSound(
-    SoundHandle* pHandle, u32 id, detail::BasicSound::AmbientArgInfo* pArgInfo,
-    detail::ExternalSoundPlayer* pPlayer, const StartInfo* pStartInfo) {
+    SoundHandle* pHandle, u32 id, const StartInfo* pStartInfo) {
 
     if (pHandle->IsAttachedSound() && id == pHandle->GetId()) {
         pHandle->detail_GetAttachedSound()->SetAutoStopCounter(1);
@@ -28,7 +26,7 @@ SoundStartable::StartResult SoundStartable::detail_HoldSound(
     }
 
     StartResult result =
-        detail_SetupSound(pHandle, id, pArgInfo, pPlayer, true, pStartInfo);
+        detail_SetupSound(pHandle, id, NULL, NULL, true, pStartInfo);
 
     if (result != START_SUCCESS) {
         return result;

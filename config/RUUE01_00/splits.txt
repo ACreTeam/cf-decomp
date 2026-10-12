@@ -1147,7 +1147,7 @@ dol/game/d_private_data.cpp:
 	.ctors      start:0x80465730 end:0x80465734
 	.rodata     start:0x80476150 end:0x80476258 align:4
 	.data       start:0x804EF1D8 end:0x804EF258 align:4
-	.bss        start:0x805F1A38 end:0x805F2680 align:4
+	.bss        start:0x805F1A38 end:0x805F2680
 	.sdata      start:0x8074B090 end:0x8074B0A8 align:4
 	.sbss       start:0x8074E7C0 end:0x8074E7C8 align:4
 
@@ -1909,12 +1909,25 @@ dol/game/d_s_boot.cpp:
 
 dol/sound/SoundSystem.cpp:
 	.text       start:0x801CA0F4 end:0x801CE58C
+	.rodata     start:0x8047E9F0 end:0x8047EB48
+	.data       start:0x80500528 end:0x805005D8
+	.bss        start:0x80625CF0 end:0x80625D28
+	.sdata      start:0x8074C5F0 end:0x8074C600
+	.sbss       start:0x8074EC10 end:0x8074EC20
+	.sdata2     start:0x80751A28 end:0x80751AC0
 
 dol/sound/SoundManager.cpp:
 	.text       start:0x801CE58C end:0x801D00E8
+	.rodata     start:0x8047EB48 end:0x8047EBE8
+	.data       start:0x805005D8 end:0x80500648
+	.bss        start:0x80625D28 end:0x80625D38
+	.sdata2     start:0x80751AC0 end:0x80751AF8
 
 dol/sound/SoundEffectReverb.cpp:
 	.text       start:0x801D00E8 end:0x801D0550
+	.data       start:0x80500648 end:0x80500700
+	.sdata      start:0x8074C600 end:0x8074C618
+	.sdata2     start:0x80751AF8 end:0x80751B58
 
 dol/sound/SoundTv.cpp:
 	.text       start:0x801D0550 end:0x801D42AC
@@ -1925,19 +1938,41 @@ dol/sound/SoundTv.cpp:
 
 dol/sound/SoundConductor.cpp:
 	.text       start:0x801D42AC end:0x801D5390
+	.data       start:0x80500D88 end:0x80501018
+	.bss        start:0x80625D50 end:0x80625D60
+	.sdata      start:0x8074C680 end:0x8074C698
+	.sbss       start:0x8074EC20 end:0x8074EC28
+	.sdata2     start:0x80751B88 end:0x80751BB8
 
 dol/sound/SoundHaniwa.cpp:
 	.text       start:0x801D5390 end:0x801D64F4
 	.ctors      start:0x8046585C end:0x80465860
+	.data       start:0x80501018 end:0x80501070
+	.bss        start:0x80625D60 end:0x80625D88
+	.sdata      start:0x8074C698 end:0x8074C6A0
+	.sdata2     start:0x80751BB8 end:0x80751BE8
 
 dol/sound/SoundFader.cpp:
 	.text       start:0x801D64F4 end:0x801D6618
+	.sdata2     start:0x80751BE8 end:0x80751BF0
 
 dol/sound/SoundBgm.cpp:
 	.text       start:0x801D6618 end:0x801D8618
+	.rodata     start:0x8047EBE8 end:0x8047ED18
+	.data       start:0x80501070 end:0x805010F0
+	.bss        start:0x80625D88 end:0x80625DA0
+	.sdata      start:0x8074C6A0 end:0x8074C6A8
+	.sbss       start:0x8074EC28 end:0x8074EC30
+	.sdata2     start:0x80751BF0 end:0x80751C40
 
 dol/sound/SoundVoice.cpp:
 	.text       start:0x801D8618 end:0x801DC544
+	.rodata     start:0x8047ED18 end:0x8047F100
+	.data       start:0x805010F0 end:0x80503930
+	.bss        start:0x80625DA0 end:0x80625DB0
+	.sdata      start:0x8074C6A8 end:0x8074C6B0
+	.sbss       start:0x8074EC30 end:0x8074EC60
+	.sdata2     start:0x80751C40 end:0x80751C80
 
 dol/sound/SoundObj.cpp:
 	.text       start:0x801DC544 end:0x801E1BD4
@@ -1954,12 +1989,22 @@ dol/sound/SoundAudioFrameCallback.cpp:
 
 dol/sound/SoundObjFurniture.cpp:
 	.text       start:0x801E1C78 end:0x801E2C3C
+	.rodata     start:0x8047F100 end:0x8047F980
+	.data       start:0x80503CD0 end:0x80503D58
+	.bss        start:0x80625DC8 end:0x80625DD8
+	.sdata      start:0x8074C708 end:0x8074C738
+	.sdata2     start:0x80751D00 end:0x80751D18
 
 dol/sound/SoundLoader.cpp:
 	.text       start:0x801E2C3C end:0x801E2E58
+	.data       start:0x80503D58 end:0x80503DA0 align:4
+	.sdata      start:0x8074C738 end:0x8074C748 align:4
 
 dol/sound/SoundAmbient.cpp:
 	.text       start:0x801E2E58 end:0x801E39B0
+	.bss        start:0x80625DD8 end:0x80625E00
+	.sbss       start:0x8074EC68 end:0x8074EC70
+	.sdata2     start:0x80751D18 end:0x80751D50
 
 lib/RegEad/RegEad.cpp:
 	.text       start:0x801E39B0 end:0x801E4EF4
@@ -1978,6 +2023,7 @@ lib/RegEad/RegEadPrc.cpp:
 
 lib/RVL_SDK/kbd/kbd.c:
 	.text       start:0x801F8970 end:0x801FA2AC
+	.bss        start:0x80625E00 end:0x80626D20 align:32
 
 lib/RVL_SDK/kbd/kbd_ios.c:
 	.text       start:0x801FA2AC end:0x801FA56C

@@ -98,6 +98,7 @@ struct SoundCommonInfo {
     u32 userParam[2];                       // at 0x20
     u8 panMode;                             // at 0x28
     u8 panCurve;                            // at 0x29
+    u8 actorPlayerId;                       // at 0x2A
 };
 typedef Util::Table<Util::DataRef<SoundCommonInfo> > SoundCommonTable;
 

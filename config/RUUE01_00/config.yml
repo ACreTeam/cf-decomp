@@ -119,6 +119,9 @@ block_relocations:
 # 80515130: a word inside lbl_80509320 (binary data) that reads 805B3926, inside d_net_mgr's g_netMgr.
 # Not a pointer.
 - source: 0x80515130
+# 8047F890: a frame sound in SoundObjFurniture's sFrameSounds (u16 8064, u16 1BE1) that looks like a
+# pointer into .bss. Not a pointer.
+- source: 0x8047F890
 modules:
 - object: files/rels/d_profileNP.rel
   hash: d54fb2da838201b0feded746aa62f3728e904c2e

@@ -1231,9 +1231,9 @@ BOOL dSTR::getNpcHouseType(u32 *out, u32 no) {
         if (no < 10) {
             dAnimal_c *animal = dSaveData_c::getAnimalBlock()->getAnimalConst(no);
             if (animal != NULL) {
-                out[0] = animal->fn_8012813C();
-                int kind = (animal->fn_801281AC() / 3) & 1;
-                out[1] = animal->fn_801281AC() % 3 + l_houseType[variant][kind] * 3;
+                out[0] = animal->getHouseVariant();
+                int kind = (animal->getHouseType() / 3) & 1;
+                out[1] = animal->getHouseType() % 3 + l_houseType[variant][kind] * 3;
                 return TRUE;
             }
         }

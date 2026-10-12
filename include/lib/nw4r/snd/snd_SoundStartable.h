@@ -38,7 +38,15 @@ public:
         enum EnableFlag {
             ENABLE_START_OFFSET = (1 << 0),
             ENABLE_PLAYER_ID = (1 << 1),
-            ENABLE_PLAYER_PRIORITY = (1 << 2)
+            ENABLE_PLAYER_PRIORITY = (1 << 2),
+            ENABLE_ACTOR_PLAYER_ID = (1 << 3), // newer nw4r
+            ENABLE_SEQ_SOUND_INFO = (1 << 4)   // newer nw4r
+        };
+
+        // Newer nw4r (City Folk): start a sequence from given data at a label.
+        struct SeqSoundInfo {
+            const void* seqDataAddress;     // at 0x0
+            const char* startLocationLabel; // at 0x4
         };
 
         enum StartOffsetType {
@@ -53,7 +61,8 @@ public:
         u32 playerId;                    // at 0xC
         int playerPriority;              // at 0x10
         int voiceOutCount;               // at 0x14
-    };
+        SeqSoundInfo seqSoundInfo;       // at 0x18
+    }; // size 0x20
 
 public:
     virtual ~SoundStartable() {} // at 0x8
@@ -68,26 +77,29 @@ public:
     detail_ConvertLabelStringToSoundId(const char* pLabel) = 0; // at 0x10
 
     bool StartSound(SoundHandle* pHandle, u32 id) {
-        return detail_StartSound(pHandle, id, NULL, NULL, NULL) ==
+        return detail_StartSound(pHandle, id, NULL) ==
                START_SUCCESS;
     }
+    bool StartSound(SoundHandle* pHandle, u32 id, const StartInfo* info) {
+        return detail_StartSound(pHandle, id, info) == START_SUCCESS;
+    }
     bool StartSound(SoundHandle* pHandle, unsigned int id) {
-        return detail_StartSound(pHandle, id, NULL, NULL, NULL) ==
+        return detail_StartSound(pHandle, id, NULL) ==
                START_SUCCESS;
     }
     bool StartSound(SoundHandle* pHandle, int id) {
-        return detail_StartSound(pHandle, id, NULL, NULL, NULL) ==
+        return detail_StartSound(pHandle, id, NULL) ==
                START_SUCCESS;
     }
 
     bool HoldSound(SoundHandle* pHandle, u32 id) {
-        return detail_HoldSound(pHandle, id, NULL, NULL, NULL) == START_SUCCESS;
+        return detail_HoldSound(pHandle, id, NULL) == START_SUCCESS;
     }
     bool HoldSound(SoundHandle* pHandle, unsigned int id) {
-        return detail_HoldSound(pHandle, id, NULL, NULL, NULL) == START_SUCCESS;
+        return detail_HoldSound(pHandle, id, NULL) == START_SUCCESS;
     }
     bool HoldSound(SoundHandle* pHandle, int id) {
-        return detail_HoldSound(pHandle, id, NULL, NULL, NULL) == START_SUCCESS;
+        return detail_HoldSound(pHandle, id, NULL) == START_SUCCESS;
     }
 
     bool PrepareSound(SoundHandle* pHandle, u32 id) {
@@ -105,13 +117,9 @@ public:
 
 private:
     StartResult detail_StartSound(SoundHandle* pHandle, u32 id,
-                                  detail::BasicSound::AmbientArgInfo* pArgInfo,
-                                  detail::ExternalSoundPlayer* pPlayer,
                                   const StartInfo* pStartInfo);
 
     StartResult detail_HoldSound(SoundHandle* pHandle, u32 id,
-                                 detail::BasicSound::AmbientArgInfo* pArgInfo,
-                                 detail::ExternalSoundPlayer* pPlayer,
                                  const StartInfo* pStartInfo);
 
     StartResult

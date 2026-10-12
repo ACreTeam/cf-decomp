@@ -196,6 +196,11 @@ void SeqPlayer::SetGlobalVariable(int idx, s16 value) {
     mGlobalVariable[idx] = value;
 }
 
+// CF 80266534
+s16 SeqPlayer::GetGlobalVariable(int idx) {
+    return mGlobalVariable[idx];
+}
+
 void SeqPlayer::SetTrackVolume(u32 trackFlags, f32 volume) {
     SetTrackParam<f32>(trackFlags, &SeqTrack::SetVolume, volume);
 }

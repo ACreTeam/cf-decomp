@@ -41,7 +41,10 @@ void playTune(u32 id);                              // 8000FC1C: plays a tune (w
 void playVoiceMelody(u16 soundId, u8 *notes);       // 8000FC98: plays a melody (the town tune) with a voice
 void playHourlyChime();                             // 8000FD24: the hourly chime
 void playSeAt(const mVec3_c *pos, int arg);         // 8000FD90: plays a sound at a world position
+void sndSetVoiceType(int type);                     // 8000FE18: the speech voice type, 0..12 (d_msg)
+void sndSpeakVoice(int mode, int tone, wchar_t c, wchar_t next, f32 volume); // 8000FE90: (d_msg) the voice of c
 void sndStopReverb();                               // 8000FF44: stops the reverb
+void sndSetSeaDist(f32 dist);                       // 800101F4: the distance to the sea (no callers)
 void sndStartReverb();                              // 8001009C: starts the reverb
 bool isSummerMorningStart();                        // 8001026C: no callers in the DOL or the RELs
 void checkSummerMorningStart();                     // 80010274: at game start (d_sv_proc): 16 Mar..15 Sep, 6:00..9:59
@@ -63,8 +66,5 @@ void fn_8000F738(int arg);                                   // 8000F738: (dBgm 
 void fn_8000F7B0(int arg);                                   // 8000F7B0: (dBgm StgBus_c)
 void fn_8000F928(int se);                                    // 8000F928: a sound effect (d_money, d_msg)
 void fn_8000FB10(u32 arg);                                   // 8000FB10: no callers
-void fn_8000FE18(int arg);                                   // 8000FE18: sets the speech voice type, 0..12 (d_msg)
-void fn_8000FE90(int a, int b, wchar_t c, wchar_t d, f32 e); // 8000FE90: (d_msg) passes the sort keys of two characters
-void fn_800101F4(f32 arg);                                   // 800101F4: no callers
 void fn_80010304(f32 arg);                                   // 80010304: no callers
 }

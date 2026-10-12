@@ -120,6 +120,12 @@ bool SeqSound::WriteVariable(int idx, s16 value) {
     return true;
 }
 
+// CF 802677D4
+bool SeqSound::ReadGlobalVariable(int idx, s16* pValue) {
+    *pValue = SeqPlayer::GetGlobalVariable(idx);
+    return true;
+}
+
 bool SeqSound::WriteGlobalVariable(int idx, s16 value) {
     SeqPlayer::SetGlobalVariable(idx, value);
     return true;

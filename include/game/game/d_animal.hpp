@@ -4,6 +4,32 @@
 // Class names except dGreetingWord_c / dHabitWord_c (RTTI) are inferred.
 
 #include <types.h>
+#include <game/game/d_script.hpp>
+
+// Script words for a villager's greeting and catchphrase. Names from RTTI. Defined before d_item.hpp is
+// included: d_animal.cpp's vtable order (reverse completion order) has dItem::seeker_c::candCB_c first.
+// The buffers are ANIMAL_GREETING_LEN / ANIMAL_HABIT_LEN + 1.
+// The vtables also hold many inherited dScript::Word_c entries not declared in d_script.hpp.
+class dGreetingWord_c : public dScript::Word_c { // vtable 804EF0C8
+public:
+    dGreetingWord_c(); // 8011B400
+    virtual ~dGreetingWord_c(); // 8011B444
+    virtual u32 getBufferSize(); // 8011B49C
+    virtual wchar_t *getBuffer(); // 8011B4A4
+
+    /* 0x24 */ wchar_t mBuffer[16 + 1];
+}; // size 0x48
+
+class dHabitWord_c : public dScript::Word_c { // vtable 804EEFD0
+public:
+    dHabitWord_c(); // 8011B4AC
+    virtual ~dHabitWord_c(); // 8011B4F0
+    virtual u32 getBufferSize(); // 8011B548
+    virtual wchar_t *getBuffer(); // 8011B550
+
+    /* 0x24 */ wchar_t mBuffer[10 + 1];
+}; // size 0x3C
+
 #include <game/game/d_item.hpp>
 #include <game/game/d_land.hpp>
 #include <game/game/d_personal_id.hpp>
@@ -22,33 +48,11 @@ class mVec3_c;
 // Filter for the memory searches (getReplaceMemoryIdx).
 typedef BOOL (*dAnimalMemoryFilter)(const dPersonalID_c *pid, const dLandID_c *land, dPrivateData_c *players);
 
-#define ANIMAL_NUM 10        // villagers per town (fn_80129A3C)
-#define ANIMAL_MEMORY_NUM 16 // fn_8011E2C0
+#define ANIMAL_NUM 10        // villagers per town (dAnimalBlock_c ctor 80129A3C)
+#define ANIMAL_MEMORY_NUM 16 // dAnimal_c ctor 8011E2C0
 #define ANIMAL_GREETING_LEN 16
 #define ANIMAL_NICKNAME_LEN 8
 #define ANIMAL_HABIT_LEN 10
-
-// Script words for a villager's greeting and catchphrase. Names from RTTI.
-// The vtables also hold many inherited dScript::Word_c entries not declared in d_script.hpp.
-class dGreetingWord_c : public dScript::Word_c { // vtable 804EF0C8
-public:
-    dGreetingWord_c(); // 8011B400
-    virtual ~dGreetingWord_c(); // 8011B444
-    virtual u32 getBufferSize(); // 8011B49C
-    virtual wchar_t *getBuffer(); // 8011B4A4
-
-    /* 0x24 */ wchar_t mBuffer[ANIMAL_GREETING_LEN + 1];
-}; // size 0x48
-
-class dHabitWord_c : public dScript::Word_c { // vtable 804EEFD0
-public:
-    dHabitWord_c(); // 8011B4AC
-    virtual ~dHabitWord_c(); // 8011B4F0
-    virtual u32 getBufferSize(); // 8011B548
-    virtual wchar_t *getBuffer(); // 8011B550
-
-    /* 0x24 */ wchar_t mBuffer[ANIMAL_HABIT_LEN + 1];
-}; // size 0x3C
 
 // Two capped counters (max 5) at dAnimalMemory_c+0x4E. The kind argument is a scene (SCENE_NUM: the
 // current one); isSceneAttr(kind, SCENE_ATTR_TOWN) picks which counter applies.
@@ -165,7 +169,7 @@ public:
     /* 0x2 */ u8 mFlags;
 };
 
-// 0x14 at dAnimal_c+0x301C. setD013Spot fills _08/_0C/_10/_11.
+// 0x14 at dAnimal_c+0x301C. setTownHallSpot fills _08/_0C/_10/_11.
 class dAnimalSpot_c {
 public:
     dAnimalSpot_c(); // 8011D558
@@ -178,9 +182,9 @@ public:
     void setTimeRaw(const s64 *value); // 8011D6FC
     BOOL pickWishSpot(dAnimal_c *animal, dAnimalBlock_c *block); // 8011DDE8
     BOOL setHomeSpot1(dAnimal_c *animal, dAnimalBlock_c *block); // 8011DFC4
-    BOOL fn_8011E080(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E080
-    BOOL fn_8011E140(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E140
-    BOOL setD013Spot(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E200
+    BOOL setHomeSpot2(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E080
+    BOOL setHomeSpot3(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E140
+    BOOL setTownHallSpot(dAnimal_c *animal, dAnimalBlock_c *block); // 8011E200
 
 
     /* 0x00 */ dTimeStamp_c mTime;
@@ -193,7 +197,7 @@ public:
 // Unrecovered member objects. Their constructors and destructors live in other TUs.
 // dQuestVillagerWish_c (wish + villager request) is in d_quest.hpp.
 
-// Per-species template record, copied whole into dAnimal_c+0x1824 by fn_8011E688.
+// Per-species template record, copied whole into dAnimal_c+0x1824 by dAnimal_c::init (8011E688).
 struct dAnimalTemplate_c {
     s16 getUmbrella() const { return mUmbrella; }
     s8 getLikedStyle() const { return mLikedStyle; }
@@ -283,8 +287,8 @@ public:
     void validateHouse(); // 80120388
     void clearFossilRoomFtr(); // 80120548
     void clearNewItems(); // 80120584
-    dItem::Item *fn_801205A0(u32 idx); // 801205A0
-    dItem::Item *fn_801205C0(u32 idx); // 801205C0
+    dItem::Item *getNewItem(u32 idx); // 801205A0
+    dItem::Item *getNewItem2(u32 idx); // 801205C0
     void packNewItems(); // 801205E0
     int findNewItem(const dItem::Item *item); // 80120664
     BOOL addNewItem(const dItem::Item *item); // 80120794
@@ -340,12 +344,12 @@ public:
     void clearMemoryFlag24(); // 801233C8
     void clearEventFlags(); // 801234AC
     void clearMemoryFlag23(); // 80123514
-    void fn_801235F8(); // 801235F8
-    void fn_801236DC(); // 801236DC
-    void fn_801237C0(); // 801237C0
-    void fn_801238A4(); // 801238A4
-    void fn_80123988(); // 80123988
-    void fn_80123A6C(); // 80123A6C
+    void clearMemoryFlag8(); // 801235F8
+    void clearMemoryFlag21(); // 801236DC
+    void clearMemoryFlag20(); // 801237C0
+    void clearMemoryFlag11(); // 801238A4
+    void clearMemoryFlag10(); // 80123988
+    void clearMemoryFlag9(); // 80123A6C
     void decNicknameWait(int n); // 80123B50
     void decGreetingWait(int n); // 80123BBC
     void growWish(); // 80123C28
@@ -385,12 +389,12 @@ public:
     u32 getBirthDay(); // 801280A4
     dItem::Item getUmbrella(); // 801280AC
     void setUmbrella(const dItem::Item *item); // 801280B8
-    u8 fn_8012813C(); // 8012813C
-    u8 fn_801281AC(); // 801281AC
+    u8 getHouseVariant(); // 8012813C
+    u8 getHouseType(); // 801281AC
     BOOL isSleepTime(const dTime_c *now); // 8012820C
     BOOL canMoveOut(dAnimalBlock_c *block); // 80128270
     BOOL isLostItemRequestDone(dPrivateData_c *player, BOOL checkFlag); // 80128374
-    BOOL fn_80128440(); // 80128440
+    BOOL isSickForVisitors(); // 80128440
     s8 getMaxFriendship(); // 801284D4
     int getDaysSinceLastTalk(const dTime_c *now); // 8012855C
     void validateItems(); // 8012865C
@@ -415,7 +419,7 @@ public:
 
 
     /* 0x0000 */ u8 mSetupData[0x1820];     // checksummed area
-    /* 0x1820 */ u32 mChecksum;        // fn_802A98FC over 0x0000..0x1820
+    /* 0x1820 */ u32 mChecksum;        // sCrc::calcCRC32 over 0x0000..0x1820
     /* 0x1824 */ dAnimalTemplate_c mTemplate;
     /* 0x19BC */ u8 _19BC[4];
     /* 0x19C0 */ dDesign_c mClothDesign;
@@ -526,8 +530,8 @@ public:
     int getBusyQuestKind(const dAnmPersonalID_c *id, int which, BOOL current); // 8012CE0C
     void assignQuestCandidates(); // 8012CF3C
     void updateQuestCandidates(); // 8012D508
-    int pickEvent16Animal(); // 8012D6E8
-    void setEvent16Done(int idx); // 8012D80C
+    int pickHarvestFestivalAnimal(); // 8012D6E8
+    void setHarvestFestivalDone(int idx); // 8012D80C
     int getLostItemAnimalIdx(); // 8012D864
     BOOL isLostItemAnimal(const dAnmPersonalID_c *id); // 8012D8F4
     BOOL tryStartLostItem(int arg); // 8012D95C
@@ -586,8 +590,8 @@ public:
     void removeMovedOut(u16 item); // 80131904
     void pushMovedOut(u16 item); // 80131968
     BOOL updateHeldItem(int idx); // 80131A10
-    BOOL updateEvent15Flag(int idx); // 80132268
-    int pickEvent11Animal(BOOL any, const dPersonalID_c *pid, const dLandID_c *land); // 801323A4
+    BOOL updateHalloweenFlag(int idx); // 80132268
+    int pickFleaMarketAnimal(BOOL any, const dPersonalID_c *pid, const dLandID_c *land); // 801323A4
     int pickBirthdayHost(dPrivateData_c *player); // 80132614
     BOOL decideBirthdayHost(int playerNo); // 801327A4
     void decideBirthdayHosts(); // 80132890
@@ -603,9 +607,9 @@ public:
     void sendNewYearLetters(dPrivateData_c *player); // 801334A8
     void sendNewYearLettersCurrent(); // 801335CC
     void clearSpots(); // 8013365C
-    void fn_801336B0(); // 801336B0
-    void fn_80133704(); // 80133704
-    void clearMemoryFlag200(); // 80133758
+    void clearAllQuestStarted(); // 801336B0
+    void clearAllQuestStarted2(); // 80133704
+    void clearAllMemoryFlag9(); // 80133758
     void updateTalkFlags(dPrivateData_c *player); // 801337AC
     void halveTalkFlags(int skip); // 80133840
     int countAnimalsNearItem(const dItem::Item *item, int group); // 801338D4
@@ -687,7 +691,7 @@ BOOL isFossilRequestMatch(const dItem::Item *item, int mode, const dItem::Item *
 u32 getRoomFtrSlot(const dItem::Item *room, u32 x, u32 z); // 8011F8B8: furniture slot of the room item at (x, z) (16x16 grid)
 // 8011F19C: a random non-empty demo word differing from def (else def) into out; flag picks the word group.
 // looks (the villager's looks, passed by d_npc_talk_approach 8003791C) is unused.
-void fn_8011F19C(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks);
+void pickNickname(dScript::Word_c *out, dScript::Word_c *def, BOOL flag, u8 looks);
 // Presents of the appointment quests (d_npc_talk_quest_q08 / q09).
 dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag); // 8012F2F8
 int pickAppointmentPresent2(dItem::Item *out, dPrivateData_c *player, dAnimal_c *animal, BOOL flag); // 8012FA64: 1 = from the villager's new items
