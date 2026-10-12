@@ -978,7 +978,7 @@ bool dAcNpc_c::canInteract(dDemoActor_c *actor) {
 }
 
 // 80012FE4
-void dAcNpc_c::demoHook50() {}
+void dAcNpc_c::demoHook50(int cmd, u8 member) {}
 
 // ---- dAcNpc_c net permit / daub sync (80012FE8..80013F1C) ----
 
@@ -7766,18 +7766,18 @@ void dAcNpc_c::lookAt_c::lookPlayer(dAcNpc_c *npc) {
 
 void dAcNpc_c::lookAt_c::lookActor(dAcNpc_c *npc) {
     BOOL found = FALSE;
-    u32 num = fn_800F97FC();
+    u32 num = dNpcList::getNmlNum();
     for (u32 i = 0; i < num; i++) {
-        dDemoActor_c *actor = fn_800F9850(i);
+        dDemoActor_c *actor = dNpcList::getNml(i);
         if (actor != NULL && mpActor == actor) {
             found = TRUE;
             break;
         }
     }
     if (!found) {
-        num = fn_800F980C();
+        num = dNpcList::getSpNum();
         for (u32 i = 0; i < num; i++) {
-            dDemoActor_c *actor = fn_800F98BC(i);
+            dDemoActor_c *actor = dNpcList::getSp(i);
             if (actor != NULL && mpActor == actor) {
                 found = TRUE;
                 break;
@@ -8251,7 +8251,7 @@ void dAcNpc_c::footstep_c::playSound(dAcNpc_c *npc) {
         if (item.isSame(dItem::Item((u16)0x8029))) {
             id = 0x193E;
         } else {
-            id = fn_800A8648(&npc->mPos, &attr);
+            id = dGroundAttr::getFootstepSe(&npc->mPos, &attr);
         }
         f32 speed = npc->mSpeedF;
         npc->mAudioObj.startFootSound(id, attr, speed);
@@ -10532,7 +10532,7 @@ void dAcNpc_c::talk_c::stepTurnTalkMsg(dAcNpc_c *npc) {
         flag = recept->mLangFlag;
         if (flag < 6) {
             dSaveExtra_c *extra = dSaveData_c::getExtra();
-            fn_801172C0(&extra->_0001CE, fn_801017B8(), flag);
+            extra->mLangFlags.reset(fn_801017B8(), flag);
             recept->mLangFlag = 6;
         }
         npc->detachDemoActor(recept);
@@ -10652,7 +10652,7 @@ void dAcNpc_c::talk_c::stepTalkMsg(dAcNpc_c *npc) {
         flag = recept->mLangFlag;
         if (flag < 6) {
             dSaveExtra_c *extra = dSaveData_c::getExtra();
-            fn_801172C0(&extra->_0001CE, fn_801017B8(), flag);
+            extra->mLangFlags.reset(fn_801017B8(), flag);
             recept->mLangFlag = 6;
         }
         npc->detachDemoActor(recept);

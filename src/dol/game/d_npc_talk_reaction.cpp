@@ -209,7 +209,7 @@ BOOL dAcNpcNml_c::talk_c::msgFirstMeeting(msgInfo_s *info, u32 known, u32 fromTo
                     code = 0x16;
                 }
                 setLooksMsg(info, label, code);
-                if (player->isFlag0(2) && player->_83F5 == 0) {
+                if (player->isFlag0(2) && player->mMiiMask == 0) {
                     setStepProc(&talk_c::stepBeeFaceSeen);
                 }
                 mCountTalk = 1;
@@ -432,7 +432,7 @@ BOOL dAcNpcNml_c::talk_c::msgNotSeen(msgInfo_s *info, int minDays, int divisor, 
                     code = 1;
                 }
                 setLooksMsg(info, label, code);
-                if (player->isFlag0(2) && player->_83F5 == 0) {
+                if (player->isFlag0(2) && player->mMiiMask == 0) {
                     setStepProc(&talk_c::stepBeeFaceSeen);
                 }
                 mCountTalk = 1;
@@ -543,7 +543,7 @@ int dAcNpcNml_c::talk_c::msgReBeeFace(msgInfo_s *info) {
     if (ok && isReactionBlocked()) {
         ok = FALSE;
     }
-    if (ok && player->_83F5 != 0) {
+    if (ok && player->mMiiMask != 0) {
         ok = FALSE;
     }
     if (ok && (mpMemory == NULL || mpMemory->mFlags.mBeeFaceTalked)) {
@@ -820,7 +820,7 @@ int dAcNpcNml_c::talk_c::msgReFireworks(msgInfo_s *info) {
 
 // 8006071C
 int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
-    const u32 *msg = NULL;
+    const dSaveDistContent_c *msg = NULL;
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
     dAnimal_c *animal = getAnimal();
     BOOL valid = FALSE;
@@ -830,7 +830,7 @@ int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
     u8 looks = valid ? animal->mID.getLooks(1) : 6;
     if ((!dNet::isSessionActive() || dNet::getMemberNum() <= 1) && player != NULL && player->mPID.isFromTown() && looks < 6 &&
         (u32)getLanguage() < LANGUAGE_NUM) {
-        msg = fn_80117318(&dSaveData_c::getRawExtra()->_0001CE, fn_801017B8(), looks, 10);
+        msg = dSaveData_c::getRawExtra()->mLangFlags.get(fn_801017B8(), looks, dSvLangFlag::LANG_FLAG_LANGUAGE_CURRENT);
     }
     if (msg != NULL && isReactionBlocked()) {
         msg = NULL;
@@ -840,7 +840,7 @@ int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
             return TRUE;
         }
         mLangFlag = looks;
-        mpBmgData = reinterpret_cast<const EGG::MsgRes::MessageHeader *>(msg + 1); // a BMG follows the header word
+        mpBmgData = reinterpret_cast<const EGG::MsgRes::MessageHeader *>(msg->mData); // a BMG follows the header word
         setLooksMsg(info, NULL, 0);
         mCountTalk = 1;
         return TRUE;

@@ -1370,7 +1370,7 @@ public:
     virtual int execute();                          // 80015F70
     virtual int draw();                             // 8001665C
     virtual bool canInteract(dDemoActor_c *actor);  // 80012FC0 (+0x4C)
-    virtual void demoHook50();                      // 80012FE4 (+0x50)
+    virtual void demoHook50(int cmd, u8 member);    // 80012FE4 (+0x50)
     virtual mVec3_c *demoHook58();                  // 800134E8 (+0x58) look/talk target position
     virtual int demoHook64(mVec3_c *pos);           // 80016770 (+0x64)
     // dAcNpc_c's own virtuals (+0x68..+0xC0)

@@ -762,7 +762,7 @@ struct BITM {
     s8 m_fgobj; // 0x168
     s8 m_series; // 0x169
     s8 m_from; // 0x16A
-    u8 m_carpetSfx; // 0x16B
+    s8 m_carpetSfx; // 0x16B: the carpet's BG attribute (bgAttr_e, dGroundAttr::getAttr)
     s8 m_fashion; // 0x16C
     u8 m_designCreatorName; // 0x16D
     u8 m_designCreatorFrom; // 0x16E

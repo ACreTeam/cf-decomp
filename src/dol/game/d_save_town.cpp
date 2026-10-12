@@ -9,12 +9,6 @@
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_8014EB3C(void *obj);
-void fn_80150524(void *obj);
-void fn_801505E4(void *obj);
-void fn_80150628(void *obj);
-void fn_80150BDC(void *obj);
-void fn_80150E74(void *obj, int player);
 void fn_80150088(void *obj, int player);
 }
 
@@ -80,14 +74,14 @@ void dSaveTown_c::clearTown() {
     mMuseum.init();
     mDaily.clear();
     mAnimals.clear();
-    fn_8014EB3C(&_0640C8);
-    fn_80150524(_06673C);
-    fn_801505E4(_066741);
-    fn_80150628(mHarvestSpot);
+    mVillagerMove.init();
+    mNpcSpotA.init();
+    mNpcSpotB.clear();
+    mHarvestSpot.clear();
     mPlayerFlag.init();
     mTownInfo.mLastDay.reset();
     mNoticeBoard.clear();
-    fn_80150BDC(&_072E0A);
+    mStarSigns.clear();
     mVillageMelody.clear();
     getAuction()->clear();
     mItemVersion = dItem::BITM::getVersion();
@@ -103,7 +97,7 @@ static inline BOOL isInRange(u16 id, u16 first, u16 last) {
 void dSaveTown_c::deletePlayer(int player) {
     mHomes.initPlayerHome(player);
     mMuseum.deletePlayer(player);
-    fn_80150E74(&_072E0A, player);
+    mStarSigns.clearNew(player);
     dPrivateData_c::clearPlayer(mPlayers, player);
     getAuction()->deletePlayer(player);
     mNoticeBoard.clearRead(player);

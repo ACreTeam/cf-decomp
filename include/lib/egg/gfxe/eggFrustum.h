@@ -42,6 +42,13 @@ public:
     virtual ~Frustum() {}
     virtual void SetProjectionGX() const;
     virtual void CopyToG3D(nw4r::g3d::Camera camera) const;
+    void SetCanvasMode(CanvasMode mode) {
+        if (mCanvasMode != mode) {
+            mFlags |= FLAG_DIRTY;
+            mCanvasMode = mode;
+        }
+    }
+
     void ResetOrthographic(f32 top, f32 bottom, f32 left, f32 right, f32 nearZ, f32 farZ);
 
     // Names inferred.

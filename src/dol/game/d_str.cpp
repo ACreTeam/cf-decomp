@@ -1518,11 +1518,11 @@ void buildPublicWorks() {
         if (getBuildingPos(&x, &z, BUILDING_LIGHTHOUSE)) {
             dSaveBuildingList_c::get()->remove(BUILDING_LIGHTHOUSE);
             dSaveBuildingList_c::get()->setPos(x, z, BUILDING_WINDMILL);
-            fn_8014F178(&dSaveData_c::getTown()->_0640C8);
+            dSaveData_c::getTown()->mVillagerMove.setWindmillBuilt();
         } else {
             if (!getBuildingPos(&x, &z, BUILDING_WINDMILL)) {
                 dSaveBuildingList_c::get()->setAtLighthouseSpot(BUILDING_WINDMILL);
-                fn_8014F178(&dSaveData_c::getTown()->_0640C8);
+                dSaveData_c::getTown()->mVillagerMove.setWindmillBuilt();
             }
         }
         dSaveData_c::getTown()->clearPublicWorksBells();
@@ -1534,11 +1534,11 @@ void buildPublicWorks() {
         if (getBuildingPos(&x, &z, BUILDING_WINDMILL)) {
             dSaveBuildingList_c::get()->remove(BUILDING_WINDMILL);
             dSaveBuildingList_c::get()->setPos(x, z, BUILDING_LIGHTHOUSE);
-            fn_8014F1E4(&dSaveData_c::getTown()->_0640C8);
+            dSaveData_c::getTown()->mVillagerMove.setLighthouseBuilt();
         } else {
             if (!getBuildingPos(&x, &z, BUILDING_LIGHTHOUSE)) {
                 dSaveBuildingList_c::get()->setAtLighthouseSpot(BUILDING_LIGHTHOUSE);
-                fn_8014F1E4(&dSaveData_c::getTown()->_0640C8);
+                dSaveData_c::getTown()->mVillagerMove.setLighthouseBuilt();
             }
         }
         dSaveData_c::getTown()->clearPublicWorksBells();
@@ -1550,7 +1550,7 @@ void buildPublicWorks() {
         dSaveData_c::getTown()->clearPublicWorksBells();
         dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_FOUNTAIN, 0, 0);
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_BUILD_FOUNTAIN);
-        fn_8014F10C(&dSaveData_c::getTown()->_0640C8);
+        dSaveData_c::getTown()->mVillagerMove.setFountainBuilt();
     }
 }
 
@@ -1684,12 +1684,12 @@ BOOL isAtFountainFront(const mVec3_c &pos, const s16 &angle, mVec3_c *front, mVe
             f32 range = getHostIO()->_44;
             if (center.xzDistTo(pos) < range && sLib::distanceAngle(-0x8000, angle) < 0x1800) {
                 if (draw) {
-                    fn_80081838(center, mColor(0xFF, 0x64, 0x64, 0x80), 1, mAng3_c(0, 0, 0), 0, range, 16.0f);
+                    dSceneCheck::drawCylinder(center, mColor(0xFF, 0x64, 0x64, 0x80), 1, mAng3_c(0, 0, 0), 0, range, 16.0f);
                 }
                 return TRUE;
             }
             if (draw) {
-                fn_80081838(center, mColor(0xFF, 0xFF, 0x64, 0x80), 1, mAng3_c(0, 0, 0), 0, range, 16.0f);
+                dSceneCheck::drawCylinder(center, mColor(0xFF, 0xFF, 0x64, 0x80), 1, mAng3_c(0, 0, 0), 0, range, 16.0f);
             }
         }
     }

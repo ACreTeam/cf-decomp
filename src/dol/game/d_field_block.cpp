@@ -6,9 +6,9 @@
 #include <lib/egg/core/eggHeap.h>
 #include <string.h>
 #include <game/game/d_save_main_field.hpp>
+#include <game/game/d_fd_block_type.hpp>
 
 extern "C" {
-u32 fn_80081324(int type);                                             // 80081324: flags of a block type
 }
 
 static inline BOOL isUnitInBlock(int unitX, int unitZ) {
@@ -78,7 +78,7 @@ void dFdBlock_c::set(int type, dItem::Item *items0, dItem::Item *items1, dFdUnit
 
 // 80080F80
 BOOL dFdBlock_c::hasFlag(int mask) const {
-    return (mask & fn_80081324(mType)) != 0;
+    return (mask & dFdBlockType::getTypeFlags(mType)) != 0;
 }
 
 // 80080FC0

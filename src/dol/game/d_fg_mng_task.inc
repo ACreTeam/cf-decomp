@@ -141,18 +141,18 @@ void dFgMngTask_c::proc() {
     switch (mKind) {
     case FG_MNG_KIND_PULL:
         if (fgMngInRange(mPrevItem, dItem::FG_WEED_A, dItem::FG_WEED_D)) {
-            fn_800C77D0(mPlayer);
+            dActivityLog::onPullWeeds(mPlayer);
         }
         break;
     case FG_MNG_KIND_PICK_UP_SPECIAL:
     case FG_MNG_KIND_PICK_UP_SPECIAL_FULL:
         if (mPrevItem == dItem::FG_LUCKY_CLOVER) {
-            fn_800C7818(mPlayer);
+            dActivityLog::onFindClover(mPlayer);
         }
         break;
     case FG_MNG_KIND_CHOP_TREE:
         if (fgMngInRange(mNewItem, dItem::FG_STUMP_S1, dItem::FG_PALM_STUMP)) {
-            fn_800C77B8(mPlayer);
+            dActivityLog::onCutTree(mPlayer);
         }
         break;
     }
@@ -214,7 +214,7 @@ void dFgMngTask_c::cancel() {
     switch (mKind) {
     case FG_MNG_KIND_PICK_UP_SPECIAL_FULL:
         if (mPrevItem == dItem::FG_LUCKY_CLOVER) {
-            fn_800C7818(mPlayer);
+            dActivityLog::onFindClover(mPlayer);
         }
     case FG_MNG_KIND_PICK_UP_FULL:
     case FG_MNG_KIND_DIG_UP_FULL:

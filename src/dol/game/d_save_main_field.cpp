@@ -5,11 +5,10 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_footmark.hpp>
 #include <game/cLib/c_math.hpp>
+#include <game/game/d_fd_block_type.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-int fn_80081514(int type); // the bridge variant of a block type (or the type itself)
-void fn_8014F0A4(void *obj);
 }
 
 // 80110634
@@ -149,13 +148,13 @@ BOOL dSaveMainField_c::buildBridge() {
         if (z != 0 && x != -1 && z != -1 && isFieldBlock(x, z)) {
             dFdBlockId_c *blockId = &mFieldBlockData[z][x];
             int type = blockId->mId;
-            int newType = fn_80081514(type);
+            int newType = dFdBlockType::getBridgeType(type);
             blockId->mId = newType;
             if (newType != type) {
                 dSaveData_c::getTown()->clearPublicWorksBells();
                 dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_BRIDGE, mBridgeBlockX, mBridgeBlockZ);
                 mBridgeBlockX = mBridgeBlockZ = -1;
-                fn_8014F0A4(&dSaveData_c::getTown()->_0640C8);
+                dSaveData_c::getTown()->mVillagerMove.setBridgeBuilt();
                 return TRUE;
             }
             return FALSE;

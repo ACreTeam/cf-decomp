@@ -6,13 +6,10 @@
 #include <game/mLib/m_heap.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <string.h>
+#include <game/game/d_fd_block_type.hpp>
 
 // The block kind tables (unsplit BG code; C linkage keeps the target names).
 extern "C" {
-int fn_800812C8(int type);   // the kind of a block type
-int fn_800812E8(u32 flags);  // the kind with exactly these flags, or BLOCK_KIND_NONE
-u32 fn_80081348(int kind);   // a kind's BLOCK_KIND_FLAG_*
-u8 fn_8008136C(int kind);
 }
 
 namespace dRF {
@@ -37,9 +34,9 @@ loader_c l_loader;
 
 // 80104C64
 BOOL field_c::addKindFlags(cell_c *cell, u32 flags) {
-    u32 kindFlags = fn_80081348(cell->mKind);
+    u32 kindFlags = dFdBlockType::getKindFlags(cell->mKind);
     kindFlags |= flags;
-    int kind = fn_800812E8(kindFlags);
+    int kind = dFdBlockType::findKind(kindFlags);
     if (kind != BLOCK_KIND_NONE) {
         cell->mKind = kind;
         return TRUE;
@@ -72,8 +69,8 @@ u32 field_c::getIndex(int x, int z) {
 void field_c::setLevels() {
     u8 level;
     for (int z = BLOCK_Z_NUM - 1; z >= 0; z--) {
-        u32 west = fn_80081348(getCell(1, z)->mKind);
-        u32 east = fn_80081348(getCell(5, z)->mKind);
+        u32 west = dFdBlockType::getKindFlags(getCell(1, z)->mKind);
+        u32 east = dFdBlockType::getKindFlags(getCell(5, z)->mKind);
         if ((west & BLOCK_KIND_FLAG_CLIFF_0) || (west & BLOCK_KIND_FLAG_CLIFF_1) || (west & BLOCK_KIND_FLAG_CLIFF_4)) {
             getCell(0, z)->mKind = BLOCK_KIND_BORDER_W_CLIFF;
         }
@@ -84,7 +81,7 @@ void field_c::setLevels() {
     for (u32 x = 1; x < 6; x++) {
         level = 0;
         for (int z = BLOCK_Z_NUM - 1; z >= 0; z--) {
-            u32 flags = fn_80081348(getCell(x, z)->mKind);
+            u32 flags = dFdBlockType::getKindFlags(getCell(x, z)->mKind);
             cell_c *cell = getCell(x, z);
             cell->mFlag = level & 1;
             if ((flags & BLOCK_KIND_FLAG_CLIFF_0) || (flags & BLOCK_KIND_FLAG_CLIFF_3) || (flags & BLOCK_KIND_FLAG_CLIFF_4)) {
@@ -93,8 +90,8 @@ void field_c::setLevels() {
         }
     }
     for (int z = BLOCK_Z_NUM - 1; z >= 0; z--) {
-        u32 west = fn_80081348(getCell(1, z)->mKind);
-        u32 east = fn_80081348(getCell(5, z)->mKind);
+        u32 west = dFdBlockType::getKindFlags(getCell(1, z)->mKind);
+        u32 east = dFdBlockType::getKindFlags(getCell(5, z)->mKind);
         if ((west & BLOCK_KIND_FLAG_CLIFF_2) || (west & BLOCK_KIND_FLAG_CLIFF_3)) {
             level = getCell(1, z)->mFlag & 1;
             cell_c *cell = getCell(0, z);
@@ -190,10 +187,10 @@ cell_c *field_c::getCell(int x, int z) {
 
 // 80105340
 BOOL canAddRacco(int kind) {
-    u32 flags = fn_80081348(kind);
+    u32 flags = dFdBlockType::getKindFlags(kind);
     BOOL ok = FALSE;
     if (!(flags & BLOCK_KIND_FLAG_BEACH) && !(flags & BLOCK_KIND_FLAG_BRIDGE) && !(flags & BLOCK_KIND_FLAG_FALL) &&
-        !(flags & BLOCK_KIND_FLAG_CLIFF) && fn_8008136C(kind) == 1) {
+        !(flags & BLOCK_KIND_FLAG_CLIFF) && dFdBlockType::getRiverNum(kind) == 1) {
         ok = TRUE;
     }
     return ok;
@@ -264,11 +261,11 @@ bool field_c::addBridges() {
     for (; z < 6; z++) {
         for (x = 1; x < 6; x++) {
             cell_c *cell = getCell(x, z);
-            int cls = fn_8008136C(cell->mKind);
+            int cls = dFdBlockType::getRiverNum(cell->mKind);
             if (cls == 2) {
                 endX = x;
                 endZ = z;
-            } else if (cls == 1 && (fn_80081348(cell->mKind) & BLOCK_KIND_FLAG_FALL)) {
+            } else if (cls == 1 && (dFdBlockType::getKindFlags(cell->mKind) & BLOCK_KIND_FLAG_FALL)) {
                 lastX = x;
                 lastZ = z;
                 if (firstX == -1) {
@@ -280,7 +277,7 @@ bool field_c::addBridges() {
     }
 
     // A bridge somewhere along the river from its first waterfall to its last.
-    u32 firstFlags = fn_80081348(getCell(firstX, firstZ)->mKind);
+    u32 firstFlags = dFdBlockType::getKindFlags(getCell(firstX, firstZ)->mKind);
     int dx, dz;
     getDirection(&dx, &dz, firstFlags);
     {
@@ -288,7 +285,7 @@ bool field_c::addBridges() {
         int z = firstZ + dz;
         u32 num = 0;
         do {
-            u32 flags = fn_80081348(getCell(x, z)->mKind);
+            u32 flags = dFdBlockType::getKindFlags(getCell(x, z)->mKind);
             getDirection(&dx, &dz, flags);
             if (!(flags & BLOCK_KIND_FLAG_CLIFF)) {
                 num++;
@@ -303,7 +300,7 @@ bool field_c::addBridges() {
         z = firstZ + dz;
         while (true) {
             cell_c *cell = getCell(x, z);
-            u32 flags = fn_80081348(cell->mKind);
+            u32 flags = dFdBlockType::getKindFlags(cell->mKind);
             if (i == pick && !(flags & BLOCK_KIND_FLAG_CLIFF)) {
                 ok = addKindFlags(cell, BLOCK_KIND_FLAG_BRIDGE);
                 break;
@@ -324,7 +321,7 @@ bool field_c::addBridges() {
             x = lastX;
             z = lastZ;
         }
-        u32 endFlags = fn_80081348(getCell(x, z)->mKind);
+        u32 endFlags = dFdBlockType::getKindFlags(getCell(x, z)->mKind);
         for (u32 d = 0; d < 7; d++) {
             int mask = sDirections[d].mFlags;
             if (mask == (int)(mask & endFlags)) {
@@ -334,7 +331,7 @@ bool field_c::addBridges() {
                 u32 branchNum = 0;
                 int bz = z + bdz;
                 while (isInterior(bx, bz)) {
-                    u32 flags = fn_80081348(getCell(bx, bz)->mKind);
+                    u32 flags = dFdBlockType::getKindFlags(getCell(bx, bz)->mKind);
                     getDirection(&bdx, &bdz, flags);
                     if (!(flags & BLOCK_KIND_FLAG_CLIFF)) {
                         branchNum++;
@@ -349,7 +346,7 @@ bool field_c::addBridges() {
                 bz = z + bdz;
                 while (isInterior(bx, bz)) {
                     cell_c *cell = getCell(bx, bz);
-                    u32 flags = fn_80081348(cell->mKind);
+                    u32 flags = dFdBlockType::getKindFlags(cell->mKind);
                     if (j == branchPick && !(flags & BLOCK_KIND_FLAG_CLIFF)) {
                         ok &= addKindFlags(cell, BLOCK_KIND_FLAG_BRIDGE);
                         break;
@@ -375,7 +372,7 @@ bool field_c::addRamps() {
     for (u32 z = 1; z < 6; z++) {
         bool west = true;
         for (u32 x = 1; x < 6; x++) {
-            u32 flags = fn_80081348(getCell(x, z)->mKind);
+            u32 flags = dFdBlockType::getKindFlags(getCell(x, z)->mKind);
             if (flags & BLOCK_KIND_FLAG_RIVER) {
                 west = false;
             } else if (flags & BLOCK_KIND_FLAG_CLIFF) {
@@ -396,7 +393,7 @@ bool field_c::addRamps() {
         bool west = true;
         for (u32 x = 1; x < 6; x++) {
             cell_c *cell = getCell(x, z);
-            u32 flags = fn_80081348(cell->mKind);
+            u32 flags = dFdBlockType::getKindFlags(cell->mKind);
             if (flags & BLOCK_KIND_FLAG_RIVER) {
                 west = false;
             } else if (flags & BLOCK_KIND_FLAG_CLIFF) {
@@ -561,13 +558,13 @@ int countTypes(const u8 *used, int kind, BOOL allowUsed) {
     int num = 0;
     if (allowUsed) {
         for (u32 type = 0; type < RF_TYPE_NUM; type++) {
-            if (kind == fn_800812C8(type)) {
+            if (kind == dFdBlockType::getKind(type)) {
                 num++;
             }
         }
     } else {
         for (u32 type = 0; type < RF_TYPE_NUM; type++) {
-            if (kind == fn_800812C8(type) && !isTypeUsed(used, type)) {
+            if (kind == dFdBlockType::getKind(type) && !isTypeUsed(used, type)) {
                 num++;
             }
         }
@@ -580,7 +577,7 @@ int getNthType(const u8 *used, int kind, BOOL allowUsed, int n) {
     u32 i = 0;
     if (allowUsed) {
         for (u32 type = 0; type < RF_TYPE_NUM; type++) {
-            if (kind == fn_800812C8(type)) {
+            if (kind == dFdBlockType::getKind(type)) {
                 if (i == n) {
                     return type;
                 }
@@ -589,7 +586,7 @@ int getNthType(const u8 *used, int kind, BOOL allowUsed, int n) {
         }
     } else {
         for (u32 type = 0; type < RF_TYPE_NUM; type++) {
-            if (kind == fn_800812C8(type) && !isTypeUsed(used, type)) {
+            if (kind == dFdBlockType::getKind(type) && !isTypeUsed(used, type)) {
                 if (i == n) {
                     return type;
                 }

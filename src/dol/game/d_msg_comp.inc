@@ -45,10 +45,10 @@ int Word_c::endLine(int pos) {
         n = insertScaleTag(pos, mScale);
     }
     f32 scale = 0.01f * mMaxScale;
-    f32 height = g_mainFont.GetHeight();
-    f32 scaledHeight = scale * g_mainFont.GetHeight();
-    f32 ascent = g_mainFont.GetAscent();
-    f32 scaledAscent = scale * g_mainFont.GetAscent();
+    f32 height = dFont::g_mainFont.mFont.GetHeight();
+    f32 scaledHeight = scale * dFont::g_mainFont.mFont.GetHeight();
+    f32 ascent = dFont::g_mainFont.mFont.GetAscent();
+    f32 scaledAscent = scale * dFont::g_mainFont.mFont.GetAscent();
     n += insertLineOffsetTag(mLineStart, scaledAscent - ascent);
     mMaxScale = mScale;
     return n;
@@ -795,7 +795,7 @@ int dMsg::Comp_c::create() {
     mAnmVib.setFrame(mAnmVib.mFrameCtrl.mEndFrame);
     mLyt.calc();
     nw4r::lyt::TextBox *text = mLyt.findTextBox("T_msg_00");
-    mLyt.setFont(&g_mainFont);
+    mLyt.setFont(&dFont::g_mainFont.mFont);
     mSeq.create(this, text);
     mVoice.create(this);
     mpPageCursor = mLyt.findPane("pageCrsr_00");
@@ -849,9 +849,9 @@ int dMsg::Comp_c::execute() {
 }
 
 int dMsg::Comp_c::draw() {
-    g_tagProcessor._4 = 0;
-    g_tagProcessor._5 = 0;
-    g_tagProcessor._6 = 0;
+    g_tagProcessor.mRectEnd = 0;
+    g_tagProcessor.mDrawEnd = 0;
+    g_tagProcessor.mLine = 0;
     mAnmWin.play();
     mAnmWaitIcon.play();
     mAnmVib.play();
@@ -1670,10 +1670,10 @@ void dMsg::Comp_c::addFriendship(s8 delta) {
 
 // 801A5CA8
 void dMsg::Comp_c::updateCursor() {
-    int cur = g_tagProcessor._6;
-    int prev = g_tagProcessor._7;
+    int cur = g_tagProcessor.mLine;
+    int prev = g_tagProcessor.mTypeLine;
     if (cur != 0 && cur != prev) {
-        g_tagProcessor._7 = cur;
+        g_tagProcessor.mTypeLine = cur;
     }
     updateVoiceType();
     int state = mSeq.mState;

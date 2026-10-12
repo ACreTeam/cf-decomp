@@ -21,7 +21,7 @@ void dWifiErr_c::create() {
     mResAcc.attach(g_cautionArc, "arc");
     mLyt.mpResAcc = &mResAcc;
     mLyt.build("caution_00.brlyt", NULL);
-    mLyt.setFont(&g_mainFont);
+    mLyt.setFont(&dFont::g_mainFont.mFont);
     mAnm.create("caution_00.brlan", &mResAcc);
     mLyt.bind(&mAnm);
     nw4r::lyt::TextBox *text = mLyt.findTextBox("T_dialg_00");
@@ -74,8 +74,8 @@ u8 dWifiErr_c::check() {
         }
     }
     if ((mReported || mNetError) && !mActive) {
-        fn_80107CF4();
-        fn_800CDD44(4);
+        dResetSave::request();
+        dMain::addStop(dMain::STOP_REASON_WIFI_ERR);
         create();
         mActive = TRUE;
         fn_8000E9C0();
@@ -112,7 +112,7 @@ void dWifiErr_c::execute() {
         }
         if (mCloseRequest) {
             BOOL close = TRUE;
-            if (!fn_80107D24()) {
+            if (!dResetSave::isNetClosed()) {
                 close = FALSE;
             }
             if (!dScreenshot::tryClose() && close) {
@@ -125,8 +125,8 @@ void dWifiErr_c::execute() {
             }
         }
         if (mClosing && dReset::Manage_c::GetInstance()->IsFadeOutDone()) {
-            fn_800CDD2C(4);
-            fn_800CDD68(4);
+            dMain::isStopped(dMain::STOP_REASON_WIFI_ERR);
+            dMain::removeStop(dMain::STOP_REASON_WIFI_ERR);
             mResAcc.detach();
             mLyt.unbind(&mAnm);
             mActive = FALSE;

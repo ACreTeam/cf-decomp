@@ -3735,11 +3735,11 @@ void dNetScene_c::clearMember(int member) {
     mHandoverAcks.off(member);
 }
 
-void dNetScene_c::setLeaveAcked(u8 v) {
+void dNetScene_c::setLeaveAcked(bool v) {
     mLeaveAcked = v;
 }
 
-u8 dNetScene_c::getLeaveAcked() const {
+bool dNetScene_c::getLeaveAcked() const {
     return mLeaveAcked;
 }
 
@@ -4744,7 +4744,7 @@ void updateNetStage() {
             g_dNet.mErrorReported = reported | g_dNet.mError;
         }
         if (reported != 0) {
-            fn_80107D24();
+            dResetSave::isNetClosed();
         }
     }
 }
@@ -5101,7 +5101,7 @@ void writeSceneClose(int arg) {
     }
 }
 
-u8 fn_800DD818() {
+bool fn_800DD818() {
     return getNetScene()->getLeaveAcked();
 }
 

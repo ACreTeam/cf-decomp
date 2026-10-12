@@ -21,6 +21,7 @@
 #include <cstring>
 #include <cmath>
 #include <game/game/d_net.hpp>
+#include <game/game/d_ground_attr.hpp>
 
 // Dependencies whose owners are not recovered yet.
 
@@ -33,7 +34,7 @@ void fn_801B8898(int idx, int part, u16 item);
 void fn_801B8FD8(int idx, int type);
 u8 *fn_800F5BA8();
 BOOL fn_8018F438(int type);
-BOOL fn_802C4404(dUnk83ED_c *mii, u16 *out);
+BOOL fn_802C4404(dMiiCreateID_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
 BOOL fn_8018EB8C();
@@ -55,7 +56,6 @@ void fn_801B9258();
 BOOL fn_801B9304(void *info, u8 *scene, u8 *b, u32 idx);
 void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarget_c *, u32), u32 kind);
 void fn_80285110(void *obj, dEffectTarget_c *target);
-u8 fn_800A8850(const mVec3_c *pos);
 }
 
 // The field task code (d_fg_mng_task.inc, #included by d_field_assessment.cpp).
@@ -732,7 +732,7 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
             }
         }
         if (fn_80100358(bone, player)) {
-            if (current->_83F5 != 0) {
+            if (current->mMiiMask != 0) {
                 fn_801B8FD8(dNet::getMyNo(), 0x12);
             }
             fn_801B910C(dNet::getMyNo(), 1, hat->mId);
@@ -1172,7 +1172,7 @@ BOOL fn_800FDD8C(u32 hair, u32 color) {
     }
     current->mHair = hair;
     current->mHairColor = color;
-    if (current->_83F5 != 0) {
+    if (current->mMiiMask != 0) {
         fn_801B8FD8(dNet::getMyNo(), 0x12);
     }
     return fn_80101A74(0x4F, 4);
@@ -1239,7 +1239,7 @@ BOOL fn_800FDF7C() {
         if (!fn_800FE360()) {
             return FALSE;
         }
-        if (!fn_802C4404(&current->_83ED, &mii)) {
+        if (!fn_802C4404(&current->mMiiId, &mii)) {
             return FALSE;
         }
     }
@@ -1269,7 +1269,7 @@ BOOL fn_800FE0D0() {
     if (current == NULL) {
         return FALSE;
     }
-    if (current->_83F5 != 0) {
+    if (current->mMiiMask != 0) {
         fn_801B8FD8(dNet::getMyNo(), 0x12);
     }
     return fn_80101A74(0x4C, 4);
@@ -1306,7 +1306,7 @@ BOOL fn_800FE17C(u16 mii) {
     if (current == NULL) {
         return FALSE;
     }
-    memcpy(&current->_83ED, data._2C, sizeof(data._2C));
+    memcpy(&current->mMiiId, data._2C, sizeof(data._2C));
     player->_22B6 = mii;
     fn_801B8FD8(dNet::getMyNo(), 0x11);
     fn_801B910C(dNet::getMyNo(), 1, dItem::ITEM_ID_NONE);
@@ -1327,7 +1327,7 @@ BOOL fn_800FE2D4() {
     if (current == NULL) {
         return FALSE;
     }
-    if (current->_83F5 == 0) {
+    if (current->mMiiMask == 0) {
         return FALSE;
     }
     fn_801B8FD8(dNet::getMyNo(), 0x12);
@@ -1615,7 +1615,7 @@ BOOL fn_800FEC60(const dItem::Item *acc) {
     dEquip_c equip;
     equip.setFromPlayer();
     equip.mAcc = *acc;
-    if (!equip.fn_8013A9C8()) {
+    if (!equip.isAccessoryVisible()) {
         equip.mHat = dItem::ITEM_ID_NONE;
     }
     return fn_800FF444(&equip, 3, 0);
@@ -1882,7 +1882,7 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
             }
         }
         if (fn_80100358(bone, player)) {
-            if (current->_83F5 != 0) {
+            if (current->mMiiMask != 0) {
                 fn_801B8FD8(dNet::getMyNo(), 0x12);
             }
             fn_801B910C(dNet::getMyNo(), 1, hat.mId);
@@ -1899,7 +1899,7 @@ BOOL fn_800FF444(const dEquip_c *equip, int mode, int kind) {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
             if (bitm != NULL && getHideBone(bitm) == 8) {
                 player->_22B4 = (player->_22B4 & ~0x80) | 0x40;
-                if (current->_83F5 != 0) {
+                if (current->mMiiMask != 0) {
                     fn_801B8FD8(dNet::getMyNo(), 0x12);
                 }
                 fn_801B910C(dNet::getMyNo(), 2, acc.mId);
@@ -1995,7 +1995,7 @@ u8 fn_800FF9C4(u32 idx, u32 gender) {
         return 0;
     }
     if (gender == 2) {
-        gender = player->_83F7;
+        gender = player->mShoeKind;
     }
     if (gender == 0) {
         return lbl_80475A34[idx];
@@ -2372,7 +2372,7 @@ BOOL fn_80100714(u8 shoeColor, u8 b) {
         return FALSE;
     }
     current->mShoeColor = shoeColor;
-    current->_83F7 = b;
+    current->mShoeKind = b;
     player->_2234 = 0x1E;
     return TRUE;
 }
@@ -3355,7 +3355,7 @@ int fn_80102434(const mVec3_c *pos) {
     if (attr == 0x17) {
         return 4;
     }
-    if ((u8)fn_800A8850(pos) > lbl_8074AF10) {
+    if ((u8)dGroundAttr::getSnowWear(pos) > lbl_8074AF10) {
         return 3;
     }
     return 0;

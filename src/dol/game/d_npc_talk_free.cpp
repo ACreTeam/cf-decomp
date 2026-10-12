@@ -182,15 +182,15 @@ const u8 *dAcNpcNml_c::talk_c::getFreeWeights() {
 int dAcNpcNml_c::talk_c::pickFriendTown() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dFriendList_c *friends = player != NULL ? &player->mFriends : NULL;
-    const dSaveTownList_c *list;
+    const dSvTownList::List_c *list;
     const dFriend_c *pal;
     int town = -1;
     if (friends != NULL) {
         list = &dSaveData_c::getTown()->mTownList;
         u32 count = 0;
-        for (u32 i = 0; i < SAVE_TOWN_LIST_NUM; i++) {
-            const dSaveTownListEntry_c *const otherValue = list->getTown(i);
-            const dSaveTownListEntry_c *other = otherValue;
+        for (u32 i = 0; i < dSvTownList::TOWN_LIST_NUM; i++) {
+            const dSvTownList::Entry_c *const otherValue = list->getTown(i);
+            const dSvTownList::Entry_c *other = otherValue;
             if (other != NULL && other->mLand.isValid()) {
                 for (int j = 0; j < FRIEND_NUM; j++) {
                     const dFriend_c *const friendValue = friends->getFriend(j);
@@ -384,8 +384,8 @@ static inline void setUnitMsg(talk_c *talk, int idx, u16 unit) {
 }
 
 // The town list entry of mJinxTown (NULL: this town); the same inline helper as d_a_npc_nml.
-inline dSaveTownListEntry_c *dAcNpcNml_c::talk_c::getJinxTown() {
-    if ((u32)mJinxTown < SAVE_TOWN_LIST_NUM) {
+inline dSvTownList::Entry_c *dAcNpcNml_c::talk_c::getJinxTown() {
+    if ((u32)mJinxTown < dSvTownList::TOWN_LIST_NUM) {
         dSaveTown_c *town = dSaveData_c::getTown();
         return town->mTownList.getTown(mJinxTown);
     }
@@ -831,8 +831,8 @@ void dAcNpcNml_c::talk_c::setJinxWords(const dSaveJinx_c *jinx, const dLandID_c 
 int dAcNpcNml_c::talk_c::msgFreeJinx(msgInfo_s *info) {
     const char *label = getMsgLabel(TALK_FREE, FREE_GROUP_A, FREE_A_JINX);
     int townIdx = pickFriendTown();
-    dSaveTownListEntry_c *town =
-        (u32)townIdx < SAVE_TOWN_LIST_NUM ? dSaveData_c::getTown()->mTownList.getTown(townIdx) : NULL;
+    dSvTownList::Entry_c *town =
+        (u32)townIdx < dSvTownList::TOWN_LIST_NUM ? dSaveData_c::getTown()->mTownList.getTown(townIdx) : NULL;
     const dSaveJinx_c *jinx = town != NULL ? &town->mJinx : NULL;
     if (label != NULL && jinx != NULL) {
         setLooksMsg(info, label, (int)cM::rndF(3.0f) + 1);
@@ -2093,7 +2093,7 @@ BOOL dAcNpcNml_c::talk_c::stepJinx(int kind) {
 int dAcNpcNml_c::talk_c::msgJinx(msgInfo_s *info) {
     const dSaveJinx_c *jinx;
     u16 code = FREE_JINX_MSG_CONDITION;
-    dSaveTownListEntry_c *town = getJinxTown();
+    dSvTownList::Entry_c *town = getJinxTown();
     if (town != NULL) {
         jinx = &town->mJinx;
     } else {
@@ -2127,7 +2127,7 @@ BOOL dAcNpcNml_c::talk_c::stepJinx2(int kind) {
 int dAcNpcNml_c::talk_c::msgJinx2(msgInfo_s *info) {
     const dSaveJinx_c *jinx;
     u16 code = FREE_JINX_MSG_OUTCOME;
-    dSaveTownListEntry_c *town = getJinxTown();
+    dSvTownList::Entry_c *town = getJinxTown();
     if (town != NULL) {
         jinx = &town->mJinx;
     } else {

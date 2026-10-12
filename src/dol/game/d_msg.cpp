@@ -254,8 +254,8 @@ void Seq_c::nextPage() {
     mLine = 0;
     mFast = FALSE;
     clearText();
-    g_tagProcessor._6 = 0;
-    g_tagProcessor._7 = 0;
+    g_tagProcessor.mLine = 0;
+    g_tagProcessor.mTypeLine = 0;
 }
 
 BOOL Seq_c::procChar() {
@@ -287,7 +287,7 @@ BOOL Seq_c::procChar() {
         mLineTotal++;
         mpComp->setVoiceChar(*mpChar);
         mpComp->mVoice.mPaused = FALSE;
-        g_tagProcessor._7 = mLine;
+        g_tagProcessor.mTypeLine = mLine;
         if (mPageLines >= MSG_PAGE_LINES) {
             setState(SEQ_STATE_PAGE_WAIT);
             return FALSE;
@@ -783,7 +783,7 @@ void Seq_c::procHouseSizeJump() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
     int value = 0;
     if (player != NULL) {
-        value = player->get_86A5();
+        value = player->getHouseSize();
     }
     mpComp->setNextMsgCode(getJumpCode(params, value, 5));
 }
@@ -979,7 +979,7 @@ void Seq_c::procMiiMaskJump() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
     int choice = 1;
     if (player != NULL) {
-        choice = player->_83F5 == 0;
+        choice = player->mMiiMask == 0;
     }
     mpComp->setNextMsgCode(getJumpCode(params, choice, 2));
 }
@@ -1158,7 +1158,7 @@ void Seq_c::procHairJump() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
     BOOL choice = FALSE;
     if (player != NULL) {
-        if (player->_83F5 != 0 || hidesHair(player->mEquipment.mHat)) {
+        if (player->mMiiMask != 0 || hidesHair(player->mEquipment.mHat)) {
             choice = TRUE;
         } else {
             u8 alt = hair + 13;
@@ -1226,8 +1226,8 @@ void Seq_c::procBuildingJump() {
 
 void Seq_c::procKicksJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    u16 key = 0x804B;
-    BOOL present = fn_800F98E4(&key);
+    dItem::Item key((u16)0x804B);
+    dDemoActor_c *present = dNpcList::getSpByKey(key);
     BOOL choice = TRUE;
     if (present) {
         choice = FALSE;
@@ -1237,8 +1237,8 @@ void Seq_c::procKicksJump() {
 
 void Seq_c::procPhineasJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    u16 key = 0x805F;
-    BOOL present = fn_800F98E4(&key);
+    dItem::Item key((u16)0x805F);
+    dDemoActor_c *present = dNpcList::getSpByKey(key);
     BOOL choice = TRUE;
     if (present) {
         choice = FALSE;

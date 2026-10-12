@@ -192,16 +192,16 @@ bool Manage_c::SetSoftResetScene() {
     if (isSoftResetFade()) {
         if (IsSafeToChangeScene()) {
             if (mErrorResetType == 1) {
-                lbl_8074B1B0 = 0xA2;
-                lbl_8074E804 = 2;
-                lbl_8074E808 = 2;
-            } else if (lbl_8074E800 != NULL && lbl_8074E800->getKind() == 0) {
+                dScene_c::m_nextScene = SCENE_PROF_ERROR;
+                dScene_c::m_fadeInType = 2;
+                dScene_c::m_fadeOutType = 2;
+            } else if (dScene_c::m_nowScene != NULL && dScene_c::m_nowScene->getKind() == SCENE_KIND_BOOT) {
                 if (mBootComplete) {
                     forceSceneChange(SCENE_DM_TITLE, 0, 0);
                 } else {
-                    lbl_8074B1B0 = 0xA6;
-                    lbl_8074E804 = 0;
-                    lbl_8074E808 = 0;
+                    dScene_c::m_nextScene = SCENE_PROF_BOOT;
+                    dScene_c::m_fadeInType = 0;
+                    dScene_c::m_fadeOutType = 0;
                 }
             } else {
                 forceSceneChange(SCENE_DM_LOAD, 0, 5);
@@ -222,7 +222,7 @@ void Manage_c::PostDeleteScene() {
         dPrcMng_c::clear();
         dSvMgr_c::cancelRequest();
         fgMngProc_resetSync();
-        fn_80107CD4();
+        dResetSave::clear();
         dSTR::resetLocks();
         dSTR::getBrresBank()->clear();
         clearAllRoomMaps();
@@ -316,7 +316,7 @@ void Manage_c::BootCompleteCheck() {
 // 80106FD4
 void Manage_c::DiskCheckReset() {
     bool bootScene = false;
-    if (lbl_8074E800 != NULL && lbl_8074E800->getKind() == 0) {
+    if (dScene_c::m_nowScene != NULL && dScene_c::m_nowScene->getKind() == SCENE_KIND_BOOT) {
         bootScene = true;
     }
     StartDiskCheck();
@@ -420,7 +420,7 @@ void Manage_c::ModeProc_Normal() {
 // 80107330
 void Manage_c::ModeInit_SoftReset() {
     ModeLog("SoftReset");
-    fn_80107CF4();
+    dResetSave::request();
     if (mSoftResetRequest) {
         mSoftResetRequest = false;
         mSoftResetStep = SOFT_RESET_FADE;

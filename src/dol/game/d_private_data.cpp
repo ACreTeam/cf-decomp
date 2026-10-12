@@ -1,3 +1,7 @@
+// The player save data (dPrivateData_c, 0x86C0 per player) and its member classes. .text 80136244..8013CB30,
+// .ctors 80465730, .rodata 80476150..80476258, .data 804EF1D8..804EF258, .bss 805F1A38..805F2680,
+// .sdata 8074B090..8074B0A8, .sbss 8074E7C0..8074E7C8. See include/game/game/d_private_data.hpp and
+// notes/d_private_data.txt.
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_net_mgr.hpp>
@@ -21,35 +25,12 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_wifi.hpp>
 #include <game/game/d_paper.hpp>
+#include <game/game/d_a_npc.hpp>
+#include <game/game/d_item_sel.hpp>
+#include <game/game/d_menu_mng.hpp>
+#include <game/game/d_post_box.hpp>
 
-// Dependencies whose owners are not recovered yet.
-extern "C" {
-// Save/town data roots.
-BOOL fn_80101490();
-void fn_801014A4();
-void fn_801014D0();
-BOOL fn_80101500();
-void fn_80101514();
-
-// dPlayerID_c / dPersonalID_c.
-void fn_8013EE54(void *);
-
-// dMail_c.
-
-// dDesign_c.
-
-// Other members.
-void fn_80150AD4(dUnk5560_c *obj);
-
-// Misc.
-BOOL fn_8019B864();
-
-// Letters and events.
-void fn_800C60B4(dItem::Item *item, int, s32 *, int, void *, int, int, int);
-extern u8 lbl_8059FF80[];
-BOOL fn_80013550();
-}
-
+// updateBank's savings milestone letters (flag0, savings threshold, letter kind, present).
 struct SavingsLetter {
     s32 flag;
     s32 threshold;
@@ -69,7 +50,7 @@ static inline BOOL isValidIndex(int idx) {
 // dPrivateData_c statics on the current player
 
 // 80136244
-BOOL dPrivateData_c::fn_80136244() {
+BOOL dPrivateData_c::isHostVisitReady() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
@@ -86,14 +67,14 @@ BOOL dPrivateData_c::fn_80136244() {
     if (dNet::isSessionActive()) {
         return FALSE;
     }
-    if (player->mHost.mFlagA) {
+    if (player->mHost.mIsGuest) {
         return FALSE;
     }
     return sLib::isInRange((int)player->mHost.mCount, 1, 7) != FALSE;
 }
 
 // 80136310
-BOOL dPrivateData_c::fn_80136310() {
+BOOL dPrivateData_c::isGuestVisitReady() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
@@ -112,7 +93,7 @@ BOOL dPrivateData_c::fn_80136310() {
     }
 
     // TODO: this is likely a class body function thats inlined that returns an int/BOOL
-    if ((int)player->mHost.mFlagA != 1) {
+    if ((int)player->mHost.mIsGuest != 1) {
         return FALSE;
     }
     return sLib::isInRange((int)player->mHost.mCount, 1, 7) != FALSE;
@@ -126,7 +107,7 @@ void dPrivateHost_c::decrease(int n) {
         if (count == 0) {
             mPID.clear();
             setCount(0);
-            mFlagA = 0;
+            mIsGuest = 0;
             mFlagB = 0;
         } else {
             setCount(count);
@@ -134,7 +115,7 @@ void dPrivateHost_c::decrease(int n) {
     } else if (n < 0) {
         mPID.clear();
         setCount(0);
-        mFlagA = 0;
+        mIsGuest = 0;
         mFlagB = 0;
     }
 }
@@ -154,22 +135,22 @@ void dPrivateData_c::loadHostFromTown() {
 }
 
 // ---------------------------------------------------------------------------
-// dPrivateData_c
+// dRelayDesign_c
 
 // 80136638
-void dUnkDesignBoard_c::clear() {
+void dRelayDesign_c::clear() {
     mDesign.initBlank();
-    _880 = 2;
-    _881 = 0;
-    _883 = 0;
+    mKind = 2;
+    mSendPending = 0;
+    mActive = 0;
     _884 = 0;
-    _885 = 0;
-    _882 = 0;
+    mHops = 0;
+    mDays = 0;
     dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x54);
 }
 
 // 80136694
-BOOL dPrivateData_c::fn_80136694() {
+BOOL dPrivateData_c::isRelayDesignVisitReady() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
@@ -187,23 +168,23 @@ BOOL dPrivateData_c::fn_80136694() {
         return FALSE;
     }
     dSaveExtra_c *extra = dSaveData_c::getExtra();
-    if (extra->mDesignBoard._883 == 0) {
+    if (extra->mDesignBoard.mActive == 0) {
         return FALSE;
     }
-    return extra->mDesignBoard._882 != 0;
+    return extra->mDesignBoard.mDays != 0;
 }
 
 // 8013675C
-void dUnkDesignBoard_c::decrease(int n) {
-    int value = _882;
+void dRelayDesign_c::decrease(int n) {
+    int value = mDays;
     if (n > 0) {
         value = MAX(0, value - n);
     }
-    _882 = value;
+    mDays = value;
 }
 
 // 8013677C
-void dUnkDesignBoard_c::fn_8013677C() {
+void dRelayDesign_c::update() {
     if (dSaveData_c::getRaw()->mTownHost.mCount != 0) {
         return;
     }
@@ -213,31 +194,31 @@ void dUnkDesignBoard_c::fn_8013677C() {
     if (!dWifi::hasSend()) {
         return;
     }
-    if (_882 != 0) {
+    if (mDays != 0) {
         return;
     }
-    if (_883 != 0) {
+    if (mActive != 0) {
         clear();
-        _883 = 0;
-        _882 = 10;
+        mActive = 0;
+        mDays = 10;
     } else if (dSaveData_c::getExtra()->mDesignBoard.mDesign.mCreator.isValid()) {
-        _882 = 7;
-        _883 = 1;
+        mDays = 7;
+        mActive = 1;
     } else if (cM::rndInt(0x80) == 0) {
-        _882 = 7;
-        _883 = 1;
+        mDays = 7;
+        mActive = 1;
     } else {
-        _882 = 1;
-        _883 = 0;
+        mDays = 1;
+        mActive = 0;
     }
 }
 
 // 80136868
-void dUnkDesignBoard_c::fn_80136868() {
+void dRelayDesign_c::validate() {
     BOOL reset = FALSE;
     u8 keep = 0;
-    if (_883 == 0) {
-        keep = _882;
+    if (mActive == 0) {
+        keep = mDays;
     }
     if (dSaveData_c::getRaw()->mExtra.mNetEnabled == 0) {
         reset = TRUE;
@@ -247,14 +228,17 @@ void dUnkDesignBoard_c::fn_80136868() {
     }
     if (reset) {
         clear();
-        _882 = keep;
+        mDays = keep;
     }
 }
 
 // 801368F4
-BOOL dUnkDesignBoard_c::fn_801368F4() {
-    return get885() >= 8;
+BOOL dRelayDesign_c::isHopLimit() {
+    return getHops() >= 8;
 }
+
+// ---------------------------------------------------------------------------
+// dPrivateData_c
 
 // 80136914
 dPrivateData_c::dPrivateData_c() {}
@@ -315,7 +299,7 @@ BOOL dPrivateData_c::isChecksumValidAll(dPrivateData_c *players, int arg) {
 }
 
 // 80136E10
-BOOL dPrivateData_c::fn_80136E10(dPrivateData_c *players) {
+BOOL dPrivateData_c::isUserDataValidAll(dPrivateData_c *players) {
     dPrivateData_c *player = players;
     BOOL result = TRUE;
     for (int i = 0; i < PLAYER_NUM; i++) {
@@ -370,28 +354,28 @@ void dPrivateData_c::setup(const wchar_t *name, u16 id, u8 gender) {
     fn_8010D7E8((dSaveOption_c *)&_83E8);
     mOrgDesigns.init(&mPID);
     mCatalog.clear();
-    _85FA.clear();
-    _8604.clear();
+    mSongs.clear();
+    mGyroids.clear();
     mMotherMail.clear();
     mFriends.clear();
     mHRAInfo.init();
-    _869A = -1;
-    _869B = -1;
-    _869C = 0;
+    mBridgeVoteX = -1;
+    mBridgeVoteY = -1;
+    mBuildingVote = 0;
     clearFlag0(0x13);
-    _55F8 = 0;
-    _8694 = 0;
-    _8695 = 0;
-    _8628 = 0;
-    _862C = 0;
-    fn_80150AD4(&_5560);
-    _55CE.clear();
-    _869D[0] = 0;
-    _869D[1] = 0;
-    _869D[2] = 0;
-    _869D[3] = 0;
-    _869D[4] = 0;
-    memset(_83CC, 0, sizeof(_83CC));
+    mDistPatternVersion = 0;
+    mResetCount = 0;
+    mLastResetCount = 0;
+    mDaysAway = 0;
+    mPendingInterest = 0;
+    mStarSign.clear();
+    mItemPairRing.clear();
+    mCafeCounts[0] = 0;
+    mCafeCounts[1] = 0;
+    mCafeCounts[2] = 0;
+    mCafeCounts[3] = 0;
+    mCafeCounts[4] = 0;
+    memset(mBunnyEggs, 0, sizeof(mBunnyEggs));
     _83CA = dItem::Item();
 }
 
@@ -418,12 +402,12 @@ int dPrivateData_c::findInSave() const {
 }
 
 // 801371DC
-void dPrivateData_c::fn_801371DC() {
+void dPrivateData_c::sendBankAnniversaryLetter() {
     if (isFlag0(0x28)) {
         return;
     }
     dTime_c stamp;
-    stamp = _8618.get();
+    stamp = mBankStamp.get();
     dTime_c prev = stamp;
     prev.year--;
     dTime_c next = stamp;
@@ -433,7 +417,7 @@ void dPrivateData_c::fn_801371DC() {
     prev.normalize();
     if (dTime_c::isSameOrBeforeDay(now, prev) == 0) {
         stamp.year = now.year;
-        _8618.set(OSCalendarTimeToTicks((OSCalendarTime *)&stamp));
+        mBankStamp.set(OSCalendarTimeToTicks((OSCalendarTime *)&stamp));
         return;
     }
     if (dTime_c::isSameOrBeforeDay(now, next) != 1) {
@@ -445,7 +429,7 @@ void dPrivateData_c::fn_801371DC() {
     if (isFlag0(0x6C)) {
         return;
     }
-    if (_8628 <= 0) {
+    if (mDaysAway <= 0) {
         return;
     }
     static dMail_c mail;
@@ -463,8 +447,8 @@ void dPrivateData_c::fn_801371DC() {
 }
 
 // 8013760C
-void dPrivateData_c::fn_8013760C() {
-    if (!isFlag0(0x28) && isFlag0(0x4A) && _8628 > 0) {        
+void dPrivateData_c::sendLostChildThanks() {
+    if (!isFlag0(0x28) && isFlag0(0x4A) && mDaysAway > 0) {        
         static dMail_c mail;
         static u8 lbl_8074B098 = MAIL_FROM_THANK_YOU;
         s32 range[4];
@@ -508,22 +492,22 @@ BOOL dPrivateData_c::sendLetter(u16 kind, const dItem::Item *present, dPrivateDa
 }
 
 // 80137898
-void dPrivateData_c::fn_80137898(int days) {
+void dPrivateData_c::updateBank(int days) {
     if (isFlag0(0x28)) {
         return;
     }
     BOOL closed = dSaveData_c::getTown()->mTimeOffset.isChanged() != 0;
-    if (!closed || _862C > 0) {
+    if (!closed || mPendingInterest > 0) {
         int months;
         int savings;
         int pending;
 
-        pending = _862C;
+        pending = mPendingInterest;
         savings = mSavings;
         if (!closed) {
             dTime_c now = *dTime_c::getCurrent();
             dTime_c start = *dTime_c::getCurrent();
-            start.add(-_8628, 0, 0, 0);
+            start.add(-mDaysAway, 0, 0, 0);
             months = now.month - start.month;
             months += (now.year - start.year) * 12;
             if (months > 0) {
@@ -542,9 +526,9 @@ void dPrivateData_c::fn_80137898(int days) {
             }
             if (sent) {
                 setSavings(total);
-                _862C = 0;
+                mPendingInterest = 0;
             } else {
-                _862C = pay;
+                mPendingInterest = pay;
             }
         }
     }
@@ -609,7 +593,7 @@ void dPrivateData_c::updateTan(int days) {
 }
 
 // 80137CD0
-void dPrivateData_c::fn_80137CD0(int days) {
+void dPrivateData_c::updateTanDaily(int days) {
     if (!fn_80101500()) {
         fn_80101514();
         if (isFlag0(0x28)) {
@@ -641,11 +625,11 @@ void dPrivateData_c::dailyUpdate(int days) {
     }
     if (days != 0) {
         memset(mFlags1, 0, sizeof(mFlags1));
-        _7FA6 = 0;
+        mVillagerDailyBits = 0;
         if (isFlag0(0x17)) {
             clearFlag0(0x17);
-            if (_8692 < 11) {
-                _8692++;
+            if (mCityVisitDays < 11) {
+                mCityVisitDays++;
             }
         }
         if (isFlag0(0x1A)) {
@@ -654,23 +638,23 @@ void dPrivateData_c::dailyUpdate(int days) {
                 _8691++;
             }
         }
-        fn_8013C878();
+        updateGracieStep();
     }
     if (isFlag0(0x72) && dPostOffice::add(&mFutureSelfLetter)) {
         clearFlag0(0x72);
     }
     _83CA = dItem::Item();
-    _8628 += days;
-    _8630 += days;
+    mDaysAway += days;
+    mDaysPassed += days;
     if (dPlayerMgr_c::getCurrentPlayer() == this) {
-        dHR::rateCurrentPlayer(_8628 != 0, 1);
-        updateLooks(_8628);
-        fn_80137898(_8628);
-        fn_801371DC();
-        fn_8013760C();
+        dHR::rateCurrentPlayer(mDaysAway != 0, 1);
+        updateLooks(mDaysAway);
+        updateBank(mDaysAway);
+        sendBankAnniversaryLetter();
+        sendLostChildThanks();
     }
     if (dPlayerMgr_c::getCurrentPlayer() == this) {
-        _8628 = 0;
+        mDaysAway = 0;
     }
 }
 
@@ -774,8 +758,8 @@ void dPrivateData_c::setPocketFlag(int idx, int flag) {
 }
 
 // 8013835C
-void dPrivateData_c::fn_8013835C(void *arg, int idx) {
-    mLetters[idx].copy((const dMail_c *)arg);
+void dPrivateData_c::setLetter(const dMail_c *mail, int idx) {
+    mLetters[idx].copy(mail);
 }
 
 // 8013836C
@@ -812,29 +796,29 @@ void dPrivateData_c::clear() {
     }
     mLetterStyle.clear();
     mEquipment.clear();
-    _8614.clear();
-    _868F = 0;
-    _7EEE.clear();
+    mEmotions.clear();
+    mShopVote = 0;
+    mLastWc24Sender.clear();
     mDebt = 0;
     _83BE.clear();
     _83C2.clear();
     mSavings = 0;
     mErrand.clear();
-    _8620.reset();
+    mFortuneWeek.reset();
     mMotherMail.clear();
     mHost.mPID.clear();
     mHost.mCount = 0;
-    mHost.mFlagA = 0;
+    mHost.mIsGuest = 0;
     mHost.mFlagB = 0;
     _8697 = 0;
     _8698 = 0;
     _8699 = 0;
-    _83C6.clear();
+    mWc24LetterDate.clear();
     mBirthdayHost.clear();
     mVisitorLetter.clear();
     mValentineYear.clear();
     mNewYearYear.clear();
-    _86A5 = 0;
+    mHouseSize = 0;
 }
 
 // 80138580
@@ -904,7 +888,7 @@ void dPrivateData_c::setFlag3(u32 flag) {
 }
 
 // 80138760
-BOOL dPrivateData_c::fn_80138760() {
+BOOL dPrivateData_c::isCardMissing() {
     if (isFlag0(0x3A) && !isFlag0(0x46)) {
         BOOL found = FALSE;
         dItem::Item a(dItem::ITEM_IDX_SHOPPING_CARD);
@@ -924,7 +908,7 @@ BOOL dPrivateData_c::fn_80138760() {
 }
 
 // 80138890
-int dPrivateData_c::fn_80138890() const {
+int dPrivateData_c::getCardSavings() const {
     int savings = mSavings;
     if (savings > 0 && isFlag0(0x3A)) {
         const dItem::Item a(dItem::ITEM_IDX_SHOPPING_CARD);
@@ -1109,23 +1093,23 @@ BOOL dPrivateData_c::payMoney(int amount, BOOL allowItems) {
 }
 
 // 80138FFC
-u8 dPrivateData_c::get_86A5() {
-    return _86A5 < 5 ? _86A5 : 0;
+u8 dPrivateData_c::getHouseSize() {
+    return mHouseSize < 5 ? mHouseSize : 0;
 }
 
 // 80139018
-void dPrivateData_c::set_86A5(u8 value) {
+void dPrivateData_c::setHouseSize(u8 value) {
     if (value < 5) {
-        _86A5 = value;
+        mHouseSize = value;
     }
 }
 
 // 8013902C
-void dPrivateData_c::fn_8013902C() {
+void dPrivateData_c::syncHouseSize() {
     dHomeList_c *homes = &dSaveData_c::getRaw()->mHomes;
     const dHome_c *house = static_cast<const dHomeList_c *>(homes)->getHome(homes->findCurrentPlayer());
     if (house != NULL) {
-        set_86A5(house->mSize);
+        setHouseSize(house->mSize);
     }
 }
 
@@ -1168,19 +1152,19 @@ void dPrivateData_c::addNookPointsForShop() {
 }
 
 // 801391A0
-void dPrivateData_c::fn_801391A0() {
-    _8620.setNow();
-    _8620.toDayStart();
+void dPrivateData_c::setFortuneWeek() {
+    mFortuneWeek.setNow();
+    mFortuneWeek.toDayStart();
 }
 
 // 801391E0
-BOOL dPrivateData_c::fn_801391E0() {
-    if (_8620.isNone()) {
+BOOL dPrivateData_c::isNewFortuneWeek() {
+    if (mFortuneWeek.isNone()) {
         return TRUE;
     }
-    dTimeStamp_c week(_8620.getTicks());
+    dTimeStamp_c week(mFortuneWeek.getTicks());
     dTime_c cal;
-    cal = _8620.get();
+    cal = mFortuneWeek.get();
     week.addDays(-cal.wday);
     dTimeStamp_c now(dTime_c::getCurrent());
     dTime_c nowCal;
@@ -1190,64 +1174,64 @@ BOOL dPrivateData_c::fn_801391E0() {
 }
 
 // 801392B8
-void dPrivateData_c::inc_8694() {
-    set_8694(get_8694() + 1);
+void dPrivateData_c::incResetCount() {
+    setResetCount(getResetCount() + 1);
 }
 
 // 801392F4
-void dPrivateData_c::set_8694(u8 value) {
-    _8694 = value;
-    if (_8694 > 10) {
-        _8694 = 9;
+void dPrivateData_c::setResetCount(u8 value) {
+    mResetCount = value;
+    if (mResetCount > 10) {
+        mResetCount = 9;
     }
 }
 
 // 80139314
-void dPrivateData_c::fn_80139314() {
-    if (_8695 > _8694) {
+void dPrivateData_c::syncResetCount() {
+    if (mLastResetCount > mResetCount) {
         setFlag0(0x58);
     }
-    _8695 = _8694;
+    mLastResetCount = mResetCount;
 }
 
 // 80139364
-u8 dPrivateData_c::get_8694() {
-    return _8694;
+u8 dPrivateData_c::getResetCount() {
+    return mResetCount;
 }
 
 // 80139370
-u8 dPrivateData_c::get_8695() {
-    return _8695;
+u8 dPrivateData_c::getLastResetCount() {
+    return mLastResetCount;
 }
 
 // 8013937C
-BOOL dPrivateData_c::fn_8013937C() {
+BOOL dPrivateData_c::isDonAtCafe() {
     return isFlag0(0x61);
 }
 
 // 80139384
-int dPrivateData_c::get_8693() {
-    return _8693;
+int dPrivateData_c::getNookPurchases() {
+    return mNookPurchases;
 }
 
 // 80139390
-void dPrivateData_c::inc_8693() {
-    if (_8693 < 50) {
-        _8693++;
+void dPrivateData_c::incNookPurchases() {
+    if (mNookPurchases < 50) {
+        mNookPurchases++;
     }
 }
 
 // 801393AC
-BOOL dPrivateData_c::fn_801393AC() {
+BOOL dPrivateData_c::isNookLoyaltyLetterDue() {
     BOOL result = FALSE;
-    if (get_8693() >= 50 && !isFlag0(0x18)) {
+    if (getNookPurchases() >= 50 && !isFlag0(0x18)) {
         result = TRUE;
     }
     return result;
 }
 
 // 80139408
-void *dPrivateData_c::fn_80139408() {
+void *dPrivateData_c::getPostBox() {
     int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
@@ -1256,7 +1240,7 @@ void *dPrivateData_c::fn_80139408() {
 }
 
 // 80139468
-void *dPrivateData_c::fn_80139468() {
+dSaveMailBox_c *dPrivateData_c::getMailBox() {
     int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
@@ -1265,7 +1249,7 @@ void *dPrivateData_c::fn_80139468() {
 }
 
 // 801394D0
-void *dPrivateData_c::fn_801394D0() {
+dSaveItemBox_c *dPrivateData_c::getItemBox() {
     int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
@@ -1274,7 +1258,7 @@ void *dPrivateData_c::fn_801394D0() {
 }
 
 // 80139530
-void *dPrivateData_c::fn_80139530() {
+dSaveDesignBox_c *dPrivateData_c::getDesignBox() {
     int idx = find(dSaveData_c::getTown()->mPlayers, &mPID);
     if (idx == -1) {
         return NULL;
@@ -1283,7 +1267,7 @@ void *dPrivateData_c::fn_80139530() {
 }
 
 // 80139594
-dMail_c *dPrivateData_c::fn_80139594() {
+dMail_c *dPrivateData_c::findAnsweredInvite() {
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
         dMail_c* mail = &mLetters[i];
         if (mail != NULL && mail->isValid() && mail->isReadFlaggedInvite() && mail->getFromPlayer()) {
@@ -1301,7 +1285,7 @@ dMail_c *dPrivateData_c::fn_80139594() {
 }
 
 // 8013967C
-dMail_c *dPrivateData_c::fn_8013967C() {
+dMail_c *dPrivateData_c::findUnansweredInvite() {
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) {
         dMail_c* mail = &mLetters[i];
         if (mail != NULL && mail->isValid() && mail->isReadUnflaggedInvite()) {
@@ -1312,9 +1296,9 @@ dMail_c *dPrivateData_c::fn_8013967C() {
 }
 
 // 801396F4
-BOOL dPrivateData_c::fn_801396F4() {
+BOOL dPrivateData_c::hasInvite() {
     BOOL result = FALSE;
-    if (fn_80139594() != NULL || fn_8013967C() != NULL) {
+    if (findAnsweredInvite() != NULL || findUnansweredInvite() != NULL) {
         result = TRUE;
     }
     return result;
@@ -1392,11 +1376,11 @@ int dPrivateData_c::countErrandPockets(u16 *mask) {
 }
 
 // 80139948
-BOOL dPrivateData_c::fn_80139948(int arg) {
+BOOL dPrivateData_c::expireErrand(const dTime_c *now) {
     if (!mPID.isValid()) {
         return FALSE;
     }
-    if (!mErrand.isExpired(*(dTime_c *)arg)) {
+    if (!mErrand.isExpired(*now)) {
         return FALSE;
     }
     u16 mask = 0;
@@ -1586,42 +1570,42 @@ BOOL dCatalog_c::isComplete(int kind) {
 }
 
 // ---------------------------------------------------------------------------
-// dPrivateBits85FA_c
+// dPrivateSongs_c
 
 // 8013A2B8
-void dPrivateBits85FA_c::clear() {
+void dPrivateSongs_c::clear() {
     for (int i = 0; i < 10; i++) {
         mBits[i] = 0;
     }
 }
 
 // 8013A2E8
-BOOL dPrivateBits85FA_c::isSet(const dItem::Item &item) {
+BOOL dPrivateSongs_c::isSet(const dItem::Item &item) {
     return isSetIdx(dItem::seeker_c::get()->findLike(item));
 }
 
 // 8013A330
-void dPrivateBits85FA_c::set(const dItem::Item &item) {
+void dPrivateSongs_c::set(const dItem::Item &item) {
     setIdx(dItem::seeker_c::get()->findLike(item));
 }
 
 // 8013A378
-void dPrivateBits85FA_c::reset(const dItem::Item &item) {
+void dPrivateSongs_c::reset(const dItem::Item &item) {
     resetIdx(dItem::seeker_c::get()->findLike(item));
 }
 
 // 8013A3C0
-BOOL dPrivateBits85FA_c::isSetIdx(u32 idx) {
+BOOL dPrivateSongs_c::isSetIdx(u32 idx) {
     return (mBits[idx >> 3] >> (idx & 7)) & 1;
 }
 
 // 8013A3D8
-void dPrivateBits85FA_c::setIdx(u32 idx) {
+void dPrivateSongs_c::setIdx(u32 idx) {
     mBits[idx >> 3] |= (1 << (idx & 7));
 }
 
 // 8013A3F8
-void dPrivateBits85FA_c::resetIdx(u32 idx) {
+void dPrivateSongs_c::resetIdx(u32 idx) {
     mBits[idx >> 3] &= ~(1 << (idx & 7));
 }
 
@@ -1685,7 +1669,7 @@ u8 dDesignList_c::getOrder(u32 i) {
 }
 
 // 8013A888
-u16 dDesignList_c::fn_8013A888(u32 i, int kind) {
+u16 dDesignList_c::getDesignItem(u32 i, int kind) {
     int order = getOrder(i);
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     dItem::seeker_c::get()->search(kind, 6, NULL);
@@ -1710,7 +1694,7 @@ dEquip_c::dEquip_c() {
 dEquip_c::~dEquip_c() {}
 
 // 8013A9C8
-BOOL dEquip_c::fn_8013A9C8() {
+BOOL dEquip_c::isAccessoryVisible() {
     if (mAcc.mId == dItem::ITEM_ID_NONE) {
         return TRUE;
     }
@@ -1742,26 +1726,26 @@ void dEquip_c::clear() {
 }
 
 // ---------------------------------------------------------------------------
-// dPrivateSlots_c
+// dPrivateEmotions_c
 
 // 8013AAAC
-BOOL dPrivateSlots_c::isValid(int i) {
+BOOL dPrivateEmotions_c::isValid(int i) {
     u8 slot = mSlots[i];
     return slot != 0xFF && slot < 0x1E;
 }
 
 // 8013AACC
-u8 dPrivateSlots_c::get(int i) {
+u8 dPrivateEmotions_c::get(int i) {
     return mSlots[i];
 }
 
 // 8013AAD4
-void dPrivateSlots_c::set(int i, u8 value) {
+void dPrivateEmotions_c::set(int i, u8 value) {
     mSlots[i] = value;
 }
 
 // 8013AADC
-void dPrivateSlots_c::clear() {
+void dPrivateEmotions_c::clear() {
     mSlots[0] = 0xFF;
     mSlots[1] = 0xFF;
     mSlots[2] = 0xFF;
@@ -1769,7 +1753,7 @@ void dPrivateSlots_c::clear() {
 }
 
 // 8013AAF4
-int dPrivateSlots_c::findEmpty() {
+int dPrivateEmotions_c::findEmpty() {
     for (int i = 0; i < 4; i++) {
         if (!isValid(i)) {
             return i;
@@ -1779,10 +1763,10 @@ int dPrivateSlots_c::findEmpty() {
 }
 
 // 8013AB54
-dUnk83ED_c::dUnk83ED_c() {}
+dMiiCreateID_c::dMiiCreateID_c() {}
 
 // 8013AB58
-dUnk83ED_c::~dUnk83ED_c() {}
+dMiiCreateID_c::~dMiiCreateID_c() {}
 
 // ---------------------------------------------------------------------------
 // dOutfit_c
@@ -1827,7 +1811,7 @@ void dOutfit_c::setFromPlayer() {
         mFlags.male = true;
     }
     mFlags.noShoes = false;
-    if (dPlayerMgr_c::getCurrentPlayer()->_83F7 == 0) {
+    if (dPlayerMgr_c::getCurrentPlayer()->mShoeKind == 0) {
         mFlags.noShoes = true;
     }
 }
@@ -2015,11 +1999,11 @@ dQuestErrand_c *dPrivateData_c::findErrandAll(dPrivateData_c *players, dAnmPerso
 }
 
 // 8013B474
-BOOL dPrivateData_c::fn_8013B474(dPrivateData_c *players, int arg) {
+BOOL dPrivateData_c::expireErrandAll(dPrivateData_c *players, const dTime_c *now) {
     BOOL result = FALSE;
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(players, i);
-        if (player != NULL && player->fn_80139948(arg)) {
+        if (player != NULL && player->expireErrand(now)) {
             result = TRUE;
         }
     }
@@ -2027,7 +2011,7 @@ BOOL dPrivateData_c::fn_8013B474(dPrivateData_c *players, int arg) {
 }
 
 // 8013B4F8
-int dPrivateData_c::fn_8013B4F8() {
+int dPrivateData_c::tallyBuildingVotes() {
     int counts[3];
     counts[0] = 0;
     counts[1] = 0;
@@ -2035,7 +2019,7 @@ int dPrivateData_c::fn_8013B4F8() {
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (player->mPID.isValid()) {
-            counts[player->_869C]++;
+            counts[player->mBuildingVote]++;
         }
     }
     if (counts[1] > counts[2]) {
@@ -2048,7 +2032,7 @@ int dPrivateData_c::fn_8013B4F8() {
 }
 
 // 8013B5CC
-int dPrivateData_c::fn_8013B5CC() {
+int dPrivateData_c::tallyBridgeVotes() {
     int ties[PLAYER_NUM];
     u8 votes[7 * 7];
     memset(votes, 0, sizeof(votes));
@@ -2057,8 +2041,8 @@ int dPrivateData_c::fn_8013B5CC() {
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (player->mPID.isValid()) {
-            s8 x = player->_869A;
-            s8 y = player->_869B;
+            s8 x = player->mBridgeVoteX;
+            s8 y = player->mBridgeVoteY;
             if (x >= 0 && y >= 0) {
                 int idx = x * 7 + y;
                 u8 count = ++votes[idx];
@@ -2085,13 +2069,13 @@ int dPrivateData_c::fn_8013B5CC() {
 }
 
 // 8013B7A4
-void dPrivateData_c::fn_8013B7A4() {
+void dPrivateData_c::clearPublicWorksVotes() {
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (player->mPID.isValid()) {
-            player->_869A = -1;
-            player->_869B = -1;
-            player->_869C = 0;
+            player->mBridgeVoteX = -1;
+            player->mBridgeVoteY = -1;
+            player->mBuildingVote = 0;
             player->clearFlag0(0x13);
         }
     }
@@ -2099,15 +2083,15 @@ void dPrivateData_c::fn_8013B7A4() {
 }
 
 // 8013B848
-void dPrivateData_c::fn_8013B848() {
+void dPrivateData_c::buildVotedBridge() {
     int x = -1;
     int y = -1;
-    int idx = fn_8013B5CC();
+    int idx = tallyBridgeVotes();
     if (idx != -1) {
         x = idx / 7;
         y = idx % 7;
     } else {
-        dFdBase_c *map = fn_80190C44(1);
+        dFdBase_c *map = fn_80190C44(FD_ID_TOWN);
         int count = 0;
         for (int j = 1; j < map->mBlockH - 1; j++) {
             for (int i = 1; i < map->mBlockW - 1; i++) {
@@ -2135,28 +2119,28 @@ void dPrivateData_c::fn_8013B848() {
         fn_800EBB24(2, "BBS_office", 0, 0);
         dSaveData_c::getTown()->mMainField.setBridgeBlock(x, y);
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
-        fn_8013B7A4();
+        clearPublicWorksVotes();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     }
 }
 
 // 8013B9F8
-void dPrivateData_c::fn_8013B9F8() {
+void dPrivateData_c::buildFountain() {
     fn_800EBB24(3, "BBS_office", 0, 0);
     dSTR::requestFountain();
     dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
-    fn_8013B7A4();
+    clearPublicWorksVotes();
     setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
 }
 
 // 8013BA50
-void dPrivateData_c::fn_8013BA50() {
+void dPrivateData_c::buildVotedBuilding() {
     int x, y;
     dItem::Item id1((u16)BUILDING_WINDMILL);
     BOOL a = dSaveBuildingList_c::get()->getPos(&x, &y, &id1, 1);
     dItem::Item id2((u16)BUILDING_LIGHTHOUSE);
     BOOL b = dSaveBuildingList_c::get()->getPos(&x, &y, &id2, 1);
-    if ((u8)fn_8013B4F8() == 1) {
+    if ((u8)tallyBuildingVotes() == 1) {
         if (!a) {
             if (b) {
                 fn_800EBB24(9, "BBS_office", 0, 0);
@@ -2167,7 +2151,7 @@ void dPrivateData_c::fn_8013BA50() {
             dSTR::requestWindmill();
         }
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
-        fn_8013B7A4();
+        clearPublicWorksVotes();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     } else {
         if (!b) {
@@ -2180,24 +2164,24 @@ void dPrivateData_c::fn_8013BA50() {
             dSTR::requestLighthouse();
         }
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
-        fn_8013B7A4();
+        clearPublicWorksVotes();
         setFlag0All(dSaveData_c::getTown()->mPlayers, 0x7F);
     }
 }
 
 // 8013BBCC
-void dPrivateData_c::fn_8013BBCC() {
+void dPrivateData_c::finishPublicWorksVote() {
     if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE)) {
         switch (dSaveData_c::getPublicWorks()) {
         case 0:
-            fn_8013B848();
+            buildVotedBridge();
             break;
         case 1:
-            fn_8013B9F8();
+            buildFountain();
             break;
         case 2:
         case 3:
-            fn_8013BA50();
+            buildVotedBuilding();
             break;
         }
     }
@@ -2205,7 +2189,7 @@ void dPrivateData_c::fn_8013BBCC() {
 }
 
 // 8013BC38
-void dPrivateData_c::fn_8013BC38(int days) {
+void dPrivateData_c::updatePublicWorks(int days) {
     if (days < 1) {
         return;
     }
@@ -2214,7 +2198,7 @@ void dPrivateData_c::fn_8013BC38(int days) {
         left = left < 0 ? 0 : left;
         dSaveData_c::getTown()->mPublicWorksDays = left;
         if (left == 0) {
-            fn_8013BBCC();
+            finishPublicWorksVote();
         }
     }
     if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_PUBLIC_WORKS_FUNDED)) {
@@ -2242,7 +2226,7 @@ void dPrivateData_c::fn_8013BC38(int days) {
 }
 
 // 8013BDA0
-BOOL dPrivateData_c::fn_8013BDA0(int chance, int count, int flag) {
+BOOL dPrivateData_c::startHostVisit(int chance, int count, int flag) {
     dSaveTown_c *town = dSaveData_c::getTown();
     if (isFlag0Any(dSaveData_c::getTown()->mPlayers, 0x4B)) {
         return FALSE;
@@ -2261,11 +2245,11 @@ BOOL dPrivateData_c::fn_8013BDA0(int chance, int count, int flag) {
         return FALSE;
     }
     int coin = cM::rndInt(2);
-    townHost->mFlagA = coin == 0;
+    townHost->mIsGuest = coin == 0;
     townHost->mCount = count;
     townHost->mFlagC = flag;
     townHost->mPID = mPID;
-    mHost.mFlagA = coin - 1 == 0;
+    mHost.mIsGuest = coin - 1 == 0;
     dPrivateData_c *host = NULL;
     if (flag == 1) {
         host = dPlayerMgr_c::getCurrentPlayer();
@@ -2305,7 +2289,7 @@ void dItemPairRing_c::clear() {
 }
 
 // 8013C0C0
-void dItemPairRing_c::fn_8013C0C0() {
+void dItemPairRing_c::begin() {
     _21_5 = 1;
     _21_2 = 1;
 }
@@ -2326,15 +2310,15 @@ void dItemPairRing_c::push(const dItem::Item *a, const dItem::Item *b) {
     _22_6 = 1;
     mCount = 0;
     dSaveTown_c *town = dSaveData_c::getTown();
-    town->_06673F = 1;
-    if (fn_80013550()) {
+    town->mNpcSpotA.mFlag = 1;
+    if (dAcNpc_c::isMultiPlay()) {
         dNet::beginPacket();
         dNet::sendPacket(NET_PACKET_NPC_SPOT_A_FLAG, NET_MEMBER_NONE);
     }
 }
 
 // 8013C1A0
-void dItemPairRing_c::fn_8013C1A0() {
+void dItemPairRing_c::incCount() {
     if (mCount < 3) {
         mCount++;
     }
@@ -2354,15 +2338,15 @@ BOOL dItemPairRing_c::contains(const dItem::Item *a, const dItem::Item *b) {
 }
 
 // 8013C25C
-void dItemPairRing_c::fn_8013C25C() {
+void dItemPairRing_c::end() {
     _21_3 = 1;
     _21_1 = 0;
     _22_7 = 0;
-    fn_8013C27C();
+    resetState();
 }
 
 // 8013C27C
-void dItemPairRing_c::fn_8013C27C() {
+void dItemPairRing_c::resetState() {
     _21_2 = 0;
     _21_0 = 0;
     _22_5 = 0;
@@ -2370,14 +2354,14 @@ void dItemPairRing_c::fn_8013C27C() {
 }
 
 // 8013C2A0
-u8 dPrivateData_c::get_869D(int i) {
-    return _869D[i];
+u8 dPrivateData_c::getCafeCount(int i) {
+    return mCafeCounts[i];
 }
 
 // 8013C2B0
-void dPrivateData_c::inc_869D(int i) {
-    if (_869D[i] < 0xFF) {
-        _869D[i]++;
+void dPrivateData_c::incCafeCount(int i) {
+    if (mCafeCounts[i] < 0xFF) {
+        mCafeCounts[i]++;
     }
 }
 
@@ -2395,19 +2379,19 @@ BOOL dPrivateData_c::isBirthday(const dTime_c& cal) const {
 }
 
 // ---------------------------------------------------------------------------
-// dUnk55FC_c / dAnimalItem_c / dUnk8634_c
+// dBirthdayHost_c / dAnimalItem_c / dPrivateYear_c
 
 // 8013C3A0
-dUnk55FC_c::dUnk55FC_c() {}
+dBirthdayHost_c::dBirthdayHost_c() {}
 
 // 8013C3A4
-dUnk55FC_c::~dUnk55FC_c() {}
+dBirthdayHost_c::~dBirthdayHost_c() {}
 
 // 8013C3E4
-void dUnk55FC_c::clear() {
-    _00 = -1;
-    _04 = -1;
-    _08 = -1;
+void dBirthdayHost_c::clear() {
+    mHostYear = -1;
+    mLetterYear = -1;
+    mHostIdx = -1;
 }
 
 // 8013C3F8
@@ -2434,58 +2418,58 @@ void dAnimalItem_c::set(const dAnmPersonalID_c *animal, const dItem::Item *item)
 }
 
 // 8013C4EC
-dUnk8634_c::dUnk8634_c() {}
+dPrivateYear_c::dPrivateYear_c() {}
 
 // 8013C4F0
-dUnk8634_c::~dUnk8634_c() {}
+dPrivateYear_c::~dPrivateYear_c() {}
 
 // 8013C530
-void dUnk8634_c::clear() {
-    mValue = -1;
+void dPrivateYear_c::clear() {
+    mYear = -1;
 }
 
 // ---------------------------------------------------------------------------
-// dPrivateBits8604_c
+// dPrivateGyroids_c
 
 // 8013C53C
-void dPrivateBits8604_c::clear() {
+void dPrivateGyroids_c::clear() {
     for (int i = 0; i < 16; i++) {
         mBits[i] = 0;
     }
 }
 
 // 8013C584
-BOOL dPrivateBits8604_c::isSet(const dItem::Item &item) {
+BOOL dPrivateGyroids_c::isSet(const dItem::Item &item) {
     return isSetIdx(dItem::seeker_c::get()->findLike(item));
 }
 
 // 8013C5CC
-void dPrivateBits8604_c::set(const dItem::Item &item) {
+void dPrivateGyroids_c::set(const dItem::Item &item) {
     setIdx(dItem::seeker_c::get()->findLike(item));
 }
 
 // 8013C614
-void dPrivateBits8604_c::reset(const dItem::Item &item) {
+void dPrivateGyroids_c::reset(const dItem::Item &item) {
     resetIdx(dItem::seeker_c::get()->findLike(item));
 }
 
 // 8013C65C
-BOOL dPrivateBits8604_c::isSetIdx(u32 idx) const {
+BOOL dPrivateGyroids_c::isSetIdx(u32 idx) const {
     return (mBits[idx >> 3] >> (idx & 7)) & 1;
 }
 
 // 8013C674
-void dPrivateBits8604_c::setIdx(u32 idx) {
+void dPrivateGyroids_c::setIdx(u32 idx) {
     mBits[idx >> 3] |= (1 << (idx & 7));
 }
 
 // 8013C694
-void dPrivateBits8604_c::resetIdx(u32 idx) {
+void dPrivateGyroids_c::resetIdx(u32 idx) {
     mBits[idx >> 3] &= ~(1 << (idx & 7));
 }
 
 // 8013C6B4
-int dPrivateBits8604_c::count() const {
+int dPrivateGyroids_c::count() const {
     u32 i;
     int count = 0;
     for (i = 0; i < 0x7F; i++) {
@@ -2497,9 +2481,9 @@ int dPrivateBits8604_c::count() const {
 }
 
 // 8013C71C
-BOOL dPrivateData_c::fn_8013C71C() const {
+BOOL dPrivateData_c::isBedHeadVisible() const {
     BOOL result = FALSE;
-    if (((mHair == 0xC || mHair == 0x19) != 0 && _83F5 == 0) != 0) {
+    if (((mHair == 0xC || mHair == 0x19) != 0 && mMiiMask == 0) != 0) {
         int bone = mEquipment.mHat.getHideBone();
         if ((bone == 2 || (u32)(bone - 3) <= 3) == FALSE) {
             result = TRUE;
@@ -2509,12 +2493,12 @@ BOOL dPrivateData_c::fn_8013C71C() const {
 }
 
 // 8013C7C0
-u8 dPrivateData_c::get_86A3() {
-    return _86A3;
+u8 dPrivateData_c::getGracieStep() {
+    return mGracieStep;
 }
 
 // 8013C7CC
-BOOL dPrivateData_c::fn_8013C7CC() const {
+BOOL dPrivateData_c::isGracieStoryReady() const {
     if (_86A4 < 3) {
         return FALSE;
     }
@@ -2524,31 +2508,31 @@ BOOL dPrivateData_c::fn_8013C7CC() const {
     if (!isFlag0(0x74)) {
         return FALSE;
     }
-    if (_8692 < 11) {
+    if (mCityVisitDays < 11) {
         return FALSE;
     }
     return dSaveData_c::getTown()->mShops.mShop.mCountdown != 0x7F;
 }
 
 // 8013C878
-void dPrivateData_c::fn_8013C878() {
-    u8 step = _86A3;
+void dPrivateData_c::updateGracieStep() {
+    u8 step = mGracieStep;
     switch (step) {
     case 0:
-        if (fn_8013C7CC()) {
-            _86A3++;
+        if (isGracieStoryReady()) {
+            mGracieStep++;
         }
         break;
     case 1:
         if (isFlag0(0x79) && isFlag0(0x7A)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x79);
             clearFlag0(0x7A);
         }
         break;
     case 2:
         if (isFlag0(0x7D) && isFlag0(0x7B) && isFlag0(0x7C)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x7D);
             clearFlag0(0x7B);
             clearFlag0(0x7C);
@@ -2557,38 +2541,38 @@ void dPrivateData_c::fn_8013C878() {
     case 3:
     case 5:
         if (isFlag0(0x78)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x78);
         }
         break;
     case 4:
     case 7:
         if (isFlag0(0x79)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x79);
         }
         break;
     case 6:
         if (isFlag0(0x7B) && isFlag0(0x7C)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x7B);
             clearFlag0(0x7C);
         }
         break;
     case 8:
         if (isFlag0(0x7A)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x7A);
         }
         break;
     case 9:
         if (isFlag0(0x7B)) {
-            _86A3++;
+            mGracieStep++;
             clearFlag0(0x7B);
         }
         break;
     }
-    if (step != _86A3) {
+    if (step != mGracieStep) {
         clearFlag0(0x80);
     }
 }

@@ -61,25 +61,27 @@ public:
     /* 0x74 */ u16 mDay;                                     // getToday() when listed
 }; // size 0x78
 
-// Records to send to other towns, one slot per player (dSaveExtra_c). Its methods are in the unsplit
-// code at 8014F2C0.
+// Records to send to other towns, one slot per player (dSaveExtra_c). Its methods are in d_sv_auc_list
+// (.text 8014F284..8014F8FC).
+enum {
+    AUC_LIST_VERSION = 1, // dSvAucList_c::mVersion; d_wifi takes received lists only with this version
+};
 struct dSvAucList_c {
+    void init();                                             // 8014F284: zeroes it, AUC_LIST_VERSION
     void clear(u32 player);                                  // 8014F2C0: frees the slot
+    void clearAll();                                         // 8014F2F0: frees every slot
     int addMine(const dSvAucItem_c *item);                   // 8014F344: into the current player's slot
     int addSeller(const dSvAucItem_c *item);                 // 8014F57C: into the seller's slot
     int getDay(u32 player);                                  // 8014F79C: the slot's mDay, -1 when free
+    const dPersonalID_c *getSeller() const;                  // 8014F804: the first valid mSeller, else NULL
+    const dPersonalID_c *getHighBidder() const;              // 8014F880: the first valid mHighBidder, else NULL
+    const dSvAucItem_c *getItem(int idx) const { return &mItems[idx]; }
 
-    /* 0x00 */ u8 _00;
+    /* 0x00 */ u8 mVersion;                                  // AUC_LIST_VERSION
     /* 0x01 */ u8 mMask;                                     // the slots in use (a bit per player)
     /* 0x02 */ u8 _02[2];
     /* 0x04 */ dSvAucItem_c mItems[PLAYER_NUM];
 }; // size 0x1E4
-
-extern "C" {
-const dPersonalID_c *fn_8014F804(const dSvAucList_c *list); // 8014F804: the first valid mSeller, else NULL
-const dPersonalID_c *fn_8014F880(const dSvAucList_c *list); // 8014F880: the first valid mHighBidder, else NULL
-void fn_8014F2F0(dSvAucList_c *list); // 8014F2F0: frees every slot (mMask = 0, clears the items)
-}
 
 // The auction (dSaveTown_c::mAuction).
 class dSvAuc_c {

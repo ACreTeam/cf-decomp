@@ -496,7 +496,7 @@ BOOL dAcNpcNml_c::talk_c::stepInviteTradeOffer(int kind) {
 // 8005BC98
 void dAcNpcNml_c::talk_c::selInviteTradeOffer() {
     dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(2);
-    fn_8019C34C();
+    dMoney_c::onForceShow();
 }
 
 // 8005BCCC
@@ -628,7 +628,7 @@ void dAcNpcNml_c::talk_c::endInviteTradeYes(int arg) {
 // 8005C284
 BOOL dAcNpcNml_c::talk_c::stepInviteTradeYes(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        fn_8019C35C();
+        dMoney_c::offForceShow();
         return TRUE;
     }
     return FALSE;

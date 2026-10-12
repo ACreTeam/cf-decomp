@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <game/game/d_actor.hpp>
+#include <game/game/d_demo_actor.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
 
@@ -14,15 +15,16 @@ class dHmnToolBank_c;
 // (getMyNo). Player slots (mSlots): 0-3 town players (dSaveData_c::mPlayers),
 // 4-6 visiting players (dGuestPlayers_c), 7 none.
 
-// The player actor (lives in the d_a_player REL). Only the fields this TU uses.
-class dPlayerActor_c : public dActor_c {
+// The player actor (lives in the d_a_player REL; its constructor runs dDemoActor_c's). Only the fields this TU
+// uses.
+class dPlayerActor_c : public dDemoActor_c {
 public:
     using dActor_c::mPos;
     using dActor_c::mAngle;
 
     m3d::fanm_c *getAnm() { return (m3d::fanm_c *)_03C4; }
 
-    /* 0x00A0 */ u8 _00A0[0x324];
+    /* 0x00BA */ u8 _00BA[0x30A]; // dDemoActor_c ends at 0xBA (mDemoFlags); MWCC packs into its tail padding
     /* 0x03C4 */ u8 _03C4[0x8];
     /* 0x03CC */ u8 _03CC[0x240];
     /* 0x060C */ u8 _060C[0x18];
@@ -162,7 +164,7 @@ struct dEffectTarget_c {
     /* 0xC8 */ void *_C8;
 };
 
-// Output of fn_802C5A0C (Mii data); 8 bytes at 0x2C go to dPrivateData_c::_83ED.
+// Output of fn_802C5A0C (Mii data); 8 bytes at 0x2C go to dPrivateData_c::mMiiId.
 struct dMiiData_c {
     /* 0x00 */ u8 _00[0x2C];
     /* 0x2C */ u8 _2C[8];

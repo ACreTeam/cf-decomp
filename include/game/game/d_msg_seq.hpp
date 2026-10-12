@@ -186,7 +186,7 @@ public:
     void procRndJump3(); // 8019DE10: 8:1
     void procFriendshipJump(); // 8019DE18: 8:2
     void procPlayerGenderJump(); // 8019DEFC: 8:3
-    void procHouseSizeJump(); // 8019DF78: 8:4: house size (dPrivateData_c::get_86A5)
+    void procHouseSizeJump(); // 8019DF78: 8:4: house size (dPrivateData_c::getHouseSize)
     void procInsectCatalogJump(); // 8019DFEC: 8:5
     void procFishCatalogJump(); // 8019E0F0: 8:6
     void procAnimalNumJump(); // 8019E1F4: 8:7
@@ -208,7 +208,7 @@ public:
     void procRndJump8(); // 8019E918: 8:23
     void procSeasonJump(); // 8019E920: 8:24
     void procShopStageJump(); // 8019E984: 8:25
-    void procMiiMaskJump(); // 8019E9EC: 8:26: Mii mask (dPrivateData_c::_83F5, inferred)
+    void procMiiMaskJump(); // 8019E9EC: 8:26: Mii mask (dPrivateData_c::mMiiMask, inferred)
     void procBeeStingJump(); // 8019EA68: 8:27: bee-stung face (flag0 2)
     void procSceneJump(); // 8019EAE4: 8:28
     void procHourJump(); // 8019EB54: 8:29

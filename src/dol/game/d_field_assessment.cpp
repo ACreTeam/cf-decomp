@@ -51,6 +51,9 @@
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_activity_log.hpp>
+#include <game/game/d_fd_block_type.hpp>
+#include <game/game/d_scene_base.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -72,39 +75,23 @@ extern "C" {
 void fn_8018EF28();
 void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
-u32 fn_80081324(int type);
-int fn_800812C8(int blockType);
-void fn_8014F248(void *obj, int days);
 void fn_80151CBC(void *obj);
 void fn_8014FD48(void *obj, dTime_c last, dTime_c *now, int *days);
 void fn_80151CF0(void *obj);
 void fn_800F5AE8();
-void fn_80150524(void *obj);
-void fn_801505E4(void *obj);
-void fn_80150628(void *obj);
-void fn_801541D8(void *obj);
 void fn_8014F998(void *obj, dTime_c *now);
 void fn_8014F96C(void *obj);
 void fn_80186838();
-void fn_8014F030(void *obj, u8 a);
-void fn_8014EFC0(void *obj, u8 a);
 BOOL fn_8018EEEC();
 void fn_8018EEF4();
 void fn_8018EE7C();
 void fn_800D16E8();
 int fn_801017B8();
-void fn_800C77E8(void *obj);
-void fn_800C7800(void *obj);
-void fn_800C7830(void *obj);
 BOOL fn_80087820(dEffect_c *effect, const char *name, const mVec3_c *pos, const mAng3_c *ang, const mVec3_c *scale);
 f32 fn_8044B83C(EGG::Effect *effect);
 int fn_80190C58(int a);
-void fn_800C77B8(int player);
-void fn_800C77D0(int player);
-void fn_800C7818(int player);
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 extern void *lbl_8074E9A0[2];
-extern u16 *lbl_8074E800;
 }
 
 
@@ -1236,7 +1223,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     }
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL && player->isFlag1(0x44)) {
-        player->_55F8 = dSaveData_c::getExtra()->mDistPattern.mVersion;
+        player->mDistPatternVersion = dSaveData_c::getExtra()->mDistPattern.mVersion;
     }
     num = days;
     if ((u32)days > 50) {
@@ -2347,7 +2334,7 @@ dFdAsPos_c dFgMngProc_c::findLilyBlock(dFdBase_c *fd, int blockW, int blockH) {
         for (pos.mX = 0; pos.mX < blockW; pos.mX++) {
             if (!sFdAssess.mBlocks[pos.mX][pos.mZ].mFlags.mBits.mHasLily) {
                 dFdBlock_c *block = fd->getBlock(pos.mX + 1, pos.mZ + 1);
-                if (block != NULL && (fn_80081324(block->mType) & 0x0FE00000)) {
+                if (block != NULL && (dFdBlockType::getTypeFlags(block->mType) & 0x0FE00000)) {
                     num++;
                     *cand++ = pos;
                 }
@@ -3426,9 +3413,9 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
     player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL && !player->isFlag0(0x28) && !player->isFlag1(0x43)) {
         for (int i = 0; i < EGG_KIND_NUM - 1; i++) {
-            player->_83CC[i] = 1;
+            player->mBunnyEggs[i] = 1;
         }
-        player->_83CC[EGG_KIND_NUM - 1] = 18;
+        player->mBunnyEggs[EGG_KIND_NUM - 1] = 18;
     }
     unitW = fd->mBlockW * UT_X_NUM;
     unitH = fd->mBlockH * UT_Z_NUM;
@@ -3454,7 +3441,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
             pid = &p->mPID;
             if (*pid == *owner) {
                 for (int j = 0; j < EGG_KIND_NUM; j++) {
-                    p->_83CC[j] += found[j];
+                    p->mBunnyEggs[j] += found[j];
                 }
                 break;
             }
@@ -3539,7 +3526,7 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
     kindNum = 0;
     realNum = 0;
     for (k = 0; k < EGG_KIND_NUM - 1; k++) {
-        n = player->_83CC[k];
+        n = player->mBunnyEggs[k];
         kindLeft[k] = n;
         realNum += n;
         if (n != 0) {
@@ -3547,7 +3534,7 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
             kindNum++;
         }
     }
-    int eggNum = realNum + player->_83CC[EGG_KIND_NUM - 1];
+    int eggNum = realNum + player->mBunnyEggs[EGG_KIND_NUM - 1];
     if (eggNum > unitNum) {
         eggNum = unitNum;
     }
@@ -3610,7 +3597,7 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
                     cand.remove(x + z * cand.mWidth);
                     egg.setFromIndex(dItem::ITEM_IDX_BUNNY_EGG_00, kind, FALSE);
                     setUnitItem(fd, realBx, realBz, x, z, egg.mId, TRUE);
-                    player->_83CC[kind]--;
+                    player->mBunnyEggs[kind]--;
                     kindLeftNum = --kindLeft[kind];
                     realEggs[realBlock]--;
                     if (kindLeftNum == 0) {
@@ -3635,7 +3622,7 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
             if (cand.getRandomXZ(&fakeX, &fakeZ)) {
                 cand.remove(fakeX + fakeZ * cand.mWidth);
                 setUnitItem(fd, fakeBx, fakeBz, fakeX, fakeZ, fake.mId, TRUE);
-                player->_83CC[EGG_KIND_NUM - 1]--;
+                player->mBunnyEggs[EGG_KIND_NUM - 1]--;
                 fakeEggs[fakeBlock]--;
             }
         }
@@ -3670,7 +3657,7 @@ void dFgMngProc_c::endEggs(dFdBase_c *fd) {
     for (i = 0; i < PLAYER_NUM; i++) {
         p = dPlayerMgr_c::getPlayer(i);
         if (p->mPID.isValid()) {
-            memset(p->_83CC, 0, sizeof(p->_83CC));
+            memset(p->mBunnyEggs, 0, sizeof(p->mBunnyEggs));
             p->clearFlag1(0x43);
         }
     }
@@ -3771,9 +3758,9 @@ void dFgMngProc_c::revertFg56(dFdBase_c *fd) {
 // 8009ADE4
 BOOL LampBkSearch_c::check(int x, int z) {
     dFdBlock_c *block = mFd->getBlock(x, z);
-    if (fn_800812C8(block->mType) == 0xC || fn_800812C8(block->mType) == 0xF ||
-        fn_800812C8(block->mType) == 0xB || fn_800812C8(block->mType) == 0x2D ||
-        (fn_80081324(block->mType) & 0x0FE00000)) {
+    if (dFdBlockType::getKind(block->mType) == 0xC || dFdBlockType::getKind(block->mType) == 0xF ||
+        dFdBlockType::getKind(block->mType) == 0xB || dFdBlockType::getKind(block->mType) == 0x2D ||
+        (dFdBlockType::getTypeFlags(block->mType) & 0x0FE00000)) {
         return FALSE;
     }
     return TRUE;
@@ -3949,7 +3936,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     int days = dTime_c::diffDays(&today, &last, TRUE);
     if (days != 0) {
         dSaveData_c::getTown()->setNewConstruction(NEW_CONSTRUCTION_NONE, 0, 0);
-        fn_8014F248(&dSaveData_c::getTown()->_0640C8, days);
+        dSaveData_c::getTown()->mVillagerMove.decPublicWorksDays(days);
         dFgMngProc_c::clearFg94();
     }
     dEvent::updateSchedule(today, days != 0);
@@ -3960,7 +3947,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     dSaveData_c::getTown()->mBugOff.update();
     fn_8014FD48(&dSaveData_c::getTown()->_05EC64, last, &today, &days);
     if (days != 0) {
-        dPrivateData_c::fn_8013B474(dSaveData_c::getTown()->mPlayers, (int)&now);
+        dPrivateData_c::expireErrandAll(dSaveData_c::getTown()->mPlayers, &now);
     }
     save->mAnimals.updateMoves(days);
     save->mAnimals.mTown.updateDaily(days);
@@ -3974,7 +3961,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     fn_800EFCCC();
     fn_800EFD48();
     fn_800EFDD4();
-    dPrivateData_c::fn_8013BC38(days);
+    dPrivateData_c::updatePublicWorks(days);
     sFgMngProc.updateFg56();
     fn_80151CF0(dSaveData_c::getTown()->_0632F0);
     dSaveData_c::getTown()->mBugOff.checkDay();
@@ -4012,15 +3999,15 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->clearFlag(0x14);
         dSaveData_c::getTown()->clearFlag(4);
         dSaveData_c::getTown()->clearFlag(5);
-        fn_80150524(dSaveData_c::getTown()->_06673C);
+        dSaveData_c::getTown()->mNpcSpotA.init();
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
             if (player != NULL && player->mPID.isValid()) {
-                player->_55CE.clear();
+                player->mItemPairRing.clear();
             }
         }
-        fn_801505E4(dSaveData_c::getTown()->_066741);
-        fn_80150628(dSaveData_c::getTown()->mHarvestSpot);
+        dSaveData_c::getTown()->mNpcSpotB.clear();
+        dSaveData_c::getTown()->mHarvestSpot.clear();
         dSaveData_c::getTown()->mPlayerFlag.init();
         dSaveData_c::getTown()->_072CEE.clear();
         for (int i = 0; i < PLAYER_NUM; i++) {
@@ -4041,7 +4028,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->mDailyRand.reset();
     }
     dSaveData_c::getExtra()->mTheater.update();
-    fn_801541D8(dSaveData_c::getTown()->_0735B7);
+    dSaveData_c::getTown()->mWeek.update();
     dSaveData_c::getTown()->mShops.mStalkMarket.checkDate();
     save->mTownInfo.mLastDay.set(OSCalendarTimeToTicks(&today));
     sFgMngProcFlags = 0;
@@ -4078,7 +4065,7 @@ void fgMngProc_procDayChange(BOOL arg) {
             fn_801002BC();
         }
         if (player->isFlag0(0x28)) {
-            player->fn_80137CD0(days);
+            player->updateTanDaily(days);
         }
     }
     if (days != 0) {
@@ -4086,9 +4073,9 @@ void fgMngProc_procDayChange(BOOL arg) {
     }
     fn_80186838();
     u32 v = dSaveData_c::getTown()->mShops.mShop.mStage;
-    fn_8014F030(&dSaveData_c::getTown()->_0640C8, v);
+    dSaveData_c::getTown()->mVillagerMove.setShopStage(v);
     dSaveTown_c *town = dSaveData_c::getTown();
-    fn_8014EFC0(&town->_0640C8, fgMngProc_assessLiveTown());
+    town->mVillagerMove.setAssessment(fgMngProc_assessLiveTown());
     sFgMngRandom = NULL;
     if (days != 0) {
         fn_800ECC78();
@@ -4379,7 +4366,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
 // 8009C7FC: field object (and base fg) an item plants as, by BITM kind (saplings, flower
 // seeds/bags, etc.); FALSE if the item cannot be planted; used by fgMngProc_getBuryFg and
 // d_fgobj_manager.
-BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj) {
+BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, int player) {
     dItem::Item item(itemId);
     BOOL ok = TRUE;
     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
@@ -4393,7 +4380,7 @@ BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj) {
         break;
     case dItem::KIND_SEEDLING:
         *outBase = *outFg;
-        fn_800C77E8(obj);
+        dActivityLog::onPlantTree(player);
         break;
     case dItem::KIND_SEED:
         *outBase = dItem::FG_SEED;
@@ -4402,12 +4389,12 @@ BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj) {
         } else {
             *outFg = ((item.mId - dItem::Item(dItem::ITEM_IDX_RED_TULIP_BAG).mId) >> 2) + dItem::FG_TULIP_RED;
         }
-        fn_800C7800(obj);
+        dActivityLog::onPlantFlower(player);
         break;
     case dItem::KIND_RKABU_SEED:
         *outBase = dItem::FG_SEED;
         *outFg = dItem::FG_RED_TURNIP_0;
-        fn_800C7830(obj);
+        dActivityLog::onPlantRedTurnip(player);
         break;
     case dItem::KIND_RKABU:
         *outBase = item.mId;
@@ -4437,10 +4424,10 @@ BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj) {
 // 8009CA58: fg produced by putting `item` into the ground: the planted form if plantable
 // (outFlag FALSE), else buried (outFlag TRUE, money via fgMngProc_getBuriedMoneyFg); caller
 // d_fgobj_manager.
-void fgMngProc_getBuryFg(void *obj, u16 *outFg, u16 *outBase, u8 *outFlag, u16 item) {
+void fgMngProc_getBuryFg(int player, u16 *outFg, u16 *outBase, u8 *outFlag, u16 item) {
     *outFg = item;
     *outFlag = TRUE;
-    if (fgMngProc_getPlantedFg(outFg, outBase, item, obj)) {
+    if (fgMngProc_getPlantedFg(outFg, outBase, item, player)) {
         *outFlag = FALSE;
     } else {
         fgMngProc_getBuriedMoneyFg(outFg, outFlag, item);
@@ -4983,7 +4970,7 @@ BOOL fgMngProc_canCheckDayChange() {
     case SCENE_RM_SAMPLE:
         return FALSE;
     }
-    if (lbl_8074E800 == NULL || lbl_8074E800[4] != 1) {
+    if (dScene_c::m_nowScene == NULL || dScene_c::m_nowScene->mProfName != 1) {
         return FALSE;
     }
     return TRUE;

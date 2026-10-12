@@ -39,7 +39,7 @@ enum dFgMngKind_e {
     FG_MNG_KIND_SHAKE_TREE_SPECIAL,   // 0x02 as SHAKE_TREE, chosen instead for trees 0x17 / 0x54 when fgMngProc_canEditField (offline only; what drops is handled outside plan(), hedged)
     FG_MNG_KIND_PICK_UP,              // 0x03 fgobj fn_111_9DFC / fn_111_A088: pick up an item / flower / dandelion / design fg 0x74..0x93; new item NONE
     FG_MNG_KIND_PICK_UP_FULL,         // 0x04 PICK_UP with a full pocket (waits for KIND_SWAP)
-    FG_MNG_KIND_PULL,                 // 0x05 fn_111_9DFC: weeds 0x57..0x5A, clover 0xE0, wilted flowers; proc counts weeds (fn_800C77D0, stat 2)
+    FG_MNG_KIND_PULL,                 // 0x05 fn_111_9DFC: weeds 0x57..0x5A, clover 0xE0, wilted flowers; proc counts weeds (dActivityLog::onPullWeeds)
     FG_MNG_KIND_CHOP_TREE,            // 0x06 fgobj fn_111_94AC (tool type 1, axe): unit flag = hits so far, felled into the stump (FgInfo::_00) at a per-stage hit count; proc counts felled trees (fn_800C77B8, stat 1)
     FG_MNG_KIND_CHOP_TREE_SPECIAL,    // 0x07 as CHOP_TREE for trees 0x17 / 0x54 when fgMngProc_canEditField (hedged, see 0x02)
     FG_MNG_KIND_DIG_HOLE,             // 0x08 fgobj fn_111_9880 (tool type 2, shovel): empty diggable ground, weeds, flowers -> hole fg 0x94
@@ -55,7 +55,7 @@ enum dFgMngKind_e {
     FG_MNG_KIND_PUT_PENDING,          // 0x12 fn_111_A994 when the player has an active task: put down elsewhere; proc() then finishes the linked task (mLinkPos)
     FG_MNG_KIND_BURY,                 // 0x13 fn_111_9880 on a hole 0x94 (also d_menu_item00): bury / plant the held item (fgMngProc_getBuryFg), or fill the hole when none; Req::proc maps an fg to getPlantedFg
     FG_MNG_KIND_FILL_HOLE,            // 0x14 fgobj fn_111_A204: hole 0x94 -> NONE (stage 1)
-    FG_MNG_KIND_PICK_UP_SPECIAL,      // 0x15 fn_111_9DFC: fg 0xE1 or a KIND_MUSH_FTR item; proc counts 0xE1 (fn_800C7818, stat 5); hedged name
+    FG_MNG_KIND_PICK_UP_SPECIAL,      // 0x15 fn_111_9DFC: fg 0xE1 or a KIND_MUSH_FTR item; proc counts 0xE1 (dActivityLog::onFindClover); hedged name
     FG_MNG_KIND_PICK_UP_SPECIAL_FULL, // 0x16 PICK_UP_SPECIAL with a full pocket
     FG_MNG_KIND_MISS,                 // 0x17 a tool used on nothing it can affect (empty unit / other fg); no field change
     FG_MNG_KIND_PLANT,                // 0x18 fgobj fn_111_A788(kind 0x18) (player, d_menu_item00): plant the item in front (fgMngProc_getPlantedFg); fgobj fn_111_6C84 effect

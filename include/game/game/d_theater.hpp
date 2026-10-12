@@ -8,6 +8,7 @@
 
 #include <types.h>
 #include <game/game/d_date.hpp>
+#include <game/game/d_search_cand_base.hpp>
 
 class dRandom_c;
 
@@ -19,6 +20,18 @@ namespace dTheater {
 // Program flags (8047B130, in another TU; also read by fn_8016CD8C for d_a_npc_sp_sisyoNP):
 // nonzero for Dr. Shrunk's programs, 0 for Frillard's.
 extern "C" const u8 lbl_8047B130[];
+
+// Dr. Shrunk's programs (d_theater.cpp; also used by d_theater_common).
+class dSearchProgramSisyo_c : public dSearchCand_c<THEATER_PROGRAM_NUM> {
+public:
+    virtual BOOL check(int idx); // 8014C2B4
+};
+
+// Frillard's programs.
+class dSearchProgramKyosyo_c : public dSearchCand_c<THEATER_PROGRAM_NUM> {
+public:
+    virtual BOOL check(int idx); // 8014C29C
+};
 
 u16 getWeek(dTime_c time); // 8014BE60: weeks since 2000-01-01 (2000-01-01 itself is week 0)
 

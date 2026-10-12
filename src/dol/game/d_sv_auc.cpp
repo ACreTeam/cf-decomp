@@ -999,9 +999,9 @@ void dSvAuc_c::pickDLItem() {
                 if (pick == n) {
                     dSaveDLItem_c *found = dl->find(getItemConst(i)->mItem);
                     if (found != NULL) {
-                        dSaveTown640C8_c *block = &dSaveData_c::getTown()->_0640C8;
+                        dSvVillagerMove::Info_c *block = &dSaveData_c::getTown()->mVillagerMove;
                         block->mDLItem = *found;
-                        block->mFlags |= 0x20;
+                        block->mFlags |= dSvVillagerMove::VILLAGER_MOVE_FLAG_DL_ITEM;
                         return;
                     }
                 }
@@ -1017,9 +1017,9 @@ void dSvAuc_c::pickDLItem() {
             if (pick == n) {
                 dSaveDLItem_c *found = dl->find(dItem::Item(item.mId));
                 if (found != NULL) {
-                    dSaveTown640C8_c *block = &dSaveData_c::getTown()->_0640C8;
+                    dSvVillagerMove::Info_c *block = &dSaveData_c::getTown()->mVillagerMove;
                     block->mDLItem = *found;
-                    block->mFlags |= 0x20;
+                    block->mFlags |= dSvVillagerMove::VILLAGER_MOVE_FLAG_DL_ITEM;
                     return;
                 }
             }

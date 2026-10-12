@@ -431,8 +431,8 @@ BOOL fgMngProc_isSelfMember(int member);        // 8009C568: TRUE offline, else 
 BOOL fgMngProc_canEditField();                  // 8009C5B4
 u16 fgMngProc_getMemberHeldItem(int member);    // 8009C638: ITEM_ID_NONE without a player
 void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId); // 8009C678: money buried with the golden shovel
-BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, void *obj); // 8009C7FC: FALSE if it can't be planted
-void fgMngProc_getBuryFg(void *obj, u16 *outFg, u16 *outBase, u8 *outFlag, u16 item); // 8009CA58: planted or buried
+BOOL fgMngProc_getPlantedFg(u16 *outFg, u16 *outBase, u16 itemId, int player); // 8009C7FC: FALSE if it can't be planted
+void fgMngProc_getBuryFg(int player, u16 *outFg, u16 *outBase, u8 *outFlag, u16 item); // 8009CA58: planted or buried
 BOOL fgMngProc_isBusy();                        // 8009CAE0: sFgMngProc.mBusy
 void fgMngProc_setBusy();                       // 8009CAEC
 void fgMngProc_clearBusy();                     // 8009CAFC

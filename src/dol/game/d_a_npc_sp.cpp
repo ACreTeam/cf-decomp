@@ -52,12 +52,12 @@ u32 dAcNpcSp_c::getHeapSize() {
 
 // 80061AE4
 u32 dAcNpcSp_c::addToNpcList() {
-    return fn_800F9888(this, &mNpcItem.mId);
+    return dNpcList::addSp(this, mNpcItem);
 }
 
 // 80061AEC
 void dAcNpcSp_c::removeFromNpcList() {
-    fn_800F98A0(this);
+    dNpcList::removeSp(this);
 }
 
 // 80061AF0
@@ -293,8 +293,8 @@ int dAcNpcSp_c::doDelete() {
 }
 
 // 800623A8
-void dAcNpcSp_c::demoHook50() {
-    dAcNpc_c::demoHook50();
+void dAcNpcSp_c::demoHook50(int cmd, u8 member) {
+    dAcNpc_c::demoHook50(cmd, member);
 }
 
 // 800623AC
@@ -382,7 +382,7 @@ BOOL dAcNpcSp_c::resMng_c::create(dAcNpc_c *npc) {
         if (!npc->loadRes(&mpData, path)) {
             return FALSE;
         }
-        DCFlushRange(mpData, fn_800F9E40());
+        DCFlushRange(mpData, dNpcMdlMng_c::getSpMdlSize());
         nw4r::g3d::ResFile file(getMdlRes());
         file.Init();
         file.Bind(file);
@@ -402,7 +402,7 @@ void *dAcNpcSp_c::resMng_c::getTexRes() {
 
 // 80062984
 u32 dAcNpcSp_c::calcHeapSize(BOOL withFrm) {
-    u32 size = fn_800F9E40() + SP_HEAP_EXTRA;
+    u32 size = dNpcMdlMng_c::getSpMdlSize() + SP_HEAP_EXTRA;
     if (withFrm) {
         size += mHeap::frmHeapCost(0, SP_FRM_HEAP_SIZE);
     }

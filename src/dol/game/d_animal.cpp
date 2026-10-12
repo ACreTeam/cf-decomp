@@ -5687,22 +5687,9 @@ extern "C" {
 // This chunk, used before their definitions.
 
 // Other TUs.
-void fn_8014EE50(void *obj, const dPersonalID_c *pid, const dAnmPersonalID_c *animal, u8 value);
 extern u8 lbl_8059FF80[];
 }
 
-// Town save data at +0x640C8, used by recordImpression.
-struct dTownUnk640E6_c {
-    /* 0x000 */ u8 _000[0x16];
-    /* 0x016 */ dPersonalID_c mPID;
-    /* 0x042 */ u8 _042[0xC2];
-    /* 0x104 */ u8 mFlag : 1;
-};
-
-struct dTownUnk640C8_c {
-    /* 0x00 */ u8 _00[0x1E];
-    /* 0x1E */ dTownUnk640E6_c _1E;
-};
 
 static inline int getWishKind(dQuestWish_c *wish) {
     return wish->isValid() ? wish->mKind : 8;
@@ -5763,17 +5750,17 @@ BOOL dAnimal_c::recordImpression(const dPersonalID_c *pid) {
         return FALSE;
     }
 
-    dTownUnk640C8_c *obj;
+    dSvVillagerMove::Info_c *obj;
     u32 value = memory->mImpression;
     if (value >= '1') {
         return FALSE;
     }
 
-    obj = (dTownUnk640C8_c *)((u8 *)dSaveData_c::getTown() + 0x640C8);
-    dTownUnk640E6_c *sub = &obj->_1E;
-    dPersonalID_c *host = &sub->mPID;
+    obj = &dSaveData_c::getTown()->mVillagerMove;
+    dSaveOtherTown_c *sub = &obj->mOtherTown;
+    dPersonalID_c *host = &sub->mPlayer;
     BOOL ok = FALSE;
-    if (!host->isValid() || (sub->mFlag && *host == *pid)) {
+    if (!host->isValid() || (sub->mValid && *host == *pid)) {
         ok = TRUE;
     }
 
@@ -5794,7 +5781,7 @@ BOOL dAnimal_c::recordImpression(const dPersonalID_c *pid) {
         return FALSE;
     }
 
-    fn_8014EE50(obj, pid, id, value);
+    obj->setOtherTown(pid, id, value);
     return TRUE;
 }
 
@@ -9899,10 +9886,10 @@ BOOL dAnimalBlock_c::decideBirthdayHost(int playerNo) {
     }
 
     s32 year = dTime_c::getCurrent()->year;
-    if (year != player->mBirthdayHost._00) {
+    if (year != player->mBirthdayHost.mHostYear) {
         s8 sel = pickBirthdayHost(player);
-        player->mBirthdayHost._00 = year;
-        player->mBirthdayHost._08 = sel;
+        player->mBirthdayHost.mHostYear = year;
+        player->mBirthdayHost.mHostIdx = sel;
         return TRUE;
     }
     return FALSE;
@@ -9921,12 +9908,12 @@ void dAnimalBlock_c::clearBirthdayHost(int playerNo) {
     if (isValidPlayerNo(playerNo)) {
         dPrivateData_c *player = dPlayerMgr_c::getPlayer(playerNo);
         if (player != NULL && player->mPID.isValid()) {
-            dUnk55FC_c *unk = &player->mBirthdayHost;
+            dBirthdayHost_c *unk = &player->mBirthdayHost;
             s32 year = dTime_c::getCurrent()->year;
-            if (year == unk->_00 && (u32)unk->_08 < ANIMAL_NUM) {
+            if (year == unk->mHostYear && (u32)unk->mHostIdx < ANIMAL_NUM) {
                 if (!isEventActive(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
-                    if (year == unk->_04) {
-                        unk->_08 = -1;
+                    if (year == unk->mLetterYear) {
+                        unk->mHostIdx = -1;
                     } else {
                         unk->clear();
                     }
@@ -9966,11 +9953,11 @@ void dAnimalBlock_c::sendBirthdayLetters() {
     s32 year = dTime_c::getCurrent()->year;
     BOOL inScene = isPlayerSelectScene();
     if (player->isFlag0(0xD)) {
-        player->mBirthdayHost._04 = year;
+        player->mBirthdayHost.mLetterYear = year;
         return;
     }
 
-    if (year != player->mBirthdayHost._04) {
+    if (year != player->mBirthdayHost.mLetterYear) {
         dAnimal_c *animal = getAnimal(0);
         int skip = getSickAnimalIdx();
         for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
@@ -9983,7 +9970,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
             }
             memFlags(mem)->mBirthdayLetterSent = 0;
             memFlags(mem)->mBirthdayDone = 0;
-            if (mem->getFriendship() < 30 || animal->isMoving() || i == skip || i == player->mBirthdayHost._08) {
+            if (mem->getFriendship() < 30 || animal->isMoving() || i == skip || i == player->mBirthdayHost.mHostIdx) {
                 continue;
             }
             dItem::Item none;
@@ -9992,7 +9979,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
                 memFlags(mem)->mBirthdayLetterSent = 1;
             }
         }
-        player->mBirthdayHost._04 = year;
+        player->mBirthdayHost.mLetterYear = year;
     }
 
     if (inScene) {
@@ -10031,11 +10018,11 @@ BOOL dAnimalBlock_c::hasBirthdayHost() {
         return FALSE;
     }
     s32 year = dTime_c::getCurrent()->year;
-    if (year != player->mBirthdayHost._00) {
+    if (year != player->mBirthdayHost.mHostYear) {
         return FALSE;
     }
 
-    dAnimal_c *animal = getAnimalConst(player->mBirthdayHost._08);
+    dAnimal_c *animal = getAnimalConst(player->mBirthdayHost.mHostIdx);
     if (animal == NULL || !animal->mID.isValid()) {
         return FALSE;
     }
@@ -10053,9 +10040,9 @@ void dAnimalBlock_c::sendBirthdayHostPresent() {
                 if ((u8)getCurrentScene() == SCENE_DM_PL_SEL) {
                     if (isEventOngoing(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
                         s32 year = dTime_c::getCurrent()->year;
-                        if (year == player->mBirthdayHost._00) {
-                            if (year == player->mBirthdayHost._04) {
-                                dAnimal_c *animal = getAnimal(player->mBirthdayHost._08);
+                        if (year == player->mBirthdayHost.mHostYear) {
+                            if (year == player->mBirthdayHost.mLetterYear) {
+                                dAnimal_c *animal = getAnimal(player->mBirthdayHost.mHostIdx);
                                 if (animal != NULL && animal->mID.isValid()) {
                                     if (animal->mDayPlace != 0) {
                                         dItem::Item item(dItem::ITEM_IDX_BIRTHDAY_CAKE);
@@ -10065,10 +10052,10 @@ void dAnimalBlock_c::sendBirthdayHostPresent() {
                                             memFlags(mem)->mBirthdayDone = 1;
                                             memFlags(mem)->mBirthdayLetterSent = 0;
                                         }
-                                        player->mBirthdayHost._08 = -1;
+                                        player->mBirthdayHost.mHostIdx = -1;
                                     }
                                 } else {
-                                    player->mBirthdayHost._08 = -1;
+                                    player->mBirthdayHost.mHostIdx = -1;
                                 }
                             }
                         }
@@ -10095,11 +10082,11 @@ int getBirthdayHostIdxIn(dAnimal_c *animals, u32 num, int playerNo, BOOL checkEv
         return -1;
     }
     s32 year = dTime_c::getCurrent()->year;
-    if (year != player->mBirthdayHost._00) {
+    if (year != player->mBirthdayHost.mHostYear) {
         return -1;
     }
 
-    sel = player->mBirthdayHost._08;
+    sel = player->mBirthdayHost.mHostIdx;
     if (sel >= num) {
         return -1;
     }
@@ -10149,7 +10136,7 @@ BOOL dAnimalBlock_c::isBirthdayHost(const dAnmPersonalID_c *id, int playerNo, BO
 
 // 801331C0
 void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
-    dUnk8634_c *last;
+    dPrivateYear_c *last;
     dPersonalID_c *pid;
     int skip;
     u8 gender;
@@ -10168,10 +10155,10 @@ void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
     last = &player->mValentineYear;
     s32 year = dTime_c::getCurrent()->year;
     if (player->isFlag0(0xD)) {
-        last->mValue = year;
+        last->mYear = year;
         return;
     }
-    if (year == last->mValue) {
+    if (year == last->mYear) {
         return;
     }
 
@@ -10216,7 +10203,7 @@ void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
         }
         animal->sendValentineLetter(pid, &item, 1);
     }
-    last->mValue = year;
+    last->mYear = year;
 }
 
 // 80133418
@@ -10246,14 +10233,14 @@ static int s_801334A8_event = EVENT_NEW_YEARS_DAY; // 8074B06C
 // Sends the New Year letters (once a year, from villagers who like the player).
 void dAnimalBlock_c::sendNewYearLetters(dPrivateData_c *player) {
     if (player != NULL) {
-        dUnk8634_c *last;
+        dPrivateYear_c *last;
         dPersonalID_c *pid = &player->mPID;
         if (pid->isValid() && dEvent::isOngoing(reinterpret_cast<const dQuestEvent_e &>(s_801334A8_event))) {
             last = &player->mNewYearYear;
             int year = dTime_c::getCurrent()->year;
             if (player->isFlag0(0xD)) {
-                last->mValue = year;
-            } else if (year != last->mValue) {
+                last->mYear = year;
+            } else if (year != last->mYear) {
                 dAnimal_c *animal = getAnimal(0);
                 int skip = getSickAnimalIdx();
                 for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
@@ -10265,7 +10252,7 @@ void dAnimalBlock_c::sendNewYearLetters(dPrivateData_c *player) {
                         }
                     }
                 }
-                last->mValue = year;
+                last->mYear = year;
             }
         }
     }
@@ -10917,7 +10904,7 @@ u32 pickRandomBit(u32 mask, int num, u32 max) {
 
 // 80134D54
 BOOL fn_80134D54(const dPrivateData_c *player) {
-    if (player->isFlag0(2) && player->_83F5 == 0) {
+    if (player->isFlag0(2) && player->mMiiMask == 0) {
         return TRUE;
     }
     return FALSE;
@@ -11272,7 +11259,7 @@ BOOL fn_8013585C(const dPrivateData_c *player) {
     if (!bitm->_187_3) {
         return FALSE;
     }
-    if (player->_83F5 != 0) {
+    if (player->mMiiMask != 0) {
         return FALSE;
     }
     if (player->mEquipment.mHat.mId == dItem::ITEM_ID_NONE &&
@@ -11284,7 +11271,7 @@ BOOL fn_8013585C(const dPrivateData_c *player) {
 
 // 80135908
 BOOL fn_80135908(const dPrivateData_c *player) {
-    if (player->_83F5 != 0) {
+    if (player->mMiiMask != 0) {
         return FALSE;
     }
     if (player->mEquipment.mHat.mId == dItem::ITEM_ID_NONE && player->mHair == 9) {
@@ -11295,7 +11282,7 @@ BOOL fn_80135908(const dPrivateData_c *player) {
 
 // 80135948
 BOOL fn_80135948(const dPrivateData_c *player) {
-    if (player->_83F5 != 0) {
+    if (player->mMiiMask != 0) {
         return FALSE;
     }
     if (player->mEquipment.mHat.mId == dItem::ITEM_ID_NONE && player->mEquipment.mAcc.mId == dItem::ITEM_ID_NONE &&
@@ -11307,7 +11294,7 @@ BOOL fn_80135948(const dPrivateData_c *player) {
 
 // 80135994
 BOOL hasFemaleHairNoHat(const dPrivateData_c *player) {
-    if (player->_83F5 != 0) {
+    if (player->mMiiMask != 0) {
         return FALSE;
     }
     if (player->mEquipment.mHat.mId == dItem::ITEM_ID_NONE && player->mHair >= 0xD && player->mHair < 0x1A) {
@@ -11318,7 +11305,7 @@ BOOL hasFemaleHairNoHat(const dPrivateData_c *player) {
 
 // 801359DC
 BOOL fn_801359DC(const dPrivateData_c *player) {
-    if (player->_83F5 != 0) {
+    if (player->mMiiMask != 0) {
         return FALSE;
     }
     if (player->mEquipment.mHat.mId == dItem::ITEM_ID_NONE) {
@@ -11344,7 +11331,7 @@ BOOL fn_80135A40(const dPrivateData_c *player) {
 
 // 80135A88
 BOOL hasMaleHairNoHat(const dPrivateData_c *player) {
-    if (player->_83F5 != 0) {
+    if (player->mMiiMask != 0) {
         return FALSE;
     }
     if (player->mEquipment.mHat.mId == dItem::ITEM_ID_NONE && player->mHair < 0xD) {

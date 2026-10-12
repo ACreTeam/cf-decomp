@@ -12,19 +12,9 @@
 #include <revolution/MTX.h>
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_net_mgr.hpp>
+#include <game/game/d_environment.hpp>
+#include <game/game/d_camera.hpp>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-BOOL fn_80199BBC(void *glow, const GXColor *color, const nw4r::math::VEC3 *pos, f32 size); // 80199BBC: queue a glow
-
-extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: town center the show is above
-extern void *lbl_8074EA60;      // 8074EA60: glow drawer (NULL: no sounds / glow without the effect)
-extern f32 lbl_8074EA1C;        // 8074EA1C..8074EA28: burst light color
-extern f32 lbl_8074EA20;
-extern f32 lbl_8074EA24;
-extern f32 lbl_8074EA28;
-extern f32 lbl_8074C010;        // 8074C010: burst light fade speed
-}
 
 // 8046EEC0 / 8046EECC: the effect's two register colors per shell color.
 static const GXColor sEffectColor0[3] = {{0xFF, 0xC0, 0xB8, 0xFF}, {0xB8, 0xFF, 0xA0, 0xFF}, {0xF8, 0xFF, 0xE0, 0xFF}};

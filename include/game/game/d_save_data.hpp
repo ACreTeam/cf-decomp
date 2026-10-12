@@ -13,6 +13,7 @@
 #include <game/game/d_quest.hpp>
 #include <game/game/d_theater.hpp>
 #include <game/game/d_save_box.hpp>
+#include <game/game/d_sv_lang_flag.hpp>
 
 #define SAVE_DATA_SIZE 0x40F340
 #define SAVE_VERSION 0x5A
@@ -21,6 +22,8 @@
 // values are cached in a static copy (lbl_8074E6D8) whose third byte marks
 // which bits were changed.
 struct dSaveOption_c {
+    BOOL isBit1() const { return mBit1; } // d_obj_voice: the player's voice chat is off
+
     /* 0x0 */ u8 mBit7 : 1;  // fn_8010D944 / fn_8010D950
     /* 0x0 */ u8 mBit65 : 2; // fn_8010D970 / fn_8010D97C
     /* 0x0 */ u8 mBit4 : 1;  // fn_8010D99C / fn_8010D9A8
@@ -61,7 +64,7 @@ int fn_8010D970();
 void fn_8010D97C(u8 v);
 u8 fn_8010D99C();
 void fn_8010D9A8(u8 v);
-u8 fn_8010D9C8();
+BOOL fn_8010D9C8();
 void fn_8010D9D4(u8 v);
 int fn_8010D9F4();
 BOOL fn_8010D9FC();
@@ -123,28 +126,12 @@ struct dSaveDistContentList_c {
     /* 0x00004 */ dSaveDistContent_c mContents[10][6];
 }; // size 0x5A0F4
 
-// Skeleton member of dSaveExtra_c (unsplit TU; C linkage keeps the target name).
-extern "C" void fn_80117118(void *obj); // 80117118
-struct dSaveUnk1CE_c;
-// d_sv_lang_flag: clears bit `bit` (< 6) of player `player` (< 4) in the flags at extra+0x1CE.
-extern "C" void fn_801172C0(dSaveUnk1CE_c *flags, u32 player, u32 bit); // 801172C0
-// d_sv_lang_flag: the downloaded message record of personality `looks` (< 6) in language `lang` (< 10;
-// 10 = getLanguage()) when player `player`'s flag `looks` is set; NULL otherwise. The message data
-// (bmg) follows the first word (d_npc_talk_reaction msgReDownload).
-extern "C" const u32 *fn_80117318(dSaveUnk1CE_c *flags, u32 player, u32 looks, u32 lang); // 80117318
-struct dSaveUnk1CE_c {
-    dSaveUnk1CE_c() { fn_80117118(this); }
-    u8 _00[0x12];
-};
-// d_sv_lang_flag: (d_wifi fn_8017B274, after reloading the downloaded per-language files).
-extern "C" void fn_80117244(dSaveUnk1CE_c *flags); // 80117244
-
 // Two flags of the post office's letters to other towns (d_wifi updateDaily, fn_8017A484).
 struct dSavePostSend_c {
     /* 0x00 */ u8 mSending; // 1 while fn_8017A484 runs
     /* 0x01 */ u8 mPending; // fn_8017A484 is called on new days until it succeeds
     /* 0x02 */ dPersonalID_c mTo;     // a registered friend of a player of this town
-    /* 0x2E */ dPersonalID_c mSender; // goes to that player's dPrivateData_c::_7EEE (receivePostPid)
+    /* 0x2E */ dPersonalID_c mSender; // goes to that player's dPrivateData_c::mLastWc24Sender (receivePostPid)
 }; // size 0x5A: the whole block is what dWifi::sendPostPid sends
 
 // Second half of the file (base+0x735E0), returned by dSaveData_c::getExtra().
@@ -171,8 +158,9 @@ struct dSaveExtra_c {
     /* 0x00003A */ dOutfit_c mOutfit;      // an outfit received from a friend town (d_wifi receiveTown)
     /* 0x000046 */ u8 _000046[0x182];
     /* 0x0001C8 */ dTheater::dSchedule_c mTheater; // the theater's weekly programs
-    /* 0x0001CE */ dSaveUnk1CE_c _0001CE;
-    /* 0x0001E0 */ dUnkDesignBoard_c mDesignBoard; // fn_80136868 from fn_8010DDE0
+    /* 0x0001CE */ dSvLangFlag::Flag_c mLangFlags; // the downloaded villager messages still to be told
+    /* 0x0001D2 */ u8 _0001D2[0xE];
+    /* 0x0001E0 */ dRelayDesign_c mDesignBoard; // validate from fn_8010DDE0
     /* 0x000A80 */ dSaveDesignBox_c mSavedPatterns[PLAYER_NUM];
     /* 0x088B00 */ dSaveDistPattern_c mDistPattern;
     /* 0x0893A0 */ dSaveDistMail_c mDistMail;
@@ -244,8 +232,8 @@ public:
     // registers d_npc_talk_reaction msgFirstMeeting needs.
     static dLandID_c *getTownLand() { return &getTown()->mLandID; }
     // Inline results: a constant stored through them is loaded after the call (d_wifi updateDaily).
-    static dSaveTown640C8_c *getTown640C8() { return &getTown()->_0640C8; }
-    static dUnkDesignBoard_c *getDesignBoard() { return &getExtra()->mDesignBoard; }
+    static dSvVillagerMove::Info_c *getVillagerMove() { return &getTown()->mVillagerMove; }
+    static dRelayDesign_c *getDesignBoard() { return &getExtra()->mDesignBoard; }
     static dSavePostSend_c *getPostSend() { return &getExtra()->mPostSend; }
     static dSaveWc24_c *getWc24() { return &getExtra()->mWc24; }
     static dAnimalBlock_c *getAnimalBlock() { return &getRaw()->mAnimals.mTown; }

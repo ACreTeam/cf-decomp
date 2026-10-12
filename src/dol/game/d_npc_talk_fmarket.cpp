@@ -140,7 +140,7 @@ void dAcNpcNml_c::talk_c::selFmarketAsk() {
     dNpcEntry_c *entry = getEntry();
     if (entry != NULL) {
         entry->_28C.mFmarketSale = 1;
-        fn_8019C34C();
+        dMoney_c::onForceShow();
     }
 }
 
@@ -237,7 +237,7 @@ void dAcNpcNml_c::talk_c::endSaleYes(int arg) {
 // 80047FA0
 BOOL dAcNpcNml_c::talk_c::stepSaleYes(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        fn_8019C35C();
+        dMoney_c::offForceShow();
         return TRUE;
     }
     return FALSE;

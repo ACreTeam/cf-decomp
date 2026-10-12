@@ -230,7 +230,7 @@ bool SimpleEx_c::build(ResAccIf_c *resAcc, const char *lytName) {
     if (!build(lytName, nullptr)) {
         return false;
     }
-    setFont(&g_mainFont);
+    setFont(&dFont::g_mainFont.mFont);
     return true;
 }
 
@@ -576,7 +576,7 @@ tagProcessor_c::Operation tagProcessor_c::Process(u16 ch, ContextType *pCtx) {
         EGG::MsgRes::analyzeTag(ch, pCtx->str, &size, &cmd, &data);
         switch (cmd) {
             case 0xFF0000:
-                fn_8016C9FC(0, pCtx, size, data);
+                procColor(0, pCtx, size, data);
                 break;
             case 0xFE0000:
                 setColor(pCtx, (u8 *)data);

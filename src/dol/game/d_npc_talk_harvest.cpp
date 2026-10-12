@@ -505,7 +505,7 @@ int dAcNpcNml_c::talk_c::msgHarvestSpot(msgInfo_s *info) {
     const char *label = getMsgLabel(TALK_HARVEST, 2, 0);
     u16 code = 0;
     dSaveTown_c *town = dSaveData_c::getTown();
-    mVec3_c pos = fn_801506F8(town->mHarvestSpot);
+    mVec3_c pos = town->mHarvestSpot.getPos();
     int blockX = 0;
     int blockZ = 0;
     int unitX = 0;

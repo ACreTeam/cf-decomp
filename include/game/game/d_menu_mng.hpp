@@ -12,6 +12,8 @@ class Item;
 }
 
 extern "C" {
+void fn_8019B864(); // 8019B864: forgets the cached pocket selection (8074EA9C / 8074EAA0 = -1); d_private_data setPocket
+BOOL fn_8019A5E4(); // 8019A5E4: 8074EA6C == 1 and 8074EA70 == 0 (d_money: the money may be shown)
 BOOL fn_8019A76C();                                       // 8019A76C: the menu is finished/closed
 BOOL fn_8019A804(u16 item, u16 msgParam, u8 menuNo);      // 8019A804: item select menu
 BOOL fn_8019A85C(u16 item, u16 msgParam);                 // 8019A85C: item select menu 0x2A

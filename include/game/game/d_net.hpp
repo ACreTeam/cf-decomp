@@ -172,7 +172,7 @@ enum dNetPacket_e {
     // = NET_PACKET_FG_MNG_UNIT_FG: fgMngProc_setUnitFgSync ->
     // fgMngProc_recvUnitFg
     NET_PACKET_FG_MNG_UNIT_FG = 0x2B,
-    // d_demo_sync: 5-byte demo sync request / answer (fn_8008239C)
+    // d_demo_sync: 5-byte demo sync request / answer (dDemoSync::receive)
     NET_PACKET_DEMO_SYNC = 0x2C,
     // dPostOffice::sendSyncState -> dPostOffice::onSyncPacket
     NET_PACKET_POST_SYNC = 0x2D,
@@ -219,7 +219,7 @@ enum dNetPacket_e {
     // d_pattern_copy fn_80083044: copy a 0x880-byte design between slots;
     // receiver answers 0x3F
     NET_PACKET_PATTERN_COPY = 0x3E,
-    // d_pattern_copy fn_800833D8: 1-byte answer to 0x3E (fn_80083468)
+    // d_pattern_copy dPatternCopy::recvPacket: 1-byte answer to 0x3E (dPatternCopy::recvAck)
     NET_PACKET_PATTERN_COPY_ACK = 0x3F,
     // insect field REL (fn_116_53C4, fn_116_7DC4): dNetPingMsg_c; the REL hooks
     // lbl_8074E510, default handler replies type 3
@@ -246,20 +246,17 @@ enum dNetPacket_e {
     NET_PACKET_NPC_EVENT_END = 0x49,
     // d_npc_info fn_800F85DC: dNpcInfoNet_c _09++
     NET_PACKET_NPC_EVENT_COUNT2 = 0x4A,
-    // dItemPairRing_c::push: dSaveTown_c::_06673F = 1
+    // dItemPairRing_c::push: dSaveTown_c::mNpcSpotA.mFlag = 1
     NET_PACKET_NPC_SPOT_A_FLAG = 0x4B,
-    // d_npc_info fn_800F60E4: packed position dSaveTown_c::_06673C
-    // (fn_80150544)
+    // d_npc_info fn_800F60E4: dSaveTown_c::mNpcSpotA (dSvNpcPos::KindPos_c::set)
     NET_PACKET_NPC_SPOT_A = 0x4C,
-    // pumpking REL (Jack): dSaveTown_c::_066741[3] = 1
+    // pumpking REL (Jack): dSaveTown_c::mNpcSpotB.mFlag = 1
     NET_PACKET_NPC_SPOT_B_FLAG = 0x4D,
-    // d_npc_info fn_800F71CC: packed position dSaveTown_c::_066741
-    // (fn_801505FC)
+    // d_npc_info fn_800F71CC: dSaveTown_c::mNpcSpotB (dSvNpcPos::Pos_c::set)
     NET_PACKET_NPC_SPOT_B = 0x4E,
-    // franklin REL: dSaveTown_c::mHarvestSpot[2] |= 0x80
+    // franklin REL: dSaveTown_c::mHarvestSpot.mFlags |= SIDE_POS_FLAG_EVENT
     NET_PACKET_HARVEST_SPOT_FLAG = 0x4F,
-    // d_npc_info fn_800F66AC: the Harvest Festival spot mHarvestSpot
-    // (fn_80150648)
+    // d_npc_info fn_800F66AC: the Harvest Festival spot mHarvestSpot (dSvNpcPos::SidePos_c::set)
     NET_PACKET_HARVEST_SPOT = 0x50,
     // d_sv_daily_rand dSvDailyRand::Rand_c::change: dSaveTown_c::mDailyRand
     NET_PACKET_DAILY_RAND = 0x51,
@@ -293,7 +290,7 @@ enum dNetPacket_e {
     NET_PACKET_GULLIVER_FLAG = 0x5F,
     // jonny REL (Gulliver): the sender's PID -> dSaveTown_c::_072CEE
     NET_PACKET_GULLIVER_PLAYER = 0x60,
-    // d_obj_voice fn_801B75E8: 1 byte -> fn_801B7488
+    // d_obj_voice dObjVoice_c::send: 1 byte -> dObjVoice_c::receive
     NET_PACKET_VOICE = 0x61,
     // dPostOffice::sendRecycleBin -> dPostOffice::onRecycleBin
     NET_PACKET_RECYCLE_BIN = 0x62,
@@ -1075,8 +1072,8 @@ class dNetScene_c {
   public:
     void init(int);               // 800DA754 (B)
     void clearMember(int member); // 800DA7D8
-    void setLeaveAcked(u8 v);     // 800DA830
-    u8 getLeaveAcked() const;     // 800DA838
+    void setLeaveAcked(bool v);   // 800DA830
+    bool getLeaveAcked() const;   // 800DA838
     bool isHandoverAcked() const; // 800DA840
     // 800DA8A0: init, only member 0 in the current scene
     void reset();
@@ -1120,7 +1117,7 @@ class dNetScene_c {
     /* 0x1C */ dNetMemberMask_c mLeaderAcks;
     /* 0x1E */ dNetMemberMask_c mMsgAcks;
     /* 0x20 */ s32 mLeaving;
-    /* 0x24 */ u8 mLeaveAcked;
+    /* 0x24 */ bool mLeaveAcked;
     /* 0x25 */ dNetMemberMask_c mHandoverAcks;
 }; // size 0x28
 
@@ -1648,7 +1645,7 @@ void onMemberLeaving(int member, const dNetMemberMask_c *mask);
 BOOL isMemberLeaveDone(int member, const dNetMemberMask_c *mask);
 
 // Placeholders (meaning unclear).
-u8 fn_800DD818();   // 800DD818: dNetScene_c::getLeaveAcked
+bool fn_800DD818(); // 800DD818: dNetScene_c::getLeaveAcked
 bool fn_800DD8C4(); // 800DD8C4: dNetScene_c::isHandoverAcked
 void fn_800DDE7C(); // 800DDE7C: dNetMgr_c::setBusy
 // 800DDE80: scene start: dNetMgr_c::clearBusy after the gate

@@ -143,7 +143,7 @@ void Caution_c::init() {
 u8 Caution_c::check() {
     mDriveStatus = DVDGetDriveStatus();
     if (mDriveStatus != DVD_STATE_IDLE && mDriveStatus != DVD_STATE_BUSY && !mActive) {
-        fn_800CDD44(2);
+        dMain::addStop(dMain::STOP_REASON_CAUTION);
         loadFont(&mFont);
         create();
         mActive = TRUE;
@@ -152,7 +152,7 @@ u8 Caution_c::check() {
                 mNetError = TRUE;
             }
             g_wifiErr.mForce = TRUE;
-            fn_80107CF4();
+            dResetSave::request();
         }
         dRumble::stop();
         fn_8000EB20();
@@ -165,7 +165,7 @@ u8 Caution_c::check() {
         mResAcc.detach();
         mLyt.unbind(&mAnm);
         removeFont(&mFont);
-        fn_800CDD68(2);
+        dMain::removeStop(dMain::STOP_REASON_CAUTION);
     }
     return mActive;
 }

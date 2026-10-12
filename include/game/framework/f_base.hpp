@@ -232,7 +232,9 @@ private:
     /// @brief Kickstarts the base's lifecycle by running the @p create operation.
     void runCreate();
 
+protected:
     /// @brief Gets a child of the base in the @ref LIFECYCLE_e::CREATING "CREATING" state.
+    /// @details Protected: dScene_c::preExecute calls it directly.
     /// @return The first child satisfying this condition, or @p nullptr if none is found.
     fBase_c *getChildProcessCreateState() const;
 

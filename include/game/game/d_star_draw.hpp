@@ -6,6 +6,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_dvd.hpp>
 #include <game/game/d_personal_id.hpp>
+#include <game/game/d_sv_star_sign.hpp>
 #include <game/mLib/m_3d.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_angle.hpp>
@@ -13,12 +14,8 @@
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/ut.h>
 
-// A player's constellation (16 per town, after the town data at dSaveData_c + 0x72E0A).
-struct dStarSign_c {
-    /* 0x00 */ dPersonalID_c mOwner;
-    /* 0x2C */ u16 mLines[16]; // indices into dStarDraw_c::sLines, 0xFFFF if unused
-    /* 0x4C */ u8 _4C[0x6E - 0x4C];
-}; // size 0x6E
+// A player's constellation (dSaveTown_c::mStarSigns, d_sv_star_sign).
+typedef dSvStarSign::Sign_c dStarSign_c;
 
 class dStarDraw_c : public m3d::proc_c {
 public:

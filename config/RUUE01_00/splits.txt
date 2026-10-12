@@ -356,9 +356,12 @@ dol/game/d_fd_unit_flags.cpp:
 	.text       start:0x800811F4 end:0x800812C8
 
 dol/game/d_fd_block_type.cpp:
-	.text       start:0x800812C8 end:0x80081618
+	.text       start:0x800812C8 end:0x80081578
 	.rodata     start:0x8046D460 end:0x8046D5A0
 	.data       start:0x804A76B8 end:0x804A7780
+
+dol/game/d_unk_80081578.cpp:
+	.text       start:0x80081578 end:0x80081618
 
 dol/game/d_scene_check.cpp:
 	.text       start:0x80081618 end:0x80081868
@@ -533,11 +536,15 @@ dol/game/d_fg_obj.cpp:
 	.bss        start:0x8058B608 end:0x8058B6D8
 	.sdata      start:0x8074A3D0 end:0x8074A3E0
 
+dol/game/d_fltg.cpp:
+	.text       start:0x800A7368 end:0x800A75B0
+	.bss        start:0x8058B6D8 end:0x8058B6F0
+
 dol/game/d_font.cpp:
-	.text       start:0x800A7368 end:0x800A773C
+	.text       start:0x800A75B0 end:0x800A773C
 	.ctors      start:0x8046567C end:0x80465680
 	.data       start:0x804E5AE8 end:0x804E5B10
-	.bss        start:0x8058B6D8 end:0x8058B760
+	.bss        start:0x8058B6F0 end:0x8058B760
 
 dol/game/d_footmark.cpp:
 	.text       start:0x800A773C end:0x800A858C
@@ -1242,7 +1249,7 @@ dol/game/d_sv_date_event.cpp:
 	.text       start:0x80150778 end:0x80150A5C
 	.sdata2     start:0x80750CE8 end:0x80750CF8 align:4
 
-dol/game/d_sv_unk5560.cpp:
+dol/game/d_sv_star_sign.cpp:
 	.text       start:0x80150A5C end:0x801510A0
 
 dol/game/d_sv_player_flag.cpp:
@@ -1388,14 +1395,24 @@ dol/game/d_sys.cpp:
 dol/game/d_tag_processor.cpp:
 	.text       start:0x8016C720 end:0x8016CCCC
 	.ctors      start:0x80465764 end:0x80465768
+	.data       start:0x804F43B0 end:0x804F43C8
+	.bss        start:0x806007A8 end:0x80600868
+	.sbss       start:0x8074E8A0 end:0x8074E8A8
+	.sdata2     start:0x80751000 end:0x80751020
 
 dol/game/d_theater_common.cpp:
 	.text       start:0x8016CCCC end:0x8016CEF8
 	.ctors      start:0x80465768 end:0x8046576C align:8
+	.data       start:0x804F43C8 end:0x804F43E8
+	.bss        start:0x80600868 end:0x80600880
+	.sdata      start:0x8074B500 end:0x8074B508
 
 dol/game/d_thunder.cpp:
 	.text       start:0x8016CEF8 end:0x8016D264
 	.ctors      start:0x8046576C end:0x80465770
+	.bss        start:0x80600880 end:0x80600898
+	.sbss       start:0x8074E8A8 end:0x8074E8B0
+	.sdata2     start:0x80751020 end:0x80751048
 
 dol/game/d_date.cpp:
 	.text       start:0x8016D264 end:0x8016DE60
@@ -1452,11 +1469,16 @@ dol/game/d_wipe_fader.cpp:
 	.sdata      start:0x8074B5E8 end:0x8074B5F0 align:4
 	.sdata2     start:0x80751380 end:0x807513A8 align:4
 
+dol/game/sc_data/d_sc_data_common.cpp:
+	.data       start:0x804F4BB0 end:0x804F4D80
+	.sdata      start:0x8074B5F0 end:0x8074B5F8
+	.sdata2     start:0x807513A8 end:0x807513B8
+
 dol/game/sc_data/d_sc_data_dm_bus_pl_crt.cpp:
 	.text       start:0x8017D09C end:0x8017D0C8
 	.ctors      start:0x80465784 end:0x80465788
-	.data       start:0x804F4D80 end:0x804F4ED0 align:4
-	.sdata      start:0x8074B5F8 end:0x8074B630 align:4
+	.data       start:0x804F4D80 end:0x804F4ED0
+	.sdata      start:0x8074B5F8 end:0x8074B630
 
 dol/game/sc_data/d_sc_data_dm_pl_sel.cpp:
 	.text       start:0x8017D0C8 end:0x8017D0F4
@@ -1546,7 +1568,9 @@ dol/game/sc_data/d_sc_data_rm_happy_ent.cpp:
 	.text       start:0x8017D330 end:0x8017D3AC
 	.ctors      start:0x804657C0 end:0x804657C4 align:8
 	.data       start:0x804F5B00 end:0x804F5C08
+	.bss        start:0x80623A40 end:0x80623A60
 	.sdata      start:0x8074B8A8 end:0x8074B8E0
+	.sdata2     start:0x807513B8 end:0x807513C0
 
 dol/game/sc_data/d_sc_data_rm_happy_mdl.cpp:
 	.text       start:0x8017D3AC end:0x8017D3D8
@@ -1589,6 +1613,7 @@ dol/game/sc_data/d_sc_data_rm_mm_fossil1.cpp:
 	.ctors      start:0x804657DC end:0x804657E0
 	.data       start:0x804F68A8 end:0x804F6D68
 	.sdata      start:0x8074BA20 end:0x8074BA90
+	.sbss       start:0x8074E960 end:0x8074E968
 
 dol/game/sc_data/d_sc_data_rm_mm_ins.cpp:
 	.text       start:0x8017D4E0 end:0x8017D5A4
@@ -1601,6 +1626,7 @@ dol/game/sc_data/d_sc_data_rm_mm_pic0.cpp:
 	.ctors      start:0x804657E4 end:0x804657E8
 	.data       start:0x804F71A0 end:0x804F77B0
 	.sdata      start:0x8074BAD8 end:0x8074BB60
+	.sbss       start:0x8074E968 end:0x8074E970
 
 dol/game/sc_data/d_sc_data_rm_mm_pic1.cpp:
 	.text       start:0x8017D5D0 end:0x8017D5FC
@@ -1625,6 +1651,10 @@ dol/game/sc_data/d_sc_data_rm_reset.cpp:
 	.ctors      start:0x804657F4 end:0x804657F8
 	.data       start:0x804F7B78 end:0x804F7CA0
 	.sdata      start:0x8074BC10 end:0x8074BC40
+
+dol/game/sc_data/d_sc_data_rm_sample.cpp:
+	.bss        start:0x80623A60 end:0x80623A70
+	.sdata      start:0x8074BC40 end:0x8074BC48
 
 dol/game/sc_data/d_sc_data_rm_shop0.cpp:
 	.text       start:0x8017D680 end:0x8017D6AC
@@ -1666,7 +1696,9 @@ dol/game/sc_data/d_sc_data_rm_theater_ent.cpp:
 	.text       start:0x8017D788 end:0x8017D844
 	.ctors      start:0x80465810 end:0x80465814 align:8
 	.data       start:0x804F81A0 end:0x804F82E8
+	.bss        start:0x80623A70 end:0x80623AA8
 	.sdata      start:0x8074BD88 end:0x8074BDC0
+	.sdata2     start:0x807513C0 end:0x807513C8
 
 dol/game/sc_data/d_sc_data_rm_theater_show.cpp:
 	.text       start:0x8017D844 end:0x8017D870
@@ -1679,6 +1711,10 @@ dol/game/sc_data/d_sc_data_town.cpp:
 	.ctors      start:0x80465818 end:0x8046581C align:8
 	.data       start:0x804F8438 end:0x804F8530
 	.sdata      start:0x8074BDF0 end:0x8074BE10
+
+dol/game/sc_data/d_sc_data_check_field.cpp:
+	.bss        start:0x80623AA8 end:0x80623AB8
+	.sdata      start:0x8074BE10 end:0x8074BE18
 
 dol/game/d_home_button.cpp:
 	.text       start:0x8017D89C end:0x8017E7B0
@@ -1693,6 +1729,9 @@ dol/game/d_a_snowman.cpp:
 dol/game/d_bg_debug.cpp:
 	.text       start:0x80186E0C end:0x801870D0
 	.ctors      start:0x80465820 end:0x80465824 align:8
+	.data       start:0x804F9280 end:0x804F9308
+	.bss        start:0x80623F50 end:0x80623FC0
+	.sdata      start:0x8074BE80 end:0x8074BE98
 
 dol/game/d_camera.cpp:
 	.text       start:0x801870D0 end:0x8018BAF8
@@ -1704,6 +1743,9 @@ dol/game/d_clock.cpp:
 
 dol/game/d_cd.cpp:
 	.text       start:0x8018D778 end:0x8018DAC8
+	.rodata     start:0x8047BEF8 end:0x8047BF40
+	.data       start:0x804F9880 end:0x804F98D8
+	.sdata      start:0x8074BF00 end:0x8074BF18
 
 dol/game/d_demo.cpp:
 	.text       start:0x8018DAC8 end:0x8018F588
@@ -1733,6 +1775,9 @@ dol/game/d_menu_mng.cpp:
 
 dol/game/d_money.cpp:
 	.text       start:0x8019BD78 end:0x8019C414
+	.data       start:0x804FAB68 end:0x804FAC60
+	.sdata      start:0x8074C110 end:0x8074C128
+	.sbss       start:0x8074EAA8 end:0x8074EAB0
 
 dol/game/d_msg.cpp:
 	.text       start:0x8019C414 end:0x801A6468
@@ -1778,9 +1823,16 @@ dol/game/d_obj_telop.cpp:
 dol/game/d_obj_tutorial.cpp:
 	.text       start:0x801B6A88 end:0x801B700C
 	.ctors      start:0x80465848 end:0x8046584C align:8
+	.data       start:0x804FC7B0 end:0x804FC850
+	.bss        start:0x80625830 end:0x80625940
+	.sdata      start:0x8074C2E0 end:0x8074C300
+	.sbss       start:0x8074EB58 end:0x8074EB70
 
 dol/game/d_obj_voice.cpp:
 	.text       start:0x801B700C end:0x801B76BC
+	.data       start:0x804FC850 end:0x804FC938
+	.sdata      start:0x8074C300 end:0x8074C318
+	.sbss       start:0x8074EB70 end:0x8074EB78
 
 dol/game/d_player_mngr.cpp:
 	.text       start:0x801B76BC end:0x801B96A4
@@ -1815,6 +1867,8 @@ dol/game/d_weather.cpp:
 
 dol/game/d_s_boot.cpp:
 	.text       start:0x801C9EF4 end:0x801CA0F4
+	.data       start:0x805004B8 end:0x80500528
+	.sdata      start:0x8074C5E0 end:0x8074C5F0
 
 dol/sound/SoundSystem.cpp:
 	.text       start:0x801CA0F4 end:0x801CE58C

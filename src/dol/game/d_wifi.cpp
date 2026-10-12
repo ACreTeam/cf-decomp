@@ -127,7 +127,7 @@ BOOL dWifi::canSendLetter() {
 
 // 80177C54
 BOOL dWifi::isLetterDayOver() {
-    return dSaveWc24_c::getDaysSince(&dPlayerMgr_c::getCurrentPlayer()->_83C6) != 0;
+    return dSaveWc24_c::getDaysSince(&dPlayerMgr_c::getCurrentPlayer()->mWc24LetterDate) != 0;
 }
 
 // 80177C8C
@@ -491,10 +491,10 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
         if (dSaveData_c::isNetEnabled()) {
             if (header->mCompressed && size != 0 && CXGetUncompressedSize(data) == 0x8A0) {
                 if (CXSecureUncompressRL(data, size, sRecvBuffer) == 0) {
-                    result = receiveDesign((const dUnkDesignBoard_c *)sRecvBuffer, key);
+                    result = receiveDesign((const dRelayDesign_c *)sRecvBuffer, key);
                 }
             } else if (!header->mCompressed && size == 0x8A0) {
-                result = receiveDesign((const dUnkDesignBoard_c *)data, key);
+                result = receiveDesign((const dRelayDesign_c *)data, key);
             }
         }
         break;
@@ -565,10 +565,10 @@ static inline void setOtherTown(u32 idx, const dSaveOtherTown_c *town) {
 
 // 80178AFC
 void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
-    if (msg->mTown.mVersion != TOWN_640C8_VERSION) {
+    if (msg->mTown.mVersion != VILLAGER_MOVE_VERSION) {
         return;
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_CATHERINE) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_CATHERINE) {
         int category = msg->mTown.mCatherineCategory;
         int sub = msg->mTown.mCatherineSub;
         if (category >= 0 && sub >= 0) {
@@ -586,10 +586,10 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
             }
         }
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_PLAYER_BITS) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_PLAYER_BITS) {
         int num = 0;
         for (int i = 0; i < PLAYER_NUM; i++) {
-            if (msg->mPlayers[i].isValid() && fn_8014EC84(&msg->mTown, i)) {
+            if (msg->mPlayers[i].isValid() && msg->mTown.isPlayerBit(i)) {
                 num++;
             }
         }
@@ -598,7 +598,7 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
         dPersonalID_c *player = msg->mPlayers;
         for (int i = 0; i < PLAYER_NUM; i++, player++) {
             if (player->isValid()) {
-                if (fn_8014EC84(&msg->mTown, i)) {
+                if (msg->mTown.isPlayerBit(i)) {
                     if (n == pick) {
                         dSaveData_c::getTown()->_072CC2 = *player;
                     }
@@ -609,9 +609,9 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
             }
         }
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_OUTFIT) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_OUTFIT) {
         dOutfit_c outfit;
-        if (fn_8014ECE0(&msg->mTown, &outfit)) {
+        if (msg->mTown.getOutfit(&outfit)) {
             const dOutfit_c *o = getShownOutfit(&outfit);
             dItem::Item shirt = o->mEquip.mShirt;
             dItem::Item hat = o->mEquip.mHat;
@@ -656,31 +656,31 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
             }
         }
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_MODEL_ROOM) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_MODEL_ROOM) {
         dHR::receiveModelRoom(&msg->mTown.mModelRoomCandidate);
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_DL_ITEM && msg->mTown.mDLItem.isUsed()) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_DL_ITEM && msg->mTown.mDLItem.isUsed()) {
         dSaveDLItemList_c::get()->add(&msg->mTown.mDLItem, 0);
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_JINX) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_JINX) {
         dPersonalID_c *sender = msg->getSender();
-        fn_801501F0(&dSaveData_c::getTown()->mTownList, &sender->land, msg->mTown.mJinx);
+        dSaveData_c::getTown()->mTownList.set(&sender->land, msg->mTown.mJinx);
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_PLAYER_VALUE) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_PLAYER_VALUE) {
         int i;
         dPersonalID_c *player;
         int value;
         player = msg->mPlayers;
         for (i = 0; i < PLAYER_NUM; i++, player++) {
             if (player->isValid()) {
-                value = fn_8014EE28(&msg->mTown, i);
+                value = msg->mTown.getPlayerValue(i);
                 if (value != 0) {
                     fn_80116D08(dSaveData_c::getExtra(), *player, value);
                 }
             }
         }
     }
-    if (msg->mTown.mFlags & TOWN_640C8_FLAG_OTHER_TOWN) {
+    if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_OTHER_TOWN) {
         int slot;
         int i;
         int j;
@@ -717,12 +717,12 @@ namespace dWifi {
 
 // 801795C4
 void receiveAucListings(const dSvAucList_c *list, const u64 *sender) {
-    if (list->_00 == 1) {
+    if (list->mVersion == AUC_LIST_VERSION) {
         // The cast goes once dSvAuc_c::receiveListings takes a const list (it only reads it).
         dSvAuc_c::get()->receiveListings((dSvAucList_c *)list, sender, TRUE);
         int idx = dSaveData_c::getExtra()->mWc24.findKey(sender);
         if (idx >= 0 && (u32)idx < WC24_FRIEND_NUM) {
-            const dPersonalID_c *seller = fn_8014F804(list);
+            const dPersonalID_c *seller = list->getSeller();
             if (seller != NULL) {
                 dSaveData_c::getExtra()->mWc24.mLands[idx].copy(&seller->land);
             }
@@ -732,14 +732,14 @@ void receiveAucListings(const dSvAucList_c *list, const u64 *sender) {
 
 // 80179678
 void receiveAucBids(const dSvAucList_c *list, const u64 *sender) {
-    if (list->_00 == 1) {
+    if (list->mVersion == AUC_LIST_VERSION) {
         // The cast goes once dSvAuc_c::receiveBids takes a const list (it only reads it).
         if (dSvAuc_c::get()->receiveBids((dSvAucList_c *)list, TRUE)) {
             dSaveData_c::getExtra()->mWc24.setTargetSent(sender);
         }
         int idx = dSaveData_c::getExtra()->mWc24.findKey(sender);
         if (idx >= 0 && (u32)idx < WC24_FRIEND_NUM) {
-            const dPersonalID_c *bidder = fn_8014F880(list);
+            const dPersonalID_c *bidder = list->getHighBidder();
             if (bidder != NULL) {
                 dSaveData_c::getExtra()->mWc24.mLands[idx].copy(&bidder->land);
             }
@@ -749,11 +749,11 @@ void receiveAucBids(const dSvAucList_c *list, const u64 *sender) {
 
 // 80179744
 void receiveAucSales(const dSvAucList_c *list, const u64 *sender) {
-    if (list->_00 == 1) {
+    if (list->mVersion == AUC_LIST_VERSION) {
         dSvAuc_c::get()->receiveSales(list, TRUE);
         int idx = dSaveData_c::getExtra()->mWc24.findKey(sender);
         if (idx >= 0 && (u32)idx < WC24_FRIEND_NUM) {
-            const dPersonalID_c *seller = fn_8014F804(list);
+            const dPersonalID_c *seller = list->getSeller();
             if (seller != NULL) {
                 dSaveData_c::getExtra()->mWc24.mLands[idx].copy(&seller->land);
             }
@@ -762,19 +762,19 @@ void receiveAucSales(const dSvAucList_c *list, const u64 *sender) {
 }
 
 // 801797F4
-BOOL receiveDesign(const dUnkDesignBoard_c *board, const u64 *sender) {
-    if (board->_880 != 2) {
+BOOL receiveDesign(const dRelayDesign_c *board, const u64 *sender) {
+    if (board->mKind != 2) {
         return TRUE;
     }
-    dUnkDesignBoard_c *mine = &dSaveData_c::getExtra()->mDesignBoard;
-    if (mine->_882 != 0 && mine->_883 != 0) {
+    dRelayDesign_c *mine = &dSaveData_c::getExtra()->mDesignBoard;
+    if (mine->mDays != 0 && mine->mActive != 0) {
         return mine->_884 == 0;
     }
     if (mine->mDesign.mCreator.isValid()) {
         return TRUE;
     }
     memcpy(mine, board, sizeof(dDesign_c));
-    mine->_885 = board->_885 + 1;
+    mine->mHops = board->mHops + 1;
     return TRUE;
 }
 
@@ -784,7 +784,7 @@ void receivePostPid(const dSavePostSend_c *msg, const u64 *sender) {
         if (msg->mTo.isValid()) {
             dPrivateData_c *player = dPrivateData_c::get(dSaveData_c::getTown()->mPlayers, &msg->mTo);
             if (player != NULL) {
-                player->_7EEE.copy(&msg->mSender);
+                player->mLastWc24Sender.copy(&msg->mSender);
             }
         }
         int idx = dSaveData_c::getExtra()->mWc24.findKey(sender);
@@ -883,7 +883,7 @@ BOOL sendTown(u32 max) {
         dPersonalID_c *pid = &dPrivateData_c::getChecked(dSaveData_c::getTown()->mPlayers, i)->mPID;
         memcpy(&buf[i * sizeof(dPersonalID_c)], pid, sizeof(dPersonalID_c));
     }
-    memcpy(&buf[PLAYER_NUM * sizeof(dPersonalID_c)], &dSaveData_c::getTown()->_0640C8, sizeof(dSaveTown640C8_c));
+    memcpy(&buf[PLAYER_NUM * sizeof(dPersonalID_c)], &dSaveData_c::getTown()->mVillagerMove, sizeof(dSvVillagerMove::Info_c));
     dNetWc24Data_c data;
     setMsgData(sRecvBuffer, sizeof(dWifiTownMsg_c), &data, pTag);
     dNetWc24MsgTag_c msgTag = tag;
@@ -1033,7 +1033,7 @@ BOOL sendDesign() {
     dNetWc24MsgTag_c *pTag = &tag;
     pTag->mBits.mKind = WIFI_MSG_DESIGN;
     dNetWc24Data_c data;
-    setMsgData(dSaveData_c::getDesignBoard(), sizeof(dUnkDesignBoard_c), &data, pTag);
+    setMsgData(dSaveData_c::getDesignBoard(), sizeof(dRelayDesign_c), &data, pTag);
     BOOL sent = FALSE;
     if (num > 0) {
         int r = cM::rndInt(num);
@@ -1115,10 +1115,10 @@ void updateDaily() {
         updateRoster();
         dSaveWc24_c *wc24 = &dSaveData_c::getExtra()->mWc24;
         u8 sendNum = wc24->startBoardSendDay();
-        if (dSaveData_c::getTown640C8()->mFlags != 0 && sendNum != 0) {
-            dSaveData_c::getTown640C8()->mVersion = TOWN_640C8_VERSION;
+        if (dSaveData_c::getVillagerMove()->mFlags != 0 && sendNum != 0) {
+            dSaveData_c::getVillagerMove()->mVersion = VILLAGER_MOVE_VERSION;
             if (sendTown(sendNum)) {
-                fn_8014EBE8(dSaveData_c::getTown640C8());
+                dSaveData_c::getVillagerMove()->clearOutfitFlag();
                 dSaveData_c::getTown()->setFlag(3);
             }
         }
@@ -1127,44 +1127,44 @@ void updateDaily() {
             switch (dSvAuc_c::getTodayType()) {
             case 1:
                 if (dSaveData_c::getExtra()->getAucListings()->mMask != 0) {
-                    dSaveData_c::getExtra()->getAucListings()->_00 = 1;
+                    dSaveData_c::getExtra()->getAucListings()->mVersion = AUC_LIST_VERSION;
                     if (sendAucListings()) {
-                        fn_8014F2F0(dSaveData_c::getExtra()->getAucListings());
+                        dSaveData_c::getExtra()->getAucListings()->clearAll();
                     }
                 }
             case 0:
-                fn_8014F2F0(dSaveData_c::getExtra()->getAucBids());
-                fn_8014F2F0(dSaveData_c::getExtra()->getAucSales());
+                dSaveData_c::getExtra()->getAucBids()->clearAll();
+                dSaveData_c::getExtra()->getAucSales()->clearAll();
                 break;
             case 2:
             case 3:
                 if (dSaveData_c::getExtra()->getAucBids()->mMask != 0) {
-                    dSaveData_c::getExtra()->getAucBids()->_00 = 1;
+                    dSaveData_c::getExtra()->getAucBids()->mVersion = AUC_LIST_VERSION;
                     sendAucBids();
                 }
-                fn_8014F2F0(dSaveData_c::getExtra()->getAucListings());
-                fn_8014F2F0(dSaveData_c::getExtra()->getAucSales());
+                dSaveData_c::getExtra()->getAucListings()->clearAll();
+                dSaveData_c::getExtra()->getAucSales()->clearAll();
                 break;
             case 4:
                 if (dSaveData_c::getExtra()->getAucSales()->mMask != 0) {
-                    dSaveData_c::getExtra()->getAucSales()->_00 = 1;
+                    dSaveData_c::getExtra()->getAucSales()->mVersion = AUC_LIST_VERSION;
                     if (sendAucSales()) {
-                        fn_8014F2F0(dSaveData_c::getExtra()->getAucSales());
+                        dSaveData_c::getExtra()->getAucSales()->clearAll();
                     }
                 }
-                fn_8014F2F0(dSaveData_c::getExtra()->getAucListings());
-                fn_8014F2F0(dSaveData_c::getExtra()->getAucBids());
+                dSaveData_c::getExtra()->getAucListings()->clearAll();
+                dSaveData_c::getExtra()->getAucBids()->clearAll();
                 break;
             }
         }
 
-        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveData_c::getDesignBoard()->_881) {
-            if (dSaveData_c::getDesignBoard()->fn_801368F4()) {
-                dSaveData_c::getDesignBoard()->_881 = 0;
+        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveData_c::getDesignBoard()->mSendPending) {
+            if (dSaveData_c::getDesignBoard()->isHopLimit()) {
+                dSaveData_c::getDesignBoard()->mSendPending = 0;
             } else if (dSaveWc24_c::getDaysSince(&wc24->_C70)) {
-                dSaveData_c::getDesignBoard()->_880 = 2;
+                dSaveData_c::getDesignBoard()->mKind = 2;
                 if (sendDesign()) {
-                    dSaveData_c::getDesignBoard()->_881 = 0;
+                    dSaveData_c::getDesignBoard()->mSendPending = 0;
                     dSaveData_c::getTown()->setFlag(0x10);
                     dSaveWc24_c::setToday(&wc24->_C70);
                 }
@@ -1369,7 +1369,7 @@ void *sendBoardThread(void *arg) {
             req->mFriend = getRosterIdx(req->mFriend);
             if (lbl_805BE940.sendBoardMessage(req)) {
                 lbl_8074B580 = 1;
-                dSaveWc24_c::setToday(&dPlayerMgr_c::getCurrentPlayer()->_83C6);
+                dSaveWc24_c::setToday(&dPlayerMgr_c::getCurrentPlayer()->mWc24LetterDate);
                 dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x3E);
             }
         }
@@ -1386,7 +1386,7 @@ void *sendSelfThread(void *arg) {
         req->mFriend = -1;
         if (lbl_805BE940.sendBoardMessage(req)) {
             lbl_8074B580 = 1;
-            dSaveWc24_c::setToday(&dPlayerMgr_c::getCurrentPlayer()->_83C6);
+            dSaveWc24_c::setToday(&dPlayerMgr_c::getCurrentPlayer()->mWc24LetterDate);
             dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x3E);
         }
         lbl_805BE940.close();
@@ -1502,7 +1502,7 @@ void onDistDownload(void *data, u32 size, BOOL arg) {
                     loadDistContent(arc, 2, i);
                     loadDistContent(arc, 3, i);
                 }
-                fn_80117244(&dSaveData_c::getExtra()->_0001CE);
+                dSaveData_c::getExtra()->mLangFlags.updateAll();
             }
         }
     }

@@ -136,7 +136,7 @@ void fn_8010D9A8(u8 v) {
 }
 
 // 8010D9C8
-u8 fn_8010D9C8() {
+BOOL fn_8010D9C8() {
     return dSaveData_c::sOption.mBit3;
 }
 
@@ -252,7 +252,7 @@ dSaveData_c *dSaveData_c::getRaw() {
 
 // 8010DC44
 BOOL dSaveData_c::isGood() {
-    if (!dPrivateData_c::fn_80136E10(mPlayers)) {
+    if (!dPrivateData_c::isUserDataValidAll(mPlayers)) {
         return FALSE;
     }
     if (!isHeaderState2()) {

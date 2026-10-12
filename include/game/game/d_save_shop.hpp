@@ -25,7 +25,7 @@ enum {
 // Nook's store (NH SaveShop): dSaveShops_c::mShop. Stock slots: 0..5 tools, 6 medicine, 7..13 seed bags,
 // 14..16 saplings, 17..24 furniture, 25..27 wallpaper, 28..30 carpet, 31..34 stationery, 35 paint; how many
 // of each depends on the stage. The store is upgraded once its sales reach getSalesGoal() and mDaysLeft
-// has run out; at Nookington's the players' votes (dPrivateData_c::_868F) decide what comes next.
+// has run out; at Nookington's the players' votes (dPrivateData_c::mShopVote) decide what comes next.
 // Source: src/dol/game/d_save_shop.cpp.
 class dSaveShop_c { // 0xC4
 public:

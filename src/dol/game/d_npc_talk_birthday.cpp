@@ -70,7 +70,7 @@ int dAcNpcNml_c::talk_c::msgPlayerBirthdayCake(msgInfo_s *info) {
     setLooksMsg(info, l_Ev_Birthday, mMessageCode + 1);
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL) {
-        player->mBirthdayHost._08 = -1;
+        player->mBirthdayHost.mHostIdx = -1;
     }
     return TRUE;
 }

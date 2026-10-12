@@ -31,7 +31,9 @@ class dAnimal_c;
 class dPlayActor_c;
 class dSceneChange_c;
 class dAnimalMemory_c;
-struct dSaveTownListEntry_c; // d_save_town.hpp
+namespace dSvTownList {
+struct Entry_c; // d_sv_town_list.hpp
+}
 struct dSaveJinx_c;          // d_save_town.hpp
 class dNpcEntry_c;
 class dQuestVillager_c;
@@ -390,7 +392,7 @@ public:
         void endGreeting(int arg);                 // 80035A58 F8: memory, talk count 0x44
         BOOL stepGreeting(int kind);                // 80035AA0 104: once idle, procedures 804A0E48 [15]
         void addFriendship(int delta);               // 80035B04 friendship += delta (current player's memory)
-        inline dSaveTownListEntry_c *getJinxTown(); // inline (defined in the .cpp): town list entry mJinxTown (land and jinx), NULL = this town
+        inline dSvTownList::Entry_c *getJinxTown(); // inline (defined in the .cpp): town list entry mJinxTown (land and jinx), NULL = this town
 
         // ---- Procedures of the d_npc_talk_* TUs. They are talk_c members: the nml tables store
         // them as constant {0,-1,fn} records, which MWCC only emits for members of talk_c itself
@@ -846,7 +848,7 @@ public:
         int msgFmarket(msgInfo_s *info);            // 800476E0
         void endFmarket(int arg);                   // 800479C4 F8 ([21], [22]): msgMemory set, entry flag mEventTalked, talk count 0x44
         BOOL stepFmarketAsk(int kind);              // 80047A6C 104: one choice (selFmarketAsk) when the controller is idle
-        void selFmarketAsk();                       // 80047B00 choice: entry flag mFmarketSale, fn_8019C34C
+        void selFmarketAsk();                       // 80047B00 choice: entry flag mFmarketSale, dMoney_c::onForceShow
         // EC (l_talkProcSets [22]), selling: the boxed furniture at mFtrPosX / mFtrPosZ (getRoomFtrIdx),
         // price getSellPrice (d_npc_talk_quest_q09) into mPrice; "Ev_FmarketNPC3" when the player has a free
         // pocket and the money (104 = stepSaleChoice), else "Ev_FmarketNPC4"; item name 0, number 3.
@@ -900,7 +902,7 @@ public:
         int msgPlayerBirthday(msgInfo_s *info);     // 8004902C EC: player's birthday; code 0xE / 0xB for a Feb 29 birthday (on / not on Feb 29), 4 / 1 by friendship (>= 0x40)
         void endPlayerBirthday(int arg);            // 80049128 F8: msgMemory set, talk count 0x44
         BOOL stepPlayerBirthday(int kind);          // 800491B8 104: present ITEM_IDX_BIRTHDAY_CAKE to talk_c+0x280, pickUp, requestItemAct; EC = msgPlayerBirthdayCake
-        int msgPlayerBirthdayCake(msgInfo_s *info); // 8004926C EC: code = mMessageCode + 1; player mBirthdayHost._08 = -1
+        int msgPlayerBirthdayCake(msgInfo_s *info); // 8004926C EC: code = mMessageCode + 1; player mBirthdayHost.mHostIdx = -1
         int msgNpcBirthday(msgInfo_s *info);        // 800492B8 EC: npc's birthday; code 7, 8 when already congratulated (getEntry() _28C.mBirthdayDone)
         void endNpcBirthday(int arg);               // 80049344 F8: msgMemory set, sets _28C.mBirthdayDone (congratulated), talk count 0x44
         // ---- d_npc_talk_quest_q04 (.text 80049FDC..8004B75C) ----
@@ -1339,7 +1341,7 @@ public:
         int msgInviteFirst(msgInfo_s *info);        // 8005BA28 EC (nml l_talkProcSets [6]): "Q09_First" once (flag 1), "Q09_Trade2" (flag 2 set, 3 clear), else a random room talk
         void endInviteFirst(int arg);               // 8005BBD0 F8: endQuestCommon, appointment flag 1
         BOOL stepInviteTradeOffer(int kind);        // 8005BC04 104: once idle, a single choice selInviteTradeOffer
-        void selInviteTradeOffer();                 // 8005BC98 choice: appointment flag 2, fn_8019C34C
+        void selInviteTradeOffer();                 // 8005BC98 choice: appointment flag 2, dMoney_c::onForceShow
         u32 getSellPrice(const dItem::Item *item);  // 8005BCCC: the villager's price for selling its item: getPrice * (255 - friendship of _17C) / 512, at least 10; also called from d_npc_talk_fmarket
         u32 getBuyPrice(const dItem::Item *item);   // 8005BD4C: the most the villager pays for the item: getPrice * (255 + friendship) / 512 rounded to 10, at least 10 (0 without item, price or memory); called from d_npc_talk_fmarket
         int msgInviteTrade(msgInfo_s *info);        // 8005BE04 EC (nml l_talkProcSets [7]): "Q09_Trade3" (affordable, 104 = stepInviteTradeChoice) / "Q09_Trade4" for mItem0 (price getSellPrice), F8 = endQuestCommon
@@ -1502,7 +1504,7 @@ public:
         /* 0x17C */ dAnimalMemory_c *mpMemory; // the villager's memory of the current player; init NULL
         /* 0x180 */ u32 mMemoryIdx;                 // init -1; the memory index (getMemoryIdx); always tested
                                               // unsigned (cmplwi 0x10): < 16 = valid
-        /* 0x184 */ int mJinxTown;                 // dSaveTownList_c index for the jinx topic (-1: this town)
+        /* 0x184 */ int mJinxTown;                 // dSvTownList::List_c index for the jinx topic (-1: this town)
         /* 0x188 */ int mRumorTown;                 // rumor town index
         /* 0x18C */ u32 mImpression;                 // impression level; init 50 = none; tested unsigned (< 50)
         /* 0x190 */ dPersonalID_c mMsgPersonal;

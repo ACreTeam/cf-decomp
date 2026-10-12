@@ -106,7 +106,7 @@ void *checkThread(void *arg);                              // 8017851C: sets sWc
 struct dWifiTownMsg_c; // d_save_town.hpp
 // region C's receivers (onReceive passes them the message data)
 struct dSvAucList_c;
-class dUnkDesignBoard_c;
+class dRelayDesign_c;
 struct dSavePostSend_c;
 
 // The header of a received WiiConnect24 message part (given to dWifi::onReceive).
@@ -140,7 +140,7 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key); // 80178AFC: takes over w
 void receiveAucListings(const dSvAucList_c *list, const u64 *sender);  // 801795C4
 void receiveAucBids(const dSvAucList_c *list, const u64 *sender);      // 80179678
 void receiveAucSales(const dSvAucList_c *list, const u64 *sender);     // 80179744
-BOOL receiveDesign(const dUnkDesignBoard_c *board, const u64 *sender); // 801797F4
+BOOL receiveDesign(const dRelayDesign_c *board, const u64 *sender); // 801797F4
 void receivePostPid(const dSavePostSend_c *msg, const u64 *sender);    // 801798A0
 } // namespace dWifi
 

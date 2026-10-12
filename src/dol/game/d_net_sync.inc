@@ -938,7 +938,7 @@ void recvStrUnlock(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 void recvPatternCopy(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800833D8(buf, member);
+    dPatternCopy::recvPacket(buf, member);
 }
 
 // 800DFB7C: NET_PACKET_PATTERN_COPY_ACK (0x3F)
@@ -946,7 +946,7 @@ void recvPatternCopyAck(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
     u8 value;
     cLib::memCpy(&value, data, sizeof(value));
-    fn_80083468(value != 0, member);
+    dPatternCopy::recvAck(value != 0, member);
 }
 
 // 800DFBC8: NET_PACKET_ROOM_ITEM (0x3D) (dBgUtil::sendRoomItem)
@@ -1121,7 +1121,7 @@ void recvClock(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 // 800E004C: NET_PACKET_VOICE (0x61)
 void recvVoice(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_801B7488(member, data);
+    dObjVoice_c::receive(member, data);
 }
 
 // 800E0050: NET_PACKET_RECYCLE_BIN (0x62)
@@ -1147,7 +1147,7 @@ void recvMelodyAck(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 // 800E0060: NET_PACKET_DEMO_SYNC (0x2C)
 void recvDemoSync(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_8008239C(member, data);
+    dDemoSync::receive(member, data, size);
 }
 
 // 800E0064: NET_PACKET_DAILY_RAND (0x51)
@@ -1159,7 +1159,7 @@ void recvDailyRand(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 // 800E0098: NET_PACKET_NPC_SPOT_A_FLAG (0x4B)
 void recvNpcSpotAFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     dSaveTown_c *town = dSaveData_c::getTown();
-    town->_06673F = 1;
+    town->mNpcSpotA.mFlag = 1;
 }
 
 // 800E00C4: NET_PACKET_NPC_SPOT_A (0x4C)
@@ -1171,26 +1171,26 @@ void recvNpcSpotA(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     dFdBase_c::getUnitCenterPos(&pos, buf[1], buf[2]);
     pos.y = 0.0f;
     dSaveTown_c *town = dSaveData_c::getTown();
-    fn_80150544(town->_06673C, buf[0], &pos);
+    town->mNpcSpotA.set(buf[0], &pos);
 }
 
 // 800E0134: NET_PACKET_NPC_SPOT_B_FLAG (0x4D)
 void recvNpcSpotBFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     dSaveTown_c *town = dSaveData_c::getTown();
-    town->_066741[3] = 1;
+    town->mNpcSpotB.mFlag = 1;
 }
 
 // 800E0160: NET_PACKET_NPC_SPOT_B (0x4E)
 void recvNpcSpotB(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_801505FC(dSaveData_c::getTown()->_066741, buf[0], buf[1]);
+    dSaveData_c::getTown()->mNpcSpotB.set(buf[0], buf[1]);
 }
 
 // 800E01A0: NET_PACKET_HARVEST_SPOT_FLAG (0x4F)
 void recvHarvestSpotFlag(int member, const u8 *data, u32 size, u32 arg,
                          u8 scene) {
-    dSaveData_c::getTown()->mHarvestSpot[2] |= 0x80;
+    dSaveData_c::getTown()->mHarvestSpot.mFlags |= dSvNpcPos::SIDE_POS_FLAG_EVENT;
 }
 
 // 800E01D0: NET_PACKET_HARVEST_SPOT (0x50)
@@ -1201,7 +1201,7 @@ void recvHarvestSpot(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     mVec3_c pos;
     dFdBase_c::getUnitCenterPos(&pos, buf[0], buf[1]);
     pos.y = 0.0f;
-    fn_80150648(dSaveData_c::getTown()->mHarvestSpot, &pos);
+    dSaveData_c::getTown()->mHarvestSpot.set(&pos);
 }
 
 // 800E023C: NET_PACKET_NPC_EVENT_START (0x45)
@@ -2899,13 +2899,13 @@ void onSessionEnd() {
 }
 
 void onVisitorClear(int, const dNetMemberMask_c *) {
-    fn_8008205C();
+    dDemoSync::init();
     dSvMgr_c::mCurrentVisitor = NET_MEMBER_NONE;
     clearAllRoomMaps();
 }
 
 void onVisitorSet(int member, const dNetMemberMask_c *) {
-    fn_8008205C();
+    dDemoSync::init();
     dSvMgr_c::mCurrentVisitor = member;
     clearAllRoomMaps();
 }
@@ -2915,13 +2915,13 @@ BOOL canFinishLeave(int, const dNetMemberMask_c *) {
 }
 
 void onLeave(int, const dNetMemberMask_c *) {
-    fn_8008205C();
+    dDemoSync::init();
     clearAllRoomMaps();
     dFootmark::getEditor()->clearMarks2();
 }
 
 void onMemberLeft(int member, const dNetMemberMask_c *) {
-    fn_8008205C();
+    dDemoSync::init();
     clearAllRoomMaps();
     if (isHost()) {
         dItem::Item item((u16)0xFFF1);
@@ -2953,8 +2953,8 @@ int sendClose0(int, void *, int, int) {
 }
 
 int sendClosePairRing(int, void *, int, int value) {
-    if (dSaveData_c::getTown()->_06673F &&
-        value == dSaveData_c::getTown()->_06673C[2]) {
+    if (dSaveData_c::getTown()->mNpcSpotA.mFlag &&
+        value == dSaveData_c::getTown()->mNpcSpotA.mKind) {
         fn_800F6098(fn_800F5C88());
         fn_800F60E4(fn_800F5C88());
     }
@@ -3023,10 +3023,10 @@ int sendOpenFish(int, void *, int, u8 scene) {
 }
 
 int sendOpenHouseRoom(int, void *, int, u8 scene) {
-    if (fn_80081674(scene) == 1) {
-        int house = fn_80081704(scene);
+    if (dSceneCheck::isHouseRoomScene(scene) == 1) {
+        int house = dSceneCheck::getSceneHouse(scene);
         if (house != -1) {
-            int room = fn_800817A0(scene);
+            int room = dSceneCheck::getSceneRoom(scene);
             if (room != -1) {
                 u8 base = house * 9 + room * 3;
                 u8 rec[5];
@@ -3062,12 +3062,12 @@ void applyOpenFish(int, const void *, u32, u8) {
 }
 
 void applyOpenHouseRoom(int, const void *, u32, u8 scene) {
-    if (fn_80081674(scene) == 1) {
-        int house = fn_80081704(scene);
+    if (dSceneCheck::isHouseRoomScene(scene) == 1) {
+        int house = dSceneCheck::getSceneHouse(scene);
         if (house != -1) {
-            int room = fn_800817A0(scene);
+            int room = dSceneCheck::getSceneRoom(scene);
             if (room != -1) {
-                fn_80081634(house, room);
+                dSceneCheck::setRoomOpen(house, room);
             }
         }
     }
@@ -3138,7 +3138,7 @@ BOOL packSyncBuf8Host(int member, const dNetMemberMask_c *mask, u8 *dst,
     dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(member);
     BOOL ok = FALSE;
     if (mask->isOn(member)) {
-        ok = player->fn_8013BDA0(0x10, 10, 1);
+        ok = player->startHostVisit(0x10, 10, 1);
     }
     if (ok) {
         dPrivateData_c::loadHostFromTown();
@@ -3173,14 +3173,14 @@ void fillSyncBuf4_0(int, u8 *data, u32) {
 }
 
 void fillSyncBuf4LogFlag(int, u8 *data, u32) {
-    *data = fn_800C7790();
+    *data = dActivityLog::isDone();
 }
 
 void applySyncBuf4_0(int, u8 *, u32) {
 }
 
 void applySyncBuf4LogFlag(int, u8 *data, u32) {
-    fn_800C7994(*data != 0);
+    dActivityLog::applyVisitorDone(*data != 0);
 }
 
 } // namespace dNet

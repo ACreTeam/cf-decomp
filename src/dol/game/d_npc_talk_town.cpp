@@ -143,8 +143,8 @@ static const char l_Town_Theater[] = "Town_Theater"; // 8046CD90
 // 80061790
 int dAcNpcNml_c::talk_c::msgTownTheater(msgInfo_s *info) {
     u16 code = 0x1F;
-    if (lbl_80600874.mOpen != 0) {
-        if (fn_8016CD8C(&lbl_80600874)) {
+    if (dTheater::g_common.mOpen != 0) {
+        if (dTheater::g_common.isKyosyoProgram()) {
             code = 0x1E;
         } else if (lbl_8074EAC8 > 0 && lbl_8074EAC8 < 0x1E) {
             code = lbl_8074EAC8;

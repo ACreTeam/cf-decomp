@@ -48,7 +48,6 @@ void fn_8010DDE0();
 void fn_8010DED0();
 void fn_8010DCF0(void *);
 void fn_800A949C(int, int);
-void fn_80136C7C(void *, void *);
 void fn_8010DFC0();
 }
 

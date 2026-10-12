@@ -108,7 +108,7 @@ bool dDemoActor_c::checkInteraction(dDemoActor_c *actor) {
     return false;
 }
 
-void dDemoActor_c::demoHook50() {
+void dDemoActor_c::demoHook50(int cmd, u8 member) {
 }
 mVec3_c *dDemoActor_c::getDemoPosition() {
     return &mPos;

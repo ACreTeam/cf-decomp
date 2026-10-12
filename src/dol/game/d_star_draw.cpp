@@ -13,18 +13,13 @@
 #include <string.h>
 #include <lib/nw4r/g3d/g3d_state.h>
 
-// Not decompiled yet (C linkage keeps the target names).
-extern "C" {
-BOOL fn_80150D3C(dSaveUnk72E0A_c *signs, int idx);         // 80150D3C: the constellation has an owner
-dStarSign_c *fn_80150D24(dSaveUnk72E0A_c *signs, int idx); // 80150D24: a constellation
-}
 
 // 80163AA0
 BOOL dStarDraw_c::isStarFree(int star, const dStarDraw_c *draw) {
-    dSaveUnk72E0A_c *signs = &dSaveData_c::getRaw()->_072E0A;
+    const dSvStarSign::List_c *signs = &dSaveData_c::getRaw()->mStarSigns;
     for (int i = 0; i < 16; i++) {
-        if (fn_80150D3C(signs, i) && i != draw->mSignIdx) {
-            u16 *lines = fn_80150D24(signs, i)->mLines;
+        if (signs->isValid(i) && i != draw->mSignIdx) {
+            const u16 *lines = signs->get(i)->mLines;
             for (int j = 0; j < 16; j++, lines++) {
                 int line = *lines;
                 if (line < LINE_NUM) {
@@ -354,13 +349,13 @@ u16 dStarDraw_c::findSignLine(const mVec2_c *pos, LineFilter filter, u16 *slot, 
 
 // 80164B30
 int dStarDraw_c::findSign(const mVec2_c *pos, f32 radius) {
-    dSaveUnk72E0A_c *signs = &dSaveData_c::getRaw()->_072E0A;
+    const dSvStarSign::List_c *signs = &dSaveData_c::getRaw()->mStarSigns;
     f32 best = radius * radius;
     int found = -1;
     for (int i = 0; i < 16; i++) {
-        if (fn_80150D3C(signs, i)) {
-            dStarSign_c *sign = fn_80150D24(signs, i);
-            u16 *lines = sign->mLines;
+        if (signs->isValid(i)) {
+            const dStarSign_c *sign = signs->get(i);
+            const u16 *lines = sign->mLines;
             for (u32 j = 0; j < 16; j++, lines++) {
                 u16 l = *lines;
                 if (l != 0xFFFF) {
@@ -483,7 +478,7 @@ void dStarDraw_c::drawXlu() {
 
 // 801650E8
 void dStarDraw_c::drawSigns() {
-    dSaveUnk72E0A_c *signs = &dSaveData_c::getRaw()->_072E0A;
+    const dSvStarSign::List_c *signs = &dSaveData_c::getRaw()->mStarSigns;
     for (int i = 0; i < 16; i++) {
         if (i == mSignIdx && mSign != NULL) {
             u16 *line = mSign->mLines;
@@ -509,8 +504,8 @@ void dStarDraw_c::drawSigns() {
             if (mSelStar >= 0) {
                 drawStarLines(mSelStar, mColor(0x80, 0x80, 0xFF, 0x80));
             }
-        } else if (fn_80150D3C(signs, i)) {
-            u16 *line = fn_80150D24(signs, i)->mLines;
+        } else if (signs->isValid(i)) {
+            const u16 *line = signs->get(i)->mLines;
             for (int j = 0; j < 16; j++, line++) {
                 u16 l = *line;
                 if (l == 0xFFFF) {

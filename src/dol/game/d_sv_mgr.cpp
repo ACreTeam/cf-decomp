@@ -778,9 +778,9 @@ void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
             dNet::getMyNo();
             int index = mPlayerIndex;
             fn_801017B8();
-            void *player = dPlayerMgr_c::getPlayer(index);
-            fn_8010DAFC(&field<dSaveOption_c>(player, 0x83E8));
-            fn_80136C7C(dPlayerMgr_c::getCurrentPlayer(), player);
+            dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
+            fn_8010DAFC(player->getOption());
+            dPlayerMgr_c::getCurrentPlayer()->copy(player);
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();
@@ -1234,9 +1234,9 @@ void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
             dNet::getMyNo();
             int index = mPlayerIndex;
             fn_801017B8();
-            void *player = dPlayerMgr_c::getPlayer(index);
-            fn_8010DAFC(&field<dSaveOption_c>(player, 0x83E8));
-            fn_80136C7C(dPlayerMgr_c::getCurrentPlayer(), player);
+            dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
+            fn_8010DAFC(player->getOption());
+            dPlayerMgr_c::getCurrentPlayer()->copy(player);
             dSaveData_c::get();
             fn_8010DFC0();
             dSaveData_c *save = dSaveData_c::getRaw();

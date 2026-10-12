@@ -18,10 +18,10 @@
 #include <revolution/MTX.h>
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_npc_list.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-BOOL fn_800F98E4(const u16 *item); // 800F98E4
 BOOL fn_8018A978(dCamera_c *camera); // 8018A978
 BOOL fn_8018EF30();                // 8018EF30
 }
@@ -679,8 +679,8 @@ StgOffice_c::~StgOffice_c() {}
 
 void StgOffice_c::start(u32 param) {
     StgBase_c::start(param);
-    u16 item = 0x800A;
-    if (fn_800F98E4(&item)) {
+    dItem::Item item((u16)0x800A);
+    if (dNpcList::getSpByKey(item) != NULL) {
         mBgm = 0x1A79;
     } else {
         mBgm = 0x1A8C;

@@ -18,6 +18,7 @@
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/math.h>
 #include <game/game/d_heap.hpp>
+#include <game/game/d_fd_block_type.hpp>
 
 // Ext item data (0xD000 ids), see d_fg_item.cpp.
 // The furniture interface the unit's furniture object exposes (base at +0x158 of fn_800A8FC4's result).
@@ -53,7 +54,6 @@ class dFdFtr_c : public dFdFtrPad_c, public dFdFtrIf_c {};
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 
-int fn_80081514(int type);                                             // 80081514: the bridge variant of a block type
 void *fn_800A9058();                                                   // 800A9058
 dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
 }
@@ -311,7 +311,7 @@ BOOL dFdBase_c::isBlockVariant(int blockX, int blockZ) const {
     const dFdBlock_c *block = getBlock(blockX, blockZ);
     if (block != NULL) {
         int type = block->mType;
-        return fn_80081514(type) != type;
+        return dFdBlockType::getBridgeType(type) != type;
     }
     return FALSE;
 }

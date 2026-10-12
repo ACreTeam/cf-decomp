@@ -3,6 +3,7 @@
 // .ctors 80465754, .rodata 80479BB0..80479F70, .data 804F0768..804F0C50, .bss 805FAF58..805FB008,
 // .sdata 8074B2C0..8074B340, .sbss 8074E848..8074E858, .sdata2 80750EB8..80750EE0.
 #include <game/game/d_scene.hpp>
+#include <game/game/d_sc_data.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_actor.hpp>
 #include <game/game/d_base.hpp>
@@ -16,15 +17,13 @@
 #include <game/game/d_world.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_fader.hpp>
+#include <game/game/d_activity_log.hpp>
+#include <game/game/d_scene_base.hpp>
+#include <game/game/d_dylink.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 BOOL fn_800CCDA4(void *data, int num);
-BOOL fn_80086DD0(u16 id);
-BOOL fn_80086E00(u16 id);
-int fn_80086E20(u16 id);
-void fn_800C7704();
-void fn_800C7708();
 void fn_801A6584();
 void fn_801A670C();
 void fn_80186708();
@@ -33,54 +32,7 @@ void *fn_80100234(int player, int arg, u32 type, const mVec3_c *pos, const mAng3
 void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
 }
 
-// The creation steps of each scene (other TUs' .sdata), named after the first scene using them.
-extern dSceneData_c *sScDataField;
-extern dSceneData_c *sScDataRmHs0F1;
-extern dSceneData_c *sScDataRmHs0F2;
-extern dSceneData_c *sScDataRmHs0Bm;
-extern dSceneData_c *sScDataRmHs0Loft;
-extern dSceneData_c *sScDataRmNpc0;
-extern dSceneData_c *sScDataRmOffice;
-extern dSceneData_c *sScDataRmChkp;
-extern dSceneData_c *sScDataRmMmEnt;
-extern dSceneData_c *sScDataRmMmFish;
-extern dSceneData_c *sScDataRmMmIns;
-extern dSceneData_c *sScDataRmMmFossil0;
-extern dSceneData_c *sScDataRmMmFossil1;
-extern dSceneData_c *sScDataRmMmPic0;
-extern dSceneData_c *sScDataRmMmPic1;
-extern dSceneData_c *sScDataRmMmCafe;
-extern dSceneData_c *sScDataRmMmAstro;
-extern dSceneData_c *sScDataRmShop0;
-extern dSceneData_c *sScDataRmShop1;
-extern dSceneData_c *sScDataRmShop2;
-extern dSceneData_c *sScDataRmShop3F1;
-extern dSceneData_c *sScDataRmShop3F2;
-extern dSceneData_c *sScDataRmTailor;
-extern dSceneData_c *sScDataTown;
-extern dSceneData_c *sScDataRmBroker;
-extern dSceneData_c *sScDataRmBarber;
-extern dSceneData_c *sScDataRmFortune;
-extern dSceneData_c *sScDataRmGrace;
-extern dSceneData_c *sScDataRmHappyEnt;
-extern dSceneData_c *sScDataRmHappyMdl;
-extern dSceneData_c *sScDataRmTheaterEnt;
-extern dSceneData_c *sScDataRmTheaterShow;
-extern dSceneData_c *sScDataRmAuction;
-extern dSceneData_c *sScDataRmReset;
-extern dSceneData_c *sScDataDmTitle;
-extern dSceneData_c *sScDataDmSave;
-extern dSceneData_c *sScDataDmPlSel;
-extern dSceneData_c *sScDataDmBusPlCrt;
-extern dSceneData_c *sScDataCheckField;
-extern dSceneData_c *sScDataRmSample;
-
 // The scene wipe (other TUs' data).
-extern u16 lbl_8074B1B6; // wipe out type
-extern u16 lbl_8074B1B4; // wipe in type
-extern u16 lbl_8074B1B0;
-extern int lbl_8074E804;
-extern int lbl_8074E808;
 extern u8 lbl_8074EACD;
 
 // 80479BB0: the house attribute per player house
@@ -459,7 +411,7 @@ BOOL isSceneResLoaded() {
         if (entry->mType == SCENE_DATA_RES) {
             ids = (const u16 *)entry->mData;
             for (j = 0; j < entry->mNum; j++) {
-                if (!fn_80086DD0(*ids) && fn_80086E20(*ids) != 1) {
+                if (!dDyl::isLinked(*ids) && dDyl::linkASync(*ids) != 1) {
                     loaded = FALSE;
                 }
                 ids++;
@@ -484,7 +436,7 @@ BOOL releaseSceneRes() {
             j = entry->mNum - 1;
             ids = &((const u16 *)entry->mData)[j];
             for (; j >= 0; j--) {
-                if (fn_80086DD0(*ids) && !fn_80086E00(*ids)) {
+                if (dDyl::isLinked(*ids) && !dDyl::unlink(*ids)) {
                     return FALSE;
                 }
                 ids--;
@@ -524,7 +476,7 @@ BOOL createScene(fBase_c *parent) {
     getSceneChange()->setScene(SCENE_NONE);
     dWorld::setCurve(isOutdoorScene(sCurScene));
     dFgMngProc_c::create();
-    fn_800C7704();
+    dActivityLog::create();
     fn_801A6584();
 
     int i;
@@ -554,7 +506,7 @@ void destroyScene() {
     sParent = NULL;
     dWorld::clearCurve();
     dFgMngProc_c::destroy();
-    fn_800C7708();
+    dActivityLog::destroy();
     fn_801A670C();
     getSceneChange()->setChanging(FALSE);
 }
@@ -912,11 +864,11 @@ BOOL dSceneChange_c::request(u8 scene, int wipeIn, int wipeOut, BOOL force) {
         } else {
             inType = dFader::getInType();
         }
-        lbl_8074B1B6 = outType;
-        lbl_8074B1B4 = inType;
-        lbl_8074B1B0 = 1;
-        lbl_8074E804 = wipeOut;
-        lbl_8074E808 = wipeIn;
+        dScene_c::m_fadeOutFrame = outType;
+        dScene_c::m_fadeInFrame = inType;
+        dScene_c::m_nextScene = 1;
+        dScene_c::m_fadeInType = wipeOut;
+        dScene_c::m_fadeOutType = wipeIn;
         if (dNet::isSessionActive() && !dNet::isNetStopped()) {
             dNet::setSceneChangeState(NET_SCENE_STATE_REQUEST);
         }

@@ -48,4 +48,6 @@ void fn_80087B5C(const mVec3_c *pos, const mAng3_c *angle, int arg, int side); /
 u32 fn_800887DC(); // 800887DC: size of the effect resource heap (0xFA000)
 u32 fn_800887E8(); // 800887E8: size of the effect manager heap (0x73000)
 u32 fn_800887F4(); // 800887F4: size of the effect callback heap (0x1000)
+// 800887FC: gives the palette data to the effect textures named name (d_fg_obj's season tree palettes).
+void fn_800887FC(const char *name, u16 *pltt);
 }

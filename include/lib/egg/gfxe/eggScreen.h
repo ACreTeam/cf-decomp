@@ -8,6 +8,7 @@ namespace EGG {
 
 class Screen : public Frustum {
 public:
+    virtual ~Screen() {}
     enum TVMode {
         TV_MODE_4_3,
         TV_MODE_16_9,
@@ -44,6 +45,8 @@ public:
     Screen();
     void SetProjectionGX() const;
     void CopyFromAnother(const Screen &);
+    // 80448F1C: the matrix that maps the unit quad onto (x, y, width, height) of this screen (name from SS's EGG).
+    void CalcMatrixForDrawQuad(nw4r::math::MTX34 *mtx, f32 x, f32 y, f32 width, f32 height) const;
 
     static void Initialize(const unsigned short *, const unsigned short *, Screen *);
     static void SetTVModeDefault();

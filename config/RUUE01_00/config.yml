@@ -24,8 +24,11 @@ fill_gaps: true
 export_all: true
 globalize_symbols: true
 clean_extab: false
-force_active: [lbl_8074E834] # d_play_util .sbss word nothing references; the original link kept it
+force_active: [lbl_8074E834, fn_80081848__11dSceneCheckFv] # lbl_8074E834: d_play_util .sbss word nothing references; fn_80081848: an unreferenced d_scene_check stub dtk leaves out of FORCEACTIVE
 block_relocations:
+# 804F8348: d_sc_data_rm_theater_show's scene3 kind 0x0B record starts with the colour 806840FF, which looks like an
+# address inside d_snd's l_soundSystemWorkMem bss. Not a pointer.
+- source: 0x804F8348
 # 8047DD54 / 8047DD70: words in an unsplit .rodata table (8047DB98..) whose field always holds 80XX0000
 # (80250000, 80060000, 801E0000, 804C0000, ...); 804A0000 and 804D0000 just happen to be data addresses
 # (804A0000 is d_a_npc's recept_c request table). Not pointers.

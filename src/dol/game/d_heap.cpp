@@ -155,7 +155,7 @@ EGG::FrmHeap *dHeap::createSaveHeap(EGG::Heap *parent) {
 
 // 800B51AC
 EGG::FrmHeap *dHeap::createFontHeap(EGG::Heap *parent) {
-    u32 size = fn_800A7678();
+    u32 size = dFont::getHeapSize();
     fontHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::fontHeap_p", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "フォントヒープ", size);
     return fontHeap_p;
@@ -275,7 +275,7 @@ EGG::ExpHeap *dHeap::createMenuDylHeap(EGG::Heap *parent) {
 
 // 800B57C4
 EGG::FrmHeap *dHeap::createNpcModelHeap(EGG::Heap *parent) {
-    u32 size = fn_800F9D5C();
+    u32 size = dNpcMdlMng_c::getHeapSize();
     npcModelHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::npcModelHeap_p : NPCモデルヒープ", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "NPCモデルヒープ", size);
     return npcModelHeap_p;

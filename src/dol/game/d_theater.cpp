@@ -10,18 +10,6 @@
 
 namespace dTheater {
 
-// Dr. Shrunk's programs.
-class dSearchProgramSisyo_c : public dSearchCand_c<THEATER_PROGRAM_NUM> {
-public:
-    virtual BOOL check(int idx); // 8014C2B4
-};
-
-// Frillard's programs.
-class dSearchProgramKyosyo_c : public dSearchCand_c<THEATER_PROGRAM_NUM> {
-public:
-    virtual BOOL check(int idx); // 8014C29C
-};
-
 // 8014BD88
 void dSchedule_c::init() {
     mWeek = 0xFFFF;

@@ -19,6 +19,8 @@
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc_setup.hpp>
+#include <game/game/d_npc_list.hpp>
+#include <game/game/d_demo_actor.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -26,15 +28,11 @@ extern "C" {
 // dAnimalBlock_c / dAnimal_c (d_animal).
 
 // Other TUs.
-mVec3_c fn_801506F8(const void *data);
 
 // Field map / actors.
-dActor_c *fn_800F9860(int x, int z);
-dActor_c *fn_800F98CC(int x, int z);
 BOOL fn_80013550();
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 u16 fn_800F88AC(const dItem::Item *key);
-dActor_c *fn_800F9878(const dItem::Item *key);
 BOOL fn_80013F98(int x, int z, int arg);
 }
 
@@ -1192,7 +1190,7 @@ void daubMngSpecial_c::fn_800EF768() {
             switch (id) {
                 case 0x801E:
                     if ((*((u8 *)dSaveData_c::getTown() + 0x66747) >> 6) & 1) {
-                        pos = fn_801506F8((u8 *)dSaveData_c::getTown() + 0x66745);
+                        pos = dSaveData_c::getTown()->mHarvestSpot.getPos();
                     } else {
                         fn_800F3830(&pos, NULL, 4, NULL, 0x400, TRUE, TRUE, 0.0f);
                     }
@@ -2319,11 +2317,11 @@ dActor_c *getActorOnUnit(int x, int z) {
     if (actor != NULL) {
         return actor;
     }
-    actor = fn_800F9860(x, z);
+    actor = dNpcList::getNmlAtUnit(x, z);
     if (actor != NULL) {
         return actor;
     }
-    return fn_800F98CC(x, z);
+    return dNpcList::getSpAtUnit(x, z);
 }
 
 // 800F1BE4: the furniture whose footprint covers unit (x, z).
@@ -3412,7 +3410,7 @@ BOOL fn_800F4C08(dAnimal_c *animal, int arg) {
         return FALSE;
     }
     dItem::Item key = dSaveData_c::getRaw()->mAnimals.mTown.getAnimalKey(id);
-    dActor_c *npc = fn_800F9878(&key);
+    dActor_c *npc = dNpcList::getNmlByKey(key);
     if (npc == NULL) {
         return FALSE;
     }

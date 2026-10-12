@@ -18,6 +18,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_catalog.hpp>
 #include <game/game/d_string.hpp>
+#include <game/game/d_item_debug.hpp>
 
 using namespace dItem;
 
@@ -29,10 +30,6 @@ void __register_global_object(void *object, void *dtor, void *node);
 
 
 // Item debug TU (empty in release).
-void *fn_800C59EC();
-void fn_800C59E0(void *debug);
-void fn_800C59E4(void *debug);
-void fn_800C59E8(void *debug, Item item);
 }
 
 
@@ -347,7 +344,7 @@ void indexTable_c::addDlItems() {
         }
     }
 
-    fn_800C59E4(fn_800C59EC());
+    dItemDebug::dlList_c::get()->update();
 }
 
 Item makeItemFromBaseId(u16 baseId);
@@ -357,7 +354,7 @@ void indexTable_c::setDlItem(u16 baseId, u16 slot) {
     if (baseId < BASE_ID_COUNT && slot < DL_ITEM_COUNT) {
         mIndex[baseId] = slot + DL_ITEM_FIRST;
         Item item = makeItemFromBaseId(baseId);
-        fn_800C59E8(fn_800C59EC(), item);
+        dItemDebug::dlList_c::get()->add(item);
     }
 }
 
@@ -853,17 +850,7 @@ int BITM::resolveColor(int color, BOOL usePlayer) const {
 // Static data, in the target's .bss/.sbss and __sinit order.
 static indexTable_c s_indexTable;
 
-// Global at 8074E490. Its constructor runs the (empty) debug registration.
-class debugFlag_c {
-public:
-    debugFlag_c() {
-        mEnabled = 0;
-        fn_800C59E0(fn_800C59EC());
-    }
-
-    u8 mEnabled;
-};
-
+// Global at 8074E490 (debugFlag_c: d_item_debug.hpp).
 debugFlag_c s_debugFlag; // global: the item debug TU after this one reads it
 
 // 800C242C

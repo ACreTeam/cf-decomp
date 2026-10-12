@@ -36,7 +36,7 @@ public:
     // Additional vtable slots, in binary order. Unknown hooks retain slot names;
     // their signatures are provisional where only a zero-return stub is known.
     virtual bool canInteract(dDemoActor_c *actor);
-    virtual void demoHook50();
+    virtual void demoHook50(int cmd, u8 member); // demo sync command (dDemoSync::receive, d_demo); member 4 = this console
     virtual mVec3_c *getDemoPosition();
     virtual mVec3_c *demoHook58(); // a position of the actor (dAcNpc_c: look/talk target)
     virtual int demoHook5C();

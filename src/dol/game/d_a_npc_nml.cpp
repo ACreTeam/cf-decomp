@@ -119,12 +119,12 @@ u32 dAcNpcNml_c::getHeapSize() {
 
 // 8002EE4C
 u32 dAcNpcNml_c::addToNpcList() {
-    return fn_800F981C(this, &mNpcItem.mId);
+    return dNpcList::addNml(this, mNpcItem);
 }
 
 // 8002EE54
 void dAcNpcNml_c::removeFromNpcList() {
-    fn_800F9834(this);
+    dNpcList::removeNml(this);
 }
 
 // 8002EE58
@@ -774,11 +774,11 @@ BOOL dAcNpcNml_c::resMng_c::create(dAcNpc_c *npc) {
 
     EGG::Heap *heap = npc->m_heap_p;
     if (mpMdl == NULL) {
-        mpMdl = heap->alloc(fn_800F9D8C(), 0x20);
+        mpMdl = heap->alloc(dNpcMdlMng_c::getMdlSize(), 0x20);
         if (mpMdl != NULL) {
             u32 size = 0;
             int species = animal->getSpecies();
-            fn_800F9D94(mpMdl, &size, species);
+            dNpcMdlMng_c::copyMdl(mpMdl, &size, species);
         } else {
             return FALSE;
         }
@@ -3014,15 +3014,15 @@ BOOL dAcNpcNml_c::talk_c::stepRequestYes(int kind) {
     return TRUE;
 }
 
-inline dSaveTownListEntry_c *dAcNpcNml_c::talk_c::getJinxTown() {
-    if ((u32)mJinxTown < SAVE_TOWN_LIST_NUM) {
+inline dSvTownList::Entry_c *dAcNpcNml_c::talk_c::getJinxTown() {
+    if ((u32)mJinxTown < dSvTownList::TOWN_LIST_NUM) {
         dSaveTown_c *town = dSaveData_c::getTown();
         return town->mTownList.getTown(mJinxTown);
     }
     return NULL;
 }
 
-static inline const dSaveJinx_c *getJinx(dSaveTownListEntry_c *town) {
+static inline const dSaveJinx_c *getJinx(dSvTownList::Entry_c *town) {
     return town != NULL ? &town->mJinx : &dSaveData_c::getTown()->mJinx;
 }
 
@@ -3078,7 +3078,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                         break;
                     case 6: {
                         mJinxTown = mem->_A0;
-                        dSaveTownListEntry_c *town = getJinxTown();
+                        dSvTownList::Entry_c *town = getJinxTown();
                         const dSaveJinx_c *jinx = getJinx(town);
                         const dLandID_c *land = town != NULL ? &town->mLand : NULL;
                         if (jinx != NULL) {
@@ -3427,7 +3427,7 @@ void dAcNpcNml_c::talk_c::addFriendship(int delta) {
 
 // 80035B88
 u32 dAcNpcNml_c::calcHeapSize(BOOL withFrm) {
-    u32 size = fn_800F9D8C();
+    u32 size = dNpcMdlMng_c::getMdlSize();
     size += ROUND_UP(isCurrentSceneAttr(SCENE_ATTR_TOWN) ? 0x5000 : 0x2800, 4);
     size += 0x9CC0;
     if (withFrm) {

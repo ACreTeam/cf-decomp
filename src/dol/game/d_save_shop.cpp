@@ -287,7 +287,7 @@ void dSaveShop_c::updateStage(int days) {
             for (int i = 0; i < PLAYER_NUM; i++) {
                 dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
                 if (player != NULL && player->mPID.isValid()) {
-                    player->_868F = 0;
+                    player->mShopVote = 0;
                 }
             }
         }
@@ -425,7 +425,7 @@ void dSaveShop_c::updateMail(int days) {
                 player->setFlag0(0x36);
             }
         }
-        if (player->fn_801393AC()) {
+        if (player->isNookLoyaltyLetterDue()) {
             static const u16 kind = 5;
             static const u8 sender[2] = {0x10, 0x00};
             static const int paper = 0x157;
@@ -478,7 +478,7 @@ void dSaveShop_c::decideNextStage() {
     votes[1] = 0;
     votes[2] = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        switch (dPlayerMgr_c::getPlayer(i)->_868F) {
+        switch (dPlayerMgr_c::getPlayer(i)->mShopVote) {
         case 1:
             votes[0]++;
             break;

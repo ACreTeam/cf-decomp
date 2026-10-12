@@ -103,6 +103,13 @@ public:
     /// @return @p true if the load is finished, @p false if it is still in progress.
     bool load_async();
 
+    /// @brief Unlinks and unloads the module whatever its usage count (802AA344; CF only, name inferred).
+    /// @return Always @p true.
+    bool forceUnlink();
+
+    /// @brief Whether the module is in use (linked at least once more than unlinked).
+    bool isLinked() const { return mUsageCount != 0; }
+
     static DynamicModuleControlBase *mFirst; ///< The first module in the linked list.
     static DynamicModuleControlBase *mLast; ///< The last module in the linked list.
 };
@@ -151,7 +158,7 @@ public:
     /// @return The result of do_load().
     static void *callback(void *self);
 
-    u8 mPad[4];
+    // (NSMBW has 4 bytes of padding here; CF does not: mpModule is at 0x10, see the ctor at 802AA434)
     OSModuleHeader *mpModule; ///< The data of the module, including the header.
     void *mpBss; ///< The BSS section of the module.
     u32 mPrologReturn; ///< The return value of the module's prolog function.

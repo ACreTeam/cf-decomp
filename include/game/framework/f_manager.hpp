@@ -13,7 +13,7 @@ class fBase_c;
 /// @brief Manages the execution of base operations.
 /// @ingroup framework
 class fManager_c {
-private:
+public: // d_main sets m_StopProcInf with these flags
 
     /// @brief The operation types.
     enum LOOP_PROC_e {
@@ -30,6 +30,7 @@ private:
         PROC_FLAG_DRAW    = GET_PROC_FLAG(DRAW)
     };
 
+private:
     /// @brief Constructs a new manager.
     /// @param owner The manager's owner.
     fManager_c(fBase_c *owner) :
@@ -83,9 +84,12 @@ private:
     /// located more efficiently.
     static fLiMgBa_c m_searchManage[8];
 
+public:
     /// @brief The operations which should be globally skipped this frame.
     /// @details Value is a combination of PROC_FLAGS_e. Signed: d_bgm's checks compare with cmpwi.
     static int m_StopProcInf;
+
+private:
 
     /// @brief The current operation being globally executed. See mainLoop().
     /// @details The list for this operation cannot be updated until the operation has finished executing.

@@ -19,7 +19,7 @@
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 
-// A player's mail box (dPrivateData_c::fn_80139408).
+// A player's mail box (dPrivateData_c::getPostBox).
 int fn_8013EE8C(void *box);
 void fn_8013EDFC(void *box, int idx, dMail_c *mail, int arg);
 BOOL fn_8013EE94(void *box);
@@ -137,7 +137,7 @@ BOOL deliverToPlayer(dMail_c *mail) {
     if (idx < 0) {
         return FALSE;
     }
-    void *box = dPlayerMgr_c::getPlayer(idx)->fn_80139408();
+    void *box = dPlayerMgr_c::getPlayer(idx)->getPostBox();
     int slot = fn_8013EE8C(box);
     if (slot < 0) {
         return FALSE;
@@ -177,7 +177,7 @@ BOOL hasMail() {
     if (dNet::getMyNo() != 0) {
         return FALSE;
     }
-    void *box = dPlayerMgr_c::getCurrentPlayer()->fn_80139408();
+    void *box = dPlayerMgr_c::getCurrentPlayer()->getPostBox();
     if (box == NULL) {
         return FALSE;
     }
@@ -213,7 +213,7 @@ void update() {
         }
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
         if (player != NULL) {
-            void *box = player->fn_80139408();
+            void *box = player->getPostBox();
             if (box != NULL) {
                 fn_8013EF50(box);
             }
@@ -225,7 +225,7 @@ void update() {
 BOOL hasFutureLetter() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL) {
-        void *box = player->fn_80139408();
+        void *box = player->getPostBox();
         if (box != NULL) {
             return fn_8013F06C(box);
         }
@@ -235,7 +235,7 @@ BOOL hasFutureLetter() {
 
 // 80102D28
 void setFutureLetterTime(const dTime_c *time) {
-    fn_8013F064(time, dPlayerMgr_c::getCurrentPlayer()->fn_80139408());
+    fn_8013F064(time, dPlayerMgr_c::getCurrentPlayer()->getPostBox());
 }
 
 // 80102D64
@@ -878,7 +878,7 @@ BOOL getDistMail() {
     dMail_c mail = *src;
     mail.setToPlayer(idx, TRUE);
     mail.clearFlags();
-    player->fn_8013835C(&mail, slot);
+    player->setLetter(&mail, slot);
     fn_8010F114(dist, idx);
     return TRUE;
 }

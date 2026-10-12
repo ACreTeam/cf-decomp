@@ -1551,7 +1551,7 @@ void dHR::selectModelRooms(BOOL players, BOOL animals) {
     dSvMdlRm_c *other;
     int theme = getModelRoomTheme();
     room = &dSaveData_c::getTown()->mModelRoom;
-    other = &dSaveData_c::getTown()->_0640C8.mModelRoomCandidate;
+    other = &dSaveData_c::getTown()->mVillagerMove.mModelRoomCandidate;
     other->clear();
     if (room->isFromThisTown()) {
         room->clear();
@@ -1617,7 +1617,7 @@ void dHR::selectModelRooms(BOOL players, BOOL animals) {
         room->mTheme = theme;
     }
     if (other->hasOwner()) {
-        dSaveData_c::getTown()->_0640C8.setModelRoom(*other);
+        dSaveData_c::getTown()->mVillagerMove.setModelRoom(*other);
     }
 }
 

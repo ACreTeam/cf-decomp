@@ -1,0 +1,88 @@
+// The New Year's Eve countdown process (dCd_c). .text 8018D778..8018DAC8; its data (.rodata 8047BEF8 scene
+// table, .data 804F9880 vtable, .sdata 8074BF00 profile/RTTI) is not split yet. See include/game/game/d_cd.hpp.
+#include <game/game/d_cd.hpp>
+#include <game/framework/f_profile.hpp>
+#include <game/game/d_date.hpp>
+#include <game/game/d_player_mgr.hpp>
+#include <game/game/d_private_data.hpp>
+#include <game/game/d_scene.hpp>
+#include <game/game/d_snd_util.hpp>
+
+CUSTOM_BASE_PROFILE(CD, dCd_c, 0xB, 4);
+
+// Scenes in which the countdown runs (by scene index).
+static const u8 l_sceneEnabled[SCENE_NUM] = {
+    1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
+};
+
+#define SECONDS_PER_DAY (24 * 60 * 60)
+#define SECONDS_PER_HOUR (60 * 60)
+#define SECONDS_PER_MINUTE 60
+
+// 8018D7C4
+int dCd_c::create() {
+    int scene = getCurrentScene();
+    mMuted = TRUE;
+    mEnabled = l_sceneEnabled[scene] != 0;
+    return 1;
+}
+
+// 8018D81C
+int dCd_c::execute() {
+    BOOL skip = FALSE;
+    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    if (player != NULL && player->isFlag0(0xD)) {
+        skip = TRUE;
+    }
+    if (!mEnabled || skip) {
+        return 1;
+    }
+
+    dTime_c now = *dTime_c::getCurrent();
+    if (now.month == MONTH_DECEMBER && now.mday == 31) {
+        u32 left = SECONDS_PER_DAY - (now.sec + now.min * SECONDS_PER_MINUTE + now.hour * SECONDS_PER_HOUR);
+        u32 hours = left / SECONDS_PER_HOUR;
+        left %= SECONDS_PER_HOUR;
+        u32 mins = left / SECONDS_PER_MINUTE;
+        u32 secs = left % SECONDS_PER_MINUTE;
+        mDigit = secs % 10;
+        if (mDigit != mPrevDigit && hours == 0) {
+            if (mins == 1 && secs == 0) {
+                if (!mMuted) {
+                    playSe(0x1722);
+                }
+            } else if (mins == 0) {
+                if (secs == 0) {
+                    if (!mMuted) {
+                        playSe(0x1721);
+                    }
+                } else if (secs <= 10) {
+                    if (!mMuted) {
+                        playSe(0x1720);
+                    }
+                } else {
+                    if (!mMuted) {
+                        playSe(0x1722);
+                    }
+                }
+            }
+            mMuted = FALSE;
+        }
+        mPrevDigit = mDigit;
+    } else if (now.month == MONTH_JANUARY && now.mday == 1 && now.hour == 0 && now.min == 0 && now.sec == 0) {
+        if (!mNewYearDone) {
+            playSe(0x1721);
+            mNewYearDone = TRUE;
+        }
+    }
+    return 1;
+}
+
+// 8018DA60
+dCd_c::~dCd_c() {}
+
+// 8018DABC
+dSceneChange_c *dCd_c::getSceneChange() {
+    return &gSceneChange;
+}
