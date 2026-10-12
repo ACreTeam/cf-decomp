@@ -1,3 +1,4 @@
+#include <game/game/d_weather.hpp>
 // Bulletin board notices: posting BBS messages for dates, events and villagers, and the
 // town board note count. .text 800EBB24..800ECD90 (no static initializer).
 // Notes: notes/d_npc_notice.txt.
@@ -23,7 +24,7 @@ extern "C" {
 // dAnimalBlock_c / dAnimal_c (d_animal).
 
 // Misc.
-bool fn_801C9C08();
+
 }
 
 // ---------------------------------------------------------------------------
@@ -252,7 +253,7 @@ void fn_800EC4F8(const dTime_c *day) {
 
 // 800EC72C
 void fn_800EC72C(const dTime_c *day) {
-    BOOL offline = !fn_801C9C08();
+    BOOL offline = !dWeather::getPattern(day);
     if (offline) {
         fn_800EBB24(0x20, "BBS_event", day, NULL);
     }

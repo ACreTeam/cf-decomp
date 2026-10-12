@@ -648,8 +648,8 @@ int findNextGuest(u32 no) {
 
 BOOL isSceneChanging() {
     BOOL ret = FALSE;
-    if (getCurrentScene() >= NET_SCENE_NONE ||
-        getNextScene() < NET_SCENE_NONE) {
+    if (dScene::getCurrentScene() >= NET_SCENE_NONE ||
+        dScene::getNextScene() < NET_SCENE_NONE) {
         ret = TRUE;
     } else if (getSceneChangeState()) {
         ret = TRUE;
@@ -1788,7 +1788,7 @@ void dNetPacket_c::send(int id, int member) {
     if (!isNetStopped() && !(getNetError() & NET_ERROR_OVERFLOW)) {
         u32 size = mStreamEnd - mBlock;
         if (size >= 6) {
-            writeBlockHeader(mBlock, id, size - 6, member, getCurrentScene(),
+            writeBlockHeader(mBlock, id, size - 6, member, dScene::getCurrentScene(),
                              getNetMyNo()->get());
             mBlock = mStreamEnd;
         }
@@ -2009,9 +2009,9 @@ void dNetRequest_c::execute() {
             }
             fn_800DDE7C();
             if (mSaveKind.get() == 1) {
-                requestSceneChange(0x40, 0, 0);
+                dScene::requestSceneChange(0x40, 0, 0);
             } else {
-                requestSceneChange(0x39, 0, 5);
+                dScene::requestSceneChange(0x39, 0, 5);
             }
             mMsgOn = 0;
             mMsgTimer = 0;
@@ -2592,7 +2592,7 @@ BOOL dNetTransfer_c::sendPlayer() {
             data[n] = fn_8008B88C();
             size[n++] = 0x54;
         }
-        scene = getCurrentScene();
+        scene = dScene::getCurrentScene();
         data[n] = &scene;
         size[n] = sizeof(scene);
         if (sendDirect(NET_MEMBER_NONE, data, size, n + 1,
@@ -3754,7 +3754,7 @@ bool dNetScene_c::isHandoverAcked() const {
 
 void dNetScene_c::reset() {
     init(0);
-    setScene(0, getCurrentScene(), 0);
+    setScene(0, dScene::getCurrentScene(), 0);
     setOwner(0, 1, 0);
 }
 
@@ -4095,7 +4095,7 @@ void dNetScene_c::execute() {
     switch (getNetScene()->getState()) {
     case NET_SCENE_STATE_REQUEST:
         mLeaderAcks.resetAcks(FALSE);
-        u8 scene = getNextScene();
+        u8 scene = dScene::getNextScene();
         if (isHost()) {
             addOrder(my, scene);
         } else {
@@ -4965,7 +4965,7 @@ void startJoinTransfer() {
 void startSaveEnd(BOOL interrupt) {
     if (!dReset::Manage_c::GetInstance()->isResetting()) {
         dNand::getSceneChange()->setReturnExitHere(0.0f);
-        requestSceneChange(SCENE_DM_SAVE, 0, 5);
+        dScene::requestSceneChange(dScene::SCENE_DM_SAVE, 0, 5);
         fn_800DDE7C();
         if (interrupt) {
             dSvMgr_c::requestSaveInterruptNetHst();
@@ -5166,7 +5166,7 @@ void resetSaveEnd() {
 
 BOOL isConnectSavePermitted() {
     BOOL ret = FALSE;
-    if (isAllInScene(SCENE_DM_SAVE) &&
+    if (isAllInScene(dScene::SCENE_DM_SAVE) &&
         getNetScene()->getLeader() >= NET_MEMBER_MAX) {
         ret = TRUE;
     }
@@ -5175,7 +5175,7 @@ BOOL isConnectSavePermitted() {
 
 BOOL canSaveContinue() {
     BOOL ret = FALSE;
-    if (isAllInScene(SCENE_DM_SAVE) &&
+    if (isAllInScene(dScene::SCENE_DM_SAVE) &&
         getNetScene()->getLeader() >= NET_MEMBER_MAX) {
         ret = TRUE;
     }
@@ -5255,11 +5255,11 @@ void fn_800DDE7C() {
     dNetMgr_c::setBusy();
 }
 
-// Leaving these scenes (the gate SCENE_RM_CHKP and
-// SCENE_DM_CHKP_CNNCT..SCENE_DM_CHKP_MISS) runs dNetMgr_c::clearBusy.
+// Leaving these scenes (the gate dScene::SCENE_RM_CHKP and
+// dScene::SCENE_DM_CHKP_CNNCT..SCENE_DM_CHKP_MISS) runs dNetMgr_c::clearBusy.
 // clang-format off
 // clang-format off
-static const u8 l_sceneSync[SCENE_NUM] = {
+static const u8 l_sceneSync[dScene::SCENE_NUM] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
@@ -5274,15 +5274,15 @@ static const u8 l_sceneSync[SCENE_NUM] = {
 void fn_800DDE80() {
     if (!dReset::Manage_c::GetInstance()->isResetting()) {
         if (getMemberNum() >= 2) {
-            u8 prev = getPrevScene();
+            u8 prev = dScene::getPrevScene();
             if (prev < NET_SCENE_NONE) {
                 if (g_dNet.mJoinStarted) {
                     dNetMgr_c::clearBusy();
                     g_dNet.mJoinStarted = 0;
                 } else if (l_sceneSync[prev]) {
                     dNetMgr_c::clearBusy();
-                } else if (prev == SCENE_DM_SAVE) {
-                    u8 cur = getCurrentScene();
+                } else if (prev == dScene::SCENE_DM_SAVE) {
+                    u8 cur = dScene::getCurrentScene();
                     if (cur < NET_SCENE_NONE && !l_sceneSync[cur]) {
                         dNetMgr_c::clearBusy();
                     }

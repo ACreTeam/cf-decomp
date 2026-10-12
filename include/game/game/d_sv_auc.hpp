@@ -1,6 +1,6 @@
 #pragma once
 
-// The city auction house (SCENE_RM_AUCTION). Source: src/dol/game/d_sv_auc.cpp
+// The city auction house (dScene::SCENE_RM_AUCTION). Source: src/dol/game/d_sv_auc.cpp
 // (.text 8010A120..8010D7E8). The file and the dSvAuc prefix come from the RTTI string
 // "dSvAuc_hostIO_c"; the other names are inferred.
 //

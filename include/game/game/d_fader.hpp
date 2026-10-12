@@ -8,7 +8,7 @@
 
 namespace dFader {
 
-// The fader types (setFader; dSceneChange_c's wipe in / out kinds).
+// The fader types (setFader; dScene::dSceneChange_c's wipe in / out kinds).
 enum TYPE_e {
     TYPE_BLACK,      // color fader, black
     TYPE_WHITE,      // color fader, white
@@ -18,7 +18,7 @@ enum TYPE_e {
     TYPE_CIRCLE2,    // dWipeFader_c
 };
 
-int getOutType();     // 8008B91C: a forced fade-out type for dSceneChange_c::request (0: none)
+int getOutType();     // 8008B91C: a forced fade-out type for dScene::dSceneChange_c::request (0: none)
 int getInType();      // 8008B924: a forced fade-in type (0: none)
 BOOL create();        // 8008B930: creates the faders (d_sys)
 void fn_8008BA48();   // 8008BA48: sets a flag nothing reads

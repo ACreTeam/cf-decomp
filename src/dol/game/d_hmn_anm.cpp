@@ -212,7 +212,7 @@ BOOL dHmnAnm_c::isCurve(int anmId) {
 
 // 800B6580
 void dHmnAnm_c::curveMtx(mMtx_c *out, const mMtx_c *in, f32 baseY) {
-    if (!isOutdoorScene(getCurrentScene())) {
+    if (!dScene::isOutdoorScene(dScene::getCurrentScene())) {
         *out = *in;
         return;
     }

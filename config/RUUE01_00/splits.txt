@@ -1456,26 +1456,44 @@ dol/game/d_voice_chat.cpp:
 	.sdata2     start:0x80751118 end:0x80751138 align:4
 
 dol/game/d_weather_rain.cpp:
-	.text       start:0x801732D4 end:0x80173C30
+	.text       start:0x801732D4 end:0x80173C20
+	.data       start:0x804F4720 end:0x804F4790 align:4
+	.bss        start:0x8061E2E0 end:0x8061E380 align:4
+	.sbss       start:0x8074E918 end:0x8074E920
+	.sdata2     start:0x80751138 end:0x807511C0
 
 dol/game/d_weather_snow.cpp:
-	.text       start:0x80173C30 end:0x801756B0
+	.text       start:0x80173C20 end:0x801756A0
 	.ctors      start:0x80465774 end:0x80465778
+	.data       start:0x804F4790 end:0x804F47E8 align:4
+	.bss        start:0x8061E380 end:0x8061E428 align:4
+	.sdata      start:0x8074B530 end:0x8074B550
+	.sbss       start:0x8074E920 end:0x8074E930
+	.sdata2     start:0x807511C0 end:0x80751288
 
 dol/game/d_weather_sakura.cpp:
-	.text       start:0x801756B0 end:0x801769B4
+	.text       start:0x801756A0 end:0x80176A30
 	.ctors      start:0x80465778 end:0x8046577C align:8
+	.data       start:0x804F47E8 end:0x804F4848
+	.bss        start:0x8061E428 end:0x8061E460
+	.sdata      start:0x8074B550 end:0x8074B570
+	.sbss       start:0x8074E930 end:0x8074E938
+	.sdata2     start:0x80751288 end:0x80751310
 
 dol/game/d_weather_confetti.cpp:
-	.text       start:0x801769B4 end:0x80177A7C
+	.text       start:0x80176A30 end:0x80177A7C
+	.rodata     start:0x8047B4F0 end:0x8047B508 align:4
+	.data       start:0x804F4848 end:0x804F48A8
+	.sdata      start:0x8074B570 end:0x8074B580
+	.sdata2     start:0x80751310 end:0x80751380
 
 dol/game/d_wifi.cpp:
 	.text       start:0x80177A7C end:0x8017C4EC
 	.ctors      start:0x8046577C end:0x80465780
-	.data       start:0x804F48A8 end:0x804F4A08 align:4
-	.bss        start:0x8061E460 end:0x80621660 align:4
+	.data       start:0x804F48A8 end:0x804F4A08
+	.bss        start:0x8061E460 end:0x80621660 align:32
 	.sdata      start:0x8074B580 end:0x8074B5D8 align:4
-	.sbss       start:0x8074E938 end:0x8074E960 align:4
+	.sbss       start:0x8074E938 end:0x8074E960
 
 dol/game/d_wifi_err.cpp:
 	.text       start:0x8017C4EC end:0x8017CD3C
@@ -1901,6 +1919,11 @@ dol/game/d_shadow.cpp:
 dol/game/d_weather.cpp:
 	.text       start:0x801C8B74 end:0x801C9EF4
 	.ctors      start:0x80465858 end:0x8046585C align:8
+	.rodata     start:0x8047E420 end:0x8047E9F0 align:4
+	.data       start:0x805002B8 end:0x805004B8 align:4
+	.sdata      start:0x8074C5D0 end:0x8074C5E0 align:4
+	.sbss       start:0x8074EBE8 end:0x8074EC10
+	.sdata2     start:0x80751A10 end:0x80751A28
 
 dol/game/d_s_boot.cpp:
 	.text       start:0x801C9EF4 end:0x801CA0F4

@@ -31,6 +31,8 @@ void *fn_80100234(int player, int arg, u32 type, const mVec3_c *pos, const mAng3
 void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
 }
 
+namespace dScene {
+
 // 80479BB0: the house attribute per player house
 static const u32 sHomeScenes[] = {
     SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE,
@@ -1089,3 +1091,5 @@ void dSceneChange_c::setReturnExitHere(f32 dz) {
 dSceneChange_c gSceneChange; // 805FAF98
 dSceneExit_c gSceneReturnExit; // 805FAFC8
 dSceneExit_c gSceneBuildingExit; // 805FAFF0
+
+} // namespace dScene

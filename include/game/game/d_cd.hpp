@@ -8,7 +8,7 @@
 #include <types.h>
 #include <game/framework/f_base.hpp>
 
-class dSceneChange_c;
+namespace dScene { class dSceneChange_c; }
 
 class dCd_c : public fBase_c {
 public:
@@ -16,7 +16,7 @@ public:
     virtual int create(); // 8018D7C4
     virtual int execute(); // 8018D81C
 
-    static dSceneChange_c *getSceneChange(); // 8018DABC: &gSceneChange (d_demo)
+    static dScene::dSceneChange_c *getSceneChange(); // 8018DABC: &dScene::gSceneChange (d_demo)
 
     u8 mPrevDigit;   // 0x64: last second digit seen
     u8 mDigit;       // 0x65: current second digit (0..9)

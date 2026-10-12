@@ -252,7 +252,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
                 data++;
                 size--;
             } else {
-                u8 sceneNo = getCurrentScene();
+                u8 sceneNo = dScene::getCurrentScene();
                 getNetScene()->setScene(i, sceneNo, 0);
                 getNetScene()->setOwner(i, 1, 0);
             }
@@ -330,7 +330,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
                 scene->setScene(i, req & 0x7F, 0);
                 scene->setOwner(i, (req >> 7) & 1, 0);
             } else {
-                u8 sceneNo = getCurrentScene();
+                u8 sceneNo = dScene::getCurrentScene();
                 getNetScene()->setScene(i, sceneNo, 0);
                 getNetScene()->setOwner(i, 1, 0);
             }
@@ -778,7 +778,7 @@ void recvPlayerState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     if (state == 0x60) {
         fgMngTask_finishActive(member);
     }
-    if (scene == getCurrentScene()) {
+    if (scene == dScene::getCurrentScene()) {
         dPlayerActor_c *player = fn_800FBC80(member);
         if (player != NULL &&
             player->getLifecycleState() == fBase_c::DELETING) {
@@ -1066,7 +1066,7 @@ void recvPlaySync(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
         recvSyncAck(&msg, member);
         break;
     case 4:
-        if (isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN) && isSceneOwner()) {
+        if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN) && isSceneOwner()) {
             dPlaySyncRecBuf_c buf;
             int id = msg.getIdx() + PLAY_SYNC_REC_ID;
             cLib::memCpy(&buf, getRecord(id), sizeof(dPlaySyncRec_c));
@@ -1465,11 +1465,11 @@ void recvAnimalFtrTouch(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
     u8 buf[3];
     cLib::memCpy(buf, data, sizeof(buf));
-    u8 roomScene = SCENE_NUM;
+    u8 roomScene = dScene::SCENE_NUM;
     int x = -1;
     int z = -1;
     fn_800F0770(&roomScene, &x, &z, buf);
-    if (roomScene < SCENE_NUM && roomScene == getCurrentScene()) {
+    if (roomScene < dScene::SCENE_NUM && roomScene == dScene::getCurrentScene()) {
         int handle = fn_800A8F98(fn_800A9058(), x, z, 0);
         if (handle != -1) {
             fn_800ABA90(handle);
@@ -2979,7 +2979,7 @@ int sendOpen0(int, void *, int, u8) {
 }
 
 int sendOpenInsects(int, void *, int, u8 scene) {
-    if (isSceneAttr(scene, SCENE_ATTR_TOWN)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
         dInsectCatchData_c init;
         init.mTypeSerial = 0;
         init.mSerial = 0;
@@ -2998,7 +2998,7 @@ int sendOpenInsects(int, void *, int, u8 scene) {
 }
 
 int sendOpenFish(int, void *, int, u8 scene) {
-    if (isSceneAttr(scene, SCENE_ATTR_TOWN)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
         dFishCatchData_c init;
         init.mType = 0;
         init._02 = 0;

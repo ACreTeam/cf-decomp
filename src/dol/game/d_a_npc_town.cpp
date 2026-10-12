@@ -38,7 +38,7 @@ void dAcNpcTown_c::setAnimal() {
                     BOOL rain = FALSE;
                     dWeather_c *weather = dWeather_c::sInstance;
                     if (weather != NULL) {
-                        BOOL raining = dWeather_c::isRainKind(weather->_5884);
+                        BOOL raining = dWeather_c::isRainKind(weather->mWeather);
                         if (raining) {
                             rain = TRUE;
                         }

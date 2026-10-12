@@ -7,7 +7,7 @@
 #include <types.h>
 #include <lib/revolution/NAND.h>
 
-class dSceneChange_c;
+namespace dScene { class dSceneChange_c; }
 
 namespace dNand {
 
@@ -90,6 +90,6 @@ int check(u32 blocks, u32 files, u32 *answer); // 800D3524: NANDCheck
 void log(const char *func, s32 result);        // 800D3570: empty
 int fn_800D3574();             // 800D3574: returns 0 (d_s_boot_static)
 int fn_800D357C();             // 800D357C: returns 0 (d_s_boot_static)
-dSceneChange_c *getSceneChange(); // 800D3584: &gSceneChange (d_net)
+dScene::dSceneChange_c *getSceneChange(); // 800D3584: &dScene::gSceneChange (d_net)
 
 } // namespace dNand

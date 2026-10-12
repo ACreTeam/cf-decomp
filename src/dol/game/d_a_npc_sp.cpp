@@ -124,7 +124,7 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
             int unitX = worldToUnit(p.x);
             int unitZ = worldToUnit(p.z);
             dPlayerActor_c *player = getPlayerOnUnit(unitX, unitZ);
-            if (pDirs != 0 && (player != NULL || canPutItemAt(&p, &mNpcItem, NULL, SCENE_NUM, TRUE, TRUE))) {
+            if (pDirs != 0 && (player != NULL || canPutItemAt(&p, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE))) {
                 if (!best || best > dist) {
                     best = dist;
                     mRouteDir = i;
@@ -182,7 +182,7 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
                 int unitX = worldToUnit(q.x);
                 int unitZ = worldToUnit(q.z);
                 dPlayerActor_c *player = getPlayerOnUnit(unitX, unitZ);
-                BOOL ok = player != NULL || canPutItemAt(&q, &dItem::Item(), NULL, SCENE_NUM, TRUE, TRUE);
+                BOOL ok = player != NULL || canPutItemAt(&q, &dItem::Item(), NULL, dScene::SCENE_NUM, TRUE, TRUE);
                 if (ok && (best < 0.0f || best > dist)) {
                     best = dist;
                     mRouteDir = i;
@@ -355,7 +355,7 @@ mVec3_c dAcNpcSp_c::calcFreePosToward(const mVec3_c *target) {
                 break;
             }
         }
-    } while (std::fabs(mPos.y - pos.y) < SP_STEP_HEIGHT_MAX && canPutItemAt(&pos, &mNpcItem, NULL, SCENE_NUM, TRUE, TRUE));
+    } while (std::fabs(mPos.y - pos.y) < SP_STEP_HEIGHT_MAX && canPutItemAt(&pos, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE));
     int unitX = worldToUnit(last.x);
     int unitZ = worldToUnit(last.z);
     dFdBase_c::getUnitCenterPos(last, unitX, unitZ);
@@ -586,7 +586,7 @@ void dAcNpcSp_c::moveFtrToPoliceBox() {
     if (dNet::isSessionActive() == 1 && dNet::getMemberNum() > 1) {
         return;
     }
-    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_OUTDOOR | SCENE_ATTR_MY_TOWN)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_OUTDOOR | dScene::SCENE_ATTR_MY_TOWN)) {
         return;
     }
     dFdBase_c *fd = getCurrentField();

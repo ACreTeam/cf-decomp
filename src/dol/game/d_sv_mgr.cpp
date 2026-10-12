@@ -154,7 +154,7 @@ int dSvMgr_c::create() {
     };
     dState::mode_c<dSvMgr_c>::initialize("dSvMgr_c", modes, 11);
     mLoadFailed = false;
-    if (getCurrentScene() == SCENE_DM_LOAD) {
+    if (dScene::getCurrentScene() == dScene::SCENE_DM_LOAD) {
         fn_80154358(lbl_8074E7F8);
         changeMode(&dSvMgr_c::executeLoad);
     }
@@ -166,7 +166,7 @@ int dSvMgr_c::doDelete() {
     if (!dNand::isIdle()) {
         return NOT_READY;
     }
-    if (getCurrentScene() == SCENE_DM_LOAD) {
+    if (dScene::getCurrentScene() == dScene::SCENE_DM_LOAD) {
         int result;
         if (mLoadFailed) {
             result = fn_8015436C(lbl_8074E7F8, 5);
@@ -699,7 +699,7 @@ void dSvMgr_c::closeGateForSave() {
 
 // 801BEC2C
 void dSvMgr_c::stepLoad_c::gotoTitle() {
-    requestSceneChange(SCENE_DM_TITLE, 5, 2);
+    dScene::requestSceneChange(dScene::SCENE_DM_TITLE, 5, 2);
     nextStep();
 }
 
@@ -1028,9 +1028,9 @@ void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
             }
         }
         if (returning) {
-            requestSceneChange(SCENE_DM_CHKP_MISS, 5, 0);
+            dScene::requestSceneChange(dScene::SCENE_DM_CHKP_MISS, 5, 0);
         } else {
-            requestSceneChange(SCENE_DM_CHKP_CNNCT, 5, 0);
+            dScene::requestSceneChange(dScene::SCENE_DM_CHKP_CNNCT, 5, 0);
         }
         nextStep();
     }
@@ -1125,9 +1125,9 @@ void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
             }
         }
         if (returning) {
-            requestSceneChange(SCENE_DM_CHKP_MISS, 5, 0);
+            dScene::requestSceneChange(dScene::SCENE_DM_CHKP_MISS, 5, 0);
         } else {
-            requestSceneChange(SCENE_DM_CHKP_CNNCT, 5, 0);
+            dScene::requestSceneChange(dScene::SCENE_DM_CHKP_CNNCT, 5, 0);
         }
         nextStep();
     }
@@ -1302,7 +1302,7 @@ void dSvMgr_c::stepSaveNormal_c::waitMessageEnd() {
 
 // 801C1BEC
 void dSvMgr_c::stepSaveNormal_c::gotoTitle() {
-    requestSceneChange(SCENE_DM_TITLE, 5, 2);
+    dScene::requestSceneChange(dScene::SCENE_DM_TITLE, 5, 2);
     nextStep();
 }
 

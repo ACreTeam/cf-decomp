@@ -10,7 +10,7 @@ class FrmHeap;
 // A pool of same-sized frame heaps. Source: src/dol/game/d_rec_bank.cpp (.text 8010655C..801068AC;
 // the string "dRecBank::bankTbl_c::m_frmHeap_p" names its heaps). Only RELs use it: the furniture
 // manager (d_ftr_managerNP, 809CB054) creates a table of 0x8400-byte heaps (one per piece of furniture
-// the scene allows, getSceneParamA), and each furniture actor (d_a_ftrNP) takes a slot with get() for
+// the scene allows, dScene::getSceneParamA), and each furniture actor (d_a_ftrNP) takes a slot with get() for
 // its resources and gives it back with release().
 namespace dRecBank {
 

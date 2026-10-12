@@ -16,7 +16,7 @@
 
 // The scene value that matches any scene (dFgMngTask_c::clear sets it, isScene accepts it,
 // fgMngTask_procGroupAt searches with it).
-#define FG_MNG_SCENE_ANY SCENE_NUM
+#define FG_MNG_SCENE_ANY dScene::SCENE_NUM
 
 // A packed unit position (x << 8) | z that is unset (task / link / command / drop positions).
 #define FG_MNG_POS_NONE 0xFFFF

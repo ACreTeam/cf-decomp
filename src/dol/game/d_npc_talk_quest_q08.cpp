@@ -21,7 +21,7 @@ static const char l_Q08_Req[] = "Q08_Req";
 
 // 8005C82C
 int dAcNpcNml_c::talk_c::msgVisitOffer(msgInfo_s *info) {
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     if (getAnimal() == NULL) {

@@ -37,7 +37,7 @@ int dAcNpcNml_c::talk_c::msgCarnival(msgInfo_s *info) {
                                         CARNIVAL_GAME5};
 
     BOOL active = FALSE;
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) && dEvent::isOngoing(EVENT_FESTIVALE)) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && dEvent::isOngoing(EVENT_FESTIVALE)) {
         active = TRUE;
     }
     dAnimal_c *animal = getAnimal();

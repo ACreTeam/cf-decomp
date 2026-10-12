@@ -9,8 +9,8 @@
 // 80090964
 void dStarMgr_c::init() {
     dTime_c now = *dTime_c::getCurrent();
-    mEnabled = !isCityScene(getCurrentScene()) && !isSceneAttr(getCurrentScene(), 0x110) &&
-               !isSceneAttr(getCurrentScene(), 0x4000);
+    mEnabled = !dScene::isCityScene(dScene::getCurrentScene()) && !dScene::isSceneAttr(dScene::getCurrentScene(), 0x110) &&
+               !dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000);
     mLastSec = now.sec;
 }
 
@@ -21,7 +21,7 @@ void dStarMgr_c::execute() {
     }
     dTime_c now = *dTime_c::getCurrent();
     dWeather_c *weather = dWeather_c::sInstance;
-    if (weather != NULL && fn_801C98CC(weather) == 0 && (now.hour >= 19 || now.hour <= 4) && now.sec < mLastSec) {
+    if (weather != NULL && weather->getCurrentPattern() == 0 && (now.hour >= 19 || now.hour <= 4) && now.sec < mLastSec) {
         dRandom_c rnd(0x9D);
         dTime_c time = *dTime_c::getCurrent();
         dSaveData_c *save = dSaveData_c::getRaw();

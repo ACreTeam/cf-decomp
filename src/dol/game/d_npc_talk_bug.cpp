@@ -21,7 +21,7 @@ int dAcNpcNml_c::talk_c::getBugOffTalkState() {
     dAnimalSave_c *animals;
     dPersonalID_c *pid;
     BOOL active = dEvent::isOngoing(EVENT_BUG_OFF) != FALSE;
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         active = FALSE;
     }
     animals = &dSaveData_c::getTown()->mAnimals;

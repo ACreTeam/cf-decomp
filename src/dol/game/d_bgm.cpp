@@ -609,7 +609,7 @@ void StgRoom_c::start(u32 param) {
     u32 type = getType();
     if (type == 1) {
         int room;
-        int home = dHomeList_c::getHomeFromScene(&room, getCurrentScene());
+        int home = dHomeList_c::getHomeFromScene(&room, dScene::getCurrentScene());
         if (home != -1 && room == 3) {
             if (dSaveData_c::getRaw()->mHomes.getPlayerOfHome(home) != -1) {
                 mHomeBgm = BGM_ATTIC;
@@ -1191,7 +1191,7 @@ void StgTown_c::setMusicPos(const mVec3_c *pos) {
 }
 
 void StgTown_c::fn_8007A790() {
-    if (getSceneParent() != NULL && getCurrentScene() == 0x2D) {
+    if (dScene::getSceneParent() != NULL && dScene::getCurrentScene() == 0x2D) {
         l_mgr.mState.mFlags &= ~State_c::FLAG_8;
     }
 }
@@ -1886,8 +1886,8 @@ void State_c::stateWaitFader() {
 }
 
 void State_c::stateCheckScene() {
-    u8 scene = getCurrentScene();
-    u8 prev = getPrevScene();
+    u8 scene = dScene::getCurrentScene();
+    u8 prev = dScene::getPrevScene();
     bool enter = false;
     if (scene == 0) {
         if (prev == 0x3C || prev == 0x3E) {
@@ -1917,7 +1917,7 @@ void State_c::stateWait() {
 }
 
 void State_c::stateCheckLeave() {
-    u8 scene = getCurrentScene();
+    u8 scene = dScene::getCurrentScene();
     if (scene != 0 && scene != 0x2D) {
         mState = 0;
     }
@@ -1982,9 +1982,9 @@ void Change_c::execute() {
 
 void Change_c::start(int fade) {
     StgBase_c *stage = l_mgr.mStage;
-    u8 next = getNextScene();
+    u8 next = dScene::getNextScene();
     if (stage != NULL && next < 0x44) {
-        mKeep = stage->isKeep(getSceneParamC(next));
+        mKeep = stage->isKeep(dScene::getSceneParamC(next));
     }
     if (!mKeep) {
         if (mState != 0) {
@@ -2669,7 +2669,7 @@ void Weather_c::set() {
     if (dWeather_c::sInstance == NULL) {
         return;
     }
-    int weather = dWeather_c::sInstance->_5884;
+    int weather = dWeather_c::sInstance->mWeather;
     mWeather = weather;
     mPrevWeather = weather;
 }
@@ -2679,7 +2679,7 @@ void Weather_c::update() {
         dWeather_c *weather = dWeather_c::sInstance;
         if (weather != NULL) {
             mPrevWeather = mWeather;
-            mWeather = weather->_5884;
+            mWeather = weather->mWeather;
         }
     }
 }
@@ -3373,8 +3373,8 @@ void Mgr_c::startStage() {
         &mStgFortune, &mStgGrace, &mStgHappy, &mStgTheater, &mStgAuction, &mStgReset,
         &mStgTitle, &mStgSave, &mStgLoad, &mStgPlSel, &mStgBus,
     };
-    if (getSceneParent() != NULL) {
-        u32 param = getSceneParamC(getCurrentScene());
+    if (dScene::getSceneParent() != NULL) {
+        u32 param = dScene::getSceneParamC(dScene::getCurrentScene());
         mStage = stages[(u8)param];
         if (mStage != NULL) {
             mStage->start(param);

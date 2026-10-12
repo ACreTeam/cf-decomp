@@ -12,7 +12,7 @@
 CUSTOM_BASE_PROFILE(CD, dCd_c, 0xB, 4);
 
 // Scenes in which the countdown runs (by scene index).
-static const u8 l_sceneEnabled[SCENE_NUM] = {
+static const u8 l_sceneEnabled[dScene::SCENE_NUM] = {
     1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
 };
@@ -23,7 +23,7 @@ static const u8 l_sceneEnabled[SCENE_NUM] = {
 
 // 8018D7C4
 int dCd_c::create() {
-    int scene = getCurrentScene();
+    int scene = dScene::getCurrentScene();
     mMuted = TRUE;
     mEnabled = l_sceneEnabled[scene] != 0;
     return 1;
@@ -84,6 +84,6 @@ int dCd_c::execute() {
 dCd_c::~dCd_c() {}
 
 // 8018DABC
-dSceneChange_c *dCd_c::getSceneChange() {
-    return &gSceneChange;
+dScene::dSceneChange_c *dCd_c::getSceneChange() {
+    return &dScene::gSceneChange;
 }

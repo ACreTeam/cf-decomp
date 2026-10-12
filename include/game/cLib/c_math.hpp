@@ -19,6 +19,7 @@ namespace cM {
     void initRnd(ulong seed); ///< Initializes ::s_rnd with the given seed.
     float rnd(); ///< Generates a floating point number between 0 and 1.
     int rndInt(int max); ///< Generates an integer between 0 and the given max.
+    float rndCenterF(float max); // 802ABB50
     float rndF(float max); ///< Generates a floating point number between 0 and the given max.
 
     /// @brief Generates a number between @p min and @p max (@p max excluded for integers).

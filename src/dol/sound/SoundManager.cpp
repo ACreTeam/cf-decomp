@@ -7,7 +7,7 @@
 #include <revolution/MIX.h>
 
 static const u32 sVolumePlayers[5] = {21, 22, 23, 25, 24};
-static const u16 sStageGroups[SCENE_NUM] = {
+static const u16 sStageGroups[dScene::SCENE_NUM] = {
     132,134,134,134,134,134,134,134,134,134,134,134,134,134,134,134,
     134,134,134,134,134,134,134,134,134,134,134,140,141,141,135,135,
     135,135,135,135,135,136,135,142,143,143,143,143,144,133,145,146,
@@ -161,29 +161,29 @@ void SoundManager::beginSceneChange() {
 
 // 801CEE24
 bool SoundManager::setupStage(int stage) {
-    if (stage == SCENE_DM_SAVE || stage == SCENE_DM_LOAD) mFaders[3].set(0.0f);
+    if (stage == dScene::SCENE_DM_SAVE || stage == dScene::SCENE_DM_LOAD) mFaders[3].set(0.0f);
     else {
         SoundObjBase::sIsPlayable = true;
         mFaders[3].set(1.0f);
     }
-    if (stage == SCENE_DM_TITLE) {
+    if (stage == dScene::SCENE_DM_TITLE) {
         SoundSystem::getInstance()->mState = SoundSystem::STATE_WAIT;
         if (mStopped) mStopped = false;
     }
-    if (stage == SCENE_FIELD && _778 != SCENE_FIELD) clearMusicHeap();
+    if (stage == dScene::SCENE_FIELD && _778 != dScene::SCENE_FIELD) clearMusicHeap();
     if (_778 == stage) {
         SoundAmbient::sIsStageSet = true;
         return true;
     }
     _780 = stage;
-    if (stage >= SCENE_FIELD && stage <= SCENE_RM_TAILOR) {
+    if (stage >= dScene::SCENE_FIELD && stage <= dScene::SCENE_RM_TAILOR) {
         if (!isGroupReady(2)) {
             u32 loading = mLoader.mState == SoundLoader::STATE_LOADING ? mLoader.mGroupId : 0;
             if (loading != 2) mHeap324.Clear();
             mLoader.requestGroup(2, &mPlayer, &mHeap324);
             return false;
         }
-    } else if (stage >= SCENE_TOWN && stage <= SCENE_RM_RESET && !isGroupReady(0xA0)) {
+    } else if (stage >= dScene::SCENE_TOWN && stage <= dScene::SCENE_RM_RESET && !isGroupReady(0xA0)) {
         u32 loading = mLoader.mState == SoundLoader::STATE_LOADING ? mLoader.mGroupId : 0;
         if (loading != 0xA0) mHeap324.Clear();
         mLoader.requestGroup(0xA0, &mPlayer, &mHeap324);
@@ -216,11 +216,11 @@ bool SoundManager::setupStage(int stage) {
         return false;
     }
     SoundSystem::getInstance()->setMusicFilter(0);
-    if (stage > SCENE_DM_TITLE && stage <= SCENE_DM_BUS_TO_LAND) {
+    if (stage > dScene::SCENE_DM_TITLE && stage <= dScene::SCENE_DM_BUS_TO_LAND) {
         SoundSystem::getInstance()->mMelody.stop();
         SoundSystem::getInstance()->mMelody.mPart0.end();
     }
-    if (stage == SCENE_DM_SAVE || stage == SCENE_DM_LOAD) {
+    if (stage == dScene::SCENE_DM_SAVE || stage == dScene::SCENE_DM_LOAD) {
         mPlayer.GetSoundPlayer(11).ForEachSound(stopHandle);
         mPlayer.GetSoundPlayer(14).ForEachSound(stopHandle);
         mPlayer.GetSoundPlayer(20).ForEachSound(stopHandle);
@@ -228,38 +228,38 @@ bool SoundManager::setupStage(int stage) {
     SoundSystem::getInstance()->mAllowConductSequence = 0;
     SoundSystem::getInstance()->getMusicId();
     SoundSystem *system = SoundSystem::getInstance();
-    if (stage == SCENE_FIELD || stage == SCENE_TOWN) {
+    if (stage == dScene::SCENE_FIELD || stage == dScene::SCENE_TOWN) {
         system->setMelodyVolume(1.0f);
         system->setMelodyFilter(0.0f);
-    } else if (stage == SCENE_RM_THEATER_ENT || stage == SCENE_RM_THEATER_SHOW || (stage >= SCENE_DM_TITLE && stage <= SCENE_DM_CHKP_MISS)) {
+    } else if (stage == dScene::SCENE_RM_THEATER_ENT || stage == dScene::SCENE_RM_THEATER_SHOW || (stage >= dScene::SCENE_DM_TITLE && stage <= dScene::SCENE_DM_CHKP_MISS)) {
         system->setMelodyVolume(0.0f);
         system->setMelodyFilter(0.0f);
     } else {
         system->setMelodyVolume(0.4f);
         system->setMelodyFilter(0.9f);
     }
-    if (stage == SCENE_RM_MM_CAFE) {
+    if (stage == dScene::SCENE_RM_MM_CAFE) {
         nw4r::snd::FxReverbHiDpl2::ReverbHiDpl2Param param(0.0f, 0.0f);
         initReverbParam(param);
         mReverb.setPreset(4);
         mReverb.SetParam(param);
         SoundObjBase::setFxSend(0.0f);
-    } else if (stage >= SCENE_RM_MM_ENT && stage <= SCENE_RM_MM_ASTRO) {
-        if (_778 < SCENE_RM_MM_ENT || _778 > SCENE_RM_MM_ASTRO || _778 == SCENE_RM_MM_CAFE) {
+    } else if (stage >= dScene::SCENE_RM_MM_ENT && stage <= dScene::SCENE_RM_MM_ASTRO) {
+        if (_778 < dScene::SCENE_RM_MM_ENT || _778 > dScene::SCENE_RM_MM_ASTRO || _778 == dScene::SCENE_RM_MM_CAFE) {
             nw4r::snd::FxReverbHiDpl2::ReverbHiDpl2Param param(0.0f, 0.0f);
             initReverbParam(param);
             mReverb.setPreset(4);
             mReverb.SetParam(param);
             SoundObjBase::setFxSend(0.8f);
         }
-    } else if (stage == SCENE_FIELD || stage == SCENE_TOWN) {
+    } else if (stage == dScene::SCENE_FIELD || stage == dScene::SCENE_TOWN) {
         nw4r::snd::FxReverbHiDpl2::ReverbHiDpl2Param param(0.0f, 0.0f);
         initReverbParam(param);
         mReverb.setPreset(5);
         mReverb.SetParam(param);
         SoundObjBase::setFxSend(0.0f);
     } else SoundObjBase::setFxSend(0.0f);
-    if (stage >= SCENE_DM_BUS_PL_CRT && stage <= SCENE_DM_BUS_TO_LAND) SoundSystem::getInstance()->enableSceneFade();
+    if (stage >= dScene::SCENE_DM_BUS_PL_CRT && stage <= dScene::SCENE_DM_BUS_TO_LAND) SoundSystem::getInstance()->enableSceneFade();
     else SoundSystem::getInstance()->disableSceneFade();
     SoundAmbient::sIsStageSet = true;
     _778 = stage;
@@ -511,7 +511,7 @@ bool SoundManager::isFixedVolume(u32 id) {
     u32 param = mArchive.GetSoundUserParam(id);
     if (param & 1) {
         result = true;
-    } else if ((param & 4) && ((_778 >= SCENE_RM_SHOP0 && _778 <= SCENE_RM_SHOP3_F2) || _778 == SCENE_RM_MM_CAFE)) {
+    } else if ((param & 4) && ((_778 >= dScene::SCENE_RM_SHOP0 && _778 <= dScene::SCENE_RM_SHOP3_F2) || _778 == dScene::SCENE_RM_MM_CAFE)) {
         result = true;
     }
     return result;

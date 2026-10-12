@@ -26,7 +26,7 @@ void Daily_c::update() {
     if (mValue != DAILY_NONE && !mDate.isToday(TRUE)) {
         clear();
     }
-    fn_801C95CC();
+    dWeather::resetCache();
 }
 
 // 80150478

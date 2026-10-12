@@ -1061,7 +1061,7 @@ u16 infoBank_c::getIndexFromItemId(u16 id) const {
         if (index < DL_ITEM_END) {
             return index;
         } else {
-            getCurrentScene();
+            dScene::getCurrentScene();
             return INDEX_NONE;
         }
     }

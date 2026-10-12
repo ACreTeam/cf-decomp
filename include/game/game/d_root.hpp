@@ -6,7 +6,7 @@
 #include <types.h>
 #include <game/framework/f_base.hpp>
 
-class dSceneChange_c;
+namespace dScene { class dSceneChange_c; }
 
 class dRoot_c : public fBase_c {
 public:
@@ -16,7 +16,7 @@ public:
     virtual int execute();  // 801B973C
     virtual int draw();     // 801B9744
 
-    static dSceneChange_c *getSceneChange(); // 801B97A8: &gSceneChange (d_sv_demo)
+    static dScene::dSceneChange_c *getSceneChange(); // 801B97A8: &dScene::gSceneChange (d_sv_demo)
 
     static dRoot_c *sInstance; // 8074EB88
 }; // size 0x64

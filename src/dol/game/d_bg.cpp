@@ -67,7 +67,7 @@ int bsd_c::getWorldPoint(f32 *x, f32 *z, int blockX, int blockZ, u32 idx) const 
     return id;
 }
 
-// The grass colour (TEV konstant colour 1 of "m_grass") for each season (getCurrentSeasonBres).
+// The grass colour (TEV konstant colour 1 of "m_grass") for each season (dScene::getCurrentSeasonBres).
 static mColor getGrassColor(u32 season) {
     static const mColor sColors[] = {
         mColor(0x00, 0x82, 0x40, 0xFF), mColor(0x00, 0x7B, 0x4C, 0xFF), mColor(0x00, 0x70, 0x57, 0xFF),
@@ -134,7 +134,7 @@ void bkLoader_c::onLoaded() {
     res.Init();
     res.Release();
     res.Bind();
-    u32 season = getCurrentSeasonBres();
+    u32 season = dScene::getCurrentSeasonBres();
     if (season < 10) {
         nw4r::g3d::ResMdl mdl = res.GetResMdl(0);
         if (mdl.IsValid()) {
@@ -218,9 +218,9 @@ BOOL mdlBank_c::create(EGG::Heap *heap) {
     if (m_heap_p != NULL) {
         return TRUE;
     }
-    BOOL demo = isCurrentSceneAttr(SCENE_ATTR_DEMO);
+    BOOL demo = dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_DEMO);
     area_c area;
-    area.set(getScenePlayerPos());
+    area.set(dScene::getScenePlayerPos());
     m_heap_p = mHeap::createFrmHeap(0x1C8000, heap, "dBG::mdlBank_c::m_heap_p : ＢＧモデルヒープ", 0x20, mHeap::OPT_NONE);
     dFdBase_c *fd = fn_80190C44(0);
     if (m_heap_p != NULL && fd != NULL) {
@@ -301,7 +301,7 @@ bkLoader_c *mdlBank_c::getLoader(u32 blockX, u32 blockZ) {
 
 // 80069308
 BOOL mdlBank_c::isReady() {
-    if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR | SCENE_ATTR_MY_TOWN)) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR | dScene::SCENE_ATTR_MY_TOWN)) {
         return mAllLoaded;
     }
     return TRUE;
@@ -332,7 +332,7 @@ packBank_c::packBank_c() : mSeason(-1) {}
 // 80069400
 BOOL packBank_c::load(void *heap) {
     if (mSeason == -1) {
-        mSeason = getCurrentSeasonBres();
+        mSeason = dScene::getCurrentSeasonBres();
     }
     if (mSeason == -1) {
         mSeason = 0;
@@ -441,7 +441,7 @@ void area_c::set(const mVec3_c *center) {
 
 // 80069834
 void area_c::setView() {
-    mVec3_c center(*getScenePlayerPos());
+    mVec3_c center(*dScene::getScenePlayerPos());
     center = lbl_80623FEC;
     set(&center);
 }

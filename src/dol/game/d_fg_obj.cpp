@@ -21,7 +21,7 @@ alwaysBank_c *getAlwaysBank() {
 // 800A70B8
 BOOL fgObjRes_c::load(void *heap) {
     char path[64];
-    sprintf(path, "/FgObj/fgObjSeason%02d.brres", getSaveSeason());
+    sprintf(path, "/FgObj/fgObjSeason%02d.brres", dScene::getSaveSeason());
     return bank_c::load(path, heap, 0);
 }
 

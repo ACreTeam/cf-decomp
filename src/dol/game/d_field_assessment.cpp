@@ -281,10 +281,10 @@ static dFgCBRate_c *sCBCarnation[CBCarnationBaseHostIO_c::CARNATION_COLOR_NUM][C
 
 #include "d_fg_mng_task.inc"
 
-// 80091AF8: returns &gSceneChange, like getSceneChange (80161CC4); identical 3-insn getters exist
+// 80091AF8: returns &dScene::gSceneChange, like dScene::getSceneChange (80161CC4); identical 3-insn getters exist
 // in 6+ other TUs: 800573C4, 800D3584, 80166990, 8018DABC, 801B97A8.
-dSceneChange_c *fn_80091AF8() {
-    return &gSceneChange;
+dScene::dSceneChange_c *fn_80091AF8() {
+    return &dScene::gSceneChange;
 }
 
 // 80091B04: returns 0x3400: size of the "createGrowUpHeap" EGG::ExpHeap dHeap::growUpHeap_p (created at
@@ -1404,7 +1404,7 @@ void dFgMngProc_c::trySpawnShellOnline() {
                     u8 scene;
                     u8 b;
                     u32 info;
-                    if (((dFgMngPlInfoFunc)fn_80101DC4)(&info, &scene, &b, i) && isSceneAttr(scene, SCENE_ATTR_TOWN)) {
+                    if (((dFgMngPlInfoFunc)fn_80101DC4)(&info, &scene, &b, i) && dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
                         f32 pos[2];
                         u8 posInfo[8];
                         if (((dFgMngPlPosFunc)fn_80101DC0)(posInfo, pos, &c, i) && ((int)pos[0] >> 9) >= 5) {
@@ -4102,7 +4102,7 @@ void fgMngProc_updateFrame() {
     if (!fgMngProc_canCheckDayChange()) {
         return;
     }
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_ROOM)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM)) {
         sFgMngProc.updateShellSpawn();
         return;
     }
@@ -4110,7 +4110,7 @@ void fgMngProc_updateFrame() {
         sFgMngProcFlags |= FG_MNG_PROC_FLAG_DAY_CHANGE;
         if (dDemo::isDayChangeReady()) {
             dDemo::startDayChangeWarp();
-            BOOL inside = isCityScene(getCurrentScene());
+            BOOL inside = dScene::isCityScene(dScene::getCurrentScene());
             fn_80091AF8()->setReturnExitHere(0.0f);
             nw4r::math::VEC3 pos;
             if (inside) {
@@ -4120,7 +4120,7 @@ void fgMngProc_updateFrame() {
                 f32 x = p->x;
                 nw4r::math::VEC3 top(x, y, z);
                 top.z += 64.0f;
-                fn_80091AF8()->request(SCENE_TOWN, (mVec3_c *)&top, 0x8C, 0, 0, 0);
+                fn_80091AF8()->request(dScene::SCENE_TOWN, (mVec3_c *)&top, 0x8C, 0, 0, 0);
             } else {
                 dItem::Item item((u16)0xD013);
                 int x, z;
@@ -4129,7 +4129,7 @@ void fgMngProc_updateFrame() {
                 dBGCF::setCurrentBg(1);
                 pos.y = dBGCF::getUnitY((const mVec3_c *)&pos);
                 dBGCF::setCurrentBg(0);
-                fn_80091AF8()->request(SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
+                fn_80091AF8()->request(dScene::SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
             }
         } else {
             dDemo::requestDayChange();
@@ -4172,8 +4172,8 @@ void fgMngProc_threadMain() {
             dSaveData_c::getTown()->clearFlag(0x12);
             dSaveData_c::getTown()->clearFlag(0x13);
         }
-        switch (getCurrentScene()) {
-        case SCENE_NONE:
+        switch (dScene::getCurrentScene()) {
+        case dScene::SCENE_NONE:
             sFgMngProc.procLiveDay(1);
             break;
         default:
@@ -4264,9 +4264,9 @@ void fgMngProc_initOnCreate() {
     if (!dNet::isSessionActive() && dPlayerMgr_c::getCurrentPlayer() != NULL) {
         dLandID_c *town = &dSaveData_c::getTown()->mLandID;
         BOOL home = dPlayerMgr_c::getCurrentPlayer()->mPID.land == *town;
-        if (home && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
+        if (home && dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
             dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
-            if (homes->getHome(homes->findCurrentPlayer()) == NULL && isSceneAttr(getPrevScene(), SCENE_ATTR_PLAYER_HOUSE)) {
+            if (homes->getHome(homes->findCurrentPlayer()) == NULL && dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_PLAYER_HOUSE)) {
                 fgMngProc_clearFg94();
             }
         }
@@ -4568,7 +4568,7 @@ BOOL fgMngProc_getRafflesiaPos(nw4r::math::VEC3 *pos) {
 // 8009D0E8: from d_a_player: damages the flower at unit (x, z) with petals (mode 1) or, 12.5%,
 // destroys it (mode 0); returns the mode (3 = nothing / not outdoors).
 int fgMngProc_trampleFlowerAt(int x, int z) {
-    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
         return FLOWER_DAMAGE_NONE;
     }
     dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
@@ -4650,7 +4650,7 @@ static const u16 sFlowerFirstFg[] = {dItem::FG_TULIP_RED, dItem::FG_PANSY_WHITE,
 // 8009D2C0: spawns the afm_*_fall / *_leaf_fall effects for the flower at unit (x, z) (wilted
 // variants, wind direction, scale by mode).
 void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, const mAng3_c *ang, BOOL wind) {
-    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
         return;
     }
     int kind = getFlowerKind(item);
@@ -4936,7 +4936,7 @@ void fgMngProc_recvUnitFg(const u16 *data) {
     dFgMngProc_c::setUnitItem(fd, unit.mX, unit.mZ, fg, 0);
 }
 
-// 8009DEE4: FALSE while fading, in SCENE_DM_TITLE..SCENE_RM_SAMPLE / SCENE_NONE, or without the 8074E800 state 1;
+// 8009DEE4: FALSE while fading, in dScene::SCENE_DM_TITLE..SCENE_RM_SAMPLE / dScene::SCENE_NONE, or without the 8074E800 state 1;
 // gate of fgMngProc_updateFrame.
 BOOL fgMngProc_canCheckDayChange() {
     BOOL fading = TRUE;
@@ -4946,20 +4946,20 @@ BOOL fgMngProc_canCheckDayChange() {
     if (fading) {
         return FALSE;
     }
-    switch (getCurrentScene()) {
-    case SCENE_NONE:
-    case SCENE_DM_TITLE:
-    case SCENE_DM_SAVE:
-    case SCENE_DM_LOAD:
-    case SCENE_DM_PL_SEL:
-    case SCENE_DM_BUS_PL_CRT:
-    case SCENE_DM_BUS_TO_TOWN:
-    case SCENE_DM_BUS_TO_LAND:
-    case SCENE_DM_CHKP_CNNCT:
-    case SCENE_DM_CHKP_DCNNCT:
-    case SCENE_DM_CHKP_MISS:
-    case SCENE_CHECK_FIELD:
-    case SCENE_RM_SAMPLE:
+    switch (dScene::getCurrentScene()) {
+    case dScene::SCENE_NONE:
+    case dScene::SCENE_DM_TITLE:
+    case dScene::SCENE_DM_SAVE:
+    case dScene::SCENE_DM_LOAD:
+    case dScene::SCENE_DM_PL_SEL:
+    case dScene::SCENE_DM_BUS_PL_CRT:
+    case dScene::SCENE_DM_BUS_TO_TOWN:
+    case dScene::SCENE_DM_BUS_TO_LAND:
+    case dScene::SCENE_DM_CHKP_CNNCT:
+    case dScene::SCENE_DM_CHKP_DCNNCT:
+    case dScene::SCENE_DM_CHKP_MISS:
+    case dScene::SCENE_CHECK_FIELD:
+    case dScene::SCENE_RM_SAMPLE:
         return FALSE;
     }
     if (dScene_c::m_nowScene == NULL || dScene_c::m_nowScene->mProfName != 1) {
@@ -5049,7 +5049,7 @@ void fgMngProc_getLitterFlags(dFgMngLitterFlags_c *flags) {
 // 8009E238: offline outdoors: turnips/candy attract ants, turnips/trash flies (flags
 // d_insect_field reads; likely ants / flies), then clears the flags.
 void fgMngProc_attractInsects(dFgMngLitterFlags_c *flags) {
-    if (!dNet::isSessionActive() && isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
+    if (!dNet::isSessionActive() && dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
         if (flags->mHasBadKabu || flags->mHasCandy) {
             dInsectInfo::setAntsAttracted();
         }

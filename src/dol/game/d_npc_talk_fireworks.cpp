@@ -22,7 +22,7 @@ int dAcNpcNml_c::talk_c::getFireworksTalkState() {
     if (dEvent::isActive(EVENT_FIREWORKS) && !dEvent::isOver(EVENT_FIREWORKS)) {
         active = TRUE;
     }
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         active = FALSE;
     }
     animals = &dSaveData_c::getTown()->mAnimals;

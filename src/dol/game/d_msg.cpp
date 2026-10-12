@@ -848,7 +848,7 @@ void Seq_c::procWeatherJump() {
     const u8 *params = dScript::getTagParams(mpChar);
     int weather = 0;
     if (dWeather_c::sInstance != NULL) {
-        weather = fn_801C987C(dWeather_c::sInstance);
+        weather = dWeather_c::sInstance->getMessageWeather();
     }
     mpComp->setNextMsgCode(getJumpCode(params, weather, 8));
 }
@@ -997,7 +997,7 @@ void Seq_c::procBeeStingJump() {
 
 void Seq_c::procSceneJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    mpComp->setNextMsgCode(getJumpCode(params, getCurrentScene() != 0, 2));
+    mpComp->setNextMsgCode(getJumpCode(params, dScene::getCurrentScene() != 0, 2));
 }
 
 void Seq_c::procHourJump() {
@@ -1041,7 +1041,7 @@ void Seq_c::procHeldItemJump() {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
     BOOL choice = TRUE;
     if (player != NULL) {
-        if (getCurrentScene() == SCENE_TOWN) {
+        if (dScene::getCurrentScene() == dScene::SCENE_TOWN) {
             int held = player->mEquipment.mHeld.getKind();
             switch (kind) {
             case JUMP_HELD_UMBRELLA:
@@ -1060,7 +1060,7 @@ void Seq_c::procHeldItemJump() {
                 }
                 break;
             }
-        } else if (getCurrentScene() == SCENE_FIELD) {
+        } else if (dScene::getCurrentScene() == dScene::SCENE_FIELD) {
             const dItem::Item *item = player->getHeldItem();
             int held = item->getKind();
             switch (kind) {

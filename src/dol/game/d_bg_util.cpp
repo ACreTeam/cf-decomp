@@ -36,12 +36,12 @@ struct signData_s {
     /* 0x20 */ sign_s mSigns[1];
 };
 
-// The player house rooms (getSceneAttrTableIndex: the room, and the house in *home).
+// The player house rooms (dScene::getSceneAttrTableIndex: the room, and the house in *home).
 static const u32 l_homeScenes[] = {
-    SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE1 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE2 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE3 | SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE2 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE3 | dScene::SCENE_ATTR_PLAYER_HOUSE,
     0,
     0,
 };
@@ -54,8 +54,8 @@ static u8 l_signFlag;
 static dBgiDraw_c *l_bgiDraw;
 
 // The wallpaper / carpet of every scene that is not a player house room.
-static dItem::Item l_wallpapers[SCENE_NUM];
-static dItem::Item l_carpets[SCENE_NUM];
+static dItem::Item l_wallpapers[dScene::SCENE_NUM];
+static dItem::Item l_carpets[dScene::SCENE_NUM];
 static dItem::Item l_noItem;
 
 // 800767A8
@@ -79,7 +79,7 @@ void createSign(const mVec3_c *pos, const mVec3_c *size, s16 angleY, int msg, in
     l_signSize = *size;
     l_signFlag = flag;
     mAng3_c angle(0, angleY, 0);
-    dActor_c::construct(0xF6, getSceneParent(), 0, pos, &angle);
+    dActor_c::construct(0xF6, dScene::getSceneParent(), 0, pos, &angle);
 }
 
 // 80076840
@@ -111,7 +111,7 @@ void sendRoomItem(dItem::Item item, int type, int flag0, BOOL isWallpaper, int f
     if (dNet::isSessionActive()) {
         roomItemMsg_c msg;
         msg.mItem = item.mId;
-        msg.mScene = getCurrentScene();
+        msg.mScene = dScene::getCurrentScene();
         msg.mIsWallpaper = isWallpaper;
         msg.mType = type;
         msg.mFlag1 = flag1;
@@ -218,7 +218,7 @@ void recvRoomItem(const roomItemMsg_c *msg) {
     int type = msg->mType;
     BOOL flag0 = msg->mFlag0 != 0;
     BOOL flag1 = msg->mFlag1 != 0;
-    if (scene == getCurrentScene()) {
+    if (scene == dScene::getCurrentScene()) {
         if (isWallpaper) {
             setSceneWallpaper(scene, item, type);
             setWallpaper(item, type, flag0, flag1, FALSE);
@@ -267,7 +267,7 @@ BOOL isBgiReady() {
 
 // 800770DC
 void initSceneItems() {
-    for (int i = 0; i < SCENE_NUM; i++) {
+    for (int i = 0; i < dScene::SCENE_NUM; i++) {
         l_wallpapers[i] = l_carpets[i] = dItem::ITEM_ID_NONE;
     }
 }
@@ -275,7 +275,7 @@ void initSceneItems() {
 // 800771D8
 BOOL setSceneWallpaper(u8 scene, dItem::Item item, int type) {
     int home;
-    int room = getSceneAttrTableIndex(scene, l_homeScenes, &home);
+    int room = dScene::getSceneAttrTableIndex(scene, l_homeScenes, &home);
     if (room != -1) {
         if (dHome_c::isValidRoom(room)) {
             dSaveData_c::getHomeRoom(home, room)->setWallpaper(item);
@@ -284,7 +284,7 @@ BOOL setSceneWallpaper(u8 scene, dItem::Item item, int type) {
         }
         return FALSE;
     }
-    if (scene < SCENE_NUM) {
+    if (scene < dScene::SCENE_NUM) {
         l_wallpapers[scene] = item;
         return TRUE;
     }
@@ -298,12 +298,12 @@ dItem::Item getSceneWallpaper(u8 scene, int *type) {
     if (type == NULL) {
         type = &dummy;
     }
-    int room = getSceneAttrTableIndex(scene, l_homeScenes, &home);
+    int room = dScene::getSceneAttrTableIndex(scene, l_homeScenes, &home);
     if (room != -1 && dHome_c::isValidRoom(room)) {
         *type = dSaveData_c::getHomeRoom(home, room)->_454;
         return dSaveData_c::getHomeRoom(home, room)->getWallpaper();
     }
-    if (scene < SCENE_NUM) {
+    if (scene < dScene::SCENE_NUM) {
         *type = 1;
         return l_wallpapers[scene];
     }
@@ -313,13 +313,13 @@ dItem::Item getSceneWallpaper(u8 scene, int *type) {
 // 800773E4
 BOOL setSceneCarpet(u8 scene, dItem::Item item, int type) {
     int home;
-    int room = getSceneAttrTableIndex(scene, l_homeScenes, &home);
+    int room = dScene::getSceneAttrTableIndex(scene, l_homeScenes, &home);
     if (room != -1 && dHome_c::isValidRoom(room)) {
         dSaveData_c::getHomeRoom(home, room)->setCarpet(item);
         dSaveData_c::getHomeRoom(home, room)->_455 = type;
         return TRUE;
     }
-    if (scene < SCENE_NUM) {
+    if (scene < dScene::SCENE_NUM) {
         l_carpets[scene] = item;
         return TRUE;
     }
@@ -333,13 +333,13 @@ dItem::Item getSceneCarpet(u8 scene, int *type) {
     if (type == NULL) {
         type = &dummy;
     }
-    int room = getSceneAttrTableIndex(scene, l_homeScenes, &home);
+    int room = dScene::getSceneAttrTableIndex(scene, l_homeScenes, &home);
     if (room != -1 && dHome_c::isValidRoom(room)) {
         *type = dSaveData_c::getHomeRoom(home, room)->_455;
         return dSaveData_c::getHomeRoom(home, room)->getCarpet();
     }
-    if (scene < SCENE_NUM) {
-        if (isSceneAttr(scene, SCENE_ATTR_STORE_ROOM) || scene == SCENE_RM_HAPPY_MDL) {
+    if (scene < dScene::SCENE_NUM) {
+        if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_STORE_ROOM) || scene == dScene::SCENE_RM_HAPPY_MDL) {
             *type = 2;
         } else {
             *type = 0;

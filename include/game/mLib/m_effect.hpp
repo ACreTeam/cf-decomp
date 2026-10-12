@@ -46,3 +46,14 @@ public:
 }; // size 0x90
 
 } // namespace mEf
+
+namespace mEf {
+class oneEmitter_c : public EGG::Effect {
+public:
+    oneEmitter_c() {}
+    virtual ~oneEmitter_c() {}
+    virtual BOOL create(const char *, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual BOOL create(const char *, const mMtx_c *);
+    virtual void create(const char *);
+};
+}

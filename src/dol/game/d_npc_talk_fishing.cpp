@@ -22,7 +22,7 @@ int dAcNpcNml_c::talk_c::getFishingTalkState() {
     dEvFishing_c *record;
     dPersonalID_c *pid;
     BOOL active = dEvent::isOngoing(EVENT_FISHING_TOURNEY) != FALSE;
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         active = FALSE;
     }
     animals = &dSaveData_c::getTown()->mAnimals;

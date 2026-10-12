@@ -20,7 +20,7 @@ static dBGO_bgHostIO_c l_hostIO; // 80623F90
 // 80186E58
 int dBgDebug_c::create() {
     fn_800AC278();
-    if (isCityScene(getCurrentScene())) {
+    if (dScene::isCityScene(dScene::getCurrentScene())) {
         dSvAuc_c::create();
     }
     fn_801C8664();
@@ -42,7 +42,7 @@ int dBgDebug_c::draw() {
 int dBgDebug_c::doDelete() {
     if (dRF::finishCreate()) {
         fn_800AC284();
-        if (isCityScene(getCurrentScene())) {
+        if (dScene::isCityScene(dScene::getCurrentScene())) {
             dSvAuc_c::resetChanged();
         }
         fn_801C866C();

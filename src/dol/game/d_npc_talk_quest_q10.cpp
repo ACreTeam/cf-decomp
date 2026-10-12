@@ -40,7 +40,7 @@ static inline BOOL isSnowMode(int mode) {
 
 // 800573D0
 int dAcNpcNml_c::talk_c::msgHideOffer(msgInfo_s *info) {
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     dAnimal_c *animal = getAnimal();
@@ -56,7 +56,7 @@ int dAcNpcNml_c::talk_c::msgHideOffer(msgInfo_s *info) {
     }
     dWeather_c *weather = dWeather_c::sInstance;
     if (weather != NULL) {
-        int mode = weather->_5884;
+        int mode = weather->mWeather;
         if (isRainMode(mode) || isSnowMode(mode)) {
             return FALSE;
         }

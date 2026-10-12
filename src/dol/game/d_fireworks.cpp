@@ -181,9 +181,9 @@ dFireWorksMgr_c::~dFireWorksMgr_c() {
 void dFireWorksMgr_c::init(BOOL withEffect) {
     BOOL allowed = FALSE;
     mWithEffect = withEffect;
-    if (!isCityScene(getCurrentScene()) && !isSceneAttr(getCurrentScene(), SCENE_ATTR_CHKP | SCENE_ATTR_ROOM) &&
-        !isSceneAttr(getCurrentScene(), SCENE_ATTR_BUS) && getCurrentScene() != SCENE_DM_PL_SEL &&
-        getCurrentScene() != SCENE_DM_SAVE && getCurrentScene() != SCENE_DM_LOAD) {
+    if (!dScene::isCityScene(dScene::getCurrentScene()) && !dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_CHKP | dScene::SCENE_ATTR_ROOM) &&
+        !dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_BUS) && dScene::getCurrentScene() != dScene::SCENE_DM_PL_SEL &&
+        dScene::getCurrentScene() != dScene::SCENE_DM_SAVE && dScene::getCurrentScene() != dScene::SCENE_DM_LOAD) {
         allowed = TRUE;
     }
     mAllowed = allowed;

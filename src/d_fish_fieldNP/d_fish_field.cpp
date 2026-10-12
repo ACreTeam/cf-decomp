@@ -153,7 +153,7 @@ BOOL isRiverMouthBlock(int blockX, int blockZ, void *user) {
 }
 
 static inline BOOL isWeatherIn(const dWeather_c *weather, int want) {
-    return weather->_5884 == want;
+    return weather->mWeather == want;
 }
 
 static inline BOOL isRainWeather(const dWeather_c *weather) {

@@ -179,9 +179,9 @@ bool Manage_c::IsSafeToChangeScene() const {
 // 80106C74
 void Manage_c::SetSoftResetFinish() {
     if (mMode == MODE_SOFT_RESET && mSoftResetStep == SOFT_RESET_SCENE) {
-        fBase_c *parent = getSceneParent();
-        u8 scene = getCurrentScene();
-        if (parent == NULL || scene != SCENE_DM_LOAD) {
+        fBase_c *parent = dScene::getSceneParent();
+        u8 scene = dScene::getCurrentScene();
+        if (parent == NULL || scene != dScene::SCENE_DM_LOAD) {
             mSoftResetStep = SOFT_RESET_FINISH;
         }
     }
@@ -197,14 +197,14 @@ bool Manage_c::SetSoftResetScene() {
                 dScene_c::m_fadeOutType = 2;
             } else if (dScene_c::m_nowScene != NULL && dScene_c::m_nowScene->getKind() == SCENE_KIND_BOOT) {
                 if (mBootComplete) {
-                    forceSceneChange(SCENE_DM_TITLE, 0, 0);
+                    dScene::forceSceneChange(dScene::SCENE_DM_TITLE, 0, 0);
                 } else {
                     dScene_c::m_nextScene = SCENE_PROF_BOOT;
                     dScene_c::m_fadeInType = 0;
                     dScene_c::m_fadeOutType = 0;
                 }
             } else {
-                forceSceneChange(SCENE_DM_LOAD, 0, 5);
+                dScene::forceSceneChange(dScene::SCENE_DM_LOAD, 0, 5);
             }
             mSoftResetStep = SOFT_RESET_SCENE;
             return true;

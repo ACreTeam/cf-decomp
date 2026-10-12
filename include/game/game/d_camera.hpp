@@ -24,6 +24,9 @@ public:
 
     // 801B0194 (weak copy kept in d_objc). Non-const: a const version stores y before x.
     mVec3_c getEyePos() { return mVec3_c(mCamera.mPos); }
+    mVec3_c getTargetPos() __attribute__((noinline)) { return mVec3_c(mCamera.mAt); }
+    mAng getYaw() { return mYaw; }
+    mAng getCurveAngle() { return mCurveAngle; }
 
     // Talk camera (d_a_npc talk_c; names provisional).
     bool fn_8018A748() const;                                // 8018A748: (f240 <= f248)
@@ -44,6 +47,8 @@ public:
     /* 0x1AC */ u8 _1AC[0x1CC - 0x1AC];
     /* 0x1CC */ s16 mPitch;
     /* 0x1CE */ s16 mYaw;
+    /* 0x1D0 */ u8 _1D0[0x344 - 0x1D0];
+    /* 0x344 */ mAng mCurveAngle;
 };
 
 extern "C" {

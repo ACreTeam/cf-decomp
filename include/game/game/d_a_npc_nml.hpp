@@ -29,7 +29,7 @@
 
 class dAnimal_c;
 class dPlayActor_c;
-class dSceneChange_c;
+namespace dScene { class dSceneChange_c; }
 class dAnimalMemory_c;
 namespace dSvTownList {
 struct Entry_c; // d_sv_town_list.hpp
@@ -496,7 +496,7 @@ public:
         // Special-day conditions (PTMF table 8046C1C0, getSpecialDay); this is unused.
         BOOL isLeapDay();                           // 80039B38 today is Feb 29 (dTime_c::getCurrent: month 1, day 29)
         BOOL isAprilFools();                        // 80039B7C dEvent::isOngoing(EVENT_APRIL_FOOLS_DAY)
-        BOOL isWeatherTopic();                      // 80039BAC weather topic: by hour (fn_801C9C08) or getWeatherPhaseA/B
+        BOOL isWeatherTopic();                      // 80039BAC weather topic: by hour (dWeather::getPattern) or getWeatherPhaseA/B
         BOOL isMoonJPN();                           // 80039C34 dEvent::isActive(EVENT_JP_AUTUMN_MOON)
         BOOL isMoonKOR();                           // 80039C64 dEvent::isActive(EVENT_KR_DAEBOREUM)
         BOOL isMoonUSA();                           // 80039C94 dEvent::isActive(EVENT_NA_AUTUMN_MOON)
@@ -1234,7 +1234,7 @@ public:
         //          and no (nml selResumeTalk, 4)
         void selErrandCon();                        // 80057344 choice: EC = msgErrandCon
         int msgErrandCon(msgInfo_s *info);          // 80057398 EC "Q06_Con"
-        static dSceneChange_c *getSceneChange();    // 800573C4 &gSceneChange (like ::getSceneChange 80161CC4); called from d_npc_talk_quest_q10
+        static dScene::dSceneChange_c *getSceneChange();    // 800573C4 &dScene::gSceneChange (like ::getSceneChange 80161CC4); called from d_npc_talk_quest_q10
         // ---- d_npc_talk_quest_q10 (.text 800573D0..80058990) ----
         int msgHideOffer(msgInfo_s *info);          // 800573D0 offer check (nml l_questOffer, kind 0x14): no rain/snow, 6:00..21:59, town checks; day
         //          to mStartDay; nml startQuestOffer(info, 10, F8 endQuestCommon, 104 stepHideOffer, 1)
@@ -1404,7 +1404,7 @@ public:
         // Index n below = reaction_e n (d_npc_talk_reaction.hpp) = entry n of getReactionMsg's table.
         void resetActiveMood();                     // 8005E584 when the npc timer (getEntry()+0x250) mode > 1 (a mood runs): resetMood (virtual +0x38)
         int msgReMoveout(msgInfo_s *info);          // 8005E5DC  0 "Re_Moveout": dAnimal_c::isMovingOut; code 1..5 by the memory flags (talk_c+0x17C); 104 = stepMoveout
-        int msgReCafe(msgInfo_s *info);             // 8005E740  1 "Re_Cafe": current scene SCENE_RM_MM_CAFE
+        int msgReCafe(msgInfo_s *info);             // 8005E740  1 "Re_Cafe": current scene dScene::SCENE_RM_MM_CAFE
         int msgReFishing(msgInfo_s *info);          // 8005E7CC  2 "Re_Fishing": always FALSE
         int msgReFall(msgInfo_s *info);             // 8005E7D4  3 "Re_Fall": the npc is in a pitfall
         int msgReRun(msgInfo_s *info);              // 8005E888  4 "Re_Run" (offline, fgMngProc_isBusy)

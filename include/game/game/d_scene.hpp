@@ -12,6 +12,8 @@
 class fBase_c;
 class dTime_c;
 
+namespace dScene {
+
 enum Scene_e {
     SCENE_FIELD = 0x00, // the player's town
     SCENE_RM_HS0_F1 = 0x01, // player house 0: main floor, upstairs, basement, loft
@@ -303,3 +305,5 @@ u32 getSceneE848(); // 80162BF8
 void *getScenePlayer(); // 80162C00
 fBase_c *getSceneParent(); // 80162C08
 mVec3_c *getScenePlayerPos(); // 80162C10
+
+} // namespace dScene

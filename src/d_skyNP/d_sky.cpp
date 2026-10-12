@@ -72,11 +72,11 @@ dSky_c::~dSky_c() {}
 
 // 0x4BC
 int dSky_c::create() {
-    mIsCity = isCityScene(getCurrentScene());
-    if (!mIsCity && !isSceneAttr(getCurrentScene(), 0x10) && !mSeasonActorCreated) {
-        if (isWinterSeasonType()) {
+    mIsCity = dScene::isCityScene(dScene::getCurrentScene());
+    if (!mIsCity && !dScene::isSceneAttr(dScene::getCurrentScene(), 0x10) && !mSeasonActorCreated) {
+        if (dScene::isWinterSeasonType()) {
             dBase_c::createBase(0xAB, this, 0, 0);
-        } else if (!isLateSeason()) {
+        } else if (!dScene::isLateSeason()) {
             dBase_c::createBase(0xAC, this, 0, 0);
         }
         mSeasonActorCreated = true;
@@ -105,7 +105,7 @@ int dSky_c::create() {
     mMdlSky.create(nw4r::g3d::ResFile(mResSky.getData()).GetResMdl(0), &mAllocator, 0, 1, NULL);
     mMdlMoon.create(nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0), &mAllocator, 0, 1, NULL);
 
-    if (mIsCity || isSceneAttr(getCurrentScene(), 0x110)) {
+    if (mIsCity || dScene::isSceneAttr(dScene::getCurrentScene(), 0x110)) {
         mStarDraw.mMode = 1;
     } else {
         mStarDraw.mMode = 0;
@@ -182,7 +182,7 @@ int dSky_c::draw() {
         mStarDraw.entry();
     }
 
-    if (!isSceneAttr(getCurrentScene(), 0x110) && !isSceneAttr(getCurrentScene(), 0x4000)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), 0x110) && !dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {
         nw4r::g3d::ResMat moonMat = nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0).GetResMat(0);
         mColor moonColor;
         moonColor.lerp(mSkyColor0, mSkyColor1, 0.125f);
@@ -249,10 +249,10 @@ f32 getMoonAge(const dTime_c *now) {
 
 // 0x10B8
 f32 getOffsetY() {
-    if (isSceneAttr(getCurrentScene(), 0x110)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), 0x110)) {
         return 256.0f;
     }
-    if (isSceneAttr(getCurrentScene(), 0x4000)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {
         return 248.0f;
     }
     return 0.0f;
@@ -260,7 +260,7 @@ f32 getOffsetY() {
 
 // 0x1128
 f32 getOffsetZ() {
-    if (isSceneAttr(getCurrentScene(), 0x4000)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {
         return -42.0f;
     }
     return 0.0f;

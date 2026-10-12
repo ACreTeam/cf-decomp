@@ -620,7 +620,7 @@ void dPrivateData_c::updateHair(int days) {
 
 // 80137DA4
 void dPrivateData_c::dailyUpdate(int days) {
-    if ((u8)getCurrentScene() == SCENE_DM_BUS_PL_CRT && dPlayerMgr_c::getCurrentPlayer() == this) {
+    if ((u8)dScene::getCurrentScene() == dScene::SCENE_DM_BUS_PL_CRT && dPlayerMgr_c::getCurrentPlayer() == this) {
         return;
     }
     if (days != 0) {

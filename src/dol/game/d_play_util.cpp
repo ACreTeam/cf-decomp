@@ -23,7 +23,7 @@ static u8 sSyncAcks[PLAY_SYNC_REC_NUM][4]; // 805FAF38: per record, per member
 // 80160EA4
 BOOL calcWeatherHoursA(f32 *hours) {
     if (dWeather_c::sInstance != NULL) {
-        int weather = fn_801C98CC(dWeather_c::sInstance);
+        int weather = dWeather_c::sInstance->getCurrentPattern();
         BOOL found = FALSE;
         dTime_c now = *dTime_c::getCurrent();
         dTime_c end = now;
@@ -57,7 +57,7 @@ BOOL calcWeatherHoursA(f32 *hours) {
 // 801610A8
 BOOL calcWeatherHoursB(f32 *hours) {
     if (dWeather_c::sInstance != NULL) {
-        int weather = fn_801C98CC(dWeather_c::sInstance);
+        int weather = dWeather_c::sInstance->getCurrentPattern();
         BOOL found = FALSE;
         dTime_c now = *dTime_c::getCurrent();
         dTime_c start = now;
@@ -96,11 +96,11 @@ BOOL calcWeatherHoursB(f32 *hours) {
 int getWeatherPhaseA() {
     BOOL check = FALSE;
     dTime_c now = *dTime_c::getCurrent();
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
-        if (isWinterSeasonType()) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
+        if (dScene::isWinterSeasonType()) {
             check = TRUE;
         }
-    } else if (isSnowSeason(&now)) {
+    } else if (dScene::isSnowSeason(&now)) {
         check = TRUE;
     }
     if (check) {
@@ -119,11 +119,11 @@ int getWeatherPhaseA() {
 int getWeatherPhaseB() {
     BOOL check = FALSE;
     dTime_c now = *dTime_c::getCurrent();
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN)) {
-        if (!isLateSeason()) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
+        if (!dScene::isLateSeason()) {
             check = TRUE;
         }
-    } else if (!isLateSeason(&now)) {
+    } else if (!dScene::isLateSeason(&now)) {
         check = TRUE;
     }
     if (check) {
@@ -249,7 +249,7 @@ void recvSyncAck(const dPlaySyncMsg_c *msg, int member) {
             return;
         }
     }
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
         dPlaySyncRecBuf_c buf;
         int id = msg->getIdx() + PLAY_SYNC_REC_ID;
         cLib::memCpy(&buf, dNet::getRecord(id), sizeof(dPlaySyncRec_c));

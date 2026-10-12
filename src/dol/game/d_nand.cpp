@@ -671,8 +671,8 @@ int fn_800D357C() {
 }
 
 // 800D3584
-dSceneChange_c *getSceneChange() {
-    return &gSceneChange;
+dScene::dSceneChange_c *getSceneChange() {
+    return &dScene::gSceneChange;
 }
 
 } // namespace dNand

@@ -54,8 +54,8 @@ typedef BOOL (*dAnimalMemoryFilter)(const dPersonalID_c *pid, const dLandID_c *l
 #define ANIMAL_NICKNAME_LEN 8
 #define ANIMAL_HABIT_LEN 10
 
-// Two capped counters (max 5) at dAnimalMemory_c+0x4E. The kind argument is a scene (SCENE_NUM: the
-// current one); isSceneAttr(kind, SCENE_ATTR_TOWN) picks which counter applies.
+// Two capped counters (max 5) at dAnimalMemory_c+0x4E. The kind argument is a scene (dScene::SCENE_NUM: the
+// current one); dScene::isSceneAttr(kind, dScene::SCENE_ATTR_TOWN) picks which counter applies.
 class dAnimalTalkCount_c {
 public:
     dAnimalTalkCount_c(); // 8011C618

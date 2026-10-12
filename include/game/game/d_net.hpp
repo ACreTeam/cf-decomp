@@ -1464,7 +1464,7 @@ void endSession(int arg);
 BOOL isNetMgrRunning();
 bool isSessionActive(); // 800DCEDC: mActive
 // 800DCEE0: mPacket.mSuspended: sending stopped (leave / session end /
-// closing); d_scene adjustChkpScene, dSceneChange_c::request
+// closing); d_scene adjustChkpScene, dScene::dSceneChange_c::request
 BOOL isNetStopped();
 // 800DCF04: dNetDisconnect_c::mMember: the member whose leave is running;
 // d_player_mngr, gatekeeper
@@ -1569,7 +1569,7 @@ bool isSaveEndAllSaved();
 // d_sv_mgr stepSaveContinueNetVst_c::waitSaveDemoEnd
 bool isSaveEndSaved();
 void resetSaveEnd(); // 800DDAE4: dNetSaveEnd_c::init; d_sv_mgr
-// 800DDB08: all in SCENE_DM_SAVE and no scene leader; d_sv_mgr
+// 800DDB08: all in dScene::SCENE_DM_SAVE and no scene leader; d_sv_mgr
 // stepSaveConnectNetHst / Vst_c::waitSavePermission
 BOOL isConnectSavePermitted();
 // 800DDB58: the same test; d_sv_mgr stepSaveContinueNetHst / Vst_c::waitCanSave

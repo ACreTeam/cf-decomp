@@ -20,7 +20,7 @@ static const char l_Q09_Req[] = "Q09_Req";
 
 // 8005A3C4
 int dAcNpcNml_c::talk_c::msgInviteOffer(msgInfo_s *info) {
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     if (getAnimal() == NULL) {
@@ -363,7 +363,7 @@ int dAcNpcNml_c::talk_c::msgInviteRoomtalk(msgInfo_s *info) {
 // 8005B6F8
 u16 dAcNpcNml_c::talk_c::pickHouseFtrMsg(dItem::Item *item, u8 looks) {
     u16 msg = 0;
-    if (!isCurrentSceneAttr(SCENE_ATTR_VILLAGER_HOUSE)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return 0;
     }
     dFdBase_c *field = fn_80190C44(0);

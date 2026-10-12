@@ -287,7 +287,7 @@ inline int worldToUnit(f32 value) { return (int)value >> 5; }
 
 inline dFdBase_c *getCurrentField() { return fn_80190C44(FD_ID_CURRENT); }
 
-// Scenes (getCurrentScene()) and their attributes (isSceneAttr()) are in d_scene.hpp.
+// Scenes (dScene::getCurrentScene()) and their attributes (dScene::isSceneAttr()) are in d_scene.hpp.
 
 class dFdInfo_c : public dFdBase_c {
 public:

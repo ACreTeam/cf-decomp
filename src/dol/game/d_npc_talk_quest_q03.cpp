@@ -82,7 +82,7 @@ int dAcNpcNml_c::talk_c::msgFossilQuest(msgInfo_s *info) {
     if (state >= QUEST_REQUEST_WON && state < QUEST_REQUEST_NUM && requester->isValid()) {
         if (requester->isSame(pid)) {
             if (state == QUEST_REQUEST_RETURN || state == QUEST_REQUEST_COMPLETE ||
-                (state == QUEST_REQUEST_DISPLAYED && !isCurrentSceneAttr(SCENE_ATTR_VILLAGER_HOUSE))) {
+                (state == QUEST_REQUEST_DISPLAYED && !dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE))) {
                 return FALSE;
             }
         } else if (quest->findPlayer(pid) == -1) {
@@ -321,7 +321,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilWin(int kind) {
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
             animal->mQuest.mWish.addValue(5);
-            if (!dNet::isSessionActive() && isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+            if (!dNet::isSessionActive() && dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
                 animal->setQuestStarted();
             }
         }

@@ -398,6 +398,6 @@ int dAcNpcNml_c::talk_c::msgErrandCon(msgInfo_s *info) {
 }
 
 // 800573C4
-dSceneChange_c *dAcNpcNml_c::talk_c::getSceneChange() {
-    return &gSceneChange;
+dScene::dSceneChange_c *dAcNpcNml_c::talk_c::getSceneChange() {
+    return &dScene::gSceneChange;
 }

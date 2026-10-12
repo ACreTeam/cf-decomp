@@ -3323,8 +3323,8 @@ int dAcNpcNml_c::talk_c::msgGreeting(msgInfo_s *info) {
     if (!flag) {
         dAnimalMemory_c *memory = mpMemory;
         if (memory != NULL) {
-            u8 scene = getCurrentScene();
-            BOOL inTown = isSceneAttr(scene, SCENE_ATTR_TOWN);
+            u8 scene = dScene::getCurrentScene();
+            BOOL inTown = dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN);
             u8 count = memory->mTalkCount.get(scene);
             dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
             BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
@@ -3337,7 +3337,7 @@ int dAcNpcNml_c::talk_c::msgGreeting(msgInfo_s *info) {
                     int weather = 2;
                     if (weatherMgr != NULL) {
                         BOOL snow = FALSE;
-                        int mode = weatherMgr->_5884;
+                        int mode = weatherMgr->mWeather;
                         if (isWeatherIn(mode, 6) || isWeatherIn(mode, 5)) {
                             snow = TRUE;
                         }
@@ -3429,7 +3429,7 @@ void dAcNpcNml_c::talk_c::addFriendship(int delta) {
 // 80035B88
 u32 dAcNpcNml_c::calcHeapSize(BOOL withFrm) {
     u32 size = dNpcMdlMng_c::getMdlSize();
-    size += ROUND_UP(isCurrentSceneAttr(SCENE_ATTR_TOWN) ? 0x5000 : 0x2800, 4);
+    size += ROUND_UP(dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) ? 0x5000 : 0x2800, 4);
     size += 0x9CC0;
     if (withFrm) {
         size += mHeap::frmHeapCost(0, 0x20);

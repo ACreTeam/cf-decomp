@@ -203,7 +203,7 @@ BOOL dAcNpcNml_c::talk_c::stepSpotIntro(int kind) {
 BOOL dAcNpcNml_c::talk_c::checkSpotNpcBlock(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
     int x = -1;
     int z = -1;
-    if (isCurrentSceneAttr(SCENE_ATTR_VILLAGER_HOUSE)) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         u32 idx = getNpcIdx();
         if (idx < 10) {
             int houseX = 0;

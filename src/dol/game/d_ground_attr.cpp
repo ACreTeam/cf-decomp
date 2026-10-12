@@ -11,7 +11,7 @@
 namespace dGroundAttr {
 
 // 8046F268: the footstep sound of a room's wall attribute, by scene.
-static const int l_roomWallSe[SCENE_NUM] = {
+static const int l_roomWallSe[dScene::SCENE_NUM] = {
     GROUND_SE_ROOM_DEFAULT, GROUND_SE_ROOM_CARPET, GROUND_SE_ROOM_CARPET, GROUND_SE_ROOM_CARPET,
     GROUND_SE_ROOM_CARPET,  GROUND_SE_ROOM_CARPET, GROUND_SE_ROOM_CARPET, GROUND_SE_ROOM_CARPET,
     GROUND_SE_ROOM_CARPET,  GROUND_SE_ROOM_CARPET, GROUND_SE_ROOM_CARPET, GROUND_SE_ROOM_CARPET,
@@ -38,7 +38,7 @@ int getAttr(const mVec3_c *pos) {
         dBGCF::groundChk_c chk(pos, 0, 0, 0);
         attr = chk.mAttr;
     }
-    if (isCurrentSceneAttr(SCENE_ATTR_ROOM) && attr == BG_ATTR_CHANGE) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM) && attr == BG_ATTR_CHANGE) {
         dItem::Item carpet = dBgUtil::getCarpetRaw();
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(carpet);
         if (bitm != NULL) {
@@ -66,15 +66,15 @@ int getFootstepSe(const mVec3_c *pos, u8 *wear) {
     if (se == GROUND_SE_GRASS_ALT) {
         se = GROUND_SE_GRASS;
     }
-    u8 scene = getCurrentScene();
-    if (isSceneAttr(scene, SCENE_ATTR_ROOM)) {
+    u8 scene = dScene::getCurrentScene();
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_ROOM)) {
         int unitX, unitZ;
         dBGCF::posToUnit(&unitX, &unitZ, pos);
-        if (dBGCF::getAttr(unitX, unitZ) == BG_ATTR_WALL && scene < SCENE_NUM) {
+        if (dBGCF::getAttr(unitX, unitZ) == BG_ATTR_WALL && scene < dScene::SCENE_NUM) {
             return l_roomWallSe[scene];
         }
     } else if (se == GROUND_SE_GRASS) {
-        u32 season = getCurrentSeasonBres();
+        u32 season = dScene::getCurrentSeasonBres();
         switch (dBgDebug_c::getGroundSeType()) {
         case 0:
             se = GROUND_SE_GRASS;
@@ -101,10 +101,10 @@ int getFootstepSe(const mVec3_c *pos, u8 *wear) {
 
 // 800A87B0
 int getFootprint(const mVec3_c *pos) {
-    if (!isCurrentSceneAttr(SCENE_ATTR_ROOM)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM)) {
         switch (getAttr(pos)) {
         case BG_ATTR_SOIL:
-            if (isWinterSeasonType()) {
+            if (dScene::isWinterSeasonType()) {
                 dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
                 if (fd != NULL) {
                     return fd->getGrassWear(pos, FALSE);
@@ -121,7 +121,7 @@ int getFootprint(const mVec3_c *pos) {
 
 // 800A8850
 int getSnowWear(const mVec3_c *pos) {
-    if (!isCurrentSceneAttr(SCENE_ATTR_ROOM) && getAttr(pos) == BG_ATTR_SOIL && isWinterSeasonType()) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM) && getAttr(pos) == BG_ATTR_SOIL && dScene::isWinterSeasonType()) {
         dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
         if (fd != NULL) {
             return fd->getGrassWear(pos, FALSE);

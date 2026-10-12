@@ -127,7 +127,7 @@ void dSaveShopTailor_c::sell(int scene, int slot, int unitX, int unitZ) {
         return;
     }
 
-    if ((u32)scene != getCurrentScene()) {
+    if ((u32)scene != dScene::getCurrentScene()) {
         return;
     }
     int idx = fn_800A8F98(fn_800A9058(), unitX, unitZ, 0);

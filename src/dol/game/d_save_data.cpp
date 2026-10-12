@@ -129,7 +129,7 @@ void dSaveData_c::refreshTown() {
     if (fd != NULL) {
         ((dFdInfo_c *)fd)->updateTown();
     }
-    fn_801C95F8();
+    dWeather::requestReset();
     dSTR::getTownUnitAttr()->setAll();
     dFootmark::getEditor()->loadSave();
     dActivityLog::setJinx(&dSaveData_c::getTown()->mActivity.mJinx);
@@ -148,7 +148,7 @@ void dSaveData_c::setupAfterLoad() {
         ((dFdInfo_c *)fd)->updateTown();
     }
     dTime_c::loadOffset();
-    fn_801C95CC();
+    dWeather::resetCache();
     dSTR::getTownUnitAttr()->setAll();
     dFootmark::getEditor()->loadSave();
     dActivityLog::applyResult();

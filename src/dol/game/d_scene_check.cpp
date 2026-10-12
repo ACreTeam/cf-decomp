@@ -25,10 +25,10 @@ void clearRoomOpen(int house, int room) {
 
 // 80081674
 u32 isHouseRoomScene(u8 scene) {
-    if (isSceneAttr(scene, SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE) ||
-        isSceneAttr(scene, SCENE_ATTR_HOUSE1 | SCENE_ATTR_PLAYER_HOUSE) ||
-        isSceneAttr(scene, SCENE_ATTR_HOUSE2 | SCENE_ATTR_PLAYER_HOUSE) ||
-        isSceneAttr(scene, SCENE_ATTR_HOUSE3 | SCENE_ATTR_PLAYER_HOUSE)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE) ||
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE) ||
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE2 | dScene::SCENE_ATTR_PLAYER_HOUSE) ||
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE3 | dScene::SCENE_ATTR_PLAYER_HOUSE)) {
         return TRUE;
     }
     return FALSE;
@@ -37,14 +37,14 @@ u32 isHouseRoomScene(u8 scene) {
 // 80081704
 int getSceneHouse(u8 scene) {
     const u32 attrs[HOUSE_NUM] = {
-        SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE,
-        SCENE_ATTR_HOUSE1 | SCENE_ATTR_PLAYER_HOUSE,
-        SCENE_ATTR_HOUSE2 | SCENE_ATTR_PLAYER_HOUSE,
-        SCENE_ATTR_HOUSE3 | SCENE_ATTR_PLAYER_HOUSE,
+        dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+        dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+        dScene::SCENE_ATTR_HOUSE2 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+        dScene::SCENE_ATTR_HOUSE3 | dScene::SCENE_ATTR_PLAYER_HOUSE,
     };
     int house = -1;
     for (int i = 0; i < HOUSE_NUM; i++) {
-        if (isSceneAttr(scene, attrs[i])) {
+        if (dScene::isSceneAttr(scene, attrs[i])) {
             house = i;
         }
     }

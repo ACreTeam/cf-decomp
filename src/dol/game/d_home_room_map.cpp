@@ -5,12 +5,12 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 
-// 80475CE0: house scene attribute per house (getSceneAttrTableIndex); same as d_home's table
+// 80475CE0: house scene attribute per house (dScene::getSceneAttrTableIndex); same as d_home's table
 static const u32 sHomeScenes[] = {
-    SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE1 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE2 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE3 | SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE2 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE3 | dScene::SCENE_ATTR_PLAYER_HOUSE,
     0,
     0,
 };
@@ -122,15 +122,15 @@ void dHomeRoomMap_c::set(int x, int z, int layer, BOOL on) {
     mActiveFtr[layer].set(x, z, on);
 }
 
-#define ANIMAL_HOME_MAP_NUM (SCENE_RM_NPC9 - SCENE_RM_NPC0 + 1) // 10
-#define SHOP_MAP_NUM (SCENE_RM_SHOP3_F2 - SCENE_RM_SHOP0 + 1) // 5
+#define ANIMAL_HOME_MAP_NUM (dScene::SCENE_RM_NPC9 - dScene::SCENE_RM_NPC0 + 1) // 10
+#define SHOP_MAP_NUM (dScene::SCENE_RM_SHOP3_F2 - dScene::SCENE_RM_SHOP0 + 1) // 5
 
 // 805EC5D0..: the maps of the rooms without one in the save data
-static dHomeRoomMap_c sAnimalHomeMaps[ANIMAL_HOME_MAP_NUM]; // SCENE_RM_NPC0..SCENE_RM_NPC9
-static dHomeRoomMap_c sShopMaps[SHOP_MAP_NUM]; // SCENE_RM_SHOP0..SCENE_RM_SHOP3_F2
-static dHomeRoomMap_c sTailorMap; // SCENE_RM_TAILOR
-static dHomeRoomMap_c sGraceMap; // SCENE_RM_GRACE
-static dHomeRoomMap_c sAuctionMap; // SCENE_RM_AUCTION
+static dHomeRoomMap_c sAnimalHomeMaps[ANIMAL_HOME_MAP_NUM]; // dScene::SCENE_RM_NPC0..SCENE_RM_NPC9
+static dHomeRoomMap_c sShopMaps[SHOP_MAP_NUM]; // dScene::SCENE_RM_SHOP0..SCENE_RM_SHOP3_F2
+static dHomeRoomMap_c sTailorMap; // dScene::SCENE_RM_TAILOR
+static dHomeRoomMap_c sGraceMap; // dScene::SCENE_RM_GRACE
+static dHomeRoomMap_c sAuctionMap; // dScene::SCENE_RM_AUCTION
 
 // 80111478
 void clearAllRoomMaps() {
@@ -162,14 +162,14 @@ BOOL clearRoomMap(u8 scene) {
 
 // 80111564
 BOOL clearAnimalHomeRoomMap(int animal) {
-    return clearRoomMap(animal + SCENE_RM_NPC0);
+    return clearRoomMap(animal + dScene::SCENE_RM_NPC0);
 }
 
 // 80111570
 dHomeRoomMap_c *getRoomMap(u8 scene) {
-    if (isSceneAttr(scene, SCENE_ATTR_PLAYER_HOUSE)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_PLAYER_HOUSE)) {
         int home;
-        int room = getSceneAttrTableIndex(scene, sHomeScenes, &home);
+        int room = dScene::getSceneAttrTableIndex(scene, sHomeScenes, &home);
         dHome_c *h = dSaveData_c::getTown()->mHomes.getHome(home);
         if (dHome_c::isValidRoom(room)) {
             dHomeRoom_c *r = h->getRoom(room);
@@ -177,17 +177,17 @@ dHomeRoomMap_c *getRoomMap(u8 scene) {
                 return &r->mMap;
             }
         }
-    } else if (isSceneAttr(scene, SCENE_ATTR_VILLAGER_HOUSE)) {
-        return &sAnimalHomeMaps[getSceneAttrIndex(scene, SCENE_ATTR_VILLAGER_HOUSE)];
-    } else if (isSceneAttr(scene, SCENE_ATTR_STORE_ROOM)) {
-        return &sShopMaps[getSceneAttrIndex(scene, SCENE_ATTR_SHOP_ROOM)];
-    } else if (scene == SCENE_RM_TAILOR) {
+    } else if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
+        return &sAnimalHomeMaps[dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE)];
+    } else if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_STORE_ROOM)) {
+        return &sShopMaps[dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_SHOP_ROOM)];
+    } else if (scene == dScene::SCENE_RM_TAILOR) {
         return &sTailorMap;
-    } else if (scene == SCENE_RM_GRACE) {
+    } else if (scene == dScene::SCENE_RM_GRACE) {
         return &sGraceMap;
-    } else if (scene == SCENE_RM_AUCTION) {
+    } else if (scene == dScene::SCENE_RM_AUCTION) {
         return &sAuctionMap;
-    } else if (scene == SCENE_RM_HAPPY_MDL) {
+    } else if (scene == dScene::SCENE_RM_HAPPY_MDL) {
         return &dSaveData_c::getTown()->mModelRoom.mMap;
     }
     return NULL;

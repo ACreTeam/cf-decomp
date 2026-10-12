@@ -356,7 +356,7 @@ int dAcNpcNml_c::talk_c::msgHalloween(msgInfo_s *info) {
         dSaveTown_c *town = dSaveData_c::getTown();
         dAnimal_c *animal = getAnimal();
         if ((dQuestEvent_e)town->mAnimals.mTown.mEventId != EVENT_HALLOWEEN || animal == NULL || !animal->mEvent.isInEvent() ||
-            !isCurrentSceneAttr(SCENE_ATTR_VILLAGER_HOUSE)) {
+            !dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
             on = FALSE;
         }
     }

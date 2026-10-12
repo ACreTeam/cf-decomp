@@ -51,3 +51,14 @@ u32 fn_800887F4(); // 800887F4: size of the effect callback heap (0x1000)
 // 800887FC: gives the palette data to the effect textures named name (d_fg_obj's season tree palettes).
 void fn_800887FC(const char *name, u16 *pltt);
 }
+
+// A single-emitter game effect (RTTI dOneEmitterEffect_c).
+class dOneEmitterEffect_c : public mEf::oneEmitter_c {
+public:
+    dOneEmitterEffect_c() {}
+    BOOL emit(const mVec3_c *, const mAng3_c *, const mVec3_c *); // 800879EC
+    virtual ~dOneEmitterEffect_c() {}
+    virtual BOOL create(const char *, const mVec3_c *, const mAng3_c *, const mVec3_c *);
+    virtual BOOL create(const char *, const mMtx_c *);
+    virtual void create(const char *);
+};

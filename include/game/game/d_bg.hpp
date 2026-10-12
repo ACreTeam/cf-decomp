@@ -124,7 +124,7 @@ public:
     BOOL load(void *heap); // 80069400
     BOOL unload();         // 800694C8
 
-    /* 0x58 */ int mSeason; // getCurrentSeasonBres when loaded, -1 if not
+    /* 0x58 */ int mSeason; // dScene::getCurrentSeasonBres when loaded, -1 if not
 }; // size 0x5C
 
 // "/BgData/Always/always.arc": the block collision data and the shadow.

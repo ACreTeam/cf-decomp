@@ -267,7 +267,7 @@ void SoundFoot::start(u32 id, u8 mix, f32 speed) {
 
     int scene = SoundManager::getInstance()->_778;
     if ((scene == 0 || scene == 0x2D || scene == 0x38) && dWeather_c::sInstance != NULL &&
-        (u32)(dWeather_c::sInstance->_5884 - 3) <= 1) {
+        (u32)(dWeather_c::sInstance->mWeather - 3) <= 1) {
         if (id == SE_walk_grass1) {
             id = SE_walk_nukarumi1;
         } else if (id == SE_walk_leaf1) {

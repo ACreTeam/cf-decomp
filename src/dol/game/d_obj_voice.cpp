@@ -92,7 +92,7 @@ void dObjVoice_c::playAnm() {
 
 // 801B72C4
 BOOL dObjVoice_c::isActive() {
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (dSaveOption::getVoiceChat() == TRUE) {

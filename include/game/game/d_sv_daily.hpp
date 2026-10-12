@@ -17,7 +17,7 @@ enum {
 struct Daily_c {
     void clear();                            // 801503E4: mValue = DAILY_NONE
     static void request();                   // 801503F0: the next update() sets DAILY_INITIAL for today
-    void update();                           // 801503FC: also resets d_weather's timestamp (fn_801C95CC)
+    void update();                           // 801503FC: also resets d_weather's timestamp (dWeather::resetCache)
     void set(const dTime_c *time, u8 value); // 80150478: the date of time - 6h
 
     /* 0x0 */ dYMD_c mDate;

@@ -146,7 +146,7 @@ static BOOL endMenu(Req_c *req) {
 
 // 8018DD24
 BOOL requestMenu(u8 menu) {
-    dDemoActor_c *player = (dDemoActor_c *)getScenePlayer();
+    dDemoActor_c *player = (dDemoActor_c *)dScene::getScenePlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -160,7 +160,7 @@ void finishMenu() {
 
 // 8018DD8C
 BOOL requestPlayerDemo(int type) {
-    dDemoActor_c *player = (dDemoActor_c *)getScenePlayer();
+    dDemoActor_c *player = (dDemoActor_c *)dScene::getScenePlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -830,7 +830,7 @@ static BOOL endDayChange(Req_c *req) {
 
 // 8018EE7C
 BOOL requestDayChange() {
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (isNoDayChange()) {

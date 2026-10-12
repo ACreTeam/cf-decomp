@@ -381,7 +381,7 @@ void fn_800FC404() {
     if (!fn_80101584(fn_8019AFE4() & 7, &held)) {
         return;
     }
-    if (dHmnToolBank_c::getItemToolType(&held) == 0xA && isCurrentSceneAttr(SCENE_ATTR_ROOM)) {
+    if (dHmnToolBank_c::getItemToolType(&held) == 0xA && dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM)) {
         fn_801B910C(dNet::getMyNo(), 3, held.mId);
         fn_801B8898(dNet::getMyNo(), 3, held.mId);
     }
@@ -740,7 +740,7 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
 
     if (held != NULL) {
         if (held->mId == dItem::ITEM_ID_NONE) {
-            if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR)) {
+            if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR)) {
                 player->_22DA = 2;
             }
             fn_801B910C(dNet::getMyNo(), 3, held->mId);
@@ -748,7 +748,7 @@ BOOL fn_800FCDFC(const dItem::Item *shirt, const dItem::Item *hat, const dItem::
         } else {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
             if (bitm != NULL && getHideBone(bitm) == 9) {
-                if (isCurrentSceneAttr(SCENE_ATTR_OUTDOOR)) {
+                if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR)) {
                     player->_22DA = 1;
                 }
                 fn_801B910C(dNet::getMyNo(), 3, held->mId);
@@ -1629,7 +1629,7 @@ BOOL fn_800FECF8(const dItem::Item *held) {
         return FALSE;
     }
     if (held->mId == dItem::ITEM_ID_NONE) {
-        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
+        if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
             player->_22DA = 2;
             player->_223C = 1;
         }
@@ -1641,7 +1641,7 @@ BOOL fn_800FECF8(const dItem::Item *held) {
         if (getHideBone(bitm) != 9) {
             return FALSE;
         }
-        if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
+        if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
             player->_22DA = 1;
             player->_223C = 1;
         }
@@ -1953,7 +1953,7 @@ BOOL fn_800FF8B0() {
     if (current != NULL && current->mEquipment.mHeld.mId == dItem::ITEM_ID_NONE) {
         return FALSE;
     }
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) || (isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(&current->mEquipment.mHeld))) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(&current->mEquipment.mHeld))) {
         return TRUE;
     }
     return FALSE;
@@ -2683,7 +2683,7 @@ BOOL fn_80101060(const dItem::Item *held) {
     if (player->mState != 0x8) {
         return FALSE;
     }
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     if (held->mId != dItem::ITEM_ID_NONE) {
@@ -3302,7 +3302,7 @@ void fn_801022B8(nw4r::ef::Particle *obj, u32 kind) {
         return;
     }
     mVec3_c pos;
-    if (isOutdoorScene((u8)getCurrentScene())) {
+    if (dScene::isOutdoorScene((u8)dScene::getCurrentScene())) {
         mVec3_c src = obj->mParameter.mPosition;
         dWorld::toFieldPosition(&pos, &src);
     } else {
@@ -3341,7 +3341,7 @@ int fn_80102434(const mVec3_c *pos) {
     }
     int attr = check.mAttr;
     if (dWeather_c::sInstance != NULL) {
-        int mode = dWeather_c::sInstance->_5884;
+        int mode = dWeather_c::sInstance->mWeather;
         BOOL special = FALSE;
         if (mode == 4 || mode == 3) {
             special = TRUE;

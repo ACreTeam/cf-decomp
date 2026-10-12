@@ -12,12 +12,12 @@
 #include <cstring>
 
 
-// 80476258: house scene attribute per house (getSceneAttrTableIndex)
+// 80476258: house scene attribute per house (dScene::getSceneAttrTableIndex)
 static const u32 sHomeScenes[] = {
-    SCENE_ATTR_HOUSE0 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE1 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE2 | SCENE_ATTR_PLAYER_HOUSE,
-    SCENE_ATTR_HOUSE3 | SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE2 | dScene::SCENE_ATTR_PLAYER_HOUSE,
+    dScene::SCENE_ATTR_HOUSE3 | dScene::SCENE_ATTR_PLAYER_HOUSE,
     0,
     0,
 };
@@ -599,7 +599,7 @@ int dHomeList_c::getHomeFromScene(int *room, u8 scene) {
     if (room == NULL) {
         room = &dummy;
     }
-    *room = getSceneAttrTableIndex(scene, sHomeScenes, &home);
+    *room = dScene::getSceneAttrTableIndex(scene, sHomeScenes, &home);
     return home;
 }
 
@@ -677,7 +677,7 @@ void dHomeList_c::updateAll(int days) {
 // 8013E2DC
 dItem::Item getCurrentRoomSong() {
     int room;
-    u8 scene = getCurrentScene();
+    u8 scene = dScene::getCurrentScene();
     int home = dHomeList_c::getHomeFromScene(&room, scene);
     if (home != -1 && dHome_c::isValidRoom(room)) {
         dHome_c *h = dSaveData_c::getTown()->mHomes.getHome(home);
@@ -710,7 +710,7 @@ BOOL setRoomSong(u8 scene, dItem::Item item) {
 
 // 8013E424
 BOOL setCurrentRoomSong(dItem::Item item) {
-    return setRoomSong(getCurrentScene(), item);
+    return setRoomSong(dScene::getCurrentScene(), item);
 }
 
 // 8013E458
@@ -745,7 +745,7 @@ BOOL isSongInOtherRoom(u8 scene, const dItem::Item &item) {
 
 // 8013E598
 BOOL isSongInOtherCurrentRoom(const dItem::Item &item) {
-    return isSongInOtherRoom(getCurrentScene(), item);
+    return isSongInOtherRoom(dScene::getCurrentScene(), item);
 }
 
 // 8013E5D0

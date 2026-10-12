@@ -659,7 +659,7 @@ void calc() {
                         dWorld::toFieldPosition(&pos, &cross);
                         if (pos.z < 0.0f && cross.z < 0.0f) {
                             pos.z = 1.0f;
-                        } else if (isCurrentSceneAttr(9) && cross.z < 0.0f) {
+                        } else if (dScene::isCurrentSceneAttr(9) && cross.z < 0.0f) {
                             pos.z = 1.0f;
                         }
                         l_dpdPos.set(pos, FALSE);
@@ -705,7 +705,7 @@ void calc() {
             int unitX;
             int unitZ;
             dBGCF::posToUnit(&unitX, &unitZ, &player->mPos);
-            getCurrentScene();
+            dScene::getCurrentScene();
             for (int z = unitZ + 3; z >= unitZ - 3; z--) {
                 for (int x = unitX + 3; x >= unitX - 3; x--) {
                     f32 colRadius;
@@ -753,7 +753,7 @@ void calc() {
             }
         }
 
-        if (isCurrentSceneAttr(0x210) || getCurrentScene() == 0x33) {
+        if (dScene::isCurrentSceneAttr(0x210) || dScene::getCurrentScene() == 0x33) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     dItem::Item *item = field->getItem(x, z, 0);

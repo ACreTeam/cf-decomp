@@ -1143,7 +1143,7 @@ int daubMngSpecial_c::getIdx(const u16 *key) {
 
 // 800EF670: finds the placement whose key matches in layout `layout`.
 BOOL fn_800EF670(mVec3_c *pos, s16 *angle, const dItem::Item &key, u8 layout) {
-    dNpcLayout_c *data = (dNpcLayout_c *)getSceneData(layout);
+    dNpcLayout_c *data = (dNpcLayout_c *)dScene::getSceneData(layout);
     if (data != NULL) {
         int num = data->mNum;
         for (int i = 0; i < num; i++) {
@@ -2326,10 +2326,10 @@ dActor_c *getActorOnUnit(int x, int z) {
 
 // 800F1BE4: the furniture whose footprint covers unit (x, z).
 dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 kind) {
-    if (kind == SCENE_NUM) {
-        kind = getCurrentScene();
+    if (kind == dScene::SCENE_NUM) {
+        kind = dScene::getCurrentScene();
     }
-    if (!isSceneAttr(kind, SCENE_ATTR_ROOM)) {
+    if (!dScene::isSceneAttr(kind, dScene::SCENE_ATTR_ROOM)) {
         return dItem::Item();
     }
     if (map == NULL) {
@@ -2379,8 +2379,8 @@ BOOL canPutItemOnUnit(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 
     if (map == NULL) {
         map = fn_80190C44(0);
     }
-    if (kind == SCENE_NUM) {
-        kind = getCurrentScene();
+    if (kind == dScene::SCENE_NUM) {
+        kind = dScene::getCurrentScene();
     }
     if (map == NULL) {
         return result;
@@ -2399,7 +2399,7 @@ BOOL canPutItemOnUnit(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 
         if (cat >= 9 && cat <= 12) {
             isFtr = TRUE;
         }
-        if (isFtr && (isSceneAttr(kind, SCENE_ATTR_TOWN) || !cur->hasFtrFunc())) {
+        if (isFtr && (dScene::isSceneAttr(kind, dScene::SCENE_ATTR_TOWN) || !cur->hasFtrFunc())) {
             goto free;
         }
         if (cur->mId >= 0xE5) {
@@ -2427,7 +2427,7 @@ free:
         }
     }
     result = TRUE;
-    if (isSceneAttr(kind, SCENE_ATTR_ROOM)) {
+    if (dScene::isSceneAttr(kind, dScene::SCENE_ATTR_ROOM)) {
         dItem::Item ftr = fn_800F1BE4(NULL, NULL, x, z, NULL, 0x44);
         if (ftr.mId != dItem::ITEM_ID_NONE) {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(ftr);
@@ -2462,7 +2462,7 @@ BOOL fn_800F2138(mVec3_c *out, const mVec3_c *pos, u32 radius) {
         for (u32 z = cz - r; z <= maxZ; z++) {
             for (u32 x = cx - r; x <= maxX; x++) {
                 dItem::Item none;
-                if (canPutItemOnUnit(x, z, &none, map, SCENE_NUM, TRUE, TRUE) != FALSE) {
+                if (canPutItemOnUnit(x, z, &none, map, dScene::SCENE_NUM, TRUE, TRUE) != FALSE) {
                     f32 chance = 100.0f / (num + 1);
                     if (cM::rndF(100.0f) <= chance) {
                         bestX = x;
@@ -2625,7 +2625,7 @@ BOOL fn_800F2920(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c
     if (map == NULL) {
         return FALSE;
     }
-    u8 kind = getCurrentScene();
+    u8 kind = dScene::getCurrentScene();
     return fn_800F23C0(outX, outZ, map, kind, 0, map->mUnitW, 0, map->mUnitH, func, arg, exclude, dist);
 }
 
@@ -2939,11 +2939,11 @@ BOOL fn_800F3830(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclud
         mVec3_c rightHalf(out->x + 14.4f, out->y, out->z);
         mVec3_c right(out->x + 32.0f, out->y, out->z);
         dItem::Item none;
-        if (canPutItemAt(&left, &none, NULL, SCENE_NUM, TRUE, TRUE)) {
+        if (canPutItemAt(&left, &none, NULL, dScene::SCENE_NUM, TRUE, TRUE)) {
             *out = leftHalf;
             BOOL useRight = FALSE;
             dItem::Item none2;
-            if (canPutItemAt(&right, &none2, NULL, SCENE_NUM, TRUE, TRUE) && cM::rndInt(2) == 0) {
+            if (canPutItemAt(&right, &none2, NULL, dScene::SCENE_NUM, TRUE, TRUE) && cM::rndInt(2) == 0) {
                 useRight = TRUE;
             }
             if (useRight) {
@@ -2951,7 +2951,7 @@ BOOL fn_800F3830(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclud
             }
         } else {
             dItem::Item none2;
-            if (canPutItemAt(&right, &none2, NULL, SCENE_NUM, TRUE, TRUE)) {
+            if (canPutItemAt(&right, &none2, NULL, dScene::SCENE_NUM, TRUE, TRUE)) {
                 *out = rightHalf;
             } else if (!fn_80013550()) {
                 dItem::Item *l = map->getItem(x - 1, z, 0);
@@ -3402,7 +3402,7 @@ BOOL fn_800F4AB8(dAnimal_c **animals) {
 
 // 800F4C08: whether the villager `animal` is not standing on a blocked unit.
 BOOL fn_800F4C08(dAnimal_c *animal, int arg) {
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     const dAnmPersonalID_c *id = &animal->mID;

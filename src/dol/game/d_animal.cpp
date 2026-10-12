@@ -733,10 +733,10 @@ void dAnimalTalkCount_c::inc(u8 kind) {
     }
 
     if (mCountNoAttr5 < 5) {
-        if (kind == SCENE_NUM) {
-            kind = getCurrentScene();
+        if (kind == dScene::SCENE_NUM) {
+            kind = dScene::getCurrentScene();
         }
-        if (!isSceneAttr(kind, SCENE_ATTR_TOWN)) {
+        if (!dScene::isSceneAttr(kind, dScene::SCENE_ATTR_TOWN)) {
             mCountNoAttr5++;
         }
     }
@@ -744,10 +744,10 @@ void dAnimalTalkCount_c::inc(u8 kind) {
 
 // 8011C6E4
 u8 dAnimalTalkCount_c::get(u8 kind) {
-    if (kind == SCENE_NUM) {
-        kind = getCurrentScene();
+    if (kind == dScene::SCENE_NUM) {
+        kind = dScene::getCurrentScene();
     }
-    if (isSceneAttr(kind, SCENE_ATTR_TOWN)) {
+    if (dScene::isSceneAttr(kind, dScene::SCENE_ATTR_TOWN)) {
         return mCount;
     }
     return mCountNoAttr5;
@@ -5691,7 +5691,7 @@ BOOL dAnimal_c::wantsParasol() {
     int kind = wish->isValid() ? wish->mKind : 8;
     dWeather_c *p = dWeather_c::sInstance;
     if (kind == 3 && p != NULL) {
-        int mode = p->_5884;
+        int mode = p->mWeather;
         BOOL ok = (mode == 0 || mode == 1) ? TRUE : FALSE;
         if (ok && mID.getGender(1) == 1) {
             dTime_c *now = dTime_c::getCurrent();
@@ -6821,7 +6821,7 @@ BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
         return TRUE;
     }
 
-    if ((u8)getCurrentScene() != SCENE_DM_PL_SEL) {
+    if ((u8)dScene::getCurrentScene() != dScene::SCENE_DM_PL_SEL) {
         return FALSE;
     }
 
@@ -9130,7 +9130,7 @@ static inline int getTmplNpcIdx(const dAnimalTemplate_c *tmpl) {
 }
 
 static inline BOOL isPlayerSelectScene() {
-    return (u8)getCurrentScene() == SCENE_DM_PL_SEL;
+    return (u8)dScene::getCurrentScene() == dScene::SCENE_DM_PL_SEL;
 }
 
 // Flag word at dAnimalMemory_c+0x00 (declared there as u8[4]).
@@ -9591,7 +9591,7 @@ static inline BOOL isRequestDoneOngoing(dAnimal_c *animal, int kind, int want) {
 }
 
 static inline BOOL isWeatherIn(const dWeather_c *p, int want) {
-    return p->_5884 == want;
+    return p->mWeather == want;
 }
 
 static inline BOOL isItemDiff(const dItem::Item *a, const dItem::Item &b) {
@@ -9657,7 +9657,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
     dItem::Item net(dItem::ITEM_IDX_NET);
     dItem::Item rod(dItem::ITEM_IDX_FISHING_ROD);
 
-    if (!dNet::isSessionActive() && (u8)getPrevScene() == SCENE_DM_PL_SEL &&
+    if (!dNet::isSessionActive() && (u8)dScene::getPrevScene() == dScene::SCENE_DM_PL_SEL &&
         isBirthdayHost(&animal->mID, fn_801017B8(), TRUE, TRUE, TRUE) && special) {
         give = animal->getUmbrella();
         set = TRUE;
@@ -9977,7 +9977,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
     }
 
     s32 year = dTime_c::getCurrent()->year;
-    bool inScene = getCurrentScene() == SCENE_DM_PL_SEL;
+    bool inScene = dScene::getCurrentScene() == dScene::SCENE_DM_PL_SEL;
     if (player->isFlag0(0xD)) {
         player->mBirthdayHost.mLetterYear = year;
         return;
@@ -10063,7 +10063,7 @@ void dAnimalBlock_c::sendBirthdayHostPresent() {
         if (player != NULL) {
             dPersonalID_c *pid = getPlayerPID(player);
             if (pid->isValid()) {
-                if ((u8)getCurrentScene() == SCENE_DM_PL_SEL) {
+                if ((u8)dScene::getCurrentScene() == dScene::SCENE_DM_PL_SEL) {
                     if (isEventOngoing(playerNo + EVENT_PLAYER_BIRTHDAY_0)) {
                         s32 year = dTime_c::getCurrent()->year;
                         if (year == player->mBirthdayHost.mHostYear) {

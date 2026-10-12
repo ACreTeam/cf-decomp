@@ -1,4 +1,4 @@
-// The scene data of DM_PL_SEL (dSceneData_c sScDataDmPlSel; see include/game/game/d_sc_data.hpp).
+// The scene data of DM_PL_SEL (dScene::dSceneData_c sScDataDmPlSel; see include/game/game/d_sc_data.hpp).
 #include <game/game/d_sc_data.hpp>
 
 namespace dScData {
@@ -12,14 +12,14 @@ static ActorData_c l_actors[] = {
 };
 static u32 l_setting0[] ALIGN(8) = {0xFFEF63FF, 0x43800000, 0x42A00000, 0x43F50000, 0xE0000000, 0x3FA00000, 0x3AA3D70A, 0x3903126F, 0x41F00000, 0x00000002}; // scene setting kind 0xC
 static Scene3Entry_c l_scene3[] = {{5, &l_palette0}, {0xC, l_setting0}};
-static dSceneDataEntry_c l_entries[] = {
-    {SCENE_DATA_3, ARRAY_SIZE(l_scene3), l_scene3},
-    {SCENE_DATA_BASE, dScData::g_commonBaseNum, dScData::g_commonBase},
-    {SCENE_DATA_RES, dScData::g_commonResNum, dScData::g_commonRes},
-    {SCENE_DATA_BASE, dScData::g_roomBaseNum, dScData::g_roomBase},
-    {SCENE_DATA_RES, dScData::g_roomResNum, dScData::g_roomRes},
-    {SCENE_DATA_ACTOR, ARRAY_SIZE(l_actors), l_actors},
-    {SCENE_DATA_RES, ARRAY_SIZE(l_resources), l_resources},
+static dScene::dSceneDataEntry_c l_entries[] = {
+    {dScene::SCENE_DATA_3, ARRAY_SIZE(l_scene3), l_scene3},
+    {dScene::SCENE_DATA_BASE, dScData::g_commonBaseNum, dScData::g_commonBase},
+    {dScene::SCENE_DATA_RES, dScData::g_commonResNum, dScData::g_commonRes},
+    {dScene::SCENE_DATA_BASE, dScData::g_roomBaseNum, dScData::g_roomBase},
+    {dScene::SCENE_DATA_RES, dScData::g_roomResNum, dScData::g_roomRes},
+    {dScene::SCENE_DATA_ACTOR, ARRAY_SIZE(l_actors), l_actors},
+    {dScene::SCENE_DATA_RES, ARRAY_SIZE(l_resources), l_resources},
 };
 static ExitData_c l_exits[] = {
     {{0x46, 0x46, 0x46, 0x46}, {256.0f, 0.0f, 464.0f}, 0, 0, 0xB, 4, 0, 0},
@@ -28,9 +28,9 @@ static ExitData_c l_exits[] = {
     {{0x49, 0x49, 0x49, 0x49}, {256.0f, 0.0f, 464.0f}, 0, 0, 0xB, 4, 0, 0},
     {{0x4A, 0x4A, 0x4A, 0x4A}, {256.0f, 0.0f, 464.0f}, 0, 0, 0xB, 4, 0, 0},
 };
-static dSceneExitList_c l_exitList = {(dSceneExitData_c *)l_exits, ARRAY_SIZE(l_exits)};
+static dScene::dSceneExitList_c l_exitList = {(dScene::dSceneExitData_c *)l_exits, ARRAY_SIZE(l_exits)};
 static SceneData_c l_scene = {{ARRAY_SIZE(l_entries), l_entries, &l_exitList}, &l_exitInfo};
 
 } // namespace dScData
 
-dSceneData_c *sScDataDmPlSel = &dScData::l_scene.mData;
+dScene::dSceneData_c *sScDataDmPlSel = &dScData::l_scene.mData;

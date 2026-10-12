@@ -12,7 +12,7 @@
 #include <game/mLib/m_vec.hpp>
 #include <cstring>
 
-class dSceneChange_c;
+namespace dScene { class dSceneChange_c; }
 namespace dBGCF {
 struct unitDat_c;
 }
@@ -236,7 +236,7 @@ public:
 
     /* 0x74 */ u8 mRegion;   // getTownRegion when loaded
     /* 0x75 */ u8 mLang;     // getTownLanguage when loaded
-    /* 0x76 */ s8 mSeason;   // getSeasonType when loaded
+    /* 0x76 */ s8 mSeason;   // dScene::getSeasonType when loaded
     /* 0x77 */ bool mIsField; // loaded outside the city
     /* 0x78 */ u8 _78;
     /* 0x7C */ townTexBank_c mTownTex;
@@ -351,7 +351,7 @@ int getCurRegion();                               // 801697BC: getTownRegion, 0 
 int getCurLanguage();                             // 801697F4: getTownLanguage, 0 in a 9 scene
 void requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg4); // 8016982C
 
-dSceneChange_c *getSceneChange(); // 80166990: &gSceneChange (this TU's copy)
+dScene::dSceneChange_c *getSceneChange(); // 80166990: &dScene::gSceneChange (this TU's copy)
 hostIO_c *getHostIO();             // 80166A7C: the function-local hostIO_c
 busInfo_c *getBusInfo();           // 801699CC: the function-local busInfo_c
 

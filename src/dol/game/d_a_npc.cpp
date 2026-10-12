@@ -660,7 +660,7 @@ void dAcNpc_c::mdlCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anm
 
     if (mpNpc != NULL &&
         (mpNpc->mNpcItem.isSame(0x8011) || mpNpc->mNpcItem.isSame(0x8012)) &&
-        isCurrentSceneAttr(5)) {
+        dScene::isCurrentSceneAttr(5)) {
         if (nodeId == 1) {
             anmRes->GetRotTrans(&mtx);
             trans.x = data.translate.x;
@@ -1180,7 +1180,7 @@ void dAcNpc_c::saveDaub() {
     if (daub == NULL) {
         return;
     }
-    daub->_0C = getCurrentScene();
+    daub->_0C = dScene::getCurrentScene();
     dNpcDaub_c::packXZ((u8 *)daub, &mPos);
     daub->set08((const u16 *)&mAngle.y);
     if (!mLookAt.mReset) {
@@ -1458,12 +1458,12 @@ static inline const dItem::Item *ptrTo(const dItem::Item &item) {
 
 static inline bool isFreePos(const mVec3_c *pos, BOOL checkA) {
     dItem::Item item((u16)0xFFF1);
-    return canPutItemAt(pos, &item, NULL, SCENE_NUM, TRUE, checkA);
+    return canPutItemAt(pos, &item, NULL, dScene::SCENE_NUM, TRUE, checkA);
 }
 
 static inline bool isFreeUnit(int x, int z) {
     dItem::Item item((u16)0xFFF1);
-    return canPutItemOnUnit(x, z, &item, NULL, SCENE_NUM, TRUE, TRUE);
+    return canPutItemOnUnit(x, z, &item, NULL, dScene::SCENE_NUM, TRUE, TRUE);
 }
 
 BOOL dAcNpc_c::searchFreeSideAngle(mAng *pAngle, const mVec3_c *pCenter, BOOL twoPass) {
@@ -1597,7 +1597,7 @@ u32 dAcNpc_c::getFreeDirBitsToward(int tgtX, int tgtZ, int unitX, int unitZ) {
 
 BOOL dAcNpc_c::searchPosNear(mVec3_c *pPos, const mVec3_c *pCenter, f32 minDist, f32 maxDist) {
     mAng sideAng = 0;
-    BOOL attr = isCurrentSceneAttr(1);
+    BOOL attr = dScene::isCurrentSceneAttr(1);
     int end = !attr;
     if (!searchFreeSideAngle(&sideAng, pCenter, attr)) {
         return FALSE;
@@ -1632,7 +1632,7 @@ BOOL dAcNpc_c::searchPosNear(mVec3_c *pPos, const mVec3_c *pCenter, f32 minDist,
             if (std::fabs(pCenter->y - p.y) < 48.0f) {
                 dItem::Item item((u16)0xFFF1);
                 dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                if (canPutItemAt(&p, &item, NULL, SCENE_NUM, holeCheck, checkA)) {
+                if (canPutItemAt(&p, &item, NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
                     ok = true;
                 }
             }
@@ -1670,7 +1670,7 @@ BOOL dAcNpc_c::searchPosInCircle(mVec3_c *pPos, const mVec3_c *pBase, const mVec
         maxDist = tmp;
     }
 
-    BOOL attr = isCurrentSceneAttr(1);
+    BOOL attr = dScene::isCurrentSceneAttr(1);
     for (int pass = 1; pass >= !attr; pass--) {
         BOOL checkA = pass != 0;
         for (int i = 0; i < 9; i++) {
@@ -1698,7 +1698,7 @@ BOOL dAcNpc_c::searchPosInCircle(mVec3_c *pPos, const mVec3_c *pBase, const mVec
                 bool ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, SCENE_NUM, holeCheck, checkA)) {
+                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
                         ok = true;
                     }
                 }
@@ -1742,7 +1742,7 @@ BOOL dAcNpc_c::searchPosInRect(mVec3_c *pPos, const mVec3_c *pTarget, f32 x0, f3
         maxDist = tmp;
     }
 
-    BOOL attr = isCurrentSceneAttr(1);
+    BOOL attr = dScene::isCurrentSceneAttr(1);
     for (pass = 1; pass >= !attr; pass--) {
         checkA = pass != 0;
         for (i = 0; i < 9; i++) {
@@ -1768,7 +1768,7 @@ BOOL dAcNpc_c::searchPosInRect(mVec3_c *pPos, const mVec3_c *pTarget, f32 x0, f3
                 ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, SCENE_NUM, holeCheck, checkA)) {
+                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
                         ok = true;
                     }
                 }
@@ -6595,7 +6595,7 @@ void dAcNpc_c::action_c::createChangeEffect(const mVec3_c &pos, mAng angY) {
         "af_ply_change_nml", "af_ply_change_water00", "af_ply_change_water00", "af_ply_change_snow00",
         "af_ply_change_sand",
     };
-    if (isCurrentSceneAttr(1)) {
+    if (dScene::isCurrentSceneAttr(1)) {
         mAng3_c ang(0, (s16)angY, 0);
         // fn_801024F8 is declared with int parameters in d_player_mgr.hpp (DECISIONS: keep it, cast here).
         fn_801024F8(l_changeEffectName, &pos, (int)&ang, (int)"af_ply_change_water01",
@@ -8182,7 +8182,7 @@ void dAcNpc_c::frontChk_c::clear() {
 BOOL dAcNpc_c::frontChk_c::checkStep(const mVec3_c *pos, f32 prevY, f32 *outY) {
     BOOL hit = FALSE;
     f32 y;
-    if (isCurrentSceneAttr(0x10)) {
+    if (dScene::isCurrentSceneAttr(0x10)) {
         y = dBGCF::getGroundY(pos, FALSE);
         if (dBGCF::getOpenNext(pos) != -1) {
             hit = TRUE;
@@ -8448,7 +8448,7 @@ void dAcNpc_c::recept_c::execute() {
 }
 
 int dAcNpc_c::recept_c::getPlayerNo() const {
-    if (getCurrentScene() == 0x41) {
+    if (dScene::getCurrentScene() == 0x41) {
         return dSvMgr_c::mCurrentVisitor;
     }
     return dNet::getMyNo();

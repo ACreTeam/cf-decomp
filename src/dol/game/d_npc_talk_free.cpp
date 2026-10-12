@@ -61,7 +61,7 @@ BOOL dAcNpcNml_c::talk_c::isAprilFools() {
 // 80039BAC
 BOOL dAcNpcNml_c::talk_c::isWeatherTopic() {
     dTime_c *now = dTime_c::getCurrent();
-    BOOL clear = !fn_801C9C08(now);
+    BOOL clear = !dWeather::getPattern(now);
     if (clear && (now->hour >= 6 || now->hour < 4)) {
         return TRUE;
     }
@@ -925,7 +925,7 @@ int dAcNpcNml_c::talk_c::msgFreeWeather(msgInfo_s *info) {
     int code = 0;
     dTime_c *now = dTime_c::getCurrent();
     if (cM::rndF(100.0f) < 50.0f) {
-        BOOL clear = !fn_801C9C08(now);
+        BOOL clear = !dWeather::getPattern(now);
         if (clear) {
             int hour = now->hour;
             if (hour >= 6 && hour < 12) {
@@ -1036,7 +1036,7 @@ int dAcNpcNml_c::talk_c::msgFreeSpecialDay(msgInfo_s *info) {
         &talk_c::msgFreeMoonKOR, &talk_c::msgFreeMoonUSA, &talk_c::msgFreeMoonEUR,
     };
     int idx = getSpecialDay();
-    if (!isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         idx = 7;
     }
     if ((u32)idx < 7 && l_specialTopics[idx]) {
@@ -1586,8 +1586,8 @@ int dAcNpcNml_c::talk_c::msgFreePlace(msgInfo_s *info) {
         {BUILDING_SHOP, 0, 0}, {BUILDING_TAILOR, 0, 0}, {BUILDING_TOWN_HALL, 5, -5}, {BUILDING_MUSEUM, 5, -5},
         {BUILDING_BUS_STOP, 3, 0},
     };
-    u8 scene = getCurrentScene();
-    if (isSceneAttr(scene, SCENE_ATTR_VILLAGER_HOUSE)) {
+    u8 scene = dScene::getCurrentScene();
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         const char *label = getMsgLabel(TALK_FREE, FREE_GROUP_F, FREE_F_INSIDE);
         if (label != NULL) {
             setLooksMsg(info, label, 0);
@@ -1595,7 +1595,7 @@ int dAcNpcNml_c::talk_c::msgFreePlace(msgInfo_s *info) {
             return TRUE;
         }
     }
-    if (!isSceneAttr(scene, SCENE_ATTR_TOWN)) {
+    if (!dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
         return FALSE;
     }
     dAcNpc_c *npc = mpNpc;
@@ -1810,7 +1810,7 @@ BOOL dAcNpcNml_c::talk_c::isCountdownTopic() {
 
 // 8003E214
 BOOL dAcNpcNml_c::talk_c::isFmarketTopic() {
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) && isInTownEvent(EVENT_FLEA_MARKET)) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && isInTownEvent(EVENT_FLEA_MARKET)) {
         return TRUE;
     }
     return FALSE;
@@ -1901,7 +1901,7 @@ int dAcNpcNml_c::talk_c::msgFreeXmas(msgInfo_s *info) {
         if (dEvent::isOngoing(EVENT_TOY_DAY)) {
             code = 3;
         }
-        if (isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+        if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
             code++;
         }
         setLooksMsg(info, label, code);
@@ -1927,7 +1927,7 @@ int dAcNpcNml_c::talk_c::msgFreeHalloween(msgInfo_s *info) {
     const char *label = getMsgLabel(TALK_FREE, FREE_GROUP_H, FREE_H_HALLOWEEN);
     if (label != NULL) {
         int code = 1;
-        if (isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+        if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
             code = 2;
         }
         setLooksMsg(info, label, code);

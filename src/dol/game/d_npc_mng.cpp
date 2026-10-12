@@ -133,19 +133,19 @@ void dNpcMng_c::createStageHeap() {
     if (m_stageHeap_p != NULL) {
         return;
     }
-    u8 scene = getCurrentScene();
+    u8 scene = dScene::getCurrentScene();
     u32 size;
-    if (isSceneAttr(scene, SCENE_ATTR_TOWN)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
         size = dAcNpcNml_c::calcHeapSize(TRUE) * 5 + dAcNpcSp_c::calcHeapSize(TRUE) * 3;
         u32 mdlSize = dNpcMdlMng_c::getSpMdlSize();
         size += ROUND_UP(ROUND_UP(mdlSize, 32) + mHeap::frmHeapCost(0, 32), 32);
-    } else if (isSceneAttr(scene, SCENE_ATTR_CITY_FIELD)) {
+    } else if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_CITY_FIELD)) {
         size = dAcNpcTown_c::calcHeapSize(TRUE) * 5 + dAcNpcSp_c::calcHeapSize(TRUE) * 3;
         size += dHmnToolMng_c::getBankHeapSize();
-    } else if (scene == SCENE_RM_GRACE) {
+    } else if (scene == dScene::SCENE_RM_GRACE) {
         u32 guestNum = 1;
         size = dAcNpcTown_c::calcHeapSize(TRUE) * guestNum + dAcNpcSp_c::calcHeapSize(TRUE) * 4;
-    } else if (scene == SCENE_RM_THEATER_SHOW) {
+    } else if (scene == dScene::SCENE_RM_THEATER_SHOW) {
         size = dAcNpcTown_c::calcHeapSize(TRUE) * 2 + dAcNpcSp_c::calcHeapSize(TRUE) * 4;
     } else {
         size = dAcNpcNml_c::calcHeapSize(TRUE) * 2 + dAcNpcSp_c::calcHeapSize(TRUE) * 4;
@@ -450,7 +450,7 @@ void dNpcMng_c::updateHideAndSeek() {
 BOOL dNpcMng_c::createVillagers() {
     dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
     u32 num = 0;
-    u8 scene = getCurrentScene();
+    u8 scene = dScene::getCurrentScene();
     BOOL online = fn_800F5550();
     for (int i = 0; i < 10 && num < 5; i++) {
         dAnimal_c *animal = block->getAnimal(i);
@@ -521,7 +521,7 @@ BOOL dNpcMng_c::createVillagers() {
 }
 
 BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
-    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_VILLAGER_HOUSE)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return FALSE;
     }
     dFdBase_c *field = fn_80190C44(0);
@@ -585,13 +585,13 @@ BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
 }
 
 void dNpcMng_c::createHouseVillager() {
-    u8 scene = getCurrentScene();
-    if (!isSceneAttr(scene, SCENE_ATTR_VILLAGER_HOUSE)) {
+    u8 scene = dScene::getCurrentScene();
+    if (!dScene::isSceneAttr(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return;
     }
     dAnimalBlock_c *block;
     dQuestPlayerItem_c *appointment;
-    int idx = getSceneAttrIndex(scene, SCENE_ATTR_VILLAGER_HOUSE);
+    int idx = dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE);
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     dAnimal_c *animal = block->getAnimal(idx);
     if (animal == NULL) {
@@ -651,7 +651,7 @@ BOOL dNpcMng_c::createPlayerHouseGuest() {
     if (dNet::isSessionActive()) {
         return FALSE;
     }
-    BOOL fromTown = isSceneAttr(getPrevScene(), SCENE_ATTR_TOWN);
+    BOOL fromTown = dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_TOWN);
     dAnimalBlock_c *block = dSaveData_c::getAnimalBlock();
     int idx = block->pickFleaMarketAnimal(fromTown, NULL, NULL);
     dAnimal_c *animal = block->getAnimalConst(idx);
@@ -712,13 +712,13 @@ void dNpcMng_c::createPlayerHouseVisitor() {
 }
 
 BOOL dNpcMng_c::createAnimals() {
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         updateHideAndSeek();
         createVillagers();
-    } else if (isCurrentSceneAttr(SCENE_ATTR_VILLAGER_HOUSE)) {
+    } else if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         createHouseVillager();
-    } else if (isCurrentSceneAttr(SCENE_ATTR_PLAYER_HOUSE)) {
-        u8 scene = getCurrentScene();
+    } else if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_PLAYER_HOUSE)) {
+        u8 scene = dScene::getCurrentScene();
         int room = -1;
         u32 home = dHomeList_c::getHomeFromScene(&room, scene);
         if (home < 4 && room == 0) {
@@ -804,7 +804,7 @@ void dNpcMng_c::setPosHarvest(mVec3_c *pos, mAng3_c *angle, const dItem::Item *n
 }
 
 BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc, BOOL checkPut) {
-    u8 scene = getCurrentScene();
+    u8 scene = dScene::getCurrentScene();
     BOOL found = FALSE;
     const dNpcDaub_c *recv = fn_800EFE6C(&npc->mId);
     if (recv != NULL) {
@@ -852,15 +852,15 @@ BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc)
 }
 
 BOOL dNpcMng_c::isTownScene(u8 scene, u8 prevScene) {
-    if (isSceneAttr(scene, SCENE_ATTR_TOWN) && !isSceneAttr(scene, SCENE_ATTR_TOWN | SCENE_ATTR_DEMO) &&
-        !isSceneAttr(scene, SCENE_ATTR_TOWN | SCENE_ATTR_CHECK_FIELD)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN) && !dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN | dScene::SCENE_ATTR_DEMO) &&
+        !dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN | dScene::SCENE_ATTR_CHECK_FIELD)) {
         return TRUE;
     }
     return FALSE;
 }
 
 BOOL dNpcMng_c::isTownPlay(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, SCENE_NUM)) {
+    if (isTownScene(scene, dScene::SCENE_NUM)) {
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
         if (player != NULL && !player->isFlag0(0xD)) {
             return TRUE;
@@ -921,8 +921,8 @@ void dNpcMng_c::createSpecialNpcs() {
         num++;
     }
     if (num < 3) {
-        u8 prevScene = getPrevScene();
-        if (hasFountain(getCurrentScene(), prevScene)) {
+        u8 prevScene = dScene::getPrevScene();
+        if (hasFountain(dScene::getCurrentScene(), prevScene)) {
             mVec3_c pos = mVec3_c::Zero;
             mAng3_c angle = mAng3_c::Zero;
             dItem::Item npc((u16)0x804F);
@@ -1147,14 +1147,14 @@ BOOL dNpcMng_c::pickCitySpots(mVec3_c *pos, u32 num) {
 }
 
 void dNpcMng_c::setupCityAnimalItems() {
-    if (!isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD)) {
         return;
     }
     dMovedAnimalList_c *moved = &dSaveData_c::getTown()->mAnimals.mMoved;
     BOOL rain = FALSE;
     dWeather_c *weather = dWeather_c::sInstance;
     if (weather != NULL) {
-        BOOL raining = dWeather_c::isRainKind(weather->_5884);
+        BOOL raining = dWeather_c::isRainKind(weather->mWeather);
         if (raining) {
             rain = TRUE;
         }
@@ -1169,7 +1169,7 @@ void dNpcMng_c::setupCityAnimalItems() {
 }
 
 BOOL dNpcMng_c::createCityAnimals() {
-    if (!isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD)) {
         return FALSE;
     }
     dLandID_c *land;
@@ -1310,7 +1310,7 @@ BOOL dNpcMng_c::pickRoomSpots(mVec3_c *pos, u32 num) {
 }
 
 BOOL dNpcMng_c::createGraceGuest() {
-    if (getCurrentScene() != SCENE_RM_GRACE) {
+    if (dScene::getCurrentScene() != dScene::SCENE_RM_GRACE) {
         return FALSE;
     }
     if (sResetGraceSpots) {
@@ -1369,7 +1369,7 @@ BOOL dNpcMng_c::pickTheaterSpots(mVec3_c *pos, u32 num) {
 }
 
 BOOL dNpcMng_c::createTheaterGuests() {
-    if (getCurrentScene() != SCENE_RM_THEATER_SHOW) {
+    if (dScene::getCurrentScene() != dScene::SCENE_RM_THEATER_SHOW) {
         return FALSE;
     }
     mVec3_c *spot;
@@ -1395,7 +1395,7 @@ BOOL dNpcMng_c::createTheaterGuests() {
 }
 
 BOOL dNpcMng_c::createCafeGuest() {
-    if (getCurrentScene() != SCENE_RM_MM_CAFE) {
+    if (dScene::getCurrentScene() != dScene::SCENE_RM_MM_CAFE) {
         return FALSE;
     }
     dAnimalBlock_c *block = dSaveData_c::getAnimalBlock();
@@ -1423,7 +1423,7 @@ void dNpcMng_c::updateAnimalPlaces() {
     if (!fn_800F5550()) {
         return;
     }
-    if (getCurrentScene() != SCENE_FIELD) {
+    if (dScene::getCurrentScene() != dScene::SCENE_FIELD) {
         return;
     }
     BOOL toyDay;
@@ -1467,10 +1467,10 @@ void dNpcMng_c::updateAnimalPlaces() {
                 quest->mState = place;
             }
         } else if (i == stayIdx) {
-            u8 prevScene = getPrevScene();
-            u8 scene = getCurrentScene();
-            BOOL inHouse = i == getSceneAttrIndex(prevScene, SCENE_ATTR_VILLAGER_HOUSE) ||
-                           i == getSceneAttrIndex(scene, SCENE_ATTR_VILLAGER_HOUSE);
+            u8 prevScene = dScene::getPrevScene();
+            u8 scene = dScene::getCurrentScene();
+            BOOL inHouse = i == dScene::getSceneAttrIndex(prevScene, dScene::SCENE_ATTR_VILLAGER_HOUSE) ||
+                           i == dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE);
             if (!inHouse) {
                 switch (place) {
                     case 2:
@@ -1546,13 +1546,13 @@ void dNpcMng_c::applyHouseVillagerItems() {
     if (dEvent::isActive(EVENT_TOY_DAY)) {
         return;
     }
-    if (!isCurrentSceneAttr(SCENE_ATTR_VILLAGER_HOUSE)) {
+    if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return;
     }
-    if (!isSceneAttr(getPrevScene(), SCENE_ATTR_TOWN)) {
+    if (!dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_TOWN)) {
         return;
     }
-    int idx = getSceneAttrIndex(getCurrentScene(), SCENE_ATTR_VILLAGER_HOUSE);
+    int idx = dScene::getSceneAttrIndex(dScene::getCurrentScene(), dScene::SCENE_ATTR_VILLAGER_HOUSE);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal == NULL || !animal->mID.isValid()) {
         return;
@@ -1561,7 +1561,7 @@ void dNpcMng_c::applyHouseVillagerItems() {
 }
 
 int dNpcMng_c::preCreate() {
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) && m_halloweenModelHeap_p == NULL) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && m_halloweenModelHeap_p == NULL) {
         m_halloweenModelHeap_p = mHeap::createFrmHeap(
             ROUND_UP(dNpcMdlMng_c::getSpMdlSize(), 32), m_stageHeap_p,
             "dNpcMng_c::m_halloweenModelHeap_p : "
@@ -1586,15 +1586,15 @@ int dNpcMng_c::create() {
         file.Init();
         file.Bind(file);
     }
-    if (getCurrentScene() == SCENE_DM_TITLE) {
+    if (dScene::getCurrentScene() == dScene::SCENE_DM_TITLE) {
         _8074EACF = 0;
     }
     dSaveData_c::getTown()->mAnimals.mTown.updateQuestCandidates();
     updateAnimalPlaces();
-    u8 scene = getCurrentScene();
-    u8 prevScene = getPrevScene();
+    u8 scene = dScene::getCurrentScene();
+    u8 prevScene = dScene::getPrevScene();
     BOOL fromBus = FALSE;
-    if (prevScene == SCENE_DM_BUS_TO_TOWN && isSceneAttr(scene, SCENE_ATTR_CITY_FIELD)) {
+    if (prevScene == dScene::SCENE_DM_BUS_TO_TOWN && dScene::isSceneAttr(scene, dScene::SCENE_ATTR_CITY_FIELD)) {
         fromBus = TRUE;
     }
     if (fromBus) {
@@ -1630,12 +1630,12 @@ int dNpcMng_c::doDelete() {
 }
 
 int dNpcMng_c::execute() {
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) && mShowTelop) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && mShowTelop) {
         fn_801B66F4(4);
         mShowTelop = 0;
         sShowTelop = 0;
     }
-    if (isCurrentSceneAttr(SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
         dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
         dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
         BOOL flagD = player != NULL ? player->isFlag0(0xD) : FALSE;
@@ -1668,8 +1668,8 @@ int dNpcMng_c::draw() {
 }
 
 BOOL dNpcMng_c::createEventNpc() {
-    u8 scene = getCurrentScene();
-    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), scene, getPrevScene());
+    u8 scene = dScene::getCurrentScene();
+    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), scene, dScene::getPrevScene());
     if (spawn != NULL) {
         mVec3_c pos = mVec3_c::Zero;
         mAng3_c angle = mAng3_c::Zero;
@@ -1736,28 +1736,28 @@ BOOL dNpcMng_c::isVisitorBeforeTortimer(u8 scene, u8 prevScene) {
     if (findSpawn(l_visitorNpcs, idx, scene, prevScene) != NULL) {
         return TRUE;
     }
-    if (prevScene == SCENE_DM_PL_SEL && getPlayerBirthdayHostIdx() != -1) {
+    if (prevScene == dScene::SCENE_DM_PL_SEL && getPlayerBirthdayHostIdx() != -1) {
         return TRUE;
     }
     return FALSE;
 }
 
 BOOL dNpcMng_c::isPlayerSelectVisitor() {
-    if (getCurrentScene() != SCENE_DM_PL_SEL) {
+    if (dScene::getCurrentScene() != dScene::SCENE_DM_PL_SEL) {
         return FALSE;
     }
     if ((u32)getPlayerBirthdayHostIdx() < 10) {
         return TRUE;
     }
-    if (isHouseWarmingTime(SCENE_FIELD, SCENE_DM_PL_SEL)) {
+    if (isHouseWarmingTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
         return TRUE;
     }
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (player != NULL && player->getLastResetCount()) {
-        if (isResetVisitTime(SCENE_FIELD, SCENE_DM_PL_SEL)) {
+        if (isResetVisitTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
             return TRUE;
         }
-        if (isBirthdayVisitTime(SCENE_FIELD, SCENE_DM_PL_SEL)) {
+        if (isBirthdayVisitTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
             return TRUE;
         }
     }
@@ -1765,12 +1765,12 @@ BOOL dNpcMng_c::isPlayerSelectVisitor() {
 }
 
 BOOL dNpcMng_c::isHolidayNpcToday() {
-    return findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), SCENE_FIELD, SCENE_NUM) != NULL;
+    return findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM) != NULL;
 }
 
 BOOL dNpcMng_c::createHolidayNpc() {
-    u8 scene = getCurrentScene();
-    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), scene, getPrevScene());
+    u8 scene = dScene::getCurrentScene();
+    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), scene, dScene::getPrevScene());
     if (spawn != NULL) {
         mVec3_c pos = mVec3_c::Zero;
         mAng3_c angle = mAng3_c::Zero;
@@ -1872,7 +1872,7 @@ BOOL dNpcMng_c::isCatalogTime(u8 scene, u8 prevScene) {
         player != NULL &&
         ((!player->isFlag0(0x76) && player->mCatalog.isComplete(8) == 1) ||
          (!player->isFlag0(0x75) && player->mCatalog.isComplete(7) == 1)) &&
-        prevScene == SCENE_DM_PL_SEL && !_8074EACF) {
+        prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF) {
         return TRUE;
     }
     return FALSE;
@@ -1939,9 +1939,9 @@ BOOL dNpcMng_c::isFireworksTime(dQuestEvent_e event) {
 }
 
 BOOL dNpcMng_c::createVisitorNpc() {
-    u8 scene = getCurrentScene();
-    u8 prevScene = getPrevScene();
-    if (scene == SCENE_DM_TITLE) {
+    u8 scene = dScene::getCurrentScene();
+    u8 prevScene = dScene::getPrevScene();
+    if (scene == dScene::SCENE_DM_TITLE) {
         sResetVisited = 0;
         _8074EAD0 = 0;
     }
@@ -1968,10 +1968,10 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
     if (player->isFlag0(0xC)) {
         return FALSE;
     }
-    if (isTownScene(scene, SCENE_NUM)) {
+    if (isTownScene(scene, dScene::SCENE_NUM)) {
         dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
         dPrivateData_c *current;
-        if (homes->getHome(homes->findCurrentPlayer()) == NULL && isSceneAttr(prevScene, SCENE_ATTR_PLAYER_HOUSE) &&
+        if (homes->getHome(homes->findCurrentPlayer()) == NULL && dScene::isSceneAttr(prevScene, dScene::SCENE_ATTR_PLAYER_HOUSE) &&
             (current = dPlayerMgr_c::getCurrentPlayer()) != NULL && current->mPID.isFromTown()) {
             u32 home = dHomeList_c::getHomeFromScene(NULL, prevScene);
             if (home < 4) {
@@ -1987,7 +1987,7 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
 }
 
 void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
-    u32 home = dHomeList_c::getHomeFromScene(NULL, getPrevScene());
+    u32 home = dHomeList_c::getHomeFromScene(NULL, dScene::getPrevScene());
     if (home < 4) {
         int x = 0;
         int z = 0;
@@ -2003,7 +2003,7 @@ void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle, const dItem::Item 
 
 BOOL dNpcMng_c::isBirthdayVisitTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    if (isTownPlay(scene, SCENE_NUM) && prevScene == SCENE_DM_PL_SEL && !_8074EACF && player != NULL &&
+    if (isTownPlay(scene, dScene::SCENE_NUM) && prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF && player != NULL &&
         player->isFlag0(0x57) && getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
@@ -2033,7 +2033,7 @@ void dNpcMng_c::setPosPlayerHouseB(mVec3_c *pos, mAng3_c *angle, const dItem::It
 }
 
 BOOL dNpcMng_c::isLetterVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, SCENE_NUM) && dNpcInfo::resetsan_c::get()->getVisit() && prevScene == SCENE_DM_PL_SEL &&
+    if (isTownScene(scene, dScene::SCENE_NUM) && dNpcInfo::resetsan_c::get()->getVisit() && prevScene == dScene::SCENE_DM_PL_SEL &&
         getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
@@ -2103,7 +2103,7 @@ void dNpcMng_c::setPosRaccoSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item 
 }
 
 BOOL dNpcMng_c::isGuestVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, SCENE_NUM) && dPrivateData_c::isGuestVisitReady()) {
+    if (isTownScene(scene, dScene::SCENE_NUM) && dPrivateData_c::isGuestVisitReady()) {
         return TRUE;
     }
     return FALSE;
@@ -2114,7 +2114,7 @@ void dNpcMng_c::setPosGuestVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item
 }
 
 BOOL dNpcMng_c::isHostVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, SCENE_NUM) && dPrivateData_c::isHostVisitReady()) {
+    if (isTownScene(scene, dScene::SCENE_NUM) && dPrivateData_c::isHostVisitReady()) {
         return TRUE;
     }
     return FALSE;
@@ -2152,7 +2152,7 @@ BOOL dNpcMng_c::hasFountain(u8 scene, u8 prevScene) {
 }
 
 BOOL dNpcMng_c::isRelayDesignVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, SCENE_NUM) && dPrivateData_c::isRelayDesignVisitReady()) {
+    if (isTownScene(scene, dScene::SCENE_NUM) && dPrivateData_c::isRelayDesignVisitReady()) {
         return TRUE;
     }
     return FALSE;
@@ -2207,7 +2207,7 @@ void dNpcMng_c::setPosVisitor2(mVec3_c *pos, mAng3_c *angle, const dItem::Item *
 BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
     if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) &&
-        (sResetVisited == 1 || (prevScene == SCENE_DM_PL_SEL && !_8074EACF)) && player != NULL &&
+        (sResetVisited == 1 || (prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF)) && player != NULL &&
         !player->isFlag0(0x28) && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
         dSaveExtra_c *extra = dSaveData_c::getExtra();
         if (extra->mDistPattern.mVersion != player->mDistPatternVersion && getPlayerBirthdayHostIdx() == -1) {
@@ -2219,7 +2219,7 @@ BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
 }
 
 void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
-    if (getPrevScene() == SCENE_DM_PL_SEL) {
+    if (dScene::getPrevScene() == dScene::SCENE_DM_PL_SEL) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
             int x = 0;
@@ -2483,7 +2483,7 @@ BOOL dNpcMng_c::isVisitor4Time(dQuestEvent_e event) {
 
 void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
     *npc = dItem::Item();
-    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), SCENE_FIELD, SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         u16 id = spawn->mNpc;
         switch (id) {
@@ -2502,7 +2502,7 @@ void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
         }
     }
     if (npc->mId == dItem::ITEM_ID_NONE) {
-        const Spawn_c *visitor = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), SCENE_FIELD, SCENE_NUM);
+        const Spawn_c *visitor = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
         BOOL here = FALSE;
         if (visitor != NULL) {
             if (isVisitorNpcHere(dItem::Item(visitor->mNpc))) {
@@ -2525,7 +2525,7 @@ BOOL dNpcMng_c::isEventNpcHere(const dItem::Item &npc) {
     if ((npc.mId >> 12 & 0xF) != 8) {
         return FALSE;
     }
-    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), SCENE_FIELD, SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         if (npc.isSame(dItem::Item(spawn->mNpc))) {
             if (spawn->mIsHere == NULL || spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
@@ -2540,7 +2540,7 @@ BOOL dNpcMng_c::isHolidayNpcHere(const dItem::Item &npc) {
     if ((npc.mId >> 12 & 0xF) != 8 && npc.mId != dItem::ITEM_ID_NONE) {
         return FALSE;
     }
-    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), SCENE_FIELD, SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         if (npc.mId != dItem::ITEM_ID_NONE || spawn->mNpc == 0x8043 || spawn->mNpc == 0x8060) {
             dItem::Item spawnNpc(spawn->mNpc);
@@ -2561,7 +2561,7 @@ BOOL dNpcMng_c::isVisitorNpcHere(const dItem::Item &npc) {
     if ((npc.mId >> 12 & 0xF) != 8) {
         return FALSE;
     }
-    const Spawn_c *spawn = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), SCENE_FIELD, SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         if (npc.isSame(dItem::Item(spawn->mNpc))) {
             if (spawn->mIsHere == NULL || spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
@@ -2598,12 +2598,12 @@ BOOL dNpcMng_c::isWeekVisitDay() {
 
 BOOL dNpcMng_c::isWeekVisitWeek() {
     dTime_c now = *dTime_c::getCurrent();
-    int kind = fn_801C9CAC(&now);
+    int kind = dWeather::getCityPattern(&now);
     if (!((kind >= 0 && kind <= 6) || (kind >= 7 && kind <= 8) || (kind >= 16 && kind <= 18) ||
           (kind >= 19 && kind <= 21) || (kind >= 22 && kind <= 25))) {
         return FALSE;
     }
-    return (u32)(fn_801C9D9C(&now) - 3) > 3;
+    return (u32)(dWeather::getCityWeather(&now) - 3) > 3;
 }
 
 const dNpcMng_c::Spawn_c dNpcMng_c::l_eventNpcs[7] = {

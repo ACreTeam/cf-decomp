@@ -198,7 +198,7 @@ void holdMail(dMail_c *mail) {
 
 // 80102C60
 void update() {
-    if (!isSceneAttr(getCurrentScene(), 0x20) && (!dNet::isSessionActive() || dNet::getMemberNum() <= 1)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), 0x20) && (!dNet::isSessionActive() || dNet::getMemberNum() <= 1)) {
         if (dPostBox_c::get()->checkDelivery(TRUE)) {
             deliverAll();
         }

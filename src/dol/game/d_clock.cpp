@@ -92,7 +92,7 @@ int dClock_c::create() {
     mTimerAnm.setToEnd();
     mTimerLyt.setAnm(&mTimerPtrnAnm, "timer_00_timerPtrn.brlan", NULL);
     mClockState = STATE_HIDDEN;
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
         resetTimer();
     } else if (isHideAndSeekHost()) {
         startHideAndSeek();
@@ -289,7 +289,7 @@ void dClock_c::updateTimer() {
 
 // 8018C4FC
 BOOL dClock_c::canShow() {
-    if (isSceneAttr(getCurrentScene(), SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (dDemo::isType(dDemo::TYPE_ANY) && !dDemo::isType(dDemo::TYPE_UITAG) &&

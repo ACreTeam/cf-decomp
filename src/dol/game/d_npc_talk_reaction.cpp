@@ -77,7 +77,7 @@ int dAcNpcNml_c::talk_c::msgReMoveout(msgInfo_s *info) {
 
 // 8005E740
 int dAcNpcNml_c::talk_c::msgReCafe(msgInfo_s *info) {
-    if (getCurrentScene() == SCENE_RM_MM_CAFE) {
+    if (dScene::getCurrentScene() == dScene::SCENE_RM_MM_CAFE) {
         if (info == NULL) {
             return TRUE;
         }
@@ -614,7 +614,7 @@ int dAcNpcNml_c::talk_c::msgRePoison(msgInfo_s *info) {
     dNpcEntry_c *entry = getEntry();
     BOOL ok = entry != NULL ? !entry->_28C.mPoisonDone : FALSE;
     dItem::Item item;
-    if (ok && !isCurrentSceneAttr(SCENE_ATTR_TOWN)) {
+    if (ok && !dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         ok = FALSE;
     }
     if (ok && isReactionBlocked()) {

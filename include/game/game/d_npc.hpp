@@ -350,7 +350,7 @@ public:
 
 } // namespace dNpc
 
-// A scene's actor placements (getSceneData; dSceneActorData_c in d_scene.hpp), as used by fn_800EF670.
+// A scene's actor placements (dScene::getSceneData; dScene::dSceneActorData_c in d_scene.hpp), as used by fn_800EF670.
 struct dNpcLayoutEntry_c {
     /* 0x00 */ u8 _00[4];
     /* 0x04 */ mVec3_c mPos;

@@ -20,10 +20,10 @@ namespace dBgm {
 class Mgr_c;
 
 // ---------------------------------------------------------------------------------------------
-// Stages: one per scene type (the low byte of getSceneParamC(scene) picks it).
+// Stages: one per scene type (the low byte of dScene::getSceneParamC(scene) picks it).
 // ---------------------------------------------------------------------------------------------
 
-// The stage numbers (the low byte of getSceneParamC; Mgr_c::startStage's table order).
+// The stage numbers (the low byte of dScene::getSceneParamC; Mgr_c::startStage's table order).
 enum Stage_e {
     STAGE_NON,
     STAGE_FIELD,
@@ -92,7 +92,7 @@ public:
     static Stage_e getStage(u32 param) { return (Stage_e)(param & 0xFF); }
     static u32 getType(u32 param) { return (param >> 16) & 0xF; }
 
-    /* 0x04 */ u32 mParam; // getSceneParamC: stage (bits 0..7), bits 8..9, type (bits 16..19)
+    /* 0x04 */ u32 mParam; // dScene::getSceneParamC: stage (bits 0..7), bits 8..9, type (bits 16..19)
 }; // size 0x8
 
 class StgNon_c : public StgBase_c {

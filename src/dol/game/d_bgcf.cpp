@@ -1229,7 +1229,7 @@ BOOL wallList_c::correct(mVec3_c *pos, const mVec3_c &old, f32 r, acch_c *acch, 
     done = sWallDone;
     for (wall_c *wall = mWalls; wall < end; wr++, done++, wall++) {
         if (*done == 0 && *wr != 0.0f) {
-            getCurrentScene();
+            dScene::getCurrentScene();
             if (wall->correctCross(&p, o, *wr)) {
                 type = wall->getType();
                 if (type != WALL_TYPE_COLUMN) {
@@ -1250,7 +1250,7 @@ BOOL wallList_c::correct(mVec3_c *pos, const mVec3_c &old, f32 r, acch_c *acch, 
     wr = sWallR;
     for (wall_c *wall = mWalls; wall < end; wr++, done++, wall++) {
         if (*done == 0 && *wr != 0.0f) {
-            getCurrentScene();
+            dScene::getCurrentScene();
             if (wall->correctCross(&p, o, *wr)) {
                 type = wall->getType();
                 if (type != WALL_TYPE_COLUMN) {
@@ -2674,7 +2674,7 @@ BOOL getMapColors(u8 *out, int unitX, int unitZ) {
 // 80073510
 f32 getUnitY(const mVec3_c *pos) {
     int cur = l_mgr.mCurrent;
-    if (cur == 1 && isCurrentSceneAttr(5)) {
+    if (cur == 1 && dScene::isCurrentSceneAttr(5)) {
         setCurrentBg(0);
     }
     int unitX, unitZ;

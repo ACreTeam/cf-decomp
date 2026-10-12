@@ -40,6 +40,6 @@ int dRoot_c::draw() {
 dRoot_c::~dRoot_c() {}
 
 // 801B97A8
-dSceneChange_c *dRoot_c::getSceneChange() {
-    return &gSceneChange;
+dScene::dSceneChange_c *dRoot_c::getSceneChange() {
+    return &dScene::gSceneChange;
 }

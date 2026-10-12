@@ -24,8 +24,8 @@
 
 
 // 80166990
-dSceneChange_c *dSTR::getSceneChange() {
-    return &gSceneChange;
+dScene::dSceneChange_c *dSTR::getSceneChange() {
+    return &dScene::gSceneChange;
 }
 
 namespace dSTR {
@@ -203,10 +203,10 @@ void strFlag_c::set(const char *name) {
 // 80166CA4
 BOOL townTexBank_c::load(void *heap) {
     char path[0x32];
-    isSceneAttr(getCurrentScene(), SCENE_ATTR_CITY_FIELD);
+    dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_CITY_FIELD);
     int region = dSTR::getTownRegion();
     int lang = dSTR::getTownLanguage();
-    s8 season = getSeasonType();
+    s8 season = dScene::getSeasonType();
     snprintf(path, sizeof(path), "/Str/Brres/%s%sTownTex%c.brres", l_regionName[region], l_langName[lang],
              season);
     return bank_c::load(path, heap, 0);
@@ -272,11 +272,11 @@ static const char *l_fieldName[] = {"field", "town"};
 // 80166EA0
 BOOL brresBank_c::load(void *heap) {
     char path[0x32];
-    BOOL city = isSceneAttr(getCurrentScene(), SCENE_ATTR_CITY_FIELD);
+    BOOL city = dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_CITY_FIELD);
     const char *field = l_fieldName[city];
     int region = dSTR::getCurRegion();
     int lang = dSTR::getCurLanguage();
-    s8 season = getSeasonType();
+    s8 season = dScene::getSeasonType();
     BOOL needTex = FALSE;
     if (mpData == NULL && city) {
         needTex = TRUE;
@@ -324,7 +324,7 @@ BOOL brresBank_c::unload() {
 // 80167094
 void brresBank_c::onLoaded() {
     arcBank_c::onLoaded();
-    isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD);
+    dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD);
     for (u32 i = 0; i < STR_NUM; i++) {
         nw4r::g3d::ResFile res(getBrres(getName(i)));
         if (res.IsValid()) {
@@ -990,16 +990,16 @@ int dSTR::getCurBuilding(int *unitX, int *unitZ) {
     if (unitZ != NULL) {
         *unitZ = 0;
     }
-    u8 scene = getCurrentScene();
-    if (!isSceneAttr(scene, 0x10) && !isSceneAttr(scene, 0x20) && !getSceneChange()->mUseDefaultPos) {
+    u8 scene = dScene::getCurrentScene();
+    if (!dScene::isSceneAttr(scene, 0x10) && !dScene::isSceneAttr(scene, 0x20) && !getSceneChange()->mUseDefaultPos) {
         if (getSceneChange()->mType != 0xB) {
             return -1;
         }
         getSceneChange();
-        dSceneExit_c *exit = &gSceneBuildingExit;
+        dScene::dSceneExit_c *exit = &dScene::gSceneBuildingExit;
         int x = exit->mBlockX;
         int z = exit->mBlockZ;
-        BOOL city = isSceneAttr(scene, 9);
+        BOOL city = dScene::isSceneAttr(scene, 9);
         dSaveBuildingList_c *list = dSaveBuildingList_c::get();
         const dItem::Item item = list->getAt(x, z, city ? BUILDING_FIELD_CITY : BUILDING_FIELD_TOWN);
         if (item.isExtId() && exit->mType == 0xB) {
@@ -1179,7 +1179,7 @@ BOOL dSTR::isAlone() {
 // 80168FDC
 u8 dSTR::getVisitors(u8 scene) {
     if (!dNet::isSessionActive() || dNet::isHost()) {
-        int id = getSceneBuilding(scene);
+        int id = dScene::getSceneBuilding(scene);
         if (dItem::Item((u16)id).isExtId()) {
             dItem::Item item((u16)id);
             return l_lock[getSlotIdx(&item)].mMembers;
@@ -1191,7 +1191,7 @@ u8 dSTR::getVisitors(u8 scene) {
 // 80169070
 u32 dSTR::countVisitors(u8 scene) {
     u32 num = countMembers(getVisitors(scene));
-    if (isSceneAttr(scene, 0x450) && isPartyFlag()) {
+    if (dScene::isSceneAttr(scene, 0x450) && isPartyFlag()) {
         return num + 1;
     }
     return num;
@@ -1199,8 +1199,8 @@ u32 dSTR::countVisitors(u8 scene) {
 
 // 801690DC
 u32 dSTR::countCurVisitors() {
-    if (isCurrentSceneAttr(0x10)) {
-        return countVisitors(getCurrentScene());
+    if (dScene::isCurrentSceneAttr(0x10)) {
+        return countVisitors(dScene::getCurrentScene());
     }
     return 0;
 }
@@ -1371,7 +1371,7 @@ int dSTR::getTownLanguage() {
 
 // 801697BC
 int dSTR::getCurRegion() {
-    if (isCurrentSceneAttr(9)) {
+    if (dScene::isCurrentSceneAttr(9)) {
         return 0;
     }
     return getTownRegion();
@@ -1379,7 +1379,7 @@ int dSTR::getCurRegion() {
 
 // 801697F4
 int dSTR::getCurLanguage() {
-    if (isCurrentSceneAttr(9)) {
+    if (dScene::isCurrentSceneAttr(9)) {
         return 0;
     }
     return getTownLanguage();
@@ -1411,7 +1411,7 @@ void dSTR::requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg
             wipeOut = 1;
             wipeIn = 1;
         }
-        getSceneChange()->request(SCENE_FIELD, &pos, 8, 0, wipeIn, wipeOut);
+        getSceneChange()->request(dScene::SCENE_FIELD, &pos, 8, 0, wipeIn, wipeOut);
     } else {
         dItem::Item item = BUILDING_CITY_BUS_STOP;
         dSaveBuildingList_c::get()->getPos(&x, &z, &item, 2);
@@ -1663,7 +1663,7 @@ mVec3_c *getCityReturnPos() {
 
 // 8016A2F8
 BOOL isAtFountainFront(const mVec3_c &pos, const s16 &angle, mVec3_c *front, mVec3_c *base, BOOL draw) {
-    if (getCurrentScene() == SCENE_FIELD) {
+    if (dScene::getCurrentScene() == dScene::SCENE_FIELD) {
         int x, z;
         if (getBuildingPos(&x, &z, BUILDING_FOUNTAIN)) {
             mVec3_c unitPos;
@@ -1699,20 +1699,20 @@ BOOL isAtFountainFront(const mVec3_c &pos, const s16 &angle, mVec3_c *front, mVe
 // 8016A548
 void playRoomSe() {
     int se = -1;
-    switch (getCurrentScene()) {
-    case SCENE_RM_HS0_F1:
-    case SCENE_RM_HS1_F1:
-    case SCENE_RM_HS2_F1:
-    case SCENE_RM_HS3_F1:
+    switch (dScene::getCurrentScene()) {
+    case dScene::SCENE_RM_HS0_F1:
+    case dScene::SCENE_RM_HS1_F1:
+    case dScene::SCENE_RM_HS2_F1:
+    case dScene::SCENE_RM_HS3_F1:
         se = 0;
         break;
-    case SCENE_RM_SHOP0:
+    case dScene::SCENE_RM_SHOP0:
         se = 1;
         break;
-    case SCENE_RM_OFFICE:
+    case dScene::SCENE_RM_OFFICE:
         se = 2;
         break;
-    case SCENE_RM_TAILOR:
+    case dScene::SCENE_RM_TAILOR:
         se = 3;
         break;
     }
@@ -1724,7 +1724,7 @@ void playRoomSe() {
 
 // 8016A614
 BOOL getBusStopBox(mVec3_c *min, mVec3_c *max) {
-    if (getCurrentScene() == SCENE_FIELD) {
+    if (dScene::getCurrentScene() == dScene::SCENE_FIELD) {
         int x, z;
         if (getBuildingPos(&x, &z, BUILDING_BUS_STOP)) {
             mVec3_c pos;
@@ -1783,7 +1783,7 @@ int getCurBuildingKind(u8 *other) {
         other = &dummy;
     }
     *other = FALSE;
-    dItem::Item building(getSceneBuilding(getCurrentScene()));
+    dItem::Item building(dScene::getSceneBuilding(dScene::getCurrentScene()));
     if (building.isExtId()) {
         int idx = building.getExtIndex();
         const dBuildingInfo_c *info = dSTR::getBuildingInfo(idx);

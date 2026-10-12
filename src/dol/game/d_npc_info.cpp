@@ -1543,7 +1543,7 @@ BOOL totakeke_c::isOnStage() {
     if (fn_800FBC48(4) == NULL) {
         return FALSE;
     }
-    if (fn_800FD664() && getCurrentScene() == SCENE_RM_MM_CAFE && fn_800FBC48(4)->z >= 352.0f) {
+    if (fn_800FD664() && dScene::getCurrentScene() == dScene::SCENE_RM_MM_CAFE && fn_800FBC48(4)->z >= 352.0f) {
         return TRUE;
     }
     return FALSE;

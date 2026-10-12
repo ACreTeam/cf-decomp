@@ -118,8 +118,8 @@ void SoundSystem::calc() {
     mConductorKK.calc();
     mConductor.calc();
     mAmbient.calc();
-    if (SoundManager::getInstance()->_778 == SCENE_FIELD ||
-        SoundManager::getInstance()->_778 == SCENE_DM_TITLE) {
+    if (SoundManager::getInstance()->_778 == dScene::SCENE_FIELD ||
+        SoundManager::getInstance()->_778 == dScene::SCENE_DM_TITLE) {
         calcRiverSound();
     }
     if (mPendingMusicId != 0) {
@@ -148,7 +148,7 @@ void SoundSystem::calc() {
             SoundManager::getInstance()->setObjectVolume(1.0f, 120);
         }
     } else if (mState == STATE_WAIT_TITLE_END) {
-        if (SoundManager::getInstance()->_778 != SCENE_DM_TITLE) {
+        if (SoundManager::getInstance()->_778 != dScene::SCENE_DM_TITLE) {
             mState = STATE_READY;
         }
     } else {
@@ -290,25 +290,25 @@ void SoundSystem::startMusic(u32 id, int tickOffset) {
         if (id == BGM_MUSEUM) {
             int weather = TRACK_INIT_MUSEUM_ENTRANCE;
             switch (SoundManager::getInstance()->_778) {
-            case SCENE_RM_MM_ENT:
+            case dScene::SCENE_RM_MM_ENT:
                 break;
-            case SCENE_RM_MM_FISH:
+            case dScene::SCENE_RM_MM_FISH:
                 weather = TRACK_INIT_MUSEUM_FISH;
                 break;
-            case SCENE_RM_MM_INS:
+            case dScene::SCENE_RM_MM_INS:
                 weather = TRACK_INIT_MUSEUM_INSECTS;
                 break;
-            case SCENE_RM_MM_FOSSIL0:
-            case SCENE_RM_MM_FOSSIL1:
+            case dScene::SCENE_RM_MM_FOSSIL0:
+            case dScene::SCENE_RM_MM_FOSSIL1:
                 weather = TRACK_INIT_MUSEUM_FOSSILS;
                 break;
-            case SCENE_RM_MM_PIC0:
-            case SCENE_RM_MM_PIC1:
+            case dScene::SCENE_RM_MM_PIC0:
+            case dScene::SCENE_RM_MM_PIC1:
                 weather = TRACK_INIT_MUSEUM_ART;
                 break;
-            case SCENE_RM_MM_CAFE:
+            case dScene::SCENE_RM_MM_CAFE:
                 break;
-            case SCENE_RM_MM_ASTRO:
+            case dScene::SCENE_RM_MM_ASTRO:
                 weather = TRACK_INIT_MUSEUM_OBSERVATORY;
                 break;
             }
@@ -599,7 +599,7 @@ void SoundSystem::calcTrackFade() {
         } else if (mTrackFader.mFrames > 0) {
             u16 fadeIn = mFadeInTracks;
             u16 fadeOut = mFadeOutTracks;
-            if (stage == SCENE_TOWN) {
+            if (stage == dScene::SCENE_TOWN) {
                 fadeIn &= 0x7FFF;
                 fadeOut &= 0x7FFF;
             }
@@ -901,7 +901,7 @@ void SoundSystem::setIndoorRain(f32 blend) {
         u32 weather = 7;
         if (dWeather_c::sInstance != NULL) {
             rain = dWeather_c::sInstance->mRainLevel;
-            weather = dWeather_c::sInstance->_5884;
+            weather = dWeather_c::sInstance->mWeather;
         }
         if ((u32)(weather - 3) <= 1 && rain > 0.0f) {
             SoundManager *manager = SoundManager::getInstance();
@@ -960,16 +960,16 @@ void SoundSystem::fadeOutMuseum() {
     int stage = SoundManager::getInstance()->_778;
     u16 tracks = 0;
     switch (stage) {
-    case SCENE_RM_MM_ENT:
+    case dScene::SCENE_RM_MM_ENT:
         tracks = 0x84;
         break;
-    case SCENE_RM_MM_PIC0:
+    case dScene::SCENE_RM_MM_PIC0:
         tracks = 0x18;
         break;
-    case SCENE_RM_MM_FOSSIL0:
+    case dScene::SCENE_RM_MM_FOSSIL0:
         tracks = 0x1800;
         break;
-    case SCENE_RM_MM_ASTRO:
+    case dScene::SCENE_RM_MM_ASTRO:
         tracks = 0x700;
         break;
     }
@@ -987,16 +987,16 @@ void SoundSystem::fadeInMuseum() {
     int stage = SoundManager::getInstance()->_778;
     u16 tracks = 0;
     switch (stage) {
-    case SCENE_RM_MM_ENT:
+    case dScene::SCENE_RM_MM_ENT:
         tracks = 0x84;
         break;
-    case SCENE_RM_MM_PIC0:
+    case dScene::SCENE_RM_MM_PIC0:
         tracks = 0x18;
         break;
-    case SCENE_RM_MM_FOSSIL0:
+    case dScene::SCENE_RM_MM_FOSSIL0:
         tracks = 0x1800;
         break;
-    case SCENE_RM_MM_ASTRO:
+    case dScene::SCENE_RM_MM_ASTRO:
         tracks = 0x700;
         break;
     }

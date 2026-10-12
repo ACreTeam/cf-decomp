@@ -18,7 +18,7 @@ void SoundAmbient::calc() {
     dWeather_c *weather = dWeather_c::sInstance;
     f32 rain = 0.0f;
     if (weather != NULL) {
-        mWeather = weather->_5884;
+        mWeather = weather->mWeather;
         rain = weather->mRainLevel;
     }
     calcSea();

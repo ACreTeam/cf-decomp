@@ -89,7 +89,7 @@ void dMoney_c::stateShown() {
 void dMoney_c::stateHidden() {
     l_flags &= ~FLAG_SHOW;
     if (isShow()) {
-        if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_FACILITY)) {
+        if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY)) {
             resetMoney();
         }
         l_flags |= FLAG_SHOW;
@@ -109,7 +109,7 @@ BOOL dMoney_c::isShow() {
     if (l_flags & FLAG_FORCE_SHOW) {
         return TRUE;
     }
-    if (!isSceneAttr(getCurrentScene(), SCENE_ATTR_FACILITY)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY)) {
         return FALSE;
     }
     if (dDemo::isType(dDemo::TYPE_ANY) && dDemo::isTalking()) {
@@ -164,7 +164,7 @@ void dMoney_c::updateMoney() {
         }
         setNumber();
     } else if (money != mDispMoney) {
-        if (isSceneAttr(getCurrentScene(), SCENE_ATTR_FACILITY) || (l_flags & FLAG_FORCE_SHOW)) {
+        if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY) || (l_flags & FLAG_FORCE_SHOW)) {
             if (fn_8019A5E4()) {
                 int diff;
                 if (money > mDispMoney) {

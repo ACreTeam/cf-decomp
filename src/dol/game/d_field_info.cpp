@@ -637,7 +637,7 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
                 *attr = BG_ATTR_WOOD;
                 return TRUE;
             }
-        } else if (getCurrentScene() == SCENE_TOWN) {
+        } else if (dScene::getCurrentScene() == dScene::SCENE_TOWN) {
             fg = dSaveBuildingList_c::get()->getAt(x, z, 2);
             if (fg.isExtId()) {
                 const dBuildingInfo_c *info = dSTR::getBuildingInfo(fg.getExtIndex());

@@ -245,7 +245,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyItem(int kind) {
             fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_6, 2);
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
-            if (!dNet::isSessionActive() && isCurrentSceneAttr(SCENE_ATTR_TOWN) && animal != NULL) {
+            if (!dNet::isSessionActive() && dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && animal != NULL) {
                 animal->setQuestStarted();
             }
             u8 minute = calcHeldItemChangeMinute((u8)dTime_c::getCurrent()->min, FALSE);
