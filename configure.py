@@ -756,6 +756,7 @@ config.libs = [
             Object(Matching, "dol/game/d_net.cpp"),
             Object(Matching, "dol/game/d_net_mgr.cpp"),
             Object(Matching, "dol/game/d_nickname.cpp"),
+            Object(Matching, "dol/game/d_npc_info.cpp"),
             Object(Matching, "dol/game/d_notice.cpp"),
             Object(NonMatching, "dol/game/d_npc_notice.cpp"),
             Object(NonMatching, "dol/game/d_npc.cpp"),

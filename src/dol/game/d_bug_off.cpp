@@ -249,10 +249,10 @@ void dBugOff_c::setup() {
             dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
             if (player->mPID.isValid()) {
                 player->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
-                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_0);
-                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_1);
-                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_2);
-                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALK_3);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_JOINED);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD);
+                player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_JUDGED);
             }
         }
         mCursor.set(mStart.getTicks());

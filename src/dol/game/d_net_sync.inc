@@ -1164,7 +1164,7 @@ void recvNpcSpotAFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 // 800E00C4: NET_PACKET_NPC_SPOT_A (0x4C)
 void recvNpcSpotA(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800F6098(fn_800F5C88());
+    dNpcInfo::jingle_c::get()->move();
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
     mVec3_c pos;
@@ -1195,7 +1195,7 @@ void recvHarvestSpotFlag(int member, const u8 *data, u32 size, u32 arg,
 
 // 800E01D0: NET_PACKET_HARVEST_SPOT (0x50)
 void recvHarvestSpot(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800F6634(fn_800F6514());
+    dNpcInfo::franklin_c::get()->relocate();
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
     mVec3_c pos;
@@ -1207,43 +1207,43 @@ void recvHarvestSpot(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 // 800E023C: NET_PACKET_NPC_EVENT_START (0x45)
 void recvNpcEventStart(int member, const u8 *data, u32 size, u32 arg,
                        u8 scene) {
-    fn_800F8700(fn_800F800C(), 1);
-    dNpcInfoNet_c *info = fn_800F800C();
-    info->_03 = 0;
+    dNpcInfo::totakeke_c::get()->setPlaying(TRUE);
+    dNpcInfo::totakeke_c *info = dNpcInfo::totakeke_c::get();
+    info->mIsRequester = 0;
 }
 
 // 800E0270: NET_PACKET_NPC_EVENT_DATA (0x46)
 void recvNpcEventData(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[0x28];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800F87B8(fn_800F800C(), buf);
+    dNpcInfo::totakeke_c::get()->fromPacket((const dNpcInfo::totakekePacket_c *)buf);
 }
 
-// 800E02A4: NET_PACKET_NPC_EVENT_COUNT (0x47)
-void recvNpcEventCount(int member, const u8 *data, u32 size, u32 arg,
+// 800E02A4: NET_PACKET_NPC_EVENT_JOIN (0x47)
+void recvNpcEventJoin(int member, const u8 *data, u32 size, u32 arg,
                        u8 scene) {
-    fn_800F800C()->_08++;
-    dNpcInfoNet_c *info = fn_800F800C();
-    info->_02 = 1;
+    dNpcInfo::totakeke_c::get()->mAudienceNum++;
+    dNpcInfo::totakeke_c *info = dNpcInfo::totakeke_c::get();
+    info->mHadAudience = 1;
 }
 
-// 800E02DC: NET_PACKET_NPC_EVENT_FLAG (0x48)
-void recvNpcEventFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    dNpcInfoNet_c *info = fn_800F800C();
-    info->_3A = 1;
+// 800E02DC: NET_PACKET_NPC_EVENT_PLAY (0x48)
+void recvNpcEventPlay(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
+    dNpcInfo::totakeke_c *info = dNpcInfo::totakeke_c::get();
+    info->mPlayReq = 1;
 }
 
 // 800E0304: NET_PACKET_NPC_EVENT_END (0x49)
 void recvNpcEventEnd(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800F8700(fn_800F800C(), 0);
-    dNpcInfoNet_c *info = fn_800F800C();
-    info->_3B = 0;
+    dNpcInfo::totakeke_c::get()->setPlaying(FALSE);
+    dNpcInfo::totakeke_c *info = dNpcInfo::totakeke_c::get();
+    info->mPerforming = 0;
 }
 
-// 800E0338: NET_PACKET_NPC_EVENT_COUNT2 (0x4A)
-void recvNpcEventCount2(int member, const u8 *data, u32 size, u32 arg,
+// 800E0338: NET_PACKET_NPC_EVENT_LEAVE (0x4A)
+void recvNpcEventLeave(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
-    fn_800F800C()->_09++;
+    dNpcInfo::totakeke_c::get()->mAudienceDoneNum++;
 }
 
 // 800E0364: NET_PACKET_FISHING_RECORD (0x43)
@@ -2165,10 +2165,10 @@ const dNetDataFunc lbl_80473E44[NET_PACKET_NUM] = {
     recvBugOff,
     recvNpcEventStart,
     recvNpcEventData,
-    recvNpcEventCount,
-    recvNpcEventFlag,
+    recvNpcEventJoin,
+    recvNpcEventPlay,
     recvNpcEventEnd,
-    recvNpcEventCount2,
+    recvNpcEventLeave,
     recvNpcSpotAFlag,
     recvNpcSpotA,
     recvNpcSpotBFlag,
@@ -2955,8 +2955,8 @@ int sendClose0(int, void *, int, int) {
 int sendClosePairRing(int, void *, int, int value) {
     if (dSaveData_c::getTown()->mNpcSpotA.mFlag &&
         value == dSaveData_c::getTown()->mNpcSpotA.mKind) {
-        fn_800F6098(fn_800F5C88());
-        fn_800F60E4(fn_800F5C88());
+        dNpcInfo::jingle_c::get()->move();
+        dNpcInfo::jingle_c::get()->setSpot();
     }
     return -1;
 }

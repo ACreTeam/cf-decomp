@@ -13,7 +13,7 @@ namespace dSvNpcPos {
 // A spot with an npc kind (5 bytes).
 struct KindPos_c {
     void init();                                // 80150524: kind 0x44, unset
-    void set(u8 kind, const mVec3_c *pos);      // 80150544
+    void set(int kind, const mVec3_c *pos);      // 80150544
     void update(u8 kind, const mVec3_c *pos);   // 80150594: kind and position only (d_a_npc_sp_jingle)
     mVec3_c getPos() const;                     // 801505D4: the unit's center
 
@@ -27,7 +27,7 @@ struct KindPos_c {
 // A spot (4 bytes).
 struct Pos_c {
     void clear();                               // 801505E4
-    void set(u8 unitX, u8 unitZ);               // 801505FC
+    void set(int unitX, int unitZ);               // 801505FC
     mVec3_c getPos() const;                     // 80150618: the unit's center
 
     /* 0x0 */ u8 mUnitX;

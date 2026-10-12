@@ -8,6 +8,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_item.hpp>
+#include <game/game/d_npc_info.hpp>
 #include <game/game/d_hmn_cloth_mng.hpp>
 #include <game/game/d_hmn_head_item_mng.hpp>
 #include <game/game/d_hmn_tool_mng.hpp>
@@ -34,7 +35,6 @@ u32 fn_8019AFE4();
 void fn_801B910C(int idx, int part, u16 item);
 void fn_801B8898(int idx, int part, u16 item);
 void fn_801B8FD8(int idx, int type);
-u8 *fn_800F5BA8();
 BOOL fn_802C4404(dMiiCreateID_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dMiiData_c *out, int a, int b, u16 mii);
@@ -832,11 +832,11 @@ BOOL fn_800FD17C() {
         }
         break;
     case 0xA:
-        if (*fn_800F5BA8() != 0) {
+        if (dNpcInfo::tanukichi_c::get()->mJobDone != 0) {
             if (fn_80101A74(0x84, 4)) {
                 player->_22DD = 1;
                 fn_80100410(player);
-                *fn_800F5BA8() = 0;
+                dNpcInfo::tanukichi_c::get()->mJobDone = 0;
                 player->_2270 |= 0x200000;
                 return TRUE;
             }

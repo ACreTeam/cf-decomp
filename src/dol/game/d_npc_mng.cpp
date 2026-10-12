@@ -2033,7 +2033,7 @@ void dNpcMng_c::setPosPlayerHouseB(mVec3_c *pos, mAng3_c *angle, const dItem::It
 }
 
 BOOL dNpcMng_c::isLetterVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, SCENE_NUM) && fn_800F7D54(fn_800F7D2C()) && prevScene == SCENE_DM_PL_SEL &&
+    if (isTownScene(scene, SCENE_NUM) && dNpcInfo::resetsan_c::get()->getVisit() && prevScene == SCENE_DM_PL_SEL &&
         getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
@@ -2070,7 +2070,7 @@ BOOL dNpcMng_c::isLetterVisitFirstTime(u8 scene, u8 prevScene) {
 }
 
 BOOL dNpcMng_c::isLetterVisitKind1(u8 scene, u8 prevScene) {
-    if (isLetterVisitTime(scene, prevScene) && fn_800F7D54(fn_800F7D2C()) == 1) {
+    if (isLetterVisitTime(scene, prevScene) && dNpcInfo::resetsan_c::get()->getVisit() == 1) {
         return TRUE;
     }
     return FALSE;

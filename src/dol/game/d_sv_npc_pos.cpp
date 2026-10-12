@@ -15,7 +15,7 @@ void KindPos_c::init() {
 }
 
 // 80150544
-void KindPos_c::set(u8 kind, const mVec3_c *pos) {
+void KindPos_c::set(int kind, const mVec3_c *pos) {
     f32 x = pos->x;
     f32 z = pos->z;
     mUnitX = (int)x >> 5;
@@ -50,7 +50,7 @@ void Pos_c::clear() {
 }
 
 // 801505FC
-void Pos_c::set(u8 unitX, u8 unitZ) {
+void Pos_c::set(int unitX, int unitZ) {
     mUnitX = unitX;
     mUnitZ = unitZ;
     mFlag = 0;

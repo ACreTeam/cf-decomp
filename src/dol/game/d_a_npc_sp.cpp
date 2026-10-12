@@ -92,7 +92,7 @@ int dAcNpcSp_c::getEarType() {
 
 // 80061B34
 int dAcNpcSp_c::getVoiceType() const {
-    return fn_800F8914(&mNpcItem);
+    return dNpcInfo::getSpVoice(&mNpcItem);
 }
 
 // 80061B3C
@@ -200,7 +200,7 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
 
 // 800620A4
 int dAcNpcSp_c::getSoundId() {
-    return fn_800F88E0(&mNpcItem);
+    return dNpcInfo::getSpSound(&mNpcItem);
 }
 
 // 800620AC
@@ -445,7 +445,7 @@ void dAcNpcSp_c::initWander() {
 
 // 80062B40
 BOOL dAcNpcSp_c::isWanderWalk() {
-    return cM::rndInt(100) < fn_800F59EC();
+    return cM::rndInt(100) < dNpcInfo::getWalkChance();
 }
 
 // 80062B88
@@ -573,12 +573,12 @@ void dAcNpcSp_c::executeRemoteWander(wanderDaub_s *daub) {
 
 // 800630CC
 int dAcNpcSp_c::getWanderWaitBase() {
-    return fn_800F59FC();
+    return dNpcInfo::getWaitBase();
 }
 
 // 800630D0
 int dAcNpcSp_c::getWanderWaitRand() {
-    return fn_800F5A0C();
+    return dNpcInfo::getWaitRand();
 }
 
 // 800630D4

@@ -25,6 +25,7 @@
 #include <game/game/d_item.hpp>
 #include <game/game/d_museum.hpp>
 #include <game/game/d_npc.hpp>
+#include <game/game/d_npc_info.hpp>
 #include <game/game/d_npc_notice.hpp>
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -75,7 +76,6 @@ static const u8 sAround5[5] = {
 extern "C" {
 void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
-void fn_800F5AE8();
 void fn_80186838();
 void fn_800D16E8();
 int fn_801017B8();
@@ -3987,7 +3987,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->clearFlag(3);
         dSaveData_c::getTown()->clearFlag(0xF);
         dSaveData_c::getTown()->clearFlag(0x10);
-        fn_800F5AE8();
+        dNpcInfo::reset();
         dSaveData_c::getTown()->clearFlag(0x14);
         dSaveData_c::getTown()->clearFlag(4);
         dSaveData_c::getTown()->clearFlag(5);

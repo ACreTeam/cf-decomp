@@ -218,7 +218,7 @@ BOOL dAcNpcNml_c::talk_c::trickPockets() {
 
 // 8004478C
 BOOL dAcNpcNml_c::talk_c::isMatchingOutfit(const dItem::Item *hat, const dItem::Item *shirt, const dItem::Item *acc) {
-    if (fn_800F8948(hat, shirt) || fn_800F8948(acc, shirt)) {
+    if (dNpcInfo::isSameFashion(hat, shirt) || dNpcInfo::isSameFashion(acc, shirt)) {
         return TRUE;
     }
     return FALSE;

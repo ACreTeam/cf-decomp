@@ -764,7 +764,7 @@ public:
         static BOOL filterTrickItem(const dItem::Item *item, int arg); // 800445DC pocket filter for countPocketsFlag: a valid, purchasable item
         static int countTrickPockets(u16 *slotMask, dPrivateData_c *player); // 80044640 count pockets matching filterTrickItem
         BOOL trickPockets();                        // 800446C4 trick: replace a random matching pocket item with a jack-in-the-box (this unused)
-        static BOOL isMatchingOutfit(const dItem::Item *hat, const dItem::Item *shirt, const dItem::Item *acc); // 8004478C hat or accessory has the shirt's fashion theme (fn_800F8948)
+        static BOOL isMatchingOutfit(const dItem::Item *hat, const dItem::Item *shirt, const dItem::Item *acc); // 8004478C hat or accessory has the shirt's fashion theme (dNpcInfo::isSameFashion)
         static BOOL isInCostume(const dEquip_c *equip); // 800447EC isMatchingOutfit(&mHat, &mShirt, &mAcc): wearing a costume
         void trickClothes();                        // 80044800 trick: pumpkin head, or a moldy / patched shirt (trickPockets when in costume or neither fits), requestEquip
         void resCandyTrick();                       // 80044A00 128: trickClothes()

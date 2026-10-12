@@ -28,6 +28,7 @@
 // the Flag1 functions on mFlags1). Shared by many systems; most indices are still literals, named here as
 // their meanings are found.
 enum dPrivateFlag0_e {
+    PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
@@ -40,13 +41,13 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
 };
 enum dPrivateFlag1_e {
-    PRIVATE_FLAG1_FISHING_TALK_0 = 0x11, // 0x11..0x13: fishing tourney talk flags, cleared by its setup
-    PRIVATE_FLAG1_FISHING_TALK_1 = 0x12,
-    PRIVATE_FLAG1_FISHING_TALK_2 = 0x13,
-    PRIVATE_FLAG1_BUG_OFF_TALK_0 = 0x35, // 0x35..0x38: Bug-Off talk flags, cleared by its setup
-    PRIVATE_FLAG1_BUG_OFF_TALK_1 = 0x36,
-    PRIVATE_FLAG1_BUG_OFF_TALK_2 = 0x37,
-    PRIVATE_FLAG1_BUG_OFF_TALK_3 = 0x38,
+    PRIVATE_FLAG1_FISHING_JOINED = 0x11, // 0x11..0x13: dNpcInfo::uomasa_c
+    PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
+    PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
+    PRIVATE_FLAG1_BUG_OFF_JOINED = 0x35, // 0x35..0x38: dNpcInfo::bug_c
+    PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START = 0x36,
+    PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,
+    PRIVATE_FLAG1_BUG_OFF_JUDGED = 0x38,
 };
 #define PRIVATE_SAVINGS_MAX 999999999
 #define PRIVATE_BELLS_MAX 99999
@@ -208,31 +209,31 @@ public:
     };
 };
 
-// 0x24 at dPrivateData_c+0x55CE (mItemPairRing): a ring of the last 8 item pairs, with state bits used by
-// d_npc_info and d_field_assessment (their meanings aren't recovered).
+// 0x24 at dPrivateData_c+0x55CE: Jingle's Toy Day state (dNpcInfo::jingle_c), the last 8 looks (hat and
+// accessory) he gave a present to.
 class dItemPairRing_c {
 public:
-    void clear(); // 8013C054
-    void begin(); // 8013C0C0
-    void push(const dItem::Item *a, const dItem::Item *b); // 8013C0D0
-    void incCount(); // 8013C1A0
-    BOOL contains(const dItem::Item *a, const dItem::Item *b); // 8013C1C0
-    void end(); // 8013C25C
-    void resetState(); // 8013C27C
+    void clear();                                    // 8013C054
+    void meet();                                     // 8013C0C0
+    void push(dItem::Item hat, dItem::Item acc);     // 8013C0D0
+    void incCount();                                 // 8013C1A0
+    BOOL contains(dItem::Item hat, dItem::Item acc); // 8013C1C0
+    void move();                                     // 8013C25C
+    void resetEncounter();                           // 8013C27C
 
-    /* 0x00 */ dItem::Item mA[8];
-    /* 0x10 */ dItem::Item mB[8];
+    /* 0x00 */ dItem::Item mHats[8];
+    /* 0x10 */ dItem::Item mAccs[8];
     /* 0x20 */ s8 mIndex;
     /* 0x21 */ u8 mCount : 2;
-    u8 _21_5 : 1;
-    u8 _21_4 : 1;
-    u8 _21_3 : 1;
-    u8 _21_2 : 1;
-    u8 _21_1 : 1;
-    u8 _21_0 : 1;
-    /* 0x22 */ u8 _22_7 : 1;
-    u8 _22_6 : 1;
-    u8 _22_5 : 1;
+    u8 mMet : 1;
+    u8 mGiven : 1;
+    u8 mMoved : 1;
+    u8 mTalked : 1;
+    u8 mGivenHere : 1;
+    u8 mRefusedNewLook : 1;
+    /* 0x22 */ u8 mFirstGift : 1;
+    u8 mFirstGiftDone : 1;
+    u8 mGreetedNewLook : 1;
     u8 _22_4 : 1;
     u8 _22_0 : 4;
 };
@@ -549,7 +550,7 @@ public:
     /* 0x83BE */ dYMD_c _83BE;
     /* 0x83C2 */ dYMD_c _83C2;
     /* 0x83C6 */ dYMD_c mWc24LetterDate; // the day WC24 letters were last sent (d_wifi isLetterDayOver)
-    /* 0x83CA */ dItem::Item _83CA;
+    /* 0x83CA */ dItem::Item mSonchoPresent;
     /* 0x83CC */ u16 mBunnyEggs[13]; // Bunny Day egg counts (12 kinds + the fake egg)
     /* 0x83E6 */ dBirthday_c mBirthday;
     /* 0x83E8 */ u8 _83E8;

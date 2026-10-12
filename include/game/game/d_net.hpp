@@ -235,30 +235,24 @@ enum dNetPacket_e {
     // uomasa REL (Chip): fishing tourney record dSaveTown_c::mFishing
     NET_PACKET_FISHING_RECORD = 0x43,
     NET_PACKET_BUG_OFF = 0x44, // bug REL (Nat): dSaveTown_c::mBugOff
-    // d_npc_info fn_800F81B8: dNpcInfoNet_c on (fn_800F8700(1), _03 = 0);
-    // hedged
+    // 0x45..0x4A: K.K.'s concert (dNpcInfo::totakeke_c)
     NET_PACKET_NPC_EVENT_START = 0x45,
-    // d_npc_info fn_800F8554: 0x28 bytes (fn_800F87B8)
     NET_PACKET_NPC_EVENT_DATA = 0x46,
-    // totakeke REL (K.K.): dNpcInfoNet_c _08++, _02 = 1
-    NET_PACKET_NPC_EVENT_COUNT = 0x47,
-    // totakeke REL (K.K.): dNpcInfoNet_c _3A = 1
-    NET_PACKET_NPC_EVENT_FLAG = 0x48,
-    // d_npc_info fn_800F85DC: dNpcInfoNet_c off (fn_800F8700(0), _3B = 0)
+    NET_PACKET_NPC_EVENT_JOIN = 0x47,
+    NET_PACKET_NPC_EVENT_PLAY = 0x48,
     NET_PACKET_NPC_EVENT_END = 0x49,
-    // d_npc_info fn_800F85DC: dNpcInfoNet_c _09++
-    NET_PACKET_NPC_EVENT_COUNT2 = 0x4A,
+    NET_PACKET_NPC_EVENT_LEAVE = 0x4A,
     // dItemPairRing_c::push: dSaveTown_c::mNpcSpotA.mFlag = 1
     NET_PACKET_NPC_SPOT_A_FLAG = 0x4B,
-    // d_npc_info fn_800F60E4: dSaveTown_c::mNpcSpotA (dSvNpcPos::KindPos_c::set)
+    // dNpcInfo::jingle_c::setSpot: dSaveTown_c::mNpcSpotA (dSvNpcPos::KindPos_c::set)
     NET_PACKET_NPC_SPOT_A = 0x4C,
     // pumpking REL (Jack): dSaveTown_c::mNpcSpotB.mFlag = 1
     NET_PACKET_NPC_SPOT_B_FLAG = 0x4D,
-    // d_npc_info fn_800F71CC: dSaveTown_c::mNpcSpotB (dSvNpcPos::Pos_c::set)
+    // dNpcInfo::pumpking_c::setSpot: dSaveTown_c::mNpcSpotB (dSvNpcPos::Pos_c::set)
     NET_PACKET_NPC_SPOT_B = 0x4E,
     // franklin REL: dSaveTown_c::mHarvestSpot.mFlags |= SIDE_POS_FLAG_EVENT
     NET_PACKET_HARVEST_SPOT_FLAG = 0x4F,
-    // d_npc_info fn_800F66AC: the Harvest Festival spot mHarvestSpot (dSvNpcPos::SidePos_c::set)
+    // dNpcInfo::franklin_c::setSpot: the Harvest Festival spot mHarvestSpot (dSvNpcPos::SidePos_c::set)
     NET_PACKET_HARVEST_SPOT = 0x50,
     // d_sv_daily_rand dSvDailyRand::Rand_c::change: dSaveTown_c::mDailyRand
     NET_PACKET_DAILY_RAND = 0x51,
