@@ -931,6 +931,7 @@ config.libs = [
         "cflags": cflags_game,
         "progress_category": "game",
         "objects": [
+            Object(Matching, "dol/sound/SoundTv.cpp"),
             Object(Matching, "dol/sound/SoundObj.cpp"),
             Object(Matching, "dol/sound/SoundAudioFrameCallback.cpp"),
         ],

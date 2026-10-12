@@ -46,6 +46,20 @@ public:
         }
     }
 
+    bool ReadVariable(int idx, s16* pValue) const {
+        if (IsAttachedSound()) {
+            return mSound->ReadVariable(idx, pValue);
+        }
+
+        return false;
+    }
+
+    void SetTrackMute(u32 trackFlags, bool mute) {
+        if (IsAttachedSound()) {
+            mSound->SetTrackMute(trackFlags, mute);
+        }
+    }
+
     void WriteVariable(int idx, s16 value) {
         if (IsAttachedSound()) {
             mSound->WriteVariable(idx, value);

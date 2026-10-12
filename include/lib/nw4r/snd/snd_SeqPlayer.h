@@ -4,6 +4,7 @@
 
 #include <nw4r/snd/snd_BasicPlayer.h>
 #include <nw4r/snd/snd_DisposeCallback.h>
+#include <nw4r/snd/snd_SeqTrack.h>
 #include <nw4r/snd/snd_SoundThread.h>
 
 #include <nw4r/ut.h>
@@ -106,6 +107,8 @@ public:
     void SetChannelPriority(int priority);
     void SetReleasePriorityFix(bool flag);
 
+    void SetTrackMute(u32 trackFlags, SeqMute mute); // CF 8026656C
+    s16 GetLocalVariable(int idx) const; // CF 80266524
     void SetLocalVariable(int idx, s16 value);
     static void SetGlobalVariable(int idx, s16 value);
 

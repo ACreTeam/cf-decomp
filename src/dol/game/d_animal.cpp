@@ -3666,14 +3666,6 @@ struct dAnimalCatalogFilter_c {
     /* 0x8 */ int _8;
 };
 
-static inline int getBITMFossil(const dItem::BITM *bitm) {
-    int fossil = 0;
-    if ((u32)bitm->m_fossil < 0x1C) {
-        fossil = bitm->m_fossil;
-    }
-    return fossil;
-}
-
 static inline int getBITMStyle(const dItem::BITM *bitm) {
     return bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_UNSET;
 }
@@ -4283,6 +4275,10 @@ u32 dAnimal_c::pickRequestItem(dItem::Item *item, u8 *arg, int kind) {
     return ret;
 }
 
+static inline dHomeList_c *getTownHomes(dSaveTown_c *town) {
+    return &town->mHomes;
+}
+
 // 8012528C
 u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_c *player, int mode, const dItem::Item *exclude) {
     if (item == NULL || price == NULL) {
@@ -4333,7 +4329,7 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
-        int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
+        int owner = getTownHomes(dSaveData_c::getTown())->findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
@@ -4406,7 +4402,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
         if (bitm == NULL || bitm->getKind() != 0xB) {
             break;
         }
-        int fossil = getBITMFossil(bitm);
+        int fossil = bitm->getFossil();
         if (fossil == 0 || fossil >= 0x1C) {
             break;
         }
@@ -4439,7 +4435,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
-        int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
+        int owner = getTownHomes(dSaveData_c::getTown())->findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
@@ -4549,7 +4545,7 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
         f32 r = cM::rndF(100.0f);
-        int owner = dSaveData_c::getTown()->mHomes.findOwner(player);
+        int owner = getTownHomes(dSaveData_c::getTown())->findOwner(player);
         if (r < 30.0f && (u32)owner < 4) {
             int rate = *dHR::getRate(owner);
             int room = player->getMoneyRoom(0);
@@ -6649,25 +6645,26 @@ void dAnimalBlock_c::decideOutdoorAnimals(BOOL flag) {
 
     clearIdxList(order, ANIMAL_NUM);
 
-    {
-        int i;
-        int questIdx;
-        dAnimal_c *animal;
-        animal = getAnimal(0);
-        questIdx = mAppointment.mAnimalIdx;
-        for (i = 0; i < ANIMAL_NUM; i++, animal++) {
-            int state = animal->getDayPlace(0, i == questIdx, 1);
-            if (state == 0) {
-                u32 pos = findIdxInList(i, mOutdoorQueue, ANIMAL_NUM);
-                if (pos < ANIMAL_NUM) {
-                    mOutdoorQueue[pos] = -1;
-                }
-                if (limit != 0) {
-                    limit--;
-                }
+    int i;
+    int questIdx;
+    dAnimal_c *dayAnimal;
+    int dayIdx;
+    int queueIdx;
+    dAnimal_c *animal;
+    animal = getAnimal(0);
+    questIdx = mAppointment.mAnimalIdx;
+    for (i = 0; i < ANIMAL_NUM; i++, animal++) {
+        int state = animal->getDayPlace(0, i == questIdx, 1);
+        if (state == 0) {
+            u32 pos = findIdxInList(i, mOutdoorQueue, ANIMAL_NUM);
+            if (pos < ANIMAL_NUM) {
+                mOutdoorQueue[pos] = -1;
             }
-            animal->mDayPlace = state;
+            if (limit != 0) {
+                limit--;
+            }
         }
+        animal->mDayPlace = state;
     }
 
     unk = &mHomeStay;
@@ -6695,26 +6692,27 @@ void dAnimalBlock_c::decideOutdoorAnimals(BOOL flag) {
     }
 
     dAnimal_c *animals = getAnimal(0);
-    for (int i = 0; i < ANIMAL_NUM; i++) {
-        dAnimal_c *animal = getAnimal(mOutdoorQueue[i]);
+    for (queueIdx = 0; queueIdx < ANIMAL_NUM; queueIdx++) {
+        dAnimal_c *animal = getAnimal(mOutdoorQueue[queueIdx]);
         if (animal != NULL && animal->mID.isValid()) {
             if (moved < limit && animal->mDayPlace >= 3) {
                 animal->mDayPlace = 0;
                 moved++;
-                mOutdoorQueue[i] = -1;
+                mOutdoorQueue[queueIdx] = -1;
             }
         } else {
-            mOutdoorQueue[i] = -1;
+            mOutdoorQueue[queueIdx] = -1;
         }
     }
 
+
     if (moved < limit) {
-        int i;
-        dAnimal_c *animal = getAnimal(0);
-        for (i = 0; i < ANIMAL_NUM; i++, animal++) {
-            if (animal != NULL && animal->mID.isValid() && animal->mDayPlace >= 3) {
+
+        dayAnimal = getAnimal(0);
+        for (dayIdx = 0; dayIdx < ANIMAL_NUM; dayIdx++, dayAnimal++) {
+            if (dayAnimal != NULL && dayAnimal->mID.isValid() && dayAnimal->mDayPlace >= 3) {
                 moved++;
-                animal->mDayPlace = 0;
+                dayAnimal->mDayPlace = 0;
                 if (moved >= limit) {
                     break;
                 }
@@ -6750,15 +6748,13 @@ void dAnimalBlock_c::decideOutdoorAnimals(BOOL flag) {
         }
     }
 
-    {
-        int i;
-        dAnimal_c *animal = getAnimal(0);
-        for (i = 0; i < ANIMAL_NUM; i++, animal++) {
-            if (animal->mID.isValid() && animal->mDayPlace >= 3) {
-                animal->mDayPlace = 1;
-            }
+    dayAnimal = getAnimal(0);
+    for (dayIdx = 0; dayIdx < ANIMAL_NUM; dayIdx++, dayAnimal++) {
+        if (dayAnimal->mID.isValid() && dayAnimal->mDayPlace >= 3) {
+            dayAnimal->mDayPlace = 1;
         }
     }
+
 
     u32 num = 0;
     s8 *out = order;
@@ -6801,6 +6797,7 @@ void dAnimalBlock_c::decideOutdoorAnimals(BOOL flag) {
             }
         }
     }
+
 
     memcpy(mOutdoorQueue, order, sizeof(order));
 }

@@ -76,6 +76,8 @@ public:
     bool holdSound(nw4r::snd::SoundHandle *handle, u32 id);  // 801CF8D8
     bool startSound(nw4r::snd::SoundHandle *handle, u32 id,
                     const nw4r::snd::SoundStartable::StartInfo *startInfo); // 801CF990
+    bool isGroupReady(u32 groupId); // 801CFB88: SoundArchivePlayer::LoadGroup without an allocator
+    bool requestGroup(u32 groupId); // 801CFDE8: true when ready, else queues the load on mLoader
     int getSoundPriority(u32 id); // 801CFE98: the archive's player priority of the sound (0: unknown)
     bool isFixedVolume(u32 id);   // 801D0070: user param bit 0, or bit 2 in scenes 0x25/0x27..0x2B
 

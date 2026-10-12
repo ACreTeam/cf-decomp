@@ -75,6 +75,8 @@ public:
     void SetTrackVolume(u32 trackFlags, f32 volume);
     void SetTrackPitch(u32 trackFlags, f32 pitch);
 
+    void SetTrackMute(u32 trackFlags, bool mute);   // CF 8026775C
+    bool ReadVariable(int idx, s16* pValue) const; // CF 80267784: -1 before the sequence started
     bool WriteVariable(int idx, s16 value);
     static bool WriteGlobalVariable(int idx, s16 value);
 
