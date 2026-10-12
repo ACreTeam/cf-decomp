@@ -168,13 +168,13 @@ BOOL dSaveVisitorNpc_c::isNewWeek(int *weeks) {
     }
     dTime_c now = *dTime_c::getCurrent();
     dTime_c cur = now;
-    if (mWeekStart.compare(&cur) == -1) {
+    if (mWeekStart.compare(cur) == -1) {
         return TRUE;
     }
     now.add(-7, 0, 0, 0);
     dTime_c weekAgo = now;
-    if (mWeekStart.compare(&weekAgo) == 1) {
-        *weeks = mWeekStart.diffDays(&now, TRUE, FALSE) / 7 + 1;
+    if (mWeekStart.compare(weekAgo) == 1) {
+        *weeks = mWeekStart.diffDays(now, TRUE, FALSE) / 7 + 1;
         return TRUE;
     }
     return FALSE;

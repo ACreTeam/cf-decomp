@@ -813,7 +813,7 @@ void dAnimalMemory_c::updateTalk(const dPersonalID_c *pid, const dLandID_c *land
     mLand.copy(land);
     dTime_c cal;
     memcpy(&cal, time, sizeof(dTime_c));
-    mLastTalkTime.set(&cal);
+    mLastTalkTime.set(cal);
 }
 
 // 8011CB4C
@@ -840,7 +840,7 @@ void dAnimalMemory_c::set(s8 a, u16 count, const dPersonalID_c *pid, const dLand
     mLand.copy(land);
     dTime_c cal;
     memcpy(&cal, time, sizeof(dTime_c));
-    mLastTalkTime.set(&cal);
+    mLastTalkTime.set(cal);
 }
 
 // 8011CCCC
@@ -1163,7 +1163,7 @@ s64 dAnimalSpot_c::getTimeRaw() {
 void dAnimalSpot_c::setTime(const dTime_c *time, int mins) {
     dTime_c cal = *time;
     cal.add(0, 0, mins, 0);
-    mTime.set(&cal);
+    mTime.set(cal);
 }
 
 // 8011D6FC
@@ -2649,7 +2649,7 @@ dItem::Item dAnimal_c::pickNewItemOfKind(int kind, const dItem::Item *exclude) {
 
 // 80120D00
 // Daily update of the villager's wallpaper, carpet, music and furniture from the _2FFC items.
-void dAnimal_c::applyNewItems(u8 idx, BOOL notify) {
+void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
     if (!mID.isValid()) {
         return;
     }
@@ -3196,7 +3196,7 @@ void dAnimal_c::setPlaceChangeTime(int mins, const dTime_c *time) {
     }
     dTime_c t = *time;
     t.add(0, 0, mins, 0);
-    mPlaceChangeTime.set(&t);
+    mPlaceChangeTime.set(t);
 }
 
 // 80122498
@@ -7020,7 +7020,7 @@ void dAnimalBlock_c::resetDailyTalkCounts() {
     dTime_c last = mTalkCountTime.get();
     BOOL newDay = FALSE;
 
-    dTimeStamp_c today(now);
+    dTimeStamp_c today(*now);
     today.toDayStart();
     dTime_c start = today.get();
 

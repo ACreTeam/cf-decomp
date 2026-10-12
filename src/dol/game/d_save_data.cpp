@@ -136,7 +136,7 @@ void dSaveData_c::refreshTown() {
     fn_801911AC();
     dTimeStamp_c lastDay = dSaveData_c::getTown()->mTownInfo.mLastDay;
     dEvent::buildSchedule(lastDay.get(), TRUE);
-    fn_8018CB40();
+    dClock::resetTimer();
     dNpcMng_c::_8074EAD0 = 0;
     fn_8010003C();
 }

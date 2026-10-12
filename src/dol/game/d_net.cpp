@@ -2204,7 +2204,7 @@ void dNetRequest_c::execute() {
 
     if (isSessionActive() && mMsgOn) {
         if (mMsgEndTimer != 0) {
-            fn_801B66F4(10);
+            fn_801B66F4(TELOP_NET_SAVE_END);
             if (--mMsgEndTimer == 0) {
                 mMsgOn = 0;
             }
@@ -2214,19 +2214,19 @@ void dNetRequest_c::execute() {
             switch (kind) {
             case 0:
                 shown = TRUE;
-                fn_801B66F4(6);
+                fn_801B66F4(TELOP_NET_SAVE + 0);
                 break;
             case 1:
                 shown = TRUE;
-                fn_801B66F4(7);
+                fn_801B66F4(TELOP_NET_SAVE + 1);
                 break;
             case 2:
                 shown = TRUE;
-                fn_801B66F4(8);
+                fn_801B66F4(TELOP_NET_SAVE + 2);
                 break;
             case 3:
                 shown = TRUE;
-                fn_801B66F4(9);
+                fn_801B66F4(TELOP_NET_SAVE + 3);
                 break;
             }
             if (shown && mMsgTimer != 0) {

@@ -228,12 +228,12 @@ void dEvFishing_c::setup() {
     if (dEvent::isActive(EVENT_FISHING_TOURNEY)) {
         dTime_c time;
         if (dEvent::getStartTime(EVENT_FISHING_TOURNEY, &time)) {
-            mStart.set(&time);
+            mStart.set(time);
         } else {
             return;
         }
         if (dEvent::getEndTime(EVENT_FISHING_TOURNEY, &time)) {
-            mEnd.set(&time);
+            mEnd.set(time);
         } else {
             return;
         }
@@ -329,7 +329,7 @@ BOOL dEvFishing_c::advance(BOOL force) {
                 }
             }
         }
-        mCursor.set(&time);
+        mCursor.set(time);
         if (dTime_c::isSameOrAfter(time, mEnd.get()) == TRUE) {
             mCursor.set(mEnd.getTicks());
             break;
@@ -357,7 +357,7 @@ BOOL dEvFishing_c::catchUp() {
                 }
             }
         }
-        mCursor.set(&time);
+        mCursor.set(time);
         if (dTime_c::isSameOrAfter(time, mEnd.get()) == TRUE) {
             mCursor.set(mEnd.getTicks());
             break;

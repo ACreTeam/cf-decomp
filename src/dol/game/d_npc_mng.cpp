@@ -213,7 +213,17 @@ BOOL dNpcMng_c::pickHideSpotBuilding(mVec3_c *pos, const s8 *usedBlocks, u32 use
         int z = 0;
         dItem::Item id = *item;
         if (getBuildingPos(dSaveBuildingList_c::get(), &x, &z, &id)) {
-            if (isFreeBlock(x >> 4, z >> 4, usedBlocks, usedNum)) {
+            int blockX = x >> 4;
+            int blockZ = z >> 4;
+            const s8 *p = usedBlocks;
+            BOOL free = TRUE;
+            for (u32 n = 0; n < usedNum; n++, p += 2) {
+                if (blockX == p[0] && blockZ == p[1]) {
+                    free = FALSE;
+                    break;
+                }
+            }
+            if (free) {
                 for (int side = 0; side < 2; side++) {
                     mVec3_c spot;
                     if (dSTR::getEntranceSidePos(&spot, *item, side)) {
@@ -245,10 +255,12 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
     if (field->getKind() != 1) {
         return FALSE;
     }
+    BOOL found;
+    u32 count;
     int blockW = field->mBlockW - 1;
     int blockH = field->mBlockH - 1;
-    BOOL found = FALSE;
-    u32 count = 0;
+    found = FALSE;
+    count = 0;
     for (int blockZ = 1; blockZ < blockH; blockZ++) {
         for (int blockX = 1; blockX < blockW; blockX++) {
             if (!isFreeBlock(blockX, blockZ, usedBlocks, usedNum)) {
@@ -283,11 +295,8 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
                             dItem::Item none1;
                             if (canPutItemAt(&left, &none1, field, 0x44, TRUE, TRUE)) {
                                 *pos = left;
-                                BOOL useRight = FALSE;
                                 dItem::Item none2;
-                                if (canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE) && cM::rndInt(2) == 0) {
-                                    useRight = TRUE;
-                                }
+                                BOOL useRight = canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE) && cM::rndInt(2) == 0;
                                 if (useRight) {
                                     *pos = right;
                                 }
@@ -850,35 +859,28 @@ BOOL dNpcMng_c::isTownPlay(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-static inline BOOL isSpawnEventOK(const dNpcMng_c::Spawn_c *spawn) {
-    BOOL ok = TRUE;
-    if (spawn->mEvent != 0xFFFF) {
-        if (!dEvent::isActive((dQuestEvent_e)spawn->mEvent)) {
-            ok = FALSE;
-        }
-    }
-    return ok;
-}
-
-static inline BOOL isSpawnCheckOK(const dNpcMng_c::Spawn_c *spawn, u8 scene, u8 prevScene) {
-    BOOL ok = TRUE;
-    if (spawn->mCheck != NULL && !spawn->mCheck(scene, prevScene)) {
-        ok = FALSE;
-    }
-    return ok;
-}
-
-static inline BOOL canSpawn(const dNpcMng_c::Spawn_c *spawn, u8 scene, u8 prevScene) {
-    BOOL ok = FALSE;
-    if (isSpawnEventOK(spawn) && isSpawnCheckOK(spawn, scene, prevScene)) {
-        ok = TRUE;
-    }
-    return ok;
-}
-
 const dNpcMng_c::Spawn_c *dNpcMng_c::findSpawn(const Spawn_c *list, u32 num, u8 scene, u8 prevScene) {
+    BOOL ok;
+    BOOL eventOK;
+    BOOL checkOK;
     for (u32 i = 0; i < num; i++, list++) {
-        if (canSpawn(list, scene, prevScene)) {
+        ok = FALSE;
+        eventOK = TRUE;
+        if (list->mEvent != 0xFFFF) {
+            if (!dEvent::isActive((dQuestEvent_e)list->mEvent)) {
+                eventOK = FALSE;
+            }
+        }
+        if (eventOK) {
+            checkOK = TRUE;
+            if (list->mCheck != NULL && !list->mCheck(scene, prevScene)) {
+                checkOK = FALSE;
+            }
+            if (checkOK) {
+                ok = TRUE;
+            }
+        }
+        if (ok) {
             return list;
         }
     }
@@ -1089,10 +1091,7 @@ BOOL dNpcMng_c::pickUnit(mVec3_c *pos, const mVec3_c *used, u32 usedNum, BOOL in
             mVec3_c spot = mVec3_c::Zero;
             dFdBase_c::getUnitCenterPos(&spot, x, z);
             BOOL ok = FALSE;
-            BOOL in = FALSE;
-            if (!inArea || (spot.x > minX && spot.x < maxX && spot.z > minZ && spot.z < maxZ)) {
-                in = TRUE;
-            }
+            BOOL in = inArea == FALSE || (spot.x > minX && spot.x < maxX && spot.z > minZ && spot.z < maxZ);
             if (in) {
                 dItem::Item none;
                 if (canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
@@ -1163,10 +1162,12 @@ BOOL dNpcMng_c::createCityAnimals() {
     if (!isCurrentSceneAttr(SCENE_ATTR_CITY_FIELD)) {
         return FALSE;
     }
-    dAnmPersonalID_c *id;
+    dLandID_c *land;
+    mVec3_c *spot;
     u16 *exclude = l_guestExclude;
     clearIdList(exclude, ARRAY_SIZE(l_guestExclude));
     dAnimalSave_c *animals = &dSaveData_c::getRaw()->mAnimals;
+    dAnmPersonalID_c *id;
     for (int i = 0; i < 10; i++) {
         dAnimal_c *animal = animals->mTown.getAnimalConst(i);
         if (animal != NULL) {
@@ -1186,7 +1187,7 @@ BOOL dNpcMng_c::createCityAnimals() {
     }
     u32 movedMask = 0;
     u32 movedNum = 0;
-    dLandID_c *land = &dSaveData_c::getRaw()->mLandID;
+    land = &dSaveData_c::getRaw()->mLandID;
     mVec3_c spots[5];
     if (!pickCitySpots(spots, 5)) {
         mVec3_c *spot = spots;
@@ -1212,7 +1213,7 @@ BOOL dNpcMng_c::createCityAnimals() {
     if (num > spotNum) {
         num = spotNum;
     }
-    mVec3_c *spot = spots;
+    spot = spots;
     u32 placed = 0;
     for (u32 i = 0; i < num; i++) {
         int idx = pickRandomBit(movedMask, movedNum, 10);
@@ -1259,7 +1260,7 @@ BOOL dNpcMng_c::createCityAnimals() {
     for (u32 i = 0; i < spotNum; i++) {
         dAnimalTemplate_c *tmpl = pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
         if (tmpl != NULL) {
-            u16 npcIdx = tmpl->mNpcIdx;
+            u16 npcIdx = (int)tmpl->mNpcIdx;
             mAng3_c angle = mAng3_c::Zero;
             angle.y = cM::rndInt(0xFFFF);
             dActor_c::construct(0x51, this, npcIdx, spot, &angle);
@@ -1422,9 +1423,9 @@ void dNpcMng_c::updateAnimalPlaces() {
     online = dNet::isSessionActive();
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     appointmentIdx = -1;
-    appointment = &block->mAppointment;
+    appointment = block->getAppointment();
     dAnimalHomeStay_c *stay = &block->mHomeStay;
-    quest = &appointment->mBase;
+    quest = appointment->getBase();
     stayIdx = stay->isValid() ? stay->mAnimalIdx : -1;
     now = dTime_c::getCurrent();
     toyDay = dEvent::isActive(EVENT_TOY_DAY) != FALSE;
@@ -1450,11 +1451,8 @@ void dNpcMng_c::updateAnimalPlaces() {
         } else if (i == stayIdx) {
             u8 prevScene = getPrevScene();
             u8 scene = getCurrentScene();
-            BOOL inHouse = FALSE;
-            if (i == getSceneAttrIndex(prevScene, SCENE_ATTR_VILLAGER_HOUSE) ||
-                i == getSceneAttrIndex(scene, SCENE_ATTR_VILLAGER_HOUSE)) {
-                inHouse = TRUE;
-            }
+            BOOL inHouse = i == getSceneAttrIndex(prevScene, SCENE_ATTR_VILLAGER_HOUSE) ||
+                           i == getSceneAttrIndex(scene, SCENE_ATTR_VILLAGER_HOUSE);
             if (!inHouse) {
                 switch (place) {
                     case 2:
@@ -2388,17 +2386,24 @@ void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc
     }
     int x;
     int z;
-    dFdBase_c *field = fn_80190C44(0);
+    // The aggregate keeps the field pointer in the original temporary allocation.
+    struct {
+        dFdBase_c *ptr;
+    } field = {fn_80190C44(0)};
     dRandom_c rnd(0x9D);
     rnd.initFromDateAndLandId(*dTime_c::getCurrent(), 0x61);
     dItem::Item ufo((u16)BUILDING_UFO);
     dSaveBuildingList_c::get()->getPos(&x, &z, &ufo, 1);
     int units[32];
-    int num = 0;
-    int x0 = x & 0xF0;
-    for (int unitZ = 0x50; unitZ < 0x60; unitZ++) {
-        for (int unitX = x0; unitX < x0 + 16; unitX++) {
-            if ((u32)(field->getBgAttr(unitX, unitZ) - 0x24) <= 2) {
+    int x0;
+    int unitX;
+    int unitZ;
+    int num;
+    num = 0;
+    x0 = x & 0xF0;
+    for (unitZ = 0x50; unitZ < 0x60; unitZ++) {
+        for (unitX = x0; unitX < x0 + 16; unitX++) {
+            if ((u32)(field.ptr->getBgAttr(unitX, unitZ) - 0x24) <= 2) {
                 units[num * 2] = unitX;
                 units[num * 2 + 1] = unitZ;
                 num++;

@@ -233,7 +233,7 @@ dTime_c dNoticeBoard_c::getTime() {
 
 // 8011B328
 void dNoticeBoard_c::setTime(const dTime_c *now) {
-    mTime.set(now);
+    mTime.set(*now);
     mTime.toDayStart();
 }
 

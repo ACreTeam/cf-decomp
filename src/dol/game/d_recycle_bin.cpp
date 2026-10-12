@@ -19,7 +19,7 @@ void dRecycleBin_c::update(dTime_c *now, int days) {
         clear();
         return;
     }
-    dTimeStamp_c time(now);
+    dTimeStamp_c time(*now);
     time.toDayStart();
     switch (time.getWeekday()) {
     case 1:

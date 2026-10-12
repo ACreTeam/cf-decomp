@@ -3691,7 +3691,7 @@ void dFgMngProc_c::updateFg56() {
     u8 day;
     fd = fn_80190C44(FD_ID_TOWN);
     fgMngProc_collectFg56Units();
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     month = today.get().month;
     day = today.get().mday;

@@ -236,7 +236,7 @@ const dShopLayout_t *dShopLayout_get(u8 scene) {
     case SCENE_RM_TAILOR:
         return &sTailorLayout;
     case SCENE_RM_GRACE: {
-        dTimeStamp_c today(dTime_c::getCurrent());
+        dTimeStamp_c today(*dTime_c::getCurrent());
         today.toDayStart();
         dSaveTown_c *town = dSaveData_c::getTown();
         switch (town->mShops.mShopGrace.getLayoutType(today.get().month)) {

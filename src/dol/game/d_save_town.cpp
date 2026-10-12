@@ -141,7 +141,7 @@ void dSaveTown_c::resetSaveTime() {
     dTime_c time;
     time.set(2000, 0, 1, 0, 0, 0);
     time.add(0, 0, 0, -1);
-    mSaveTime.set(&time);
+    mSaveTime.set(time);
 }
 
 // The save pointer is fetched before the item.

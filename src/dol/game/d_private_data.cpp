@@ -1166,7 +1166,7 @@ BOOL dPrivateData_c::isNewFortuneWeek() {
     dTime_c cal;
     cal = mFortuneWeek.get();
     week.addDays(-cal.wday);
-    dTimeStamp_c now(dTime_c::getCurrent());
+    dTimeStamp_c now(*dTime_c::getCurrent());
     dTime_c nowCal;
     nowCal = now.get();
     now.addDays(-nowCal.wday);

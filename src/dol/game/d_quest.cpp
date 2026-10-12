@@ -229,7 +229,7 @@ int dQuestBase_c::pickDeadline(const int *deadlines, u32 num, dTime_c *time) {
 
 // 8013F9D8
 void dQuestBase_c::setTimeLimit(const dTime_c &time) {
-    mTimeLimit.set(&time);
+    mTimeLimit.set(time);
 }
 
 // 8013F9DC
@@ -1104,7 +1104,7 @@ void dLostQuest_c::set(const dTime_c &time, int value, const dItem::Item *item) 
 
 // 80142330
 void dLostQuest_c::setTime(const dTime_c &time) {
-    mTime.set(&time);
+    mTime.set(time);
 }
 
 // 80142334

@@ -1116,7 +1116,7 @@ void recvChatState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 // 800E0048: NET_PACKET_CLOCK (0x54)
 void recvClock(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_8018CE28(member, data);
+    dClock::receive(member, data);
 }
 
 // 800E004C: NET_PACKET_VOICE (0x61)

@@ -293,7 +293,7 @@ public:
     dItem::Item *pickNewItem(const dItem::Item *exclude, u32 num, BOOL all); // 80120944
     dItem::Item *pickPricedNewItem(const dItem::Item *exclude, u32 num, BOOL all); // 80120A50
     dItem::Item pickNewItemOfKind(int kind, const dItem::Item *exclude); // 80120BC0
-    void applyNewItems(u8 idx, BOOL notify); // 80120D00
+    void applyNewItems(u32 idx, BOOL notify); // 80120D00
     u32 countNewItems(); // 80121234
     dItem::Item pickOwnItem(); // 801212A0
     BOOL updateOwnItems(); // 80121738
@@ -550,6 +550,7 @@ public:
     dPrivateData_c *getAppointmentPlayer(dPrivateData_c *players); // 8012F6EC
     BOOL sendAppointment1Letter(); // 8012F9AC
     BOOL sendAppointment0Letter(); // 8012FC8C
+    dQuestPlayerItem_c *getAppointment() { return &mAppointment; }
     void updateAppointmentFlags(); // 8012FD44
     BOOL updateAppointmentDaily(BOOL arg); // 8012FE44
     BOOL canAskHideAndSeek(u32 idx); // 80130160

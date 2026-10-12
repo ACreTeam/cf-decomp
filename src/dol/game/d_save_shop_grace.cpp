@@ -50,7 +50,7 @@ u16 dSaveShopGrace_c::getItem(int slot, BOOL showSold) {
 
 // 80148CF0
 int dSaveShopGrace_c::getSaleStage() {
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     switch (today.get().month) {
     case MONTH_JANUARY:
@@ -75,7 +75,7 @@ int dSaveShopGrace_c::getLayoutType(int month) {
 
 // 80148DD4
 void dSaveShopGrace_c::update() {
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
 
     dSaveData_c::getTown()->clearFlag(0x17);

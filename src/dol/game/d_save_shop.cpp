@@ -80,7 +80,7 @@ void dSaveShop_c::clear() {
 
 // 8014406C
 void dSaveShop_c::setStage(int stage) {
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     mNextStage = stage;
     mStage = stage;
@@ -129,7 +129,7 @@ void dSaveShop_c::setStage(int stage) {
 // 80144288
 BOOL dSaveShop_c::isUpgradingToday() {
     BOOL today = FALSE;
-    if (mUpgrading && mStageDate.diffDays(dTime_c::getCurrent(), TRUE, FALSE) == 0) {
+    if (mUpgrading && mStageDate.diffDays(*dTime_c::getCurrent(), TRUE, FALSE) == 0) {
         today = TRUE;
     }
     return today;
@@ -138,7 +138,7 @@ BOOL dSaveShop_c::isUpgradingToday() {
 // 801442F0
 BOOL dSaveShop_c::isUpgradingOnLastDay() {
     BOOL today = FALSE;
-    if (mUpgrading && mStageDate.diffDays(&fgMngProc_getLastDayTime(), TRUE, FALSE) == 0) {
+    if (mUpgrading && mStageDate.diffDays(fgMngProc_getLastDayTime(), TRUE, FALSE) == 0) {
         today = TRUE;
     }
     return today;
@@ -147,8 +147,8 @@ BOOL dSaveShop_c::isUpgradingOnLastDay() {
 // 8014435C
 BOOL dSaveShop_c::isOpen() {
     const dTime_c &last = fgMngProc_getLastDayTime();
-    dTimeStamp_c lastDay(&last);
-    if (lastDay.diffDays(dTime_c::getCurrent(), TRUE, FALSE) != 0) {
+    dTimeStamp_c lastDay(last);
+    if (lastDay.diffDays(*dTime_c::getCurrent(), TRUE, FALSE) != 0) {
         return FALSE;
     }
 
@@ -187,7 +187,7 @@ void dSaveShop_c::processDays(int days) {
 
 // 80144548
 void dSaveShop_c::updateStage(int days) {
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
 
     if (!mStageDate.isNone()) {
@@ -322,7 +322,7 @@ void dSaveShop_c::updateStage(int days) {
     } else if (days < 0) {
         if (mUpgrading) {
             dTime_c last = fgMngProc_getLastDayTime();
-            int diff = mStageDate.diffDays(&last, TRUE, FALSE);
+            int diff = mStageDate.diffDays(last, TRUE, FALSE);
             mStageDate.setNow();
             mStageDate.toDayStart();
             mStageDate.addDays(-diff);
@@ -342,7 +342,7 @@ void dSaveShop_c::updateStage(int days) {
 void dSaveShop_c::updateMail(int days) {
     static dMail_c sMail;
 
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
 
     if (today.get().month == MONTH_OCTOBER) {
@@ -551,11 +551,11 @@ void dSaveShop_c::update() {
         mStock[i].mSold = FALSE;
     }
 
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     if (dSaveData_c::getRaw()->isFlag(0x15) && !isUpgradingToday() && !isEventToday() &&
         cM::rndInt(14) < sRates[1]) {
-        mSaleDate = dTimeStamp_c(dTime_c::getCurrent());
+        mSaleDate = dTimeStamp_c(*dTime_c::getCurrent());
         mSaleDate.toDayStart();
         mSaleDate.add(0, (u8)(cM::rndInt(4) + 11), 0, 0);
     } else {
@@ -823,7 +823,7 @@ void dSaveShop_c::stockTools() {
         used[i] = FALSE;
     }
     BOOL october = FALSE;
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
 
     for (u32 i = 0; i < getToolNum(); i++) {
@@ -947,7 +947,7 @@ BOOL dSaveShop_c::isSaleNow() {
     }
     if (today) {
         dTime_c time = now;
-        if (mSaleDate.compare(&time) >= 0) {
+        if (mSaleDate.compare(time) >= 0) {
             started = TRUE;
         }
     }
@@ -1017,7 +1017,7 @@ void dSaveShop_c::postNotices() {
     }
 
     dLetter::setStringWord(0, mStage + 0x2E, "sys_STRING/STR_Unit");
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     dTime_c date = today.get();
 

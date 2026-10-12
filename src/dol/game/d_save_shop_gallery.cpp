@@ -33,7 +33,7 @@ u16 dSaveShopGallery_c::getItem(int slot) {
 
 // 80148478
 dTime_c dSaveShopGallery_c::getNextWednesday() {
-    dTimeStamp_c day(dTime_c::getCurrent());
+    dTimeStamp_c day(*dTime_c::getCurrent());
     day.toDayStart();
     if (day.get().wday < 3) {
         day.addDays(-day.get().wday + 3);
@@ -45,7 +45,7 @@ dTime_c dSaveShopGallery_c::getNextWednesday() {
 
 // 80148520
 dTime_c dSaveShopGallery_c::getLastWednesday() {
-    dTimeStamp_c day(dTime_c::getCurrent());
+    dTimeStamp_c day(*dTime_c::getCurrent());
     day.toDayStart();
     if (day.get().wday < 3) {
         day.addDays(-day.get().wday - 4);
@@ -57,7 +57,7 @@ dTime_c dSaveShopGallery_c::getLastWednesday() {
 
 // 801485C8
 void dSaveShopGallery_c::update() {
-    dTimeStamp_c today(dTime_c::getCurrent());
+    dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
 
     if (!mDate.isNone()) {
@@ -72,7 +72,7 @@ void dSaveShopGallery_c::update() {
 
         dTimeStamp_c last = mDate;
         const dTime_c &wednesday = getLastWednesday();
-        dTimeStamp_c thisWeek(&wednesday);
+        dTimeStamp_c thisWeek(wednesday);
         if (last.get().wday < 3) {
             last.addDays(-last.get().wday - 4);
         } else {

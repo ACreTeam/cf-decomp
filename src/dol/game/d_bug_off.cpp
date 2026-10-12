@@ -10,7 +10,7 @@
 #include <game/game/d_mail.hpp>
 #include <game/game/d_insect_info.hpp>
 #include <game/game/d_letter.hpp>
-#include <game/cLib/c_math.hpp>
+#include <game/cLib/c_math.hpp>
 #include <game/game/d_post_office.hpp>
 
 // Not split yet (C linkage keeps the target names).
@@ -236,12 +236,12 @@ void dBugOff_c::setup() {
     if (dEvent::isActive(EVENT_BUG_OFF)) {
         dTime_c time;
         if (dEvent::getStartTime(EVENT_BUG_OFF, &time)) {
-            mStart.set(&time);
+            mStart.set(time);
         } else {
             return;
         }
         if (dEvent::getEndTime(EVENT_BUG_OFF, &time)) {
-            mEnd.set(&time);
+            mEnd.set(time);
         } else {
             return;
         }
@@ -307,7 +307,7 @@ BOOL dBugOff_c::advance(BOOL force) {
                 }
             }
         }
-        mCursor.set(&time);
+        mCursor.set(time);
         if (dTime_c::isSameOrAfter(time, mEnd.get()) == TRUE) {
             mCursor.set(mEnd.getTicks());
             break;
@@ -335,7 +335,7 @@ BOOL dBugOff_c::catchUp() {
                 }
             }
         }
-        mCursor.set(&time);
+        mCursor.set(time);
         if (dTime_c::isSameOrAfter(time, mEnd.get()) == TRUE) {
             mCursor.set(mEnd.getTicks());
             break;

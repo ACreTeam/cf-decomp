@@ -37,7 +37,7 @@ BOOL dYMD_c::isToday(BOOL dayStart) const {
         return FALSE;
     }
     if (dayStart) {
-        dTimeStamp_c stamp(dTime_c::getCurrent());
+        dTimeStamp_c stamp(*dTime_c::getCurrent());
         stamp.toDayStart();
         dTime_c t = stamp.get();
         return isDate(t.year, t.month, t.mday);

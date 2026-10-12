@@ -26,6 +26,8 @@ class Heap;
 // for "none".
 #define NET_MEMBER_MAX 4
 #define NET_MEMBER_NONE 4
+// the host's member number (isHost)
+#define NET_MEMBER_HOST 0
 #define NET_SCENE_NONE 0x44
 // Block destinations besides a member / NET_MEMBER_NONE (the routing switch in
 // dNetPacket_c::sendFrame).
@@ -264,7 +266,7 @@ enum dNetPacket_e {
     NET_PACKET_CHAT = 0x52,
     // d_obj_chat fn_801B133C: 2 bytes -> fn_801B13C8; hedged
     NET_PACKET_CHAT_STATE = 0x53,
-    // d_clock fn_8018CDE0: a 1-byte clock event -> fn_8018CE28
+    // d_clock dClock::sendCmd: a 1-byte clock command (dClock::Cmd_e) -> dClock::receive
     NET_PACKET_CLOCK = 0x54,
     // d_npc fn_800EFFA0: a villager's held item (setHeldItem)
     NET_PACKET_ANIMAL_HELD_ITEM = 0x55,

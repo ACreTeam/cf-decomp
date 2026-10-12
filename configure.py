@@ -780,6 +780,7 @@ config.libs = [
             Object(Matching, "dol/game/d_sv_lang_flag.cpp"),
             Object(Matching, "dol/game/d_ground_attr.cpp"),
             Object(Matching, "dol/game/d_reset_save.cpp"),
+            Object(Matching, "dol/game/d_clock.cpp"),
             Object(Matching, "dol/game/d_cd.cpp"),
             Object(Matching, "dol/game/d_demo.cpp"),
             Object(Matching, "dol/game/d_fd_block_type.cpp"),

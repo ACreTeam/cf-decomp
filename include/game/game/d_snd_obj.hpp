@@ -4,8 +4,9 @@
 
 class mVec3_c;
 
-// Game-side holders of the sound library's objects (DOL TU d_snd_obj.cpp, not split yet, around
-// 80010E18..80011130). There is one holder per SoundObj class, each holding the object at offset 0.
+// Game-side holders of the sound library's objects (in DOL TU d_audio_obj.cpp, 80010E18..80011130: the
+// data order puts all of 800107AC..800120A8 in one TU, see d_audio_obj.hpp). There is one holder per
+// SoundObj class, each holding the object at offset 0.
 // They have no RTTI: the class names are inferred from the class they hold.
 // Users: dFishFldShadow_c, daSnowMan_c, dHandItem_c.
 

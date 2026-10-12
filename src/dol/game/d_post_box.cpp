@@ -38,7 +38,7 @@ static int packMails(dMail_c *mails, int num) {
 
 // A copy of time for dTimeStamp_c::compare.
 static inline int compareTime(dTimeStamp_c *stamp, dTime_c time) {
-    return stamp->compare(&time);
+    return stamp->compare(time);
 }
 
 // 8013ED24
@@ -80,7 +80,7 @@ BOOL dPlayerPostBox_c::hasMail() {
 // 8013EEF4
 void dPlayerPostBox_c::setFutureMail(const dMail_c *mail, const dTime_c *date) {
     mFutureMail.copy(mail);
-    mFutureMailDate.set(date);
+    mFutureMailDate.set(*date);
     mFutureMailDate.setTimeOfDay(9, 0, 0);
 }
 
@@ -181,8 +181,8 @@ BOOL dPostBox_c::checkDelivery(BOOL reschedule) {
 // 8013F354
 void dPostBox_c::scheduleDelivery() {
     dTime_c now = *dTime_c::getCurrent();
-    mLastDelivery.set(&now);
-    mNextDelivery.set(&now);
+    mLastDelivery.set(now);
+    mNextDelivery.set(now);
     int hour;
     if (now.hour < 9) {
         hour = 9;

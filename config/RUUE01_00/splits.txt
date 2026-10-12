@@ -51,6 +51,8 @@ dol/game/d_snd_util.cpp:
 
 dol/game/d_audio_obj.cpp:
 	.text       start:0x800107AC end:0x800120A8
+	.data       start:0x8049E630 end:0x8049E7C8
+	.sdata      start:0x80749818 end:0x80749848
 	.sdata2     start:0x8074FDD8 end:0x8074FDE0
 
 dol/game/d_a_npc.cpp:
@@ -1760,6 +1762,11 @@ dol/game/d_camera.cpp:
 dol/game/d_clock.cpp:
 	.text       start:0x8018BAF8 end:0x8018D778
 	.ctors      start:0x80465828 end:0x8046582C align:8
+	.data       start:0x804F9610 end:0x804F9880 align:4
+	.bss        start:0x80624010 end:0x80624040 align:4
+	.sdata      start:0x8074BEB8 end:0x8074BF00 align:4
+	.sbss       start:0x8074E9C8 end:0x8074E9D0 align:4
+	.sdata2     start:0x807515C8 end:0x807515F8 align:4
 
 dol/game/d_cd.cpp:
 	.text       start:0x8018D778 end:0x8018DAC8

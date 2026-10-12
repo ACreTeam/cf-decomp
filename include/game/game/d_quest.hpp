@@ -341,6 +341,7 @@ public:
 class dQuestPlayerItem_c {
 public:
     dQuestPlayerItem_c(); // 801429C8
+    dQuestBase_c *getBase() { return &mBase; }
 
     void clear();                                                // 80142A08
     dTime_c getMeetTime();                                       // 80142A64

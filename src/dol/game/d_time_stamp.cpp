@@ -40,7 +40,7 @@ void dTimeStamp_c::setTimeOfDay(int hour, int min, int sec) {
     cal.sec = sec;
     cal.usec = 0;
     cal.msec = 0;
-    set(&cal);
+    set(cal);
 }
 
 // 8014C468
@@ -51,7 +51,7 @@ void dTimeStamp_c::reset() {
 // 8014C478
 BOOL dTimeStamp_c::isToday(BOOL dayStart) {
     if (dayStart) {
-        dTimeStamp_c now(dTime_c::getCurrent());
+        dTimeStamp_c now(*dTime_c::getCurrent());
         dTimeStamp_c self(getTicks());
         now.toDayStart();
         self.toDayStart();
@@ -61,8 +61,8 @@ BOOL dTimeStamp_c::isToday(BOOL dayStart) {
 }
 
 // 8014C538
-void dTimeStamp_c::set(const dTime_c *cal) {
-    dTime_c copy = *cal;
+void dTimeStamp_c::set(const dTime_c &cal) {
+    dTime_c copy = cal;
     set(OSCalendarTimeToTicks(&copy));
 }
 
@@ -75,21 +75,21 @@ void dTimeStamp_c::set(s64 ticks) {
 // 8014C61C
 void dTimeStamp_c::setNow() {
     dTime_c cal = *dTime_c::getCurrent();
-    set(&cal);
+    set(cal);
 }
 
 // 8014C6A4
 void dTimeStamp_c::addDays(int days) {
     dTime_c cal = get();
     cal.add(days, 0, 0, 0);
-    set(&cal);
+    set(cal);
 }
 
 // 8014C758
 void dTimeStamp_c::add(int days, int hours, int mins, int secs) {
     dTime_c cal = get();
     cal.add(days, hours, mins, secs);
-    set(&cal);
+    set(cal);
 }
 
 // 8014C818
@@ -101,7 +101,7 @@ void dTimeStamp_c::toDayStart() {
     cal.msec = 0;
     cal.sec = 0;
     cal.min = 0;
-    set(&cal);
+    set(cal);
 }
 
 // 8014C8E4
@@ -111,7 +111,7 @@ int dTimeStamp_c::getWeekday() {
 }
 
 // 8014C95C
-int dTimeStamp_c::diffDays(const dTime_c *cal, BOOL dayStart, BOOL adjust) {
+int dTimeStamp_c::diffDays(const dTime_c &cal, BOOL dayStart, BOOL adjust) {
     dTimeStamp_c other(cal);
     return diffDays(other.getTicks(), dayStart, adjust);
 }
@@ -133,7 +133,7 @@ int dTimeStamp_c::diffDays(s64 ticks, BOOL dayStart, BOOL adjust) {
 // 8014CAA4
 int dTimeStamp_c::diffDaysFromNow(BOOL dayStart, BOOL adjust) {
     dTime_c cal = *dTime_c::getCurrent();
-    dTimeStamp_c now(&cal);
+    dTimeStamp_c now(cal);
     if (dayStart) {
         now.toDayStart();
     }
@@ -141,8 +141,8 @@ int dTimeStamp_c::diffDaysFromNow(BOOL dayStart, BOOL adjust) {
 }
 
 // 8014CB74
-int dTimeStamp_c::compare(const dTime_c *cal) {
-    s64 other = OSCalendarTimeToTicks(cal);
+int dTimeStamp_c::compare(const dTime_c &cal) {
+    s64 other = OSCalendarTimeToTicks(&cal);
     s64 ticks = getRaw();
     if (ticks > other) {
         return -1;

@@ -79,6 +79,11 @@ public:
     bool isStop() const;
 
     f32 getLastFrame() const { return mEndFrame - 1.0f; }
+    f32 calcFrame(f32 value, f32 maxValue) const {
+        f32 end = mEndFrame;
+        f32 frame = value / maxValue;
+        return frame * (end - 1.0f);
+    }
     bool notLooping() const { return (mFlags & NO_LOOP) != 0; }
     bool isBackwards() const { return (mFlags & REVERSE) != 0; }
 
@@ -111,6 +116,8 @@ public:
     void patrolTargetName(patrolNameFunc func, void *arg);
 
     nw4r::lyt::AnimTransform *getTransform() const { return mpTransform; }
+    f32 getLastFrame() const { return mFrameCtrl.getLastFrame(); }
+
     bool isBound() const { return mFlags & 1; }
     void setBound() { mFlags |= 1; }
     void setUnbound() { mFlags &= ~1; }

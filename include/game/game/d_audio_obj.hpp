@@ -1,8 +1,14 @@
 #pragma once
 
-// Game-side sound objects attached to actors (DOL TU d_audio_obj.cpp, .text 800107AC..800120A8, not
-// decompiled yet). Class names from the RTTI (dAudioObjCharBase_c, dAudioObjNpc_c); only what d_a_npc
-// uses is declared.
+// Game-side sound objects attached to actors (DOL TU d_audio_obj.cpp, .text 800107AC..800120A8, .data
+// 8049E630..8049E7C8, .sdata 80749818..80749848, not decompiled yet). Class names from the RTTI
+// (dAudioObjCharBase_c, dAudioObjPlayer_c, dAudioObjNpc_c); only what d_a_npc uses is declared.
+//
+// The TU holds, in order: dAudioObjCharBase_c, dAudioObjPlayer_c (d_a_player), dAudioObjNpc_c, the
+// dSndObj* holders of d_snd_obj.hpp (insects, furniture actions), the furniture sound objects
+// (d_a_ftr_act, d_ftr_manager; an 11-case factory of SoundTv_* objects), more player functions, and a
+// weak tail (SoundHandle ctor, SoundObj<1>/<2> dtors and inline virtuals). One TU: the factory's
+// jumptable is the first .data object, before the vtables MWCC writes at the end of the TU.
 
 #include <types.h>
 #include <game/mLib/m_vec.hpp>
