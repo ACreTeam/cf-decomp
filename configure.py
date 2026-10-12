@@ -763,6 +763,7 @@ config.libs = [
             Object(NonMatching, "dol/game/d_player_mgr.cpp"),
             Object(Matching, "dol/game/d_rumble.cpp"),
             Object(Matching, "dol/game/d_paper.cpp"),
+            Object(NonMatching, "dol/game/d_photo.cpp"),
             Object(Matching, "dol/game/d_post_office.cpp"),
             Object(Matching, "dol/game/d_prc_mng.cpp"),
             Object(Matching, "dol/game/d_random_field.cpp"),

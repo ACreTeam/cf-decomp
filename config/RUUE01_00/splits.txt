@@ -946,17 +946,17 @@ dol/game/d_photo.cpp:
 	.rodata     start:0x804759F0 end:0x80475A00
 	.bss        start:0x805CEB20 end:0x805D2420
 	.sbss       start:0x8074E5E0 end:0x8074E600
-	.sdata2     start:0x80750A60 end:0x80750A80
+	.sdata2     start:0x80750A60 end:0x80750A70
 
 dol/game/d_player_mgr.cpp:
 	.text       start:0x800FBB58 end:0x8010263C
 	.ctors      start:0x804656F8 end:0x804656FC
-	.rodata     start:0x80475A00 end:0x80475B40 align:4
+	.rodata     start:0x80475A00 end:0x80475B40
 	.data       start:0x804ED848 end:0x804ED8B8 align:4
-	.bss        start:0x805D2420 end:0x805EB900 align:4
+	.bss        start:0x805D2420 end:0x805EB900 align:32
 	.sdata      start:0x8074AF10 end:0x8074AF18 align:4
 	.sbss       start:0x8074E600 end:0x8074E608 align:4
-	.sdata2     start:0x80750A80 end:0x80750AB0 align:4
+	.sdata2     start:0x80750A70 end:0x80750AB0 align:4
 
 dol/game/d_post_office.cpp:
 	.text       start:0x8010263C end:0x80104770

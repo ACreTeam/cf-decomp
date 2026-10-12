@@ -5,7 +5,8 @@
 namespace m3d {
     class capture_c {
     public:
-        virtual ~capture_c() {}
+        capture_c() : mTexBuffer(nullptr), mBufferSize(0) {}
+        virtual ~capture_c() { remove(); }
 
         bool create(EGG::Heap *heap, u16 width, u16 height, GXTexFmt texFmt,
                     GXTexFilter texFilter, bool texIsHalfSize);
