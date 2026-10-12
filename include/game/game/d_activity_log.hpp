@@ -18,6 +18,8 @@ public:
     void set(const dSaveJinx_c *jinx);    // 800C7764: also resets the progress
     void count(int cond, int player, int value); // 800C7890: dJinxCondition_e
     void setTownBits(u16 bits);           // 800C7AF8
+    
+    const dSaveJinx_c* const getJinx() const { return &mJinx; }
 
     /* 0x0 */ dSaveJinx_c mJinx;          // the jinx being attempted
     /* 0x4 */ int mCount;                 // JINX_COND_CUT_TREE..PLANT_FLOWERS: count so far

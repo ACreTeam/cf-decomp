@@ -152,9 +152,13 @@ void applyVisitorDone(BOOL done) {
     }
 }
 
-// 800C79DC (88%: the target copies the jinx with byte loads through one base register, lbzu)
+// 800C79DC
 void applyResult() {
-    dSaveJinx_c jinx = g_log.mJinx;
+    // Assign through a fixed source pointer to preserve the byte-wise copy.
+    dSaveJinx_c jinx;
+    const dSaveJinx_c* source = g_log.getJinx();
+
+    jinx = *source;
     if (jinx.mCondition < JINX_COND_NUM) {
         dSaveTown_c *town = dSaveData_c::getTown();
         dPrivateData_c *me = dPlayerMgr_c::getCurrentPlayer();

@@ -780,7 +780,7 @@ config.libs = [
             Object(Matching, "dol/game/d_menu_res.cpp"),
             Object(Matching, "dol/game/d_dylink.cpp"),
             Object(Matching, "dol/game/d_item_debug.cpp"),
-            Object(NonMatching, "dol/game/d_activity_log.cpp"),
+            Object(Matching, "dol/game/d_activity_log.cpp"),
             Object(Matching, "dol/game/d_scene_base.cpp"),
             Object(Matching, "dol/game/d_obj_tutorial.cpp"),
             Object(Matching, "dol/game/d_tag_processor.cpp"),
