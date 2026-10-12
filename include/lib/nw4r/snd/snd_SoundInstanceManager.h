@@ -1,186 +1,144 @@
 #ifndef NW4R_SND_SOUND_INSTANCE_MANAGER_H
 #define NW4R_SND_SOUND_INSTANCE_MANAGER_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_InstancePool.h>
+#include <nw4r/ut.h>
 
-#include <new>
+#include <revolution/OS.h>
 
-#include <types.h>
 
-#include "nw4r/snd/snd_InstancePool.h"
+namespace nw4r {
+namespace snd {
+namespace detail {
 
-#include "nw4r/ut/ut_Lock.h"
-#include "nw4r/ut/ut_algorithm.h"
+template <typename T> class SoundInstanceManager {
+public:
+    SoundInstanceManager() {
+        OSInitMutex(&mMutex);
+    }
 
-#include <revolution/OS/OSMutex.h>
+    u32 Create(void* pBuffer, u32 size) {
+        ut::detail::AutoLock<OSMutex> lock(mMutex);
+        return mPool.Create(pBuffer, size);
+    }
 
-#include "nw4r/NW4RAssert.hpp"
+    void Destroy(void* pBuffer, u32 size) {
+        ut::detail::AutoLock<OSMutex> lock(mMutex);
+        mPool.Destroy(pBuffer, size);
+    }
 
-/*******************************************************************************
- * classes and functions
- */
+    T* Alloc(int priority) {
+        ut::detail::AutoLock<OSMutex> lock(mMutex);
+        T* pSound = NULL;
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2f03c, 0x30a63...
-	template <class Sound>
-	class SoundInstanceManager
-	{
-	// methods
-	public:
-		// cdtors
-		SoundInstanceManager() { OSInitMutex(&mMutex); }
+        while (pSound == NULL) {
+            void* pBuffer = mPool.Alloc();
 
-		// methods
-		ulong Create(void *buffer, ulong size)
-		{
-			NW4RAssertPointerNonnull_Line(67, buffer);
+            if (pBuffer != NULL) {
+                pSound = new (pBuffer) T(this);
+            } else {
+                T* pLowest = GetLowestPrioritySound();
 
-			ut::detail::AutoLock<OSMutex> lock(mMutex);
+                if (pLowest == NULL) {
+                    return NULL;
+                }
 
-			return mPool.Create(buffer, size);
-		}
+                if (priority < pLowest->CalcCurrentPlayerPriority()) {
+                    return NULL;
+                }
 
-		void Destroy(void *buffer, ulong size)
-		{
-			NW4RAssertPointerNonnull_Line(86, buffer);
+                OSUnlockMutex(&mMutex);
+                pLowest->Stop(0);
+                OSLockMutex(&mMutex);
+            }
+        }
 
-			ut::detail::AutoLock<OSMutex> lock(mMutex);
+        InsertPriorityList(pSound, priority);
+        return pSound;
+    }
 
-			mPool.Destroy(buffer, size);
-		}
+    void Free(T* pSound) {
+        ut::detail::AutoLock<OSMutex> lock(mMutex);
 
-		Sound *Alloc(int priority, int ambientPriority)
-		{
-			int allocPriority =
-				ut::Clamp(priority + ambientPriority, Sound::PRIORITY_MIN,
-				          Sound::PRIORITY_MAX);
+        if (mPriorityList.IsEmpty()) {
+            return;
+        }
 
-			ut::detail::AutoLock<OSMutex> lock(mMutex);
-			Sound *sound = nullptr;
+        RemovePriorityList(pSound);
+        pSound->~T();
+        mPool.Free(pSound);
+    }
 
-			while (!sound)
-			{
-				if (void *ptr = mPool.Alloc())
-				{
-					sound = new (ptr) Sound(this, priority, ambientPriority);
-					continue;
-				}
+    u32 GetActiveCount() const {
+        return mPriorityList.GetSize();
+    }
 
-				Sound *sound = GetLowestPrioritySound();
-				if (!sound)
-					return nullptr;
+    u32 GetFreeCount() const {
+        return mPool.Count();
+    }
 
-				if (allocPriority < sound->CalcCurrentPlayerPriority())
-					return nullptr;
+    T* GetLowestPrioritySound() {
+        if (mPriorityList.IsEmpty()) {
+            return NULL;
+        }
 
-				OSUnlockMutex(&mMutex);
+        return static_cast<T*>(&mPriorityList.GetFront());
+    }
 
-				NW4RCheckMessage_Line(133,
-					!Debug_GetWarningFlag(
-						Debug_GetDebugWarningFlagFromSoundType(
-							sound->GetSoundType())),
-					"Sound (id:%d) is stopped for not enough %s sound "
-					"instance.",
-					sound->GetId(),
-					Debug_GetSoundTypeString(sound->GetSoundType()));
+    void InsertPriorityList(T* pSound, int priority) {
+        typename TPrioList::Iterator it = mPriorityList.GetBeginIter();
 
-				sound->Stop(0);
+        for (; it != mPriorityList.GetEndIter(); ++it) {
+            if (priority < it->CalcCurrentPlayerPriority()) {
+                break;
+            }
+        }
 
-				OSLockMutex(&mMutex);
-			}
+        mPriorityList.Insert(it, pSound);
+    }
 
-			InsertPriorityList(sound, allocPriority);
-			return sound;
-		}
+    void RemovePriorityList(T* pSound) {
+        mPriorityList.Erase(pSound);
+    }
 
-		void Free(Sound *sound)
-		{
-			NW4RAssertPointerNonnull_Line(158, sound);
+    void SortPriorityList() {
+        TPrioList listsByPrio[T::PRIORITY_MAX + 1];
+        ut::detail::AutoLock<OSMutex> lock(mMutex);
 
-			ut::detail::AutoLock<OSMutex> lock(mMutex);
+        while (!mPriorityList.IsEmpty()) {
+            T& rSound = mPriorityList.GetFront();
+            mPriorityList.PopFront();
+            listsByPrio[rSound.CalcCurrentPlayerPriority()].PushBack(&rSound);
+        }
 
-			if (mPriorityList.IsEmpty())
-				return;
+        for (int i = 0; i < T::PRIORITY_MAX + 1; i++) {
+            while (!listsByPrio[i].IsEmpty()) {
+                T& rSound = listsByPrio[i].GetFront();
+                listsByPrio[i].PopFront();
+                mPriorityList.PushBack(&rSound);
+            }
+        }
+    }
 
-			RemovePriorityList(sound);
-			sound->~Sound();
-			mPool.Free(sound);
-		}
+    void UpdatePriority(T* pSound, int priority) {
+        ut::detail::AutoLock<OSMutex> lock(mMutex);
 
-		ulong GetActiveCount() const { return mPriorityList.GetSize(); }
+        RemovePriorityList(pSound);
+        InsertPriorityList(pSound, priority);
+    }
 
-		Sound *GetLowestPrioritySound()
-		{
-			if (mPriorityList.IsEmpty())
-				return nullptr;
+private:
+    NW4R_UT_LINKLIST_TYPEDEF_DECL_EX(T, Prio);
 
-			return &mPriorityList.GetFront();
-		}
+private:
+    MemoryPool<T> mPool;     // at 0x0
+    TPrioList mPriorityList; // at 0x4
+    mutable OSMutex mMutex;  // at 0x10
+};
 
-		void InsertPriorityList(Sound *sound, int priority)
-		{
-			decltype(mPriorityList.GetBeginIter()) itr =
-				mPriorityList.GetBeginIter();
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-			for (; itr != mPriorityList.GetEndIter(); ++itr)
-			{
-				if (priority < itr->CalcCurrentPlayerPriority())
-					break;
-			}
-
-			mPriorityList.Insert(itr, sound);
-		}
-
-		void SortPriorityList()
-		{
-			int const TMP_NUM = Sound::PRIORITY_MAX + 1;
-
-			if (mPriorityList.GetSize() < 2)
-				return;
-
-			ut::detail::AutoLock<OSMutex> lock(mMutex);
-
-			typename Sound::PriorityLinkList tmpList[TMP_NUM];
-
-			while (!mPriorityList.IsEmpty())
-			{
-				Sound &front = mPriorityList.GetFront();
-				mPriorityList.PopFront();
-
-				tmpList[front.CalcCurrentPlayerPriority()].PushBack(&front);
-			}
-
-			for (int i = 0; i < TMP_NUM; i++)
-			{
-				while (!tmpList[i].IsEmpty())
-				{
-					Sound &front = tmpList[i].GetFront();
-					tmpList[i].PopFront();
-
-					mPriorityList.PushBack(&front);
-				}
-			}
-		}
-
-		void RemovePriorityList(Sound *sound) { mPriorityList.Erase(sound); }
-
-		void UpdatePriority(Sound *sound, int priority)
-		{
-			ut::detail::AutoLock<OSMutex> lock(mMutex);
-
-			RemovePriorityList(sound);
-			InsertPriorityList(sound, priority);
-		}
-
-	// members
-	private:
-		MemoryPool<Sound>					mPool;			// size 0x04, offset 0x00
-		typename Sound::PriorityLinkList	mPriorityList;	// size 0x0c, offset 0x04
-		OSMutex								mMutex;			// size 0x18, offset 0x10
-	}; // size 0x28
-}}} // namespace nw4r::snd::detail
-
-#endif // NW4R_SND_SOUND_INSTANCE_MANAGER_H
+#endif

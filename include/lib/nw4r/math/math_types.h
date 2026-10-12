@@ -360,7 +360,12 @@ inline f32 VEC3Dot(register const VEC3* pA, register const VEC3* pB) {
 }
 
 inline f32 VEC3LenSq(register const VEC3* pVec) {
-    register f32 work2, work1, work0; // this order: d_fish_field (work0 not first)
+#ifdef NW4R_LIB_BUILD
+    // The prebuilt library's header (ef_cube EmissionSub, ef_util MtxGetScale).
+    register f32 work0, work1, work2;
+#else
+    register f32 work2, work1, work0; // the game's header: d_fish_field (work0 not first)
+#endif
 
     // clang-format off
     asm {

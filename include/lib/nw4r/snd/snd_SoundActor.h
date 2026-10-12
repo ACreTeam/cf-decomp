@@ -1,86 +1,67 @@
 #ifndef NW4R_SND_SOUND_ACTOR_H
 #define NW4R_SND_SOUND_ACTOR_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_ExternalSoundPlayer.h>
+#include <nw4r/snd/snd_SoundStartable.h>
 
-#include <types.h>
+#include <climits>
 
-#include "nw4r/snd/snd_BasicSound.h"
-#include "nw4r/snd/snd_ExternalSoundPlayer.h"
-#include "nw4r/snd/snd_SoundStartable.h"
+namespace nw4r {
+namespace snd {
 
-/*******************************************************************************
- * types
- */
+// Forward declarations
+class SoundHandle;
 
-// forward declarations
-namespace nw4r { namespace snd { class SoundArchivePlayer; }}
+namespace detail {
 
-/*******************************************************************************
- * classes and functions
- */
+class SoundActor : public SoundStartable {
+public:
+    explicit SoundActor(SoundStartable& rStartable) : mStartable(rStartable) {
+        detail_GetActorSoundPlayer(0)->SetPlayableSoundCount(INT_MAX);
+    }
 
-namespace nw4r { namespace snd
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x278fa
-	class SoundActor : public SoundStartable
-	{
-	// methods
-	public:
-		// cdtors
-		SoundActor(SoundArchivePlayer &player);
-		virtual ~SoundActor();
+    virtual StartResult
+    detail_SetupSound(SoundHandle* pHandle, u32 id,
+                      detail::BasicSound::AmbientArgInfo* pArgInfo,
+                      detail::ExternalSoundPlayer* pPlayer, bool hold,
+                      const StartInfo* pStartInfo); // at 0xC
 
-		virtual ulong detail_ConvertLabelStringToSoundId(const char* label) override;
-		virtual StartResult detail_SetupSound(SoundHandle *pHandle, ulong soundId, bool holdFlag, const StartInfo *pStartInfo) override;
+    virtual u32 detail_ConvertLabelStringToSoundId(const char* pLabel) {
+        return mStartable.detail_ConvertLabelStringToSoundId(pLabel);
+    } // at 0x10
 
+    ExternalSoundPlayer* detail_GetActorSoundPlayer(int idx) {
+        if (idx < 0 || idx >= ACTOR_PLAYER_COUNT) {
+            return NULL;
+        }
 
-		virtual StartResult SetupSound(SoundHandle *pHandle, ulong soundId, const StartInfo *pStartInfo, void*);
-		virtual StartResult detail_SetupSoundWithAmbientInfo(SoundHandle*, ulong, const StartInfo*, detail::BasicSound::AmbientInfo*, void*);
+        return &mActorPlayer[idx];
+    }
 
+    template <typename TForEachFunc>
+    TForEachFunc ForEachSound(TForEachFunc pFunc, bool reverse) {
+        int i;
+        ExternalSoundPlayer* pPlayer = detail_GetActorSoundPlayer(0);
 
-		// methods
-		detail::ExternalSoundPlayer *detail_GetActorPlayer(int actorPlayerId)
-		{
-			if (actorPlayerId < 0 || ACTOR_PLAYER_COUNT <= actorPlayerId)
-				return nullptr;
+        for (i = 0; i < ACTOR_PLAYER_COUNT; i++) {
+            pPlayer->ForEachSound(pFunc, reverse);
+            pPlayer++;
+        }
 
-			return &mActorPlayer[actorPlayerId];
-		}
+        return pFunc;
+    }
 
+private:
+    static const int ACTOR_PLAYER_COUNT = 8;
 
-		template <typename TForEachFunc>
-		TForEachFunc ForEachSound(TForEachFunc pFunc, bool reverse) {
-			for (int i = 0; i < ACTOR_PLAYER_COUNT; i++) {
-				mActorPlayer[i].ForEachSound(pFunc, reverse);
-			}
+private:
+    SoundStartable& mStartable;                           // at 0x4
+    ExternalSoundPlayer mActorPlayer[ACTOR_PLAYER_COUNT]; // at 0x8
+};
 
-			return pFunc;
-		}
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-		detail::SoundActorParam const &detail_GetActorParam() const
-		{
-			return mActorParam;
-		}
-
-		void StopAllSound(int fadeFrames);
-		void PauseAllSound(bool flag, int fadeFrames);
-		int GetPlayingSoundCount(int playerId) const;
-		void SetPlayableSoundCount(int playerId, int count);
-
-	// static members
-	public:
-		static int const ACTOR_PLAYER_COUNT = 4;
-
-	// members
-	private:
-		/* base SoundStartable */										// size 0x04, offset 0x00
-		SoundArchivePlayer			&mSoundArchivePlayer;				// size 0x04, offset 0x04
-		detail::ExternalSoundPlayer	mActorPlayer[ACTOR_PLAYER_COUNT];	// size 0x40, offset 0x08
-		detail::SoundActorParam		mActorParam;						// size 0x0c, offset 0x48
-	}; // size 0x54
-}} // namespace nw4r::snd
-
-#endif // NW4R_SND_SOUND_ACTOR_H
+#endif

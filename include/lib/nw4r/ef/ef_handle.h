@@ -9,7 +9,7 @@ namespace ef {
 
 class HandleBase {
 private:
-    ulong mObjectID;         // at 0x0
+    u32 mObjectID;         // at 0x0
     LinkedObject* mObject; // at 0x4
 
 public:
@@ -31,7 +31,8 @@ public:
     Handle(T* pObject) : HandleBase(static_cast<LinkedObject*>(pObject)) {}
 
     Handle& operator=(T* pObject) {
-        *this = static_cast<LinkedObject*>(pObject);
+        static_cast<HandleBase&>(*this) = static_cast<LinkedObject*>(pObject);
+        return *this;
     }
 
     bool IsAlive() const {

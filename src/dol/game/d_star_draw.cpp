@@ -196,7 +196,7 @@ void dStarDraw_c::getStarScreenPos(int star, mVec2_c *out) {
     lbl_8074E9B0->getProjectionMtx(&proj);
     mVec3_c pos(sStars[star].x, sStars[star].y, 0.0f);
     mVec3_c view;
-    fn_803911A4(mMtx, pos, view);
+    PSMTXMultVec(mMtx, pos, view);
     f32 x = proj._00 * view.x + proj._01 * view.y + proj._02 * view.z + proj._03;
     f32 y = proj._10 * view.x + proj._11 * view.y + proj._12 * view.z + proj._13;
     f32 w = proj._30 * view.x + proj._31 * view.y + proj._32 * view.z + proj._33;
@@ -605,7 +605,7 @@ bool dStarDraw_c::drawStar(pos_c *star, f32 scale, const nw4r::ut::Color *color)
     star_c *twinkle = &mStars[star->mTwinkle];
     mVec3_c pos(star->x, star->y, 0.0f);
     mVec3_c view;
-    fn_803911A4(mMtx, pos, view);
+    PSMTXMultVec(mMtx, pos, view);
     f32 h = -view.z * (f32)tan(NW4R_MATH_DEG_TO_RAD(11.25f));
     f32 w = h * lbl_8074E9B0->getAspect();
     h += 2.0f;

@@ -4,11 +4,10 @@
 
 #include <nw4r/ef/ef_activitylist.h>
 #include <nw4r/ef/ef_animcurve.h>
-#include <nw4r/ef/ef_emitter.h>
 #include <nw4r/ef/ef_random.h>
 #include <nw4r/ef/ef_referencedobject.h>
+#include <nw4r/ef/ef_res_emitter.h>
 #include <nw4r/ef/ef_types.h>
-
 #include <nw4r/math.h>
 #include <nw4r/ut.h>
 
@@ -16,12 +15,12 @@ namespace nw4r {
 namespace ef {
 
 // Forward declarations
+class Effect;
+class Emitter;
+class EmitterForm;
+class Particle;
 class ParticleManager;
 struct EmitterResource;
-class Effect;
-class EmitterForm;
-class Emitter;
-class Particle;
 
 struct EmitterInheritSetting {
     enum Flag {
@@ -36,8 +35,6 @@ struct EmitterInheritSetting {
     u8 weight; // at 0x5
     u8 type;   // at 0x6
     u8 flag;   // at 0x7
-    u8 alphaFuncPri;
-    u8 alphaFuncSec;
 };
 
 class EmitterParameter {
@@ -48,8 +45,8 @@ public:
     };
 
 public:
-    ulong mComFlags;                  // at 0x0
-    ulong mEmitFlags;                 // at 0x4
+    u32 mComFlags;                  // at 0x0
+    u32 mEmitFlags;                 // at 0x4
     f32 mEmitRatio;                 // at 0x8
     f32 mEmitRandom;                // at 0xC
     u16 mEmitInterval;              // at 0x10
@@ -90,7 +87,7 @@ public:
     bool mIsFirstEmission;                 // at 0xDC
     u16 mWaitTime;                         // at 0xDE
     u16 mEmitIntervalWait;                 // at 0xE0
-    ulong mTick;                             // at 0xE4
+    u32 mTick;                             // at 0xE4
     u16 mCalcRemain;                       // at 0xE8
     u16 mRandSeed;                         // at 0xEA
     Random mRandom;                        // at 0xEC
@@ -127,9 +124,9 @@ public:
 
     bool Closing(ParticleManager* pManager);
 
-    ulong RetireParticleAll();
-    ulong RetireParticleManager(ParticleManager* pManager);
-    ulong RetireParticleManagerAll();
+    u32 RetireParticleAll();
+    u32 RetireParticleManager(ParticleManager* pManager);
+    u32 RetireParticleManagerAll();
 
     void UpdateDatas(EmitterResource* pResource);
     bool InitializeDatas(EmitterResource* pResource, Effect* pEffect);
@@ -150,9 +147,9 @@ public:
     u16 GetNumParticleManager() const;
     ParticleManager* GetParticleManager(u16 idx);
 
-    ulong ForeachEmitter(ForEachFunc pFunc, ForEachParam param,
+    u32 ForeachEmitter(ForEachFunc pFunc, ForEachParam param,
                        bool ignoreLifeStatus);
-    ulong ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
+    u32 ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                bool ignoreLifeStatus, bool propogate);
 
     static math::MTX34* RestructMatrix(math::MTX34* pResult, math::MTX34* pOrig,

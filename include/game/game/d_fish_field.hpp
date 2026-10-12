@@ -38,7 +38,11 @@
 #include <game/game/d_uki.hpp>
 
 class dFishFldShadow_c;
-struct dEffectTarget_c;
+namespace nw4r {
+namespace ef {
+class Particle;
+}
+} // namespace nw4r
 
 // Per fish type (sFishParam, data 0x8, [77]; copied to dFishFldShadow_c::mParam).
 struct dFishParam_c {
@@ -274,7 +278,7 @@ public:
     void recvRec();                   // 0x62D8
     void addLink(dFishLink_c *link);    // 0x698C
     void removeLink(dFishLink_c *link); // 0x69B8
-    static void splashCallback(dEffectTarget_c *target, u32 kind); // 0x7260: watersplash / hamon
+    static void splashCallback(nw4r::ef::Particle *ptcl, u32 kind); // 0x7260: watersplash / hamon
     void setSplashEffect();           // 0x73BC: af_fsh_watercolumn_* / af_hny_mizutama_*
     void setEscapeEffect();           // 0x74C0: af_fsh_escape_hamon
 

@@ -3,15 +3,20 @@
 #include <stddef.h>
 #ifdef __cplusplus
 
-// inline void* operator new(size_t size, void* ptr) {
-// #pragma unused(size)
-//     return ptr;
-// }
+// Placement new. The prebuilt NW4R library was compiled against an MSL that inlines it (no NW4R
+// function calls __nw__FUlPv); EGG and the game call the out-of-line copy (__nw__FUlPv, 8043FE94)
+// declared in egg/core/eggHeap.h. NW4R_LIB_BUILD is set only by the NW4R units' flags.
+#ifdef NW4R_LIB_BUILD
+inline void* operator new(size_t size, void* ptr) {
+#pragma unused(size)
+    return ptr;
+}
 
-// inline void* operator new[](size_t size, void* ptr) {
-// #pragma unused(size)
-//     return ptr;
-// }
+inline void* operator new[](size_t size, void* ptr) {
+#pragma unused(size)
+    return ptr;
+}
+#endif
 
 #endif
 #endif

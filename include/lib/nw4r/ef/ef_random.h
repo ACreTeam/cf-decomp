@@ -7,10 +7,10 @@ namespace ef {
 
 class Random {
 private:
-    ulong mSeed; // at 0x0
+    u32 mSeed; // at 0x0
 
 public:
-    void Srand(ulong seed) {
+    void Srand(u32 seed) {
         mSeed = seed;
     }
 

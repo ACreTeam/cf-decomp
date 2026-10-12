@@ -49,18 +49,18 @@ public:
  ******************************************************************************/
 struct ResCacheVtxDescv {
     union {
-        ulong data_ulong[0xC / sizeof(ulong)];
+        ulong data_u32[0xC / sizeof(ulong)];
         u8 data[0xC / sizeof(u8)];
     }; // at 0x0
 
     void Clear() {
-        data_ulong[0] = data_ulong[1] = data_ulong[2] = 0;
+        data_u32[0] = data_u32[1] = data_u32[2] = 0;
     }
 
     bool operator==(const ResCacheVtxDescv& rRhs) const {
-        return data_ulong[0] == rRhs.data_ulong[0] &&
-               data_ulong[1] == rRhs.data_ulong[1] &&
-               data_ulong[2] == rRhs.data_ulong[2];
+        return data_u32[0] == rRhs.data_u32[0] &&
+               data_u32[1] == rRhs.data_u32[1] &&
+               data_u32[2] == rRhs.data_u32[2];
     }
 };
 

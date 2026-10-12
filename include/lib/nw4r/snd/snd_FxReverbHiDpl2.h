@@ -1,8 +1,10 @@
 #ifndef NW4R_SND_FX_REVERB_HI_DPL2_H
 #define NW4R_SND_FX_REVERB_HI_DPL2_H
-#include "nw4r/snd/snd_AxfxImpl.h"
-#include "nw4r/snd/snd_FxBase.h"
-#include "nw4r/types_nw4r.h"
+#include <nw4r/types_nw4r.h>
+
+#include <nw4r/snd/snd_AxfxImpl.h>
+#include <nw4r/snd/snd_FxBase.h>
+
 #include <revolution/AXFX.h> // IWYU pragma: export
 
 namespace nw4r {
@@ -18,11 +20,11 @@ public:
         f32 crossTalk;    // at 0x10
         f32 outGain;      // at 0x14
         // City Folk's version has five more words (ctor 80262D10 sets 5, f, 0, f, f).
-        int field_0x18;   // at 0x18
-        f32 field_0x1C;   // at 0x1C
-        int field_0x20;   // at 0x20
-        f32 field_0x24;   // at 0x24
-        f32 field_0x28;   // at 0x28
+        int field_0x18; // at 0x18
+        f32 field_0x1C; // at 0x1C
+        int field_0x20; // at 0x20
+        f32 field_0x24; // at 0x24
+        f32 field_0x28; // at 0x28
     }; // size 0x2C
 
 public:
@@ -36,16 +38,17 @@ public:
     virtual bool StartUp();  // at 0xC
     virtual void Shutdown(); // at 0x10
 
-    virtual void UpdateBuffer(
-        int channels, void **ppBuffer, ulong size, SampleFormat format, f32 sampleRate,
-        OutputMode mode
-    ); // at 0x14
+    virtual void UpdateBuffer(int channels, void** ppBuffer, u32 size,
+                              SampleFormat format, f32 sampleRate,
+                              OutputMode mode); // at 0x14
 
-    virtual bool AssignWorkBuffer(void *pBuffer, ulong size); // at 0x18
-    virtual void ReleaseWorkBuffer();                       // at 0x1C
+    virtual void OnChangeOutputMode(); // at 0x18
 
-    ulong GetRequiredMemSize();
-    bool SetParam(const ReverbHiDpl2Param &rParam);
+    virtual bool AssignWorkBuffer(void* pBuffer, u32 size); // at 0x1C
+    virtual void ReleaseWorkBuffer();                       // at 0x20
+
+    u32 GetRequiredMemSize();
+    bool SetParam(const ReverbHiDpl2Param& rParam);
 
 private:
     // City Folk's layout (ctor 80262D10, UpdateBuffer 8026333C; size 0x308).

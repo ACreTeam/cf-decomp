@@ -350,7 +350,7 @@ bool m3d::bmdl_c::getNodeWorldMtxMultVec(ulong idx, const nw4r::math::VEC3 &in, 
     if (!getNodeWorldMtx(idx, &mtx)) {
         return false;
     }
-    fn_803911A4(mtx, in, out);
+    PSMTXMultVec(mtx, in, out);
     return true;
 }
 

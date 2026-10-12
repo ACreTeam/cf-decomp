@@ -122,7 +122,7 @@ int isInPane(nw4r::lyt::Pane *pane, void *arg) {
     EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13, g._20, g._21, g._22, g._23);
     PSMTXInverse(mtx.m, mtx.m);
     mVec3_c pos(hit->mPos.x, hit->mPos.y, 0.0f);
-    fn_803911A4(mtx.m, (Vec *)&pos, (Vec *)&pos);
+    PSMTXMultVec(mtx.m, (Vec *)&pos, (Vec *)&pos);
     char c = pane->GetName()[1];
     if (c == 'C' || c == 'c') {
         f32 r2 = hit->mScale * (pane->GetSize().width * 0.5f);
@@ -443,7 +443,7 @@ void getScreenPos(mVec3_c *pos, nw4r::lyt::Pane *pane) {
     pos->x = 0.0f;
     pos->y = 0.0f;
     pos->z = 0.0f;
-    fn_803911A4(mtx.m, (Vec *)pos, (Vec *)pos);
+    PSMTXMultVec(mtx.m, (Vec *)pos, (Vec *)pos);
 }
 
 // 80008724
@@ -457,7 +457,7 @@ void getScreenLeftTop(mVec3_c *pos, nw4r::lyt::Pane *pane) {
     pos->z = 0.0f;
     pos->x = rect.left;
     pos->y = rect.top;
-    fn_803911A4(mtx.m, (Vec *)pos, (Vec *)pos);
+    PSMTXMultVec(mtx.m, (Vec *)pos, (Vec *)pos);
 }
 
 // 800087F4
@@ -471,7 +471,7 @@ void getScreenRightBottom(mVec3_c *pos, nw4r::lyt::Pane *pane) {
     pos->z = 0.0f;
     pos->x = rect.right;
     pos->y = rect.bottom;
-    fn_803911A4(mtx.m, (Vec *)pos, (Vec *)pos);
+    PSMTXMultVec(mtx.m, (Vec *)pos, (Vec *)pos);
 }
 
 // 800088C4

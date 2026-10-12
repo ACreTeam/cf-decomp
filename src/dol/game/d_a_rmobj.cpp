@@ -85,7 +85,7 @@ mVec3_c *daRmobj_c::model_c::getNodePos(const char *name) {
     static mVec3_c l_pos;
     nw4r::math::MTX34 *mtx = getNodeMtx(name);
     if (mtx != NULL) {
-        fn_803911A4(mtx->m, mVec3_c::Zero, l_pos);
+        PSMTXMultVec(mtx->m, mVec3_c::Zero, l_pos);
         return &l_pos;
     }
     return &l_pos;
@@ -104,7 +104,7 @@ mVec3_c *daRmobj_c::model_c::getNodePos(int node) {
     static mVec3_c l_pos;
     nw4r::math::MTX34 *mtx = getNodeMtx(node);
     if (mtx != NULL) {
-        fn_803911A4(mtx->m, mVec3_c::Zero, l_pos);
+        PSMTXMultVec(mtx->m, mVec3_c::Zero, l_pos);
         return &l_pos;
     }
     return &l_pos;

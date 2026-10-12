@@ -124,7 +124,7 @@ void getSoundPos(const mVec3_c *src, mVec3_c *dst) {
     if (dWorld::isCurve()) {
         *dst = *src - lbl_80624004;
     } else {
-        fn_803911A4(lbl_8074E9B0->mCamera.getViewMatrix(), *src, *dst);
+        PSMTXMultVec(lbl_8074E9B0->mCamera.getViewMatrix(), *src, *dst);
     }
 }
 

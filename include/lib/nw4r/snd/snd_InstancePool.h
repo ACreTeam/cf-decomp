@@ -1,105 +1,98 @@
 #ifndef NW4R_SND_INSTANCE_POOL_H
 #define NW4R_SND_INSTANCE_POOL_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+namespace nw4r {
+namespace snd {
+namespace detail {
 
-#include <new>
+/******************************************************************************
+ *
+ * PoolImpl
+ *
+ ******************************************************************************/
+class PoolImpl {
+public:
+    PoolImpl() : mNext(NULL) {}
 
-#include <types.h>
+protected:
+    u32 CreateImpl(void* pBuffer, u32 size, u32 stride);
+    void DestroyImpl(void* pBuffer, u32 size);
+    int CountImpl() const;
 
-/*******************************************************************************
- * classes and functions
- */
+    void* AllocImpl();
+    void FreeImpl(void* pElem);
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2e96b
-	class PoolImpl
-	{
-	// methods
-	protected:
-		// cdtors
-		PoolImpl() : mNext(nullptr) {}
+private:
+    PoolImpl* mNext; // at 0x0
+};
 
-		// methods
-		ulong CreateImpl(void *buffer, ulong size, ulong objSize);
-		void DestroyImpl(void *buffer, ulong size);
+/******************************************************************************
+ *
+ * InstancePool
+ *
+ ******************************************************************************/
+template <typename T> class InstancePool : private PoolImpl {
+public:
+    u32 Create(void* pBuffer, u32 size) {
+        return CreateImpl(pBuffer, size, sizeof(T));
+    }
 
-		int CountImpl() const;
+    void Destroy(void* pPtr, u32 size) {
+        DestroyImpl(pPtr, size);
+    }
 
-		void *AllocImpl();
-		void FreeImpl(void *ptr);
+    int Count() const {
+        return CountImpl();
+    }
 
-	// members
-	private:
-		PoolImpl	*mNext;	// size 0x04, offset 0x00
-	}; // size 0x04
+    T* Alloc() {
+        void* pPtr = AllocImpl();
+        if (pPtr == NULL) {
+            return NULL;
+        }
 
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2f735, 0x31491...
-	template <class T>
-	class InstancePool : private PoolImpl
-	{
-	// methods
-	public:
-		// methods
-		ulong Create(void *buffer, ulong size)
-		{
-			ulong objSize = sizeof(T);
+        return new (pPtr) T;
+    }
 
-			return CreateImpl(buffer, size, objSize);
-		}
-		void Destroy(void *buffer, ulong size) { DestroyImpl(buffer, size); }
+    void Free(T* pElem) {
+        if (pElem != NULL) {
+            pElem->~T();
+            FreeImpl(pElem);
+        }
+    }
+};
 
-		int Count() const { return CountImpl(); }
+/******************************************************************************
+ *
+ * MemoryPool
+ *
+ ******************************************************************************/
+template <typename T> class MemoryPool : private PoolImpl {
+public:
+    u32 Create(void* pBuffer, u32 size) {
+        return CreateImpl(pBuffer, size, sizeof(T));
+    }
 
-		T *Alloc()
-		{
-			void *ptr = AllocImpl();
-			if (!ptr)
-				return nullptr;
+    void Destroy(void* pPtr, u32 size) {
+        DestroyImpl(pPtr, size);
+    }
 
-			return new (ptr) T;
-		}
-		void Free(T *obj)
-		{
-			if (obj)
-			{
-				obj->~T();
-				FreeImpl(obj);
-			}
-		}
+    int Count() const {
+        return CountImpl();
+    }
 
-	// members
-	private:
-		/* base PoolImpl */	// size 0x04, offset 0x00
-	}; // size 0x04
+    T* Alloc() {
+        return static_cast<T*>(AllocImpl());
+    }
 
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2efa0, 0x309c7...
-	template <class T>
-	class MemoryPool : private PoolImpl
-	{
-	// methods
-	public:
-		// methods
-		ulong Create(void *buffer, ulong size)
-		{
-			ulong objSize = sizeof(T);
+    void Free(T* pElem) {
+        FreeImpl(pElem);
+    }
+};
 
-			return CreateImpl(buffer, size, objSize);
-		}
-		void Destroy(void *buffer, ulong size) { DestroyImpl(buffer, size); }
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-		int Count() const { return CountImpl(); } // Presumably
-
-		T *Alloc() { return static_cast<T *>(AllocImpl()); }
-		void Free(T *obj) { FreeImpl(obj); }
-
-	// members
-	private:
-		/* base PoolImpl */	// size 0x04, offset 0x00
-	}; // size 0x04
-}}} // namespace nw4r::snd::detail
-
-#endif // NW4R_SND_INSTANCE_POOL_H
+#endif

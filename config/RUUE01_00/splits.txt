@@ -2137,6 +2137,7 @@ lib/nw4r/ut/ut_LockedCache.cpp:
 
 lib/nw4r/ut/ut_Font.cpp:
 	.text       start:0x8022BAE0 end:0x8022BB88
+	.data       start:0x805212F8 end:0x80521328
 
 lib/nw4r/ut/ut_RomFont.cpp:
 	.text       start:0x8022BB88 end:0x8022BBC8
@@ -2171,6 +2172,7 @@ lib/nw4r/math/math_types.cpp:
 
 lib/nw4r/math/math_geometry.cpp:
 	.text       start:0x802325A4 end:0x802331EC
+	.sdata2     start:0x80751E00 end:0x80751E10
 
 lib/nw4r/g3d/res/g3d_rescommon.cpp:
 	.text       start:0x802331EC end:0x802332E4
@@ -2204,24 +2206,29 @@ lib/nw4r/g3d/res/g3d_resnode.cpp:
 
 lib/nw4r/g3d/res/g3d_resanm.cpp:
 	.text       start:0x80239A28 end:0x80239C54
+	.sdata2     start:0x80751E58 end:0x80751E6C
 
 lib/nw4r/g3d/res/g3d_resanmvis.cpp:
 	.text       start:0x80239C54 end:0x80239D74
+	.sdata2     start:0x80751E70 end:0x80751E80
 
 lib/nw4r/g3d/res/g3d_resanmclr.cpp:
 	.text       start:0x80239D74 end:0x80239EE0
+	.sdata2     start:0x80751E80 end:0x80751E90
 
 lib/nw4r/g3d/res/g3d_resanmtexpat.cpp:
 	.text       start:0x80239EE0 end:0x8023A4F4
 
 lib/nw4r/g3d/res/g3d_resanmtexsrt.cpp:
 	.text       start:0x8023A4F4 end:0x8023A908
+	.sdata2     start:0x80751E90 end:0x80751E98
 
 lib/nw4r/g3d/res/g3d_resanmchr.cpp:
 	.text       start:0x8023A908 end:0x8023C37C
 
 lib/nw4r/g3d/res/g3d_resanmshp.cpp:
 	.text       start:0x8023C37C end:0x8023C4E4
+	.sdata2     start:0x80751EB8 end:0x80751EBC
 
 lib/nw4r/g3d/g3d_transform.cpp:
 	.text       start:0x8023C4E4 end:0x8023C7D4
@@ -2252,15 +2259,23 @@ lib/nw4r/g3d/g3d_obj.cpp:
 
 lib/nw4r/g3d/g3d_anmobj.cpp:
 	.text       start:0x80242B74 end:0x80242C2C
+	.rodata     start:0x80485420 end:0x80485430
+	.sdata      start:0x8074CA08 end:0x8074CA10
+	.sdata2     start:0x80751F38 end:0x80751F40
 
 lib/nw4r/g3d/platform/g3d_gpu.cpp:
 	.text       start:0x80242C2C end:0x8024313C
+	.sdata2     start:0x80751F40 end:0x80751F58
 
 lib/nw4r/g3d/platform/g3d_tmem.cpp:
 	.text       start:0x8024313C end:0x80243494
+	.rodata     start:0x80485430 end:0x80485BB0
+	.bss        start:0x8065F6D0 end:0x8065FB10
+	.sbss       start:0x8074EEA0 end:0x8074EEB0
 
 lib/nw4r/g3d/platform/g3d_cpu.cpp:
 	.text       start:0x80243494 end:0x80243638
+	.sdata2     start:0x80751F58 end:0x80751F60
 
 lib/nw4r/g3d/g3d_state.cpp:
 	.text       start:0x80243638 end:0x80246E8C
@@ -2316,18 +2331,25 @@ lib/nw4r/g3d/g3d_calcmaterial.cpp:
 
 lib/nw4r/g3d/g3d_init.cpp:
 	.text       start:0x80257498 end:0x80257594
+	.data       start:0x80521E10 end:0x80521E58
+	.sdata      start:0x8074CA50 end:0x8074CA58
 
 lib/nw4r/g3d/g3d_scnproc.cpp:
 	.text       start:0x80257594 end:0x80257884
+	.rodata     start:0x80485D20 end:0x80485D30
+	.data       start:0x80521E58 end:0x80521E90
+	.sdata2     start:0x80752068 end:0x80752070
 
 lib/nw4r/g3d/g3d_fog.cpp:
 	.text       start:0x80257884 end:0x802579F8
+	.sdata2     start:0x80752070 end:0x80752078
 
 lib/nw4r/g3d/g3d_light.cpp:
 	.text       start:0x802579F8 end:0x80258434
 
 lib/nw4r/g3d/g3d_calcvtx.cpp:
 	.text       start:0x80258434 end:0x80258C2C
+	.sdata2     start:0x807520A8 end:0x807520B0
 
 lib/nw4r/snd/snd_AxManager.cpp:
 	.text       start:0x80258C2C end:0x8025A7D0
@@ -2474,6 +2496,8 @@ lib/nw4r/snd/snd_Task.cpp:
 
 lib/nw4r/snd/snd_TaskManager.cpp:
 	.text       start:0x8027286C end:0x80272EF4
+	.bss        start:0x806993F8 end:0x80699440
+	.sbss       start:0x8074EF58 end:0x8074EF60
 
 lib/nw4r/snd/snd_TaskThread.cpp:
 	.text       start:0x80272EF4 end:0x802730B8
@@ -2511,6 +2535,7 @@ lib/nw4r/snd/snd_adpcm.cpp:
 
 lib/nw4r/ef/ef_draworder.cpp:
 	.text       start:0x802782A8 end:0x802783B4
+	.data       start:0x80522598 end:0x805225B0
 
 lib/nw4r/ef/ef_effect.cpp:
 	.text       start:0x802783B4 end:0x802790DC
@@ -2612,6 +2637,8 @@ lib/nw4r/ef/ef_res_animcurve_ac.cpp:
 
 lib/nw4r/lyt/lyt_init.cpp:
 	.text       start:0x8029D7E4 end:0x8029D838
+	.data       start:0x80522C58 end:0x80522CA0
+	.sdata      start:0x8074CAF8 end:0x8074CB00
 
 lib/nw4r/lyt/lyt_pane.cpp:
 	.text       start:0x8029D838 end:0x8029E6F8
@@ -2647,12 +2674,15 @@ lib/nw4r/lyt/lyt_texMap.cpp:
 
 lib/nw4r/lyt/lyt_drawInfo.cpp:
 	.text       start:0x802A7050 end:0x802A7104
+	.data       start:0x80523018 end:0x80523024
+	.sdata2     start:0x807528A0 end:0x807528A8
 
 lib/nw4r/lyt/lyt_animation.cpp:
 	.text       start:0x802A7104 end:0x802A8630
 
 lib/nw4r/lyt/lyt_resourceAccessor.cpp:
 	.text       start:0x802A8630 end:0x802A8688
+	.data       start:0x80523050 end:0x80523064
 
 lib/nw4r/lyt/lyt_arcResourceAccessor.cpp:
 	.text       start:0x802A8688 end:0x802A8D9C

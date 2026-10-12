@@ -1,10 +1,13 @@
 #ifndef NW4R_SND_SOUND_HEAP_H
 #define NW4R_SND_SOUND_HEAP_H
-#include "nw4r/snd/snd_FrameHeap.h"
-#include "nw4r/snd/snd_SoundMemoryAllocatable.h"
-#include "nw4r/ut.h" // IWYU pragma: export
-#include <revolution/OS.h>  // IWYU pragma: export
+#include <nw4r/types_nw4r.h>
 
+#include <nw4r/snd/snd_FrameHeap.h>
+#include <nw4r/snd/snd_SoundMemoryAllocatable.h>
+
+#include <nw4r/ut.h>
+
+#include <revolution/OS.h>
 
 namespace nw4r {
 namespace snd {
@@ -14,11 +17,12 @@ public:
     SoundHeap();
     virtual ~SoundHeap(); // at 0x8
 
-    virtual void *Alloc(ulong size); // at 0xC
+    virtual void* Alloc(u32 size); // at 0xC
 
-    void *Alloc(ulong size, detail::FrameHeap::FreeCallback pCallback, void *pCallbackArg);
+    void* Alloc(u32 size, detail::FrameHeap::FreeCallback pCallback,
+                void* pCallbackArg);
 
-    bool Create(void *pBase, ulong size);
+    bool Create(void* pBase, u32 size);
     void Destroy();
 
     void Clear();
@@ -35,16 +39,17 @@ public:
         return mFrameHeap.GetCurrentLevel();
     }
 
-    ulong GetFreeSize() const {
+    u32 GetFreeSize() const {
         ut::detail::AutoLock<OSMutex> lock(mMutex);
         return mFrameHeap.GetFreeSize();
     }
 
 private:
-    static void DisposeCallbackFunc(void *pBuffer, ulong size, void *pCallbackArg);
+    static void DisposeCallbackFunc(void* pBuffer, u32 size,
+                                    void* pCallbackArg);
 
 private:
-    mutable OSMutex mMutex;       // at 0x0
+    mutable OSMutex mMutex;       // at 0x4
     detail::FrameHeap mFrameHeap; // at 0x1C
 };
 

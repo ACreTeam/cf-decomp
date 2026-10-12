@@ -96,3 +96,10 @@ typedef int BOOL;
 #define AT_ADDRESS(x)
 #define STATIC_ASSERT(...)
 #endif
+
+// Shared helpers (from the nw4r import): string / FOURCC / rounding macros and the inline-asm
+// compatibility layer.
+#include <macros.h>
+#include <decomp/compat.h>
+#include <decomp/decomp.h>
+#include <decomp/lang.h>

@@ -1,39 +1,27 @@
 #ifndef NW4R_SND_DISPOSE_CALLBACK_H
 #define NW4R_SND_DISPOSE_CALLBACK_H
-#include "nw4r/types_nw4r.h"
-#include "nw4r/ut.h"
+#include <nw4r/types_nw4r.h>
 
+#include <nw4r/ut.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
 
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x26773
-	class DisposeCallback
-	{
-	// typedefs
-	public:
-		typedef ut::LinkList<DisposeCallback, 0x00> LinkList;
+class DisposeCallback {
+public:
+    NW4R_UT_LINKLIST_NODE_DECL(); // at 0x0
 
-	// methods
-	public:
-		// cdtors
-		/* virtual ~DisposeCallback() {} */ // virtual function ordering
+public:
+    virtual ~DisposeCallback() {} // at 0x8
 
-	// members
-	public:
-		ut::LinkListNode	mDisposeLink;	// size 0x08, offset 0x00
-		/* vtable */						// size 0x04, offset 0x08
+    virtual void InvalidateData(const void* pStart,
+                                const void* pEnd) = 0; // at 0xC
+    virtual void InvalidateWaveData(const void* pStart,
+                                    const void* pEnd) = 0; // at 0x10
+};
 
-	// late virtual methods
-	public:
-		// virtual function ordering
-		// vtable DisposeCallback
-		virtual ~DisposeCallback() {}
-		virtual void InvalidateData(void const *pStart, void const *pEnd) = 0;
-		virtual void InvalidateWaveData(void const *pStart,
-		                                void const *pEnd) = 0;
-	}; // size 0x0c
+NW4R_UT_LINKLIST_TYPEDEF_DECL(DisposeCallback);
 
 } // namespace detail
 } // namespace snd

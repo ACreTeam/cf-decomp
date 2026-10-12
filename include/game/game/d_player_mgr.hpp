@@ -5,6 +5,8 @@
 #include <game/game/d_demo_actor.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
+#include <lib/nw4r/ef/ef_particle.h>
+#include <lib/nw4r/ef/ef_particlemanager.h>
 
 class dHmnToolBank_c;
 
@@ -156,13 +158,6 @@ extern dPlayerMgr_c lbl_805D2440;
 extern s16 sLookPitchMax; // 8074E600: 10 degrees
 extern s16 sLookYawMax;   // 8074E602: 45 degrees
 
-// Object passed to the splash effect callback (fn_801022B8).
-struct dEffectTarget_c {
-    /* 0x00 */ u8 _00[0xAC];
-    /* 0xAC */ mVec3_c _AC;
-    /* 0xB8 */ u8 _B8[0x10];
-    /* 0xC8 */ void *_C8;
-};
 
 // Output of fn_802C5A0C (Mii data); 8 bytes at 0x2C go to dPrivateData_c::mMiiId.
 struct dMiiData_c {
@@ -398,7 +393,7 @@ BOOL fn_80101EB0(int idx, u8 b, int state, const u8 *param); // 80101EB0
 BOOL fn_80102138(int a, int b); // 80102138
 u8 fn_801021B0(u32 state); // 801021B0
 int fn_801021D0(const dItem::Item *a, const dItem::Item *b); // 801021D0
-void fn_801022B8(dEffectTarget_c *obj, u32 kind); // 801022B8
+void fn_801022B8(nw4r::ef::Particle *obj, u32 kind); // 801022B8
 int fn_80102434(const mVec3_c *pos); // 80102434
 void fn_801024F8(const char *const *names, const mVec3_c *pos, int b, int c, int d); // 801024F8
 BOOL fn_801025B8(); // 801025B8

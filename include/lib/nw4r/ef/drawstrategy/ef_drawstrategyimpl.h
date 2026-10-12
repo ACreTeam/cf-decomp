@@ -3,8 +3,9 @@
 #include <nw4r/types_nw4r.h>
 
 #include <nw4r/ef/ef_drawstrategy.h>
+#include <nw4r/ef/ef_particle.h>
+#include <nw4r/ef/ef_particlemanager.h>
 #include <nw4r/ef/ef_types.h>
-
 #include <nw4r/math.h>
 
 #include <revolution/GX.h>
@@ -17,8 +18,14 @@ namespace ef {
 // Forward declarations
 class Particle;
 class ParticleManager;
+struct EmitterDrawSetting;
 struct TextureData;
 
+/******************************************************************************
+ *
+ * DrawStrategyImpl
+ *
+ ******************************************************************************/
 class DrawStrategyImpl : public DrawStrategy {
 public:
     typedef Particle* (*GetFirstDrawParticleFunc)(ParticleManager* pManager);
@@ -152,7 +159,8 @@ protected:
     }
 
     static void CalcAhead_EmitterDesign(math::VEC3* pAxisY,
-                                        AheadContext* pContext) {
+                                        AheadContext* pContext,
+                                        Particle* /* pParticle */) {
 
         *pAxisY = pContext->mCommon.mEmitterAxisY;
     }
@@ -176,7 +184,8 @@ protected:
         }
     }
 
-    static void CalcAhead_NoDesign(math::VEC3* pAxisY, AheadContext* pContext) {
+    static void CalcAhead_NoDesign(math::VEC3* pAxisY, AheadContext* pContext,
+                                   Particle* /* pParticle */) {
         *pAxisY = math::VEC3(pContext->mNoDesign.mWorldYAxis);
     }
 
@@ -358,6 +367,15 @@ protected:
     static const math::VEC3 mZeroVec;
     static const math::MTX34 mIdentityMtx;
 };
+
+/******************************************************************************
+ *
+ * Utility functions
+ *
+ ******************************************************************************/
+static void GXPosition(const math::VEC3& rPos) {
+    GXPosition3f32(rPos.x, rPos.y, rPos.z);
+}
 
 } // namespace ef
 } // namespace nw4r

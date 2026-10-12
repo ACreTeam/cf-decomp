@@ -255,50 +255,50 @@ void dpdBox_c::set(const mVec3_c &pos, f32 sizeX, f32 sizeZ, f32 height, s16 ang
     v1 = mVec3_c(nx, 0.0f, hz);
     v2 = mVec3_c(hx, 0.0f, hz);
     v3 = mVec3_c(hx, height, hz);
-    fn_803911A4(mtx, v0, v0);
-    fn_803911A4(mtx, v1, v1);
-    fn_803911A4(mtx, v2, v2);
-    fn_803911A4(mtx, v3, v3);
+    PSMTXMultVec(mtx, v0, v0);
+    PSMTXMultVec(mtx, v1, v1);
+    PSMTXMultVec(mtx, v2, v2);
+    PSMTXMultVec(mtx, v3, v3);
     mQuad[0].set(v0, v1, v2, v3, type, owner, &pos, param);
 
     v0 = mVec3_c(hx, height, hz);
     v1 = mVec3_c(hx, 0.0f, hz);
     v2 = mVec3_c(hx, 0.0f, nz);
     v3 = mVec3_c(hx, height, nz);
-    fn_803911A4(mtx, v0, v0);
-    fn_803911A4(mtx, v1, v1);
-    fn_803911A4(mtx, v2, v2);
-    fn_803911A4(mtx, v3, v3);
+    PSMTXMultVec(mtx, v0, v0);
+    PSMTXMultVec(mtx, v1, v1);
+    PSMTXMultVec(mtx, v2, v2);
+    PSMTXMultVec(mtx, v3, v3);
     mQuad[1].set(v0, v1, v2, v3, type, owner, &pos, param);
 
     v0 = mVec3_c(nx, height, nz);
     v1 = mVec3_c(nx, 0.0f, nz);
     v2 = mVec3_c(nx, 0.0f, hz);
     v3 = mVec3_c(nx, height, hz);
-    fn_803911A4(mtx, v0, v0);
-    fn_803911A4(mtx, v1, v1);
-    fn_803911A4(mtx, v2, v2);
-    fn_803911A4(mtx, v3, v3);
+    PSMTXMultVec(mtx, v0, v0);
+    PSMTXMultVec(mtx, v1, v1);
+    PSMTXMultVec(mtx, v2, v2);
+    PSMTXMultVec(mtx, v3, v3);
     mQuad[2].set(v0, v1, v2, v3, type, owner, &pos, param);
 
     v0 = mVec3_c(hx, height, nz);
     v1 = mVec3_c(hx, 0.0f, nz);
     v2 = mVec3_c(nx, 0.0f, nz);
     v3 = mVec3_c(nx, height, nz);
-    fn_803911A4(mtx, v0, v0);
-    fn_803911A4(mtx, v1, v1);
-    fn_803911A4(mtx, v2, v2);
-    fn_803911A4(mtx, v3, v3);
+    PSMTXMultVec(mtx, v0, v0);
+    PSMTXMultVec(mtx, v1, v1);
+    PSMTXMultVec(mtx, v2, v2);
+    PSMTXMultVec(mtx, v3, v3);
     mQuad[3].set(v0, v1, v2, v3, type, owner, &pos, param);
 
     v0 = mVec3_c(nx, height, nz);
     v1 = mVec3_c(nx, height, hz);
     v2 = mVec3_c(hx, height, hz);
     v3 = mVec3_c(hx, height, nz);
-    fn_803911A4(mtx, v0, v0);
-    fn_803911A4(mtx, v1, v1);
-    fn_803911A4(mtx, v2, v2);
-    fn_803911A4(mtx, v3, v3);
+    PSMTXMultVec(mtx, v0, v0);
+    PSMTXMultVec(mtx, v1, v1);
+    PSMTXMultVec(mtx, v2, v2);
+    PSMTXMultVec(mtx, v3, v3);
     mQuad[4].set(v0, v1, v2, v3, type, owner, &pos, param);
 }
 
@@ -643,10 +643,10 @@ void calc() {
                 mtx.XrotS(horizon);
                 mtx.concat(mMtx_c::createTrans(center->x, radius, 0.0f));
                 mtx.XrotM(-0x1000);
-                fn_803911A4(mtx, v0, v0);
-                fn_803911A4(mtx, v1, v1);
-                fn_803911A4(mtx, v2, v2);
-                fn_803911A4(mtx, v3, v3);
+                PSMTXMultVec(mtx, v0, v0);
+                PSMTXMultVec(mtx, v1, v1);
+                PSMTXMultVec(mtx, v2, v2);
+                PSMTXMultVec(mtx, v3, v3);
                 mVec3_c normal;
                 dBGC::poly_c::calcNormal(&normal, v0, v1, v2);
                 dBGC::poly_c polys[2] = {dBGC::poly_c(v0, v1, v2, normal),

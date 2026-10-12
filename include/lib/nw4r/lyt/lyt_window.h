@@ -128,7 +128,7 @@ public:
     virtual void UnbindAnimationSelf(AnimTransform* pAnimTrans); // at 0x50
 
     virtual AnimationLink*
-    FindAnimationLink(AnimTransform* pAnimTrans); // at 0x54
+    FindAnimationLinkSelf(AnimTransform* pAnimTrans); // at 0x54
 
     virtual void SetAnimationEnable(AnimTransform* pAnimTrans, bool enable,
                                     bool recursive); // at 0x58

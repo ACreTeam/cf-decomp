@@ -13,6 +13,6 @@ Some of these translation units match City Folk exactly (`Matching` in
 | `gamespy/` | [doldecomp/mkw](https://github.com/doldecomp/mkw) `lib/gamespy` | GameSpy sources and headers |
 | `gamespy/support/` | mkw `include`, `lib/MSL`, `lib/rvl` | mkw headers GameSpy depends on |
 
-Both upstream projects are CC0 (`LICENSE.wii-ipl`, `LICENSE.mkw`). Each group is
+All upstream projects are CC0 (`LICENSE.wii-ipl`, `LICENSE.mkw`). Each group is
 built with its upstream project's own compiler flags (the `cflags_ext_*` lists in
 `configure.py`). Keep edits to a minimum so the files can be refreshed from upstream.

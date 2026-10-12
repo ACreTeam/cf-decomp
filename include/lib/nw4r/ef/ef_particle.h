@@ -6,7 +6,6 @@
 #include <nw4r/ef/ef_referencedobject.h>
 #include <nw4r/ef/ef_res_emitter.h>
 #include <nw4r/ef/ef_types.h>
-
 #include <nw4r/math.h>
 
 #include <revolution/GX.h>
@@ -87,6 +86,10 @@ public:
                             const EmitterInheritSetting* pSetting,
                             Particle* pReferencePtcl); // at 0x10
 
+    ParticleParameter* GetParticleParameter() {
+        return &mParameter;
+    }
+
     void Draw_GetColor(int layer, GXColor* pColorPri, GXColor* pColorSec);
 
     void GetColor(int layer, int index, GXColor* pColor) {
@@ -161,8 +164,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<ulong>(reverse) == TEX_REVERSE_S ||
-            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<u32>(reverse) == TEX_REVERSE_S ||
+            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
             scale -= scale * 2;
         }
 
@@ -179,8 +182,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<ulong>(reverse) == TEX_REVERSE_T ||
-            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<u32>(reverse) == TEX_REVERSE_T ||
+            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
             scale -= scale * 2;
         }
 
@@ -194,8 +197,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<ulong>(reverse) == TEX_REVERSE_S ||
-            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<u32>(reverse) == TEX_REVERSE_S ||
+            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
             trans = 1;
         }
 
@@ -212,8 +215,8 @@ public:
             (mParameter.mTextureReverse >> (layer * NUM_OF_TEX_REVERSE) &
              TEX_REVERSE_ST);
 
-        if (static_cast<ulong>(reverse) == TEX_REVERSE_T ||
-            static_cast<ulong>(reverse) == TEX_REVERSE_ST) {
+        if (static_cast<u32>(reverse) == TEX_REVERSE_T ||
+            static_cast<u32>(reverse) == TEX_REVERSE_ST) {
             trans = 1;
         }
 

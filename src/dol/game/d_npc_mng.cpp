@@ -412,8 +412,14 @@ void dNpcMng_c::hideHiders() {
                     daub->set08((u16 *)&angle);
                 }
                 if (usedNum < 3) {
-                    used[usedNum][0] = (int)pos.x >> 9;
-                    used[usedNum][1] = (int)pos.z >> 9;
+                    int xi = pos.x;
+                    // Keep the second conversion in a compiler temporary.
+                    struct {
+                        int value;
+                    } zi = {0};
+                    zi.value = pos.z;
+                    used[usedNum][0] = xi >> 9;
+                    used[usedNum][1] = zi.value >> 9;
                     usedNum++;
                 }
                 break;
@@ -486,8 +492,10 @@ BOOL dNpcMng_c::createVillagers() {
             check = TRUE;
         }
         if (check) {
+            // Post-increment preserves MWCC's argument evaluation order.
+            BOOL checkA = TRUE;
             dItem::Item none;
-            if (!canPutItemAt(&pos, &none, NULL, 0x44, FALSE, TRUE)) {
+            if (!canPutItemAt(&pos, &none, NULL, 0x44, FALSE, checkA++)) {
                 blocked = TRUE;
             }
         }
@@ -815,8 +823,10 @@ BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc,
             dNpcDaub_c::unpackXZ((const u8 *)daub, &spot);
             BOOL blocked = FALSE;
             if (checkPut) {
+                // Post-increment preserves MWCC's argument evaluation order.
+                BOOL checkA = TRUE;
                 dItem::Item none;
-                if (!canPutItemAt(&spot, &none, NULL, 0x44, FALSE, TRUE)) {
+                if (!canPutItemAt(&spot, &none, NULL, 0x44, FALSE, checkA++)) {
                     blocked = TRUE;
                 }
             }
@@ -1163,6 +1173,9 @@ BOOL dNpcMng_c::createCityAnimals() {
         return FALSE;
     }
     dLandID_c *land;
+    dAnmPersonalID_c *scanID;
+    dAnmPersonalID_c *spawnID;
+    mVec3_c *templateSpot;
     mVec3_c *spot;
     u16 *exclude = l_guestExclude;
     clearIdList(exclude, ARRAY_SIZE(l_guestExclude));
@@ -1200,11 +1213,11 @@ BOOL dNpcMng_c::createCityAnimals() {
         if (animal == NULL) {
             continue;
         }
-        id = &animal->mID;
-        if (!id->isValid() || !(looks >> id->getLooks(1) & 1)) {
+        scanID = &animal->mID;
+        if (!scanID->isValid() || !(looks >> scanID->getLooks(1) & 1)) {
             continue;
         }
-        if (id->mLand != *land) {
+        if (scanID->mLand != *land) {
             movedMask |= 1 << i;
             movedNum++;
         }
@@ -1219,18 +1232,23 @@ BOOL dNpcMng_c::createCityAnimals() {
         int idx = pickRandomBit(movedMask, movedNum, 10);
         dAnimal_c *animal = moved->getAnimalConst(idx);
         if (animal != NULL) {
-            id = &animal->mID;
-            if (id->isValid()) {
+            spawnID = &animal->mID;
+            if (spawnID->isValid()) {
                 dItem::Item key((u16)(0xE000 + ((idx & 0x3FF) | 0x800)));
+                // Materialize the range before the angle's zero initializer.
+                struct {
+                    u32 value;
+                } angleRange = {0};
+                angleRange.value = 0x10000;
                 mAng3_c angle = mAng3_c::Zero;
-                angle.y = cM::rndInt(0xFFFF);
+                angle.y = cM::rndInt(angleRange.value - 1);
                 if (dActor_c::construct(0x51, this, key.mId, spot, &angle) != NULL && spotNum != 0) {
                     spotNum--;
                     spot++;
                     placed++;
                 }
                 if (looksNum != 0) {
-                    looks &= ~(1 << id->getLooks(1));
+                    looks &= ~(1 << spawnID->getLooks(1));
                     looksNum--;
                 }
                 if (movedNum != 0) {
@@ -1256,15 +1274,15 @@ BOOL dNpcMng_c::createCityAnimals() {
     for (u32 i = 0; i < 2; i++) {
         addId(exclude, ARRAY_SIZE(l_guestExclude), sTheaterGuests[i]);
     }
-    spot = &spots[placed];
+    templateSpot = &spots[placed];
     for (u32 i = 0; i < spotNum; i++) {
         dAnimalTemplate_c *tmpl = pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
         if (tmpl != NULL) {
             u16 npcIdx = (int)tmpl->mNpcIdx;
             mAng3_c angle = mAng3_c::Zero;
             angle.y = cM::rndInt(0xFFFF);
-            dActor_c::construct(0x51, this, npcIdx, spot, &angle);
-            spot++;
+            dActor_c::construct(0x51, this, npcIdx, templateSpot, &angle);
+            templateSpot++;
             if (looksNum != 0) {
                 looksNum--;
                 looks &= ~(1 << (s8)tmpl->mLooks);

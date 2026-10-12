@@ -1,132 +1,116 @@
 #ifndef NW4R_SND_SOUND_THREAD_H
 #define NW4R_SND_SOUND_THREAD_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_AxManager.h>
 
-#include <types.h>
+#include <nw4r/ut.h>
 
-#include "nw4r/snd/snd_AxManager.h"
+#include <revolution/OS.h>
 
-#include "nw4r/ut/ut_algorithm.h" // ut::NonCopyable
-#include "nw4r/ut/ut_LinkList.h"
+namespace nw4r {
+namespace snd {
+namespace detail {
 
-#include <revolution/OS/OSMessage.h>
-#include <revolution/OS/OSMutex.h>
-#include <revolution/OS/OSThread.h>
+class SoundThread {
+    friend class AutoLock; // Prevent locking without AutoLock
 
-/*******************************************************************************
- * classes
- */
+public:
+    /******************************************************************************
+     * SoundFrameCallback
+     ******************************************************************************/
+    class SoundFrameCallback {
+    public:
+        NW4R_UT_LINKLIST_NODE_DECL(); // at 0x0
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2bc156
-	class SoundThread
-	{
-	// nested types
-	public:
-		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2bbe45
-		class AutoLock : private ut::NonCopyable
-		{
-		// methods
-		public:
-			// cdtors
-			AutoLock() { SoundThread::GetInstance().Lock(); }
-			~AutoLock() { SoundThread::GetInstance().Unlock(); }
-		}; // size 0x01 (0x00 for inheritance)
+        virtual ~SoundFrameCallback() {}    // at 0x8
+        virtual void OnBeginSoundFrame() {} // at 0xC
+        virtual void OnEndSoundFrame() {}   // at 0x10
+    };
 
-		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2bc03f
-		class SoundFrameCallback
-		{
-		// typedefs
-		public:
-			typedef ut::LinkList<SoundFrameCallback, 0x00> LinkList;
+    NW4R_UT_LINKLIST_TYPEDEF_DECL(SoundFrameCallback);
 
-		// members
-		private:
-			ut::LinkListNode	mLink;	// size 0x08, offset 0x00
-			/* vtable */				// size 0x04, offset 0x08
+    /******************************************************************************
+     * PlayerCallback
+     ******************************************************************************/
+    class PlayerCallback {
+    public:
+        NW4R_UT_LINKLIST_NODE_DECL(); // at 0x0
 
-		// late virtual methods
-		public:
-			// City Folk's vtable for a derived class (SoundAudioFrameCallback, 80503C90): the dtor,
-			// an override at 0xC and an inline empty function at 0x10 (80010478, weak).
-			virtual ~SoundFrameCallback() {}
-			virtual void OnBeginSoundFrame() {}
-			virtual void OnEndSoundFrame() {}
-		}; // size 0x0c
+        virtual ~PlayerCallback() {}               // at 0x8
+        virtual void OnUpdateFrameSoundThread() {} // at 0xC
+        virtual void OnUpdateVoiceSoundThread() {} // at 0x10
+        virtual void OnShutdownSoundThread() {}    // at 0x14
+    };
 
-		// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2cc6f
-		class PlayerCallback
-		{
-		// typedefs
-		public:
-			typedef ut::LinkList<PlayerCallback, 0x00> LinkList;
+    NW4R_UT_LINKLIST_TYPEDEF_DECL(PlayerCallback);
 
-		// members
-		private:
-			ut::LinkListNode	mLink;	// size 0x08, offset 0x00
-			/* vtable */				// size 0x04, offset 0x08
+    /******************************************************************************
+     * AutoLock
+     ******************************************************************************/
+    class AutoLock : private ut::NonCopyable {
+    public:
+        AutoLock() {
+            SoundThread::GetInstance().Lock();
+        }
 
-		// late virtual methods
-		public:
-			virtual ~PlayerCallback() {}
-			virtual void OnUpdateFrameSoundThread() {}
-			virtual void OnUpdateVoiceSoundThread() {}
-			virtual void OnShutdownSoundThread() {}
-		}; // size 0x0c
+        ~AutoLock() {
+            SoundThread::GetInstance().Unlock();
+        }
+    };
 
-	// methods
-	public:
-		// instance accessors
-		static SoundThread &GetInstance();
+public:
+    static SoundThread& GetInstance();
 
-		// methods
-		bool Create(s32 priority, void *stack, ulong stackSize);
-		void Shutdown();
+    bool Create(s32 priority, void* pStack, u32 stackSize);
+    void Shutdown();
 
-		void Lock() { OSLockMutex(&mMutex); }
-		void Unlock() { OSUnlockMutex(&mMutex); }
+    void RegisterPlayerCallback(PlayerCallback* pCallback);
+    void UnregisterPlayerCallback(PlayerCallback* pCallback);
 
-		void RegisterPlayerCallback(PlayerCallback *callback);
-		void UnregisterPlayerCallback(PlayerCallback *callback);
+private:
+    enum ThreadMessage {
+        MSG_NONE,
+        MSG_AX_CALLBACK,
+        MSG_SHUTDOWN,
+    };
 
-	private:
-		// cdtors
-		SoundThread();
+    static const int MSG_QUEUE_CAPACITY = 4;
 
-		// fibers, callbacks, and procedures
-		static void AxCallbackFunc();
-		void AxCallbackProc();
+private:
+    SoundThread();
 
-		static void *SoundThreadFunc(void *arg);
-		void SoundThreadProc();
-		void FrameProcess();
+    static void AxCallbackFunc();
+    void AxCallbackProc();
 
-	// static members
-	private:
-		static int const MESSAGE_SHUTDOWN = 1 << 1;
-		static int const MESSAGE_AX_CALLBACK = 1 << 0;
-		static int const THREAD_MESSAGE_BUFSIZE = 4;
+    static void* SoundThreadFunc(void* pArg);
+    void SoundThreadProc();
 
-	// members
-	private:
-		OSThread						mThread;							// size 0x318, offset 0x000
-		OSThreadQueue					mThreadQueue;						// size 0x008, offset 0x318
-		OSMessageQueue					mMsgQueue;							// size 0x020, offset 0x320
-		OSMessage						mMsgBuffer[THREAD_MESSAGE_BUFSIZE];	// size 0x010, offset 0x340
-		ulong							*mStackEnd;							// size 0x004, offset 0x350
-		OSMutex							mMutex;								// size 0x018, offset 0x354
-		AxManager::CallbackListNode		mAxCallbackNode;					// size 0x00c, offset 0x36c
-		SoundFrameCallback::LinkList	mSoundFrameCallbackList;			// size 0x00c, offset 0x378
-		PlayerCallback::LinkList		mPlayerCallbackList;				// size 0x00c, offset 0x384
-		ulong								mProcessTick;						// size 0x004, offset 0x390
-		bool							mCreateFlag;						// size 0x001, offset 0x394
-		bool							field_0x395;						// size 0x001, offset 0x395
-		/* 3 bytes padding */
-	}; // size 0x398
-}}} // namespace nw4r::snd::detail
+    void Lock() {
+        OSLockMutex(&mMutex);
+    }
+    void Unlock() {
+        OSUnlockMutex(&mMutex);
+    }
 
-#endif // NW4R_SND_SOUND_THREAD_H
+private:
+    OSThread mThread;                         // at 0x0
+    OSThreadQueue mThreadQueue;               // at 0x318
+    OSMessageQueue mMsgQueue;                 // at 0x320
+    OSMessage mMsgBuffer[MSG_QUEUE_CAPACITY]; // at 0x340
+    void* mStackEnd;                          // at 0x350
+    mutable OSMutex mMutex;                   // at 0x354
+
+    AxManager::CallbackListNode mAxCallbackNode;    // at 0x36C
+    SoundFrameCallbackList mSoundFrameCallbackList; // at 0x378
+    PlayerCallbackList mPlayerCallbackList;         // at 0x384
+
+    u32 mProcessTick; // at 0x390
+    bool mCreateFlag; // at 0x394
+};
+
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
+
+#endif

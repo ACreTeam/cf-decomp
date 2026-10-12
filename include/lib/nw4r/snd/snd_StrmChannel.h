@@ -1,66 +1,48 @@
 #ifndef NW4R_SND_STRM_CHANNEL_H
 #define NW4R_SND_STRM_CHANNEL_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_Types.h>
 
-#include <climits> // CHAR_BIT
+namespace nw4r {
+namespace snd {
+namespace detail {
 
-#include <types.h>
+struct StrmChannel {
+    void* bufferAddress; // at 0x0
+    u32 bufferSize;      // at 0x4
+    AdpcmInfo adpcmInfo; // at 0x8
+};
 
-#include "nw4r/snd/snd_adpcm.h"
+class StrmBufferPool {
+public:
+    void Setup(void* pBase, u32 size, int count);
+    void Shutdown();
 
-/*******************************************************************************
- * types
- */
+    void* Alloc();
+    void Free(void* pBuffer);
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2f927
-	struct StrmChannel
-	{
-		void			*bufferAddress;	// size 0x04, offset 0x00
-		AdpcmParam		adpcmParam;		// size 0x28, offset 0x04
-		AdpcmLoopParam	adpcmLoopParam;	// size 0x06, offset 0x2c
-		u16				adpcmPredScale;	// size 0x02, offset 0x32
-	}; // size 0x34
-}}} // namespace nw4r::snd::detail
+    u32 GetBlockSize() const {
+        return mBlockSize;
+    }
 
-/*******************************************************************************
- * classes and functions
- */
+private:
+    static const int BLOCK_MAX = 32;
+    static const int BITS_PER_BYTE = 8;
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x2f7c6
-	class StrmBufferPool
-	{
-	// methods
-	public:
-		// methods
-		void Setup(void *buffer, ulong size, int blockCount);
-		void Shutdown();
+private:
+    void* mBuffer;   // at 0x0
+    u32 mBufferSize; // at 0x4
 
-		ulong GetBlockSize() const { return mBlockSize; }
+    u32 mBlockSize;  // at 0x8
+    int mBlockCount; // at 0xC
 
-		void *Alloc();
-		void Free(void *p);
+    int mAllocCount;                           // at 0x10
+    u8 mAllocFlags[BLOCK_MAX / BITS_PER_BYTE]; // at 0x14
+};
 
-	// static members
-	private:
-		static int const BIT_PER_BYTE = CHAR_BIT; // uhhh ok
-		static int const BLOCK_MAX = 32;
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-	// members
-	private:
-		void	*mBuffer;														// size 0x04, offset 0x00
-		ulong		mBufferSize;													// size 0x04, offset 0x04
-		ulong		mBlockSize;														// size 0x04, offset 0x08
-		int		mBlockCount;													// size 0x04, offset 0x0c
-		int		mAllocCount;													// size 0x04, offset 0x10
-		byte_t	mAllocFlags[ROUND_UP(BLOCK_MAX, BIT_PER_BYTE) / BIT_PER_BYTE];	// size 0x04, offset 0x14
-	}; // size 0x18
-}}} // namespace nw4r::snd::detail
-
-#endif // NW4R_SND_STRM_CHANNEL_H
+#endif

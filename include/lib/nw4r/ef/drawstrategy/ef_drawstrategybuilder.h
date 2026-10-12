@@ -5,6 +5,9 @@
 namespace nw4r {
 namespace ef {
 
+// Forward declarations
+class DrawStrategy;
+
 enum DrawStrategyType {
     DRAWSTRATEGY_POINT,
     DRAWSTRATEGY_LINE,
@@ -17,7 +20,7 @@ enum DrawStrategyType {
 
 class DrawStrategyBuilder {
 public:
-    virtual DrawStrategy* Create(ulong type); // at 0x8
+    virtual DrawStrategy* Create(u32 type); // at 0x8
 };
 
 } // namespace ef

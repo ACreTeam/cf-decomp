@@ -8,7 +8,6 @@
 #include <nw4r/ef/ef_referencedobject.h>
 #include <nw4r/ef/ef_res_emitter.h>
 #include <nw4r/ef/ef_types.h>
-
 #include <nw4r/math.h>
 #include <nw4r/ut.h>
 
@@ -36,7 +35,7 @@ private:
     struct CallBack {
         typedef void (*PrevEmissionFunc)(Emitter* pEmitter,
                                          ParticleManager* pManager, int* pCount,
-                                         ulong* pFlags,
+                                         u32* pFlags,
                                          f32 (*pParams)[NUM_PARAMS], u16* pLife,
                                          f32* pLifeRnd, math::MTX34* pSpace);
 
@@ -51,11 +50,11 @@ private:
 public:
     EffectSystem* mManagerES;   // at 0x20
     ActivityList mActivityList; // at 0x24
-    ulong mGroupID;               // at 0x40
+    u32 mGroupID;               // at 0x40
     CallBack mCallBack;         // at 0x44
 
 protected:
-    ulong mFlags;                    // at 0x50
+    u32 mFlags;                    // at 0x50
     math::MTX34 mRootMtx;          // at 0x54
     math::VEC3 mVelocity;          // at 0x84
     ut::List mParticleManager;     // at 0x90
@@ -68,6 +67,16 @@ public:
     virtual void SendClosing(); // at 0x8
     virtual void DestroyFunc(); // at 0xC
 
+#if defined(VERSION_RSPE01_00)
+    bool Initialize(EffectSystem* pSystem, EmitterResource* pResource,
+                    u16 calcRemain);
+    Emitter* CreateEmitter(ResEmitter res, u8 drawWeight, u16 calcRemain) {
+        return CreateEmitter(res.ptr(), drawWeight, calcRemain);
+    }
+
+    void Calc(bool onlyBillboard);
+    void Draw(const DrawInfo& rInfo);
+#elif defined(VERSION_RSPE01_01)
     virtual bool Initialize(EffectSystem* pSystem, EmitterResource* pResource,
                             u16 calcRemain); // at 0x10
     virtual Emitter* CreateEmitter(ResEmitter res, u8 drawWeight,
@@ -77,22 +86,23 @@ public:
 
     virtual void Calc(bool onlyBillboard);    // at 0x18
     virtual void Draw(const DrawInfo& rInfo); // at 0x1C
+#endif
 
     bool Closing(Emitter* pEmitter);
 
     Emitter* CreateEmitter(EmitterResource* pResource, u8 drawWeight,
                            u16 calcRemain);
-    ulong RetireEmitter(Emitter* pEmitter);
+    u32 RetireEmitter(Emitter* pEmitter);
 
-    ulong RetireEmitterAll();
-    ulong RetireParticleAll();
+    u32 RetireEmitterAll();
+    u32 RetireParticleAll();
 
     u16 GetNumEmitter() const;
     Emitter* GetEmitter(u16 idx);
 
-    ulong ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
+    u32 ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                bool ignoreLifeStatus);
-    ulong ForeachEmitterFrom(ForEachFunc pFunc, ForEachParam param,
+    u32 ForeachEmitterFrom(ForEachFunc pFunc, ForEachParam param,
                            bool ignoreLifeStatus, Emitter* pEmitter);
 
     void ParticleManagerAdd(ParticleManager* pManager) {
@@ -102,29 +112,30 @@ public:
         mDrawOrderFunc->Remove(this, pManager);
     }
 
-    void Modifier_SetSimpleLightType(u8 type, bool ignoreLifeStatus) {
+    void Modifier_SetSimpleLightType(u8 type, bool ignoreLifeStatus = false) {
         ForeachParticleManager(
             ParticleManager::ModifierTravFunc_SetSimpleLightType,
-            static_cast<ulong>(type), ignoreLifeStatus);
+            static_cast<u32>(type), ignoreLifeStatus);
     }
 
     void Modifier_SetSimpleLightAmbient(const GXColor& rColor,
-                                        bool ignoreLifeStatus) {
+                                        bool ignoreLifeStatus = false) {
         ForeachParticleManager(
             ParticleManager::ModifierTravFunc_SetSimpleLightAmbient,
-            reinterpret_cast<ulong>(&rColor), ignoreLifeStatus);
+            reinterpret_cast<u32>(&rColor), ignoreLifeStatus);
     }
 
     // @bug Surely meant to be a const reference...
-    void Modifier_SetScale(math::VEC2& rScale, bool ignoreLifeStatus) {
+    void Modifier_SetScale(math::VEC2& rScale, bool ignoreLifeStatus = false) {
         ForeachParticleManager(ParticleManager::ModifierTravFunc_SetScale,
-                               reinterpret_cast<ulong>(&rScale),
+                               reinterpret_cast<u32>(&rScale),
                                ignoreLifeStatus);
     }
 
-    void Modifier_SetRotate(const math::VEC3& rRot, bool ignoreLifeStatus) {
+    void Modifier_SetRotate(const math::VEC3& rRot,
+                            bool ignoreLifeStatus = false) {
         ForeachParticleManager(ParticleManager::ModifierTravFunc_SetRotate,
-                               reinterpret_cast<ulong>(&rRot), ignoreLifeStatus);
+                               reinterpret_cast<u32>(&rRot), ignoreLifeStatus);
     }
 
     bool GetFlagDisableCalc() const {
@@ -168,6 +179,10 @@ public:
 
     const math::VEC3* GetVelocity() const {
         return &mVelocity;
+    }
+
+    void SetVelocity(const nw4r::math::VEC3& rVelocity) {
+        mVelocity = rVelocity;
     }
 };
 

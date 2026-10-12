@@ -2130,7 +2130,7 @@ BOOL mvbgList_c::calc(mvbg_c *mvbg, const mVec3_c &pos, mAng ang, const mVec3_c 
             mvbg->mPointNum = MVBG_POINTS_LINE;
             for (int i = 0; i < 4; i++, corner++, a += 0x4000) {
                 if ((i & 1) == odd) {
-                    fn_803911A4(mtx.m, *corner, *point);
+                    PSMTXMultVec(mtx.m, *corner, *point);
                     if (i == odd) {
                         max = *point;
                         min = *point;
@@ -2148,7 +2148,7 @@ BOOL mvbgList_c::calc(mvbg_c *mvbg, const mVec3_c &pos, mAng ang, const mVec3_c 
         } else {
             mvbg->mPointNum = MVBG_POINTS_BOX;
             for (int i = 0; i < mvbg->mPointNum; i++) {
-                fn_803911A4(mtx.m, *corner, *point);
+                PSMTXMultVec(mtx.m, *corner, *point);
                 if (i == 0) {
                     max = *point;
                     min = *point;

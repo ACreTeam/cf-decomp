@@ -510,6 +510,34 @@ private:
 
 /******************************************************************************
  *
+ * ResTexPlttInfoOffset
+ *
+ ******************************************************************************/
+struct OffsetPair {
+    s32 toMat;         // at 0x0
+    s32 toTexPlttInfo; // at 0x4
+};
+
+struct ResTexPlttInfoOffsetData {
+    ulong numOffset;     // at 0x0
+    OffsetPair vec[1]; // at 0x4
+};
+
+class ResTexPlttInfoOffset : public ResCommon<ResTexPlttInfoOffsetData> {
+public:
+    NW4R_G3D_RESOURCE_FUNC_DEF(ResTexPlttInfoOffset);
+
+    ulong GetNumOffset() const {
+        return ref().numOffset;
+    }
+
+    ResTexPlttInfo GetResTexPlttInfo(ulong idx) {
+        return ofs_to_obj<ResTexPlttInfo>(ref().vec[idx].toTexPlttInfo);
+    }
+};
+
+/******************************************************************************
+ *
  * ResMat
  *
  ******************************************************************************/

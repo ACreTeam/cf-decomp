@@ -60,7 +60,7 @@ struct ChrAnmResult {
  ******************************************************************************/
 struct ResAnmChrFrm32Data {
     union {
-        ulong fvsulong; // at 0x0
+        ulong fvsU32; // at 0x0
 
         struct {
             u8 frame; // at 0x0

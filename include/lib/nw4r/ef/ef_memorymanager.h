@@ -5,6 +5,12 @@
 namespace nw4r {
 namespace ef {
 
+// Forward declarations
+class Effect;
+class Emitter;
+class Particle;
+class ParticleManager;
+
 class MemoryManagerBase {
 public:
     MemoryManagerBase() {}
@@ -14,29 +20,30 @@ public:
 
     virtual Effect* AllocEffect() = 0;          // at 0x10
     virtual void FreeEffect(void* pObject) = 0; // at 0x14
-    virtual ulong GetNumAllocEffect() const = 0;  // at 0x18
-    virtual ulong GetNumActiveEffect() const = 0; // at 0x1C
-    virtual ulong GetNumFreeEffect() const = 0;   // at 0x20
+    virtual u32 GetNumAllocEffect() const = 0;  // at 0x18
+    virtual u32 GetNumActiveEffect() const = 0; // at 0x1C
+    virtual u32 GetNumFreeEffect() const = 0;   // at 0x20
 
     virtual Emitter* AllocEmitter() = 0;         // at 0x24
     virtual void FreeEmitter(void* pObject) = 0; // at 0x28
-    virtual ulong GetNumAllocEmitter() const = 0;  // at 0x2C
-    virtual ulong GetNumActiveEmitter() const = 0; // at 0x30
-    virtual ulong GetNumFreeEmitter() const = 0;   // at 0x34
+    virtual u32 GetNumAllocEmitter() const = 0;  // at 0x2C
+    virtual u32 GetNumActiveEmitter() const = 0; // at 0x30
+    virtual u32 GetNumFreeEmitter() const = 0;   // at 0x34
 
     virtual ParticleManager* AllocParticleManager() = 0; // at 0x38
     virtual void FreeParticleManager(void* pObject) = 0; // at 0x3C
-    virtual ulong GetNumAllocParticleManager() const = 0;  // at 0x40
-    virtual ulong GetNumActiveParticleManager() const = 0; // at 0x44
-    virtual ulong GetNumFreeParticleManager() const = 0;   // at 0x48
+    virtual u32 GetNumAllocParticleManager() const = 0;  // at 0x40
+    virtual u32 GetNumActiveParticleManager() const = 0; // at 0x44
+    virtual u32 GetNumFreeParticleManager() const = 0;   // at 0x48
 
     virtual Particle* AllocParticle() = 0;        // at 0x4C
     virtual void FreeParticle(void* pObject) = 0; // at 0x50
-    virtual ulong GetNumAllocParticle() const = 0;  // at 0x54
-    virtual ulong GetNumActiveParticle() const = 0; // at 0x58
-    virtual ulong GetNumFreeParticle() const = 0;   // at 0x5C
+    virtual u32 GetNumAllocParticle() const = 0;  // at 0x54
+    virtual u32 GetNumActiveParticle() const = 0; // at 0x58
+    virtual u32 GetNumFreeParticle() const = 0;   // at 0x5C
 
-    virtual void* AllocHeap(ulong size) = 0; // at 0x60
+    virtual void* AllocHeap(u32 size) = 0; // at 0x60
+    virtual void FreeHeap(void* pPtr) = 0; // at 0x64
 };
 
 } // namespace ef

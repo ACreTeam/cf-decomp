@@ -109,11 +109,11 @@ struct AnimCurveHeader {
     u16 randomSeed;  // at 0x6
     u16 frameLength; // at 0x8
     u16 PADDING_0xA; // at 0xA
-    ulong keyTable;    // at 0xC
-    ulong rangeTable;  // at 0x10
-    ulong randomTable; // at 0x14
-    ulong nameTable;   // at 0x18
-    ulong infoTable;   // at 0x1C
+    u32 keyTable;    // at 0xC
+    u32 rangeTable;  // at 0x10
+    u32 randomTable; // at 0x14
+    u32 nameTable;   // at 0x18
+    u32 infoTable;   // at 0x1C
 };
 
 struct AnimCurveKey {
@@ -136,7 +136,7 @@ struct AnimCurveRandomTable {
 
 struct AnimCurveNameTable {
     struct Name {
-        ulong work; // at 0x0
+        u32 work; // at 0x0
     };
 
     u16 count;       // at 0x0
@@ -147,6 +147,21 @@ struct AnimCurveNameTable {
 class ResAnimCurve {
 private:
     u8* mAnimCurveData; // at 0x0
+
+public:
+    explicit ResAnimCurve(u8* pData = NULL) : mAnimCurveData(pData) {}
+    ResAnimCurve(const ResAnimCurve& rOther)
+        : mAnimCurveData(rOther.mAnimCurveData) {}
+
+    bool IsValid() const {
+        return mAnimCurveData != NULL;
+    }
+
+    AnimCurveHeader* ptr() {
+        return reinterpret_cast<AnimCurveHeader*>(mAnimCurveData);
+    }
+
+    void SetStop(bool stop);
 };
 
 } // namespace ef

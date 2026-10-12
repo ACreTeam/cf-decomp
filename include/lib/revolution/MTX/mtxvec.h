@@ -7,8 +7,8 @@
 extern "C" {
 #endif
 
-void fn_803911A4(const Mtx mtx, const Vec* vec, Vec* out); // like PSMTXMultVec (also applies the translation)
-void PSMTXMultVec(const Mtx mtx, const Vec* vec, Vec* out);
+void PSMTXMultVec(const Mtx mtx, const Vec* vec, Vec* out);   // 803911A4: out = mtx * vec (with the translation)
+void PSMTXMultVecSR(const Mtx mtx, const Vec* vec, Vec* out); // 803911F8: rotation / scale only
 
 #ifdef __cplusplus
 }

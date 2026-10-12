@@ -1,52 +1,41 @@
 #ifndef NW4R_SND_MML_SEQ_TRACK_ALLOCATOR_H
 #define NW4R_SND_MML_SEQ_TRACK_ALLOCATOR_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_InstancePool.h>
+#include <nw4r/snd/snd_SeqTrackAllocator.h>
 
-#include <types.h>
+namespace nw4r {
+namespace snd {
+namespace detail {
 
-#include "nw4r/snd/snd_InstancePool.h"
-#include "nw4r/snd/snd_SeqTrackAllocator.h"
+// Forward declarations
+class MmlParser;
+class MmlSeqTrack;
+class SeqPlayer;
+class SeqTrack;
 
-/*******************************************************************************
- * classes and functions
- */
+class MmlSeqTrackAllocator : public SeqTrackAllocator {
+public:
+    explicit MmlSeqTrackAllocator(MmlParser* pParser) : mParser(pParser) {}
 
-// forward declarations
-namespace nw4r { namespace snd { namespace detail { class MmlParser; }}}
-namespace nw4r { namespace snd { namespace detail { class MmlSeqTrack; }}}
+    virtual SeqTrack* AllocTrack(SeqPlayer* pPlayer); // at 0xC
+    virtual void FreeTrack(SeqTrack* pTrack);         // at 0x10
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x314e0
-	class MmlSeqTrackAllocator : public SeqTrackAllocator
-	{
-	// methods
-	public:
-		// cdtors
-		MmlSeqTrackAllocator(MmlParser *parser) : mParser(parser) {}
+    virtual int GetAllocatableTrackCount() const {
+        return mTrackPool.Count();
+    } // at 0x14
 
-		// virtual function ordering
-		// vtable SeqTrackAllocator
-		virtual SeqTrack *AllocTrack(SeqPlayer *player);
-		virtual void FreeTrack(SeqTrack *track);
-		virtual int GetAllocatableTrackCount() const
-		{
-			return mTrackPool.Count();
-		}
+    u32 Create(void* pBuffer, u32 size);
+    void Destroy(void* pBuffer, u32 size);
 
-		// methods
-		ulong Create(void *buffer, ulong size);
-		void Destroy(void *buffer, ulong size);
+private:
+    MmlParser* mParser;                   // at 0x4
+    InstancePool<MmlSeqTrack> mTrackPool; // at 0x8
+};
 
-	// members
-	private:
-		/* base SeqTrackAllocator */			// size 0x04, offset 0x00
-		MmlParser					*mParser;	// size 0x04, offset 0x04
-		InstancePool<MmlSeqTrack>	mTrackPool;	// size 0x04, offset 0x08
-	}; // size 0x0c
-}}} // namespace nw4r::snd::detail
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-#endif // NW4R_SND_MML_SEQ_TRACK_ALLOCATOR_H
+#endif

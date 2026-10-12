@@ -25,8 +25,7 @@ BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
 void fn_80087844(const char *name, const mVec3_c *pos, int arg, const mVec3_c *scale,
-                 void (*cb)(dEffectTarget_c *, u32), u32 kind); // effect with a callback
-void fn_80285110(void *obj, dEffectTarget_c *target);
+                 void (*cb)(nw4r::ef::Particle *, u32), u32 kind); // effect with a callback
 BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
 void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3_c *angle,
                  int arg);                         // d_fgobj_managerNP
@@ -930,7 +929,7 @@ void dFishFldShadow_c::calcMtx() {
             if (hand != NULL) {
                 _1E8.set(dFishInfo::getHoldParam(mKind), 0.0f, 0.0f);
                 mVec3_c handPos;
-                PSMTXMultVec(*hand, _1E8, handPos);
+                PSMTXMultVecSR(*hand, _1E8, handPos);
                 mMtx_c trans;
                 trans.trans(handPos.x, handPos.y, handPos.z);
                 PSMTXConcat(trans, mtx, mtx);
@@ -2429,14 +2428,14 @@ void *dFishFldShadow_c::operator new(size_t size, EGG::Heap *heap) {
 }
 
 // 0x7260
-void dFishFldShadow_c::splashCallback(dEffectTarget_c *target, u32 kind) {
+void dFishFldShadow_c::splashCallback(nw4r::ef::Particle *target, u32 kind) {
     static const char *const sNames[] = {"af_hny_hamon_S01", "afi_hny_watersplash_b"};
     if (target == NULL) {
         return;
     }
     mVec3_c pos;
     mVec3_c src;
-    src = target->_AC;
+    src = target->mParameter.mPosition;
     dWorld::toFieldPosition(&pos, &src);
     dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
     if (check.mWater != BG_WATER_NONE) {
@@ -2445,8 +2444,8 @@ void dFishFldShadow_c::splashCallback(dEffectTarget_c *target, u32 kind) {
                 pos.y = check.mWaterY;
                 fn_80087790(sNames[kind], &pos, 0, NULL);
             }
-            if (target->_C8 != NULL) {
-                fn_80285110(target->_C8, target);
+            if (target->mParticleManager != NULL) {
+                target->mParticleManager->RetireParticle(target);
             }
         }
     } else {
@@ -2457,8 +2456,8 @@ void dFishFldShadow_c::splashCallback(dEffectTarget_c *target, u32 kind) {
                 pos.y = ground;
                 fn_80087790("afi_hny_watersplash_a", &pos, 0, NULL);
             }
-            if (target->_C8 != NULL) {
-                fn_80285110(target->_C8, target);
+            if (target->mParticleManager != NULL) {
+                target->mParticleManager->RetireParticle(target);
             }
         }
     }

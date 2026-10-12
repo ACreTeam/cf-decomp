@@ -18,7 +18,7 @@ typedef struct __va_list_struct {
     char fpr;
     char* input_arg_area;
     char* reg_save_area;
-} va_list;
+} va_list[1];
 
 void* __va_arg(va_list argp, int type);
 

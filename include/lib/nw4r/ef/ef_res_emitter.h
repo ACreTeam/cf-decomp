@@ -2,9 +2,9 @@
 #define NW4R_EF_RES_EMITTER_H
 #include <nw4r/types_nw4r.h>
 
+#include <nw4r/ef/ef_res_animcurve.h>
 #include <nw4r/ef/ef_types.h>
 #include <nw4r/ef/emform/ef_emform.h>
-
 #include <nw4r/math.h>
 
 #include <revolution/GX.h>
@@ -65,7 +65,7 @@ struct ColorInput {
     u8 mTevKColor[GX_MAX_KCOLOR];    // at 0x4
 };
 
-// TODO: Why?
+// TODO(kiwi) Why?
 #pragma pack(push, 1)
 struct Lighting {
     enum Mode {
@@ -115,6 +115,36 @@ struct EmitterDrawSetting {
         ALPHAFLICK_SAWTOOTH2,
         ALPHAFLICK_SQUARE,
         ALPHAFLICK_SINE
+    };
+
+    enum Assist {
+        // Common
+        ASSIST_CMN_NORMAL = 0,
+        ASSIST_CMN_CROSS,
+
+        // Billboard
+        ASSIST_BB_NORMAL = 0,
+        ASSIST_BB_Y,
+        ASSIST_BB_DIRECTIONAL,
+        ASSIST_BB_NOROLL,
+
+        // Stripe
+        ASSIST_ST_NORMAL = 0,
+        ASSIST_ST_CROSS,
+        ASSIST_ST_BILLBOARD,
+        ASSIST_ST_TUBE,
+    };
+
+    enum Ahead {
+        // Common
+        AHEAD_CMN_NODESIGN = 5,
+
+        // Billboard
+        AHEAD_BB_SPEED = 0,
+        AHEAD_BB_EMITTER_CENTER,
+        AHEAD_BB_EMITTER_DESIGN,
+        AHEAD_BB_PARTICLE,
+        AHEAD_BB_PARTICLE_BOTH,
     };
 
     enum OptionTypeCommon { TYPE_CMN_NORMAL, TYPE_CMN_CROSS };
@@ -188,8 +218,8 @@ struct EmitterDesc {
         EMIT_FLAG_26 = (1 << 26),
     };
 
-    ulong commonFlag;                 // at 0x0
-    ulong emitFlag;                   // at 0x4
+    u32 commonFlag;                 // at 0x0
+    u32 emitFlag;                   // at 0x4
     u16 emitLife;                   // at 0x8
     u16 ptclLife;                   // at 0xA
     s8 ptclLifeRandom;              // at 0xC
@@ -221,7 +251,7 @@ struct EmitterDesc {
     u8 lodFar;                      // at 0x85
     u8 lodMinEmit;                  // at 0x86
     u8 lodAlpha;                    // at 0x87
-    ulong randomSeed;                 // at 0x88
+    u32 randomSeed;                 // at 0x88
     u8 userdata[8];                 // at 0x8C
     EmitterDrawSetting drawSetting; // at 0x94
 
@@ -233,7 +263,7 @@ struct EmitterDesc {
 struct EmitterResource {
 private:
     char* name;     // at 0x0
-    ulong headersize; // at 0x4
+    u32 headersize; // at 0x4
 
 public:
     /******************************************************************************
@@ -267,7 +297,7 @@ public:
     }
     u8* SkipParticleParameterDesc() {
         u8* pPtr = SkipEmitterDesc();
-        pPtr += *reinterpret_cast<ulong*>(pPtr) + sizeof(ulong);
+        pPtr += *reinterpret_cast<u32*>(pPtr) + sizeof(u32);
         return pPtr;
     }
 
@@ -332,22 +362,22 @@ public:
         pTail += NumPtclTrack() * 8 + 4;
         pTail += NumEmitTrack() * 8 + 4;
 
-        ulong* pPtclPtrTbl = reinterpret_cast<ulong*>(GetPtclTrackTbl());
-        ulong* pEmitPtrTbl = reinterpret_cast<ulong*>(GetEmitTrackTbl());
+        u32* pPtclPtrTbl = reinterpret_cast<u32*>(GetPtclTrackTbl());
+        u32* pEmitPtrTbl = reinterpret_cast<u32*>(GetEmitTrackTbl());
 
-        ulong* pPtclSizeTbl =
-            reinterpret_cast<ulong*>(GetPtclTrackTbl()) + NumPtclTrack();
-        ulong* pEmitSizeTbl =
-            reinterpret_cast<ulong*>(GetEmitTrackTbl()) + NumEmitTrack();
+        u32* pPtclSizeTbl =
+            reinterpret_cast<u32*>(GetPtclTrackTbl()) + NumPtclTrack();
+        u32* pEmitSizeTbl =
+            reinterpret_cast<u32*>(GetEmitTrackTbl()) + NumEmitTrack();
 
         int i;
         for (i = 0; i < NumPtclTrack(); i++) {
-            pPtclPtrTbl[i] = reinterpret_cast<ulong>(pTail);
+            pPtclPtrTbl[i] = reinterpret_cast<u32>(pTail);
             pTail += pPtclSizeTbl[i];
         }
 
         for (i = 0; i < NumEmitTrack(); i++) {
-            pEmitPtrTbl[i] = reinterpret_cast<ulong>(pTail);
+            pEmitPtrTbl[i] = reinterpret_cast<u32>(pTail);
             pTail += pEmitSizeTbl[i];
         }
     }
@@ -359,7 +389,7 @@ private:
 
 public:
     explicit ResEmitter(EmitterResource* pData = NULL) : mData(pData) {}
-    explicit ResEmitter(const ResEmitter& rOther) : mData(rOther.mData) {}
+    ResEmitter(const ResEmitter& rOther) : mData(rOther.mData) {}
 
     bool IsValid() const {
         return mData != NULL;
@@ -368,6 +398,8 @@ public:
     EmitterResource* ptr() {
         return mData;
     }
+
+    ResAnimCurve GetPtclTrack(u16 idx);
 };
 
 } // namespace ef

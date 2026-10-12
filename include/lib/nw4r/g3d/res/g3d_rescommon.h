@@ -294,7 +294,7 @@ inline u8 ResRead_u8(const u8* pPtr) {
     return *pPtr;
 }
 
-inline ulong ResRead_ulong(const u8* pPtr) {
+inline ulong ResRead_u32(const u8* pPtr) {
     ulong value = ResRead_u8(pPtr++) << 24;
     value |= ResRead_u8(pPtr++) << 16;
     value |= ResRead_u8(pPtr++) << 8;
@@ -311,7 +311,7 @@ inline void ResWrite_u16(u8* pPtr, u16 data) {
     ResWrite_u8(pPtr++, data >> 0);
 }
 
-inline void ResWrite_ulong(u8* pPtr, ulong data) {
+inline void ResWrite_u32(u8* pPtr, ulong data) {
     ResWrite_u8(pPtr++, data >> 24);
     ResWrite_u8(pPtr++, data >> 16);
     ResWrite_u8(pPtr++, data >> 8);
@@ -325,7 +325,7 @@ inline void ResWrite_ulong(u8* pPtr, ulong data) {
  ******************************************************************************/
 inline void ResReadBPCmd(const u8* pPtr, ulong* pOut) {
     // Skip over FIFO command byte
-    *pOut = ResRead_ulong(pPtr + 1);
+    *pOut = ResRead_u32(pPtr + 1);
 }
 
 void ResWriteBPCmd(u8* pPtr, ulong reg);
@@ -339,7 +339,7 @@ void ResWriteSSMask(u8* pPtr, ulong value);
  ******************************************************************************/
 inline void ResReadCPCmd(const u8* pPtr, ulong* pOut) {
     // Skip over FIFO command byte + addr byte
-    *pOut = ResRead_ulong(pPtr + 2);
+    *pOut = ResRead_u32(pPtr + 2);
 }
 
 void ResWriteCPCmd(u8* pPtr, u8 addr, ulong value);
@@ -351,7 +351,7 @@ void ResWriteCPCmd(u8* pPtr, u8 addr, ulong value);
  ******************************************************************************/
 inline void ResReadXFCmd(const u8* pPtr, ulong* pOut) {
     // Skip over FIFO command byte + size short + addr short
-    *pOut = ResRead_ulong(pPtr + 5);
+    *pOut = ResRead_u32(pPtr + 5);
 }
 
 void ResWriteXFCmd(u8* pPtr, u16 addr, ulong value);

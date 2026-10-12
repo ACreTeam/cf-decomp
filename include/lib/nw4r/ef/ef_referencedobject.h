@@ -21,7 +21,7 @@ public:
 
 protected:
     LifeStatus mLifeStatus; // at 0xC
-    ulong mRefCount;          // at 0x10
+    u32 mRefCount;          // at 0x10
 
 public:
     ut::Link mActivityLink; // at 0x14
@@ -37,7 +37,7 @@ public:
         return mLifeStatus;
     }
 
-    ulong GetRefCount() const {
+    u32 GetRefCount() const {
         return mRefCount;
     }
 
@@ -55,10 +55,10 @@ public:
         }
     }
 
-    ulong Ref() {
+    u32 Ref() {
         return mRefCount++;
     }
-    ulong UnRef() {
+    u32 UnRef() {
         if (--mRefCount == 0 && mLifeStatus == NW4R_EF_LS_WAIT) {
             SendClosing();
         }

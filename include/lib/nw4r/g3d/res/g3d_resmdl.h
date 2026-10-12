@@ -181,7 +181,7 @@ public:
     ResShp GetResShp(ulong idx) const;
     ulong GetResShpNumEntries() const;
 
-    ResTexPlttInfo GetResTexPlttInfoOffsetFromTexName(int idx) const;
+    ResTexPlttInfoOffset GetResTexPlttInfoOffsetFromTexName(int idx) const;
     ulong GetResTexPlttInfoOffsetFromTexNameNumEntries() const;
 
     ResMdlInfo GetResMdlInfo() {

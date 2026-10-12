@@ -3235,7 +3235,7 @@ BOOL dAcNpc_c::manpuEf_c::createNakuL(const mMtx_c *mtx, const mVec3_c *ofs, con
     mVec3_c v(*ofs);
     v += *ofsL;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3248,7 +3248,7 @@ BOOL dAcNpc_c::manpuEf_c::createNakuR(const mMtx_c *mtx, const mVec3_c *ofs, con
     mVec3_c v(*ofs);
     v += *ofsR;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3261,7 +3261,7 @@ BOOL dAcNpc_c::manpuEf_c::createTereCheekL(const mMtx_c *mtx, const mVec3_c *ofs
     mVec3_c v(*ofs);
     v += *ofsL;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3274,7 +3274,7 @@ BOOL dAcNpc_c::manpuEf_c::createTereCheekR(const mMtx_c *mtx, const mVec3_c *ofs
     mVec3_c v(*ofs);
     v += *ofsR;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3286,7 +3286,7 @@ BOOL dAcNpc_c::manpuEf_c::createFollowNeboke(const mMtx_c *mtx, const mVec3_c *o
     mMtx_c m(*mtx);
     mVec3_c v(*ofs);
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3298,7 +3298,7 @@ BOOL dAcNpc_c::manpuEf_c::followNeboke(const mMtx_c *mtx, const mVec3_c *ofs, co
     mMtx_c m(*mtx);
     mVec3_c v(*ofs);
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3310,7 +3310,7 @@ BOOL dAcNpc_c::manpuEf_c::createFollowTame(const mMtx_c *mtx, const mVec3_c *ofs
     mMtx_c m(*mtx);
     mVec3_c v(*ofs);
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3322,7 +3322,7 @@ BOOL dAcNpc_c::manpuEf_c::followTame(const mMtx_c *mtx, const mVec3_c *ofs, cons
     mMtx_c m(*mtx);
     mVec3_c v(*ofs);
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3356,7 +3356,7 @@ BOOL dAcNpc_c::manpuEf_c::createFollowWaruL(const mMtx_c *mtx, const mVec3_c *of
     mVec3_c v(*ofs);
     v += *ofsL;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3369,7 +3369,7 @@ BOOL dAcNpc_c::manpuEf_c::followWaruL(const mMtx_c *mtx, const mVec3_c *ofs, con
     mVec3_c v(*ofs);
     v += *ofsL;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3382,7 +3382,7 @@ BOOL dAcNpc_c::manpuEf_c::createFollowWaruR(const mMtx_c *mtx, const mVec3_c *of
     mVec3_c v(*ofs);
     v += *ofsR;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3395,7 +3395,7 @@ BOOL dAcNpc_c::manpuEf_c::followWaruR(const mMtx_c *mtx, const mVec3_c *ofs, con
     mVec3_c v(*ofs);
     v += *ofsR;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3408,7 +3408,7 @@ BOOL dAcNpc_c::manpuEf_c::createFollowWaruKiraL(const mMtx_c *mtx, const mVec3_c
     mVec3_c v(*ofs);
     v += *ofsL;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3421,7 +3421,7 @@ BOOL dAcNpc_c::manpuEf_c::followWaruKiraL(const mMtx_c *mtx, const mVec3_c *ofs,
     mVec3_c v(*ofs);
     v += *ofsL;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3434,7 +3434,7 @@ BOOL dAcNpc_c::manpuEf_c::createFollowWaruKiraR(const mMtx_c *mtx, const mVec3_c
     mVec3_c v(*ofs);
     v += *ofsR;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);
@@ -3447,7 +3447,7 @@ BOOL dAcNpc_c::manpuEf_c::followWaruKiraR(const mMtx_c *mtx, const mVec3_c *ofs,
     mVec3_c v(*ofs);
     v += *ofsR;
     if (v != mVec3_c::Zero) {
-        PSMTXMultVec(m, v, v);
+        PSMTXMultVecSR(m, v, v);
         mMtx_c t;
         PSMTXTrans(t, v.x, v.y, v.z);
         PSMTXConcat(t, m, m);

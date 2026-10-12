@@ -1,75 +1,67 @@
 #ifndef NW4R_SND_DVD_SOUND_ARCHIVE_H
 #define NW4R_SND_DVD_SOUND_ARCHIVE_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_SoundArchive.h>
+#include <nw4r/snd/snd_SoundArchiveFile.h>
 
-#include <types.h>
+#include <nw4r/ut.h>
 
-// WARNING: DO NOT REORDER these #include directives, data pooling depends on it
+#include <revolution/DVD.h>
 
-// clang-format off
-#include "nw4r/ut/ut_FileStream.h" // This needs to be
-#include "nw4r/snd/snd_SoundArchive.h" // before this
-#include "nw4r/snd/snd_SoundArchiveFile.h" // before this
-#include <revolution/DVD/dvd.h>
-// clang-format on
+namespace nw4r {
+namespace snd {
 
-/*******************************************************************************
- * classes and functions
- */
+class DvdSoundArchive : public SoundArchive {
+private:
+    class DvdFileStream;
 
-namespace nw4r { namespace snd
-{
-	class DvdSoundArchive : public SoundArchive
-	{
-	public:
-		class DvdFileStream;
-		DvdSoundArchive();
-		virtual ~DvdSoundArchive(); // at 0x8
+public:
+    DvdSoundArchive();
+    virtual ~DvdSoundArchive(); // at 0x8
 
-		virtual const void *detail_GetFileAddress(ulong /* id */) const {
-			return NULL;
-		} // at 0xC
+    virtual const void* detail_GetFileAddress(u32 /* id */) const {
+        return NULL;
+    } // at 0xC
 
-		virtual const void *detail_GetWaveDataFileAddress(ulong /* id */) const {
-			return NULL;
-		} // at 0x10
+    virtual const void* detail_GetWaveDataFileAddress(u32 /* id */) const {
+        return NULL;
+    } // at 0x10
 
-		virtual int detail_GetRequiredStreamBufferSize() const; // at 0x14
+    virtual int detail_GetRequiredStreamBufferSize() const; // at 0x14
 
-		virtual ut::FileStream *OpenStream(void *pBuffer, int size, ulong offset,
-										ulong length) const; // at 0x18
+    virtual ut::FileStream* OpenStream(void* pBuffer, int size, u32 offset,
+                                       u32 length) const; // at 0x18
 
-		virtual ut::FileStream *OpenExtStream(
-			void *pBuffer, int size, const char *pExtPath, ulong offset,
-			ulong length
-		) const; // at 0x1C
+    virtual ut::FileStream* OpenExtStream(void* pBuffer, int size,
+                                          const char* pExtPath, u32 offset,
+                                          u32 length) const; // at 0x1C
 
-		bool Open(s32 entrynum);
-		bool Open(const char *pPath);
+    bool Open(s32 entrynum);
+    bool Open(const char* pPath);
 
-		void Close();
+    void Close();
 
-		bool LoadHeader(void *pBuffer, ulong size);
-		bool LoadLabelStringData(void *pBuffer, ulong size);
+    bool LoadHeader(void* pBuffer, u32 size);
+    bool LoadLabelStringData(void* pBuffer, u32 size);
 
-		ulong GetHeaderSize() const {
-			return mFileReader.GetInfoChunkSize();
-		}
-		ulong GetLabelStringDataSize() const {
-			return mFileReader.GetLabelStringChunkSize();
-		}
+    u32 GetHeaderSize() const {
+        return mFileReader.GetInfoChunkSize();
+    }
+    u32 GetLabelStringDataSize() const {
+        return mFileReader.GetLabelStringChunkSize();
+    }
 
-	private:
-		bool LoadFileHeader();
+private:
+    bool LoadFileHeader();
 
-	private:
-		detail::SoundArchiveFileReader mFileReader; // at 0x108
-		DVDFileInfo mFileInfo;                      // at 0x14C
-		bool mOpen;                                 // at 0x188
-	};
-}} // namespace nw4r::snd
+private:
+    detail::SoundArchiveFileReader mFileReader; // at 0x108
+    DVDFileInfo mFileInfo;                      // at 0x14C
+    bool mOpen;                                 // at 0x188
+};
 
-#endif // NW4R_SND_DVD_SOUND_ARCHIVE_H
+} // namespace snd
+} // namespace nw4r
+
+#endif

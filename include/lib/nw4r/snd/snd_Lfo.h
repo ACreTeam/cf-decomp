@@ -1,74 +1,65 @@
 #ifndef NW4R_SND_LFO_H
 #define NW4R_SND_LFO_H
+#include <nw4r/types_nw4r.h>
 
-/*******************************************************************************
- * headers
- */
+namespace nw4r {
+namespace snd {
+namespace detail {
 
-#include <types.h>
+/******************************************************************************
+ *
+ * LfoParam
+ *
+ ******************************************************************************/
+struct LfoParam {
+    LfoParam() {
+        Init();
+    }
 
-/*******************************************************************************
- * classes and functions
- */
+    void Init();
 
-namespace nw4r { namespace snd { namespace detail
-{
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x28dc2
-	struct LfoParam
-	{
-	// methods
-	public:
-		// cdtors
-		LfoParam() { Init(); }
+    f32 depth;                  // at 0x0
+    f32 speed;                  // at 0x4
+    u32 delay;                  // at 0x8
+    u8 range;                   // at 0xC
+    u8 PADDING_0xD[0x10 - 0xD]; // at 0xD
+};
 
-		// methods
-		void Init();
+/******************************************************************************
+ *
+ * Lfo
+ *
+ ******************************************************************************/
+class Lfo {
+public:
+    Lfo() : mDelayCounter(0), mCounter(0.0f) {}
 
-	// members
-	public:
-		f32		depth;		// size 0x04, offset 0x00
-		f32		speed;		// size 0x04, offset 0x04
-		ulong		delay;		// size 0x04, offset 0x08
-		u8		range;		// size 0x01, offset 0x0c
-		u8	padding[3];
-	}; // size 0x10
+    LfoParam& GetParam() {
+        return mParam;
+    }
+    void SetParam(const LfoParam& rParam) {
+        mParam = rParam;
+    }
 
-	// [R89JEL]:/bin/RVL/Debug/mainD.elf:.debug::0x28ea0
-	class Lfo
-	{
-	// methods
-	public:
-		// cdtors
-		Lfo() :
-			mDelayCounter	(0),
-			mCounter		(0.0f)
-		{
-		}
+    void Reset();
+    void Update(int msec);
 
-		// methods
-		void Update(int msec);
-		void Reset();
+    f32 GetValue() const;
 
-		LfoParam &GetParam() { return mParam; }
+private:
+    static const int TABLE_SIZE = 32;
 
-		void SetParam(LfoParam const &param) { mParam = param; }
+private:
+    static s8 GetSinIdx(int idx);
 
-		f32 GetValue() const;
+private:
+    LfoParam mParam;   // at 0x0
+    u32 mDelayCounter; // at 0x10
+    f32 mCounter;      // at 0x14
+};
 
-	private:
-		static s8 GetSinIdx(int i);
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-	// static members
-	private:
-		static int const PERIOD;
-		static int const TABLE_SIZE = 32;
-
-	// members
-	private:
-		LfoParam	mParam;			// size 0x10, offset 0x00
-		ulong			mDelayCounter;	// size 0x04, offset 0x10
-		f32			mCounter;		// size 0x04, offset 0x14
-	}; // size 0x18
-}}} // namespace nw4r::snd::detail
-
-#endif // NW4R_SND_LFO_H
+#endif

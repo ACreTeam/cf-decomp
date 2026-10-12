@@ -4,8 +4,8 @@
 
 #include <nw4r/ef/ef_res_emitter.h>
 #include <nw4r/ef/ef_res_texture.h>
-
 #include <nw4r/ut.h>
+
 
 namespace nw4r {
 namespace ef {
@@ -14,7 +14,7 @@ namespace ef {
 struct EmitterResource;
 
 struct EffectProject {
-    ulong headersize;       // at 0x0
+    u32 headersize;       // at 0x0
     ut::Link projectlink; // at 0x4
     u16 projectnameLen;   // at 0xC
     u16 PADDING_0xE;      // at 0xE
@@ -22,7 +22,7 @@ struct EffectProject {
 };
 
 struct TextureProject {
-    ulong headersize;       // at 0x0
+    u32 headersize;       // at 0x0
     ut::Link projectlink; // at 0x4
     u16 projectnameLen;   // at 0xC
     u16 PADDING_0xE;      // at 0xE
@@ -35,9 +35,9 @@ private:
 
 public:
     ut::List mBREFFList; // at 0x0
-    ulong mNumEmitter;     // at 0xC
+    u32 mNumEmitter;     // at 0xC
     ut::List mBREFTList; // at 0x10
-    ulong mNumTexture;     // at 0x1C
+    u32 mNumTexture;     // at 0x1C
 
 public:
     static u16 GetVersion() {
@@ -46,6 +46,8 @@ public:
 
     static Resource* GetInstance();
 
+    void Initialize();
+
     EffectProject* Add(u8* pData);
     TextureProject* AddTexture(u8* pData);
 
@@ -53,8 +55,8 @@ public:
     EmitterResource* _FindEmitter(const char* pName,
                                   EffectProject* pEffProject) const;
 
-    ulong NumEmitter(EffectProject* pEffProject) const;
-    EmitterResource* _GetEmitterIndexOf(ulong idx,
+    u32 NumEmitter(EffectProject* pEffProject) const;
+    EmitterResource* _GetEmitterIndexOf(u32 idx,
                                         EffectProject* pEffProject) const;
 
     ResTexture FindTexture(const char* pName,
@@ -62,7 +64,7 @@ public:
     TextureData* _FindTexture(const char* pName,
                               TextureProject* pTexProject) const;
 
-    ulong RelocateCommand();
+    u32 RelocateCommand();
 
     bool RemoveEffectProject(EffectProject* pEffProject);
     bool RemoveTextureProject(TextureProject* pTexProject);
@@ -70,10 +72,8 @@ public:
 private:
     Resource();
 
-    void Initialize();
-
-    ulong relocateCurveTexture(u8* pCmdList);
-    ulong relocateCurveChild(u8* pCmdList);
+    u32 relocateCurveTexture(u8* pCmdList);
+    u32 relocateCurveChild(u8* pCmdList);
 
 private:
     static Resource mResource;

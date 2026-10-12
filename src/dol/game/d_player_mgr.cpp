@@ -52,8 +52,7 @@ void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 BOOL fn_801B9304(void *info, u8 *scene, u8 *b, u32 idx);
-void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(dEffectTarget_c *, u32), u32 kind);
-void fn_80285110(void *obj, dEffectTarget_c *target);
+void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(nw4r::ef::Particle *, u32), u32 kind);
 }
 
 // The field task code (d_fg_mng_task.inc, #included by d_field_assessment.cpp).
@@ -3297,16 +3296,16 @@ int fn_801021D0(const dItem::Item *a, const dItem::Item *b) {
 }
 
 // 801022B8: splash/snow effect callback for fn_801024F8.
-void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
+void fn_801022B8(nw4r::ef::Particle *obj, u32 kind) {
     if (obj == NULL) {
         return;
     }
     mVec3_c pos;
     if (isOutdoorScene((u8)getCurrentScene())) {
-        mVec3_c src = obj->_AC;
+        mVec3_c src = obj->mParameter.mPosition;
         dWorld::toFieldPosition(&pos, &src);
     } else {
-        pos = obj->_AC;
+        pos = obj->mParameter.mPosition;
     }
 
     dBGCF::groundChk_c check(&pos, dBGCF::LAYER_TOP, 0, 0);
@@ -3314,8 +3313,8 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
         if (check.isUnderWater(pos.y)) {
             pos.y = check.mWaterY;
             fn_80087790("afi_hny_watersplash_b", &pos, NULL, NULL);
-            if (obj->_C8 != NULL) {
-                fn_80285110(obj->_C8, obj);
+            if (obj->mParticleManager != NULL) {
+                obj->mParticleManager->RetireParticle(obj);
             }
         }
     } else {
@@ -3325,8 +3324,8 @@ void fn_801022B8(dEffectTarget_c *obj, u32 kind) {
             if (fabsf(ground - pos.y) <= 5.0f) {
                 pos.y = ground;
                 fn_80087790(name, &pos, NULL, NULL);
-                if (obj->_C8 != NULL) {
-                    fn_80285110(obj->_C8, obj);
+                if (obj->mParticleManager != NULL) {
+                    obj->mParticleManager->RetireParticle(obj);
                 }
             }
         }
