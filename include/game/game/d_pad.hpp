@@ -6,6 +6,8 @@
 #include <game/mLib/m_vec.hpp>
 
 extern "C" {
+BOOL fn_800FA5D8(); // 800FA5D8: no remote (WPADProbe fails, or its device type is not known yet)
+BOOL fn_800FA640(); // 800FA640: an extension other than the Nunchuk is attached
 void fn_800FA6C4(mVec2_c *pos); // 800FA6C4: the pointer position (lbl_8074E5D0)
 void fn_800FA6DC(mVec2_c *dir); // 800FA6DC: the pointer direction (lbl_8074E5C8)
 f32 fn_800FA704(); // 800FA704: the stick y (lbl_8074E5B4)

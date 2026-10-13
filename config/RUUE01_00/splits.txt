@@ -1901,6 +1901,12 @@ dol/game/d_obj_staffroll.cpp:
 
 dol/game/d_obj_telop.cpp:
 	.text       start:0x801B5E88 end:0x801B6A88
+	.rodata     start:0x8047E218 end:0x8047E240
+	.data       start:0x804FC620 end:0x804FC7B0
+	.bss        start:0x80625808 end:0x80625830
+	.sdata      start:0x8074C2C8 end:0x8074C2E0
+	.sbss       start:0x8074EB50 end:0x8074EB58
+	.sdata2     start:0x80751968 end:0x80751980
 
 dol/game/d_obj_tutorial.cpp:
 	.text       start:0x801B6A88 end:0x801B700C

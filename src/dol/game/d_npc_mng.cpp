@@ -1631,7 +1631,7 @@ int dNpcMng_c::doDelete() {
 
 int dNpcMng_c::execute() {
     if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && mShowTelop) {
-        fn_801B66F4(4);
+        dObjTelop_c::request(TELOP_HIDE_AND_SEEK_START);
         mShowTelop = 0;
         sShowTelop = 0;
     }

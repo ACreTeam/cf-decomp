@@ -670,9 +670,9 @@ void Timer_c::stateRun() {
         mState = STATE_FINISH;
         mFinishTimer = TIMER_FINISH_FRAMES;
         if (mFlags & FLAG_HIDE_AND_SEEK) {
-            fn_801B66F4(TELOP_HIDE_AND_SEEK_END);
+            dObjTelop_c::request(TELOP_HIDE_AND_SEEK_END);
         } else {
-            fn_801B66F4(TELOP_TIMER_END);
+            dObjTelop_c::request(TELOP_TIMER_END);
             dString::Word_c word;
             dScript::formatNumber(&word, mFishCount, 2, dScript::NUM_FORMAT_PLAIN, 0);
             dString::setWord(0, &word);
@@ -709,7 +709,7 @@ void Timer_c::start(int minutes) {
     playStartSe();
     mLastRemain = TIMER_COUNT_SECONDS;
     mTickTimer = TIMER_TICK_FRAMES;
-    fn_801B66F4(TELOP_TIMER_START);
+    dObjTelop_c::request(TELOP_TIMER_START);
 }
 
 // 8018D278
@@ -735,7 +735,7 @@ void Timer_c::stop() {
     if (isCounting()) {
         reset();
         playStopSe();
-        fn_801B66F4(TELOP_TIMER_STOP);
+        dObjTelop_c::request(TELOP_TIMER_STOP);
     }
 }
 

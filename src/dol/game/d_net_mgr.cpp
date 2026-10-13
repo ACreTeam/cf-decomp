@@ -211,7 +211,7 @@ void dNetMgr_c::execute() {
             mState = NET_MGR_STATE_SETUP;
         }
         if (dVoiceChat::isStarted() && !mBusy && !mTelopShown && mInfo.m1A32) {
-            fn_801B66F4(0x11);
+            dObjTelop_c::request(TELOP_MIC_CHAT_UNAVAILABLE);
             mTelopShown = 1;
         }
     }
