@@ -996,7 +996,7 @@ BOOL lieOnBed(s16 angle, int type, f32 x, f32 z) {
 }
 
 // 800FD88C
-BOOL getUpFromBed(int type) {
+BOOL getUpFromBed(int type, int arg) {
     dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;

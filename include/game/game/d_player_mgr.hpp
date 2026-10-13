@@ -323,7 +323,7 @@ BOOL isChairAnimation(); // 800FD664
 BOOL getBedAnimationPosition(mVec3_c *out, int idx); // 800FD6A8
 BOOL getBedPosition(mVec3_c *out, int idx); // 800FD720
 BOOL lieOnBed(s16 angle, int type, f32 x, f32 z); // 800FD798
-BOOL getUpFromBed(int type); // 800FD88C
+BOOL getUpFromBed(int type, int arg); // 800FD88C; second argument unused in this build
 BOOL changeSeatedPose(int type); // 800FD924
 BOOL fn_800FD9E0(int type, s16 angle, f32 x, f32 z); // 800FD9E0: Requests player state 0x32; action meaning unresolved.
 BOOL fn_800FDAA4(int type); // 800FDAA4: Requests player state 0x34; action meaning unresolved.

@@ -2207,7 +2207,7 @@ int dAcNpc_c::draw() {
                 mAng ang = 0;
                 f32 b = _1B68;
                 f32 a = _1B64;
-                fn_801C8518(&pos, 0, &ang, a, b, size, 0.0f, 1.0f);
+                dShadow::requestRound(&pos, 0, &ang, a, b, size, 0.0f, 1.0f);
             }
         }
     }

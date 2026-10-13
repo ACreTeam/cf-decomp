@@ -36,6 +36,10 @@ static void (*const instantiate_stepSaveInterruptNetHst_c)(dSvMgr_c::stepSaveInt
 static void (*const instantiate_stepSaveInterruptNetVst_c)(dSvMgr_c::stepSaveInterruptNetVst_c *) =
     &checkSaveResultImpl<dSvMgr_c::stepSaveInterruptNetVst_c>;
 
+fProf::fBaseProfile_c g_profile_SV_MGR = {
+    reinterpret_cast<void *(*)()>(&dSvMgr_c::createMgr), 0xA4, 0xE1
+};
+
 dSvMgr_c::Method dSvMgr_c::mRequestedMode = NULL;
 int dSvMgr_c::mVisitors[3];
 int dSvMgr_c::mCurrentVisitor = 4;
@@ -762,13 +766,13 @@ void dSvMgr_c::stepBase_c<Owner, Step>::waitMessageEnd() {
 
 template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::gotoOutsideGate() {
-    fn_801BB7B8()->requestExit(1, 5, 0);
+    dSvDemo::getSceneChange()->requestExit(1, 5, 0);
     this->nextStep();
 }
 
 template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::gotoPreviousScene() {
-    fn_801BB7B8()->requestExit(0, 5, 0);
+    dSvDemo::getSceneChange()->requestExit(0, 5, 0);
     this->nextStep();
 }
 

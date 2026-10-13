@@ -23,7 +23,7 @@ int dBgDebug_c::create() {
     if (dScene::isCityScene(dScene::getCurrentScene())) {
         dSvAuc_c::create();
     }
-    fn_801C8664();
+    dShadow::fn_801C8664();
     return 1;
 }
 
@@ -45,7 +45,7 @@ int dBgDebug_c::doDelete() {
         if (dScene::isCityScene(dScene::getCurrentScene())) {
             dSvAuc_c::resetChanged();
         }
-        fn_801C866C();
+        dShadow::fn_801C866C();
         return 1;
     }
     return 0;

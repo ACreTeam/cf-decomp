@@ -9,6 +9,7 @@
 #include <game/game/d_nand.hpp>
 #include <game/game/d_banner.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_sv_demo_scene.hpp>
 
 // Narrow ABI boundary for dependencies whose class interfaces are unrecovered.
 // Address names deliberately avoid assigning speculative ownership to them.
@@ -43,7 +44,6 @@ void *fn_8017D8E8();
 void fn_80154358(void *process);
 int fn_8015436C(void *process, int mode);
 extern unsigned char lbl_8074E7F8[8];
-dScene::dSceneChange_c *fn_801BB7B8(); // 801BB7B8: &dScene::gSceneChange
 void fn_8010DED0();
 }
 

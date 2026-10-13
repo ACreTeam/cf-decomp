@@ -1914,6 +1914,10 @@ dol/game/d_obj_keyboard.cpp:
 
 dol/game/d_obj_staffroll.cpp:
 	.text       start:0x801B4CC0 end:0x801B5E88
+	.data       start:0x804FC4A0 end:0x804FC620
+	.sdata      start:0x8074C2A8 end:0x8074C2C8
+	.sbss       start:0x8074EB48 end:0x8074EB50
+	.sdata2     start:0x80751940 end:0x80751968
 
 dol/game/d_obj_telop.cpp:
 	.text       start:0x801B5E88 end:0x801B6A88
@@ -1950,7 +1954,15 @@ dol/game/d_root.cpp:
 	.sdata2     start:0x807519A0 end:0x807519A8 align:4
 
 dol/game/d_sv_demo.cpp:
-	.text       start:0x801B97B4 end:0x801BB7C4
+	.text       start:0x801B97B4 end:0x801BB7B8
+	.rodata     start:0x8047E240 end:0x8047E2E8
+	.data       start:0x804FC9F8 end:0x804FD180
+	.sdata      start:0x8074C348 end:0x8074C3B8
+	.sbss       start:0x8074EB90 end:0x8074EB98
+	.sdata2     start:0x807519A8 end:0x807519B0
+
+dol/game/d_sv_demo_scene.cpp:
+	.text       start:0x801BB7B8 end:0x801BB7C4
 
 dol/game/d_sv_mgr.cpp:
 	.text       start:0x801BB7C4 end:0x801C6D54
@@ -1958,12 +1970,17 @@ dol/game/d_sv_mgr.cpp:
 	.rodata     start:0x8047E2E8 end:0x8047E420 align:4
 	.data       start:0x804FD180 end:0x80500090 align:4
 	.bss        start:0x806259E0 end:0x806259F8 align:4
-	.sdata      start:0x8074C3C0 end:0x8074C5A8 align:4
+	.sdata      start:0x8074C3B8 end:0x8074C5A8 align:4
 	.sbss       start:0x8074EB98 end:0x8074EBD4 align:4
 
 dol/game/d_shadow.cpp:
 	.text       start:0x801C6D54 end:0x801C8B74
 	.ctors      start:0x80465854 end:0x80465858
+	.data       start:0x80500090 end:0x805002B8
+	.bss        start:0x80625A00 end:0x80625CF0 align:32
+	.sdata      start:0x8074C5B0 end:0x8074C5D0 align:4
+	.sbss       start:0x8074EBD8 end:0x8074EBE8 align:4
+	.sdata2     start:0x807519B0 end:0x80751A10
 
 dol/game/d_weather.cpp:
 	.text       start:0x801C8B74 end:0x801C9EF4
