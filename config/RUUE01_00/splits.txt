@@ -954,7 +954,7 @@ dol/game/d_photo.cpp:
 	.text       start:0x800FACC0 end:0x800FBB58
 	.ctors      start:0x804656F4 end:0x804656F8
 	.rodata     start:0x804759F0 end:0x80475A00
-	.bss        start:0x805CEB20 end:0x805D2420
+	.bss        start:0x805CEB20 end:0x805D2420 align:32
 	.sbss       start:0x8074E5E0 end:0x8074E600
 	.sdata2     start:0x80750A60 end:0x80750A70
 

@@ -1819,7 +1819,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
     if (dDemo::isType(dDemo::TYPE_ANY)) {
         return FALSE;
     }
-    if (!fn_800FA748()) {
+    if (!dPad::isConfirmTriggered()) {
         return FALSE;
     }
 
@@ -1832,7 +1832,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
     bool found;
     BOOL ok;
     ok = TRUE;
-    if (mPad::g_currentCore->getDpdValidFlag() && fn_800FA724()) {
+    if (mPad::g_currentCore->getDpdValidFlag() && dPad::isATriggered()) {
         const dObjc::dpdHit_c *hit = dObjc::getDpdHit();
         int type = hit != NULL ? (int)hit->mType : 0;
         switch (type) {

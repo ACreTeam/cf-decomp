@@ -78,7 +78,7 @@ int dObjTelop_c::execute() {
     static void (dObjTelop_c::*l_stateFuncs[])() = {
         &dObjTelop_c::stateMain,
     };
-    if (fn_800FA640()) {
+    if (dPad::hasUnsupportedExtension()) {
         if (mExtensionCnt < 5) {
             mExtensionCnt++;
         } else {
@@ -87,7 +87,7 @@ int dObjTelop_c::execute() {
     } else {
         mExtensionCnt = 0;
     }
-    if ((!fn_8038E36C() || fn_800FA5D8()) && !dReset::Manage_c::GetInstance()->isShutdown()) {
+    if ((!fn_8038E36C() || dPad::isRemoteUnavailable()) && !dReset::Manage_c::GetInstance()->isShutdown()) {
         if (mNoRemoteCnt < 20) {
             mNoRemoteCnt++;
         } else if (dScene::getCurrentScene() != dScene::SCENE_DM_TITLE) {
@@ -196,7 +196,7 @@ static void wpadInfoCallback(s32 chan, s32 result) {
 }
 
 void dObjTelop_c::wpadWait() {
-    if (fn_800FA5D8()) {
+    if (dPad::isRemoteUnavailable()) {
         mWpadState = WPAD_STATE_CHECK;
         mLowBatteryCnt = 0;
         mWpadTimer = 0;
@@ -204,7 +204,7 @@ void dObjTelop_c::wpadWait() {
 }
 
 void dObjTelop_c::wpadCheck() {
-    if (!fn_800FA5D8()) {
+    if (!dPad::isRemoteUnavailable()) {
         if (mWpadTimer > 0) {
             mWpadTimer--;
         } else {

@@ -2003,7 +2003,7 @@ u8 getShoeColor(u32 idx, u32 gender) {
 
 // 800FFA50
 BOOL fn_800FFA50(const mVec3_c *a, int b, f32 f) {
-    if (fn_800FA724() && isFacingPosition(a, b, f)) {
+    if (dPad::isATriggered() && isFacingPosition(a, b, f)) {
         return TRUE;
     }
     return FALSE;

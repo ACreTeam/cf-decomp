@@ -151,8 +151,7 @@ void dObjCursor_c::calcState() {
 void dObjCursor_c::calcPos() {
     BOOL invalid = FALSE;
     if (mPad::g_currentCore->getDpdValidFlag() > 0) {
-        mVec2_c pos;
-        fn_800FA6C4(&pos);
+        mVec2_c pos = dPad::getPointerPosition();
         l_pos = pos;
     } else {
         invalid = TRUE;
@@ -202,8 +201,7 @@ void dObjCursor_c::calcRotate() {
     if (mAnm.mCurIdx == ANM_HOLD || (mAnm.mCurIdx == ANM_RELEASE && !mAnm.isEnd())) {
         deg = 0.0f;
     } else {
-        mVec2_c dir;
-        fn_800FA6DC(&dir);
+        mVec2_c dir = dPad::getPointerDirection();
         f32 rad = cM::atan2f(dir.y, dir.x);
         deg = rad * mAng::RadianToDegreeCoefficient;
     }

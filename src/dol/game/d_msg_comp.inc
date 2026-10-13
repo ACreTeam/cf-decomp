@@ -625,9 +625,9 @@ void Word_c::setAnimalWord(dScript::Word_c *word, dAnimal_c *animal, dAnimal_c *
     }
 }
 
-BOOL fn_801A20CC() { return fn_800FA748(); }
-BOOL fn_801A20D0() { return fn_800FA760(); }
-BOOL fn_801A20D4() { return fn_800FA76C(); }
+BOOL fn_801A20CC() { return dPad::isConfirmTriggered(); }
+BOOL fn_801A20D0() { return dPad::isCancelTriggered(); }
+BOOL fn_801A20D4() { return dPad::isCancelHeld(); }
 
 BOOL isNextTrig() {
     BOOL ret = FALSE;

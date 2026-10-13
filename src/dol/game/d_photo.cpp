@@ -23,7 +23,7 @@ int fn_8036D698(void *work, const void *image, int width, int height, int format
 
 static m3d::capture_c l_capture;
 static OSThread l_thread;
-static u8 l_stack[0x2000];
+static u8 l_stack[0x2000] ALIGN(32);
 // The source position of each destination column / row, in quarter texels.
 static int l_srcX[PHOTO_WIDTH_MAX + 1];
 static int l_srcY[PHOTO_HEIGHT + 1];

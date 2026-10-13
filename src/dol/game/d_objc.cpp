@@ -4,6 +4,7 @@
 // .sdata2 80751800..80751848.
 // See include/game/game/d_objc.hpp and notes/d_objc.txt.
 #include <game/game/d_objc.hpp>
+#include <game/game/d_pad.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_a_str.hpp>
 #include <game/cLib/c_math.hpp>
@@ -28,8 +29,6 @@
 // Not decompiled yet (C linkage keeps the target names).
 extern "C" {
 
-// 800FA6AC (d_pad): the pointer's screen position
-void fn_800FA6AC(mVec2_c *pos);
 // 8018A080 (d_camera): a screen position to a world position
 void fn_8018A080(mVec3_c *pos, const dCamera_c *cam, const mVec2_c *screen);
 }
@@ -590,8 +589,7 @@ void calc() {
     l_dpdHit.clear();
     if (cam != NULL && mPad::getCore()->getDpdValidFlag() > 0 && player != NULL && field != NULL) {
         dBGC::column_c hitCol;
-        mVec2_c screen;
-        fn_800FA6AC(&screen);
+        mVec2_c screen = dPad::getRawPointer();
         mVec3_c target;
         fn_8018A080(&target, cam, &screen);
         mVec3_c eye = cam->getEyePos();

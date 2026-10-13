@@ -22,18 +22,18 @@ static const char *sButtonNames[BComp_c::NUM_ANSWERS] = {"B_msg_00", "B_msg_01",
 
 // 8015B680
 BOOL isDecideTrig() {
-    return fn_800FA748();
+    return dPad::isConfirmTriggered();
 }
 
 // 8015B684
 BOOL isCancelTrig() {
-    return fn_800FA760();
+    return dPad::isCancelTriggered();
 }
 
 // 8015B688
 BOOL isUpHold() {
     BOOL ret = TRUE;
-    if (((fn_800FA714() >> 3) & 1) == 0) {
+    if (((dPad::getHeld() >> 3) & 1) == 0) {
         if (mPad::getCore()->down(8) == 0) {
             ret = FALSE;
         }
@@ -44,7 +44,7 @@ BOOL isUpHold() {
 // 8015B6E4
 BOOL isDownHold() {
     BOOL ret = TRUE;
-    if (((fn_800FA714() >> 2) & 1) == 0) {
+    if (((dPad::getHeld() >> 2) & 1) == 0) {
         if (mPad::getCore()->down(4) == 0) {
             ret = FALSE;
         }
@@ -400,7 +400,7 @@ void BComp_c::executeSelectDpd() {
     }
     if (mPad::getCore()->downTrigger(0x800) && mCurrent == -1 && mCancel != -1) {
         cancel();
-    } else if (!fn_8017FE28() && mCancel != -1 && fn_800FA760()) {
+    } else if (!fn_8017FE28() && mCancel != -1 && dPad::isCancelTriggered()) {
         cancel();
     }
     if (mCurrent != prev) {
@@ -692,7 +692,7 @@ void BComp_c::updatePointer() {
         if (mCurrent != -1) {
             decide();
         }
-    } else if (mCancel != -1 && fn_800FA760()) {
+    } else if (mCancel != -1 && dPad::isCancelTriggered()) {
         cancel();
     }
 }

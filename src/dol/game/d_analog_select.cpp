@@ -19,15 +19,15 @@ static const dState::mode_c<Comp_c>::Entry sModes[] = {
 };
 
 // 8000C14C
-BOOL isConfirmTriggered() { return fn_800FA748(); }
+BOOL isConfirmTriggered() { return dPad::isConfirmTriggered(); }
 // 8000C150
-BOOL isConfirmHeld() { return fn_800FA754(); }
+BOOL isConfirmHeld() { return dPad::isConfirmHeld(); }
 // 8000C154
 BOOL isUpPressed() { return mPad::getCore()->down(8); }
 // 8000C16C
 BOOL isDownPressed() { return mPad::getCore()->down(4); }
 // 8000C184
-f32 getStickY() { return fn_800FA704(); }
+f32 getStickY() { return dPad::getStickY(); }
 // 8000C188
 Comp_c::Comp_c() {}
 // 8000C228
