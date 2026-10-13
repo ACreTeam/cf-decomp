@@ -301,7 +301,7 @@ public:
     u32 getLength(int breakOnNewLine); // length of this word
     BOOL isSame(Word_c *other); // same text
     BOOL getChar(wchar_t *out, u32 index); // character at index
-    BOOL set(const wchar_t *str, int); // 801590F0: clear(), copy, then parse
+    BOOL set(const wchar_t *str, int breakOnNewLine); // 801590F0: clear(), copy, then parse
     BOOL copy(const Word_c *src, int breakOnNewLine); // copy
     BOOL appendText(const wchar_t *str, int breakOnNewLine); // append and parse
     BOOL appendChar(wchar_t c); // append a character and parse

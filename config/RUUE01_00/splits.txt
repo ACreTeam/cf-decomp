@@ -1883,6 +1883,11 @@ dol/game/d_obj_bal.cpp:
 
 dol/game/d_obj_chat.cpp:
 	.text       start:0x801B0B20 end:0x801B3380
+	.rodata     start:0x8047E1F0 end:0x8047E218 align:4
+	.data       start:0x804FBC98 end:0x804FC048 align:4
+	.bss        start:0x80625470 end:0x806257D0
+	.sdata      start:0x8074C220 end:0x8074C250 align:4
+	.sdata2     start:0x80751878 end:0x80751908
 
 dol/game/d_obj_cursor.cpp:
 	.text       start:0x801B3380 end:0x801B3E54

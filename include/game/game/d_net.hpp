@@ -256,10 +256,10 @@ enum dNetPacket_e {
     NET_PACKET_HARVEST_SPOT = 0x50,
     // d_sv_daily_rand dSvDailyRand::Rand_c::change: dSaveTown_c::mDailyRand
     NET_PACKET_DAILY_RAND = 0x51,
-    // d_obj_chat fn_801B122C: chat text (1 byte + u16 chars) -> fn_801B12B0
+    // dObjChat::postText: chat text (1 byte + u16 chars) -> receiveText
     NET_PACKET_CHAT = 0x52,
-    // d_obj_chat fn_801B133C: 2 bytes -> fn_801B13C8; hedged
-    NET_PACKET_CHAT_STATE = 0x53,
+    // dObjChat::postPreset: preset group and index (2 bytes) -> receivePreset
+    NET_PACKET_CHAT_PRESET = 0x53,
     // d_clock dClock::sendCmd: a 1-byte clock command (dClock::Cmd_e) -> dClock::receive
     NET_PACKET_CLOCK = 0x54,
     // d_npc fn_800EFFA0: a villager's held item (setHeldItem)

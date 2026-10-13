@@ -1106,12 +1106,12 @@ void recvNoticeRemove(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 // 800E0024: NET_PACKET_CHAT (0x52)
 void recvChat(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_801B12B0(data, size, member);
+    dObjChat::receiveText(data, size, member);
 }
 
-// 800E0038: NET_PACKET_CHAT_STATE (0x53)
-void recvChatState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_801B13C8(data, member);
+// 800E0038: NET_PACKET_CHAT_PRESET (0x53)
+void recvChatPreset(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
+    dObjChat::receivePreset(data, member);
 }
 
 // 800E0048: NET_PACKET_CLOCK (0x54)
@@ -2177,7 +2177,7 @@ const dNetDataFunc lbl_80473E44[NET_PACKET_NUM] = {
     recvHarvestSpot,
     recvDailyRand,
     recvChat,
-    recvChatState,
+    recvChatPreset,
     recvClock,
     recvAnimalHeldItem,
     recvAnimalHeldItemTime,

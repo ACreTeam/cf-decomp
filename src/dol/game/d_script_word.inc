@@ -461,9 +461,9 @@ BOOL Word_c::getChar(wchar_t *out, u32 index) {
 }
 
 // 801590F0
-BOOL Word_c::set(const wchar_t *str, int arg) {
+BOOL Word_c::set(const wchar_t *str, int breakOnNewLine) {
     clear();
-    if (!writeText(str, 0, arg)) {
+    if (!writeText(str, 0, breakOnNewLine)) {
         return FALSE;
     }
     parse();

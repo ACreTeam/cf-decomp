@@ -679,7 +679,7 @@ void Timer_c::stateRun() {
             dScript::formatNumber(&word, mBugCount, 2, dScript::NUM_FORMAT_PLAIN, 0);
             dString::setWord(1, &word);
             dString::loadString(&word, MSG_TIMER_RESULT, MSG_TIMER_RESULT_GROUP);
-            fn_801B122C(word.getText(), 1);
+            dObjChat::postText(word.getText(), dObjChat::TEXT_KIND_SYSTEM);
         }
     } else if (mFlags & FLAG_HIDE_AND_SEEK) {
         if (!isHideAndSeekHost()) {

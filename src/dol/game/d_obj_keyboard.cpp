@@ -256,7 +256,7 @@ BOOL dObjKeyboard_c::send() {
     if (mText[0] == 0) {
         return FALSE;
     }
-    fn_801B122C(mText, 0);
+    dObjChat::postText(mText, dObjChat::TEXT_KIND_PLAYER);
     clearText();
     dKbd::playSeSubmit();
     return TRUE;
