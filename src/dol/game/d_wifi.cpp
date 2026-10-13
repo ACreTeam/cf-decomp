@@ -800,12 +800,12 @@ void updateRoster() {
     BOOL updateRegs = dSaveWc24_c::getDaysSince(&wc24->_C5C) != 0;
     BOOL updateSends = dSaveWc24_c::getDaysSince(&wc24->_C60) != 0;
     if (updateRegs || updateSends) {
-        dNetWus_c wus;
+        dNetWus::dNetWus_c wus;
         u8 results[WC24_SEND_INDEX_NUM];
         BOOL failed = FALSE;
         if (wus.open()) {
             if (updateRegs) {
-                if (wus.fn_800EB584(dNetWc24::g_wc24.mUserId, FALSE)) {
+                if (wus.notify(dNetWc24::g_wc24.mUserId, FALSE)) {
                     dSaveWc24_c::setToday(&wc24->_C5C);
                 } else {
                     failed = TRUE;
@@ -813,7 +813,7 @@ void updateRoster() {
             }
             if (updateSends && !failed) {
                 int num = wc24->getKeys(sKeys, WC24_SEND_INDEX_NUM);
-                if (wus.fn_800EB700(sKeys, num, 10, results)) {
+                if (wus.inquire(sKeys, num, 10, results)) {
                     for (int i = 0; i < num; i++) {
                         if (results[i]) {
                             wc24->setSend(&sKeys[i], TRUE);
@@ -833,8 +833,8 @@ void updateRoster() {
 void updateRegistration() {
     dSaveWc24_c *wc24 = &dSaveData_c::getExtra()->mWc24;
     if (wc24->mSendCleared && dSaveWc24_c::getDaysSince(&wc24->_C5C)) {
-        dNetWus_c wus;
-        if (wus.open() && wus.fn_800EB584(dNetWc24::g_wc24.mUserId, TRUE)) {
+        dNetWus::dNetWus_c wus;
+        if (wus.open() && wus.notify(dNetWc24::g_wc24.mUserId, TRUE)) {
             dSaveWc24_c::setToday(&wc24->_C5C);
             wc24->mSendCleared = 0;
         }
