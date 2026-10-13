@@ -929,7 +929,7 @@ config.libs = [
             Object(Matching, "dol/game/d_date.cpp"),
             Object(Matching, "dol/game/d_voice_chat.cpp"),
             # Stored as CP932; pass directly to MWCC without UTF-8 conversion.
-            Object(NonMatching, "dol/game/d_sv_mgr.cpp", shift_jis=False),
+            Object(Matching, "dol/game/d_sv_mgr.cpp", shift_jis=False),
         ],
     },
     {

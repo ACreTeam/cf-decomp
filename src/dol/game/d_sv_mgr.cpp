@@ -10,22 +10,32 @@
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_wifi.hpp>
 
-// TODO: Not linkable yet; every function matches, but the section layout does not.
-// - The target is likely two TUs. .text/.ctors/.bss put the boundary after
-//   clearRequestedMode (really __sinit for mRequestedMode = __ptmf_null), with
-//   the remaining stepX_c helpers, checkSaveResult and ~dSvMgr_c in the second.
-// - But the vtable block sits mid-.data, after stepLoad_c's data (+0x16A8),
-//   instead of at the end of the first TU's .data as MWCC emits it.
-// - Weak dtors sit after the __sinit thunks and before ~dSvMgr_c, not after
-//   createMgr. MWCC places weak dtors after a ctor, so the original likely had
-//   constructor code there that the linker stripped.
-// - Declaring the stepX_c/stepBase_c dtors `inline virtual ~X();` (no body)
-//   fixes the getStateName order, and declaring ~dSvMgr_c after execute()
-//   with stepLoad_c defined last fixes the vtable order.
+// The deferred message/load templates stay in this file. Save callbacks and
+// destructors have separate definition files so -sym on places their weak
+// code sections after the state framework, while retaining the PTMF pool order.
 
 using namespace dSvRuntime;
 
-dSvMgr_c::Method dSvMgr_c::mRequestedMode;
+// Seed deferred result specializations in declaration order. These unused
+// address anchors are discarded by the linker.
+static void (*const instantiate_stepSaveNormal_c)(dSvMgr_c::stepSaveNormal_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveNormal_c>;
+static void (*const instantiate_stepSaveRetireNetVst_c)(dSvMgr_c::stepSaveRetireNetVst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveRetireNetVst_c>;
+static void (*const instantiate_stepSaveConnectNetHst_c)(dSvMgr_c::stepSaveConnectNetHst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveConnectNetHst_c>;
+static void (*const instantiate_stepSaveConnectNetVst_c)(dSvMgr_c::stepSaveConnectNetVst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveConnectNetVst_c>;
+static void (*const instantiate_stepSaveContinueNetHst_c)(dSvMgr_c::stepSaveContinueNetHst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveContinueNetHst_c>;
+static void (*const instantiate_stepSaveContinueNetVst_c)(dSvMgr_c::stepSaveContinueNetVst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveContinueNetVst_c>;
+static void (*const instantiate_stepSaveInterruptNetHst_c)(dSvMgr_c::stepSaveInterruptNetHst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveInterruptNetHst_c>;
+static void (*const instantiate_stepSaveInterruptNetVst_c)(dSvMgr_c::stepSaveInterruptNetVst_c *) =
+    &checkSaveResultImpl<dSvMgr_c::stepSaveInterruptNetVst_c>;
+
+dSvMgr_c::Method dSvMgr_c::mRequestedMode = NULL;
 int dSvMgr_c::mVisitors[3];
 int dSvMgr_c::mCurrentVisitor = 4;
 int dSvMgr_c::mPlayerIndex = 3;
@@ -676,7 +686,7 @@ int dSvMgr_c::getRequiredInodes() {
     static int extra = inodesForSize(dBanner_c::sFileSize);
     static int resource = inodesForSize(dWifi::getNandResourceSize());
     static int auxiliary = inodesForSize(dWifi::getNandAuxSize());
-    static int total = auxiliary + resource + save + extra;
+    static int total = save + extra + resource + auxiliary;
     return total;
 }
 
@@ -708,308 +718,61 @@ void dSvMgr_c::stepLoad_c::finish() {
     mpOwner->finishLoad();
 }
 
-// 801BECDC
-void dSvMgr_c::stepSaveInterruptNetVst_c::requestSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
+template <class A, class B> struct SvStepIs { enum { value = 0 }; };
+template <class A> struct SvStepIs<A, A> { enum { value = 1 }; };
+
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::requestSaveMessage() {
+    this->mpOwner->requestMessage(SvStepIs<Step, stepSaveNormal_c>::value ? 0x0D : 0x1B);
+    this->nextStep();
 }
 
-// 801BED80
-void dSvMgr_c::stepSaveInterruptNetVst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::requestNetworkSaveMessage() {
+    this->mpOwner->requestMessage(0x1B);
+    this->nextStep();
+}
+
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::waitMessageLock() {
+    dMsg::Comp_c *controller = this->mpOwner->getMessageController();
     DemoMethod expected = &dMsg::Comp_c::executeComplete;
     if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
+        this->mpOwner->getMessageController()->mLock) {
+        this->nextStep();
     }
 }
 
-// 801BEE68
-void dSvMgr_c::stepSaveInterruptNetVst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::releaseMessageLock() {
+    releaseMessage(this->mpOwner->getMessageController());
+    this->nextStep();
 }
 
-// 801BEF18
-void dSvMgr_c::stepSaveInterruptNetVst_c::waitMessageEnd() {
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::waitMessageEnd() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     DemoMethod expected = &dMsg::Comp_c::executeHidden;
     if (isDemoMode(demo, expected)) {
         static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
+        this->nextStep();
     }
 }
 
-// 801BEFF0
-void dSvMgr_c::stepSaveInterruptNetVst_c::gotoOutsideGate() {
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::gotoOutsideGate() {
     fn_801BB7B8()->requestExit(1, 5, 0);
-    nextStep();
+    this->nextStep();
 }
 
-// 801BF09C
-void dSvMgr_c::stepSaveInterruptNetVst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801BF0A4
-void dSvMgr_c::stepSaveInterruptNetVst_c::waitCanSave() {
-    if (dNet::canSaveInterrupt()) {
-        nextStep();
-    }
-}
-
-// 801BF148
-void dSvMgr_c::stepSaveInterruptNetVst_c::processLoadedSave() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    switch (dNand::getResult()) {
-    case 1:
-        if (!dSaveData_c::getRaw()->isExtraGood(1)) {
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-        } else if (!dSaveData_c::get()->isGood()) {
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-        } else {
-            dNet::getMyNo();
-            int index = mPlayerIndex;
-            fn_801017B8();
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
-            dSaveOption::store(player->getOption());
-            dPlayerMgr_c::getCurrentPlayer()->copy(player);
-            dSaveData_c::get()->setupAfterLoad();
-            dSaveData_c *save = dSaveData_c::getRaw();
-            save->mSaveTime.get();
-            nextStep();
-        }
-        break;
-    case 2:
-        releaseMessage(demo);
-        demo->setNextMsgCode(0x0C);
-        demo->setNextMsgLabel(mMessageLabel);
-        mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-        break;
-    default:
-        releaseMessage(demo);
-        demo->setNextMsgCode(0x13);
-        demo->setNextMsgLabel(mMessageLabel);
-        mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-    }
-}
-
-// 801BF39C
-void dSvMgr_c::stepSaveInterruptNetVst_c::initializeGrowth() {
-    fn_80154358(lbl_8074E7F8);
-    nextStep();
-}
-
-// 801BF43C
-void dSvMgr_c::stepSaveInterruptNetVst_c::processGrowth() {
-    if (fn_8015436C(lbl_8074E7F8, 4)) {
-        nextStep();
-    }
-}
-
-// 801BF4E8
-void dSvMgr_c::stepSaveInterruptNetHst_c::requestNetworkSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
-}
-
-// 801BF58C
-void dSvMgr_c::stepSaveInterruptNetHst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801BF674
-void dSvMgr_c::stepSaveInterruptNetHst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801BF724
-void dSvMgr_c::stepSaveInterruptNetHst_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801BF7FC
-void dSvMgr_c::stepSaveInterruptNetHst_c::gotoPreviousScene() {
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::gotoPreviousScene() {
     fn_801BB7B8()->requestExit(0, 5, 0);
-    nextStep();
+    this->nextStep();
 }
 
-// 801BF8A8
-void dSvMgr_c::stepSaveInterruptNetHst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801BF8B0
-void dSvMgr_c::stepSaveInterruptNetHst_c::waitCanSave() {
-    if (dNet::canSaveInterrupt()) {
-        nextStep();
-    }
-}
-
-// 801BF954
-void dSvMgr_c::stepSaveInterruptNetHst_c::initializeGrowth() {
-    fn_80154358(lbl_8074E7F8);
-    nextStep();
-}
-
-// 801BF9F4
-void dSvMgr_c::stepSaveInterruptNetHst_c::processGrowth() {
-    if (fn_8015436C(lbl_8074E7F8, 4)) {
-        nextStep();
-    }
-}
-
-// 801BFAA0
-void dSvMgr_c::stepSaveContinueNetVst_c::requestNetworkSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
-}
-
-// 801BFB44
-void dSvMgr_c::stepSaveContinueNetVst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801BFC2C
-void dSvMgr_c::stepSaveContinueNetVst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801BFCDC
-void dSvMgr_c::stepSaveContinueNetVst_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801BFDB4
-void dSvMgr_c::stepSaveContinueNetVst_c::gotoPreviousScene() {
-    fn_801BB7B8()->requestExit(0, 5, 0);
-    nextStep();
-}
-
-// 801BFE60
-void dSvMgr_c::stepSaveContinueNetVst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801BFE68
-void dSvMgr_c::stepSaveContinueNetVst_c::waitCanSave() {
-    if (dNet::canSaveContinue()) {
-        nextStep();
-    }
-}
-
-// 801BFF0C
-void dSvMgr_c::stepSaveContinueNetHst_c::requestNetworkSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
-}
-
-// 801BFFB0
-void dSvMgr_c::stepSaveContinueNetHst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801C0098
-void dSvMgr_c::stepSaveContinueNetHst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801C0148
-void dSvMgr_c::stepSaveContinueNetHst_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801C0220
-void dSvMgr_c::stepSaveContinueNetHst_c::gotoPreviousScene() {
-    fn_801BB7B8()->requestExit(0, 5, 0);
-    nextStep();
-}
-
-// 801C02CC
-void dSvMgr_c::stepSaveContinueNetHst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801C02D4
-void dSvMgr_c::stepSaveContinueNetHst_c::waitCanSave() {
-    if (dNet::canSaveContinue()) {
-        nextStep();
-    }
-}
-
-// 801C0378
-void dSvMgr_c::stepSaveConnectNetVst_c::requestNetworkSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
-}
-
-// 801C041C
-void dSvMgr_c::stepSaveConnectNetVst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801C0504
-void dSvMgr_c::stepSaveConnectNetVst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801C05B4
-void dSvMgr_c::stepSaveConnectNetVst_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801C068C
-void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::gotoWelcomeDemo() {
     if (dNet::isSessionActive() && mCurrentVisitor < 4) {
         bool returning = false;
         void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
@@ -1032,1116 +795,121 @@ void dSvMgr_c::stepSaveConnectNetVst_c::gotoWelcomeDemo() {
         } else {
             dScene::requestSceneChange(dScene::SCENE_DM_CHKP_CNNCT, 5, 0);
         }
-        nextStep();
+        this->nextStep();
     }
 }
 
-// 801C0824
-void dSvMgr_c::stepSaveConnectNetVst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801C082C
-void dSvMgr_c::stepSaveConnectNetVst_c::waitNewPlayer() {
-    if (dNet::isNewPlayerReady()) {
-        dNet::setSaveVisitor();
-        nextStep();
-    }
-}
-
-// 801C08D4
-void dSvMgr_c::stepSaveConnectNetVst_c::findFriend() {
-    if (dNet::isSessionActive()) {
-        int visitor = mCurrentVisitor;
-        if (visitor >= 4) return;
-        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(visitor);
-        u64 friendCode = dNet::getMemberTime(visitor);
-        int index = dWifi::findUser(&player->mFriends.mUserData);
-        if (index >= 0 || index == -1) {
-            if (index >= 0) {
-                dWifi::updateFriend(index, &player->mPID, player->mFriends.mName, &friendCode);
-            }
-            nextStep();
-        }
-    }
-}
-
-// 801C09D0
-void dSvMgr_c::stepSaveConnectNetVst_c::waitSavePermission() {
-    if (dNet::isConnectSavePermitted()) {
-        nextStep();
-    }
-}
-
-// 801C0A74
-void dSvMgr_c::stepSaveConnectNetHst_c::requestNetworkSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
-}
-
-// 801C0B18
-void dSvMgr_c::stepSaveConnectNetHst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801C0C00
-void dSvMgr_c::stepSaveConnectNetHst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801C0CB0
-void dSvMgr_c::stepSaveConnectNetHst_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801C0D88
-void dSvMgr_c::stepSaveConnectNetHst_c::gotoWelcomeDemo() {
-    if (dNet::isSessionActive() && mCurrentVisitor < 4) {
-        bool returning = false;
-        void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
-        if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
-            if (field<TownIdentity>(player, 0x7FA8).isSame(
-                    field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
-                returning = true;
-                player = &dSaveData_c::getTown()->mTownHost;
-                ((dPersonalID_c *)player)->clear();
-                field<IdentityFlags>(player, 0x2C).state = 0;
-                if (dNet::isHost()) {
-                    player = &field<u8>(dPlayerMgr_c::getCurrentPlayer(), 0x7FA8);
-                    ((dPersonalID_c *)player)->clear();
-                    field<IdentityFlags>(player, 0x2C).state = 0;
-                }
-            }
-        }
-        if (returning) {
-            dScene::requestSceneChange(dScene::SCENE_DM_CHKP_MISS, 5, 0);
-        } else {
-            dScene::requestSceneChange(dScene::SCENE_DM_CHKP_CNNCT, 5, 0);
-        }
-        nextStep();
-    }
-}
-
-// 801C0F20
-void dSvMgr_c::stepSaveConnectNetHst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801C0F28
-void dSvMgr_c::stepSaveConnectNetHst_c::waitNewPlayer() {
-    if (dNet::isNewPlayerReady()) {
-        dNet::setSaveVisitor();
-        nextStep();
-    }
-}
-
-// 801C0FD0
-void dSvMgr_c::stepSaveConnectNetHst_c::findFriend() {
-    if (dNet::isSessionActive()) {
-        int visitor = mCurrentVisitor;
-        if (visitor >= 4) return;
-        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(visitor);
-        u64 friendCode = dNet::getMemberTime(visitor);
-        int index = dWifi::findUser(&player->mFriends.mUserData);
-        if (index >= 0 || index == -1) {
-            if (index >= 0) {
-                dWifi::updateFriend(index, &player->mPID, player->mFriends.mName, &friendCode);
-            }
-            nextStep();
-        }
-    }
-}
-
-// 801C10CC
-void dSvMgr_c::stepSaveConnectNetHst_c::waitSavePermission() {
-    if (dNet::isConnectSavePermitted()) {
-        nextStep();
-    }
-}
-
-// 801C1170
-void dSvMgr_c::stepSaveRetireNetVst_c::requestNetworkSaveMessage() {
-    mpOwner->requestMessage(0x1B);
-    nextStep();
-}
-
-// 801C1214
-void dSvMgr_c::stepSaveRetireNetVst_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801C12FC
-void dSvMgr_c::stepSaveRetireNetVst_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801C13AC
-void dSvMgr_c::stepSaveRetireNetVst_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801C1484
-void dSvMgr_c::stepSaveRetireNetVst_c::gotoOutsideGate() {
-    fn_801BB7B8()->requestExit(1, 5, 0);
-    nextStep();
-}
-
-// 801C1530
-void dSvMgr_c::stepSaveRetireNetVst_c::finish() {
-    mpOwner->finishLoad();
-}
-
-// 801C1538
-void dSvMgr_c::stepSaveRetireNetVst_c::processLoadedSave() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    switch (dNand::getResult()) {
-    case 1:
-        if (!dSaveData_c::getRaw()->isExtraGood(1)) {
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-        } else if (!dSaveData_c::get()->isGood()) {
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-        } else {
-            dNet::getMyNo();
-            int index = mPlayerIndex;
-            fn_801017B8();
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
-            dSaveOption::store(player->getOption());
-            dPlayerMgr_c::getCurrentPlayer()->copy(player);
-            dSaveData_c::get()->setupAfterLoad();
-            dSaveData_c *save = dSaveData_c::getRaw();
-            save->mSaveTime.get();
-            nextStep();
-        }
-        break;
-    case 2:
-        releaseMessage(demo);
-        demo->setNextMsgCode(0x0C);
-        demo->setNextMsgLabel(mMessageLabel);
-        mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-        break;
-    default:
-        releaseMessage(demo);
-        demo->setNextMsgCode(0x13);
-        demo->setNextMsgLabel(mMessageLabel);
-        mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-    }
-}
-
-// 801C178C
-void dSvMgr_c::stepSaveRetireNetVst_c::initializeGrowth() {
-    fn_80154358(lbl_8074E7F8);
-    nextStep();
-}
-
-// 801C182C
-void dSvMgr_c::stepSaveRetireNetVst_c::processGrowth() {
-    if (fn_8015436C(lbl_8074E7F8, 4)) {
-        nextStep();
-    }
-}
-
-// 801C18D8
-void dSvMgr_c::stepSaveNormal_c::requestSaveMessage() {
-    mpOwner->requestMessage(0x0D);
-    nextStep();
-}
-
-// 801C197C
-void dSvMgr_c::stepSaveNormal_c::waitMessageLock() {
-    dMsg::Comp_c *controller = mpOwner->getMessageController();
-    DemoMethod expected = &dMsg::Comp_c::executeComplete;
-    if (isDemoMode(controller, expected) &&
-        mpOwner->getMessageController()->mLock) {
-        nextStep();
-    }
-}
-
-// 801C1A64
-void dSvMgr_c::stepSaveNormal_c::releaseMessageLock() {
-    releaseMessage(mpOwner->getMessageController());
-    nextStep();
-}
-
-// 801C1B14
-void dSvMgr_c::stepSaveNormal_c::waitMessageEnd() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    DemoMethod expected = &dMsg::Comp_c::executeHidden;
-    if (isDemoMode(demo, expected)) {
-        static_cast<dMsg::Comp_c *>(demo)->detachActor();
-        nextStep();
-    }
-}
-
-// 801C1BEC
-void dSvMgr_c::stepSaveNormal_c::gotoTitle() {
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::gotoTitle() {
     dScene::requestSceneChange(dScene::SCENE_DM_TITLE, 5, 2);
-    nextStep();
+    this->nextStep();
 }
 
-// 801C1C94
-void dSvMgr_c::stepSaveNormal_c::finishFinal() {
-    mpOwner->finishLoad();
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::finish() {
+    this->mpOwner->finishLoad();
 }
 
-// 801C1C9C
-void dSvMgr_c::clearRequestedMode() {
-    mRequestedMode = NULL;
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::finishFinal() {
+    this->mpOwner->finishLoad();
 }
 
-// 801C30C0
-void dSvMgr_c::stepLoad_c::initializeLoad() {
-    nextStep();
-}
-
-// 801C3158
-void dSvMgr_c::stepLoad_c::startLoad() {
-    if (dNand::loadAll()) {
-        nextStep();
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::waitCanSave() {
+    if (SvStepIs<Step, stepSaveInterruptNetVst_c>::value ||
+        SvStepIs<Step, stepSaveInterruptNetHst_c>::value) {
+        if (dNet::canSaveInterrupt()) this->nextStep();
+    } else if (dNet::canSaveContinue()) {
+        this->nextStep();
     }
 }
 
-// 801C31FC
-void dSvMgr_c::stepLoad_c::waitLoad() {
-    if (dNand::isIdle()) {
-        nextStep();
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::waitNewPlayer() {
+    if (dNet::isNewPlayerReady()) {
+        dNet::setSaveVisitor();
+        this->nextStep();
     }
 }
 
-// 801C32A0
-void dSvMgr_c::stepSaveInterruptNetVst_c::initializeLoad() {
-    nextStep();
-}
-
-// 801C3338
-void dSvMgr_c::stepSaveInterruptNetVst_c::startLoad() {
-    if (dNand::loadAll()) {
-        nextStep();
-    }
-}
-
-// 801C33DC
-void dSvMgr_c::stepSaveInterruptNetVst_c::waitLoad() {
-    if (dNand::isIdle()) {
-        nextStep();
-    }
-}
-
-// 801C3480
-void dSvMgr_c::stepSaveInterruptNetVst_c::initializeFullSave() {
-    dSaveData_c::get()->prepareSave();
-    dTime_c::saveOffset();
-    dNand::updateCheckFlags();
-    nextStep();
-}
-
-// 801C3528
-void dSvMgr_c::stepSaveInterruptNetVst_c::startFullSave() {
-    if (dNand::saveAll()) {
-        nextStep();
-    }
-}
-
-// 801C35CC
-void dSvMgr_c::stepSaveInterruptNetVst_c::waitFullSave() {
-    checkSaveResult();
-}
-
-// 801C35D0
-void dSvMgr_c::stepSaveInterruptNetVst_c::initializeDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else if (dWifi::startSetupDownload()) {
-        nextStep();
-    }
-}
-
-// 801C36E8
-void dSvMgr_c::stepSaveInterruptNetVst_c::createDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else {
-        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (dWifi::getThreadResult()) {
-        case -1:
-            break;
-        case 0:
-            if (dWifi::getNetErrorMessage() == 0x0C) {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x0C);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod =
-                    &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-            } else {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x13);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod =
-                    &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::findFriend() {
+    if (dNet::isSessionActive()) {
+        int visitor = mCurrentVisitor;
+        if (visitor >= 4) return;
+        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(visitor);
+        u64 friendCode = dNet::getMemberTime(visitor);
+        int index = dWifi::findUser(&player->mFriends.mUserData);
+        if (index >= 0 || index == -1) {
+            if (index >= 0) {
+                dWifi::updateFriend(index, &player->mPID, player->mFriends.mName, &friendCode);
             }
-            break;
-        case 1:
-            nextStep();
-            break;
+            this->nextStep();
         }
     }
 }
 
-// 801C38B4
-void dSvMgr_c::stepSaveInterruptNetVst_c::disableHomeAndReset() {
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    dReset::Manage_c::GetInstance()->SetResetDisable();
-    nextStep();
-}
-
-// 801C3964
-void dSvMgr_c::stepSaveInterruptNetVst_c::enableHomeAndReset() {
-    enableReset();
-    nextStep();
-}
-
-// 801C3A14
-void dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed() {
-}
-
-// 801C3A18
-void dSvMgr_c::stepSaveInterruptNetHst_c::initializeFullSave() {
-    dSaveData_c::get()->prepareSave();
-    dTime_c::saveOffset();
-    dNand::updateCheckFlags();
-    nextStep();
-}
-
-// 801C3AC0
-void dSvMgr_c::stepSaveInterruptNetHst_c::startFullSave() {
-    if (dNand::saveAll()) {
-        nextStep();
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::waitSavePermission() {
+    if (dNet::isConnectSavePermitted()) {
+        this->nextStep();
     }
 }
 
-// 801C3B64
-void dSvMgr_c::stepSaveInterruptNetHst_c::waitFullSave() {
-    checkSaveResult();
-}
-
-// 801C3B68
-void dSvMgr_c::stepSaveInterruptNetHst_c::initializeDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else if (dWifi::startSetupDownload()) {
-        nextStep();
-    }
-}
-
-// 801C3C80
-void dSvMgr_c::stepSaveInterruptNetHst_c::createDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else {
-        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (dWifi::getThreadResult()) {
-        case -1:
-            break;
-        case 0:
-            if (dWifi::getNetErrorMessage() == 0x0C) {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x0C);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod =
-                    &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
-            } else {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x13);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod =
-                    &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
-            }
-            break;
-        case 1:
-            nextStep();
-            break;
-        }
-    }
-}
-
-// 801C3E4C
-void dSvMgr_c::stepSaveInterruptNetHst_c::disableHomeAndReset() {
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    dReset::Manage_c::GetInstance()->SetResetDisable();
-    nextStep();
-}
-
-// 801C3EFC
-void dSvMgr_c::stepSaveInterruptNetHst_c::enableHomeAndReset() {
-    enableReset();
-    nextStep();
-}
-
-// 801C3FAC
-void dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed() {
-}
-
-// 801C3FB0
-void dSvMgr_c::stepSaveContinueNetVst_c::initializeVisitorSave() {
-    dSaveOption::storeToCurrentPlayer();
-    nextStep();
-}
-
-// 801C404C
-void dSvMgr_c::stepSaveContinueNetVst_c::startVisitorSave() {
-    if (dNand::savePlayer()) {
-        nextStep();
-    }
-}
-
-// 801C40F0
-void dSvMgr_c::stepSaveContinueNetVst_c::waitVisitorSave() {
-    checkSaveResult();
-}
-
-// 801C40F4
-void dSvMgr_c::stepSaveContinueNetVst_c::saveFailed() {
-}
-
-// 801C40F8
-void dSvMgr_c::stepSaveContinueNetHst_c::initializeFullSave() {
-    dSaveData_c::get()->prepareSave();
-    dTime_c::saveOffset();
-    dNand::updateCheckFlags();
-    nextStep();
-}
-
-// 801C41A0
-void dSvMgr_c::stepSaveContinueNetHst_c::startFullSave() {
-    if (dNand::saveAll()) {
-        nextStep();
-    }
-}
-
-// 801C4244
-void dSvMgr_c::stepSaveContinueNetHst_c::waitFullSave() {
-    checkSaveResult();
-}
-
-// 801C4248
-void dSvMgr_c::stepSaveContinueNetHst_c::initializeDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else if (dWifi::startSetupDownload()) {
-        nextStep();
-    }
-}
-
-// 801C4360
-void dSvMgr_c::stepSaveContinueNetHst_c::createDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else {
-        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (dWifi::getThreadResult()) {
-        case -1:
-            break;
-        case 0:
-            if (dWifi::getNetErrorMessage() == 0x0C) {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x0C);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod =
-                    &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
-            } else {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x13);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod =
-                    &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
-            }
-            break;
-        case 1:
-            nextStep();
-            break;
-        }
-    }
-}
-
-// 801C452C
-void dSvMgr_c::stepSaveContinueNetHst_c::saveFailed() {
-}
-
-// 801C4530
-void dSvMgr_c::stepSaveConnectNetVst_c::initializeVisitorSave() {
-    dSaveOption::storeToCurrentPlayer();
-    nextStep();
-}
-
-// 801C45CC
-void dSvMgr_c::stepSaveConnectNetVst_c::startVisitorSave() {
-    if (dNand::savePlayer()) {
-        nextStep();
-    }
-}
-
-// 801C4670
-void dSvMgr_c::stepSaveConnectNetVst_c::waitVisitorSave() {
-    checkSaveResult();
-}
-
-// 801C4674
-void dSvMgr_c::stepSaveConnectNetVst_c::saveFailed() {
-}
-
-// 801C4678
-void dSvMgr_c::stepSaveConnectNetHst_c::initializeHostSave() {
-    dSaveOption::storeToCurrentPlayer();
-    nextStep();
-}
-
-// 801C4714
-void dSvMgr_c::stepSaveConnectNetHst_c::startHostSave() {
-    if (dNand::savePlayer()) {
-        nextStep();
-    }
-}
-
-// 801C47B8
-void dSvMgr_c::stepSaveConnectNetHst_c::waitHostSave() {
-    checkSaveResult();
-}
-
-// 801C47BC
-void dSvMgr_c::stepSaveConnectNetHst_c::initializeTownSave() {
-    dSaveData_c::get()->prepareSave();
-    nextStep();
-}
-
-// 801C485C
-void dSvMgr_c::stepSaveConnectNetHst_c::startTownSave() {
-    if (dNand::saveTown()) {
-        nextStep();
-    }
-}
-
-// 801C4900
-void dSvMgr_c::stepSaveConnectNetHst_c::waitTownSave() {
-    checkSaveResult();
-}
-
-// 801C4904
-void dSvMgr_c::stepSaveConnectNetHst_c::saveFailed() {
-}
-
-// 801C4908
-void dSvMgr_c::stepSaveRetireNetVst_c::initializeLoad() {
-    nextStep();
-}
-
-// 801C49A0
-void dSvMgr_c::stepSaveRetireNetVst_c::startLoad() {
-    if (dNand::loadAll()) {
-        nextStep();
-    }
-}
-
-// 801C4A44
-void dSvMgr_c::stepSaveRetireNetVst_c::waitLoad() {
-    if (dNand::isIdle()) {
-        nextStep();
-    }
-}
-
-// 801C4AE8
-void dSvMgr_c::stepSaveRetireNetVst_c::initializeFullSave() {
-    dSaveData_c::get()->prepareSave();
-    dTime_c::saveOffset();
-    dNand::updateCheckFlags();
-    nextStep();
-}
-
-// 801C4B90
-void dSvMgr_c::stepSaveRetireNetVst_c::startFullSave() {
-    if (dNand::saveAll()) {
-        nextStep();
-    }
-}
-
-// 801C4C34
-void dSvMgr_c::stepSaveRetireNetVst_c::waitFullSave() {
-    checkSaveResult();
-}
-
-// 801C4C38
-void dSvMgr_c::stepSaveRetireNetVst_c::initializeDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else if (dWifi::startSetupDownload()) {
-        nextStep();
-    }
-}
-
-// 801C4D50
-void dSvMgr_c::stepSaveRetireNetVst_c::createDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else {
-        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (dWifi::getThreadResult()) {
-        case -1:
-            break;
-        case 0:
-            if (dWifi::getNetErrorMessage() == 0x0C) {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x0C);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-            } else {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x13);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-            }
-            break;
-        case 1:
-            nextStep();
-            break;
-        }
-    }
-}
-
-// 801C4F1C
-void dSvMgr_c::stepSaveRetireNetVst_c::disableHomeAndReset() {
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    dReset::Manage_c::GetInstance()->SetResetDisable();
-    nextStep();
-}
-
-// 801C4FCC
-void dSvMgr_c::stepSaveRetireNetVst_c::enableHomeAndReset() {
-    enableReset();
-    nextStep();
-}
-
-// 801C507C
-void dSvMgr_c::stepSaveRetireNetVst_c::saveFailed() {
-}
-
-// 801C5080
-void dSvMgr_c::stepSaveNormal_c::initializeFullSave() {
-    dSaveData_c::get()->prepareSave();
-    dTime_c::saveOffset();
-    dNand::updateCheckFlags();
-    nextStep();
-}
-
-// 801C5128
-void dSvMgr_c::stepSaveNormal_c::startFullSave() {
-    if (dNand::saveAll()) {
-        nextStep();
-    }
-}
-
-// 801C51CC
-void dSvMgr_c::stepSaveNormal_c::waitFullSave() {
-    checkSaveResult();
-}
-
-// 801C51D0
-void dSvMgr_c::stepSaveNormal_c::initializeDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else if (dWifi::startSetupDownload()) {
-        nextStep();
-    }
-}
-
-// 801C52E8
-void dSvMgr_c::stepSaveNormal_c::createDownloadBox() {
-    if (dNand::getType(lbl_8074B010) == 1) {
-        nextStep();
-    } else {
-        dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-        switch (dWifi::getThreadResult()) {
-        case -1:
-            break;
-        case 0:
-            if (dWifi::getNetErrorMessage() == 0x0C) {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x0C);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
-            } else {
-                releaseMessage(demo);
-                demo->setNextMsgCode(0x13);
-                demo->setNextMsgLabel(mMessageLabel);
-                mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
-            }
-            break;
-        case 1:
-            nextStep();
-            break;
-        }
-    }
-}
-
-// 801C54B4
-void dSvMgr_c::stepSaveNormal_c::disableHomeAndReset() {
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
-    dReset::Manage_c::GetInstance()->SetResetDisable();
-    nextStep();
-}
-
-// 801C5564
-void dSvMgr_c::stepSaveNormal_c::enableHomeAndReset() {
-    enableReset();
-    nextStep();
-}
-
-// 801C5614
-void dSvMgr_c::stepSaveNormal_c::saveFailed() {
-}
-
-inline void dSvMgr_c::setLoadErrorMessage(u16 code) {
-    sLoadErrorMessage = code;
-}
-
-// 801C5618
-void dSvMgr_c::stepSaveInterruptNetVst_c::checkSaveResult() {
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::processLoadedSave() {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-            break;
-        default:
-            enableReset();
+    switch (dNand::getResult()) {
+    case 1:
+        if (!dSaveData_c::getRaw()->isExtraGood(1)) {
             releaseMessage(demo);
             demo->setNextMsgCode(0x13);
             demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetVst_c::saveFailed;
-            break;
-        }
-    }
-}
-
-// 801C5864
-void dSvMgr_c::stepSaveInterruptNetHst_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
-            break;
-        default:
-            enableReset();
+            this->mCurrentMethod = &Step::saveFailed;
+        } else if (!dSaveData_c::get()->isGood()) {
             releaseMessage(demo);
             demo->setNextMsgCode(0x13);
             demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveInterruptNetHst_c::saveFailed;
-            break;
+            this->mCurrentMethod = &Step::saveFailed;
+        } else {
+            dNet::getMyNo();
+            int index = mPlayerIndex;
+            fn_801017B8();
+            dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
+            dSaveOption::store(player->getOption());
+            dPlayerMgr_c::getCurrentPlayer()->copy(player);
+            dSaveData_c::get()->setupAfterLoad();
+            dSaveData_c *save = dSaveData_c::getRaw();
+            save->mSaveTime.get();
+            this->nextStep();
         }
+        break;
+    case 2:
+        releaseMessage(demo);
+        demo->setNextMsgCode(0x0C);
+        demo->setNextMsgLabel(mMessageLabel);
+        this->mCurrentMethod = &Step::saveFailed;
+        break;
+    default:
+        releaseMessage(demo);
+        demo->setNextMsgCode(0x13);
+        demo->setNextMsgLabel(mMessageLabel);
+        this->mCurrentMethod = &Step::saveFailed;
     }
 }
 
-// 801C5AB0
-void dSvMgr_c::stepSaveContinueNetVst_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
-            break;
-        default:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetVst_c::saveFailed;
-            break;
-        }
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::initializeGrowth() {
+    fn_80154358(lbl_8074E7F8);
+    this->nextStep();
+}
+
+template <class Owner, class Step>
+void dSvMgr_c::stepBase_c<Owner, Step>::processGrowth() {
+    if (fn_8015436C(lbl_8074E7F8, 4)) {
+        this->nextStep();
     }
 }
 
-// 801C5CFC
-void dSvMgr_c::stepSaveContinueNetHst_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
-            break;
-        default:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveContinueNetHst_c::saveFailed;
-            break;
-        }
-    }
-}
-
-// 801C5F48
-void dSvMgr_c::stepSaveConnectNetVst_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
-            break;
-        default:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetVst_c::saveFailed;
-            break;
-        }
-    }
-}
-
-// 801C6194
-void dSvMgr_c::stepSaveConnectNetHst_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
-            break;
-        default:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveConnectNetHst_c::saveFailed;
-            break;
-        }
-    }
-}
-
-// 801C63E0
-void dSvMgr_c::stepSaveRetireNetVst_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-            break;
-        default:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveRetireNetVst_c::saveFailed;
-            break;
-        }
-    }
-}
-
-// 801C662C
-void dSvMgr_c::stepSaveNormal_c::checkSaveResult() {
-    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
-    if (dNand::isIdle()) {
-        switch (dNand::getResult()) {
-        case 1:
-            nextStep();
-            break;
-        case 2:
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x0C);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
-            break;
-        case 7:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(8);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
-            break;
-        case 8:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(9);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
-            break;
-        default:
-            enableReset();
-            releaseMessage(demo);
-            demo->setNextMsgCode(0x13);
-            demo->setNextMsgLabel(mMessageLabel);
-            mCurrentMethod = &dSvMgr_c::stepSaveNormal_c::saveFailed;
-            break;
-        }
-    }
-}
-
-dSvMgr_c::~dSvMgr_c() {
-}
-
-// Original demo callbacks; only their addresses are used here.
+#include "d_sv_mgr_tail.inc"
