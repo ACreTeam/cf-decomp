@@ -9,14 +9,8 @@
 #include <game/sLib/s_lib.hpp>
 #include <revolution/MTX.h>
 #include <math.h>
+#include <game/game/d_environment.hpp>
 #include <game/game/d_heap.hpp>
-
-// Not decompiled yet (C linkage keeps the target names).
-extern "C" {
-
-void fn_80197414(mColor *color, int idx); // 80197414: a sky color for the time of day
-u8 fn_801977BC();                         // 801977BC: the star color's alpha
-}
 
 void *dSky_c_classInit();
 f32 getMoonAge(const dTime_c *now);
@@ -145,11 +139,11 @@ int dSky_c::draw() {
 
     mColor cloudColor0;
     mColor cloudColor1;
-    fn_80197414(&mSkyColor0, 4);
-    fn_80197414(&mSkyColor1, 5);
-    fn_80197414(&cloudColor0, 6);
-    fn_80197414(&cloudColor1, 7);
-    cloudColor0.a = fn_801977BC();
+    dEnvironment_c::calcColor(&mSkyColor0, dEnvironment_c::COLOR_SKY0);
+    dEnvironment_c::calcColor(&mSkyColor1, dEnvironment_c::COLOR_SKY1);
+    dEnvironment_c::calcColor(&cloudColor0, dEnvironment_c::COLOR_CLOUD0);
+    dEnvironment_c::calcColor(&cloudColor1, dEnvironment_c::COLOR_CLOUD1);
+    cloudColor0.a = dEnvironment_c::getStarAlpha();
 
     u8 alpha;
     if (dTime_c::getCurrent()->hour < 4 || dTime_c::getCurrent()->hour > 19) {

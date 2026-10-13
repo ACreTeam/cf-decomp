@@ -67,7 +67,7 @@ void dFireWork_c::launch(BOOL withEffect) {
         } else {
             playSe(SE_sky_HANABI_hyuu);
         }
-    } else if (lbl_8074EA60 != NULL) {
+    } else if (dEffectLight_c::sInstance != NULL) {
         playSe(SE_sky_HANABI_hyuu_Indoor);
     }
 }
@@ -101,11 +101,11 @@ void dFireWork_c::execute(BOOL withEffect) {
             *(u32 *)&color = *(const u32 *)&sLightColor[mColor];
             mState = STATE_BURST;
             mTimer = 20;
-            lbl_8074EA1C = color.r;
-            lbl_8074EA20 = color.g;
-            lbl_8074EA24 = color.b;
-            lbl_8074EA28 = color.a;
-            lbl_8074C010 = 0.005f;
+            dEnvironment_c::sFlashR = color.r;
+            dEnvironment_c::sFlashG = color.g;
+            dEnvironment_c::sFlashB = color.b;
+            dEnvironment_c::sFlashA = color.a;
+            dEnvironment_c::sFlashSpeed = 0.005f;
         } else if (mTimer == 12) {
             if (withEffect) {
                 int se;
@@ -124,7 +124,7 @@ void dFireWork_c::execute(BOOL withEffect) {
                     }
                 }
                 playSe(se);
-            } else if (lbl_8074EA60 != NULL) {
+            } else if (dEffectLight_c::sInstance != NULL) {
                 playSe(mScale > 1.0f ? SE_sky_HANABI_BIG_Indoor : SE_sky_HANABI_SMALL_Indoor);
             }
         }
@@ -157,10 +157,9 @@ void dFireWork_c::execute(BOOL withEffect) {
 
 // 80090370
 void dFireWork_c::draw(BOOL withEffect) {
-    if (mState != STATE_IDLE && lbl_8074EA60 != NULL) {
-        GXColor color;
-        *(u32 *)&color = *(const u32 *)&sGlowColor[mColor];
-        fn_80199BBC(lbl_8074EA60, &color, &mPos, mGlow);
+    if (mState != STATE_IDLE && dEffectLight_c::sInstance != NULL) {
+        nw4r::ut::Color color(sGlowColor[mColor]);
+        dEffectLight_c::sInstance->addGlow(&color, &mPos, mGlow);
     }
 }
 

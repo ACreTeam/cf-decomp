@@ -263,6 +263,10 @@ public:
 // A light that fades or flickers on (d_environment's lbl_80624220; the town's night lights).
 class light_c {
 public:
+    light_c() {
+        init();
+    }
+
     void init();                                           // 80167E08
     BOOL set(BOOL on);                                     // 80167E20: fades at 0.1 a frame
     BOOL update();                                         // 80167E30: TRUE when mValue changed

@@ -866,7 +866,7 @@ config.libs = [
             Object(Matching, "dol/game/d_menu_base.cpp"),
             Object(Matching, "dol/game/d_menu_btn.cpp"),
             Object(NonMatching, "dol/game/d_hand_item.cpp"),
-            Object(NonMatching, "dol/game/d_environment.cpp"),
+            Object(Matching, "dol/game/d_environment.cpp"),
             Object(Matching, "dol/game/d_menu_mng.cpp"),
             Object(Matching, "dol/game/d_menu_slct_b.cpp"),
             Object(Matching, "dol/game/d_menu_slct_c.cpp"),

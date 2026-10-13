@@ -1830,7 +1830,12 @@ dol/game/d_hand_item.cpp:
 dol/game/d_environment.cpp:
 	.text       start:0x80195290 end:0x8019A264
 	.ctors      start:0x80465834 end:0x80465838
-	.sdata2     start:0x80751728 end:0x80751730
+	.rodata     start:0x8047CE10 end:0x8047D5E8
+	.data       start:0x804FA098 end:0x804FA9B8
+	.bss        start:0x80624220 end:0x80624240
+	.sdata      start:0x8074BFA0 end:0x8074C0F8
+	.sbss       start:0x8074EA18 end:0x8074EA68
+	.sdata2     start:0x80751678 end:0x80751730
 
 dol/game/d_menu_mng.cpp:
 	.text       start:0x8019A264 end:0x8019BD78

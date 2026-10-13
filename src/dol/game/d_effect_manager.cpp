@@ -3,6 +3,7 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_camera.hpp>
 #include <game/game/d_sky.hpp>
+#include <game/game/d_environment.hpp>
 #include <game/game/d_light.hpp>
 #include <game/mLib/m_3d/global.hpp>
 #include <game/mLib/m_color.hpp>
@@ -99,7 +100,6 @@ extern "C" {
 void fn_8024C6BC(const nw4r::g3d::Camera *, nw4r::math::VEC3 *);
 u32 fn_80279660(nw4r::ef::EffectSystem *, int);
 void fn_80279824(nw4r::ef::EffectSystem *, void (*)(dEffect::particleColor_c *, u32), u32, int, int);
-void fn_80197414(mColor *, int);
 }
 
 // Accessor return temporaries preserve the original MWCC float-register allocation.
@@ -133,7 +133,7 @@ void dEffect::calc() {
     mEf::setCamera(&pos, &view, nearZ, farZ, 4);
     mEf::endCalc();
     if (fn_80279660(nw4r::ef::EffectSystem::GetInstance(), 5)) {
-        fn_80197414(&l_particleColor, 9);
+        dEnvironment_c::calcColor(&l_particleColor, dEnvironment_c::COLOR_PARTICLE);
         fn_80279824(nw4r::ef::EffectSystem::GetInstance(), setParticleColor, 0, 5, 1);
     }
 }

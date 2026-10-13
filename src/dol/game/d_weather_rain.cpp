@@ -1,5 +1,6 @@
 // Rain emitters for the town and the bus ride.
 #include <game/game/d_weather.hpp>
+#include <game/game/d_environment.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_camera.hpp>
 #include <game/game/d_bgcf.hpp>
@@ -7,7 +8,6 @@
 #include <game/cLib/c_lib.hpp>
 #include <game/sLib/s_lib.hpp>
 
-extern "C" f32 fn_801973F0();
 
 namespace dWeatherRain {
 
@@ -69,7 +69,7 @@ f32 Rain_c::getRate(int weather, int nextWeather) {
             next = 0.0f;
             break;
         }
-        f32 blend = fn_801973F0();
+        f32 blend = dEnvironment_c::getHourBlend();
         result = next * blend + rate * (1.0f - blend);
     }
     return result;
