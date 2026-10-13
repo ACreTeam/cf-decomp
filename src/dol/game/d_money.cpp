@@ -115,7 +115,7 @@ BOOL dMoney_c::isShow() {
     if (dDemo::isType(dDemo::TYPE_ANY) && dDemo::isTalking()) {
         return TRUE;
     }
-    if (fn_801B3D70()) {
+    if (dObjCursor_c::isVisible()) {
         return FALSE;
     }
     return !mPad::g_currentCore->down(WPAD_BUTTON_B);

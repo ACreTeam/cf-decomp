@@ -55,6 +55,7 @@ extern "C" {
 extern nw4r::math::VEC3 lbl_80623FEC; // 80623FEC: the camera's target (the view center)
 extern mVec3_c lbl_80624004;          // 80624004: the camera's eye position
 extern dCamera_c *lbl_8074E9B0;       // 8074E9B0: the camera
+void fn_8018A16C(const dCamera_c *cam, f32 *x, f32 *y, const mVec3_c *pos); // 8018A16C: a world position to the screen (0..1)
 }
 
 template <typename T>

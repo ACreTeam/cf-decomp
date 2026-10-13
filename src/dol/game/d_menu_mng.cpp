@@ -122,7 +122,7 @@ static ProfileName l_menuProfName[MENU_RES_MENU_NUM] = {
 };
 
 void dMenuMng_c::createMenu() {
-    if (s_state == STATE_OPEN && !fn_801B4A5C()) {
+    if (s_state == STATE_OPEN && !dObjKeyboard_c::isOpen()) {
         fBase_c *parent = this;
         dMenuNd_c *last = (dMenuNd_c *)s_menuList.getLast();
         if (last != nullptr) {

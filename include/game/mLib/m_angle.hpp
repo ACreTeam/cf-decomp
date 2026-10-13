@@ -76,6 +76,7 @@ struct mAng {
     static const float DegreeToAngleCoefficient;
     static const float AngleToRadianCoefficient;
     static const float RadianToAngleCoefficient;
+    static const float RadianToDegreeCoefficient;
 };
 
 /// @brief A three-dimensional short angle vector.

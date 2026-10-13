@@ -190,9 +190,7 @@ void Comp_c::updateButtons() {
 void Comp_c::updatePointer() {
     struct Hit { mVec2_c pos; f32 scale; nw4r::lyt::Pane *pane; } hit;
     hit.pane = NULL; hit.scale = 1.0f;
-    mVec2_c pos;
-    fn_801B3D58(&pos);
-    hit.pos = pos;
+    hit.pos = dObjCursor_c::getPos();
     f32 delta = hit.pos.y - mPointerPos.y;
     mPointerPos = hit.pos;
     if (mPointerMode != fn_8017FE28()) delta = 0.0f;

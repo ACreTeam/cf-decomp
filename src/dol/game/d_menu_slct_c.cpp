@@ -111,11 +111,10 @@ BOOL dMenuSlctC_c::checkInput() {
         push(1);
         return TRUE;
     }
-    if (!fn_801B3D70()) {
+    if (!dObjCursor_c::isVisible()) {
         return FALSE;
     }
-    mVec2_c cursor;
-    fn_801B3D58(&cursor);
+    mVec2_c cursor = dObjCursor_c::getPos();
     mVec2_c pos = cursor;
     int btn = hitCheck(&pos);
     if (btn != -1) {
