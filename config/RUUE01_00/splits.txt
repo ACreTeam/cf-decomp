@@ -1827,6 +1827,10 @@ dol/game/d_environment.cpp:
 dol/game/d_menu_mng.cpp:
 	.text       start:0x8019A264 end:0x8019BD78
 	.ctors      start:0x80465838 end:0x8046583C align:8
+	.data       start:0x804FA9B8 end:0x804FAB68
+	.bss        start:0x80624240 end:0x80625190
+	.sdata      start:0x8074C0F8 end:0x8074C110
+	.sbss       start:0x8074EA68 end:0x8074EAA8
 
 dol/game/d_money.cpp:
 	.text       start:0x8019BD78 end:0x8019C414

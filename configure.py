@@ -844,6 +844,7 @@ config.libs = [
             Object(Matching, "dol/game/d_font.cpp"),
             Object(Matching, "dol/game/d_menu_base.cpp"),
             Object(Matching, "dol/game/d_menu_btn.cpp"),
+            Object(Matching, "dol/game/d_menu_mng.cpp"),
             Object(Matching, "dol/game/d_menu_res.cpp"),
             Object(Matching, "dol/game/d_dylink.cpp"),
             Object(Matching, "dol/game/d_item_debug.cpp"),

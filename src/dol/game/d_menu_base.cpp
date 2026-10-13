@@ -1,6 +1,3 @@
-// The menu base class (dMenuBase_c) and dMenuMove_c. .text 800CE43C..800CEC80, .rodata 80473870..804738B0,
-// .data 804EB3A0..804EB520, .sdata 8074AAA8..8074AAC0, .sbss 8074E4E8, .sdata2 80750890. See
-// include/game/game/d_menu_base.hpp.
 #include <game/game/d_menu_base.hpp>
 #include <game/game/d_menu_mng.hpp>
 #include <game/game/d_obj_cursor.hpp>
@@ -64,7 +61,7 @@ int dMenuBase_c::preCreate() {
 
 void dMenuBase_c::postCreate(MAIN_STATE_e state) {
     if (state == SUCCESS) {
-        fn_8019A528(&mNode);
+        dMenuMng_c::addMenu(&mNode);
         fBase_c *parent = getConnectParent();
         if (parent != nullptr) {
             setExecuteOrder(parent->getExecuteOrder() + 1);
@@ -80,7 +77,7 @@ int dMenuBase_c::preDelete() {
 
 void dMenuBase_c::postDelete(MAIN_STATE_e state) {
     if (state == SUCCESS) {
-        fn_8019A56C(&mNode);
+        dMenuMng_c::removeMenu(&mNode);
     }
     fBase_c::postDelete(state);
 }
@@ -114,7 +111,7 @@ void dMenuBase_c::setNextState(u8 state) {
 
 void dMenuBase_c::startAnm(m2d::Simple_c *layout, const char *paneName, int anm, u8 nextState, BOOL playSe) {
     mpAnmLayout = layout;
-    m2d::ResAccIf_c *resAcc = fn_8019A6FC();
+    m2d::ResAccIf_c *resAcc = dMenuMng_c::getWinResAcc();
     mAnm.create(getAnmName(anm), resAcc);
     mAnm.mFrameCtrl.mFlags = m2d::FrameCtrl_c::NO_LOOP;
     mAnm.changeTargetName(l_allPaneName, paneName);

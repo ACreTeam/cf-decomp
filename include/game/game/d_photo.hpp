@@ -31,7 +31,7 @@ int getTexWidth();             // 800FAD6C
 int getTexHeight();            // 800FAD9C
 u8 *getJpeg();                 // 800FADCC
 u32 getJpegSize();             // 800FADD4
-bool isCaptured();             // 800FADDC
+BOOL isCaptured();             // 800FADDC
 void clear();                  // 800FADE4
 void create(EGG::Heap *heap);   // 800FB868
 void capture();                // 800FB9A0: after the frame is drawn

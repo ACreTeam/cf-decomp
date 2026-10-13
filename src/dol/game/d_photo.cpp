@@ -101,7 +101,7 @@ u32 dPhoto::getJpegSize() {
 }
 
 // 800FADDC
-bool dPhoto::isCaptured() {
+BOOL dPhoto::isCaptured() {
     return l_captured;
 }
 

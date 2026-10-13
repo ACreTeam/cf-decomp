@@ -1,5 +1,3 @@
-// The menus' button bar (dMenuBtn_c). .text 800CEC80..800CF77C, .data 804EB520..804EB6E0,
-// .sdata 8074AAC0..8074AAF8, .sdata2 80750898. See include/game/game/d_menu_btn.hpp.
 #include <game/game/d_menu_btn.hpp>
 #include <game/game/d_menu_base.hpp>
 #include <game/game/d_menu_mng.hpp>
@@ -36,13 +34,13 @@ dMenuBtn_c::dMenuBtn_c() {}
 dMenuBtn_c::~dMenuBtn_c() {}
 
 bool dMenuBtn_c::load() {
-    return fn_8019A718() != nullptr;
+    return dMenuMng_c::getBtnResAcc() != nullptr;
 }
 
 bool dMenuBtn_c::create() {
     int i;
     mFlags = 0;
-    mLyt.build(fn_8019A718(), "cmn_btn_A_00.brlyt");
+    mLyt.build(dMenuMng_c::getBtnResAcc(), "cmn_btn_A_00.brlyt");
     for (i = 0; i < BTN_NUM; i++) {
         char name[32];
         sprintf(name, "%s%02d", l_textBoxName, i);
@@ -51,14 +49,14 @@ bool dMenuBtn_c::create() {
     }
     mLyt.calc();
     for (i = 0; i < BTN_NUM; i++) {
-        mBtnAnm[i].init(&mLyt, fn_8019A718(), l_btnAnmName, 3);
+        mBtnAnm[i].init(&mLyt, dMenuMng_c::getBtnResAcc(), l_btnAnmName, 3);
         mBtnAnm[i].setNumber(i);
         mBtnAnm[i].start(BTN_ANM_CAN_PUSH);
         mBtnAnm[i].setToEnd();
     }
-    mInOutAnm[0].init(&mLyt, fn_8019A718(), l_inOutAnmName0, 2);
-    mInOutAnm[1].init(&mLyt, fn_8019A718(), l_inOutAnmName1, 2);
-    mInOutAnm[2].init(&mLyt, fn_8019A718(), l_inOutAnmName2, 2);
+    mInOutAnm[0].init(&mLyt, dMenuMng_c::getBtnResAcc(), l_inOutAnmName0, 2);
+    mInOutAnm[1].init(&mLyt, dMenuMng_c::getBtnResAcc(), l_inOutAnmName1, 2);
+    mInOutAnm[2].init(&mLyt, dMenuMng_c::getBtnResAcc(), l_inOutAnmName2, 2);
     for (i = 0; i < BTN_NUM; i++) {
         mInOutAnm[i].setNext(0);
     }
@@ -166,7 +164,7 @@ BOOL dMenuBtn_c::startAnm(int anm) {
     mAnmNo = anm;
     mFlags |= FLAG_ANM;
     const char *name = dMenuBase_c::getAnmName(anm);
-    mLyt.setAnm(&mAnm, name, fn_8019A6FC());
+    mLyt.setAnm(&mAnm, name, dMenuMng_c::getWinResAcc());
     return TRUE;
 }
 

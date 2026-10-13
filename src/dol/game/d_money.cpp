@@ -103,7 +103,7 @@ BOOL dMoney_c::isShow() {
     if (l_flags & FLAG_DISABLE) {
         return FALSE;
     }
-    if (!fn_8019A5E4()) {
+    if (!dMenuMng_c::isFree()) {
         return FALSE;
     }
     if (l_flags & FLAG_FORCE_SHOW) {
@@ -165,7 +165,7 @@ void dMoney_c::updateMoney() {
         setNumber();
     } else if (money != mDispMoney) {
         if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY) || (l_flags & FLAG_FORCE_SHOW)) {
-            if (fn_8019A5E4()) {
+            if (dMenuMng_c::isFree()) {
                 int diff;
                 if (money > mDispMoney) {
                     diff = money - mDispMoney;

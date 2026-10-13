@@ -1172,7 +1172,7 @@ public:
         static BOOL isMenuInvalid();                                                            // 80029928
         static void *getMenuWork();                                                             // 80029940
         static int getMenuSelSlot();                                                            // 80029944
-        static dItem::Item *getMenuSelItems(int *count);                                        // 8002997C
+        static u16 *getMenuSelItems(int *count);                                                 // 8002997C: selected item IDs
         static BOOL removeMenuSelItems();                                                       // 800299E0
         static u16 getMenuItem();                                                               // 80029A18
         static u32 fn_80029A50();                                                               // 80029A50
