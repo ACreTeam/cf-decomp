@@ -2,19 +2,13 @@
 #include <game/game/d_save_shop_tailor.hpp>
 #include <game/game/d_shop_layout.hpp>
 #include <game/game/d_fg_item.hpp>
+#include <game/game/d_ftr.hpp>
 #include <game/game/d_item_def.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_field_info.hpp>
 #include <string.h>
 #include <game/game/d_net.hpp>
 #include <game/game/d_item_sel.hpp>
-
-
-extern "C" {
-void *fn_800A9058();                  // 800A9058
-int fn_800A8F98(void *, int unitX, int unitZ, int); // 800A8F98: -1 when none
-void fn_800ABAF4(int);                // 800ABAF4
-}
 
 // 80147ECC
 void dSaveShopTailor_c::clear() {
@@ -128,9 +122,9 @@ void dSaveShopTailor_c::sell(int scene, int slot, int unitX, int unitZ) {
     if ((u32)scene != dScene::getCurrentScene()) {
         return;
     }
-    int idx = fn_800A8F98(fn_800A9058(), unitX, unitZ, 0);
+    int idx = dFTR::getUnitMap()->getHandle(unitX, unitZ, 0);
     if (idx != -1) {
-        fn_800ABAF4(idx);
+        dFTR::sendSellEvent(idx);
         return;
     }
     dItem::Item sold(dItem::ITEM_IDX_SOLD_OUT_SIGN_00);

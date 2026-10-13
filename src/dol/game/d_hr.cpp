@@ -173,13 +173,13 @@ u8 dHR::fnShui_c::count(dFdBase_c *field, u32 x0, u32 x1, u32 z0, u32 z1, int co
                 dItem::Item *item = field->getItem(x, z, layer);
                 if (item != NULL && item->hasFtrFunc()) {
                     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
-                    dNpcFtrShape_c shape;
-                    fn_800A8B28(&shape, *item);
-                    u32 tiles = fn_800A8BB8(&shape);
+                    dFTR::shape_c shape;
+                    shape.set(*item);
+                    u32 tiles = shape.getNum();
                     BOOL inside = TRUE;
                     for (u32 i = 0; i < tiles; i++) {
-                        int ux = x + fn_800A8BE4(&shape, i)[0];
-                        int uz = z + fn_800A8BE4(&shape, i)[1];
+                        int ux = x + shape.getOfs(i)[0];
+                        int uz = z + shape.getOfs(i)[1];
                         if (ux < (int)x0 || ux > (int)x1 || uz < (int)z0 || uz > (int)z1) {
                             inside = FALSE;
                             break;

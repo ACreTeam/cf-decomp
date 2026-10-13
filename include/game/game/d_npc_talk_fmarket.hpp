@@ -11,7 +11,7 @@
 // Its functions are talk procedures stored in dAcNpcNml_c::talk_c's member-function pointers (records
 // 21..27 of the d_a_npc_nml table l_talkProcSets 804A0784). See d_npc_talk_arbeit.hpp for the slot
 // conventions. talk_c fields used: mFtrPosX / mFtrPosZ (the furniture of the deal, arguments of
-// getRoomFtrIdx / fn_800A8F98), mFtrHandle (handle from fn_800A8F98), mItem0 (the item of the deal), mPrice.
+// getRoomFtrIdx / dFTR::unitMap_c::getHandle), mFtrHandle (handle from dFTR::unitMap_c::getHandle), mItem0 (the item of the deal), mPrice.
 // Parameter and return types are inferred from the asm; unused incoming registers are left out.
 
 #include <types.h>

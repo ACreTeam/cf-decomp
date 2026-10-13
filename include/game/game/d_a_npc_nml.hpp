@@ -856,9 +856,9 @@ public:
         BOOL stepSaleChoice(int kind);              // 80047CD4 104: two choices (selSaleYes code 0x42, selSaleNo code 0x45)
         void selSaleYes();                          // 80047DAC choice: EC = msgSaleYes
         int msgSaleYes(msgInfo_s *info);            // 80047E00 EC: "Q09_TradeYes"; F8 = endSaleYes, 104 = stepSaleYes; returns 0
-        void endSaleYes(int arg);                   // 80047E8C F8: the sale: fn_800A8F98 -> mFtrHandle, removeRoomFtr, payMoney / pickUp, clears mFmarketSale; 110 = actSaleWait
+        void endSaleYes(int arg);                   // 80047E8C F8: the sale: dFTR::unitMap_c::getHandle -> mFtrHandle, removeRoomFtr, payMoney / pickUp, clears mFmarketSale; 110 = actSaleWait
         BOOL stepSaleYes(int kind);                 // 80047FA0 104: fn_8019C35C when the controller is idle
-        void actSaleWait();                         // 80047FE4 110: waits for fn_800A9354(mFtrHandle), unlocks, clears 110
+        void actSaleWait();                         // 80047FE4 110: waits for dFTR::list_c::get(mFtrHandle), unlocks, clears 110
         void selSaleNo();                           // 8004805C choice: EC = msgSaleNo
         int msgSaleNo(msgInfo_s *info);             // 800480B0 EC: "Q09_TradeNo"; returns 0
         // The npc at the player's stall (l_talkProcSets [23]..[27]).
@@ -885,11 +885,11 @@ public:
         // msgStallRefused when cancelled; reqMsgClose.
         void resStallPrice();                       // 800489D4
         int msgStallPriceOK(msgInfo_s *info);       // 80048B0C EC: "Ev_FmarketPC" code 6 (price accepted); 104 = stepStallBuy
-        // 104: the purchase: the player has room for the money (getMoneyRoom), fn_800A8F98, removeRoomFtr,
+        // 104: the purchase: the player has room for the money (getMoneyRoom), dFTR::unitMap_c::getHandle, removeRoomFtr,
         // addMoney, dAnimal_c::addNewItem + fn_800F0E9C, entry byte +0x289 += 1; 110 = actStallBuyWait;
         // otherwise EC = msgStallNoRoom.
         BOOL stepStallBuy(int kind);                // 80048B70
-        void actStallBuyWait();                     // 80048D3C 110: waits for fn_800A9354(mFtrHandle), unlocks, clears 110, EC = msgStallBought
+        void actStallBuyWait();                     // 80048D3C 110: waits for dFTR::list_c::get(mFtrHandle), unlocks, clears 110, EC = msgStallBought
         int msgStallBought(msgInfo_s *info);        // 80048DE4 EC: "Ev_FmarketPC" code 9
         int msgStallNoRoom(msgInfo_s *info);        // 80048E14 EC: "Ev_FmarketPC" code 8 (no room for the money)
         void selStallNo();                          // 80048E44 choice: EC = msgStallRefused
@@ -1350,7 +1350,7 @@ public:
         int msgInviteTradeYes(msgInfo_s *info);     // 8005C0EC EC "Q09_TradeYes" (returns 0), F8 = endInviteTradeYes, 104 = stepInviteTradeYes
         void endInviteTradeYes(int arg);            // 8005C178 F8: removes the room furniture, pays, picks up mItem0, appointment flag 3; 110 = actInviteTradeWait
         BOOL stepInviteTradeYes(int kind);          // 8005C284 104: once idle, fn_8019C35C
-        void actInviteTradeWait();                  // 8005C2C8 110: waits for the furniture (fn_800A9354), unlocks, clears 110
+        void actInviteTradeWait();                  // 8005C2C8 110: waits for the furniture (dFTR::list_c::get), unlocks, clears 110
         void selInviteTradeNo();                    // 8005C340 choice: EC = msgInviteTradeNo
         int msgInviteTradeNo(msgInfo_s *info);      // 8005C394 EC "Q09_TradeNo" (returns 0)
         int msgInviteWait(msgInfo_s *info);         // 8005C3C4 EC (nml l_talkProcSets [8]): "Q09_Wait", F8 = endQuestCommon
@@ -1516,7 +1516,7 @@ public:
         /* 0x1F4 */ int mMsgYear;                 // countdown year
         /* 0x1F8 */ int mFtrPosX;                 // fmarket deal
         /* 0x1FC */ int mFtrPosZ;                 // fmarket deal
-        /* 0x200 */ int mFtrHandle;               // fg handle of the furniture at mFtrPosX/Z (fn_800A8F98; -1 none)
+        /* 0x200 */ int mFtrHandle;               // fg handle of the furniture at mFtrPosX/Z (dFTR::unitMap_c::getHandle; -1 none)
         /* 0x204 */ int mGiveFlag;                 // 1 when an item was given
         /* 0x208 */ dEquip_c mEquip;
         /* 0x210 */ u16 mPickCode;                 // init 0xFFFF; 0 when a message without a code starts (fixMsgCode)

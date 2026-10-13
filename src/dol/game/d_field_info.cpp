@@ -20,45 +20,9 @@
 #include <nw4r/math.h>
 #include <game/game/d_heap.hpp>
 #include <game/game/d_fd_block_type.hpp>
+#include <game/game/d_ftr.hpp>
 
 // Ext item data (0xD000 ids), see d_fg_item.cpp.
-// The furniture interface the unit's furniture object exposes (base at +0x158 of fn_800A8FC4's result).
-class dFdFtrIf_c {
-public:
-    virtual void vf08();
-    virtual void vf0C();
-    virtual void vf10();
-    virtual void vf14();
-    virtual void vf18();
-    virtual void vf1C();
-    virtual void vf20();
-    virtual void vf24();
-    virtual void vf28();
-    virtual void vf2C();
-    virtual void vf30();
-    virtual void vf34();
-    virtual void vf38();
-    virtual void vf3C();
-    virtual void vf40();
-    virtual void vf44();
-    virtual void vf48();
-    virtual void vf4C();
-    virtual void vf50();
-    virtual void vf54();
-    virtual dItem::Item getItem(); // 0x58
-};
-struct dFdFtrPad_c {
-    u8 _000[0x158];
-};
-class dFdFtr_c : public dFdFtrPad_c, public dFdFtrIf_c {};
-
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-
-void *fn_800A9058();                                                   // 800A9058
-dFdFtr_c *fn_800A8FC4(void *, int x, int z, int);                      // 800A8FC4
-}
-
 // Units where Racco can appear (RTTI raccoCand_c; vtable 804DF990): units of BG attribute
 // 0x6C..0x70 in block (mBlockX, mBlockZ), or anywhere when both are -1, excluding the block saved at
 // dSaveData_c+0x735CD/E when the flag at +0x735CC is 1.
@@ -728,7 +692,7 @@ dItem::Item dFdBase_c::getUnitItem(int unitX, int unitZ) const {
     dItem::Item *item = getItem(unitX, unitZ, 0);
     if (item != NULL && item->isNotSame(sExcluded)) {
         if (item->isUsable()) {
-            dFdFtrIf_c *ftr = fn_800A8FC4(fn_800A9058(), unitX, unitZ, 0);
+            dFTR::alwaysAc_c *ftr = dFTR::getUnitMap()->get(unitX, unitZ, 0);
             result = ftr->getItem();
         } else {
             u16 id = item->mId;

@@ -152,7 +152,6 @@ class dFdBase_c;
 namespace dMsg {
 class Comp_c;
 }
-struct dNpcFtrShape_c;
 
 // Vtables are emitted in reverse class-completion order: the target's .data has searchCat_c,
 // searchLucky_c, searchSeries_c, searchKiddy_c, searchAdult_c, searchOld_c, searchNew_c, fdNpcCb_c,
