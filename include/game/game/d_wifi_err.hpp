@@ -48,7 +48,7 @@ public:
     /* 0x006 */ u8 mClosing;       // a reset was requested; waiting for its fade out
     /* 0x007 */ u8 mResetRequest;  // the reset button was pressed while it is shown (d_reset)
     /* 0x008 */ u8 mForce;         // shows the window without a net manager error; it can't be closed
-    /* 0x00C */ int mErrorCode;    // dNetError_c::mDetail
+    /* 0x00C */ int mErrorCode;    // dNetFriend::Error_c::mDetail
     /* 0x010 */ m2d::ResAcc_c mResAcc;
     /* 0x0CC */ m2d::Simple_c mLyt;
     /* 0x164 */ m2d::Anm_c mAnm;

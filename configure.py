@@ -769,7 +769,7 @@ config.libs = [
             Object(Matching, "dol/game/d_net.cpp"),
             Object(NonMatching, "dol/game/d_net_ds_download.cpp"),
             Object(Matching, "dol/game/d_net_mgr.cpp"),
-            Object(NonMatching, "dol/game/d_net_friend.cpp"),
+            Object(Matching, "dol/game/d_net_friend.cpp"),
             Object(Matching, "dol/game/d_net_dwc.cpp"),
             Object(Matching, "dol/game/d_net_wc24.cpp"),
             Object(Matching, "dol/game/d_net_wus.cpp"),

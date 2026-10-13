@@ -4,7 +4,7 @@
 // 800E48A0..800E6804, -sym on). It sits between d_net (the session protocol)
 // and the DWC thread (d_net_dwc): receive / send buffers per member, the friend
 // list, voice chat settings and one request at a time to the DWC thread
-// (dNetFriendReq_c). The instance is g_netMgr, reached through
+// (dNetFriend::Request_c). The instance is g_netMgr, reached through
 // dNetMgr_c::sInstance. All names are inferred; see notes/d_net_mgr.txt.
 
 #include <game/game/d_net_dwc.hpp>
@@ -124,12 +124,12 @@ class dNetMgr_c {
 
     static dNetMgr_c *sInstance;
 
-    /* 0x0000 */ dNetMutex_c mMutex;
-    /* 0x0018 */ dNetMutex_c mMutex2;
-    /* 0x0030 */ dNetFriendData_c mData; // written by the DWC thread
+    /* 0x0000 */ dNetFriend::Mutex_c mMutex;
+    /* 0x0018 */ dNetFriend::Mutex_c mMutex2;
+    /* 0x0030 */ dNetFriend::Data_c mData; // written by the DWC thread
     // mData.mInfo, copied by execute / start
-    /* 0x1C40 */ dNetFriendInfo_c mInfo;
-    /* 0x3678 */ dNetFriendReq_c mReq;
+    /* 0x1C40 */ dNetFriend::Info_c mInfo;
+    /* 0x3678 */ dNetFriend::Request_c mReq;
     /* 0x3720 */ dNetMgrFunc mStatusCb; // after the status data was sent
     /* 0x3724 */ dNetMgrMemberFunc mJoinCb;
     /* 0x3728 */ dNetMgrMemberFunc mLeaveCb;
@@ -144,7 +144,7 @@ class dNetMgr_c {
     /* 0x383C */ DWCUserData *mUserDataSrc;
     // the current player's dFriendList_c::mKeys
     /* 0x3840 */ DWCFriendData *mFriendSrc;
-    /* 0x3844 */ dNetSendBuf_c *mSendBufs; // mMemberNum
+    /* 0x3844 */ dNetFriend::SendBuf_c *mSendBufs; // mMemberNum
     /* 0x3848 */ int *mSendCounts;         // mMemberNum (setSendCount)
     /* 0x384C */ int *mSendCountMax;       // mMemberNum
                                            // mMemberNum - 1 (the other members)

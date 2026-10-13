@@ -112,7 +112,7 @@ int findUser(const DWCUserData *userData) {
     }
     if (sReqState == REQ_FIND_USER) {
         int result;
-        if (dNetMgr_c::sInstance->mReq.takeResult(NET_FRIEND_REQ_FIND_USER, &result)) {
+        if (dNetMgr_c::sInstance->mReq.takeResult(dNetFriend::NET_FRIEND_REQ_FIND_USER, &result)) {
             sReqState = REQ_NONE;
             return result;
         }
@@ -142,7 +142,7 @@ int findFriendDataReq(const DWCFriendData *data) {
     }
     if (sReqState == REQ_FIND_DATA) {
         int result;
-        if (dNetMgr_c::sInstance->mReq.takeResult(NET_FRIEND_REQ_FIND_DATA, &result)) {
+        if (dNetMgr_c::sInstance->mReq.takeResult(dNetFriend::NET_FRIEND_REQ_FIND_DATA, &result)) {
             sReqState = REQ_NONE;
             return result;
         }
@@ -275,12 +275,12 @@ void updateReq() {
     int result;
     switch (sReqState) {
     case REQ_REGISTER:
-        if (dNetMgr_c::sInstance->mReq.takeResult(NET_FRIEND_REQ_REGISTER, &result)) {
+        if (dNetMgr_c::sInstance->mReq.takeResult(dNetFriend::NET_FRIEND_REQ_REGISTER, &result)) {
             onRegistered(result);
         }
         break;
     case REQ_REMOVE:
-        if (dNetMgr_c::sInstance->mReq.takeResult(NET_FRIEND_REQ_REMOVE, &result)) {
+        if (dNetMgr_c::sInstance->mReq.takeResult(dNetFriend::NET_FRIEND_REQ_REMOVE, &result)) {
             onRemoved(result);
         }
         break;

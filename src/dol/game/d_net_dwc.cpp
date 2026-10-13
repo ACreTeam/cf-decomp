@@ -91,7 +91,7 @@ Session_c::~Session_c() {
 }
 // 800E79E4
 void Session_c::init(EGG::Heap *soHeap, EGG::Heap *dwcHeap,
-                     dNetFriendData_c *data) {
+                     dNetFriend::Data_c *data) {
     if (mState < STATE_INITIALIZED) {
         sSocketHeap = soHeap;
         sDwcHeap = dwcHeap;
@@ -112,7 +112,7 @@ void Session_c::cleanup() {
 }
 // 800E7ABC
 void Session_c::setAccount(DWCUserData *data, DWCFriendData *friends, u8 num,
-                           dNetSendBuf_c *bufs) {
+                           dNetFriend::SendBuf_c *bufs) {
     mUserData = data;
     mFriends = friends;
     mFriendNum = num;
@@ -130,7 +130,7 @@ void Session_c::reset() {
 }
 // 800E7AF8
 void Session_c::start(DWCUserData *data, DWCFriendData *friends, u8 num,
-                      dNetSendBuf_c *bufs, u8 voice) {
+                      dNetFriend::SendBuf_c *bufs, u8 voice) {
     if (OSIsThreadTerminated(&mThread)) {
         setAccount(data, friends, num, bufs);
         mStopRequested = 0;
@@ -593,7 +593,7 @@ void Session_c::clearConnections() {
 }
 // 800E8C44
 void Session_c::publishStatus() {
-    BOOL micFailed = sMicResult == MIC_UNAVAILABLE;
+    bool micFailed = sMicResult == MIC_UNAVAILABLE;
     BOOL micActive = dVoiceChat::isMicActive();
     mData->updateSession(mState, &mError, mUserData, mFriends, mMemberBits,
                          mUpdatingFriends, micActive, micFailed);

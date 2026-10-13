@@ -71,12 +71,12 @@ class Session_c {
   public:
     Session_c();                                             // 800E77F4
     ~Session_c();                                            // 800E799C
-    void init(EGG::Heap *, EGG::Heap *, dNetFriendData_c *); // 800E79E4
+    void init(EGG::Heap *, EGG::Heap *, dNetFriend::Data_c *); // 800E79E4
     void cleanup();                                          // 800E7A6C
     void setAccount(DWCUserData *, DWCFriendData *, u8,
-                    dNetSendBuf_c *); // 800E7ABC
+                    dNetFriend::SendBuf_c *); // 800E7ABC
     void reset();                     // 800E7AD8
-    void start(DWCUserData *, DWCFriendData *, u8, dNetSendBuf_c *,
+    void start(DWCUserData *, DWCFriendData *, u8, dNetFriend::SendBuf_c *,
                u8);                                                 // 800E7AF8
     void requestStop();                                             // 800E7BE4
     static void *threadMain(void *);                                // 800E7C20
@@ -130,9 +130,9 @@ class Session_c {
     /* 0x318 */ s64 mMatchStart;
     /* 0x320 */ DWCUserData *mUserData;
     /* 0x324 */ DWCFriendData *mFriends;
-    /* 0x328 */ dNetFriendData_c *mData;
-    /* 0x32C */ dNetError_c mError;
-    /* 0x338 */ dNetSendBuf_c *mSendBufs;
+    /* 0x328 */ dNetFriend::Data_c *mData;
+    /* 0x32C */ dNetFriend::Error_c mError;
+    /* 0x338 */ dNetFriend::SendBuf_c *mSendBufs;
     /* 0x33C */ SendNode_c *mSendHead;
     /* 0x340 */ SendNode_c mSendOrder[MEMBER_COUNT - 1];
     /* 0x358 */ BOOL mInVoiceCalc;

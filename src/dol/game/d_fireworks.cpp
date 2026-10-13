@@ -62,7 +62,7 @@ void dFireWork_c::launch(BOOL withEffect) {
             effect.setRegisterColor(sEffectColor0[mColor], sEffectColor1[mColor], 0);
             effect.EGG::Effect::update();
         }
-        if (dNetMgr_c::sInstance->mInfo.m1A31) {
+        if (dNetMgr_c::sInstance->mInfo.mMicActive) {
             playSe(SE_VCT_sky_HANABI_hyuu);
         } else {
             playSe(SE_sky_HANABI_hyuu);
@@ -109,7 +109,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         } else if (mTimer == 12) {
             if (withEffect) {
                 int se;
-                u8 alt = dNetMgr_c::sInstance->mInfo.m1A31;
+                u8 alt = dNetMgr_c::sInstance->mInfo.mMicActive;
                 if (mScale > 1.0f) {
                     if (alt) {
                         se = SE_VCT_sky_HANABI_BIG;

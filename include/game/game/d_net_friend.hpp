@@ -1,17 +1,25 @@
-#pragma once
+#ifndef GAME_D_NET_FRIEND_HPP
+#define GAME_D_NET_FRIEND_HPP
 
 // The friend / connection data and the request queue of the network manager
-// (DOL TU d_net_friend.cpp, .text 800E6804..800E7650, not decompiled). Only
-// what d_net_mgr uses; all names are inferred.
+// (DOL TU d_net_friend.cpp, .text 800E6804..800E7650). Names are inferred
+// from the network manager and DWC worker behavior.
 
 #include <lib/dwc/dwc.h>
 #include <revolution/OS.h>
 #include <types.h>
 
+namespace dNetFriend {
+
+enum InfoState_e { INFO_OFFLINE, INFO_STARTING, INFO_ONLINE, INFO_CONNECTED };
+enum StatusFlags_e { STATUS_VALID = 1, STATUS_BUDDY = 2, STATUS_HAS_AID = 4 };
+enum SendState_e { SEND_IDLE, SEND_BUSY };
+enum { FRIEND_STATUS_CONNECTED = 6 };
+
 // A mutex that initialises itself.
-class dNetMutex_c {
+class Mutex_c {
   public:
-    dNetMutex_c() {
+    Mutex_c() {
         OSInitMutex(&mMutex);
     }
 
@@ -19,26 +27,33 @@ class dNetMutex_c {
 }; // size 0x18
 
 // One friend's connection status. 0xD0 bytes.
-class dNetFriendStatus_c {
+class Status_c {
   public:
-    dNetFriendStatus_c(); // 800E6804
+    Status_c() {
+        clear();
+    }
+    void clear(); // 800E6804
 
-    bool hasAid() const {
-        return mFlags & 4;
+    void *getStatus() {
+        return mStatus;
     }
 
-    /* 0x00 */ s64 m00;
-    /* 0x08 */ u32 m08;
+    bool hasAid() const {
+        return mFlags & STATUS_HAS_AID;
+    }
+
+    /* 0x00 */ s64 mFriendKey;
+    /* 0x08 */ u32 mProfileId;
     // the friend's status data (dNetMgr_c::mStatus)
     /* 0x0C */ u8 mStatus[0xBD];
     /* 0xC9 */ u8 mAid;
-    /* 0xCA */ u8 mFlags; // 1: ?, 4: mAid is valid
+    /* 0xCA */ u8 mFlags; // STATUS_* bit flags
 }; // size 0xD0
 
 // The last error, kept by priority.
-class dNetError_c {
+class Error_c {
   public:
-    dNetError_c() {
+    Error_c() {
         clear();
     }
     void clear(); // 800E6920
@@ -60,77 +75,77 @@ class dNetError_c {
 #define NET_FRIEND_NUM 32
 
 // The friends' status and the session state.
-class dNetFriendInfo_c {
+class Info_c {
   public:
-    dNetFriendInfo_c(); // 800E682C
-    void clear();       // 800E689C
+    Info_c();     // 800E682C
+    void clear(); // 800E689C
 
-    /* 0x0000 */ dNetFriendStatus_c mFriends[NET_FRIEND_NUM];
-    /* 0x1A00 */ dNetError_c mError;
-    /* 0x1A10 */ s64 m1A10;
-    /* 0x1A18 */ u8 m1A18[0xC];
+    /* 0x0000 */ Status_c mFriends[NET_FRIEND_NUM];
+    /* 0x1A00 */ Error_c mError;
+    /* 0x1A10 */ s64 mMyFriendKey;
+    /* 0x1A18 */ u8 mMyFriendData[0xC];
     /* 0x1A24 */ int mState;
-    /* 0x1A28 */ u32 m1A28;
+    /* 0x1A28 */ u32 mMyProfileId;
     /* 0x1A2C */ u16 mMemberBits; // bit i: member i is connected
     /* 0x1A2E */ u8 mMyNo;        // this console's member number
-    /* 0x1A2F */ u8 m1A2F;
-    /* 0x1A30 */ u8 m1A30;
-    /* 0x1A31 */ u8 m1A31; // d_fireworks: picks the alternative sounds
-    /* 0x1A32 */ u8 m1A32;
-    /* 0x1A33 */ u8 m1A33;
+    /* 0x1A2F */ u8 mMemberCount;
+    /* 0x1A30 */ u8 mUpdatingFriends;
+    /* 0x1A31 */ u8
+        mMicActive; // usable microphone; also selects fireworks sounds
+    /* 0x1A32 */ u8 mMicUnavailable;
+    /* 0x1A33 */ u8 mMatchReady; // SDK match synchronization predicate
 }; // size 0x1A38
 
 // The account, the friend list and the status, as the DWC callbacks keep them
 // (copied out under the mutex).
-class dNetFriendData_c {
+class Data_c {
   public:
     // 800E6958
-    void get(dNetFriendInfo_c *info, DWCUserData *userData,
-             DWCFriendData *friends);
+    void get(Info_c *info, DWCUserData *userData, DWCFriendData *friends);
 
     // 800E69F4: publish the worker session under the friend-data mutex.
-    void updateSession(int state, dNetError_c *error, DWCUserData *user,
+    void updateSession(int state, Error_c *error, DWCUserData *user,
                        DWCFriendData *friends, u16 members, u8 updating,
-                       BOOL micActive, BOOL micFailed);
+                       BOOL micActive, bool micFailed);
 
     /* 0x0000 */ DWCUserData mUserData;
     /* 0x0040 */ DWCFriendData mFriends[NET_FRIEND_NUM];
-    /* 0x01C0 */ dNetFriendInfo_c mInfo;
-    /* 0x1BF8 */ dNetMutex_c mMutex;
+    /* 0x01C0 */ Info_c mInfo;
+    /* 0x1BF8 */ Mutex_c mMutex;
 }; // size 0x1C10
 
 // The send queue of one member.
-class dNetSendBuf_c {
+class SendBuf_c {
   public:
-    dNetSendBuf_c() {
-        mSize = 0;
+    SendBuf_c() {
+        mSendState = SEND_IDLE;
     }
-    ~dNetSendBuf_c() {
+    ~SendBuf_c() {
     }
     void set(const void *data, u32 size); // 800E6D38
     BOOL isBusy();                        // 800E6DA0
 
-    void reset(); // 800E6CC0
-    void onSent(); // 800E6CFC
+    void reset();        // 800E6CC0
+    void onSent();       // 800E6CFC
     void clearPending(); // 800E6D94
-    BOOL hasPending(); // 800E6DE8
+    BOOL hasPending();   // 800E6DE8
 
-    /* 0x00 */ dNetMutex_c mMutex;
+    /* 0x00 */ Mutex_c mMutex;
     /* 0x18 */ const void *mData;
     /* 0x1C */ u32 mLength;
-    /* 0x20 */ u32 mSize;
+    /* 0x20 */ int mSendState;
 }; // size 0x24
 
-// Request kinds of dNetFriendReq_c (handled by dNetMgr_c::procRequest /
+// Request kinds of Request_c (handled by dNetMgr_c::procRequest /
 // procDwcRequest).
-enum dNetFriendReqKind_e {
+enum RequestKind_e {
     NET_FRIEND_REQ_NONE = 0,
-    NET_FRIEND_REQ_1 = 1,
-    NET_FRIEND_REQ_2 = 2,
-    NET_FRIEND_REQ_3 = 3,
-    NET_FRIEND_REQ_4 = 4,
-    NET_FRIEND_REQ_5 = 5,
-    NET_FRIEND_REQ_6 = 6,
+    NET_FRIEND_REQ_MATCH_ANYBODY = 1,
+    NET_FRIEND_REQ_HOST_MATCH = 2,
+    NET_FRIEND_REQ_MATCH_FRIEND = 3,
+    NET_FRIEND_REQ_CANCEL_MATCH = 4,
+    NET_FRIEND_REQ_CLOSE_CONNECTIONS = 5,
+    NET_FRIEND_REQ_CLEAR_ERROR = 6,
     NET_FRIEND_REQ_VOICE_PARAM_ON = 7,
     NET_FRIEND_REQ_VOICE_PARAM_OFF = 8,
     NET_FRIEND_REQ_MUTE_ON = 9,
@@ -138,7 +153,7 @@ enum dNetFriendReqKind_e {
     NET_FRIEND_REQ_VOICE_B_ON = 11,
     NET_FRIEND_REQ_VOICE_B_OFF = 12,
     NET_FRIEND_REQ_VOICE_C = 13,
-    NET_FRIEND_REQ_14 = 14,
+    NET_FRIEND_REQ_FINISH = 14,
     // a friend's data at an index of the friend list
     NET_FRIEND_REQ_REGISTER = 15,
     NET_FRIEND_REQ_REMOVE = 16,    // removes the friend at an index
@@ -155,27 +170,28 @@ enum dNetFriendReqKind_e {
 };
 
 // The arguments of a request.
-struct dNetFriendReqArgs_c {
-    union {
-        DWCUserData mUserData;
-        struct {
-            DWCFriendData mData;
-            int mIndex;
-        } mFriend;
-        u64 mFriendKey;
-        struct {
-            u32 mValue;
-            u8 mAid;
-            u8 mArg;
-        } mMatch;
-        u8 mParam;
-    };
-    /* 0x40 */ u64 mFriendKey2;
+union RequestArgs_c {
+    DWCUserData mUserData;
+    struct {
+        DWCFriendData mData;
+        int mIndex;
+    } mFriend;
+    u64 mFriendKey;
+    struct {
+        u32 mValue;
+        u8 mMemberNum;
+        u8 mArg;
+    } mMatch;
+    u8 mParam;
+    struct {
+        /* 0x00 */ DWCUserData mUserData;
+        /* 0x40 */ u64 mFriendKey;
+    } mAccountKey;
 }; // size 0x48
 
 // One request at a time from the game to the DWC thread, with its result. No
 // constructor: dNetMgr_c's initialises it.
-class dNetFriendReq_c {
+class Request_c {
   public:
     void reset(); // 800E6E48
     // 800E6E80: back to NET_FRIEND_REQ_NONE
@@ -186,37 +202,42 @@ class dNetFriendReq_c {
     void setResult(int kind, int result);                    // 800E6F98
     void setResultData(int kind, const DWCFriendData *data); // 800E7004
     void setResultKey(int kind, u64 key);                    // 800E705C
-    // 800E70B8: TRUE once the current request is no longer `kind` (done); *result = its result
+    // 800E70B8: TRUE once the current request is no longer `kind` (done);
+    // *result = its result
     BOOL takeResult(int kind, int *result);
-    BOOL fn_800E723C(u8 memberNum, int arg);                 // NET_FRIEND_REQ_2
-    BOOL fn_800E726C(u8 memberNum, u32 arg);                 // NET_FRIEND_REQ_3
-    BOOL fn_800E729C();                                      // NET_FRIEND_REQ_6
+    BOOL takeResultData(int kind, DWCFriendData *data); // 800E7134
+    BOOL submit(int kind, const RequestArgs_c *args);   // 800E71AC
+    BOOL requestHostMatch(u8 memberNum, int arg);       // 800E723C
+    BOOL requestFriendMatch(u8 memberNum,
+                            u32 arg); // 800E726C
+    BOOL requestClearError();         // 800E729C
     // NET_FRIEND_REQ_REGISTER
-    BOOL fn_800E72C4(int index, const DWCFriendData *data);
+    BOOL requestRegisterFriend(int index,
+                               const DWCFriendData *data); // 800E72C4
     // NET_FRIEND_REQ_REMOVE
-    BOOL fn_800E731C(int index);
+    BOOL requestRemoveFriend(int index); // 800E731C
     // NET_FRIEND_REQ_MY_DATA
-    BOOL fn_800E7348(const DWCUserData *userData);
+    BOOL requestMyFriendData(const DWCUserData *userData); // 800E7348
     // NET_FRIEND_REQ_KEY_DATA
-    BOOL fn_800E738C(u64 key);
+    BOOL requestFriendKeyData(u64 key); // 800E738C
     // NET_FRIEND_REQ_CHECK_KEY
-    BOOL fn_800E73BC(u64 key);
+    BOOL requestCheckFriendKey(u64 key); // 800E73BC
     // NET_FRIEND_REQ_FIND_USER
-    BOOL fn_800E73EC(const DWCUserData *userData);
+    BOOL requestFindUser(const DWCUserData *userData); // 800E73EC
     // NET_FRIEND_REQ_FIND_DATA
-    BOOL fn_800E7430(const DWCFriendData *data);
+    BOOL requestFindFriendData(const DWCFriendData *data); // 800E7430
     // NET_FRIEND_REQ_IS_FRIEND
-    BOOL fn_800E7474(const DWCUserData *userData, u64 key);
-    BOOL connect(u8 aid);      // 800E74D8
-    BOOL disconnect(u8 aid);   // 800E753C
-    void addConnect(u16 mask); // 800E75A0
+    BOOL requestIsFriend(const DWCUserData *userData, u64 key); // 800E7474
+    BOOL connect(u8 aid);                                       // 800E74D8
+    BOOL disconnect(u8 aid);                                    // 800E753C
+    void addConnect(u16 mask);                                  // 800E75A0
     // NET_FRIEND_REQ_MUTE_ON
-    BOOL fn_800E7600();
+    BOOL requestMute(); // 800E7600
     // NET_FRIEND_REQ_MUTE_OFF
-    BOOL fn_800E7628();
+    BOOL requestUnmute(); // 800E7628
 
     /* 0x00 */ OSMutex mMutex;
-    /* 0x18 */ dNetFriendReqArgs_c mArgs;
+    /* 0x18 */ RequestArgs_c mArgs;
     /* 0x60 */ int mKind;
     /* 0x64 */ u16 mConnect;    // aids to connect
     /* 0x66 */ u16 mDisconnect; // aids to disconnect
@@ -225,3 +246,6 @@ class dNetFriendReq_c {
     /* 0x94 */ DWCFriendData mResultData;
     /* 0xA0 */ u64 mResultKey;
 }; // size 0xA8
+
+} // namespace dNetFriend
+#endif

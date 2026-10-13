@@ -19,9 +19,9 @@
 dNetMgr_c *dNetMgr_c::sInstance;
 
 dNetMgr_c::dNetMgr_c() {
-    dNetFriendReq_c *req = &mReq;
+    dNetFriend::Request_c *req = &mReq;
     OSInitMutex(&req->mMutex);
-    req->mKind = NET_FRIEND_REQ_NONE;
+    req->mKind = dNetFriend::NET_FRIEND_REQ_NONE;
     req->mConnect = 0;
     req->mDisconnect = 0;
 
@@ -79,7 +79,7 @@ void dNetMgr_c::setup(DWCUserData *userData, DWCFriendData *friends,
         mFriendNum = friendNum;
         mMemberNum = memberNum;
         mFriends = new (dHeap::netSoHeap_p, 4) DWCFriendData[friendNum];
-        mSendBufs = new (dHeap::netSoHeap_p, 4) dNetSendBuf_c[memberNum];
+        mSendBufs = new (dHeap::netSoHeap_p, 4) dNetFriend::SendBuf_c[memberNum];
         mRecvBufs = new (dHeap::netSoHeap_p, 4) u8 *[memberNum - 1];
         if (bufs != NULL) {
             for (int i = 0; i < memberNum - 1; i++) {
@@ -175,7 +175,7 @@ BOOL dNetMgr_c::start() {
 
 BOOL dNetMgr_c::open() {
     dNetMgr_c *mgr = sInstance;
-    if (mgr->mInfo.mState >= 2 && !mgr->mInfo.m1A30) {
+    if (mgr->mInfo.mState >= 2 && !mgr->mInfo.mUpdatingFriends) {
         return TRUE;
     }
     if (mgr->mState <= NET_MGR_STATE_SETUP) {
@@ -210,7 +210,7 @@ void dNetMgr_c::execute() {
         if (mState == NET_MGR_STATE_2 && mInfo.mState < 1) {
             mState = NET_MGR_STATE_SETUP;
         }
-        if (dVoiceChat::isStarted() && !mBusy && !mTelopShown && mInfo.m1A32) {
+        if (dVoiceChat::isStarted() && !mBusy && !mTelopShown && mInfo.mMicUnavailable) {
             dObjTelop_c::request(TELOP_MIC_CHAT_UNAVAILABLE);
             mTelopShown = 1;
         }
@@ -221,7 +221,7 @@ BOOL dNetMgr_c::fn_800E51C8(int arg) {
     if (mState == NET_MGR_STATE_5) {
         return TRUE;
     }
-    if (!mReq.fn_800E723C(mMemberNum, arg)) {
+    if (!mReq.requestHostMatch(mMemberNum, arg)) {
         return FALSE;
     }
     mState = NET_MGR_STATE_5;
@@ -232,7 +232,7 @@ BOOL dNetMgr_c::fn_800E5230(int arg) {
     if (mState == NET_MGR_STATE_6) {
         return TRUE;
     }
-    if (!mReq.fn_800E726C(mMemberNum, arg)) {
+    if (!mReq.requestFriendMatch(mMemberNum, arg)) {
         return FALSE;
     }
     mState = NET_MGR_STATE_6;
@@ -322,7 +322,7 @@ int dNetMgr_c::getErrorKind() {
 
 void dNetMgr_c::fn_800E55B0() {
     if (sInstance->mState > NET_MGR_STATE_SETUP) {
-        sInstance->mReq.fn_800E729C();
+        sInstance->mReq.requestClearError();
     }
 }
 
@@ -336,7 +336,7 @@ u8 dNetMgr_c::getFriendStatus(int idx, void *dst, u32 *size) {
 }
 
 BOOL dNetMgr_c::isFriendInSession(int idx) {
-    dNetFriendStatus_c *status = &mInfo.mFriends[idx];
+    dNetFriend::Status_c *status = &mInfo.mFriends[idx];
     if (status->hasAid() && status->mAid < mMemberNum) {
         return TRUE;
     }
@@ -396,7 +396,7 @@ void dNetMgr_c::setVolume(int volume) {
 
 void dNetMgr_c::mute() {
     if (sInstance->mState > NET_MGR_STATE_SETUP) {
-        sInstance->mReq.fn_800E7600();
+        sInstance->mReq.requestMute();
     } else {
         dVoiceChat::setMute(1);
     }
@@ -404,7 +404,7 @@ void dNetMgr_c::mute() {
 
 void dNetMgr_c::unmute() {
     if (sInstance->mState > NET_MGR_STATE_SETUP) {
-        sInstance->mReq.fn_800E7628();
+        sInstance->mReq.requestUnmute();
     } else {
         dVoiceChat::setMute(0);
     }
@@ -423,19 +423,19 @@ void dNetMgr_c::initFriendList(DWCUserData *userData, DWCFriendData *friends,
 }
 
 s64 dNetMgr_c::getInfo1A10() {
-    return sInstance->mInfo.m1A10;
+    return sInstance->mInfo.mMyFriendKey;
 }
 
 u32 dNetMgr_c::getInfo1A28() {
-    return sInstance->mInfo.m1A28;
+    return sInstance->mInfo.mMyProfileId;
 }
 
 s64 dNetMgr_c::getFriend00(int idx) {
-    return sInstance->mInfo.mFriends[idx].m00;
+    return sInstance->mInfo.mFriends[idx].mFriendKey;
 }
 
 u32 dNetMgr_c::getFriend08(int idx) {
-    return sInstance->mInfo.mFriends[idx].m08;
+    return sInstance->mInfo.mFriends[idx].mProfileId;
 }
 
 BOOL dNetMgr_c::getFriendFlag(int idx) {
@@ -510,35 +510,35 @@ int dNetMgr_c::checkFriendKey(const DWCUserData *userData, u64 key) {
 }
 
 BOOL dNetMgr_c::reqMyData(const DWCUserData *userData) {
-    return sInstance->mReq.fn_800E7348(userData);
+    return sInstance->mReq.requestMyFriendData(userData);
 }
 
 BOOL dNetMgr_c::reqKeyData(u64 key) {
-    return sInstance->mReq.fn_800E738C(key);
+    return sInstance->mReq.requestFriendKeyData(key);
 }
 
 BOOL dNetMgr_c::reqIsFriend(const DWCUserData *userData, u64 key) {
-    return sInstance->mReq.fn_800E7474(userData, key);
+    return sInstance->mReq.requestIsFriend(userData, key);
 }
 
 BOOL dNetMgr_c::reqCheckKey(u64 key) {
-    return sInstance->mReq.fn_800E73BC(key);
+    return sInstance->mReq.requestCheckFriendKey(key);
 }
 
 BOOL dNetMgr_c::reqRegister(int index, const DWCFriendData *data) {
-    return sInstance->mReq.fn_800E72C4(index, data);
+    return sInstance->mReq.requestRegisterFriend(index, data);
 }
 
 BOOL dNetMgr_c::reqRemove(int index) {
-    return sInstance->mReq.fn_800E731C(index);
+    return sInstance->mReq.requestRemoveFriend(index);
 }
 
 BOOL dNetMgr_c::reqFindUser(const DWCUserData *userData) {
-    return sInstance->mReq.fn_800E73EC(userData);
+    return sInstance->mReq.requestFindUser(userData);
 }
 
 BOOL dNetMgr_c::reqFindData(const DWCFriendData *data) {
-    return sInstance->mReq.fn_800E7430(data);
+    return sInstance->mReq.requestFindFriendData(data);
 }
 
 void dNetMgr_c::onStatus() {
@@ -607,34 +607,34 @@ void dNetMgr_c::setFriendRemoved(int index) {
 }
 
 void dNetMgr_c::procDwcRequest() {
-    dNetFriendReq_c *req = &sInstance->mReq;
+    dNetFriend::Request_c *req = &sInstance->mReq;
     switch (req->getKind()) {
-    case NET_FRIEND_REQ_1:
-        if (g_netDwc.matchAnybody(req->mArgs.mMatch.mAid)) {
+    case dNetFriend::NET_FRIEND_REQ_MATCH_ANYBODY:
+        if (g_netDwc.matchAnybody(req->mArgs.mMatch.mMemberNum)) {
             req->finish();
         }
         break;
-    case NET_FRIEND_REQ_2:
-        if (g_netDwc.hostMatch(req->mArgs.mMatch.mAid,
+    case dNetFriend::NET_FRIEND_REQ_HOST_MATCH:
+        if (g_netDwc.hostMatch(req->mArgs.mMatch.mMemberNum,
                                  req->mArgs.mMatch.mArg)) {
             req->finish();
         }
         break;
-    case NET_FRIEND_REQ_3:
-        if (g_netDwc.matchFriend(req->mArgs.mMatch.mAid,
+    case dNetFriend::NET_FRIEND_REQ_MATCH_FRIEND:
+        if (g_netDwc.matchFriend(req->mArgs.mMatch.mMemberNum,
                                  req->mArgs.mMatch.mValue)) {
             req->finish();
         }
         break;
-    case NET_FRIEND_REQ_4:
+    case dNetFriend::NET_FRIEND_REQ_CANCEL_MATCH:
         g_netDwc.cancelMatch();
         req->finish();
         break;
-    case NET_FRIEND_REQ_5:
+    case dNetFriend::NET_FRIEND_REQ_CLOSE_CONNECTIONS:
         g_netDwc.closeConnections();
         req->finish();
         break;
-    case NET_FRIEND_REQ_6:
+    case dNetFriend::NET_FRIEND_REQ_CLEAR_ERROR:
         g_netDwc.clearError();
         req->finish();
         break;
@@ -667,18 +667,18 @@ void dNetMgr_c::procDwcRequest() {
 
 void dNetMgr_c::procRequest() {
     dNetMgr_c *mgr = sInstance;
-    dNetFriendReq_c *req = &mgr->mReq;
+    dNetFriend::Request_c *req = &mgr->mReq;
     DWCFriendData *friends = mgr->mFriends;
     DWCFriendData *reqData = &req->mArgs.mFriend.mData;
 
     if (DWC_CanChangeFriendList()) {
         int index = req->mArgs.mFriend.mIndex;
         switch (req->getKind()) {
-        case NET_FRIEND_REQ_REMOVE:
+        case dNetFriend::NET_FRIEND_REQ_REMOVE:
             DWC_DeleteBuddyFriendData(&friends[index]);
             mgr->mRemovedFriends |= 1 << index;
             g_netDwc.updateFriends();
-            req->setResult(NET_FRIEND_REQ_REMOVE, index);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_REMOVE, index);
             break;
         }
         u32 removed = mgr->mRemovedFriends;
@@ -700,15 +700,15 @@ void dNetMgr_c::procRequest() {
             }
         }
         switch (req->getKind()) {
-        case NET_FRIEND_REQ_REGISTER:
+        case dNetFriend::NET_FRIEND_REQ_REGISTER:
             if (isFriendDataValid(reqData)) {
                 if (!isSameFriend(&mgr->mUserData, reqData, &friends[index])) {
                     memcpy(&friends[index], reqData, sizeof(DWCFriendData));
                     g_netDwc.updateFriends();
                 }
-                req->setResult(NET_FRIEND_REQ_REGISTER, index);
+                req->setResult(dNetFriend::NET_FRIEND_REQ_REGISTER, index);
             } else {
-                req->setResult(NET_FRIEND_REQ_REGISTER, -1);
+                req->setResult(dNetFriend::NET_FRIEND_REQ_REGISTER, -1);
             }
             break;
         }
@@ -718,35 +718,35 @@ void dNetMgr_c::procRequest() {
     DWCFriendData friendData2;
     u32 i;
     switch (req->getKind()) {
-    case NET_FRIEND_REQ_VOICE_PARAM_ON:
+    case dNetFriend::NET_FRIEND_REQ_VOICE_PARAM_ON:
         dVoiceChat::setParam(1);
         req->finish();
         break;
-    case NET_FRIEND_REQ_VOICE_PARAM_OFF:
+    case dNetFriend::NET_FRIEND_REQ_VOICE_PARAM_OFF:
         dVoiceChat::setParam(0);
         req->finish();
         break;
-    case NET_FRIEND_REQ_MUTE_ON:
+    case dNetFriend::NET_FRIEND_REQ_MUTE_ON:
         dVoiceChat::setMute(1);
         req->finish();
         break;
-    case NET_FRIEND_REQ_MUTE_OFF:
+    case dNetFriend::NET_FRIEND_REQ_MUTE_OFF:
         dVoiceChat::setMute(0);
         req->finish();
         break;
-    case NET_FRIEND_REQ_VOICE_B_ON:
+    case dNetFriend::NET_FRIEND_REQ_VOICE_B_ON:
         if (dVoiceChat::fn_80171C08(1)) {
             dSaveData_c::getExtra()->setVoiceSetting(1);
         }
         req->finish();
         break;
-    case NET_FRIEND_REQ_VOICE_B_OFF:
+    case dNetFriend::NET_FRIEND_REQ_VOICE_B_OFF:
         if (dVoiceChat::fn_80171C08(0)) {
             dSaveData_c::getExtra()->setVoiceSetting(0);
         }
         req->finish();
         break;
-    case NET_FRIEND_REQ_VOICE_C: {
+    case dNetFriend::NET_FRIEND_REQ_VOICE_C: {
         u8 level = req->mArgs.mParam;
         if (dVoiceChat::fn_80171C10(level)) {
             dSaveData_c::getExtra()->mVoiceLevel = level;
@@ -754,26 +754,26 @@ void dNetMgr_c::procRequest() {
         req->finish();
         break;
     }
-    case NET_FRIEND_REQ_MY_DATA:
+    case dNetFriend::NET_FRIEND_REQ_MY_DATA:
         getMyFriendData(&req->mArgs.mUserData, &friendData);
-        req->setResultData(NET_FRIEND_REQ_MY_DATA, &friendData);
+        req->setResultData(dNetFriend::NET_FRIEND_REQ_MY_DATA, &friendData);
         break;
-    case NET_FRIEND_REQ_MY_KEY:
-        req->setResultKey(NET_FRIEND_REQ_MY_KEY,
+    case dNetFriend::NET_FRIEND_REQ_MY_KEY:
+        req->setResultKey(dNetFriend::NET_FRIEND_REQ_MY_KEY,
                           getMyFriendKey(&req->mArgs.mUserData));
         break;
-    case NET_FRIEND_REQ_KEY:
-        req->setResultKey(NET_FRIEND_REQ_KEY, getFriendKey(reqData));
+    case dNetFriend::NET_FRIEND_REQ_KEY:
+        req->setResultKey(dNetFriend::NET_FRIEND_REQ_KEY, getFriendKey(reqData));
         break;
-    case NET_FRIEND_REQ_KEY_DATA:
+    case dNetFriend::NET_FRIEND_REQ_KEY_DATA:
         makeFriendData(req->mArgs.mFriendKey, &friendData);
-        req->setResultData(NET_FRIEND_REQ_KEY_DATA, &friendData);
+        req->setResultData(dNetFriend::NET_FRIEND_REQ_KEY_DATA, &friendData);
         break;
-    case NET_FRIEND_REQ_CHECK_KEY:
-        req->setResult(NET_FRIEND_REQ_CHECK_KEY,
+    case dNetFriend::NET_FRIEND_REQ_CHECK_KEY:
+        req->setResult(dNetFriend::NET_FRIEND_REQ_CHECK_KEY,
                        checkFriendKey(&mgr->mUserData, req->mArgs.mFriendKey));
         break;
-    case NET_FRIEND_REQ_FIND_USER:
+    case dNetFriend::NET_FRIEND_REQ_FIND_USER:
         getMyFriendData(&req->mArgs.mUserData, &friendData);
         for (i = 0; i < mgr->mFriendNum; i++) {
             if (isSameFriend(&mgr->mUserData, friends, &friendData)) {
@@ -782,12 +782,12 @@ void dNetMgr_c::procRequest() {
             friends++;
         }
         if (i < mgr->mFriendNum) {
-            req->setResult(NET_FRIEND_REQ_FIND_USER, i);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_FIND_USER, i);
         } else {
-            req->setResult(NET_FRIEND_REQ_FIND_USER, -1);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_FIND_USER, -1);
         }
         break;
-    case NET_FRIEND_REQ_FIND_DATA:
+    case dNetFriend::NET_FRIEND_REQ_FIND_DATA:
         for (i = 0; i < mgr->mFriendNum; i++) {
             if (isSameFriend(&mgr->mUserData, friends, reqData)) {
                 break;
@@ -795,12 +795,12 @@ void dNetMgr_c::procRequest() {
             friends++;
         }
         if (i < mgr->mFriendNum) {
-            req->setResult(NET_FRIEND_REQ_FIND_DATA, i);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_FIND_DATA, i);
         } else {
-            req->setResult(NET_FRIEND_REQ_FIND_DATA, -1);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_FIND_DATA, -1);
         }
         break;
-    case NET_FRIEND_REQ_FIND_KEY:
+    case dNetFriend::NET_FRIEND_REQ_FIND_KEY:
         makeFriendData(req->mArgs.mFriendKey, &friendData);
         for (i = 0; i < mgr->mFriendNum; i++) {
             if (isSameFriend(&mgr->mUserData, friends, &friendData)) {
@@ -809,21 +809,21 @@ void dNetMgr_c::procRequest() {
             friends++;
         }
         if (i < mgr->mFriendNum) {
-            req->setResult(NET_FRIEND_REQ_FIND_KEY, i);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_FIND_KEY, i);
         } else {
-            req->setResult(NET_FRIEND_REQ_FIND_KEY, -1);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_FIND_KEY, -1);
         }
         break;
-    case NET_FRIEND_REQ_IS_FRIEND:
+    case dNetFriend::NET_FRIEND_REQ_IS_FRIEND:
         getMyFriendData(&req->mArgs.mUserData, &friendData);
-        makeFriendData(req->mArgs.mFriendKey2, &friendData2);
+        makeFriendData(req->mArgs.mAccountKey.mFriendKey, &friendData2);
         if (isSameFriend(&req->mArgs.mUserData, &friendData, &friendData2)) {
-            req->setResult(NET_FRIEND_REQ_IS_FRIEND, TRUE);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_IS_FRIEND, TRUE);
         } else {
-            req->setResult(NET_FRIEND_REQ_IS_FRIEND, FALSE);
+            req->setResult(dNetFriend::NET_FRIEND_REQ_IS_FRIEND, FALSE);
         }
         break;
-    case NET_FRIEND_REQ_14:
+    case dNetFriend::NET_FRIEND_REQ_FINISH:
         req->finish();
         break;
     }

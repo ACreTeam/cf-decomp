@@ -104,7 +104,7 @@ BOOL dObjVoice_c::isActive() {
     if (dNet::getMemberNum() <= 1) {
         return FALSE;
     }
-    return dNetMgr_c::sInstance->mInfo.m1A31 != 0;
+    return dNetMgr_c::sInstance->mInfo.mMicActive != 0;
 }
 
 // 801B7350
@@ -162,7 +162,7 @@ void dObjVoice_c::receive(int member, const void *data) {
             if (dSaveOption::getVoiceChat() == TRUE) {
                 reply = VOICE_MSG_NONE;
             } else {
-                reply = dNetMgr_c::sInstance->mInfo.m1A31 != 0 ? VOICE_MSG_READY : VOICE_MSG_NOT_READY;
+                reply = dNetMgr_c::sInstance->mInfo.mMicActive != 0 ? VOICE_MSG_READY : VOICE_MSG_NOT_READY;
             }
             sendReply(reply, member);
             break;
