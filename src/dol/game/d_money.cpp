@@ -123,7 +123,7 @@ BOOL dMoney_c::isShow() {
 
 // 8019C138
 int dMoney_c::getMoney() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (player == NULL) {
         return 0;
     }

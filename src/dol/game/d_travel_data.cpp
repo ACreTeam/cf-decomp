@@ -37,7 +37,7 @@ Data_c::~Data_c() {}
 
 // 80084990
 void Data_c::prepareDeparture() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveOption::store(player->getOption());
     mPlayer.copy(player);
     mPlayer.setFlag0(0x28);
@@ -58,8 +58,8 @@ void Data_c::prepareDeparture() {
 
 // 80084B88
 void Data_c::backupDeparture() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    dPlayerMgr_c::getPlayer(5)->copy(player);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
+    dPlayerMgr::Mgr_c::getPlayer(5)->copy(player);
     player->mEquipment.mHat = dItem::ITEM_ID_NONE;
     player->mEquipment.mAcc = dItem::ITEM_ID_NONE;
     player->mEquipment.mHeld = dItem::ITEM_ID_NONE;
@@ -82,8 +82,8 @@ void Data_c::backupDeparture() {
 
 // 80084CA4
 void Data_c::cancelDeparture() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
-    dPrivateData_c *backup = dPlayerMgr_c::getPlayer(5);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
+    dPrivateData_c *backup = dPlayerMgr::Mgr_c::getPlayer(5);
     player->copy(backup);
     backup->clear();
     fgMngProc_restoreSaveFlag1A();
@@ -94,7 +94,7 @@ void Data_c::cancelDeparture() {
 
 // 80084D24
 void Data_c::prepareVisit() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveOption::store(player->getOption());
     mPlayer.copy(player);
     mPlayer.startHostVisit(32, 10, 0);
@@ -114,8 +114,8 @@ void Data_c::prepareVisit() {
 
 // 80084F18
 void Data_c::backupVisit() {
-    dPrivateData_c *player = dPlayerMgr_c::getPlayer(4);
-    dPlayerMgr_c::getPlayer(5)->copy(player);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(4);
+    dPlayerMgr::Mgr_c::getPlayer(5)->copy(player);
     dActivityLog::backupTownBits();
     dSaveTown_c *town = dSaveData_c::getTown();
     town->mActivity.setVisitorDone(dActivityLog::isDone());
@@ -127,8 +127,8 @@ void Data_c::backupVisit() {
 
 // 80084FA0
 void Data_c::cancelVisit() {
-    dPrivateData_c *backup = dPlayerMgr_c::getPlayer(5);
-    dPlayerMgr_c::getPlayer(4)->copy(backup);
+    dPrivateData_c *backup = dPlayerMgr::Mgr_c::getPlayer(5);
+    dPlayerMgr::Mgr_c::getPlayer(4)->copy(backup);
     backup->clear();
     dActivityLog::restoreTownBits();
     fgMngProc_restoreSaveFlag1A();
@@ -139,10 +139,10 @@ void Data_c::cancelVisit() {
 
 // 80085018
 void Data_c::finishReturn() {
-    int slot = fn_801017EC(&mPlayer.mPID);
-    dPrivateData_c *player = dPlayerMgr_c::getPlayer(slot);
+    int slot = dPlayerMgr::findPersonalIDSlot(&mPlayer.mPID);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(slot);
     player->copy(&mPlayer);
-    fn_80100238(0, slot);
+    dPlayerMgr::setPlayerSlot(0, slot);
     dSaveOption::store(player->getOption());
     dSaveData_c::getTown()->mTownHost = player->mHost;
     countPlayerDlItems((u8 *)mPlayerItems.mItems);
@@ -159,9 +159,9 @@ void Data_c::finishVisit() {
     dPrivateHost_c *host;
     dPrivateHost_c *townHost;
     dPrivateData_c *player;
-    player = dPlayerMgr_c::getPlayer(4);
+    player = dPlayerMgr::Mgr_c::getPlayer(4);
     player->copy(&mPlayer);
-    fn_80100238(0, 4);
+    dPlayerMgr::setPlayerSlot(0, 4);
     dSaveOption::store(player->getOption());
     countPlayerDlItems((u8 *)mPlayerItems.mItems);
     countTownDlItems((u8 *)mTownItems.mItems, player);

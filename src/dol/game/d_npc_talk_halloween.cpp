@@ -25,7 +25,7 @@ int dAcNpcNml_c::talk_c::msgCandyAsk(msgInfo_s *info) {
 
 // 80043F48
 void dAcNpcNml_c::talk_c::endCandyAsk(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (mpMemory != NULL && player != NULL) {
         recordTalk(NULL);
     }
@@ -54,7 +54,7 @@ BOOL dAcNpcNml_c::talk_c::stepCandyChoice(int kind) {
 
 // 8004409C
 void dAcNpcNml_c::talk_c::selCandyGive() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     u16 mask = 0;
     if (player != NULL) {
         countPocketsUsed(&mask, NULL);
@@ -70,7 +70,7 @@ void dAcNpcNml_c::talk_c::resCandyGive() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 BOOL candy = FALSE;
                 dItem::Item item = player->mPockets[slot];
@@ -126,7 +126,7 @@ BOOL dAcNpcNml_c::talk_c::stepCandyThanks(int kind) {
 // 800443EC
 int dAcNpcNml_c::talk_c::msgCandyCostume(msgInfo_s *info) {
     int code = 0x1A;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (mpMemory != NULL && player != NULL) {
         mEquip.setFromPlayer();
         code = isInCostume(&mEquip) ? 0x19 : 0x18;
@@ -180,7 +180,7 @@ int dAcNpcNml_c::talk_c::countTrickPockets(u16 *slotMask, dPrivateData_c *player
         *slotMask = 0;
     }
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (player != NULL) {
         u32 num = player->countPocketsFlag(filterTrickItem, slotMask);
@@ -193,7 +193,7 @@ int dAcNpcNml_c::talk_c::countTrickPockets(u16 *slotMask, dPrivateData_c *player
 
 // 800446C4
 BOOL dAcNpcNml_c::talk_c::trickPockets() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -443,7 +443,7 @@ BOOL dAcNpcNml_c::talk_c::stepHalloweenPresent(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         u16 code = mMessageCode;
         int slot = -1;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dItem::Item present;
         if (code == 3 && player != NULL) {
             slot = player->findEmptyPocket(0);

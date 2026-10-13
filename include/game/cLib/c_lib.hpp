@@ -20,6 +20,18 @@ namespace cLib {
         return binAngle * (M_PI / 32768);
     }
 
+    inline float bin2deg(s16 binAngle) {
+        return binAngle * (180.0f / 32768);
+    }
+
+    inline s16 rad2bin(float rad) {
+        return rad * (32768 / M_PI);
+    }
+
+    inline s16 deg2bin(float deg) {
+        return deg * (32768 / 180.0f);
+    }
+
     /// @brief Calculates the yaw (Y-axis) orientation angle from an origin position to a target position.
     /// @param vec1 The origin position vector.
     /// @param vec2 The target position vector.

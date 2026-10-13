@@ -29,7 +29,7 @@ void dSvAucList_c::clearAll() {
 
 // 8014F344
 int dSvAucList_c::addMine(const dSvAucItem_c *item) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (player != NULL) {
         u32 idx = dPrivateData_c::find(dSaveData_c::getRaw()->mPlayers, &player->mPID);
         if (idx < PLAYER_NUM) {

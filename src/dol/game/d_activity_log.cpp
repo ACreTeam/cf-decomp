@@ -108,7 +108,7 @@ void Log_c::count(int cond, int player, int value) {
         return;
     }
     dLandID_c *townLand = dSaveData_c::getTownLand();
-    dPrivateData_c *me = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *me = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (me->mPID.land == *townLand) {
         return; // only another town's jinx counts
     }
@@ -153,7 +153,7 @@ void applyResult() {
     dSaveJinx_c jinx = *source;
     if (jinx.mCondition < JINX_COND_NUM) {
         dSaveTown_c *town = dSaveData_c::getTown();
-        dPrivateData_c *me = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *me = dPlayerMgr::Mgr_c::getCurrentPlayer();
         u8 done = g_log.mDone;
         town->mActivity.setDone(jinx.mOutcome, done, me->findInSave());
         clear();
@@ -163,7 +163,7 @@ void applyResult() {
 // 800C7A5C
 void applyTravelResult(int outcome) {
     dSaveTown_c *town = dSaveData_c::getTown();
-    dPrivateData_c *me = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *me = dPlayerMgr::Mgr_c::getCurrentPlayer();
     town->mActivity.setDone(outcome, outcome != JINX_OUTCOME_NUM, me->findInSave());
 }
 

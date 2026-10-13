@@ -82,7 +82,7 @@ int fn_800EBDB4() {
 
 // 800EBDE0
 BOOL fn_800EBDE0() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return TRUE;
     }
@@ -104,7 +104,7 @@ BOOL fn_800EBDE0() {
 
 // 800EBEA4
 void fn_800EBEA4(int idx) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveTown_c *save = dSaveData_c::getTown();
     int playerIdx = dPrivateData_c::find(save->mPlayers, &player->mPID);
     if (playerIdx != -1) {
@@ -114,7 +114,7 @@ void fn_800EBEA4(int idx) {
 
 // 800EBF14
 BOOL fn_800EBF14(int idx) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveData_c *save = dSaveData_c::getRaw();
     int playerIdx = dPrivateData_c::find(save->mPlayers, &player->mPID);
     if (playerIdx == -1) {
@@ -151,7 +151,7 @@ void fn_800EBF94(const dTime_c *day) {
 // 800EC060
 void fn_800EC060(const dTime_c *day) {
     for (int i = 0; i < 4; i++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
         if (player->isBirthday(*day)) {
             dLetter::setPersonalName(1, &player->mPID);
             fn_800EBB24(cM::rndInt(4) + 0x1C, "BBS_event", day, NULL);

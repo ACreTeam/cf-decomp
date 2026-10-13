@@ -9,7 +9,7 @@ namespace dNetPlayerInfo {
 
 struct Info_c {
     void clear(); // 800AC154
-    void set();   // 800AC160: from dPlayerMgr_c::getCurrentPlayer()
+    void set();   // 800AC160: from dPlayerMgr::Mgr_c::getCurrentPlayer()
 
     /* 0x00 */ wchar_t mPlayerName[9];    // dPrivateData_c::mPID.player.mName
     /* 0x12 */ wchar_t mTownName[9];      // dPrivateData_c::mPID.land.mName

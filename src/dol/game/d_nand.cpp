@@ -40,7 +40,7 @@ static u8 sCheckFlagsChanged;              // 8074E50D
 
 // The save slot of this console's player: its own town's when hosting, else its network player number.
 static inline int getPlayerNo() {
-    return !dNet::isHost() ? dNet::getLocalPlayerNo() : fn_801017B8();
+    return !dNet::isHost() ? dNet::getLocalPlayerNo() : dPlayerMgr::getCurrentPlayerSlot();
 }
 
 // 800D22F8
@@ -148,9 +148,9 @@ BOOL saveFriendList() {
     Request_s request;
     request.mPath = lbl_8074B010;
     request.mOffset = dSvMgr_c::getPlayerDataOffset(player);
-    request.mWriteData = dPlayerMgr_c::getCurrentPlayer();
+    request.mWriteData = dPlayerMgr::Mgr_c::getCurrentPlayer();
     request.mSize = FRIEND_LIST_SIZE;
-    dPlayerMgr_c::getCurrentPlayer()->mFriends.updateChecksum();
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.updateChecksum();
     return startThread(writeFriendListThread, &request);
 }
 
@@ -160,9 +160,9 @@ BOOL savePlayer() {
     Request_s request;
     request.mPath = lbl_8074B010;
     request.mOffset = dSvMgr_c::getPlayerDataOffset(player);
-    request.mWriteData = dPlayerMgr_c::getCurrentPlayerRaw();
+    request.mWriteData = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     request.mSize = PLAYER_SIZE;
-    dPlayerMgr_c::getCurrentPlayer()->updateChecksum();
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->updateChecksum();
     return startThread(writePlayerThread, &request);
 }
 
@@ -546,14 +546,14 @@ int writeAll() {
 // 800D3168
 int writePlayer() {
     int player = getPlayerNo();
-    return writeFile(lbl_8074B010, dSvMgr_c::getPlayerDataOffset(player), dPlayerMgr_c::getCurrentPlayerRaw(),
+    return writeFile(lbl_8074B010, dSvMgr_c::getPlayerDataOffset(player), dPlayerMgr::Mgr_c::getCurrentPlayerRaw(),
                      PLAYER_SIZE);
 }
 
 // 800D31DC
 int writeFriendList() {
     int player = getPlayerNo();
-    dFriendList_c *friends = &dPlayerMgr_c::getCurrentPlayer()->mFriends;
+    dFriendList_c *friends = &dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends;
     return writeFile(lbl_8074B010, dSvMgr_c::getPlayerDataOffset(player), friends, FRIEND_LIST_SIZE);
 }
 

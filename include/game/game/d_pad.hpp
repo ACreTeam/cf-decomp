@@ -1,6 +1,6 @@
 #pragma once
 
-// Game pad helpers (TU d_pad.cpp, not decompiled). d_player_mgr.cpp still declares fn_800FA724 locally.
+// Game pad helpers (TU d_pad.cpp, not decompiled). Used by d_player_mgr and the pad consumers.
 
 #include <types.h>
 #include <game/mLib/m_vec.hpp>

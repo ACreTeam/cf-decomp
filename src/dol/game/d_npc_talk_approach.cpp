@@ -92,7 +92,7 @@ int dAcNpcNml_c::talk_c::msgApFortuneLove(msgInfo_s *info) {
         ok = TRUE;
     }
     if (ok) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player == NULL || player->mFortune != FORTUNE_LOVE || animal->mID.getGender(1) == player->mPID.player.getGender()) {
             ok = FALSE;
         }
@@ -117,7 +117,7 @@ int dAcNpcNml_c::talk_c::msgApFortuneFriend(msgInfo_s *info) {
         ok = TRUE;
     }
     if (ok) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player == NULL || player->mFortune != FORTUNE_FRIENDSHIP || animal->mID.getGender(1) != player->mPID.player.getGender()) {
             ok = FALSE;
         }
@@ -141,7 +141,7 @@ int dAcNpcNml_c::talk_c::msgApFortuneItem(msgInfo_s *info) {
         ok = TRUE;
     }
     if (ok) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player == NULL || player->mFortune != FORTUNE_ITEM) {
             ok = FALSE;
         }
@@ -219,7 +219,7 @@ int dAcNpcNml_c::talk_c::msgApNickname(msgInfo_s *info) {
         const char *label = getApproachLabel(1, 2, 0);
         if (label != NULL) {
             if (getController() != NULL) {
-                dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
                 dAnimal_c *animal = getAnimal();
                 if (player != NULL && animal != NULL) {
                     dHmnName::Word_c name;
@@ -238,7 +238,7 @@ int dAcNpcNml_c::talk_c::msgApNickname(msgInfo_s *info) {
 
 // 80036C28
 int dAcNpcNml_c::talk_c::msgApPresent(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL ok = FALSE;
     if (player != NULL && player->findEmptyPocket(0) != -1) {
         ok = TRUE;
@@ -258,7 +258,7 @@ int dAcNpcNml_c::talk_c::msgApPresent(msgInfo_s *info) {
 // 80036D08
 int dAcNpcNml_c::talk_c::msgApSell(msgInfo_s *info) {
     BOOL ok;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     ok = FALSE;
     if (player != NULL && player->findEmptyPocket(0) != -1 && player->getPocketMoney() >= 2000) {
         ok = TRUE;
@@ -284,7 +284,7 @@ dItem::Item dAcNpcNml_c::talk_c::pickWantedPocketItem(const dAcNpcNml_c::talk_c 
     };
     dItem::Item result;
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (player == NULL) {
         return result;
@@ -413,7 +413,7 @@ int dAcNpcNml_c::talk_c::msgApPendingQuest(msgInfo_s *info) {
 // 800372D4
 int dAcNpcNml_c::talk_c::msgApLetter(msgInfo_s *info) {
     BOOL ok;
-    dPrivateData_c *const current = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *const current = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dPrivateData_c *player = current;
     dAnimal_c *animal = getAnimal();
     ok = FALSE;
@@ -505,7 +505,7 @@ BOOL dAcNpcNml_c::talk_c::stepApFortune(int kind) {
 // 8003766C
 void dAcNpcNml_c::talk_c::endApFortuneItem(int arg) {
     endApproach(arg);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int slot = player != NULL ? player->findEmptyPocket(0) : -1;
     mItem0 = dItem::Item();
     if (!fn_800F4510(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
@@ -561,7 +561,7 @@ BOOL dAcNpcNml_c::talk_c::stepApNickname(int kind) {
 
 // 8003791C
 void dAcNpcNml_c::talk_c::selApNicknameNew() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (player != NULL && animal != NULL && mpMemory != NULL) {
         mpMemory->getNickname(&mName);
@@ -635,7 +635,7 @@ void dAcNpcNml_c::talk_c::endApSell(int arg) {
     }
     mPrice = 10;
     if (mItem0.isValid()) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             f32 price = mItem0.getPrice();
             price *= 0.8f + cM::rndF(0.8f);
@@ -692,7 +692,7 @@ void dAcNpcNml_c::talk_c::endApWant(int arg) {
     mItem0 = pickWantedPocketItem(this, NULL);
     mPrice = 10;
     if (mItem0.isValid()) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             f32 price = 0.25f * mItem0.getPrice();
             price *= 0.8f + cM::rndF(0.8f);
@@ -718,7 +718,7 @@ void dAcNpcNml_c::talk_c::endApWant(int arg) {
 
 // 80038078
 BOOL dAcNpcNml_c::talk_c::isNicknameWaiting() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         const dPersonalID_c *pid = &player->mPID;
         dAnimalBlock_c *block = &dSaveData_c::getRaw()->mAnimals.mTown;

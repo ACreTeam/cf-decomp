@@ -300,7 +300,7 @@ void dNpcUnk288_c::clear() {
 // 800ED6E0
 void dNpcUnk288_c::fn_800ED6E0(dAnimal_c *animal, dPrivateData_c *player) {
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayerRaw();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     }
 
     clear();
@@ -320,7 +320,7 @@ int dNpcUnk288_c::fn_800ED7D4(u32 max, u32 min, dAnimal_c *animal, dPrivateData_
         return 0;
     }
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayerRaw();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     }
     if (!animal->mID.isValid() || player == NULL) {
         return 0;
@@ -2299,7 +2299,7 @@ static inline int getFtrFunc(const dItem::BITM *bitm) {
 // 800F1AE0: the player standing on unit (x, z).
 dPlayerActor_c *getPlayerOnUnit(int x, int z) {
     for (int i = 0; i < 4; i++) {
-        dPlayerActor_c *player = fn_800FBC7C(i);
+        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
         if (player != NULL) {
             int px = (int)player->mPos.x >> 5;
             int pz = (int)player->mPos.z >> 5;

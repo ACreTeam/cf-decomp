@@ -79,7 +79,7 @@ BOOL Info_c::getOutfit(dOutfit_c *outfit) const {
 void Info_c::setPlayerValue(int player, u8 value) {
     mPlayerValue[player] = value;
     mFlags |= VILLAGER_MOVE_FLAG_PLAYER_VALUE;
-    dSaveData_c::getExtra()->addRumor(dPlayerMgr_c::getPlayer(player)->mPID, value);
+    dSaveData_c::getExtra()->addRumor(dPlayerMgr::Mgr_c::getPlayer(player)->mPID, value);
 }
 
 // 8014EE28

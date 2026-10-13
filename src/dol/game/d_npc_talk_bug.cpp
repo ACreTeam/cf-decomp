@@ -36,7 +36,7 @@ int dAcNpcNml_c::talk_c::getBugOffTalkState() {
     dBugOff_c *bugOff = &dSaveData_c::getRaw()->mBugOff;
     dAnmPersonalID_c *leaderAnimal = bugOff->getAnimal(0);
     dPersonalID_c *leaderPlayer = bugOff->getPlayer(0);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dNpcEntry_c *entry = getEntry();
     if (active) {
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
@@ -91,7 +91,7 @@ int dAcNpcNml_c::talk_c::msgBugOff(msgInfo_s *info) {
             dBugOff_c *bugOff = &dSaveData_c::getRaw()->mBugOff;
             dAnmPersonalID_c *leaderAnimal = bugOff->getAnimal(0);
             dPersonalID_c *leaderPlayer = bugOff->getPlayer(0);
-            dPlayerMgr_c::getCurrentPlayer();
+            dPlayerMgr::Mgr_c::getCurrentPlayer();
             dAnimal_c *animal = getAnimal();
             dItem::Item item = bugOff->getItem(0);
             if (item.isValid()) {

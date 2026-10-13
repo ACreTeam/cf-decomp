@@ -819,7 +819,7 @@ u16 BITM::getFromNameIndex() const {
 int BITM::resolveColor(int color, BOOL usePlayer) const {
     if (color == 0 && getKind() == KIND_CAP) {
         if (usePlayer) {
-            u8 *player = (u8 *)dPlayerMgr_c::getCurrentPlayerRaw();
+            u8 *player = (u8 *)dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
             if (player != NULL) {
             switch (player[0x83EC]) {
             case 0:
@@ -1763,13 +1763,13 @@ Item makePlEquipSendData_c::getItem(u32 index) const {
 
 // 800C47B0
 u32 countPlEquipSendable() {
-    makePlEquipSendData_c data(dPlayerMgr_c::getCurrentPlayerRaw());
+    makePlEquipSendData_c data(dPlayerMgr::Mgr_c::getCurrentPlayerRaw());
     return data.countSendable();
 }
 
 // 800C4804
 void *getPlEquipSendable(u32 n) {
-    makePlEquipSendData_c data(dPlayerMgr_c::getCurrentPlayerRaw());
+    makePlEquipSendData_c data(dPlayerMgr::Mgr_c::getCurrentPlayerRaw());
     return data.getNthSendable(n);
 }
 

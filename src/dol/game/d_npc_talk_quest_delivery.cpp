@@ -18,7 +18,7 @@ int dAcNpcNml_c::talk_c::msgDelivery(msgInfo_s *info) {
         return FALSE;
     }
     dAnmPersonalID_c *self = &animal->mID;
-    const dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    const dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -98,7 +98,7 @@ void dAcNpcNml_c::talk_c::endQuestCommon(int arg) {
 
 // 800532B4
 void dAcNpcNml_c::talk_c::startDeliverySelect(hookFunc next) {
-    const dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    const dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
     if (errand != NULL) {
         dItem::Item item = errand->mBase.mItem;
@@ -168,7 +168,7 @@ void dAcNpcNml_c::talk_c::resPackageSelect() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 int flag = player->getPocketFlag(slot);
@@ -228,7 +228,7 @@ int dAcNpcNml_c::talk_c::msgPackageGet2(msgInfo_s *info) {
 // 80053924
 BOOL dAcNpcNml_c::talk_c::stepPackageGet2(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         if (errand != NULL) {
             if (errand->mBase.isPastDeadline(NULL)) {
@@ -271,7 +271,7 @@ int dAcNpcNml_c::talk_c::msgPackageOpened(msgInfo_s *info) {
 // 80053AFC
 BOOL dAcNpcNml_c::talk_c::stepPackageOpened(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         if (errand != NULL) {
             if (errand->mBase.isPastDeadline(NULL)) {
@@ -326,7 +326,7 @@ void dAcNpcNml_c::talk_c::resClothesSelect() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 int flag = player->getPocketFlag(slot);
@@ -367,7 +367,7 @@ int dAcNpcNml_c::talk_c::msgClothesGet(msgInfo_s *info) {
 // 80054004
 int dAcNpcNml_c::talk_c::updateClothesMatch() {
     dAnimal_c *animal = getAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
     int match = errand != NULL && animal != NULL ? animal->getStyleMatch(&errand->mBase.mItem) : 2;
     if (errand != NULL) {

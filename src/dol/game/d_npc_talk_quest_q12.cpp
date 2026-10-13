@@ -44,7 +44,7 @@ int dAcNpcNml_c::talk_c::msgLostKeyQuest(msgInfo_s *info) {
     }
     BOOL fromTown = TRUE;
     dPlayerID_c *pid;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         fromTown = FALSE;
     }
@@ -120,7 +120,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyChoice(int kind) {
 
 // 800512F0
 void dAcNpcNml_c::talk_c::selLostKeyGive() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         u16 mask = 0;
         countPocketsKind(&mask, 0x35, player, TRUE);
@@ -137,7 +137,7 @@ void dAcNpcNml_c::talk_c::resLostKeyGive() {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
             dAnimal_c *animal = getAnimal();
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL && animal != NULL) {
                 mItem0 = player->mPockets[slot];
                 if (animal->mQuest.mQuest.mBase.mItem.isSame(mItem0)) {
@@ -196,7 +196,7 @@ int dAcNpcNml_c::talk_c::msgLostKeyItem(msgInfo_s *info) {
 
 // 800516B8
 void dAcNpcNml_c::talk_c::endLostKeyItem(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     int price = 0;
     dItem::Item item;
@@ -239,7 +239,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyItem(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->mBase.mState = 2;
             fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_6, 2);
@@ -310,7 +310,7 @@ int dAcNpcNml_c::talk_c::msgLostKeyCancel(msgInfo_s *info) {
 BOOL dAcNpcNml_c::talk_c::stepLostKeyReport(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL) {
             dQuestVillager_c *quest = &animal->mQuest.mQuest;
             if (player != NULL) {
@@ -331,7 +331,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyReport(int kind) {
 BOOL dAcNpcNml_c::talk_c::stepLostKeyVisit(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL) {
             dQuestVillager_c *quest = &animal->mQuest.mQuest;
             if (player != NULL) {

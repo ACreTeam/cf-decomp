@@ -79,7 +79,6 @@ void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
 void fn_80186838();
 void fn_800D16E8();
-int fn_801017B8();
 
 f32 fn_8044B83C(EGG::Effect *effect);
 extern void *lbl_8074E9A0[2];
@@ -939,7 +938,6 @@ void dFdAssess_c::assessLiveBlock(dFdBase_c *fd, int blockX, int blockZ) {
 // 80101DC4 / 80101DC0 are declared without parameters in d_player_mgr.hpp (tail calls to
 // 801B9304 / 801B9258); called here with their real arguments.
 typedef BOOL (*dFgMngPlInfoFunc)(void *a, u8 *scene, u8 *b, u32 idx);
-typedef BOOL (*dFgMngPlPosFunc)(void *a, f32 *pos, u8 *b, u32 idx);
 
 // The cross-breeding searches (RTTI CBBkSearch_c / CBUtSearch_c): the usable blocks, then the
 // flowers of one block.
@@ -1212,7 +1210,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     if (days >= TIME_DAYS_PER_WEEK || last->wday < now->wday) {
         spoilAllKabu();
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL && player->isFlag1(0x44)) {
         player->mDistPatternVersion = dSaveData_c::getExtra()->mDistPattern.mVersion;
     }
@@ -1335,7 +1333,7 @@ void dFgMngProc_c::putShellOnBeach(dFdBase_c *fd, int blockX, BOOL avoidPlayer) 
         bx = blockX + 1;
         num = 0;
         if (avoidPlayer) {
-            dPlayerActor_c *player = fn_800FBC7C(4);
+            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
             if (player == NULL) {
                 return;
             }
@@ -1403,10 +1401,10 @@ void dFgMngProc_c::trySpawnShellOnline() {
                     u8 scene;
                     u8 b;
                     u32 info;
-                    if (((dFgMngPlInfoFunc)fn_80101DC4)(&info, &scene, &b, i) && dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
+                    if (((dFgMngPlInfoFunc)dPlayerMgr::getRemoteStateInfo)(&info, &scene, &b, i) && dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
                         f32 pos[2];
                         u8 posInfo[8];
-                        if (((dFgMngPlPosFunc)fn_80101DC0)(posInfo, pos, &c, i) && ((int)pos[0] >> 9) >= 5) {
+                        if (dPlayerMgr::getRemoteTransform(posInfo, pos, &c, i) && ((int)pos[0] >> 9) >= 5) {
                             onBeach = TRUE;
                             break;
                         }
@@ -3289,7 +3287,7 @@ void dFgMngProc_c::spoilPocketKabu() {
     u32 i;
     int j;
     for (i = 0; i < PLAYER_NUM; i++) {
-        p = dPlayerMgr_c::getPlayer(i);
+        p = dPlayerMgr::Mgr_c::getPlayer(i);
         if (p->mPID.isValid()) {
             pocket = p->mPockets;
             for (j = 0; j < PLAYER_POCKETS_COUNT; j++, pocket++) {
@@ -3401,7 +3399,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
     dPersonalID_c *owner;
     int i;
     memset(found, 0, sizeof(found));
-    player = dPlayerMgr_c::getCurrentPlayer();
+    player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL && !player->isFlag0(0x28) && !player->isFlag1(0x43)) {
         for (int i = 0; i < EGG_KIND_NUM - 1; i++) {
             player->mBunnyEggs[i] = 1;
@@ -3427,7 +3425,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
     }
     owner = &dSaveData_c::getTown()->mTownInfo.mEggPlayer;
     for (i = 0; i < PLAYER_NUM; i++) {
-        p = dPlayerMgr_c::getPlayer(i);
+        p = dPlayerMgr::Mgr_c::getPlayer(i);
         if (p->mPID.isValid()) {
             pid = &p->mPID;
             if (*pid == *owner) {
@@ -3480,7 +3478,7 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
     int m;
     int i;
     int kindLeftNum;
-    player = dPlayerMgr_c::getCurrentPlayer();
+    player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return;
     }
@@ -3646,7 +3644,7 @@ void dFgMngProc_c::endEggs(dFdBase_c *fd) {
     dPrivateData_c *p;
     int i;
     for (i = 0; i < PLAYER_NUM; i++) {
-        p = dPlayerMgr_c::getPlayer(i);
+        p = dPlayerMgr::Mgr_c::getPlayer(i);
         if (p->mPID.isValid()) {
             memset(p->mBunnyEggs, 0, sizeof(p->mBunnyEggs));
             p->clearFlag1(0x43);
@@ -3992,7 +3990,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->clearFlag(5);
         dSaveData_c::getTown()->mNpcSpotA.init();
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player != NULL && player->mPID.isValid()) {
                 player->mItemPairRing.clear();
             }
@@ -4002,7 +4000,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->mPlayerFlag.init();
         dSaveData_c::getTown()->_072CEE.clear();
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player != NULL && player->mPID.isValid()) {
                 player->mFortune = FORTUNE_NONE;
             }
@@ -4029,7 +4027,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->mShops.decideStalkPrices();
     }
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
         if (player != NULL && player->mPID.isValid()) {
             int flag = i + 0x1B;
             if (player->isFlag0(0x28)) {
@@ -4044,16 +4042,16 @@ void fgMngProc_procDayChange(BOOL arg) {
         }
     }
     if (dSaveData_c::getTown()->mTownInfo.findEndEvent(EVENT_BUNNY_DAY) >= 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL && !player->isFlag0(0x28)) {
             player->setFlag1(0x43);
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
-        if (!fn_80101558()) {
-            fn_8010156C();
-            fn_801002BC();
+        if (!dPlayerMgr::areSaveRequestFlagsCleared()) {
+            dPlayerMgr::markSaveRequestFlagsCleared();
+            dPlayerMgr::clearSaveRequestFlags();
         }
         if (player->isFlag0(0x28)) {
             player->updateTanDaily(days);
@@ -4260,9 +4258,9 @@ void fgMngProc_initOnCreate() {
     fgMngProc_assessLiveTown();
     fgMngProc_getLitterFlags(&sFgMngLitterFlags);
     fgMngTask_setBusy();
-    if (!dNet::isSessionActive() && dPlayerMgr_c::getCurrentPlayer() != NULL) {
+    if (!dNet::isSessionActive() && dPlayerMgr::Mgr_c::getCurrentPlayer() != NULL) {
         dLandID_c *town = &dSaveData_c::getTown()->mLandID;
-        BOOL home = dPlayerMgr_c::getCurrentPlayer()->mPID.land == *town;
+        BOOL home = dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID.land == *town;
         if (home && dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
             dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
             if (homes->getHome(homes->findCurrentPlayer()) == NULL && dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_PLAYER_HOUSE)) {
@@ -4301,7 +4299,7 @@ BOOL fgMngProc_isSelfMember(int member) {
 // jinx outcome JINX_OUTCOME_NO_BEES is not in effect; gate used by d_fgobj_manager and the task code (hedged name).
 BOOL fgMngProc_canEditField() {
     BOOL ok = FALSE;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (!dNet::isSessionActive() && !player->isFlag0(0xD) && sFgMngProc.mBusy == 0 &&
         !(dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_NO_BEES))) {
         ok = TRUE;
@@ -4312,7 +4310,7 @@ BOOL fgMngProc_canEditField() {
 // 8009C638: item id held by net member `member` (ITEM_ID_NONE without a player).
 u16 fgMngProc_getMemberHeldItem(int member) {
     u16 id = dItem::ITEM_ID_NONE;
-    dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(member);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(member);
     if (player != NULL) {
         id = player->mEquipment.mHeld.mId;
     }
@@ -4333,7 +4331,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     }
     *outFg = dItem::FG_TREE_SAPLING;
     *outFlag = 0;
-    if (fn_801017B8() >= 4) {
+    if (dPlayerMgr::getCurrentPlayerSlot() >= 4) {
         return;
     }
     save = dSaveData_c::getTown();
@@ -4342,7 +4340,7 @@ void fgMngProc_getBuriedMoneyFg(u16 *outFg, u8 *outFlag, u16 itemId) {
     }
     v = *dHR::getRate(4);
     f32 rate = (10.0f * (4.0f * v) + item.getPrice()) / 1000.0f;
-    if (dPlayerMgr_c::getCurrentPlayer()->mFortune == FORTUNE_MONEY) {
+    if (dPlayerMgr::Mgr_c::getCurrentPlayer()->mFortune == FORTUNE_MONEY) {
         rate *= 2.0f;
     }
     if (rate > 100.0f) {
@@ -4464,7 +4462,7 @@ static const s8 sAroundZ5[] = {0, 0, 0, -1, 1};
 // golden/silver can); golden can turns fg 0xD6 into 0xD8, silver can fg 0x95 into 0x9D.
 void fgMngProc_waterAround(int member, const dFdAsPos_c *pos) {
     dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     const s8 *dx;
     const s8 *dz;
     BOOL a;
@@ -4797,7 +4795,7 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     if (!(held == dItem::Item(dItem::ITEM_IDX_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_SILVER_SHOVEL).mId || held == dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).mId)) {
         return FALSE;
     }
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }

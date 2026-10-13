@@ -2,19 +2,18 @@
 
 // The hand-item manager (TU d_hand_item.cpp, not decompiled; static instance lbl_8074E9F8): items
 // handed between the players and npcs. Each function checks the instance and forwards to it.
-// d_player_mgr.cpp still declares fn_80194A2C / fn_80194AA0 / fn_80194B30 locally (dPlayerActor_c *).
+// Exchange actors may be either players or NPCs (d_a_npc and d_player_mgr).
 
 #include <types.h>
 
 class dActor_c;
-class dPlayerActor_c;
 class mVec3_c;
 namespace dItem {
 class Item;
 }
 
 extern "C" {
-BOOL fn_80194A2C(const dItem::Item *item, int a, int b, int c, dActor_c *actor, dPlayerActor_c *player,
+BOOL fn_80194A2C(const dItem::Item *item, int a, int b, int c, dActor_c *actor, dActor_c *partner,
                  f32 f1, f32 f2, f32 f3, f32 f4, f32 f5, f32 f6); // 80194A2C: start (forwards to fn_80191664)
 BOOL fn_80194AA0(int type, dActor_c *actor, f32 radius); // 80194AA0: request (type, reach radius)
 BOOL fn_80194AC8(dActor_c *actor);                       // 80194AC8: the actor is registered / holding

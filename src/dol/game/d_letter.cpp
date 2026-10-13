@@ -325,7 +325,7 @@ Comp_c g_comp;
 
 // 800CB0CC
 BOOL isMalePlayer() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (player == NULL) {
         return TRUE;
     }

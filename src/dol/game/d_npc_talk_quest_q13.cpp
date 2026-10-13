@@ -19,7 +19,7 @@ int dAcNpcNml_c::talk_c::msgStyleOffer(msgInfo_s *info) {
     if (animal == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -52,7 +52,7 @@ int dAcNpcNml_c::talk_c::msgStyleReq(msgInfo_s *info) {
 
 // 80058B98
 void dAcNpcNml_c::talk_c::endStyleReq(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (player != NULL && animal != NULL) {
         dSaveData_c *save = dSaveData_c::getRaw();
@@ -106,7 +106,7 @@ int dAcNpcNml_c::talk_c::msgStyleYes(msgInfo_s *info) {
 
 // 80058E4C
 void dAcNpcNml_c::talk_c::endStyleYes(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
     if (player != NULL && animal != NULL && mStylePlayer != NULL) {
@@ -139,7 +139,7 @@ int dAcNpcNml_c::talk_c::msgStyleQuest(msgInfo_s *info) {
     if (!block->isStyleAnimal(self)) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -340,7 +340,7 @@ BOOL dAcNpcNml_c::talk_c::stepStyleAnswerOK(int kind) {
 // 80059A38
 int dAcNpcNml_c::talk_c::msgStyleReward(msgInfo_s *info) {
     static const char l_Q13_AnswerOK[] = "Q13_AnswerOK"; // 8046CAAC
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     endFunc hook = &talk_c::endStyleRewardFull;
     stepFunc step = &talk_c::stepStyleRewardFull;
     u16 code = 10;
@@ -359,7 +359,7 @@ int dAcNpcNml_c::talk_c::msgStyleReward(msgInfo_s *info) {
 // 80059B88
 void dAcNpcNml_c::talk_c::endStyleReward(int arg) {
     dAnimalBlock_c *block;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     mItem0 = block->pickStylePresent(player);
     if (mItem0.isValid()) {
@@ -504,7 +504,7 @@ BOOL dAcNpcNml_c::talk_c::stepStyleOver(int kind) {
 void dAcNpcNml_c::talk_c::endStyleItem(int arg) {
     endQuestTalk(arg);
     dAnimalBlock_c *block;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     mItem0 = block->pickStylePresent(player);
     if (mItem0.isValid()) {

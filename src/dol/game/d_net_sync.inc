@@ -75,7 +75,7 @@ void recvDirectXferStart(int member, const u8 *data, u32 size) {
 #ifndef BUGFIXES
 void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     int myNo = getNetMyNo()->get();
-    cLib::memCpy(dPlayerMgr_c::getNetPlayer(member), data,
+    cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(member), data,
                  NET_PLAYER_DATA_SIZE);
     cLib::memCpy(getNetTransfer()->mExclude, data + NET_PLAYER_DATA_SIZE,
                  sizeof(getNetTransfer()->mExclude));
@@ -83,7 +83,7 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     s64 time;
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(time));
     setMemberTime(member, time);
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
+    if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     u8 dlNum;
@@ -152,7 +152,7 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
         return;
     }
     int myNo = getNetMyNo()->get();
-    cLib::memCpy(dPlayerMgr_c::getNetPlayer(member), data,
+    cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(member), data,
                  NET_PLAYER_DATA_SIZE);
     cLib::memCpy(getNetTransfer()->mExclude, data + NET_PLAYER_DATA_SIZE,
                  sizeof(getNetTransfer()->mExclude));
@@ -160,7 +160,7 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     s64 time;
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(time));
     setMemberTime(member, time);
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
+    if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     const u8 *dl = data + prefix;
@@ -222,7 +222,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
         setMemberTime(member, time);
         u8 value;
         cLib::memCpy(&value, data + 8, sizeof(value));
-        fn_80100238(0, value);
+        dPlayerMgr::setPlayerSlot(0, value);
         cLib::memCpy(getNetSyncBuf()->getBuf0(), data + 9, 2);
         cLib::memCpy(getNetPacket()->getRecordBuf(), data + 0xB, 0x15CA);
         getNetPacket()->clearRecordFlags();
@@ -263,7 +263,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
     }
     cLib::memCpy((u8 *)dSaveData_c::getTown() + offset, data, size);
     if (offset + size >= sizeof(dSaveTown_c)) {
-        if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
+        if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
             dNetMgr_c::connect(member);
         }
         getNetTransfer()->mReady[0] = 1;
@@ -309,7 +309,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
         cLib::memCpy(&time, data, sizeof(time));
         setMemberTime(member, time);
         u8 value = data[8];
-        fn_80100238(0, value);
+        dPlayerMgr::setPlayerSlot(0, value);
         cLib::memCpy(getNetSyncBuf()->getBuf0(), data + 9, 2);
         cLib::memCpy(getNetPacket()->getRecordBuf(), data + 0xB, 0x15CA);
         getNetPacket()->clearRecordFlags();
@@ -339,7 +339,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
     cLib::memCpy((u8 *)dSaveData_c::getTown() + townOffset, data, townLength);
     transfer->mTownRecv += size;
     if (townOffset + townLength == townSize) {
-        if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
+        if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
             dNetMgr_c::connect(member);
         }
         transfer->mReady[0] = 1;
@@ -351,7 +351,7 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
 #ifndef BUGFIXES
 void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     getNetMyNo()->get();
-    cLib::memCpy(dPlayerMgr_c::getNetPlayer(member), data,
+    cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(member), data,
                  NET_PLAYER_DATA_SIZE);
     s64 time;
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE, sizeof(time));
@@ -363,7 +363,7 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     } else {
         fn_8008B89C(NULL, member);
     }
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
+    if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     getNetTransfer()->mReady[member] = 1;
@@ -379,7 +379,7 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     if (hasMii > 1 || size != prefix + (hasMii ? 0x54 : 0)) {
         return;
     }
-    cLib::memCpy(dPlayerMgr_c::getNetPlayer(member), data,
+    cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(member), data,
                  NET_PLAYER_DATA_SIZE);
     s64 time;
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE, sizeof(time));
@@ -389,7 +389,7 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     } else {
         fn_8008B89C(NULL, member);
     }
-    if (!getNetPlayerOption(dPlayerMgr_c::getNetPlayer(member))->mVoiceChat) {
+    if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
     getNetTransfer()->mReady[member] = 1;
@@ -752,7 +752,7 @@ void recvPlayerMngr25(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(&a, data, sizeof(a));
     u16 b;
     cLib::memCpy(&b, data + 1, sizeof(b));
-    fn_80101CB4(member, a, b);
+    dPlayerMgr::receiveEquipment(member, a, b);
 }
 
 // 800DF530: NET_PACKET_PLAYER_MNGR_26 (0x26)
@@ -761,7 +761,7 @@ void recvPlayerMngr26(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(&a, data, sizeof(a));
     u16 b;
     cLib::memCpy(&b, data + 1, sizeof(b));
-    fn_80101CBC(member, a, b);
+    dPlayerMgr::queueRemoteEquipment(member, a, b);
 }
 
 // 800DF590: NET_PACKET_PLAYER_STATE (0x27)
@@ -779,34 +779,34 @@ void recvPlayerState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
         fgMngTask_finishActive(member);
     }
     if (scene == dScene::getCurrentScene()) {
-        dPlayerActor_c *player = fn_800FBC80(member);
+        dPlayerActor_c *player = dPlayerMgr::getPlayerActorRaw(member);
         if (player != NULL &&
             player->getLifecycleState() == fBase_c::DELETING) {
-            fn_80101EB0(member, scene, state, (const u8 *)&param);
-        } else if (player != NULL && !fn_800FC0C0(member)) {
+            dPlayerMgr::updateActionFieldTasks(member, scene, state, (const u8 *)&param);
+        } else if (player != NULL && !dPlayerMgr::fn_800FC0C0(member)) {
             int x;
             u8 b;
             u8 c;
-            if (fn_80101DC4(&x, &b, &c, member)) {
+            if (dPlayerMgr::getRemoteStateInfo(&x, &b, &c, member)) {
                 c = c - 1;
             } else {
                 c = 0xAB;
             }
-            if (c != 0 || fn_80102138(value, x)) {
-                fn_80101D0C(member, c, x);
+            if (c != 0 || dPlayerMgr::isSyncValueAhead(value, x)) {
+                dPlayerMgr::setRemoteActionSync(member, c, x);
             }
-            fn_80101CC0(member, &param);
-            fn_80101DB0(member, state);
-            fn_80101D70(member, value);
+            dPlayerMgr::setNetworkPosition(member, &param);
+            dPlayerMgr::changeNetPlayerState(member, state);
+            dPlayerMgr::setRemoteSyncValue(member, value);
             if (state == 0xE || state == 0x46 || state == 0x53) {
-                fn_80101DA8(member, state);
-                fn_80101DAC(member, (const u8 *)&param);
+                dPlayerMgr::cacheRemoteState(member, state);
+                dPlayerMgr::cacheRemoteParams(member, (const u8 *)&param);
             }
         } else {
-            fn_80101DC8(member, scene, state, (const u8 *)&param);
+            dPlayerMgr::cacheUnavailableActorAction(member, scene, state, (const u8 *)&param);
         }
     } else {
-        fn_80101E3C(member, scene, state, (const u8 *)&param);
+        dPlayerMgr::cacheOtherSceneAction(member, scene, state, (const u8 *)&param);
     }
 }
 
@@ -814,7 +814,7 @@ void recvPlayerState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 void recvPlayerMngr24(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 value;
     cLib::memCpy(&value, data, sizeof(value));
-    fn_80101CB8(member, value);
+    dPlayerMgr::receiveAppearance(member, value);
 }
 
 // 800DF7A0: NET_PACKET_FG_MNG_REQ (0x28)
@@ -1317,7 +1317,7 @@ void recvAnimalMemoryInit(int member, const u8 *data, u32 size, u32 arg,
     if (animal != NULL) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
         if (memory != NULL) {
-            dPrivateData_c *player = dPlayerMgr_c::getNetPlayerRaw(member);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(member);
             if (player != NULL) {
                 pid = &player->mPID;
                 if (pid->isValid()) {
@@ -1345,7 +1345,7 @@ void recvAnimalMemorySet(int member, const u8 *data, u32 size, u32 arg,
     if (animal != NULL) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
         if (memory != NULL) {
-            dPrivateData_c *player = dPlayerMgr_c::getNetPlayerRaw(member);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(member);
             if (player != NULL) {
                 pid = &player->mPID;
                 if (pid->isValid()) {
@@ -1914,7 +1914,7 @@ void recvGulliverFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 // 800E1AE8: NET_PACKET_GULLIVER_PLAYER (0x60)
 void recvGulliverPlayer(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
-    dPrivateData_c *player = dPlayerMgr_c::getNetPlayerRaw(member);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(member);
     dSaveData_c::getTown()->_072CEE.copy(&player->mPID);
 }
 
@@ -3135,7 +3135,7 @@ BOOL packSyncBuf8None(int, const dNetMemberMask_c *, u8 *, u32) {
 
 BOOL packSyncBuf8Host(int member, const dNetMemberMask_c *mask, u8 *dst,
                       u32 size) {
-    dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(member);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(member);
     BOOL ok = FALSE;
     if (mask->isOn(member)) {
         ok = player->startHostVisit(0x10, 10, 1);
@@ -3159,7 +3159,7 @@ void unpackSyncBuf8None(const dNetMemberMask_c &, const u8 *, u32) {
 }
 
 void unpackSyncBuf8Host(const dNetMemberMask_c &, const u8 *data, u32) {
-    memcpy(&dPlayerMgr_c::getCurrentPlayer()->mHost, data,
+    memcpy(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mHost, data,
            sizeof(dPrivateHost_c));
 }
 

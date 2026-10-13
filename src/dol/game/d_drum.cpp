@@ -127,7 +127,7 @@ BOOL getHorizonPosition(mVec3_c *result, const mVec3_c *position) {
     if (lbl_8074E9B0 != NULL) {
         mVec3_c pos;
         if (position == NULL) {
-            dPlayerActor_c *player = fn_800FBC7C(4);
+            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
             if (player == NULL) {
                 return FALSE;
             }
@@ -152,7 +152,7 @@ mAng getPlayerHorizonAngle(bool *ok) {
         ok = &dummy;
     }
     dCamera_c *camera = lbl_8074E9B0;
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (camera != NULL && player != NULL) {
         mVec3_c eye;
         curvePositionSimple(&eye, &lbl_80624004);

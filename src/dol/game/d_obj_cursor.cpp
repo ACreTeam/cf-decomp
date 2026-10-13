@@ -121,7 +121,7 @@ void dObjCursor_c::calcState() {
     }
     bool held = mPad::g_currentCore->down(WPAD_BUTTON_A);
     mAnm.setNext(!held);
-    if (fn_800FFAC0()) {
+    if (dPlayerMgr::fn_800FFAC0()) {
         BOOL first = !(l_flags & FLAG_PRESS);
         l_flags |= FLAG_PRESS;
         if (first && !(l_flags & FLAG_PRESS_SE)) {
@@ -164,7 +164,7 @@ void dObjCursor_c::calcPos() {
     }
 
     BOOL edge = FALSE;
-    if (fn_800FFAC0()) {
+    if (dPlayerMgr::fn_800FFAC0()) {
         mLyt.mPos.x = l_pos.x;
         mLyt.mPos.y = l_pos.y;
         mLyt.calc();

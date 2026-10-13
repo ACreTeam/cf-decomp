@@ -57,7 +57,7 @@ int dObjBal_c::draw() {
 }
 
 void dObjBal_c::calcPos() {
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == nullptr) {
         return;
     }

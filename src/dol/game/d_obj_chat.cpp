@@ -422,7 +422,7 @@ void loadPlayerPreset(dScript::Word_c *word, int index) {
     dPrivateData_c *player = NULL;
     int slot = 0;
     if (!dNet::isSessionActive()) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         slot = 0;
     } else {
         int i;
@@ -433,7 +433,7 @@ void loadPlayerPreset(dScript::Word_c *word, int index) {
                     --remaining;
                     ++slot;
                 } else {
-                    player = dPlayerMgr_c::getNetPlayer(i);
+                    player = dPlayerMgr::Mgr_c::getNetPlayer(i);
                     break;
                 }
             }
@@ -521,7 +521,7 @@ void loadNamePreset(dScript::Word_c *word, int index) {
 
 // 801B1BCC
 void loadMemberPreset(dScript::Word_c *word, int member) {
-    dString::setPlayerWord(0, &dPlayerMgr_c::getNetPlayer(member)->mPID);
+    dString::setPlayerWord(0, &dPlayerMgr::Mgr_c::getNetPlayer(member)->mPID);
     loadPreset(word, TEXT_REGISTERED_MEMBER);
 }
 
@@ -705,7 +705,7 @@ void Balloon_c::init(m2d::ResAccLoader_c *res, int member) {
     mState = STATE_INIT;
     updateEnabled();
     if (isEnabled()) {
-        setName(dPlayerMgr_c::getNetPlayer(mMember)->mPID.player.mName);
+        setName(dPlayerMgr::Mgr_c::getNetPlayer(mMember)->mPID.player.mName);
     } else {
         mState = STATE_DISABLED;
     }
@@ -822,7 +822,7 @@ Balloon_c::State_e Balloon_c::getState() {
     if (member != dNet::getMyNo()) {
         u32 pos;
         u8 scene, flags;
-        if (!fn_80101DC4(&pos, &scene, &flags, mMember)) {
+        if (!dPlayerMgr::getRemoteStateInfo(&pos, &scene, &flags, mMember)) {
             l_requests[mRequest].clear();
             return STATE_MISSING;
         }
@@ -835,7 +835,7 @@ Balloon_c::State_e Balloon_c::getState() {
         return STATE_REMOTE;
     }
     // Keep the selection signed before converting to the state enum.
-    return (State_e)(fn_800FBC7C(member) == NULL
+    return (State_e)(dPlayerMgr::getPlayerActor(member) == NULL
         ? (int)STATE_REMOTE : (int)STATE_PLAYER);
 }
 
@@ -853,7 +853,7 @@ void Balloon_c::drawLayout() {
 // 801B2620
 void Balloon_c::calcPlayerPos() {
     int member = mMember;
-    dPlayerActor_c *player = fn_800FBC84(member);
+    dPlayerActor_c *player = dPlayerMgr::getNpcTargetActor(member);
     if (!player) {
         return;
     }
@@ -906,9 +906,9 @@ void Balloon_c::calcAlpha() {
     mTargetAlpha = 1.0f;
     int net_no = dNet::getMyNo();
     if (mMember != net_no) {
-        dPlayerActor_c *player = fn_800FBC7C(mMember);
+        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(mMember);
         if (player) {
-            dPlayerActor_c *local = fn_800FBC7C(4);
+            dPlayerActor_c *local = dPlayerMgr::getPlayerActor(4);
             if (local) {
                 mVec3_c diff = local->mPos - player->mPos;
                 f32 distance =

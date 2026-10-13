@@ -702,7 +702,7 @@ int dHR::rate(dHR::area_c *area, dHR::result_c *res, dHR::fdCb_c *cb, int start,
         *sent = FALSE;
     }
     dHomeList_c *homes;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (mode == 1 && player != NULL && letter) {
         if (isTownPlayer(player) && !player->isFlag0(0xD) && !player->isFlag0(PRIVATE_FLAG0_HRA_JOINED)) {
             static u16 kind = HR_MAIL_WELCOME;
@@ -1402,7 +1402,7 @@ BOOL dHR::sendRatingLetter(const dHR::area_c *area, int kind, int points, u32 se
         dLetter::setWord(0, &name);
     }
     dLetter::setWord(1, &name);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL && player->mPID.isValid()) {
         l_mail.clear();
         setupMail(kind, 2, &player->mPID, 0x15B);
@@ -1424,7 +1424,7 @@ BOOL dHR::sendRatingLetter(const dHR::area_c *area, int kind, int points, u32 se
 
 // 800B0698
 BOOL dHR::sendModelPresent(const dHR::area_c *area, int points) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         int kind = -1;
         u32 flag = 0x2A;
@@ -1561,7 +1561,7 @@ void dHR::selectModelRooms(BOOL players, BOOL animals) {
     }
     if (players) {
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player == NULL || !player->mPID.isValid() || !player->isFlag0(PRIVATE_FLAG0_HRA_RATED)) {
                 continue;
             }

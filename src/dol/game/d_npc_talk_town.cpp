@@ -22,7 +22,7 @@ int dAcNpcNml_c::talk_c::msgTownRumor(msgInfo_s *info) {
     if (animal == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }

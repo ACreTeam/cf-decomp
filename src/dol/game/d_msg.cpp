@@ -612,7 +612,7 @@ void Seq_c::procPay() {
     const u8 *params = dScript::getTagParams(mpChar);
     u16 amount = 0;
     std::memcpy(&amount, params, sizeof(amount));
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int money = player->getPocketMoney();
     if (money >= amount) {
         player->payMoney(amount, FALSE);
@@ -758,7 +758,7 @@ void Seq_c::procFriendshipJump() {
     u8 friendship = 0;
     int choice = 1;
     std::memcpy(&friendship, params, sizeof(friendship));
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = mpComp->mpRcpt->getSpeakerAnimal();
     if (player != NULL && animal != NULL) {
         dAnimalMemory_c *memory = animal->findMemory(&player->mPID);
@@ -772,7 +772,7 @@ void Seq_c::procFriendshipJump() {
 void Seq_c::procPlayerGenderJump() {
     const u8 *params = dScript::getTagParams(mpChar);
     u8 gender = 0;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         gender = player->mPID.player.getGender();
     }
@@ -781,7 +781,7 @@ void Seq_c::procPlayerGenderJump() {
 
 void Seq_c::procHouseSizeJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     int value = 0;
     if (player != NULL) {
         value = player->getHouseSize();
@@ -793,7 +793,7 @@ void Seq_c::procInsectCatalogJump() {
     dCatalog_c *catalog;
     const u8 *params = dScript::getTagParams(mpChar);
     int choice = 0;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         catalog = &player->mCatalog;
         if (catalog != NULL) {
@@ -814,7 +814,7 @@ void Seq_c::procFishCatalogJump() {
     dCatalog_c *catalog;
     const u8 *params = dScript::getTagParams(mpChar);
     int choice = 0;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         catalog = &player->mCatalog;
         if (catalog != NULL) {
@@ -872,7 +872,7 @@ void Seq_c::procWeekdayJump() {
 
 void Seq_c::procVisitorJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int choice = TRUE;
     if (player != NULL) {
         choice = player->mPID.land != dSaveData_c::getRaw()->mLandID;
@@ -896,7 +896,7 @@ void Seq_c::procMoneyJump() {
     const u8 *params = dScript::getTagParams(mpChar);
     u32 price = 0;
     std::memcpy(&price, params, sizeof(price));
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int choice = 0;
     if (player != NULL) {
         int money = player->getPocketMoney();
@@ -909,7 +909,7 @@ void Seq_c::procMoneyJump() {
 
 void Seq_c::procPocketFullJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int choice = 0;
     if (player != NULL) {
         int idx = player->findEmptyPocket(0);
@@ -922,7 +922,7 @@ void Seq_c::procPocketFullJump() {
 
 void Seq_c::procTanJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int choice = 0;
     if (player != NULL) {
         choice = player->mTan >> 1;
@@ -977,7 +977,7 @@ void Seq_c::procShopStageJump() {
 
 void Seq_c::procMiiMaskJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     int choice = 1;
     if (player != NULL) {
         choice = player->mMiiMask == 0;
@@ -987,7 +987,7 @@ void Seq_c::procMiiMaskJump() {
 
 void Seq_c::procBeeStingJump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int choice = 1;
     if (player != NULL) {
         choice = !player->isFlag0(2);
@@ -1038,7 +1038,7 @@ void Seq_c::procHeldItemJump() {
     const u8 *params = dScript::getTagParams(mpChar);
     u8 kind = 0;
     std::memcpy(&kind, params, 1);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     BOOL choice = TRUE;
     if (player != NULL) {
         if (dScene::getCurrentScene() == dScene::SCENE_TOWN) {
@@ -1156,7 +1156,7 @@ void Seq_c::procHairJump() {
     std::memcpy(&mode, params, 1);
     u8 hair = 0;
     std::memcpy(&hair, params + 1, 1);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     BOOL choice = FALSE;
     if (player != NULL) {
         if (player->mMiiMask != 0 || hidesHair(player->mEquipment.mHat)) {
@@ -1249,7 +1249,7 @@ void Seq_c::procPhineasJump() {
 
 void Seq_c::procFlag0x28Jump() {
     const u8 *params = dScript::getTagParams(mpChar);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL choice = TRUE;
     if (player != NULL && player->isFlag0(0x28)) {
         choice = FALSE;

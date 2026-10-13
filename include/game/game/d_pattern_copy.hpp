@@ -13,7 +13,7 @@ namespace dPatternCopy {
 
 // Where a design is (getDesign's kind). PATTERN_PLAYER_0 + n is net member n's player.
 enum Kind_e {
-    PATTERN_PLAYER_0 = 0, // 0..3: dPlayerMgr_c::getNetPlayer(kind)'s designs [idx % 8]
+    PATTERN_PLAYER_0 = 0, // 0..3: dPlayerMgr::Mgr_c::getNetPlayer(kind)'s designs [idx % 8]
     PATTERN_PLAYER_1 = 1,
     PATTERN_PLAYER_2 = 2,
     PATTERN_PLAYER_3 = 3,

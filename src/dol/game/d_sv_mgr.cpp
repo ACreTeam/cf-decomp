@@ -55,7 +55,7 @@ void dSvMgr_c::requestSaveNormal() {
 
 void dSvMgr_c::requestSaveRetireNetVst() {
     dNet::getMyNo();
-    mPlayerIndex = fn_801017B8();
+    mPlayerIndex = dPlayerMgr::getCurrentPlayerSlot();
     mRequestedMode = &dSvMgr_c::executeSaveRetireNetVst;
 }
 
@@ -81,7 +81,7 @@ void dSvMgr_c::requestSaveInterruptNetHst() {
 
 void dSvMgr_c::requestSaveInterruptNetVst() {
     dNet::getMyNo();
-    mPlayerIndex = fn_801017B8();
+    mPlayerIndex = dPlayerMgr::getCurrentPlayerSlot();
     mRequestedMode = &dSvMgr_c::executeSaveInterruptNetVst;
 }
 
@@ -134,7 +134,7 @@ int dSvMgr_c::getVisitorDataOffset() {
 
 int dSvMgr_c::getPlayerDataOffset(int player) {
     dSaveData_c *base = dSaveData_c::getRaw();
-    return reinterpret_cast<int>(dPlayerMgr_c::getPlayerRaw(player)) -
+    return reinterpret_cast<int>(dPlayerMgr::Mgr_c::getPlayerRaw(player)) -
            reinterpret_cast<int>(base);
 }
 
@@ -775,7 +775,7 @@ template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::gotoWelcomeDemo() {
     if (dNet::isSessionActive() && mCurrentVisitor < 4) {
         bool returning = false;
-        void *player = dPlayerMgr_c::getNetPlayer(mCurrentVisitor);
+        void *player = dPlayerMgr::Mgr_c::getNetPlayer(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
             if (field<TownIdentity>(player, 0x7FA8).isSame(
                     field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
@@ -784,7 +784,7 @@ void dSvMgr_c::stepBase_c<Owner, Step>::gotoWelcomeDemo() {
                 ((dPersonalID_c *)player)->clear();
                 field<IdentityFlags>(player, 0x2C).state = 0;
                 if (dNet::isHost()) {
-                    player = &field<u8>(dPlayerMgr_c::getCurrentPlayer(), 0x7FA8);
+                    player = &field<u8>(dPlayerMgr::Mgr_c::getCurrentPlayer(), 0x7FA8);
                     ((dPersonalID_c *)player)->clear();
                     field<IdentityFlags>(player, 0x2C).state = 0;
                 }
@@ -838,7 +838,7 @@ void dSvMgr_c::stepBase_c<Owner, Step>::findFriend() {
     if (dNet::isSessionActive()) {
         int visitor = mCurrentVisitor;
         if (visitor >= 4) return;
-        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(visitor);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(visitor);
         u64 friendCode = dNet::getMemberTime(visitor);
         int index = dWifi::findUser(&player->mFriends.mUserData);
         if (index >= 0 || index == -1) {
@@ -875,10 +875,10 @@ void dSvMgr_c::stepBase_c<Owner, Step>::processLoadedSave() {
         } else {
             dNet::getMyNo();
             int index = mPlayerIndex;
-            fn_801017B8();
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(index);
+            dPlayerMgr::getCurrentPlayerSlot();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(index);
             dSaveOption::store(player->getOption());
-            dPlayerMgr_c::getCurrentPlayer()->copy(player);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->copy(player);
             dSaveData_c::get()->setupAfterLoad();
             dSaveData_c *save = dSaveData_c::getRaw();
             save->mSaveTime.get();

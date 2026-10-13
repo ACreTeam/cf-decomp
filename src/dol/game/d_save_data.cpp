@@ -29,7 +29,6 @@
 extern "C" {
 
 
-void fn_80101424();
 void fn_800CAC20();
 }
 
@@ -81,7 +80,7 @@ void dSaveData_c::initialize() {
 // 8010DCF0
 void dSaveData_c::prepareSave() {
     dSaveTown_c *town = getTown();
-    dPrivateData_c *player = dPrivateData_c::getChecked(town->mPlayers, fn_801017B8());
+    dPrivateData_c *player = dPrivateData_c::getChecked(town->mPlayers, dPlayerMgr::getCurrentPlayerSlot());
     if (player != NULL) {
         mTownInfo.mEggPlayer.copy(&player->mPID);
         if (player->mPID.isFromTown()) {
@@ -102,10 +101,10 @@ void dSaveData_c::updateOnSave() {
     mBugOff.update();
     mBugOff.checkDay();
     mExtra.mDesignBoard.validate();
-    fn_801002BC();
+    dPlayerMgr::clearSaveRequestFlags();
     fn_800F47F4();
     fgMngProc_clearFg94();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         player->clearFlag0(0x29);
         if (player->isFlag1(0x44)) {
@@ -120,7 +119,7 @@ void dSaveData_c::updateOnSave() {
 // 8010DED0
 extern "C" void fn_8010DED0() {
     dPhoto::clear();
-    fn_80101424();
+    dPlayerMgr::reset();
     fn_800CAC20();
 }
 
@@ -139,7 +138,7 @@ void dSaveData_c::refreshTown() {
     dEvent::buildSchedule(lastDay.get(), TRUE);
     dClock::resetTimer();
     dNpcMng_c::_8074EAD0 = 0;
-    fn_8010003C();
+    dPlayerMgr::clearEquipmentManagers();
 }
 
 // 8010DFC0
@@ -160,10 +159,10 @@ void dSaveData_c::setupAfterLoad() {
     dNet::setRecord(0x2A, &none, 0);
     dPrivateData_c::saveHostToTown();
     fn_800F47F4();
-    dPlayerMgr_c::getCurrentPlayer()->clearFlag1(0x3D);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->clearFlag1(0x3D);
     clearAllRoomMaps();
     dSTR::resetLocks();
-    fn_8010003C();
+    dPlayerMgr::clearEquipmentManagers();
 }
 
 // 8010E0A8
@@ -241,11 +240,11 @@ void dSaveData_c::clear() {
 
 // 8010EA98
 dPrivateData_c *dSaveData_c::setupPlayer(const wchar_t *name, u8 gender, u32 idx) {
-    dPrivateData_c *player = dPlayerMgr_c::getPlayer(idx);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(idx);
     u16 ids[PLAYER_NUM];
     u16 num = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *other = dPlayerMgr_c::getPlayer(i);
+        dPrivateData_c *other = dPlayerMgr::Mgr_c::getPlayer(i);
         if (i != idx && other->mPID.isValid() == 1U) {
             ids[num++] = other->mPID.player.mId;
         }

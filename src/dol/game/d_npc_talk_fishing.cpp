@@ -38,7 +38,7 @@ int dAcNpcNml_c::talk_c::getFishingTalkState() {
     record = &dSaveData_c::getRaw()->mFishing;
     dAnmPersonalID_c *leaderAnimal = record->getAnimal(0);
     dPersonalID_c *leaderPlayer = record->getPlayer(0);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dNpcEntry_c *entry = getEntry();
     if (active) {
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
@@ -85,7 +85,7 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
     dItem::Item item = record->getFish();
     dAnmPersonalID_c *leaderAnimal = record->getAnimal(0);
     dPersonalID_c *leaderPlayer = record->getPlayer(0);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dNpcEntry_c *entry = getEntry();
     dSaveTown_c *town = dSaveData_c::getTown();
     dAnimal_c *animal = getAnimal();

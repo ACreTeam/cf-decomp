@@ -162,7 +162,7 @@ int dMuseum_c::getDonorKind(const dItem::Item &item) {
     if (donor == MUSEUM_DONOR_DELETED) {
         return MUSEUM_DONATED_BY_DELETED;
     }
-    return donor != fn_801017B8() + 1;
+    return donor != dPlayerMgr::getCurrentPlayerSlot() + 1;
 }
 
 // 80119AF8
@@ -181,7 +181,7 @@ void dMuseum_c::donate(const dItem::Item &item) {
     int idx;
     u8 *donors = getDonors(item, &idx);
     if (donors != NULL) {
-        u32 player = fn_801017B8() & 3;
+        u32 player = dPlayerMgr::getCurrentPlayerSlot() & 3;
         donors[idx >> 1] |= (player + 1) << ((idx & 1) << 2);
     }
     if (isComplete()) {
@@ -234,7 +234,7 @@ BOOL dMuseum_c::setDonorWord(dScript::Word_c *word, const dItem::Item &item) {
 // 80119DB0
 BOOL dMuseum_c::getDonorID(dPersonalID_c *out, const dItem::Item &item) {
     if ((u32)getDonorKind(item) <= MUSEUM_DONATED_BY_OTHER) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer((getDonor(item) - 1) & 3);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer((getDonor(item) - 1) & 3);
         if (player->mPID.isValid()) {
             *out = player->mPID;
             return TRUE;

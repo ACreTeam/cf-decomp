@@ -74,7 +74,7 @@ void setTownWord(int slot, dLandID_c *land) {
 
 // 8016B110
 int WordBase_c::procPlayer(int pos) {
-    return procPlayerName(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    return procPlayerName(pos, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
 }
 
 // 8016B15C: copies word into a slot
@@ -149,7 +149,7 @@ int WordBase_c::setInflect(int pos) {
 
 // 8016B480
 int WordBase_c::procPlayerGender(int pos) {
-    return procByPlayerGender(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    return procByPlayerGender(pos, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
 }
 
 // 8016B4CC
@@ -162,7 +162,7 @@ int WordBase_c::procWordGender(int pos) {
 
 // 8016B54C
 int WordBase_c::procPlayerElision(int pos) {
-    return procElisionPlayer(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    return procElisionPlayer(pos, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
 }
 
 // 8016B598

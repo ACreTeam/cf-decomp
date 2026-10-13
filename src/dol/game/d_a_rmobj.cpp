@@ -468,7 +468,7 @@ bool daRmobj_c::model_c::isStopSrt() {
 }
 
 void daRmobj_c::setLookPos(const mVec3_c *min, const mVec3_c *max) {
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return;
     }

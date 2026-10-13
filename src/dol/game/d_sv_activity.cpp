@@ -17,7 +17,7 @@ static const int sOutcomeRates[JINX_OUTCOME_NUM] = {20, 7, 10, 10, 7, 10, 7, 15,
 // 8014F8FC
 void dSavePostSend_c::set(const dPersonalID_c *to) {
     mTo.copy(to);
-    mSender.copy(&dPlayerMgr_c::getCurrentPlayer()->mPID);
+    mSender.copy(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
     mPending = TRUE;
 }
 
@@ -185,7 +185,7 @@ void dSvActivity_c::applyOutcome(const int &outcome, const dTime_c &time, const 
     case JINX_OUTCOME_FRIENDSHIP:
         for (int i = 0; i < PLAYER_NUM; i++) {
             if (friendshipPlayers & (1 << i)) {
-                dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
                 dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
                 if (pid != NULL) {
                     dAnimalBlock_c *animals = &dSaveData_c::getTown()->mAnimals.mTown;

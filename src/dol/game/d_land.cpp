@@ -82,7 +82,7 @@ BOOL dLandID_c::isNewTown(const dLandID_c *other) const {
     if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL && dWifi::findFriend(other, player) >= 0) {
         return FALSE;
     }

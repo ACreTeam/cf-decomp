@@ -157,7 +157,7 @@ const u8 *dAcNpcNml_c::talk_c::getFreeWeights() {
     static const u8 l_visitorSpecial[10] = {20, 20, 0, 15, 0, 0, 0, 15, 30, 0};
     static const u8 l_visitorEvent[10] = {10, 0, 50, 10, 0, 0, 0, 5, 25, 0};
     BOOL special = (u32)getSpecialDay() < 7 ? TRUE : FALSE;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL visitor = isVisitor(player);
     dAnimalBlock_c *block = &dSaveData_c::getRaw()->mAnimals.mTown;
     dAnimal_c *animal = getAnimal();
@@ -180,7 +180,7 @@ const u8 *dAcNpcNml_c::talk_c::getFreeWeights() {
 
 // 80039F74
 int dAcNpcNml_c::talk_c::pickFriendTown() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dFriendList_c *friends = player != NULL ? &player->mFriends : NULL;
     const dSvTownList::List_c *list;
     const dFriend_c *pal;
@@ -215,7 +215,7 @@ int dAcNpcNml_c::talk_c::pickFriendTown() {
 
 // 8003A0FC
 dAnimalMemory_c *dAcNpcNml_c::talk_c::pickOtherMemory() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
     const dPersonalID_c *other;
     dAnimal_c *animal = getAnimal();
@@ -253,7 +253,7 @@ const u8 *dAcNpcNml_c::talk_c::getGeneralWeights() {
     static const u8 l_offlineMem[8] = {10, 25, 25, 20, 20, 0, 0, 0};
     static const u8 l_offline[8] = {10, 30, 30, 20, 10, 0, 0, 0};
     static const u8 l_visitor[8] = {15, 35, 35, 15, 0, 0, 0, 0};
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     bool visitor = (dNet::isSessionActive() && dNet::getMemberNum() > 1) || player == NULL || !player->mPID.isFromTown();
     if (visitor) {
         return l_visitor;
@@ -286,7 +286,7 @@ static inline bool hasLastCloth(const dAnimalMemory_c *mem) {
 int dAcNpcNml_c::talk_c::msgFreeClothes(msgInfo_s *info) {
     dItem::Item item;
     u16 code = 0;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (player != NULL && animal != NULL && mpMemory != NULL && !mpMemory->mFlags.mClothesTalked) {
         u8 looks = animal->mID.getLooks(1);
@@ -431,7 +431,7 @@ int dAcNpcNml_c::talk_c::msgFreeDress(msgInfo_s *info) {
             const dLandID_c *townLand = dSaveData_c::getTownLand();
             int code = 1;
             if (animal->isWearingOrgCloth() && creator->isValid()) {
-                dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
                 const dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
                 if (pid != NULL && *pid == *creator) {
                     code = 2;
@@ -632,7 +632,7 @@ int dAcNpcNml_c::talk_c::msgFreeMemory(msgInfo_s *info) {
     dAnimal_c *animal = getAnimal();
     if (label != NULL && animal != NULL) {
         u16 code = 1;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         const dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
         if (pid != NULL) {
             const dPersonalID_c *exclude = pid;
@@ -1282,7 +1282,7 @@ const u8 *dAcNpcNml_c::talk_c::getApcWeights() {
     static const u8 l_roomItem[4] = {20, 0, 40, 40};
     static const u8 l_room[4] = {100, 0, 0, 0};
     static const u8 l_item[4] = {0, 0, 50, 50};
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (player == NULL) {
         return NULL;
     }
@@ -1681,7 +1681,7 @@ const u8 *dAcNpcNml_c::talk_c::getOnlineWeights() {
     static const u8 l_ownTown[3] = {100, 0, 0};
     static const u8 l_otherTown[3] = {0, 90, 10};
     BOOL own;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dLandID_c *townLand = dSaveData_c::getTownLand();
     if (player != NULL) {
         own = (player->mPID.land == *townLand) ? 1 : 0;
@@ -1707,7 +1707,7 @@ int dAcNpcNml_c::talk_c::msgFreeHost(msgInfo_s *info) {
 
 // 8003DD5C
 void dAcNpcNml_c::talk_c::setHostWords() {
-    dPrivateData_c *host = dPlayerMgr_c::getNetPlayer(0);
+    dPrivateData_c *host = dPlayerMgr::Mgr_c::getNetPlayer(0);
     if (host != NULL) {
         const dPersonalID_c *pid = &host->mPID;
         if (pid->isValid()) {
@@ -1719,7 +1719,7 @@ void dAcNpcNml_c::talk_c::setHostWords() {
             }
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         setLandName(&player->mPID.land, 2);
     }
@@ -2008,7 +2008,7 @@ int dAcNpcNml_c::talk_c::msgFreeKK(msgInfo_s *info) {
         ok = TRUE;
     }
     u32 idx = 2;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimalBlock_c *block = dSaveData_c::getAnimalBlock();
     for (int i = 0; i < ANIMAL_NUM; i++) {
         dAnimal_c *animal = block->getAnimalConst(i);

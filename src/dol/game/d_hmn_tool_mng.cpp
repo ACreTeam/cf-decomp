@@ -407,7 +407,7 @@ void dHmnToolBank_c::calc(const mMtx_c *mtx) {
             mFloat.fn_8016E380(&tip);
         } else if (type == HMN_TOOL_SCOOP) {
             mMtx_c digMtx;
-            fn_800FFF2C(&digMtx, &mDigPos, &mDigAngle);
+            dPlayerMgr::makeCurvedAngleMatrix(&digMtx, &mDigPos, &mDigAngle);
             if (mDigMode == 1) {
                 if (mDigAnmCreated && mDigAnm0.isStop()) {
                     mDigMode = 0;
@@ -582,7 +582,7 @@ void dHmnToolBank_c::setupAxe(nw4r::g3d::ResFile *file, nw4r::g3d::ResMdl *mdl) 
                 mVisCreated = TRUE;
                 s8 idx = 0;
                 if (mType < dHmnToolMng_c::PLAYER_SLOT_NUM) {
-                    dPrivateData_c *priv = dPlayerMgr_c::getNetPlayer(mType);
+                    dPrivateData_c *priv = dPlayerMgr::Mgr_c::getNetPlayer(mType);
                     if (priv != NULL) {
                         idx = getAxeIdx(priv->mEquipment.mHeld);
                     }

@@ -123,7 +123,7 @@ void dAcNpcNml_c::talk_c::resForkGive() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 player->clearPocket(slot);
@@ -254,7 +254,7 @@ static inline const dHome_c *getHouse(const dHomeList_c *homes, u32 home) {
 
 // 80045C00
 BOOL dAcNpcNml_c::talk_c::checkSpotOtherHouse(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
-    int self = fn_801017B8();
+    int self = dPlayerMgr::getCurrentPlayerSlot();
     dHomeList_c *homes = &dSaveData_c::getRaw()->mHomes;
     const dPersonalID_c *owner;
     for (int i = 0; i < 4; i++) {

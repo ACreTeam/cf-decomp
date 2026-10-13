@@ -584,7 +584,7 @@ void calc() {
     }
 
     cam = lbl_8074E9B0;
-    player = fn_800FBC7C(4);
+    player = dPlayerMgr::getPlayerActor(4);
     field = dField::getInfo(0);
     l_dpdPos.clear();
     l_dpdHit.clear();

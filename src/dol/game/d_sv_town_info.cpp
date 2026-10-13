@@ -119,14 +119,14 @@ void dSaveTownInfo_c::removeSouthCedars() {
 
 // 8014D69C
 void dSaveTownInfo_c::setMoneyTreeRolled() {
-    int idx = dPlayerMgr_c::getCurrentPlayer()->findInSave();
+    int idx = dPlayerMgr::Mgr_c::getCurrentPlayer()->findInSave();
     dTime_c now = *dTime_c::getCurrent();
     mMoneyTreeDates[idx].set(&now);
 }
 
 // 8014D740
 BOOL dSaveTownInfo_c::canRollMoneyTree() {
-    int idx = dPlayerMgr_c::getCurrentPlayer()->findInSave();
+    int idx = dPlayerMgr::Mgr_c::getCurrentPlayer()->findInSave();
     dTime_c now = *dTime_c::getCurrent();
     return !mMoneyTreeDates[idx].isDate(&now);
 }

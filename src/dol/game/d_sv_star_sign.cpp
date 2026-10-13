@@ -135,15 +135,15 @@ void List_c::clearNew(int player) {
 
 // 80150E88
 void List_c::registerPlayerSign() {
-    if (!dPlayerMgr_c::getCurrentPlayer()->mStarSign.mOwner.isValid()) {
+    if (!dPlayerMgr::Mgr_c::getCurrentPlayer()->mStarSign.mOwner.isValid()) {
         return;
     }
     dString::Word_c name;
-    name.set(dPlayerMgr_c::getCurrentPlayer()->mStarSign.getName(), 0);
+    name.set(dPlayerMgr::Mgr_c::getCurrentPlayer()->mStarSign.getName(), 0);
     for (int i = 0; i < SIGN_NUM; i++) {
         if (dSaveData_c::getTown()->mStarSigns.isValid(i)) {
             dSaveTown_c *town = dSaveData_c::getTown();
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (dStarDraw_c::isSignLinked(&player->mStarSign, town->mStarSigns.get(i))) {
                 return;
             }
@@ -156,15 +156,15 @@ void List_c::registerPlayerSign() {
     }
     for (int i = 0; i < SIGN_NUM; i++) {
         if (!dSaveData_c::getTown()->mStarSigns.isValid(i)) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             dSaveData_c::getTown()->mStarSigns.get(i)->copy(&player->mStarSign);
             for (int p = 0; p < PLAYER_NUM; p++) {
-                if (dPlayerMgr_c::getPlayer(p)->mPID.isValid()) {
+                if (dPlayerMgr::Mgr_c::getPlayer(p)->mPID.isValid()) {
                     u16 *flags = &dSaveData_c::getTown()->mStarSigns.mNew[p];
                     *flags |= 1 << i;
                 }
             }
-            dPlayerMgr_c::getCurrentPlayer()->mStarSign.clear();
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->mStarSign.clear();
             return;
         }
     }

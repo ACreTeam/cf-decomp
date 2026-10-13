@@ -141,6 +141,22 @@ enum Kind {
 };
 
 // Furniture footprint (BITM::m_ftrSize).
+// BITM hide-bone/edibility values used when changing equipment or eating.
+// Hide-bone values 0..7 select the hat/hair visibility combinations.
+enum HideBone {
+    HIDE_BONE_ACCESSORY = 8,
+    HIDE_BONE_HAND = 9,
+    HIDE_BONE_NONE = 10,
+    HIDE_BONE_COUNT = 11,
+};
+
+enum Edibility {
+    EDIBILITY_NONE = 0,
+    EDIBILITY_FOOD = 1,
+    EDIBILITY_SPECIAL = 2, // alternate eating action
+    EDIBILITY_COUNT = 3,
+};
+
 enum FtrSize {
     FTR_SIZE_1x1, // 0x00
     FTR_SIZE_1x2,

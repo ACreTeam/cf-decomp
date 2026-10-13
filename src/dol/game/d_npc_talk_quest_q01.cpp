@@ -60,7 +60,7 @@ int dAcNpcNml_c::talk_c::msgInsectQuest(msgInfo_s *info) {
         return FALSE;
     }
     u8 state;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -175,7 +175,7 @@ BOOL dAcNpcNml_c::talk_c::stepInsectGiveChoice(int kind) {
 // 80050268
 void dAcNpcNml_c::talk_c::selInsectGive() {
     dAnimal_c *animal = getAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (animal != NULL && player != NULL) {
         dItem::Item *item = &animal->mQuest.mQuest.mBase.mItem;
         if (item->isValid()) {
@@ -194,7 +194,7 @@ void dAcNpcNml_c::talk_c::resInsectGive() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 player->getPocketFlag(slot);
@@ -231,7 +231,7 @@ int dAcNpcNml_c::talk_c::msgInsectWin(msgInfo_s *info) {
 
 // 8005052C
 void dAcNpcNml_c::talk_c::endInsectWin(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
     int price = 0;
@@ -281,7 +281,7 @@ BOOL dAcNpcNml_c::talk_c::stepInsectWin(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->mBase.mState = QUEST_REQUEST_WON;
             quest->setRequester(&player->mPID.player);
@@ -335,7 +335,7 @@ int dAcNpcNml_c::talk_c::msgInsectRewardEnd(msgInfo_s *info) {
 BOOL dAcNpcNml_c::talk_c::stepInsectLose(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL) {
             dQuestVillager_c *quest = &animal->mQuest.mQuest;
             if (player != NULL) {
@@ -422,7 +422,7 @@ BOOL dAcNpcNml_c::talk_c::stepInsectAccept(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dQuestVillager_c *quest;
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL && player != NULL) {
             quest = &animal->mQuest.mQuest;
             if (!quest->mBase.isActive()) {

@@ -249,7 +249,7 @@ int Word_c::procUnit(int pos) {
 }
 
 int Word_c::procPlayerChar(int pos, u32 index) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dHmnName::Word_c name;
     player->mPID.setWord(&name);
     wchar_t c = 0;
@@ -269,7 +269,7 @@ int Word_c::procPlayerChar1(int pos) { return procPlayerChar(pos, 1); }
 int Word_c::procPlayerChar2(int pos) { return procPlayerChar(pos, 2); }
 
 int Word_c::procPlayer(int pos) {
-    int n = procPlayerName(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    int n = procPlayerName(pos, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
     int a = insertColorTag(pos, TEXT_COLOR_PLAYER);
     int b = insertColorTag(pos + a + n, mColor);
     mpComp->updateUnitWord();
@@ -370,7 +370,7 @@ int Word_c::procCatchphrase(int pos) {
 
 int Word_c::procPlayerNickname(int pos) {
     dAnimal_c *speaker = mpComp->mpRcpt->getSpeakerAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dHmnName::Word_c name;
     speaker->getPlayerCallName(&name, &player->mPID);
     int n = setTagWord(pos, &name);
@@ -382,14 +382,14 @@ int Word_c::procPlayerNickname(int pos) {
 }
 
 int Word_c::procImpression(int pos) {
-    int index = getImpression(dPlayerMgr_c::getCurrentPlayerRaw());
+    int index = getImpression(dPlayerMgr::Mgr_c::getCurrentPlayerRaw());
     dString::Word_c word(index + 1, "sys_STRING/STR_Impress");
     _18 = 0;
     return setTagWord(pos, &word);
 }
 
 int Word_c::procPlayerStarSign(int pos) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int sign = dTime_c::getStarSign(player->mBirthday.mMonth, player->mBirthday.mDay);
     dString::Word_c word(sign + 1, "sys_STRING/STR_Constellation");
     _18 = 1;
@@ -409,7 +409,7 @@ int Word_c::procAnimalStarSign(int pos) {
 int Word_c::procGreeting(int pos) {
     const wchar_t *p = getBuffer() + pos;
     dScript::getTagLength(p);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *speaker = mpComp->mpRcpt->getSpeakerAnimal();
     dGreetingWord_c word;
     if (!speaker->getGreeting(&word, &player->mPID)) {
@@ -444,7 +444,7 @@ int Word_c::procGreeting(int pos) {
 int Word_c::procAnimalFlagBegin(int pos) {
     const wchar_t *p = getBuffer() + pos;
     dScript::getTagLength(p);
-    dPlayerMgr_c::getCurrentPlayer();
+    dPlayerMgr::Mgr_c::getCurrentPlayer();
     dNpcEntry_c *entry = fn_800F3EE8(&mpComp->mpRcpt->getSpeakerAnimal()->mID);
     BOOL keep = TRUE;
     if (entry == NULL) {
@@ -498,7 +498,7 @@ int Word_c::procPageEnd(int pos) {
 }
 
 int Word_c::procPlayerGender(int pos) {
-    return procByPlayerGender(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    return procByPlayerGender(pos, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
 }
 
 int Word_c::procWordGender(int pos) {
@@ -515,7 +515,7 @@ int Word_c::procAnimalGender(int pos) {
 }
 
 int Word_c::procPlayerElision(int pos) {
-    return procElisionPlayer(pos, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    return procElisionPlayer(pos, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
 }
 
 int Word_c::procAnimalElision(int pos) {
@@ -548,7 +548,7 @@ int Word_c::procAnimalParamElision(int pos) {
 
 int Word_c::procPlayerNicknameElision(int pos) {
     dAnimal_c *speaker = mpComp->mpRcpt->getSpeakerAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dHmnName::Word_c name;
     speaker->getPlayerCallName(&name, &player->mPID);
     return procElisionWord(pos, 0, &name);
@@ -1468,7 +1468,7 @@ void dMsg::Comp_c::setDayName(int idx, int day) {
 
 // 801A53D4
 void dMsg::Comp_c::setPersonalName(int idx, const dPersonalID_c *id) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     dHmnName::Word_c word;
     id->setWord(&word);
     if (player != NULL) {
@@ -1485,7 +1485,7 @@ void dMsg::Comp_c::setPersonalName(int idx, const dPersonalID_c *id) {
 
 // 801A548C
 void dMsg::Comp_c::setPlayerName(int idx, const dPlayerID_c *id) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     dHmnName::Word_c word;
     id->setWord(&word);
     if (player != NULL) {
@@ -1539,7 +1539,7 @@ void dMsg::Comp_c::clearWord(int idx) {
 
 // 801A5728
 void dMsg::Comp_c::setPersonalWord(int idx, const dScript::Word_c *src, const dPersonalID_c *pid) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     dString::Word_c word;
     word.copy(src, 0);
     if (player != NULL) {
@@ -1659,7 +1659,7 @@ void dMsg::Comp_c::addFriendship(s8 delta) {
     if (delta != 0) {
         dAnimal_c *animal = mpRcpt->getSpeakerAnimal();
         if (animal != NULL) {
-            u32 memIdx = animal->getMemoryIdx(&dPlayerMgr_c::getCurrentPlayer()->mPID);
+            u32 memIdx = animal->getMemoryIdx(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
             dAnimalMemory_c *memory = animal->getMemory(memIdx);
             if (memory != NULL) {
                 fn_800F0434(&animal->mID, memIdx, memory->addFriendship(delta));
@@ -1762,7 +1762,7 @@ void dMsg::Comp_c::setUnitWord(const dScript::Word_c *word) {
 
 // 801A5FD4
 void dMsg::Comp_c::updateUnitWord() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = mpRcpt->getSpeakerAnimal();
     if (player != NULL && animal != NULL) {
         u16 msgId = fn_800F3F84(&player->mPID, animal->mID.getLooks(1), animal);

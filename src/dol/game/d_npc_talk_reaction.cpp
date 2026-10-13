@@ -38,7 +38,7 @@ int dAcNpcNml_c::talk_c::msgReMoveout(msgInfo_s *info) {
     dAnimal_c *animal = getAnimal();
     int code = 0;
     BOOL movingOut = animal != NULL ? animal->isMovingOut() : FALSE;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (movingOut && (player == NULL || player->isFlag0(0xD))) {
         movingOut = FALSE;
     }
@@ -135,7 +135,7 @@ int dAcNpcNml_c::talk_c::msgReRun(msgInfo_s *info) {
 
 // 8005E944
 int dAcNpcNml_c::talk_c::msgEvFirst(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (player != NULL && animal != NULL) {
         BOOL first = player->isFlag0(0xD);
@@ -165,7 +165,7 @@ int dAcNpcNml_c::talk_c::msgEvFirst(msgInfo_s *info) {
 // 8005EA54
 BOOL dAcNpcNml_c::talk_c::msgFirstMeeting(msgInfo_s *info, u32 known, u32 fromTown, u32 npcFromTown,
                                       u32 movingIn, int labelIdx, BOOL checkSick, u8 checkLostItem) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (player != NULL && animal != NULL) {
         dLandID_c *townLand = dSaveData_c::getTownLand();
@@ -289,7 +289,7 @@ int dAcNpcNml_c::talk_c::msgReFirstC2(msgInfo_s *info) {
 
 // 8005F154
 void dAcNpcNml_c::talk_c::setPlayerLandWord() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
     if (pid != NULL && pid->isValid()) {
         setLandName(&pid->land, 0);
@@ -330,7 +330,7 @@ int dAcNpcNml_c::talk_c::msgReMovein(msgInfo_s *info) {
     dAnimal_c *animal = getAnimal();
     BOOL movingIn = animal != NULL ? animal->isMovingIn() : FALSE;
     if (movingIn) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player == NULL || player->isFlag0(0xD)) {
             movingIn = FALSE;
         }
@@ -355,7 +355,7 @@ BOOL dAcNpcNml_c::talk_c::isReactionBlocked() const {
     if (animal == NULL || !animal->mID.isValid()) {
         return TRUE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (player == NULL || player->isFlag0(0xD)) {
         return TRUE;
     }
@@ -370,7 +370,7 @@ int dAcNpcNml_c::talk_c::msgReBirthday(msgInfo_s *info) {
     BOOL ok = FALSE;
     dBirthday_c *birthday;
     if (mpMemory != NULL && mpMemory->mFlags.mBirthdayDone) {
-        int playerNo = fn_801017B8();
+        int playerNo = dPlayerMgr::getCurrentPlayerSlot();
         bool valid = false;
         if (playerNo >= 0 && playerNo < 4) {
             valid = true;
@@ -392,7 +392,7 @@ int dAcNpcNml_c::talk_c::msgReBirthday(msgInfo_s *info) {
         const char *label = getMsgLabel(TALK_REACTION, REACTION_BIRTHDAY, 0);
         if (label != NULL) {
             int code = 0;
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 birthday = &player->mBirthday;
                 dTime_c *now = dTime_c::getCurrent();
@@ -411,7 +411,7 @@ int dAcNpcNml_c::talk_c::msgReBirthday(msgInfo_s *info) {
 
 // 8005F63C
 BOOL dAcNpcNml_c::talk_c::msgNotSeen(msgInfo_s *info, int minDays, int divisor, int labelIdx) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -538,7 +538,7 @@ int dAcNpcNml_c::talk_c::msgReSad(msgInfo_s *info) {
 
 // 8005FB18
 int dAcNpcNml_c::talk_c::msgReBeeFace(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     BOOL ok = player != NULL ? player->isFlag0(2) : FALSE;
     if (ok && isReactionBlocked()) {
         ok = FALSE;
@@ -821,7 +821,7 @@ int dAcNpcNml_c::talk_c::msgReFireworks(msgInfo_s *info) {
 // 8006071C
 int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
     const dSaveDistContent_c *msg = NULL;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     dAnimal_c *animal = getAnimal();
     BOOL valid = FALSE;
     if (animal != NULL && animal->mID.isValid()) {
@@ -830,7 +830,7 @@ int dAcNpcNml_c::talk_c::msgReDownload(msgInfo_s *info) {
     u8 looks = valid ? animal->mID.getLooks(1) : 6;
     if ((!dNet::isSessionActive() || dNet::getMemberNum() <= 1) && player != NULL && player->mPID.isFromTown() && looks < 6 &&
         (u32)getLanguage() < LANGUAGE_NUM) {
-        msg = dSaveData_c::getRawExtra()->mLangFlags.get(fn_801017B8(), looks, dSvLangFlag::LANG_FLAG_LANGUAGE_CURRENT);
+        msg = dSaveData_c::getRawExtra()->mLangFlags.get(dPlayerMgr::getCurrentPlayerSlot(), looks, dSvLangFlag::LANG_FLAG_LANGUAGE_CURRENT);
     }
     if (msg != NULL && isReactionBlocked()) {
         msg = NULL;

@@ -145,7 +145,7 @@ BOOL setWallpaper(dItem::Item item, int type, int flag0, int flag1, BOOL send) {
 
 // 80076BE8: one of the current player's 8 designs
 BOOL setDesignWallpaper(int slot, BOOL type2, int flag1, BOOL send) {
-    int player = dPlayerMgr_c::getCurrentPlayer()->findInSave();
+    int player = dPlayerMgr::Mgr_c::getCurrentPlayer()->findInSave();
     dItem::Item item(0x295, (slot & 7) + (player & 3) * 8, FALSE);
     int type = 1;
     if (type2) {
@@ -193,7 +193,7 @@ BOOL setCarpet(dItem::Item item, int type, int flag0, int flag1, BOOL send) {
 
 // 80076DD0
 BOOL setDesignCarpet(int slot, BOOL type2, int flag1, BOOL send) {
-    int player = dPlayerMgr_c::getCurrentPlayer()->findInSave();
+    int player = dPlayerMgr::Mgr_c::getCurrentPlayer()->findInSave();
     dItem::Item item(0x295, (slot & 7) + (player & 3) * 8, FALSE);
     int type = 1;
     if (type2) {

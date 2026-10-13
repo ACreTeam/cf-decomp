@@ -27,7 +27,7 @@ const talk_c::hookFunc dAcNpcNml_c::talk_c::getRollanChoice(u16 *code, u8 *flag)
     static const u16 l_codes[4] = {7, 7, 10, 10};
 
     dAnimalBlock_c *block;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return NULL;
     }
@@ -143,7 +143,7 @@ BOOL dAcNpcNml_c::talk_c::stepRollan(int kind) {
 
 // 80060ED8
 BOOL dAcNpcNml_c::talk_c::rollRollanGift() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->findEmptyPocket(0) == -1 || player->isFlag0(0xD)) {
         return FALSE;
     }

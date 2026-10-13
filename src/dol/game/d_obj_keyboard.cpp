@@ -165,7 +165,7 @@ void dObjKeyboard_c::stateEmotionStart() {
 }
 
 void dObjKeyboard_c::stateEmotion() {
-    if (fn_801009E0(mEmotion)) {
+    if (dPlayerMgr::playEmotion(mEmotion)) {
         mState = STATE_EMOTION_END;
     }
     if (mKbd.isUpdated()) {
@@ -174,7 +174,7 @@ void dObjKeyboard_c::stateEmotion() {
 }
 
 void dObjKeyboard_c::stateEmotionEnd() {
-    if (fn_800FEAD8(4)) {
+    if (dPlayerMgr::isStartingDemo(4)) {
         dDemo::finishKeyboard();
         mState = STATE_INPUT;
     }
@@ -332,7 +332,7 @@ void dObjKeyboard_c::setCursor() {
 }
 
 u8 dObjKeyboard_c::getEmotion(int slot) {
-    dPrivateData_c *data = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *data = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (data->mEmotions.isValid(slot) == FALSE) {
         return 0xFF;
     }

@@ -47,7 +47,7 @@ int dAcNpcNml_c::talk_c::msgHideOffer(msgInfo_s *info) {
     if (animal == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -144,7 +144,7 @@ int dAcNpcNml_c::talk_c::msgHideOK(msgInfo_s *info) {
 // 800578A0
 void dAcNpcNml_c::talk_c::endHideOK(int arg) {
     dAnimal_c *animal = getAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (animal != NULL && player != NULL) {
         dSaveTown_c *town = dSaveData_c::getTown();
         town->mAnimals.mTown.startHideAndSeek(&player->mPID.player, &animal->mID, dTime_c::getCurrent());
@@ -163,11 +163,11 @@ BOOL dAcNpcNml_c::talk_c::stepHideOK(int kind) {
 
 // 80057988
 void dAcNpcNml_c::talk_c::resHideSetup() {
-    fn_800FC598();
+    dPlayerMgr::holdToolAction();
     s16 angle;
     int state;
     mVec3_c pos;
-    fn_800FE688(&state, &pos, &angle);
+    dPlayerMgr::getDemoWaitPose(&state, &pos, &angle);
     dNpcMng_c::getTownHallPos(&pos, -1, 6);
     getSceneChange()->setReturnExit(0, &pos, state, 0);
     getSceneChange()->requestExit(0, 2, 2);
@@ -211,7 +211,7 @@ int dAcNpcNml_c::talk_c::msgHideQuest(msgInfo_s *info) {
     if (block->getHiderSlot(id) == 3) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isValid() || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -277,7 +277,7 @@ BOOL dAcNpcNml_c::talk_c::stepHideExplain(int kind) {
 
 // 80057E20
 void dAcNpcNml_c::talk_c::resHideStart() {
-    fn_800FC604();
+    dPlayerMgr::clearToolActionHold();
     getSceneChange()->setReturnExitHere(0.0f);
     getSceneChange()->requestExit(0, 2, 2);
     dNpcMng_c::setHideAndSeekState(1);
@@ -296,7 +296,7 @@ static const char l_Q10_Visit[] = "Q10_Visit"; // 8046CA48
 
 // 80057EA8
 int dAcNpcNml_c::talk_c::msgHideHider(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
     const char *label;
     stepFunc step = NULL;
@@ -323,7 +323,7 @@ int dAcNpcNml_c::talk_c::msgHideHider(msgInfo_s *info) {
         }
     } else {
         label = l_Q10_Visit;
-        dPrivateData_c *visitor = dPlayerMgr_c::getNetPlayer(0);
+        dPrivateData_c *visitor = dPlayerMgr::Mgr_c::getNetPlayer(0);
         if (visitor != NULL) {
             dPersonalID_c *pid = &visitor->mPID;
             if (pid->isValid()) {
@@ -376,11 +376,11 @@ BOOL dAcNpcNml_c::talk_c::stepHideFind(int kind) {
 
 // 80058270
 void dAcNpcNml_c::talk_c::resHideEnd() {
-    fn_800FC598();
+    dPlayerMgr::holdToolAction();
     s16 angle;
     int state;
     mVec3_c pos;
-    fn_800FE688(&state, &pos, &angle);
+    dPlayerMgr::getDemoWaitPose(&state, &pos, &angle);
     dNpcMng_c::getTownHallPos(&pos, -1, 6);
     getSceneChange()->setReturnExit(0, &pos, state, 0);
     getSceneChange()->requestExit(0, 2, 2);
@@ -427,7 +427,7 @@ static const char l_Q10_ItemFull[] = "Q10_ItemFull"; // 8046CA70
 
 // 8005844C
 int dAcNpcNml_c::talk_c::msgHideReward(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     stepFunc step = &talk_c::stepHideReward;
     const char *label = l_Q10_Item;
     BOOL full = player != NULL ? player->findEmptyPocket(0) == -1 : TRUE;
@@ -445,7 +445,7 @@ int dAcNpcNml_c::talk_c::msgHideReward(msgInfo_s *info) {
 void dAcNpcNml_c::talk_c::endHideReward(int arg) {
     dAnimalBlock_c *block;
     dAnimal_c *animal = getAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     mItem0 = dItem::ITEM_ID_NONE;
     if (animal != NULL && player != NULL) {
         block = &dSaveData_c::getTown()->mAnimals.mTown;
@@ -531,7 +531,7 @@ void dAcNpcNml_c::talk_c::endHideLose(int arg) {
 // 800588BC
 void dAcNpcNml_c::talk_c::addHiderFriendship(s8 delta) {
     dQuestPlayerAnimal_c *game = &dSaveData_c::getRaw()->mAnimals.mTown.mHideAndSeek;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         for (int i = 0; i < 3; i++) {
             int idx = game->getHider(i);

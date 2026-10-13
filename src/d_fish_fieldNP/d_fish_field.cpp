@@ -115,7 +115,7 @@ dItem::Item getFishItem(int type) {
 
 // 0xF0
 int getLostItemLikeIdx() {
-    dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(0);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(0);
     return dSaveData_c::getRaw()->mAnimals.mTown.getLostItemLikeIdx(player);
 }
 
@@ -661,7 +661,7 @@ dFishFldShadow_c *dFishField_c::addPlayerFish(int type, int mode, const mVec3_c 
         res = nw4r::g3d::ResFile(mShadowRes.getData());
         fish->create(res);
         if (mode == 1) {
-            dPlayerActor_c *actor = fn_800FBC7C(player);
+            dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(player);
             if (actor != NULL) {
                 fish->mTargetAngle.y = actor->mAngle.y;
             }
@@ -837,7 +837,7 @@ BOOL dFishField_c::isAwayFromPlayers(int blockX, int blockZ, int unitX, int unit
         int z = (blockZ << 4) + unitZ;
         for (int i = 0; i < 4; i++) {
             u32 px, pz;
-            if (fn_800FBD5C(&px, &pz, i) && isNearUnit(x, z, px, pz)) {
+            if (dPlayerMgr::getUnitCoordinates(&px, &pz, i) && isNearUnit(x, z, px, pz)) {
                 return FALSE;
             }
         }
@@ -925,7 +925,7 @@ void dFishFldShadow_c::calcMtx() {
         pos = mPos;
         dActor_c::makeMtx(&mtx, &pos, mTargetAngle.y);
         if (!FISH_NOT_IN_HAND(mState)) {
-            const nw4r::math::MTX34 *hand = (const nw4r::math::MTX34 *)fn_800FBE08(mPlayer);
+            const nw4r::math::MTX34 *hand = (const nw4r::math::MTX34 *)dPlayerMgr::getHandTransform(mPlayer);
             if (hand != NULL) {
                 _1E8.set(dFishInfo::getHoldParam(mKind), 0.0f, 0.0f);
                 mVec3_c handPos;
@@ -1027,12 +1027,12 @@ BOOL dFishFldShadow_c::checkScared() {
         return TRUE;
     }
     for (int i = 0; i < 4; i++) {
-        dPlayerActor_c *player = fn_800FBC7C(i);
+        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
         if (player != NULL) {
             static const f32 cScareR = 80.0f;
             static const f32 cScareRSq = cScareR * cScareR;
             mVec3_c diff = mPos - player->mPos;
-            if (diff.x * diff.x + diff.z * diff.z < cScareRSq && (fn_8010094C(i) || fn_800FF150(i))) {
+            if (diff.x * diff.x + diff.z * diff.z < cScareRSq && (dPlayerMgr::isRunAnimation(i) || dPlayerMgr::fn_800FF150(i))) {
                 return TRUE;
             }
         }
@@ -1640,7 +1640,7 @@ void dFishFldShadow_c::executeCatch() {
     }
     sLib::calcTimer(&mTimer);
     dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
-    const mVec3_c *hand = (const mVec3_c *)fn_800FBDD4(mPlayer);
+    const mVec3_c *hand = dPlayerMgr::getHandPosition(mPlayer);
     if (fl != NULL && hand != NULL) {
         f32 t = mTimer / 45.0f;
         f32 u = 1.0f - t;
@@ -1679,7 +1679,7 @@ void dFishFldShadow_c::initShow() {
 
 // 0x51BC
 void dFishFldShadow_c::executeShow() {
-    const mVec3_c *hand = (const mVec3_c *)fn_800FBDD4(mPlayer);
+    const mVec3_c *hand = dPlayerMgr::getHandPosition(mPlayer);
     if (hand != NULL) {
         mPos = *hand;
     }
@@ -1698,7 +1698,7 @@ void dFishFldShadow_c::initHold() {
 
 // 0x5280
 void dFishFldShadow_c::executeHold() {
-    const mVec3_c *hand = (const mVec3_c *)fn_800FBDD4(mPlayer);
+    const mVec3_c *hand = dPlayerMgr::getHandPosition(mPlayer);
     if (hand != NULL) {
         mPos = *hand;
     }
@@ -1859,7 +1859,7 @@ BOOL dFishFldShadow_c::pull() {
         return FALSE;
     }
     if (mState == STATE_BITE) {
-        dPrivateData_c *player = dPlayerMgr_c::getNetPlayerRaw(mPlayer);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(mPlayer);
         BOOL ok;
         int kind = mKind;
         BOOL isKey = FALSE;
@@ -2265,7 +2265,7 @@ void dFishFrog_c::execAway(dFishFldShadow_c *fish) {
     if (mCroakWait != 0) {
         mCroakWait--;
     }
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         mVec3_c pos = player->mPos;
         f32 dist = (fish->mPos - pos).xzLen();
@@ -2280,7 +2280,7 @@ void dFishFrog_c::execNear(dFishFldShadow_c *fish) {
     if (mCroakWait != 0) {
         mCroakWait--;
     }
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         mVec3_c pos = player->mPos;
         f32 dist = (fish->mPos - pos).xzLen();
@@ -2289,7 +2289,7 @@ void dFishFrog_c::execNear(dFishFldShadow_c *fish) {
             return;
         }
     }
-    if (fn_8010094C(4)) {
+    if (dPlayerMgr::isRunAnimation(4)) {
         if (++mAlarm >= 200) {
             mAlarm = 200;
         }
@@ -2313,7 +2313,7 @@ void dFishFrog_c::execCroak(dFishFldShadow_c *fish) {
         mCroakWait = cM::rndRange<s16>(60, 240);
         mState = 1;
     }
-    if (fn_8010094C(4)) {
+    if (dPlayerMgr::isRunAnimation(4)) {
         mCroakWait = cM::rndRange<s16>(60, 120);
         mState = 1;
         mCroakTimer = 0;

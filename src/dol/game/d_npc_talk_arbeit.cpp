@@ -17,7 +17,7 @@ const char *l_arbeitLabels[6] = {l_Ev_Arbeit, l_Ev_Arbeit, l_Ai_Quest, l_Ai_Ques
 
 // 80038134
 int dAcNpcNml_c::talk_c::msgArbeitMoveIn(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     BOOL ok = FALSE;
     if (player != NULL && animal != NULL && player->isFlag0(0xD)) {
@@ -41,7 +41,7 @@ int dAcNpcNml_c::talk_c::msgArbeitMoveIn(msgInfo_s *info) {
 
 // 80038238
 int dAcNpcNml_c::talk_c::msgArbeitMoveOut(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     BOOL ok = FALSE;
     if (player != NULL && animal != NULL && player->isFlag0(0xD)) {
@@ -66,7 +66,7 @@ int dAcNpcNml_c::talk_c::msgArbeitMoveOut(msgInfo_s *info) {
 
 // 80038344
 BOOL dAcNpcNml_c::talk_c::msgArbeitErrand(msgInfo_s *info, u8 errandKind, u8 errandState, u8 labelIdx) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     dQuestErrandList_c *errand;
     BOOL ok = FALSE;
@@ -120,7 +120,7 @@ int dAcNpcNml_c::talk_c::msgArbeitDeliverCan(msgInfo_s *info) {
 
 // 800385A0
 int dAcNpcNml_c::talk_c::msgArbeitNewcomer(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL ? player->isFlag0(0xD) : FALSE) {
         const char *label = getMsgLabel(TALK_ARBEIT, 5, 0);
         if (label != NULL) {
@@ -183,7 +183,7 @@ BOOL dAcNpcNml_c::talk_c::stepArbeitErrandChoice(int kind) {
 
 // 80038894
 void dAcNpcNml_c::talk_c::selArbeitGive() {
-    dItem::Item item = *dPlayerMgr_c::getCurrentPlayer()->mErrand.getItem();
+    dItem::Item item = *dPlayerMgr::Mgr_c::getCurrentPlayer()->mErrand.getItem();
     u16 mask = 0;
     countPocketsItem(&item, 3, &mask, NULL);
     mask = ~mask;
@@ -197,7 +197,7 @@ void dAcNpcNml_c::talk_c::resArbeitGive() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 player->clearPocket(slot);
@@ -233,7 +233,7 @@ void dAcNpcNml_c::talk_c::resArbeitGiven() {
 
 // 80038AF0
 int dAcNpcNml_c::talk_c::msgArbeitGiven(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dQuestErrandList_c *errand = &player->mErrand;
     int kind = errand->getKind();
     stepFunc step = NULL;
@@ -253,7 +253,7 @@ int dAcNpcNml_c::talk_c::msgArbeitGiven(msgInfo_s *info) {
             mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_RUG);
         }
         setItemName(&mItem0, 1);
-        dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (current != NULL) {
             current->pickUp(&mItem0, FALSE);
         }
@@ -308,7 +308,7 @@ int dAcNpcNml_c::talk_c::msgArbeitFtrReward(msgInfo_s *info) {
         mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_BED);
     }
     setItemName(&mItem0, 0);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         player->pickUp(&mItem0, FALSE);
     }
@@ -354,7 +354,7 @@ void dAcNpcNml_c::talk_c::resArbeitBirthday() {
 // 80039068
 int dAcNpcNml_c::talk_c::msgArbeitBirthdayCheck(msgInfo_s *info) {
     setLooksMsg(info, l_Ev_Arbeit, 0x18);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dBirthday_c *birthday = player != NULL ? &player->mBirthday : NULL;
     int month = birthday != NULL ? birthday->mMonth : 0;
     int day = birthday != NULL ? birthday->mDay : 1;
@@ -382,7 +382,7 @@ BOOL dAcNpcNml_c::talk_c::stepArbeitBirthdayChoice(int kind) {
 void dAcNpcNml_c::talk_c::selArbeitBirthdayYes() {
     setMsgProc(&talk_c::msgArbeitBirthdayYes);
     startMsg();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         player->mErrand.setState(2);
     }
@@ -392,7 +392,7 @@ void dAcNpcNml_c::talk_c::selArbeitBirthdayYes() {
 int dAcNpcNml_c::talk_c::msgArbeitBirthdayYes(msgInfo_s *info) {
     u16 code = 0x1C;
     dTime_c *now = dTime_c::getCurrent();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dBirthday_c *birthday = player != NULL ? &player->mBirthday : NULL;
     if (birthday != NULL) {
         if (now->month == birthday->mMonth && now->mday == birthday->mDay) {
@@ -448,7 +448,7 @@ int dAcNpcNml_c::talk_c::msgArbeitCarpetThanks(msgInfo_s *info) {
 // 8003950C
 BOOL dAcNpcNml_c::talk_c::stepArbeitErrandDone(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->mErrand.setState(2);
         }
@@ -460,7 +460,7 @@ BOOL dAcNpcNml_c::talk_c::stepArbeitErrandDone(int kind) {
 // 80039564
 BOOL dAcNpcNml_c::talk_c::stepArbeitErrandNext(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->mErrand.setState(1);
         }
@@ -527,7 +527,7 @@ BOOL dAcNpcNml_c::talk_c::stepArbeitNewcomerChoice(int kind) {
 
 // 800398B4
 u16 dAcNpcNml_c::talk_c::getArbeitProgressCode() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     u16 code = 6;
     if (player != NULL) {
         code = player->mNewcomerTip + 6;
@@ -550,7 +550,7 @@ int dAcNpcNml_c::talk_c::msgArbeitProgressCheck(msgInfo_s *info) {
         if (code == 0xB) {
             u32 num = dPrivateData_c::count(dSaveData_c::getTown()->mPlayers);
             if (num == 4) {
-                dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
                 if (player != NULL) {
                     player->incNewcomerTip();
                 }
@@ -569,7 +569,7 @@ int dAcNpcNml_c::talk_c::msgArbeitProgressCheck(msgInfo_s *info) {
 // 80039A44
 BOOL dAcNpcNml_c::talk_c::stepArbeitProgressNext(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->incNewcomerTip();
         }

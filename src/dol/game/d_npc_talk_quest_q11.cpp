@@ -44,7 +44,7 @@ int dAcNpcNml_c::talk_c::msgSickQuest(msgInfo_s *info) {
     if (!quest->mBase.isActive() || quest->mBase.getKind() != QUEST_KIND_REQUEST_5) {
         return FALSE;
     }
-    player = dPlayerMgr_c::getCurrentPlayer();
+    player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -181,7 +181,7 @@ int dAcNpcNml_c::talk_c::msgSickMedicine(msgInfo_s *info) {
 // 8005237C
 BOOL dAcNpcNml_c::talk_c::stepSickMedicine(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             dItem::Item medicine = dQuestSick_c::getMedicine();
             u16 mask = 0;
@@ -202,7 +202,7 @@ void dAcNpcNml_c::talk_c::resSickMedicine() {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
             dAnimal_c *animal = getAnimal();
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL && animal != NULL) {
                 mItem0 = player->mPockets[slot];
                 player->clearPocket(slot);
@@ -247,7 +247,7 @@ int dAcNpcNml_c::talk_c::msgSickCure(msgInfo_s *info) {
 // 80052694
 BOOL dAcNpcNml_c::talk_c::stepSickCure(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dAnimal_c *animal = getAnimal();
         if (player != NULL && animal != NULL) {
             dQuestVillager_c *quest = &animal->mQuest.mQuest;
@@ -284,7 +284,7 @@ int dAcNpcNml_c::talk_c::msgSickCancel(msgInfo_s *info) {
 // 80052818
 BOOL dAcNpcNml_c::talk_c::stepSickVisit(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dAnimal_c *animal = getAnimal();
         if (player != NULL && animal != NULL) {
             animal->mQuest.mQuest.addPlayer(&player->mPID.player, TRUE);
@@ -320,7 +320,7 @@ int dAcNpcNml_c::talk_c::msgSickTalk(msgInfo_s *info) {
 // 800529B0
 BOOL dAcNpcNml_c::talk_c::stepSickTalk(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dAnimal_c *animal = getAnimal();
         if (player != NULL && animal != NULL) {
             animal->mQuest.mQuest.addPlayer(&player->mPID.player, TRUE);
@@ -343,7 +343,7 @@ BOOL dAcNpcNml_c::talk_c::stepSickGreet(int kind) {
 // 80052AAC
 void dAcNpcNml_c::talk_c::endSickReward(int arg) {
     endQuestTalk(arg);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     dItem::Item item;
     if (animal != NULL) {
@@ -363,7 +363,7 @@ BOOL dAcNpcNml_c::talk_c::stepSickReward(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->removePlayer(&player->mPID.player);
             if (quest->countPlayers(FALSE) == 0) {
@@ -391,7 +391,7 @@ int dAcNpcNml_c::talk_c::msgSickEnd(msgInfo_s *info) {
 // 80052C88
 void dAcNpcNml_c::talk_c::endSickRewardFull(int arg) {
     endQuestTalk(arg);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (animal != NULL) {
         dItem::Item item;
@@ -406,7 +406,7 @@ BOOL dAcNpcNml_c::talk_c::stepSickRewardFull(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->removePlayer(&player->mPID.player);
             if (quest->mBase.mState == 1 && quest->countPlayers(FALSE) == 0) {
@@ -426,7 +426,7 @@ BOOL dAcNpcNml_c::talk_c::stepSickReport(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->removePlayer(&player->mPID.player);
             if (quest->mBase.mState == 1 && quest->countPlayers(FALSE) == 0) {

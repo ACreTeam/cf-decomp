@@ -75,7 +75,7 @@ void dAcNpcNml_c::talk_c::endErrandYes(int arg) {
     static const int l_deadlines[3] = {QUEST_DEADLINE_NEXT_HOUR, QUEST_DEADLINE_NEXT_PERIOD, QUEST_DEADLINE_MIDNIGHT};
 
     dAnmPersonalID_c *self;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
     if (errand != NULL) {
         dTime_c *now = dTime_c::getCurrent();
@@ -131,7 +131,7 @@ int dAcNpcNml_c::talk_c::msgErrandQuest(msgInfo_s *info) {
     }
     dAnmPersonalID_c *self = &animal->mID;
     const dQuestErrand_c *errand;
-    const dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    const dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         errand = player->mErrand.get(0);
     } else {
@@ -221,7 +221,7 @@ BOOL dAcNpcNml_c::talk_c::stepErrandReportChoice(int kind) {
 
 // 80056AFC
 void dAcNpcNml_c::talk_c::selErrandReport() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
     if (errand != NULL && errand->mBase.mState == QUEST_ERRAND_DONE) {
         setMsgProc(&talk_c::msgErrandReport);
@@ -245,7 +245,7 @@ int dAcNpcNml_c::talk_c::msgErrandReport(msgInfo_s *info) {
 // 80056C30
 BOOL dAcNpcNml_c::talk_c::stepErrandReport(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         BOOL full = player != NULL ? player->findEmptyPocket(0) == -1 : TRUE;
         msgFunc msg;
         if (full) {
@@ -270,7 +270,7 @@ int dAcNpcNml_c::talk_c::msgErrandReward(msgInfo_s *info) {
 
 // 80056DA0
 void dAcNpcNml_c::talk_c::endErrandReward(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     int price = 0;
     mItem0 = dItem::ITEM_ID_NONE;
@@ -305,7 +305,7 @@ void dAcNpcNml_c::talk_c::endErrandReward(int arg) {
 // 80056EF4
 BOOL dAcNpcNml_c::talk_c::stepErrandReward(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         if (errand != NULL) {
             errand->clear();
@@ -339,7 +339,7 @@ int dAcNpcNml_c::talk_c::msgErrandRewardFull(msgInfo_s *info) {
 // 80057064
 BOOL dAcNpcNml_c::talk_c::stepErrandRewardFull(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         if (errand != NULL) {
             errand->_18E = 1;

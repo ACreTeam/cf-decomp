@@ -69,7 +69,7 @@ int dAcNpcNml_c::talk_c::msgFossilQuest(msgInfo_s *info) {
         return FALSE;
     }
     u8 state;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -209,7 +209,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilGiveChoice(int kind) {
 // 8004D4A4
 void dAcNpcNml_c::talk_c::selFossilGive() {
     dAnimal_c *animal = getAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (animal != NULL && player != NULL) {
         u16 mask = 0;
         countPocketsFossil(&mask, &animal->mQuest.mQuest, player);
@@ -225,7 +225,7 @@ void dAcNpcNml_c::talk_c::resFossilGive() {
     if (!isMenuInvalid()) {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 if (item.isValid()) {
@@ -264,7 +264,7 @@ int dAcNpcNml_c::talk_c::msgFossilWin(msgInfo_s *info) {
 
 // 8004D76C
 void dAcNpcNml_c::talk_c::endFossilWin(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
     int price = 0;
@@ -314,7 +314,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilWin(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->mBase.mState = QUEST_REQUEST_WON;
             fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_FOSSIL, QUEST_REQUEST_WON);
@@ -374,7 +374,7 @@ int dAcNpcNml_c::talk_c::msgFossilRewardEnd(msgInfo_s *info) {
 BOOL dAcNpcNml_c::talk_c::stepFossilLose(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL) {
             dQuestVillager_c *quest = &animal->mQuest.mQuest;
             if (player != NULL) {
@@ -493,7 +493,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilAccept(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dQuestVillager_c *quest;
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL && player != NULL) {
             quest = &animal->mQuest.mQuest;
             if (!quest->mBase.isActive()) {

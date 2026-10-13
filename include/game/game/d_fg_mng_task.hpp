@@ -48,7 +48,7 @@ enum dFgMngKind_e {
     FG_MNG_KIND_DIG_OUT,              // 0x0B fn_111_9880: stumps 0x05..0x10, dead trees 0x01..0x04, 0x95 / 0x9D, saplings (FgInfo stage 0)
     FG_MNG_KIND_BLOCKED,              // 0x0C tool blocked: an item (BITM / furniture) or another player on the unit, undiggable ground, rafflesia; no field change (exec / Req::proc return TRUE)
     FG_MNG_KIND_HIT_ROCK,             // 0x0D axe / shovel on a rock 0x5B..0x5F, an ext object 0xD000.., another player's money rock; no field change
-    FG_MNG_KIND_HIT_MONEY_ROCK,       // 0x0E own money rock 0x60..0x73 ((id - 0x60) / 5 == fn_801017B8()), offline: dFgMngReq_c::proc -> dFgMngStone_c::hit
+    FG_MNG_KIND_HIT_MONEY_ROCK,       // 0x0E own money rock 0x60..0x73 ((id - 0x60) / 5 == dPlayerMgr::getCurrentPlayerSlot()), offline: dFgMngReq_c::proc -> dFgMngStone_c::hit
     FG_MNG_KIND_WATER,                // 0x0F fgobj fn_111_9CE8 (tool type 4): watering; dFgMngReq_c::proc / send -> fgMngProc_waterAround
     FG_MNG_KIND_PUT,                  // 0x10 fgobj fn_111_A878 / fn_111_A994: put an item down on the unit in front
     FG_MNG_KIND_SWAP,                 // 0x11 fgobj fn_111_A8D4: put the held item down at the active (pocket-full) task's unit

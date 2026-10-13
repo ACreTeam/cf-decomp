@@ -283,7 +283,7 @@ void dSaveShop_c::updateStage(int days) {
 
         if (mCountdown >= 8) {
             for (int i = 0; i < PLAYER_NUM; i++) {
-                dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
                 if (player != NULL && player->mPID.isValid()) {
                     player->mShopVote = 0;
                 }
@@ -346,7 +346,7 @@ void dSaveShop_c::updateMail(int days) {
     if (today.get().month == MONTH_OCTOBER) {
         if (mOctoberDate.isNone() || mOctoberDate.get().year != today.get().year) {
             for (int i = 0; i < PLAYER_NUM; i++) {
-                dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
                 if (player != NULL && player->mPID.isValid()) {
                     player->setFlag0(0x56);
                 }
@@ -358,7 +358,7 @@ void dSaveShop_c::updateMail(int days) {
     if (today.get().month == MONTH_DECEMBER && today.get().mday >= 15 && today.get().mday <= 24) {
         if (mDecemberDate.isNone() || mDecemberDate.get().year != today.get().year) {
             for (int i = 0; i < PLAYER_NUM; i++) {
-                dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
                 if (player != NULL && player->mPID.isValid()) {
                     player->setFlag0(0x84);
                 }
@@ -369,7 +369,7 @@ void dSaveShop_c::updateMail(int days) {
     }
 
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
         if (player == NULL || !player->mPID.isValid()) {
             continue;
         }
@@ -476,7 +476,7 @@ void dSaveShop_c::decideNextStage() {
     votes[1] = 0;
     votes[2] = 0;
     for (int i = 0; i < PLAYER_NUM; i++) {
-        switch (dPlayerMgr_c::getPlayer(i)->mShopVote) {
+        switch (dPlayerMgr::Mgr_c::getPlayer(i)->mShopVote) {
         case 1:
             votes[0]++;
             break;

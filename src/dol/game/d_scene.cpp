@@ -3,6 +3,7 @@
 // .ctors 80465754, .rodata 80479BB0..80479F70, .data 804F0768..804F0C50, .bss 805FAF58..805FB008,
 // .sdata 8074B2C0..8074B340, .sbss 8074E848..8074E858, .sdata2 80750EB8..80750EE0.
 #include <game/game/d_scene.hpp>
+#include <game/game/d_player_mgr.hpp>
 #include <game/game/d_sc_data.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_actor.hpp>
@@ -27,8 +28,6 @@ extern "C" {
 BOOL fn_800CCDA4(void *data, int num);
 void fn_80186708();
 void fn_80186260();
-void *fn_80100234(int player, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle);
-void fn_800FE688(u32 *type, mVec3_c *pos, s16 *angle);
 }
 
 namespace dScene {
@@ -371,7 +370,7 @@ static BOOL createScenePlayer(dSceneDataEntry_c *entry) {
     }
 
     sPlayerPos = pos;
-    sPlayer = fn_80100234(dNet::getMyNo(), 1, type, &pos, &angle);
+    sPlayer = dPlayerMgr::createActor(dNet::getMyNo(), 1, type, &pos, &angle);
     if (sPlayer == NULL) {
         return FALSE;
     }
@@ -1081,9 +1080,9 @@ BOOL dSceneChange_c::setReturnExit(u8 scene, const mVec3_c *pos, u32 type, s16 a
 // 80163740
 void dSceneChange_c::setReturnExitHere(f32 dz) {
     s16 angle;
-    u32 type;
+    int type;
     mVec3_c pos;
-    fn_800FE688(&type, &pos, &angle);
+    dPlayerMgr::getDemoWaitPose(&type, &pos, &angle);
     pos.z += dz;
     gSceneReturnExit.set(getCurrentScene(), &pos, type, angle, -1, -1);
 }

@@ -339,7 +339,7 @@ int Item::getPrice() const {
 // 800A60F8
 int Item::getShopPrice() {
     int price = getPrice();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     switch (dSaveData_c::getTown()->mShops.mShop.getRank(player)) {
     case 2:
         price = price - 0.05f * price;

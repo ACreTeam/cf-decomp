@@ -151,7 +151,7 @@ int dAcNpcNml_c::talk_c::msgSale(msgInfo_s *info) {
     dAnimal_c *animal = getAnimal();
     mPrice = 10;
     if (animal != NULL && animal->isFtrBoxed(idx)) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL && player->findEmptyPocket(0) != -1) {
             int price = getSellPrice(&mItem0);
             mPrice = price;
@@ -217,7 +217,7 @@ void dAcNpcNml_c::talk_c::endSaleYes(int arg) {
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             if (mPrice > 0) {
                 player->payMoney(mPrice, FALSE);
@@ -489,7 +489,7 @@ int dAcNpcNml_c::talk_c::msgStallPriceOK(msgInfo_s *info) {
 BOOL dAcNpcNml_c::talk_c::stepStallBuy(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         BOOL ok = FALSE;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL && mPrice > 0 && player->getMoneyRoom(0) >= mPrice) {
             ok = TRUE;
         }

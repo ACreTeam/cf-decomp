@@ -175,7 +175,7 @@ void dSvAucItem_c::clear() {
 void dSvAucItem_c::deletePlayer(u32 player) {
     if (player < PLAYER_NUM) {
         mBids[player & 3] = 0;
-        dPrivateData_c *data = dPlayerMgr_c::getPlayerRaw(player);
+        dPrivateData_c *data = dPlayerMgr::Mgr_c::getPlayerRaw(player);
         if (data != NULL) {
             const dPersonalID_c *bidder = &mHighBidder;
             const dPersonalID_c *pid = &data->mPID;
@@ -285,10 +285,10 @@ void dSvAucItem_c::sendResults(const dLandID_c *land, u32 day, BOOL online) {
     if (!isValid()) {
         return;
     }
-    int self = fn_801017B8();
+    int self = dPlayerMgr::getCurrentPlayerSlot();
     dItem::Item none;
     if ((mSold || day != mDay) && mSentResults != 0xF) {
-        int seller = fn_801017EC(&mSeller);
+        int seller = dPlayerMgr::findPersonalIDSlot(&mSeller);
         if (mSold) {
             if (isFromTown(land) && seller != 7 && !(mSentResults >> (seller & 3) & 1)) {
                 BOOL other = FALSE;
@@ -307,7 +307,7 @@ void dSvAucItem_c::sendResults(const dLandID_c *land, u32 day, BOOL online) {
                     }
                 }
             }
-            int winner = fn_801017EC(&mHighBidder);
+            int winner = dPlayerMgr::findPersonalIDSlot(&mHighBidder);
             if (!online && (u32)winner < PLAYER_NUM && !(mSentResults >> (winner & 3) & 1) &&
                 sendResult(winner, 1, 0, &mItem)) {
                 mSentResults |= 1 << (winner & 3);
@@ -369,10 +369,10 @@ void dSvAucItem_c::close(const dLandID_c *land, int dayType) {
 
 // 8010B65C
 int dSvAucItem_c::getMyBid() const {
-    dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (current != NULL) {
         for (u32 i = 0; i < PLAYER_NUM; i++) {
-            if (dPlayerMgr_c::getPlayer(i) == current) {
+            if (dPlayerMgr::Mgr_c::getPlayer(i) == current) {
                 return mBids[i & 3];
             }
         }
@@ -383,7 +383,7 @@ int dSvAucItem_c::getMyBid() const {
 // 8010B6D8
 void dSvAucItem_c::placeBid(int price, dPrivateData_c *current) {
     if (current == NULL) {
-        current = dPlayerMgr_c::getCurrentPlayer();
+        current = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (mSeller.isValid()) {
         const dPersonalID_c *pid = &current->mPID;
@@ -394,7 +394,7 @@ void dSvAucItem_c::placeBid(int price, dPrivateData_c *current) {
     }
     if (price >= mMinPrice && current != NULL) {
         for (u32 i = 0; i < PLAYER_NUM; i++) {
-            if (dPlayerMgr_c::getPlayer(i) == current) {
+            if (dPlayerMgr::Mgr_c::getPlayer(i) == current) {
                 mBids[i & 3] = price;
                 if (price > mHighBid) {
                     mHighBid = price;
@@ -419,7 +419,7 @@ BOOL dSvAucItem_c::isMyUnsold() const {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid() && !mSold) {
         u16 day = mDay;
         if (day != dSvAuc_c::getToday()) {
-            dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayerRaw();
+            dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
             if (current != NULL) {
                 const dPersonalID_c *pid = &current->mPID;
                 const dPersonalID_c *seller = &mSeller;
@@ -435,7 +435,7 @@ BOOL dSvAucItem_c::isMyUnsold() const {
 // 8010B9C0
 BOOL dSvAucItem_c::isMyWon() const {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid()) {
-        dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayerRaw();
+        dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
         if (current != NULL && mSold) {
             const dPersonalID_c *pid = &current->mPID;
             const dPersonalID_c *bidder = &mHighBidder;
@@ -468,7 +468,7 @@ BOOL dSvAucItem_c::isNotToday() const {
 // 8010BBD8
 void dSvAucItem_c::take() {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid()) {
-        u32 player = fn_801017B8();
+        u32 player = dPlayerMgr::getCurrentPlayerSlot();
         if (player < PLAYER_NUM) {
             mSentResults |= 1 << (player & 3);
             clear();
@@ -479,7 +479,7 @@ void dSvAucItem_c::take() {
 // 8010BC64
 BOOL dSvAucItem_c::hasMyBid() const {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid()) {
-        u32 player = fn_801017B8();
+        u32 player = dPlayerMgr::getCurrentPlayerSlot();
         if (player < PLAYER_NUM) {
             return mBids[player & 3] > 0;
         }
@@ -509,7 +509,7 @@ BOOL dSvAucItem_c::isOver(u32 day, const dLandID_c *land) const {
 BOOL dSvAucItem_c::sendResult(u32 player, u16 kind, int money, const dItem::Item *present) {
     if (player < PLAYER_NUM) {
         static dMail_c sMail;
-        dPrivateData_c *data = dPlayerMgr_c::getPlayer(player);
+        dPrivateData_c *data = dPlayerMgr::Mgr_c::getPlayer(player);
         if (data->mPID.isValid()) {
             if (money > 0 || dItem::isRealItemId(present->mId)) {
                 sMail.clear();
@@ -669,7 +669,7 @@ BOOL dSvAuc_c::list(u32 idx, const dItem::Item *item, int price, const dPersonal
     slot->clear();
     slot->mItem = *item;
     slot->mMinPrice = price;
-    dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     seller = seller != NULL ? seller : &current->mPID;
     slot->mSeller = *seller;
     slot->mDay = getToday();
@@ -813,7 +813,7 @@ void dSvAuc_c::receiveSales(const dSvAucList_c *list, BOOL online) {
                         own->mHighBidder = item->mHighBidder;
                         own->mSold = 1;
                         getChanged()->set(4);
-                        fn_801017EC(&item->mHighBidder);
+                        dPlayerMgr::findPersonalIDSlot(&item->mHighBidder);
                     }
                 }
             }
@@ -926,7 +926,7 @@ BOOL dSvAuc_c::hasMyWon() const {
 // 8010D234
 BOOL dSvAuc_c::hasListedToday(const dPersonalID_c *pid) const {
     u32 day = getToday();
-    dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     pid = pid != NULL ? pid : (current != NULL ? &current->mPID : NULL);
     if (pid != NULL) {
         const dPersonalID_c *seller;

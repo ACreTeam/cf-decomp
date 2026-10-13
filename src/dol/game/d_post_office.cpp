@@ -57,14 +57,14 @@ dPrivateData_c *getSender(dMail_c *mail) {
     }
     dPersonalID_c *from = mail->getFromPlayer();
     if (from != NULL) {
-        return dPlayerMgr_c::getPlayer(from);
+        return dPlayerMgr::Mgr_c::getPlayer(from);
     }
     dPersonalID_c *to = mail->getToPlayer();
     if (to == NULL) {
         return NULL;
     }
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
         if (player->mPID.isValid() && dWifi::findFriend(to, player) >= 0) {
             return player;
         }
@@ -128,7 +128,7 @@ BOOL deliverToPlayer(dMail_c *mail) {
     if (idx < 0) {
         return FALSE;
     }
-    dPlayerPostBox_c *box = dPlayerMgr_c::getPlayer(idx)->getPostBox();
+    dPlayerPostBox_c *box = dPlayerMgr::Mgr_c::getPlayer(idx)->getPostBox();
     int slot = box->findEmpty();
     if (slot < 0) {
         return FALSE;
@@ -168,7 +168,7 @@ BOOL hasMail() {
     if (dNet::getMyNo() != 0) {
         return FALSE;
     }
-    dPlayerPostBox_c *box = dPlayerMgr_c::getCurrentPlayer()->getPostBox();
+    dPlayerPostBox_c *box = dPlayerMgr::Mgr_c::getCurrentPlayer()->getPostBox();
     if (box == NULL) {
         return FALSE;
     }
@@ -202,7 +202,7 @@ void update() {
         if (dPostBox_c::get()->checkDelivery(TRUE)) {
             deliverAll();
         }
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             dPlayerPostBox_c *box = player->getPostBox();
             if (box != NULL) {
@@ -214,7 +214,7 @@ void update() {
 
 // 80102CE8
 BOOL hasFutureLetter() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         dPlayerPostBox_c *box = player->getPostBox();
         if (box != NULL) {
@@ -226,7 +226,7 @@ BOOL hasFutureLetter() {
 
 // 80102D28
 dTime_c getFutureLetterTime() {
-    return dPlayerMgr_c::getCurrentPlayer()->getPostBox()->getFutureMailDate();
+    return dPlayerMgr::Mgr_c::getCurrentPlayer()->getPostBox()->getFutureMailDate();
 }
 
 // 80102D64
@@ -839,7 +839,7 @@ BOOL canGetDistMail() {
     if (mail.isEmpty()) {
         return FALSE;
     }
-    int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, &dPlayerMgr_c::getCurrentPlayer()->mPID);
+    int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
     if (idx == -1) {
         return FALSE;
     }
@@ -855,7 +855,7 @@ BOOL getDistMail() {
     if (!canGetDistMail()) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int slot = player->findLetter();
     if (slot == -1) {
         return FALSE;

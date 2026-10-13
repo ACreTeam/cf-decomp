@@ -118,7 +118,7 @@ void dObjVoice_c::queryStatus() {
         if (i == myNo) {
             l_status[i] = VOICE_MSG_NONE;
         } else if (dNet::isMember(i)) {
-            if (getOption(dPlayerMgr_c::getNetPlayer(i))->isVoiceChat() == TRUE) {
+            if (getOption(dPlayerMgr::Mgr_c::getNetPlayer(i))->isVoiceChat() == TRUE) {
                 l_status[i] = VOICE_MSG_NONE;
             } else {
                 sendReply(VOICE_MSG_QUERY, i);
@@ -192,7 +192,7 @@ void dObjVoice_c::setAnmFinish() {
 // 801B7550
 void dObjVoice_c::setVoice(int member, int msg) {
     if (dNet::isMember(member)) {
-        dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(member);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(member);
         if (player != NULL) {
             if (msg == VOICE_MSG_ON) {
                 dNetMgr_c::connect(member);

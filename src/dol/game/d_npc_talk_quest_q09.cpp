@@ -26,7 +26,7 @@ int dAcNpcNml_c::talk_c::msgInviteOffer(msgInfo_s *info) {
     if (getAnimal() == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -147,7 +147,7 @@ int dAcNpcNml_c::talk_c::msgInviteReserved(msgInfo_s *info) {
 // 8005ACC8
 void dAcNpcNml_c::talk_c::endInviteReserved(int arg) {
     dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (animal != NULL && player != NULL) {
         dTime_c *now = dTime_c::getCurrent();
@@ -226,7 +226,7 @@ int dAcNpcNml_c::talk_c::msgInviteQuest(msgInfo_s *info) {
     if (!block->isAppointmentAnimal(id)) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -428,7 +428,7 @@ int dAcNpcNml_c::talk_c::msgInviteTradeOffer(msgInfo_s *info) {
     if (dSaveData_c::getRaw()->mAnimals.mTown.mAppointment.isFlag(3)) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -539,7 +539,7 @@ static const char l_Q09_Trade4[] = "Q09_Trade4";
 // 8005BE04
 int dAcNpcNml_c::talk_c::msgInviteTrade(msgInfo_s *info) {
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL canBuy = FALSE;
     int idx = npc->getRoomFtrIdx(mFtrPosX, mFtrPosZ);
     mPrice = 10;
@@ -611,7 +611,7 @@ void dAcNpcNml_c::talk_c::endInviteTradeYes(int arg) {
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             if (mPrice > 0) {
                 player->payMoney(mPrice, FALSE);
@@ -706,7 +706,7 @@ void dAcNpcNml_c::talk_c::selInvitePresent() {
     u32 rank;
     dAnimal_c *animal;
     dPrivateData_c *player;
-    player = dPlayerMgr_c::getCurrentPlayer();
+    player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     animal = getAnimal();
     appt = &dSaveData_c::getTown()->mAnimals.mTown.mAppointment;
     idx = appt->mAnimalIdx;

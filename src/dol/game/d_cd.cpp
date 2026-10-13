@@ -32,7 +32,7 @@ int dCd_c::create() {
 // 8018D81C
 int dCd_c::execute() {
     BOOL skip = FALSE;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (player != NULL && player->isFlag0(0xD)) {
         skip = TRUE;
     }

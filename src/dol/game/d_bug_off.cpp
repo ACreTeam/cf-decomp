@@ -244,7 +244,7 @@ void dBugOff_c::setup() {
             return;
         }
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player->mPID.isValid()) {
                 player->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
                 player->clearFlag1(PRIVATE_FLAG1_BUG_OFF_JOINED);

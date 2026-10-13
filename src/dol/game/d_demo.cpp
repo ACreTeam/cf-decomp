@@ -116,7 +116,7 @@ static BOOL checkMenu(Req_c *req) {
     if (!dMenuMng_c::isFree()) {
         return FALSE;
     }
-    if (!fn_800FCAA0()) {
+    if (!dPlayerMgr::requestDemoStart()) {
         return FALSE;
     }
     u8 menu = req->mParam;
@@ -138,7 +138,7 @@ static BOOL execMenu(Req_c *req) {
 
 // 8018DCEC
 static BOOL endMenu(Req_c *req) {
-    BOOL ret = fn_800FD17C();
+    BOOL ret = dPlayerMgr::endDemoWait();
     fn_8019A7B4();
     dMenuMng_c::endMenuBgm();
     return ret;
@@ -208,7 +208,7 @@ static BOOL requestStart(Req_c *req) {
     } else {
         if (dNet::isSessionActive() && req->mCheck == DEMO_CMD_SPEAK) {
             dDemoActor_c *actor = dDemoActor_c::findByDemoID(req->mTargetID);
-            if (!actor->canSpeak(fn_800FBC7C(4))) {
+            if (!actor->canSpeak(dPlayerMgr::getPlayerActor(4))) {
                 return FALSE;
             }
         }
@@ -227,7 +227,7 @@ static BOOL startTalkDemo(Req_c *req) {
     }
     if (ok) {
         sTalkActorID = req->mTargetID;
-        fn_800FBFCC();
+        dPlayerMgr::startDemoWait();
     }
     return ok;
 }
@@ -254,7 +254,7 @@ static void sendTargetCommand(Req_c *req, u8 cmd) {
 
 // 8018E118
 static BOOL endTalkDemo(Req_c *req) {
-    if (!fn_800FD17C()) {
+    if (!dPlayerMgr::endDemoWait()) {
         return FALSE;
     }
     if (req->mStep != STEP_REJECTED) {
@@ -273,7 +273,7 @@ static BOOL checkTalk(Req_c *req) {
     }
     dDemoActor_c *target = dDemoActor_c::findByDemoID(req->mTargetID);
     dDemoActor_c *src = dDemoActor_c::findByDemoID(req->mSrcID);
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
     req->mCheck = DEMO_CMD_TALK;
@@ -315,19 +315,19 @@ static BOOL startTalk(Req_c *req) {
                 state = 2;
             }
             if (state == 2) {
-                if (!fn_800FC010()) {
+                if (!dPlayerMgr::requestDemoWait()) {
                     return FALSE;
                 }
                 req->mStep = STEP_RUN;
                 sendCommand(actor, req->mCheck);
                 return TRUE;
             }
-            fn_800FDBDC(state);
+            dPlayerMgr::fn_800FDBDC(state);
             req->mStep = STEP_WAIT_PLAYER;
             return FALSE;
         }
         case STEP_WAIT_PLAYER:
-            if (fn_800FDCC0()) {
+            if (dPlayerMgr::canFinishToolAction()) {
                 req->mStep = STEP_RUN;
                 sendCommand(actor, req->mCheck);
                 return TRUE;
@@ -383,7 +383,7 @@ BOOL finishTalk(dDemoActor_c *actor) {
 
 // 8018E4FC
 static BOOL checkSpeak(Req_c *req) {
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
     req->mCheck = DEMO_CMD_SPEAK;
@@ -407,7 +407,7 @@ static BOOL endSpeak(Req_c *req) {
 
 // 8018E560
 BOOL requestSpeak(dDemoActor_c *actor) {
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }
@@ -440,7 +440,7 @@ static BOOL execSceneStart(Req_c *req) {
 
 // 8018E648
 static BOOL endSceneStart(Req_c *req) {
-    return fn_800FD17C() != FALSE;
+    return dPlayerMgr::endDemoWait() != FALSE;
 }
 
 // 8018E674
@@ -504,10 +504,10 @@ BOOL isHoldStart() {
 // 8018E7B4
 static BOOL checkExitScene(Req_c *req) {
     dDemoActor_c *actor = dDemoActor_c::findByDemoID(req->mSrcID);
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
-    fn_800FBFCC();
+    dPlayerMgr::startDemoWait();
     if (actor != NULL) {
         actor->onDemoCmd(DEMO_CMD_EXIT, DEMO_SYNC_MEMBER_SELF);
     }
@@ -599,10 +599,10 @@ static BOOL endEnter(Req_c *req) {
 
 // 8018EA10
 static BOOL check7(Req_c *req) {
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
-    fn_800FBFCC();
+    dPlayerMgr::startDemoWait();
     return TRUE;
 }
 
@@ -618,7 +618,7 @@ static BOOL exec7(Req_c *req) {
 
 // 8018EA64
 static BOOL end7(Req_c *req) {
-    return fn_800FD17C();
+    return dPlayerMgr::endDemoWait();
 }
 
 // 8018EA68
@@ -638,7 +638,7 @@ BOOL finish7() {
 
 // 8018EA80
 static BOOL checkReport(Req_c *req) {
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
     req->mCheck = DEMO_CMD_REPORT;
@@ -662,7 +662,7 @@ static BOOL endReport(Req_c *req) {
 
 // 8018EAE4
 BOOL requestReport(dDemoActor_c *actor) {
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }
@@ -714,10 +714,10 @@ BOOL isActive9() {
 
 // 8018EC20
 static BOOL check10(Req_c *req) {
-    if (!fn_800FC7E8()) {
+    if (!dPlayerMgr::canStartIdleDemo()) {
         return FALSE;
     }
-    if (!fn_800FC858()) {
+    if (!dPlayerMgr::hasCurrentActor()) {
         return FALSE;
     }
     req->mStep = STEP_START;
@@ -741,7 +741,7 @@ static BOOL end10(Req_c *req) {
 
 // 8018ECA0
 BOOL request10() {
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }
@@ -765,25 +765,25 @@ static BOOL execSave(Req_c *req) {
 
 // 8018ED14
 static BOOL endSave(Req_c *req) {
-    fn_800FC8EC(FALSE);
+    dPlayerMgr::setDemoWait(FALSE);
     return TRUE;
 }
 
 // 8018ED3C
 BOOL startNetSave() {
-    if (fn_800FBC7C(4) == NULL) {
+    if (dPlayerMgr::getPlayerActor(4) == NULL) {
         return FALSE;
     }
     if (isType(TYPE_ANY)) {
         return FALSE;
     }
-    if (!fn_800FBE98()) {
+    if (!dPlayerMgr::canStartNetSave()) {
         return FALSE;
     }
-    if (!fn_800FC888()) {
+    if (!dPlayerMgr::isNetSaveWaitState()) {
         return FALSE;
     }
-    fn_800FC8EC(TRUE);
+    dPlayerMgr::setDemoWait(TRUE);
     Req_c *req = dNetReqPool::alloc();
     req->mSrcID = 0;
     req->mTargetID = 0;
@@ -805,11 +805,11 @@ BOOL endNetSave() {
 
 // 8018EE28
 static BOOL checkDayChange(Req_c *req) {
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
     onDayChangeReady();
-    fn_800FBFCC();
+    dPlayerMgr::startDemoWait();
     return FALSE;
 }
 
@@ -879,10 +879,10 @@ void offSilence() {
 
 // 8018EF40
 static BOOL checkEvent(Req_c *req) {
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
-    fn_800FBFCC();
+    dPlayerMgr::startDemoWait();
     return TRUE;
 }
 
@@ -898,7 +898,7 @@ static BOOL execEvent(Req_c *req) {
 
 // 8018EF94
 static BOOL endEvent(Req_c *req) {
-    return fn_800FD17C();
+    return dPlayerMgr::endDemoWait();
 }
 
 // 8018EF98
@@ -923,10 +923,10 @@ BOOL isNoDayChange() {
 
 // 8018EFB8: also TYPE_KEYBOARD's
 static BOOL checkUitag(Req_c *req) {
-    if (!fn_800FCAA0()) {
+    if (!dPlayerMgr::requestDemoStart()) {
         return FALSE;
     }
-    fn_800FBFCC();
+    dPlayerMgr::startDemoWait();
     return TRUE;
 }
 
@@ -942,7 +942,7 @@ static BOOL execUitag(Req_c *req) {
 
 // 8018F00C
 static BOOL endUitag(Req_c *req) {
-    return fn_800FD17C();
+    return dPlayerMgr::endDemoWait();
 }
 
 // 8018F010
@@ -982,7 +982,7 @@ static BOOL checkSpeech(Req_c *req) {
         return FALSE;
     }
     dDemoActor_c *src = dDemoActor_c::findByDemoID(req->mSrcID);
-    if (!fn_800FBE3C()) {
+    if (!dPlayerMgr::canStartDemo()) {
         return FALSE;
     }
     req->mCheck = DEMO_CMD_SPEECH;

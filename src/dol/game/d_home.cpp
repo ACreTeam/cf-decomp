@@ -365,7 +365,7 @@ BOOL dHome_c::setOwner(dPrivateData_c *player) {
 
 // 8013D744
 BOOL dHome_c::setOwnerToCurrent() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         return setOwner(player);
     }
@@ -574,7 +574,7 @@ int dHomeList_c::findOwner(dPrivateData_c *player) {
 // 8013DFA8
 int dHomeList_c::findPlayer(u32 player) {
     if (player < PLAYER_NUM) {
-        dPrivateData_c *data = dPlayerMgr_c::getPlayerRaw(player);
+        dPrivateData_c *data = dPlayerMgr::Mgr_c::getPlayerRaw(player);
         if (data != NULL) {
             return findOwner(data);
         }
@@ -585,7 +585,7 @@ int dHomeList_c::findPlayer(u32 player) {
 
 // 8013E004
 int dHomeList_c::findCurrentPlayer() {
-    dPrivateData_c *data = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *data = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (data != NULL) {
         return findOwner(data);
     }
@@ -636,7 +636,7 @@ int dHomeList_c::getPlayerOfHome(u32 home) {
 dPrivateData_c *dHomeList_c::getHomePlayer(u32 home) {
     int player = getPlayerOfHome(home);
     if (player >= 0) {
-        return dPlayerMgr_c::getPlayer(player);
+        return dPlayerMgr::Mgr_c::getPlayer(player);
     }
     return NULL;
 }
@@ -645,7 +645,7 @@ dPrivateData_c *dHomeList_c::getHomePlayer(u32 home) {
 dPrivateData_c *dHomeList_c::getHomePlayerRaw(u32 home) {
     int player = getPlayerOfHome(home);
     if (player >= 0) {
-        return dPlayerMgr_c::getPlayerRaw(player);
+        return dPlayerMgr::Mgr_c::getPlayerRaw(player);
     }
     return NULL;
 }

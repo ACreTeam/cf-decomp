@@ -203,8 +203,8 @@ void dNetMgr_c::execute() {
             mData.get(&mInfo, NULL, NULL);
         } else {
             mData.get(&mInfo,
-                      &dPlayerMgr_c::getCurrentPlayer()->mFriends.mUserData,
-                      dPlayerMgr_c::getCurrentPlayer()->mFriends.mKeys);
+                      &dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mUserData,
+                      dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mKeys);
             dWifi::updateReq();
         }
         if (mState == NET_MGR_STATE_2 && mInfo.mState < 1) {
@@ -654,7 +654,7 @@ void dNetMgr_c::procDwcRequest() {
     } else if (sInstance->mVoiceOff && !dVoiceChat::isStarted()) {
         g_netDwc.fn_800E8DF8(TRUE);
         for (int i = 0; i < sInstance->mMemberNum; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getNetPlayerRaw(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(i);
             if (player != NULL && player->mPID.isValid() &&
                 !player->getOption()->mVoiceChat) {
                 sInstance->mReq.connect(i);

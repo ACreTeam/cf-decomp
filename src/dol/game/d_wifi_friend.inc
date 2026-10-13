@@ -10,13 +10,13 @@ static u8 sSaving;                // 8074E95D
 
 // 8017B894
 DWCFriendData *getFriendData(int idx) {
-    return &dPlayerMgr_c::getCurrentPlayer()->mFriends.mKeys[idx];
+    return &dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mKeys[idx];
 }
 
 // 8017B8CC
 void onRegistered(int idx) {
     if (idx >= 0) {
-        dPlayerMgr_c::getCurrentPlayer()->mFriends.mFriends[idx].copy(&sRegisterFriend);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mFriends[idx].copy(&sRegisterFriend);
         if (sRegisterFriend.mKey != 0) {
             sChanged = TRUE;
         }
@@ -27,14 +27,14 @@ void onRegistered(int idx) {
 // 8017B93C
 void onRemoved(int idx) {
     if (idx >= 0) {
-        dPlayerMgr_c::getCurrentPlayer()->mFriends.removeFriend(idx);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.removeFriend(idx);
     }
     sReqState = REQ_REMOVED;
 }
 
 // 8017B980
 DWCUserData *getUserData() {
-    return &dPlayerMgr_c::getCurrentPlayer()->mFriends.mUserData;
+    return &dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mUserData;
 }
 
 // 8017B9A4
@@ -124,7 +124,7 @@ int findUser(const DWCUserData *userData) {
 
 // 8017BC40
 int findFriendData(const DWCFriendData *data) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const DWCUserData *userData = &player->mFriends.mUserData;
     const DWCFriendData *keys = player->mFriends.mKeys;
     for (u32 i = 0; i < FRIEND_NUM; i++) {
@@ -154,7 +154,7 @@ int findFriendDataReq(const DWCFriendData *data) {
 
 // 8017BD4C
 int findFriendKey(const u64 *key) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     for (int i = 0; i < FRIEND_NUM; i++) {
         if (isFriendValid(i) && *key == player->mFriends.getFriend(i)->mKey) {
             return i;
@@ -175,7 +175,7 @@ int findFriendKey(const u64 *key, const dPrivateData_c *player) {
 
 // 8017BEC0
 int findFriend(const dPersonalID_c *pid) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     for (int i = 0; i < FRIEND_NUM; i++) {
         if (isFriendValid(i) && player->mFriends.getFriend(i)->mPID == *pid) {
             return i;
@@ -222,7 +222,7 @@ BOOL registerFriend(int idx, const DWCFriendData *data, const dFriend_c *fr) {
     if (!dNetMgr_c::isFriendDataValid(data)) {
         return FALSE;
     }
-    dPlayerMgr_c::getCurrentPlayer()->mFriends.set2(idx, data, fr);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.set2(idx, data, fr);
     return TRUE;
 }
 
@@ -251,7 +251,7 @@ BOOL removeFriend(int idx) {
     if (dNetMgr_c::sInstance->mState > NET_MGR_STATE_SETUP) {
         return FALSE;
     }
-    dPlayerMgr_c::getCurrentPlayer()->mFriends.remove(idx);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.remove(idx);
     return TRUE;
 }
 
@@ -289,12 +289,12 @@ void updateReq() {
 
 // 8017C3EC
 void updateFriend(u32 idx, const dPersonalID_c *pid, const wchar_t *message, const u64 *key) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (idx < FRIEND_NUM) {
         player->mFriends.mFriends[idx].mKey = *key;
     }
     sChanged = TRUE;
-    dPlayerMgr_c::getCurrentPlayer()->mFriends.update(idx, pid, message);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.update(idx, pid, message);
 }
 
 // 8017C478

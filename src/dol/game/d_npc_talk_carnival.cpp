@@ -50,7 +50,7 @@ int dAcNpcNml_c::talk_c::msgCarnival(msgInfo_s *info) {
 
     u32 state = CARNIVAL_STATE_NUM;
     if (active) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dNpcEntry_c *entry = getEntry();
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
             // first talk at the event (endCarnival sets the flag)
@@ -166,7 +166,7 @@ void dAcNpcNml_c::talk_c::endCarnival(int arg) {
 BOOL dAcNpcNml_c::talk_c::stepCarnivalGift(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         mItem0.setFromIndex(dItem::ITEM_IDX_BLUE_CANDY, cM::rndInt(4), FALSE);
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL && player->findEmptyPocket(0) != -1) {
             player->pickUp(&mItem0, FALSE);
         }
@@ -203,7 +203,7 @@ int dAcNpcNml_c::talk_c::countStakeItems(u16 *slotMask, dPrivateData_c *player) 
     }
     *slotMask = 0;
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (player != NULL) {
         dItem::Item *pockets = player->mPockets;
@@ -227,7 +227,7 @@ static const int l_candyIdx[4] = {dItem::ITEM_IDX_BLUE_CANDY, dItem::ITEM_IDX_RE
 BOOL dAcNpcNml_c::talk_c::setStakeMsg(msgInfo_s *info, const char *label, stepFunc next) {
     // code 3 candy, 4 500 bells, 5 another item, 6 nothing to stake
     u16 code = 6;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     stepFunc step = NULL;
     mItem0 = dItem::ITEM_ID_NONE;
     mPrice = 0;
@@ -453,7 +453,7 @@ void dAcNpcNml_c::talk_c::endCarnivalLose(int arg) {
 // 8004042C
 BOOL dAcNpcNml_c::talk_c::stepCarnival1Prize(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0 && mItem0.isValid()) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->pickUp(&mItem0, FALSE);
         }
@@ -493,7 +493,7 @@ int dAcNpcNml_c::talk_c::msgCarnival1Pay(msgInfo_s *info) {
             code = 21;
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         if (mPrice > 0) {
             player->payMoney(500, FALSE);
@@ -789,7 +789,7 @@ int dAcNpcNml_c::talk_c::msgCarnival2Won(msgInfo_s *info) {
 // 800412CC
 BOOL dAcNpcNml_c::talk_c::stepCarnival2Prize(int kind) {
     if (mItem0.isValid()) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->pickUp(&mItem0, FALSE);
         }
@@ -829,7 +829,7 @@ int dAcNpcNml_c::talk_c::msgCarnival2Pay(msgInfo_s *info) {
             code = 31;
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         if (mPrice > 0) {
             player->payMoney(500, FALSE);
@@ -1049,7 +1049,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival3Won(int kind) {
 // 80041FBC
 BOOL dAcNpcNml_c::talk_c::stepCarnival3Prize(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->pickUp(&mItem0, FALSE);
         }
@@ -1089,7 +1089,7 @@ int dAcNpcNml_c::talk_c::msgCarnival3Pay(msgInfo_s *info) {
             code = 34;
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         if (mPrice > 0) {
             player->payMoney(500, FALSE);
@@ -1266,7 +1266,7 @@ void dAcNpcNml_c::talk_c::selCarnival4Color() {
 BOOL dAcNpcNml_c::talk_c::stepCarnival4Prize(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         if (mItem0.isValid()) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
@@ -1307,7 +1307,7 @@ int dAcNpcNml_c::talk_c::msgCarnival4Pay(msgInfo_s *info) {
             code = 24;
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         if (mPrice > 0) {
             player->payMoney(500, FALSE);
@@ -1438,7 +1438,7 @@ int dAcNpcNml_c::talk_c::msgCarnival5Pay(msgInfo_s *info) {
             code = 35;
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         if (mPrice > 0) {
             player->payMoney(500, FALSE);
@@ -1560,7 +1560,7 @@ void dAcNpcNml_c::talk_c::selCarnival5Color() {
 BOOL dAcNpcNml_c::talk_c::stepCarnival5Prize(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         if (mItem0.isValid()) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }

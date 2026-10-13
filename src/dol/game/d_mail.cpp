@@ -329,7 +329,7 @@ void dMail_c::setupFromPlayer(const dItem::Item *paper) {
     clear();
     setPaper(paper);
     mSenderKind = MAIL_FROM_NAMED;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     mFrom.setPlayer(&player->mPID);
     setStatus(MAIL_STATUS_WRITTEN);
     player->mLetterStyle.apply(this);
@@ -450,7 +450,7 @@ void dMail_c::setupSystem(const u16 *kind, const char *label, const u8 *senderKi
 
 // 80118694
 void dMail_c::setToVillager(int idx) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     mTo.setAnimal(&animal->mID);
     player->mLetterStyle.applyHeader(this);
@@ -458,8 +458,8 @@ void dMail_c::setToVillager(int idx) {
 
 // 80118708
 void dMail_c::setToPlayer(int idx, BOOL keepHeader) {
-    dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayer();
-    dPrivateData_c *player = dPlayerMgr_c::getPlayer(idx);
+    dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(idx);
     mTo.setPlayer(&player->mPID);
     if (!keepHeader) {
         current->mLetterStyle.applyHeader(this);
@@ -468,7 +468,7 @@ void dMail_c::setToPlayer(int idx, BOOL keepHeader) {
 
 // 80118784
 void dMail_c::setToSelf() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     mTo.setPlayer(&player->mPID);
     mTo.setFutureSelf();
     player->mLetterStyle.applyHeader(this);
@@ -476,7 +476,7 @@ void dMail_c::setToSelf() {
 
 // 801187DC
 void dMail_c::setToFriend(int idx) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     mTo.setPlayer(&player->mFriends.mFriends[idx].mPID);
     player->mLetterStyle.applyHeader(this);
 }
@@ -645,7 +645,7 @@ void dLetterStyle_c::clear() {
 
 // 80118F64
 void dLetterStyle_c::init() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     mFutureNamePos = 0;
     mNamePos = 0;
 

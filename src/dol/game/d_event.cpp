@@ -398,7 +398,7 @@ namespace dEvent {
 
 // 80088BCC
 BOOL isPlayerBirthday(const dTime_c *t, const u8 *player, const u8 *b) {
-    dPrivateData_c *p = dPlayerMgr_c::getPlayer(*player);
+    dPrivateData_c *p = dPlayerMgr::Mgr_c::getPlayer(*player);
     if (p == NULL || !p->mPID.isValid()) {
         return FALSE;
     }
@@ -876,7 +876,7 @@ void buildSchedule(const dTime_c &now, BOOL reset) {
         sActive[i].mActive = FALSE;
     }
     int num = 0;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
 
     active = sActive;
     for (i = 0; i < EVENT_NUM && num < EVENT_ACTIVE_NUM; i++) {

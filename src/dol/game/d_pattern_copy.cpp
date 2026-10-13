@@ -34,7 +34,7 @@ dDesign_c *getDesign(int kind, u32 idx) {
         case PATTERN_PLAYER_1:
         case PATTERN_PLAYER_2:
         case PATTERN_PLAYER_3: {
-            dPrivateData_c *player = dPlayerMgr_c::getNetPlayer(kind);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(kind);
             if (player != nullptr) {
                 return &player->mOrgDesigns.mDesigns[idx % PLAYER_ORG_DESIGN_COUNT];
             }
@@ -47,7 +47,7 @@ dDesign_c *getDesign(int kind, u32 idx) {
         case PATTERN_CLIPBOARD:
             return getClipboard();
         case PATTERN_MY_PLAYER: {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != nullptr) {
                 return &player->mOrgDesigns.mDesigns[idx % PLAYER_ORG_DESIGN_COUNT];
             }

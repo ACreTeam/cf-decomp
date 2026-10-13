@@ -15,7 +15,7 @@ void Info_c::clear() {
 // 800AC160
 void Info_c::set() {
     clear();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     memcpy(mPlayerName, player->mPID.player.mName, sizeof(mPlayerName));
     memcpy(mTownName, player->mPID.land.mName, sizeof(mTownName));
     memcpy(mFriendName, player->mFriends.mName, sizeof(mFriendName));

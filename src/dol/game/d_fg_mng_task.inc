@@ -714,7 +714,7 @@ void dFgMngStone_c::hit(dFdAsPos_c pos) {
     if (mHit == 0) {
         activity = &dSaveData_c::getTown()->mActivity;
         if (activity->mActive & (1 << JINX_OUTCOME_MONEY)) {
-            int player = fn_801017B8();
+            int player = dPlayerMgr::getCurrentPlayerSlot();
             u8 players = activity->mMoneyPlayers;
             if (players & (1 << player)) {
                 max = HIT_MAX_BONUS;
@@ -847,13 +847,12 @@ BOOL fgMngState_isPlayerLeftOf(int player, const f32 *dist) {
     BOOL near = FALSE;
     nw4r::math::VEC3 pos;
     int a, b;
-    // fn_80101DC0 is an empty stub (d_player_mgr); the original called it with these arguments.
-    if (((BOOL (*)(nw4r::math::VEC3 *, int *, int *, int))fn_80101DC0)(&pos, &a, &b, player)) {
+    if (dPlayerMgr::getRemoteTransform(&pos, &a, &b, player)) {
         if (pos.x < *dist) {
             near = TRUE;
         }
     } else {
-        mVec3_c *p = fn_800FBC48(player);
+        mVec3_c *p = dPlayerMgr::getPosition(player);
         if (p != NULL && p->x < *dist) {
             near = TRUE;
         }
@@ -870,7 +869,7 @@ BOOL fgMngState_isFreeOfPlayers(int x, int z, int exclude) {
     dFdBase_c::getUnitCenterPos(&pos, x, z);
     for (int i = 0; i < 4; i++) {
         if (i != exclude) {
-            dFgMngActor_c *actor = (dFgMngActor_c *)fn_800FBC7C(i);
+            dFgMngActor_c *actor = (dFgMngActor_c *)dPlayerMgr::getPlayerActor(i);
             if (actor != NULL) {
                 f32 dx = pos.x - actor->mPos.x;
                 f32 dz = pos.z - actor->mPos.z;
@@ -1295,7 +1294,7 @@ BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
     case dItem::FG_TREE_BELLS:
     case dItem::FG_CEDAR_BELLS:
     default:
-        if (((u8 *)dPlayerMgr_c::getCurrentPlayer())[0x83F9] == 3) {
+        if (((u8 *)dPlayerMgr::Mgr_c::getCurrentPlayer())[0x83F9] == 3) {
             item = dItem::Item(dItem::ITEM_IDX_300_BELLS).mId;
         } else {
             item = dItem::Item(dItem::ITEM_IDX_100_BELLS).mId;

@@ -2554,7 +2554,7 @@ BOOL dNetTransfer_c::sendPlayer() {
         u8 hasMii;
         u8 scene;
 
-        data[0] = dPlayerMgr_c::getCurrentPlayer();
+        data[0] = dPlayerMgr::Mgr_c::getCurrentPlayer();
         size[0] = 0x86C0;
         memset(itemMask, 0, sizeof(itemMask));
         buildDlItemMask(itemMask);
@@ -2652,7 +2652,7 @@ BOOL dNetTransfer_c::sendTown(int member) {
             data[0] = &mTownSent;
             size[0] = sizeof(mTownSent);
             key = lbl_805BE940.mUserId;
-            player = fn_801017B8();
+            player = dPlayerMgr::getCurrentPlayerSlot();
             ticks = dTime_c::getCurrentTicks();
             hasMii = fn_8008B87C();
             if (mTownSent < 0x1635) {
@@ -2718,7 +2718,7 @@ BOOL dNetTransfer_c::sendPlayer(int member) {
         u64 key;
         u8 hasMii;
         int n;
-        data[0] = dPlayerMgr_c::getCurrentPlayer();
+        data[0] = dPlayerMgr::Mgr_c::getCurrentPlayer();
         size[0] = 0x86C0;
         key = lbl_805BE940.mUserId;
         data[1] = &key;
@@ -4658,9 +4658,9 @@ void setupNetMgr() {
             buffer += NET_RECV_BUF_SIZE;
         }
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dNetMgr_c::sInstance->setup(
-        &dPlayerMgr_c::getCurrentPlayer()->mFriends.mUserData,
+        &dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mUserData,
         player->mFriends.mKeys, FRIEND_NUM, NET_MEMBER_MAX, bufs,
         NET_RECV_BUF_SIZE);
     dNetMgr_c::sInstance->setCallbacks(onNetMgrRecv, onNetMgrJoin,
@@ -4682,9 +4682,9 @@ void startNetHostSession() {
     getNetScene()->reset();
     for (u32 i = 0; i < NET_MEMBER_MAX; i++) {
         if (i == 0) {
-            fn_80100238(0, fn_801017B8());
+            dPlayerMgr::setPlayerSlot(0, dPlayerMgr::getCurrentPlayerSlot());
         } else {
-            fn_80100238(i, i + 3);
+            dPlayerMgr::setPlayerSlot(i, i + 3);
         }
     }
     getNetPacket()->mFrame = cCounter_c::m_gameFrame;
@@ -4696,7 +4696,7 @@ void startNetHostSession() {
 void terminateNetSession(int arg) {
     onSessionEnd();
     if (g_dNet.mSavedSlot < 7) {
-        fn_80100238(0, g_dNet.mSavedSlot);
+        dPlayerMgr::setPlayerSlot(0, g_dNet.mSavedSlot);
     }
     resetNetState(arg);
     dNetMgr_c::sInstance->cleanup();
@@ -4820,7 +4820,7 @@ BOOL startHost() {
     if (!dReset::Manage_c::GetInstance()->isResetting() &&
         dNetMgr_c::sInstance->fn_800E51C8(0)) {
         if (g_dNet.mSavedSlot >= 7) {
-            g_dNet.mSavedSlot = fn_801017B8();
+            g_dNet.mSavedSlot = dPlayerMgr::getCurrentPlayerSlot();
         }
         setNetMyNo(0);
         startNetHostSession();
@@ -4833,18 +4833,18 @@ BOOL startGuest(int arg) {
     if (!dReset::Manage_c::GetInstance()->isResetting() &&
         dNetMgr_c::sInstance->fn_800E5298(arg)) {
         u8 my = dNetMgr_c::sInstance->mInfo.mMyNo;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (g_dNet.mSavedSlot >= 7) {
-            g_dNet.mSavedSlot = fn_801017B8();
+            g_dNet.mSavedSlot = dPlayerMgr::getCurrentPlayerSlot();
         }
         setNetMyNo(my);
         setJoined(1);
         for (u32 i = 0; i < NET_MEMBER_MAX; i++) {
             if (i != 0) {
-                fn_80100238(i, i + 3);
+                dPlayerMgr::setPlayerSlot(i, i + 3);
             }
         }
-        cLib::memCpy(dPlayerMgr_c::getNetPlayer(my), player,
+        cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(my), player,
                      sizeof(dPrivateData_c));
         getNetPacket()->mFrame = cCounter_c::m_gameFrame;
         fn_8008B838(my);

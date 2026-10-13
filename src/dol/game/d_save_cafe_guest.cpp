@@ -111,7 +111,7 @@ u8 dSaveCafeGuest_c::getCurrentGuest() {
         return getGuest(0);
     }
     if (now.hour == 12 || (now.hour == 13 && now.min < 30)) {
-        if (mGuests[1] == CAFE_GUEST_DON && !dPlayerMgr_c::getCurrentPlayer()->isDonAtCafe()) {
+        if (mGuests[1] == CAFE_GUEST_DON && !dPlayerMgr::Mgr_c::getCurrentPlayer()->isDonAtCafe()) {
             return CAFE_GUEST_NONE;
         }
         return getGuest(1);

@@ -151,11 +151,11 @@ void tanukichi_c::clear() {
 
 // 800F5BC4
 BOOL tanukichi_c::isAllVillagersMet() {
-    if (!dPlayerMgr_c::getCurrentPlayerRaw()->isFlag0(0xF)) {
+    if (!dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(0xF)) {
         return FALSE;
     }
     dAnimalBlock_c *animals = &dSaveData_c::getTown()->mAnimals.mTown;
-    dPersonalID_c *pid = &dPlayerMgr_c::getCurrentPlayer()->mPID;
+    dPersonalID_c *pid = &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID;
     for (int i = 0; i < 10; i++) {
         dAnimal_c *animal = animals->getAnimal(i);
         if (animal != NULL && animal->mID.isValid() && animal->findMemory(pid) == NULL) {
@@ -178,7 +178,7 @@ void jingle_c::clear() {
 // 800F5C98
 bool jingle_c::isMet() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mMet;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mMet;
     }
     return mRing.mMet;
 }
@@ -186,7 +186,7 @@ bool jingle_c::isMet() {
 // 800F5CFC
 bool jingle_c::isGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mGiven;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mGiven;
     }
     return mRing.mGiven;
 }
@@ -194,7 +194,7 @@ bool jingle_c::isGiven() {
 // 800F5D60
 bool jingle_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mTalked;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mTalked;
     }
     return mRing.mTalked;
 }
@@ -202,7 +202,7 @@ bool jingle_c::isTalked() {
 // 800F5DC4
 bool jingle_c::isGivenHere() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mGivenHere;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mGivenHere;
     }
     return mRing.mGivenHere;
 }
@@ -210,7 +210,7 @@ bool jingle_c::isGivenHere() {
 // 800F5E28
 int jingle_c::getCount() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mCount;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mCount;
     }
     return mRing.mCount;
 }
@@ -218,7 +218,7 @@ int jingle_c::getCount() {
 // 800F5E74
 bool jingle_c::isMoved() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mMoved;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mMoved;
     }
     return mRing.mMoved;
 }
@@ -226,7 +226,7 @@ bool jingle_c::isMoved() {
 // 800F5ED8
 void jingle_c::meet() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.meet();
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.meet();
     } else {
         mRing.meet();
     }
@@ -235,7 +235,7 @@ void jingle_c::meet() {
 // 800F5F24
 void jingle_c::push(dItem::Item hat, dItem::Item acc) {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.push(hat, acc);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.push(hat, acc);
     } else {
         mRing.push(hat, acc);
     }
@@ -244,7 +244,7 @@ void jingle_c::push(dItem::Item hat, dItem::Item acc) {
 // 800F5FB8
 void jingle_c::incCount() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.incCount();
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.incCount();
     } else {
         mRing.incCount();
     }
@@ -253,7 +253,7 @@ void jingle_c::incCount() {
 // 800F6004
 BOOL jingle_c::contains(dItem::Item hat, dItem::Item acc) {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.contains(hat, acc);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.contains(hat, acc);
     }
     return mRing.contains(hat, acc);
 }
@@ -261,7 +261,7 @@ BOOL jingle_c::contains(dItem::Item hat, dItem::Item acc) {
 // 800F6098
 void jingle_c::move() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.move();
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.move();
     } else {
         mRing.move();
     }
@@ -330,7 +330,7 @@ void jingle_c::setSpot() {
 // 800F62F4
 bool jingle_c::isFirstGift() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mFirstGift;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mFirstGift;
     }
     return mRing.mFirstGift;
 }
@@ -338,7 +338,7 @@ bool jingle_c::isFirstGift() {
 // 800F6358
 bool jingle_c::isRefusedNewLook() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mRefusedNewLook;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mRefusedNewLook;
     }
     return mRing.mRefusedNewLook;
 }
@@ -346,7 +346,7 @@ bool jingle_c::isRefusedNewLook() {
 // 800F63BC
 void jingle_c::setGreetedNewLook() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dItemPairRing_c *ring = &dPlayerMgr_c::getCurrentPlayer()->mItemPairRing;
+        dItemPairRing_c *ring = &dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing;
         ring->mGreetedNewLook = 1;
     } else {
         mRing.mGreetedNewLook = 1;
@@ -356,7 +356,7 @@ void jingle_c::setGreetedNewLook() {
 // 800F6410
 bool jingle_c::isGreetedNewLook() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.mGreetedNewLook;
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.mGreetedNewLook;
     }
     return mRing.mGreetedNewLook;
 }
@@ -364,7 +364,7 @@ bool jingle_c::isGreetedNewLook() {
 // 800F6474
 void jingle_c::setRefusedNewLook() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dItemPairRing_c *ring = &dPlayerMgr_c::getCurrentPlayer()->mItemPairRing;
+        dItemPairRing_c *ring = &dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing;
         ring->mRefusedNewLook = 1;
     } else {
         mRing.mRefusedNewLook = 1;
@@ -374,7 +374,7 @@ void jingle_c::setRefusedNewLook() {
 // 800F64C8
 void jingle_c::resetEncounter() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->mItemPairRing.resetEncounter();
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mItemPairRing.resetEncounter();
     } else {
         mRing.resetEncounter();
     }
@@ -402,7 +402,7 @@ void franklin_c::clear() {
 // 800F6550
 void franklin_c::setTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x18);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x18);
     } else {
         mTalked = 1;
     }
@@ -412,10 +412,10 @@ void franklin_c::setTalked() {
 // 800F65A4
 void franklin_c::setGaveKnifeFork() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        if (dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x19)) {
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x1A);
+        if (dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x19)) {
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x1A);
         } else {
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x19);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x19);
         }
     } else if (mGaveKnifeFork) {
         mGaveKnifeFork2 = 1;
@@ -428,7 +428,7 @@ void franklin_c::setGaveKnifeFork() {
 // 800F6634
 void franklin_c::relocate() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        if (dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x18)) {
+        if (dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x18)) {
             mRelocated = 1;
         }
     } else if (mTalked) {
@@ -460,7 +460,7 @@ void franklin_c::setSpot(const mVec3_c *center, f32 radius) {
 // 800F67B0
 BOOL franklin_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x18);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x18);
     }
     return mTalked;
 }
@@ -489,7 +489,7 @@ void pyontaro_c::resetTalks() {
 // 800F6830
 void pyontaro_c::setIntroduced() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x28);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x28);
     } else {
         mIntroduced = 1;
     }
@@ -502,7 +502,7 @@ void pyontaro_c::setIntroduced() {
 // 800F6890
 void pyontaro_c::setShovelOffered() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x3F);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x3F);
     } else {
         mShovelOffered = 1;
     }
@@ -555,10 +555,10 @@ void pyontaro_c::incNoEggsTalks() {
 // 800F6990
 void pyontaro_c::incBackTalks() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        if (!dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x46)) {
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x46);
+        if (!dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x46)) {
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x46);
         } else {
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x47);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x47);
         }
     } else if (mBackTalks < 2) {
         mBackTalks++;
@@ -572,10 +572,10 @@ void pyontaro_c::incBackTalks() {
 // 800F6A20
 int pyontaro_c::getBackTalks() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        if (dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x47)) {
+        if (dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x47)) {
             return 2;
         }
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x46);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x46);
     }
     return mBackTalks;
 }
@@ -583,7 +583,7 @@ int pyontaro_c::getBackTalks() {
 // 800F6A84
 BOOL pyontaro_c::isIntroduced() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x28);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x28);
     }
     return mIntroduced;
 }
@@ -591,7 +591,7 @@ BOOL pyontaro_c::isIntroduced() {
 // 800F6ACC
 BOOL pyontaro_c::isShovelOffered() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x3F);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x3F);
     }
     return mShovelOffered;
 }
@@ -611,7 +611,7 @@ void uomasa_c::clear() {
 // 800F6B30
 void uomasa_c::setJoined() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_FISHING_JOINED);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_FISHING_JOINED);
     } else {
         mJoined = 1;
     }
@@ -620,7 +620,7 @@ void uomasa_c::setJoined() {
 // 800F6B7C
 void uomasa_c::setTalkedBeforeStart() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START);
     } else {
         mTalkedBeforeStart = 1;
     }
@@ -629,7 +629,7 @@ void uomasa_c::setTalkedBeforeStart() {
 // 800F6BC8
 void uomasa_c::setResultHeard() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_FISHING_RESULT_HEARD);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_FISHING_RESULT_HEARD);
     } else {
         mResultHeard = 1;
     }
@@ -638,7 +638,7 @@ void uomasa_c::setResultHeard() {
 // 800F6C14
 BOOL uomasa_c::isJoined() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_FISHING_JOINED);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_FISHING_JOINED);
     }
     return mJoined;
 }
@@ -646,7 +646,7 @@ BOOL uomasa_c::isJoined() {
 // 800F6C5C
 BOOL uomasa_c::isTalkedBeforeStart() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START);
     }
     return mTalkedBeforeStart;
 }
@@ -654,7 +654,7 @@ BOOL uomasa_c::isTalkedBeforeStart() {
 // 800F6CA4
 BOOL uomasa_c::isResultHeard() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_FISHING_RESULT_HEARD);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_FISHING_RESULT_HEARD);
     }
     return mResultHeard;
 }
@@ -675,7 +675,7 @@ void bug_c::clear() {
 // 800F6D0C
 void bug_c::setJoined() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_JOINED);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_JOINED);
     } else {
         mJoined = 1;
     }
@@ -684,7 +684,7 @@ void bug_c::setJoined() {
 // 800F6D58
 void bug_c::setTalkedBeforeStart() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START);
     } else {
         mTalkedBeforeStart = 1;
     }
@@ -693,7 +693,7 @@ void bug_c::setTalkedBeforeStart() {
 // 800F6DA4
 void bug_c::setResultHeard() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD);
     } else {
         mResultHeard = 1;
     }
@@ -702,7 +702,7 @@ void bug_c::setResultHeard() {
 // 800F6DF0
 void bug_c::setJudged() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_JUDGED);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(PRIVATE_FLAG1_BUG_OFF_JUDGED);
     } else {
         mJudged = 1;
     }
@@ -711,7 +711,7 @@ void bug_c::setJudged() {
 // 800F6E3C
 BOOL bug_c::isJoined() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_JOINED);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_JOINED);
     }
     return mJoined;
 }
@@ -719,7 +719,7 @@ BOOL bug_c::isJoined() {
 // 800F6E84
 BOOL bug_c::isTalkedBeforeStart() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START);
     }
     return mTalkedBeforeStart;
 }
@@ -727,7 +727,7 @@ BOOL bug_c::isTalkedBeforeStart() {
 // 800F6ECC
 BOOL bug_c::isResultHeard() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD);
     }
     return mResultHeard;
 }
@@ -735,7 +735,7 @@ BOOL bug_c::isResultHeard() {
 // 800F6F14
 BOOL bug_c::isJudged() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_JUDGED);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_BUG_OFF_JUDGED);
     }
     return mJudged;
 }
@@ -756,7 +756,7 @@ void pumpking_c::clear() {
 // 800F6F7C
 void pumpking_c::setNoCandyTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x14);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x14);
     } else {
         mNoCandyTold = 1;
     }
@@ -765,7 +765,7 @@ void pumpking_c::setNoCandyTold() {
 // 800F6FC8
 void pumpking_c::setCandyGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x15);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x15);
     } else {
         mCandyGiven = 1;
     }
@@ -774,7 +774,7 @@ void pumpking_c::setCandyGiven() {
 // 800F7014
 void pumpking_c::setOtherGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x16);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x16);
     } else {
         mOtherGiven = 1;
     }
@@ -783,7 +783,7 @@ void pumpking_c::setOtherGiven() {
 // 800F7060
 void pumpking_c::setRefused() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x17);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x17);
     } else {
         mRefused = 1;
     }
@@ -792,7 +792,7 @@ void pumpking_c::setRefused() {
 // 800F70AC
 BOOL pumpking_c::isNoCandyTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x14);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x14);
     }
     return mNoCandyTold;
 }
@@ -800,7 +800,7 @@ BOOL pumpking_c::isNoCandyTold() {
 // 800F70F4
 BOOL pumpking_c::isCandyGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x15);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x15);
     }
     return mCandyGiven;
 }
@@ -808,7 +808,7 @@ BOOL pumpking_c::isCandyGiven() {
 // 800F713C
 BOOL pumpking_c::isOtherGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x16);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x16);
     }
     return mOtherGiven;
 }
@@ -816,7 +816,7 @@ BOOL pumpking_c::isOtherGiven() {
 // 800F7184
 BOOL pumpking_c::isRefused() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x17);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x17);
     }
     return mRefused;
 }
@@ -875,7 +875,7 @@ void soncho_c::clear() {
 // 800F734C
 dItem::Item *soncho_c::getPresent() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return &dPlayerMgr_c::getCurrentPlayer()->mSonchoPresent;
+        return &dPlayerMgr::Mgr_c::getCurrentPlayer()->mSonchoPresent;
     }
     return &mPresent;
 }
@@ -883,7 +883,7 @@ dItem::Item *soncho_c::getPresent() {
 // 800F7394
 void soncho_c::setPresent(dItem::Item item) {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->mSonchoPresent = item;
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->mSonchoPresent = item;
     } else {
         mPresent = item;
     }
@@ -892,7 +892,7 @@ void soncho_c::setPresent(dItem::Item item) {
 // 800F73F0
 void soncho_c::setTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x06);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x06);
     } else {
         mTalked = 1;
     }
@@ -901,7 +901,7 @@ void soncho_c::setTalked() {
 // 800F743C
 void soncho_c::setFullTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x0B);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x0B);
     } else {
         mFullTold = 1;
     }
@@ -910,7 +910,7 @@ void soncho_c::setFullTold() {
 // 800F7488
 void soncho_c::setTalkedAfter() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x0C);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x0C);
     } else {
         mTalkedAfter = 1;
     }
@@ -919,7 +919,7 @@ void soncho_c::setTalkedAfter() {
 // 800F74D4
 void soncho_c::setPopperGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x22);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x22);
     } else {
         mPopperGiven = 1;
     }
@@ -928,7 +928,7 @@ void soncho_c::setPopperGiven() {
 // 800F7520
 void soncho_c::setHfRegiveTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x23);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x23);
     } else {
         mHfRegiveTold = 1;
     }
@@ -937,7 +937,7 @@ void soncho_c::setHfRegiveTold() {
 // 800F756C
 void soncho_c::setHfLostAsked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x24);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x24);
     } else {
         mHfLostAsked = 1;
     }
@@ -946,7 +946,7 @@ void soncho_c::setHfLostAsked() {
 // 800F75B8
 void soncho_c::setHfGreeted() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x25);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x25);
     } else {
         mHfGreeted = 1;
     }
@@ -955,7 +955,7 @@ void soncho_c::setHfGreeted() {
 // 800F7604
 void soncho_c::setHfTalkedAfter() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x26);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x26);
     } else {
         mHfTalkedAfter = 1;
     }
@@ -964,7 +964,7 @@ void soncho_c::setHfTalkedAfter() {
 // 800F7650
 void soncho_c::setHfFullTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x41);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x41);
     } else {
         mHfFullTold = 1;
     }
@@ -973,7 +973,7 @@ void soncho_c::setHfFullTold() {
 // 800F769C
 void soncho_c::setHfTalkedBeforeStart() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x42);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x42);
     } else {
         mHfTalkedBeforeStart = 1;
     }
@@ -982,7 +982,7 @@ void soncho_c::setHfTalkedBeforeStart() {
 // 800F76E8
 void soncho_c::resetPopperGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->clearFlag1(0x22);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->clearFlag1(0x22);
     } else {
         mPopperGiven = 0;
     }
@@ -991,7 +991,7 @@ void soncho_c::resetPopperGiven() {
 // 800F7734
 void soncho_c::resetHfLostAsked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->clearFlag1(0x24);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->clearFlag1(0x24);
     } else {
         mHfLostAsked = 0;
     }
@@ -1000,7 +1000,7 @@ void soncho_c::resetHfLostAsked() {
 // 800F7780
 void soncho_c::setGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x07);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x07);
     } else {
         mGiven = 1;
     }
@@ -1009,7 +1009,7 @@ void soncho_c::setGiven() {
 // 800F77CC
 BOOL soncho_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x06);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x06);
     }
     return mTalked;
 }
@@ -1017,7 +1017,7 @@ BOOL soncho_c::isTalked() {
 // 800F7814
 BOOL soncho_c::isFullTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x0B);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x0B);
     }
     return mFullTold;
 }
@@ -1025,7 +1025,7 @@ BOOL soncho_c::isFullTold() {
 // 800F785C
 BOOL soncho_c::isTalkedAfter() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x0C);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x0C);
     }
     return mTalkedAfter;
 }
@@ -1033,7 +1033,7 @@ BOOL soncho_c::isTalkedAfter() {
 // 800F78A4
 BOOL soncho_c::isPopperGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x22);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x22);
     }
     return mPopperGiven;
 }
@@ -1041,7 +1041,7 @@ BOOL soncho_c::isPopperGiven() {
 // 800F78EC
 BOOL soncho_c::isHfRegiveTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x23);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x23);
     }
     return mHfRegiveTold;
 }
@@ -1049,7 +1049,7 @@ BOOL soncho_c::isHfRegiveTold() {
 // 800F7934
 BOOL soncho_c::isHfLostAsked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x24);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x24);
     }
     return mHfLostAsked;
 }
@@ -1057,7 +1057,7 @@ BOOL soncho_c::isHfLostAsked() {
 // 800F797C
 BOOL soncho_c::isHfGreeted() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x25);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x25);
     }
     return mHfGreeted;
 }
@@ -1065,7 +1065,7 @@ BOOL soncho_c::isHfGreeted() {
 // 800F79C4
 BOOL soncho_c::isHfTalkedAfter() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x26);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x26);
     }
     return mHfTalkedAfter;
 }
@@ -1073,7 +1073,7 @@ BOOL soncho_c::isHfTalkedAfter() {
 // 800F7A0C
 BOOL soncho_c::isHfFullTold() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x41);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x41);
     }
     return mHfFullTold;
 }
@@ -1081,7 +1081,7 @@ BOOL soncho_c::isHfFullTold() {
 // 800F7A54
 BOOL soncho_c::isHfTalkedBeforeStart() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x42);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x42);
     }
     return mHfTalkedBeforeStart;
 }
@@ -1089,7 +1089,7 @@ BOOL soncho_c::isHfTalkedBeforeStart() {
 // 800F7A9C
 BOOL soncho_c::isGiven() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x07);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x07);
     }
     return mGiven;
 }
@@ -1233,7 +1233,7 @@ void dancer_c::clear() {
 // 800F7DC8
 BOOL dancer_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x2B);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x2B);
     }
     return mTalked;
 }
@@ -1241,7 +1241,7 @@ BOOL dancer_c::isTalked() {
 // 800F7E10
 void dancer_c::setTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x2B);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x2B);
     } else {
         mTalked = 1;
     }
@@ -1252,13 +1252,13 @@ BOOL dancer_c::isCandyAsked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
         switch (dSaveData_c::getTown()->mDailyRand.mValue) {
         case 0:
-            return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x2C);
+            return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x2C);
         case 1:
-            return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x2D);
+            return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x2D);
         case 2:
-            return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x2E);
+            return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x2E);
         case 3:
-            return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x2F);
+            return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x2F);
         default:
             return FALSE;
         }
@@ -1271,16 +1271,16 @@ void dancer_c::setCandyAsked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
         switch (dSaveData_c::getTown()->mDailyRand.mValue) {
         case 0:
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x2C);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x2C);
             break;
         case 1:
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x2D);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x2D);
             break;
         case 2:
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x2E);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x2E);
             break;
         case 3:
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x2F);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x2F);
             break;
         }
     } else {
@@ -1343,7 +1343,7 @@ void totakeke_c::setTalked() {
         _05 = 1;
     }
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x30);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x30);
     } else {
         mTalked = 1;
     }
@@ -1351,13 +1351,13 @@ void totakeke_c::setTalked() {
 
 // 800F8148
 BOOL totakeke_c::isMet() {
-    return dPlayerMgr_c::getCurrentPlayerRaw()->isFlag0(0x4D);
+    return dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(0x4D);
 }
 
 // 800F8170
 BOOL totakeke_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x30);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x30);
     }
     return mTalked;
 }
@@ -1368,7 +1368,7 @@ void totakeke_c::start(int kind, u16 song, const void *request) {
     dItem::Item requestedSong(song);
     mRequestKind = kind;
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x31);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x31);
     } else {
         mRequested = 1;
     }
@@ -1404,7 +1404,7 @@ void totakeke_c::start(int kind, u16 song, const void *request) {
     }
     if (!mSong.isValid()) {
         // Prefer a song the player does not own.
-        u8 *ownedSongs = dPlayerMgr_c::getCurrentPlayer()->mFlags2;
+        u8 *ownedSongs = dPlayerMgr::Mgr_c::getCurrentPlayer()->mFlags2;
         if (from == dItem::FROM_MUSIC_HAZURE) {
             ownedSongs = NULL;
         }
@@ -1519,7 +1519,7 @@ void totakeke_c::stop() {
 // 800F8690
 BOOL totakeke_c::isRequested() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x31);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x31);
     }
     return mRequested;
 }
@@ -1540,10 +1540,10 @@ void totakeke_c::setPlaying(BOOL on) {
 
 // 800F8740
 BOOL totakeke_c::isOnStage() {
-    if (fn_800FBC48(4) == NULL) {
+    if (dPlayerMgr::getPosition(4) == NULL) {
         return FALSE;
     }
-    if (fn_800FD664() && dScene::getCurrentScene() == dScene::SCENE_RM_MM_CAFE && fn_800FBC48(4)->z >= 352.0f) {
+    if (dPlayerMgr::isChairAnimation() && dScene::getCurrentScene() == dScene::SCENE_RM_MM_CAFE && dPlayerMgr::getPosition(4)->z >= 352.0f) {
         return TRUE;
     }
     return FALSE;
@@ -1663,12 +1663,12 @@ BOOL dNpcInfo::isSameFashion(const dItem::Item *a, const dItem::Item *b) {
 
 // 800F8A20
 BOOL dNpcInfo::isPlayerFashionMatching() {
-    if (isSameFashion(&dPlayerMgr_c::getCurrentPlayer()->mEquipment.mShirt,
-                      &dPlayerMgr_c::getCurrentPlayer()->mEquipment.mHat)) {
+    if (isSameFashion(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mEquipment.mShirt,
+                      &dPlayerMgr::Mgr_c::getCurrentPlayer()->mEquipment.mHat)) {
         return TRUE;
     }
-    return isSameFashion(&dPlayerMgr_c::getCurrentPlayer()->mEquipment.mShirt,
-                         &dPlayerMgr_c::getCurrentPlayer()->mEquipment.mAcc);
+    return isSameFashion(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mEquipment.mShirt,
+                         &dPlayerMgr::Mgr_c::getCurrentPlayer()->mEquipment.mAcc);
 }
 
 // 800F8A84
@@ -1694,9 +1694,9 @@ void kaburiba_c::clear() {
 
 // 800F8AB0
 void kaburiba_c::setTalked() {
-    dPlayerMgr_c::getCurrentPlayer()->setFlag0(PRIVATE_FLAG0_JOAN_MET);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag0(PRIVATE_FLAG0_JOAN_MET);
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x00);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x00);
     } else {
         mTalked = 1;
     }
@@ -1705,7 +1705,7 @@ void kaburiba_c::setTalked() {
 // 800F8B08
 BOOL kaburiba_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x00);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x00);
     }
     return mTalked;
 }
@@ -1723,7 +1723,7 @@ void fuko_c::clear() {
 // 800F8B64
 void fuko_c::setTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x02);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x02);
     } else {
         mTalked = 1;
     }
@@ -1732,7 +1732,7 @@ void fuko_c::setTalked() {
 // 800F8BB0
 BOOL fuko_c::isTalked() {
     if (dAcNpc_c::isPlayerFromThisTown()) {
-        return dPlayerMgr_c::getCurrentPlayer()->isFlag1(0x02);
+        return dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x02);
     }
     return mTalked;
 }

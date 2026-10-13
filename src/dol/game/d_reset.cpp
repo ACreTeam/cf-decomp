@@ -231,7 +231,7 @@ void Manage_c::PostDeleteScene() {
         bus->mType = 0;
         dNpcMng_c::reset();
         dSaveOption::reset(&dSaveData_c::sOption);
-        fn_80101424();
+        dPlayerMgr::reset();
         dBgm::l_mgr.init();
         dWifi::reset();
         mSoftResetPending = false;

@@ -65,7 +65,7 @@ void setNewPlayerDefaults(dSaveOption_c *opt) {
 
     if (dSaveData_c::getTown()->isHeaderState2()) {
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player->mPID.isValid() && getOption(player)->isKana() == TRUE) {
                 flag = FALSE;
             }
@@ -164,7 +164,7 @@ void setVoiceSound(u8 v) {
 
 // 8010DA54
 u8 getPlayerVoiceVolume() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return 0;
     }
@@ -173,12 +173,12 @@ u8 getPlayerVoiceVolume() {
 
 // 8010DA8C
 void setPlayerVoiceVolume(u8 v) {
-    setVoiceVolume(getOption(dPlayerMgr_c::getCurrentPlayer()), v);
+    setVoiceVolume(getOption(dPlayerMgr::Mgr_c::getCurrentPlayer()), v);
 }
 
 // 8010DAC8
 void storeToCurrentPlayer() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         store(getOption(player));
     }

@@ -1181,7 +1181,7 @@ BOOL dAcNpcNml_c::talk_c::startMsg() {
 // 80030F18
 void dAcNpcNml_c::talk_c::recordMemoryTalk(dAnimalMemory_c **memory, u32 *memoryIdx, dAnimal_c *animal, int npcIdx,
                                       const dLandID_c *land) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
     if (pid != NULL && animal != NULL) {
         if (*memory == NULL) {
@@ -1249,7 +1249,7 @@ void dAcNpcNml_c::talk_c::start(dAcNpc_c *npc, dActor_c *actor, const procSet_s 
     mCountTalk = 0;
     mStylePlayer = NULL;
     mEquip.clear();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
     if (pid != NULL && pid->isValid()) {
         dAnimal_c *animal = getAnimal();
@@ -1312,7 +1312,7 @@ BOOL dAcNpcNml_c::talk_c::reqSell() {
     if (mPrice == 0) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -1352,7 +1352,7 @@ BOOL dAcNpcNml_c::talk_c::reqBuy() {
     if (mPrice == 0) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -1400,7 +1400,7 @@ BOOL dAcNpcNml_c::talk_c::reqTrade() {
     if (!mItem2.isValid()) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -1434,7 +1434,7 @@ BOOL dAcNpcNml_c::talk_c::reqTrade() {
 
 // 80031960
 BOOL dAcNpcNml_c::talk_c::reqGive() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -1451,7 +1451,7 @@ BOOL dAcNpcNml_c::talk_c::reqTake() {
     if (!mItem0.isValid()) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -1897,7 +1897,7 @@ void dAcNpcNml_c::talk_c::selectMessage(const EGG::MsgRes::MessageHeader *bmg) {
     dTime_c *now = dTime_c::getCurrent();
     int timeOfDay = now->getTimeOfDay();
     int season = dTime_c::getCurrentSeason();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dPersonalID_c *pid = player != NULL ? &player->mPID : NULL;
     dAnimal_c *animal = getAnimal();
     dAnimalMemory_c *memory = animal != NULL && pid != NULL ? animal->findMemory2(pid) : NULL;
@@ -2301,7 +2301,7 @@ int dAcNpcNml_c::talk_c::countPocketsItem(const dItem::Item *item, int flag, u16
         *mask = 0;
     }
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (player != NULL) {
         l_filterFlag = flag;
@@ -2323,7 +2323,7 @@ int dAcNpcNml_c::talk_c::countPocketsKind(u16 *mask, int kind, dPrivateData_c *p
     }
     *mask = 0;
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (player != NULL) {
         dItem::Item *pockets = player->mPockets;
@@ -2355,7 +2355,7 @@ int dAcNpcNml_c::talk_c::countPocketsUsed(u16 *mask, dPrivateData_c *player) {
         *mask = 0;
     }
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     if (player != NULL) {
         u32 num = player->countPocketsFlag(filterUsed, mask);
@@ -2528,7 +2528,7 @@ BOOL dAcNpcNml_c::talk_c::stepReaction(int kind) {
 int dAcNpcNml_c::talk_c::countPocketsFossil(u16 *mask, dQuestVillager_c *quest, dPrivateData_c *player) {
     int count = 0;
     if (player == NULL) {
-        player = dPlayerMgr_c::getCurrentPlayer();
+        player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     }
     u16 dummy = 0;
     if (mask == NULL) {
@@ -2644,7 +2644,7 @@ void dAcNpcNml_c::talk_c::endQuestTalk(int arg) {
 // 80033FA4
 BOOL dAcNpcNml_c::talk_c::stepErrandOver(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         dQuestBase_c *quest = errand != NULL ? &errand->mBase : NULL;
         u16 mask = 0;
@@ -2693,7 +2693,7 @@ int dAcNpcNml_c::talk_c::msgTimeover2(msgInfo_s *info) {
 // 80034224
 BOOL dAcNpcNml_c::talk_c::stepClearErrand(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
         if (errand != NULL) {
             errand->clear();
@@ -2794,7 +2794,7 @@ int dAcNpcNml_c::talk_c::startErrandOffer(msgInfo_s *info, int questKind, int la
     if (animal == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -2832,7 +2832,7 @@ int dAcNpcNml_c::talk_c::startRequestOffer(msgInfo_s *info, int labelIdx, int qu
     if (animal == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -2945,7 +2945,7 @@ void dAcNpcNml_c::talk_c::selRequestNo() {
         if (num == 1) {
             quest->clear();
         } else {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
                 quest->clearPlayerFlag(&player->mPID.player);
             }
@@ -3265,7 +3265,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                 }
                 case QUEST_TALK_ERRAND:
                 case QUEST_TALK_ERRAND_FINAL: {
-                    const dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+                    const dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
                     const dQuestErrand_c *errand = player != NULL ? player->mErrand.get(0) : NULL;
                     const dQuestBase_c *quest = errand != NULL ? &errand->mBase : NULL;
                     if (quest != NULL && quest->isActive()) {
@@ -3326,7 +3326,7 @@ int dAcNpcNml_c::talk_c::msgGreeting(msgInfo_s *info) {
             u8 scene = dScene::getCurrentScene();
             BOOL inTown = dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN);
             u8 count = memory->mTalkCount.get(scene);
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
             BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
             int idx;
             if (inTown) {
@@ -3417,7 +3417,7 @@ BOOL dAcNpcNml_c::talk_c::stepGreeting(int kind) {
 // 80035B04
 void dAcNpcNml_c::talk_c::addFriendship(int delta) {
     dAnimal_c *animal = getAnimal();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (animal != NULL && player != NULL) {
         dAnimalMemory_c *memory = animal->findMemory(&player->mPID);
         if (memory != NULL && memory->mPlayer.isValid()) {

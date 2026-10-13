@@ -510,7 +510,7 @@ static inline dHome_c *getPlayerHome() {
 }
 
 void StgField_c::checkHome() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     u32 id = -1;
     if (player != NULL) {
         if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
@@ -1048,7 +1048,7 @@ void StgShop_c::start(u32 param) {
 void StgShop_c::execute() {
     Time_c *now = &l_mgr.mTime;
     const ShopTime_s *time = &sShopTime[mType];
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL flag = FALSE;
     if (player != NULL && player->isFlag0(0xD)) {
         flag = TRUE;
@@ -1969,7 +1969,7 @@ void Change_c::init() {
 
 void Change_c::execute() {
     if (mState == 2) {
-        if (mFader_c::isStatus(mFaderBase_c::HIDDEN) && fn_800FF840()) {
+        if (mFader_c::isStatus(mFaderBase_c::HIDDEN) && dPlayerMgr::isSceneReadyForBgm()) {
             mTimer = 5;
             mState = 3;
         }
@@ -2971,7 +2971,7 @@ void VolStateBeach_c::init() {
 }
 
 void VolStateBeach_c::execute() {
-    const mVec3_c *pos = (const mVec3_c *)fn_800FBC88(4);
+    const mVec3_c *pos = dPlayerMgr::getSoundPosition(4);
     bool on = false;
     if (pos != NULL) {
         dBGCF::groundChk_c ground(pos, 0, 0, 0);
@@ -3010,7 +3010,7 @@ void VolStateFocus_c::init() {
 }
 
 void VolStateFocus_c::execute() {
-    const mVec3_c *pos = (const mVec3_c *)fn_800FBC88(4);
+    const mVec3_c *pos = dPlayerMgr::getSoundPosition(4);
     bool on = false;
     f32 volume = 0.0f;
     if (mType != 2 && pos != NULL) {

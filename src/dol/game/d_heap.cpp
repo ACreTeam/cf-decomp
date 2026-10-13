@@ -450,7 +450,7 @@ EGG::ExpHeap *dHeap::createRumbleHeap(EGG::Heap *parent) {
 
 // 800B6010
 EGG::ExpHeap *dHeap::createPlayerHeap(EGG::Heap *parent) {
-    u32 size = fn_801015F4();
+    u32 size = dPlayerMgr::getHeapSize();
     playerHeap_p = EGG::ExpHeap::create(size, parent, 0);
     playerHeap_p->setName("プレイヤー用ヒープ");
     playerHeap_p->setAllocMode(0);

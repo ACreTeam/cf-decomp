@@ -273,7 +273,7 @@ BOOL dMenuMng_c::openItemSel2(u16 mask, u16 msgParam) {
 }
 
 u16 dMenuMng_c::makePocketMask(BOOL (*filter)(void *pocket, int flag)) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int i;
     u16 mask = 0;
     for (i = 0; i < POCKET_NUM; i++) {
@@ -322,7 +322,7 @@ void dMenuMng_c::clearSelItems() {
 
 void dMenuMng_c::setSelItems() {
     clearSelItems();
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int num = 0;
     for (int i = 0; i < POCKET_NUM; i++) {
         if ((1 << i) & s_selMask) {
@@ -347,7 +347,7 @@ int dMenuMng_c::getSelItemNum() {
 }
 
 void dMenuMng_c::removeSelItems() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     for (int i = 0; i < POCKET_NUM; i++) {
         if ((1 << i) & s_selMask) {
             player->clearPocket(i);
@@ -832,7 +832,7 @@ void dMenuMng_c::resetToolPocket() {
 }
 
 BOOL dMenuMng_c::canPutAwayHeld() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dItem::Item held = player->mEquipment.mHeld;
     if (held.getKind() == 0x14) {
         return TRUE;
@@ -844,7 +844,7 @@ BOOL dMenuMng_c::canPutAwayHeld() {
 }
 
 void dMenuMng_c::putAwayHeld() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dItem::Item held = player->mEquipment.mHeld;
     if (held.isValid() && held.getKind() != 0x14) {
         player->setPocket(&held, player->findEmptyPocket(0), FALSE);
@@ -852,7 +852,7 @@ void dMenuMng_c::putAwayHeld() {
 }
 
 BOOL dMenuMng_c::isSwitchTool(int pocket) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player->getPocketFlag(pocket)) {
         return FALSE;
     }
@@ -877,7 +877,7 @@ BOOL dMenuMng_c::isSwitchTool(int pocket) {
 }
 
 u16 dMenuMng_c::getNextTool() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int start = s_toolNext - 1;
     if (start < 0) {
         start = 0;
@@ -898,7 +898,7 @@ u16 dMenuMng_c::getNextTool() {
 }
 
 u16 dMenuMng_c::getPrevTool() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int start = s_toolNext > 0 ? s_toolNext - 1 : POCKET_NUM - 1;
     for (int i = 0; i < POCKET_NUM; i++) {
         int pocket = (start + POCKET_NUM - i) % POCKET_NUM;
@@ -912,7 +912,7 @@ u16 dMenuMng_c::getPrevTool() {
 }
 
 void dMenuMng_c::swapHeld() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dItem::Item held = player->mEquipment.mHeld;
     if (held.isValid() && held.getKind() == 0x14) {
         held = dItem::ITEM_ID_NONE;

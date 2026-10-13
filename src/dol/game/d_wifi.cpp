@@ -127,7 +127,7 @@ BOOL dWifi::canSendLetter() {
 
 // 80177C54
 BOOL dWifi::isLetterDayOver() {
-    return dSaveWc24_c::getDaysSince(&dPlayerMgr_c::getCurrentPlayer()->mWc24LetterDate) != 0;
+    return dSaveWc24_c::getDaysSince(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mWc24LetterDate) != 0;
 }
 
 // 80177C8C
@@ -854,7 +854,7 @@ int getSendProfileId(u32 idx) {
     if (idx < WC24_FRIEND_NUM) {
         return getMyProfileId();
     }
-    dPrivateData_c *player = dPlayerMgr_c::getPlayer((idx - WC24_FRIEND_NUM) / FRIEND_NUM);
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer((idx - WC24_FRIEND_NUM) / FRIEND_NUM);
     if (player != NULL && player->mPID.isValid()) {
         return dNetMgr_c::getMyProfileId(&player->mFriends.mUserData);
     }
@@ -1193,7 +1193,7 @@ void updateDaily() {
 // The registered friends of the current player as NWC24 friend records.
 static inline void registerFriendRecs() {
     if (lbl_805BE940.canUseFriends()) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         for (int i = 0; i < FRIEND_NUM; i++) {
             int profileId = getFriendProfileId(i);
             u64 key = player->mFriends.getFriend(i)->mKey;
@@ -1260,7 +1260,7 @@ BOOL isFriendRecUsed(const dNetWc24FriendRec_c *rec) {
 void *sendLetterThread(void *arg) {
     dPostRequest_c *req = (dPostRequest_c *)arg;
     lbl_8074B580 = 0;
-    dPrivateData_c *player = req->mSender != NULL ? req->mSender : dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = req->mSender != NULL ? req->mSender : dPlayerMgr::Mgr_c::getCurrentPlayer();
     u64 key = player->mFriends.mFriends[req->mFriend].mKey;
     if (key != 0 && lbl_805BE940.open()) {
         if (lbl_805BE940.canSendMessages()) {
@@ -1292,7 +1292,7 @@ void *updateRosterThread(void *arg) {
             if (getRosterType(i) == 1 && !getRosterLand(i)->isValid()) {
                 int friendIdx = findFriendKey(&dSaveData_c::getRawExtra()->mWc24.mKeys[idx]);
                 if (friendIdx >= 0) {
-                    dLandID_c *land = &dPlayerMgr_c::getCurrentPlayer()->mFriends.mFriends[friendIdx].mPID.land;
+                    dLandID_c *land = &dPlayerMgr::Mgr_c::getCurrentPlayer()->mFriends.mFriends[friendIdx].mPID.land;
                     if (land->isValid()) {
                         dSaveData_c::getExtra()->mWc24.mLands[idx].copy(land);
                     }
@@ -1369,8 +1369,8 @@ void *sendBoardThread(void *arg) {
             req->mFriend = getRosterIdx(req->mFriend);
             if (lbl_805BE940.sendBoardMessage(req)) {
                 lbl_8074B580 = 1;
-                dSaveWc24_c::setToday(&dPlayerMgr_c::getCurrentPlayer()->mWc24LetterDate);
-                dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x3E);
+                dSaveWc24_c::setToday(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mWc24LetterDate);
+                dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x3E);
             }
         }
         lbl_805BE940.close();
@@ -1386,8 +1386,8 @@ void *sendSelfThread(void *arg) {
         req->mFriend = -1;
         if (lbl_805BE940.sendBoardMessage(req)) {
             lbl_8074B580 = 1;
-            dSaveWc24_c::setToday(&dPlayerMgr_c::getCurrentPlayer()->mWc24LetterDate);
-            dPlayerMgr_c::getCurrentPlayer()->setFlag1(0x3E);
+            dSaveWc24_c::setToday(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mWc24LetterDate);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x3E);
         }
         lbl_805BE940.close();
     }

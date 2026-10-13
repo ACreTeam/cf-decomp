@@ -64,7 +64,7 @@ int dAcNpcNml_c::talk_c::msgFtrQuest(msgInfo_s *info) {
     if (!quest->mBase.isActive() || quest->mBase.getKind() != QUEST_KIND_REQUEST_FTR) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -198,7 +198,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrGiveChoice(int kind) {
 
 // 8004EB64
 void dAcNpcNml_c::talk_c::selFtrGive() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         u16 mask = 0;
         countPocketsKind(&mask, 3, player, TRUE);
@@ -215,7 +215,7 @@ void dAcNpcNml_c::talk_c::resFtrSelect() {
         u32 slot = getMenuSelSlot();
         if (slot < 15) {
             dAnimal_c *animal = getAnimal();
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL && animal != NULL) {
                 mItem0 = player->mPockets[slot];
                 u32 result = animal->checkFtrRequest(&mItem0, animal->mQuest.mQuest.mMatchMode,
@@ -260,7 +260,7 @@ int dAcNpcNml_c::talk_c::msgFtrWin(msgInfo_s *info) {
 
 // 8004EE64
 void dAcNpcNml_c::talk_c::endFtrReward(int arg) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
     int price = 0;
@@ -309,7 +309,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrWin(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
         dQuestVillager_c *quest = animal != NULL ? &animal->mQuest.mQuest : NULL;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->mBase.mState = QUEST_REQUEST_WON;
             fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_WON);
@@ -406,7 +406,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrNG(int kind) {
 BOOL dAcNpcNml_c::talk_c::stepFtrOver(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL) {
             dQuestVillager_c *quest = &animal->mQuest.mQuest;
             if (player != NULL) {
@@ -517,7 +517,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrAccept(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dQuestVillager_c *quest;
         dAnimal_c *animal = getAnimal();
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (animal != NULL && player != NULL) {
             quest = &animal->mQuest.mQuest;
             if (!quest->mBase.isActive()) {

@@ -1420,7 +1420,7 @@ void dSTR::requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg
         pos.x += 32.0f;
         pos.y = 28.0f;
         int wipeOut;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
         BOOL first = FALSE;
         if (player != NULL && !player->isFlag0(0x70)) {
             first = TRUE;

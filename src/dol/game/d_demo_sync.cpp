@@ -155,7 +155,7 @@ void receive(int member, const u8 *data, u32 size) {
         u32 demoId = readDemoId(data);
         u8 arg = data[5];
         dDemoActor_c *actor = dDemoActor_c::findByDemoID(demoId);
-        dPlayerActor_c *player = fn_800FBC7C(member);
+        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(member);
         if (actor == NULL || player == NULL) {
             if (cmd == DEMO_SYNC_START) {
                 if (member != dNet::getMyNo()) {

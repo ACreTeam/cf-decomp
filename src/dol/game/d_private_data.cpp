@@ -51,7 +51,7 @@ static inline BOOL isValidIndex(int idx) {
 
 // 80136244
 BOOL dPrivateData_c::isHostVisitReady() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -75,7 +75,7 @@ BOOL dPrivateData_c::isHostVisitReady() {
 
 // 80136310
 BOOL dPrivateData_c::isGuestVisitReady() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -122,14 +122,14 @@ void dPrivateHost_c::decrease(int n) {
 
 // 80136460
 void dPrivateData_c::saveHostToTown() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveTown_c *town = dSaveData_c::getTown();
     town->mTownHost = player->mHost;
 }
 
 // 8013654C
 void dPrivateData_c::loadHostFromTown() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveTown_c *town = dSaveData_c::getTown();
     player->mHost = town->mTownHost;
 }
@@ -151,7 +151,7 @@ void dRelayDesign_c::clear() {
 
 // 80136694
 BOOL dPrivateData_c::isRelayDesignVisitReady() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -594,8 +594,8 @@ void dPrivateData_c::updateTan(int days) {
 
 // 80137CD0
 void dPrivateData_c::updateTanDaily(int days) {
-    if (!fn_80101500()) {
-        fn_80101514();
+    if (!dPlayerMgr::isDailyTanUpdated()) {
+        dPlayerMgr::markDailyTanUpdated();
         if (isFlag0(0x28)) {
             return;
         }
@@ -605,22 +605,22 @@ void dPrivateData_c::updateTanDaily(int days) {
 
 // 80137D34
 void dPrivateData_c::updateHair(int days) {
-    if (!fn_80101490()) {
-        fn_801014A4();
+    if (!dPlayerMgr::isDailyHairUpdated()) {
+        dPlayerMgr::markDailyHairUpdated();
         if (days >= 15) {
             u8 hair = 0x19;
             if (mHair < 13) {
                 hair = 0xC;
             }
             mHair = hair;
-            fn_801014D0();
+            dPlayerMgr::setBedHairPending();
         }
     }
 }
 
 // 80137DA4
 void dPrivateData_c::dailyUpdate(int days) {
-    if ((u8)dScene::getCurrentScene() == dScene::SCENE_DM_BUS_PL_CRT && dPlayerMgr_c::getCurrentPlayer() == this) {
+    if ((u8)dScene::getCurrentScene() == dScene::SCENE_DM_BUS_PL_CRT && dPlayerMgr::Mgr_c::getCurrentPlayer() == this) {
         return;
     }
     if (days != 0) {
@@ -646,14 +646,14 @@ void dPrivateData_c::dailyUpdate(int days) {
     mSonchoPresent = dItem::Item();
     mDaysAway += days;
     mDaysPassed += days;
-    if (dPlayerMgr_c::getCurrentPlayer() == this) {
+    if (dPlayerMgr::Mgr_c::getCurrentPlayer() == this) {
         dHR::rateCurrentPlayer(mDaysAway != 0, 1);
         updateLooks(mDaysAway);
         updateBank(mDaysAway);
         sendBankAnniversaryLetter();
         sendLostChildThanks();
     }
-    if (dPlayerMgr_c::getCurrentPlayer() == this) {
+    if (dPlayerMgr::Mgr_c::getCurrentPlayer() == this) {
         mDaysAway = 0;
     }
 }
@@ -1066,7 +1066,7 @@ BOOL dPrivateData_c::payMoney(int amount, BOOL allowItems) {
     if (getPocketMoney() < amount) {
         return FALSE;
     }
-    if (allowItems && dPlayerMgr_c::getCurrentPlayer()->countPockets(NULL, NULL) <= 0) {
+    if (allowItems && dPlayerMgr::Mgr_c::getCurrentPlayer()->countPockets(NULL, NULL) <= 0) {
         int idx = findMoneyPocketSmallest();
         if (idx == -1) {
             return FALSE;
@@ -1671,7 +1671,7 @@ u8 dDesignList_c::getOrder(u32 i) {
 // 8013A888
 u16 dDesignList_c::getDesignItem(u32 i, int kind) {
     int order = getOrder(i);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dItem::seeker_c::get()->search(kind, 6, NULL);
     if (player != NULL) {
         int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, &player->mPID);
@@ -1707,7 +1707,7 @@ BOOL dEquip_c::isAccessoryVisible() {
 
 // 8013AA28
 void dEquip_c::setFromPlayer() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     mHeld = player->mEquipment.mHeld;
     mShirt = player->mEquipment.mShirt;
     mHat = player->mEquipment.mHat;
@@ -1802,16 +1802,16 @@ void dOutfit_c::setDefault() {
 void dOutfit_c::setFromPlayer() {
     clear();
     mEquip.setFromPlayer();
-    mHairColor = dPlayerMgr_c::getCurrentPlayer()->mHairColor;
-    mHair = dPlayerMgr_c::getCurrentPlayer()->mHair;
-    mShoeColor = dPlayerMgr_c::getCurrentPlayer()->mShoeColor;
+    mHairColor = dPlayerMgr::Mgr_c::getCurrentPlayer()->mHairColor;
+    mHair = dPlayerMgr::Mgr_c::getCurrentPlayer()->mHair;
+    mShoeColor = dPlayerMgr::Mgr_c::getCurrentPlayer()->mShoeColor;
     mFlags.valid = true;
     mFlags.male = false;
-    if (dPlayerMgr_c::getCurrentPlayer()->mPID.player.mGender == GENDER_MALE) {
+    if (dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID.player.mGender == GENDER_MALE) {
         mFlags.male = true;
     }
     mFlags.noShoes = false;
-    if (dPlayerMgr_c::getCurrentPlayer()->mShoeKind == 0) {
+    if (dPlayerMgr::Mgr_c::getCurrentPlayer()->mShoeKind == 0) {
         mFlags.noShoes = true;
     }
 }
@@ -2252,10 +2252,10 @@ BOOL dPrivateData_c::startHostVisit(int chance, int count, int flag) {
     mHost.mIsGuest = coin - 1 == 0;
     dPrivateData_c *host = NULL;
     if (flag == 1) {
-        host = dPlayerMgr_c::getCurrentPlayer();
+        host = dPlayerMgr::Mgr_c::getCurrentPlayer();
     } else {
         for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(i);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player->mPID.isValid()) {
                 host = player;
             }

@@ -77,7 +77,7 @@ enum Step_e {
     STEP_DONE,          // finished (finish, finishTalk, ...)
     STEP_REJECTED,      // the host rejected the demo
     STEP_START,         // run the target's start check
-    STEP_WAIT_PLAYER,   // waiting for the player (fn_800FDCC0)
+    STEP_WAIT_PLAYER,   // waiting for the player (dPlayerMgr::canFinishToolAction)
     STEP_RUN,           // running
     STEP_ENTER,         // TYPE_ENTER: ask for the building's demo slot
     STEP_ENTER_WAIT,    // TYPE_ENTER: waiting for the host's answer

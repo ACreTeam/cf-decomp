@@ -15,7 +15,7 @@ static const char l_Ev_Birthday[] = "Ev_Birthday";
 
 // 8004902C
 int dAcNpcNml_c::talk_c::msgPlayerBirthday(msgInfo_s *info) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL leapDay = player != NULL ? player->mBirthday.isSame(1, 29) : FALSE;
     u16 code = 1;
     if (leapDay) {
@@ -53,7 +53,7 @@ void dAcNpcNml_c::talk_c::endPlayerBirthday(int arg) {
 BOOL dAcNpcNml_c::talk_c::stepPlayerBirthday(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         mItem0.setFromIndex(dItem::ITEM_IDX_BIRTHDAY_CAKE);
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
             player->pickUp(&mItem0, TRUE);
         }
@@ -68,7 +68,7 @@ BOOL dAcNpcNml_c::talk_c::stepPlayerBirthday(int kind) {
 // 8004926C
 int dAcNpcNml_c::talk_c::msgPlayerBirthdayCake(msgInfo_s *info) {
     setLooksMsg(info, l_Ev_Birthday, mMessageCode + 1);
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         player->mBirthdayHost.mHostIdx = -1;
     }

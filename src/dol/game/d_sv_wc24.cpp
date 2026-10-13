@@ -68,7 +68,7 @@ void dSaveWc24_c::clearSend() {
         mFlags[i].mSend = 0;
     }
     for (int p = 0; p < PLAYER_NUM; p++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(p);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(p);
         for (int f = 0; f < FRIEND_NUM; f++) {
             player->mFriends.getFriend(f)->mWc24Flag.mSend = 0;
         }
@@ -187,7 +187,7 @@ int dSaveWc24_c::getKeys(u64 *keys, int max) const {
         }
     }
     for (int p = 0; p < PLAYER_NUM; p++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(p);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(p);
         for (int f = 0; f < FRIEND_NUM; f++) {
             u64 key = player->mFriends.getFriend(f)->mKey;
             if (key != 0 && isNewKey(keys, &key, num)) {
@@ -216,7 +216,7 @@ void dSaveWc24_c::setSend(const u64 *key, BOOL send) {
     }
     dPrivateData_c *player;
     for (int p = 0; p < PLAYER_NUM; p++) {
-        player = dPlayerMgr_c::getPlayer(p);
+        player = dPlayerMgr::Mgr_c::getPlayer(p);
         int idx = dWifi::findFriendKey(key, player);
         if (idx >= 0) {
             dFriend_c *fr = player->mFriends.getFriend(idx);
@@ -249,7 +249,7 @@ int dSaveWc24_c::getNextSend(u32 *indices, u64 *keys, int max) const {
             p = idx - WC24_FRIEND_NUM;
             f = p % FRIEND_NUM;
             p /= FRIEND_NUM;
-            dPrivateData_c *player = dPlayerMgr_c::getPlayer(p);
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(p);
             u64 key = player->mFriends.getFriend(f)->mKey;
             if (key != 0 && player->mFriends.getFriend(f)->mWc24Flag.mSend && isNewKey(keys, &key, num)) {
                 indices[num] = getFriendBase(p) + WC24_FRIEND_NUM + f;
@@ -289,7 +289,7 @@ int dSaveWc24_c::getSendKeys(u32 *indices, u64 *keys, int max) const {
         }
     }
     for (int p = 0; p < PLAYER_NUM; p++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(p);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(p);
         for (int f = 0; f < FRIEND_NUM; f++) {
             u64 key = player->mFriends.getFriend(f)->mKey;
             if (key != 0 && player->mFriends.getFriend(f)->mWc24Flag.mSend && isNewKey(keys, &key, num)) {
@@ -355,7 +355,7 @@ BOOL dSaveWc24_c::hasSend() const {
         }
     }
     for (int p = 0; p < PLAYER_NUM; p++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(p);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(p);
         for (int f = 0; f < FRIEND_NUM; f++) {
             if (player->mFriends.getFriend(f)->mKey != 0 && player->mFriends.getFriend(f)->mWc24Flag.mSend) {
                 return TRUE;
@@ -373,7 +373,7 @@ int dSaveWc24_c::findKey(const u64 *key) const {
         }
     }
     for (int p = 0; p < PLAYER_NUM; p++) {
-        dPrivateData_c *player = dPlayerMgr_c::getPlayer(p);
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(p);
         for (int f = 0; f < FRIEND_NUM; f++) {
             if (*key == player->mFriends.getFriend(f)->mKey) {
                 return getFriendBase(p) + f;

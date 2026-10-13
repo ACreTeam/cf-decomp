@@ -607,13 +607,13 @@ void dNpcMng_c::createHouseVillager() {
         int kind = appointment->mBase.getKind();
         u8 state = appointment->mBase.getState();
         if (kind == 0x11 && state != 2) {
-            dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+            dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
             if (player != NULL && player->mPID.isFromTown() && player->mPID.player.isSame(&appointment->mPlayer)) {
                 profile = 0x4E;
             }
         }
-    } else if (animal->mPlace == 0 && dPlayerMgr_c::getCurrentPlayer() != NULL &&
-               !dPlayerMgr_c::getCurrentPlayerRaw()->isFlag0(0xD) && dEvent::isActive(EVENT_TOY_DAY)) {
+    } else if (animal->mPlace == 0 && dPlayerMgr::Mgr_c::getCurrentPlayer() != NULL &&
+               !dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(0xD) && dEvent::isActive(EVENT_TOY_DAY)) {
         profile = 0x77;
         key = 0x8052 + idx;
     }
@@ -644,7 +644,7 @@ void dNpcMng_c::createHouseVillager() {
 }
 
 BOOL dNpcMng_c::createPlayerHouseGuest() {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -723,7 +723,7 @@ BOOL dNpcMng_c::createAnimals() {
         u32 home = dHomeList_c::getHomeFromScene(&room, scene);
         if (home < 4 && room == 0) {
             int player = dSaveData_c::getRaw()->mHomes.getPlayerOfHome(home);
-            if ((u32)player < 4 && player == fn_801017B8()) {
+            if ((u32)player < 4 && player == dPlayerMgr::getCurrentPlayerSlot()) {
                 createPlayerHouseVisitor();
             }
         }
@@ -861,7 +861,7 @@ BOOL dNpcMng_c::isTownScene(u8 scene, u8 prevScene) {
 
 BOOL dNpcMng_c::isTownPlay(u8 scene, u8 prevScene) {
     if (isTownScene(scene, dScene::SCENE_NUM)) {
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL && !player->isFlag0(0xD)) {
             return TRUE;
         }
@@ -1436,7 +1436,7 @@ void dNpcMng_c::updateAnimalPlaces() {
     dQuestPlayerItem_c *appointment;
     int appointmentIdx;
     dTime_c *now;
-    player = dPlayerMgr_c::getCurrentPlayer();
+    player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     flagD = player != NULL ? player->isFlag0(0xD) : FALSE;
     online = dNet::isSessionActive();
     block = &dSaveData_c::getTown()->mAnimals.mTown;
@@ -1637,7 +1637,7 @@ int dNpcMng_c::execute() {
     }
     if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
         dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
-        dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
         BOOL flagD = player != NULL ? player->isFlag0(0xD) : FALSE;
         for (int i = 0; i < 10; i++) {
             dAnimal_c *animal = block->getAnimal(i);
@@ -1724,7 +1724,7 @@ BOOL dNpcMng_c::isBugOffTime(dQuestEvent_e event) {
 // The villager hosting the current player's birthday party, or -1.
 static inline int getPlayerBirthdayHostIdx() {
     dSaveData_c *save = dSaveData_c::getRaw();
-    return save->mAnimals.mTown.getBirthdayHostIdx(fn_801017B8(), 1, 1, 1);
+    return save->mAnimals.mTown.getBirthdayHostIdx(dPlayerMgr::getCurrentPlayerSlot(), 1, 1, 1);
 }
 
 BOOL dNpcMng_c::isVisitorBeforeTortimer(u8 scene, u8 prevScene) {
@@ -1752,7 +1752,7 @@ BOOL dNpcMng_c::isPlayerSelectVisitor() {
     if (isHouseWarmingTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
         return TRUE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL && player->getLastResetCount()) {
         if (isResetVisitTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
             return TRUE;
@@ -1858,7 +1858,7 @@ BOOL dNpcMng_c::isConstructionTime(u8 scene, u8 prevScene) {
     if (dNet::isSessionActive()) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
     if (isTownPlay(scene, prevScene) && fromTown && dSaveData_c::getTown()->mNewConstruction != NEW_CONSTRUCTION_NONE) {
         return TRUE;
@@ -1867,7 +1867,7 @@ BOOL dNpcMng_c::isConstructionTime(u8 scene, u8 prevScene) {
 }
 
 BOOL dNpcMng_c::isCatalogTime(u8 scene, u8 prevScene) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) && !isVisitorBeforeTortimer(scene, prevScene) &&
         player != NULL &&
         ((!player->isFlag0(0x76) && player->mCatalog.isComplete(8) == 1) ||
@@ -1961,7 +1961,7 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
     if (dNet::isSessionActive()) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }
@@ -1972,7 +1972,7 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
         dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
         dPrivateData_c *current;
         if (homes->getHome(homes->findCurrentPlayer()) == NULL && dScene::isSceneAttr(prevScene, dScene::SCENE_ATTR_PLAYER_HOUSE) &&
-            (current = dPlayerMgr_c::getCurrentPlayer()) != NULL && current->mPID.isFromTown()) {
+            (current = dPlayerMgr::Mgr_c::getCurrentPlayer()) != NULL && current->mPID.isFromTown()) {
             u32 home = dHomeList_c::getHomeFromScene(NULL, prevScene);
             if (home < 4) {
                 int x = 0;
@@ -2002,7 +2002,7 @@ void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle, const dItem::Item 
 }
 
 BOOL dNpcMng_c::isBirthdayVisitTime(u8 scene, u8 prevScene) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (isTownPlay(scene, dScene::SCENE_NUM) && prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF && player != NULL &&
         player->isFlag0(0x57) && getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
@@ -2062,7 +2062,7 @@ void dNpcMng_c::setPosPlayerHouseDoor(mVec3_c *pos, mAng3_c *angle, const dItem:
 }
 
 BOOL dNpcMng_c::isLetterVisitFirstTime(u8 scene, u8 prevScene) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (isLetterVisitTime(scene, prevScene) && player != NULL && !player->getLastResetCount()) {
         return TRUE;
     }
@@ -2077,7 +2077,7 @@ BOOL dNpcMng_c::isLetterVisitKind1(u8 scene, u8 prevScene) {
 }
 
 BOOL dNpcMng_c::isVisitor8Day(u8 scene, u8 prevScene) {
-    dPlayerMgr_c::getCurrentPlayer();
+    dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 8) {
         return TRUE;
     }
@@ -2205,7 +2205,7 @@ void dNpcMng_c::setPosVisitor2(mVec3_c *pos, mAng3_c *angle, const dItem::Item *
 }
 
 BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) &&
         (sResetVisited == 1 || (prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF)) && player != NULL &&
         !player->isFlag0(0x28) && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
@@ -2238,7 +2238,7 @@ void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item
 }
 
 BOOL dNpcMng_c::isVisitor7Day(u8 scene, u8 prevScene) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (isTownPlay(scene, prevScene) && !dNet::isSessionActive() && dEvent::getTodayVisitor() == 7 && player != NULL &&
         !player->isFlag0(0x28) && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
         return TRUE;
@@ -2261,7 +2261,7 @@ void dNpcMng_c::setPosGateA(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc
 }
 
 BOOL dNpcMng_c::isVisitor4Day(u8 scene, u8 prevScene) {
-    dPlayerMgr_c::getCurrentPlayerRaw();
+    dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 4) {
         return TRUE;
     }
@@ -2463,7 +2463,7 @@ BOOL dNpcMng_c::isNotTownFlag5(dQuestEvent_e event) {
 }
 
 BOOL dNpcMng_c::isVisitor7Here(dQuestEvent_e event) {
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayerRaw();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (dEvent::isVisitorHere(7) && player != NULL && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
         return TRUE;
     }
@@ -2471,8 +2471,8 @@ BOOL dNpcMng_c::isVisitor7Here(dQuestEvent_e event) {
 }
 
 BOOL dNpcMng_c::isVisitor4Time(dQuestEvent_e event) {
-    dPlayerMgr_c::getCurrentPlayerRaw();
-    if (!dNet::isSessionActive() && fn_801017B8() < 4) {
+    dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
+    if (!dNet::isSessionActive() && dPlayerMgr::getCurrentPlayerSlot() < 4) {
         dTime_c *now = dTime_c::getCurrent();
         if ((now->hour == 9 || now->hour == 17) && now->min < 30) {
             return TRUE;

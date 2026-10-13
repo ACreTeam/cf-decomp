@@ -150,14 +150,14 @@ enum dNetPacket_e {
     // host -> everyone (sendDisconnectGo, gatekeeper REL): dNetDisconnect_c
     // mReady.on(self)
     NET_PACKET_DISCONNECT_GO = 0x23,
-    // d_player_mngr fn_801B9490 (1 byte) -> fn_80101CB8 (empty stub); meaning
-    // unknown
+    // d_player_mngr fn_801B9490 (1 byte) -> dPlayerMgr::receiveAppearance:
+    // tanning value, save-request flag clear, or Mii-mask on/off.
     NET_PACKET_PLAYER_MNGR_24 = 0x24,
-    // d_player_mngr fn_801B93B8 (u8 + u16) -> fn_80101CB4 (empty stub); meaning
-    // unknown
+    // d_player_mngr fn_801B93B8 (u8 + u16) -> dPlayerMgr::receiveEquipment:
+    // equipment part and item ID, applied to the remote player save data.
     NET_PACKET_PLAYER_MNGR_25 = 0x25,
-    // d_player_mngr fn_801B9424 (u8 + u16) -> fn_80101CBC (empty stub); meaning
-    // unknown
+    // d_player_mngr fn_801B9424 (u8 + u16) -> dPlayerMgr::queueRemoteEquipment:
+    // equipment part and item ID, queued for the remote actor.
     NET_PACKET_PLAYER_MNGR_26 = 0x26,
     // player actor (d_a_player REL fn_80_2C64C) -> everyone: value, state,
     // 9-byte param; drives the remote player
@@ -1209,7 +1209,7 @@ struct dNet_c {
     /* 0x5B8 */ dNetPlayerInfo::Info_c mPlayerInfo;
     // dTime_c::applyPending on the next postNetStage
     /* 0x61E */ u8 mTimePending;
-    // 7 = none; fn_801017B8 error bits (getNetError / setNetError)
+    // 7 = none; dPlayerMgr::getCurrentPlayerSlot error bits (getNetError / setNetError)
     /* 0x620 */ s32 mSavedSlot;
     /* 0x624 */ s32 mError;
     /* 0x628 */ s32 mErrorReported;
@@ -1543,7 +1543,7 @@ void setSceneChangeState(int state);
 // 800DD70C: dNetScene_c::enterLeaderScene: own scene = the scene leader's,
 // owner if first, NET_PACKET_SCENE_STATE; d_scene_base
 void enterLeaderScene();
-// 800DD75C: g_dNet.mSavedSlot: own town player number (fn_801017B8) saved at
+// 800DD75C: g_dNet.mSavedSlot: own town player number (dPlayerMgr::getCurrentPlayerSlot) saved at
 // session start, 7 none; d_nand, d_reset_save
 s32 getLocalPlayerNo();
 // 800DD76C: mPacket.mFrame: cCounter_c::m_gameFrame of the last send stage;

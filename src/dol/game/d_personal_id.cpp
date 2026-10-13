@@ -11,8 +11,6 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-int fn_801017EC(const dPersonalID_c *pid);
-int fn_801018DC(const dPlayerID_c *id);
 }
 
 // 80750BF0
@@ -76,12 +74,12 @@ BOOL dPersonalID_c::fn_8013E740(const dPersonalID_c *other) const {
         return FALSE;
     }
 
-    int n = fn_801017EC(other);
+    int n = dPlayerMgr::findPersonalIDSlot(other);
     if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && n < 7) {
         return FALSE;
     }
 
-    dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (current != NULL && dWifi::findFriend(other, current) >= 0) {
         return FALSE;
     }
@@ -185,12 +183,12 @@ BOOL dPlayerID_c::fn_8013EB28(const dPlayerID_c *other) const {
         return FALSE;
     }
 
-    int n = fn_801018DC(other);
+    int n = dPlayerMgr::findPlayerIDSlot(other);
     if (dNet::isSessionActive() && dNet::getMemberNum() > 1 && n < 7) {
         return FALSE;
     }
 
-    dPrivateData_c *current = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (current != NULL && dWifi::findFriend(other, current) >= 0) {
         return FALSE;
     }

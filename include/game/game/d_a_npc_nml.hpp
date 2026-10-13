@@ -583,7 +583,7 @@ public:
         // FreeG online play
         static const u8 *getOnlineWeights();        // 8003DC3C FreeG weights (3 x u8, .sdata2 80750048 own town / 8075004C visitor)
         int msgFreeHost(msgInfo_s *info);           // 8003DCDC EC FreeG_Host
-        void setHostWords();                        // 8003DD5C words: host player's name (dPlayerMgr_c::getNetPlayer(0)) and the current player's land (also nml msgRecall)
+        void setHostWords();                        // 8003DD5C words: host player's name (dPlayerMgr::Mgr_c::getNetPlayer(0)) and the current player's land (also nml msgRecall)
         int msgFreeVisitor(msgInfo_s *info);        // 8003DE3C EC FreeG_Visitor (code 2 when memory mFlags.mSameTown)
         int msgFreeJinxV(msgInfo_s *info);          // 8003DEF8 EC FreeG_JinxV: jinx of this town (mJinxTown = -1); 104 = stepJinx
         int msgFreeOnline(msgInfo_s *info);         // 8003DFE8 EC: FreeG topic by the weights of getOnlineWeights

@@ -802,7 +802,7 @@ f32 dAcNpc_c::calcDistXZ(const dActor_c *actor, const mVec3_c *pos) const {
 
 // 800129BC
 f32 dAcNpc_c::calcPlayerDistXZ(int player, const mVec3_c *pos) const {
-    return calcDistXZ(fn_800FBC84(player), pos);
+    return calcDistXZ(dPlayerMgr::getNpcTargetActor(player), pos);
 }
 
 // 80012A08
@@ -835,7 +835,7 @@ int dAcNpc_c::searchPlayer(u32 player, BOOL checkGround, int exclude, BOOL neare
         if (i == exclude) {
             continue;
         }
-        dPlayerActor_c *pl = fn_800FBC84(i);
+        dPlayerActor_c *pl = dPlayerMgr::getNpcTargetActor(i);
         if (pl == NULL) {
             continue;
         }
@@ -873,7 +873,7 @@ mAng dAcNpc_c::getAngleYTo(const dActor_c *actor) const {
 
 // 80012BF4
 mAng dAcNpc_c::getAngleYToPlayer(int player) const {
-    return getAngleYTo(fn_800FBC84(player));
+    return getAngleYTo(dPlayerMgr::getNpcTargetActor(player));
 }
 
 // 80012C30
@@ -1415,7 +1415,7 @@ BOOL dAcNpc_c::recvDaub() {
 // 80013F1C
 BOOL dAcNpc_c::isPlayerFromThisTown() {
     const dLandID_c &land = dSaveData_c::getTown()->mLandID;
-    return dPlayerMgr_c::getCurrentPlayer()->mPID.land == land;
+    return dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID.land == land;
 }
 
 // 80013F98
@@ -1823,7 +1823,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
         return FALSE;
     }
 
-    dPlayerActor_c *player = fn_800FBC7C(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     mVec3_c p = mVec3_c::Zero;
     player->getOffsetPos(&p, dist, snapToCardinal);
 
@@ -1840,7 +1840,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
             break;
         case (int)0x80020000: {
             firstPos = &hit->mPos;
-            if (fn_800FFA50(firstPos, pAngle->mAngle, range)) {
+            if (dPlayerMgr::fn_800FFA50(firstPos, pAngle->mAngle, range)) {
                 p = *firstPos;
             } else {
                 ok = FALSE;
@@ -1850,7 +1850,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
         case (int)0x80040000: {
             pos = &hit->mPos;
             void *ftr = NULL;
-            found = fn_800FFA50(pos, pAngle->mAngle, range) != 0;
+            found = dPlayerMgr::fn_800FFA50(pos, pAngle->mAngle, range) != 0;
             if (found) {
                 ftr = fn_800A900C(fn_800A9058(), &hit->mPos, 0);
             }
@@ -2159,7 +2159,7 @@ int dAcNpc_c::execute() {
             } else {
                 const mVec3_c *goal = &mAction.mGoal;
                 if (getSpeedF() != 0.0f && *goal != mVec3_c::Zero) {
-                    mPos.y = fn_80100194(goal, &mPos, &mLastPos);
+                    mPos.y = dPlayerMgr::getIntermediateGroundHeight(goal, &mPos, &mLastPos);
                 } else {
                     mPos.y = dBGCF::getGroundY(&mPos, FALSE);
                 }
@@ -5852,7 +5852,7 @@ int dAcNpc_c::action_c::initCatch(dAcNpc_c *npc) {
     }
     int member = dNet::getMyNo();
     f32 f1 = npc->getHandItemOfsX();
-    f32 f2 = fn_80100548();
+    f32 f2 = dPlayerMgr::getItemExchangeOffsetY();
     f32 f3 = npc->getHandItemOfsZ();
     f32 f5;
     f32 zero = 0.0f;
@@ -5860,7 +5860,7 @@ int dAcNpc_c::action_c::initCatch(dAcNpc_c *npc) {
     if (npc->mNpcItem.isSame(dItem::Item((u16)0x8005))) {
         f5 = 2.0f;
     }
-    fn_80194A2C(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, fn_800FBC84(member), f1, f2, f3, zero, f5, zero);
+    fn_80194A2C(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, dPlayerMgr::getNpcTargetActor(member), f1, f2, f3, zero, f5, zero);
     int anm = 0x56;
     int mode = m3d::PLAYMODE_INHERIT;
     if (type == 1) {
@@ -5906,7 +5906,7 @@ void dAcNpc_c::action_c::catchStep2(dAcNpc_c *npc) {
         actionPrm_c *prm = getPrm();
         int anm = prm->mItem.isFish() ? 0x64 : 0x59;
         npc->setAnm(anm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-        if (fn_80100644(TRUE)) {
+        if (dPlayerMgr::fn_80100644(TRUE)) {
             mStep = 4;
         } else {
             mStep = 3;
@@ -5916,7 +5916,7 @@ void dAcNpc_c::action_c::catchStep2(dAcNpc_c *npc) {
 
 // 80021614
 void dAcNpc_c::action_c::catchStep3(dAcNpc_c *npc) {
-    if (fn_80100644(TRUE)) {
+    if (dPlayerMgr::fn_80100644(TRUE)) {
         mStep = 4;
     }
 }
@@ -5985,7 +5985,7 @@ void dAcNpc_c::action_c::catchStep9(dAcNpc_c *npc) {
     if (!fn_80194B10(2)) {
         fn_80194B4C(3, npc);
         if (fn_80194B8C(prm->mpActor)) {
-            if (fn_801006A8()) {
+            if (dPlayerMgr::fn_801006A8()) {
                 mStep = 11;
             } else {
                 mStep = 10;
@@ -6001,7 +6001,7 @@ void dAcNpc_c::action_c::catchStep10(dAcNpc_c *npc) {
     if (anm->mAnmId == 0x6D && anm->isStop()) {
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     }
-    if (fn_801006A8()) {
+    if (dPlayerMgr::fn_801006A8()) {
         mStep = 11;
     }
 }
@@ -6057,13 +6057,13 @@ int dAcNpc_c::action_c::initHandItem(dAcNpc_c *npc) {
     }
 
     if (variant == 1) {
-        if (fn_80100550((int)&prm->mItem, prm->_50, prm->_48, prm->mVariant, (int)npc, f1, f2)) {
+        if (dPlayerMgr::giveItem(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, f1, f2)) {
             mStep = 0x10;
         } else {
             mStep = 0xF;
         }
     } else {
-        if (fn_80100440((int)&prm->mItem, prm->_50, prm->_48, prm->mVariant, (int)npc, f1, f2, f3)) {
+        if (dPlayerMgr::receiveItem(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, f1, f2, f3)) {
             mStep = 1;
         } else {
             mStep = 0;
@@ -6083,7 +6083,7 @@ void dAcNpc_c::action_c::handItemStartA(dAcNpc_c *npc) {
     if (npc->mNpcItem.isSame(dItem::Item((u16)0x8005))) {
         f3 = 2.0f;
     }
-    if (fn_80100440((int)&prm->mItem, prm->_50, prm->_48, prm->mVariant, (int)npc, f1, f2, f3)) {
+    if (dPlayerMgr::receiveItem(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, f1, f2, f3)) {
         mStep = 1;
     }
 }
@@ -6168,10 +6168,10 @@ static inline bool isMedicineItem(const dItem::Item &item) {
 
 static const char *l_eatFishEffect[2] = {"af_npc_eatfish_bev", "af_npc_eatfish_wrl"};
 
-// The sound of a clothes change (fn_801021D0: the fashion sound of the item).
+// The sound of a clothes change (dPlayerMgr::getWearSound: the fashion sound of the item).
 static inline void startChangeSound(dAcNpc_c *npc, const dItem::Item &item) {
     dItem::Item none;
-    npc->mAudioObj.startSound(fn_801021D0(&item, &none));
+    npc->mAudioObj.startSound(dPlayerMgr::getWearSound(&item, &none));
 }
 
 // 80022558
@@ -6343,7 +6343,7 @@ void dAcNpc_c::action_c::handItemPutA(dAcNpc_c *npc) {
         actionPrm_c *prm = getPrm();
         int anmId = prm->mItem.isFish() ? 0x64 : 0x59;
         npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-        if (fn_80100644(FALSE)) {
+        if (dPlayerMgr::fn_80100644(FALSE)) {
             mStep = 0xB;
         } else {
             mStep = 0xA;
@@ -6353,7 +6353,7 @@ void dAcNpc_c::action_c::handItemPutA(dAcNpc_c *npc) {
 
 // 8002319C
 void dAcNpc_c::action_c::handItemRetryPut(dAcNpc_c *npc) {
-    if (fn_80100644(FALSE)) {
+    if (dPlayerMgr::fn_80100644(FALSE)) {
         mStep = 0xB;
     }
 }
@@ -6417,7 +6417,7 @@ void dAcNpc_c::action_c::handItemStartB(dAcNpc_c *npc) {
     // getHandItemOfsX twice (initHandItem uses getHandItemOfsX and getHandItemOfsZ)
     f32 f1 = npc->getHandItemOfsX();
     f32 f2 = npc->getHandItemOfsX();
-    if (fn_80100550((int)&prm->mItem, prm->_50, prm->_48, prm->mVariant, (int)npc, f1, f2)) {
+    if (dPlayerMgr::giveItem(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, f1, f2)) {
         mStep = 0x10;
     }
 }
@@ -6508,7 +6508,7 @@ void dAcNpc_c::action_c::handItemReturnB(dAcNpc_c *npc) {
     if (!fn_80194B10(2)) {
         actionPrm_c *prm = getPrm();
         fn_80194B4C(3, npc);
-        if (fn_80194B8C(prm->mpActor) && fn_801006A8()) {
+        if (fn_80194B8C(prm->mpActor) && dPlayerMgr::fn_801006A8()) {
             mStep = 0xC;
         }
     }
@@ -6590,16 +6590,15 @@ int dAcNpc_c::action_c::initChangeCloth(dAcNpc_c *npc) {
 
 // 80023E44
 void dAcNpc_c::action_c::createChangeEffect(const mVec3_c &pos, mAng angY) {
-    // 8049FF50 (index: fn_80102434 ground kind)
+    // 8049FF50 (index: dPlayerMgr::getSurfaceEffectKind ground kind)
     static const char *l_changeEffectName[] = {
         "af_ply_change_nml", "af_ply_change_water00", "af_ply_change_water00", "af_ply_change_snow00",
         "af_ply_change_sand",
     };
     if (dScene::isCurrentSceneAttr(1)) {
         mAng3_c ang(0, (s16)angY, 0);
-        // fn_801024F8 is declared with int parameters in d_player_mgr.hpp (DECISIONS: keep it, cast here).
-        fn_801024F8(l_changeEffectName, &pos, (int)&ang, (int)"af_ply_change_water01",
-                    (int)"af_ply_change_snow01");
+            dPlayerMgr::createSurfaceEffects(l_changeEffectName, &pos, &ang, "af_ply_change_water01",
+                                       "af_ply_change_snow01");
     }
 }
 
@@ -6781,7 +6780,7 @@ void dAcNpc_c::action_c::giveWaitHoldOut(dAcNpc_c *npc) {
         if (npc->getModel()->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
             npc->mFace.setAnmTex(npc, anmId, m3d::PLAYMODE_INHERIT);
         }
-        if (fn_80100644(FALSE)) {
+        if (dPlayerMgr::fn_80100644(FALSE)) {
             mStep = 3;
         } else {
             mStep = 2;
@@ -6791,7 +6790,7 @@ void dAcNpc_c::action_c::giveWaitHoldOut(dAcNpc_c *npc) {
 
 // 80024860
 void dAcNpc_c::action_c::giveWaitPlayer(dAcNpc_c *npc) {
-    if (fn_80100644(FALSE)) {
+    if (dPlayerMgr::fn_80100644(FALSE)) {
         mStep = 3;
     }
 }
@@ -7747,7 +7746,7 @@ void dAcNpc_c::lookAt_c::lookFront(dAcNpc_c *npc) {
 }
 
 void dAcNpc_c::lookAt_c::lookPlayerNo(dAcNpc_c *npc, int playerNo) {
-    dPlayerActor_c *player = fn_800FBC84(playerNo);
+    dPlayerActor_c *player = dPlayerMgr::getNpcTargetActor(playerNo);
     if (player != NULL) {
         // dPlayerActor_c is declared as a dActor_c only; its vtable slot +0x58 is dDemoActor_c::demoHook58.
         mVec3_c pos = *((dDemoActor_c *)player)->demoHook58();
@@ -7865,7 +7864,7 @@ int dAcNpc_c::lookAt_c::searchPlayer(int playerNo, const dAcNpc_c *npc, const mA
         end = 4;
     }
     for (int i = start; i < end; i++) {
-        dPlayerActor_c *player = fn_800FBC7C(i);
+        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
         if (player != NULL) {
             const mVec3_c *pos = player->getPosP();
             if (pos != NULL && canSee(npc, *pos, fov, range)) {
@@ -8105,7 +8104,7 @@ BOOL dAcNpc_c::viewArea_c::isOutsideAll(u32 playerNo, const mVec3_c *pos) const 
         if (i == me) {
             out = isOutside(pos);
         } else {
-            dPlayerActor_c *player = fn_800FBC7C(i);
+            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
             if (player != NULL) {
                 out = isOutside(pos, player->getPosP());
             }
@@ -8143,7 +8142,7 @@ BOOL dAcNpc_c::viewArea_c::isUnitOutsideAll(u32 playerNo, int ux, int uz) const 
         if (i == 0) {
             out = isUnitOutside(ux, uz);
         } else {
-            dPlayerActor_c *player = fn_800FBC7C(i);
+            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
             if (player != NULL) {
                 out = isUnitOutside(ux, uz, player->getPosP());
             }
@@ -8528,7 +8527,7 @@ void dAcNpc_c::recept_c::playerLookAt(dAcNpc_c *target) {
             if (npc != NULL) {
                 saveDemoFlag(npc);
                 npc->setDemoFlag8();
-                fn_800FE938(pos, 800, TRUE, 800);
+                dPlayerMgr::lookAt(pos, 800, TRUE, 800);
             }
         }
     }
@@ -8537,8 +8536,8 @@ void dAcNpc_c::recept_c::playerLookAt(dAcNpc_c *target) {
 void dAcNpc_c::recept_c::playerTurnTo(dAcNpc_c *target) {
     if (target != NULL) {
         int playerNo = getPlayerNo();
-        dPlayerActor_c *player = fn_800FBC84(playerNo);
-        mVec3_c *playerPos = fn_800FBC48(playerNo);
+        dPlayerActor_c *player = dPlayerMgr::getNpcTargetActor(playerNo);
+        mVec3_c *playerPos = dPlayerMgr::getPosition(playerNo);
         if (player != NULL && playerPos != NULL) {
             s16 angle = dActor_c::targetAngleY(playerPos, target->getPosP());
             dAcNpc_c *npc = getNpc(0);
@@ -8546,7 +8545,7 @@ void dAcNpc_c::recept_c::playerTurnTo(dAcNpc_c *target) {
                 saveDemoFlag(npc);
                 npc->setDemoFlag8();
                 int frame = getTurnFrame();
-                fn_800FE89C(angle, (s16)frame, playerNo);
+                dPlayerMgr::turnToInFrames(angle, (s16)frame, playerNo);
             }
         }
     }
@@ -10069,7 +10068,7 @@ int dAcNpc_c::recept_c::stepEquipStart() {
         if (ctrl != NULL) {
             ctrl->mLock = 1;
         }
-        if (fn_800FF444(mReq.mpEquip, mReq.mEquipMode, mReq.mEquipKind)) {
+        if (dPlayerMgr::changeEquipment(mReq.mpEquip, mReq.mEquipMode, mReq.mEquipKind)) {
             mReqStep = 1;
         }
     }
@@ -10078,7 +10077,7 @@ int dAcNpc_c::recept_c::stepEquipStart() {
 
 // 8002C900
 int dAcNpc_c::recept_c::stepEquipWait() {
-    if (!fn_800FEEB0()) {
+    if (!dPlayerMgr::isChangingEquipment()) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
@@ -10115,7 +10114,7 @@ BOOL dAcNpc_c::recept_c::requestHairChange(u8 hair, u8 color) {
 
 // 8002CA0C
 int dAcNpc_c::recept_c::stepHairChange() {
-    if (mpNpc != NULL && fn_800FDD8C(mReq.mHair, mReq.mHairColor)) {
+    if (mpNpc != NULL && dPlayerMgr::changeHair(mReq.mHair, mReq.mHairColor)) {
         mReqStep = 1;
         return 1;
     }
@@ -10290,7 +10289,7 @@ bool dAcNpc_c::recept_c::requestPlayerTurn() {
 
 // 8002CFF4
 int dAcNpc_c::recept_c::stepPlayerTurnStart() {
-    if (fn_800FC958()) {
+    if (dPlayerMgr::fn_800FC958()) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
@@ -10302,7 +10301,7 @@ int dAcNpc_c::recept_c::stepPlayerTurnStart() {
 
 // 8002D048
 int dAcNpc_c::recept_c::stepPlayerTurnWait() {
-    if (fn_800FC9AC()) {
+    if (dPlayerMgr::fn_800FC9AC()) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
@@ -10533,7 +10532,7 @@ void dAcNpc_c::talk_c::stepTurnTalkMsg(dAcNpc_c *npc) {
         flag = recept->mLangFlag;
         if (flag < 6) {
             dSaveExtra_c *extra = dSaveData_c::getExtra();
-            extra->mLangFlags.reset(fn_801017B8(), flag);
+            extra->mLangFlags.reset(dPlayerMgr::getCurrentPlayerSlot(), flag);
             recept->mLangFlag = 6;
         }
         npc->detachDemoActor(recept);
@@ -10653,7 +10652,7 @@ void dAcNpc_c::talk_c::stepTalkMsg(dAcNpc_c *npc) {
         flag = recept->mLangFlag;
         if (flag < 6) {
             dSaveExtra_c *extra = dSaveData_c::getExtra();
-            extra->mLangFlags.reset(fn_801017B8(), flag);
+            extra->mLangFlags.reset(dPlayerMgr::getCurrentPlayerSlot(), flag);
             recept->mLangFlag = 6;
         }
         npc->detachDemoActor(recept);

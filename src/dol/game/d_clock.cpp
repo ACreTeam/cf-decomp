@@ -314,7 +314,7 @@ BOOL dClock_c::canShowClock() {
     if (sFlags & FLAG_TIMER) {
         return FALSE;
     }
-    if (fn_800FFAC0() || fn_800FEAC0(4) || fn_800FFB18()) {
+    if (dPlayerMgr::fn_800FFAC0() || dPlayerMgr::isWalking(4) || dPlayerMgr::fn_800FFB18()) {
         mShowDelay = SHOW_DELAY;
         return FALSE;
     }

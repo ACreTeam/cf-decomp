@@ -27,7 +27,7 @@ int dAcNpcNml_c::talk_c::msgVisitOffer(msgInfo_s *info) {
     if (getAnimal() == NULL) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || player->isFlag0(0xD)) {
         return FALSE;
     }
@@ -148,7 +148,7 @@ int dAcNpcNml_c::talk_c::msgVisitReserved(msgInfo_s *info) {
 // 8005D130
 void dAcNpcNml_c::talk_c::endVisitReserved(int arg) {
     dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (animal != NULL && player != NULL) {
         dTime_c *now = dTime_c::getCurrent();
@@ -227,7 +227,7 @@ int dAcNpcNml_c::talk_c::msgVisitQuest(msgInfo_s *info) {
     if (!block->isAppointmentAnimal(id)) {
         return FALSE;
     }
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
@@ -463,7 +463,7 @@ int dAcNpcNml_c::talk_c::msgVisitLayout(msgInfo_s *info) {
         L"\x2606\x2606\x2606\x2606",
         L"\x2606\x2606\x2606\x2606\x2606",
     };
-    dPrivateData_c *player = dPlayerMgr_c::getCurrentPlayer();
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player == NULL) {
         return FALSE;
     }

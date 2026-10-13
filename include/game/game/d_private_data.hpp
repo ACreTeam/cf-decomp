@@ -125,6 +125,13 @@ public:
 
 class dEquip_c {
 public:
+    enum Part {
+        PART_SHIRT = 0,
+        PART_HAT = 1,
+        PART_ACCESSORY = 2,
+        PART_HELD = 3,
+    };
+
     dEquip_c(); // 8013A940
     ~dEquip_c(); // 8013A988
 
@@ -350,7 +357,7 @@ public:
     dSaveOption_c *getOption() { return (dSaveOption_c *)&_83E8; }
     const dItem::Item *getHeldItem() const { return &mEquipment.mHeld; }
 
-    // Checks on the current player (dPlayerMgr_c::getCurrentPlayer) for the special npcs' appearances (d_npc_mng):
+    // Checks on the current player (dPlayerMgr::Mgr_c::getCurrentPlayer) for the special npcs' appearances (d_npc_mng):
     // not resetting, from this town, offline.
     static BOOL isHostVisitReady();        // 80136244: mHost set up (1..7) with this player as the host
     static BOOL isGuestVisitReady();       // 80136310: mHost set up (1..7) with this player as the guest
