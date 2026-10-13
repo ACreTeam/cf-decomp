@@ -64,7 +64,7 @@ static inline bool isSystemIdle() {
 // ... and DS download play too: quitting may go ahead.
 static inline bool isAllIdle() {
     bool idle = false;
-    if (isSystemIdle() && fn_80084738(&lbl_80584B94)) {
+    if (isSystemIdle() && dDsDl::g_manager.finish()) {
         idle = true;
     }
     return idle;
@@ -167,7 +167,7 @@ bool Manage_c::IsSafeToChangeScene() const {
     if (!mFadeOutRequest && dNand::isReady() && dScreenshot::isIdle() && dWifi::isIdle()) {
         idle = true;
     }
-    if (idle && fn_80084738(&lbl_80584B94)) {
+    if (idle && dDsDl::g_manager.finish()) {
         allIdle = true;
     }
     if (allIdle && fn_8017D8E8()->mState != dHomeButton_c::STATE_OPEN) {

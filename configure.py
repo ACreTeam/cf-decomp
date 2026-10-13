@@ -850,6 +850,7 @@ config.libs = [
             Object(Matching, "dol/game/d_obj_tutorial.cpp"),
             Object(Matching, "dol/game/d_tag_processor.cpp"),
             Object(Matching, "dol/game/d_pattern_copy.cpp"),
+            Object(Matching, "dol/game/d_ds_dl.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_sv_star_sign.cpp"),
             Object(Matching, "dol/game/d_sv_auc_list.cpp"),
             Object(Matching, "dol/game/d_field.cpp"),
