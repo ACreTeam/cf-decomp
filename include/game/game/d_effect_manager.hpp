@@ -25,3 +25,11 @@ public:
     }; // size 0x28
 };
 
+// The stage module tears down these draw procedures.
+namespace dEffect {
+extern dEffectManager_c::DrawProc_c *l_drawWorld;
+extern dEffectManager_c::DrawProc_c *l_drawOverlay;
+extern dEffectManager_c::DrawProc_c *l_drawSky;
+extern dEffectManager_c::DrawProc_c *l_drawTinted;
+extern dEffectManager_c::DrawProc_c *l_drawBackground;
+}

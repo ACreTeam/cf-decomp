@@ -28,11 +28,11 @@ u32 dEffectGroupManager::getGroupID(u32 flags) {
 }
 
 namespace dEffect {
-static dEffectManager_c::DrawProc_c *l_drawWorld;
-static dEffectManager_c::DrawProc_c *l_drawOverlay;
-static dEffectManager_c::DrawProc_c *l_drawSky;
-static dEffectManager_c::DrawProc_c *l_drawTinted;
-static dEffectManager_c::DrawProc_c *l_drawBackground;
+dEffectManager_c::DrawProc_c *l_drawWorld;
+dEffectManager_c::DrawProc_c *l_drawOverlay;
+dEffectManager_c::DrawProc_c *l_drawSky;
+dEffectManager_c::DrawProc_c *l_drawTinted;
+dEffectManager_c::DrawProc_c *l_drawBackground;
 static u8 l_active;
 static u8 l_calculated;
 static mColor l_particleColor;
@@ -102,6 +102,9 @@ void fn_80279824(nw4r::ef::EffectSystem *, void (*)(dEffect::particleColor_c *, 
 void fn_80197414(mColor *, int);
 }
 
+// Accessor return temporaries preserve the original MWCC float-register allocation.
+static inline f32 getTranslationY(const mMtx_c &view) { return view._13; }
+static inline f32 getTranslationZ(const mMtx_c &view) { return view._23; }
 // 80087F8C
 void dEffect::calc() {
     if (!l_active) return;
@@ -123,7 +126,9 @@ void dEffect::calc() {
     mEf::setCamera(&pos, &view, nearZ, farZ, 2);
     if (lbl_8074E830) {
         view = lbl_8074E830->mMtx538;
-        pos.z = view._23; pos.y = view._13; pos.x = view._03;
+        pos.x = view._03;
+        pos.y = getTranslationY(view);
+        pos.z = getTranslationZ(view);
     }
     mEf::setCamera(&pos, &view, nearZ, farZ, 4);
     mEf::endCalc();
