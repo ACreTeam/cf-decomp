@@ -1895,6 +1895,11 @@ dol/game/d_obj_cursor.cpp:
 
 dol/game/d_obj_keyboard.cpp:
 	.text       start:0x801B3E54 end:0x801B4CC0
+	.data       start:0x804FC188 end:0x804FC4A0
+	.bss        start:0x806257F8 end:0x80625808
+	.sdata      start:0x8074C280 end:0x8074C2A8
+	.sbss       start:0x8074EB40 end:0x8074EB48
+	.sdata2     start:0x80751938 end:0x80751940
 
 dol/game/d_obj_staffroll.cpp:
 	.text       start:0x801B4CC0 end:0x801B5E88

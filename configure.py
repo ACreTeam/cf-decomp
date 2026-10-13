@@ -880,7 +880,7 @@ config.libs = [
             Object(Matching, "dol/game/d_obj_bal.cpp"),
             Object(NonMatching, "dol/game/d_obj_chat.cpp"),
             Object(Matching, "dol/game/d_obj_cursor.cpp"),
-            Object(NonMatching, "dol/game/d_obj_keyboard.cpp"),
+            Object(Matching, "dol/game/d_obj_keyboard.cpp"),
             Object(NonMatching, "dol/game/d_obj_staffroll.cpp"),
             Object(Matching, "dol/game/d_obj_telop.cpp"),
             Object(Matching, "dol/game/d_obj_tutorial.cpp"),
