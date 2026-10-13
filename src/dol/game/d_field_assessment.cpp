@@ -79,7 +79,7 @@ void fn_800D11C8(dTime_c *last, int days);
 void fn_80186838();
 void fn_800D16E8();
 int fn_801017B8();
-BOOL fn_80087820(dEffect_c *effect, const char *name, const mVec3_c *pos, const mAng3_c *ang, const mVec3_c *scale);
+
 f32 fn_8044B83C(EGG::Effect *effect);
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 extern void *lbl_8074E9A0[2];
@@ -4682,7 +4682,7 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, c
     } else {
         name = sFallTable[kind][id - sFlowerFirstFg[kind]];
     }
-    if (fn_80087820(&petals, name, &pos, ang, NULL)) {
+    if (petals.createEffect(name, &pos, ang, NULL)) {
         petals.vf2C(scale * fn_8044B83C(&petals));
         if (ang != NULL) {
             petals.vf48(&dir);
@@ -4700,14 +4700,14 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode, c
     }
     BOOL ok;
     if (item->mId == dItem::FG_ROSE_GOLD) {
-        ok = fn_80087820(&leaves, "afm_rose_leaf_fall_gl_st", &pos, ang, NULL);
+        ok = leaves.createEffect("afm_rose_leaf_fall_gl_st", &pos, ang, NULL);
     } else {
         if (item->isWiltedFlower()) {
             name = sWiltLeafFallTable[kind];
         } else {
             name = sLeafFallTable[kind];
         }
-        ok = fn_80087820(&leaves, name, &pos, ang, NULL);
+        ok = leaves.createEffect(name, &pos, ang, NULL);
     }
     if (ok) {
         leaves.vf2C(scale * fn_8044B83C(&leaves));

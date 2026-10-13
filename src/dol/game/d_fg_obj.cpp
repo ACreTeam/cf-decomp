@@ -48,7 +48,7 @@ void fgObjRes_c::onLoaded() {
     nw4r::g3d::ResFile file(g_fgObjRes.mpData);
     for (int i = 0; i < TEX_NUM; i++) {
         nw4r::g3d::ResPltt pltt = file.GetResPltt(l_plttNames[l_texPltt[i]]);
-        fn_800887FC(l_texNames[i], pltt.GetPlttData());
+        dEffect::setTexturePalette(l_texNames[i], pltt.GetPlttData());
     }
 }
 

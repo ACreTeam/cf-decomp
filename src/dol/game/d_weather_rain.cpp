@@ -191,9 +191,9 @@ BOOL Rain_c::calcBus(int weather) {
 
     mMtx_c matrix;
     PSMTXIdentity(matrix);
-    fn_80087B40(&mSplash, "af_bus_rain_window00", &matrix, 0);
+    mSplash.create("af_bus_rain_window00", &matrix, 0);
     mSplash.vf2C(windowCount);
-    fn_80087B40(&mRipple, "af_bus_rain_window01", &matrix, 0);
+    mRipple.create("af_bus_rain_window01", &matrix, 0);
     mRipple.vf2C(windowRate);
     return TRUE;
 }

@@ -470,7 +470,7 @@ EGG::ExpHeap *dHeap::createHmnToolHeap(EGG::Heap *parent) {
 
 // 800B6100
 EGG::ExpHeap *dHeap::createEffectResHeap(EGG::Heap *parent) {
-    u32 size = fn_800887DC();
+    u32 size = dEffect::getResourceHeapSize();
     effectResHeap_p = EGG::ExpHeap::create(size, parent, 0);
     effectResHeap_p->setName("エフェクトリソース用ヒープ");
     effectResHeap_p->setAllocMode(0);
@@ -480,7 +480,7 @@ EGG::ExpHeap *dHeap::createEffectResHeap(EGG::Heap *parent) {
 
 // 800B6178
 EGG::ExpHeap *dHeap::createEffectMngHeap(EGG::Heap *parent) {
-    u32 size = fn_800887E8();
+    u32 size = dEffect::getManagerHeapSize();
     effectMngHeap_p = EGG::ExpHeap::create(size, parent, 0);
     effectMngHeap_p->setName("エフェクト管理用ヒープ");
     effectMngHeap_p->setAllocMode(0);
@@ -490,7 +490,7 @@ EGG::ExpHeap *dHeap::createEffectMngHeap(EGG::Heap *parent) {
 
 // 800B61F0: the heap is named like createEffectMngHeap's (エフェクト管理用ヒープ) in the original.
 EGG::ExpHeap *dHeap::createEffectCallBackHeap(EGG::Heap *parent) {
-    u32 size = fn_800887F4();
+    u32 size = dEffect::getCallbackHeapSize();
     effectCallBackHeap_p = EGG::ExpHeap::create(size, parent, 0);
     effectCallBackHeap_p->setName("エフェクト管理用ヒープ");
     effectCallBackHeap_p->setAllocMode(0);

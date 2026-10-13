@@ -25,8 +25,7 @@ extern "C" {
 BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
 void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
-void fn_80087844(const char *name, const mVec3_c *pos, int arg, const mVec3_c *scale,
-                 void (*cb)(nw4r::ef::Particle *, u32), u32 kind); // effect with a callback
+
 BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
 void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3_c *angle,
                  int arg);                         // d_fgobj_managerNP
@@ -2156,7 +2155,7 @@ int dFishFldShadow_c::execute() {
             mMtx_c scale;
             PSMTXScale(scale, sShadowScale[mParam.mSize][0], 1.0f, sShadowScale[mParam.mSize][1]);
             PSMTXConcat(mtx, scale, mtx);
-            fn_80087B40(&mEffect, effects[fin], &mtx, 1);
+            mEffect.create(effects[fin], &mtx, 1);
             mEffect.setColor(0xFF, 0xFF, 0xFF, mAlpha, EGG::Effect::RECURSIVE_0);
         }
     }
@@ -2369,7 +2368,7 @@ void dFishRipple_c::execute() {
     f32 range = 0.0f;
     pos.x += cM::rndRange(-range, range);
     pos.z += cM::rndRange(-range, range);
-    fn_80087790("af_fsh_hamon", &pos, 0, &scale);
+    dEffect::create("af_fsh_hamon", &pos, 0, &scale);
 }
 
 // 0x6F8C
@@ -2443,7 +2442,7 @@ void dFishFldShadow_c::splashCallback(nw4r::ef::Particle *target, u32 kind) {
         if (check.isUnderWater(pos.y)) {
             if (check.mWaterY - pos.y < 5.0f) {
                 pos.y = check.mWaterY;
-                fn_80087790(sNames[kind], &pos, 0, NULL);
+                dEffect::create(sNames[kind], &pos, 0, NULL);
             }
             if (target->mParticleManager != NULL) {
                 target->mParticleManager->RetireParticle(target);
@@ -2455,7 +2454,7 @@ void dFishFldShadow_c::splashCallback(nw4r::ef::Particle *target, u32 kind) {
         if (d > 0.0f) {
             if (kind == 1 && d < 5.0f) {
                 pos.y = ground;
-                fn_80087790("afi_hny_watersplash_a", &pos, 0, NULL);
+                dEffect::create("afi_hny_watersplash_a", &pos, 0, NULL);
             }
             if (target->mParticleManager != NULL) {
                 target->mParticleManager->RetireParticle(target);
@@ -2488,10 +2487,10 @@ void dFishFldShadow_c::setSplashEffect() {
     mVec3_c pos = mPos;
     dBGCF::groundChk_c check(&pos, dBGCF::LAYER_WATER, 0, 0);
     pos.y = check.mWaterY;
-    fn_80087790(sColumnNames[mParam.mSize], &pos, 0, NULL);
+    dEffect::create(sColumnNames[mParam.mSize], &pos, 0, NULL);
     f32 s = sDropScales[mParam.mSize];
     mVec3_c scale(s, s, s);
-    fn_80087844(sDropNames[mParam.mSize], &pos, 0, &scale, splashCallback, kind);
+    dEffect::create(sDropNames[mParam.mSize], &pos, 0, &scale, splashCallback, kind);
 }
 
 // 0x74C0
@@ -2499,7 +2498,7 @@ void dFishFldShadow_c::setEscapeEffect() {
     static const f32 sScales[] = {0.7f, 0.8f, 1.0f, 1.1f, 1.2f, 1.3f, 1.6f, 1.0f};
     f32 s = sScales[mParam.mSize];
     mVec3_c scale(s, s, s);
-    fn_80087790("af_fsh_escape_hamon", &mPos, 0, &scale);
+    dEffect::create("af_fsh_escape_hamon", &mPos, 0, &scale);
 }
 
 // 0x7518

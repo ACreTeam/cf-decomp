@@ -53,7 +53,7 @@ void fn_801B94E8(int idx, int value);
 void fn_801B9518(int idx, const u8 *value);
 void fn_801B9258();
 BOOL fn_801B9304(void *info, u8 *scene, u8 *b, u32 idx);
-void fn_80087844(int a, const mVec3_c *pos, int b, int c, void (*cb)(nw4r::ef::Particle *, u32), u32 kind);
+
 }
 
 // The field task code (d_fg_mng_task.inc, #included by d_field_assessment.cpp).
@@ -3313,7 +3313,7 @@ void fn_801022B8(nw4r::ef::Particle *obj, u32 kind) {
     if (check.mWater != BG_WATER_NONE) {
         if (check.isUnderWater(pos.y)) {
             pos.y = check.mWaterY;
-            fn_80087790("afi_hny_watersplash_b", &pos, NULL, NULL);
+            dEffect::create("afi_hny_watersplash_b", &pos, NULL, NULL);
             if (obj->mParticleManager != NULL) {
                 obj->mParticleManager->RetireParticle(obj);
             }
@@ -3324,7 +3324,7 @@ void fn_801022B8(nw4r::ef::Particle *obj, u32 kind) {
             const char *name = kind == 3 ? "afi_hny_snowbreak" : "afi_hny_watersplash_a";
             if (fabsf(ground - pos.y) <= 5.0f) {
                 pos.y = ground;
-                fn_80087790(name, &pos, NULL, NULL);
+                dEffect::create(name, &pos, NULL, NULL);
                 if (obj->mParticleManager != NULL) {
                     obj->mParticleManager->RetireParticle(obj);
                 }
@@ -3363,7 +3363,7 @@ int fn_80102434(const mVec3_c *pos) {
 void fn_801024F8(const char *const *names, const mVec3_c *pos, int b, int c, int d) {
     u32 kind = fn_80102434(pos);
     // b is the effect angle (fn_801024F8 keeps int parameters, see d_player_mgr.hpp).
-    fn_80087790(names[kind], pos, (const mAng3_c *)b, NULL);
+    dEffect::create(names[kind], pos, (const mAng3_c *)b, NULL);
     if (kind == 0 || kind == 4) {
         return;
     }
@@ -3371,7 +3371,7 @@ void fn_801024F8(const char *const *names, const mVec3_c *pos, int b, int c, int
     if (kind == 1 || kind == 2) {
         wet = TRUE;
     }
-    fn_80087844(wet ? c : d, pos, b, 0, fn_801022B8, kind);
+    dEffect::create((const char *)(wet ? c : d), pos, (const mAng3_c *)b, NULL, fn_801022B8, kind);
 }
 
 // 801025B8

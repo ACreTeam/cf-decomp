@@ -654,7 +654,7 @@ public:
         BOOL followWaruKiraR(const mMtx_c *mtx, const mVec3_c *ofs, const mVec3_c *ofsL, const mVec3_c *ofsR); // 8001A888
 
         /* 0x000 */ const manpuEfData_s *mpData; // &l_manpuEfData[mType] or NULL
-        /* 0x004 */ dLevelEffect_c mEffect;      // one-shot (createEffect, fn_80087B40)
+        /* 0x004 */ dLevelEffect_c mEffect;      // one-shot (createEffect, create)
         /* 0x098 */ dLevelEffect_c mEffect2;     // following (createFollow / follow)
         /* 0x12C */ int mType;                   // 0x20 = none
         /* 0x130 */ u8 _130;

@@ -212,8 +212,8 @@ void dNpcMood_c::procHappy(dAcNpcNml_c *npc) {
         }
         if (mShowEffects) {
             const mMtx_c *mtx = &npc->mNodeMtx12;
-            fn_80087B40(&mEffectL, l_happyWalkL, mtx, 0);
-            fn_80087B40(&mEffectR, l_happyWalkR, mtx, 0);
+            mEffectL.create(l_happyWalkL, mtx, 0);
+            mEffectR.create(l_happyWalkR, mtx, 0);
         }
     }
 }
@@ -260,7 +260,7 @@ void dNpcMood_c::procSad(dAcNpcNml_c *npc) {
             npc->mAudioObj.startSound(SE_default_manpu_kanashii);
         }
         if (mShowEffects) {
-            fn_80087B40(&mEffectL, l_sad, &npc->mNodeMtx12, 0);
+            mEffectL.create(l_sad, &npc->mNodeMtx12, 0);
         }
     }
 }

@@ -3,6 +3,7 @@
 #include <lib/egg/util/eggEffect.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_mtx.hpp>
+namespace EGG { class Heap; }
 
 // City Folk's mEf::effect_c (RTTI string 804DF7E0). Replaces the NSMBW-derived header, whose
 // EGG::Effect layout and derived classes (levelEffect_c, levelOneEffect_c) do not match City Folk
@@ -17,9 +18,9 @@ public:
     ~effect_c() {}
 
     virtual void createEffect(const char *name, int);                                          // 0x94
-    virtual void createEffect(const char *name, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 0x98
-    virtual void createEffect(const char *name, ulong, const mMtx_c *mtx);                     // 0x9C
-    virtual void vfA0();
+    virtual bool createEffect(const char *name, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 0x98
+    virtual bool createEffect(const char *name, ulong, const mMtx_c *mtx);                     // 0x9C
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *, void (*)(nw4r::ef::Particle *, u32), u32);
     virtual void vfA4();
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);                    // 0xA8
     virtual bool follow(const mMtx_c *mtx);                                                    // 0xAC
@@ -34,6 +35,13 @@ public:
     ~levelEffect_c() { cleanup(); }
 
     virtual void vf10(); // 802B898C
+    virtual void vf18(); // 802B899C
+    virtual void update(); // 802B885C
+    virtual void createEffect(const char *, int); // 802B85AC
+    virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 802B86AC
+    virtual bool createEffect(const char *, ulong, const mMtx_c *); // 802B875C
+    virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *); // 802B89AC
+    virtual bool follow(const mMtx_c *); // 802B89F8
 
     void cleanup(); // 802B88C4
 
@@ -56,4 +64,30 @@ public:
     virtual BOOL create(const char *, const mMtx_c *);
     virtual void create(const char *);
 };
+}
+
+namespace mEf {
+BOOL initialize(EGG::Heap *, int, int, int, int, int, int); // 802B7A6C
+void shutdown(); // 802B7B0C
+void setCallbackHeap(EGG::Heap *); // 802B7BFC
+void beginCalc(); // 802B7DE8
+void endCalc(); // 802B7E0C
+void setCamera(const nw4r::math::VEC3 *, const nw4r::math::MTX34 *, f32, f32, int); // 802B7E10
+void draw(nw4r::ef::DrawInfo *, int, int); // 802B7E30
+}
+
+#include <lib/egg/util/eggEffectManager.hpp>
+#include <lib/egg/core/eggHeap.h>
+namespace mEf {
+// 80088AD4: the game installs its EffectCreator subclass for each creator slot.
+template <class Creator>
+BOOL initialize(EGG::Heap *heap, int effects, int emitters, int managers,
+                int particles, int creators, int groups) {
+    if (initialize(heap, effects, emitters, managers, particles, creators, groups) == FALSE) return FALSE;
+    for (int i = 0; i < creators; i++) {
+        Creator *creator = new (heap, 4) Creator(i);
+        EGG::EffectManager::sEffectManager->setCreator(creator, i);
+    }
+    return TRUE;
+}
 }

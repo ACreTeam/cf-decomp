@@ -1936,7 +1936,7 @@ void dAcNpc_c::setGroundEffect(const char *sandName, const char *otherName, cons
             if (attr == BG_ATTR_SAND || water == BG_WATER_SEA) {
                 sand = true;
             }
-            fn_80087790(sand ? sandName : otherName, pPos, pAngle, NULL);
+            dEffect::create(sand ? sandName : otherName, pPos, pAngle, NULL);
         }
     }
 }
@@ -3205,7 +3205,7 @@ BOOL dAcNpc_c::manpuEf_c::createEffect(const mMtx_c *mtx, int arg) {
     if (isActive() == false) {
         return FALSE;
     }
-    return fn_80087B40(&mEffect, mpData->mName, mtx, arg);
+    return mEffect.create(mpData->mName, mtx, arg);
 }
 
 // ---- manpuEf_c handlers (800192E4..8001A9E8) ----
@@ -6193,7 +6193,7 @@ void dAcNpc_c::action_c::handItemUseA(dAcNpc_c *npc) {
         npc->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
-        fn_80087790("af_ply_change", &npc->mPos, NULL, NULL);
+        dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
         mStep = 8;
         break;
     case 8:
@@ -6324,7 +6324,7 @@ void dAcNpc_c::action_c::handItemWaitCloth(dAcNpc_c *npc) {
         npc->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
-        fn_80087790("af_ply_change", &npc->mPos, NULL, NULL);
+        dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
         mStep = 8;
     }
 }
@@ -6581,7 +6581,7 @@ int dAcNpc_c::action_c::initChangeCloth(dAcNpc_c *npc) {
         fn_80194CB0(npc);
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
-        fn_80087790("af_ply_change", &npc->mPos, NULL, NULL);
+        dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
         mStep = 1;
     }
     mCanChange = FALSE;
@@ -6617,7 +6617,7 @@ void dAcNpc_c::action_c::changeClothWaitCloth(dAcNpc_c *npc) {
         }
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
-        fn_80087790("af_ply_change", &npc->mPos, NULL, NULL);
+        dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
         mStep = 1;
     }
 }
@@ -7080,7 +7080,7 @@ int dAcNpc_c::action_c::initChangeCloth2(dAcNpc_c *npc) {
         mStep = 1;
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
-        fn_80087790("af_ply_change", &npc->mPos, NULL, NULL);
+        dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
     }
     mCanChange = FALSE;
     return 1;
@@ -7096,7 +7096,7 @@ void dAcNpc_c::action_c::changeCloth2WaitCloth(dAcNpc_c *npc) {
         }
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
-        fn_80087790("af_ply_change", &npc->mPos, NULL, NULL);
+        dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
         mStep = 1;
     }
 }
@@ -8262,13 +8262,13 @@ void dAcNpc_c::footstep_c::playSound(dAcNpc_c *npc) {
 void dAcNpc_c::footstep_c::setPrintL(dAcNpc_c *npc) {
     mVec3_c pos = npc->getFootPos0();
     pos.y = npc->mPos.y;
-    fn_80087B5C(&pos, &npc->mAngle, 0, 0);
+    dEffect::createFootprint(&pos, &npc->mAngle, 0, 0);
 }
 
 void dAcNpc_c::footstep_c::setPrintR(dAcNpc_c *npc) {
     mVec3_c pos = npc->getFootPos1();
     pos.y = npc->mPos.y;
-    fn_80087B5C(&pos, &npc->mAngle, 0, 1);
+    dEffect::createFootprint(&pos, &npc->mAngle, 0, 1);
 }
 
 void dAcNpc_c::footstep_c::calc(dAcNpc_c *npc) {
