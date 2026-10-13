@@ -191,7 +191,7 @@ BOOL dNetMgr_c::close() {
         return TRUE;
     }
     if (state > NET_MGR_STATE_2) {
-        g_netDwc.fn_800E7BE4();
+        g_netDwc.requestStop();
         sInstance->mState = NET_MGR_STATE_2;
     }
     return FALSE;
@@ -412,14 +412,14 @@ void dNetMgr_c::unmute() {
 
 void dNetMgr_c::initFriendList(DWCUserData *userData, DWCFriendData *friends,
                                u32 num) {
-    fn_8033C2BC(userData, friends, num);
-    fn_8033C63C(userData);
+    DWC_CreateUserData(userData);
+    DWC_ClearDirtyFlag(userData);
     for (u32 i = 0; i < num; i++) {
-        if (fn_8033C28C(&friends[i])) {
-            fn_8033BC84(&friends[i]);
+        if (DWC_IsValidFriendData(&friends[i])) {
+            DWC_ClearBuddyFlagFriendData(&friends[i]);
         }
     }
-    fn_8033CFE8(userData);
+    DWC_ReportUserData(userData);
 }
 
 s64 dNetMgr_c::getInfo1A10() {
@@ -443,7 +443,7 @@ BOOL dNetMgr_c::getFriendFlag(int idx) {
 }
 
 BOOL dNetMgr_c::isUserDataValid(const DWCUserData *userData) {
-    if (fn_8033C2F4(userData) && fn_8033C600(userData)) {
+    if (DWC_CheckUserData(userData) && fn_8033C600(userData)) {
         return TRUE;
     }
     return FALSE;
@@ -451,35 +451,35 @@ BOOL dNetMgr_c::isUserDataValid(const DWCUserData *userData) {
 
 void dNetMgr_c::getMyFriendData(const DWCUserData *userData,
                                 DWCFriendData *friendData) {
-    fn_8033CA50(userData, friendData);
+    DWC_CreateExchangeToken(userData, friendData);
 }
 
 u64 dNetMgr_c::getMyFriendKey(const DWCUserData *userData) {
-    return fn_8033C944(userData);
+    return DWC_CreateFriendKey(userData);
 }
 
 int dNetMgr_c::getMyProfileId(const DWCUserData *userData) {
     DWCFriendData friendData;
-    fn_8033CA50(userData, &friendData);
+    DWC_CreateExchangeToken(userData, &friendData);
     return getProfileId(userData, &friendData);
 }
 
 u64 dNetMgr_c::getFriendKey(const DWCFriendData *friendData) {
-    return fn_8033C7B4(friendData);
+    return DWC_GetFriendKey(friendData);
 }
 
 int dNetMgr_c::getProfileId(const DWCUserData *userData,
                             const DWCFriendData *friendData) {
-    int id = fn_8033C7DC(userData, friendData);
+    int id = DWC_GetGsProfileId(userData, friendData);
     return id > 0 ? id : 0;
 }
 
 void dNetMgr_c::makeFriendData(u64 key, DWCFriendData *friendData) {
-    fn_8033C9D8(friendData, key);
+    DWC_CreateFriendKeyToken(friendData, key);
 }
 
 BOOL dNetMgr_c::isFriendDataValid(const DWCFriendData *friendData) {
-    return fn_8033C28C(friendData);
+    return DWC_IsValidFriendData(friendData);
 }
 
 BOOL dNetMgr_c::isSameFriend(const DWCUserData *userData,
@@ -490,14 +490,14 @@ BOOL dNetMgr_c::isSameFriend(const DWCUserData *userData,
     if (!isFriendDataValid(b)) {
         return FALSE;
     }
-    if (fn_8033CCDC(a, b)) {
+    if (DWC_IsEqualFriendData(a, b)) {
         return TRUE;
     }
-    int kindA = fn_8033BC40(a);
-    int kindB = fn_8033BC40(b);
+    int kindA = DWC_GetFriendDataType(a);
+    int kindB = DWC_GetFriendDataType(b);
     if ((kindA == 2 && kindB == 3) || (kindB == 2 && kindA == 3)) {
-        int idA = fn_8033C7DC(userData, a);
-        int idB = fn_8033C7DC(userData, b);
+        int idA = DWC_GetGsProfileId(userData, a);
+        int idB = DWC_GetGsProfileId(userData, b);
         if (idA > 0 && idB > 0 && idA == idB) {
             return TRUE;
         }
@@ -506,7 +506,7 @@ BOOL dNetMgr_c::isSameFriend(const DWCUserData *userData,
 }
 
 int dNetMgr_c::checkFriendKey(const DWCUserData *userData, u64 key) {
-    return fn_8033BCB8(userData, key);
+    return DWC_CheckFriendKey(userData, key);
 }
 
 BOOL dNetMgr_c::reqMyData(const DWCUserData *userData) {
@@ -544,7 +544,7 @@ BOOL dNetMgr_c::reqFindData(const DWCFriendData *data) {
 void dNetMgr_c::onStatus() {
     dNetMgr_c *mgr = sInstance;
     if (mgr->mStatusSize != 0) {
-        fn_8031A724(mgr->mStatus, mgr->mStatusSize);
+        DWC_SetOwnStatusData(mgr->mStatus, mgr->mStatusSize);
     }
     if (mgr->mStatusCb != NULL) {
         mgr->mStatusCb();
@@ -588,11 +588,11 @@ void dNetMgr_c::onRecv(u8 aid, const void *data, u32 size) {
 }
 
 void dNetMgr_c::setDwcRecvBuf(u8 aid) {
-    u8 myAid = fn_8031E9C4();
+    u8 myAid = DWC_GetMyAID();
     if (aid < myAid) {
-        fn_80339AF0(aid, mRecvBufs[aid], mRecvBufSize);
+        DWC_SetRecvBuffer(aid, mRecvBufs[aid], mRecvBufSize);
     } else if (aid > myAid) {
-        fn_80339AF0(aid, mRecvBufs[aid - 1], mRecvBufSize);
+        DWC_SetRecvBuffer(aid, mRecvBufs[aid - 1], mRecvBufSize);
     }
 }
 
@@ -610,49 +610,49 @@ void dNetMgr_c::procDwcRequest() {
     dNetFriendReq_c *req = &sInstance->mReq;
     switch (req->getKind()) {
     case NET_FRIEND_REQ_1:
-        if (g_netDwc.fn_800E84C0(req->mArgs.mMatch.mAid)) {
+        if (g_netDwc.matchAnybody(req->mArgs.mMatch.mAid)) {
             req->finish();
         }
         break;
     case NET_FRIEND_REQ_2:
-        if (g_netDwc.fn_800E85CC(req->mArgs.mMatch.mAid,
+        if (g_netDwc.hostMatch(req->mArgs.mMatch.mAid,
                                  req->mArgs.mMatch.mArg)) {
             req->finish();
         }
         break;
     case NET_FRIEND_REQ_3:
-        if (g_netDwc.fn_800E86BC(req->mArgs.mMatch.mAid,
+        if (g_netDwc.matchFriend(req->mArgs.mMatch.mAid,
                                  req->mArgs.mMatch.mValue)) {
             req->finish();
         }
         break;
     case NET_FRIEND_REQ_4:
-        g_netDwc.fn_800E8820();
+        g_netDwc.cancelMatch();
         req->finish();
         break;
     case NET_FRIEND_REQ_5:
-        g_netDwc.fn_800E8864();
+        g_netDwc.closeConnections();
         req->finish();
         break;
     case NET_FRIEND_REQ_6:
-        g_netDwc.fn_800E8B5C();
+        g_netDwc.clearError();
         req->finish();
         break;
     }
 
     sInstance->lock(1);
     if (sInstance->m3863) {
-        g_netDwc.fn_800E8910();
+        g_netDwc.setBusy();
     } else {
-        g_netDwc.fn_800E8918();
+        g_netDwc.clearBusy();
     }
     sInstance->unlock(1);
 
     sInstance->lock(3);
     if (!sInstance->mVoiceOff && dVoiceChat::isStarted()) {
-        g_netDwc.fn_800E8DF8(FALSE);
+        g_netDwc.setVoiceEnabled(FALSE);
     } else if (sInstance->mVoiceOff && !dVoiceChat::isStarted()) {
-        g_netDwc.fn_800E8DF8(TRUE);
+        g_netDwc.setVoiceEnabled(TRUE);
         for (int i = 0; i < sInstance->mMemberNum; i++) {
             dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(i);
             if (player != NULL && player->mPID.isValid() &&
@@ -671,13 +671,13 @@ void dNetMgr_c::procRequest() {
     DWCFriendData *friends = mgr->mFriends;
     DWCFriendData *reqData = &req->mArgs.mFriend.mData;
 
-    if (fn_8031A7BC()) {
+    if (DWC_CanChangeFriendList()) {
         int index = req->mArgs.mFriend.mIndex;
         switch (req->getKind()) {
         case NET_FRIEND_REQ_REMOVE:
-            fn_8031A7EC(&friends[index]);
+            DWC_DeleteBuddyFriendData(&friends[index]);
             mgr->mRemovedFriends |= 1 << index;
-            g_netDwc.fn_800E88A8();
+            g_netDwc.updateFriends();
             req->setResult(NET_FRIEND_REQ_REMOVE, index);
             break;
         }
@@ -704,7 +704,7 @@ void dNetMgr_c::procRequest() {
             if (isFriendDataValid(reqData)) {
                 if (!isSameFriend(&mgr->mUserData, reqData, &friends[index])) {
                     memcpy(&friends[index], reqData, sizeof(DWCFriendData));
-                    g_netDwc.fn_800E88A8();
+                    g_netDwc.updateFriends();
                 }
                 req->setResult(NET_FRIEND_REQ_REGISTER, index);
             } else {
@@ -835,7 +835,7 @@ void dNetMgr_c::procRequest() {
             req->addConnect(mask);
             for (int j = 0; j < sInstance->mMemberNum; j++) {
                 if (mask & (1 << j)) {
-                    g_netDwc.fn_800E8DF0(j);
+                    g_netDwc.disconnectVoice(j);
                 }
             }
         }
@@ -843,22 +843,22 @@ void dNetMgr_c::procRequest() {
         u16 mask = req->takeConnect();
         for (int j = 0; j < sInstance->mMemberNum; j++) {
             if (mask & (1 << j)) {
-                g_netDwc.fn_800E8DA4(j);
+                g_netDwc.connectVoice(j);
             }
         }
     }
     u16 mask = req->takeDisconnect();
     for (int j = 0; j < sInstance->mMemberNum; j++) {
         if (mask & (1 << j)) {
-            g_netDwc.fn_800E8DF0(j);
+            g_netDwc.disconnectVoice(j);
         }
     }
     sInstance->unlock(3);
 
-    if (!isStarted() && g_netDwc.mVoiceOn) {
-        g_netDwc.mVoiceOn = 0;
-    } else if (isStarted() && !g_netDwc.mVoiceOn) {
-        g_netDwc.mVoiceOn = 1;
+    if (!isStarted() && g_netDwc.mKeepaliveEnabled) {
+        g_netDwc.mKeepaliveEnabled = 0;
+    } else if (isStarted() && !g_netDwc.mKeepaliveEnabled) {
+        g_netDwc.mKeepaliveEnabled = 1;
     }
 }
 
@@ -872,4 +872,4 @@ void dNetMgr_c::setSendCount(u8 member, int count) {
 }
 
 dNetMgr_c g_netMgr;
-dNetDwc_c g_netDwc;
+dNetDwc::Session_c g_netDwc;

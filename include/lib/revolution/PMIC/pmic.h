@@ -20,6 +20,8 @@ typedef void (*PMICCallback)(s32 result);
 #define PMIC_ERR_RETRY -6     // (as a request result / completion) go back one step
 
 // pmic.c
+s32 fn_80225BC0(void *work); // initialises microphone work memory
+s32 fn_80225EBC(void); // shuts down; PMIC_ERR_BUSY while pending
 s32 fn_80225FA8(void);                         // device status
 s32 fn_8022607C(PMICCallback callback, void* arg); // open
 s32 fn_802261A4(PMICCallback callback, void* arg); // close

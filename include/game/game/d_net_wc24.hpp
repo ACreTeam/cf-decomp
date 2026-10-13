@@ -83,7 +83,8 @@ public:
 
     // ---- region A of d_wifi (80177A7C..80178604); names inferred ----
     static BOOL suspendScheduler();                  // 800E97B8: NWC24SuspendScheduler() >= 0
-    static void resumeScheduler();                   // 800E97E4: NWC24ResumeScheduler
+    static int trySuspendScheduler();               // 800E97E0: raw NWC24SuspendScheduler result
+    static int resumeScheduler();                   // 800E97E4: NWC24ResumeScheduler
 
     /* 0x000 */ u8 _000[0x400];
     /* 0x400 */ u64 mUserId; // this console's user id (sent by d_net)

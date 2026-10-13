@@ -163,4 +163,4 @@ class dNetMgr_c {
     /* 0x3867 */ u8 mBusy; // set while a scene change is under way (d_net)
 }; // size 0x3868
 
-extern dNetDwc_c g_netDwc; // 805B6560
+extern dNetDwc::Session_c g_netDwc; // 805B6560

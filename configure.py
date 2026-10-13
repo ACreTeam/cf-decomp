@@ -770,7 +770,7 @@ config.libs = [
             Object(NonMatching, "dol/game/d_net_ds_download.cpp"),
             Object(Matching, "dol/game/d_net_mgr.cpp"),
             Object(NonMatching, "dol/game/d_net_friend.cpp"),
-            Object(NonMatching, "dol/game/d_net_dwc.cpp"),
+            Object(Matching, "dol/game/d_net_dwc.cpp"),
             Object(NonMatching, "dol/game/d_net_wc24.cpp"),
             Object(NonMatching, "dol/game/d_net_wus.cpp"),
             Object(Matching, "dol/game/d_nickname.cpp"),

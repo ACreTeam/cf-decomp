@@ -1040,7 +1040,7 @@ void dBusTunnelLight_c::calc() {
 }
 
 void dPlayerFollowSpotLight_c::calc() {
-    mVec3_c *pos = fn_800FBC48(4);
+    mVec3_c *pos = dPlayerMgr::getPosition(4);
     if (pos != NULL) {
         mPos = *pos;
         mPos += mOffset;

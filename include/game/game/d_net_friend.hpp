@@ -88,6 +88,11 @@ class dNetFriendData_c {
     void get(dNetFriendInfo_c *info, DWCUserData *userData,
              DWCFriendData *friends);
 
+    // 800E69F4: publish the worker session under the friend-data mutex.
+    void updateSession(int state, dNetError_c *error, DWCUserData *user,
+                       DWCFriendData *friends, u16 members, u8 updating,
+                       BOOL micActive, BOOL micFailed);
+
     /* 0x0000 */ DWCUserData mUserData;
     /* 0x0040 */ DWCFriendData mFriends[NET_FRIEND_NUM];
     /* 0x01C0 */ dNetFriendInfo_c mInfo;
@@ -105,8 +110,14 @@ class dNetSendBuf_c {
     void set(const void *data, u32 size); // 800E6D38
     BOOL isBusy();                        // 800E6DA0
 
+    void reset(); // 800E6CC0
+    void onSent(); // 800E6CFC
+    void clearPending(); // 800E6D94
+    BOOL hasPending(); // 800E6DE8
+
     /* 0x00 */ dNetMutex_c mMutex;
-    /* 0x18 */ u8 _18[8];
+    /* 0x18 */ const void *mData;
+    /* 0x1C */ u32 mLength;
     /* 0x20 */ u32 mSize;
 }; // size 0x24
 
