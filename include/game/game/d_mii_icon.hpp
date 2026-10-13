@@ -14,3 +14,9 @@ BOOL fn_8008B8C8(int member); // 8008B8C8: (d_net) member's Mii is received
 void fn_8008B89C(const void *data, int member); // 8008B89C: member's received Mii data (0x54 bytes), NULL = none (d_net)
 BOOL fn_8008B8DC();           // 8008B8DC: its worker thread is suspended (idle) (d_reset_save)
 }
+
+// Names inferred from d_travel_data: the 0x4C-byte travel copy of the Mii.
+namespace dMiiIcon {
+void *getTravelMii();             // 8008B8E8: NULL when no travel Mii is available
+void setTravelMii(const void *data); // 8008B8F8: NULL clears the travel Mii
+}

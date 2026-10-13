@@ -48,7 +48,7 @@ const dSaveJinx_c *getJinx() {
 }
 
 // 800C7790
-u8 isDone() {
+BOOL isDone() {
     return g_log.mDone;
 }
 

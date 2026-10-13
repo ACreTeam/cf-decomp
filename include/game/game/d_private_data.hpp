@@ -281,8 +281,15 @@ struct dPrivateHost_c {
     void decrease(int n); // 801363E0
 
     int getCount(void) const { return mCount; }
+    dPersonalID_c& getPID() { return mPID; }
     void setCount(int count) {
         mCount = count;
+    }
+    void clear() {
+        mPID.clear();
+        mCount = 0;
+        mIsGuest = 0;
+        mFlagB = 0;
     }
 
     dPersonalID_c mPID; // the other player

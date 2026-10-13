@@ -32,7 +32,7 @@ void destroy();                           // 800C7708 (dScene destroy)
 void clear();                             // 800C770C
 void setJinx(const dSaveJinx_c *jinx);    // 800C7754
 const dSaveJinx_c *getJinx();             // 800C7784
-u8 isDone();                              // 800C7790
+BOOL isDone();                              // 800C7790
 void onHeartLetter(int player);           // 800C77A0
 void onCutTree(int player);               // 800C77B8
 void onPullWeeds(int player);             // 800C77D0
