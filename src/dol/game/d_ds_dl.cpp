@@ -183,7 +183,7 @@ void Manage_c::requestShutdown() {
     mTransferState = TRANSFER_SHUTDOWN;
 }
 // 80083A7C
-void Manage_c::onReceive(u16, const void *data, u32 size) {
+void Manage_c::onReceive(u32, const void *data, u32 size) {
     u32 command = size >= 4 ? __lwbrx((void *)data, 0) : 0;
     OSLockMutex(&s_mutex.mMutex);
     switch (g_manager.mTransferState) {

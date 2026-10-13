@@ -97,7 +97,7 @@ class Manage_c {
     void startSend();                                            // 80083A10
     void requestClose();                                         // 80083A64
     void requestShutdown();                                      // 80083A70
-    static void onReceive(u16 peer, const void *data, u32 size); // 80083A7C
+    static void onReceive(u32 peer, const void *data, u32 size); // 80083A7C
     void executeTransfer();                                      // 80083CA8
     static void onSend(int result);                              // 80083F94
     void readReceiveResult();                                    // 800840B8

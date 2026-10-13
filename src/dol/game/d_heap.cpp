@@ -339,7 +339,7 @@ EGG::FrmHeap *dHeap::createPrcHeap(EGG::Heap *parent) {
 
 // 800B5B40
 EGG::ExpHeap *dHeap::createNetSoHeap(EGG::Heap *parent) {
-    u32 size = fn_800E4888();
+    u32 size = dNetDsDownload::getSocketHeapSize();
     netSoHeap_p = EGG::ExpHeap::create(size, parent, 0);
     netSoHeap_p->setName("ソケットライブラリ用ヒープ");
     netSoHeap_p->setAllocMode(0);
@@ -349,7 +349,7 @@ EGG::ExpHeap *dHeap::createNetSoHeap(EGG::Heap *parent) {
 
 // 800B5BB8
 EGG::ExpHeap *dHeap::createNetDwcHeap(EGG::Heap *parent) {
-    u32 size = fn_800E4894();
+    u32 size = dNetDsDownload::getDwcHeapSize();
     netDwcHeap_p = EGG::ExpHeap::create(size, parent, 0);
     netDwcHeap_p->setName("DWCライブラリ用ヒープ");
     netDwcHeap_p->setAllocMode(0);

@@ -140,6 +140,7 @@ public:
 
     // Inlined by other units.
     int getMode() const { return mMode; }
+    bool isSafetyWait() const { return mMode == MODE_SAFETY_WAIT; } // d_net_ds_download: skip unloading during shutdown
     // d_net, ...: a reset is under way (the game state is about to be reset, or the game is quitting).
     bool isResetting() const { return mSoftResetPending || mMode == MODE_SAFETY_WAIT; }
     // dScene_c: the soft reset still waits for its scene change.
