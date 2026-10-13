@@ -5,5 +5,5 @@
 #include <types.h>
 
 extern "C" {
-BOOL fn_8017FE28(); // 8017FE28: the pointer is shown (fn_801B3D70) and inside the screen
+BOOL fn_8017FE28(); // 8017FE28: the pointer is shown (dObjCursor_c::isVisible) and inside the screen
 }

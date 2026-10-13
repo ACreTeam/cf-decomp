@@ -276,9 +276,7 @@ void dMenuMove_c::calcFollow() {
         f32 rate = (f32)mFollowCnt / (f32)(mFollowCnt + 1);
         mOfs *= rate;
     }
-    mVec2_c cursor;
-    fn_801B3D58(&cursor);
-    mPos = mOfs + cursor;
+    mPos = mOfs + dObjCursor_c::getPos();
 }
 
 void dMenuMove_c::startFollow() {

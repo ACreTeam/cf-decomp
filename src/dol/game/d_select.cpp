@@ -678,9 +678,7 @@ void BComp_c::updatePointer() {
     } hit;
     hit.pane = NULL;
     hit.scale = 1.0f;
-    mVec2_c pos;
-    fn_801B3D58(&pos);
-    hit.pos = pos;
+    hit.pos = dObjCursor_c::getPos();
     mLayout.patrolPane(m2d::isInPane, m2d::isRectButton, &hit);
     int idx = -1;
     if (hit.pane != NULL) {
