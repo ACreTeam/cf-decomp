@@ -1,22 +1,89 @@
 #pragma once
 
-// d_mii_icon (DOL TU d_mii_icon.cpp, not decompiled). Only what other TUs use.
+// The Miis drawn as icons: the other net members' (converted on a worker thread) and the travel Mii.
 
 #include <types.h>
+#include <revolution/RFL.h>
 
-extern "C" {
-void fn_8008B838(int member); // 8008B838: (d_net, a member joined)
-void fn_8008B84C();           // 8008B84C: (d_net, the session ended)
-void fn_8008B85C(int member); // 8008B85C: (d_net, a member left)
-u8 fn_8008B87C();             // 8008B87C: this console has a Mii to send (d_net)
-void *fn_8008B88C();          // 8008B88C: this console's Mii data (0x54 bytes, d_net)
-BOOL fn_8008B8C8(int member); // 8008B8C8: (d_net) member's Mii is received
-void fn_8008B89C(const void *data, int member); // 8008B89C: member's received Mii data (0x54 bytes), NULL = none (d_net)
-BOOL fn_8008B8DC();           // 8008B8DC: its worker thread is suspended (idle) (d_reset_save)
+namespace EGG {
+class Heap;
 }
 
-// Names inferred from d_travel_data: the 0x4C-byte travel copy of the Mii.
+#define MII_ICON_MEMBER_MAX 4
+#define MII_ICON_NET_DATA_SIZE 0x54
+
 namespace dMiiIcon {
-void *getTravelMii();             // 8008B8E8: NULL when no travel Mii is available
-void setTravelMii(const void *data); // 8008B8F8: NULL clears the travel Mii
-}
+
+enum State_e {
+    STATE_NONE,
+    STATE_RECEIVED, // waits for the thread
+    STATE_READY,
+    STATE_FAILED,
+};
+
+class net_c {
+public:
+    void init(int myNo);
+    void clear();
+    void reset(int member);
+    bool hasMyData();
+    void *getMyData();
+    void *getData(int member);
+    void setData(const void *data, int member);
+    RFLMiddleDB *getDB(int member);
+    RFLMiddleDB *getReadyDB(int member);
+    BOOL isDone(int member);
+
+    /* 0x00 */ void *mMyData;
+    /* 0x04 */ bool mHasMyData;
+    /* 0x08 */ void *mData[MII_ICON_MEMBER_MAX - 1];
+    /* 0x14 */ u32 mConverter[4];
+    /* 0x24 */ void *mConverterBuf;
+    /* 0x28 */ bool mConverting[MII_ICON_MEMBER_MAX];
+    /* 0x2C */ RFLMiddleDB mDB[MII_ICON_MEMBER_MAX - 1];
+    /* 0x74 */ void *mDBBuf[MII_ICON_MEMBER_MAX - 1];
+    /* 0x80 */ int mState[MII_ICON_MEMBER_MAX];
+    /* 0x90 */ u32 mError[MII_ICON_MEMBER_MAX];
+};
+
+class travel_c {
+public:
+    void *get();
+    BOOL set(const void *data);
+    RFLMiddleDB *getDB();
+
+    /* 0x00 */ RFLStoreData mData;
+    /* 0x4C */ RFLMiddleDB mDB;
+    /* 0x64 */ void *mDBBuf;
+    /* 0x68 */ int mState;
+    /* 0x6C */ u32 mError;
+};
+
+class mng_c {
+public:
+    void create(EGG::Heap *heap);
+    void execute();
+    bool isIdle();
+
+    /* 0x00 */ u8 *mWork;
+    /* 0x04 */ bool mCreated;
+    /* 0x08 */ net_c mNet;
+    /* 0xA8 */ travel_c mTravel;
+};
+
+void create(EGG::Heap *heap);
+void startNet(int myNo);
+void endNet();
+void removeMember(int member);
+void execute();
+bool hasMyMii();
+void *getMyMii();
+void setMemberMii(const void *data, int member); // NULL = none
+RFLMiddleDB *getMemberDB(int member);
+BOOL isMemberDone(int member);
+bool isIdle(); // the worker thread is suspended
+void *getTravelMii(); // NULL when no travel Mii is available
+BOOL setTravelMii(const void *data); // NULL clears the travel Mii
+RFLMiddleDB *getTravelDB();
+
+} // namespace dMiiIcon

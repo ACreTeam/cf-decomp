@@ -14,7 +14,8 @@ typedef enum {
     RFLErrcode_NANDCommandfail,
     RFLErrcode_Loadfail,
     RFLErrcode_Brokendata,
-    RFLErrcode_Fatal
+    RFLErrcode_Fatal,
+    RFLErrcode_Busy
 } RFLErrcode;
 
 typedef enum {
@@ -37,7 +38,14 @@ typedef enum {
     RFLExp_Max
 } RFLExpression;
 
-typedef struct RFLMiddleDB RFLMiddleDB;
+typedef struct RFLMiddleDB {
+    u32 data[6];
+} RFLMiddleDB;
+
+#define RFL_STORE_DATA_SIZE 0x4C
+typedef struct RFLStoreData {
+    u8 data[RFL_STORE_DATA_SIZE];
+} RFLStoreData;
 
 // Opaque, 4-byte aligned. The size follows from mFace::model_c (RFLCharModel base at 0x10, next member at 0x98).
 #define RFL_CHAR_MODEL_SIZE 0x88

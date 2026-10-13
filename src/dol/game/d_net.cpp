@@ -2584,12 +2584,12 @@ BOOL dNetTransfer_c::sendPlayer() {
             data[n] = animal;
             size[n++] = 0x3040;
         }
-        hasMii = fn_8008B87C();
+        hasMii = dMiiIcon::hasMyMii();
         data[n] = &hasMii;
         size[n] = sizeof(hasMii);
         n++;
         if (hasMii) {
-            data[n] = fn_8008B88C();
+            data[n] = dMiiIcon::getMyMii();
             size[n++] = 0x54;
         }
         scene = dScene::getCurrentScene();
@@ -2654,7 +2654,7 @@ BOOL dNetTransfer_c::sendTown(int member) {
             key = dNetWc24::g_wc24.mUserId;
             player = dPlayerMgr::getCurrentPlayerSlot();
             ticks = dTime_c::getCurrentTicks();
-            hasMii = fn_8008B87C();
+            hasMii = dMiiIcon::hasMyMii();
             if (mTownSent < 0x1635) {
                 data[1] = &key;
                 size[1] = sizeof(key);
@@ -2669,7 +2669,7 @@ BOOL dNetTransfer_c::sendTown(int member) {
                 size[5] = sizeof(ticks);
                 data[6] = &hasMii;
                 size[6] = sizeof(hasMii);
-                data[7] = fn_8008B88C();
+                data[7] = dMiiIcon::getMyMii();
                 size[7] = 0x54;
                 int i = 0;
                 n = 8;
@@ -2723,12 +2723,12 @@ BOOL dNetTransfer_c::sendPlayer(int member) {
         key = dNetWc24::g_wc24.mUserId;
         data[1] = &key;
         size[1] = sizeof(key);
-        hasMii = fn_8008B87C();
+        hasMii = dMiiIcon::hasMyMii();
         data[2] = &hasMii;
         size[2] = sizeof(hasMii);
         n = 3;
         if (hasMii) {
-            data[3] = fn_8008B88C();
+            data[3] = dMiiIcon::getMyMii();
             size[3] = 0x54;
             n = 4;
         }
@@ -2816,7 +2816,7 @@ BOOL dNetTransfer_c::isAllReady() const {
     for (int i = 0; i < ARRAY_SIZE(mReady); i++) {
         if (i != self && getNetAccepted()->isOn(i)) {
             if (mReady[i]) {
-                if (!fn_8008B8C8(i)) {
+                if (!dMiiIcon::isMemberDone(i)) {
                     return FALSE;
                 }
             } else {
@@ -3032,7 +3032,7 @@ void dNetDisconnect_c::executePostDelete() {
         callOnMemberLeft();
         int member = mMember.get();
         removeNetMember(member);
-        fn_8008B85C(member);
+        dMiiIcon::removeMember(member);
         clearRequestMember();
         getNetPacket()->mLeaving.clear();
         getNetPacket()->mSuspended = 0;
@@ -4690,7 +4690,7 @@ void startNetHostSession() {
     getNetPacket()->mFrame = cCounter_c::m_gameFrame;
     getNetPacket()->clearRecords();
     onSessionStart();
-    fn_8008B838(0);
+    dMiiIcon::startNet(0);
 }
 
 void terminateNetSession(int arg) {
@@ -4700,7 +4700,7 @@ void terminateNetSession(int arg) {
     }
     resetNetState(arg);
     dNetMgr_c::sInstance->cleanup();
-    fn_8008B84C();
+    dMiiIcon::endNet();
 }
 
 void receiveNetStage() {
@@ -4847,7 +4847,7 @@ BOOL startGuest(int arg) {
         cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(my), player,
                      sizeof(dPrivateData_c));
         getNetPacket()->mFrame = cCounter_c::m_gameFrame;
-        fn_8008B838(my);
+        dMiiIcon::startNet(my);
         return TRUE;
     }
     return FALSE;
@@ -4993,7 +4993,7 @@ u8 isItemsReceived() {
 
 BOOL isNewPlayerReady() {
     int member = getNetRequest()->mGrantedMember.get();
-    if (member < NET_MEMBER_MAX && fn_8008B8C8(member)) {
+    if (member < NET_MEMBER_MAX && dMiiIcon::isMemberDone(member)) {
         int state = getNetTransfer()->getStep();
         if (getNetMyNo()->get() == 0) {
             return state > 6;

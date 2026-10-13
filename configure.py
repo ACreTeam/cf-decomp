@@ -729,7 +729,7 @@ config.libs = [
             Object(Matching, "dol/game/d_demo_actor.cpp"),
             Object(NonMatching, "dol/game/d_light.cpp"),
             Object(Matching, "dol/game/d_demo_actor_list.cpp"),
-            Object(NonMatching, "dol/game/d_mii_icon.cpp"),
+            Object(Matching, "dol/game/d_mii_icon.cpp"),
             Object(Matching, "dol/game/d_fader.cpp"),
             Object(Matching, "dol/game/d_field_info.cpp"),
             Object(Matching, "dol/game/d_effect.cpp"),

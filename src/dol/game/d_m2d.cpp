@@ -4,6 +4,7 @@
 // .text 800075C0..8000AD84. See include/game/game/d_m2d.hpp and notes/d_m2d.txt.
 #include <game/game/d_font.hpp>
 #include <game/game/d_m2d.hpp>
+#include <game/game/d_mii_icon.hpp>
 #include <game/game/d_script.hpp>
 #include <game/game/d_string.hpp>
 #include <game/mLib/m_allocator.hpp>
@@ -25,9 +26,8 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-u32 fn_8008B90C(); // the current capture source
 BOOL fn_802C406C(u16 id); // id is a valid capture texture
-void fn_802C2538(void *buffer, int format, u32 source, u16 id, int, void *params); // copies the frame buffer
+void fn_802C2538(void *buffer, int source, RFLMiddleDB *middleDB, u16 id, int, void *params); // RFLMakeIcon
 }
 
 namespace m2d {
@@ -1267,9 +1267,9 @@ void captureNode_c::execute() {
         params.mWidth = mWidth;
         params.mHeight = mHeight;
         if (mID == 0xFFFE) {
-            fn_802C2538(mpBuffer, 7, fn_8008B90C(), 0, 0, &params);
+            fn_802C2538(mpBuffer, 7, dMiiIcon::getTravelDB(), 0, 0, &params);
         } else {
-            fn_802C2538(mpBuffer, 0, 0, mID, 0, &params);
+            fn_802C2538(mpBuffer, 0, NULL, mID, 0, &params);
         }
         DCFlushRange(mpBuffer, mWidth * mHeight * 2);
     }
