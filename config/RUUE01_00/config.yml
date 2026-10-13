@@ -24,7 +24,7 @@ fill_gaps: true
 export_all: true
 globalize_symbols: true
 clean_extab: false
-force_active: [lbl_8074E834, fn_80081848__11dSceneCheckFv] # lbl_8074E834: d_play_util .sbss word nothing references; fn_80081848: an unreferenced d_scene_check stub dtk leaves out of FORCEACTIVE
+force_active: [lbl_8074E834, fn_80081848__11dSceneCheckFv, _8074E524__14dNetDsDownload] # Unreferenced storage/stubs retained in the original; the download word preserves its .sbss layout.
 block_relocations:
 # 804F8348: d_sc_data_rm_theater_show's scene3 kind 0x0B record starts with the colour 806840FF, which looks like an
 # address inside d_snd's l_soundSystemWorkMem bss. Not a pointer.
