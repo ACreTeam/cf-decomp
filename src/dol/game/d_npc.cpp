@@ -22,6 +22,7 @@
 #include <game/game/d_npc_setup.hpp>
 #include <game/game/d_npc_list.hpp>
 #include <game/game/d_demo_actor.hpp>
+#include <game/game/d_item_sel.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
@@ -32,7 +33,6 @@ extern "C" {
 
 // Field map / actors.
 BOOL fn_80013550();
-int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 BOOL fn_80013F98(int x, int z, int arg);
 }
 
@@ -3194,7 +3194,7 @@ int fn_800F4510(dItem::Item *out, int num, const void *filter, const dItem::Item
     static dNpcPair_c sPairs[4] = {
         dNpcPair_c(4, 0), dNpcPair_c(3, 0), dNpcPair_c(2, 0), dNpcPair_c(1, 0),
     };
-    return fn_800C60B4(out, num, sPairs, 4, filter, exclude, excludeNum, 0);
+    return dItemSel::select(out, num, reinterpret_cast<const dItemSel::Range_c *>(sPairs), 4, reinterpret_cast<const dItemSel::Filter_c *>(filter), exclude, excludeNum, 0);
 }
 
 // 800F45A4
@@ -3202,7 +3202,7 @@ int fn_800F45A4(dItem::Item *out, int num, const void *filter, const dItem::Item
     static dNpcPair_c sPairs[3] = {
         dNpcPair_c(3, 0), dNpcPair_c(2, 0), dNpcPair_c(1, 0),
     };
-    return fn_800C60B4(out, num, sPairs, 3, filter, exclude, excludeNum, 0);
+    return dItemSel::select(out, num, reinterpret_cast<const dItemSel::Range_c *>(sPairs), 3, reinterpret_cast<const dItemSel::Filter_c *>(filter), exclude, excludeNum, 0);
 }
 
 // 800F4608
@@ -3210,7 +3210,7 @@ int fn_800F4608(dItem::Item *out, int num, const void *filter, const dItem::Item
     static dNpcPair_c sPairs[3] = {
         dNpcPair_c(3, 3), dNpcPair_c(2, 3), dNpcPair_c(1, 3),
     };
-    return fn_800C60B4(out, num, sPairs, 3, filter, exclude, excludeNum, 0);
+    return dItemSel::select(out, num, reinterpret_cast<const dItemSel::Range_c *>(sPairs), 3, reinterpret_cast<const dItemSel::Filter_c *>(filter), exclude, excludeNum, 0);
 }
 
 // 800F4668
@@ -3218,7 +3218,7 @@ int fn_800F4668(dItem::Item *out, int num, const void *filter, const dItem::Item
     static dNpcPair_c sPairs[3] = {
         dNpcPair_c(3, 5), dNpcPair_c(2, 5), dNpcPair_c(1, 5),
     };
-    return fn_800C60B4(out, num, sPairs, 3, filter, exclude, excludeNum, 0);
+    return dItemSel::select(out, num, reinterpret_cast<const dItemSel::Range_c *>(sPairs), 3, reinterpret_cast<const dItemSel::Filter_c *>(filter), exclude, excludeNum, 0);
 }
 
 // 800F46CC

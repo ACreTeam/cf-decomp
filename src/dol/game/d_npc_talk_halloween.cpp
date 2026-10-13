@@ -452,7 +452,7 @@ BOOL dAcNpcNml_c::talk_c::stepHalloweenPresent(int kind) {
             int range[2];
             range[0] = dItem::KIND_CANDY;
             range[1] = 0x2C;
-            fn_800C60B4(&present, 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+            dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         }
         if (present.isValid()) {
             requestItemAct(&present, 0, 0);

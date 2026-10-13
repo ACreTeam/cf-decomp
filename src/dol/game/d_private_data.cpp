@@ -462,7 +462,7 @@ void dPrivateData_c::sendLostChildThanks() {
         dItem::Item present;
         range[0] = 3;
         range[1] = 0x19;
-        fn_800C60B4(&present, 1, range, 1, lbl_8059FF80, 0, 0, 0);
+        dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, 0, 0, 0);
         mail.setPresent(present.mId, 0xFF);
         if (dPostOffice::deliverToPlayer(&mail)) {
             clearFlag0(0x4A);

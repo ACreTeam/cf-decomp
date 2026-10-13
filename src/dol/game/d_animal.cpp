@@ -32,6 +32,7 @@
 #include <game/game/d_npc_setup.hpp>
 #include <game/game/d_block_kind.hpp>
 #include <game/game/d_save_building.hpp>
+#include <game/game/d_item_sel.hpp>
 
 struct dHomeStayPeriod_c {
     u8 mValue;
@@ -56,7 +57,6 @@ struct dAnimalEvent_c {
 
 // Callees in other TUs declared with differing signatures by the first-pass chunks.
 extern "C" {
-int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 }
 
 // Free functions of this TU.
@@ -1644,7 +1644,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-extern u8 lbl_8059FF80[];
 }
 
 // Flag bit 26 of the memory's first word.
@@ -2422,7 +2421,7 @@ void dAnimal_c::validateHouse() {
     static dAnimalItemRange_c sRange(dItem::KIND_FTR, 0);
     for (; i < 10 && count < 5; i++) {
         dItem::Item item;
-        if (fn_800C60B4(&item, 1, &sRange.mKind, 1, lbl_8059FF80, 0, 0, 0) && item.mId != dItem::ITEM_ID_NONE &&
+        if (dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&sRange.mKind), 1, &dItemSel::sDefaultFilter, 0, 0, 0) && item.mId != dItem::ITEM_ID_NONE &&
             placeFtr(&item, -1, FALSE, NULL)) {
             count++;
         }
@@ -2827,7 +2826,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-extern u8 lbl_8059FF80[0x10];
 struct dNpcPair_c;
 int fn_801017B8();
 }
@@ -2909,13 +2907,13 @@ dItem::Item dAnimal_c::pickOwnItem() {
             static dNpcPair_c sPair(dItem::KIND_FOSSIL, 0x5C);
             // Integer select: the target computes this branchless.
             const dItem::Item *exclude = (const dItem::Item *)(prev.mId != dItem::ITEM_ID_NONE ? (int)&prev : 0);
-            fn_800C60B4(&item, 1, &sPair, 1, lbl_8059FF80, exclude, exclude != NULL, 0);
+            dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&sPair), 1, &dItemSel::sDefaultFilter, exclude, exclude != NULL, 0);
             if (item.isSame(prev)) {
                 item = dItem::ITEM_ID_NONE;
             }
         } else if (rnd < 50.0f) {
             static dNpcPair_c sPair(dItem::KIND_HANIWA, 0x5C);
-            fn_800C60B4(&item, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
+            dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&sPair), 1, &dItemSel::sDefaultFilter, NULL, FALSE, 0);
             if (item.isSame(prev)) {
                 item = dItem::ITEM_ID_NONE;
             }
@@ -2947,7 +2945,7 @@ dItem::Item dAnimal_c::pickOwnItem() {
 
     static dNpcPair_c sDefault(dItem::KIND_FTR, 0);
     if (item.mId == dItem::ITEM_ID_NONE) {
-        if (!fn_800C60B4(&item, 1, &sDefault, 1, lbl_8059FF80, NULL, FALSE, 0)) {
+        if (!dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&sDefault), 1, &dItemSel::sDefaultFilter, NULL, FALSE, 0)) {
             item = dItem::ITEM_ID_NONE;
         }
     }
@@ -3412,16 +3410,16 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
             switch (dPostOffice::getLengthType(mail)) {
             case 1: {
                 static dNpcPair_c sPair(dItem::KIND_FTR, 0);
-                fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
+                dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(&sPair), 1, &dItemSel::sDefaultFilter, NULL, FALSE, 0);
                 break;
             }
             case 2:
-                fn_800F45A4(&present, 1, lbl_8059FF80, NULL, 0);
+                fn_800F45A4(&present, 1, &dItemSel::sDefaultFilter, NULL, 0);
                 break;
             default: {
                 static dNpcPair_c sPair(dItem::KIND_CLOTH, 0);
                 if (cM::rndF(100.0f) < 50.0f) {
-                    fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
+                    dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(&sPair), 1, &dItemSel::sDefaultFilter, NULL, FALSE, 0);
                 }
                 if (present.mId == dItem::ITEM_ID_NONE) {
                     present.setFromIndex(dItem::ITEM_IDX_APPLE, cM::rndInt(6), 0);
@@ -3476,16 +3474,16 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
             switch (dPostOffice::getLengthType(mail)) {
             case 1: {
                 static dNpcPair_c sPair(dItem::KIND_FTR, 0);
-                fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
+                dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(&sPair), 1, &dItemSel::sDefaultFilter, NULL, FALSE, 0);
                 break;
             }
             case 2:
-                fn_800F45A4(&present, 1, lbl_8059FF80, NULL, 0);
+                fn_800F45A4(&present, 1, &dItemSel::sDefaultFilter, NULL, 0);
                 break;
             default: {
                 static dNpcPair_c sPair(dItem::KIND_CLOTH, 0);
                 if (cM::rndF(100.0f) < 50.0f) {
-                    fn_800C60B4(&present, 1, &sPair, 1, lbl_8059FF80, NULL, FALSE, 0);
+                    dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(&sPair), 1, &dItemSel::sDefaultFilter, NULL, FALSE, 0);
                 }
                 if (present.mId == dItem::ITEM_ID_NONE) {
                     present.setFromIndex(dItem::ITEM_IDX_APPLE, cM::rndInt(6), 0);
@@ -3653,7 +3651,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-extern u8 lbl_8059FF80[];
 }
 
 
@@ -3747,7 +3744,7 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
 
     switch (ret) {
     case 0:
-        fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0);
+        fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         break;
     case 1: {
         dItem::Item *p = pickNewItem(NULL, 0, FALSE);
@@ -3772,7 +3769,7 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
     }
 
     if (item->mId == dItem::ITEM_ID_NONE) {
-        fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0);
+        fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         ret = 3;
         if (item->mId != dItem::ITEM_ID_NONE) {
             ret = 0;
@@ -3915,7 +3912,7 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
             dAnimalPair_c(dItem::KIND_WALL, 4), dAnimalPair_c(dItem::KIND_FTR, 4), dAnimalPair_c(dItem::KIND_CARPET, 4),
             dAnimalPair_c(dItem::KIND_WALL, 5), dAnimalPair_c(dItem::KIND_FTR, 5), dAnimalPair_c(dItem::KIND_CARPET, 5),
         };
-        fn_800C60B4(item, 1, sPairs, 6, lbl_8059FF80, 0, 0, 0);
+        dItemSel::select(item, 1, reinterpret_cast<const dItemSel::Range_c *>(sPairs), 6, &dItemSel::sDefaultFilter, 0, 0, 0);
         break;
     }
     case 1: {
@@ -3943,7 +3940,7 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
     if (item->mId == dItem::ITEM_ID_NONE) {
         dAnimalCatalogFilter_c filter(&player->mCatalog, 0x23);
         if (!fn_800F4608(item, 1, &filter, NULL, 0)) {
-            fn_800F4608(item, 1, lbl_8059FF80, NULL, 0);
+            fn_800F4608(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         }
         ret = 4;
         if (item->mId != dItem::ITEM_ID_NONE) {
@@ -4309,7 +4306,7 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
         dAnimalCatalogFilter_c filter(&player->mCatalog, 0x20);
         if (fn_800F45A4(item, 1, &filter, NULL, 0)) {
             ret = 0;
-        } else if (fn_800F4668(item, 1, lbl_8059FF80, NULL, 0)) {
+        } else if (fn_800F4668(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
         base = 700;
@@ -4351,7 +4348,7 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0)) {
+        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4421,9 +4418,9 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
                 *item = *p;
             }
             base = 700;
-        } else if (fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0)) {
+        } else if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
-        } else if (fn_800F4668(item, 1, lbl_8059FF80, NULL, 0)) {
+        } else if (fn_800F4668(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
         break;
@@ -4457,7 +4454,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0)) {
+        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4525,7 +4522,7 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
         dAnimalCatalogFilter_c filter(&player->mCatalog, 0x20);
         if (fn_800F45A4(item, 1, &filter, NULL, 0)) {
             ret = 0;
-        } else if (fn_800F4668(item, 1, lbl_8059FF80, NULL, 0)) {
+        } else if (fn_800F4668(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
         base = 700;
@@ -4567,7 +4564,7 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0)) {
+        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4727,7 +4724,7 @@ u32 dAnimal_c::pickFtrReward(dItem::Item *item, int *price, dPrivateData_c *play
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0)) {
+        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4772,7 +4769,7 @@ u32 dAnimal_c::pickLostItemReward(dItem::Item *item, int *price, dPrivateData_c 
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, lbl_8059FF80, NULL, 0)) {
+        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4802,7 +4799,7 @@ int dAnimal_c::pickSickReward(dItem::Item *item, dPrivateData_c *player) {
     static dAnimalPair_c sPairs[1] = {
         dAnimalPair_c(dItem::KIND_FTR, 0),
     };
-    fn_800C60B4(item, 1, sPairs, 1, lbl_8059FF80, 0, 0, 0);
+    dItemSel::select(item, 1, reinterpret_cast<const dItemSel::Range_c *>(sPairs), 1, &dItemSel::sDefaultFilter, 0, 0, 0);
     return 0;
 }
 
@@ -5710,7 +5707,6 @@ extern "C" {
 // This chunk, used before their definitions.
 
 // Other TUs.
-extern u8 lbl_8059FF80[];
 }
 
 
@@ -5835,7 +5831,7 @@ BOOL dAnimal_c::setVisitorLetter(dPrivateData_c *player) {
     if (ok) {
         dItem::Item item;
         if (cM::rndF(100.0f) < 25.0f) {
-            fn_800F45A4(&item, 1, lbl_8059FF80, NULL, 0);
+            fn_800F45A4(&item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         }
         animalItem->set(&mID, &item);
         return TRUE;
@@ -5915,7 +5911,7 @@ dItem::Item pickRandomUmbrella() {
     static dItemRange_c range(dItem::KIND_UMBRELLA, 8);
     dItem::Item result;
     dItem::Item item;
-    if (fn_800C60B4(&item, 1, &range.mKind, 1, lbl_8059FF80, 0, 0, 0)) {
+    if (dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&range.mKind), 1, &dItemSel::sDefaultFilter, 0, 0, 0)) {
         result = item;
     }
     return result;
@@ -8083,7 +8079,6 @@ extern "C" {
 // This TU, other chunks.
 
 // Other TUs.
-extern u8 lbl_8059FF80[];
 }
 
 // 804EED68
@@ -8182,9 +8177,9 @@ dItem::Item dAnimalBlock_c::pickStylePresent(dPrivateData_c *player) {
         u16 id = player->mEquipment.mShirt.mId;
         if (id != dItem::ITEM_ID_NONE) {
             dItem::Item exclude(id);
-            fn_800C60B4(&result, 1, &range, 1, &filter, &exclude, 1, 0);
+            dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), &exclude, 1, 0);
         } else {
-            fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
+            dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         }
         break;
     }
@@ -8194,28 +8189,28 @@ dItem::Item dAnimalBlock_c::pickStylePresent(dPrivateData_c *player) {
         u16 id = player->mEquipment.mAcc.mId;
         if (id != dItem::ITEM_ID_NONE) {
             dItem::Item exclude(id);
-            fn_800C60B4(&result, 1, &range, 1, &filter, &exclude, 1, 0);
+            dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), &exclude, 1, 0);
         } else {
-            fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
+            dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         }
         break;
     }
     case 2: {
         dAnmItemRange_c range(dItem::KIND_FTR, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
-        fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
+        dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         break;
     }
     case 3: {
         dAnmItemRange_c range(dItem::KIND_WALL, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
-        fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
+        dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         break;
     }
     case 4: {
         dAnmItemRange_c range(dItem::KIND_CARPET, 0);
         dAnmItemFilter_c filter(NULL, 0, 1);
-        fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
+        dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         break;
     }
     }
@@ -8492,28 +8487,28 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
     case 1:
         if (flag) {
             dAnmItemRange_c range(dItem::KIND_FTR, 1);
-            fn_800C60B4(&result, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+            dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         } else {
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
             if (items != NULL) {
                 dAnmItemRange_c range(dItem::KIND_FTR, 2);
                 dAnmItemFilter_c filter(NULL, 0, 0x11);
-                fn_800C60B4(&result, 1, &range, 1, &filter, items, num, 0);
+                dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), items, num, 0);
                 heap->free(items);
             }
         }
         break;
     case 2:
         if (flag) {
-            fn_800F45A4(&result, 1, lbl_8059FF80, NULL, 0);
+            fn_800F45A4(&result, 1, &dItemSel::sDefaultFilter, NULL, 0);
         } else {
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
             if (items != NULL) {
                 dAnmItemRange_c range(dItem::KIND_FTR, 2);
                 dAnmItemFilter_c filter(NULL, 0, 0x11);
-                fn_800C60B4(&result, 1, &range, 1, &filter, items, num, 0);
+                dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), items, num, 0);
                 heap->free(items);
             }
         }
@@ -8522,14 +8517,14 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
         if (flag) {
             dAnmItemRange_c range(dItem::KIND_FTR, 1);
             dAnmItemFilter_c filter(NULL, 0, 1);
-            fn_800C60B4(&result, 1, &range, 1, &filter, NULL, 0, 0);
+            dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         } else {
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
             if (items != NULL) {
                 dAnmItemRange_c range(dItem::KIND_FTR, 2);
                 dAnmItemFilter_c filter(&player->mCatalog, 0, 0x11);
-                fn_800C60B4(&result, 1, &range, 1, &filter, items, num, 0);
+                dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), items, num, 0);
                 heap->free(items);
             }
         }
@@ -8541,7 +8536,7 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
             dAnmItemRange_c(2, 1),
         };
         dAnmItemFilter_c filter(NULL, 0, 1);
-        fn_800C60B4(&result, 1, sRanges, 3, &filter, NULL, 0, 0);
+        dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(sRanges), 3, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         break;
     }
     case 5: {
@@ -8551,7 +8546,7 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
             dAnmItemRange_c(2, 1),
         };
         dAnmItemFilter_c filter(&player->mCatalog, 0, 1);
-        fn_800C60B4(&result, 1, sRanges, 3, &filter, NULL, 0, 0);
+        dItemSel::select(&result, 1, reinterpret_cast<const dItemSel::Range_c *>(sRanges), 3, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         break;
     }
     }
@@ -9026,7 +9021,7 @@ int dAnimalBlock_c::pickHideAndSeekPresent(dItem::Item *out, dAnimal_c *animal) 
     if (itemId(item) == dItem::ITEM_ID_NONE) {
         dAnmItemRange_c range(0xC, 0xA);
         dAnmItemFilter_c filter(NULL, 0, 0x21);
-        fn_800C60B4(&item, 1, &range, 1, &filter, NULL, 0, 0);
+        dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), NULL, 0, 0);
         if (itemId(item) != dItem::ITEM_ID_NONE) {
             result = 0;
         }

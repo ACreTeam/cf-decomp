@@ -7,12 +7,10 @@
 #include <game/game/d_field_info.hpp>
 #include <string.h>
 #include <game/game/d_net.hpp>
+#include <game/game/d_item_sel.hpp>
 
-extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
 extern "C" {
-int fn_800C60B4(dItem::Item *out, int num, const int *range, int rangeNum, const void *filter, const dItem::Item *exclude,
-                int excludeNum, int); // 800C60B4: random items
 void *fn_800A9058();                  // 800A9058
 int fn_800A8F98(void *, int unitX, int unitZ, int); // 800A8F98: -1 when none
 void fn_800ABAF4(int);                // 800ABAF4
@@ -62,7 +60,7 @@ void dSaveShopTailor_c::update() {
         int range[2];
         range[0] = 0x38;
         range[1] = 8;
-        fn_800C60B4(&item, 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         mStock[0].mItem = item.mId;
     }
     {
@@ -70,7 +68,7 @@ void dSaveShopTailor_c::update() {
         int range[2];
         range[0] = 4;
         range[1] = 0;
-        fn_800C60B4(items, 3, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(items, 3, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         mStock[1].mItem = items[0].mId;
         mStock[2].mItem = items[1].mId;
         mStock[3].mItem = items[2].mId;
@@ -83,7 +81,7 @@ void dSaveShopTailor_c::update() {
         int range[2];
         range[0] = 5;
         range[1] = 8;
-        fn_800C60B4(&item, 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         mStock[12].mItem = item.mId;
     }
     {
@@ -91,7 +89,7 @@ void dSaveShopTailor_c::update() {
         int range[2];
         range[0] = 6;
         range[1] = 8;
-        fn_800C60B4(&item, 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         mStock[13].mItem = item.mId;
     }
 }

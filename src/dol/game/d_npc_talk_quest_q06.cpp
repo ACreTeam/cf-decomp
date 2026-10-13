@@ -84,7 +84,7 @@ void dAcNpcNml_c::talk_c::endErrandYes(int arg) {
         const dAnmPersonalID_c *exclude = self;
         dSaveTown_c *town = dSaveData_c::getTown();
         dAnimal_c *other = town->mAnimals.mTown.pickRandomAvailableAnimal(&exclude, 1);
-        if (!fn_800F4608(&mItem0, 1, lbl_8059FF80, NULL, 0)) {
+        if (!fn_800F4608(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_BED);
         }
         errand->clear();

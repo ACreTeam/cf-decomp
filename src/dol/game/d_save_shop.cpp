@@ -24,12 +24,10 @@
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_item_sel.hpp>
 
-extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
 extern "C" {
-int fn_800C60B4(dItem::Item *out, int num, const int *range, int rangeNum, const void *filter, const dItem::Item *exclude,
-                int excludeNum, int); // 800C60B4: random items
 void *fn_800A9058();                  // 800A9058
 int fn_800A8F98(void *, int unitX, int unitZ, int); // 800A8F98: -1 when none
 void fn_800ABAF4(int);                // 800ABAF4
@@ -573,7 +571,7 @@ void dSaveShop_c::update() {
         int range[2];
         range[0] = dItem::KIND_FTR;
         range[1] = 0;
-        fn_800C60B4(ftrs, num, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(ftrs, num, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
 
     u8 rate = dHR::getAverageRate()[1];
@@ -593,7 +591,7 @@ void dSaveShop_c::update() {
         if (mStage == SHOP_STAGE_NOOKINGTONS) {
             slot = 2;
         }
-        fn_800C60B4(&ftrs[slot], 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&ftrs[slot], 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
 
     int seasonal = 0;
@@ -628,7 +626,7 @@ void dSaveShop_c::update() {
         int range[2];
         range[0] = dItem::KIND_FTR;
         range[1] = seasonal;
-        fn_800C60B4(&ftrs[slot], 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&ftrs[slot], 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
         dItem::infoBank_c::get()->getBITM(ftrs[1]);
     }
     for (int i = 0; i < num; i++) {
@@ -641,7 +639,7 @@ void dSaveShop_c::update() {
         int range[2];
         range[0] = dItem::KIND_WALL;
         range[1] = 0;
-        fn_800C60B4(walls, num, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(walls, num, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
     for (int i = 0; i < num; i++) {
         mStock[25 + i].mItem = walls[i].mId;
@@ -653,7 +651,7 @@ void dSaveShop_c::update() {
         int range[2];
         range[0] = dItem::KIND_CARPET;
         range[1] = 0;
-        fn_800C60B4(carpets, num, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(carpets, num, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
     for (int i = 0; i < num; i++) {
         mStock[28 + i].mItem = carpets[i].mId;
@@ -665,7 +663,7 @@ void dSaveShop_c::update() {
         int range[2];
         range[0] = dItem::KIND_PAPER;
         range[1] = 0;
-        fn_800C60B4(papers, num, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(papers, num, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
     for (int i = 0; i < num; i++) {
         mStock[31 + i].mItem = papers[i].mId;
@@ -832,7 +830,7 @@ void dSaveShop_c::stockTools() {
             int range[2];
             range[0] = 0x30;
             range[1] = 0x2C;
-            fn_800C60B4(&item, 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+            dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
             october = TRUE;
             mStock[i].mItem = item.mId;
             continue;

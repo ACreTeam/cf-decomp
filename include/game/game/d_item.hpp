@@ -559,6 +559,17 @@ enum SeriesGroup {
 
 // Item source groups (BITM::m_from). Names follow the game's own string table
 // (804EA114, owned by the preceding TU).
+// BITM clothing availability. Seasonal values match d_date's SEASON_*.
+enum ClothSeason {
+    CLOTH_SEASON_ALL = 4,
+    CLOTH_SEASON_COUNT,
+};
+
+// Paper variants encode the number of sheets minus one.
+enum PaperVariant {
+    PAPER_VARIANT_FULL_PACK = 3,
+};
+
 enum From {
     FROM_GROUP_ABC, // 0x00
     FROM_GROUP_ABC_AVERAGE,
@@ -975,6 +986,12 @@ public:
 // Candidate set over item indices 0..DL_ITEM_END.
 class seeker_c {
 public:
+    enum SearchFlags {
+        SEARCH_ALL_REGIONS = 1 << 0,
+        SEARCH_BUILTIN = 1 << 1,
+        SEARCH_DOWNLOAD = 1 << 2,
+    };
+
     // Filters candidates during search.
     class candCB_c {
     public:

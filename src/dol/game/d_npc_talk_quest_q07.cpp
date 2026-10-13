@@ -85,11 +85,11 @@ void dAcNpcNml_c::talk_c::endErrandFinalYes(int arg) {
         const dAnmPersonalID_c *exclude = self;
         dSaveTown_c *town = dSaveData_c::getTown();
         dAnimal_c *other = town->mAnimals.mTown.pickRandomAvailableAnimal(&exclude, 1);
-        dItemSelFilter_c filter(NULL, 0, 1);
+        dItemSel::Filter_c filter(NULL, NULL, dItemSel::EXCLUDE_NOT_FOR_SALE);
         dItem::Item excludeItems[2];
         excludeItems[0] = other->mCloth;
-        dItemSelRange_c range(4, 3);
-        if (!fn_800C60B4(&mItem0, 1, &range, 1, &filter, excludeItems, 1, 0)) {
+        dItemSel::Range_c range(4, 3);
+        if (!dItemSel::select(&mItem0, 1, &range, 1, &filter, excludeItems, 1, 0)) {
             mItem0.setFromIndex(dItem::ITEM_IDX_WORK_UNIFORM);
         }
         errand->clear();

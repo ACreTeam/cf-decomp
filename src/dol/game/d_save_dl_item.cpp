@@ -268,7 +268,7 @@ void dItem::dSaveItemRarity_c::randomize() {
 }
 
 // 80115C98
-u8 dItem::dSaveItemRarity_c::get(int category) {
+u32 dItem::dSaveItemRarity_c::get(int category) {
     return mOrder[category & 7];
 }
 

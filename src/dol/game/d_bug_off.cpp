@@ -12,12 +12,10 @@
 #include <game/game/d_letter.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_item_sel.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter,
-                const dItem::Item *exclude, int excludeNum, int); // 800C60B4: random item
-extern u8 lbl_8059FF80[];
 }
 
 // C++ linkage (mangled in symbols.txt).
@@ -129,7 +127,7 @@ void dBugOff_c::sendResultLetters() {
                     setupMail(&sMail, cM::rndInt(3) + 1, 12, &player->mPID, 0x14C);
                     dItem::Item present;
                     dBugOffItemRange_c range(3, 0x1E);
-                    fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+                    dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
                     sMail.setPresent(present.mId, 0xFF);
                     if (dPostOffice::add(&sMail)) {
                         getTownPlayer(i)->clearFlag0(PRIVATE_FLAG0_BUG_OFF_ENTERED);
@@ -164,7 +162,7 @@ void dBugOff_c::sendResultLetters() {
             setupMail(&sMail, cM::rndInt(3) + 7, 12, &mPlayer[0], 0x14C);
             dItem::Item present;
             dBugOffItemRange_c range(3, 0x1E);
-            fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+            dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(&range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
             sMail.setPresent(present.mId, 0xFF);
             dPostOffice::holdMail(&sMail);
         }

@@ -80,7 +80,7 @@ namespace dItem {
 class dSaveItemRarity_c {
 public:
     void randomize();         // 80115C3C
-    u8 get(int category);     // 80115C98: 0..5 (callers take it mod 6)
+    u32 get(int category);     // 80115C98: 0..5 (callers take it mod 6)
 
     /* 0x0 */ u8 mOrder[8];
 }; // size 0x8

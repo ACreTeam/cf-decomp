@@ -2,13 +2,12 @@
 #include <game/game/d_police_box.hpp>
 #include <game/game/d_item.hpp>
 #include <game/cLib/c_math.hpp>
+#include <game/game/d_item_sel.hpp>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
 // Picks a random item (also used by dPrivateData_c for presents).
-void fn_800C60B4(dItem::Item *item, int, s32 *range, int, void *, int, int, int);
 }
-extern u8 lbl_8059FF80[];
 
 // 801538F8
 void dPoliceBox_c::clear() {
@@ -28,7 +27,7 @@ void dPoliceBox_c::init() {
     dItem::Item item;
     for (int i = 0; i < 3; i++) {
         range[0] = categories[i];
-        fn_800C60B4(&item, 1, range, 1, lbl_8059FF80, 0, 0, 0);
+        dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, 0, 0, 0);
         mItems[i] = item.mId;
     }
 }
@@ -69,7 +68,7 @@ void dPoliceBox_c::refill(int days) {
                         category = 0;
                     }
                     range[0] = categories[category];
-                    fn_800C60B4(&item, 1, range, 1, lbl_8059FF80, 0, 0, 0);
+                    dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, 0, 0, 0);
                     mItems[i] = item.mId;
                     n++;
                 }

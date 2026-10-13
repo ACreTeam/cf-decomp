@@ -56,6 +56,7 @@
 #include <game/game/d_activity_log.hpp>
 #include <game/game/d_fd_block_type.hpp>
 #include <game/game/d_scene_base.hpp>
+#include <game/game/d_item_sel.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -81,7 +82,6 @@ void fn_800D16E8();
 int fn_801017B8();
 
 f32 fn_8044B83C(EGG::Effect *effect);
-int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 extern void *lbl_8074E9A0[2];
 }
 

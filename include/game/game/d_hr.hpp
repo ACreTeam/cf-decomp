@@ -160,6 +160,18 @@ struct dNpcFtrShape_c;
 
 namespace dHR {
 
+// getRate's special home selector and indices into rate_c::mScore.
+enum RateHome {
+    RATE_CURRENT_HOME = 4,
+};
+
+enum FengShuiColor {
+    FENG_SHUI_YELLOW,
+    FENG_SHUI_GREEN,
+    FENG_SHUI_RED,
+};
+
+
 // Where a rated room's field, wallpaper and carpet come from. No virtual dtor (3-entry vtable).
 class fdCb_c {
 public:

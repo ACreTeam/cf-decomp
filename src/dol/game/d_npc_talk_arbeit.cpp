@@ -249,7 +249,7 @@ int dAcNpcNml_c::talk_c::msgArbeitGiven(msgInfo_s *info) {
         int range[2];
         range[0] = 2;
         range[1] = 3;
-        if (!fn_800C60B4(&mItem0, 1, range, 1, lbl_8059FF80, NULL, 0, 0)) {
+        if (!dItemSel::select(&mItem0, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0)) {
             mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_RUG);
         }
         setItemName(&mItem0, 1);
@@ -304,7 +304,7 @@ int dAcNpcNml_c::talk_c::msgArbeitFtrReward(msgInfo_s *info) {
     int range[2];
     range[0] = 3;
     range[1] = 3;
-    if (!fn_800C60B4(&mItem0, 1, range, 1, lbl_8059FF80, NULL, 0, 0)) {
+    if (!dItemSel::select(&mItem0, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0)) {
         mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_BED);
     }
     setItemName(&mItem0, 0);

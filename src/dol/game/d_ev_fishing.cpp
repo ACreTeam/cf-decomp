@@ -104,11 +104,11 @@ void dEvFishing_c::sendResultLetters() {
                     setupMail(&sMail, cM::rndInt(3) + 1, 11, &player->mPID, 0x14C);
                     dItem::Item present;
                     if (!mFish.isValid()) {
-                        dItemSelRange_c range(3, 0x1C);
-                        fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+                        dItemSel::Range_c range(3, 0x1C);
+                        dItemSel::select(&present, 1, &range, 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
                     } else {
-                        dItemSelRange_c range(3, 0x1D);
-                        fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+                        dItemSel::Range_c range(3, 0x1D);
+                        dItemSel::select(&present, 1, &range, 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
                     }
                     sMail.setPresent(present.mId, 0xFF);
                     if (!dPostOffice::add(&sMail)) {
@@ -141,11 +141,11 @@ void dEvFishing_c::sendResultLetters() {
             setupMail(&sMail, cM::rndInt(3) + 7, 11, &mPlayer[0], 0x14C);
             dItem::Item present;
             if (!mFish.isValid()) {
-                dItemSelRange_c range(3, 0x1C);
-                fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+                dItemSel::Range_c range(3, 0x1C);
+                dItemSel::select(&present, 1, &range, 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
             } else {
-                dItemSelRange_c range(3, 0x1D);
-                fn_800C60B4(&present, 1, &range, 1, lbl_8059FF80, NULL, 0, 0);
+                dItemSel::Range_c range(3, 0x1D);
+                dItemSel::select(&present, 1, &range, 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
             }
             sMail.setPresent(present.mId, 0xFF);
             dPostOffice::holdMail(&sMail);

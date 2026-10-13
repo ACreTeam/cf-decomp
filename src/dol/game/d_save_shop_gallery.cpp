@@ -6,12 +6,10 @@
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 #include <game/game/d_hr.hpp>
+#include <game/game/d_item_sel.hpp>
 
-extern u8 lbl_8059FF80[]; // the random item filter (fn_800C60B4)
 
 extern "C" {
-int fn_800C60B4(dItem::Item *out, int num, const int *range, int rangeNum, const void *filter, const dItem::Item *exclude,
-                int excludeNum, int); // 800C60B4: random items
 }
 
 // 801483D8
@@ -96,12 +94,12 @@ void dSaveShopGallery_c::update() {
         int range[2];
         range[0] = dItem::KIND_PICTURE;
         range[1] = 0x24;
-        fn_800C60B4(&items[0], 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&items[0], 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     } else {
         int range[2];
         range[0] = dItem::KIND_FAKE_PICTURE_BEFORE;
         range[1] = 0x25;
-        fn_800C60B4(&items[0], 1, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&items[0], 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
 
     f32 rate = getFtrRate();
@@ -120,13 +118,13 @@ void dSaveShopGallery_c::update() {
         int range[2];
         range[0] = dItem::KIND_FTR;
         range[1] = 7;
-        fn_800C60B4(&items[1], rare, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&items[1], rare, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
     if (common > 0) {
         int range[2];
         range[0] = dItem::KIND_FTR;
         range[1] = 0;
-        fn_800C60B4(&items[1 + rare], common, range, 1, lbl_8059FF80, NULL, 0, 0);
+        dItemSel::select(&items[1 + rare], common, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0);
     }
 
     mStock[0].mItem = items[0].mId;

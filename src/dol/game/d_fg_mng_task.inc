@@ -1,3 +1,4 @@
+#include <game/game/d_item_sel.hpp>
 // Field tasks of the FG manager (see d_fg_mng_task.hpp). #included by d_field_assessment.cpp: with
 // -sym on MWCC puts the functions of this file after the TU's main .text (800A2220..800A597C).
 
@@ -10,13 +11,6 @@
 #include <lib/egg/core/eggFrmHeap.h>
 #include <nw4r/math.h>
 
-// The item filter at 8059FF80 (fn_800C60B4).
-struct dFgMngItemFilter_c {
-    /* 0x0 */ u32 _00;
-    /* 0x4 */ u32 _04;
-    /* 0x8 */ int mNum;
-};
-extern "C" dFgMngItemFilter_c lbl_8059FF80;
 
 // Actor fields read here (fBase_c / dActor_c).
 struct dFgMngActor_c {
@@ -1287,15 +1281,14 @@ BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
     case dItem::FG_CEDAR_FTR:
     case dItem::FG_CEDAR_BEES: {
         dItem::Item got;
-        dFgMngItemFilter_c filter;
-        filter = lbl_8059FF80;
+        dItemSel::Filter_c filter = dItemSel::sDefaultFilter;
         if (dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_TREE_LUCK)) {
-            filter.mNum = 8;
+            filter.mFlags = dItemSel::REVERSE_RARITY;
         }
         int range[2];
         range[0] = 3;
         range[1] = 0;
-        fn_800C60B4(&got, 1, range, 1, &filter, 0, 0, 0);
+        dItemSel::select(&got, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, reinterpret_cast<const dItemSel::Filter_c *>(&filter), 0, 0, 0);
         item = got.mId;
         break;
     }

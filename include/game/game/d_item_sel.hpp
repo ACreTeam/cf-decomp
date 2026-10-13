@@ -1,35 +1,73 @@
 #pragma once
 
-// d_item_sel.cpp (not decompiled). Only its .bss is declared here.
-
+#include <game/game/d_fg_item.hpp>
+#include <game/game/d_hr.hpp>
+#include <game/game/d_item.hpp>
+#include <game/game/d_save_data.hpp>
 #include <types.h>
 
-// 8059FF80 (.bss, 0x10): the default item filter passed to the item pickers (fn_800C60B4, fn_800F4608).
-// d_fg_mng_task.inc views it as dFgMngItemFilter_c.
-extern "C" u8 lbl_8059FF80[0x10];
+class dCatalog_c;
 
-namespace dItem {
-struct Item;
-}
+namespace dItemSel {
 
-// 800C60B4: picks num random items into out from the kind ranges of table (tableNum {kind, ..} int
-// records), filtered by filter (lbl_8059FF80: the default) and excluding exclude[0..excludeNum).
-extern "C" int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter,
-                           const dItem::Item *exclude, int excludeNum, int);
+// RTTI supplies unqRnd_c's original name. Other names are inferred.
+class unqRnd_c {
+  public:
+    unqRnd_c();                  // 800C6B58
+    virtual u32 getRnd(u32 max); // 800C5C30
+}; // size 0x4
 
-// A {kind, sub} record of fn_800C60B4's table.
-struct dItemSelRange_c {
-    dItemSelRange_c(int kind, int sub) : mKind(kind), mSub(sub) {}
-
+struct Range_c {
+    Range_c(int kind, int from) : mKind(kind), mFrom(from) {
+    }
+    int getKind() const {
+        return mKind;
+    }
+    int getFrom() const {
+        return mFrom;
+    }
     /* 0x0 */ int mKind;
-    /* 0x4 */ int mSub;
+    /* 0x4 */ int mFrom;
+}; // size 0x8
+
+enum FilterFlags {
+    EXCLUDE_NOT_FOR_SALE = 1 << 0,
+    ONLY_REGISTERED = 1 << 1,
+    KEEP_FROM = 1 << 2,
+    REVERSE_RARITY = 1 << 3,
+    UNIQUE_FTR_PART = 1 << 4,
+    NO_FALLBACK = 1 << 5,
 };
 
-// A filter argument of fn_800C60B4 (same layout as lbl_8059FF80). _0 is a catalog or NULL.
-struct dItemSelFilter_c {
-    dItemSelFilter_c(const void *catalog, int a, int b) : _0(catalog), _4(a), _8(b) {}
+class Filter_c {
+  public:
+    Filter_c(dCatalog_c *catalog = NULL, unqRnd_c *rnd = NULL, u32 flags = 0)
+        : mpCatalog(catalog), mpRnd(rnd), mFlags(flags) {
+    }
+    void setCatalog(dCatalog_c *catalog); // 800C5C6C
+    /* 0x0 */ dCatalog_c *mpCatalog;
+    /* 0x4 */ unqRnd_c *mpRnd;
+    /* 0x8 */ u32 mFlags;
+}; // size 0xC (target .bss includes four bytes of alignment padding)
 
-    /* 0x0 */ const void *_0;
-    /* 0x4 */ int _4;
-    /* 0x8 */ int _8;
-};
+extern Filter_c sDefaultFilter; // 8059FF80
+extern int sCandidateKind;      // 8074A9B8
+
+u32 searchCandidates(int kind, int from, const dItem::Item *items, int num,
+                     const dItem::Item *exclude, int excludeNum,
+                     const Filter_c *filter,
+                     int season);       // 800C5F50
+u16 getCandidate(u32 index);            // 800C5FC0
+int getClothSeason(u8 month, u8 day); // 800C6024
+BOOL select(dItem::Item *out, u32 num, const Range_c *ranges, u32 rangeNum,
+            const Filter_c *filter, const dItem::Item *exclude, int excludeNum,
+            int *selectedFrom); // 800C60B4
+int resolveFrom(int kind, int from, unqRnd_c *rnd, BOOL keepFrom,
+                BOOL reverse);          // 800C6B68
+u8 getFengShuiBonus();                  // 800C6E54
+int getFromRate(int kind, int rate);    // 800C6EB8
+int getRarity(const dItem::Item *item); // 800C6F6C
+extern "C" int
+fn_800C769C(); // 800C769C: unused constant-zero stub, purpose unknown
+
+} // namespace dItemSel
