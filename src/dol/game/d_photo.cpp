@@ -227,8 +227,10 @@ void dPhoto::create(EGG::Heap *heap) {
     if (video == NULL) {
         return;
     }
-    const GXRenderModeObj *mode = video->pRenderMode;
-    if (!l_capture.create(heap, mode->fbWidth, mode->efbHeight, GX_TF_RGB565, GX_NEAR, false)) {
+    // Preserve the height-before-width loads; MWCC otherwise folds them into argument order.
+    const volatile GXRenderModeObj *mode = video->pRenderMode;
+    u16 height = mode->efbHeight;
+    if (!l_capture.create(heap, mode->fbWidth, height, GX_TF_RGB565, GX_NEAR, false)) {
         return;
     }
     l_encodeWork = heap->alloc(0x1C00, 32);
