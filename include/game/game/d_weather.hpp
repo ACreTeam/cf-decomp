@@ -33,6 +33,9 @@ class dWeather_c : public fBase_c {
     f32 getRainLevel();
     int getMessageWeather();
     int getCurrentPattern();
+    static BOOL isFineKind(int weather) {
+        return weather == dWeather::CLEAR || weather == dWeather::SUNNY;
+    }
     static BOOL isRainKind(int weather) {
         return weather == dWeather::HEAVY_RAIN || weather == dWeather::RAIN;
     }

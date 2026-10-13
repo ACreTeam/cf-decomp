@@ -5,10 +5,11 @@
 /// @ingroup mlib
 struct mColor : public nw4r::ut::Color {
 public:
-    mColor() : nw4r::ut::Color() {} ///< Creates the default color.
+    mColor() { ToU32ref() = WHITE; } ///< Creates the default color.
     ~mColor() {}
     mColor(nw4r::ut::Color color) : nw4r::ut::Color(color) {} ///< Creates a color from from a base nw4r::ut::Color instance.
     mColor(u32 color) : nw4r::ut::Color(color) {} ///< Creates a color from a packed RGBA value.
+    mColor(const GXColor &color) : nw4r::ut::Color(color) {} ///< Creates a color from a GX color.
     mColor(u8 r, u8 g, u8 b, u8 a) { Set(r, g, b, a); } ///< Creates a color from its channels (after the default white).
 
     mColor &operator=(nw4r::ut::Color color) {

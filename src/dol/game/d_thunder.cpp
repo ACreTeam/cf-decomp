@@ -67,11 +67,11 @@ void Thunder_c::calc(BOOL outdoor) {
         mPos = lbl_80623FEC;
         mPos.y += height;
         if (sLib::calcTimer(&mTimer) == 0) {
-            lbl_8074EA1C = l_lightColor.r;
-            lbl_8074EA20 = l_lightColor.g;
-            lbl_8074EA24 = l_lightColor.b;
-            lbl_8074EA28 = l_lightColor.a;
-            lbl_8074C010 = 0.125f;
+            dEnvironment_c::sFlashR = l_lightColor.r;
+            dEnvironment_c::sFlashG = l_lightColor.g;
+            dEnvironment_c::sFlashB = l_lightColor.b;
+            dEnvironment_c::sFlashA = l_lightColor.a;
+            dEnvironment_c::sFlashSpeed = 0.125f;
             mState = STATE_FADE;
             mTimer = 90;
         }
@@ -96,8 +96,8 @@ void Thunder_c::calc(BOOL outdoor) {
 
 // 8016D188
 void Thunder_c::draw(BOOL outdoor) {
-    if (mState != STATE_WAIT && lbl_8074EA60 != NULL) {
-        fn_80199BBC(lbl_8074EA60, &l_glowColor, &mPos, mGlow);
+    if (mState != STATE_WAIT && dEffectLight_c::sInstance != NULL) {
+        dEffectLight_c::sInstance->addGlow(&l_glowColor, &mPos, mGlow);
     }
 }
 

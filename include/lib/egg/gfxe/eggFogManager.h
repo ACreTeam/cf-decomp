@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nw4r/g3d.h>
+#include <egg/gfxe/eggFog.h>
 
 namespace EGG {
 
@@ -17,7 +18,8 @@ public:
     void CopyToG3D(nw4r::g3d::ScnRoot *) const;
 
     u8 state;
-    char pad[8];
+    char pad[7];
+    Fog **mFog; // 0x0C
 
     void DoneDraw() { state &= 0xfb; }
 };

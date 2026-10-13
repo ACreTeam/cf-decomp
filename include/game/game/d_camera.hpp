@@ -13,6 +13,8 @@ class dCamera_c {
 public:
     f32 getAspect() const; // 8018B2EC
     static f32 getFovy();  // 8018B2FC
+    static f32 getNear();  // 8018B308
+    static f32 getFar();   // 8018B318
 
     void getProjectionMtx(nw4r::math::MTX44 *mtx) const {
         if (mFrustum.mProjType == EGG::Frustum::PROJ_ORTHO) {
