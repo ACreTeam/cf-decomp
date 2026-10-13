@@ -127,7 +127,7 @@ enum SeqState_e {
     SEQ_STATE_END,       // 3: text end (onTextEnd)
     SEQ_STATE_KEY_WAIT,  // 4: tag 6:1, waits for a key (onKeyWait)
     SEQ_STATE_SELECT,    // 5: answer select (onSelectStart)
-    SEQ_STATE_SELECTING, // 6: the controller opened the select (vf0C), waits for the answer
+    SEQ_STATE_SELECTING, // 6: the controller opened the select (open), waits for the answer
 };
 
 class Seq_c {

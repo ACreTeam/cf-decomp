@@ -312,6 +312,7 @@ VEC3* VEC3Maximize(VEC3* pOut, const VEC3* pA, const VEC3* pB);
 VEC3* VEC3Minimize(VEC3* pOut, const VEC3* pA, const VEC3* pB);
 VEC3* VEC3TransformNormal(VEC3* pOut, const MTX34* pMtx, const VEC3* pVec);
 
+#ifndef __INTELLISENSE__
 inline VEC3* VEC3Add(register VEC3* pOut, register const VEC3* pA,
                      register const VEC3* pB) {
     register f32 work0, work1, work2;
@@ -455,6 +456,14 @@ inline VEC3* VEC3Sub(register VEC3* pOut, register const VEC3* pA,
 
     return pOut;
 }
+#else
+VEC3* VEC3Add(VEC3* pOut, const VEC3* pA, const VEC3* pB);
+f32 VEC3Dot(const VEC3* pA, const VEC3* pB);
+f32 VEC3LenSq(const VEC3* pVec);
+VEC3* VEC3Lerp(VEC3* pOut, const VEC3* pVec1, const VEC3* pVec2, f32 t);
+VEC3* VEC3Scale(VEC3* pOut, const VEC3* pIn, f32 scale);
+VEC3* VEC3Sub(VEC3* pOut, const VEC3* pA, const VEC3* pB);
+#endif
 
 inline VEC3* VEC3Cross(VEC3* pOut, const VEC3* pA, const VEC3* pB) {
     PSVECCrossProduct(*pA, *pB, *pOut);

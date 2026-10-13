@@ -1,31 +1,95 @@
 #pragma once
 
-// The message controller's two-way npc select (TU d_analog_select.cpp, not decompiled). Class name and
-// layout inferred from d_a_npc_nml's talk_c (800323F0 / 800324DC); it is dMsg::Comp_c::mAnalogSelect (+0x5FC4).
-// Like dMsgSelect_c it has a second vtable at +0x48 (vtable 8049E3D0).
-
 #include <types.h>
 #include <game/game/d_select.hpp>
+#include <game/game/d_item.hpp>
+#include <game/game/d_state.hpp>
+#include <game/game/d_m2d.hpp>
 
-namespace dScript {
-class Word_c;
-}
+namespace dAnalogSelect {
+BOOL isConfirmTriggered(); // 8000C14C
+BOOL isConfirmHeld();      // 8000C150
+BOOL isUpPressed();        // 8000C154
+BOOL isDownPressed();      // 8000C16C
+f32 getStickY();           // 8000C184
 
-// RTTI: dAnalogSelect::Comp_c : dSelect::BaseComp_c (dMsgSelectBase0_c; its virtuals are overridden here).
-class dMsgAnalogSelect_c : public dMsgSelectBase0_c { // controller+0x5FC4: the two-way npc select ("sys_SELECT/SYS_SelectNPC")
+class Comp_c : public dSelect::BaseComp_c, public dState::mode_c<Comp_c> {
 public:
-    dMsgAnalogSelect_c(); // 8000C188
-    virtual ~dMsgAnalogSelect_c(); // 8000C228
+    bool isMode(Method method) const { return mCurrentMethod == method; }
 
-    BOOL fn_8000C560(); // 8000C560: create step (controller create)
-    BOOL fn_8000C5BC(); // 8000C5BC: delete step (controller doDelete)
-    void fn_8000C658(); // 8000C658: execute (controller execute)
-    void fn_8000C6AC(); // 8000C6AC: draw (controller draw)
+    Comp_c(); // 8000C188
+    virtual ~Comp_c(); // 8000C228
+    BOOL load(); // 8000C2D0
+    void build(); // 8000C2E0
+    BOOL create(); // 8000C560
+    BOOL remove(); // 8000C5BC
+    BOOL update(); // 8000C658
+    BOOL draw(); // 8000C6AC
+    f32 getTextWidth(); // 8000C740
+    void calcWindowSize(); // 8000C7B8
+    void resizeWindow(); // 8000C824
+    void moveCursorLine(); // 8000C8D8
+    void moveCursor(); // 8000C92C
+    void updateLayout(); // 8000C978
+    void moveWindow(); // 8000C9BC
+    void updateStick(); // 8000CA28
+    void updateButtons(); // 8000CC04
+    void updatePointer(); // 8000CC68
+    int getSelection(); // 8000CEC4
+    void confirm(); // 8000CEE8
+    virtual void onOpen(); // 8000D054: prepare the layout
+    virtual void onClose(); // 8000D090
+    dSelect::Separate_c *getSeparate(int idx); // 8000D094
+    virtual void reset(); // 8000D0A4
+    void changeWindowAnm(int idx); // 8000D104
+    void changeCursorAnm(int idx); // 8000D170
+    void changeCursorPressAnm(int idx); // 8000D1DC
+    void setResultLabel(const char *label); // 8000D2A8
+    void setResultCode(u16 code); // 8000D2FC
+    void setText(int idx, dScript::Word_c *text); // 8000D304
+    void setItemName(int idx, dItem::Item item); // stripped item-name choice overload
+    void setMessage(int idx, u16 code, const char *label); // 8000D340
+    void setCode(int idx, u16 code, int label); // 8000D3A0
+    virtual void open(); // 8000D3EC
+    virtual bool isClosed(); // 8000D548
+    void initHidden(); // 8000D594
+    void executeHidden(); // 8000D598
+    void initIn(); // 8000D59C
+    void executeIn(); // 8000D6B4
+    void initSelect(); // 8000D820
+    void executeSelect(); // 8000D824
+    void initOut(); // 8000D920
+    void executeOut(); // 8000D994
 
-    // Shows label (a message label) / code on side idx (0, 1).
-    void fn_8000D304(int idx, dScript::Word_c *text); // 8000D304: text of side idx (dMsg::Seq_c 7:8)
-    void fn_8000D340(int idx, u16 code, const char *label); // 8000D340
-    void fn_8000D3A0(int idx, u16 code, int a3); // 8000D3A0: message code idx of 8 (dMsg::Seq_c 7:8)
+    /* 0x06C */ m2d::ResAccLoader_c mResources;
+    /* 0x140 */ m2d::SimpleEx_c mLayout;
+    /* 0x1D8 */ m2d::Anm_c mWindowAnm;
+    /* 0x1FC */ m2d::Anm_c mCursorPressAnm;
+    /* 0x220 */ m2d::Anm_c mCursorAnm;
+    /* 0x244 */ nw4r::lyt::Pane *mpWindow;
+    /* 0x248 */ nw4r::lyt::Pane *mpChoiceWindow;
+    /* 0x24C */ nw4r::lyt::Pane *mpChoiceShadow;
+    /* 0x250 */ nw4r::lyt::Pane *mpCursor;
+    /* 0x254 */ nw4r::lyt::Pane *mpCursorLine;
+    /* 0x258 */ nw4r::lyt::Pane *mpMessage;
+    /* 0x25C */ nw4r::lyt::Pane *mpCursorButton;
+    /* 0x260 */ nw4r::lyt::Pane *mpConfirmButton;
+    /* 0x264 */ f32 mOriginalTextWidth;
+    /* 0x268 */ f32 mTextWidth;
+    /* 0x26C */ f32 mLeftMargin;
+    /* 0x270 */ f32 mRightMargin;
+    /* 0x274 */ f32 mCursorPos;
+    /* 0x278 */ f32 mStickSpeed;
+    /* 0x27C */ f32 mPrevStick;
+    /* 0x280 */ dSelect::Separate_c mChoices[8];
+    /* 0xC80 */ int mWindowAnmId;
+    /* 0xC84 */ int mCursorPressAnmId;
+    /* 0xC88 */ int mCursorAnmId;
+    /* 0xC8C */ int mPointerButton;
+    /* 0xC90 */ mVec2_c mPointerPos;
+    /* 0xC98 */ u8 mPointerMode;
+    /* 0xC99 */ bool mCreated;
+}; // size 0xC9C
+} // namespace dAnalogSelect
 
-    /* 0x048 */ u8 _048[0xC9C - 0x48];
-}; // size 0xC9C (controller layout)
+typedef dAnalogSelect::Comp_c dMsgAnalogSelect_c;

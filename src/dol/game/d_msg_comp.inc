@@ -772,10 +772,10 @@ int dMsg::Comp_c::create() {
     if (!mResAcc.load("Layout/msg_win.arc")) {
         return NOT_READY;
     }
-    if (!mSelect.fn_8015E274()) {
+    if (!mSelect.create()) {
         return NOT_READY;
     }
-    if (!mAnalogSelect.fn_8000C560()) {
+    if (!mAnalogSelect.create()) {
         return NOT_READY;
     }
     dState::mode_c<Comp_c>::initialize("dMsg::Comp_c", modes, ARRAY_SIZE(modes), false);
@@ -819,10 +819,10 @@ int dMsg::Comp_c::doDelete() {
     if (!dPrcMng_c::isDone()) {
         return NOT_READY;
     }
-    if (!mSelect.fn_8015E2A0()) {
+    if (!mSelect.remove()) {
         return NOT_READY;
     }
-    if (!mAnalogSelect.fn_8000C5BC()) {
+    if (!mAnalogSelect.remove()) {
         return NOT_READY;
     }
     if (!mSeq.remove()) {
@@ -843,8 +843,8 @@ int dMsg::Comp_c::execute() {
         mNextStateFunc = NULL;
     }
     dState::base_c<Comp_c>::execute();
-    mSelect.fn_8015BCE0();
-    mAnalogSelect.fn_8000C658();
+    mSelect.update();
+    mAnalogSelect.update();
     return SUCCEEDED;
 }
 
@@ -861,8 +861,8 @@ int dMsg::Comp_c::draw() {
         mLyt.calc();
         mLyt.entry();
     }
-    mSelect.fn_8015BD44();
-    mAnalogSelect.fn_8000C6AC();
+    mSelect.draw();
+    mAnalogSelect.draw();
     return SUCCEEDED;
 }
 
@@ -1241,7 +1241,7 @@ void dMsg::Comp_c::executeComplete() {
     }
     if (!mPageDone) {
         if (mSeq.mState == dMsg::SEQ_STATE_SELECTING && mpCurSelect != NULL) {
-            if (mpCurSelect->vf10()) {
+            if (mpCurSelect->isClosed()) {
                 setNextMsgCode(mpCurSelect->mCode);
                 setNextMsgLabel(mpCurSelect->mLabel);
                 notifyAnswer();
@@ -1255,7 +1255,7 @@ void dMsg::Comp_c::executeComplete() {
             return;
         }
         if (mSeq.mState == dMsg::SEQ_STATE_SELECT && mpCurSelect != NULL) {
-            mpCurSelect->vf0C();
+            mpCurSelect->open();
             mSeq.setState(dMsg::SEQ_STATE_SELECTING);
             return;
         }

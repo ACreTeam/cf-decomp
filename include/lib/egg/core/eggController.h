@@ -26,9 +26,9 @@ public:
     virtual void setHoriParam(float, float);
     virtual void setDistParam(float, float);
     virtual void setAccParam(float, float);
-    virtual bool down(ulong) const;
+    virtual bool down(ulong mask) const { return (mask & mCoreStatus[0].hold) != 0; }
     virtual bool up(ulong) const;
-    virtual bool downTrigger(ulong) const;
+    virtual bool downTrigger(ulong mask) const { return (mask & mCoreStatus[0].trig) != 0; }
     virtual bool upTrigger(ulong) const;
     virtual bool downAll(ulong) const;
     virtual bool upAll(ulong) const;

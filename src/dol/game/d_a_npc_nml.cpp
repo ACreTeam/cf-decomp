@@ -1698,11 +1698,11 @@ void dAcNpcNml_c::talk_c::setChoiceCancel(int cancel) {
 
 // 8003226C
 void dAcNpcNml_c::talk_c::showChoice() const {
-    dMsgSelect_c *sel = getSelect();
+    dSelect::Comp_c *sel = getSelect();
     if (sel != NULL) {
         const choice_c::entry_s *entry = mChoice.mEntry;
         for (u32 i = 0; i < mChoice.mNum; i++, entry++) {
-            sel->fn_8015BF9C(i, entry->mCode + (int)cM::rndF(entry->mRange), 0, 0, 0, 0);
+            sel->setNpcMessage(i, entry->mCode + (int)cM::rndF(entry->mRange), 0, 0, 0, 0);
         }
         sel->mNum = mChoice.mNum;
         sel->mCancel = mChoice.mCancel;
@@ -1748,9 +1748,9 @@ void dAcNpcNml_c::talk_c::setNpcChoice(u16 code0, u8 range0, u16 code1, u8 range
 void dAcNpcNml_c::talk_c::showNpcChoice() const {
     dMsgAnalogSelect_c *sel = getAnalogSelect();
     if (sel != NULL) {
-        sel->fn_8000D340(0, mNpcChoice.mEntry[0].mCode + (u16)cM::rndInt(mNpcChoice.mEntry[0].mRange),
+        sel->setMessage(0, mNpcChoice.mEntry[0].mCode + (u16)cM::rndInt(mNpcChoice.mEntry[0].mRange),
                     "sys_SELECT/SYS_SelectNPC");
-        sel->fn_8000D340(1, mNpcChoice.mEntry[1].mCode + (u16)cM::rndInt(mNpcChoice.mEntry[1].mRange),
+        sel->setMessage(1, mNpcChoice.mEntry[1].mCode + (u16)cM::rndInt(mNpcChoice.mEntry[1].mRange),
                     "sys_SELECT/SYS_SelectNPC");
         getController()->openAnalogSelect();
     }

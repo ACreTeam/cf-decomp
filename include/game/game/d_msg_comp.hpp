@@ -208,7 +208,7 @@ public:
     void setUnitWord(const dScript::Word_c *word);  // 801A5F80: mUnitWord = word
 
     bool isState(StateFunc state) const { return this->mCurrentMethod == state; }
-    dMsgSelect_c *getSelect() { return &mSelect; }
+    dSelect::Comp_c *getSelect() { return &mSelect; }
     dMsgAnalogSelect_c *getAnalogSelect() { return &mAnalogSelect; }
 
     /* 0x0000 */ // fBase_c (vtable at +0x60)
@@ -221,11 +221,11 @@ public:
     /* 0x0260 */ dDvd::loader_c mLoader;               // the message file
     /* 0x0274 */ dMsg::Seq_c mSeq;                     // the text (vtable 804FB538)
     /* 0x55F8 */ dMsg::Voice_c mVoice;                 // vtable 804FB6A0
-    /* 0x5610 */ dMsgSelect_c mSelect;
+    /* 0x5610 */ dSelect::Comp_c mSelect;
     /* 0x5FC4 */ dMsgAnalogSelect_c mAnalogSelect;
     /* 0x6C60 */ int mSuspendReq;                         // SuspendReq_e (set by the npc requests)
     /* 0x6C64 */ StateFunc mNextStateFunc;          // set by requestStart, applied by execute
-    /* 0x6C70 */ dMsgSelectBase0_c *mpCurSelect;                   // &mSelect or &mAnalogSelect (openSelect / openAnalogSelect)
+    /* 0x6C70 */ dSelect::BaseComp_c *mpCurSelect;                   // &mSelect or &mAnalogSelect (openSelect / openAnalogSelect)
     /* 0x6C74 */ dMsg::Rcpt_c *mpRcpt;
     /* 0x6C78 */ const EGG::MsgRes::MessageHeader *mpBmg;            // the message data (BMG)
     /* 0x6C7C */ u8 mWaitIcon; // complete state: wait icon + hold SE (dSvMgr_c::lockMessage, d_sv_demo)
@@ -234,7 +234,7 @@ public:
     /* 0x6C7F */ u8 mLock;                          // 1 while an npc action / player turn runs
     /* 0x6C80 */ u8 mForceNext; // complete state: go on without the key (RELs set it)
     /* 0x6C81 */ u8 mMouthOpen;                     // lip sync (dAcNpc_c::recept_c::isMouthOpen)
-    /* 0x6C82 */ u8 mNoCloseSe; // no close SE 0x16BD (dMsgSelect_c sets it, 8015DC5C)
+    /* 0x6C82 */ u8 mNoCloseSe; // no close SE 0x16BD (dSelect::BComp_c::decide sets it)
     /* 0x6C83 */ u8 mBgmKeep; // VolStateTalk_c::end(keep) on exit (d_sv_demo sets it)
     /* 0x6C84 */ u16 mNextMsgCode;                  // queued message code (setNextMsgCode sets it, applyNextMessage hands
                                                     // it to mpRcpt->setMessageCode and clears it; 0xFFFE detach);

@@ -238,7 +238,7 @@ public:
         void resHabit();                        // 80031B3C result of reqHabit: stores the new habit
         BOOL reqHabit();                        // 80031BC0 (804A0C70 [12]): habit text input
         // 80031C00..80032D00
-        // The answer table of the choice menu (+0x214), shown on the controller's dMsgSelect_c by
+        // The answer table of the choice menu (+0x214), shown on the controller's dSelect::Comp_c by
         // showChoice: answer i shows message code mEntry[i].mCode + rndF(mEntry[i].mRange); after the
         // menu onAnswer runs mProc[cursor].
         class choice_c {
@@ -322,7 +322,7 @@ public:
         // The speaker / the partner (these call getNpc const: const helpers).
         int getTalkIdx() const { return mTalkIdx; }
         // The controller's choice menus (NULL without a controller).
-        dMsgSelect_c *getSelect() const {
+        dSelect::Comp_c *getSelect() const {
             return getController() != NULL ? getController()->getSelect() : NULL;
         }
         dMsgAnalogSelect_c *getAnalogSelect() const {

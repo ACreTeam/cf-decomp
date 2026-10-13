@@ -645,7 +645,7 @@ void Seq_c::procPageEnd() {
 }
 
 void Seq_c::procSelect() {
-    dMsgSelect_c *select = &mpComp->mSelect;
+    dSelect::Comp_c *select = &mpComp->mSelect;
     u16 id = dScript::getTagId(mpChar);
     const u8 *params = dScript::getTagParams(mpChar);
     mpComp->setVoiceChar(L' ');
@@ -674,7 +674,7 @@ void Seq_c::procSelect() {
         std::memcpy(&code, params + i * sizeof(u16), sizeof(code));
         dString::Word_c word;
         word.set(line, 1);
-        dMsgSelectItem_c *item = select->fn_8015D4B0(i);
+        dSelect::Separate_c *item = select->getSeparate(i);
         item->mWord.copy(&word, 0);
         if (code == SEQ_ANSWER_CODE_CANCEL) {
             item->mIsCancel = TRUE;
@@ -705,12 +705,12 @@ void Seq_c::procAnalogSelect() {
         }
         dString::Word_c word;
         word.set(line, 1);
-        select->fn_8000D304(i, &word);
+        select->setText(i, &word);
     }
     for (int i = 0; i < 8; i++) {
         u16 code = 0;
         std::memcpy(&code, params + i * sizeof(u16), sizeof(code));
-        select->fn_8000D3A0(i, code, 0);
+        select->setCode(i, code, 0);
     }
     mpComp->openAnalogSelect();
 }

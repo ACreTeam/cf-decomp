@@ -74,7 +74,7 @@ typedef int BOOL;
 #define DECL_WEAK __declspec(weak)
 #define ATTR_UNUSED
 
-#ifdef __CWCC__
+#if defined(__CWCC__) && !defined(__INTELLISENSE__)
 #define NOINLINE __attribute__((noinline))
 #define ALIGN(x) __attribute__((aligned(x)))
 #define DECOMP_INLINE inline

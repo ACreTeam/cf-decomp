@@ -38,6 +38,7 @@ dol/game/d_actor.cpp:
 dol/game/d_analog_select.cpp:
 	.text       start:0x8000C14C end:0x8000DE5C
 	.rodata     start:0x80465980 end:0x804659F0 align:4
+	.data       start:0x8049E078 end:0x8049E5F8 align:4
 	.sdata      start:0x807497B0 end:0x80749810 align:4
 	.sdata2     start:0x8074FD70 end:0x8074FDD0
 
