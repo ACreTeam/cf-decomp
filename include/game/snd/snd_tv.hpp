@@ -12,10 +12,10 @@
 // members start at 0x3A.
 class SoundTv_base : public SoundObj<2> {
 public:
-    SoundTv_base(u32 groupId) : mGroupId(groupId), mLoading(0) {}
-    // Declared without a body and defined inline below: that makes the dtor the class's key function, and
-    // since it is never defined out of line, MWCC emits no SoundTv_base vtable (the target has only its RTTI).
-    virtual ~SoundTv_base();
+    SoundTv_base() : mLoading(0) {}
+    // A pure virtual dtor prevents MWCC from emitting a SoundTv_base vtable in d_audio_obj; the target
+    // has only its RTTI. The body is still needed by derived destructors.
+    virtual ~SoundTv_base() = 0;
 
     virtual void reset();                                          // 801D0550: restart the programme, muted
     virtual void stop();                                           // 801D05AC
@@ -35,21 +35,21 @@ inline SoundTv_base::~SoundTv_base() {}
 
 class SoundTv_00_storm : public SoundTv_base {
 public:
-    SoundTv_00_storm() : SoundTv_base(0xA2) {}
+    SoundTv_00_storm() { mGroupId = 0xA2; }
 
     virtual void startProgram(); // 801D0BC0
 }; // size 0x3C
 
 class SoundTv_01_color : public SoundTv_base {
 public:
-    SoundTv_01_color() : SoundTv_base(0xA3) {}
+    SoundTv_01_color() { mGroupId = 0xA3; }
 
     virtual void startProgram(); // 801D0BD8
 }; // size 0x3C
 
 class SoundTv_02_news : public SoundTv_base {
 public:
-    SoundTv_02_news() : SoundTv_base(0xA4) {}
+    SoundTv_02_news() { mGroupId = 0xA4; }
 
     virtual void reset();                                          // 801D0BF0
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D0C3C
@@ -60,7 +60,7 @@ public:
 
 class SoundTv_03_drama : public SoundTv_base {
 public:
-    SoundTv_03_drama() : SoundTv_base(0xA5) {}
+    SoundTv_03_drama() { mGroupId = 0xA5; }
 
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D1068
     virtual void startProgram();                                   // 801D1020
@@ -70,7 +70,7 @@ public:
 
 class SoundTv_04_song : public SoundTv_base {
 public:
-    SoundTv_04_song() : SoundTv_base(0xA6) {}
+    SoundTv_04_song() { mGroupId = 0xA6; }
 
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D1238
     virtual void startProgram();                                   // 801D11E8
@@ -83,7 +83,7 @@ public:
 
 class SoundTv_05_quiz : public SoundTv_base {
 public:
-    SoundTv_05_quiz() : SoundTv_base(0xA7) {}
+    SoundTv_05_quiz() { mGroupId = 0xA7; }
 
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D13B8
     virtual void startProgram();                                   // 801D13AC
@@ -93,7 +93,7 @@ public:
 
 class SoundTv_06_travel : public SoundTv_base {
 public:
-    SoundTv_06_travel() : SoundTv_base(0xA8) {}
+    SoundTv_06_travel() { mGroupId = 0xA8; }
 
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D18F4
     virtual void startProgram();                                   // 801D1E24
@@ -103,7 +103,7 @@ public:
 
 class SoundTv_07_hero : public SoundTv_base {
 public:
-    SoundTv_07_hero() : SoundTv_base(0xA9) {}
+    SoundTv_07_hero() { mGroupId = 0xA9; }
 
     virtual void reset();                                          // 801D23E8
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D1E88
@@ -117,7 +117,7 @@ public:
 
 class SoundTv_08_variety : public SoundTv_base {
 public:
-    SoundTv_08_variety() : SoundTv_base(0xAA) {}
+    SoundTv_08_variety() { mGroupId = 0xAA; }
 
     virtual void reset();                                          // 801D2AE0
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D246C
@@ -129,7 +129,7 @@ public:
 
 class SoundTv_09_movie : public SoundTv_base {
 public:
-    SoundTv_09_movie() : SoundTv_base(0xAB) {}
+    SoundTv_09_movie() { mGroupId = 0xAB; }
 
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D2BB8
     virtual void startProgram();                                   // 801D2B5C
@@ -137,7 +137,7 @@ public:
 
 class SoundTv_10_soccer : public SoundTv_base {
 public:
-    SoundTv_10_soccer() : SoundTv_base(0xAC) {}
+    SoundTv_10_soccer() { mGroupId = 0xAC; }
 
     virtual void reset();                                          // 801D36CC
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D2E2C
@@ -151,7 +151,7 @@ public:
 
 class SoundTv_255_weather : public SoundTv_base {
 public:
-    SoundTv_255_weather() : SoundTv_base(0xAD) {}
+    SoundTv_255_weather() { mGroupId = 0xAD; }
 
     virtual void execute(int frame, const nw4r::math::VEC3 *pos); // 801D38A8
     virtual void startProgram();                                   // 801D3754

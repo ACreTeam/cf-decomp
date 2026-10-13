@@ -540,7 +540,7 @@ void dHmnToolBank_c::setupAnm(int type, nw4r::g3d::ResFile *file, nw4r::g3d::Res
             mMatClr.setPlayMode(m3d::FORWARD_ONCE, 0);
             mMdl.setAnm(mMatClr);
         }
-        mpBalloon = dBalloonString_c::fn_80068108(mpHeap);
+        mpBalloon = dBalloonString_c::create(mpHeap);
         setBalloonColor(0xFF);
         break;
     }
@@ -1030,9 +1030,9 @@ void dHmnToolBank_c::setSlingWait(m3d::playMode_e mode, f32 blend) {
 }
 
 // 800BC400
-void dHmnToolBank_c::setBalloonItem(const dItem::Item *item) {
+void dHmnToolBank_c::releaseBalloon(const mAng *angle) {
     if (mpBalloon != NULL && !mpBalloon->mFly) {
-        mpBalloon->fn_80067BF0(*item);
+        mpBalloon->release(*angle);
     }
 }
 
@@ -1251,7 +1251,7 @@ void dHmnToolBank_c::removeModels() {
         }
     }
     if (mpBalloon != NULL) {
-        mpBalloon->fn_800680F4();
+        mpBalloon->destroy();
         mpBalloon = NULL;
     }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-// The speech balloon layout (DOL TU d_balloon.cpp, .text 80065524..80066018, not decompiled; RTTI "dBalloon_c").
-// "Layout/bal.arc", "balloon_00.brlyt". Only what d_obj_tutorial uses; all names but the class name are inferred.
+// The speech balloon layout (DOL TU d_balloon.cpp, .text 80065524..80066018; RTTI "dBalloon_c").
+// "Layout/bal.arc", "balloon_00.brlyt". Names other than the class name are inferred.
 
 #include <types.h>
 #include <game/game/d_m2d.hpp>
@@ -34,6 +34,19 @@ public:
     void setWord(const dScript::Word_c *word); // 80065A04: the text, resized to fit
     void setColor(int color); // 80065EFC: "balloon_00_blnBlue.brlan" / "balloon_00_blnYlow.brlan"
     void setTail(int tail);   // 80065F5C: shows tail 0 ("blnTail_00") or 1 ("blnTail_01")
+
+    void updateWidth();   // 800658C8
+    void clampOnScreen(); // 80065A60
+    void changeState();   // 80065C54
+    void runState();      // 80065CD0
+    void stateHideInit();  // 80065D40
+    void stateHide();      // 80065D44
+    void stateOpenInit();  // 80065D48
+    void stateOpen();      // 80065DE0
+    void stateShowInit();  // 80065E50
+    void stateShow();      // 80065E54
+    void stateCloseInit(); // 80065E58
+    void stateClose();     // 80065EA0
 
     int getState() const { return mState; }
     void setNextState(int state) { mNextState = state; }

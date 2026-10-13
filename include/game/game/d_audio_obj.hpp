@@ -1,7 +1,7 @@
 #pragma once
 
 // Game-side sound objects attached to actors (DOL TU d_audio_obj.cpp, .text 800107AC..800120A8, .data
-// 8049E630..8049E7C8, .sdata 80749818..80749848, not decompiled yet). Class names from the RTTI
+// 8049E630..8049E7C8, .sdata 80749818..80749848). Class names from the RTTI
 // (dAudioObjCharBase_c, dAudioObjPlayer_c, dAudioObjNpc_c).
 //
 // The TU holds, in order: dAudioObjCharBase_c, dAudioObjPlayer_c (d_a_player), dAudioObjNpc_c, the
@@ -69,3 +69,27 @@ public:
 
     /* 0x08 */ SoundObjNPC mObj;
 }; // size 0x50
+
+namespace EGG { class Heap; }
+class SoundTv_base;
+
+// The TV programme sound adapter. The programme is allocated by create() from the selected heap.
+class dSndTv_c {
+public:
+    dSndTv_c();  // 8001155C
+    ~dSndTv_c(); // 80011568
+
+    bool create(EGG::Heap *heap, u32 channel); // 800115BC: channels 0..10, other values use weather
+    void clear();                              // 80011B3C
+    bool isReady();                            // 80011BA4
+    void reset();                              // 80011BB8
+    void stop();                               // 80011C08
+    void execute(int frame, const mVec3_c *pos); // 80011C50
+    void setOn();                              // 80011CD0
+    void mute();                               // 80011D2C
+
+    /* 0x00 */ SoundTv_base *mObj;
+    /* 0x04 */ u8 mOn;
+    /* 0x05 */ u8 mStarted;
+    /* 0x06 */ u8 mPendingOn;
+};

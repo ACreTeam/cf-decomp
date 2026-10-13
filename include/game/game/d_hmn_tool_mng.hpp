@@ -186,7 +186,7 @@ public:
     void setSlingShoot2(m3d::playMode_e mode, f32 blend);    // 800BC2D4
     void setSlingShoot3(m3d::playMode_e mode, f32 blend);    // 800BC338
     void setSlingWait(m3d::playMode_e mode, f32 blend);      // 800BC39C
-    void setBalloonItem(const dItem::Item *item);            // 800BC400
+    void releaseBalloon(const mAng *angle);            // 800BC400
     void calcBalloonInit(const mMtx_c *mtx);                 // 800BC448
     u8 isBalloonFly();                                       // 800BC468
     BOOL isBalloonGone();                                    // 800BC484

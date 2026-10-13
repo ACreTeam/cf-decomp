@@ -38,6 +38,9 @@ public:
 // A layout with helpers for the game's menus.
 class SimpleEx_c : public Simple_c {
 public:
+#ifdef D_BALLOON_SOURCE
+    ~SimpleEx_c() {}
+#endif
     // No declared dtor: the implicit one (8000AA5C) is generated at the end of d_m2d, before __sinit,
     // and other TUs (d_msg, d_select, ...) inline it (Simple_c dtor with 0).
     virtual bool build(const char *lytName, ResAccIf_c *resAcc); // 80007BE4

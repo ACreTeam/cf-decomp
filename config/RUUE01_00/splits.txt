@@ -300,12 +300,15 @@ dol/game/d_banner.cpp:
 
 dol/game/d_balloon.cpp:
 	.text       start:0x80065524 end:0x80066018
+	.rodata     start:0x8046CDC0 end:0x8046CE20
 	.data       start:0x804A50B0 end:0x804A51A8 align:4
+	.sdata      start:0x80749B98 end:0x80749BD8
 	.sdata2     start:0x80750338 end:0x80750370 align:4
 
 dol/game/d_balloon_string.cpp:
 	.text       start:0x80066018 end:0x80068474
 	.data       start:0x804A51A8 end:0x804A5238
+	.sdata      start:0x80749BD8 end:0x80749BE8
 	.sdata2     start:0x80750370 end:0x807503D0
 
 dol/game/d_base.cpp:

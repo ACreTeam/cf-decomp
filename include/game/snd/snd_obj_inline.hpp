@@ -28,6 +28,8 @@ inline void SoundObjRiver::holdSound(u32 id) {}
 
 inline void SoundObjRiver::stopAll(int fadeFrames) {}
 
+#ifndef D_AUDIO_OBJ_PINWHEEL_DTOR_IN_SOURCE
 inline SoundObjPinwheel::~SoundObjPinwheel() {}
+#endif
 
 inline void SoundObjPinwheel::update(const nw4r::math::VEC3 *pos) {}

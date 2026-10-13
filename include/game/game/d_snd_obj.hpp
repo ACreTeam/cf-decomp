@@ -38,11 +38,50 @@ public:
     /* 0x00 */ SoundObjSimple mObj;
 }; // size 0x30
 
-// Holds a SoundHaniwa (layout not needed yet).
+// Holds a SoundHaniwa.
 class dSndHaniwa_c {
 public:
     dSndHaniwa_c();  // 8001101C
     ~dSndHaniwa_c(); // 8001104C
+
+    void setup(u32 kind, s8 startBar); // 800110A4
+    f32 calc(const mVec3_c *pos);     // 800110AC
+    void play();                       // 800110EC
+    void stop();                       // 800110F0
+    u8 getStartBar();                  // 800110F4
+    int getWaitFrames();               // 800110FC
+
+    /* 0x00 */ SoundHaniwa mObj;
+};
+
+// Thin actor-facing wrapper around the instrument used for the town tune.
+class dSndObjInst_c {
+public:
+    dSndObjInst_c();  // 80011100
+    ~dSndObjInst_c(); // 80011130
+
+    void setup(int inst);                // 80011188
+    void calc(const mVec3_c *pos);      // 8001118C
+    void play();                         // 800111CC
+    void stop();                         // 800111D0
+
+    /* 0x00 */ SoundObjInst mObj;
+};
+
+// Furniture sound wrapper; the sound object sits at offset zero.
+class dSndObjFurniture_c {
+public:
+    dSndObjFurniture_c();  // 800111D4
+    ~dSndObjFurniture_c(); // 80011204
+
+    void setup(u8 item, bool on); // 8001125C
+    void setupSeq(const SoundObjFurniture::SeqData *data, const void *seq, bool on); // 80011260
+    void update(const mVec3_c *pos, f32 frame); // 80011264
+    void turnOn();                    // 800112B4
+    void turnOff();                   // 800112B8
+    int getType();                    // 800112BC
+
+    /* 0x00 */ SoundObjFurniture mObj;
 };
 
 // Holds a SoundObjPond.
@@ -87,6 +126,7 @@ public:
     ~dSndObjPinwheel_c(); // 80011E3C
 
     void update(const mVec3_c *pos, f32 speed); // 80011ED0: no-op without a position
+    void holdSound(u32 id);                    // 80011F28
 
     /* 0x00 */ SoundObjPinwheel mObj;
 }; // size 0x34
