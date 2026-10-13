@@ -450,11 +450,16 @@ dol/game/d_dylink.cpp:
 	.sbss       start:0x8074E2A0 end:0x8074E2C0
 
 dol/game/d_effect.cpp:
-	.text       start:0x80087064 end:0x80088BCC
+	.text       start:0x80087064 end:0x80087D84
+	.data       start:0x804DF520 end:0x804DF808
+	.sdata      start:0x80749E78 end:0x80749EB0
+
+dol/game/d_effect_manager.cpp:
+	.text       start:0x80087D84 end:0x80088BCC
 	.ctors      start:0x80465664 end:0x80465668
-	.data       start:0x804DF520 end:0x804DF968
+	.data       start:0x804DF808 end:0x804DF968
 	.bss        start:0x80585138 end:0x80585368
-	.sdata      start:0x80749E78 end:0x80749ED0
+	.sdata      start:0x80749EB0 end:0x80749ED0
 	.sbss       start:0x8074E2C0 end:0x8074E2E0
 	.sdata2     start:0x80750570 end:0x80750590
 
