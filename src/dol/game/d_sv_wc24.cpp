@@ -153,7 +153,7 @@ void dSaveWc24_c::addLetterSendCount() {
 void dSaveWc24_c::updateRoster() {
     for (u32 i = 0; i < WC24_FRIEND_NUM; i++) {
         u64 key;
-        if (lbl_805BE940.getFriendKey(i, &key)) {
+        if (dNetWc24::g_wc24.getFriendKey(i, &key)) {
             if (key != mKeys[i]) {
                 mKeys[i] = key;
                 mLands[i].clear();

@@ -71,7 +71,7 @@ namespace dWifi {
 // sWc24State: what checkThread found.
 enum Wc24State_e {
     WC24_STATE_UNKNOWN, // not checked yet
-    WC24_STATE_ON,      // WiiConnect24 can be used (dNetWc24_c::canUseFriends)
+    WC24_STATE_ON,      // WiiConnect24 can be used (dNetWc24::dNetWc24_c::canUseFriends)
     WC24_STATE_OFF,
 };
 
@@ -96,7 +96,7 @@ BOOL startSendBoard(const dPostRequest_c *req);            // 80178120 (d_menu_m
 BOOL startSendSelf(const dPostRequest_c *req);             // 8017817C (d_menu_mng): sendSelfThread
 BOOL startDeleteTasks();                                   // 80178234: deleteTasksThread
 BOOL startStartThread();                                   // 80178290: startThread (8017B5D0)
-int getNetErrorCode();                                     // 80178438: dNetWc24_c::mErrorCode
+int getNetErrorCode();                                     // 80178438: dNetWc24::dNetWc24_c::mErrorCode
 int getErrorMessage(int error, u8 kind);                   // 8017845C: an NWC24Err -> its message
 void *checkThread(void *arg);                              // 8017851C: sets sWc24State
 
@@ -132,7 +132,7 @@ enum {
 };
 
 namespace dWifi {
-// 80178604: the dNetWc24_c receive callback: handles one message part by its type. FALSE when a letter
+// 80178604: the dNetWc24::dNetWc24_c receive callback: handles one message part by its type. FALSE when a letter
 // could not be delivered or kept at the post office (or what receiveDesign returns).
 BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_c *header);
 void receiveTown(dWifiTownMsg_c *msg, const u64 *key); // 80178AFC: takes over what msg->mTown.mFlags says
@@ -145,15 +145,15 @@ void receivePostPid(const dSavePostSend_c *msg, const u64 *sender);    // 801798
 } // namespace dWifi
 
 // ---- region C (801795C4..8017A708): the sends (the receivers are declared in region B's block) ----
-struct dNetWc24Data_c;
-union dNetWc24MsgTag_c;
+namespace dNetWc24 { struct dNetWc24Data_c; }
+namespace dNetWc24 { union dNetWc24MsgTag_c; }
 
 namespace dWifi {
 // Once a day: re-reads the registrations of the NWC24 friend list (dSaveWc24_c::_C5C) and which keys to
 // send to (_C60, dSaveWc24_c::setSend).
 void updateRoster();                                                        // 80179968
 void updateRegistration();                                                  // 80179AE8: after clearSend
-void setMsgData(const void *data, u32 size, dNetWc24Data_c *msg, dNetWc24MsgTag_c *tag); // 80179B90
+void setMsgData(const void *data, u32 size, dNetWc24::dNetWc24Data_c *msg, dNetWc24::dNetWc24MsgTag_c *tag); // 80179B90
 int getSendProfileId(u32 idx);                                              // 80179BA8: of a send index
 // The sends: TRUE when one went out.
 BOOL sendTown(u32 max);                                                     // 80179C14: WIFI_MSG_TOWN
@@ -169,7 +169,7 @@ BOOL sendAnimal(const void *animal);                                        // 8
 namespace EGG {
 class Archive;
 }
-struct dNetWc24FriendRec_c;
+namespace dNetWc24 { struct dNetWc24FriendRec_c; }
 
 // info.bin of the downloaded distribution archive (0x14 bytes).
 struct dWifiInfoBin_c {
@@ -196,8 +196,8 @@ int getNetErrorMessage();                                // 80178448: (d_sv_mgr;
 BOOL hasRoster();                                        // 8017AF60: the NWC24 friend list was read (dWifi::updateRosterThread)
 u32 getRosterType(int i);                                // 8017AF7C: roster entry i's type (1: a friend with a key)
 u8 *getRosterInfo(int i);                                // 8017AF90: roster entry i's data
-int getNandResourceSize();                               // 8017B18C: dNetWc24 fn_800E94B4 (d_sv_mgr: NAND resource size)
-int getNandAuxSize();                                    // 8017B190: dNetWc24 fn_800E94C0 (d_sv_mgr: NAND auxiliary size)
+int getNandResourceSize();                               // 8017B18C: dNetWc24 dNetWc24::getDownloadResourceSize (d_sv_mgr: NAND resource size)
+int getNandAuxSize();                                    // 8017B190: dNetWc24 dNetWc24::getDownloadAuxSize (d_sv_mgr: NAND auxiliary size)
 
 } // namespace dWifi
 
@@ -207,7 +207,7 @@ namespace dWifi {
 // leave their result in 8074B580 (1: done).
 void updateDaily();                                       // 8017A708
 void *registerFriendsThread(void *arg);                   // 8017AA6C
-BOOL isFriendRecUsed(const dNetWc24FriendRec_c *rec);     // 8017AB54: cleanFriendRecs callback
+BOOL isFriendRecUsed(const dNetWc24::dNetWc24FriendRec_c *rec);     // 8017AB54: cleanFriendRecs callback
 void *sendLetterThread(void *arg);                        // 8017ACAC
 void *updateRosterThread(void *arg);                      // 8017ADB4
 u32 getRosterNum();                                       // 8017AF74

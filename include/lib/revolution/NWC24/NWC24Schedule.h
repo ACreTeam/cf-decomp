@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 s32 NWC24SuspendScheduler(void);
+s32 NWC24TrySuspendScheduler(void);
 s32 NWC24ResumeScheduler(void);
 NWC24Err NWC24iRequestGenerateUserId(u64* idOut, u32* arg1);
 NWC24Err NWC24iTrySuspendForOpenLib(void);

@@ -39,7 +39,7 @@
 
 // .sdata
 static int lbl_8074B580 = 1; // 8074B580: the result of the last thread job (1: done; dWifi::getThreadResult)
-static u8 sErrorKind = 4;    // 8074B584: dNetWc24_c::mErrorKind of the last failed check
+static u8 sErrorKind = 4;    // 8074B584: dNetWc24::dNetWc24_c::mErrorKind of the last failed check
 
 // .data 804F48A8 / 804F48D0 (their strings are the .sdata literals 8074B588..8074B5C7)
 static const char *lbl_804F48A8[10] = {"jj", "ue", "us", "uf", "ee", "es", "ef", "ei", "eg", "kk"};
@@ -57,7 +57,7 @@ static void *sThreadStack;       // 8074E938: THREAD_STACK_SIZE bytes
 static OSThreadFunc sThreadFunc; // 8074E93C: the last job started (retried by dWifi::getThreadResult)
 static u8 sRetryCount;           // 8074E940
 static u8 sRetryWait;            // 8074E941: frames until that retry
-static dNetWc24Friend_c *lbl_8074E944; // 8074E944: 100 entries from netWc24Heap_p (freed by dWifi::reset)
+static dNetWc24::dNetWc24Friend_c *lbl_8074E944; // 8074E944: 100 entries from netWc24Heap_p (freed by dWifi::reset)
 static u32 lbl_8074E948; // 8074E948
 static int sWc24State;           // 8074E94C: dWifi::Wc24State_e (checkThread)
 static int sError;               // 8074E950: the NWC24Err of the last failed check
@@ -296,7 +296,7 @@ int dWifi::getThreadResult() {
     } else if (dWifi::isThreadDone()) {
         result = lbl_8074B580;
         if (result == 0) {
-            NWC24Err err = lbl_805BE940.mLastError;
+            NWC24Err err = dNetWc24::g_wc24.mLastError;
             if ((err == NWC24_ERR_MUTEX || err == NWC24_ERR_BUSY || err == NWC24_ERR_INPROGRESS) &&
                 sRetryCount < RETRY_MAX) {
                 sRetryCount++;
@@ -310,12 +310,12 @@ int dWifi::getThreadResult() {
 
 // 80178438
 int dWifi::getNetErrorCode() {
-    return lbl_805BE940.mErrorCode;
+    return dNetWc24::g_wc24.mErrorCode;
 }
 
 // 80178448
 int dWifi::getNetErrorMessage() {
-    return dWifi::getErrorMessage(lbl_805BE940.mLastError, lbl_805BE940.mErrorKind);
+    return dWifi::getErrorMessage(dNetWc24::g_wc24.mLastError, dNetWc24::g_wc24.mErrorKind);
 }
 
 // 8017845C
@@ -371,9 +371,9 @@ int dWifi::getErrorMessage(int error, u8 kind) {
         msg = 0xB;
         break;
     default:
-        if (lbl_805BE940.mNandState == 5) { // a NAND operation failed
+        if (dNetWc24::g_wc24.mNandState == 5) { // a NAND operation failed
             msg = 0xD;
-            if (lbl_805BE940.mNandResult == NAND_RESULT_CORRUPT) {
+            if (dNetWc24::g_wc24.mNandResult == NAND_RESULT_CORRUPT) {
                 msg = 0xC;
             }
         } else {
@@ -386,26 +386,26 @@ int dWifi::getErrorMessage(int error, u8 kind) {
 
 // 8017851C
 void *dWifi::checkThread(void *arg) {
-    BOOL suspended = dNetWc24_c::suspendScheduler();
-    if (lbl_805BE940.open()) {
-        sWc24State = lbl_805BE940.canUseFriends() ? WC24_STATE_ON : WC24_STATE_OFF;
-        sError = lbl_805BE940.mLastError;
-        sErrorCode = lbl_805BE940.mErrorCode;
-        sErrorKind = lbl_805BE940.mErrorKind;
-        lbl_805BE940.close();
+    BOOL suspended = dNetWc24::dNetWc24_c::suspendScheduler();
+    if (dNetWc24::g_wc24.open()) {
+        sWc24State = dNetWc24::g_wc24.canUseFriends() ? WC24_STATE_ON : WC24_STATE_OFF;
+        sError = dNetWc24::g_wc24.mLastError;
+        sErrorCode = dNetWc24::g_wc24.mErrorCode;
+        sErrorKind = dNetWc24::g_wc24.mErrorKind;
+        dNetWc24::g_wc24.close();
         lbl_8074B580 = 1;
     } else {
-        NWC24Err err = lbl_805BE940.mLastError;
+        NWC24Err err = dNetWc24::g_wc24.mLastError;
         if (err != NWC24_ERR_MUTEX && err != NWC24_ERR_BUSY && err != NWC24_ERR_INPROGRESS) {
             sWc24State = WC24_STATE_OFF;
             sError = err;
-            sErrorCode = lbl_805BE940.mErrorCode;
-            sErrorKind = lbl_805BE940.mErrorKind;
+            sErrorCode = dNetWc24::g_wc24.mErrorCode;
+            sErrorKind = dNetWc24::g_wc24.mErrorKind;
         }
         lbl_8074B580 = 0;
     }
     if (suspended) {
-        dNetWc24_c::resumeScheduler();
+        dNetWc24::dNetWc24_c::resumeScheduler();
     }
     return NULL;
 }
@@ -805,7 +805,7 @@ void updateRoster() {
         BOOL failed = FALSE;
         if (wus.open()) {
             if (updateRegs) {
-                if (wus.fn_800EB584(lbl_805BE940.mUserId, FALSE)) {
+                if (wus.fn_800EB584(dNetWc24::g_wc24.mUserId, FALSE)) {
                     dSaveWc24_c::setToday(&wc24->_C5C);
                 } else {
                     failed = TRUE;
@@ -834,7 +834,7 @@ void updateRegistration() {
     dSaveWc24_c *wc24 = &dSaveData_c::getExtra()->mWc24;
     if (wc24->mSendCleared && dSaveWc24_c::getDaysSince(&wc24->_C5C)) {
         dNetWus_c wus;
-        if (wus.open() && wus.fn_800EB584(lbl_805BE940.mUserId, TRUE)) {
+        if (wus.open() && wus.fn_800EB584(dNetWc24::g_wc24.mUserId, TRUE)) {
             dSaveWc24_c::setToday(&wc24->_C5C);
             wc24->mSendCleared = 0;
         }
@@ -843,7 +843,7 @@ void updateRegistration() {
 }
 
 // 80179B90
-void setMsgData(const void *data, u32 size, dNetWc24Data_c *msg, dNetWc24MsgTag_c *tag) {
+void setMsgData(const void *data, u32 size, dNetWc24::dNetWc24Data_c *msg, dNetWc24::dNetWc24MsgTag_c *tag) {
     msg->mData[2] = data;
     msg->mSize[2] = size;
     tag->mBits.mFlag = 0;
@@ -875,8 +875,8 @@ BOOL sendTown(u32 max) {
     if (num <= 0) {
         return FALSE;
     }
-    dNetWc24MsgTag_c tag;
-    dNetWc24MsgTag_c *pTag = &tag;
+    dNetWc24::dNetWc24MsgTag_c tag;
+    dNetWc24::dNetWc24MsgTag_c *pTag = &tag;
     pTag->mBits.mKind = WIFI_MSG_TOWN;
     u8 *buf = sRecvBuffer;
     for (int i = 0; i < PLAYER_NUM; i++) {
@@ -884,17 +884,17 @@ BOOL sendTown(u32 max) {
         memcpy(&buf[i * sizeof(dPersonalID_c)], pid, sizeof(dPersonalID_c));
     }
     memcpy(&buf[PLAYER_NUM * sizeof(dPersonalID_c)], &dSaveData_c::getTown()->mVillagerMove, sizeof(dSvVillagerMove::Info_c));
-    dNetWc24Data_c data;
+    dNetWc24::dNetWc24Data_c data;
     setMsgData(sRecvBuffer, sizeof(dWifiTownMsg_c), &data, pTag);
-    dNetWc24MsgTag_c msgTag = tag;
-    u32 size = lbl_805BE940.makeMessage(data.mData[2], data.mSize[2], NULL, 0, msgTag.mRaw);
+    dNetWc24::dNetWc24MsgTag_c msgTag = tag;
+    u32 size = dNetWc24::g_wc24.makeMessage(data.mData[2], data.mSize[2], NULL, 0, msgTag.mRaw);
     BOOL sent = FALSE;
     for (int i = 0; i < num; i++) {
-        if (lbl_805BE940.sendMessage(getSendKey(i), size, getSendProfileId(getSendIndex(indices, i)))) {
+        if (dNetWc24::g_wc24.sendMessage(getSendKey(i), size, getSendProfileId(getSendIndex(indices, i)))) {
             dSaveData_c::getExtra()->getWc24()->setNextSend(indices[(u32)i]);
             dSaveData_c::getExtra()->getWc24()->addBoardSendCount(1);
             sent |= TRUE;
-        } else if (lbl_805BE940.mLastError == NWC24_ERR_NAND_CORRUPT) {
+        } else if (dNetWc24::g_wc24.mLastError == NWC24_ERR_NAND_CORRUPT) {
             break;
         }
     }
@@ -903,7 +903,7 @@ BOOL sendTown(u32 max) {
 
 // 80179DF0
 BOOL sendAucListings() {
-    dNetWc24MsgTag_c tag;
+    dNetWc24::dNetWc24MsgTag_c tag;
     u32 *idx;
     u64 *target;
     u32 size;
@@ -938,16 +938,16 @@ BOOL sendAucListings() {
     }
     tag.mBits.mKind = WIFI_MSG_AUC_LIST;
     tag.mRaw &= 0x7FFF;
-    size = lbl_805BE940.makeMessage(dSaveData_c::getExtra()->getAucListings(), sizeof(dSvAucList_c), NULL, 0,
+    size = dNetWc24::g_wc24.makeMessage(dSaveData_c::getExtra()->getAucListings(), sizeof(dSvAucList_c), NULL, 0,
                                         tag.mRaw);
     sent = FALSE;
     idx = targetIdx;
     target = targets;
     for (i = 0; i < num; i++) {
-        if (lbl_805BE940.sendMessage(target, size, getSendProfileId(*idx))) {
+        if (dNetWc24::g_wc24.sendMessage(target, size, getSendProfileId(*idx))) {
             sent |= TRUE;
         } else {
-            if (lbl_805BE940.mLastError == NWC24_ERR_NAND_CORRUPT) {
+            if (dNetWc24::g_wc24.mLastError == NWC24_ERR_NAND_CORRUPT) {
                 break;
             }
             *target = 0;
@@ -969,8 +969,8 @@ BOOL sendAucBids() {
     dSvAucItem_c *item;
     dSvAucList_c *const list = dSaveData_c::getExtra()->getAucBids();
     item = list->mItems;
-    dNetWc24Data_c data;
-    dNetWc24MsgTag_c tag;
+    dNetWc24::dNetWc24Data_c data;
+    dNetWc24::dNetWc24MsgTag_c tag;
     data.mData[2] = list;
     data.mSize[2] = sizeof(dSvAucList_c);
     tag.mBits.mKind = WIFI_MSG_AUC_BIDS;
@@ -982,10 +982,10 @@ BOOL sendAucBids() {
             if (key != 0) {
                 int idx = dSaveData_c::getRawExtra()->mWc24.findKey(&key);
                 if (idx >= 0 && (u32)idx < WC24_SEND_INDEX_NUM) {
-                    if (lbl_805BE940.sendMessage(&key, 1, &data, tag.mRaw, getSendProfileId(idx))) {
+                    if (dNetWc24::g_wc24.sendMessage(&key, 1, &data, tag.mRaw, getSendProfileId(idx))) {
                         list->clear(i);
                         sent = TRUE;
-                    } else if (lbl_805BE940.mLastError == NWC24_ERR_NAND_CORRUPT) {
+                    } else if (dNetWc24::g_wc24.mLastError == NWC24_ERR_NAND_CORRUPT) {
                         break;
                     }
                 }
@@ -1001,19 +1001,19 @@ BOOL sendAucSales() {
     if (num <= 0) {
         return FALSE;
     }
-    dNetWc24MsgTag_c tag;
+    dNetWc24::dNetWc24MsgTag_c tag;
     tag.mBits.mKind = WIFI_MSG_AUC_SALES;
     tag.mRaw &= 0x7FFF;
-    u32 size = lbl_805BE940.makeMessage(dSaveData_c::getExtra()->getAucSales(), sizeof(dSvAucList_c), NULL, 0,
+    u32 size = dNetWc24::g_wc24.makeMessage(dSaveData_c::getExtra()->getAucSales(), sizeof(dSvAucList_c), NULL, 0,
                                         tag.mRaw);
     BOOL sent = FALSE;
     u64 *key = sKeys;
     for (int i = 0; i < num; i++) {
         int idx = dSaveData_c::getRawExtra()->mWc24.findKey(key);
         if (idx >= 0 && (u32)idx < WC24_SEND_INDEX_NUM) {
-            if (lbl_805BE940.sendMessage(key, size, getSendProfileId(idx))) {
+            if (dNetWc24::g_wc24.sendMessage(key, size, getSendProfileId(idx))) {
                 sent |= TRUE;
-            } else if (lbl_805BE940.mLastError == NWC24_ERR_NAND_CORRUPT) {
+            } else if (dNetWc24::g_wc24.mLastError == NWC24_ERR_NAND_CORRUPT) {
                 break;
             }
         }
@@ -1029,15 +1029,15 @@ BOOL sendDesign() {
     if (num <= 0) {
         return FALSE;
     }
-    dNetWc24MsgTag_c tag;
-    dNetWc24MsgTag_c *pTag = &tag;
+    dNetWc24::dNetWc24MsgTag_c tag;
+    dNetWc24::dNetWc24MsgTag_c *pTag = &tag;
     pTag->mBits.mKind = WIFI_MSG_DESIGN;
-    dNetWc24Data_c data;
+    dNetWc24::dNetWc24Data_c data;
     setMsgData(dSaveData_c::getDesignBoard(), sizeof(dRelayDesign_c), &data, pTag);
     BOOL sent = FALSE;
     if (num > 0) {
         int r = cM::rndInt(num);
-        if (lbl_805BE940.sendMessage(&sKeys[r], 1, &data, pTag->mRaw, getSendProfileId(indices[r]))) {
+        if (dNetWc24::g_wc24.sendMessage(&sKeys[r], 1, &data, pTag->mRaw, getSendProfileId(indices[r]))) {
             sent = TRUE;
         }
     }
@@ -1062,12 +1062,12 @@ BOOL sendPostPid() {
     }
     BOOL sent = FALSE;
     if (key != 0) {
-        dNetWc24Data_c data;
-        dNetWc24MsgTag_c tag;
+        dNetWc24::dNetWc24Data_c data;
+        dNetWc24::dNetWc24MsgTag_c tag;
         data.mData[2] = &dSaveData_c::getExtra()->mPostSend;
         data.mSize[2] = sizeof(dSavePostSend_c);
         tag.mBits.mKind = WIFI_MSG_POST;
-        if (lbl_805BE940.sendMessage(&key, 1, &data, tag.mRaw & 0x7FFF, profileId)) {
+        if (dNetWc24::g_wc24.sendMessage(&key, 1, &data, tag.mRaw & 0x7FFF, profileId)) {
             sent = TRUE;
         }
     }
@@ -1081,8 +1081,8 @@ BOOL sendAnimal(const void *animal) {
     if (num <= 0) {
         return FALSE;
     }
-    dNetWc24Data_c data;
-    dNetWc24MsgTag_c tag;
+    dNetWc24::dNetWc24Data_c data;
+    dNetWc24::dNetWc24MsgTag_c tag;
     data.mData[2] = animal;
     data.mSize[2] = 0x3040;
     data.mData[3] = &dSaveData_c::getRaw()->mLandID;
@@ -1092,7 +1092,7 @@ BOOL sendAnimal(const void *animal) {
     BOOL sent = FALSE;
     if (num > 0) {
         int r = cM::rndInt(num);
-        if (lbl_805BE940.sendMessage(&sKeys[r], 1, &data, tag.mRaw, getSendProfileId(indices[r]))) {
+        if (dNetWc24::g_wc24.sendMessage(&sKeys[r], 1, &data, tag.mRaw, getSendProfileId(indices[r]))) {
             sent = TRUE;
         }
     }
@@ -1108,7 +1108,7 @@ namespace dWifi {
 // board, a moving villager, the post office), run by dailyThread.
 void updateDaily() {
     dSaveData_c::getExtra()->mWc24.updateRoster();
-    if (!lbl_805BE940.canSendMessages()) {
+    if (!dNetWc24::g_wc24.canSendMessages()) {
         return;
     }
     if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled) {
@@ -1123,7 +1123,7 @@ void updateDaily() {
             }
         }
 
-        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT) {
+        if (dNetWc24::g_wc24.mLastError != NWC24_ERR_NAND_CORRUPT) {
             switch (dSvAuc_c::getTodayType()) {
             case 1:
                 if (dSaveData_c::getExtra()->getAucListings()->mMask != 0) {
@@ -1158,7 +1158,7 @@ void updateDaily() {
             }
         }
 
-        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveData_c::getDesignBoard()->mSendPending) {
+        if (dNetWc24::g_wc24.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveData_c::getDesignBoard()->mSendPending) {
             if (dSaveData_c::getDesignBoard()->isHopLimit()) {
                 dSaveData_c::getDesignBoard()->mSendPending = 0;
             } else if (dSaveWc24_c::getDaysSince(&wc24->_C70)) {
@@ -1171,7 +1171,7 @@ void updateDaily() {
             }
         }
 
-        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveWc24_c::getDaysSince(&wc24->_C6C)) {
+        if (dNetWc24::g_wc24.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveWc24_c::getDaysSince(&wc24->_C6C)) {
             dAnimal_c *animal = fn_800F4A08();
             if (animal != NULL && sendAnimal(animal)) {
                 animal->clear();
@@ -1179,7 +1179,7 @@ void updateDaily() {
             }
         }
 
-        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveData_c::getPostSend()->mPending) {
+        if (dNetWc24::g_wc24.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveData_c::getPostSend()->mPending) {
             dSaveData_c::getPostSend()->mSending = 1;
             if (sendPostPid()) {
                 dSaveData_c::getPostSend()->mPending = 0;
@@ -1192,13 +1192,13 @@ void updateDaily() {
 
 // The registered friends of the current player as NWC24 friend records.
 static inline void registerFriendRecs() {
-    if (lbl_805BE940.canUseFriends()) {
+    if (dNetWc24::g_wc24.canUseFriends()) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         for (int i = 0; i < FRIEND_NUM; i++) {
             int profileId = getFriendProfileId(i);
             u64 key = player->mFriends.getFriend(i)->mKey;
             if (profileId > 0 && key != 0) {
-                dNetWc24_c::registerFriendRec(
+                dNetWc24::dNetWc24_c::registerFriendRec(
                     &key, profileId, getGameCode(getLanguageArea(player->mFriends.getFriend(i)->mPID.land.mRegion))
                 );
             }
@@ -1209,16 +1209,16 @@ static inline void registerFriendRecs() {
 // 8017AA6C
 void *registerFriendsThread(void *arg) {
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
+    if (dNetWc24::g_wc24.open()) {
         registerFriendRecs();
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
         lbl_8074B580 = 1;
     }
     return NULL;
 }
 
 // 8017AB54: keeps an NWC24 friend record that belongs to a registered friend of a player of this town.
-BOOL isFriendRecUsed(const dNetWc24FriendRec_c *rec) {
+BOOL isFriendRecUsed(const dNetWc24::dNetWc24FriendRec_c *rec) {
     int area;
     dPrivateData_c *player;
     switch (rec->mGameCode) {
@@ -1262,17 +1262,17 @@ void *sendLetterThread(void *arg) {
     lbl_8074B580 = 0;
     dPrivateData_c *player = req->mSender != NULL ? req->mSender : dPlayerMgr::Mgr_c::getCurrentPlayer();
     u64 key = player->mFriends.mFriends[req->mFriend].mKey;
-    if (key != 0 && lbl_805BE940.open()) {
-        if (lbl_805BE940.canSendMessages()) {
-            dNetWc24MsgTag_c tag;
+    if (key != 0 && dNetWc24::g_wc24.open()) {
+        if (dNetWc24::g_wc24.canSendMessages()) {
+            dNetWc24::dNetWc24MsgTag_c tag;
             tag.mBits.mKind = 1;
             tag.mBits.mFlag = 0;
-            if (lbl_805BE940.sendMessage(&key, 1, req, tag.mRaw, dNetMgr_c::getMyProfileId(&player->mFriends.mUserData))) {
+            if (dNetWc24::g_wc24.sendMessage(&key, 1, req, tag.mRaw, dNetMgr_c::getMyProfileId(&player->mFriends.mUserData))) {
                 lbl_8074B580 = 1;
                 dSaveData_c::getExtra()->mWc24.addLetterSendCount();
             }
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
     return NULL;
 }
@@ -1281,12 +1281,12 @@ void *sendLetterThread(void *arg) {
 // without a town the town of the registered friend with their key.
 void *updateRosterThread(void *arg) {
     if (lbl_8074E944 == NULL) {
-        lbl_8074E944 = (dNetWc24Friend_c *)dHeap::netWc24Heap_p->alloc(WC24_FRIEND_NUM * sizeof(dNetWc24Friend_c), 4);
+        lbl_8074E944 = (dNetWc24::dNetWc24Friend_c *)dHeap::netWc24Heap_p->alloc(WC24_FRIEND_NUM * sizeof(dNetWc24::dNetWc24Friend_c), 4);
     }
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
+    if (dNetWc24::g_wc24.open()) {
         dSaveData_c::getExtra()->mWc24.updateRoster();
-        lbl_8074E948 = lbl_805BE940.getFriends(lbl_8074E944, WC24_FRIEND_NUM);
+        lbl_8074E948 = dNetWc24::g_wc24.getFriends(lbl_8074E944, WC24_FRIEND_NUM);
         for (u32 i = 0; i < lbl_8074E948; i++) {
             u32 idx = getRosterIdx(i);
             if (getRosterType(i) == 1 && !getRosterLand(i)->isValid()) {
@@ -1299,9 +1299,9 @@ void *updateRosterThread(void *arg) {
                 }
             }
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
-    if (lbl_805BE940.mLastError == NWC24_OK) {
+    if (dNetWc24::g_wc24.mLastError == NWC24_OK) {
         lbl_8074B580 = 1;
     }
     if (lbl_8074B580 != 1) {
@@ -1364,16 +1364,16 @@ void freeRoster() {
 void *sendBoardThread(void *arg) {
     dPostRequest_c *req = (dPostRequest_c *)arg;
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
-        if (lbl_805BE940.canSendMessages()) {
+    if (dNetWc24::g_wc24.open()) {
+        if (dNetWc24::g_wc24.canSendMessages()) {
             req->mFriend = getRosterIdx(req->mFriend);
-            if (lbl_805BE940.sendBoardMessage(req)) {
+            if (dNetWc24::g_wc24.sendBoardMessage(req)) {
                 lbl_8074B580 = 1;
                 dSaveWc24_c::setToday(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mWc24LetterDate);
                 dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x3E);
             }
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
     return NULL;
 }
@@ -1382,14 +1382,14 @@ void *sendBoardThread(void *arg) {
 void *sendSelfThread(void *arg) {
     dPostRequest_c *req = (dPostRequest_c *)arg;
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
+    if (dNetWc24::g_wc24.open()) {
         req->mFriend = -1;
-        if (lbl_805BE940.sendBoardMessage(req)) {
+        if (dNetWc24::g_wc24.sendBoardMessage(req)) {
             lbl_8074B580 = 1;
             dSaveWc24_c::setToday(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mWc24LetterDate);
             dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag1(0x3E);
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
     return NULL;
 }
@@ -1398,12 +1398,12 @@ void *sendSelfThread(void *arg) {
 
 // 8017B18C (d_sv_mgr)
 int dWifi::getNandResourceSize() {
-    return fn_800E94B4();
+    return dNetWc24::getDownloadResourceSize();
 }
 
 // 8017B190 (d_sv_mgr)
 int dWifi::getNandAuxSize() {
-    return fn_800E94C0();
+    return dNetWc24::getDownloadAuxSize();
 }
 
 namespace dWifi {
@@ -1411,11 +1411,11 @@ namespace dWifi {
 // 8017B194
 void *setupDownloadThread(void *arg) {
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
-        if (lbl_805BE940.setupDownload() && lbl_805BE940.registerTasks()) {
+    if (dNetWc24::g_wc24.open()) {
+        if (dNetWc24::g_wc24.setupDownload() && dNetWc24::g_wc24.registerTasks()) {
             lbl_8074B580 = 1;
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
     return NULL;
 }
@@ -1423,11 +1423,11 @@ void *setupDownloadThread(void *arg) {
 // 8017B20C
 void *deleteTasksThread(void *arg) {
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
-        if (lbl_805BE940.deleteTasks()) {
+    if (dNetWc24::g_wc24.open()) {
+        if (dNetWc24::g_wc24.deleteTasks()) {
             lbl_8074B580 = 1;
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
     return NULL;
 }
@@ -1518,19 +1518,19 @@ void onNgWordDownload(void *data, u32 size, BOOL arg) {
 // download tasks.
 void *startThread(void *arg) {
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
+    if (dNetWc24::g_wc24.open()) {
         registerFriendRecs();
         dSaveData_c::getExtra()->mWc24.updateRoster();
-        lbl_805BE940.receiveMessages(onReceive);
+        dNetWc24::g_wc24.receiveMessages(onReceive);
         lbl_8074B580 = 1;
-        if (dNetWc24_c::needsDownloadSetup() && !lbl_805BE940.setupDownload()) {
+        if (dNetWc24::dNetWc24_c::needsDownloadSetup() && !dNetWc24::g_wc24.setupDownload()) {
             lbl_8074B580 = 0;
         }
         if (lbl_8074B580 == 1) {
-            int tasks = lbl_805BE940.checkTasks();
+            int tasks = dNetWc24::g_wc24.checkTasks();
             if (tasks != 0) {
                 if (tasks == 1) {
-                    if (!lbl_805BE940.registerTasks()) {
+                    if (!dNetWc24::g_wc24.registerTasks()) {
                         lbl_8074B580 = 0;
                     }
                 } else {
@@ -1538,17 +1538,17 @@ void *startThread(void *arg) {
                 }
             }
         }
-        if (lbl_8074B580 == 1 && lbl_805BE940.canDownload()) {
-            if (!lbl_805BE940.download(1, onNgWordDownload)) {
+        if (lbl_8074B580 == 1 && dNetWc24::g_wc24.canDownload()) {
+            if (!dNetWc24::g_wc24.download(1, onNgWordDownload)) {
                 lbl_8074B580 = 0;
             }
             if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled && (lbl_8074B580 == 1 || getNetErrorMessage() != 12)) {
-                if (!lbl_805BE940.download(0, onDistDownload)) {
+                if (!dNetWc24::g_wc24.download(0, onDistDownload)) {
                     lbl_8074B580 = 0;
                 }
             }
         }
-        lbl_805BE940.close();
+        dNetWc24::g_wc24.close();
     }
     return NULL;
 }
@@ -1556,11 +1556,11 @@ void *startThread(void *arg) {
 // 8017B7E4: updateDaily and the friend record cleanup.
 void *dailyThread(void *arg) {
     lbl_8074B580 = 0;
-    if (lbl_805BE940.open()) {
+    if (dNetWc24::g_wc24.open()) {
         updateDaily();
-        dNetWc24_c::cleanFriendRecs(isFriendRecUsed);
-        lbl_805BE940.close();
-        if (lbl_805BE940.mLastError != NWC24_ERR_NAND_CORRUPT) {
+        dNetWc24::dNetWc24_c::cleanFriendRecs(isFriendRecUsed);
+        dNetWc24::g_wc24.close();
+        if (dNetWc24::g_wc24.mLastError != NWC24_ERR_NAND_CORRUPT) {
             lbl_8074B580 = 1;
         }
     }

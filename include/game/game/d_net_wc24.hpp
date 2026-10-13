@@ -1,12 +1,42 @@
-#pragma once
+#ifndef GAME_D_NET_WC24_HPP
+#define GAME_D_NET_WC24_HPP
 
-// WiiConnect24 (DOL TU d_net_wc24.cpp, not decompiled). Only what other TUs use.
+// WiiConnect24 library, message transport and background downloads. Names inferred.
 
 #include <types.h>
 #include <revolution/NWC24/NWC24Types.h>
+#include <revolution/NWC24/NWC24Download.h>
+#include <revolution/NWC24/NWC24MsgObj.h>
 
 struct dPostRequest_c;
 struct dWifiMsgHeader_c;
+
+namespace dNetWc24 {
+
+enum ErrorKind_e { ERROR_OPEN, ERROR_CHECK, ERROR_SEND, ERROR_DOWNLOAD, ERROR_NONE };
+enum TaskState_e { TASK_REGISTERED, TASK_NEW, TASK_UNCHECKED };
+enum FriendType_e { FRIEND_NONE, FRIEND_WII, FRIEND_EMAIL };
+enum FriendStatus_e { FRIEND_STATUS_NONE, FRIEND_PENDING, FRIEND_CONFIRMED, FRIEND_DECLINED };
+enum DownloadTask_e { TASK_DISTRIBUTION, TASK_NGWORD };
+enum ReadResult_e { READ_ERROR = -1, READ_DONE, READ_MISSING };
+enum {
+    FRIEND_SELF = -1,
+    BOARD_LETTER_TAG = 0x2019,
+    MESSAGE_VERSION = 2,
+    MESSAGE_REGION_MASK = 0xFFFFFF00,
+    MESSAGE_GAME_CODE = 0x52555500,
+    DOWNLOAD_PRIORITY = 10,
+    NAND_DELETE_ERROR = 5,
+    HEAP_SIZE = 0x5C800,
+    TASK_COUNT = 2,
+    LIBRARY_WORK_SIZE = 0x4000,
+    MESSAGE_CAPACITY = 0x25800,
+    MESSAGE_WORK_SIZE = 2 * MESSAGE_CAPACITY,
+    DOWNLOAD_RESOURCE_SIZE = 0x5A000,
+    DOWNLOAD_AUX_SIZE = 0x800,
+    MAX_RECEIVE_MESSAGES = 50,
+    MAX_SUBJECT_LENGTH = 35
+};
 
 // The data blocks of a message (d_wifi; dPostRequest_c adds the sender): only [2] and [3] are sent
 // (makeMessage), [2] first.
@@ -16,7 +46,7 @@ struct dNetWc24Data_c {
             mData[i] = NULL;
             mSize[i] = 0;
         }
-        mFriend = -1;
+        mFriend = FRIEND_SELF;
     }
 
     /* 0x00 */ const void *mData[4];
@@ -49,12 +79,13 @@ union dNetWc24MsgTag_c {
     } mBits;
 };
 
-// The WiiConnect24 state (805BE940; size unknown).
+// The WiiConnect24 state (805BE940; size 0x438).
 class dNetWc24_c {
 public:
+    dNetWc24_c(); // 800E94C8
+    ~dNetWc24_c(); // 800E953C
     BOOL getFriendKey(u32 idx, u64 *key); // 800E997C: entry idx of the NWC24 friend list, FALSE if unused
 
-    // ---- region D of d_wifi (8017A708..8017B894); names inferred ----
     typedef BOOL (*FriendRecCallback)(const dNetWc24FriendRec_c *rec);
     typedef void (*DownloadCallback)(void *data, u32 size, BOOL arg);
     // A received message: (message object, its data, size, header); the result is kept per message.
@@ -81,27 +112,43 @@ public:
     BOOL deleteTasks();                              // 800EAD18
     BOOL download(int task, DownloadCallback callback); // 800EAF28: callback(data, size, FALSE) on new data
 
-    // ---- region A of d_wifi (80177A7C..80178604); names inferred ----
     static BOOL suspendScheduler();                  // 800E97B8: NWC24SuspendScheduler() >= 0
-    static int trySuspendScheduler();               // 800E97E0: raw NWC24SuspendScheduler result
+    static int trySuspendScheduler();               // 800E97E0: raw NWC24TrySuspendScheduler result
     static int resumeScheduler();                   // 800E97E4: NWC24ResumeScheduler
 
-    /* 0x000 */ u8 _000[0x400];
+    NWC24DlTask *getTask(int task) { return &mTasks[task]; }
+    u8 *getMessageBuffer() { return mMessageBuffer; }
+    u8 *getCryptBuffer() { return mCryptBuffer; }
+
+    BOOL readFriend(u32 idx, struct FriendInfo_c *info); // 800E98C0
+    BOOL commitMessage(NWC24MsgObj *msg, u32 size, int profileId); // 800E9AC8
+    BOOL decodeMessage(const u64 *key, const void *data, u32 size); // 800EA584
+    BOOL setError(NWC24Err error, int kind); // 800EA760
+    void clearError(); // 800EA7E0
+    BOOL prepareTask(int task); // 800EA900
+    BOOL configureTask(int task); // 800EA9F0
+    int readDownload(int task, void *data, u32 capacity, u32 *size); // 800EAE38
+
+    /* 0x000 */ NWC24DlTask mTasks[TASK_COUNT];
     /* 0x400 */ u64 mUserId; // this console's user id (sent by d_net)
-    /* 0x408 */ u8 _408[0x10];
+    /* 0x408 */ void *mVfWork;
+    /* 0x40C */ void *mLibraryWork;
+    /* 0x410 */ u8 *mMessageBuffer;
+    /* 0x414 */ u8 *mCryptBuffer;
     /* 0x418 */ NWC24Err mLastError; // of the last operation (d_wifi skips its updates on NWC24_ERR_NAND_CORRUPT)
     /* 0x41C */ int mErrorCode;      // NWC24GetErrorCode, negated (set with mLastError by 800EA760)
     /* 0x420 */ int mNandState;      // 5: a NAND operation failed (mNandResult; 800EAD18)
     /* 0x424 */ int mNandResult;     // NANDResult
-    /* 0x428 */ u8 _428[8];
+    /* 0x428 */ int mTaskState[TASK_COUNT];
     /* 0x430 */ u8 mErrorKind;       // the kind given with mLastError (4 when cleared)
     /* 0x431 */ u8 mOpened;          // open() succeeded
 };
 
-extern dNetWc24_c lbl_805BE940; // 805BE940
+extern dNetWc24_c g_wc24; // 805BE940
 
-extern "C" {
-u32 fn_800E94A8(); // 800E94A8: size of the NWC24 library heap (0x5C800)
-u32 fn_800E94B4(); // 800E94B4: 0x5A000 (d_wifi fn_8017B18C; d_sv_mgr: NAND resource size)
-u32 fn_800E94C0(); // 800E94C0: 0x800 (d_wifi fn_8017B190; d_sv_mgr: NAND auxiliary size)
-}
+u32 getHeapSize(); // 800E94A8
+u32 getDownloadResourceSize(); // 800E94B4
+u32 getDownloadAuxSize(); // 800E94C0
+
+} // namespace dNetWc24
+#endif

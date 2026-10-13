@@ -260,7 +260,7 @@ BOOL Session_c::suspendScheduler() {
     int result;
     int retries = SCHEDULER_RETRIES;
     do {
-        result = dNetWc24_c::trySuspendScheduler();
+        result = dNetWc24::dNetWc24_c::trySuspendScheduler();
         if (result != NWC24_ERR_BUSY) {
             break;
         }
@@ -274,7 +274,7 @@ BOOL Session_c::suspendScheduler() {
 }
 // 800E8058
 BOOL Session_c::resumeScheduler() {
-    if (dNetWc24_c::resumeScheduler() >= 0) {
+    if (dNetWc24::dNetWc24_c::resumeScheduler() >= 0) {
         return TRUE;
     }
     setError(ERROR_SCHEDULER_RESUME, ERROR_RESTART_REQUIRED, 0, 0);

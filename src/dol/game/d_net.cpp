@@ -2560,7 +2560,7 @@ BOOL dNetTransfer_c::sendPlayer() {
         buildDlItemMask(itemMask);
         data[1] = itemMask;
         size[1] = sizeof(itemMask);
-        key = lbl_805BE940.mUserId;
+        key = dNetWc24::g_wc24.mUserId;
         data[2] = &key;
         size[2] = sizeof(key);
         equipNum = countPlEquipSendable();
@@ -2651,7 +2651,7 @@ BOOL dNetTransfer_c::sendTown(int member) {
             n = 1;
             data[0] = &mTownSent;
             size[0] = sizeof(mTownSent);
-            key = lbl_805BE940.mUserId;
+            key = dNetWc24::g_wc24.mUserId;
             player = dPlayerMgr::getCurrentPlayerSlot();
             ticks = dTime_c::getCurrentTicks();
             hasMii = fn_8008B87C();
@@ -2720,7 +2720,7 @@ BOOL dNetTransfer_c::sendPlayer(int member) {
         int n;
         data[0] = dPlayerMgr::Mgr_c::getCurrentPlayer();
         size[0] = 0x86C0;
-        key = lbl_805BE940.mUserId;
+        key = dNetWc24::g_wc24.mUserId;
         data[1] = &key;
         size[1] = sizeof(key);
         hasMii = fn_8008B87C();

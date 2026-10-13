@@ -20,7 +20,7 @@ class Word_c;
 // A WiiConnect24 message to send (fn_80178048): up to 4 attachments, the friend it goes to and the
 // player sending it.
 // mData: [2] the present's download data, [3] the letter; mFriend: the friend index of the sender.
-struct dPostRequest_c : public dNetWc24Data_c {
+struct dPostRequest_c : public dNetWc24::dNetWc24Data_c {
     dPostRequest_c() {
         mSender = NULL;
     }

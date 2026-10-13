@@ -359,7 +359,7 @@ EGG::ExpHeap *dHeap::createNetDwcHeap(EGG::Heap *parent) {
 
 // 800B5C30
 EGG::ExpHeap *dHeap::createNetWc24Heap(EGG::Heap *parent) {
-    u32 size = fn_800E94A8();
+    u32 size = dNetWc24::getHeapSize();
     netWc24Heap_p = EGG::ExpHeap::create(size, parent, 0);
     netWc24Heap_p->setName("NWC24ライブラリ用ヒープ");
     netWc24Heap_p->setAllocMode(0);
