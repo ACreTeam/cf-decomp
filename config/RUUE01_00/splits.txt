@@ -370,12 +370,9 @@ dol/game/d_fd_unit_flags.cpp:
 	.text       start:0x800811F4 end:0x800812C8
 
 dol/game/d_fd_block_type.cpp:
-	.text       start:0x800812C8 end:0x80081578
+	.text       start:0x800812C8 end:0x80081618
 	.rodata     start:0x8046D460 end:0x8046D5A0
 	.data       start:0x804A76B8 end:0x804A7780
-
-dol/game/d_unk_80081578.cpp:
-	.text       start:0x80081578 end:0x80081618
 
 dol/game/d_scene_check.cpp:
 	.text       start:0x80081618 end:0x80081868

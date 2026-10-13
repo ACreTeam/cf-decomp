@@ -1,6 +1,8 @@
-// d_fd_block_type: block type kinds and kind flags (dFdBlockType). .text 800812C8..80081578,
+// d_fd_block_type: block type kinds and kind flags (dFdBlockType). .text 800812C8..80081618,
 // .rodata 8046D460..8046D5A0, .data 804A76B8..804A7780. See include/game/game/d_fd_block_type.hpp.
 #include <game/game/d_fd_block_type.hpp>
+#include <game/mLib/m_fader_base.hpp>
+#include <game/mLib/m_3d/m_3d_capture.hpp>
 
 namespace dFdBlockType {
 
@@ -243,3 +245,15 @@ int getBridgeType(int type) {
 }
 
 } // namespace dFdBlockType
+
+#ifdef MUST_MATCH
+// The original stripped caller is unknown. These qualified calls emit the two
+// surviving weak destructors at 80081578 and 800815B8; this helper is stripped.
+#pragma push
+#pragma dont_inline on
+void strippedFaderCapture(mFaderBase_c *fader, m3d::capture_c *capture) {
+    fader->mFaderBase_c::~mFaderBase_c();
+    capture->m3d::capture_c::~capture_c();
+}
+#pragma pop
+#endif

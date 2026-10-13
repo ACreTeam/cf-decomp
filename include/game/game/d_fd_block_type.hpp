@@ -1,6 +1,6 @@
 #pragma once
 
-// d_fd_block_type (DOL TU d_fd_block_type.cpp, .text 800812C8..80081578, .rodata 8046D460..8046D5A0, .data
+// d_fd_block_type (DOL TU d_fd_block_type.cpp, .text 800812C8..80081618, .rodata 8046D460..8046D5A0, .data
 // 804A76B8..804A7780): the kind of each block (acre) type and the flags of each kind (d_block_kind.hpp).
 // Namespace from the file name; function names inferred from what they do and from their callers
 // (d_random_field, d_field_block, d_field_info, d_save_main_field, d_field_assessment, d_npc_mng).
