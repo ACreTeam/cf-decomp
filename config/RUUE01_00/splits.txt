@@ -1876,6 +1876,10 @@ dol/game/d_objc.cpp:
 
 dol/game/d_obj_bal.cpp:
 	.text       start:0x801B0230 end:0x801B0B20
+	.data       start:0x804FB9A0 end:0x804FBC98
+	.sdata      start:0x8074C210 end:0x8074C220
+	.sbss       start:0x8074EB08 end:0x8074EB10
+	.sdata2     start:0x80751848 end:0x80751878
 
 dol/game/d_obj_chat.cpp:
 	.text       start:0x801B0B20 end:0x801B3380
