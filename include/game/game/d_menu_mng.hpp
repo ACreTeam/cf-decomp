@@ -6,7 +6,11 @@
 #include <types.h>
 
 class dMail_c;
+class dMenuNd_c;
 class dTime_c;
+namespace m2d {
+class ResAccIf_c;
+}
 namespace dItem {
 class Item;
 }
@@ -14,7 +18,10 @@ class Item;
 extern "C" {
 void fn_8019B864(); // 8019B864: forgets the cached pocket selection (8074EA9C / 8074EAA0 = -1); d_private_data setPocket
 BOOL fn_8019A5E4(); // 8019A5E4: 8074EA6C == 1 and 8074EA70 == 0 (d_money: the money may be shown)
+void fn_8019A528(dMenuNd_c *node);                        // 8019A528: adds a menu (dMenuBase_c postCreate)
+void fn_8019A56C(dMenuNd_c *node);                        // 8019A56C: removes a menu, releases its modules (postDelete)
 BOOL fn_8019A608(u8 menu, BOOL a);                        // 8019A608: opens a menu (d_demo TYPE_MENU)
+m2d::ResAccIf_c *fn_8019A6FC();                           // 8019A6FC: the menus' shared layout resources
 void fn_8019A7B4();                                       // 8019A7B4: fn_8019A7D4(0x10) (d_demo TYPE_MENU end)
 void fn_8019B7D4(u8 menu);                                // 8019B7D4: starts the menu's BGM volume state
 void fn_8019B824();                                       // 8019B824: ends the menu's BGM volume state

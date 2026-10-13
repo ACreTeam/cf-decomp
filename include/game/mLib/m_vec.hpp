@@ -55,6 +55,7 @@ public:
 
     // mVec2_c &operator=(const mVec2_c &v) { set(v.x, v.y); return *this; }
     mVec2_c &operator=(const mVec2_c &v) { x = v.x; y = v.y; return *this; }
+    mVec2_c &operator=(const EGG::Vector2f &v) { x = v.x; y = v.y; return *this; }
 
     /// @brief Float cast operator.
     operator f32*() { return &x; }
