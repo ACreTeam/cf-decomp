@@ -31,7 +31,7 @@ BOOL makeMapColumn(void *tex, int column) {
     }
 
     int lastZ;
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     int baseZ;
     if (fd == NULL) {
         return FALSE;

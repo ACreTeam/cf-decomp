@@ -103,7 +103,7 @@ void dFgMngTask_c::set(int player, u8 scene, u16 pos, u16 pos2, u16 item, u16 it
 // 800A233C
 void dFgMngTask_c::proc() {
     int stage = 0;
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
         dFdAsPos_c pos(getX(), getZ());
         dItem::Item *item = fd->getItem(getX(), getZ(), 0);
@@ -273,11 +273,11 @@ void dFgMngTask_c::finish() {
 // 800A2918
 void dFgMngTask_c::apply() {
     if (dScene::isSceneAttr(mScene, dScene::SCENE_ATTR_TOWN)) {
-        dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+        dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
         dFgMngProc_c::setUnitItem(fd, getX(), getZ(), mNewItem, mStage);
         notify(mStage != 0);
     } else {
-        dFdBase_c *fd = fn_80190C44(fn_80190C58(mScene));
+        dFdBase_c *fd = dField::getInfo(dField::getSceneFieldId(mScene));
         if (fd != NULL) {
             dItem::Item item(mNewItem);
             fd->setItem(&item, getX(), getZ(), mLayer);
@@ -695,7 +695,7 @@ void dFgMngStone_c::update() {
             dFdAsPos_c pos(mPos.mPos >> 8, mPos.mPos & 0xFF);
             if (fgMngTask_find(0, &pos, 0) < 0) {
                 u16 item = dItem::FG_STONE_A;
-                fd = fn_80190C44(FD_ID_TOWN);
+                fd = dField::getInfo(FD_ID_TOWN);
                 mTimer = TIMER_NONE;
                 if (fd != NULL) {
                     dItem::Item *cur = fd->getItem(pos.mX, pos.mZ, 0);
@@ -742,7 +742,7 @@ void dFgMngStone_c::spawn(const dFdAsPos_c *pos) {
     dFdBase_c *fd;
     const u8 *dir;
     int i;
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
         w = fd->mBlockW * UT_X_NUM;
         h = fd->mBlockH * UT_Z_NUM;
@@ -1024,7 +1024,7 @@ BOOL dFgMngCmd_c::exec() {
         pos2 = dFdAsPos_c(mDropPos[0].mPos >> 8, mDropPos[0].mPos & 0xFF);
         break;
     }
-    dItem::Item *item = fn_80190C44(fn_80190C58(mScene))->getItem(pos.mX, pos.mZ, 0);
+    dItem::Item *item = dField::getInfo(dField::getSceneFieldId(mScene))->getItem(pos.mX, pos.mZ, 0);
     u8 b2 = mB2;
     u8 layer = mLayer;
     u8 kind = mKind;
@@ -1224,7 +1224,7 @@ u16 dFgMngCmd_c::getFruit(u16 id) {
 
 // 800A52BC
 BOOL dFgMngCmd_c::planFruit(int player, u16 id) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return TRUE;
     }
@@ -1277,7 +1277,7 @@ BOOL dFgMngCmd_c::planShakeItem(dFgMngReq_c *req, int player) {
     int base = 0;
     nw4r::math::VEC3 at;
     dFdAsPos_c pos;
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return TRUE;
     }

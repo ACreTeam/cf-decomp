@@ -428,7 +428,7 @@ void dHome_c::update(int days, BOOL isCurrent) {
         if (mSize != mNextSize && mNextSize < HOME_SIZE_NUM) {
             mSize = mNextSize;
             dSTR::getTownUnitAttr()->setAll();
-            fn_801911AC();
+            dField::reloadHomes();
         }
         _15B6 = _15B7;
     }
@@ -670,7 +670,7 @@ void dHomeList_c::updateAll(int days) {
             dHome_c *cur = getHome(findCurrentPlayer());
             home->update(days, home == cur);
         }
-        fn_801911E8(i);
+        dField::reloadHome(i);
     }
 }
 

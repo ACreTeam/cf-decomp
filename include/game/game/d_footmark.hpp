@@ -69,7 +69,7 @@ private:
     /* 0x0080 */ u8 mPixels[TEX_SIZE * TEX_SIZE] ALIGN(32);
     /* 0x4080 */ u8 mMarks[TEX_SIZE * TEX_SIZE / 8];  // a bit per unit: changed since clearMarks
     /* 0x4880 */ u8 mMarks2[TEX_SIZE * TEX_SIZE / 8]; // a bit per unit (only cleared here)
-    /* 0x5080 */ int mFieldId;                          // fn_80190C44 index (FD_ID_*)
+    /* 0x5080 */ int mFieldId;                          // dField::getInfo index (FD_ID_*)
     /* 0x5084 */ EGG::FrmHeap *m_frmHeap_p;
 }; // size 0x50A0
 

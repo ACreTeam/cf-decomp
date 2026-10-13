@@ -2333,7 +2333,7 @@ dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 k
         return dItem::Item();
     }
     if (map == NULL) {
-        map = fn_80190C44(0);
+        map = dField::getInfo(0);
     }
     if (map == NULL) {
         return dItem::Item();
@@ -2377,7 +2377,7 @@ dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 k
 BOOL canPutItemOnUnit(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
     BOOL result = FALSE;
     if (map == NULL) {
-        map = fn_80190C44(0);
+        map = dField::getInfo(0);
     }
     if (kind == dScene::SCENE_NUM) {
         kind = dScene::getCurrentScene();
@@ -2446,7 +2446,7 @@ BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u
 
 // 800F2138: a random free unit closest to `pos`, searching up to `radius` rings out.
 BOOL fn_800F2138(mVec3_c *out, const mVec3_c *pos, u32 radius) {
-    dFdBase_c *map = fn_80190C44(0);
+    dFdBase_c *map = dField::getInfo(0);
     if (map == NULL) {
         return FALSE;
     }
@@ -2543,7 +2543,7 @@ BOOL fn_800F23C0(int *outX, int *outZ, dFdBase_c *map, u8 kind, int x0, int x1, 
 
 // 800F25A4: fn_800F23C0 over the outdoor map, keeping a one-block border.
 BOOL fn_800F25A4(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist) {
-    dFdBase_c *map = fn_80190C44(1);
+    dFdBase_c *map = dField::getInfo(1);
     if (map == NULL) {
         return FALSE;
     }
@@ -2570,7 +2570,7 @@ BOOL fn_800F26C8(int *outX, int *outZ) {
     if (outX == NULL || outZ == NULL) {
         return FALSE;
     }
-    dFdBase_c *map = fn_80190C44(1);
+    dFdBase_c *map = dField::getInfo(1);
     if (map == NULL) {
         return FALSE;
     }
@@ -2621,7 +2621,7 @@ BOOL fn_800F28AC(mVec3_c *out) {
 
 // 800F2920: fn_800F23C0 over the current scene's whole map.
 BOOL fn_800F2920(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c *exclude, f32 dist) {
-    dFdBase_c *map = fn_80190C44(0);
+    dFdBase_c *map = dField::getInfo(0);
     if (map == NULL) {
         return FALSE;
     }
@@ -2780,7 +2780,7 @@ u32 fn_800F2F8C(int *outX, int *outZ, u32 num, u32 bx, u32 bz, dFdBase_c *map, c
 // (0x400: around that block) that pass `func`.
 BOOL fn_800F3178(int *outX, int *outZ, dNpcSpotFunc func, int arg, const mVec3_c *exclude, u32 type,
                  BOOL skipTrees, BOOL allowFg94, f32 dist) {
-    dFdBase_c *map = fn_80190C44(1);
+    dFdBase_c *map = dField::getInfo(1);
     if (map == NULL) {
         return FALSE;
     }
@@ -2925,14 +2925,14 @@ BOOL fn_800F3830(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclud
     }
 
     dFdBase_c::getUnitCenterPos(out, x, z);
-    dFdBase_c *map = fn_80190C44(1);
+    dFdBase_c *map = dField::getInfo(1);
     dItem::Item *item = map->getItem(x, z, 0);
     if (!fn_80013550() && item != NULL && isFg94(item)) {
         dItem::Item none;
         map->setItem(&none, x, z, 0);
     }
 
-    dItem::Item *south = fn_80190C44(1)->getItem(x, z + 1, 0);
+    dItem::Item *south = dField::getInfo(1)->getItem(x, z + 1, 0);
     if (south != NULL && south->mId != dItem::ITEM_ID_NONE && isGrownTree(south)) {
         mVec3_c left(out->x - 32.0f, out->y, out->z);
         mVec3_c leftHalf(out->x - 14.4f, out->y, out->z);
@@ -2973,7 +2973,7 @@ BOOL fn_800F3830(mVec3_c *out, dNpcSpotFunc func, int arg, const mVec3_c *exclud
 
 // 800F3C0C: whether unit (x, z) faces something to its south (tree, wall, or blocked unit).
 BOOL fn_800F3C0C(int x, int z) {
-    dFdBase_c *map = fn_80190C44(1);
+    dFdBase_c *map = dField::getInfo(1);
     if (map == NULL) {
         return FALSE;
     }

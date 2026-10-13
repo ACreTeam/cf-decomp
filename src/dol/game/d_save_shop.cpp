@@ -801,7 +801,7 @@ void dSaveShop_c::sell(int scene, int slot, int unitX, int unitZ) {
         return;
     }
     dItem::Item sold(dItem::ITEM_IDX_SOLD_OUT_SIGN_00);
-    dFdBase_c *fd = fn_80190C44(0);
+    dFdBase_c *fd = dField::getInfo(0);
     if (fd != NULL) {
         fd->setItem(&sold, 0, 0, unitX, unitZ, 0);
     }

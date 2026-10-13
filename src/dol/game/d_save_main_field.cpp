@@ -1,5 +1,6 @@
 // The town field in the save data (dSaveMainField_c). .text 80110634..80110F30.
 #include <game/game/d_save_main_field.hpp>
+#include <game/game/d_field_process.hpp>
 #include <game/game/d_random_field.hpp>
 #include <game/game/d_fg_data.hpp>
 #include <game/game/d_save_data.hpp>
@@ -75,9 +76,9 @@ BOOL dSaveMainField_c::createField(EGG::Heap *heap) {
                 blockId++;
             }
         }
-        dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+        dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
         if (fd != NULL) {
-            ((dFdInfo_c *)fd)->updateTown();
+            ((dFdInfoSv_c *)fd)->updateTown();
         }
         dSaveData_c::getTown()->mBuilding.mList.create();
         mCreateStep = MAIN_FIELD_CREATE_STEP3;
@@ -100,9 +101,9 @@ BOOL dSaveMainField_c::createField(EGG::Heap *heap) {
 // 80110958
 BOOL dSaveMainField_c::createFinish() {
     if (mCreateStep == MAIN_FIELD_CREATE_FIELD_DONE) {
-        dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+        dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
         if (fd != NULL) {
-            ((dFdInfo_c *)fd)->updateTown();
+            ((dFdInfoSv_c *)fd)->updateTown();
         }
         mCreateStep = MAIN_FIELD_CREATE_STEP6;
     }

@@ -13,6 +13,7 @@
 #include <game/game/d_field.hpp>
 #include <game/game/d_field_assessment.hpp>
 #include <game/game/d_field_info.hpp>
+#include <game/game/d_field_process.hpp>
 #include <game/game/d_footmark.hpp>
 #include <game/game/d_home_room_map.hpp>
 #include <game/game/d_net.hpp>
@@ -125,15 +126,15 @@ extern "C" void fn_8010DED0() {
 
 // 8010DEF8
 void dSaveData_c::refreshTown() {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
-        ((dFdInfo_c *)fd)->updateTown();
+        ((dFdInfoSv_c *)fd)->updateTown();
     }
     dWeather::requestReset();
     dSTR::getTownUnitAttr()->setAll();
     dFootmark::getEditor()->loadSave();
     dActivityLog::setJinx(&dSaveData_c::getTown()->mActivity.mJinx);
-    fn_801911AC();
+    dField::reloadHomes();
     dTimeStamp_c lastDay = dSaveData_c::getTown()->mTownInfo.mLastDay;
     dEvent::buildSchedule(lastDay.get(), TRUE);
     dClock::resetTimer();
@@ -143,16 +144,16 @@ void dSaveData_c::refreshTown() {
 
 // 8010DFC0
 void dSaveData_c::setupAfterLoad() {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
-        ((dFdInfo_c *)fd)->updateTown();
+        ((dFdInfoSv_c *)fd)->updateTown();
     }
     dTime_c::loadOffset();
     dWeather::resetCache();
     dSTR::getTownUnitAttr()->setAll();
     dFootmark::getEditor()->loadSave();
     dActivityLog::applyResult();
-    fn_801911AC();
+    dField::reloadHomes();
     dTimeStamp_c lastDay = getTown()->mTownInfo.mLastDay;
     dEvent::buildSchedule(lastDay.get(), TRUE);
     u16 none = 0;

@@ -222,7 +222,7 @@ BOOL mdlBank_c::create(EGG::Heap *heap) {
     area_c area;
     area.set(dScene::getScenePlayerPos());
     m_heap_p = mHeap::createFrmHeap(0x1C8000, heap, "dBG::mdlBank_c::m_heap_p : ＢＧモデルヒープ", 0x20, mHeap::OPT_NONE);
-    dFdBase_c *fd = fn_80190C44(0);
+    dFdBase_c *fd = dField::getInfo(0);
     if (m_heap_p != NULL && fd != NULL) {
         mBlockW = fd->mBlockW;
         mBlockH = fd->mBlockH;

@@ -260,7 +260,7 @@ BOOL dShopLayout_findFreeUnit(int kind, int *unitX, int *unitZ) {
     const dShopLayout_t *layout = dShopLayout_get(dScene::getCurrentScene());
     for (int z = 0; z < UT_Z_NUM; z++) {
         for (int x = 0; x < UT_X_NUM; x++) {
-            dItem::Item *item = fn_80190C44(0)->getItem(x, z, 0);
+            dItem::Item *item = dField::getInfo(0)->getItem(x, z, 0);
             if (kind == (*layout)[z][x] && item != NULL && item->mId == dItem::ITEM_ID_NONE) {
                 *unitX = x;
                 *unitZ = z;
@@ -276,7 +276,7 @@ BOOL dShopLayout_findFreeUnit(int kind, int *unitX, int *unitZ) {
 int dShopLayout_getSlot(int unitX, int unitZ) {
     u16 id;
 
-    dItem::Item item = fn_80190C44(0)->getUnitItem(unitX, unitZ);
+    dItem::Item item = dField::getInfo(0)->getUnitItem(unitX, unitZ);
     if (!dItem::isRealItemId(item.mId)) {
         return -1;
     }

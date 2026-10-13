@@ -187,7 +187,7 @@ public:
     };
 
     void assessTown(dFdBase_c *fd, int blockW, int blockH); // 80092B70: dFdAsBlock_c::assess
-    int assessLiveTown();                                   // 80092E88: assessLive over fn_80190C44(1); mRank
+    int assessLiveTown();                                   // 80092E88: assessLive over dField::getInfo(1); mRank
     int getTownRank(int *blockRankNum, int blockW, int blockH); // 8009316C
     int getBlockRank(int point);                            // 800931D0
     void assessLiveBlock(dFdBase_c *fd, int blockX, int blockZ); // 80093218

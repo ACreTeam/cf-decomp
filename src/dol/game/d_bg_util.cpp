@@ -240,7 +240,7 @@ BOOL getNodePos(mVec3_c *pos, const char *name, int blockX, int blockZ) {
     if (l_bgiDraw != NULL) {
         dBGI::alwaysAc_c *ac = l_bgiDraw;
         if (blockX == -1 || blockZ == -1) {
-            dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
+            dFdBase_c *fd = dField::getInfo(FD_ID_CURRENT);
             if (fd != NULL) {
                 for (int z = 0; z < fd->mBlockH; z++) {
                     for (int x = 0; x < fd->mBlockW; x++) {

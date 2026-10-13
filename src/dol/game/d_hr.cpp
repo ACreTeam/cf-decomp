@@ -107,7 +107,7 @@ void dHR::updateRate(u32 home) {
     if (dSaveData_c::getRaw()->mHomes.getHomePlayerRaw(home) != NULL) {
         for (int room = 0; room < 3; room++) {
             dHR::fnShui_c shui;
-            dFdBase_c *field = fn_80191178(home, room);
+            dFdBase_c *field = dField::getHomeInfo(home, room);
             if (field != NULL) {
                 shui.calc(field);
                 rate->mScore[0] += shui.mScore[0];
@@ -279,7 +279,7 @@ dItem::Item dHR::fdMdlCb_c::getCarpet(int room) {
 
 // 800ACBF0
 dFdBase_c *dHR::fdPlCb_c::getField(int room) {
-    return fn_80190C44(mHome * 3 + room + 2);
+    return dField::getInfo(mHome * 3 + room + 2);
 }
 
 // 800ACC08

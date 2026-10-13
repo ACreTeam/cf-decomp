@@ -81,7 +81,6 @@ void fn_800D16E8();
 int fn_801017B8();
 BOOL fn_80087820(dEffect_c *effect, const char *name, const mVec3_c *pos, const mAng3_c *ang, const mVec3_c *scale);
 f32 fn_8044B83C(EGG::Effect *effect);
-int fn_80190C58(int a);
 int fn_800C60B4(dItem::Item *out, int num, const void *table, int tableNum, const void *filter, const dItem::Item *exclude, int excludeNum, int);
 extern void *lbl_8074E9A0[2];
 }
@@ -852,7 +851,7 @@ int dFdAssess_c::assessLiveTown() {
         sFdAssess.mBlockRankNum[i] = 0;
     }
 
-    fd = fn_80190C44(1);
+    fd = dField::getInfo(1);
     blockW = fd->mBlockW - 2;
     blockH = fd->mBlockH - 2;
     row = mBlocks[0];
@@ -1140,7 +1139,7 @@ void dFgMngProc_c::destroyHeap() {
 // 800939E8: the day-change processing of the field for `days` days (last..now).
 void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag, BOOL arg) {
     int seed = *(int *)((u8 *)dSaveData_c::getTown() + 0x5EC60);
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     int w = fd->mBlockW - 2;
     int h = fd->mBlockH - 2;
     if (flag) {
@@ -1381,7 +1380,7 @@ void dFgMngProc_c::trySpawnShellOffline() {
     if (!isLastTime(now.hour, now.min)) {
         switch (now.min % 10) {
         case 3:
-            dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+            dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
             putShellOnBeach(fd, (int)cM::rndF(FG_BLOCK_X_NUM), TRUE);
             setLastTime(now.hour, now.min);
             break;
@@ -1414,7 +1413,7 @@ void dFgMngProc_c::trySpawnShellOnline() {
                     }
                 }
                 if (!onBeach) {
-                    fd = fn_80190C44(FD_ID_TOWN);
+                    fd = dField::getInfo(FD_ID_TOWN);
                     putShellOnBeach(fd, (int)cM::rndF(FG_BLOCK_X_NUM), FALSE);
                     setLastTime(now.hour, now.min);
                 }
@@ -2499,7 +2498,7 @@ void dFgMngProc_c::addEvent(int id) {
 
 // 8009779C
 void dFgMngProc_c::procLiveDay(BOOL arg) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     dTime_c now = *dTime_c::getCurrent();
     sFdAssess.assessLiveTown();
     procDay(fd, &now);
@@ -3242,7 +3241,7 @@ void dFgMngProc_c::clearFg94() {
     int blockZ;
     int unitX;
     int unitZ;
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     blockW = fd->mBlockW - 2;
     blockH = fd->mBlockH - 2;
     for (blockZ = 1; blockZ <= blockH; blockZ++) {
@@ -3304,13 +3303,13 @@ void dFgMngProc_c::spoilPocketKabu() {
 
 // 800998F0
 void dFgMngProc_c::spoilTownKabu() {
-    spoilKabu(fn_80190C44(FD_ID_TOWN));
+    spoilKabu(dField::getInfo(FD_ID_TOWN));
 }
 
 // 8009992C: the rooms (fields 2..13).
 void dFgMngProc_c::spoilRoomKabu() {
     for (int i = 2; i < 14; i++) {
-        spoilKabu(fn_80190C44(i));
+        spoilKabu(dField::getInfo(i));
     }
 }
 
@@ -3375,7 +3374,7 @@ void dFgMngProc_c::takeEgg(int *pick, int *kind, int *blockEggs, int *total, int
 
 // 80099C0C: Bunny Day: collects the eggs, then hides new ones.
 void dFgMngProc_c::updateEggs() {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     collectEggs(fd);
     hideEggs(fd);
 }
@@ -3689,7 +3688,7 @@ void dFgMngProc_c::updateFg56() {
     int blockZ;
     int blockW;
     u8 day;
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     fgMngProc_collectFg56Units();
     dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
@@ -3966,7 +3965,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     } else {
         sFgMngProc.createHeap();
         u16 *buf = (u16 *)sFgMngProc.mBuffer;
-        dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+        dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
         dFgMngProc_c::setupUnitMask(fd, buf);
         if (arg) {
             sFgMngProc.procLiveDay(1);
@@ -4014,7 +4013,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         if (sFgMngProcFlags & FG_MNG_PROC_FLAG_SAVE_FLAG6) {
             dSaveData_c::getTown()->setFlag(6);
         }
-        fn_80190C44(FD_ID_TOWN)->clearWatered();
+        dField::getInfo(FD_ID_TOWN)->clearWatered();
         dSaveData_c::getTown()->mTownHost.decrease(days);
         dSaveData_c::getTown()->mMuseum.sendCompleteMail();
         dSaveData_c::getTown()->mDailyRand.reset();
@@ -4148,7 +4147,7 @@ void fgMngProc_threadMain() {
     fgMngSync_reset();
     dSaveData_c::getTown();
     dTime_c last = fgMngProc_getLastDayTime();
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     fgMngProc_updateFrame();
     if (fd != NULL) {
         int w = fd->mBlockW - 2;
@@ -4194,7 +4193,7 @@ void fgMngProc_collectFg56Units() {
     int x;
     int z;
     int w;
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     fgMngProc_clearFg56Units();
     w = fd->mBlockW - 2;
     pos = fgMngProc_getFg56Units();
@@ -4226,7 +4225,7 @@ void fgMngProc_collectFg56Units() {
 // dSaveTownInfo_c::init (new-town creation).
 void fgMngProc_initTownField() {
     int salt = (int)dSaveData_c::getTown()->mTownChecksum;
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
         int w = fd->mBlockW - 2;
         int h = fd->mBlockH - 2;
@@ -4464,7 +4463,7 @@ static const s8 sAroundZ5[] = {0, 0, 0, -1, 1};
 // 8009CB44: watering from the task code: sets flagB on the 5 units around pos (3x3 with the
 // golden/silver can); golden can turns fg 0xD6 into 0xD8, silver can fg 0x95 into 0x9D.
 void fgMngProc_waterAround(int member, const dFdAsPos_c *pos) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     dPlayerActor_c *player = fn_800FBC7C(4);
     const s8 *dx;
     const s8 *dz;
@@ -4571,7 +4570,7 @@ int fgMngProc_trampleFlowerAt(int x, int z) {
     if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
         return FLOWER_DAMAGE_NONE;
     }
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     int mode = FLOWER_DAMAGE_NONE;
     if (fd != NULL) {
         dItem::Item *item = fd->getItem(x, z, 0);
@@ -4597,7 +4596,7 @@ void fgMngProc_damageFlower(dItem::Item *item, int x, int z, int mode) {
 
 // 8009D248: fgMngProc_damageFlower on the town item at unit (x, z); caller d_fgobj_manager.
 void fgMngProc_damageFlowerAt(int x, int z, int mode) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
         dItem::Item *item = fd->getItem(x, z, 0);
         if (item != NULL) {
@@ -4809,7 +4808,7 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     f32 pz = pos.z;
     pu.mX = (int)px >> 5;
     pu.mZ = (int)pz >> 5;
-    fd = fn_80190C44(FD_ID_CURRENT);
+    fd = dField::getInfo(FD_ID_CURRENT);
     int ux[2], uz[2];
     dPlayerActor_c **actors = (dPlayerActor_c **)lbl_8074E9A0;
     for (int j = 0; j < 2; j++) {
@@ -4857,7 +4856,7 @@ BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, int member) {
     if (idx >= 0 && !(BOOL)fgMngTask_getActive(req->mMember)) {
         return FALSE;
     }
-    dFdBase_c *fd = fn_80190C44(fn_80190C58(member));
+    dFdBase_c *fd = dField::getInfo(dField::getSceneFieldId(member));
     dItem::Item *item = fd->getItem(req->mPos >> 8, req->mPos & 0xFF, req->mLayer);
     if (item != NULL && item->mId == req->mTarget) {
         if (idx < 0) {
@@ -4908,13 +4907,13 @@ void fgMngProc_setUnitFgSync(int x, int z, u16 fg) {
         dNet::addPacket(&data, 4);
         dNet::sendPacket(NET_PACKET_FG_MNG_UNIT_FG, NET_MEMBER_NONE);
     }
-    dFgMngProc_c::setUnitItem(fn_80190C44(FD_ID_TOWN), x, z, fg, 0);
+    dFgMngProc_c::setUnitItem(dField::getInfo(FD_ID_TOWN), x, z, fg, 0);
 }
 
 // 8009DDD0: applies a received 0x2B unit-fg packet (playing the flower effect when a flower is
 // removed); caller net receive fn_800DF8E4.
 void fgMngProc_recvUnitFg(const u16 *data) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     u16 fg = data[1];
     dFdAsPos_c unit;
     unit.mX = data[0] >> 8;
@@ -5112,7 +5111,7 @@ void fgMngProc_stashFg94() {
     sFgMngProc.createHeap();
     bits = (u16 *)sFgMngProc.mBuffer;
     memset(bits, 0, FG_MNG_BUFFER_SIZE);
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     blockW = fd->mBlockW - 2;
     blockH = fd->mBlockH - 2;
     for (blockZ = 1; blockZ <= blockH; blockZ++) {
@@ -5142,7 +5141,7 @@ void fgMngProc_restoreFg94() {
     int blockZ;
     int unitX;
     int unitZ;
-    fd = fn_80190C44(FD_ID_TOWN);
+    fd = dField::getInfo(FD_ID_TOWN);
     bits = (u16 *)sFgMngProc.mBuffer;
     blockW = fd->mBlockW - 2;
     blockH = fd->mBlockH - 2;

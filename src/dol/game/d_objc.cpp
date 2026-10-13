@@ -585,7 +585,7 @@ void calc() {
 
     cam = lbl_8074E9B0;
     player = fn_800FBC7C(4);
-    field = fn_80190C44(0);
+    field = dField::getInfo(0);
     l_dpdPos.clear();
     l_dpdHit.clear();
     if (cam != NULL && mPad::getCore()->getDpdValidFlag() > 0 && player != NULL && field != NULL) {

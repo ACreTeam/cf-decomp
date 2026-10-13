@@ -848,6 +848,7 @@ config.libs = [
             Object(Matching, "dol/game/d_pattern_copy.cpp"),
             Object(Matching, "dol/game/d_sv_star_sign.cpp"),
             Object(Matching, "dol/game/d_sv_auc_list.cpp"),
+            Object(Matching, "dol/game/d_field.cpp"),
             Object(Matching, "dol/game/d_money.cpp"),
             Object(Matching, "dol/game/d_obj_voice.cpp"),
             Object(Matching, "dol/game/d_letter.cpp"),

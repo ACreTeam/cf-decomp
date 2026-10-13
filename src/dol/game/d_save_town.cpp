@@ -98,7 +98,7 @@ void dSaveTown_c::deletePlayer(int player) {
     mNoticeBoard.clearRead(player);
     mActivity.removePlayer(player);
 
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
         dItem::Item none;
         int x, z;

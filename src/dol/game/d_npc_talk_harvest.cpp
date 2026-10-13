@@ -344,7 +344,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotNpcHouse(u16 *code, int blockX, int blockZ, i
 BOOL dAcNpcNml_c::talk_c::checkSpotLandmark(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
     static const int l_blockFlags[6] = {BLOCK_KIND_FLAG_SHOP,   BLOCK_KIND_FLAG_TAILOR, BLOCK_KIND_FLAG_TOWN_HALL,
                                         BLOCK_KIND_FLAG_MUSEUM, BLOCK_KIND_FLAG_GATE,   0};
-    const dFdBase_c *fd = fn_80190C44(1);
+    const dFdBase_c *fd = dField::getInfo(1);
     if (fd != NULL) {
         const dFdBlock_c *block = fd->getBlock(blockX, blockZ);
         if (block != NULL) {
@@ -361,7 +361,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotLandmark(u16 *code, int blockX, int blockZ, i
 
 // 80045FC8
 BOOL dAcNpcNml_c::talk_c::checkSpotWater(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
-    const dFdBase_c *fd = fn_80190C44(1);
+    const dFdBase_c *fd = dField::getInfo(1);
     if (fd != NULL) {
         const dFdBlock_c *block = fd->getBlock(blockX, blockZ);
         if (block != NULL) {
@@ -407,7 +407,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotEmptyHouse(u16 *code, int blockX, int blockZ,
 
 // 8004617C
 BOOL dAcNpcNml_c::talk_c::checkSpotBuildSite(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
-    const dFdBase_c *fd = fn_80190C44(1);
+    const dFdBase_c *fd = dField::getInfo(1);
     if (fd != NULL) {
         const dFdBlock_c *block = fd->getBlock(blockX, blockZ);
         if (block != NULL) {
@@ -433,7 +433,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotBuildSite(u16 *code, int blockX, int blockZ, 
 
 // 8004627C
 BOOL dAcNpcNml_c::talk_c::checkSpotBeach(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
-    const dFdBase_c *fd = fn_80190C44(1);
+    const dFdBase_c *fd = dField::getInfo(1);
     if (fd != NULL && fd->hasBlockFlag(blockX, blockZ, BLOCK_KIND_FLAG_BEACH)) {
         *code = 0x18;
         return TRUE;
@@ -443,7 +443,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotBeach(u16 *code, int blockX, int blockZ, int 
 
 // 800462F8
 BOOL dAcNpcNml_c::talk_c::checkSpotGateLine(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
-    const dFdBase_c *fd = fn_80190C44(1);
+    const dFdBase_c *fd = dField::getInfo(1);
     if (fd != NULL) {
         const dFdBlock_c *block = fd->findBlock(BLOCK_KIND_FLAG_GATE);
         if (block != NULL) {
@@ -469,7 +469,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotGateLine(u16 *code, int blockX, int blockZ, i
 
 // 800463F0
 BOOL dAcNpcNml_c::talk_c::checkSpotEdge(u16 *code, int blockX, int blockZ, int unitX, int unitZ) {
-    const dFdBase_c *fd = fn_80190C44(1);
+    const dFdBase_c *fd = dField::getInfo(1);
     if (fd != NULL) {
         int w = fd->getBlockW();
         int h = fd->getBlockH();

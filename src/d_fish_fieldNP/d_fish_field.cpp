@@ -122,27 +122,27 @@ int getLostItemLikeIdx() {
 
 // 0x134
 BOOL isRiverBlock(int blockX, int blockZ, void *user) {
-    return fn_80190C44(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_RIVER);
+    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_RIVER);
 }
 
 // 0x188
 BOOL isPoolBlock(int blockX, int blockZ, void *user) {
-    return fn_80190C44(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_RACCO);
+    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_RACCO);
 }
 
 // 0x1D8
 BOOL isWaterfallBlock(int blockX, int blockZ, void *user) {
-    return fn_80190C44(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_FALL);
+    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_FALL);
 }
 
 // 0x228
 BOOL isPondBlock(int blockX, int blockZ, void *user) {
-    return fn_80190C44(0)->getBlock(blockX, blockZ)->hasPond();
+    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasPond();
 }
 
 // 0x274
 BOOL isRiverMouthBlock(int blockX, int blockZ, void *user) {
-    dFdBlock_c *block = fn_80190C44(0)->getBlock(blockX, blockZ);
+    dFdBlock_c *block = dField::getInfo(0)->getBlock(blockX, blockZ);
     static const u32 cRiverFlags = BLOCK_KIND_FLAG_RIVER_S0 | BLOCK_KIND_FLAG_RIVER_S1 | BLOCK_KIND_FLAG_RIVER_S2;
     BOOL ret = FALSE;
     if (block->hasFlag(cRiverFlags) &&
@@ -175,14 +175,14 @@ static inline BOOL isSnowWeather(const dWeather_c *weather) {
 // 0x2F4
 BOOL isOffingBlock(int blockX, int blockZ, void *user) {
     if (isRainWeather(dWeather_c::sInstance) || isSnowWeather(dWeather_c::sInstance)) {
-        return fn_80190C44(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
+        return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
     }
     return FALSE;
 }
 
 // 0x39C
 BOOL isSeaBlock(int blockX, int blockZ, void *user) {
-    return fn_80190C44(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
+    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
 }
 
 // 0x3EC
@@ -263,7 +263,7 @@ int dFishField_c::create() {
     }
 
     // The waterfall basin: the center of the first waterfall acre's basin units.
-    dFdBkSearchCandCb_c falls(fn_80190C44(0)->getBlockW(), fn_80190C44(0)->getBlockH(), isWaterfallBlock, NULL);
+    dFdBkSearchCandCb_c falls(dField::getInfo(0)->getBlockW(), dField::getInfo(0)->getBlockH(), isWaterfallBlock, NULL);
     falls.clear();
     falls.search();
     n = falls.getCount();
@@ -444,7 +444,7 @@ BOOL dSearchFishPos::check(int x, int z) {
 
 // 0x1074
 BOOL dBkAttrSearchCand_c::check(int x, int z) {
-    return fn_80190C44(0)->getBlock(x, z)->hasFlag(mMask);
+    return dField::getInfo(0)->getBlock(x, z)->hasFlag(mMask);
 }
 
 // 0x10D0
@@ -707,8 +707,8 @@ void dFishField_c::spawn(int riverNum, int seaNum, bool awayFromPlayers) {
     static dQuestEvent_e sEvent = (dQuestEvent_e)14;
 
     // The acres without a fish yet.
-    int h = fn_80190C44(0)->mBlockH;
-    int w = fn_80190C44(0)->mBlockW;
+    int h = dField::getInfo(0)->mBlockH;
+    int w = dField::getInfo(0)->mBlockW;
     dFdBkSearchCand_c free(w, h);
     free.setAll();
     free.removeBorder();
@@ -753,8 +753,8 @@ void dFishField_c::spawn(int riverNum, int seaNum, bool awayFromPlayers) {
                 place = dFishSpawn_c::PLACE_RIVER;
             }
             dFishPlaceCheck check = getPlaceCheck(place);
-            h = fn_80190C44(0)->mBlockH;
-            w = fn_80190C44(0)->mBlockW;
+            h = dField::getInfo(0)->mBlockH;
+            w = dField::getInfo(0)->mBlockW;
             dFdBkSearchCandCb_c blocks(w, h, check, (void *)spawn);
             blocks.clear();
             blocks.search();

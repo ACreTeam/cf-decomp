@@ -60,9 +60,10 @@ extern const f32 lbl_8075052C; // 8075052C: half a block in z (256)
 //
 // dBGCF::clmcb_c                  collision callback (d_bgcf.hpp; vtable 804A6BA8, code around 80076688)
 //   dFdBase_c                     a grid of units with per-unit data, registered with dBGCF
-//     dFdInfo_c                   the town field
+//     dFdInfo_c                   a scene block list
 //     dFdInfoNpcHs_c              a villager's house room
 //     dFdInfoSvMdlRm_c            the model room
+// Persistent town / house grids are dFdInfoSv_c / dFdInfoSvHs_c (d_field_process.hpp).
 
 #include <lib/egg/core/eggHeap.h>
 #include <game/game/d_scene.hpp>
@@ -164,6 +165,8 @@ public:
 
 class dFdBase_c : public dBGCF::clmcb_c {
 public:
+    static void *operator new(size_t size, void *p) { return p; }
+
     enum Kind_e {
         KIND_FIELD = 0,
         KIND_NPC_HOUSE = 3,
@@ -270,12 +273,7 @@ public:
     /* 0x24 */ dFdUnitAttr_c *_24; // optional per-unit attributes
 }; // size 0x28
 
-// 80190C44: the field info of the current scene (0) or of the town (1).
-extern "C" dFdBase_c *fn_80190C44(int idx);
-// 80191178 (d_field): the field of room room of player house home, or NULL.
-extern "C" dFdBase_c *fn_80191178(u32 home, int room);
-// 8019112C (d_field): size of the field heap (dFdInfo_c::getHeapSize() and more).
-extern "C" u32 fn_8019112C();
+#include <game/game/d_field.hpp>
 enum {
     FD_ID_CURRENT = 0,
     FD_ID_TOWN = 1,
@@ -285,7 +283,7 @@ enum {
 // small negative values map to 0 (unlike dBGCF::posToUnit).
 inline int worldToUnit(f32 value) { return (int)value >> 5; }
 
-inline dFdBase_c *getCurrentField() { return fn_80190C44(FD_ID_CURRENT); }
+inline dFdBase_c *getCurrentField() { return dField::getInfo(FD_ID_CURRENT); }
 
 // Scenes (dScene::getCurrentScene()) and their attributes (dScene::isSceneAttr()) are in d_scene.hpp.
 
@@ -298,8 +296,6 @@ public:
     BOOL create(const dFdBlockId_c *blockIds, int blockW, int blockH, EGG::Heap *heap,
                 dFdUnitAttr_c *unitAttr);                                                // 8008DA44
     static u32 getHeapSize();                                                            // 8008DD3C: the town (7 x 7)
-    BOOL createTown(EGG::Heap *heap);                                                    // 8008DD70
-    BOOL updateTown();                                                                   // 8008DEF4
     static u32 getRoomHeapSize();                                                        // 8008E024: one block
 };
 

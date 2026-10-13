@@ -313,7 +313,7 @@ BOOL dAcNpcSp_c::getPointedShopItem(dItem::Item *item, int *unitX, int *unitZ) {
     if (!getPointedUnit(unitX, unitZ, &l_pointAngle, 0, l_pointRange, l_pointDist)) {
         return FALSE;
     }
-    dFdBase_c *fd = fn_80190C44(0);
+    dFdBase_c *fd = dField::getInfo(0);
     if (fd == NULL) {
         return FALSE;
     }

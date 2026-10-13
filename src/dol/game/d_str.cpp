@@ -1449,7 +1449,7 @@ namespace dSTR {
 
 // 801699F0: puts a building at a unit of the town hall's acre (16 units per acre).
 static void setBuildingNearTownHall(u16 id, int unitX, int unitZ) {
-    dFdBlock_c *block = fn_80190C44(FD_ID_TOWN)->findBlock(BLOCK_KIND_FLAG_TOWN_HALL);
+    dFdBlock_c *block = dField::getInfo(FD_ID_TOWN)->findBlock(BLOCK_KIND_FLAG_TOWN_HALL);
     if (block != NULL) {
         int blockX = block->mBlockX;
         int blockZ = block->mBlockZ;

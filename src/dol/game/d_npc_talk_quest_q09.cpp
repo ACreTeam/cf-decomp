@@ -366,7 +366,7 @@ u16 dAcNpcNml_c::talk_c::pickHouseFtrMsg(dItem::Item *item, u8 looks) {
     if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return 0;
     }
-    dFdBase_c *field = fn_80190C44(0);
+    dFdBase_c *field = dField::getInfo(0);
     if (field == NULL) {
         return 0;
     }

@@ -56,7 +56,7 @@ void dSaveTownInfo_c::updatePerfectDays(int rank, int days) {
 
 // 8014D42C
 void dSaveTownInfo_c::plantFruitTrees() {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return;
     }
@@ -97,7 +97,7 @@ void dSaveTownInfo_c::plantFruitTrees() {
 
 // 8014D5C4
 void dSaveTownInfo_c::removeSouthCedars() {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return;
     }

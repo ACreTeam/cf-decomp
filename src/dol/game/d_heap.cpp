@@ -203,7 +203,7 @@ EGG::FrmHeap *dHeap::createFgDataHeap(EGG::Heap *parent) {
 
 // 800B5440
 EGG::FrmHeap *dHeap::createFieldHeap(EGG::Heap *parent) {
-    u32 size = fn_8019112C();
+    u32 size = dField::getHeapSize();
     fieldHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::fieldHeap_p", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "フィールド情報ヒープ", size);
     return fieldHeap_p;

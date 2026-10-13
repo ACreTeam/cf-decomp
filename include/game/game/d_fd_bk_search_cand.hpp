@@ -1,7 +1,7 @@
 #pragma once
 #include <game/game/d_search_cand_base.hpp>
 
-// The field's acres. The users build it from the field size (fn_80190C44(0)->mBlockW / mBlockH).
+// The field's acres. The users build it from the field size (dField::getInfo(0)->mBlockW / mBlockH).
 class dFdBkSearchCand_c : public dSearchCandXZCore_c {
 public:
     dFdBkSearchCand_c(int width, int height) : dSearchCandXZCore_c(width, height, mBuf) {}

@@ -248,7 +248,7 @@ static inline bool canStandAtPos(const mVec3_c *pos, dFdBase_c *field) {
 }
 
 BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum) {
-    dFdBase_c *field = fn_80190C44(0);
+    dFdBase_c *field = dField::getInfo(0);
     if (field == NULL) {
         return FALSE;
     }
@@ -524,7 +524,7 @@ BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
     if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return FALSE;
     }
-    dFdBase_c *field = fn_80190C44(0);
+    dFdBase_c *field = dField::getInfo(0);
     if (field == NULL) {
         return FALSE;
     }
@@ -1089,7 +1089,7 @@ BOOL dNpcMng_c::pickUnit(mVec3_c *pos, const mVec3_c *used, u32 usedNum, BOOL in
     if (pos == NULL) {
         return FALSE;
     }
-    dFdBase_c *field = fn_80190C44(0);
+    dFdBase_c *field = dField::getInfo(0);
     if (field == NULL) {
         return FALSE;
     }
@@ -1792,7 +1792,7 @@ void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle, const dItem::It
     int z = 0;
     switch (dSaveData_c::getTown()->mNewConstruction) {
         case NEW_CONSTRUCTION_BRIDGE: {
-            dFdBase_c *field = fn_80190C44(0);
+            dFdBase_c *field = dField::getInfo(0);
             if (field != NULL) {
                 int blockZ = dSaveData_c::getTown()->mNewConstructionBlockZ;
                 dSaveTown_c *town = dSaveData_c::getTown();
@@ -1834,7 +1834,7 @@ void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle, const dItem::It
         mVec3_c right;
         right = *pos;
         right.x += 32.0f;
-        dFdBase_c *field = fn_80190C44(0);
+        dFdBase_c *field = dField::getInfo(0);
         BOOL ok = FALSE;
         dItem::Item none;
         if (canPutItemAt(&left, &none, field, 0x44, TRUE, TRUE)) {
@@ -2088,7 +2088,7 @@ void dNpcMng_c::setPosRaccoSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item 
     if (getDaubPos(pos, angle, npc, FALSE)) {
         return;
     }
-    dFdBase_c *field = fn_80190C44(0);
+    dFdBase_c *field = dField::getInfo(0);
     if (field == NULL) {
         return;
     }
@@ -2310,7 +2310,7 @@ void dNpcMng_c::setPosVisitor5(mVec3_c *pos, mAng3_c *angle, const dItem::Item *
     z &= ~0xF;
     x += 7;
     z += 12;
-    if (canStandAt(fn_80190C44(0), x, z)) {
+    if (canStandAt(dField::getInfo(0), x, z)) {
         dFdBase_c::getUnitCenterPos(pos, x, z);
     } else {
         dFdBase_c::getUnitCenterPos(pos, 0, 0);
@@ -2355,7 +2355,7 @@ BOOL dNpcMng_c::pickEmptyBlockSpot(mVec3_c *pos) {
 }
 
 BOOL dNpcMng_c::pickBlockSpot(mVec3_c *pos, int blockX, int blockZ) {
-    dFdBase_c *field = fn_80190C44(0);
+    dFdBase_c *field = dField::getInfo(0);
     int x, x0 = blockX * 16 + 6;
     int z, z0 = blockZ * 16 + 6;
     int num = 0;
@@ -2407,7 +2407,7 @@ void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc
     // The aggregate keeps the field pointer in the original temporary allocation.
     struct {
         dFdBase_c *ptr;
-    } field = {fn_80190C44(0)};
+    } field = {dField::getInfo(0)};
     dRandom_c rnd(0x9D);
     rnd.initFromDateAndLandId(*dTime_c::getCurrent(), 0x61);
     dItem::Item ufo((u16)BUILDING_UFO);

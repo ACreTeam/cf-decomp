@@ -1295,7 +1295,7 @@ BOOL getGateSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *block) {
 // 8011DBA0
 // Random block (not on the map edge) of the given type; returns its center unit.
 BOOL getBlockTypeSpot(int *x, int *z, u32 type) {
-    dFdBase_c *map = fn_80190C44(1);
+    dFdBase_c *map = dField::getInfo(1);
     if (map == NULL) {
         return FALSE;
     }

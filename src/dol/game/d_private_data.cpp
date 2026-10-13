@@ -2091,7 +2091,7 @@ void dPrivateData_c::buildVotedBridge() {
         x = idx / 7;
         y = idx % 7;
     } else {
-        dFdBase_c *map = fn_80190C44(FD_ID_TOWN);
+        dFdBase_c *map = dField::getInfo(FD_ID_TOWN);
         int count = 0;
         for (int j = 1; j < map->mBlockH - 1; j++) {
             for (int i = 1; i < map->mBlockW - 1; i++) {

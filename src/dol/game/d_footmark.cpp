@@ -148,7 +148,7 @@ static inline int getBlockType(dFdBlock_c *block) {
 void Editor_c::onLoaded() {
     dDvd::brresBank_c::onLoaded();
     init();
-    dFdBase_c *fd = fn_80190C44(mFieldId);
+    dFdBase_c *fd = dField::getInfo(mFieldId);
     for (int blockZ = 0; blockZ < fd->mBlockH; blockZ++) {
         for (int blockX = 0; blockX < fd->mBlockW; blockX++) {
             u8 *units = getTexImage(getBlockType(getFdBlock(fd, blockX, blockZ)));
@@ -267,7 +267,7 @@ void Editor_c::updateDay(int days, int arg, BOOL flush) {
     if (days < 1) {
         return;
     }
-    dFdBase_c *fd = fn_80190C44(mFieldId);
+    dFdBase_c *fd = dField::getInfo(mFieldId);
     if (fd == NULL) {
         return;
     }
@@ -311,7 +311,7 @@ void Editor_c::updateDay(int days, int arg, BOOL flush) {
 
 // 800A822C
 void Editor_c::clampAll() {
-    dFdBase_c *fd = fn_80190C44(mFieldId);
+    dFdBase_c *fd = dField::getInfo(mFieldId);
     int blockX;
     int blockZ;
     int z;

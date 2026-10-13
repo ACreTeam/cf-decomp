@@ -58,7 +58,7 @@ int getFootstepSe(const mVec3_c *pos, u8 *wear) {
     u32 se = dBGCF::getFootstepSe(getAttr(pos));
     if (wear != NULL) {
         *wear = 0;
-        dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
+        dFdBase_c *fd = dField::getInfo(FD_ID_CURRENT);
         if (fd != NULL) {
             *wear = fd->getGrassWear(pos, FALSE);
         }
@@ -105,7 +105,7 @@ int getFootprint(const mVec3_c *pos) {
         switch (getAttr(pos)) {
         case BG_ATTR_SOIL:
             if (dScene::isWinterSeasonType()) {
-                dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
+                dFdBase_c *fd = dField::getInfo(FD_ID_CURRENT);
                 if (fd != NULL) {
                     return fd->getGrassWear(pos, FALSE);
                 }
@@ -122,7 +122,7 @@ int getFootprint(const mVec3_c *pos) {
 // 800A8850
 int getSnowWear(const mVec3_c *pos) {
     if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM) && getAttr(pos) == BG_ATTR_SOIL && dScene::isWinterSeasonType()) {
-        dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
+        dFdBase_c *fd = dField::getInfo(FD_ID_CURRENT);
         if (fd != NULL) {
             return fd->getGrassWear(pos, FALSE);
         }

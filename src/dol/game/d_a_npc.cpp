@@ -1794,7 +1794,7 @@ u32 dAcNpc_c::selectFreeSide() {
     static const f32 offX[2] = {-19.2f, 19.2f};
 
     u32 ret = 0xD6;
-    dFdBase_c *fd = fn_80190C44(FD_ID_CURRENT);
+    dFdBase_c *fd = dField::getInfo(FD_ID_CURRENT);
     if (fd != NULL && fd->_24 != NULL) {
         u32 cnt = 0;
         for (int i = 0; i < 2; i++) {

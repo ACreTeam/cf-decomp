@@ -26,7 +26,7 @@ class plHsCand_c : public dFdGutSearchCand_c {
 public:
     plHsCand_c(dFdBase_c *fd, const dPlHsFlags_c &flags)
         : dFdGutSearchCand_c(fd->mUnitW, fd->mUnitH), mNeed(flags.mNeed), mAvoid(flags.mAvoid) {
-        mInfo = fn_80190C44(FD_ID_TOWN);
+        mInfo = dField::getInfo(FD_ID_TOWN);
     }
     virtual BOOL check(int x, int z);
 
@@ -38,10 +38,10 @@ public:
 class reserveCand_c : public dFdGutSearchCand_c {
 public:
     reserveCand_c(int width, int height) : dFdGutSearchCand_c(width, height) {
-        mInfo = fn_80190C44(FD_ID_TOWN);
+        mInfo = dField::getInfo(FD_ID_TOWN);
     }
     reserveCand_c(dFdBase_c *fd) : dFdGutSearchCand_c(fd->mUnitW, fd->mUnitH) {
-        mInfo = fn_80190C44(FD_ID_TOWN);
+        mInfo = dField::getInfo(FD_ID_TOWN);
     }
     virtual BOOL check(int x, int z);
 
@@ -75,7 +75,7 @@ public:
 class lightHouseCand_c : public reserveCand_c {
 public:
     lightHouseCand_c(dFdBase_c *fd) : reserveCand_c(fd->mUnitW, fd->mUnitH) {
-        mInfo = fn_80190C44(FD_ID_TOWN);
+        mInfo = dField::getInfo(FD_ID_TOWN);
     }
     virtual BOOL check(int x, int z);
 };
@@ -84,7 +84,7 @@ public:
 class ufoCand_c : public reserveCand_c {
 public:
     ufoCand_c(dFdBase_c *fd) : reserveCand_c(fd->mUnitW, fd->mUnitH) {
-        mInfo = fn_80190C44(FD_ID_TOWN);
+        mInfo = dField::getInfo(FD_ID_TOWN);
     }
     virtual BOOL check(int x, int z);
 };
@@ -93,7 +93,7 @@ public:
 class insidePlHsBkCand_c : public reserveCand_c {
 public:
     insidePlHsBkCand_c(int width, int height) : reserveCand_c(width, height) {
-        mInfo = fn_80190C44(FD_ID_TOWN);
+        mInfo = dField::getInfo(FD_ID_TOWN);
         mPlayers = 0;
     }
     virtual BOOL check(int x, int z);
@@ -107,7 +107,7 @@ class nearBkCand_c : public reserveCand_c {
 public:
     nearBkCand_c(int width, int height, u16 first, u16 last, BOOL adjacent)
         : reserveCand_c(width, height), mFirst(dItem::ITEM_ID_NONE), mLast(dItem::ITEM_ID_NONE) {
-        mFd = fn_80190C44(FD_ID_TOWN);
+        mFd = dField::getInfo(FD_ID_TOWN);
         mFirst = first;
         mLast = last;
         mAdjacent = adjacent;
@@ -230,7 +230,7 @@ BOOL dSaveBuildingList_c::getPlayerHousePos(int *x, int *z, int no) const {
 // 8014A098
 BOOL dSaveBuildingList_c::setNpcHouse(u32 no) {
     if (no < 10) {
-        dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+        dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
         if (fd == NULL) {
             return FALSE;
         }
@@ -316,7 +316,7 @@ BOOL dSaveBuildingList_c::hasNpcHouse(u32 no) const {
 
 // 8014A5E4
 BOOL dSaveBuildingList_c::setFountain() {
-    dFdBlock_c *block = fn_80190C44(FD_ID_TOWN)->findBlock(BLOCK_KIND_FLAG_GATE);
+    dFdBlock_c *block = dField::getInfo(FD_ID_TOWN)->findBlock(BLOCK_KIND_FLAG_GATE);
     if (block != NULL) {
         int bx = block->mBlockX;
         int bz = block->mBlockZ;
@@ -328,7 +328,7 @@ BOOL dSaveBuildingList_c::setFountain() {
 
 // 8014A660
 BOOL dSaveBuildingList_c::setAtLighthouseSpot(const dItem::Item &id) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return FALSE;
     }
@@ -345,7 +345,7 @@ BOOL dSaveBuildingList_c::setAtLighthouseSpot(const dItem::Item &id) {
 
 // 8014A770
 BOOL dSaveBuildingList_c::setAtUfoSpot(dItem::Item id) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return FALSE;
     }
@@ -362,7 +362,7 @@ BOOL dSaveBuildingList_c::setAtUfoSpot(dItem::Item id) {
 
 // 8014A880
 BOOL dSaveBuildingList_c::setAtReserveSpot(const dItem::Item &id) {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return FALSE;
     }
@@ -433,7 +433,7 @@ static const dPlHsFlags_c sPlHsFlags[PLAYER_NUM] = {
 
 // 8014ADB0
 BOOL dSaveBuildingList_c::setPlayerHouses() {
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd == NULL) {
         return FALSE;
     }
@@ -459,7 +459,7 @@ BOOL dSaveBuildingList_c::setPlayerHouses() {
 // 8014AEF4
 void dSaveBuildingList_c::setFromField() {
     static dItem::Item sNone;
-    dFdBase_c *fd = fn_80190C44(FD_ID_TOWN);
+    dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     for (int z = 0; z < fd->mUnitH; z++) {
         for (int x = 0; x < fd->mUnitW; x++) {
             dItem::Item *item = fd->getItem(x, z, 0);

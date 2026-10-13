@@ -5,6 +5,7 @@
 // .bss 80587818..80587840, .sdata 80749EE0..80749F20, .sbss 8074E300..8074E310,
 // .sdata2 807505A0..807505C0.
 #include <game/game/d_field_info.hpp>
+#include <game/game/d_field_process.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_search_cand.hpp>
 #include <game/game/d_fg_item.hpp>
@@ -822,7 +823,7 @@ u32 dFdInfo_c::getHeapSize() {
 }
 
 // 8008DD70
-BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
+BOOL dFdInfoSv_c::createTown(EGG::Heap *heap) {
     dSaveMainField_c *field;
     dFdBlock_c *block;
     const dFdBlockId_c *blockIds;
@@ -856,7 +857,7 @@ BOOL dFdInfo_c::createTown(EGG::Heap *heap) {
 }
 
 // 8008DEF4
-BOOL dFdInfo_c::updateTown() {
+BOOL dFdInfoSv_c::updateTown() {
     dSaveMainField_c *field;
     void *data;
     dFdBlock_c *block;
