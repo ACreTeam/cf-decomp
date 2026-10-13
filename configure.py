@@ -906,7 +906,7 @@ config.libs = [
             Object(Matching, "dol/game/d_black_wait.cpp"),
             Object(Matching, "dol/game/d_sv_town_list.cpp"),
             Object(Matching, "dol/game/d_sv_npc_pos.cpp"),
-            Object(NonMatching, "dol/game/d_ftr.cpp"),
+            Object(Matching, "dol/game/d_ftr.cpp"),
             Object(Matching, "dol/game/d_net_player_info.cpp"),
             Object(Matching, "dol/game/d_sys_gfx.cpp"),
             Object(Matching, "dol/game/d_npc_setup.cpp"),

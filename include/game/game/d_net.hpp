@@ -191,29 +191,29 @@ enum dNetPacket_e {
     // d_str fn_80168DC0: release every slot the member holds -> fn_80168A4C;
     // hedged
     NET_PACKET_STR_UNLOCK = 0x32,
-    // d_ftr fn_800AB3E0: visitor -> host, reserve furniture at (x, z, layer);
+    // dFTR::requestHold: visitor -> host, reserve furniture at (x, z, layer);
     // host answers 0x34 / 0x35
     NET_PACKET_FTR_HOLD_REQUEST = 0x33,
-    // d_ftr fn_800A93C8 (host answer) -> fn_800A9484(TRUE)
+    // dFTR::recvHoldRequest (host answer) -> dFTR::recvHoldAnswer(TRUE)
     NET_PACKET_FTR_HOLD_OK = 0x34,
-    // d_ftr fn_800A93C8 (host answer) -> fn_800A9484(FALSE)
+    // dFTR::recvHoldRequest (host answer) -> dFTR::recvHoldAnswer(FALSE)
     NET_PACKET_FTR_HOLD_NG = 0x35,
-    // d_ftr fn_800AB4CC: visitor -> host, drop the reservation (fn_800A949C)
+    // dFTR::releaseHold: visitor -> host, drop the reservation (dFTR::recvHoldRelease)
     NET_PACKET_FTR_HOLD_RELEASE = 0x36,
-    // d_ftr fn_800A98E0: a furniture's state at (scene, x, z); receiver relays
+    // dFTR::sendSwitch: a furniture's state at (scene, x, z); receiver relays
     // when bit 2 is set; hedged
     NET_PACKET_FTR_ACTION = 0x37,
-    // d_ftr fn_800A9E98: 2-byte furniture update (fn_800A9F20); relayed when
+    // dFTR::sendRoomFlag: 2-byte furniture update (dFTR::setRoomFlag); relayed when
     // bit 7 is set; hedged
     NET_PACKET_FTR_ACTION2 = 0x38,
-    // d_ftr fn_800AA210: a furniture item put into a room's field info
+    // dFTR::putFtr: a furniture item put into a room's field info
     NET_PACKET_FTR_PUT = 0x39,
-    // d_ftr fn_800AA448: furniture removed (its units set to 0xFFF1)
+    // dFTR::removeFtr: furniture removed (its units set to 0xFFF1)
     NET_PACKET_FTR_REMOVE = 0x3A,
-    // d_ftr fn_800AA0AC: one room unit's item
+    // dFTR::setUnitItem: one room unit's item
     // (dFdInfoBase_setItemFromWorldUnit)
     NET_PACKET_FTR_SET_UNIT = 0x3B,
-    // d_ftr fn_800A9618 -> scene owner (NET_DEST_SCENE_OWNER): fn_800A94D8 runs
+    // dFTR::sendOwnerSwitch -> scene owner (NET_DEST_SCENE_OWNER): dFTR::setOwnerSwitch runs
     // on the owner; hedged
     NET_PACKET_FTR_OWNER = 0x3C,
     // dBgUtil::sendRoomItem -> dBgUtil::recvRoomItem
@@ -303,7 +303,7 @@ enum dNetPacket_e {
     // dPostOffice::onMelody -> dPostOffice::onMelodyAck
     NET_PACKET_MELODY_ACK = 0x68,
     // d_npc fn_800F0864: the furniture at (x, z) in the current room
-    // (fn_800ABA90); hedged
+    // (dFTR::sendEvent); hedged
     NET_PACKET_ANIMAL_FTR_TOUCH = 0x69,
     // d_npc fn_800F09B4: a villager's furniture slot set / cleared
     NET_PACKET_ANIMAL_FTR = 0x6A,

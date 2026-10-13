@@ -590,6 +590,7 @@ dol/game/d_ftr.cpp:
 	.sdata      start:0x8074A400 end:0x8074A408
 	.sbss       start:0x8074E388 end:0x8074E398
 	.sdata2     start:0x80750730 end:0x80750758 align:4
+	.sbss2      start:0x807539E0 end:0x807539F0
 
 dol/game/d_net_player_info.cpp:
 	.text       start:0x800AC154 end:0x800AC1CC

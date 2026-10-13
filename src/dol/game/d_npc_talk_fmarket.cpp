@@ -211,7 +211,7 @@ int dAcNpcNml_c::talk_c::msgSaleYes(msgInfo_s *info) {
 // 80047E8C
 void dAcNpcNml_c::talk_c::endSaleYes(int arg) {
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
-    mFtrHandle = fn_800A8F98(fn_800A9058(), mFtrPosX, mFtrPosZ, 0);
+    mFtrHandle = dFTR::getUnitMap()->getHandle(mFtrPosX, mFtrPosZ, 0);
     if (npc != NULL && npc->removeRoomFtr(mFtrHandle, mFtrPosX, mFtrPosZ)) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
@@ -245,7 +245,7 @@ BOOL dAcNpcNml_c::talk_c::stepSaleYes(int kind) {
 
 // 80047FE4
 void dAcNpcNml_c::talk_c::actSaleWait() {
-    if (!fn_800A9354(fn_800A93BC(), mFtrHandle)) {
+    if (!dFTR::getList()->get(mFtrHandle)) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;
@@ -420,7 +420,7 @@ void dAcNpcNml_c::talk_c::endStallBuy(int arg) {
 int dAcNpcNml_c::talk_c::msgStallItem(msgInfo_s *info) {
     BOOL found = FALSE;
     if (mItem0.mId != dItem::ITEM_ID_NONE) {
-        mFtrHandle = fn_800A8F98(fn_800A9058(), mFtrPosX, mFtrPosZ, 0);
+        mFtrHandle = dFTR::getUnitMap()->getHandle(mFtrPosX, mFtrPosZ, 0);
         if (mFtrHandle != -1) {
             found = TRUE;
         }
@@ -495,7 +495,7 @@ BOOL dAcNpcNml_c::talk_c::stepStallBuy(int kind) {
         }
         if (ok) {
             dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
-            mFtrHandle = fn_800A8F98(fn_800A9058(), mFtrPosX, mFtrPosZ, 0);
+            mFtrHandle = dFTR::getUnitMap()->getHandle(mFtrPosX, mFtrPosZ, 0);
             if (npc != NULL && npc->removeRoomFtr(mFtrHandle, mFtrPosX, mFtrPosZ)) {
                 dMsg::Comp_c *ctrl = getController();
                 if (ctrl != NULL) {
@@ -526,7 +526,7 @@ BOOL dAcNpcNml_c::talk_c::stepStallBuy(int kind) {
 
 // 80048D3C
 void dAcNpcNml_c::talk_c::actStallBuyWait() {
-    if (!fn_800A9354(fn_800A93BC(), mFtrHandle)) {
+    if (!dFTR::getList()->get(mFtrHandle)) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;

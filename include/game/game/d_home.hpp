@@ -78,7 +78,7 @@ struct dHomeGyroids_c {
     /* 0xD */ u8 _D; // copied by the implicit copy constructor (d_hr fn_800B2740)
 }; // size 0xE
 
-// Per-room furniture state, written by the furniture-state handler fn_800A9718 when
+// Per-room furniture state, written by the furniture-state handler dFTR::applySwitch when
 // the room is not the current scene: active bits per layer plus the gyroids. The out-of-line copy of the
 // ctor is 801119C4 (used with __construct_array for the globals at 805EC5D0).
 struct dHomeRoomMap_c {

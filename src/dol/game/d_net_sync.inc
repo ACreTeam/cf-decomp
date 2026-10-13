@@ -859,65 +859,65 @@ void recvFtrHoldRequest(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
     u8 buf[3];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800A93C8(buf, member);
+    dFTR::recvHoldRequest(buf, member);
 }
 
 // 800DF954: NET_PACKET_FTR_HOLD_OK (0x34)
 void recvFtrHoldOk(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800A9484(1);
+    dFTR::recvHoldAnswer(TRUE);
 }
 
 // 800DF95C: NET_PACKET_FTR_HOLD_NG (0x35)
 void recvFtrHoldNg(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800A9484(0);
+    dFTR::recvHoldAnswer(FALSE);
 }
 
 // 800DF964: NET_PACKET_FTR_HOLD_RELEASE (0x36)
 void recvFtrHoldRelease(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
-    fn_800A949C(member, 1);
+    dFTR::recvHoldRelease(member, 1);
 }
 
 // 800DF96C: NET_PACKET_FTR_ACTION2 (0x38)
 void recvFtrAction2(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800AA028(buf);
+    dFTR::recvRoomFlag(buf);
 }
 
 // 800DF99C: NET_PACKET_FTR_ACTION (0x37)
 void recvFtrAction(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800A9DD8(buf);
+    dFTR::recvSwitch(buf);
 }
 
 // 800DF9CC: NET_PACKET_FTR_PUT (0x39)
 void recvFtrPut(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800AA3F8(scene, buf);
+    dFTR::recvPutFtr(scene, buf);
 }
 
 // 800DFA0C: NET_PACKET_FTR_REMOVE (0x3A)
 void recvFtrRemove(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800AA68C(scene, buf);
+    dFTR::recvRemoveFtr(scene, buf);
 }
 
 // 800DFA4C: NET_PACKET_FTR_SET_UNIT (0x3B)
 void recvFtrSetUnit(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800AA1D4(scene, buf);
+    dFTR::recvUnitItem(scene, buf);
 }
 
 // 800DFA8C: NET_PACKET_FTR_OWNER (0x3C)
 void recvFtrOwner(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
-    fn_800A95FC(buf);
+    dFTR::recvOwnerSwitch(buf);
 }
 
 // 800DFABC: NET_PACKET_STR_LOCK (0x31)
@@ -1470,9 +1470,9 @@ void recvAnimalFtrTouch(int member, const u8 *data, u32 size, u32 arg,
     int z = -1;
     fn_800F0770(&roomScene, &x, &z, buf);
     if (roomScene < dScene::SCENE_NUM && roomScene == dScene::getCurrentScene()) {
-        int handle = fn_800A8F98(fn_800A9058(), x, z, 0);
+        int handle = dFTR::getUnitMap()->getHandle(x, z, 0);
         if (handle != -1) {
-            fn_800ABA90(handle);
+            dFTR::sendEvent(handle);
         }
     }
 }

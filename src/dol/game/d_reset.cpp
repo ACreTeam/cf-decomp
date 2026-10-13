@@ -226,7 +226,7 @@ void Manage_c::PostDeleteScene() {
         dSTR::resetLocks();
         dSTR::getBrresBank()->clear();
         clearAllRoomMaps();
-        fn_800AB3CC();
+        dFTR::resetHold();
         dSTR::busInfo_c *bus = dSTR::getBusInfo();
         bus->mType = 0;
         dNpcMng_c::reset();

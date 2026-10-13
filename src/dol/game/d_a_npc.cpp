@@ -1852,7 +1852,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
             void *ftr = NULL;
             found = dPlayerMgr::fn_800FFA50(pos, pAngle->mAngle, range) != 0;
             if (found) {
-                ftr = fn_800A900C(fn_800A9058(), &hit->mPos, 0);
+                ftr = dFTR::getUnitMap()->get(&hit->mPos, 0);
             }
             if (!found) {
                 ok = FALSE;
@@ -8188,7 +8188,7 @@ BOOL dAcNpc_c::frontChk_c::checkStep(const mVec3_c *pos, f32 prevY, f32 *outY) {
         } else {
             f32 x = pos->x;
             f32 z = pos->z;
-            f32 h = fn_800AA7F0((int)x >> 5, (int)z >> 5);
+            f32 h = dFTR::getRoomGroundY((int)x >> 5, (int)z >> 5);
             if (h != y) {
                 hit = TRUE;
             }

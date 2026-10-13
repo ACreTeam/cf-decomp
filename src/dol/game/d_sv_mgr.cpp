@@ -1,6 +1,7 @@
 #include <cstring>
 #include <game/game/d_str.hpp>
 #include <game/game/d_msg_comp.hpp>
+#include <game/game/d_ftr.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_sv_runtime.hpp>
@@ -532,9 +533,9 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::initializeSave() {
     dSTR::unlock(&item, 1);
     dSTR::unlock(&item, 2);
     dSTR::unlock(&item, 3);
-    fn_800A949C(1, 0);
-    fn_800A949C(2, 0);
-    fn_800A949C(3, 0);
+    dFTR::recvHoldRelease(1, 0);
+    dFTR::recvHoldRelease(2, 0);
+    dFTR::recvHoldRelease(3, 0);
     dSvMgr_c::closeGateForSave();
     nextStep();
 }

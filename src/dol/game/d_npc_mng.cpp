@@ -549,10 +549,10 @@ BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
             if (item == NULL || item->mId == dItem::ITEM_ID_NONE) {
                 continue;
             }
-            dNpcFtrShape_c shape;
-            fn_800A8B28(&shape, item->mId);
-            for (u32 i = 0; i < fn_800A8BB8(&shape); i++) {
-                const int *ofs = fn_800A8BE4(&shape, i);
+            dFTR::shape_c shape;
+            shape.set(item->mId);
+            for (u32 i = 0; i < shape.getNum(); i++) {
+                const int *ofs = shape.getOfs(i);
                 u32 unitX = x + ofs[0];
                 u32 unitZ = z + ofs[1];
                 if (unitX < 16 && unitZ < 16) {

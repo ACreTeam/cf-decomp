@@ -2356,10 +2356,10 @@ dItem::Item fn_800F1BE4(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 k
             if (item != NULL && item->mId != dItem::ITEM_ID_NONE) {
                 const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
                 if (bitm != NULL && getFtrFunc(bitm) != 0) {
-                    dNpcFtrShape_c shape;
-                    fn_800A8B28(&shape, *item);
-                    for (u32 i = 0; i < fn_800A8BB8(&shape); i++) {
-                        const int *ofs = fn_800A8BE4(&shape, i);
+                    dFTR::shape_c shape;
+                    shape.set(*item);
+                    for (u32 i = 0; i < shape.getNum(); i++) {
+                        const int *ofs = shape.getOfs(i);
                         if (x == xx + ofs[0] && z == zz + ofs[1]) {
                             *outX = xx;
                             *outZ = zz;

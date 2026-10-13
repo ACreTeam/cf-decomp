@@ -196,14 +196,14 @@ dItem::Item dSvMdlRm_c::getRandomRoomItem(dSvMdlRm_c::searchCB_c &check) {
 
 // 80112B08
 int dSvMdlRm_c::countRoomFtrTiles() {
-    dNpcFtrShape_c shape;
+    dFTR::shape_c shape;
     int num = 0;
     dItem::Item *item = getLayerItems(0)->mItems[0];
     for (int z = 0; z < 16; z++) {
         for (int x = 0; x < 16; x++) {
             if (item->hasFtrFunc()) {
-                fn_800A8B28(&shape, *item);
-                num += fn_800A8BB8(&shape);
+                shape.set(*item);
+                num += shape.getNum();
             }
             item++;
         }
