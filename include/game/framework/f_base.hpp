@@ -193,6 +193,9 @@ public:
     fBase_c *getConnectParent() const; ///< Gets the base's parent.
     fBase_c *getConnectChild() const; ///< Gets the base's first child.
 
+    u16 getExecuteOrder() const { return mMng.mMainNode.getOrder(); } ///< @unofficial
+    u16 getDrawOrder() const { return mMng.mDrawNode.getOrder(); } ///< @unofficial
+
     /// @brief Changes the execution priority, deferring reordering during execution.
     void setExecuteOrder(u16 order);
     /// @brief Changes the drawing priority, deferring reordering during drawing.

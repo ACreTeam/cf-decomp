@@ -8647,32 +8647,32 @@ BOOL dAcNpc_c::recept_c::isMenuInvalid() {
 }
 
 void *dAcNpc_c::recept_c::getMenuWork() {
-    return fn_8019AD58();
+    return dMenuMng_c::getInputBuf();
 }
 
 int dAcNpc_c::recept_c::getMenuSelSlot() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019A944();
+        return dMenuMng_c::getSelSlot();
     }
     return -1;
 }
 
-dItem::Item *dAcNpc_c::recept_c::getMenuSelItems(int *count) {
+u16 *dAcNpc_c::recept_c::getMenuSelItems(int *count) {
     int tmp = 0;
     if (count == NULL) {
         count = &tmp;
     }
     *count = 0;
     if (isMenuInvalid() == FALSE) {
-        *count = fn_8019AAF0();
-        return fn_8019AAE4();
+        *count = dMenuMng_c::getSelItemNum();
+        return dMenuMng_c::getSelItems();
     }
     return NULL;
 }
 
 BOOL dAcNpc_c::recept_c::removeMenuSelItems() {
     if (isMenuInvalid() == FALSE) {
-        fn_8019AB74();
+        dMenuMng_c::removeSelItems();
         return TRUE;
     }
     return FALSE;
@@ -8736,14 +8736,14 @@ bool dAcNpc_c::recept_c::isMenuSel20() {
 
 int dAcNpc_c::recept_c::countMenuSelSlots() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B360();
+        return dMenuMng_c::countSelSlots();
     }
     return 0;
 }
 
 bool dAcNpc_c::recept_c::isMenuSelSlot(int slot) {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B3B8(slot);
+        return dMenuMng_c::isSelSlot(slot);
     }
     return false;
 }
@@ -8763,7 +8763,7 @@ bool dAcNpc_c::recept_c::isMenuSel80() {
 }
 
 dTime_c dAcNpc_c::recept_c::getMenuResult() {
-    return fn_8019B494();
+    return dMenuMng_c::getTime();
 }
 
 u32 dAcNpc_c::recept_c::fn_80029CDC() {
@@ -9373,17 +9373,17 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
             case 0x00: {
                 u16 item = mReq.mItemArg;
                 if (mReq.mpItemFilter != NULL) {
-                    item = fn_8019A8B4(mReq.mpItemFilter);
+                    item = dMenuMng_c::makePocketMask(mReq.mpItemFilter);
                 }
-                ok = fn_8019A804(item, mReq.mItemMsgParam, mReq.mItemMenuNo);
+                ok = dMenuMng_c::openItemSel(item, mReq.mItemMsgParam, mReq.mItemMenuNo);
                 break;
             }
             case 0x01: {
                 u16 item = mReq.mItemArg;
                 if (mReq.mpItemFilter != NULL) {
-                    item = fn_8019A8B4(mReq.mpItemFilter);
+                    item = dMenuMng_c::makePocketMask(mReq.mpItemFilter);
                 }
-                ok = fn_8019A85C(item, mReq.mItemMsgParam);
+                ok = dMenuMng_c::openItemSel2(item, mReq.mItemMsgParam);
                 break;
             }
             case 0x02:
@@ -9392,7 +9392,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = TRUE;
                 break;
             case 0x03:
-                ok = fn_8019AF64(mReq.mpMail);
+                ok = dMenuMng_c::openLetter(mReq.mpMail);
                 break;
             case 0x04:
                 mReqStep = 3;
@@ -9402,20 +9402,20 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = fn_8019AEE4();
                 break;
             case 0x06:
-                ok = fn_8019AF40(0x3D);
+                ok = dMenuMng_c::openMenu(0x3D);
                 break;
             case 0x07:
                 mReqStep = 3;
                 ok = TRUE;
                 break;
             case 0x08:
-                ok = fn_8019AF40(0x3A);
+                ok = dMenuMng_c::openMenu(0x3A);
                 break;
             case 0x09:
-                ok = fn_8019AF40(0x3C);
+                ok = dMenuMng_c::openMenu(0x3C);
                 break;
             case 0x0A:
-                ok = fn_8019AF40(0x50);
+                ok = dMenuMng_c::openMenu(0x50);
                 break;
             case 0x0B:
                 ok = fn_8019ADD4();
@@ -9424,7 +9424,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = fn_8019AE00();
                 break;
             case 0x0D:
-                ok = fn_8019AF40(mReq.mMenuNo);
+                ok = dMenuMng_c::openMenu(mReq.mMenuNo);
                 break;
             case 0x0E:
                 ok = fn_8019B4EC();
@@ -9436,55 +9436,55 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = fn_8019B504();
                 break;
             case 0x11:
-                ok = fn_8019AF40(0x45);
+                ok = dMenuMng_c::openMenu(0x45);
                 break;
             case 0x12:
-                ok = fn_8019AF40(0x65);
+                ok = dMenuMng_c::openMenu(0x65);
                 break;
             case 0x13:
-                ok = fn_8019AF40(0x68);
+                ok = dMenuMng_c::openMenu(0x68);
                 break;
             case 0x14:
-                ok = fn_8019AF40(0x69);
+                ok = dMenuMng_c::openMenu(0x69);
                 break;
             case 0x15:
-                ok = fn_8019AF40(0x6A);
+                ok = dMenuMng_c::openMenu(0x6A);
                 break;
             case 0x16:
-                ok = fn_8019AF40(0x66);
+                ok = dMenuMng_c::openMenu(0x66);
                 break;
             case 0x17:
-                ok = fn_8019AF40(0x67);
+                ok = dMenuMng_c::openMenu(0x67);
                 break;
             case 0x18:
-                ok = fn_8019AF40(0x6C);
+                ok = dMenuMng_c::openMenu(0x6C);
                 break;
             case 0x19:
-                ok = fn_8019AF40(0x55);
+                ok = dMenuMng_c::openMenu(0x55);
                 break;
             case 0x1A:
                 ok = fn_8019AE2C();
                 break;
             case 0x1B:
-                ok = fn_8019AF40(0x5F);
+                ok = dMenuMng_c::openMenu(0x5F);
                 break;
             case 0x1C:
-                ok = fn_8019AF40(0x3E);
+                ok = dMenuMng_c::openMenu(0x3E);
                 break;
             case 0x1D:
-                ok = fn_8019AF40(0x63);
+                ok = dMenuMng_c::openMenu(0x63);
                 break;
             case 0x1E:
-                ok = fn_8019AF40(0x71);
+                ok = dMenuMng_c::openMenu(0x71);
                 break;
             case 0x1F:
-                ok = fn_8019AF40(0x36);
+                ok = dMenuMng_c::openMenu(0x36);
                 break;
             case 0x20:
-                ok = fn_8019AF40(0x47);
+                ok = dMenuMng_c::openMenu(0x47);
                 break;
             case 0x21:
-                ok = fn_8019AF40(0x46);
+                ok = dMenuMng_c::openMenu(0x46);
                 break;
             case 0x22:
                 ok = fn_8019AE58();
@@ -9499,50 +9499,50 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = fn_8019B2EC();
                 break;
             case 0x26:
-                ok = fn_8019AF40(0x3F);
+                ok = dMenuMng_c::openMenu(0x3F);
                 break;
             case 0x27:
-                ok = fn_8019AF40(0x40);
+                ok = dMenuMng_c::openMenu(0x40);
                 break;
             case 0x28:
-                ok = fn_8019AF40(0x72);
+                ok = dMenuMng_c::openMenu(0x72);
                 break;
             case 0x29:
                 fn_8019B294(mReq.mMenuArgD0);
-                ok = fn_8019AF40(0x73);
+                ok = dMenuMng_c::openMenu(0x73);
                 break;
             case 0x2A:
-                ok = fn_8019AF40(0x74);
+                ok = dMenuMng_c::openMenu(0x74);
                 break;
             case 0x2B:
-                ok = fn_8019AF40(0x1F);
+                ok = dMenuMng_c::openMenu(0x1F);
                 break;
             case 0x2C:
-                ok = fn_8019AF40(0x20);
+                ok = dMenuMng_c::openMenu(0x20);
                 break;
             case 0x2D:
-                ok = fn_8019AF40(0x21);
+                ok = dMenuMng_c::openMenu(0x21);
                 break;
             case 0x2E:
-                ok = fn_8019AF40(0x37);
+                ok = dMenuMng_c::openMenu(0x37);
                 break;
             case 0x2F:
-                ok = fn_8019AE84(0x22, mReq.mpInputBuf, 10);
+                ok = dMenuMng_c::openInput(0x22, mReq.mpInputBuf, 10);
                 break;
             case 0x30:
-                ok = fn_8019AF40(0x48);
+                ok = dMenuMng_c::openMenu(0x48);
                 break;
             case 0x31:
                 ok = fn_8019AEF0(mReq.mMenuArgE0);
                 break;
             case 0x32:
-                ok = fn_8019AF40(0x11);
+                ok = dMenuMng_c::openMenu(0x11);
                 break;
             case 0x33:
-                ok = fn_8019AE84(0x23, mReq.mpInputBuf, 8);
+                ok = dMenuMng_c::openInput(0x23, mReq.mpInputBuf, 8);
                 break;
             case 0x34:
-                ok = fn_8019AE84(0x24, mReq.mpInputBuf, 16);
+                ok = dMenuMng_c::openInput(0x24, mReq.mpInputBuf, 16);
                 break;
             }
             if (ok && mReqStep == 1) {
@@ -9555,7 +9555,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
 
 // 8002B9AC
 int dAcNpc_c::recept_c::stepMenuWait() {
-    if (getController() != NULL && fn_8019A76C()) {
+    if (getController() != NULL && dMenuMng_c::isMenuEnd()) {
         if (mReq.mKeepMsg != 1) {
             getController()->requestStart(0);
         }

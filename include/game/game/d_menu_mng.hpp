@@ -1,62 +1,181 @@
 #pragma once
 
-// The menu manager (TU d_menu_mng.cpp, .text from 8019A264, not decompiled): menus opened from a
-// message (item select, letters, text input ...) and their results. Names provisional.
+// The menu manager (RTTI dMenuMng_c). Names other than the class name are inferred.
 
 #include <types.h>
+#include <game/framework/f_base.hpp>
+#include <game/game/d_m2d.hpp>
 
+class dDesign_c;
 class dMail_c;
+class dMenuNd_c;
 class dTime_c;
-namespace dItem {
-class Item;
-}
+
+class dMenuMng_c : public fBase_c {
+public:
+    enum STATE_e {
+        STATE_NONE,
+        STATE_IDLE,
+        STATE_OPEN,
+        STATE_CREATING,
+    };
+
+    enum FLAG_e {
+        FLAG_NO_BGM = 0x8,
+    };
+
+    enum { POCKET_NUM = 15 };
+
+    virtual int create();
+    virtual int doDelete();
+    virtual int execute();
+    virtual int draw();
+
+    void createMenu();
+
+    static void addMenu(dMenuNd_c *node);
+    static void removeMenu(dMenuNd_c *node);
+    static BOOL isFree();
+    static BOOL open(u8 menu, BOOL noBgm);
+    static BOOL openSub(u8 menu);
+    static m2d::ResAccIf_c *getWinResAcc();
+    static m2d::ResAccIf_c *getBtnResAcc();
+    static m2d::ResAccLoader_c *getWiiMenuResAcc();
+    static m2d::ResAccLoader_c *getWiiMenu2ResAcc();
+    static BOOL isMenuEnd();
+    static void onFlag(u32 flag);
+    static void offFlag(u32 flag);
+    static bool isFlag(u32 flag);
+    static void setResult(u8 result);
+
+    static BOOL openItemSel(u16 mask, u16 msgParam, u8 menu);
+    static BOOL openItemSel2(u16 mask, u16 msgParam);
+    static u16 makePocketMask(BOOL (*filter)(void *pocket, int flag));
+    static u8 getSelSlot();
+    static void setSelSlot(u8 slot);
+    static u16 getSelMask();
+    static void setSelMask(u16 mask);
+    static void setPocketMask(u16 mask);
+    static u16 getPocketMask();
+    static u16 getItemMsgParam();
+    static void clearSelItems();
+    static void setSelItems();
+    static u16 *getSelItems();
+    static int getSelItemNum();
+    static void removeSelItems();
+
+    static wchar_t *getInputBuf();
+    static void setInputBuf(const u16 *str, int len);
+    static void clearInputBuf();
+    static BOOL openInput(u8 menu, const u16 *str, int len);
+
+    static BOOL openMenu(u8 menu);
+    static dMail_c *getMail();
+    static void setMail(const dMail_c *mail);
+    static BOOL openLetter(const dMail_c *mail);
+
+    static void setDesign(const dDesign_c *design);
+    static dDesign_c *getDesign();
+
+    static void clearSelMask();
+    static bool isSelMask(u16 bit);
+    static void onSelMask(u16 bit);
+    static int countSelSlots();
+    static BOOL isSelSlot(int slot);
+    static void onSelSlot(int slot);
+
+    static void setTime(const dTime_c *time);
+    static dTime_c getTime();
+
+    static void setFriendIdx(int idx);
+    static u8 *getFriendInfo();
+    static void setPostType(int type);
+    static wchar_t *getPostMsg();
+    static wchar_t *getPostTitle();
+    static void setupPost(BOOL withPhoto);
+    static void clearPost();
+    static BOOL sendPost();
+    static bool isPhotoCaptured();
+    static bool isFriendWithKey();
+
+    static void startMenuBgm(u8 menu);
+    static void endMenuBgm();
+
+    static void resetToolPocket();
+    static BOOL canPutAwayHeld();
+    static void putAwayHeld();
+    static BOOL isSwitchTool(int pocket);
+    static u16 getNextTool();
+    static u16 getPrevTool();
+    static void swapHeld();
+
+    /* 0x064 */ m2d::ResAccLoader_c mWinRes;
+    /* 0x138 */ m2d::ResAccLoader_c mBtnRes;
+    /* 0x20C */ m2d::ResAccLoader_c mWiiMenuRes;
+    /* 0x2E0 */ m2d::ResAccLoader_c mWiiMenu2Res;
+};
+
+extern mVec3_c g_menuPos;
 
 extern "C" {
-void fn_8019B864(); // 8019B864: forgets the cached pocket selection (8074EA9C / 8074EAA0 = -1); d_private_data setPocket
-BOOL fn_8019A5E4(); // 8019A5E4: 8074EA6C == 1 and 8074EA70 == 0 (d_money: the money may be shown)
-BOOL fn_8019A608(u8 menu, BOOL a);                        // 8019A608: opens a menu (d_demo TYPE_MENU)
-void fn_8019A7B4();                                       // 8019A7B4: fn_8019A7D4(0x10) (d_demo TYPE_MENU end)
-void fn_8019B7D4(u8 menu);                                // 8019B7D4: starts the menu's BGM volume state
-void fn_8019B824();                                       // 8019B824: ends the menu's BGM volume state
-BOOL fn_8019A76C();                                       // 8019A76C: the menu is finished/closed
-BOOL fn_8019A804(u16 item, u16 msgParam, u8 menuNo);      // 8019A804: item select menu
-BOOL fn_8019A85C(u16 item, u16 msgParam);                 // 8019A85C: item select menu 0x2A
-u16 fn_8019A8B4(BOOL (*filter)(void *pockets, int flag)); // 8019A8B4: pocket mask (15 slots) from a filter
-u8 fn_8019A944();                                         // 8019A944: selected slot (8074EA82)
-dItem::Item *fn_8019AAE4();                               // 8019AAE4: the selected items (80624240)
-int fn_8019AAF0();                                        // 8019AAF0: number of selected slots
-void fn_8019AB74();                                       // 8019AB74: removes the selected items from the pockets
-u16 fn_8019AD30();                                        // 8019AD30 (8074C104)
-void *fn_8019AD58();                                      // 8019AD58: &80624278
-BOOL fn_8019ADD4();                                       // 8019ADD4
-BOOL fn_8019AE00();                                       // 8019AE00
-BOOL fn_8019AE2C();                                       // 8019AE2C
-BOOL fn_8019AE58();                                       // 8019AE58
-BOOL fn_8019AE84(int menu, u16 *buf, int maxLen);         // 8019AE84: text input
-BOOL fn_8019AEE4();                                       // 8019AEE4: menu 0x35
-BOOL fn_8019AEF0(u32 arg);                                // 8019AEF0: menu 0x49 with arg
-BOOL fn_8019AF40(u8 menu);                                // 8019AF40: open a menu by id
-BOOL fn_8019AF64(const dMail_c *mail);                    // 8019AF64: letter menu
-u32 fn_8019AFCC();                                        // 8019AFCC (8074EA84)
-u32 fn_8019AFD4();                                        // 8019AFD4 (8074EA84)
-u32 fn_8019AFE4();                                        // 8019AFE4 (8074EA88)
-u16 fn_8019B240();                                        // 8019B240 (8074C104)
-u32 fn_8019B270();                                        // 8019B270 (8074EA88)
-u32 fn_8019B278();                                        // 8019B278 (8074EA8C)
-u32 fn_8019B28C();                                        // 8019B28C (8074EA88)
-void fn_8019B294(u32 arg);                                // 8019B294: stores lbl_8074EA88
-BOOL fn_8019B29C();                                       // 8019B29C
-BOOL fn_8019B2C4();                                       // 8019B2C4
-BOOL fn_8019B2EC();                                       // 8019B2EC
-BOOL fn_8019B348();                                       // 8019B348: selection mask & 1
-BOOL fn_8019B350();                                       // 8019B350: mask & 0x80
-BOOL fn_8019B358();                                       // 8019B358: mask & 0x20
-int fn_8019B360();                                        // 8019B360: number of fn_8019B3B8(0..3)
-BOOL fn_8019B3B8(int slot);                               // 8019B3B8: mask & (2 << slot)
-BOOL fn_8019B3DC();                                       // 8019B3DC: mask & 0x40
-dTime_c fn_8019B494();                                    // 8019B494: the time entered in the time menu (copy of 80624EE0)
-BOOL fn_8019B4EC();                                       // 8019B4EC
-BOOL fn_8019B4F8();                                       // 8019B4F8
-BOOL fn_8019B504();                                       // 8019B504
-extern u8 lbl_8074EA7D;                                   // menu result state (1 = valid; no split yet)
+void fn_8019A7A4();
+void fn_8019A7AC();
+void fn_8019A7B4();
+bool fn_8019A7BC();
+BOOL fn_8019AC04(u16 arg);
+BOOL fn_8019AC44(u16 arg);
+BOOL fn_8019AC84(u16 arg);
+BOOL fn_8019ACC4(u16 arg, const mVec3_c *pos);
+u16 fn_8019AD30();
+u16 fn_8019AD38(u16 arg);
+u8 fn_8019AD48();
+void fn_8019AD50(u8 arg);
+BOOL fn_8019ADD4();
+BOOL fn_8019AE00();
+BOOL fn_8019AE2C();
+BOOL fn_8019AE58();
+BOOL fn_8019AEE4();
+BOOL fn_8019AEF0(u32 arg);
+void fn_8019AFBC(u32 arg);
+u32 fn_8019AFC4();
+u32 fn_8019AFCC();
+u32 fn_8019AFD4();
+void fn_8019AFDC(u32 arg);
+u32 fn_8019AFE4();
+void fn_8019AFEC(u32 arg);
+bool fn_8019AFF4();
+bool fn_8019AFFC();
+void fn_8019B004();
+void fn_8019B00C();
+void fn_8019B014();
+void fn_8019B01C();
+u16 fn_8019B240();
+void fn_8019B248(u16 arg);
+u32 fn_8019B250();
+void fn_8019B258(u32 arg);
+u16 fn_8019B260();
+void fn_8019B268(u16 arg);
+u32 fn_8019B270();
+u32 fn_8019B278();
+void fn_8019B280(u32 a, u32 b);
+u32 fn_8019B28C();
+void fn_8019B294(u32 arg);
+BOOL fn_8019B29C();
+BOOL fn_8019B2C4();
+BOOL fn_8019B2EC();
+BOOL fn_8019B348();
+BOOL fn_8019B350();
+BOOL fn_8019B358();
+BOOL fn_8019B3DC();
+void fn_8019B3E4();
+void fn_8019B3EC();
+void fn_8019B3F4();
+void fn_8019B418();
+BOOL fn_8019B4EC();
+BOOL fn_8019B4F8();
+BOOL fn_8019B504();
+bool fn_8019B518();
+void fn_8019B52C();
+void fn_8019B538();
+extern u8 lbl_8074EA7D;
 }

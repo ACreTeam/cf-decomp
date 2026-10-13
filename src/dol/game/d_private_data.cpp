@@ -679,7 +679,7 @@ void dPrivateData_c::setPocket(const dItem::Item *item, int idx, BOOL flag) {
         mCatalog.registerItem(item->mId, FALSE);
     }
     if (item->mId != dItem::ITEM_ID_NONE) {
-        fn_8019B864();
+        dMenuMng_c::resetToolPocket();
     }
     int kind = pocket.getKind();
     if (kind == 0x3F) {

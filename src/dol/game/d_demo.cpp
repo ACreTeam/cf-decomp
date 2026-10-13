@@ -113,15 +113,15 @@ static BOOL endNone(Req_c *req) {
 
 // 8018DC54
 static BOOL checkMenu(Req_c *req) {
-    if (!fn_8019A5E4()) {
+    if (!dMenuMng_c::isFree()) {
         return FALSE;
     }
     if (!fn_800FCAA0()) {
         return FALSE;
     }
     u8 menu = req->mParam;
-    if (menu != 0x79 && fn_8019A608(menu, TRUE)) {
-        fn_8019B7D4(menu);
+    if (menu != 0x79 && dMenuMng_c::open(menu, TRUE)) {
+        dMenuMng_c::startMenuBgm(menu);
     }
     return TRUE;
 }
@@ -140,7 +140,7 @@ static BOOL execMenu(Req_c *req) {
 static BOOL endMenu(Req_c *req) {
     BOOL ret = fn_800FD17C();
     fn_8019A7B4();
-    fn_8019B824();
+    dMenuMng_c::endMenuBgm();
     return ret;
 }
 
