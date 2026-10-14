@@ -10,7 +10,7 @@
 #include <game/game/d_effect.hpp>
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_field_assessment.hpp>
-#include <game/game/d_fish_field.hpp>
+#include <game/game/d_fi_mdl_mgr.hpp>
 #include <game/game/d_player_mngr.hpp>
 #include <game/game/d_item_def.hpp>
 #include <game/snd/snd_id.hpp>
@@ -162,7 +162,7 @@ BOOL dHandItem_c::start(const dItem::Item *item, int kind, int useType, int vari
 void dHandItem_c::release() {
     mVisible = FALSE;
     if (mItem.isFish()) {
-        fn_801909D4(lbl_8074E9E8, dNet::getMyNo());
+        dFIMdlMgr_c::sInstance->release(dNet::getMyNo());
     }
     reset();
 }
@@ -377,7 +377,7 @@ int dHandItem_c::execute() {
         }
     }
     if ((u32)mState < STATE_NUM && mVisible && mItem.isFish()) {
-        dHoldItemMgr_c::Mdl_c *mdl = lbl_8074E9E8->getMdl(dNet::getMyNo());
+        dFIObj_c *mdl = dFIMdlMgr_c::sInstance->getObj(dNet::getMyNo());
         if (mdl != NULL) {
             mMtx_c mtx;
             dActor_c::makeMtx(&mtx, &mPos, 0);
@@ -393,7 +393,7 @@ int dHandItem_c::draw() {
     if ((u32)mState < STATE_NUM && mVisible && mItem.mId != dItem::ITEM_ID_NONE && mScale > 0.0f) {
         mVec3_c scale(mScale, mScale, mScale);
         if (mItem.isFish()) {
-            dHoldItemMgr_c::Mdl_c *mdl = lbl_8074E9E8->getMdl(dNet::getMyNo());
+            dFIObj_c *mdl = dFIMdlMgr_c::sInstance->getObj(dNet::getMyNo());
             if (mdl != NULL) {
                 mdl->mMdl.setScale(scale);
                 mdl->mMdl.entry();
@@ -419,7 +419,7 @@ void dHandItem_c::initLoad() {
 void dHandItem_c::execLoad() {
     BOOL ready = FALSE;
     if (mItem.isFish()) {
-        if (fn_80190900(lbl_8074E9E8, dNet::getMyNo(), 2, &mItem, 1, 1)) {
+        if (dFIMdlMgr_c::sInstance->request(dNet::getMyNo(), dFIMdlBank_c::TYPE_FISH, mItem, TRUE, dFIMdlBank_c::MODE_GET)) {
             ready = TRUE;
         }
     } else {

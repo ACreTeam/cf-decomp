@@ -36,6 +36,7 @@
 #include <game/mLib/m_allocator.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
 #include <game/game/d_uki.hpp>
+#include <game/game/d_fi_mdl_mgr.hpp> // the fish the players hold up
 
 class dFishFldShadow_c;
 namespace nw4r {
@@ -71,44 +72,6 @@ struct dFishSizeParam_c {
     /* 0x10 */ s16 mHookTimeMin; // initHooked: frames before the catch (cM::rndRange<s16>)
     /* 0x12 */ s16 mHookTimeMax;
 }; // size 0x14
-
-// What the players hold up (DOL manager lbl_8074E9E8, not split yet, around 80190970):
-// fn_80190970 requests player idx's held item model, fn_801909D4 releases it. Only what this TU uses.
-struct dHoldItemMgr_c {
-    struct Req_c {
-        /* 0x00 */ u8 _00[0x64];   // a dDvd::bank_c (ctor 80190A0C)
-        /* 0x64 */ int mState;     // 3: loaded
-        /* 0x68 */ int _68;
-        /* 0x6C */ u8 mReady;
-    }; // size 0x70
-    struct Mdl_c {
-        /* 0x00 */ u8 _00[0x8];
-        /* 0x08 */ m3d::bmdl_c mMdl;
-        /* 0x14 */ u8 _14[0x94 - 0x14];
-    }; // size 0x94
-
-    // The model of request idx once it is loaded, NULL before.
-    Mdl_c *getMdl(int idx) {
-        Req_c *req = &mReqs[idx];
-        if (req->mState == 3 && req->mReady) {
-            return &mMdls[idx];
-        }
-        return NULL;
-    }
-
-    /* 0x000 */ u8 _000[0x64];
-    /* 0x064 */ Req_c mReqs[4];
-    /* 0x224 */ u8 _224[0x10];
-    /* 0x234 */ Mdl_c mMdls[4];
-};
-extern dHoldItemMgr_c *lbl_8074E9E8;
-
-namespace dItem { struct Item; }
-extern "C" {
-BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item (d_fish_field)
-BOOL fn_80190900(dHoldItemMgr_c *mgr, int player, int type, dItem::Item *item, int a, int b); // hold up an item (d_hand_item)
-void fn_801909D4(dHoldItemMgr_c *mgr, int player); // stop holding
-}
 
 #define FISH_FIELD_FISH_NUM 8   // town fish (mFish), one sync record each
 #define FISH_FIELD_PLAYER_NUM 4 // fish held by the players (mPlayerFish)
@@ -329,7 +292,7 @@ public:
     /* 0x214 */ f32 mAnmRate;         // the swim animation's rate
     /* 0x218 */ int mNibbleNum;       // nibbles so far (executeNibble)
     /* 0x21C */ int mPlayer;          // the player whose float it is on / holding it, -1
-    /* 0x220 */ int mHoldPlayer;      // the player of the held model request (lbl_8074E9E8), -1
+    /* 0x220 */ int mHoldPlayer;      // the player of the held model request (dFIMdlMgr_c), -1
     /* 0x224 */ s16 mTimer;           // state timer
     /* 0x226 */ s16 mTurnTimer;       // swim: turn again in open water; searchFloat: wait
     /* 0x228 */ dFishRipple_c mRipple;

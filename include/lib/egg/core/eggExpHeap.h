@@ -15,3 +15,8 @@ public:
 };
 
 } // namespace EGG
+
+
+extern "C" {
+BOOL fn_804402BC(EGG::Heap *heap, int arg); // 804402BC (eggExpHeap.o): returns TRUE; d_sys calls it per frame for both root heaps
+}

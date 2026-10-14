@@ -381,7 +381,7 @@ void dSvProc_c::initializePlayer() {
     day.add(0, -6, 0, 0);
     player->mMotherMail.mLastDate.set(&day);
     player->setFlag0(0xC);
-    player->setFlag0(0xD);
+    player->setFlag0(PRIVATE_FLAG0_PART_TIME_JOB);
     player->setFlag0(0x29);
     if (now.month == MONTH_OCTOBER) {
         player->setFlag0(0x56);

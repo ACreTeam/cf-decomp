@@ -613,7 +613,7 @@ void dNpcMng_c::createHouseVillager() {
             }
         }
     } else if (animal->mPlace == 0 && dPlayerMgr::Mgr_c::getCurrentPlayer() != NULL &&
-               !dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(0xD) && dEvent::isActive(EVENT_TOY_DAY)) {
+               !dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && dEvent::isActive(EVENT_TOY_DAY)) {
         profile = 0x77;
         key = 0x8052 + idx;
     }
@@ -645,7 +645,7 @@ void dNpcMng_c::createHouseVillager() {
 
 BOOL dNpcMng_c::createPlayerHouseGuest() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player == NULL || player->isFlag0(0xD)) {
+    if (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     if (dNet::isSessionActive()) {
@@ -862,7 +862,7 @@ BOOL dNpcMng_c::isTownScene(u8 scene, u8 prevScene) {
 BOOL dNpcMng_c::isTownPlay(u8 scene, u8 prevScene) {
     if (isTownScene(scene, dScene::SCENE_NUM)) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-        if (player != NULL && !player->isFlag0(0xD)) {
+        if (player != NULL && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             return TRUE;
         }
     }
@@ -1437,7 +1437,7 @@ void dNpcMng_c::updateAnimalPlaces() {
     int appointmentIdx;
     dTime_c *now;
     player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    flagD = player != NULL ? player->isFlag0(0xD) : FALSE;
+    flagD = player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE;
     online = dNet::isSessionActive();
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     appointmentIdx = -1;
@@ -1638,7 +1638,7 @@ int dNpcMng_c::execute() {
     if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
         dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-        BOOL flagD = player != NULL ? player->isFlag0(0xD) : FALSE;
+        BOOL flagD = player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE;
         for (int i = 0; i < 10; i++) {
             dAnimal_c *animal = block->getAnimal(i);
             if (animal == NULL || !animal->mID.isValid() || animal->mDayPlace == 0) {

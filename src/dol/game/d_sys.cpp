@@ -13,6 +13,7 @@
 #include <game/game/d_hmn_tool_mng.hpp>
 #include <game/game/d_home_button.hpp>
 #include <game/game/d_main.hpp>
+#include <game/game/d_mii_icon.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_net_mgr.hpp>
 #include <game/game/d_npc.hpp>
@@ -32,24 +33,19 @@
 #include <game/game/d_wifi_err.hpp>
 #include <game/mLib/m_3d/global.hpp>
 #include <game/mLib/m_allocator.hpp>
+#include <game/mLib/m_dvd.hpp>
+#include <game/mLib/m_face.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <game/mLib/m_perf.hpp>
 #include <game/mLib/m_video.hpp>
+#include <lib/egg/core/eggDecomp.h>
+#include <lib/egg/core/eggExpHeap.h>
+#include <lib/egg/gfx/eggDrawGX.h>
 
 
 extern "C" {
-void fn_8043EFD4(EGG::Heap *);
 void fn_800CABD8();
-void fn_8008B870();
-void fn_802B3B10();
-void fn_802AD464(int, EGG::Heap *, EGG::Heap *, int);
-BOOL fn_804402BC(EGG::Heap *, int);
-void fn_8017D89C(EGG::Heap *);
-void fn_8017DBD4(dHomeButton_c *);
-void fn_8017DC8C(dHomeButton_c *);
-void fn_8017DD20(dHomeButton_c *);
-void fn_80446348(EGG::Heap *); // Initializes the EGG draw helpers.
 }
 
 namespace dSys {
@@ -92,6 +88,10 @@ void beginFrame() {
 void endFrame() {
     sConfiguration->mpDisplay->endFrame();
     sConfiguration->onEndFrame();
+}
+// Unused, stripped from the DOL: its call queues getAudioMgr's weak copy right after onEndFrame.
+EGG::SimpleAudioMgr *getAudioMgr() {
+    return sConfiguration->getAudioMgr();
 }
 // 8016B97C
 BOOL setBlack(u32 black) {
@@ -474,7 +474,7 @@ void runFrame() {
         g_wifiErr.execute();
     }
     dNet::updateNet();
-    fn_8008B870();
+    dMiiIcon::execute();
     executeSound();
     dPad::end();
     endFrame();

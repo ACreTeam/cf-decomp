@@ -430,7 +430,7 @@ void dSaveShop_c::updateMail(int days) {
             }
         }
 
-        if (days != 0 && player->isFlag0(0x56) && !player->isFlag0(0xD)) {
+        if (days != 0 && player->isFlag0(0x56) && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             if (today.get().month != MONTH_OCTOBER) {
                 player->clearFlag0(0x56);
             } else {
@@ -445,7 +445,7 @@ void dSaveShop_c::updateMail(int days) {
                 }
             }
         }
-        if (days != 0 && player->isFlag0(0x84) && !player->isFlag0(0xD)) {
+        if (days != 0 && player->isFlag0(0x84) && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             if (today.get().month != MONTH_DECEMBER || today.get().mday < 15 || today.get().mday > 24) {
                 player->clearFlag0(0x84);
             } else {

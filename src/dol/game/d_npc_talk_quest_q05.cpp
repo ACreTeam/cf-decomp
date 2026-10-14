@@ -68,7 +68,7 @@ int dAcNpcNml_c::talk_c::msgFtrQuest(msgInfo_s *info) {
     if (player == NULL || !player->mPID.isFromTown()) {
         return FALSE;
     }
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     state = quest->mBase.mState;

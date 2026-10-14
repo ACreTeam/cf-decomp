@@ -58,7 +58,7 @@ BOOL dPrivateData_c::isHostVisitReady() {
     if (player->isFlag0(0x28)) {
         return FALSE;
     }
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     if (!player->mPID.isFromTown()) {
@@ -82,7 +82,7 @@ BOOL dPrivateData_c::isGuestVisitReady() {
     if (player->isFlag0(0x28)) {
         return FALSE;
     }
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     if (!player->mPID.isFromTown()) {
@@ -158,7 +158,7 @@ BOOL dPrivateData_c::isRelayDesignVisitReady() {
     if (dSaveData_c::getRaw()->mExtra.mHeader.mNetEnabled == 0) {
         return FALSE;
     }
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     if (!player->mPID.isFromTown()) {
@@ -423,7 +423,7 @@ void dPrivateData_c::sendBankAnniversaryLetter() {
     if (dTime_c::isSameOrBeforeDay(now, next) != 1) {
         return;
     }
-    if (isFlag0(0xD)) {
+    if (isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return;
     }
     if (isFlag0(0x6C)) {

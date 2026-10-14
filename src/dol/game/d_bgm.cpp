@@ -510,7 +510,7 @@ void StgField_c::checkHome() {
     if (player != NULL) {
         if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
             id = BGM_ARBEIT_PRE;
-        } else if (player->isFlag0(0xD)) {
+        } else if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             id = BGM_ARBEIT;
         }
     }
@@ -1045,7 +1045,7 @@ void StgShop_c::execute() {
     const ShopTime_s *time = &sShopTime[mType];
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL flag = FALSE;
-    if (player != NULL && player->isFlag0(0xD)) {
+    if (player != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         flag = TRUE;
     }
     if (!flag && (now->isTime(time->mStartH, time->mStartM, time->mStartS, time->mCloseH, time->mCloseM,

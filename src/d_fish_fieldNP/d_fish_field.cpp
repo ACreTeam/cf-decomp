@@ -23,8 +23,6 @@
 #include <game/snd/snd_id.hpp>
 
 extern "C" {
-void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
-
 BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
 void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3_c *angle,
                  int arg);                         // d_fgobj_managerNP
@@ -1584,7 +1582,7 @@ void dFishFldShadow_c::executeHooked() {
         held = TRUE;
     } else {
         mHoldPlayer = mPlayer;
-        held = fn_80190970(lbl_8074E9E8, mPlayer, 2, mKind, 1, 1);
+        held = dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
     }
     if (sLib::calcTimer(&mTimer) == 0 && held && isMine()) {
         setState(STATE_CATCH);
@@ -1613,7 +1611,7 @@ void dFishFldShadow_c::initCatch() {
         held = TRUE;
     } else {
         mHoldPlayer = mPlayer;
-        held = fn_80190970(lbl_8074E9E8, mPlayer, 2, mKind, 1, 1);
+        held = dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
     }
     if (held) {
         mHeld = 1;
@@ -1629,7 +1627,7 @@ void dFishFldShadow_c::executeCatch() {
         if (mKind >= FISH_NUM) {
             held = TRUE;
         } else {
-            held = fn_80190970(lbl_8074E9E8, mHoldPlayer, 2, mKind, 1, 1);
+            held = dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
         }
         if (held) {
             mHeld = 1;
@@ -1653,7 +1651,7 @@ void dFishFldShadow_c::executeCatch() {
 // 0x50DC
 void dFishFldShadow_c::initShowHold() {
     mHoldPlayer = mPlayer;
-    fn_80190970(lbl_8074E9E8, mPlayer, 2, mKind, 1, 1);
+    dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
     mHeld = 1;
     mTargetAngle.y = 0;
     mHideHeld = 1;
@@ -1661,7 +1659,7 @@ void dFishFldShadow_c::initShowHold() {
 
 // 0x513C
 void dFishFldShadow_c::executeShowHold() {
-    if (fn_80190970(lbl_8074E9E8, mHoldPlayer, 2, mKind, 1, 1)) {
+    if (dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET)) {
         mHoldPlayer = mPlayer;
         setState(STATE_SHOW);
     }
@@ -1688,7 +1686,7 @@ void dFishFldShadow_c::executeShow() {
 // 0x5228
 void dFishFldShadow_c::initHold() {
     mHoldPlayer = mPlayer;
-    fn_80190970(lbl_8074E9E8, mPlayer, 2, mKind, 1, 1);
+    dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
     mHeld = 1;
     mHideHeld = 1;
 }
@@ -1699,7 +1697,7 @@ void dFishFldShadow_c::executeHold() {
     if (hand != NULL) {
         mPos = *hand;
     }
-    if (fn_80190970(lbl_8074E9E8, mHoldPlayer, 2, mKind, 1, 1)) {
+    if (dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET)) {
         mScale.set(0.0f, 0.0f, 0.0f);
         setState(STATE_RELEASE);
     }
@@ -1714,7 +1712,7 @@ void dFishFldShadow_c::initRelease() {
     if (!isMine() || (getRec() != NULL && getRec()->mRemote)) {
         mPlayer = getRec()->mRec.getMember();
     }
-    dHoldItemMgr_c::Mdl_c *mdl = lbl_8074E9E8->getMdl(mHoldPlayer);
+    dFIObj_c *mdl = dFIMdlMgr_c::sInstance->getObj(mHoldPlayer);
     if (mdl == NULL) {
         initHold();
     } else {
@@ -1725,7 +1723,7 @@ void dFishFldShadow_c::initRelease() {
         mHideHeld = 0;
         mTimer = 60;
         mStartPos = mPos;
-        fn_8019022C(mdl, "swim");
+        mdl->setAnm("swim");
         mSound.startSound(SE_FishFall);
         setHeldScale(&mScale);
     }
@@ -1753,7 +1751,7 @@ void dFishFldShadow_c::executeRelease() {
         mPos.y += 32.0f * height;
         if (sLib::calcTimer(&mTimer) == 0) {
             if (mKind < FISH_NUM) {
-                fn_801909D4(lbl_8074E9E8, mHoldPlayer);
+                dFIMdlMgr_c::sInstance->release(mHoldPlayer);
                 mHoldPlayer = -1;
             }
             u32 se;
@@ -1940,7 +1938,7 @@ void dFishFldShadow_c::requestDelete() {
         mPlayer = -1;
     }
     if (mHeld) {
-        fn_801909D4(lbl_8074E9E8, mHoldPlayer);
+        dFIMdlMgr_c::sInstance->release(mHoldPlayer);
         mHoldPlayer = -1;
         mHeld = 0;
     }
@@ -2065,7 +2063,7 @@ BOOL dFishFldShadow_c::pushOutOfFall() {
 // 0x61B8
 m3d::bmdl_c *dFishFldShadow_c::getMdl() {
     if (mHeld && !mHideHeld && mKind < FISH_NUM) {
-        return &lbl_8074E9E8->getMdl(mHoldPlayer)->mMdl;
+        return &dFIMdlMgr_c::sInstance->getObj(mHoldPlayer)->mMdl;
     }
     return &mMdl;
 }
@@ -2185,7 +2183,7 @@ int dFishFldShadow_c::draw() {
 // 0x68CC
 BOOL dFishFldShadow_c::isDeleteOk() {
     if (mHoldPlayer != -1) {
-        fn_801909D4(lbl_8074E9E8, mHoldPlayer);
+        dFIMdlMgr_c::sInstance->release(mHoldPlayer);
         mHoldPlayer = -1;
     }
     if (mPlayer >= 0) {

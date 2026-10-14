@@ -20,7 +20,7 @@ int dAcNpcNml_c::talk_c::msgArbeitMoveIn(msgInfo_s *info) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     BOOL ok = FALSE;
-    if (player != NULL && animal != NULL && player->isFlag0(0xD)) {
+    if (player != NULL && animal != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         ok = animal->isMovingIn();
     }
     if (ok) {
@@ -44,7 +44,7 @@ int dAcNpcNml_c::talk_c::msgArbeitMoveOut(msgInfo_s *info) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     BOOL ok = FALSE;
-    if (player != NULL && animal != NULL && player->isFlag0(0xD)) {
+    if (player != NULL && animal != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         ok = animal->isMovingOut();
     }
     if (ok) {
@@ -121,7 +121,7 @@ int dAcNpcNml_c::talk_c::msgArbeitDeliverCan(msgInfo_s *info) {
 // 800385A0
 int dAcNpcNml_c::talk_c::msgArbeitNewcomer(msgInfo_s *info) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player != NULL ? player->isFlag0(0xD) : FALSE) {
+    if (player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE) {
         const char *label = getMsgLabel(TALK_ARBEIT, 5, 0);
         if (label != NULL) {
             setLooksMsg(info, label, 0);

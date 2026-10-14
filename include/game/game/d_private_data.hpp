@@ -32,6 +32,10 @@ enum dPrivateFlag0_e {
                                                 // (d_npc_talk_reaction, d_msg, d_animal); cleared by the
                                                 // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
     PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
+    PRIVATE_FLAG0_PART_TIME_JOB = 0x0D,         // Nook's part-time job is under way: set for a new player
+                                                // (dSvProc_c::initializePlayer); villagers talk about the
+                                                // newcomer (d_npc_talk_arbeit), no event announcements,
+                                                // villager memories / letters, quests (inferred)
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)

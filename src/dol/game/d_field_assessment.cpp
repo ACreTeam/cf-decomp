@@ -4300,7 +4300,7 @@ BOOL fgMngProc_isSelfMember(int member) {
 BOOL fgMngProc_canEditField() {
     BOOL ok = FALSE;
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (!dNet::isSessionActive() && !player->isFlag0(0xD) && sFgMngProc.mBusy == 0 &&
+    if (!dNet::isSessionActive() && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && sFgMngProc.mBusy == 0 &&
         !(dSaveData_c::getTown()->mActivity.mActive & (1 << JINX_OUTCOME_NO_BEES))) {
         ok = TRUE;
     }

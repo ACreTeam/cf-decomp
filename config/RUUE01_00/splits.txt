@@ -1833,9 +1833,16 @@ dol/game/d_demo.cpp:
 
 dol/game/d_event_mng.cpp:
 	.text       start:0x8018F588 end:0x8018FE10
+	.data       start:0x804F9930 end:0x804F9AE8
+	.sdata      start:0x8074BF30 end:0x8074BF40
 
 dol/game/d_fi_mdl_mgr.cpp:
 	.text       start:0x8018FE10 end:0x80190BE4
+	.rodata     start:0x8047C050 end:0x8047CC50
+	.data       start:0x804F9AE8 end:0x804F9CD0
+	.bss        start:0x80624040 end:0x80624060
+	.sdata      start:0x8074BF40 end:0x8074BF70
+	.sbss       start:0x8074E9E8 end:0x8074E9F0
 
 dol/game/d_field.cpp:
 	.text       start:0x80190BE4 end:0x80191500
