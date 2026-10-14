@@ -14,7 +14,7 @@ enum {
 #define MOTHER_MAIL_EVENT_YEAR_NONE 0xFF
 
 // A player's record of Mom's letters ("MAIL_ETC_Mother*"), at dPrivateData_c::mMotherMail.
-// The letters themselves are sent from the daily update at 800D11C8.
+// The letters themselves are sent from the day change (dMotherMail::update).
 // Source: src/dol/game/d_save_mother_mail.cpp (.text 8011041C..80110634).
 class dSaveMotherMail_c { // 0x18
 public:
@@ -29,6 +29,7 @@ public:
     void setRetry(int event); // 801105F0
     void clearRetry(int event); // 80110608
     BOOL isRetry(int event); // 80110620
+    dYMD_c getLastDate() const { return mLastDate; }
 
     /* 0x00 */ dYMD_c mLastDate; // the last letter
     /* 0x04 */ u8 mEventYears[4]; // year - 2000 of each event's last letter, or MOTHER_MAIL_EVENT_YEAR_NONE

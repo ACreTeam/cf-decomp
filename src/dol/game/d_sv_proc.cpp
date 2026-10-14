@@ -394,7 +394,7 @@ void dSvProc_c::initializePlayer() {
 // 801551E8
 void dSvProc_c::initializeVisitor() {
     initializePlayer();
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag0(0x12);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag0(PRIVATE_FLAG0_JOINED_AS_VISITOR);
 }
 // 80155214
 void dSvProc_c::initializeTown() {

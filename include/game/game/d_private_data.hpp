@@ -36,6 +36,7 @@ enum dPrivateFlag0_e {
                                                 // (dSvProc_c::initializePlayer); villagers talk about the
                                                 // newcomer (d_npc_talk_arbeit), no event announcements,
                                                 // villager memories / letters, quests (inferred)
+    PRIVATE_FLAG0_JOINED_AS_VISITOR = 0x12,     // made by dSvProc_c::initializeVisitor; Mom's first letter differs (inferred)
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
@@ -44,6 +45,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
     PRIVATE_FLAG0_FISHING_ENTERED = 0x2D,       // the player entered this fishing tourney (d_ev_fishing)
+    PRIVATE_FLAG0_MOM_FIRST_LETTER = 0x4F,      // Mom's first letter was delivered (dMotherMail::sendFirst)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
 };
