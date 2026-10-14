@@ -975,7 +975,7 @@ config.libs = [
             Object(Matching, "dol/game/d_str.cpp"),
             Object(Matching, "dol/game/d_string.cpp"),
             Object(Matching, "dol/game/d_date.cpp"),
-            Object(NonMatching, "dol/game/d_uki.cpp"),
+            Object(Matching, "dol/game/d_uki.cpp"),
             Object(Matching, "dol/game/d_voice_chat.cpp"),
             # Stored as CP932; pass directly to MWCC without UTF-8 conversion.
             Object(NonMatching, "dol/game/d_sv_demo.cpp"),

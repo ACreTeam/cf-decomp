@@ -1,48 +1,183 @@
 #pragma once
 
-// The fishing float ("uki"). DOL TU d_uki.cpp (.text 8016DE60..801711EC), not decompiled. The class
-// name is inferred from the TU name (no RTTI). Each player's float lives in their dHmnToolBank_c
-// (d_hmn_tool_mng) and is also the slingshot's shot. Only what other TUs use; unnamed functions keep
-// their addresses.
+// The fishing float ("uki") and the slingshot shot.
 
 #include <types.h>
+#include <game/game/d_objc.hpp>
+#include <game/game/d_effect.hpp>
+#include <game/game/d_snd_obj.hpp>
+#include <game/game/d_dvd.hpp>
+#include <game/mLib/m_3d.hpp>
+#include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
 
-extern "C" u32 fn_801710DC(); // 801710DC: size of the float heap
-
 class dFishFldShadow_c;
+namespace dBGCF {
+class groundChk_c;
+}
 namespace dItem {
 class Item;
 }
+namespace nw4r {
+namespace ef {
+class Particle;
+}
+} // namespace nw4r
+namespace EGG {
+class FrmHeap;
+}
+
+#define UKI_SLOT_NUM 9
+#define UKI_SHOT_NUM 3
 
 class dUki_c {
 public:
+    enum Kind_e {
+        KIND_ROD,
+        KIND_SILVER_ROD,
+        KIND_GOLD_ROD,
+        KIND_PACHINKO,
+        KIND_NONE,
+    };
+
+    enum State_e {
+        STATE_NONE,
+        STATE_HOLD,
+        STATE_RETURN,
+        STATE_SWING,
+        STATE_CAST,
+        STATE_FLOAT,
+        STATE_DROP,
+        STATE_BITE,
+        STATE_HOOKED,
+        STATE_REEL,
+        STATE_REEL_EMPTY,
+        STATE_SHOT_HOLD,
+        STATE_SHOT,
+    };
+
     dUki_c();  // 8016DE60
     ~dUki_c(); // 8016DF98
 
-    void fn_8016E0C0(int slot);                         // init
-    void fn_8016E148();                                 // remove
-    void fn_8016E1AC(int type, const dItem::Item *item); // create (0..2 rod grade, 3 slingshot)
-    void fn_8016E37C();                                 // put away
-    void fn_8016E380(const mMtx_c *mtx);                // calc at the rod tip
-    void fn_8016E5D0();                                 // draw
-    void fn_8016E680(const mMtx_c *mtx);                // set the matrix
-    void fn_8016E7E4();                                 // change
-    void fn_8016FC44(int state);
-    void fn_8016FD60();                                 // the float bobs (ripple)
-    BOOL fn_8016FED4() const;                           // the float just hit the water
+    void init(int slot);
+    void remove();
+    void create(int kind, const dItem::Item *item);
+    void putAway();
+    void calc(const mMtx_c *mtx);
+    void draw();
+    void setMdlMtx(const mMtx_c *mtx);
+    void removeMdl();
+    void reset();
 
-    // The player's float while it is free for fish (or fish is on it), NULL if none.
-    static dUki_c *fn_801710A4(int player, dFishFldShadow_c *fish);
-    // Put fish on the player's float (NULL: off).
-    static void fn_801710BC(int player, dFishFldShadow_c *fish);
-    static int fn_801710F4(); // heap size of a float
+    void initHold();
+    void executeHold(mMtx_c *mtx);
+    void initReturn();
+    void executeReturn(mMtx_c *mtx);
+    void initSwing();
+    void executeSwing(mMtx_c *mtx);
+    void initCast();
+    void executeCast(mMtx_c *mtx);
+    void initFloat();
+    void executeFloat(mMtx_c *mtx);
+    void exitFloat();
+    void initDrop();
+    void executeDrop(mMtx_c *mtx);
+    void initBite();
+    void executeBite(mMtx_c *mtx);
+    void exitBite(u32 next);
+    void initHooked();
+    void executeHooked(mMtx_c *mtx);
+    void initReel();
+    void executeReel(mMtx_c *mtx);
+    void initReelEmpty();
+    void executeReelEmpty(mMtx_c *mtx);
+    void initShotHold();
+    void executeShotHold();
+    void initShot();
+    void executeShot(mMtx_c *mtx);
 
-    /* 0x000 */ u8 _000[0x270];
-    /* 0x270 */ mVec3_c mPos;
-    /* 0x27C */ u8 _27C[0x446 - 0x27C];
-    /* 0x446 */ u8 mCastState; // 1, 2: in the water (2: cast long, a longer bite window)
-    /* 0x447 */ u8 _447;       // 9: the fish escapes instead of biting (executeNibble)
-    /* 0x448 */ u8 _448[0x450 - 0x448];
+    void setState(u32 state);
+    void nibble();
+    bool isInWater() const;
+    BOOL isJustLanded() const;
+    void shoot(const mVec3_c *pos);
+    void setFishPos(const mVec3_c *pos);
+    dFishFldShadow_c *getFish() const;
+    void setTarget(const mVec3_c *pos);
+    void setPos(const mVec3_c *pos);
+    void setRodMtx(const mMtx_c *mtx);
+    void setPos(f32 x, f32 y, f32 z);
+
+    BOOL calcCast();
+    BOOL calcReel();
+    BOOL calcReelEmpty();
+    BOOL calcReturn();
+    BOOL calcSwing();
+    void initTipPos();
+    void calcTipMtx(mMtx_c *mtx);
+    void updateTip();
+    BOOL setMatAlpha(bool markDirty, const dBGCF::groundChk_c *chk);
+    BOOL calcShot();
+    static void particleCallback(nw4r::ef::Particle *particle, u32 arg);
+    void createWaterEffect(const char *name, const mVec3_c *pos);
+    void createSplashEffect(const char *name, const mVec3_c *pos);
+    void createSplash(const mVec3_c *pos);
+    u8 getFallAlpha(const mVec3_c *pos);
+
+    static dUki_c *getFloat(int player, dFishFldShadow_c *fish);
+    static void setFish(int player, dFishFldShadow_c *fish);
+    static u32 getBankHeapSize();
+    static BOOL loadRes();
+    static int getHeapSize();
+    static void *getResData();
+
+    /* 0x000 */ dSndObjSimple_c mSound;
+    /* 0x030 */ mAllocator_c mAllocator;
+    /* 0x04C */ m3d::mdl_c mRodMdl[2];
+    /* 0x0CC */ m3d::mdl_c mShotMdl[UKI_SHOT_NUM];
+    /* 0x18C */ dObjc::pos_c mObjc[UKI_SHOT_NUM];
+    /* 0x270 */ mVec3_c mPos[UKI_SHOT_NUM];
+    /* 0x294 */ mVec3_c mReelPos;
+    /* 0x2A0 */ mVec3_c mTarget;
+    /* 0x2AC */ mVec3_c mTip;
+    /* 0x2B8 */ mVec3_c mHookPos;
+    /* 0x2C4 */ mVec3_c mFishPos;
+    /* 0x2D0 */ mMtx_c mRodMtx;
+    /* 0x300 */ dLevelEffect_c mEffect0;
+    /* 0x394 */ dLevelEffect_c mEffect1;
+    /* 0x428 */ EGG::FrmHeap *mHeap;
+    /* 0x42C */ int mSlot;
+    /* 0x430 */ f32 mCastRate;
+    /* 0x434 */ f32 mPullRadius;
+    /* 0x438 */ u32 mTimer;
+    /* 0x43C */ s16 mAngY;
+    /* 0x43E */ s16 mAngX;
+    /* 0x440 */ s16 mAngXTarget;
+    /* 0x442 */ s16 _442;
+    /* 0x444 */ s16 mPlayerYaw;
+    /* 0x446 */ u8 mKind;
+    /* 0x447 */ u8 mState;
+    /* 0x448 */ u8 mNum;
+    /* 0x449 */ u8 mMdlIdx;
+    /* 0x44A */ u8 mAlpha;
+    /* 0x44B */ u8 mFollowTip;
+    /* 0x44C */ u8 mRipple;
+    /* 0x44D */ u8 mFade;
 }; // size 0x450 (dHmnToolBank_c: 0x1C..0x46C)
+
+class dUkiBank_c {
+public:
+    dUkiBank_c();  // 80170E70
+    ~dUkiBank_c(); // 80170EC8
+
+    BOOL load();
+    u32 getHeapSize();
+    void setUki(int slot, dUki_c *uki);
+    dUki_c *getUki(int player, dFishFldShadow_c *fish);
+
+    /* 0x00 */ dDvd::loader_c mLoader;
+    /* 0x14 */ dUki_c *mUki[UKI_SLOT_NUM];
+    /* 0x38 */ dFishFldShadow_c *mFish[UKI_SLOT_NUM];
+    /* 0x5C */ void *mResData;
+}; // size 0x60

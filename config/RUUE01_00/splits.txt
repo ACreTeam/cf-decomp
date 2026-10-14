@@ -1454,6 +1454,11 @@ dol/game/d_date.cpp:
 dol/game/d_uki.cpp:
 	.text       start:0x8016DE60 end:0x801711EC
 	.ctors      start:0x80465770 end:0x80465774 align:8
+	.data       start:0x804F43E8 end:0x804F45B0
+	.bss        start:0x806008C0 end:0x80600930
+	.sdata      start:0x8074B508 end:0x8074B510
+	.sbss       start:0x8074E8C8 end:0x8074E8D0
+	.sdata2     start:0x80751048 end:0x80751118
 
 dol/game/d_voice_chat.cpp:
 	.text       start:0x801711EC end:0x801732D4

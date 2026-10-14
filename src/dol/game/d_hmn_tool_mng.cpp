@@ -173,7 +173,7 @@ void dHmnToolBank_c::create(int slot) {
         mDigVisCreated = FALSE;
         mItem = dItem::ITEM_ID_NONE;
     }
-    mFloat.fn_8016E0C0(slot);
+    mFloat.init(slot);
 }
 
 // 800BA474
@@ -362,7 +362,7 @@ int dHmnToolBank_c::getItemToolType(const dItem::Item *item) {
 
 // 800BA9AC
 void dHmnToolBank_c::remove() {
-    mFloat.fn_8016E148();
+    mFloat.remove();
     if (mpHeap != NULL) {
         removeModels();
         mHeap::destroyFrmHeap(mpHeap);
@@ -404,7 +404,7 @@ void dHmnToolBank_c::calc(const mMtx_c *mtx) {
         if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {
             mMtx_c tip;
             getNodeMtx(&tip, 2);
-            mFloat.fn_8016E380(&tip);
+            mFloat.calc(&tip);
         } else if (type == HMN_TOOL_SCOOP) {
             mMtx_c digMtx;
             dPlayerMgr::makeCurvedAngleMatrix(&digMtx, &mDigPos, &mDigAngle);
@@ -434,7 +434,7 @@ void dHmnToolBank_c::draw() {
         }
         int type = getToolType();
         if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {
-            mFloat.fn_8016E5D0();
+            mFloat.draw();
         } else if (type == HMN_TOOL_SCOOP && mDigMdlCreated) {
             if (mDigMode == 1) {
                 mDigMdl0.entry();
@@ -449,7 +449,7 @@ void dHmnToolBank_c::draw() {
 void dHmnToolBank_c::change() {
     int type = getToolType();
     if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {
-        mFloat.fn_8016E7E4();
+        mFloat.reset();
     }
     resetHeap();
     nw4r::g3d::ResFile file(getResFile(FALSE));
@@ -511,7 +511,7 @@ void dHmnToolBank_c::setupAnm(int type, nw4r::g3d::ResFile *file, nw4r::g3d::Res
                 grade = 2;
             }
         }
-        mFloat.fn_8016E1AC(grade, &mItem);
+        mFloat.create(grade, &mItem);
         break;
     }
     case HMN_TOOL_AXE:
@@ -529,7 +529,7 @@ void dHmnToolBank_c::setupAnm(int type, nw4r::g3d::ResFile *file, nw4r::g3d::Res
         break;
     }
     case HMN_TOOL_PACHINKO:
-        mFloat.fn_8016E1AC(3, &mItem);
+        mFloat.create(3, &mItem);
         break;
     case HMN_TOOL_BALLOON: {
         nw4r::g3d::ResAnmClr clr = file->GetResAnmClr(0);
@@ -642,7 +642,7 @@ void dHmnToolBank_c::putAway() {
     mWindSpeed = 0.0f;
     int type = getToolType();
     if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {
-        mFloat.fn_8016E37C();
+        mFloat.putAway();
     }
     resetHeap();
 }
@@ -721,7 +721,7 @@ void dHmnToolBank_c::setLocalMtx(const mMtx_c *mtx) {
         mMdl.setLocalMtx(mtx);
         int type = getToolType();
         if (type == HMN_TOOL_ROD || type == HMN_TOOL_PACHINKO) {
-            mFloat.fn_8016E680(mtx);
+            mFloat.setMdlMtx(mtx);
         }
     }
 }
@@ -866,7 +866,7 @@ void dHmnToolBank_c::setNetAnm1A8(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPoleWait(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("tf_pole_wait1", mode, blend);
-        mFloat.fn_8016FC44(1);
+        mFloat.setState(1);
     }
 }
 
@@ -874,7 +874,7 @@ void dHmnToolBank_c::setPoleWait(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPoleSwing(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("ts_pole_swing1", mode, blend);
-        mFloat.fn_8016FC44(3);
+        mFloat.setState(3);
     }
 }
 
@@ -882,7 +882,7 @@ void dHmnToolBank_c::setPoleSwing(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPoleSuka(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("ts_pole_suka1", mode, blend);
-        mFloat.fn_8016FC44(2);
+        mFloat.setState(2);
     }
 }
 
@@ -897,7 +897,7 @@ void dHmnToolBank_c::setPoleWaitNibble(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPoleHit(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("ts_pole_hit1", mode, blend);
-        mFloat.fn_8016FC44(8);
+        mFloat.setState(8);
     }
 }
 
@@ -905,7 +905,7 @@ void dHmnToolBank_c::setPoleHit(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPolePutback(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("ts_pole_putback1", mode, blend);
-        mFloat.fn_8016FC44(9);
+        mFloat.setState(9);
     }
 }
 
@@ -913,7 +913,7 @@ void dHmnToolBank_c::setPolePutback(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPoleFail(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("ts_pole_fail1", mode, blend);
-        mFloat.fn_8016FC44(10);
+        mFloat.setState(10);
     }
 }
 
@@ -921,7 +921,7 @@ void dHmnToolBank_c::setPoleFail(m3d::playMode_e mode, f32 blend) {
 void dHmnToolBank_c::setPoleGet1(m3d::playMode_e mode, f32 blend) {
     if (getToolType() == HMN_TOOL_ROD) {
         setAnm("ts_pole_get1", mode, blend);
-        mFloat.fn_8016FC44(9);
+        mFloat.setState(9);
     }
 }
 
@@ -1390,7 +1390,7 @@ void dHmnToolMng_c::bindDesign(data_c *data) {
 
 // 800BD294
 int dHmnToolMng_c::getHeapSize() {
-    return ((dUki_c::fn_801710F4() + 0x1A00) * 9 + 3) & ~3;
+    return ((dUki_c::getHeapSize() + 0x1A00) * 9 + 3) & ~3;
 }
 
 // 800BD2C8

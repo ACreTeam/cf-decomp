@@ -360,6 +360,8 @@ public:
     void setSlope(f32 prevY, f32 y, mAng ang); // 8006E42C
     void check(const mVec3_c *pos, int type, int mode); // 8006E4AC
 
+    f32 getWaterY() const { return mWaterY; }
+
     /* 0x00 */ u8 mSlope;
     /* 0x04 */ mVec3_c mSlopeCenter;
     /* 0x10 */ mVec3_c mPos;

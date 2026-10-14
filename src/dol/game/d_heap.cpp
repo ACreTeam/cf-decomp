@@ -291,7 +291,7 @@ EGG::FrmHeap *dHeap::createNpcNmlPackHeap(EGG::Heap *parent) {
 
 // 800B58A0
 EGG::FrmHeap *dHeap::createUkiHeap(EGG::Heap *parent) {
-    u32 size = fn_801710DC();
+    u32 size = dUki_c::getBankHeapSize();
     UkiHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::UkiHeap_p", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "浮き管理ヒープ", size);
     return UkiHeap_p;
