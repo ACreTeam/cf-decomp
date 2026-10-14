@@ -1,6 +1,7 @@
 // The whole save file in memory. .text 8010DC04..8010F124, .sbss 8074E6E0..8074E6E8.
 // See notes/save_file_layout.txt.
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_kbd.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <cstring>
@@ -26,11 +27,6 @@
 #include <lib/revolution/OS/OSTime.h>
 
 // Dependencies whose owners are not recovered yet.
-extern "C" {
-
-
-void fn_800CAC20();
-}
 
 // Game heap (owner not recovered).
 
@@ -120,7 +116,7 @@ void dSaveData_c::updateOnSave() {
 extern "C" void fn_8010DED0() {
     dPhoto::clear();
     dPlayerMgr::reset();
-    fn_800CAC20();
+    dKbd::resetSetting();
 }
 
 // 8010DEF8

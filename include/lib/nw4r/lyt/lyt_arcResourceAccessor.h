@@ -18,6 +18,10 @@ namespace lyt {
  ******************************************************************************/
 class FontRefLink {
 public:
+    FontRefLink();
+
+    void Set(const char* pName, ut::Font* pFont);
+
     const char* GetFontName() const {
         return mFontName;
     }
@@ -74,6 +78,54 @@ protected:
     void* mArcBuf;                  // at 0x20
     FontRefLinkList mFontList;      // at 0x24
     char mResRootDir[ROOTPATH_MAX]; // at 0x30
+};
+
+/******************************************************************************
+ *
+ * ArcResourceLink
+ *
+ ******************************************************************************/
+class ArcResourceLink {
+public:
+    bool Set(void* pArchive, const char* pRootDir);
+
+public:
+    NW4R_UT_LINKLIST_NODE_DECL(); // at 0x0
+
+protected:
+    static const int ROOTPATH_MAX = 128;
+
+protected:
+    ARCHandle mArcHandle;           // at 0x8
+    char mResRootDir[ROOTPATH_MAX]; // at 0x24
+};
+
+NW4R_UT_LINKLIST_TYPEDEF_DECL(ArcResourceLink);
+
+/******************************************************************************
+ *
+ * MultiArcResourceAccessor
+ *
+ ******************************************************************************/
+class MultiArcResourceAccessor : public ResourceAccessor {
+public:
+    MultiArcResourceAccessor();
+    virtual ~MultiArcResourceAccessor(); // at 0x8
+
+    virtual void* GetResource(ulong type, const char* pName,
+                              size_t* pSize); // at 0xC
+
+    virtual ut::Font* GetFont(const char* pName); // at 0x10
+
+    void Attach(ArcResourceLink* pLink);
+    void Detach(ArcResourceLink* pLink);
+
+    void RegistFont(FontRefLink* pLink);
+    void UnregistFont(FontRefLink* pLink);
+
+protected:
+    ArcResourceLinkList mArcList;  // at 0x4
+    FontRefLinkList mFontList;     // at 0x10
 };
 
 } // namespace lyt

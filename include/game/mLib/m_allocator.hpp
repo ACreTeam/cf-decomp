@@ -25,9 +25,11 @@ public:
  */
 class mHeapAllocator_c : public mAllocator_c {
 public:
-    mHeapAllocator_c(); ///< Constructs a new heap allocator.
-    virtual ~mHeapAllocator_c(); ///< Destroys the heap allocator.
+    // Inline in City Folk: the vtable and the dtor's weak copy are kept in d_kbd.
+    mHeapAllocator_c() {} ///< Constructs a new heap allocator.
+    virtual ~mHeapAllocator_c() { destroyHeap(); } ///< Destroys the heap allocator.
 
+    bool createExpHeap(size_t size, EGG::Heap *parent, const char *name, ulong align); // 802AE69C: name may be NULL
     bool createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
     bool createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
 

@@ -1,5 +1,6 @@
 #include <game/cLib/c_lib.hpp>
 #include <game/game/d_pad.hpp>
+#include <game/game/d_kbd.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <revolution/WPAD.h>
 
@@ -8,7 +9,6 @@ extern "C" {
 void fn_803BFEE0();
 BOOL fn_803B12B4();
 void fn_803B124C(BOOL);
-void fn_800CABFC();
 f32 fn_80443CD0(EGG::CoreController *);
 f32 fn_80443CEC(EGG::CoreController *);
 extern void (*lbl_8074FC54)(const s32 *);
@@ -124,7 +124,7 @@ void begin() {
     if (sInputMode == INPUT_NONE) {
         sInputMode = previousMode;
     }
-    fn_800CABFC();
+    dKbd::calcHKB();
     if (sPrevious & BUTTON_SHAKE) {
         if (mPad::getCore()->mCoreStatus[0].acc_value > 2.0f ||
             mPad::getCore()->mCoreStatus[0].acc_speed > 1.0f) {

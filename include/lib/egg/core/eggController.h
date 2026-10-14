@@ -30,7 +30,7 @@ public:
     virtual bool down(ulong mask) const { return (mask & mCoreStatus[0].hold) != 0; }
     virtual bool up(ulong) const;
     virtual bool downTrigger(ulong mask) const { return (mask & mCoreStatus[0].trig) != 0; }
-    virtual bool upTrigger(ulong) const;
+    virtual bool upTrigger(ulong mask) const { return (mask & mCoreStatus[0].release) != 0; }
     virtual bool downAll(ulong) const;
     virtual bool upAll(ulong) const;
     virtual void beginFrame(PADStatus *);

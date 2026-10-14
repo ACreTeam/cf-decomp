@@ -12,6 +12,7 @@
 #include <game/game/d_hmn_head_item_mng.hpp>
 #include <game/game/d_hmn_tool_mng.hpp>
 #include <game/game/d_home_button.hpp>
+#include <game/game/d_kbd.hpp>
 #include <game/game/d_main.hpp>
 #include <game/game/d_mii_icon.hpp>
 #include <game/game/d_net.hpp>
@@ -44,9 +45,6 @@
 #include <lib/egg/gfx/eggDrawGX.h>
 
 
-extern "C" {
-void fn_800CABD8();
-}
 
 namespace dSys {
 enum {
@@ -288,7 +286,7 @@ void init() {
     dScene_c::createPerf(debug);
     dRumble::create(1);
     dSysGfx::create(mem2);
-    fn_800CABD8();
+    dKbd::initHKB();
     reportHeapStep(0x3BE);
     dCaution::g_caution.init();
     g_wifiErr.clear();

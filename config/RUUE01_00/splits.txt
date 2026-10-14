@@ -736,7 +736,7 @@ dol/game/d_activity_log.cpp:
 	.bss        start:0x8059FF90 end:0x8059FFA8
 
 dol/game/d_kbd.cpp:
-	.text       start:0x800C7BE4 end:0x800CB0CC
+	.text       start:0x800C7BE4 end:0x800CB0BC
 	.rodata     start:0x80472E40 end:0x80472E50
 	.data       start:0x804EAA10 end:0x804EAFF8
 	.bss        start:0x8059FFA8 end:0x805A02C0
@@ -745,7 +745,7 @@ dol/game/d_kbd.cpp:
 	.sdata2     start:0x80750840 end:0x80750860
 
 dol/game/d_letter.cpp:
-	.text       start:0x800CB0CC end:0x800CCCD8
+	.text       start:0x800CB0BC end:0x800CCCD8
 	.ctors      start:0x804656C4 end:0x804656C8
 	.rodata     start:0x80472E50 end:0x80473870
 	.data       start:0x804EAFF8 end:0x804EB238
