@@ -62,7 +62,7 @@ void dWifiErr_c::clear() {
 }
 
 // 8017C6CC
-u8 dWifiErr_c::check() {
+BOOL dWifiErr_c::check() {
     mReported = dNet::getNetReportedError() != 0;
     if ((dNet::isSessionActive() && dNetMgr_c::sInstance->mInfo.mError.mState != 0) || mForce) {
         mNetError = TRUE;

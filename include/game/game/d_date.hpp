@@ -109,6 +109,9 @@ enum dTime_Weekday_e {
 
 #define TIME_DAY_START_HOUR 6 // the game day starts at 6:00 (the day change)
 #define TIME_DAYS_PER_WEEK 7
+#define TIME_SECONDS_PER_MINUTE 60
+#define TIME_SECONDS_PER_HOUR 3600
+#define TIME_SECONDS_PER_DAY 86400
 
 // dTime_c::getTerm(): the first i with MONTHDAY(month, mday) <= sTermDates[i] (d_date.cpp).
 enum dTime_Term_e {

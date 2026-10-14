@@ -35,7 +35,7 @@ public:
     void create();               // 8017C4EC: builds the caution_00 layout
     void setMessage(int msgId);  // 8017C600: sys_2D/SYS_2D_menu message msgId into T_dialg_00
     void clear();                // 8017C69C
-    u8 check();                  // 8017C6CC: opens the window on a reported error; returns mActive
+    BOOL check();                // 8017C6CC: opens the window on a reported error; returns mActive
     void draw();                 // 8017C7A8
     void execute();              // 8017C7DC
 

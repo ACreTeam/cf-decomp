@@ -884,7 +884,7 @@ config.libs = [
             Object(Matching, "dol/game/d_obj_staffroll.cpp"),
             Object(Matching, "dol/game/d_obj_telop.cpp"),
             Object(Matching, "dol/game/d_obj_tutorial.cpp"),
-            Object(NonMatching, "dol/game/d_sys.cpp"),
+            Object(NonMatching, "dol/game/d_sys.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_tag_processor.cpp"),
             Object(Matching, "dol/game/d_pattern_copy.cpp"),
             Object(Matching, "dol/game/d_ds_dl.cpp"),

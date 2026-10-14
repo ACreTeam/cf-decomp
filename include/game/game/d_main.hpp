@@ -11,6 +11,7 @@ namespace dMain {
 // The reasons the fManager_c processes are stopped (sStopReason). The first one set stops them all; clearing the
 // last one restarts them.
 enum StopReason_e {
+    STOP_REASON_HOME_MENU = 0x1, // d_sys: the HOME menu is open
     STOP_REASON_CAUTION = 0x2,  // d_caution's window
     STOP_REASON_WIFI_ERR = 0x4, // d_wifi_err's window
     STOP_REASON_PERF = 0x8,     // dScene_c::checkPerf

@@ -308,7 +308,7 @@ void Manage_c::Exec() const {
 
 // 80106FB0
 void Manage_c::BootCompleteCheck() {
-    if (!mBootComplete && lbl_8074E890) {
+    if (!mBootComplete && dSys::sBootComplete) {
         BootComplete(true);
     }
 }

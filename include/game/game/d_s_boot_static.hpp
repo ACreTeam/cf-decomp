@@ -8,8 +8,11 @@
 
 struct dScBootStatic_c;
 
+namespace dSys {
+extern bool sBootComplete; // 8074E890: owned by d_sys; set once the boot sequence is done
+}
+
 extern "C" {
-extern bool lbl_8074E890; // set once the boot sequence is done (in an unsplit .sbss); d_reset BootCompleteCheck
 dScBootStatic_c *fn_80108698();        // 80108698: the boot sequence object (lbl_805EBDA0)
 BOOL fn_801086A4();                    // 801086A4: FALSE when lbl_805EBDA0 +0x333 and +0x19C are both set (d_wifi: idle / reset)
 BOOL fn_8010875C(dScBootStatic_c *p);  // 8010875C: create (FALSE until its parts are created; makes the fader)

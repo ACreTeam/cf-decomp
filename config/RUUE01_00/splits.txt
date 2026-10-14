@@ -1423,6 +1423,11 @@ dol/game/d_string.cpp:
 dol/game/d_sys.cpp:
 	.text       start:0x8016B894 end:0x8016C720
 	.ctors      start:0x80465760 end:0x80465764 align:8
+	.data       start:0x804F4260 end:0x804F43B0 align:4
+	.bss        start:0x80600750 end:0x806007A8 align:4
+	.sdata      start:0x8074B4F0 end:0x8074B500
+	.sbss       start:0x8074E880 end:0x8074E8A0 align:4
+	.sdata2     start:0x80750FF8 end:0x80751000 align:4
 
 dol/game/d_tag_processor.cpp:
 	.text       start:0x8016C720 end:0x8016CCCC

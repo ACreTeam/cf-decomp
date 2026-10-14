@@ -20,7 +20,7 @@ void dScBoot_c::drawCallback() {
 // 801C9F78
 int dScBoot_c::create() {
     dSysGfx::sDrawCallback = drawCallback;
-    fn_8016B9FC(1);
+    dSys::setFrameRate(1);
     return fn_8010875C(fn_80108698()) != FALSE;
 }
 

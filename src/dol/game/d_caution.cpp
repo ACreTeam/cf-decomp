@@ -140,7 +140,7 @@ void Caution_c::init() {
 }
 
 // 80086990
-u8 Caution_c::check() {
+BOOL Caution_c::check() {
     mDriveStatus = DVDGetDriveStatus();
     if (mDriveStatus != DVD_STATE_IDLE && mDriveStatus != DVD_STATE_BUSY && !mActive) {
         dMain::addStop(dMain::STOP_REASON_CAUTION);

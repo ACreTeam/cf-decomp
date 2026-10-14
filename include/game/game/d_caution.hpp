@@ -31,7 +31,7 @@ public:
     void create();                                // 800866EC: builds the caution_00 layout
     void setMessage();                            // 800867E4: the message for mDriveStatus into T_dialg_00
     void init();                                  // 800868C4: selects the messages of the console language
-    u8 check();                                   // 80086990: opens / closes the window; returns mActive
+    BOOL check();                                 // 80086990: opens / closes the window; returns mActive
     void draw();                                  // 80086AA8
     void execute();                               // 80086B00
 

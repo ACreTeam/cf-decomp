@@ -223,7 +223,7 @@ void dPhoto::create(EGG::Heap *heap) {
     l_captured = false;
     l_encoded = false;
     l_jpegSize = 0;
-    EGG::Video *video = lbl_8074E880->mpVideo;
+    EGG::Video *video = dSys::sConfiguration->mpVideo;
     if (video == NULL) {
         return;
     }
@@ -244,7 +244,7 @@ void dPhoto::create(EGG::Heap *heap) {
 // 800FB9A0
 void dPhoto::capture() {
     if (l_step == STEP_CAPTURE) {
-        if (lbl_8074E880->mpVideo != NULL) {
+        if (dSys::sConfiguration->mpVideo != NULL) {
             l_capture.capture(0, 0, false);
             l_step = STEP_CAPTURED;
         }

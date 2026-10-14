@@ -35,14 +35,14 @@ void removeStop(u32 mask) {
 
 // 800CDD88
 void init() {
-    fn_8016BA7C();
-    fn_8016B97C(0);
+    dSys::init();
+    dSys::setBlack(0);
 }
 
 // 800CDDB0
 void loop() {
     while (true) {
-        fn_8016C3C0();
+        dSys::runFrame();
     }
 }
 

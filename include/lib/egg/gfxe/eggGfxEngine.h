@@ -17,7 +17,9 @@ namespace GfxEngine {
         u8 mPad1[0x8];
         u16 m_14;
         u16 m_16;
-        u8 mPad2[0x8];
+        u8 mPad2[0x4];
+        // MWCC places the vptr where the first virtual member is declared.
+        virtual ~Configuration() {}
     };
 }
 
