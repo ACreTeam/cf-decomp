@@ -14,10 +14,10 @@ class BaseCamera {
 public:
     virtual nw4r::math::MTX34 &getViewMatrix() = 0;
     virtual const nw4r::math::MTX34 &getViewMatrixOld() const = 0;
-    virtual void update(); // 804459FC: calls updateMatrix
-    virtual void updateMatrix() = 0;
+    virtual void updateMatrix();   // 804459FC
+    virtual void doUpdateMatrix() = 0;
 
-    void CopyToG3D(nw4r::g3d::Camera camera) const; // 80445A5C
+    void setG3DCamera(nw4r::g3d::Camera &camera); // 80445A5C
 };
 
 class LookAtCamera : public BaseCamera {
@@ -26,7 +26,7 @@ public:
     // inline: the kept weak copies are 800107A4 (d_snd_util) and 80445D10 (eggCamera.cpp's tail)
     virtual nw4r::math::MTX34 &getViewMatrix() { return mViewMtx; }
     virtual const nw4r::math::MTX34 &getViewMatrixOld() const { return mViewMtx; }
-    virtual void updateMatrix(); // 80445AA8
+    virtual void doUpdateMatrix(); // 80445AA8
 
     /* 0x04 */ nw4r::math::MTX34 mViewMtx;
     /* 0x34 */ nw4r::math::MTX34 mOldViewMtx;

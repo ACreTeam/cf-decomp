@@ -442,7 +442,7 @@ void area_c::set(const mVec3_c *center) {
 // 80069834
 void area_c::setView() {
     mVec3_c center(*dScene::getScenePlayerPos());
-    center = lbl_80623FEC;
+    center = dCamera_c::sCenter;
     set(&center);
 }
 

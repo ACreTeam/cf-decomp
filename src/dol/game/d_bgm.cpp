@@ -22,10 +22,6 @@
 #include <game/game/d_npc_list.hpp>
 #include <game/snd/snd_id.hpp>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-}
-
 namespace dBgm {
 
 // 80077754: counts a timer down unless the process manager stops execution.
@@ -2944,7 +2940,7 @@ void VolStateSky_c::init() {
 
 void VolStateSky_c::execute() {
     bool on = false;
-    if (lbl_8074E9B0 != NULL && lbl_8074E9B0->isFollowLookUp()) {
+    if (dCamera_c::sInstance != NULL && dCamera_c::sInstance->isFollowLookUp()) {
         on = true;
     }
     if (mOn) {

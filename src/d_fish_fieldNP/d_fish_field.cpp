@@ -1,5 +1,6 @@
 // dFishField_c: the fish in the town (REL d_fish_fieldNP). See include/game/game/d_fish_field.hpp.
 #include <game/game/d_fish_field.hpp>
+#include <game/game/d_camera.hpp>
 #include <lib/egg/core/eggExpHeap.h>
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_block_kind.hpp>
@@ -30,8 +31,6 @@ BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
 void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3_c *angle,
                  int arg);                         // d_fgobj_managerNP
 }
-
-extern nw4r::math::VEC3 lbl_80623FEC; // the camera's target (the view center)
 
 void *dFishField_c_classInit();
 
@@ -338,7 +337,7 @@ int dFishField_c::execute() {
 
 // 0xC04
 int dFishField_c::draw() {
-    mVec3_c center = lbl_80623FEC;
+    mVec3_c center = dCamera_c::sCenter;
     for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
         dFishFldShadow_c *fish = mFish[i];
         if (fish != NULL && isInView(&center, &fish->mPos)) {
@@ -843,8 +842,8 @@ BOOL dFishField_c::isAwayFromPlayers(int blockX, int blockZ, int unitX, int unit
         }
         return TRUE;
     }
-    int cx = posToUnit(lbl_80623FEC.x);
-    int cz = posToUnit(lbl_80623FEC.z);
+    int cx = posToUnit(dCamera_c::sCenter.x);
+    int cz = posToUnit(dCamera_c::sCenter.z);
     return !isNearUnit((blockX << 4) + unitX, (blockZ << 4) + unitZ, cx, cz);
 }
 

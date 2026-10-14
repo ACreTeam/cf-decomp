@@ -96,7 +96,7 @@ BOOL Rain_c::calc(int weather, int nextWeather) {
     if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM | dScene::SCENE_ATTR_CHKP)) {
         center.set(256.0f, 0.0f, 80.0f);
     } else {
-        center = lbl_80623FEC;
+        center = dCamera_c::sCenter;
     }
 
     for (int i = 0; i < count; ++i) {
@@ -148,7 +148,7 @@ BOOL Rain_c::calcBus(int weather) {
     center.set(256.0f, 0.0f, 0.0f);
     mAng nearAngle(mAng::fromDegree(7.5f));
     mAng farAngle(mAng::fromDegree(82.5f));
-    mAng cameraAngle = lbl_8074E9B0->getYaw();
+    mAng cameraAngle = dCamera_c::sInstance->getYaw();
     f32 farCos = farAngle.cos();
     f32 nearCos = nearAngle.cos();
     f32 blend = (cameraAngle.cos() - farCos) / (nearCos - farCos);

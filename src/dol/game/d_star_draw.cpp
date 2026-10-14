@@ -193,7 +193,7 @@ void dStarDraw_c::calc(const mVec3_c *pos, const mAng &angle) {
 // 80164414
 void dStarDraw_c::getStarScreenPos(int star, mVec2_c *out) {
     nw4r::math::MTX44 proj;
-    lbl_8074E9B0->getProjectionMtx(&proj);
+    dCamera_c::sInstance->getProjectionMtx(&proj);
     mVec3_c pos(sStars[star].x, sStars[star].y, 0.0f);
     mVec3_c view;
     PSMTXMultVec(mMtx, pos, view);
@@ -563,7 +563,7 @@ void dStarDraw_c::drawBackground() {
     f32 deg = 0.5f * dCamera_c::getFovy();
     mAng halfFovy = deg * mAng::DegreeToAngleCoefficient;
     f32 t = 0.004f + halfFovy.sin();
-    f32 aspect = lbl_8074E9B0->getAspect();
+    f32 aspect = dCamera_c::sInstance->getAspect();
     f32 h = z * t;
     f32 w = h * aspect;
     mVec3_c topLeft(-w, h, z);
@@ -607,7 +607,7 @@ bool dStarDraw_c::drawStar(pos_c *star, f32 scale, const nw4r::ut::Color *color)
     mVec3_c view;
     PSMTXMultVec(mMtx, pos, view);
     f32 h = -view.z * (f32)tan(NW4R_MATH_DEG_TO_RAD(11.25f));
-    f32 w = h * lbl_8074E9B0->getAspect();
+    f32 w = h * dCamera_c::sInstance->getAspect();
     h += 2.0f;
     w += 2.0f;
     if (view.x < -w || view.x > w || view.y < -h || view.y > h) {

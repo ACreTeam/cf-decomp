@@ -49,16 +49,17 @@ public:
         }
     }
 
-    void ResetOrthographic(f32 top, f32 bottom, f32 left, f32 right, f32 nearZ, f32 farZ);
-
-    void SetFovY(f32 fovy) {
+    void SetFovy(f32 fovy) {
         if (mFovY != fovy) {
             mFovY = fovy;
-            f32 sine, cosine;
-            nw4r::math::SinCosFIdx(&sine, &cosine, (fovy * 0.5f) * (256.0f / 360.0f));
-            mTanFovY = cosine / sine;
+            f32 sin, cos;
+            f32 halfFovy = fovy / 2.0f;
+            nw4r::math::SinCosDeg(&sin, &cos, halfFovy);
+            mTanFovY = cos / sin;
         }
     }
+
+    void ResetOrthographic(f32 top, f32 bottom, f32 left, f32 right, f32 nearZ, f32 farZ);
 
     // Names inferred.
     void GetPerspectiveMtx(nw4r::math::MTX44 *mtx) const;  // 80447E7C

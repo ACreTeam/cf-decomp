@@ -69,5 +69,5 @@
 //   804A2ED8 .data   0xC   PTMF {0,-1,stepStallTooHigh}
 //   804A2EE4 .data   0xC   PTMF {0,-1,selStallPrice}
 //   804A2EF0 .data   0x10  PTMF {0,-1,selStallNo} (+ 4 bytes padding)
-// Globals used, not of this TU: l_walkTargetPos (.bss, walk target position), lbl_8074E9B0 (the camera),
+// Globals used, not of this TU: l_walkTargetPos (.bss, walk target position), dCamera_c::sInstance (the camera),
 // l_moveParamWalk / l_walkTurnSpeed / cNpcMorphFrames / l_defaultAnmRate (d_a_npc).

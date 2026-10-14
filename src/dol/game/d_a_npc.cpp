@@ -8075,7 +8075,7 @@ BOOL dAcNpc_c::viewArea_c::isUnitOutside(int ux, int uz, const nw4r::math::VEC3 
 }
 
 BOOL dAcNpc_c::viewArea_c::isOutside(const mVec3_c *pos) const {
-    return isOutside(pos, &lbl_80623FEC);
+    return isOutside(pos, &dCamera_c::sCenter);
 }
 
 BOOL dAcNpc_c::viewArea_c::isOutside(const dActor_c *actor) const {
@@ -8121,7 +8121,7 @@ BOOL dAcNpc_c::viewArea_c::isOutsideAll(u32 playerNo, const dActor_c *actor) con
 }
 
 BOOL dAcNpc_c::viewArea_c::isUnitOutside(int ux, int uz) const {
-    return isUnitOutside(ux, uz, &lbl_80623FEC);
+    return isUnitOutside(ux, uz, &dCamera_c::sCenter);
 }
 
 BOOL dAcNpc_c::viewArea_c::isUnitOutsideAll(u32 playerNo, int ux, int uz) const {
@@ -10166,7 +10166,7 @@ int dAcNpc_c::recept_c::stepChangeSpeakerCamera() {
             const recept_c *self = this;
             dAcNpc_c *npc = self->getNpc((mTalkIdx + 1) & 1);
             if (npc != NULL) {
-                lbl_8074E9B0->switchTalkTarget(npc->demoHook58());
+                dCamera_c::sInstance->switchTalkTarget(npc->demoHook58());
             }
             mReqStep = 2;
         }
@@ -10179,7 +10179,7 @@ int dAcNpc_c::recept_c::stepChangeSpeakerTalk() {
     dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
         if (ctrl->isState(&dMsg::Comp_c::executeSuspend)) {
-            if (lbl_8074E9B0 != NULL && (lbl_8074E9B0->isTransitionActive() || lbl_8074E9B0->getTransitionFramesLeft() < 17.0f)) {
+            if (dCamera_c::sInstance != NULL && (dCamera_c::sInstance->isTransitionActive() || dCamera_c::sInstance->getTransitionFramesLeft() < 17.0f)) {
                 // The target calls the const getNpc overload (800292B4) here.
                 const recept_c *self = this;
                 int idx = mTalkIdx;
@@ -10418,7 +10418,7 @@ void dAcNpc_c::talk_c::startTalk(dAcNpc_c *npc) {
         speaker = npc;
     }
     if (recept->mTalkIdx == 1 && speaker != NULL) {
-        lbl_8074E9B0->switchTalkTarget(speaker->demoHook58());
+        dCamera_c::sInstance->switchTalkTarget(speaker->demoHook58());
     }
     dHmnName::Word_c name;
     recept_c::msgInfo_s info;
@@ -10479,7 +10479,7 @@ void dAcNpc_c::talk_c::finish(dAcNpc_c *npc) {
         }
     }
     if (!mNoCamera && !mKeepCamera) {
-        lbl_8074E9B0->_1A8 = lbl_8074E9B0->_1A4;
+        dCamera_c::sInstance->mRequestedMode = dCamera_c::sInstance->mDefaultMode;
     }
     objc_c *objc = &npc->mObjc;
     if (objc->isFixWeight()) {
@@ -10496,9 +10496,9 @@ void dAcNpc_c::talk_c::initTurnTalk(dAcNpc_c *npc) {
         recept_c *recept = npc->mpRecept;
         mVec3_c *target = npc->demoHook58();
         if (recept != NULL && recept->mpPartner != NULL) {
-            lbl_8074E9B0->startThreeActorTalkView(target, recept->mpPartner->demoHook58());
+            dCamera_c::sInstance->startThreeActorTalkView(target, recept->mpPartner->demoHook58());
         } else {
-            lbl_8074E9B0->startTalkView(target);
+            dCamera_c::sInstance->startTalkView(target);
         }
     }
     npc->mObjc.setFixWeight(0xFF);
@@ -10621,9 +10621,9 @@ void dAcNpc_c::talk_c::initTalk(dAcNpc_c *npc) {
         recept_c *recept = npc->mpRecept;
         mVec3_c *target = npc->demoHook58();
         if (recept != NULL && recept->mpPartner != NULL) {
-            lbl_8074E9B0->startThreeActorTalkView(target, recept->mpPartner->demoHook58());
+            dCamera_c::sInstance->startThreeActorTalkView(target, recept->mpPartner->demoHook58());
         } else {
-            lbl_8074E9B0->startTalkView(target);
+            dCamera_c::sInstance->startTalkView(target);
         }
     }
     npc->mObjc.setFixWeight(0xFF);

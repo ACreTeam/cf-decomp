@@ -34,7 +34,7 @@ static mColor l_lightColor(0x20, 0x18, 0x10, 0xFF); // 8074E8AC
 // The glow sits 768 above the view center.
 static inline void setBasePos(nw4r::math::VEC3 &pos) {
     f32 height = 768.0f;
-    pos = lbl_80623FEC;
+    pos = dCamera_c::sCenter;
     pos.y += height;
 }
 
@@ -64,7 +64,7 @@ void Thunder_c::calc(BOOL outdoor) {
         f32 height = 768.0f;
         f32 glow = outdoor ? 1024.0f : 672.0f;
         approach(mGlow, glow, mTimer);
-        mPos = lbl_80623FEC;
+        mPos = dCamera_c::sCenter;
         mPos.y += height;
         if (sLib::calcTimer(&mTimer) == 0) {
             dEnvironment_c::sFlashR = l_lightColor.r;
