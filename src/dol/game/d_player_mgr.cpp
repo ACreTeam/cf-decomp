@@ -2292,10 +2292,10 @@ BOOL receiveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner
     if (player == NULL) {
         return FALSE;
     }
-    if (!fn_80194A2C(item, b, c, d, player, partner, getItemExchangeOffsetY(), f1, 0.0f, f2, 0.0f, f3)) {
+    if (!dHandItem::start(item, b, c, d, player, (dDemoActor_c *)partner, getItemExchangeOffsetY(), f1, 0.0f, f2, 0.0f, f3)) {
         return FALSE;
     }
-    if (!fn_80194AA0(0, player, 16.0f)) {
+    if (!dHandItem::request(dHandItem_c::STATE_LOAD, player, 16.0f)) {
         return FALSE;
     }
     return changeState(STATE_RECEIVE_ITEM, PLAYER_INDEX_CURRENT);
@@ -2312,10 +2312,10 @@ BOOL giveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f
     if (player == NULL) {
         return FALSE;
     }
-    if (!fn_80194A2C(item, b, c, d, player, partner, getItemExchangeOffsetY(), f1, 0.0f, f2, 0.0f, 0.0f)) {
+    if (!dHandItem::start(item, b, c, d, player, (dDemoActor_c *)partner, getItemExchangeOffsetY(), f1, 0.0f, f2, 0.0f, 0.0f)) {
         return FALSE;
     }
-    if (!fn_80194AA0(1, player, 16.0f)) {
+    if (!dHandItem::request(dHandItem_c::STATE_APPEAR, player, 16.0f)) {
         return FALSE;
     }
     return changeState(STATE_GIVE_ITEM, PLAYER_INDEX_CURRENT);
@@ -2338,7 +2338,7 @@ BOOL fn_801006A8() {
     if (player == NULL) {
         return FALSE;
     }
-    if (!fn_80194AA0(fn_80194B30(), player, 16.0f)) {
+    if (!dHandItem::request(dHandItem::getUseType(), player, 16.0f)) {
         return FALSE;
     }
     return changeState(0x6E, PLAYER_INDEX_CURRENT);

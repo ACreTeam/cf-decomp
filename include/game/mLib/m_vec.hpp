@@ -176,7 +176,7 @@ public:
     mVec3_c &operator*=(f32 f) { x *= f; y *= f; z *= f; return *this; }
 
     /// @brief Augmented scalar division operator.
-    mVec3_c &operator/=(f32 f) { return operator*=(1.0f / f); }
+    mVec3_c &operator/=(f32 f) { f32 r = 1.0f / f; x *= r; y *= r; z *= r; return *this; }
 
     /// @brief Positive operator.
     mVec3_c operator+() const { return *this; }

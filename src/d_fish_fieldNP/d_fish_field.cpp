@@ -22,8 +22,6 @@
 #include <game/snd/snd_id.hpp>
 
 extern "C" {
-BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item
-void fn_801909D4(dHoldItemMgr_c *mgr, int player);   // stop holding
 void fn_8019022C(dHoldItemMgr_c::Mdl_c *mdl, const char *anm);
 
 BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP

@@ -222,7 +222,7 @@ void dpdQuad_c::set(const mVec3_c &p0, const mVec3_c &p1, const mVec3_c &p2, con
         c += p1;
         c += p2;
         c += p3;
-        c /= 4.0f;
+        c *= 0.25f;
         mTri[0].set(tri0, type, owner, &c, param);
         mTri[1].set(tri1, type, owner, &c, param);
     }

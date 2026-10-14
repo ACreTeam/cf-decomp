@@ -5166,7 +5166,7 @@ BOOL dAcNpc_c::action_c::requestHandItem(int prio, dActor_c *actor, int arg48, c
 }
 
 BOOL dAcNpc_c::action_c::requestChangeCloth() {
-    if (!fn_80194AEC() || fn_80194B30() != 7) {
+    if (!dHandItem::isActive() || dHandItem::getUseType() != dHandItem_c::STATE_KEEP) {
         return FALSE;
     }
     dItem::Item item = getPrm()->mItem;
@@ -5178,7 +5178,7 @@ BOOL dAcNpc_c::action_c::requestChangeCloth() {
 }
 
 BOOL dAcNpc_c::action_c::requestReceive() {
-    if (!fn_80194AEC() || fn_80194B30() != 7) {
+    if (!dHandItem::isActive() || dHandItem::getUseType() != dHandItem_c::STATE_KEEP) {
         return FALSE;
     }
     dItem::Item item = getPrm()->mItem;
@@ -5190,7 +5190,7 @@ BOOL dAcNpc_c::action_c::requestReceive() {
 }
 
 BOOL dAcNpc_c::action_c::requestGive() {
-    if (!fn_80194AEC() || fn_80194B30() != 7) {
+    if (!dHandItem::isActive() || dHandItem::getUseType() != dHandItem_c::STATE_KEEP) {
         return FALSE;
     }
     dItem::Item item = getPrm()->mItem;
@@ -5202,7 +5202,7 @@ BOOL dAcNpc_c::action_c::requestGive() {
 }
 
 BOOL dAcNpc_c::action_c::requestHandOver() {
-    if (!fn_80194AEC() || fn_80194B30() != 7) {
+    if (!dHandItem::isActive() || dHandItem::getUseType() != dHandItem_c::STATE_KEEP) {
         return FALSE;
     }
     dItem::Item item = getPrm()->mItem;
@@ -5214,7 +5214,7 @@ BOOL dAcNpc_c::action_c::requestHandOver() {
 }
 
 BOOL dAcNpc_c::action_c::requestEat(int effectIdx) {
-    if (!fn_80194AEC() || fn_80194B30() != 7) {
+    if (!dHandItem::isActive() || dHandItem::getUseType() != dHandItem_c::STATE_KEEP) {
         return FALSE;
     }
     dItem::Item item = getPrm()->mItem;
@@ -5228,7 +5228,7 @@ BOOL dAcNpc_c::action_c::requestEat(int effectIdx) {
 }
 
 BOOL dAcNpc_c::action_c::requestInspect() {
-    if (!fn_80194AEC() || fn_80194B30() != 7) {
+    if (!dHandItem::isActive() || dHandItem::getUseType() != dHandItem_c::STATE_KEEP) {
         return FALSE;
     }
     dItem::Item item = getPrm()->mItem;
@@ -5860,13 +5860,13 @@ int dAcNpc_c::action_c::initCatch(dAcNpc_c *npc) {
     if (npc->mNpcItem.isSame(dItem::Item((u16)0x8005))) {
         f5 = 2.0f;
     }
-    fn_80194A2C(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, dPlayerMgr::getNpcTargetActor(member), f1, f2, f3, zero, f5, zero);
+    dHandItem::start(&prm->mItem, prm->_50, prm->_48, prm->mVariant, npc, dPlayerMgr::getNpcTargetActor(member), f1, f2, f3, zero, f5, zero);
     int anm = 0x56;
     int mode = m3d::PLAYMODE_INHERIT;
     if (type == 1) {
         anm = 0x6F;
         mode = m3d::REVERSE_ONCE;
-        fn_80194AA0(1, npc, npc->mObjc.mRadius);
+        dHandItem::request(dHandItem_c::STATE_APPEAR, npc, npc->mObjc.mRadius);
         mStep = 6;
     } else {
         if (prm->mItem.isFish()) {
@@ -5881,7 +5881,7 @@ int dAcNpc_c::action_c::initCatch(dAcNpc_c *npc) {
 
 // 800212D0
 void dAcNpc_c::action_c::catchStep0(dAcNpc_c *npc) {
-    if (npc->getModel()->mAnm.isStop() && fn_80194AA0(0, npc, lbl_80751600)) {
+    if (npc->getModel()->mAnm.isStop() && dHandItem::request(dHandItem_c::STATE_LOAD, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         int anm = prm->mItem.isFish() ? 0x62 : 0x57;
         npc->setAnm(anm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
@@ -5892,7 +5892,7 @@ void dAcNpc_c::action_c::catchStep0(dAcNpc_c *npc) {
 
 // 800213F0
 void dAcNpc_c::action_c::catchStep1(dAcNpc_c *npc) {
-    if (npc->getModel()->mAnm.checkFrame(0.0f) && !fn_80194B74() && fn_80194AA0(1, npc, npc->mObjc.mRadius)) {
+    if (npc->getModel()->mAnm.checkFrame(0.0f) && !dHandItem::isReceiving() && dHandItem::request(dHandItem_c::STATE_APPEAR, npc, npc->mObjc.mRadius)) {
         actionPrm_c *prm = getPrm();
         int anm = prm->mItem.isFish() ? 0x63 : 0x58;
         npc->setAnm(anm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
@@ -5923,7 +5923,7 @@ void dAcNpc_c::action_c::catchStep3(dAcNpc_c *npc) {
 
 // 80021654
 void dAcNpc_c::action_c::catchStep4(dAcNpc_c *npc) {
-    if (!fn_80194AC8(npc)) {
+    if (!dHandItem::isHolder(npc)) {
         actionPrm_c *prm = getPrm();
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 5;
@@ -5932,7 +5932,7 @@ void dAcNpc_c::action_c::catchStep4(dAcNpc_c *npc) {
 
 // 8002171C
 void dAcNpc_c::action_c::catchStep5(dAcNpc_c *npc) {
-    if (!fn_80194AEC()) {
+    if (!dHandItem::isActive()) {
         mCanChange = TRUE;
         mStep = 12;
     }
@@ -5955,7 +5955,7 @@ void dAcNpc_c::action_c::catchStep7(dAcNpc_c *npc) {
     if (npc->getModel()->mAnm.isStop()) {
         actionPrm_c *prm = getPrm();
         npc->setAnm(0x6D, m3d::REVERSE_ONCE, 0.0f, 1.0f, prm->mMorph, FALSE);
-        if (fn_80194AA0(2, npc, lbl_80751600)) {
+        if (dHandItem::request(dHandItem_c::STATE_FALL, npc, dHandItem::cDefaultReach)) {
             mStep = 9;
         } else {
             mStep = 8;
@@ -5970,7 +5970,7 @@ void dAcNpc_c::action_c::catchStep8(dAcNpc_c *npc) {
     if (anm->mAnmId == 0x6D && anm->isStop()) {
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     }
-    if (fn_80194AA0(2, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_FALL, npc, dHandItem::cDefaultReach)) {
         mStep = 9;
     }
 }
@@ -5982,9 +5982,9 @@ void dAcNpc_c::action_c::catchStep9(dAcNpc_c *npc) {
     if (anm->mAnmId == 0x6D && anm->isStop()) {
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     }
-    if (!fn_80194B10(2)) {
-        fn_80194B4C(3, npc);
-        if (fn_80194B8C(prm->mpActor)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_FALL)) {
+        dHandItem::setUseType(dHandItem_c::STATE_STOW, npc);
+        if (dHandItem::swapActors((dDemoActor_c *)prm->mpActor)) {
             if (dPlayerMgr::fn_801006A8()) {
                 mStep = 11;
             } else {
@@ -6013,12 +6013,12 @@ void dAcNpc_c::action_c::catchStep11(dAcNpc_c *npc) {
     if (anm->mAnmId == 0x6D) {
         if (anm->isStop()) {
             npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-            if (!fn_80194AEC()) {
+            if (!dHandItem::isActive()) {
                 mCanChange = TRUE;
                 mStep = 12;
             }
         }
-    } else if (!fn_80194AEC()) {
+    } else if (!dHandItem::isActive()) {
         mCanChange = TRUE;
         mStep = 12;
     }
@@ -6103,17 +6103,17 @@ BOOL isQuickHandItem(const dItem::Item &item) {
 
 // 80022144
 void dAcNpc_c::action_c::handItemWaitA(dAcNpc_c *npc) {
-    if (!fn_80194B10(2)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_FALL)) {
         return;
     }
     actionPrm_c *prm = getPrm();
-    if (isQuickHandItem(npc->mNpcItem) || fn_80194BCC(npc)) {
+    if (isQuickHandItem(npc->mNpcItem) || dHandItem::isInRange(npc)) {
         int anmId = prm->mItem.isFish() ? 0x65 : 0x5A;
         npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 3;
     } else {
         mVec3_c pos;
-        if (fn_80194CEC(&pos)) {
+        if (dHandItem::getPos(&pos)) {
             pos.y = 0.0f;
             reset();
             setTarget(pos);
@@ -6127,7 +6127,7 @@ void dAcNpc_c::action_c::handItemWaitA(dAcNpc_c *npc) {
 
 // 800222F0
 void dAcNpc_c::action_c::handItemWalkA(dAcNpc_c *npc) {
-    if (fn_80194BCC(npc)) {
+    if (dHandItem::isInRange(npc)) {
         actionPrm_c *prm = getPrm();
         reset();
         setAngle(npc->mAngle.y);
@@ -6139,14 +6139,14 @@ void dAcNpc_c::action_c::handItemWalkA(dAcNpc_c *npc) {
 
 // 800223DC
 void dAcNpc_c::action_c::handItemTakeA(dAcNpc_c *npc) {
-    if (npc->getModel()->mAnm.isStop() && fn_80194B8C(npc) && fn_80194AA0(4, npc, npc->mObjc.mRadius)) {
+    if (npc->getModel()->mAnm.isStop() && dHandItem::swapActors(npc) && dHandItem::request(dHandItem_c::STATE_TAKE, npc, npc->mObjc.mRadius)) {
         mStep = 4;
     }
 }
 
 // 80022464
 void dAcNpc_c::action_c::handItemHoldA(dAcNpc_c *npc) {
-    if (!fn_80194B10(4) && fn_80194AA0(5, npc, lbl_80751600)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_TAKE) && dHandItem::request(dHandItem_c::STATE_HOLD, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         int anmId = prm->mItem.isFish() ? 0x66 : 0x5B;
         npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
@@ -6183,36 +6183,36 @@ void dAcNpc_c::action_c::handItemUseA(dAcNpc_c *npc) {
     }
 
     int anmId;
-    switch (fn_80194B30()) {
-    case 9:
+    switch (dHandItem::getUseType()) {
+    case dHandItem_c::STATE_CHANGE:
         if (!isMedicineItem(prm->mItem) && npc->getCloth() != NULL) {
             mStep = 7;
             break;
         }
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         npc->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
         dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
         mStep = 8;
         break;
-    case 8:
-        if (fn_80194AA0(8, npc, lbl_80751600)) {
+    case dHandItem_c::STATE_FOLLOW:
+        if (dHandItem::request(dHandItem_c::STATE_FOLLOW, npc, dHandItem::cDefaultReach)) {
             anmId = prm->mItem.isFish() ? 0x66 : 0x5B;
             npc->setAnm(anmId, m3d::REVERSE_ONCE, 0.0f, 1.0f, prm->mMorph, FALSE);
             mStep = 9;
         }
         break;
-    case 6:
-        if (fn_80194AA0(6, npc, lbl_80751600)) {
+    case dHandItem_c::STATE_SHRINK:
+        if (dHandItem::request(dHandItem_c::STATE_SHRINK, npc, dHandItem::cDefaultReach)) {
             anmId = prm->mItem.isFish() ? 0x68 : 0x5D;
             npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
             npc->mLookAt.mReset = true;
             mStep = 6;
         }
         break;
-    case 7:
-        if (fn_80194AA0(7, npc, lbl_80751600)) {
+    case dHandItem_c::STATE_KEEP:
+        if (dHandItem::request(dHandItem_c::STATE_KEEP, npc, dHandItem::cDefaultReach)) {
             anmId = prm->mItem.isFish() ? 0x67 : 0x5C;
             mSavedAnmId = npc->mAnmSet.mWaitAnm;
             npc->mAnmSet.setAnm0(anmId);
@@ -6221,8 +6221,8 @@ void dAcNpc_c::action_c::handItemUseA(dAcNpc_c *npc) {
             mStep = 0x18;
         }
         break;
-    case 10:
-        if (fn_80194AA0(10, npc, lbl_80751600)) {
+    case dHandItem_c::STATE_EAT:
+        if (dHandItem::request(dHandItem_c::STATE_EAT, npc, dHandItem::cDefaultReach)) {
             anmId = prm->mItem.isFish() ? 0x69 : 0x5F;
             npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
             if ((u32)prm->mEffectIdx < 2) {
@@ -6239,8 +6239,8 @@ void dAcNpc_c::action_c::handItemUseA(dAcNpc_c *npc) {
             npc->mLookAt.mReset = true;
         }
         break;
-    case 12:
-        if (fn_80194AA0(12, npc, lbl_80751600)) {
+    case dHandItem_c::STATE_SHOW:
+        if (dHandItem::request(dHandItem_c::STATE_SHOW, npc, dHandItem::cDefaultReach)) {
             anmId = prm->mItem.isInsect() ? 0x115 : 0x6A;
             npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
             npc->mLookAt.mReset = true;
@@ -6267,7 +6267,7 @@ void dAcNpc_c::action_c::handItemActA(dAcNpc_c *npc) {
         if (npc->getModel()->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
             npc->mFace.setAnmTex(npc, anmId, m3d::PLAYMODE_INHERIT);
         }
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         npc->mLookAt.mReset = false;
         mCanChange = TRUE;
         mStep = 0x18;
@@ -6320,7 +6320,7 @@ void dAcNpc_c::action_c::handItemWaitCloth(dAcNpc_c *npc) {
     clothBase_c *cloth = npc->getCloth();
     actionPrm_c *prm = getPrm();
     if (cloth->isLoaded(npc)) {
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         npc->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
@@ -6360,7 +6360,7 @@ void dAcNpc_c::action_c::handItemRetryPut(dAcNpc_c *npc) {
 
 // 800231DC
 void dAcNpc_c::action_c::handItemWaitPut(dAcNpc_c *npc) {
-    if (!fn_80194AC8(npc)) {
+    if (!dHandItem::isHolder(npc)) {
         actionPrm_c *prm = getPrm();
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 0xC;
@@ -6369,7 +6369,7 @@ void dAcNpc_c::action_c::handItemWaitPut(dAcNpc_c *npc) {
 
 // 800232A4
 void dAcNpc_c::action_c::handItemWaitEnd(dAcNpc_c *npc) {
-    if (!fn_80194AEC()) {
+    if (!dHandItem::isActive()) {
         mCanChange = TRUE;
         mStep = 0x18;
     }
@@ -6381,7 +6381,7 @@ void dAcNpc_c::action_c::handItemEatFish(dAcNpc_c *npc) {
     actionPrm_c *prm = getPrm();
     if (model->mAnm.isStop()) {
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         npc->mLookAt.mReset = false;
         mCanChange = TRUE;
         mStep = 0x18;
@@ -6399,8 +6399,8 @@ void dAcNpc_c::action_c::handItemEatFish(dAcNpc_c *npc) {
 void dAcNpc_c::action_c::handItemRelease(dAcNpc_c *npc) {
     if (npc->getModel()->mAnm.isStop()) {
         npc->mLookAt.mReset = false;
-        fn_80194B4C(7, npc);
-        if (fn_80194AA0(7, npc, lbl_80751600)) {
+        dHandItem::setUseType(dHandItem_c::STATE_KEEP, npc);
+        if (dHandItem::request(dHandItem_c::STATE_KEEP, npc, dHandItem::cDefaultReach)) {
             actionPrm_c *prm = getPrm();
             mSavedAnmId = npc->mAnmSet.mWaitAnm;
             npc->mAnmSet.setAnm0(0x67);
@@ -6424,14 +6424,14 @@ void dAcNpc_c::action_c::handItemStartB(dAcNpc_c *npc) {
 
 // 80023604
 void dAcNpc_c::action_c::handItemWaitB(dAcNpc_c *npc) {
-    if (fn_80194B10(1)) {
+    if (dHandItem::isState(dHandItem_c::STATE_APPEAR)) {
         mStep = 0x11;
     }
 }
 
 // 80023644
 void dAcNpc_c::action_c::handItemTakeB(dAcNpc_c *npc) {
-    if (!fn_80194B10(1)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_APPEAR)) {
         actionPrm_c *prm = getPrm();
         npc->setAnm(0x6D, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 0x12;
@@ -6440,8 +6440,8 @@ void dAcNpc_c::action_c::handItemTakeB(dAcNpc_c *npc) {
 
 // 80023700
 void dAcNpc_c::action_c::handItemGiveB(dAcNpc_c *npc) {
-    if (npc->getModel()->mAnm.isStop() && fn_80194B8C(npc)) {
-        if (fn_80194AA0(4, npc, lbl_80751600)) {
+    if (npc->getModel()->mAnm.isStop() && dHandItem::swapActors(npc)) {
+        if (dHandItem::request(dHandItem_c::STATE_TAKE, npc, dHandItem::cDefaultReach)) {
             mStep = 0x14;
         } else {
             mStep = 0x13;
@@ -6451,14 +6451,14 @@ void dAcNpc_c::action_c::handItemGiveB(dAcNpc_c *npc) {
 
 // 80023794
 void dAcNpc_c::action_c::handItemRetryGiveB(dAcNpc_c *npc) {
-    if (fn_80194AA0(4, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_TAKE, npc, dHandItem::cDefaultReach)) {
         mStep = 0x14;
     }
 }
 
 // 800237D8
 void dAcNpc_c::action_c::handItemHoldB(dAcNpc_c *npc) {
-    if (!fn_80194B10(4) && fn_80194AA0(5, npc, lbl_80751600)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_TAKE) && dHandItem::request(dHandItem_c::STATE_HOLD, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         npc->setAnm(0x6E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 0x15;
@@ -6472,20 +6472,20 @@ void dAcNpc_c::action_c::handItemUseB(dAcNpc_c *npc) {
     if (!model->mAnm.isStop()) {
         return;
     }
-    switch (fn_80194B30()) {
-    case 8:
-        if (fn_80194AA0(8, npc, lbl_80751600)) {
+    switch (dHandItem::getUseType()) {
+    case dHandItem_c::STATE_FOLLOW:
+        if (dHandItem::request(dHandItem_c::STATE_FOLLOW, npc, dHandItem::cDefaultReach)) {
             npc->setAnm(0x6E, m3d::REVERSE_ONCE, 0.0f, 1.0f, prm->mMorph, FALSE);
             mStep = 0x16;
         }
         break;
-    case 6:
-        if (fn_80194AA0(6, npc, lbl_80751600)) {
+    case dHandItem_c::STATE_SHRINK:
+        if (dHandItem::request(dHandItem_c::STATE_SHRINK, npc, dHandItem::cDefaultReach)) {
             npc->setAnm(0x6F, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
             mStep = 6;
         }
         break;
-    case 7:
+    case dHandItem_c::STATE_KEEP:
     default:
         npc->setAnm(0x59, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mCanChange = TRUE;
@@ -6496,7 +6496,7 @@ void dAcNpc_c::action_c::handItemUseB(dAcNpc_c *npc) {
 
 // 80023AB4
 void dAcNpc_c::action_c::handItemPutB(dAcNpc_c *npc) {
-    if (npc->getModel()->mAnm.isStop() && fn_80194AA0(2, npc, lbl_80751600)) {
+    if (npc->getModel()->mAnm.isStop() && dHandItem::request(dHandItem_c::STATE_FALL, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
         mStep = 0x17;
@@ -6505,10 +6505,10 @@ void dAcNpc_c::action_c::handItemPutB(dAcNpc_c *npc) {
 
 // 80023BA8
 void dAcNpc_c::action_c::handItemReturnB(dAcNpc_c *npc) {
-    if (!fn_80194B10(2)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_FALL)) {
         actionPrm_c *prm = getPrm();
-        fn_80194B4C(3, npc);
-        if (fn_80194B8C(prm->mpActor) && dPlayerMgr::fn_801006A8()) {
+        dHandItem::setUseType(dHandItem_c::STATE_STOW, npc);
+        if (dHandItem::swapActors((dDemoActor_c *)prm->mpActor) && dPlayerMgr::fn_801006A8()) {
             mStep = 0xC;
         }
     }
@@ -6578,7 +6578,7 @@ int dAcNpc_c::action_c::initChangeCloth(dAcNpc_c *npc) {
             }
             npc->getModel()->stopLarmAnm(prm->mMorph);
         }
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         npc->mLookAt.mReset = true;
         startChangeSound(npc, prm->mItem);
         dEffect::create("af_ply_change", &npc->mPos, NULL, NULL);
@@ -6607,7 +6607,7 @@ void dAcNpc_c::action_c::changeClothWaitCloth(dAcNpc_c *npc) {
     clothBase_c *cloth = npc->getCloth();
     actionPrm_c *prm = getPrm();
     if (cloth->isLoaded(npc)) {
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         if (npc->getModel()->setAnm(0x5E, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE)) {
             if (npc->mFace.isValid()) {
                 npc->mFace.setAnmTex(npc, 0x5E, m3d::PLAYMODE_INHERIT);
@@ -6645,11 +6645,11 @@ void dAcNpc_c::action_c::postExecChangeCloth(dAcNpc_c *npc) {
 
 // 800240D8
 int dAcNpc_c::action_c::initReceive(dAcNpc_c *npc) {
-    if (fn_80194AEC()) {
+    if (dHandItem::isActive()) {
         actionPrm_c *prm = getPrm();
         reset();
         setAngle(npc->mAngle.y);
-        if (fn_80194AA0(6, npc, lbl_80751600)) {
+        if (dHandItem::request(dHandItem_c::STATE_SHRINK, npc, dHandItem::cDefaultReach)) {
             if (mSavedAnmId != 0x1BC) {
                 npc->mAnmSet.setAnm0(mSavedAnmId);
                 mSavedAnmId = 0x1BC;
@@ -6673,7 +6673,7 @@ int dAcNpc_c::action_c::initReceive(dAcNpc_c *npc) {
 
 // 8002422C
 void dAcNpc_c::action_c::receiveReq(dAcNpc_c *npc) {
-    if (fn_80194AA0(6, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_SHRINK, npc, dHandItem::cDefaultReach)) {
         if (mSavedAnmId != 0x1BC) {
             npc->mAnmSet.setAnm0(mSavedAnmId);
             mSavedAnmId = 0x1BC;
@@ -6700,7 +6700,7 @@ void dAcNpc_c::action_c::receiveWaitAnm(dAcNpc_c *npc) {
         if (npc->getModel()->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
             npc->mFace.setAnmTex(npc, anmId, m3d::PLAYMODE_INHERIT);
         }
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         mCanChange = TRUE;
         npc->mLookAt.mReset = false;
         mStep = 2;
@@ -6728,11 +6728,11 @@ void dAcNpc_c::action_c::postExecReceive(dAcNpc_c *npc) {
 
 // 800244EC
 int dAcNpc_c::action_c::initGive(dAcNpc_c *npc) {
-    if (fn_80194AEC()) {
+    if (dHandItem::isActive()) {
         actionPrm_c *prm = getPrm();
         reset();
         setAngle(npc->mAngle.y);
-        if (fn_80194AA0(8, npc, lbl_80751600)) {
+        if (dHandItem::request(dHandItem_c::STATE_FOLLOW, npc, dHandItem::cDefaultReach)) {
             if (mSavedAnmId != 0x1BC) {
                 npc->mAnmSet.setAnm0(mSavedAnmId);
                 mSavedAnmId = 0x1BC;
@@ -6755,7 +6755,7 @@ int dAcNpc_c::action_c::initGive(dAcNpc_c *npc) {
 
 // 8002463C
 void dAcNpc_c::action_c::giveReq(dAcNpc_c *npc) {
-    if (fn_80194AA0(8, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_FOLLOW, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         if (mSavedAnmId != 0x1BC) {
             npc->mAnmSet.setAnm0(mSavedAnmId);
@@ -6797,7 +6797,7 @@ void dAcNpc_c::action_c::giveWaitPlayer(dAcNpc_c *npc) {
 
 // 800248A0
 void dAcNpc_c::action_c::giveWaitRelease(dAcNpc_c *npc) {
-    if (!fn_80194AC8(npc)) {
+    if (!dHandItem::isHolder(npc)) {
         actionPrm_c *prm = getPrm();
         int anmId = npc->mAnmSet.mWaitAnm;
         if (npc->getModel()->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
@@ -6809,7 +6809,7 @@ void dAcNpc_c::action_c::giveWaitRelease(dAcNpc_c *npc) {
 
 // 80024968
 void dAcNpc_c::action_c::giveWaitEnd(dAcNpc_c *npc) {
-    if (!fn_80194AEC()) {
+    if (!dHandItem::isActive()) {
         mCanChange = TRUE;
         mStep = 5;
     }
@@ -6833,10 +6833,10 @@ void dAcNpc_c::action_c::execGive(dAcNpc_c *npc) {
 
 // 800249EC
 int dAcNpc_c::action_c::initHandOver(dAcNpc_c *npc) {
-    if (fn_80194AEC()) {
+    if (dHandItem::isActive()) {
         reset();
         setAngle(npc->mAngle.y);
-        if (fn_80194AA0(0xB, npc, lbl_80751600)) {
+        if (dHandItem::request(dHandItem_c::STATE_UNWRAP, npc, dHandItem::cDefaultReach)) {
             mStep = 1;
         } else {
             mStep = 0;
@@ -6848,21 +6848,21 @@ int dAcNpc_c::action_c::initHandOver(dAcNpc_c *npc) {
 
 // 80024A74
 void dAcNpc_c::action_c::handOverReq(dAcNpc_c *npc) {
-    if (fn_80194AA0(0xB, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_UNWRAP, npc, dHandItem::cDefaultReach)) {
         mStep = 1;
     }
 }
 
 // 80024AB8
 void dAcNpc_c::action_c::handOverWaitOn(dAcNpc_c *npc) {
-    if (fn_80194B10(0xB)) {
+    if (dHandItem::isState(dHandItem_c::STATE_UNWRAP)) {
         mStep = 2;
     }
 }
 
 // 80024AF8
 void dAcNpc_c::action_c::handOverWaitOff(dAcNpc_c *npc) {
-    if (!fn_80194B10(0xB)) {
+    if (!dHandItem::isState(dHandItem_c::STATE_UNWRAP)) {
         mStep = 3;
         mCanChange = TRUE;
     }
@@ -6884,11 +6884,11 @@ void dAcNpc_c::action_c::execHandOver(dAcNpc_c *npc) {
 
 // 80024B80
 int dAcNpc_c::action_c::initEat(dAcNpc_c *npc) {
-    if (fn_80194AEC()) {
+    if (dHandItem::isActive()) {
         actionPrm_c *prm = getPrm();
         reset();
         setAngle(npc->mAngle.y);
-        if (fn_80194AA0(0xA, npc, lbl_80751600)) {
+        if (dHandItem::request(dHandItem_c::STATE_EAT, npc, dHandItem::cDefaultReach)) {
             if (mSavedAnmId != 0x1BC) {
                 npc->mAnmSet.setAnm0(mSavedAnmId);
                 mSavedAnmId = 0x1BC;
@@ -6922,7 +6922,7 @@ int dAcNpc_c::action_c::initEat(dAcNpc_c *npc) {
 
 // 80024D5C
 void dAcNpc_c::action_c::eatReq(dAcNpc_c *npc) {
-    if (fn_80194AA0(0xA, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_EAT, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         if (mSavedAnmId != 0x1BC) {
             npc->mAnmSet.setAnm0(mSavedAnmId);
@@ -6956,7 +6956,7 @@ void dAcNpc_c::action_c::eatWaitAnm(dAcNpc_c *npc) {
         if (npc->getModel()->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
             npc->mFace.setAnmTex(npc, anmId, m3d::PLAYMODE_INHERIT);
         }
-        fn_80194CB0(npc);
+        dHandItem::release(npc);
         npc->mLookAt.mReset = false;
         mCanChange = TRUE;
         mStep = 2;
@@ -6985,11 +6985,11 @@ void dAcNpc_c::action_c::execEat(dAcNpc_c *npc) {
 
 // 80025080
 int dAcNpc_c::action_c::initInspect(dAcNpc_c *npc) {
-    if (fn_80194AEC()) {
+    if (dHandItem::isActive()) {
         actionPrm_c *prm = getPrm();
         reset();
         setAngle(npc->mAngle.y);
-        if (fn_80194AA0(0xC, npc, lbl_80751600)) {
+        if (dHandItem::request(dHandItem_c::STATE_SHOW, npc, dHandItem::cDefaultReach)) {
             if (mSavedAnmId != 0x1BC) {
                 npc->mAnmSet.setAnm0(mSavedAnmId);
                 mSavedAnmId = 0x1BC;
@@ -7013,7 +7013,7 @@ int dAcNpc_c::action_c::initInspect(dAcNpc_c *npc) {
 
 // 800251D4
 void dAcNpc_c::action_c::inspectReq(dAcNpc_c *npc) {
-    if (fn_80194AA0(0xC, npc, lbl_80751600)) {
+    if (dHandItem::request(dHandItem_c::STATE_SHOW, npc, dHandItem::cDefaultReach)) {
         actionPrm_c *prm = getPrm();
         if (mSavedAnmId != 0x1BC) {
             npc->mAnmSet.setAnm0(mSavedAnmId);
@@ -7030,8 +7030,8 @@ void dAcNpc_c::action_c::inspectReq(dAcNpc_c *npc) {
 
 // 800252D4
 void dAcNpc_c::action_c::inspectWaitAnm(dAcNpc_c *npc) {
-    if (npc->getModel()->mAnm.isStop() && fn_80194AA0(7, npc, lbl_80751600)) {
-        fn_80194B4C(7, npc);
+    if (npc->getModel()->mAnm.isStop() && dHandItem::request(dHandItem_c::STATE_KEEP, npc, dHandItem::cDefaultReach)) {
+        dHandItem::setUseType(dHandItem_c::STATE_KEEP, npc);
         actionPrm_c *prm = getPrm();
         mSavedAnmId = npc->mAnmSet.mWaitAnm;
         npc->mAnmSet.setAnm0(0x67);

@@ -103,6 +103,13 @@ struct dHoldItemMgr_c {
 };
 extern dHoldItemMgr_c *lbl_8074E9E8;
 
+namespace dItem { struct Item; }
+extern "C" {
+BOOL fn_80190970(dHoldItemMgr_c *mgr, int player, int type, int kind, int a, int b); // hold up an item (d_fish_field)
+BOOL fn_80190900(dHoldItemMgr_c *mgr, int player, int type, dItem::Item *item, int a, int b); // hold up an item (d_hand_item)
+void fn_801909D4(dHoldItemMgr_c *mgr, int player); // stop holding
+}
+
 #define FISH_FIELD_FISH_NUM 8   // town fish (mFish), one sync record each
 #define FISH_FIELD_PLAYER_NUM 4 // fish held by the players (mPlayerFish)
 

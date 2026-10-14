@@ -1848,6 +1848,12 @@ dol/game/d_field.cpp:
 dol/game/d_hand_item.cpp:
 	.text       start:0x80191500 end:0x80195290
 	.ctors      start:0x80465830 end:0x80465834 align:8
+	.rodata     start:0x8047CC50 end:0x8047CE10
+	.data       start:0x804F9DB0 end:0x804FA098
+	.bss        start:0x80624098 end:0x80624220
+	.sdata      start:0x8074BF90 end:0x8074BFA0
+	.sbss       start:0x8074E9F8 end:0x8074EA18
+	.sdata2     start:0x80751600 end:0x80751678
 
 dol/game/d_environment.cpp:
 	.text       start:0x80195290 end:0x8019A264
