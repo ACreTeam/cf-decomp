@@ -39,7 +39,7 @@ int dAcNpcNml_c::talk_c::msgReMoveout(msgInfo_s *info) {
     int code = 0;
     BOOL movingOut = animal != NULL ? animal->isMovingOut() : FALSE;
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (movingOut && (player == NULL || player->isFlag0(0xD))) {
+    if (movingOut && (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB))) {
         movingOut = FALSE;
     }
     if (movingOut) {
@@ -138,7 +138,7 @@ int dAcNpcNml_c::talk_c::msgEvFirst(msgInfo_s *info) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = getAnimal();
     if (player != NULL && animal != NULL) {
-        BOOL first = player->isFlag0(0xD);
+        BOOL first = player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB);
         BOOL known = mpMemory != NULL;
         if (first && !known) {
             if (info == NULL) {
@@ -331,7 +331,7 @@ int dAcNpcNml_c::talk_c::msgReMovein(msgInfo_s *info) {
     BOOL movingIn = animal != NULL ? animal->isMovingIn() : FALSE;
     if (movingIn) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-        if (player == NULL || player->isFlag0(0xD)) {
+        if (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             movingIn = FALSE;
         }
     }
@@ -356,7 +356,7 @@ BOOL dAcNpcNml_c::talk_c::isReactionBlocked() const {
         return TRUE;
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    if (player == NULL || player->isFlag0(0xD)) {
+    if (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return TRUE;
     }
     if (animal->isLostItemRequestDone(player, TRUE) == FALSE) {

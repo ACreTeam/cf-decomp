@@ -85,7 +85,7 @@ BOOL Particle_c::calc(BOOL remove) {
     } else {
         sLib::chase(&mAlpha, 255, 32);
         mAngle += mAngleSpeed;
-        mAng cameraAngle = lbl_8074E9B0->getCurveAngle();
+        mAng cameraAngle = dCamera_c::sInstance->getCurveAngle();
         f32 x = mAngle.sin();
         f32 y = mAng(mAngle.mAngle * 2).cos();
         f32 z = mAng(mAngle.mAngle * 3).cos();
@@ -158,7 +158,7 @@ BOOL Particle_c::calcBus(BOOL remove, f32 wind) {
     } else {
         sLib::chase(&mAlpha, 255, 32);
         mAngle += mAngleSpeed;
-        mAng cameraAngle = lbl_8074E9B0->getCurveAngle();
+        mAng cameraAngle = dCamera_c::sInstance->getCurveAngle();
         f32 x = mAngle.sin();
         f32 y = mAng(mAngle.mAngle * 2).cos();
         f32 z = mAng(mAngle.mAngle * 3).cos();
@@ -283,7 +283,7 @@ BOOL dWeatherSnowDraw_c::create(nw4r::g3d::ResFile *file,
                                 mAllocator_c *allocator) {
     mTexture = file->GetResTex("af_snow00_ia");
     m3d::proc_c::create(allocator, NULL);
-    mCameraPos = lbl_8074E9B0->getTargetPos();
+    mCameraPos = dCamera_c::sInstance->getTargetPos();
     mTargetCount = 0.0f;
     mCount = 0;
 
@@ -327,7 +327,7 @@ BOOL dWeatherSnowDraw_c::create(nw4r::g3d::ResFile *file,
 }
 
 void dWeatherSnowDraw_c::init(int count) {
-    mCameraPos = lbl_8074E9B0->getTargetPos();
+    mCameraPos = dCamera_c::sInstance->getTargetPos();
     int active = 0;
     mVec3_c min, max;
     dWeatherSnow::getBounds(&min, &max);
@@ -359,7 +359,7 @@ BOOL dWeatherSnowDraw_c::calc(int weather) {
         count = 200;
         break;
     }
-    mVec3_c camera = lbl_8074E9B0->getTargetPos();
+    mVec3_c camera = dCamera_c::sInstance->getTargetPos();
     if (PSVECSquareDistance((const Vec *)&camera, (const Vec *)&mCameraPos) >
         1024.0f) {
         init(0);
@@ -403,7 +403,7 @@ BOOL dWeatherSnowDraw_c::calc(int weather) {
 
 BOOL dWeatherSnowDraw_c::calcBus(int weather) {
     using namespace dWeatherSnow;
-    mAng cameraAngle = lbl_8074E9B0->getYaw();
+    mAng cameraAngle = dCamera_c::sInstance->getYaw();
     mAng nearAngle(mAng::fromDegree(7.5f)), farAngle(mAng::fromDegree(82.5f));
     f32 farCos = farAngle.cos(), nearCos = nearAngle.cos();
     f32 blend = (cameraAngle.cos() - farCos) / (nearCos - farCos);
@@ -424,7 +424,7 @@ BOOL dWeatherSnowDraw_c::calcBus(int weather) {
         count = 200;
         break;
     }
-    mVec3_c camera = lbl_8074E9B0->getTargetPos();
+    mVec3_c camera = dCamera_c::sInstance->getTargetPos();
     if (PSVECSquareDistance((const Vec *)&camera, (const Vec *)&mCameraPos) >
         1024.0f) {
         init(0);

@@ -49,3 +49,8 @@ public:
     /* 0x1C */ u32 _1C;
     /* 0x20 */ EGG::Heap *mpHeap;
 }; // size 0x24
+
+extern "C" {
+// 802AD464: starts the DVD command thread (d_sys: thread priority 15, mHeap::g_commandHeap / g_archiveHeap).
+void fn_802AD464(int priority, EGG::Heap *commandHeap, EGG::Heap *archiveHeap, int dvdPriority);
+}

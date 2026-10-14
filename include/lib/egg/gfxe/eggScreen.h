@@ -44,6 +44,7 @@ public:
 
     Screen();
     void SetProjectionGX() const;
+    void CopyToG3D(nw4r::g3d::Camera camera) const;
     void CopyFromAnother(const Screen &);
     // 80448F1C: the matrix that maps the unit quad onto (x, y, width, height) of this screen (name from SS's EGG).
     void CalcMatrixForDrawQuad(nw4r::math::MTX34 *mtx, f32 x, f32 y, f32 width, f32 height) const;

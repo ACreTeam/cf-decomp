@@ -198,7 +198,7 @@ int daSnowMan_c::draw() {
         mMtx_c mtx;
         mpMdl->getLocalMtx(&mtx);
         mSphere_c sphere(mVec3_c(mtx.m[0][3], mtx.m[1][3], mtx.m[2][3]), radius);
-        if (lbl_8074E9B0->mCullFrustum.intersectSphere(&sphere)) {
+        if (dCamera_c::sInstance->mCullFrustum.intersectSphere(&sphere)) {
             mpMdl->entry();
             if (mState != STATE_SINK) {
                 angle = 0;
@@ -905,7 +905,7 @@ void daSnowMan_c::initTalkEnd() {
     } else {
         target.y += getRadius();
     }
-    lbl_8074E9B0->startTalkView(&target);
+    dCamera_c::sInstance->startTalkView(&target);
 }
 
 // 801845B0
@@ -924,7 +924,7 @@ void daSnowMan_c::executeTalkEnd() {
 
 // 8018468C
 void daSnowMan_c::finalTalkEnd() {
-    lbl_8074E9B0->_1A8 = lbl_8074E9B0->_1A4;
+    dCamera_c::sInstance->mRequestedMode = dCamera_c::sInstance->mDefaultMode;
     mJustBuilt = false;
 }
 

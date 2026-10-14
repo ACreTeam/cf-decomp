@@ -28,7 +28,7 @@ const talk_c::hookFunc dAcNpcNml_c::talk_c::getRollanChoice(u16 *code, u8 *flag)
 
     dAnimalBlock_c *block;
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player == NULL || player->isFlag0(0xD)) {
+    if (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return NULL;
     }
     if (!player->mPID.isFromTown()) {
@@ -144,7 +144,7 @@ BOOL dAcNpcNml_c::talk_c::stepRollan(int kind) {
 // 80060ED8
 BOOL dAcNpcNml_c::talk_c::rollRollanGift() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player == NULL || player->findEmptyPocket(0) == -1 || player->isFlag0(0xD)) {
+    if (player == NULL || player->findEmptyPocket(0) == -1 || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     u32 rating2 = 0;

@@ -3387,7 +3387,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
     if (!pid->isValid() || !pid->isFromTown()) {
         return FALSE;
     }
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
 
@@ -5431,7 +5431,7 @@ BOOL dAnimal_c::isLostItemRequestDone(dPrivateData_c *player, BOOL checkFlag) {
         if (player == NULL) {
             player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
         }
-        if (player != NULL && player->isFlag0(0xD)) {
+        if (player != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             return TRUE;
         }
     }
@@ -5730,7 +5730,7 @@ dItem::Item dAnimal_c::getWishTool() {
         break;
     case 3: {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-        if (player == NULL || !player->isFlag0(0xD)) {
+        if (player == NULL || !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             if (wantsParasol()) {
                 dItem::Item tmp = getUmbrella();
                 if (isFancyUmbrella(&tmp)) {
@@ -5742,7 +5742,7 @@ dItem::Item dAnimal_c::getWishTool() {
     }
     case 6: {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-        if (player == NULL || !player->isFlag0(0xD)) {
+        if (player == NULL || !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             item.setFromIndex(dItem::ITEM_IDX_WATERING_CAN);
         }
         break;
@@ -6958,7 +6958,7 @@ BOOL dAnimalBlock_c::isHomeStayTime(const dAnmPersonalID_c *id, dPrivateData_c *
         player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     }
 
-    if (player == NULL || !player->mPID.isValid() || player->isFlag0(0xD)) {
+    if (player == NULL || !player->mPID.isValid() || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
 
@@ -6987,7 +6987,7 @@ BOOL dAnimalBlock_c::isHomeStayTime(const dAnmPersonalID_c *id, dPrivateData_c *
 // 8012BB4C
 void dAnimalBlock_c::updateAnimalPlaces() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    BOOL flag = player != NULL ? player->isFlag0(0xD) : FALSE;
+    BOOL flag = player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE;
     dAnimal_c *animal = getAnimal(0);
     BOOL event = dEvent::isActive(EVENT_TOY_DAY) != FALSE;
 
@@ -8097,7 +8097,7 @@ dPlayerID_c *dAnimalBlock_c::pickStyleOtherPlayer(dAnimal_c *animal, dPrivateDat
 
     dPersonalID_c *pid;
     const dPersonalID_c *selfPid = &self->mPID;
-    if (!selfPid->isValid() || self->isFlag0(0xD)) {
+    if (!selfPid->isValid() || self->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return NULL;
     }
 
@@ -8107,7 +8107,7 @@ dPlayerID_c *dAnimalBlock_c::pickStyleOtherPlayer(dAnimal_c *animal, dPrivateDat
         dPrivateData_c *player = dPrivateData_c::getRaw(players, i);
         if (player != NULL) {
             pid = &player->mPID;
-            if (pid->isValid() && !player->isFlag0(0xD) && animal->findMemory2(pid)) {
+            if (pid->isValid() && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && animal->findMemory2(pid)) {
                 if (!(*pid == *selfPid)) {
                     f32 chance = 100.0f / (count + 1);
                     if (cM::rndF(100.0f) <= chance) {
@@ -8126,7 +8126,7 @@ BOOL dAnimalBlock_c::canStartStyle(dAnimal_c *animal, dPrivateData_c *players, d
     if (!animal->mID.isValid()) {
         return FALSE;
     }
-    if (self == NULL || !self->mPID.isValid() || self->isFlag0(0xD) || !self->mPID.isFromTown()) {
+    if (self == NULL || !self->mPID.isValid() || self->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) || !self->mPID.isFromTown()) {
         return FALSE;
     }
     if ((u32)getStyleAnimalIdx() < ANIMAL_NUM) {
@@ -8372,7 +8372,7 @@ BOOL dAnimalBlock_c::updateStyleDaily(BOOL arg) {
 
 // 8012EF00
 BOOL dAnimalBlock_c::canStartAppointment(dPrivateData_c *player, dTime_c *time, int kind) {
-    if (player == NULL || !player->mPID.isValid() || player->isFlag0(0xD) || !player->mPID.isFromTown()) {
+    if (player == NULL || !player->mPID.isValid() || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) || !player->mPID.isFromTown()) {
         return FALSE;
     }
     if (dNet::isSessionActive()) {
@@ -8924,7 +8924,7 @@ int dAnimalBlock_c::pickHider(const int *exclude, u32 num) {
 
 // 8013048C
 BOOL dAnimalBlock_c::canStartHideAndSeek(dPrivateData_c *player) {
-    if (player == NULL || !player->mPID.isValid() || player->isFlag0(0xD) || !player->mPID.isFromTown()) {
+    if (player == NULL || !player->mPID.isValid() || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) || !player->mPID.isFromTown()) {
         return FALSE;
     }
     if (!dQuestBase_c::checkEventSchedule(QUEST_KIND_HIDE_AND_SEEK, NULL)) {
@@ -9713,7 +9713,7 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
         if (isItemChanged(give, cur)) {
             changed = TRUE;
         }
-    } else if (player != NULL && player->isFlag0(0xD) && isKind43) {
+    } else if (player != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && isKind43) {
         give = dItem::ITEM_ID_NONE;
         set = TRUE;
         if (isItemChanged(give, cur)) {
@@ -9762,7 +9762,7 @@ BOOL dAnimalBlock_c::updateHalloweenFlag(int idx) {
     u32 event = isEventOngoing(kind) != 0;
     u32 cur = obj->isFlag(0);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player != NULL && player->isFlag0(0xD) && event) {
+    if (player != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && event) {
         event = 0;
     }
 
@@ -9851,7 +9851,7 @@ int dAnimalBlock_c::pickBirthdayHost(dPrivateData_c *player) {
     if (!pid->isValid() || !pid->isFromTown()) {
         return -1;
     }
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return -1;
     }
 
@@ -9972,7 +9972,7 @@ void dAnimalBlock_c::sendBirthdayLetters() {
 
     s32 year = dTime_c::getCurrent()->year;
     bool inScene = dScene::getCurrentScene() == dScene::SCENE_DM_PL_SEL;
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         player->mBirthdayHost.mLetterYear = year;
         return;
     }
@@ -10174,7 +10174,7 @@ void dAnimalBlock_c::sendValentineLetter(dPrivateData_c *player) {
 
     last = &player->mValentineYear;
     s32 year = dTime_c::getCurrent()->year;
-    if (player->isFlag0(0xD)) {
+    if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         last->mYear = year;
         return;
     }
@@ -10258,7 +10258,7 @@ void dAnimalBlock_c::sendNewYearLetters(dPrivateData_c *player) {
         if (pid->isValid() && dEvent::isOngoing(reinterpret_cast<const dQuestEvent_e &>(s_801334A8_event))) {
             last = &player->mNewYearYear;
             int year = dTime_c::getCurrent()->year;
-            if (player->isFlag0(0xD)) {
+            if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
                 last->mYear = year;
             } else if (year != last->mYear) {
                 dAnimal_c *animal = getAnimal(0);

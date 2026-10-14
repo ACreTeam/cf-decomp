@@ -92,7 +92,7 @@
 //   807502D4 0x04 .float 96
 //   807502D8 0x08 .4byte 0x00070007 .4byte 0x000A000A
 // External: endQuestCommon (d_npc_talk_quest_delivery), lbl_804A0784 entries [1..4] (nml talk states), lbl_804A0E48,
-// l_walkTargetPos (walk target), lbl_8074E9B0 (sbss pointer, actVisitArrive).
+// l_walkTargetPos (walk target), dCamera_c::sInstance (sbss pointer, actVisitArrive).
 // 807502D0..807502E0 (f32 48, f32 96, u16[4]) follow "Q08_Bye" but are not referenced here (owner unknown).
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest

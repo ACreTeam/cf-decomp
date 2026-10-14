@@ -108,7 +108,7 @@ void playDigitKeySe(int idx, BOOL a, BOOL b); // 800CB188: digit key SE (b: thir
 void playUpperKeySe(int idx);                // 800CB1EC: upper case letter key SE
 void playAltKeySe(int idx);                // 800CB234: letter key SE (b)
 void playLowerKeySe(int idx);                // 800CB27C: lower case letter key SE
-void playKeySe(wchar_t c, BOOL a, BOOL b); // 800CB2DC: the key SE of c (0x16DA for others)
+void playKeySe(wchar_t c, BOOL a, BOOL b, BOOL pcKeyboard); // 800CB2DC: the key SE of c (0x16DA for others); pcKeyboard (d_kbd) is unused
 
 int getEntryNum(int kind, const char *label); // 800CB34C: the number of entries of the mail BMG kind/label
 // 800CB3C8: word = entry idx of the mail BMG kind/label (it has to fit)

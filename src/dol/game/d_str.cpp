@@ -178,8 +178,8 @@ void viewArea_c::set(f32 front, f32 back, f32 halfWidth) {
 
 // 80166BB8
 BOOL viewArea_c::isIn(const mVec3_c &pos) const {
-    f32 dx = pos.x - lbl_80623FEC.x;
-    f32 dz = pos.z - lbl_80623FEC.z;
+    f32 dx = pos.x - dCamera_c::sCenter.x;
+    f32 dz = pos.z - dCamera_c::sCenter.z;
     return !isOutside(std::fabs(dx), dz);
 }
 

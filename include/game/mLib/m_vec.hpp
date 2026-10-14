@@ -140,6 +140,9 @@ public:
     /// @brief Constructs a new vector from an existing vector from the NW4R library.
     mVec3_c(const nw4r::math::VEC3 &v) { set(v.x, v.y, v.z); }
 
+    /// @brief Constructs a vector from a plain _VEC3.
+    mVec3_c(const nw4r::math::_VEC3 &v) { set(v.x, v.y, v.z); }
+
     /// @brief Copy constructor with a different Z value.
     mVec3_c(const mVec3_c &v, float fz) { x = v.x; y = v.y; z = fz; }
     mVec3_c(const mVec2_c &v, float fz) { x = v.x; y = v.y; z = fz; }
@@ -176,7 +179,7 @@ public:
     mVec3_c &operator*=(f32 f) { x *= f; y *= f; z *= f; return *this; }
 
     /// @brief Augmented scalar division operator.
-    mVec3_c &operator/=(f32 f) { return operator*=(1.0f / f); }
+    mVec3_c &operator/=(f32 f) { f32 r = 1.0f / f; x *= r; y *= r; z *= r; return *this; }
 
     /// @brief Positive operator.
     mVec3_c operator+() const { return *this; }

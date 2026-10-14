@@ -704,7 +704,7 @@ int dHR::rate(dHR::area_c *area, dHR::result_c *res, dHR::fdCb_c *cb, int start,
     dHomeList_c *homes;
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (mode == 1 && player != NULL && letter) {
-        if (isTownPlayer(player) && !player->isFlag0(0xD) && !player->isFlag0(PRIVATE_FLAG0_HRA_JOINED)) {
+        if (isTownPlayer(player) && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && !player->isFlag0(PRIVATE_FLAG0_HRA_JOINED)) {
             static u16 kind = HR_MAIL_WELCOME;
             static u16 sender = MAIL_FROM_HRA << 8; // the bytes {MAIL_FROM_HRA, 0}
             static int paper = dItem::ITEM_IDX_ACADEMY_PAPER;

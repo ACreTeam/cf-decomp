@@ -22,10 +22,6 @@
 #include <game/game/d_npc_list.hpp>
 #include <game/snd/snd_id.hpp>
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-}
-
 namespace dBgm {
 
 // 80077754: counts a timer down unless the process manager stops execution.
@@ -514,7 +510,7 @@ void StgField_c::checkHome() {
     if (player != NULL) {
         if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
             id = BGM_ARBEIT_PRE;
-        } else if (player->isFlag0(0xD)) {
+        } else if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             id = BGM_ARBEIT;
         }
     }
@@ -1049,7 +1045,7 @@ void StgShop_c::execute() {
     const ShopTime_s *time = &sShopTime[mType];
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL flag = FALSE;
-    if (player != NULL && player->isFlag0(0xD)) {
+    if (player != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         flag = TRUE;
     }
     if (!flag && (now->isTime(time->mStartH, time->mStartM, time->mStartS, time->mCloseH, time->mCloseM,
@@ -2944,7 +2940,7 @@ void VolStateSky_c::init() {
 
 void VolStateSky_c::execute() {
     bool on = false;
-    if (lbl_8074E9B0 != NULL && lbl_8074E9B0->isFollowLookUp()) {
+    if (dCamera_c::sInstance != NULL && dCamera_c::sInstance->isFollowLookUp()) {
         on = true;
     }
     if (mOn) {

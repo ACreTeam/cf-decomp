@@ -562,7 +562,7 @@ mAng dEnvironment_c::getMoonAngle() {
 
 mAng dEnvironment_c::getCurveAngle() {
     if (dScene::getSceneE848() && dWorld::isCurve()) {
-        return dWorld::getCurveAngle(static_cast<const mVec3_c *>(&lbl_80623FEC)).mAngle - DEG_TO_ANGLE(29);
+        return dWorld::getCurveAngle(&dCamera_c::sCenter).mAngle - DEG_TO_ANGLE(29);
     }
     return 0;
 }
@@ -1028,7 +1028,7 @@ void dBusTunnelLight_c::calc() {
     mTimer++;
     s16 angMax = mAng::fromDegree(7.5f);
     s16 angMin = mAng::fromDegree(82.5f);
-    mAng yaw = lbl_8074E9B0->getYaw();
+    mAng yaw = dCamera_c::sInstance->getYaw();
     f32 cosMin = nw4r::math::CosIdx(angMin);
     f32 cosMax = nw4r::math::CosIdx(angMax);
     f32 t = (nw4r::math::CosIdx(yaw) - cosMin) / (cosMax - cosMin);
@@ -1087,7 +1087,7 @@ void dEffectLight_c::apply() {
         viewPos = *player->getPosP();
         viewPos.y += 20.0f;
     } else {
-        viewPos = lbl_80623FEC;
+        viewPos = dCamera_c::sCenter;
     }
 
     if (mGlowNum > 0) {

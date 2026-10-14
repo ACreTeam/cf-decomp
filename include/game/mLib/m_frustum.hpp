@@ -19,7 +19,7 @@ public:
     * @param far The distance to the far clipping plane.
     * @param cameraMtx The matrix defining the camera's transform in world space.
     */
-    void set(f32 fovy, f32 aspect, f32 n, f32 f, const mMtx_c &cameraMtx);
+    void set(f32 fovy, f32 aspect, f32 n, f32 f, const nw4r::math::MTX34 &cameraMtx);
 
     /**
     * @brief Builds an arbitrary perspective or orthographic frustum.
@@ -32,7 +32,7 @@ public:
     * @param cameraMtx The matrix defining the camera's transform in world space.
     * @param orthographic @p true for orthographic projection, @p false for perspective projection.
     */
-    void set(f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far, const mMtx_c &cameraMtx, bool orthographic);
+    void set(f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far, const nw4r::math::MTX34 &cameraMtx, bool orthographic);
 
     /// @brief Checks whether the given sphere is at least partially inside the frustum.
     bool intersectSphere(const mSphere_c *sphere) const;

@@ -124,7 +124,7 @@ f32 getRadius() {
 }
 
 BOOL getHorizonPosition(mVec3_c *result, const mVec3_c *position) {
-    if (lbl_8074E9B0 != NULL) {
+    if (dCamera_c::sInstance != NULL) {
         mVec3_c pos;
         if (position == NULL) {
             dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
@@ -137,7 +137,7 @@ BOOL getHorizonPosition(mVec3_c *result, const mVec3_c *position) {
         }
         if (result != NULL) {
             mVec3_c eye;
-            curvePositionSimple(&eye, &lbl_80624004);
+            curvePositionSimple(&eye, &dCamera_c::sEye);
             pos.z = angleToZ(getHorizonAngle(&eye, &pos));
             *result = pos;
             return TRUE;
@@ -151,11 +151,11 @@ mAng getPlayerHorizonAngle(bool *ok) {
     if (ok == NULL) {
         ok = &dummy;
     }
-    dCamera_c *camera = lbl_8074E9B0;
+    dCamera_c *camera = dCamera_c::sInstance;
     dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (camera != NULL && player != NULL) {
         mVec3_c eye;
-        curvePositionSimple(&eye, &lbl_80624004);
+        curvePositionSimple(&eye, &dCamera_c::sEye);
         *ok = true;
         return getHorizonAngle(&eye, &player->mPos);
     }

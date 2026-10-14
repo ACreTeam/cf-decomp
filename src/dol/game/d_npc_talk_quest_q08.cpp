@@ -28,7 +28,7 @@ int dAcNpcNml_c::talk_c::msgVisitOffer(msgInfo_s *info) {
         return FALSE;
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player == NULL || player->isFlag0(0xD)) {
+    if (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     dSaveData_c *save = dSaveData_c::getRaw();
@@ -377,7 +377,7 @@ void dAcNpcNml_c::talk_c::actVisitArrive() {
         if (npc->mAction.mCanChange) {
             npc->mAction.requestWait(1);
             reqMsgClose();
-            lbl_8074E9B0->startTalkView(npc->demoHook58());
+            dCamera_c::sInstance->startTalkView(npc->demoHook58());
             clearActProc();
             dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(0);
         }

@@ -54,3 +54,7 @@ namespace mFace {
         mAllocator_c *mpAllocator;  // 0xB0
     };
 }
+
+extern "C" {
+void fn_802B3B10(); // 802B3B10: the per-frame pass over the queued mFace::obj_c (calls init()); d_sys runFrame
+}

@@ -187,7 +187,7 @@ void dEffect::draw(int creator, int group) {
         mMtx_c view;
         camera.GetCameraMtx(&view);
         info.SetViewMtx(view);
-        info.SetProjMtx(makeProjection(dCamera_c::getFovy(), lbl_8074E9B0->getAspect()));
+        info.SetProjMtx(makeProjection(dCamera_c::getFovy(), dCamera_c::sInstance->getAspect()));
         break;
     }
     case 4: {
@@ -204,7 +204,7 @@ void dEffect::draw(int creator, int group) {
         if (lbl_8074E830) view = lbl_8074E830->mMtx538;
         else camera.GetCameraMtx(&view);
         info.SetViewMtx(view);
-        info.SetProjMtx(makeProjection(dCamera_c::getFovy(), lbl_8074E9B0->getAspect()));
+        info.SetProjMtx(makeProjection(dCamera_c::getFovy(), dCamera_c::sInstance->getAspect()));
         break;
     }
     case 2: {

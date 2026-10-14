@@ -1,6 +1,7 @@
-// d_letter: letter text building and the keyboard key sound effects. .text 800CB0CC..800CCCD8.
+// d_letter: letter text building and the keyboard key sound effects. .text 800CB0BC..800CCCD8.
 // See include/game/game/d_letter.hpp.
 #include <game/game/d_letter.hpp>
+#include <game/game/d_kbd.hpp>
 #include <game/game/d_item.hpp>
 #include <game/game/d_land.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -318,6 +319,21 @@ static const char *sMailDirs[dLetter::MAIL_KIND_NUM] = {
     "sys_MAIL2/MSG2_A/", "sys_MAIL2/MSG2_B/", "sys_MAIL2/MSG2_C/", "sys_MAIL2/FROM2/",
 };
 
+// The keyboard SEs of d_kbd (declared in d_kbd.hpp) open this TU's .text.
+namespace dKbd {
+
+// 800CB0BC
+void playSeCanNotInput() {
+    playSe(SE_keyboard_CanNotInputWord);
+}
+
+// 800CB0C4
+void playSeSubmit() {
+    playSe(SE_text_submit);
+}
+
+} // namespace dKbd
+
 namespace dLetter {
 
 // 805A02D0 (static initializer 800CCBBC)
@@ -382,7 +398,7 @@ void playLowerKeySe(int idx) {
 }
 
 // 800CB2DC
-void playKeySe(wchar_t c, BOOL a, BOOL b) {
+void playKeySe(wchar_t c, BOOL a, BOOL b, BOOL pcKeyboard) {
     if (c >= L'0' && c <= L'9') {
         playDigitKeySe(c - L'0', a, b);
     } else if (c >= L'A' && c <= L'Z') {

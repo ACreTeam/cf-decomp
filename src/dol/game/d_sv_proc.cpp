@@ -8,6 +8,7 @@
 #include <game/game/d_footmark.hpp>
 #include <game/game/d_home_room_map.hpp>
 #include <game/game/d_hr.hpp>
+#include <game/game/d_kbd.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_npc_info.hpp>
 #include <game/game/d_npc_mng.hpp>
@@ -21,7 +22,6 @@
 #include <game/game/d_wifi.hpp>
 
 // Unrecovered dependency interfaces; the implementations are outside this TU.
-extern "C" void fn_800CAC20();
 BOOL sendVisitorLetter(dPrivateData_c *player);
 void *fgMngProcThreadFunc(void *);
 void startFgMngProcThread(void *(*)(void *));
@@ -361,7 +361,7 @@ void dSvProc_c::updateTown() {
     dSaveData_c::getTown()->mAnimals.mTown.assignQuestCandidates();
     dSTR::getCityUnitAttr()->setAll();
     dSaveData_c::getTown()->setFlag(0x15);
-    fn_800CAC20();
+    dKbd::resetSetting();
     dSaveData_c::getTown()->mAnimals.mTown.clearSpots();
     dSaveData_c::getTown()->mAnimals.mTown.clearAllQuestStarted();
     dSaveData_c::getTown()->mAnimals.mTown.clearAllQuestStarted2();
@@ -381,7 +381,7 @@ void dSvProc_c::initializePlayer() {
     day.add(0, -6, 0, 0);
     player->mMotherMail.mLastDate.set(&day);
     player->setFlag0(0xC);
-    player->setFlag0(0xD);
+    player->setFlag0(PRIVATE_FLAG0_PART_TIME_JOB);
     player->setFlag0(0x29);
     if (now.month == MONTH_OCTOBER) {
         player->setFlag0(0x56);

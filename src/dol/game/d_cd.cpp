@@ -33,7 +33,7 @@ int dCd_c::create() {
 int dCd_c::execute() {
     BOOL skip = FALSE;
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    if (player != NULL && player->isFlag0(0xD)) {
+    if (player != NULL && player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         skip = TRUE;
     }
     if (!mEnabled || skip) {

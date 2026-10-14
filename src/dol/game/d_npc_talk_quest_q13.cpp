@@ -20,7 +20,7 @@ int dAcNpcNml_c::talk_c::msgStyleOffer(msgInfo_s *info) {
         return FALSE;
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player == NULL || player->isFlag0(0xD)) {
+    if (player == NULL || player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
         return FALSE;
     }
     dSaveData_c *save = dSaveData_c::getRaw();

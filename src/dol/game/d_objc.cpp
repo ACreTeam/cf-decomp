@@ -26,12 +26,6 @@
 #include <revolution/MTX.h>
 #include <cmath>
 
-// Not decompiled yet (C linkage keeps the target names).
-extern "C" {
-
-// 8018A080 (d_camera): a screen position to a world position
-}
-
 // The process that runs the collision every frame (RTTI "dObjc_c").
 class dObjc_c : public fBase_c {
 public:
@@ -222,7 +216,7 @@ void dpdQuad_c::set(const mVec3_c &p0, const mVec3_c &p1, const mVec3_c &p2, con
         c += p1;
         c += p2;
         c += p3;
-        c /= 4.0f;
+        c *= 0.25f;
         mTri[0].set(tri0, type, owner, &c, param);
         mTri[1].set(tri1, type, owner, &c, param);
     }
@@ -581,7 +575,7 @@ void calc() {
         }
     }
 
-    cam = lbl_8074E9B0;
+    cam = dCamera_c::sInstance;
     player = dPlayerMgr::getPlayerActor(4);
     field = dField::getInfo(0);
     l_dpdPos.clear();
@@ -626,7 +620,7 @@ void calc() {
                 l_dpdPos.set(pos, water);
             }
             if (!ground && !water) {
-                nw4r::math::VEC3 *const center = &lbl_80623FEC;
+                nw4r::math::VEC3 *const center = &dCamera_c::sCenter;
                 mVec3_c s2 = start;
                 mVec3_c e2 = end;
                 static f32 s_width = s_range;

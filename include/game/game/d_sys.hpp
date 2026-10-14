@@ -18,6 +18,7 @@ void beginRender(); // 8016B894
 void endRender(); // 8016B8AC
 void beginFrame(); // 8016B8E4
 void endFrame(); // 8016B934
+EGG::SimpleAudioMgr *getAudioMgr(); // unused (stripped); sets the weak getAudioMgr order
 BOOL setBlack(u32 black); // 8016B97C: request a video black-state change
 void setFrameRate(u8 rate); // 8016B9FC
 void setClearColor(const nw4r::ut::Color &color); // 8016BA14

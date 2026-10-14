@@ -736,7 +736,7 @@ dol/game/d_activity_log.cpp:
 	.bss        start:0x8059FF90 end:0x8059FFA8
 
 dol/game/d_kbd.cpp:
-	.text       start:0x800C7BE4 end:0x800CB0CC
+	.text       start:0x800C7BE4 end:0x800CB0BC
 	.rodata     start:0x80472E40 end:0x80472E50
 	.data       start:0x804EAA10 end:0x804EAFF8
 	.bss        start:0x8059FFA8 end:0x805A02C0
@@ -745,7 +745,7 @@ dol/game/d_kbd.cpp:
 	.sdata2     start:0x80750840 end:0x80750860
 
 dol/game/d_letter.cpp:
-	.text       start:0x800CB0CC end:0x800CCCD8
+	.text       start:0x800CB0BC end:0x800CCCD8
 	.ctors      start:0x804656C4 end:0x804656C8
 	.rodata     start:0x80472E50 end:0x80473870
 	.data       start:0x804EAFF8 end:0x804EB238
@@ -1839,9 +1839,16 @@ dol/game/d_demo.cpp:
 
 dol/game/d_event_mng.cpp:
 	.text       start:0x8018F588 end:0x8018FE10
+	.data       start:0x804F9930 end:0x804F9AE8
+	.sdata      start:0x8074BF30 end:0x8074BF40
 
 dol/game/d_fi_mdl_mgr.cpp:
 	.text       start:0x8018FE10 end:0x80190BE4
+	.rodata     start:0x8047C050 end:0x8047CC50
+	.data       start:0x804F9AE8 end:0x804F9CD0
+	.bss        start:0x80624040 end:0x80624060
+	.sdata      start:0x8074BF40 end:0x8074BF70
+	.sbss       start:0x8074E9E8 end:0x8074E9F0
 
 dol/game/d_field.cpp:
 	.text       start:0x80190BE4 end:0x80191500
@@ -1854,6 +1861,12 @@ dol/game/d_field.cpp:
 dol/game/d_hand_item.cpp:
 	.text       start:0x80191500 end:0x80195290
 	.ctors      start:0x80465830 end:0x80465834 align:8
+	.rodata     start:0x8047CC50 end:0x8047CE10
+	.data       start:0x804F9DB0 end:0x804FA098
+	.bss        start:0x80624098 end:0x80624220
+	.sdata      start:0x8074BF90 end:0x8074BFA0
+	.sbss       start:0x8074E9F8 end:0x8074EA18
+	.sdata2     start:0x80751600 end:0x80751678
 
 dol/game/d_environment.cpp:
 	.text       start:0x80195290 end:0x8019A264

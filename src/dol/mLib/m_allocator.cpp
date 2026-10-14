@@ -84,12 +84,6 @@ void mAllocator_c::init(EGG::Heap *heap) {
     new(heap, 4) mAllocatorDummyHeap_c();
 }
 
-mHeapAllocator_c::mHeapAllocator_c() {}
-
-mHeapAllocator_c::~mHeapAllocator_c() {
-    destroyHeap();
-}
-
 bool mHeapAllocator_c::createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt) {
     destroyHeap();
     EGG::FrmHeap *heap = mHeap::createFrmHeap(size, parent, name, align, opt);

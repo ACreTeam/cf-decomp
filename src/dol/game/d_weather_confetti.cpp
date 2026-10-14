@@ -83,7 +83,7 @@ BOOL Particle_c::calc(BOOL remove) {
         mRotation += mSpin;
         sLib::chase(&mAlpha, 255, 32);
         mAngle += mAngleSpeed;
-        mAng cameraAngle = lbl_8074E9B0->getCurveAngle();
+        mAng cameraAngle = dCamera_c::sInstance->getCurveAngle();
         f32 x = mAngle.sin();
         f32 y = mAng(mAngle.mAngle * 2).cos();
         f32 z = mAng(mAngle.mAngle * 3).cos();
@@ -205,7 +205,7 @@ BOOL dWeatherConfettiDraw_c::create(nw4r::g3d::ResFile *file,
     mMaterial = model.GetResMat(0);
     mShape = model.GetResShp(0);
     m3d::proc_c::create(allocator, NULL);
-    mCameraPos = lbl_8074E9B0->getTargetPos();
+    mCameraPos = dCamera_c::sInstance->getTargetPos();
     mTargetCount = 0.0f;
     mCount = 0;
 
@@ -251,7 +251,7 @@ BOOL dWeatherConfettiDraw_c::calc() {
     if (mEnabled) {
         count = 120;
     }
-    mVec3_c camera = lbl_8074E9B0->getTargetPos();
+    mVec3_c camera = dCamera_c::sInstance->getTargetPos();
     if (PSVECSquareDistance((const Vec *)&camera, (const Vec *)&mCameraPos) >
         1024.0f) {
         init();
