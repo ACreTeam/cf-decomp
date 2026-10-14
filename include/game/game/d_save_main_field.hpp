@@ -65,7 +65,7 @@ public:
     void clear(); // 801106F4
     BOOL createBlocks(); // 8011076C: nothing to do
     BOOL createField(EGG::Heap *heap); // 80110774: steps mCreateStep up to MAIN_FIELD_CREATE_FIELD_DONE
-    BOOL createFinish(); // 80110958: up to MAIN_FIELD_CREATE_DONE
+    BOOL createFinish(EGG::Heap *heap); // 80110958: heap unused; up to MAIN_FIELD_CREATE_DONE
     void resetCreate(); // 801109D4: back to MAIN_FIELD_CREATE_FIELD_DONE
     BOOL setBridgeBlock(int blockX, int blockZ); // 801109EC: where the extra bridge goes, unless already set or built
     BOOL buildBridge(); // 80110A7C: the block at mBridgeBlockX/Z to its bridge variant (BLOCK_KIND_FLAG_BRIDGE)

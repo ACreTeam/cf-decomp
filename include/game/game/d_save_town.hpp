@@ -94,6 +94,10 @@ struct dWifiTownMsg_c {
 
 class dSaveTown_c {
 public:
+    struct RegionInfo_c {
+        u8 language : 4;
+        u8 region : 4;
+    };
     BOOL isHeaderVersionOK();             // 80115CDC
     BOOL isHeaderState2();                // 80115CE0
     void updateTownChecksum();            // 80115CE4: header, players, animals, mTownChecksum
@@ -112,6 +116,8 @@ public:
     static BOOL isBusNetEventPending();   // 80116570: WiiConnect24 connected and SAVE_FLAG_BUS_NET_EVENT_DONE not set
     void backupFlag6();                   // 801165B8: SAVE_FLAG_FLAG6_BACKUP = flag 6
     dSvAuc_c *getAuction() { return &mAuction; }
+    void setPublicWorksDays(u8 days) { mPublicWorksDays = days; }
+    dLandID_c *getLandID() { return &mLandID; }
 
     /* 0x000000 */ dSaveCheck_c mHeader;
     /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
@@ -159,8 +165,10 @@ public:
     /* 0x0735AE */ dSvDailyRand::Rand_c mDailyRand;
     /* 0x0735AF */ dItem::dSaveItemRarity_c mItemRarity;
     /* 0x0735B7 */ dSvWeek::Week_c mWeek;  // the game week (d_sv_week)
-    /* 0x0735C2 */ u8 _0735C2;              // low nibble: region (getRegion() value, dSaveData_c::getTownRegion);
-                                            // high nibble: language (LANGUAGE_*, dSaveData_c::getTownLanguage)
+    /* 0x0735C2 */ union {
+        u8 _0735C2;
+        RegionInfo_c mRegionInfo;
+    };
     /* 0x0735C3 */ u8 mFlags[8];           // town flags, bits 0..63 (SAVE_FLAG_*, isFlag / setFlag / clearFlag)
     /* 0x0735CB */ u8 mPublicWorksDays;     // days left in the public works vote; 0xFF = none
     /* 0x0735CC */ u8 mNewConstruction;     // NEW_CONSTRUCTION_*

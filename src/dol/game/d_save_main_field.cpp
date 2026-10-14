@@ -99,7 +99,7 @@ BOOL dSaveMainField_c::createField(EGG::Heap *heap) {
 }
 
 // 80110958
-BOOL dSaveMainField_c::createFinish() {
+BOOL dSaveMainField_c::createFinish(EGG::Heap *heap) {
     if (mCreateStep == MAIN_FIELD_CREATE_FIELD_DONE) {
         dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
         if (fd != NULL) {

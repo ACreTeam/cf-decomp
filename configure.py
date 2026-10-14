@@ -875,7 +875,7 @@ config.libs = [
             Object(Matching, "dol/game/d_item_debug.cpp"),
             Object(Matching, "dol/game/d_item_sel.cpp"),
             Object(Matching, "dol/game/d_activity_log.cpp"),
-            Object(NonMatching, "dol/game/d_sv_proc.cpp"),
+            Object(Matching, "dol/game/d_sv_proc.cpp"),
             Object(Matching, "dol/game/d_scene_base.cpp"),
             Object(Matching, "dol/game/d_obj_bal.cpp"),
             Object(Matching, "dol/game/d_obj_chat.cpp"),

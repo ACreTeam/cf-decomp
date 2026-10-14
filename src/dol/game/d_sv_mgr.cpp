@@ -170,7 +170,7 @@ int dSvMgr_c::create() {
     dState::mode_c<dSvMgr_c>::initialize("dSvMgr_c", modes, 11);
     mLoadFailed = false;
     if (dScene::getCurrentScene() == dScene::SCENE_DM_LOAD) {
-        fn_80154358(lbl_8074E7F8);
+        dSvProc::sProc.reset();
         changeMode(&dSvMgr_c::executeLoad);
     }
     field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
@@ -184,9 +184,9 @@ int dSvMgr_c::doDelete() {
     if (dScene::getCurrentScene() == dScene::SCENE_DM_LOAD) {
         int result;
         if (mLoadFailed) {
-            result = fn_8015436C(lbl_8074E7F8, 5);
+            result = dSvProc::sProc.process(dSvProc_c::MODE_TITLE);
         } else {
-            result = fn_8015436C(lbl_8074E7F8, 6);
+            result = dSvProc::sProc.process(dSvProc_c::MODE_GROWTH);
         }
         if (!result) {
             return NOT_READY;
@@ -906,13 +906,13 @@ void dSvMgr_c::stepBase_c<Owner, Step>::processLoadedSave() {
 
 template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::initializeGrowth() {
-    fn_80154358(lbl_8074E7F8);
+    dSvProc::sProc.reset();
     this->nextStep();
 }
 
 template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::processGrowth() {
-    if (fn_8015436C(lbl_8074E7F8, 4)) {
+    if (dSvProc::sProc.process(dSvProc_c::MODE_LOAD)) {
         this->nextStep();
     }
 }

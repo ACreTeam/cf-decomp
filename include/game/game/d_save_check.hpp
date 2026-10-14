@@ -12,6 +12,7 @@ struct dSaveCheck_c {
     void init();                // 801152D8: current version, state 0
     BOOL isVersionOK();         // 8011532C: mVersion is dSaveData_c::getVersion()
     BOOL isState2();            // 8011536C
+    void setState(u8 state) { mState = state; }
 
     /* 0x00 */ u32 mChecksum;
     /* 0x04 */ u16 mVersion; // SAVE_VERSION

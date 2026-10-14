@@ -288,6 +288,8 @@ struct dPrivateHost_c {
     void decrease(int n); // 801363E0
 
     int getCount(void) const { return mCount; }
+    void clearFlagB() { mFlagB = 0; }
+    int getFlagC() const { return mFlagC; }
     dPersonalID_c& getPID() { return mPID; }
     void setCount(int count) {
         mCount = count;
