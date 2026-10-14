@@ -256,7 +256,7 @@ void Particle_c::draw(const mMtx_c &view) {
         GXLoadPosMtxImm(matrix, GX_PNMTX0);
         GXLoadNrmMtxImm(mMtx_c::Identity, GX_PNMTX0);
         GXSetCurrentMtx(GX_PNMTX0);
-        GXColor color = fn_800CD168(0);
+        GXColor color = dLight::getAmbColor(0);
         color.a = alpha;
         GXSetTevColor(GX_TEVREG0, color);
         GXSetTevColor(GX_TEVREG1, color);
@@ -482,12 +482,12 @@ void dWeatherSnowDraw_c::drawXlu() {
     m3d::resetMaterial();
     nw4r::g3d::G3DState::Invalidate(0x7FF);
     GXSetNumChans(1);
-    GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_REG, fn_800CD250(),
+    GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_REG, dLight::getLightMask(),
                   GX_DF_NONE, GX_AF_SPOT);
-    GXSetChanCtrl(GX_ALPHA0, GX_TRUE, GX_SRC_REG, GX_SRC_REG, fn_800CD250(),
+    GXSetChanCtrl(GX_ALPHA0, GX_TRUE, GX_SRC_REG, GX_SRC_REG, dLight::getLightMask(),
                   GX_DF_NONE, GX_AF_SPOT);
     GXColor white = {255, 255, 255, 255};
-    GXSetChanAmbColor(GX_COLOR0A0, fn_800CD168(0));
+    GXSetChanAmbColor(GX_COLOR0A0, dLight::getAmbColor(0));
     GXSetChanMatColor(GX_COLOR0A0, white);
     GXSetAlphaCompare(GX_GREATER, 0, GX_AOP_OR, GX_GREATER, 0);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);

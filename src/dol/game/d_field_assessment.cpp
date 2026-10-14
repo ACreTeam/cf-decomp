@@ -23,6 +23,7 @@
 #include <game/game/d_home_room_map.hpp>
 #include <game/game/d_insect_info.hpp>
 #include <game/game/d_item.hpp>
+#include <game/game/d_mother_mail.hpp>
 #include <game/game/d_museum.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_npc_info.hpp>
@@ -77,8 +78,6 @@ static const u8 sAround5[5] = {
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 void fn_802B8D90(OSThread *thread);
-void fn_800D11C8(dTime_c *last, int days);
-void fn_800D16E8();
 
 f32 fn_8044B83C(EGG::Effect *effect);
 }
@@ -1201,7 +1200,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     }
     dSaveData_c::getTown()->clearFlag(0x16);
     fgMngProc_seedRandom(now, seed + 0x2232);
-    fn_800D11C8(last, days);
+    dMotherMail::update(last, days);
     dSaveData_c::getTown()->mShops.update();
     dSaveData_c::getExtra()->mDesignBoard.decrease(days);
     if (days >= TIME_DAYS_PER_WEEK || last->wday < now->wday) {
@@ -4162,7 +4161,7 @@ void fgMngProc_threadMain() {
     if (!dNet::isSessionActive()) {
         if (fgMngProc_isClockSetBack()) {
             sFgMngProc.spoilAllKabu();
-            fn_800D16E8();
+            dMotherMail::resetDate();
             dSaveData_c::getTown()->clearFlag(0x12);
             dSaveData_c::getTown()->clearFlag(0x13);
         }

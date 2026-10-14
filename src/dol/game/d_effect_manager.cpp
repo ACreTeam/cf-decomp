@@ -175,8 +175,8 @@ void dEffect::draw(int creator, int group) {
     switch (group) {
     case 0: case 5: case 6: case 7: {
         info.mLightEnable = true;
-        info.mLightMask = fn_800CD250();
-        nw4r::ut::Color color = fn_800CD168(0);
+        info.mLightMask = dLight::getLightMask();
+        mColor color = dLight::getAmbColor(0);
         color.a = 255;
         info.SetAmbientColor(color);
         info.mIsSpotLight = true;
@@ -192,8 +192,8 @@ void dEffect::draw(int creator, int group) {
     }
     case 4: {
         info.mLightEnable = true;
-        info.mLightMask = fn_800CD250();
-        nw4r::ut::Color color = fn_800CD168(0);
+        info.mLightMask = dLight::getLightMask();
+        mColor color = dLight::getAmbColor(0);
         color.a = 255;
         info.SetAmbientColor(color);
         info.mIsSpotLight = true;

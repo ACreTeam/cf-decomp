@@ -11,30 +11,10 @@
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_wifi.hpp>
 
-// The deferred message/load templates stay in this file. Save callbacks and
-// destructors have separate definition files so -sym on places their weak
-// code sections after the state framework, while retaining the PTMF pool order.
+// The step destructors have their own definition file so -sym on places their
+// weak code section after the save step templates (d_sv_step.hpp).
 
 using namespace dSvRuntime;
-
-// Seed deferred result specializations in declaration order. These unused
-// address anchors are discarded by the linker.
-static void (*const instantiate_stepSaveNormal_c)(dSvMgr_c::stepSaveNormal_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveNormal_c>;
-static void (*const instantiate_stepSaveRetireNetVst_c)(dSvMgr_c::stepSaveRetireNetVst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveRetireNetVst_c>;
-static void (*const instantiate_stepSaveConnectNetHst_c)(dSvMgr_c::stepSaveConnectNetHst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveConnectNetHst_c>;
-static void (*const instantiate_stepSaveConnectNetVst_c)(dSvMgr_c::stepSaveConnectNetVst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveConnectNetVst_c>;
-static void (*const instantiate_stepSaveContinueNetHst_c)(dSvMgr_c::stepSaveContinueNetHst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveContinueNetHst_c>;
-static void (*const instantiate_stepSaveContinueNetVst_c)(dSvMgr_c::stepSaveContinueNetVst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveContinueNetVst_c>;
-static void (*const instantiate_stepSaveInterruptNetHst_c)(dSvMgr_c::stepSaveInterruptNetHst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveInterruptNetHst_c>;
-static void (*const instantiate_stepSaveInterruptNetVst_c)(dSvMgr_c::stepSaveInterruptNetVst_c *) =
-    &checkSaveResultImpl<dSvMgr_c::stepSaveInterruptNetVst_c>;
 
 fProf::fBaseProfile_c g_profile_SV_MGR = {
     reinterpret_cast<void *(*)()>(&dSvMgr_c::createMgr), 0xA4, 0xE1
@@ -173,7 +153,7 @@ int dSvMgr_c::create() {
         dSvProc::sProc.reset();
         changeMode(&dSvMgr_c::executeLoad);
     }
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
+    dHomeButton_c::getInstance()->mFlags |= dHomeButton_c::FLAG_SAVING;
     return SUCCEEDED;
 }
 
@@ -192,7 +172,7 @@ int dSvMgr_c::doDelete() {
             return NOT_READY;
         }
     }
-    field<u32>(fn_8017D8E8(), 0x1AC) &= ~0x200;
+    dHomeButton_c::getInstance()->mFlags &= ~dHomeButton_c::FLAG_SAVING;
     return SUCCEEDED;
 }
 
@@ -917,4 +897,8 @@ void dSvMgr_c::stepBase_c<Owner, Step>::processGrowth() {
     }
 }
 
-#include "d_sv_mgr_tail.inc"
+inline void dSvMgr_c::setLoadErrorMessage(u16 code) {
+    sLoadErrorMessage = code;
+}
+
+#include "d_sv_mgr_dtors.inc"

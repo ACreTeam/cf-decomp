@@ -407,8 +407,8 @@ static void addLightCallback(void *req, void *env) {
 int dEnvironment_c::create() {
     mFireWorks.init(!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM) ||
                     dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM | dScene::SCENE_ATTR_CHKP));
-    fn_800CCCD8();
-    if (!fn_800CCDB4(addLightCallback, this)) {
+    dLight::init();
+    if (!dLight::execLightReq(addLightCallback, this)) {
         const LightReq_c *reqs;
         u32 num;
         if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM)) {
@@ -422,11 +422,11 @@ int dEnvironment_c::create() {
             addLight(&reqs[i]);
         }
     }
-    fn_800CCEAC(1);
+    dLight::changeLightSet(1);
     for (u32 i = 0; i < ARRAY_SIZE(l_bookLights); i++) {
         addLight(&l_bookLights[i]);
     }
-    fn_800CCEBC();
+    dLight::restoreLightSet();
     sInstance = this;
     sFlashR = 0.0f;
     sFlashG = 0.0f;
@@ -1182,7 +1182,7 @@ int dBookLight_c::sLightObjIdx = -1;
 
 void dBookLight_c::regist() {
     dLight::AbstractLight_c::regist();
-    sLightObjIdx = mLightIdx;
+    sLightObjIdx = mLightObjIdx;
 }
 
 dBookLight_c::~dBookLight_c() {

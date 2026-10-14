@@ -18,7 +18,6 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_prc_mng.hpp>
 #include <game/game/d_reset_save.hpp>
-#include <game/game/d_s_boot_static.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_scene_base.hpp>
@@ -26,6 +25,7 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_sv_mgr.hpp>
+#include <game/game/d_sys.hpp>
 #include <game/game/d_wifi.hpp>
 #include <game/game/d_wifi_err.hpp>
 #include <revolution/DVD.h>
@@ -170,7 +170,7 @@ bool Manage_c::IsSafeToChangeScene() const {
     if (idle && dDsDl::g_manager.finish()) {
         allIdle = true;
     }
-    if (allIdle && fn_8017D8E8()->mState != dHomeButton_c::STATE_OPEN) {
+    if (allIdle && dHomeButton_c::getInstance()->mState != dHomeButton_c::STATE_OPEN) {
         safe = true;
     }
     return safe;
@@ -349,7 +349,7 @@ void Manage_c::ModeCalc() {
         if (mMode != MODE_DISK_WAIT && mMode != MODE_SAFETY_WAIT) {
             SetNextMode(MODE_DISK_WAIT);
         }
-    } else if (mMode == MODE_NORMAL && fn_8017D8E8()->mState == dHomeButton_c::STATE_OPEN) {
+    } else if (mMode == MODE_NORMAL && dHomeButton_c::getInstance()->mState == dHomeButton_c::STATE_OPEN) {
         SetNextMode(MODE_HBM_WAIT);
     }
 
@@ -453,14 +453,14 @@ void Manage_c::ModeProc_HbmWait() {
         } else if (mHbmReset) {
             DiskCheckReset();
             fade = true;
-        } else if (fn_8017D8E8()->mState != dHomeButton_c::STATE_OPEN) {
+        } else if (dHomeButton_c::getInstance()->mState != dHomeButton_c::STATE_OPEN) {
             SetNextMode(MODE_NORMAL);
         } else if (mPowerButton) {
-            if (fn_8017E570(fn_8017D8E8(), 2)) {
+            if (dHomeButton_c::getInstance()->requestClose(dHomeButton_c::CLOSE_POWER)) {
                 mHbmPowerClose = HBM_CLOSE_REQUEST;
             }
         } else if (mResetButton) {
-            if (fn_8017E570(fn_8017D8E8(), 1)) {
+            if (dHomeButton_c::getInstance()->requestClose(dHomeButton_c::CLOSE_RESET)) {
                 mHbmResetClose = HBM_CLOSE_REQUEST;
             }
         }

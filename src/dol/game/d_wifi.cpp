@@ -166,7 +166,7 @@ BOOL dWifi::isNetOn() {
 
 // 80177D6C
 BOOL dWifi::isIdle() {
-    if (dWifi::isThreadDone() || fn_801086A4()) {
+    if (dWifi::isThreadDone() || dScBootStatic_c::isBooting()) {
         return TRUE;
     }
     return FALSE;
@@ -174,7 +174,7 @@ BOOL dWifi::isIdle() {
 
 // 80177DAC
 void dWifi::reset() {
-    if (!fn_801086A4()) {
+    if (!dScBootStatic_c::isBooting()) {
         sThreadFunc = NULL;
         lbl_8074B580 = 1;
         sRetryCount = 0;

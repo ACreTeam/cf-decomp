@@ -267,13 +267,13 @@ public:
         /* 0x04 */ nw4r::math::VEC3 mPos;
         /* 0x10 */ s16 mAngX;
         /* 0x12 */ s16 mAngY;
-        /* 0x14 */ f32 mAngleAttn[3];
+        /* 0x14 */ f32 mDistAttn[3];
         /* 0x20 */ f32 mCutoff;
         /* 0x24 */ GXSpotFn mSpotFn;
     };
 
     dFixSpotLight_c(Data_c *data)
-        : dLight::SpotLight_c(data->mPos, data->mAngleAttn[0], data->mAngleAttn[1], data->mAngleAttn[2], data->mCutoff,
+        : dLight::SpotLight_c(data->mPos, data->mDistAttn[0], data->mDistAttn[1], data->mDistAttn[2], data->mCutoff,
                               data->mSpotFn) {
         mAngX = data->mAngX;
         mAngY = data->mAngY;
@@ -572,10 +572,7 @@ public:
         COLOR_NUM,
     };
 
-    struct LightReq_c {
-        int mType;
-        void *mData;
-    };
+    typedef dLight::LightReq_c LightReq_c;
 
     dEnvironment_c()
         : mFogStart(512.0f), mFogColor(0x000000FF), mLightRatio(1.0f), mFixAlpha(0xFF), mAlpha(0xFF),

@@ -960,6 +960,7 @@ public:
     virtual void onLoaded(); // 800C249C
 
     static dsnPlttLoader_c *get(); // 800C242C
+    BOOL load(void *heap) { return bank_c::load("/Item/dsnPltt.brres", heap, 0); }
 }; // sizeof = 0x58
 
 class infoBank_c : public dDvd::arcBank_c {

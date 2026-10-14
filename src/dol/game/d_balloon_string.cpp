@@ -365,8 +365,8 @@ void dBalloonString_c::drawXlu() {
     GXColor color = {255, 255, 255, mAlpha};
     GXSetTevColor(GX_TEVREG0, color);
     GXSetNumChans(1);
-    GXSetChanCtrl(GX_COLOR0A0, GX_TRUE, GX_SRC_REG, GX_SRC_REG, fn_800CD250(), GX_DF_NONE, GX_AF_SPOT);
-    GXSetChanAmbColor(GX_COLOR0A0, fn_800CD168(0));
+    GXSetChanCtrl(GX_COLOR0A0, GX_TRUE, GX_SRC_REG, GX_SRC_REG, dLight::getLightMask(), GX_DF_NONE, GX_AF_SPOT);
+    GXSetChanAmbColor(GX_COLOR0A0, dLight::getAmbColor(0));
     GXSetChanMatColor(GX_COLOR0A0, dBalloonString::lMaterial);
     GXSetNumTexGens(0);
     GXSetNumIndStages(0);

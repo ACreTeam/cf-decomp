@@ -14,13 +14,7 @@ struct dYMD_c {
         month = 0;
         day = 0;
     }
-    BOOL isNone() const {
-        BOOL none = FALSE;
-        if (year == 0 || day == 0) {
-            none = TRUE;
-        }
-        return none;
-    }
+    BOOL isNone() const { return year == 0 || day == 0; }
 
     BOOL isDate(int year, u8 month, u8 day) const {
         return this->year == year && this->month == month && this->day == day;

@@ -124,6 +124,9 @@ public:
         return mpSetting != NULL && mpLightSetData != NULL;
     }
 
+    LightObj* GetLightObj(ulong lightIdx);
+    AmbLightObj* GetAmbLightObj();
+
     bool SelectLightObj(ulong lightIdx, int lightObjIdx);
     bool SelectAmbLightObj(int lightObjIdx);
 
