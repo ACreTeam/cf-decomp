@@ -412,6 +412,8 @@ struct dFgMngLitterFlags_c {
 typedef void (*dFgObjCallback)(int a, int b, int c, mAng3_c *ang, int d);
 
 extern "C" dScene::dSceneChange_c *fn_80091AF8();       // 80091AF8: &dScene::gSceneChange (d_scene.hpp)
+BOOL isBlockedUnit(dFdBase_c *fd, int x, int z);  // 8009536C (also d_a_snowman)
+BOOL isPondEdgeUnit(dFdBase_c *fd, int x, int z); // 80095438 (also d_a_snowman)
 int fgMngProc_getGrowUpHeapSize();              // 80091B04: 0x3400, the "createGrowUpHeap" ExpHeap (thread stack)
 int fgMngProc_getFgHeapSize();                  // 80091B0C: 0x2617C0, the "createFgHeap" FrmHeap (m_heap)
 int fgMngProc_getElapsedDays();                 // 80091B18: days since the last processed day (at 6:00)

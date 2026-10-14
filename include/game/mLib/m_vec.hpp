@@ -208,6 +208,8 @@ public:
         return EGG::Mathf::sqrt(x * x + z * z);
     }
 
+    float xzLenSq() const { return x * x + z * z; }
+
     short xzAng() const {
         return cM::atan2s(x, z);
     }

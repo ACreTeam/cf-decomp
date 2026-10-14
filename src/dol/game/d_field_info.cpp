@@ -664,7 +664,7 @@ void dFdBase_c::updateGrass(int days, int arg) {
 }
 
 // 8008D760
-u8 dFdBase_c::getGrassWear(const nw4r::math::VEC3 *pos, BOOL onlySoil) {
+int dFdBase_c::getGrassWear(const nw4r::math::VEC3 *pos, BOOL onlySoil) {
     if (_24 != NULL) {
         f32 x = pos->x;
         f32 z = pos->z;

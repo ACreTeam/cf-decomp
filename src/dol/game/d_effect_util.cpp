@@ -98,8 +98,8 @@ extern dOneEmitterEffect_c l_npcRight;
 
 // 80087B5C
 BOOL dEffect::createFootprint(const mVec3_c *pos, const mAng3_c *angle, int player, int side) {
-    int alpha = dGroundAttr::getFootprint(pos);
-    if (!(u8)alpha) return FALSE;
+    u8 alpha = dGroundAttr::getFootprint(pos);
+    if (!alpha) return FALSE;
     dBGCF::groundChk_c ground(pos, 0, 0, 0);
     mVec3_c normal = ground.mFloor.mNormal;
     mAng3_c rot;

@@ -248,13 +248,15 @@ public:
     void wearGrass(int unitX, int unitZ, int amount, int arg);                           // 8008D658
     void wearGrass(const nw4r::math::VEC3 *pos, int amount, int arg);                    // 8008D6B4: dFootmark
     void updateGrass(int days, int arg);                                                 // 8008D70C: dFootmark daily update
-    u8 getGrassWear(const nw4r::math::VEC3 *pos, BOOL onlySoil);                         // 8008D760
+    int getGrassWear(const nw4r::math::VEC3 *pos, BOOL onlySoil);                        // 8008D760
     dItem::Item getUnitItem(int unitX, int unitZ) const;                                 // 8008D858
     void registerBg();                                                                   // 8008D99C
     static int getHomeRoomBg(u32 home, int room);                                        // 8008E054: 0x10 if none
     BOOL buildHomeRoom(u32 home, int room, EGG::Heap *heap);                             // 8008E0B8
     void reloadHomeRoom(u32 home, int room);                                             // 8008E238
     static int getBgDataSize();                                                          // 8008E2D0
+
+    dFdUnitAttr_c *getUnitAttr() const { return _24; }
 
     inline void setItemFromId(u16 id, int ux, int uz, int layer) {
         dItem::Item fg;

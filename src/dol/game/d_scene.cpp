@@ -22,12 +22,11 @@
 #include <game/game/d_scene_base.hpp>
 #include <game/game/d_dylink.hpp>
 #include <game/game/d_npc_mng.hpp>
+#include <game/game/d_a_snowman.hpp>
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 BOOL fn_800CCDA4(void *data, int num);
-void fn_80186708();
-void fn_80186260();
 }
 
 namespace dScene {
@@ -488,8 +487,8 @@ BOOL createScene(fBase_c *parent) {
             return FALSE;
         }
     }
-    fn_80186708();
-    fn_80186260();
+    daSnowMan_c::placeSnowmen();
+    daSnowMan_c::placeBalls();
     if (getCurrentScene() != SCENE_FIELD && getCurrentScene() != SCENE_RM_OFFICE) {
         dNpcMng_c::_8074EACD = 0;
     }

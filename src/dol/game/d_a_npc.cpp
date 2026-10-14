@@ -7964,7 +7964,7 @@ void dAcNpc_c::earCtrl_c::ear_c::calc(nw4r::g3d::WorldMtxManip *manip) {
     mPos = trans + newRel;
     EGG::Quatf q;
     fn_804456B0(&q, &tip, &newRel);
-    fn_80445344(&q);
+    q.normalise();
     mMtx_c rot;
     fn_80444FE4(&rot, &q);
     PSMTXConcat(rot, mtx, mtx);

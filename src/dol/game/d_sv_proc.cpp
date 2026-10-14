@@ -1,4 +1,5 @@
 #include <egg/core/eggHeap.h>
+#include <game/game/d_a_snowman.hpp>
 #include <game/game/d_bg_util.hpp>
 #include <game/game/d_event.hpp>
 #include <game/game/d_field.hpp>
@@ -20,7 +21,6 @@
 #include <game/game/d_wifi.hpp>
 
 // Unrecovered dependency interfaces; the implementations are outside this TU.
-extern "C" void fn_801869B0();
 extern "C" void fn_800CAC20();
 BOOL sendVisitorLetter(dPrivateData_c *player);
 void *fgMngProcThreadFunc(void *);
@@ -356,7 +356,7 @@ void dSvProc_c::updateTown() {
     dSaveData_c::getTown()->mDaily.update();
     fn_800F3E24();
     dNpcInfo::init();
-    fn_801869B0();
+    daSnowMan_c::clearBalls();
     dSaveData_c::getTown()->mAnimals.mTown.resetDailyTalkCounts();
     dSaveData_c::getTown()->mAnimals.mTown.assignQuestCandidates();
     dSTR::getCityUnitAttr()->setAll();

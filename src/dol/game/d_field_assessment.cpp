@@ -57,6 +57,7 @@
 #include <game/game/d_fd_block_type.hpp>
 #include <game/game/d_scene_base.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/game/d_a_snowman.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -77,11 +78,9 @@ static const u8 sAround5[5] = {
 extern "C" {
 void fn_802B8D90(OSThread *thread);
 void fn_800D11C8(dTime_c *last, int days);
-void fn_80186838();
 void fn_800D16E8();
 
 f32 fn_8044B83C(EGG::Effect *effect);
-extern void *lbl_8074E9A0[2];
 }
 
 
@@ -93,8 +92,6 @@ void growTree(dFdBase_c *fd, const dItem::Item *item, int x, int z);
 BOOL forEachAroundUnit(dFdBase_c *fd, int *size, int x, int z, dFgMngAroundFunc func);
 BOOL isTreeObstacleAt(dFdBase_c *fd, const int *pos, int x, int z, int *size);
 BOOL killSaplingAt(dFdBase_c *fd, const int *pos, int x, int z, int *size);
-BOOL isBlockedUnit(dFdBase_c *fd, int x, int z);
-BOOL isPondEdgeUnit(dFdBase_c *fd, int x, int z);
 BOOL isSapling(dItem::Item *item);
 BOOL tryCrossBreedAt(dFdBase_c *fd, const int *pos, int x, int z, int *size);
 int getFlowerKind(const dItem::Item *item);
@@ -4060,7 +4057,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     if (days != 0) {
         dSaveData_c::getTown()->mActivity.updateMonth(&today);
     }
-    fn_80186838();
+    daSnowMan_c::removeOld();
     u32 v = dSaveData_c::getTown()->mShops.mShop.mStage;
     dSaveData_c::getTown()->mVillagerMove.setShopStage(v);
     dSaveTown_c *town = dSaveData_c::getTown();
@@ -4808,11 +4805,11 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
     pu.mZ = (int)pz >> 5;
     fd = dField::getInfo(FD_ID_CURRENT);
     int ux[2], uz[2];
-    dPlayerActor_c **actors = (dPlayerActor_c **)lbl_8074E9A0;
-    for (int j = 0; j < 2; j++) {
-        if (actors[j] != NULL) {
-            f32 px = actors[j]->mPos.x;
-            f32 pz = actors[j]->mPos.z;
+    daSnowMan_c **balls = daSnowMan_c::sBall;
+    for (int j = 0; j < daSnowMan_c::BALL_NUM; j++) {
+        if (balls[j] != NULL) {
+            f32 px = balls[j]->getPosP()->x;
+            f32 pz = balls[j]->getPosP()->z;
             ux[j] = (int)px >> 5;
             uz[j] = (int)pz >> 5;
         } else {

@@ -1,8 +1,11 @@
 // A dated town record with two scales (dSvDateEvent::Event_c; the snowmen). .text 80150778..80150A5C,
-// .sdata2 80750CE8..80750CF8. See include/game/game/d_sv_date_event.hpp.
+// .sdata2 80750CE0..80750CF8. See include/game/game/d_sv_date_event.hpp.
 #include <game/game/d_sv_date_event.hpp>
 
 namespace dSvDateEvent {
+
+const f32 cScaleMin = 0.5f;
+const f32 cScaleMax = 1.25f;
 
 // 80150778
 void Event_c::clear() {
