@@ -17,7 +17,7 @@ void create(EGG::Heap *heap) {
     sDrawCallback = NULL;
     m3d::create(EGG::Heap::getCurrentHeap(), 0x100, 0x100, 0x10, 2);
     m3d::createFogMgr(EGG::Heap::getCurrentHeap(), 1);
-    fn_800CCCD8();
+    dLight::init();
     m2d::create(heap, 0xC8000);
     m2d::ResAccLoader_c::create(heap, 0x41A000);
     mFace::create();

@@ -23,11 +23,7 @@
 #include <game/game/d_dylink.hpp>
 #include <game/game/d_npc_mng.hpp>
 #include <game/game/d_a_snowman.hpp>
-
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-BOOL fn_800CCDA4(void *data, int num);
-}
+#include <game/game/d_light.hpp>
 
 namespace dScene {
 
@@ -388,7 +384,7 @@ static BOOL createSceneBases(dSceneDataEntry_c *entry) {
 
 // 80162148
 static BOOL createScene3(dSceneDataEntry_c *entry) {
-    return fn_800CCDA4(entry->mData, entry->mNum);
+    return dLight::setLightReq(entry->mData, entry->mNum);
 }
 
 // 80162158

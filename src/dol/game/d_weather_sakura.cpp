@@ -233,7 +233,7 @@ void Particle_c::draw(nw4r::g3d::ResShp shape, const mMtx_c &view) {
     PSMTXConcat(matrix, scale, matrix);
     PSMTXConcat(view, normal, normal);
 
-    GXColor color = fn_800CD168(0);
+    GXColor color = dLight::getAmbColor(0);
     color.a = alpha;
     GXSetTevColor(GX_TEVREG0, color);
     nw4r::g3d::G3DState::SetViewPosNrmMtxArray(&matrix, NULL, NULL);
