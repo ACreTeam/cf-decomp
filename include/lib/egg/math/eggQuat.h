@@ -16,4 +16,6 @@ extern "C" {
 void fn_804456B0(EGG::Quatf *q, const EGG::Vector3f *from, const EGG::Vector3f *to); // 804456B0: rotation from -> to
 void fn_80445344(EGG::Quatf *q);                                                 // 80445344: normalise
 void fn_80444FE4(nw4r::math::MTX34 *mtx, const EGG::Quatf *q);                 // 80444FE4 (eggMatrix): rotation matrix of q
+void fn_8044527C(EGG::Quatf *q, const EGG::Vector3f *axis, f32 angle);          // 8044527C: rotation by angle (radians) about axis
+EGG::Vector3f fn_8044540C(const EGG::Quatf *q, const EGG::Vector3f *v);         // 8044540C: v rotated by q
 }

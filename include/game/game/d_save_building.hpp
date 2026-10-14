@@ -170,7 +170,7 @@ public:
     BOOL remove(dItem::Item id);                           // 8014B2FC
     u32 calcChecksum() const;                                    // 8014B3CC
     BOOL addBuildSite(int x, int z, BOOL updateCrc);       // 8014B3E4
-    BOOL isBuildSite(int x, int z) const;                        // 8014B474
+    bool isBuildSite(int x, int z) const;                        // 8014B474
     BOOL getBuildSite(int *x, int *z, u32 n) const;              // 8014B4E4
     int countHouses(int blockX, int blockZ) const;               // 8014B55C: player and villager houses in an acre
     static dSaveBuildingList_c *get();                     // 8014B6C8

@@ -38,6 +38,8 @@ namespace cLib {
     /// @return The calculated yaw value.
     s16 targetAngleY(const mVec3_c &vec1, const mVec3_c &vec2);
 
+    f32 easeOut(f32 t, f32 power); // 802AB69C
+
     /// @brief Calculates the pitch (X-axis) orientation angle from an origin position to a target position.
     /// @param vec1 The origin position vector.
     /// @param vec2 The target position vector.

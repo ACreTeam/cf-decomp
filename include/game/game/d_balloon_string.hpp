@@ -40,3 +40,7 @@ public:
     /* 0x1C5 */ u8 mInit;
     /* 0x1C6 */ u8 mFly; // released (flying away)
 }; // size 0x1C8
+
+namespace dBalloonString {
+void setQuaternion(EGG::Quatf *out, const Vec *xyz, float w); // 80068374
+}

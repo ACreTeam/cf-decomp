@@ -764,7 +764,7 @@ config.libs = [
             Object(Matching, "dol/game/d_heap.cpp"),
             Object(Matching, "dol/game/d_hr.cpp"),
             Object(Matching, "dol/game/d_insect_info.cpp"),
-            Object(NonMatching, "dol/game/d_insect_util.cpp"),
+            Object(Matching, "dol/game/d_insect_util.cpp"),
             Object(Matching, "dol/game/d_item.cpp", shift_jis=False),
             Object(Matching, "dol/game/d_net.cpp"),
             Object(NonMatching, "dol/game/d_net_ds_download.cpp"),
