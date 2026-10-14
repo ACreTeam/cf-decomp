@@ -19,6 +19,7 @@ namespace DrawGX {
 
     void Initialize(EGG::Heap *);
 
+    void BeginDrawScreen(bool, bool, bool);                     // 804463F8
     void SetMat_ColorChannel(ColorChannel chan);                // 804464D4
     void SetMat_TexGen(TexGen texGen);                          // 804465B0
     void SetMat_Ind();                                          // 80446630: no indirect stages
@@ -26,6 +27,7 @@ namespace DrawGX {
     void LoadTexture(nw4r::g3d::ResTex tex, GXTexMapID map);    // 80446800
     void SetBlendMode(Blend blend);                             // 80446858
     void DrawDL(DL dl, const nw4r::math::MTX34 &mtx);           // 80447450
+    void DrawDL(DL dl, const nw4r::math::MTX34 &mtx, GXColor color); // 804474B8
 }
 
 } // namespace EGG

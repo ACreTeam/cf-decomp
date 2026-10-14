@@ -14,6 +14,7 @@ namespace EGG {
 class CoreStatus : public KPADStatus {
 public:
     void init();
+    Vector2f getPosition() const { return Vector2f(pos.x, pos.y); } // 8017E79C
     Vector2f getHorizon() const { return Vector2f(horizon.x, horizon.y); } // 800FAAF8
 
     Vector2f getAccelVertical() {

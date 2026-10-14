@@ -1778,6 +1778,9 @@ dol/game/sc_data/d_sc_data_check_field.cpp:
 
 dol/game/d_home_button.cpp:
 	.text       start:0x8017D89C end:0x8017E7B0
+	.data       start:0x804F8530 end:0x804F8680
+	.sbss       start:0x8074E970 end:0x8074E978
+	.sdata2     start:0x807513C8 end:0x807513F8
 
 dol/game/d_a_c_uitag.cpp:
 	.text       start:0x8017E7B0 end:0x801811D0

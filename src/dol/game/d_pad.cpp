@@ -167,7 +167,7 @@ void end() {
 
 // 800FA5D8
 BOOL isRemoteUnavailable() {
-    s32 device;
+    u32 device;
     s32 result = WPADProbe(mPad::getCurrentCoreID(), &device);
     if (result == WPAD_ERR_NO_CONTROLLER) {
         return TRUE;
@@ -175,19 +175,19 @@ BOOL isRemoteUnavailable() {
     if (result != WPAD_ERR_OK) {
         return FALSE;
     }
-    if ((u32)device == WPAD_DEV_NOT_FOUND) {
+    if (device == WPAD_DEV_NOT_FOUND) {
         return TRUE;
     }
-    return (u32)device == WPAD_DEV_NOT_SUPPORTED;
+    return device == WPAD_DEV_NOT_SUPPORTED;
 }
 
 // 800FA640
 BOOL hasUnsupportedExtension() {
-    s32 device;
+    u32 device;
     if (WPADProbe(mPad::getCurrentCoreID(), &device) != WPAD_ERR_OK) {
         return FALSE;
     }
-    if ((u32)device == WPAD_DEV_NOT_FOUND) {
+    if (device == WPAD_DEV_NOT_FOUND) {
         return FALSE;
     }
     if (device == WPAD_DEV_CORE) {

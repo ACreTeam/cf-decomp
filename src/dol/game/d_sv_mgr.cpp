@@ -173,7 +173,7 @@ int dSvMgr_c::create() {
         dSvProc::sProc.reset();
         changeMode(&dSvMgr_c::executeLoad);
     }
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
+    dHomeButton_c::getInstance()->mFlags |= dHomeButton_c::FLAG_SAVING;
     return SUCCEEDED;
 }
 
@@ -192,7 +192,7 @@ int dSvMgr_c::doDelete() {
             return NOT_READY;
         }
     }
-    field<u32>(fn_8017D8E8(), 0x1AC) &= ~0x200;
+    dHomeButton_c::getInstance()->mFlags &= ~dHomeButton_c::FLAG_SAVING;
     return SUCCEEDED;
 }
 

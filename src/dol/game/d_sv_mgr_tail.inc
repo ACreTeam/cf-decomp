@@ -155,7 +155,7 @@ void dSvStep_c<Owner, Step>::createDownloadBox() {
 
 template <class Owner, class Step>
 void dSvStep_c<Owner, Step>::disableHomeAndReset() {
-    field<u32>(fn_8017D8E8(), 0x1AC) |= 0x200;
+    dHomeButton_c::getInstance()->mFlags |= dHomeButton_c::FLAG_SAVING;
     dReset::Manage_c::GetInstance()->SetResetDisable();
     this->nextStep();
 }

@@ -305,7 +305,7 @@ void init() {
     fn_8000E06C();
     dReset::Manage_c::CreateInstance(mem2);
     dBlackWait::BlackWait_c::create(dHeap::blackWaitHeap_p);
-    fn_8017D89C(dHeap::hbmHeap_p);
+    dHomeButton_c::create(dHeap::hbmHeap_p);
     fn_800F5378(dHeap::npcPermitMngHeap_p);
     dScene_c::initNextScene();
     setFrameRate(1);
@@ -404,7 +404,7 @@ void runFrame() {
     BOOL wifiError = g_wifiErr.check();
     fn_804402BC(mem1, 1);
     fn_804402BC(mem2, 1);
-    fn_8017DBD4(fn_8017D8E8());
+    dHomeButton_c::getInstance()->execute();
     dReset::Manage_c::GetInstance()->Calculate();
     dResetSave::execute();
     m3d::calcWorld();
@@ -420,7 +420,7 @@ void runFrame() {
     mFader_c::draw();
     dShutdownFader::draw();
     m3d::clear();
-    fn_8017DC8C(fn_8017D8E8());
+    dHomeButton_c::getInstance()->draw();
     if (wifiError) {
         g_wifiErr.draw();
     }
@@ -431,7 +431,7 @@ void runFrame() {
     if (!caution && !wifiError) {
         dBlackWait::BlackWait_c::getInstance()->draw();
     }
-    fn_8017DD20(fn_8017D8E8());
+    dHomeButton_c::getInstance()->drawIcon();
     endRender();
     dScene_c::endPerf();
     dScene_c::beginPerf();
@@ -442,7 +442,7 @@ void runFrame() {
     }
     if (sStartupPhase.callMethod(NULL) == sPhase_c::DONE) {
         if (!caution && !wifiError) {
-            if (fn_8017D8E8()->mState == dHomeButton_c::STATE_OPEN) {
+            if (dHomeButton_c::getInstance()->mState == dHomeButton_c::STATE_OPEN) {
                 if (!dMain::isStopped(dMain::STOP_REASON_HOME_MENU)) {
                     dMain::addStop(dMain::STOP_REASON_HOME_MENU);
                 }
@@ -459,7 +459,7 @@ void runFrame() {
         fManager_c::mainLoop();
     }
     if (!caution && !wifiError) {
-        if (fn_8017D8E8()->mState != dHomeButton_c::STATE_OPEN) {
+        if (dHomeButton_c::getInstance()->mState != dHomeButton_c::STATE_OPEN) {
             calcShutterFader();
         }
         dShutdownFader::calc();

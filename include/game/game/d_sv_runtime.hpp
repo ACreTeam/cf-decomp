@@ -4,6 +4,7 @@
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_reset.hpp>
+#include <game/game/d_home_button.hpp>
 #include <cstring>
 #include <game/game/d_net.hpp>
 #include <game/game/d_nand.hpp>
@@ -41,7 +42,6 @@ inline bool isDemoMode(void *demo, const DemoMethod &expected) {
 }
 
 extern "C" {
-void *fn_8017D8E8();
 void fn_8010DED0();
 }
 
@@ -56,7 +56,7 @@ inline void showSaveError(dMsg::Comp_c *controller, u16 code, const char *label)
     controller->setNextMsgLabel(label);
 }
 inline void enableReset() {
-    field<u32>(fn_8017D8E8(), 0x1AC) &= ~0x200;
+    dHomeButton_c::getInstance()->mFlags &= ~dHomeButton_c::FLAG_SAVING;
     dReset::Manage_c::GetInstance()->SetResetEnable();
 }
 
