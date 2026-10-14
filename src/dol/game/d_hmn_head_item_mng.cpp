@@ -70,7 +70,7 @@ dHmnHeadItem_c::dHmnHeadItem_c() {}
 dHmnHeadItem_c::~dHmnHeadItem_c() {}
 
 // 800B8528
-void dHmnHeadItem_c::setSlot(u8 slot) {
+void dHmnHeadItem_c::setSlot(int slot) {
     mSlot = slot;
 }
 

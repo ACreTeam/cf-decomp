@@ -209,7 +209,7 @@ BOOL dAcNpcNml_c::talk_c::msgFirstMeeting(msgInfo_s *info, u32 known, u32 fromTo
                     code = 0x16;
                 }
                 setLooksMsg(info, label, code);
-                if (player->isFlag0(2) && player->mMiiMask == 0) {
+                if (player->isFlag0(PRIVATE_FLAG0_BEE_STUNG) && player->mMiiMask == 0) {
                     setStepProc(&talk_c::stepBeeFaceSeen);
                 }
                 mCountTalk = 1;
@@ -432,7 +432,7 @@ BOOL dAcNpcNml_c::talk_c::msgNotSeen(msgInfo_s *info, int minDays, int divisor, 
                     code = 1;
                 }
                 setLooksMsg(info, label, code);
-                if (player->isFlag0(2) && player->mMiiMask == 0) {
+                if (player->isFlag0(PRIVATE_FLAG0_BEE_STUNG) && player->mMiiMask == 0) {
                     setStepProc(&talk_c::stepBeeFaceSeen);
                 }
                 mCountTalk = 1;
@@ -539,7 +539,7 @@ int dAcNpcNml_c::talk_c::msgReSad(msgInfo_s *info) {
 // 8005FB18
 int dAcNpcNml_c::talk_c::msgReBeeFace(msgInfo_s *info) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    BOOL ok = player != NULL ? player->isFlag0(2) : FALSE;
+    BOOL ok = player != NULL ? player->isFlag0(PRIVATE_FLAG0_BEE_STUNG) : FALSE;
     if (ok && isReactionBlocked()) {
         ok = FALSE;
     }

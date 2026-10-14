@@ -13,6 +13,8 @@
 class dPrivateData_c;
 
 #define HOME_ROOM_NUM 3
+// dHomeList_c::getHomeFromScene's room for the loft scenes (SCENE_RM_HS*_LOFT), after the HOME_ROOM_NUM rooms.
+#define HOME_SCENE_LOFT 3
 #define HOME_LAYER_NUM 2
 #define HOME_SIZE_NUM 5
 
@@ -151,6 +153,7 @@ struct dHome_c {
     u8 getFlagMask(u8 count); // 8013DE5C
 
     bool isPending() const { return _15BB.mRaw & 1; }
+    dPersonalID_c *getOwner() { return &mOwner; }
 
     /* 0x0000 */ dDesign_c mDesign;
     /* 0x0880 */ dPersonalID_c mOwner;

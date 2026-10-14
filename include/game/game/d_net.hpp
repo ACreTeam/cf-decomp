@@ -150,13 +150,13 @@ enum dNetPacket_e {
     // host -> everyone (sendDisconnectGo, gatekeeper REL): dNetDisconnect_c
     // mReady.on(self)
     NET_PACKET_DISCONNECT_GO = 0x23,
-    // d_player_mngr fn_801B9490 (1 byte) -> dPlayerMgr::receiveAppearance:
+    // dPlayerMngr_c::sendAppearance (1 byte) -> dPlayerMgr::receiveAppearance:
     // tanning value, save-request flag clear, or Mii-mask on/off.
     NET_PACKET_PLAYER_MNGR_24 = 0x24,
-    // d_player_mngr fn_801B93B8 (u8 + u16) -> dPlayerMgr::receiveEquipment:
+    // dPlayerMngr_c::sendEquip (u8 + u16) -> dPlayerMgr::receiveEquipment:
     // equipment part and item ID, applied to the remote player save data.
     NET_PACKET_PLAYER_MNGR_25 = 0x25,
-    // d_player_mngr fn_801B9424 (u8 + u16) -> dPlayerMgr::queueRemoteEquipment:
+    // dPlayerMngr_c::sendEquipQueue (u8 + u16) -> dPlayerMgr::queueRemoteEquipment:
     // equipment part and item ID, queued for the remote actor.
     NET_PACKET_PLAYER_MNGR_26 = 0x26,
     // player actor (d_a_player REL fn_80_2C64C) -> everyone: value, state,

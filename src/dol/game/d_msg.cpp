@@ -990,7 +990,7 @@ void Seq_c::procBeeStingJump() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int choice = 1;
     if (player != NULL) {
-        choice = !player->isFlag0(2);
+        choice = !player->isFlag0(PRIVATE_FLAG0_BEE_STUNG);
     }
     mpComp->setNextMsgCode(getJumpCode(params, choice, 2));
 }

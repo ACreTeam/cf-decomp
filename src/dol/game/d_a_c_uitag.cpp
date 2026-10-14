@@ -467,17 +467,17 @@ void dAcUitag_c::unbindTabAnm() {
     mTabLyt.unbind(&mTabAnm);
 }
 
-static const char *l_tabBtnAnms[] = {
-    "tab_00_dpdIn.brlan",
-    "tab_00_dpdOut.brlan",
-    "tab_00_dpdPsh.brlan",
-};
-
 // 8017F800
 void dAcUitag_c::setTabBtnAnm(u8 kind, int tab) {
+    static const char *l_tabBtnAnms[] = {
+        "tab_00_dpdIn.brlan",
+        "tab_00_dpdOut.brlan",
+        "tab_00_dpdPsh.brlan",
+    };
+
+    m2d::Anm_c *anm = &mTabBtnAnm[tab];
     mFlags |= FLAG_TAB_BTN_ANM << tab;
     mTabBtnKind[tab] = kind;
-    m2d::Anm_c *anm = &mTabBtnAnm[tab];
     anm->create(l_tabBtnAnms[kind], &mResAcc);
     anm->mFrameCtrl.mFlags = m2d::FrameCtrl_c::NO_LOOP;
     m2d::setAnmNumber(anm, tab);

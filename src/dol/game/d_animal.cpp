@@ -10924,7 +10924,7 @@ u32 pickRandomBit(u32 mask, int num, u32 max) {
 
 // 80134D54
 BOOL hasFlag2NoMii(const dPrivateData_c *player) {
-    if (player->isFlag0(2) && player->mMiiMask == 0) {
+    if (player->isFlag0(PRIVATE_FLAG0_BEE_STUNG) && player->mMiiMask == 0) {
         return TRUE;
     }
     return FALSE;

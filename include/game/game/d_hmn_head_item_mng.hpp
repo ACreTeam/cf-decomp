@@ -94,7 +94,7 @@ public:
     dHmnHeadItem_c();  // 800B84E4
     ~dHmnHeadItem_c(); // 800B84E8
 
-    void setSlot(u8 slot);                                             // 800B8528
+    void setSlot(int slot);                                            // 800B8528
     BOOL requestCap(const dItem::Item *item, dPrivateData_c *priv);    // 800B8530: TRUE when done
     BOOL requestAccessory(const dItem::Item *item);                    // 800B860C: TRUE when done
     BOOL request(int kind, const dItem::Item *item, dPrivateData_c *priv, BOOL isOrg) const; // 800B86B0

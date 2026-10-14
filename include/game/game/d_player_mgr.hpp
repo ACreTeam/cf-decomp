@@ -172,7 +172,7 @@ enum EquipmentChangeMode {
 };
 
 enum AppearanceChange {
-    APPEARANCE_CLEAR_SAVE_REQUEST = 0x10,
+    APPEARANCE_CLEAR_BEE_STING = 0x10, // clear PRIVATE_FLAG0_BEE_STUNG (removeMaskForEating)
     APPEARANCE_MII_MASK_ON = 0x11,
     APPEARANCE_MII_MASK_OFF = 0x12,
 };
@@ -398,7 +398,7 @@ void clearPlayerEquipmentManagers(int value); // 80100068
 BOOL isDesignEquipped(int slot); // 801000AC
 BOOL getActionAnimationFrame(f32 *out, int idx); // 80100128
 f32 getIntermediateGroundHeight(const mVec3_c *a, const mVec3_c *b, const mVec3_c *c); // 80100194
-dActor_c *createActor(int member, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle); // 80100234
+dActor_c *createActor(int member, int remote, u32 state, const mVec3_c *pos, const mAng3_c *angle); // 80100234
 void setPlayerSlot(u32 idx, int value); // 80100238
 void clearPlayerSlot(u32 idx); // 80100258
 void clearPlayers(); // 8010027C
@@ -475,13 +475,13 @@ void setActor(dPlayerActor_c *actor, u32 idx); // 801019A4
 dPlayerActor_c *getActor(int idx); // 801019C4
 dPlayerActor_c *getActorRaw(int idx); // 80101A28
 BOOL changeState(int state, int idx); // 80101A74
-void receiveEquipment(int idx, int a, int b); // 80101CB4
-void receiveAppearance(int idx, int a); // 80101CB8
-void queueRemoteEquipment(int idx, int a, int b); // 80101CBC
+void receiveEquipment(int idx, int part, int item); // 80101CB4
+void receiveAppearance(int idx, int kind); // 80101CB8
+void queueRemoteEquipment(int idx, int part, int item); // 80101CBC
 void setNetworkPosition(int idx, const mVec3_c *value); // 80101CC0
 void setRemoteActionSync(int idx, int a, int b); // 80101D0C
 void setRemoteSyncValue(int idx, int value); // 80101D70
-void cacheRemoteState(int idx, int value); // 80101DA8
+void cacheRemoteState(int idx, int state); // 80101DA8
 void cacheRemoteParams(int idx, const u8 *value); // 80101DAC
 BOOL changeNetPlayerState(int idx, int state); // 80101DB0
 BOOL getRemoteTransform(void *position, void *angle, void *flags, u32 member); // 80101DC0

@@ -1966,6 +1966,11 @@ dol/game/d_obj_voice.cpp:
 dol/game/d_player_mngr.cpp:
 	.text       start:0x801B76BC end:0x801B96A4
 	.ctors      start:0x8046584C end:0x80465850
+	.data       start:0x804FC938 end:0x804FC9A0
+	.bss        start:0x80625940 end:0x806259E0
+	.sdata      start:0x8074C318 end:0x8074C330
+	.sbss       start:0x8074EB78 end:0x8074EB88
+	.sdata2     start:0x80751980 end:0x807519A0
 
 dol/game/d_root.cpp:
 	.text       start:0x801B96A4 end:0x801B97B4

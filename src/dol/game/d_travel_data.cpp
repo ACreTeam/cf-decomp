@@ -73,7 +73,7 @@ void Data_c::backupDeparture() {
     player->setFlag0(0x28);
     if (!dPrivateData_c::isFlag0Any(dSaveData_c::getTown()->mPlayers, 0x4B)) player->setFlag0(0x4B);
     player->_55F4++;
-    player->clearFlag0(2);
+    player->clearFlag0(PRIVATE_FLAG0_BEE_STUNG);
     fgMngProc_backupSaveFlag1A();
     dSaveData_c::getTown()->backupFlag6();
     fn_800F4904(&mOutgoingAnimal.mID);

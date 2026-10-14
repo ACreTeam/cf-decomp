@@ -3,6 +3,7 @@
 // Names inferred from behavior and callers; unresolved requests retain their address names.
 #include <game/game/d_demo.hpp>
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_player_mngr.hpp>
 #include <game/game/d_hand_item.hpp>
 #include <game/game/d_menu_mng.hpp>
 #include <game/game/d_pad.hpp>
@@ -35,22 +36,9 @@
 extern "C" {
 extern u8 lbl_8074EA7D;
 
-void fn_801B910C(int idx, int part, u16 item);
-void fn_801B8898(int idx, int part, u16 item);
-void fn_801B8FD8(int idx, int type);
 BOOL fn_802C4404(dMiiCreateID_c *mii, u16 *out);
 BOOL fn_802B3BD0(int a, u16 mii, int b);
 int fn_802C5A0C(dPlayerMgr::MiiData_c *out, int a, int b, u16 mii);
-void fn_801B961C();
-void fn_801B9658(int value);
-dActor_c *fn_801B7C10(int member, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle);
-void fn_801B91B8(int idx, int a, int b);
-void fn_801B90C0(int idx, int a);
-void fn_801B835C(int idx, int a, int b);
-void fn_801B94E8(int idx, int value);
-void fn_801B9518(int idx, const u8 *value);
-BOOL fn_801B9258(void *position, void *angle, void *flags, u32 member);
-BOOL fn_801B9304(void *info, u8 *scene, u8 *b, u32 idx);
 
 }
 
@@ -382,8 +370,8 @@ void refreshEquippedUmbrellaDesign() {
         return;
     }
     if (dHmnToolBank_c::getItemToolType(&held) == 0xA && dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM)) {
-        fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HELD, held.mId);
-        fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HELD, held.mId);
+        dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held.mId);
+        dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held.mId);
     }
 }
 
@@ -716,8 +704,8 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
         int tmp;
         if (dHmnClothMng_c::isOrgCloth(&tmp, shirt)) {
             player->_22B4 |= EQUIPMENT_CHANGE_CLOTH;
-            fn_801B910C(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
-            fn_801B8898(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
+            dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
+            dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
         }
     }
 
@@ -731,10 +719,10 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
         }
         if (setHatHideBone(bone, player)) {
             if (current->mMiiMask != 0) {
-                fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
+                dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
             }
-            fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HAT, hat->mId);
-            fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HAT, hat->mId);
+            dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, hat->mId);
+            dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HAT, hat->mId);
         }
     }
 
@@ -743,16 +731,16 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
             if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR)) {
                 player->_22DA = HELD_ITEM_CHANGE_REMOVE;
             }
-            fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-            fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+            dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+            dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
         } else {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
             if (bitm != NULL && getHideBone(bitm) == dItem::HIDE_BONE_HAND) {
                 if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR)) {
                     player->_22DA = HELD_ITEM_CHANGE_EQUIP;
                 }
-                fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-                fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+                dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+                dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
             }
         }
     }
@@ -793,7 +781,7 @@ BOOL removeMaskForEating() {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }
-    fn_801B8FD8(dNet::getMyNo(), APPEARANCE_CLEAR_SAVE_REQUEST);
+    dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_CLEAR_BEE_STING);
     return changeState(STATE_EAT_REMOVE_MASK, PLAYER_INDEX_CURRENT);
 }
 
@@ -1171,7 +1159,7 @@ BOOL changeHair(u32 hair, u32 color) {
     current->mHair = hair;
     current->mHairColor = color;
     if (current->mMiiMask != 0) {
-        fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
+        dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
     }
     return changeState(STATE_CHANGE_HAIR, PLAYER_INDEX_CURRENT);
 }
@@ -1242,11 +1230,11 @@ BOOL prepareMiiMask() {
         }
     }
     player->_22B6 = mii;
-    fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
-    fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
-    fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
-    fn_801B910C(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
-    fn_801B8898(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
+    dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
+    dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
+    dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
+    dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
+    dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
     return TRUE;
 }
 
@@ -1268,7 +1256,7 @@ BOOL takeOffMiiMask() {
         return FALSE;
     }
     if (current->mMiiMask != 0) {
-        fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
+        dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
     }
     return changeState(STATE_MII_MASK, PLAYER_INDEX_CURRENT);
 }
@@ -1306,9 +1294,9 @@ BOOL changeMiiMask(u16 mii) {
     }
     memcpy(&current->mMiiId, data.mCreateID, sizeof(data.mCreateID));
     player->_22B6 = mii;
-    fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
-    fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
-    fn_801B910C(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
+    dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
+    dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
+    dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
     return changeState(STATE_CHANGE_MII_MASK, PLAYER_INDEX_CURRENT);
 }
 
@@ -1328,7 +1316,7 @@ BOOL takeOffMiiMaskImmediately() {
     if (current->mMiiMask == 0) {
         return FALSE;
     }
-    fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
+    dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
     return changeState(STATE_MII_MASK_IMMEDIATE, PLAYER_INDEX_CURRENT);
 }
 
@@ -1646,8 +1634,8 @@ BOOL changeHeldItem(const dItem::Item *held) {
             player->_223C = 1;
         }
     }
-    fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-    fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+    dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+    dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
     player->_2234 = 8;
     player->_2270 |= 0x1000000;
     return changeState(STATE_CHANGE_HELD_ITEM, PLAYER_INDEX_CURRENT);
@@ -1814,7 +1802,7 @@ BOOL fn_800FF354(int *outState) {
     if (!dDemo::request9()) {
         return FALSE;
     }
-    Mgr_c::getCurrentPlayer()->setFlag0(2);
+    Mgr_c::getCurrentPlayer()->setFlag0(PRIVATE_FLAG0_BEE_STUNG);
     *outState = 0x62;
     return changeState(0x62, PLAYER_INDEX_CURRENT);
 }
@@ -1866,8 +1854,8 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
         int tmp2;
         if (dHmnClothMng_c::isCloth(&shirt) || dHmnClothMng_c::isOrgCloth(&tmp2, &shirt)) {
             player->_22B4 |= EQUIPMENT_CHANGE_CLOTH;
-            fn_801B910C(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
-            fn_801B8898(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
+            dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
+            dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
         }
     }
 
@@ -1881,27 +1869,27 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
         }
         if (setHatHideBone(bone, player)) {
             if (current->mMiiMask != 0) {
-                fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
+                dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
             }
-            fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HAT, hat.mId);
-            fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HAT, hat.mId);
+            dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, hat.mId);
+            dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HAT, hat.mId);
         }
     }
 
     if (changeAcc) {
         if (acc.mId == dItem::ITEM_ID_NONE) {
             player->_22B4 = (player->_22B4 & ~EQUIPMENT_SHOW_ACCESSORY) | EQUIPMENT_HIDE_ACCESSORY;
-            fn_801B910C(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
-            fn_801B8898(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
+            dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
+            dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
         } else {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
             if (bitm != NULL && getHideBone(bitm) == dItem::HIDE_BONE_ACCESSORY) {
                 player->_22B4 = (player->_22B4 & ~EQUIPMENT_HIDE_ACCESSORY) | EQUIPMENT_SHOW_ACCESSORY;
                 if (current->mMiiMask != 0) {
-                    fn_801B8FD8(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
+                    dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
                 }
-                fn_801B910C(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
-                fn_801B8898(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
+                dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
+                dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
             }
         }
     }
@@ -2153,7 +2141,7 @@ u16 getRandomShirt(int gender) {
 
 // 8010003C
 void clearEquipmentManagers() {
-    fn_801B961C();
+    dPlayerMngr_c::clearAllEquip();
     dHmnToolMng_c::clearPlayers();
     dHmnHeadItemMng_c::clearPlayers();
     dHmnClothMng_c::clearPlayers();
@@ -2161,7 +2149,7 @@ void clearEquipmentManagers() {
 
 // 80100068
 void clearPlayerEquipmentManagers(int value) {
-    fn_801B9658(value);
+    dPlayerMngr_c::clearEquip(value);
     dHmnToolMng_c::clear((u8)value);
     dHmnHeadItemMng_c::clear((u8)value);
     dHmnClothMng_c::clear((u8)value);
@@ -2207,8 +2195,8 @@ f32 getIntermediateGroundHeight(const mVec3_c *a, const mVec3_c *b, const mVec3_
 }
 
 // 80100234
-dActor_c *createActor(int member, int arg, u32 type, const mVec3_c *pos, const mAng3_c *angle) {
-    return fn_801B7C10(member, arg, type, pos, angle);
+dActor_c *createActor(int member, int remote, u32 state, const mVec3_c *pos, const mAng3_c *angle) {
+    return dPlayerMngr_c::createActor(member, remote, state, pos, angle);
 }
 
 // 80100238
@@ -2238,7 +2226,7 @@ void clearSaveRequestFlags() {
     for (int i = 0; i < PLAYER_INDEX_COUNT; i++) {
         dPrivateData_c *player = dPrivateData_c::getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (player != NULL && player->mPID.isValid()) {
-            player->clearFlag0(2);
+            player->clearFlag0(PRIVATE_FLAG0_BEE_STUNG);
         }
     }
 }
@@ -2696,8 +2684,8 @@ BOOL changeHeldItemForDemo(const dItem::Item *held) {
         }
         player->_22DA = HELD_ITEM_CHANGE_EQUIP;
         player->_223C = 1;
-        fn_801B910C(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-        fn_801B8898(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+        dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+        dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
     }
     return changeState(STATE_CHANGE_HELD_ITEM_DEMO, PLAYER_INDEX_CURRENT);
 }
@@ -3103,18 +3091,18 @@ dPrivateData_c *GuestPlayers_c::getRaw(int slot) {
 }
 
 // 80101CB4
-void receiveEquipment(int idx, int a, int b) {
-    fn_801B91B8(idx, a, b);
+void receiveEquipment(int idx, int part, int item) {
+    dPlayerMngr_c::receiveEquip(idx, part, item);
 }
 
 // 80101CB8
-void receiveAppearance(int idx, int a) {
-    fn_801B90C0(idx, a);
+void receiveAppearance(int idx, int kind) {
+    dPlayerMngr_c::receiveAppearance(idx, kind);
 }
 
 // 80101CBC
-void queueRemoteEquipment(int idx, int a, int b) {
-    fn_801B835C(idx, a, b);
+void queueRemoteEquipment(int idx, int part, int item) {
+    dPlayerMngr_c::queueEquip(idx, part, item);
 }
 
 // 80101CC0
@@ -3143,13 +3131,13 @@ void setRemoteSyncValue(int idx, int value) {
 }
 
 // 80101DA8
-void cacheRemoteState(int idx, int value) {
-    fn_801B94E8(idx, value);
+void cacheRemoteState(int idx, int state) {
+    dPlayerMngr_c::setRemoteState(idx, state);
 }
 
 // 80101DAC
 void cacheRemoteParams(int idx, const u8 *value) {
-    fn_801B9518(idx, value);
+    dPlayerMngr_c::setRemoteParam(idx, (const dPlayerMngr_c::actionParam_c *)value);
 }
 
 // 80101DB0
@@ -3159,12 +3147,12 @@ BOOL changeNetPlayerState(int idx, int state) {
 
 // 80101DC0
 BOOL getRemoteTransform(void *position, void *angle, void *flags, u32 member) {
-    return fn_801B9258(position, angle, flags, member);
+    return dPlayerMngr_c::getRemoteTransform((f32 *)position, (f32 *)angle, (s16 *)flags, member);
 }
 
 // 80101DC4
 BOOL getRemoteStateInfo(void *info, u8 *scene, u8 *b, u32 idx) {
-    return fn_801B9304(info, scene, b, idx);
+    return dPlayerMngr_c::getRemoteStateInfo((u32 *)info, scene, b, idx);
 }
 
 // 80101DC8

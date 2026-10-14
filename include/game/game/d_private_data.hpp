@@ -28,6 +28,9 @@
 // the Flag1 functions on mFlags1). Shared by many systems; most indices are still literals, named here as
 // their meanings are found.
 enum dPrivateFlag0_e {
+    PRIVATE_FLAG0_BEE_STUNG = 0x02,             // stung by bees (state 0x62 after dDemo::request9): villagers react
+                                                // (d_npc_talk_reaction, d_msg, d_animal); cleared by the
+                                                // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
     PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
