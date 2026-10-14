@@ -1,14 +1,14 @@
 #include <game/mLib/m_frustum.hpp>
 #include <math.h>
 
-void mFrustum_c::set(f32 fovy, f32 aspect, f32 near, f32 far, const mMtx_c &cameraMtx) {
+void mFrustum_c::set(f32 fovy, f32 aspect, f32 near, f32 far, const nw4r::math::MTX34 &cameraMtx) {
     f32 tangent = tan(NW4R_MATH_FIDX_TO_RAD(NW4R_MATH_DEG_TO_FIDX(fovy * 0.5f)));
     f32 top = tangent * near;
     f32 right = top * aspect;
     set(top, -top, -right, right, near, far, cameraMtx, false);
 }
 
-void mFrustum_c::set(f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far, const mMtx_c &cameraMtx, bool orthographic) {
+void mFrustum_c::set(f32 top, f32 bottom, f32 left, f32 right, f32 near, f32 far, const nw4r::math::MTX34 &cameraMtx, bool orthographic) {
     mVec3_c eyePos;
     mMtx_c invCameraMtx;
     mVec3_c pts[POINT_MAX];

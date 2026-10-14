@@ -101,7 +101,7 @@ extern const char *cNameTbl[STR_NUM];
 const char *getName(u32 idx);  // 80166AE0: cNameTbl[idx], the first one when out of range
 int getIndex(const char *name); // 80166B08: the STR_* of a name, -1 if none
 
-// A view rectangle around the camera target (lbl_80623FEC). Unused.
+// A view rectangle around the camera target (dCamera_c::sCenter). Unused.
 class viewArea_c {
 public:
     viewArea_c(f32 front, f32 back, f32 halfWidth); // 80166B70

@@ -85,8 +85,8 @@ static void setupProjection(const mVec3_c *pos, const mMtx_c *view, const Projec
 }
 // 801C728C
 f32 getDistanceFade(const mVec3_c *pos) {
-    if (lbl_8074E9B0) {
-        mVec3_c center(lbl_80623FEC);
+    if (dCamera_c::sInstance) {
+        mVec3_c center(dCamera_c::sCenter);
         f32 distance = center.z - pos->z;
         if (distance > 0.0f) {
             if (distance > 256.0f) return 0.0f;
@@ -379,8 +379,8 @@ BOOL requestRound(const mVec3_c *pos, u32 flags, const mAng *angle,
     if (sInstance && scale != 0.0f && alphaScale != 0.0f) {
         static Bounds_c bounds(160.0f, -480.0f, 512.0f);
         f32 z;
-        f32 x = f32(__fabs(pos->x - lbl_80623FEC.x));
-        z = pos->z - lbl_80623FEC.z;
+        f32 x = f32(__fabs(pos->x - dCamera_c::sCenter.x));
+        z = pos->z - dCamera_c::sCenter.z;
         bool culled = false;
         if (x > bounds.z || z > bounds.x || z < bounds.y)
             culled = true;

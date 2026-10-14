@@ -711,7 +711,7 @@ void dAcUitag::setTabFocus(int tab) {
 static inline void closeMenu() {
     l_this->mState = dAcUitag_c::STATE_MENU_CLOSE;
     l_this->mFlags &= ~dAcUitag_c::FLAG_HIDE_AFTER_MENU;
-    lbl_8074E9B0->_1A8 = lbl_8074E9B0->_1A4;
+    dCamera_c::sInstance->mRequestedMode = dCamera_c::sInstance->mDefaultMode;
     dMenuBase_c::playSeSubMenuClose();
 }
 

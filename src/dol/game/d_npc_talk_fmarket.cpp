@@ -327,7 +327,7 @@ void dAcNpcNml_c::talk_c::actStallArrive() {
         npc->mPos.y = dBGCF::getGroundY(&npc->mPos, FALSE);
         if (npc->mAction.mCanChange) {
             npc->mAction.requestWait(1);
-            lbl_8074E9B0->startTalkView(npc->demoHook58());
+            dCamera_c::sInstance->startTalkView(npc->demoHook58());
             reqMsgClose();
             clearActProc();
             if (mpMemory != NULL) {

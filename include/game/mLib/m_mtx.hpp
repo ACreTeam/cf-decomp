@@ -31,6 +31,14 @@ public:
         return *this;
     }
 
+    mMtx_c &operator=(const nw4r::math::MTX34 &other) {
+        for (int i = 0; i < 12; i++) {
+            f32 v = other.a[i];
+            a[i] = v;
+        }
+        return *this;
+    }
+
     void XrotS(mAng angle); ///< Generates a rotation matrix for the X axis with the given angle.
     void XrotM(mAng angle); ///< Rotates the matrix on the X axis by the given angle.
     void YrotS(mAng angle); ///< Generates a rotation matrix for the Y axis with the given angle.

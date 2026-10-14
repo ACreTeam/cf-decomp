@@ -140,6 +140,9 @@ public:
     /// @brief Constructs a new vector from an existing vector from the NW4R library.
     mVec3_c(const nw4r::math::VEC3 &v) { set(v.x, v.y, v.z); }
 
+    /// @brief Constructs a vector from a plain _VEC3.
+    mVec3_c(const nw4r::math::_VEC3 &v) { set(v.x, v.y, v.z); }
+
     /// @brief Copy constructor with a different Z value.
     mVec3_c(const mVec3_c &v, float fz) { x = v.x; y = v.y; z = fz; }
     mVec3_c(const mVec2_c &v, float fz) { x = v.x; y = v.y; z = fz; }

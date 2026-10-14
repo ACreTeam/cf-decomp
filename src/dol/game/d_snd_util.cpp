@@ -122,9 +122,9 @@ void fn_8000EC78() {
 // field is curved, else into view space.
 void getSoundPos(const mVec3_c *src, mVec3_c *dst) {
     if (dWorld::isCurve()) {
-        *dst = *src - lbl_80624004;
+        *dst = *src - dCamera_c::sEye;
     } else {
-        PSMTXMultVec(lbl_8074E9B0->mCamera.getViewMatrix(), *src, *dst);
+        PSMTXMultVec(dCamera_c::sInstance->mCamera.getViewMatrix(), *src, *dst);
     }
 }
 

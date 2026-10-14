@@ -30,7 +30,7 @@ dFireWorksMgr_c *dFireWorksMgr_c::sInstance;
 // The shells sit 768 above the town center.
 static inline void setBasePos(nw4r::math::VEC3 &pos) {
     f32 height = 768.0f;
-    pos = lbl_80623FEC;
+    pos = dCamera_c::sCenter;
     pos.y += height;
 }
 
@@ -94,7 +94,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         f32 rate = 1.0f / mTimer;
         mGlow += rate * (glow - mGlow);
         mBrightness += rate * (0.625f - mBrightness);
-        mPos = lbl_80623FEC;
+        mPos = dCamera_c::sCenter;
         mPos.y += height;
         if (sLib::calcTimer(&mTimer) == 0) {
             GXColor color;
@@ -142,7 +142,7 @@ void dFireWork_c::execute(BOOL withEffect) {
         f32 rate = 1.0f / mTimer;
         mGlow += rate * (glow - mGlow);
         mBrightness += -mBrightness * rate;
-        mPos = lbl_80623FEC;
+        mPos = dCamera_c::sCenter;
         mPos.y += height;
         if (sLib::calcTimer(&mTimer) == 0) {
             reset();

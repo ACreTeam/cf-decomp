@@ -875,7 +875,7 @@ void Balloon_c::calcPlayerPos() {
         pos.y = player->mPos.y + 43.0f;
         dWorld::curvePosition(&curved, &pos);
         f32 x, y;
-        dCamera::worldToScreen(lbl_8074E9B0, &x, &y, &curved);
+        dCamera::worldToScreen(dCamera_c::sInstance, &x, &y, &curved);
         mTargetPos.x = -304.0f + 608.0f * x;
         mTargetPos.y = -228.0f + 456.0f * (1.0f - y);
     }
