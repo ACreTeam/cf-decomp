@@ -21,27 +21,27 @@ void dScBoot_c::drawCallback() {
 int dScBoot_c::create() {
     dSysGfx::sDrawCallback = drawCallback;
     dSys::setFrameRate(1);
-    return fn_8010875C(fn_80108698()) != FALSE;
+    return dScBootStatic_c::getInstance()->create() != FALSE;
 }
 
 // 801C9FBC
 int dScBoot_c::preExecute() {
     int ret = dScene_c::preExecute();
     if (ret == NOT_READY) {
-        fn_80108934(fn_80108698());
+        dScBootStatic_c::getInstance()->preExecute();
     }
     return ret;
 }
 
 // 801C9FFC
 int dScBoot_c::execute() {
-    fn_80108940(fn_80108698());
+    dScBootStatic_c::getInstance()->execute();
     return SUCCEEDED;
 }
 
 // 801CA024
 int dScBoot_c::doDelete() {
-    if (!fn_80108840(fn_80108698())) {
+    if (!dScBootStatic_c::getInstance()->doDelete()) {
         return NOT_READY;
     }
     dSysGfx::sDrawCallback = NULL;
@@ -50,7 +50,7 @@ int dScBoot_c::doDelete() {
 
 // 801CA064
 int dScBoot_c::draw() {
-    fn_80108A74(fn_80108698());
+    dScBootStatic_c::getInstance()->draw();
     return SUCCEEDED;
 }
 

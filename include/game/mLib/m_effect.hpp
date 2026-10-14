@@ -75,6 +75,7 @@ void beginCalc(); // 802B7DE8
 void endCalc(); // 802B7E0C
 void setCamera(const nw4r::math::VEC3 *, const nw4r::math::MTX34 *, f32, f32, int); // 802B7E10
 void draw(nw4r::ef::DrawInfo *, int, int); // 802B7E30
+void setResource(void *breff, void *breft); // 802B7C04: the resident .breff/.breft (d_s_boot_static)
 }
 
 #include <lib/egg/util/eggEffectManager.hpp>

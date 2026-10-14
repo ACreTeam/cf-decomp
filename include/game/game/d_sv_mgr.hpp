@@ -5,8 +5,6 @@
 #include <game/game/d_state_mode.hpp>
 #include <game/game/d_sv_step.hpp>
 
-template <class Step> void checkSaveResultImpl(Step *step);
-
 // Save manager. Method names are inferred from the original state-table labels.
 class dSvMgr_c : public fBase_c, public dMsg::Rcpt_c,
                  public dState::mode_c<dSvMgr_c> {
@@ -32,8 +30,6 @@ public:
         void processLoadedSave();
         void initializeGrowth();
         void processGrowth();
-        template <class T> friend void checkSaveResultImpl(T *step);
-        void checkSaveResult() { checkSaveResultImpl(static_cast<Step *>(this)); }
         stepBase_c() {}
         inline virtual ~stepBase_c();
     };
@@ -107,9 +103,6 @@ public:
         void processLoadedSave(); // 801BE938
         void gotoTitle(); // 801BEC2C
         void finish(); // 801BECD4
-        void initializeLoad() __attribute__((never_inline)); // 801C30C0
-        void startLoad() __attribute__((never_inline)); // 801C3158
-        void waitLoad() __attribute__((never_inline)); // 801C31FC
     };
 
     dSvMgr_c() {}

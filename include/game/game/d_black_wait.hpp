@@ -30,7 +30,7 @@ public:
     static void create(EGG::Heap *heap); // 800805BC
     static BlackWait_c *getInstance();   // 80080608
 
-    void load();    // 80080610: requests the textures; STATE_WAIT once all are there
+    BOOL load();    // 80080610: requests the textures; TRUE (and STATE_WAIT) once all are there
     void execute(); // 800806C8
     void draw();    // 80080700
 

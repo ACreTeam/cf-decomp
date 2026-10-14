@@ -490,8 +490,8 @@ packBank_c *getPackBank() {
 }
 
 // 80069990
-roomAlwaysBank_c *getRoomAlwaysBank() {
-    return NULL;
+BOOL isBusy() {
+    return FALSE;
 }
 
 // 80069998

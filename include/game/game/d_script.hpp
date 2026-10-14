@@ -400,6 +400,7 @@ BOOL isAlpha(wchar_t c); // 80155E6C
 bool toLower(wchar_t *c); // 80156368
 int getLineLength(const u16 *text, u32 maxSize); // 801579C0
 Bank_c *getBank(); // 80157B30
+BOOL loadBank(Bank_c *bank, void *heap); // 80157B3C
 void *getBmgFile(Bank_c *bank, const char *name); // 80157BA0
 u32 getBankHeapSize(); // 80157BEC: size of the script heap (dHeap::createScriptHeap)
 

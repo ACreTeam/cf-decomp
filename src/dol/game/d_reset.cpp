@@ -18,7 +18,6 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_prc_mng.hpp>
 #include <game/game/d_reset_save.hpp>
-#include <game/game/d_s_boot_static.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_scene_base.hpp>
@@ -26,6 +25,7 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_sv_mgr.hpp>
+#include <game/game/d_sys.hpp>
 #include <game/game/d_wifi.hpp>
 #include <game/game/d_wifi_err.hpp>
 #include <revolution/DVD.h>

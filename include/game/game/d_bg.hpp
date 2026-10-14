@@ -169,6 +169,6 @@ extern const f32 cGroundY;
 mdlBank_c *getMdlBank();               // 8006996C
 alwaysBank_c *getAlwaysBank();         // 80069978
 packBank_c *getPackBank();             // 80069984
-roomAlwaysBank_c *getRoomAlwaysBank(); // 80069990: always NULL
+BOOL isBusy();                         // 80069990: always FALSE (d_s_boot_static)
 
 } // namespace dBG

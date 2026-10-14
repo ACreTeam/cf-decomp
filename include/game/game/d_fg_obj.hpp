@@ -14,6 +14,7 @@ namespace dFgObj {
 class alwaysBank_c : public dDvd::bank_c {
 public:
     virtual ~alwaysBank_c() {} // 800A72CC
+    inline BOOL load(void *heap); // defined in d_s_boot_static (/FgObj/fgItem.brres)
     virtual void onLoaded() {  // 800A7328
         nw4r::g3d::ResFile res(mpData);
         res.Init();

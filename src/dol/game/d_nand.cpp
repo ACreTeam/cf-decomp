@@ -56,7 +56,7 @@ void updateCheckFlags() {
 
 // 800D2360
 BOOL isReady() {
-    if (isIdle() || fn_801086A4()) {
+    if (isIdle() || dScBootStatic_c::isBooting()) {
         return TRUE;
     }
     return FALSE;
@@ -64,7 +64,7 @@ BOOL isReady() {
 
 // 800D23A0
 void reset() {
-    if (!fn_801086A4()) {
+    if (!dScBootStatic_c::isBooting()) {
         sResult = RESULT_OK;
         sWriting = FALSE;
         sThreadActive = FALSE;

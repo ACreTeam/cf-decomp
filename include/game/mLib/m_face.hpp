@@ -5,11 +5,16 @@
 #include <revolution/RFL.h>
 
 class mAllocator_c;
+namespace EGG {
+class Heap;
+}
 
 // mFace: Mii (RFL) face models (City Folk only). m_face.cpp is at 0x802B39E4..0x802B3E40 (no source yet).
 // All names are @unofficial; offsets/behaviour come from the target code.
 namespace mFace {
     void create(); // 0x802B39E4: initialises the entry list (0x806A5DD0); d_sys_gfx create
+    // 0x802B39F4: opens the RFL resource in the archive and initialises RFL with a work buffer from heap
+    BOOL initRes(void *arc, EGG::Heap *heap, BOOL deluxTex);
 
     /**
      * An object whose RFL data is initialised later: entry() queues it in a global nw4r::ut::List

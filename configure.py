@@ -790,7 +790,7 @@ config.libs = [
             Object(Matching, "dol/game/d_region.cpp"),
             Object(Matching, "dol/game/d_reset.cpp"),
             Object(Matching, "dol/game/d_random.cpp"),
-            Object(NonMatching, "dol/game/d_s_boot_static.cpp"),
+            Object(Matching, "dol/game/d_s_boot_static.cpp"),
             Object(Matching, "dol/game/d_sv_auc.cpp"),
             Object(Matching, "dol/game/d_save_option.cpp"),
             Object(Matching, "dol/game/d_save_data.cpp"),

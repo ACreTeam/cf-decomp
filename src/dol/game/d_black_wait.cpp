@@ -41,7 +41,7 @@ BlackWait_c *BlackWait_c::getInstance() {
 }
 
 // 80080610
-void BlackWait_c::load() {
+BOOL BlackWait_c::load() {
     BOOL done = TRUE;
     for (int i = 0; i < BLACK_WAIT_ICON_NUM; i++) {
         nw4r::g3d::ResTex *tex = &mTex[i];
@@ -58,6 +58,7 @@ void BlackWait_c::load() {
     if (done) {
         mState = STATE_WAIT;
     }
+    return done;
 }
 
 // 800806C8
