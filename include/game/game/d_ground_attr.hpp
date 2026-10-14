@@ -23,7 +23,7 @@ namespace dGroundAttr {
 
 int getAttr(const mVec3_c *pos);                // 800A858C: BG attribute (bgAttr_e) at pos; the carpet's in a room
 int getFootstepSe(const mVec3_c *pos, u8 *wear); // 800A8648: footstep sound id at pos, grass wear into *wear
-int getFootprint(const mVec3_c *pos);            // 800A87B0: 0 none, 0xFF sand/wave, else the snow's grass wear
-int getSnowWear(const mVec3_c *pos);             // 800A8850: grass wear of snowy soil, 0 otherwise
+u8 getFootprint(const mVec3_c *pos);             // 800A87B0: 0 none, 0xFF sand/wave, else the snow's grass wear
+u8 getSnowWear(const mVec3_c *pos);              // 800A8850: grass wear of snowy soil, 0 otherwise
 
 } // namespace dGroundAttr

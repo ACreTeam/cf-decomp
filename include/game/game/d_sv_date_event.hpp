@@ -1,6 +1,6 @@
 #pragma once
 
-// d_sv_date_event (DOL TU d_sv_date_event.cpp, .text 80150778..80150A5C, .sdata2 80750CE8..80750CF8): a dated
+// d_sv_date_event (DOL TU d_sv_date_event.cpp, .text 80150778..80150A5C, .sdata2 80750CE0..80750CF8): a dated
 // town record with two scales; its only user is the snowman (d_a_snowman), which keeps SNOWMAN_NUM of them at
 // dSaveTown_c::mSnowmen (+0x683E0): the day it was built and the sizes of its two snowballs. Dates are game days
 // (they start at 6:00). No RTTI: names inferred (the TU name is the split's).
@@ -13,6 +13,10 @@ namespace dSvDateEvent {
 enum {
     SNOWMAN_NUM = 3,
 };
+
+// The range of the scales (Event_c::set clamps to it).
+extern const f32 cScaleMin;
+extern const f32 cScaleMax;
 
 struct Event_c {
     void clear();                            // 80150778

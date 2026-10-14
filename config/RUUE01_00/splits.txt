@@ -1279,7 +1279,7 @@ dol/game/d_sv_npc_pos.cpp:
 
 dol/game/d_sv_date_event.cpp:
 	.text       start:0x80150778 end:0x80150A5C
-	.sdata2     start:0x80750CE8 end:0x80750CF8 align:4
+	.sdata2     start:0x80750CE0 end:0x80750CF8 align:4
 
 dol/game/d_sv_star_sign.cpp:
 	.text       start:0x80150A5C end:0x801510A0
@@ -1790,6 +1790,12 @@ dol/game/d_a_c_uitag.cpp:
 dol/game/d_a_snowman.cpp:
 	.text       start:0x801811D0 end:0x80186E0C
 	.ctors      start:0x8046581C end:0x80465820
+	.rodata     start:0x8047B528 end:0x8047B580
+	.data       start:0x804F8D00 end:0x804F9280
+	.bss        start:0x80623AB8 end:0x80623F50
+	.sdata      start:0x8074BE58 end:0x8074BE80
+	.sbss       start:0x8074E980 end:0x8074E9B0
+	.sdata2     start:0x80751428 end:0x80751538
 
 dol/game/d_bg_debug.cpp:
 	.text       start:0x80186E0C end:0x801870D0

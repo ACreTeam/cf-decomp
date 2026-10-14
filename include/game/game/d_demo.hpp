@@ -106,7 +106,7 @@ BOOL finish(int type);                                  // 8018DE2C
 void sendCommand(dDemoActor_c *actor, u8 cmd);          // 8018E010: to the actor here and on the other consoles
 BOOL requestTalk(dDemoActor_c *src, dDemoActor_c *target); // 8018E428
 BOOL finishTalk(dDemoActor_c *actor);                   // 8018E48C (d_a_snowman)
-BOOL requestSpeak(dDemoActor_c *actor);                 // 8018E560 (d_a_snowman)
+BOOL requestSpeak(dDemoActor_c *actor, dDemoActor_c *target); // 8018E560 (d_a_snowman; target unused)
 void reset();                                           // 8018E674 (d_reset soft reset)
 void startScene();                                      // 8018E6A0
 BOOL finishSceneStart();                                // 8018E734

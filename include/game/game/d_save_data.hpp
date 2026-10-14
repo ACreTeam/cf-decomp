@@ -253,6 +253,11 @@ public:
         return getTown()->mRecycleBin.add(copy.mId);
     }
 
+    static BOOL addToPoliceBox(const dItem::Item &item) {
+        dItem::Item copy = item;
+        return getTown()->mPoliceBox.add(copy.mId);
+    }
+
     static dSaveExtra_c *getRawExtra() { return &getRaw()->mExtra; }
     // Distribution / WiiConnect24 data handling is on (dSaveExtra_c::mHeader.mNetEnabled). Returns bool: d_wifi
     // onReceive tests the converted value.

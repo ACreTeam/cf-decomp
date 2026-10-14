@@ -846,7 +846,7 @@ config.libs = [
             Object(Matching, "dol/game/d_fg_obj.cpp"),
             Object(NonMatching, "dol/game/d_home_button.cpp"),
             Object(Matching, "dol/game/d_a_c_uitag.cpp"),
-            Object(NonMatching, "dol/game/d_a_snowman.cpp"),
+            Object(Matching, "dol/game/d_a_snowman.cpp"),
             Object(Matching, "dol/game/d_bg_debug.cpp"),
             Object(Matching, "dol/game/d_sv_week.cpp"),
             Object(Matching, "dol/game/d_sv_activity.cpp"),

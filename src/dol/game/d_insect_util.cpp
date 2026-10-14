@@ -556,7 +556,7 @@ void axis_c::rotateX(mAng angle) {
     f32 rad = angle.mAngle * mAng::AngleToRadianCoefficient;
     EGG::Quatf q;
     setQuatIdentity(&q);
-    fn_8044527C(&q, &mSide, rad);
+    q.setAxisRotation(mSide, rad);
     mUp = fn_8044540C(&q, &mUp);
     mFront = fn_8044540C(&q, &mFront);
     setUp(mUp);
@@ -566,7 +566,7 @@ void axis_c::rotateY(mAng angle) {
     f32 rad = angle.mAngle * mAng::AngleToRadianCoefficient;
     EGG::Quatf q;
     setQuatIdentity(&q);
-    fn_8044527C(&q, &mUp, rad);
+    q.setAxisRotation(mUp, rad);
     mFront = fn_8044540C(&q, &mFront);
     mSide = fn_8044540C(&q, &mSide);
     setFront(mFront);
@@ -576,7 +576,7 @@ void axis_c::rotateZ(mAng angle) {
     f32 rad = angle.mAngle * mAng::AngleToRadianCoefficient;
     EGG::Quatf q;
     setQuatIdentity(&q);
-    fn_8044527C(&q, &mFront, rad);
+    q.setAxisRotation(mFront, rad);
     mUp = fn_8044540C(&q, &mUp);
     mSide = fn_8044540C(&q, &mSide);
     setUp(mUp);

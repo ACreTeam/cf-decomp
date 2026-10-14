@@ -3341,7 +3341,7 @@ int getSurfaceEffectKind(const mVec3_c *pos) {
     if (attr == BG_ATTR_SAND) {
         return SURFACE_EFFECT_SAND;
     }
-    if ((u8)dGroundAttr::getSnowWear(pos) > sSnowEffectWearThreshold) {
+    if (dGroundAttr::getSnowWear(pos) > sSnowEffectWearThreshold) {
         return SURFACE_EFFECT_SNOW;
     }
     return SURFACE_EFFECT_NORMAL;

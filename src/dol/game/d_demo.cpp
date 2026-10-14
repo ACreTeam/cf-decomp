@@ -406,7 +406,7 @@ static BOOL endSpeak(Req_c *req) {
 }
 
 // 8018E560
-BOOL requestSpeak(dDemoActor_c *actor) {
+BOOL requestSpeak(dDemoActor_c *actor, dDemoActor_c *target) {
     dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;

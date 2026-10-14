@@ -376,10 +376,10 @@ public:
     /* 0x80 */ u8 mArg;
 }; // size 0x84
 
-// The wall hits of one acch_c check. No constructor of its own: clear() (800714C8) is called in place by
-// acch_c's constructor and by acch_c::clear().
+// The wall hits of one acch_c check.
 class acchWall_c {
 public:
+    acchWall_c() { clear(); }
     void clear(); // 800714C8
 
     BOOL add(mAng ang, int type, int attr, BOOL ignore); // 800714F0
@@ -407,7 +407,6 @@ public:
 class acch_c {
 public:
     acch_c() {
-        mWall.clear();
         init();
     }
 
@@ -421,6 +420,7 @@ public:
     void check(f32 r, mVec3_c *pos, const mVec3_c *old, mAng ang, int ownerId, u32 flags,
                BOOL doClear); // 80074234
     f32 getStepHeight() const { return mStepHeight; }
+    acchWall_c *getWall() { return &mWall; }
 
     /* 0x00 */ u8 _00;            // cleared at the end of each check
     /* 0x04 */ u32 mPrevHitFlags; // mHitFlags of the previous check (HIT_UNDER_WATER: LAYER_WATER)

@@ -5,15 +5,12 @@
 #include <game/game/d_light.hpp>
 #include <nw4r/g3d.h>
 
-extern "C" void fn_804450F0(EGG::Quatf *out, f32 x, f32 y, f32 z, f32 w);
 extern "C" BOOL fn_802B41E4(EGG::Quatf *out, const Vec *from, const Vec *to);
 namespace dBalloonString {
 static const GXColor lMaterial = {160, 160, 192, 255};
 
 void multiplyQuaternion(EGG::Quatf *out, const EGG::Quatf *a, const EGG::Quatf *b);
 }
-extern "C" void fn_804454EC(const EGG::Quatf *a, const EGG::Quatf *b, f32 weight,
-                            EGG::Quatf *out);
 
 // 80066018
 dBalloonString_c::~dBalloonString_c() {}
@@ -29,9 +26,9 @@ void dBalloonString_c::setInitialDirection(const mVec3_c &dir) {
     mVec3_c up;
     up.set(0.0f, 1.0f, 0.0f);
     mVec3_c direction(dir);
-    fn_804450F0(&mRotation, 0.0f, 0.0f, 0.0f, 1.0f);
+    mRotation.set(0.0f, 0.0f, 0.0f, 1.0f);
     if (!fn_802B41E4(&mRotation, up, direction)) {
-        fn_804450F0(&mRotation, 0.0f, 1.0f, 0.0f, 0.0f);
+        mRotation.set(0.0f, 1.0f, 0.0f, 0.0f);
     }
     mVec3_c axis(1.0f, 0.0f, 0.0f);
     mVec3_c cross(axis.y * direction.z - axis.z * direction.y,
@@ -50,7 +47,7 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
     EGG::Quatf fromTangent, fromUp, product, copy;
     fn_804456B0(&fromTangent, &direction, &mTangents[6]);
     if (!fn_802B41E4(&fromUp, up, direction)) {
-        fn_804450F0(&fromUp, 0.0f, 1.0f, 0.0f, 0.0f);
+        fromUp.set(0.0f, 1.0f, 0.0f, 0.0f);
     }
     dBalloonString::multiplyQuaternion(&product, &fromTangent, &fromUp);
     struct Bits {
@@ -62,8 +59,8 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
     fromTangent.y = copy.y;
     fromTangent.z = copy.z;
     fromTangent.w = copy.w;
-    fn_804454EC(&mRotation, &fromTangent, 0.12f, &mRotation);
-    fn_80445344(&mRotation);
+    mRotation.slerpTo(fromTangent, 0.12f, mRotation);
+    mRotation.normalise();
     if (mRotation.w < 0.0f) {
         mRotation.w *= -1.0f;
         mRotation.x *= -1.0f;

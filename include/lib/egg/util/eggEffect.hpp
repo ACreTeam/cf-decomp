@@ -31,7 +31,7 @@ public:
     virtual void vf2C(f32 value);                      // 0x2C: (d_field_assessment)
     virtual void vf30();
     virtual void vf34();
-    virtual void vf38();
+    virtual void vf38(f32 value);                      // 0x38
     virtual void vf3C(f32 value);                      // 0x3C
     virtual void vf40();
     virtual void vf44();
@@ -40,7 +40,7 @@ public:
     virtual void setColor(u8 r, u8 g, u8 b, u8 a, ERecursive recursive); // 0x50 (d_fish_field)
     virtual void setRegisterColor(const _GXColor &color0, const _GXColor &color1, u8 index); // 0x54
     virtual void setRegisterAlpha(u8 alpha0, u8 alpha1, u8 index); // 0x58 (d_a_npc)
-    virtual void vf5C();
+    virtual void vf5C(const nw4r::math::VEC2 *vec);    // 0x5C
     virtual void vf60();
     virtual void vf64();
     virtual void vf68();

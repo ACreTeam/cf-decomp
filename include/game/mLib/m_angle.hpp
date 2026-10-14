@@ -64,6 +64,9 @@ struct mAng {
     /// @brief Converts the angle to degrees.
     float degree() const { return mAngle * AngleToDegreeCoefficient; }
 
+    /// @brief Converts the angle to radians.
+    float radian() const { return mAngle * AngleToRadianCoefficient; }
+
     /// @brief Converts degrees to an angle.
     static s16 fromDegree(float deg) { return deg * DegreeToAngleCoefficient; }
 

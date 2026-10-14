@@ -100,7 +100,7 @@ int getFootstepSe(const mVec3_c *pos, u8 *wear) {
 }
 
 // 800A87B0
-int getFootprint(const mVec3_c *pos) {
+u8 getFootprint(const mVec3_c *pos) {
     if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM)) {
         switch (getAttr(pos)) {
         case BG_ATTR_SOIL:
@@ -120,7 +120,7 @@ int getFootprint(const mVec3_c *pos) {
 }
 
 // 800A8850
-int getSnowWear(const mVec3_c *pos) {
+u8 getSnowWear(const mVec3_c *pos) {
     if (!dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM) && getAttr(pos) == BG_ATTR_SOIL && dScene::isWinterSeasonType()) {
         dFdBase_c *fd = dField::getInfo(FD_ID_CURRENT);
         if (fd != NULL) {
