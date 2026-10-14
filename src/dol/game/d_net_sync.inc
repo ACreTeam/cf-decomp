@@ -108,10 +108,10 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     cLib::memCpy(&hasMii, data, sizeof(hasMii));
     data++;
     if (hasMii) {
-        fn_8008B89C(data, member);
+        dMiiIcon::setMemberMii(data, member);
         data += 0x54;
     } else {
-        fn_8008B89C(NULL, member);
+        dMiiIcon::setMemberMii(NULL, member);
     }
     u8 scene;
     cLib::memCpy(&scene, data, sizeof(scene));
@@ -179,10 +179,10 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     }
     tail++;
     if (hasMii) {
-        fn_8008B89C(tail, member);
+        dMiiIcon::setMemberMii(tail, member);
         tail += 0x54;
     } else {
-        fn_8008B89C(NULL, member);
+        dMiiIcon::setMemberMii(NULL, member);
     }
     getNetTransfer()->setScene(*tail);
     if (myNo != 0) {
@@ -233,9 +233,9 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
         u8 hasMii;
         cLib::memCpy(&hasMii, data + 0x15DD, sizeof(hasMii));
         if (hasMii) {
-            fn_8008B89C(data + 0x15DE, member);
+            dMiiIcon::setMemberMii(data + 0x15DE, member);
         } else {
-            fn_8008B89C(NULL, member);
+            dMiiIcon::setMemberMii(NULL, member);
         }
         data += 0x1632;
         size -= 0x1632;
@@ -318,9 +318,9 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
         dTime_c::setPendingTicks(pending);
         g_dNet.mTimePending = 1;
         if (data[0x15DD]) {
-            fn_8008B89C(data + 0x15DE, member);
+            dMiiIcon::setMemberMii(data + 0x15DE, member);
         } else {
-            fn_8008B89C(NULL, member);
+            dMiiIcon::setMemberMii(NULL, member);
         }
         data += 0x1632;
         for (int i = 0; i < NET_MEMBER_MAX; i++) {
@@ -359,9 +359,9 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     u8 hasMii;
     cLib::memCpy(&hasMii, data + NET_PLAYER_DATA_SIZE + 8, sizeof(hasMii));
     if (hasMii) {
-        fn_8008B89C(data + NET_PLAYER_DATA_SIZE + 9, member);
+        dMiiIcon::setMemberMii(data + NET_PLAYER_DATA_SIZE + 9, member);
     } else {
-        fn_8008B89C(NULL, member);
+        dMiiIcon::setMemberMii(NULL, member);
     }
     if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
@@ -385,9 +385,9 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE, sizeof(time));
     setMemberTime(member, time);
     if (hasMii) {
-        fn_8008B89C(data + prefix, member);
+        dMiiIcon::setMemberMii(data + prefix, member);
     } else {
-        fn_8008B89C(NULL, member);
+        dMiiIcon::setMemberMii(NULL, member);
     }
     if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);

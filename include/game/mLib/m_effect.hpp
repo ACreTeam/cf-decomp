@@ -44,6 +44,7 @@ public:
     virtual bool follow(const mMtx_c *); // 802B89F8
 
     void cleanup(); // 802B88C4
+    void setParticleCallback(void (*callback)(nw4r::ef::Particle *, u32), u32 arg); // 802B8980
 
     /* 0x7C */ levelEffect_c *mPrev;
     /* 0x80 */ levelEffect_c *mNext;

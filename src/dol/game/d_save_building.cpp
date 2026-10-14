@@ -576,13 +576,13 @@ BOOL dSaveBuildingList_c::addBuildSite(int x, int z, BOOL updateCrc) {
 }
 
 // 8014B474
-BOOL dSaveBuildingList_c::isBuildSite(int x, int z) const {
+bool dSaveBuildingList_c::isBuildSite(int x, int z) const {
     for (const dSaveBuildingPos_c *pos = mSites; pos < mSites + BUILD_SITE_NUM; pos++) {
         if (x != 0 && z != 0 && pos->mX == (s8)x && pos->mZ == (s8)z) {
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // 8014B4E4

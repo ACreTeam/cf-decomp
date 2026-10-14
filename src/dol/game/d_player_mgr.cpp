@@ -1803,7 +1803,7 @@ BOOL fn_800FF354(int *outState) {
     }
     int state = player->mState;
     if (state == 0x1A) {
-        dUki_c::fn_801710BC(dNet::getMyNo(), NULL);
+        dUki_c::setFish(dNet::getMyNo(), NULL);
         *outState = 0x1D;
         changeState(0x1D, PLAYER_INDEX_CURRENT);
         return FALSE;
@@ -2408,7 +2408,7 @@ BOOL fn_80100860() {
     }
     int state = player->mState;
     if (state == 0x1A) {
-        dUki_c::fn_801710BC(dNet::getMyNo(), NULL);
+        dUki_c::setFish(dNet::getMyNo(), NULL);
         changeState(0x1D, PLAYER_INDEX_CURRENT);
         return FALSE;
     }

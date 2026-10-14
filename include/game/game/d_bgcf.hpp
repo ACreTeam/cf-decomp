@@ -360,6 +360,8 @@ public:
     void setSlope(f32 prevY, f32 y, mAng ang); // 8006E42C
     void check(const mVec3_c *pos, int type, int mode); // 8006E4AC
 
+    f32 getWaterY() const { return mWaterY; }
+
     /* 0x00 */ u8 mSlope;
     /* 0x04 */ mVec3_c mSlopeCenter;
     /* 0x10 */ mVec3_c mPos;
@@ -505,7 +507,7 @@ BOOL isWaterArea(const mVec3_c *pos, f32 r);                                    
 
 // The bg check.
 BOOL checkLineSteps(lineChk_s *out, mVec3_c *end, const mVec3_c *start, u32 flags); // 80074630
-BOOL checkLine(lineChk_s *out, mVec3_c *end, const mVec3_c *start, u32 flags);      // 8007481C
+u32 checkLine(lineChk_s *out, mVec3_c *end, const mVec3_c *start, u32 flags);      // 8007481C
 f32 getGroundY(const mVec3_c *pos, BOOL withColumn);                                // 80074974
 f32 getGroundY(const mVec3_c *pos, int *attr, u32 flags);                           // 80074C8C
 f32 getUnitBaseY(int unitX, int unitZ);                                             // 80074D64

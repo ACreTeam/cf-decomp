@@ -29,6 +29,9 @@ block_relocations:
 # 804F8348: d_sc_data_rm_theater_show's scene3 kind 0x0B record starts with the colour 806840FF, which looks like an
 # address inside d_snd's l_soundSystemWorkMem bss. Not a pointer.
 - source: 0x804F8348
+# 8050938C: a word inside the 0x17CC8-byte binary blob at 80509320 (fn_80225BC0 records its address and size),
+# 805867BF, which looks like an address inside d_mii_icon's l_stack bss. Not a pointer.
+- source: 0x8050938C
 # 8047DCCC / 8047DD90 / 8047E04C + 0x1C * n + 0x18: d_npc_mng's spawn tables (dNpcMng_c::Spawn_c); the npc
 # item id (u16 80XX) and its padding read as 80XX0000, inside .text or data. Not pointers.
 - source: 0x8047DCE4

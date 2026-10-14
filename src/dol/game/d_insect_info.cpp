@@ -1329,7 +1329,7 @@ u8 getActiveTimeMask(int type) {
     return sActiveTimeMask[type];
 }
 
-// 800BDB78: FALSE for the insects that do not spawn while it rains (weather 3/4, fn_800C0420); the
+// 800BDB78: FALSE for the insects that do not spawn while it rains (weather 3/4, dInsectUtil::isRaining); the
 // snail needs rain (d_insect_fieldNP checks that separately).
 BOOL canSpawnInRain(int type) {
     const int list[32] = {
@@ -1350,7 +1350,7 @@ BOOL canSpawnInRain(int type) {
     return TRUE;
 }
 
-// 800BDC70: FALSE for the insects that do not spawn while it snows (weather 5/6, fn_800C0454). Same
+// 800BDC70: FALSE for the insects that do not spawn while it snows (weather 5/6, dInsectUtil::isSnowing). Same
 // list as canSpawnInRain, with the snail instead of the ant.
 BOOL canSpawnInSnow(int type) {
     const int list[32] = {

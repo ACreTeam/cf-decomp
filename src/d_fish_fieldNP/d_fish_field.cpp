@@ -69,14 +69,14 @@ s16 sTimeParam1[6] = {22, 28, 35, 50, 80, 0};
 // rodata 0x0: draw's item model offset (0xC: 0.0f, unknown).
 static const f32 sItemOfs[3] = {0.0f, -2.0f, 2.0f};
 // rodata 0x10: the effect shadow's x / z scale, by dFishParam_c::mSize (execute).
-static const f32 sShadowScale[8][2] = {
+static const f32 sShadowScale[FISH_SIZE_NUM][2] = {
     {1.25f, 1.25f}, {1.65f, 1.0f}, {1.4f, 1.0f}, {1.33f, 0.9f}, {1.28f, 0.81f}, {1.38f, 0.61f}, {1.0f, 1.0f}, {2.66f, 0.72f},
 };
 // rodata 0x50: the ripples' scale range (dFishRipple_c::execute), by dFishParam_c::mSize.
-static const f32 sRippleScaleMin[8] = {2.0f, 2.3f, 1.5f, 1.3f, 1.2f, 1.1f, 0.8f, 2.5f};
-static const f32 sRippleScaleMax[8] = {2.5f, 2.8f, 2.0f, 1.8f, 1.7f, 1.6f, 3.0f, 1.3f};
+static const f32 sRippleScaleMin[FISH_SIZE_NUM] = {2.0f, 2.3f, 1.5f, 1.3f, 1.2f, 1.1f, 0.8f, 2.5f};
+static const f32 sRippleScaleMax[FISH_SIZE_NUM] = {2.5f, 2.8f, 2.0f, 1.8f, 1.7f, 1.6f, 3.0f, 1.3f};
 // rodata 0x90
-static const dFishSizeParam_c sSizeParams[8] = {
+static const dFishSizeParam_c sSizeParams[FISH_SIZE_NUM] = {
     {{0.3f, 0.3f, 0.3f}, 1.4f, 30, 60},
     {{0.4f, 0.4f, 0.45f}, 1.3f, 45, 90},
     {{0.5f, 0.5f, 0.65f}, 1.3f, 60, 120},
@@ -974,24 +974,24 @@ int dFishFldShadow_c::searchFloat() {
         return -1;
     }
     for (int i = 0; i <= 3; i++) {
-        dUki_c *fl = dUki_c::fn_801710A4(i, this);
+        dUki_c *fl = dUki_c::getFloat(i, this);
         if (fl == NULL) {
             continue;
         }
-        mVec3_c floatPos = fl->mPos;
+        mVec3_c floatPos = fl->mPos[0];
         mVec3_c diff = floatPos;
         diff.x -= mPos.x;
         diff.y -= mPos.y;
         diff.z -= mPos.z;
         BOOL inWater = TRUE;
-        if (fl->mCastState != 1 && fl->mCastState != 2) {
+        if (fl->mKind != dUki_c::KIND_SILVER_ROD && fl->mKind != dUki_c::KIND_GOLD_ROD) {
             inWater = FALSE;
         }
         s16 angle = (inWater ? &sTurnParam1[mParam._1] : &sTurnParam0[mParam._1])->mAngle;
         f32 range = 32.0f * (inWater ? &sTurnParam1[mParam._1] : &sTurnParam0[mParam._1])->mSpeed;
         f32 dist = PSVECMag(diff);
         static const f32 cSplashR = 16.0f;
-        if (dist < cSplashR && fl->fn_8016FED4()) {
+        if (dist < cSplashR && fl->isJustLanded()) {
             initSwim();
             mTurnTimer = 30;
             if (diff.normalizeRS()) {
@@ -1270,10 +1270,10 @@ void dFishFldShadow_c::initApproach() {
     mNibbling = 1;
     mTimer = cM::rndRange<s16>(30, 90);
     mNibbleNum = 0;
-    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
-    dUki_c::fn_801710BC(mPlayer, this);
+    dUki_c *fl = dUki_c::getFloat(mPlayer, this);
+    dUki_c::setFish(mPlayer, this);
     if (fl != NULL) {
-        mVec3_c pos = fl->mPos;
+        mVec3_c pos = fl->mPos[0];
         mSpeed = cM::rndRange(1.25f, 2.0f);
     }
 }
@@ -1290,9 +1290,9 @@ void dFishFldShadow_c::executeApproach() {
             setState(STATE_SWIM);
         }
     } else {
-        dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+        dUki_c *fl = dUki_c::getFloat(mPlayer, this);
         if (fl != NULL) {
-            flPos = &fl->mPos;
+            flPos = &fl->mPos[0];
             if (isMine() && isInFallBasin(flPos)) {
                 setState(STATE_ESCAPE);
                 calcBgMove();
@@ -1310,9 +1310,9 @@ void dFishFldShadow_c::executeApproach() {
                 mVec3_c d2 = *flPos - mPos;
                 f32 reach = 17.6f;
                 if (d2.x * d2.x + d2.z * d2.z < reach) {
-                    fl->fn_8016FD60();
+                    fl->nibble();
                     mSound.startSound(SE_PushByFish);
-                    dUki_c::fn_801710BC(mPlayer, NULL);
+                    dUki_c::setFish(mPlayer, NULL);
                     mPlayer = -1;
                     mTimer = cM::rndRange<s16>(30, 90);
                 }
@@ -1345,7 +1345,7 @@ void dFishFldShadow_c::executeApproach() {
 // 0x4130
 void dFishFldShadow_c::endApproach() {
     if (mPlayer >= 0) {
-        dUki_c::fn_801710BC(mPlayer, NULL);
+        dUki_c::setFish(mPlayer, NULL);
         mPlayer = -1;
     }
     if (isMine() && getRec()->mRec.getMember() != 4) {
@@ -1368,9 +1368,9 @@ void dFishFldShadow_c::initNibble() {
         getRec()->mRec.setDir(mNibbling);
     }
     mTimer = cM::rndRange(70, 220);
-    if (dUki_c::fn_801710A4(mPlayer, this) != NULL) {
+    if (dUki_c::getFloat(mPlayer, this) != NULL) {
         mSpeed *= 0.5f;
-        dUki_c::fn_801710BC(mPlayer, this);
+        dUki_c::setFish(mPlayer, this);
     }
 }
 
@@ -1378,10 +1378,10 @@ void dFishFldShadow_c::initNibble() {
 void dFishFldShadow_c::executeNibble() {
     const mVec3_c *flPos;
     u8 prev;
-    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::getFloat(mPlayer, this);
     BOOL mine = isMine();
     if (fl != NULL) {
-        flPos = &fl->mPos;
+        flPos = &fl->mPos[0];
         if (isMine() && isInFallBasin(flPos)) {
             setState(STATE_ESCAPE);
             calcBgMove();
@@ -1406,7 +1406,7 @@ void dFishFldShadow_c::executeNibble() {
                         mSpeed = -mSpeed;
                     }
                 } else {
-                    fl->fn_8016FD60();
+                    fl->nibble();
                     mSound.startSound(SE_PushByFish);
                     sLib::chase(&mNibbleNum, 5, 1);
                     mTimer = cM::rndRange(70, 220);
@@ -1425,14 +1425,14 @@ void dFishFldShadow_c::executeNibble() {
                 int n = left >= 1 ? left : 1;
                 f32 chance = 100.0f - 100.0f / n;
                 if (cM::rndRange(0.0f, 100.0f) > chance || sLib::chase(&mNibbleNum, 5, 1)) {
-                    if (fl->_447 == 9) {
-                        dUki_c::fn_801710BC(mPlayer, NULL);
+                    if (fl->mState == dUki_c::STATE_REEL) {
+                        dUki_c::setFish(mPlayer, NULL);
                         setState(STATE_ESCAPE);
                     } else {
                         setState(STATE_BITE);
                     }
                 } else {
-                    fl->fn_8016FD60();
+                    fl->nibble();
                     mSound.startSound(SE_PushByFish);
                     mTimer = cM::rndRange(70, 220);
                     mSpeed = -0.5f;
@@ -1487,11 +1487,11 @@ void dFishFldShadow_c::initBite() {
     if (!isMine() || getRec()->mRemote) {
         mPlayer = getRec()->mRec.getMember();
     }
-    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::getFloat(mPlayer, this);
     BOOL longCast = FALSE;
     if (fl != NULL) {
-        fl->fn_8016FC44(7);
-        longCast = fl->mCastState == 2;
+        fl->setState(7);
+        longCast = fl->mKind == dUki_c::KIND_GOLD_ROD;
     }
     mCourse = mTargetAngle.y;
     s16 *time;
@@ -1505,11 +1505,11 @@ void dFishFldShadow_c::initBite() {
 
 // 0x4934
 void dFishFldShadow_c::executeBite() {
-    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::getFloat(mPlayer, this);
     if (fl != NULL) {
         if (sLib::calcTimer(&mTimer) == 0 && isMine()) {
-            fl->fn_8016FC44(5);
-            dUki_c::fn_801710BC(mPlayer, NULL);
+            fl->setState(5);
+            dUki_c::setFish(mPlayer, NULL);
             setState(STATE_ESCAPE);
         }
     } else if (isMine()) {
@@ -1521,7 +1521,7 @@ void dFishFldShadow_c::executeBite() {
 // 0x49E8
 void dFishFldShadow_c::initEscape() {
     if (mPlayer >= 0) {
-        dUki_c::fn_801710BC(mPlayer, NULL);
+        dUki_c::setFish(mPlayer, NULL);
     }
     if (isFinFish()) {
         mTimer = 120;
@@ -1567,7 +1567,7 @@ void dFishFldShadow_c::initHooked() {
         mPlayer = getRec()->mRec.getMember();
     }
     mAnmRate = 1.0f;
-    dUki_c::fn_801710BC(mPlayer, this);
+    dUki_c::setFish(mPlayer, this);
     const dFishSizeParam_c *size = &sSizeParams[mParam.mSize];
     mTimer = cM::rndRange(size->mHookTimeMin, size->mHookTimeMax);
     int kind = mKind;
@@ -1592,9 +1592,9 @@ void dFishFldShadow_c::executeHooked() {
     if (sLib::calcTimer(&mTimer) == 0 && held && isMine()) {
         setState(STATE_CATCH);
     } else {
-        dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+        dUki_c *fl = dUki_c::getFloat(mPlayer, this);
         if (fl != NULL) {
-            mVec3_c pos = fl->mPos;
+            mVec3_c pos = fl->mPos[0];
             mPos.set(pos.x, mPos.y, pos.z);
         }
         mTargetAngle.y.mAngle += 0x71C;
@@ -1607,7 +1607,7 @@ void dFishFldShadow_c::initCatch() {
     if (!isMine() || getRec()->mRemote) {
         mPlayer = getRec()->mRec.getMember();
     }
-    dUki_c::fn_801710BC(mPlayer, this);
+    dUki_c::setFish(mPlayer, this);
     mTimer = 45;
     mDestPos = mPos;
     mStartPos = mPos;
@@ -1639,12 +1639,12 @@ void dFishFldShadow_c::executeCatch() {
         }
     }
     sLib::calcTimer(&mTimer);
-    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::getFloat(mPlayer, this);
     const mVec3_c *hand = dPlayerMgr::getHandPosition(mPlayer);
     if (fl != NULL && hand != NULL) {
         f32 t = mTimer / 45.0f;
         f32 u = 1.0f - t;
-        mPos = fl->mPos * t + *hand * u;
+        mPos = fl->mPos[0] * t + *hand * u;
     } else if (hand != NULL) {
         mPos = *hand;
     }
@@ -1761,16 +1761,16 @@ void dFishFldShadow_c::executeRelease() {
             }
             u32 se;
             switch (mParam.mSize) {
-            case 0:
-            case 1:
+            case FISH_SIZE_TINY:
+            case FISH_SIZE_SMALL:
                 se = SE_fish_fall_river_s;
                 break;
-            case 2:
-            case 7:
+            case FISH_SIZE_MEDIUM:
+            case FISH_SIZE_NARROW:
                 se = SE_fish_fall_river_m;
                 break;
-            case 3:
-            case 4:
+            case FISH_SIZE_LARGE:
+            case FISH_SIZE_XLARGE:
                 se = SE_fish_fall_river_l;
                 break;
             default:
@@ -1891,19 +1891,19 @@ BOOL dFishFldShadow_c::pull() {
         if (ok) {
             setState(STATE_HOOKED);
         } else {
-            dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+            dUki_c *fl = dUki_c::getFloat(mPlayer, this);
             if (fl != NULL) {
-                fl->fn_8016FC44(5);
-                dUki_c::fn_801710BC(mPlayer, NULL);
+                fl->setState(5);
+                dUki_c::setFish(mPlayer, NULL);
             }
             setState(STATE_ESCAPE);
         }
         return ok;
     }
-    dUki_c *fl = dUki_c::fn_801710A4(mPlayer, this);
+    dUki_c *fl = dUki_c::getFloat(mPlayer, this);
     if (fl != NULL) {
-        fl->fn_8016FC44(5);
-        dUki_c::fn_801710BC(mPlayer, NULL);
+        fl->setState(5);
+        dUki_c::setFish(mPlayer, NULL);
     }
     return FALSE;
 }
@@ -1929,7 +1929,7 @@ void dFishFldShadow_c::throwBack(const mVec3_c *pos) {
     }
     if (mState != STATE_HOLD) {
         if (mPlayer >= 0) {
-            dUki_c::fn_801710BC(mPlayer, NULL);
+            dUki_c::setFish(mPlayer, NULL);
             mPlayer = -1;
         }
         setState(STATE_RELEASE);
@@ -1939,7 +1939,7 @@ void dFishFldShadow_c::throwBack(const mVec3_c *pos) {
 // 0x5C44
 void dFishFldShadow_c::requestDelete() {
     if (mPlayer >= 0) {
-        dUki_c::fn_801710BC(mPlayer, 0);
+        dUki_c::setFish(mPlayer, 0);
         mPlayer = -1;
     }
     if (mHeld) {
@@ -2192,7 +2192,7 @@ BOOL dFishFldShadow_c::isDeleteOk() {
         mHoldPlayer = -1;
     }
     if (mPlayer >= 0) {
-        dUki_c::fn_801710BC(mPlayer, 0);
+        dUki_c::setFish(mPlayer, 0);
         mPlayer = -1;
     }
     if (_20C != NULL) {
@@ -2476,8 +2476,8 @@ void dFishFldShadow_c::setSplashEffect() {
     static const f32 sDropScales[] = {1.0f, 1.0f, 0.9f, 1.2f, 1.4f, 1.1f, 1.3f, 1.0f};
     u32 kind;
     switch (mParam.mSize) {
-    case 5:
-    case 6:
+    case FISH_SIZE_HUGE:
+    case FISH_SIZE_FIN:
         kind = 1;
         break;
     default:

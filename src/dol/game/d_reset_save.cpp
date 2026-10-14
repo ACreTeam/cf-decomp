@@ -45,7 +45,7 @@ BOOL stepCloseNet() {
 
 // 80107AFC
 BOOL stepWaitMiiIcon() {
-    if (fn_8008B8DC()) {
+    if (dMiiIcon::isIdle()) {
         sStep = STEP_WAIT_NAND;
         return FALSE;
     }

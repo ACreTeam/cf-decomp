@@ -44,14 +44,27 @@ class Particle;
 }
 } // namespace nw4r
 
+// The shadow size class of a fish type (dFishParam_c::mSize).
+enum dFishSize_e {
+    FISH_SIZE_TINY,
+    FISH_SIZE_SMALL,
+    FISH_SIZE_MEDIUM,
+    FISH_SIZE_LARGE,
+    FISH_SIZE_XLARGE,
+    FISH_SIZE_HUGE,
+    FISH_SIZE_FIN,
+    FISH_SIZE_NARROW,
+    FISH_SIZE_NUM,
+};
+
 // Per fish type (sFishParam, data 0x8, [77]; copied to dFishFldShadow_c::mParam).
 struct dFishParam_c {
-    /* 0x0 */ u8 mSize; // sSizeParams index (rodata 0x90)
+    /* 0x0 */ u8 mSize; // dFishSize_e
     /* 0x1 */ u8 _1;    // searchFloat: sTurnParam0/1 index
     /* 0x2 */ u8 _2;    // initBite: sTimeParam0/1 index
 }; // size 0x3
 
-// Per size class (sSizeParams, rodata 0x90, [8]; by dFishParam_c::mSize).
+// Per size class (sSizeParams, rodata 0x90; by dFishParam_c::mSize).
 struct dFishSizeParam_c {
     /* 0x00 */ f32 mScale[3];    // the shadow model's scale
     /* 0x0C */ f32 _0C;

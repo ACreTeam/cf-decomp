@@ -3019,7 +3019,7 @@ BOOL checkLineSteps(lineChk_s *out, mVec3_c *end, const mVec3_c *start, u32 flag
 }
 
 // 8007481C
-BOOL checkLine(lineChk_s *out, mVec3_c *end, const mVec3_c *start, u32 flags) {
+u32 checkLine(lineChk_s *out, mVec3_c *end, const mVec3_c *start, u32 flags) {
     mVec3_c e(*end);
     mVec3_c min(*start);
     mVec3_c max(*start);
