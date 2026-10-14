@@ -51,6 +51,15 @@ public:
 
     void ResetOrthographic(f32 top, f32 bottom, f32 left, f32 right, f32 nearZ, f32 farZ);
 
+    void SetFovY(f32 fovy) {
+        if (mFovY != fovy) {
+            mFovY = fovy;
+            f32 sine, cosine;
+            nw4r::math::SinCosFIdx(&sine, &cosine, (fovy * 0.5f) * (256.0f / 360.0f));
+            mTanFovY = cosine / sine;
+        }
+    }
+
     // Names inferred.
     void GetPerspectiveMtx(nw4r::math::MTX44 *mtx) const;  // 80447E7C
     void GetOrthographicMtx(nw4r::math::MTX44 *mtx) const; // 80447F0C

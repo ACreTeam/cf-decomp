@@ -24,7 +24,6 @@
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-BOOL fn_8018A978(dCamera_c *camera); // 8018A978
 }
 
 namespace dBgm {
@@ -2945,7 +2944,7 @@ void VolStateSky_c::init() {
 
 void VolStateSky_c::execute() {
     bool on = false;
-    if (lbl_8074E9B0 != NULL && fn_8018A978(lbl_8074E9B0)) {
+    if (lbl_8074E9B0 != NULL && lbl_8074E9B0->isFollowLookUp()) {
         on = true;
     }
     if (mOn) {

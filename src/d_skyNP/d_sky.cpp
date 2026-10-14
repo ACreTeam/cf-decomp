@@ -277,7 +277,7 @@ void dSky_c::calc() {
     } else {
         cityY = 110.0f;
     }
-    f32 pitch = mAng(lbl_8074E9B0->mPitch).degree();
+    f32 pitch = mAng(lbl_8074E9B0->mCurrent.mParam.mPitch).degree();
     f32 rate = nw4r::math::TanDeg(pitch) - nw4r::math::TanDeg(-52.0f);
     rate /= nw4r::math::TanDeg(-22.0f) - nw4r::math::TanDeg(-52.0f);
     f32 inv = 1.0f - rate;
@@ -286,7 +286,7 @@ void dSky_c::calc() {
     mVec3_c cloudPos(0.0f, 32.0f, 0.0f);
     skyPos.y += getOffsetY();
     cloudPos += skyPos;
-    mPos.set(lbl_8074E9B0->mYaw * 0.05f, starMaxY * inv + starMinY * rate, -1300.0f);
+    mPos.set(lbl_8074E9B0->mCurrent.mParam.mYaw * 0.05f, starMaxY * inv + starMinY * rate, -1300.0f);
     mPos.y += getOffsetY();
     mPos.z += getOffsetZ();
 
@@ -302,7 +302,7 @@ void dSky_c::calc() {
     f32 scroll = 0.0f;
     if (lbl_8074E9B0 != NULL) {
         scroll = 0.0016f * getViewCenter<nw4r::math::VEC3>()->x;
-        scroll += -0.0002f * lbl_8074E9B0->mYaw;
+        scroll += -0.0002f * lbl_8074E9B0->mCurrent.mParam.mYaw;
         scroll = fmod(scroll, 4.0);
     }
     for (u32 i = 0; i < cloudMdl.GetResMatNumEntries(); i++) {

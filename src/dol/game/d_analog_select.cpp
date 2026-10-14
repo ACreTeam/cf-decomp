@@ -193,7 +193,7 @@ void Comp_c::updatePointer() {
     hit.pos = dObjCursor_c::getPos();
     f32 delta = hit.pos.y - mPointerPos.y;
     mPointerPos = hit.pos;
-    if (mPointerMode != fn_8017FE28()) delta = 0.0f;
+    if (mPointerMode != dAcUitag::isPointerInScreen()) delta = 0.0f;
     mLayout.patrolPane(m2d::isInPane, m2d::isRectButton, &hit);
     if (mPointerButton == 0) {
         if (hit.pane == mpCursorButton) { mPointerButton = 1; changeCursorAnm(0); }
@@ -290,9 +290,9 @@ void Comp_c::executeHidden() {}
 // 8000D59C
 void Comp_c::initIn() {
     changeWindowAnm(0);
-    if (fn_8017FE28() != 0) { changeCursorAnm(3); changeCursorPressAnm(1); mPointerButton = 0; }
+    if (dAcUitag::isPointerInScreen() != 0) { changeCursorAnm(3); changeCursorPressAnm(1); mPointerButton = 0; }
     else { changeCursorAnm(2); changeCursorPressAnm(0); mPointerButton = 0; }
-    mPointerMode = fn_8017FE28();
+    mPointerMode = dAcUitag::isPointerInScreen();
     for (int i = 0; i < 2; ++i) {
         mChoices[i].applyText();
         mChoices[i].mpTextBox->SetVisible(true);
@@ -307,7 +307,7 @@ void Comp_c::initSelect() {}
 void Comp_c::executeSelect() {
     int oldButton = mPointerButton;
     f32 oldPos = mCursorPos;
-    if (fn_8017FE28() != 0) updatePointer(); else updateButtons();
+    if (dAcUitag::isPointerInScreen() != 0) updatePointer(); else updateButtons();
     if (oldButton != mPointerButton && mPointerButton != 0) playSe(0x16BE);
     if (mCursorPos != oldPos) {
         int oldSelection = (int)(oldPos / 10.0f);
@@ -315,7 +315,7 @@ void Comp_c::executeSelect() {
         if (oldSelection != newSelection) playSe(0x16CE);
         moveCursor();
     }
-    mPointerMode = fn_8017FE28();
+    mPointerMode = dAcUitag::isPointerInScreen();
     if (mPad::getCore()->downTrigger(0x10)) confirm();
 }
 // 8000D920

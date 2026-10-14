@@ -377,7 +377,7 @@ void dAcNpcNml_c::talk_c::actVisitArrive() {
         if (npc->mAction.mCanChange) {
             npc->mAction.requestWait(1);
             reqMsgClose();
-            lbl_8074E9B0->fn_8018B5B8(npc->demoHook58());
+            lbl_8074E9B0->startTalkView(npc->demoHook58());
             clearActProc();
             dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(0);
         }

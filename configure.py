@@ -854,7 +854,7 @@ config.libs = [
             Object(Matching, "dol/game/d_sv_lang_flag.cpp"),
             Object(Matching, "dol/game/d_ground_attr.cpp"),
             Object(Matching, "dol/game/d_reset_save.cpp"),
-            Object(NonMatching, "dol/game/d_camera.cpp"),
+            Object(NonMatching, "dol/game/d_camera.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_clock.cpp"),
             Object(Matching, "dol/game/d_cd.cpp"),
             Object(Matching, "dol/game/d_demo.cpp"),

@@ -10166,7 +10166,7 @@ int dAcNpc_c::recept_c::stepChangeSpeakerCamera() {
             const recept_c *self = this;
             dAcNpc_c *npc = self->getNpc((mTalkIdx + 1) & 1);
             if (npc != NULL) {
-                lbl_8074E9B0->fn_8018B768(npc->demoHook58());
+                lbl_8074E9B0->switchTalkTarget(npc->demoHook58());
             }
             mReqStep = 2;
         }
@@ -10179,7 +10179,7 @@ int dAcNpc_c::recept_c::stepChangeSpeakerTalk() {
     dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL) {
         if (ctrl->isState(&dMsg::Comp_c::executeSuspend)) {
-            if (lbl_8074E9B0 != NULL && (lbl_8074E9B0->fn_8018A748() || lbl_8074E9B0->fn_8018A460() < 17.0f)) {
+            if (lbl_8074E9B0 != NULL && (lbl_8074E9B0->isTransitionActive() || lbl_8074E9B0->getTransitionFramesLeft() < 17.0f)) {
                 // The target calls the const getNpc overload (800292B4) here.
                 const recept_c *self = this;
                 int idx = mTalkIdx;
@@ -10418,7 +10418,7 @@ void dAcNpc_c::talk_c::startTalk(dAcNpc_c *npc) {
         speaker = npc;
     }
     if (recept->mTalkIdx == 1 && speaker != NULL) {
-        lbl_8074E9B0->fn_8018B768(speaker->demoHook58());
+        lbl_8074E9B0->switchTalkTarget(speaker->demoHook58());
     }
     dHmnName::Word_c name;
     recept_c::msgInfo_s info;
@@ -10496,9 +10496,9 @@ void dAcNpc_c::talk_c::initTurnTalk(dAcNpc_c *npc) {
         recept_c *recept = npc->mpRecept;
         mVec3_c *target = npc->demoHook58();
         if (recept != NULL && recept->mpPartner != NULL) {
-            lbl_8074E9B0->fn_8018B67C(target, recept->mpPartner->demoHook58());
+            lbl_8074E9B0->startThreeActorTalkView(target, recept->mpPartner->demoHook58());
         } else {
-            lbl_8074E9B0->fn_8018B5B8(target);
+            lbl_8074E9B0->startTalkView(target);
         }
     }
     npc->mObjc.setFixWeight(0xFF);
@@ -10621,9 +10621,9 @@ void dAcNpc_c::talk_c::initTalk(dAcNpc_c *npc) {
         recept_c *recept = npc->mpRecept;
         mVec3_c *target = npc->demoHook58();
         if (recept != NULL && recept->mpPartner != NULL) {
-            lbl_8074E9B0->fn_8018B67C(target, recept->mpPartner->demoHook58());
+            lbl_8074E9B0->startThreeActorTalkView(target, recept->mpPartner->demoHook58());
         } else {
-            lbl_8074E9B0->fn_8018B5B8(target);
+            lbl_8074E9B0->startTalkView(target);
         }
     }
     npc->mObjc.setFixWeight(0xFF);

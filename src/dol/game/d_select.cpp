@@ -347,7 +347,7 @@ void BComp_c::executeIn() {
 
 // 8015C89C
 void BComp_c::initSelectMsg() {
-    if (fn_8017FE28()) {
+    if (dAcUitag::isPointerInScreen()) {
         setKeyMode(false);
     } else {
         setKeyMode(true);
@@ -359,7 +359,7 @@ void BComp_c::initSelectMsg() {
 // 8015C908
 void BComp_c::executeSelectMsg() {
     int prev = mCurrent;
-    if (fn_8017FE28()) {
+    if (dAcUitag::isPointerInScreen()) {
         if (mKeyMode == true) {
             setKeyMode(false);
             prev = -2;
@@ -393,14 +393,14 @@ void BComp_c::initSelectDpd() {
 // 8015CA20
 void BComp_c::executeSelectDpd() {
     int prev = mCurrent;
-    if (!fn_8017FE28()) {
+    if (!dAcUitag::isPointerInScreen()) {
         mCurrent = -1;
     } else {
         updatePointer();
     }
     if (mPad::getCore()->downTrigger(0x800) && mCurrent == -1 && mCancel != -1) {
         cancel();
-    } else if (!fn_8017FE28() && mCancel != -1 && dPad::isCancelTriggered()) {
+    } else if (!dAcUitag::isPointerInScreen() && mCancel != -1 && dPad::isCancelTriggered()) {
         cancel();
     }
     if (mCurrent != prev) {
@@ -421,7 +421,7 @@ void BComp_c::initSelectKey() {
 // 8015CB6C
 void BComp_c::executeSelectKey() {
     int prev = mCurrent;
-    if (mCancel != -1 && fn_8017FE28()) {
+    if (mCancel != -1 && dAcUitag::isPointerInScreen()) {
         cancel();
     } else {
         updateKey();

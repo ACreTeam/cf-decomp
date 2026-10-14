@@ -65,7 +65,7 @@ void dObjBal_c::calcPos() {
     mVec3_c curved;
     dWorld::curvePosition(&curved, &pos);
     f32 x, y;
-    fn_8018A16C(lbl_8074E9B0, &x, &y, &curved);
+    dCamera::worldToScreen(lbl_8074E9B0, &x, &y, &curved);
     mVec2_c screen;
     screen.x = -304.0f + 608.0f * x;
     screen.y = 80.0f + (-228.0f + 456.0f * (1.0f - y));

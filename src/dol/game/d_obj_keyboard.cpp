@@ -127,7 +127,7 @@ void dObjKeyboard_c::stateInput() {
         }
     }
     if (mKbd.isTextChanged()) {
-        fn_80180AD0();
+        dAcUitag::hideCameraMsg();
         resetTimer();
         if (checkLength()) {
             mKbd.updateInput();
@@ -153,7 +153,7 @@ void dObjKeyboard_c::stateClose() {
 
 void dObjKeyboard_c::stateEmotionStart() {
     if (dDemo::isActiveKeyboard()) {
-        fn_80180FC4(mEmotionSlot);
+        dAcUitag::startEmotion(mEmotionSlot);
         mState = STATE_EMOTION;
         stateEmotion();
     } else {

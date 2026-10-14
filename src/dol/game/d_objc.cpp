@@ -30,7 +30,6 @@
 extern "C" {
 
 // 8018A080 (d_camera): a screen position to a world position
-void fn_8018A080(mVec3_c *pos, const dCamera_c *cam, const mVec2_c *screen);
 }
 
 // The process that runs the collision every frame (RTTI "dObjc_c").
@@ -590,8 +589,7 @@ void calc() {
     if (cam != NULL && mPad::getCore()->getDpdValidFlag() > 0 && player != NULL && field != NULL) {
         dBGC::column_c hitCol;
         mVec2_c screen = dPad::getRawPointer();
-        mVec3_c target;
-        fn_8018A080(&target, cam, &screen);
+        mVec3_c target = cam->screenToWorld(&screen);
         mVec3_c eye = cam->getEyePos();
         mVec3_c start = eye;
         mVec3_c end = target - start;

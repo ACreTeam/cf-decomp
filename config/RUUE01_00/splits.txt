@@ -1781,6 +1781,11 @@ dol/game/d_home_button.cpp:
 
 dol/game/d_a_c_uitag.cpp:
 	.text       start:0x8017E7B0 end:0x801811D0
+	.rodata     start:0x8047B508 end:0x8047B528
+	.data       start:0x804F8680 end:0x804F8D00 align:4
+	.sdata      start:0x8074BE18 end:0x8074BE58
+	.sbss       start:0x8074E978 end:0x8074E980 align:4
+	.sdata2     start:0x807513F8 end:0x80751428 align:4
 
 dol/game/d_a_snowman.cpp:
 	.text       start:0x801811D0 end:0x80186E0C
@@ -1796,6 +1801,12 @@ dol/game/d_bg_debug.cpp:
 dol/game/d_camera.cpp:
 	.text       start:0x801870D0 end:0x8018BAF8
 	.ctors      start:0x80465824 end:0x80465828
+	.rodata     start:0x8047B580 end:0x8047BEF8
+	.data       start:0x804F9308 end:0x804F9610
+	.bss        start:0x80623FC0 end:0x80624010
+	.sdata      start:0x8074BE98 end:0x8074BEB8
+	.sbss       start:0x8074E9B0 end:0x8074E9C8
+	.sdata2     start:0x80751538 end:0x807515C8
 
 dol/game/d_clock.cpp:
 	.text       start:0x8018BAF8 end:0x8018D778

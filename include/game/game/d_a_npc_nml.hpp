@@ -867,7 +867,7 @@ public:
         BOOL stepStallCall(int kind);               // 800481FC 104: EC = msgStallComing, setRequest1(0), 128 = resStallCall
         void resStallCall();                        // 8004829C 128: 110 = actStallWalk
         void actStallWalk();                        // 800482DC 110: npc requestWalk to l_walkTargetPos; 110 = actStallArrive
-        void actStallArrive();                      // 8004838C 110: at the goal: requestWait, camera fn_8018B5B8, reqMsgClose, clear 110, memory event flag 0
+        void actStallArrive();                      // 8004838C 110: at the goal: requestWait, camera startTalkView, reqMsgClose, clear 110, memory event flag 0
         int msgStallComing(msgInfo_s *info);        // 80048438 EC: "Ev_FmarketPC" code 1
         int msgStallWait(msgInfo_s *info);          // 80048468 EC ([24]): "Q08_Wait"; F8 = endStallTalk, 104 = stepStallWait
         BOOL stepStallWait(int kind);               // 800484F4 104: EC = msgStallLook when the controller is idle
