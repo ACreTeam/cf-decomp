@@ -670,18 +670,17 @@ void dStarDraw_c::drawLine(const pos_c *star1, const pos_c *star2, f32 width, co
     if (dir.normalizeRS()) {
         mVec3_c side = dir;
         side.rotZ(0x4000);
-        mVec3_c v0, v1, v2, v3;
         dir *= 10.0f;
-        v2 = end;
-        v0 = start;
-        v1 = start;
-        v3 = end;
+        mVec3_c v0 = start;
+        mVec3_c v1 = start;
+        mVec3_c v2 = end;
+        mVec3_c v3 = end;
+        side *= width;
         v0 += dir;
         v1 += dir;
-        side *= width;
         v2 -= dir;
-        v0 += side;
         v3 -= dir;
+        v0 += side;
         v2 += side;
         v1 -= side;
         v3 -= side;

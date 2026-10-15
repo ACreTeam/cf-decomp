@@ -6,24 +6,25 @@
 
 namespace mEf {
 
-// The end iterator is an object pointer whose link fields overlay this list's root.
+// The end sentinel is an object pointer whose link fields overlay this list's root.
 template <typename T, int Offset> class effectList_c {
 public:
     class iterator {
     public:
         iterator(T *object) : ptr(object) {}
         T *operator->() const { return ptr; }
+        operator T *() const { return ptr; }
         iterator &operator++() { ptr = ptr->mNext; return *this; }
         bool operator!=(const iterator &other) const { return ptr != other.ptr; }
         T *ptr;
     };
 
-    effectList_c() { T *sentinel = end().ptr; mFirst = sentinel; mLast = sentinel; mCount = 0; }
-    iterator end() { return iterator((T *)((u8 *)this - Offset)); }
-    iterator end() const { return iterator((T *)((const u8 *)this - Offset)); }
+    effectList_c() { mLast = mFirst = end(); mCount = 0; }
+    T *end() { return (T *)((u8 *)this - Offset); }
     iterator begin() const {
-        if (end().ptr != mFirst) return iterator(mFirst);
-        return end();
+        T *root = head();
+        if (root != mFirst) return iterator(mFirst);
+        return iterator(root);
     }
     void pushBack(T *object) {
         T *sentinel = (T *)((u8 *)this - Offset);
@@ -41,25 +42,25 @@ public:
             mCount++;
         }
     }
-    bool isEnd(T *object) const { return end().ptr == object; }
+    bool isEnd(T *object) const { return head() == object; }
     void remove(T *object) {
         T *next = object->mNext;
         T *prev = object->mPrev;
         if (isEnd(prev)) mFirst = next;
         else prev->mNext = next;
         next = object->mNext;
-        if (end().ptr == next) mLast = object->mPrev;
+        if (end() == next) mLast = object->mPrev;
         else next->mPrev = object->mPrev;
         object->mPrev = NULL;
         object->mNext = NULL;
         mCount--;
     }
     iterator erase(iterator it) {
-        iterator next = it.ptr->mNext ? iterator(it.ptr->mNext) : end();
+        iterator next = it.ptr->mNext ? iterator(it.ptr->mNext) : iterator(end());
         T *object = it.ptr;
         if (isEnd(object->mPrev)) mFirst = object->mNext;
         else object->mPrev->mNext = object->mNext;
-        if (end().ptr == object->mNext) mLast = object->mPrev;
+        if (end() == object->mNext) mLast = object->mPrev;
         else object->mNext->mPrev = object->mPrev;
         object->mPrev = NULL;
         object->mNext = NULL;
@@ -67,6 +68,8 @@ public:
         return next;
     }
 private:
+    T *head() const { return (T *)((const u8 *)&mFirst - offsetof(T, mNext)); }
+
     T *mLast;
     T *mFirst;
     int mCount;
@@ -98,9 +101,9 @@ BOOL initialize(EGG::Heap *heap, int effects, int emitters, int managers, int pa
 void shutdown() {
     EGG::EffectManager::sEffectManager->shutdown();
     if (l_callbackHeap != NULL) {
-        effectList_c<effectCB_c, 0>::iterator it = l_callbacks.begin();
-        if (it != l_callbacks.end()) {
-            while (it != l_callbacks.end()) it = l_callbacks.erase(it);
+        effectCB_c *cb = l_callbacks.begin();
+        if (cb != l_callbacks.end()) {
+            while (cb != l_callbacks.end()) cb = l_callbacks.erase(cb);
         }
         static_cast<EGG::ExpHeap *>(l_callbackHeap)->freeAll();
     }
@@ -119,16 +122,15 @@ void setResource(void *breff, void *breft) {
 // 802B7C24
 static void executeCallbacks() {
     if (l_callbackHeap != NULL) {
-        effectList_c<effectCB_c, 0>::iterator last = l_callbacks.end();
-        effectList_c<effectCB_c, 0>::iterator it = l_callbacks.begin();
+        effectCB_c *it = l_callbacks.begin();
+        effectList_c<effectCB_c, 0>::iterator next = it, last = l_callbacks.end();
         while (it != last) {
-            effectCB_c *callback = it.ptr;
-            effectList_c<effectCB_c, 0>::iterator next = it;
+            next = it;
             ++next;
-            if (!callback->mHandle.IsAlive()) {
-                l_callbacks.remove(callback);
-                delete callback;
-            } else callback->execute();
+            if (!it->mHandle.IsAlive()) {
+                l_callbacks.remove(it);
+                delete it;
+            } else it->execute();
             it = next;
         }
     }
