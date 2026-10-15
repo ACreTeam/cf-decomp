@@ -3671,7 +3671,7 @@ struct dAnimalCatalogFilter_c {
 };
 
 static inline int getBITMStyle(const dItem::BITM *bitm) {
-    return bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_UNSET;
+    return bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_CUTE;
 }
 
 static inline int getBITMSeries(const dItem::BITM *bitm) {
