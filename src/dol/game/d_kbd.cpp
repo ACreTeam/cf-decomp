@@ -631,7 +631,7 @@ BOOL Mng_c::updatePointer() {
         pos.x = 1000.0f;
         pos.y = 1000.0f;
     } else {
-        u8 aspect = SCGetAspectRatio();
+        u8 aspect = (u8)SCGetAspectRatio();
         pos.x = l_screenWidth[aspect] * dPad::getRawPointer().x / 2.0f;
         pos.y = l_screenHeight[aspect] * dPad::getRawPointer().y / 2.0f;
     }
@@ -1137,19 +1137,19 @@ void calcHKB() {
 }
 
 void resetSetting() {
+    sSetting.mKeyboardType = 0x11;
+    sSetting.m01 = 0xFA;
+    sSetting.m03 = 0;
     sSetting.m04_7 = 1;
     sSetting.m04_3 = 2;
     sSetting.m05_4 = 1;
     sSetting.m05_0 = 0;
-    sSetting.mKeyboardType = 0x11;
-    sSetting.m01 = 0xFA;
     sSetting.m02 = 0;
-    sSetting.m03 = 0;
-    sSetting.m04_0 = 0;
     sSetting.m06 = 0;
     sSetting.m07 = 0;
     sSavedByte = 0;
     sSavedFlag = 0;
+    sSetting.m04_0 = 0;
 }
 
 u8 getSavedByte() {

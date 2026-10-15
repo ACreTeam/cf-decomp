@@ -11,14 +11,18 @@ namespace memo {
 // The keyboard settings, kept by the application between uses.
 struct Setting {
     /* 0x00 */ u8 mKeyboardType;
-    /* 0x01 */ u8 m01;
-    /* 0x02 */ u8 m02;
-    /* 0x03 */ u8 m03;
-    /* 0x04 */ u8 m04_7 : 1;
-    /* 0x04 */ u8 m04_3 : 4;
-    /* 0x04 */ u8 m04_0 : 3;
-    /* 0x05 */ u8 m05_4 : 4;
-    /* 0x05 */ u8 m05_0 : 4;
+    struct {
+        /* 0x01 */ u8 m01;
+        /* 0x02 */ u8 m02;
+        /* 0x03 */ u8 m03;
+    };
+    struct {
+        /* 0x04 */ u8 m04_7 : 1;
+        /* 0x04 */ u8 m04_3 : 4;
+        /* 0x04 */ u8 m04_0 : 3;
+        /* 0x05 */ u8 m05_4 : 4;
+        /* 0x05 */ u8 m05_0 : 4;
+    };
     /* 0x06 */ u8 m06;
     /* 0x07 */ u8 m07;
 }; // size 0x8
