@@ -658,9 +658,9 @@ config.libs = [
             Object(Matching, "dol/mLib/m_fader_base.cpp"),
             Object(Matching, "dol/mLib/m_wipe_fader.cpp"),
             Object(Matching, "dol/mLib/m_color_fader.cpp"),
-            Object(NonMatching, "dol/mLib/m_frustum.cpp"),
+            Object(Matching, "dol/mLib/m_frustum.cpp"),
             Object(Matching, "dol/mLib/m_3d/m_3d_capture.cpp"),
-            Object(NonMatching, "dol/mLib/m_color.cpp"),
+            Object(Matching, "dol/mLib/m_color.cpp"),
         ],
     },
     {

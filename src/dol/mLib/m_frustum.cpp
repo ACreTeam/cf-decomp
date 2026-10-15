@@ -122,11 +122,7 @@ bool mFrustum_c::intersectSphere(const mSphere_c *sphere) const {
     if (sphereCenterPos.y * mPlaneT.n.y + sphereCenterPos.z * mPlaneT.n.z > sphere->mRadius) {
         return false;
     }
-    if (sphereCenterPos.y * mPlaneB.n.y + sphereCenterPos.z * mPlaneB.n.z > sphere->mRadius) {
-        return false;
-    }
-
-    return true;
+    return !(sphereCenterPos.y * mPlaneB.n.y + sphereCenterPos.z * mPlaneB.n.z > sphere->mRadius);
 }
 
 bool mFrustum_c::intersectAABB(const mAABB_c *box) const {
