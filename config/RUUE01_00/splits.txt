@@ -894,7 +894,7 @@ dol/game/d_notice.cpp:
 dol/game/d_npc.cpp:
 	.text       start:0x800ECD90 end:0x800F59C8
 	.ctors      start:0x804656DC end:0x804656E0
-	.rodata     start:0x80474F70 end:0x80475418 align:4
+	.rodata     start:0x80474F70 end:0x80475418
 	.data       start:0x804ECE68 end:0x804ED108
 	.bss        start:0x805BF600 end:0x805CE800 align:4
 	.sdata      start:0x8074AE88 end:0x8074AEE8
