@@ -21,12 +21,12 @@
 #include <revolution/MTX/mtx.h>
 #include <revolution/MTX/mtxvec.h>
 #include <revolution/OS.h>
+#include <revolution/RFL.h>
 #include <revolution/SC/scapi.h>
 #include <string.h>
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-BOOL fn_802C406C(u16 id); // id is a valid capture texture
 void fn_802C2538(void *buffer, int source, RFLMiddleDB *middleDB, u16 id, int, void *params); // RFLMakeIcon
 }
 
@@ -1259,7 +1259,7 @@ struct captureParams_c {
 
 // 8000A5D0
 void captureNode_c::execute() {
-    if (mID == 0xFFFE || fn_802C406C(mID)) {
+    if (mID == 0xFFFE || RFLIsAvailableOfficialData(mID)) {
         captureParams_c params;
         params._4 = 1;
         params.mColor = nw4r::ut::Color(0);

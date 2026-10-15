@@ -259,7 +259,7 @@ extern s16 sLookPitchMax; // 8074E600: 10 degrees
 extern s16 sLookYawMax;   // 8074E602: 45 degrees
 
 
-// Output of fn_802C5A0C (Mii data); the create ID goes to dPrivateData_c::mMiiId.
+// Output of RFLGetCharInfo; the create ID goes to dPrivateData_c::mMiiId.
 struct MiiData_c {
     /* 0x00 */ u8 _00[0x2C];
     /* 0x2C */ u8 mCreateID[8];

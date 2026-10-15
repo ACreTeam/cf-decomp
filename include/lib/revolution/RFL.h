@@ -6,6 +6,7 @@ extern "C" {
 
 #include <revolution/RFL/RFL_Types.h>
 #include <revolution/RFL/RFL_Model.h>
+#include <revolution/RFL/RFL_System.h>
 
 #ifdef __cplusplus
 }

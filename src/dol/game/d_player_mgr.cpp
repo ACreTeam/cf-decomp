@@ -20,6 +20,7 @@
 #include <game/game/d_weather.hpp>
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_mtx.hpp>
+#include <game/mLib/m_face.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
@@ -37,8 +38,6 @@ extern "C" {
 extern u8 lbl_8074EA7D;
 
 BOOL fn_802C4404(dMiiCreateID_c *mii, u16 *out);
-BOOL fn_802B3BD0(int a, u16 mii, int b);
-int fn_802C5A0C(dPlayerMgr::MiiData_c *out, int a, int b, u16 mii);
 
 }
 
@@ -1281,11 +1280,11 @@ BOOL changeMiiMask(u16 mii) {
     if (!canUseMiiMask()) {
         return FALSE;
     }
-    if (!fn_802B3BD0(0, mii, 0)) {
+    if (!mFace::isValidData(RFLDataSource_Official, mii, nullptr)) {
         return FALSE;
     }
     MiiData_c data;
-    if (fn_802C5A0C(&data, 0, 0, mii) != 0) {
+    if (RFLGetCharInfo((RFLCharInfo *)&data, RFLDataSource_Official, nullptr, mii) != RFLErrcode_Success) {
         return FALSE;
     }
     dPrivateData_c *current = Mgr_c::getCurrentPlayer();

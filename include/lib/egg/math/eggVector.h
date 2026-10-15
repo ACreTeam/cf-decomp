@@ -48,6 +48,8 @@ namespace EGG {
         /// @brief Dot product.
         f32 dot(const Vector3f &v) const { return x * v.x + y * v.y + z * v.z; }
 
+        void setCross(const Vector3f &a, const Vector3f &b); // 800681FC, shared by quaternion helpers.
+
         void set(float x, float y, float z) {
             this->x = x;
             this->y = y;

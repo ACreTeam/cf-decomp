@@ -19,7 +19,8 @@ typedef enum {
 } RFLErrcode;
 
 typedef enum {
-    RFLDataSource_Official = 0
+    RFLDataSource_Official = 0,
+    RFLDataSource_MiddleDB = 7
 } RFLDataSource;
 
 typedef enum {
@@ -41,6 +42,10 @@ typedef enum {
 typedef struct RFLMiddleDB {
     u32 data[6];
 } RFLMiddleDB;
+
+typedef struct RFLCharInfo {
+    u8 data[0x48];
+} RFLCharInfo;
 
 #define RFL_STORE_DATA_SIZE 0x4C
 typedef struct RFLStoreData {

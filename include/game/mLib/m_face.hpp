@@ -9,12 +9,14 @@ namespace EGG {
 class Heap;
 }
 
-// mFace: Mii (RFL) face models (City Folk only). m_face.cpp is at 0x802B39E4..0x802B3E40 (no source yet).
+// mFace: Mii (RFL) face models (City Folk only), 0x802B39E4..0x802B3E40.
 // All names are @unofficial; offsets/behaviour come from the target code.
 namespace mFace {
     void create(); // 0x802B39E4: initialises the entry list (0x806A5DD0); d_sys_gfx create
     // 0x802B39F4: opens the RFL resource in the archive and initialises RFL with a work buffer from heap
     BOOL initRes(void *arc, EGG::Heap *heap, BOOL deluxTex);
+    void execute(); // 802B3B10: initializes queued objects and removes them from the list.
+    BOOL isValidData(RFLDataSource source, u16 index, RFLMiddleDB *middleDB); // 802B3BD0
 
     /**
      * An object whose RFL data is initialised later: entry() queues it in a global nw4r::ut::List
@@ -22,6 +24,7 @@ namespace mFace {
      * unlinks it (0x802B3BC0).
      */
     class obj_c : public nw4r::ut::Link {
+        friend void execute();
     public:
         obj_c() : mIsReady(false) {}
 
@@ -48,8 +51,11 @@ namespace mFace {
                     mAllocator_c *allocator, RFLMiddleDB *middleDB); // 0x802B3C74
         void remove(); // 0x802B3D38, frees mpBuffer through mpAllocator
         void setMtx(const nw4r::math::MTX34 *mtx); // 0x802B3E20, RFLSetMtx
+        bool change(RFLDataSource source, u16 index, RFLMiddleDB *middleDB); // 802B3D9C
+        void setExpression(RFLExpression expression); // 802B3E30
 
     private:
+        void entry(RFLDataSource source, u16 index, RFLMiddleDB *middleDB); // 802B3D8C
         RFLDataSource mSource;      // 0x98
         u16 mIndex;                 // 0x9C
         RFLResolution mResolution;  // 0xA0
@@ -58,8 +64,4 @@ namespace mFace {
         void *mpBuffer;             // 0xAC
         mAllocator_c *mpAllocator;  // 0xB0
     };
-}
-
-extern "C" {
-void fn_802B3B10(); // 802B3B10: the per-frame pass over the queued mFace::obj_c (calls init()); d_sys runFrame
 }

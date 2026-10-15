@@ -3,9 +3,9 @@
 // .sdata 80749BD8..80749BE8, .sdata2 80750370..807503D0.
 #include <game/game/d_balloon_string.hpp>
 #include <game/game/d_light.hpp>
+#include <game/mLib/m_quat.hpp>
 #include <nw4r/g3d.h>
 
-extern "C" BOOL fn_802B41E4(EGG::Quatf *out, const Vec *from, const Vec *to);
 namespace dBalloonString {
 static const GXColor lMaterial = {160, 160, 192, 255};
 
@@ -27,7 +27,7 @@ void dBalloonString_c::setInitialDirection(const mVec3_c &dir) {
     up.set(0.0f, 1.0f, 0.0f);
     mVec3_c direction(dir);
     mRotation.set(0.0f, 0.0f, 0.0f, 1.0f);
-    if (!fn_802B41E4(&mRotation, up, direction)) {
+    if (!mQuat::makeRotate(mRotation, up, direction)) {
         mRotation.set(0.0f, 1.0f, 0.0f, 0.0f);
     }
     mVec3_c axis(1.0f, 0.0f, 0.0f);
@@ -46,7 +46,7 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
     mVec3_c up(0.0f, 1.0f, 0.0f);
     EGG::Quatf fromTangent, fromUp, product, copy;
     fn_804456B0(&fromTangent, &direction, &mTangents[6]);
-    if (!fn_802B41E4(&fromUp, up, direction)) {
+    if (!mQuat::makeRotate(fromUp, up, direction)) {
         fromUp.set(0.0f, 1.0f, 0.0f, 0.0f);
     }
     dBalloonString::multiplyQuaternion(&product, &fromTangent, &fromUp);
@@ -431,14 +431,14 @@ dBalloonString_c *dBalloonString_c::create(EGG::Heap *heap) {
     return balloon;
 }
 
-namespace dBalloonString {
-
 // 800681FC: vector cross product, also used by m_quat.cpp.
-void crossVector(Vec *out, const Vec *a, const Vec *b) {
-    out->x = a->y * b->z - a->z * b->y;
-    out->y = a->z * b->x - a->x * b->z;
-    out->z = a->x * b->y - a->y * b->x;
+void EGG::Vector3f::setCross(const Vector3f &a, const Vector3f &b) {
+    x = a.y * b.z - a.z * b.y;
+    y = a.z * b.x - a.x * b.z;
+    z = a.x * b.y - a.y * b.x;
 }
+
+namespace dBalloonString {
 
 // 80068248
 void scaleVector(Vec *out, const Vec *a, float scale) {
@@ -466,7 +466,7 @@ void multiplyQuaternion(EGG::Quatf *out, const EGG::Quatf *a, const EGG::Quatf *
     Vec sum;
     Vec scaledA;
     Vec xyz;
-    crossVector(&cross, (const Vec *)a, (const Vec *)b);
+    ((EGG::Vector3f *)&cross)->setCross(*a, *b);
     scaleVector(&scaledB, (const Vec *)b, a->w);
     addVector(&sum, &cross, &scaledB);
     scaleVector(&scaledA, (const Vec *)a, b->w);

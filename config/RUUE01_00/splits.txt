@@ -3007,6 +3007,9 @@ dol/mLib/m_angle.cpp:
 
 dol/mLib/m_face.cpp:
 	.text       start:0x802B39E4 end:0x802B3E40
+	.data       start:0x80524030 end:0x80524098
+	.bss        start:0x806A5DD0 end:0x806A5DDC align:4
+	.sdata      start:0x8074CC00 end:0x8074CC18
 
 dol/mLib/m_vec.cpp:
 	.text       start:0x802B3E40 end:0x802B41E4

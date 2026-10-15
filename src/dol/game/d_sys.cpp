@@ -410,7 +410,7 @@ void runFrame() {
     m3d::calcWorld();
     beginFrame();
     m3d::calcMaterial();
-    fn_802B3B10();
+    mFace::execute();
     dPad::begin();
     m3d::reset();
     beginRender();
