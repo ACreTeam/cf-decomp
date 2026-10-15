@@ -44,7 +44,7 @@ void startSoundInit() {
     if (!l_sndReady) {
         OSCreateThread(&l_sndThread, sndInitThread, NULL, l_sndThreadStack + sizeof(l_sndThreadStack),
                        sizeof(l_sndThreadStack), 29, 1);
-        fn_802B8D30(&l_sndThread, fn_8016CF08(13));
+        mPerf::setThreadColor(&l_sndThread, dPerf::getThreadColor(13));
         OSResumeThread(&l_sndThread);
     }
 }

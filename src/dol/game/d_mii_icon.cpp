@@ -189,7 +189,7 @@ void mng_c::create(EGG::Heap *heap) {
     fn_802C601C(mWork, 1);
     fn_802C6200(mNet.mConverter, mNet.mConverterBuf, 0, MII_ICON_MEMBER_MAX, 1);
     OSCreateThread(&l_thread, threadMain, NULL, l_stack + sizeof(l_stack), sizeof(l_stack), 17, OS_THREAD_DETACHED);
-    fn_802B8D30(&l_thread, fn_8016CF08(7));
+    mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(7));
     mCreated = true;
 }
 

@@ -17,7 +17,6 @@ extern "C" {
 int fn_801F7FC4(void *work, size_t workSize, const void *data, s32 dataSize); // build the matcher
 int fn_801F83D0(const u16 **words, int num, u8 *results, int *hits);         // run it
 void fn_801F8958();
-void fn_802B8D90(OSThread *thread);
 }
 
 static OSThread l_thread;
@@ -109,7 +108,7 @@ BOOL dPrcMng_c::startThread(void *(*func)(void *), void *arg) {
         memcpy(&l_param, arg, sizeof(param_c));
     }
     OSCreateThread(&l_thread, func, &l_param, (u8 *)l_stack + 0xA000, 0xA000, 0x12, 1);
-    fn_802B8D30(&l_thread, fn_8016CF08(8));
+    mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(8));
     OSResumeThread(&l_thread);
     l_running = true;
     return TRUE;
@@ -124,7 +123,7 @@ BOOL dPrcMng_c::endThread() {
         if (l_stack != NULL) {
             dHeap::prcHeap_p->free(3);
             l_stack = NULL;
-            fn_802B8D90(&l_thread);
+            mPerf::resetThreadColor(&l_thread);
         }
         l_param.mWords = NULL;
         l_param.mNum = 0;

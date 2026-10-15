@@ -43,7 +43,7 @@ static void createThread(OSThreadFunc func, void *arg) {
     void *stack = m2d::ResAccLoader_c::getAllocator()->mpHeap->alloc(THREAD_STACK_SIZE, 0x20);
     sThreadStack = stack;
     OSCreateThread(&sThread, func, arg, (u8 *)stack + THREAD_STACK_SIZE, THREAD_STACK_SIZE, 28, 1);
-    fn_802B8D30(&sThread, fn_8016CF08(11));
+    mPerf::setThreadColor(&sThread, dPerf::getThreadColor(11));
     OSResumeThread(&sThread);
 }
 
@@ -52,7 +52,7 @@ static BOOL isThreadDone() {
         if (sThreadStack != NULL) {
             m2d::ResAccLoader_c::getAllocator()->mpHeap->free(sThreadStack);
             sThreadStack = NULL;
-            fn_802B8D90(&sThread);
+            mPerf::resetThreadColor(&sThread);
         }
         return TRUE;
     }

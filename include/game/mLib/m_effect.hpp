@@ -12,16 +12,37 @@ namespace EGG { class Heap; }
 
 namespace mEf {
 
+class effectCB_c;
+struct effectCBLink_c {
+    void initLinks() { mPrev = NULL; mNext = NULL; }
+    effectCB_c *mPrev;
+    effectCB_c *mNext;
+};
+
+class effectCB_c : private effectCBLink_c {
+public:
+    using effectCBLink_c::mPrev;
+    using effectCBLink_c::mNext;
+    effectCB_c(void (*callback)(nw4r::ef::Particle *, u32), u32 arg)
+        : mCallback((initLinks(), callback)), mArg(arg) {}
+    virtual ~effectCB_c() {}
+    void execute(); // 802B854C
+
+    void (*mCallback)(nw4r::ef::Particle *, u32); // 0x0C
+    u32 mArg; // 0x10
+    nw4r::ef::Handle<nw4r::ef::Effect> mHandle; // 0x14
+}; // 0x1C
+
 class effect_c : public EGG::Effect {
 public:
     effect_c() {}
     ~effect_c() {}
 
-    virtual void createEffect(const char *name, int);                                          // 0x94
+    virtual BOOL createEffect(const char *name, int);                                          // 0x94
     virtual bool createEffect(const char *name, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 0x98
     virtual bool createEffect(const char *name, ulong, const mMtx_c *mtx);                     // 0x9C
     virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *, void (*)(nw4r::ef::Particle *, u32), u32);
-    virtual void vfA4();
+    virtual BOOL createEffect(const char *, ulong, const mMtx_c *, void (*)(nw4r::ef::Particle *, u32), u32); // 0xA4
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *);                    // 0xA8
     virtual bool follow(const mMtx_c *mtx);                                                    // 0xAC
 };
@@ -34,10 +55,10 @@ public:
     levelEffect_c() : mPrev(NULL), mNext(NULL), mActive(false), _85(false), _88(0), _8C(0) {}
     ~levelEffect_c() { cleanup(); }
 
-    virtual void vf10(); // 802B898C
-    virtual void vf18(); // 802B899C
+    virtual void retire(); // 802B898C
+    virtual void retireAll(); // 802B899C
     virtual void update(); // 802B885C
-    virtual void createEffect(const char *, int); // 802B85AC
+    virtual BOOL createEffect(const char *, int); // 802B85AC
     virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 802B86AC
     virtual bool createEffect(const char *, ulong, const mMtx_c *); // 802B875C
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *); // 802B89AC
@@ -50,7 +71,7 @@ public:
     /* 0x80 */ levelEffect_c *mNext;
     /* 0x84 */ bool mActive;
     /* 0x85 */ bool _85;
-    /* 0x88 */ u32 _88;
+    /* 0x88 */ void (*_88)(nw4r::ef::Particle *, u32);
     /* 0x8C */ u32 _8C;
 }; // size 0x90
 

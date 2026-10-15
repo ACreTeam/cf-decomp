@@ -8,6 +8,7 @@ class ExpHeap : public Heap {
 public:
     void setGroupID(u16 groupID);
     void setAllocMode(u16 mode);
+    void freeAll(); // 804402E8
 
     static EGG::ExpHeap *create(void *buffer, size_t size, u16 flags);
     static EGG::ExpHeap *create(size_t, EGG::Heap *, u16);

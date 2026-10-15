@@ -201,7 +201,7 @@ BOOL dWifi::createThread(ThreadFunc func, const dPostRequest_c *req) {
     sThreadStack = dHeap::netWc24Heap_p->alloc(THREAD_STACK_SIZE, 0x20);
     OSCreateThread(&sThread, func, &lbl_806215C0, (u8 *)sThreadStack + THREAD_STACK_SIZE, THREAD_STACK_SIZE, 20,
                    OS_THREAD_DETACHED);
-    fn_802B8D30(&sThread, fn_8016CF08(9));
+    mPerf::setThreadColor(&sThread, dPerf::getThreadColor(9));
     OSResumeThread(&sThread);
     return TRUE;
 }
@@ -210,7 +210,7 @@ BOOL dWifi::createThread(ThreadFunc func, const dPostRequest_c *req) {
 BOOL dWifi::isThreadDone() {
     if (OSIsThreadTerminated(&sThread)) {
         if (sThreadStack != NULL) {
-            fn_802B8D90(&sThread);
+            mPerf::resetThreadColor(&sThread);
             dHeap::netWc24Heap_p->free(sThreadStack);
             sThreadStack = NULL;
         }

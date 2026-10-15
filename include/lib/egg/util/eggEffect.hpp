@@ -20,10 +20,10 @@ public:
 
     Effect();          // 8044A11C
     virtual ~Effect(); // 8044A188
-    virtual void vf0C();
-    virtual void vf10();
+    virtual BOOL create();
+    virtual void retire();
     virtual void vf14();
-    virtual void vf18();
+    virtual void retireAll();
     virtual void vf1C();
     virtual void vf20();
     virtual void vf24();
@@ -50,13 +50,18 @@ public:
     virtual void setScale(float scale); // 0x78
     virtual void vf7C();
     virtual void vf80();
-    virtual void vf84();
+    virtual void setMtx(const nw4r::math::MTX34 *mtx);
     virtual void vf88();
     virtual void update(); // 0x8C (8044B6C4)
     virtual void reset();  // 0x90
 
-    /* 0x04 */ u8 _04;
-    /* 0x05 */ u8 _05[0x1F];
+    union {
+        /* 0x04 */ char mName[0x20];
+        struct {
+            u8 _04;
+            u8 _05[0x1F];
+        };
+    };
     /* 0x24 */ u32 _24;
     /* 0x28 */ u32 _28;
     /* 0x2C */ u8 _2C[0x48];

@@ -660,7 +660,9 @@ config.libs = [
             Object(Matching, "dol/mLib/m_color_fader.cpp"),
             Object(Matching, "dol/mLib/m_frustum.cpp"),
             Object(Matching, "dol/mLib/m_3d/m_3d_capture.cpp"),
+            Object(NonMatching, "dol/mLib/m_ef.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/mLib/m_color.cpp"),
+            Object(Matching, "dol/mLib/m_perf.cpp"),
         ],
     },
     {
@@ -745,7 +747,7 @@ config.libs = [
             Object(Matching, "dol/game/d_star.cpp"),
             Object(Matching, "dol/game/d_fish_info.cpp"),
             Object(Matching, "dol/game/d_fg_data.cpp"),
-            Object(NonMatching, "dol/game/d_field_assessment.cpp"),
+            Object(Matching, "dol/game/d_field_assessment.cpp"),
             Object(Matching, "dol/game/d_msg.cpp"),
             Object(Matching, "dol/game/d_npc_mng.cpp"),
             Object(Matching, "dol/game/d_objc.cpp"),

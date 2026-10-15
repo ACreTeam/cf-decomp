@@ -238,7 +238,7 @@ void dPhoto::create(EGG::Heap *heap) {
     const u32 jpegSizeKB[3] = {100, 70, 100}; // This line pushed it to 99.65, but only [2] is used, and feels a bit off to me. I think it's a good candidate to keep in mind while going for 100%.
     l_jpeg = (u8 *)heap->alloc(jpegSizeKB[2] * 1024, 32);
     OSCreateThread(&l_thread, photoThread, NULL, l_stack + sizeof(l_stack), sizeof(l_stack), 29, OS_THREAD_DETACHED);
-    fn_802B8D30(&l_thread, fn_8016CF08(14));
+    mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(14));
 }
 
 // 800FB9A0

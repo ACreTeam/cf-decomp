@@ -2,11 +2,12 @@
 
 // d_thunder (DOL TU d_thunder.cpp, .text 8016CEF8..8016D264, .ctors 8046576C..80465770): the lightning of a
 // thunderstorm (dWeather_c + 0x28C). Namespace from the file name; class and member names inferred from
-// what the code does. The five stubs at the start keep their target names (unknown purpose; d_sys and the
-// thread creators call them).
+// what the code does. The first four stubs retain their target names. The fifth is the disabled
+// dPerf thread-color lookup, kept in this split.
 
 #include <types.h>
 #include <nw4r/math.h>
+#include <revolution/GX.h>
 
 namespace EGG {
 class Heap;
@@ -17,7 +18,10 @@ void fn_8016CEF8(EGG::Heap *heap); // 8016CEF8: empty (d_sys, with the system he
 void fn_8016CEFC();               // 8016CEFC: empty (d_sys)
 void fn_8016CF00();               // 8016CF00: empty (d_sys)
 void fn_8016CF04();               // 8016CF04: empty (d_sys)
-int fn_8016CF08(int idx);         // 8016CF08: returns 0 (a per-thread value passed to fn_802B8D30)
+}
+
+namespace dPerf {
+const GXColor *getThreadColor(int index); // 8016CF08: disabled in this build; returns NULL.
 }
 
 namespace dThunder {

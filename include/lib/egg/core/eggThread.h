@@ -5,6 +5,7 @@
 namespace EGG {
 
 class Heap;
+class ThreadMeter;
 
 class Thread {
 public:
@@ -23,6 +24,7 @@ public:
     /* 0x0C */ u8 _0C[0x40];
 
     static void initialize();
+    static ThreadMeter *sThreadMeter; // 8074FC18
 }; // size 0x4C
 
 } // namespace EGG

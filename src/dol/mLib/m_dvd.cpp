@@ -60,7 +60,7 @@ void *MyThread_c::run() {
 }
 
 // 802AD464
-void create(int priority, EGG::Heap *commandHeap, EGG::Heap *archiveHeap, int perfInfo) {
+void create(int priority, EGG::Heap *commandHeap, EGG::Heap *archiveHeap, const GXColor *perfColor) {
     g_commandHeap = commandHeap;
     g_archiveHeap = archiveHeap;
     g_thread = new MyThread_c(priority);
@@ -69,7 +69,7 @@ void create(int priority, EGG::Heap *commandHeap, EGG::Heap *archiveHeap, int pe
     if (mHeap::g_assertHeap != nullptr) {
         g_thread->setCurrentHeap(mHeap::g_assertHeap);
     }
-    fn_802B8D30(thread, perfInfo);
+    mPerf::setThreadColor(thread, perfColor);
     OSResumeThread(g_thread->getOSThread());
 }
 

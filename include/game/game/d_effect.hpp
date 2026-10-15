@@ -29,7 +29,7 @@ public:
     dLevelEffect_c() {}
     ~dLevelEffect_c() {}
 
-    virtual void vf10(); // 8008771C
+    virtual void retire(); // 8008771C
     virtual bool follow(const mVec3_c *, const mAng3_c *, const mVec3_c *); // 800872A0
     virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 80087394
     virtual bool follow(const mMtx_c *); // 800875F0

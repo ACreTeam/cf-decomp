@@ -129,7 +129,6 @@ static const f32 sShellWeights[] = {2.0f, 3.0f, 5.0f, 10.0f, 10.0f, 5.0f, 10.0f,
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-void fn_802B8D90(OSThread *thread);
 
 f32 fn_8044B83C(EGG::Effect *effect);
 }
@@ -391,7 +390,7 @@ void startFgMngProcThread(OSThreadFunc func) {
     sFgMngProcFlags |= FG_MNG_PROC_FLAG_THREAD;
     sFgMngProcThreadStack = dHeap::growUpHeap_p->alloc(FG_MNG_THREAD_STACK_SIZE, 0x20);
     OSCreateThread(&sFgMngProcThread, func, NULL, (u8 *)sFgMngProcThreadStack + FG_MNG_THREAD_STACK_SIZE, FG_MNG_THREAD_STACK_SIZE, 0x19, 1);
-    fn_802B8D30(&sFgMngProcThread, fn_8016CF08(0xC));
+    mPerf::setThreadColor(&sFgMngProcThread, dPerf::getThreadColor(0xC));
     OSResumeThread(&sFgMngProcThread);
     dTime_c::stop();
 }
@@ -400,7 +399,7 @@ static inline void freeThreadStack() {
     if (sFgMngProcThreadStack != NULL) {
         dHeap::growUpHeap_p->free(sFgMngProcThreadStack);
         sFgMngProcThreadStack = NULL;
-        fn_802B8D90(&sFgMngProcThread);
+        mPerf::resetThreadColor(&sFgMngProcThread);
     }
 }
 
@@ -1804,6 +1803,8 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
     int rest;
     int unitNum;
     int block;
+    int left;
+    int remainder;
     int *num;
     int blockX;
     int blockZ;
@@ -1811,9 +1812,8 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
     int per;
     int *freeTail;
     int i;
-    int freeNum;
     u32 fullBlocks;
-    int left;
+    int freeNum;
     int weedNum[FG_BLOCK_TOTAL_NUM];
     int freeBlocks[FG_BLOCK_TOTAL_NUM];
     dFdAsPos_c units[UT_TOTAL_NUM];
@@ -1834,25 +1834,25 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
             break;
         }
         per = left / freeNum;
-        left -= per * freeNum;
+        remainder = left - per * freeNum;
         for (i = 0; i < freeNum; i++) {
             weedNum[freeBlocks[i]] = per;
         }
-        while (left != 0) {
+        while (remainder != 0) {
             k = (int)fgMngProc_rndF(freeNum);
             freeNum--;
             weedNum[freeBlocks[k]]++;
             for (i = k; i < freeNum; i++) {
                 freeBlocks[i] = freeBlocks[i + 1];
             }
-            left--;
+            remainder--;
         }
 
         num = weedNum;
         block = 0;
         left = 0;
         for (blockZ = 0; blockZ < FG_BLOCK_Z_NUM; blockZ++) {
-            for (blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, block++, num++) {
+            for (blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, num++, block++) {
                 if (*num != 0) {
                     unitNum = collectUnits(units, fd, blockX, blockZ, isGrassUnit);
                     rest = *num - plantGrass(fd, unitNum, units, *num);

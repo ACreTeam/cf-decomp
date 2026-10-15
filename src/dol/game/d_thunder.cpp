@@ -1,4 +1,4 @@
-// d_thunder: the lightning of a thunderstorm (dThunder::Thunder_c) and five empty stubs.
+// d_thunder: the lightning of a thunderstorm (dThunder::Thunder_c) and disabled hooks.
 // .text 8016CEF8..8016D264, .ctors 8046576C..80465770. See include/game/game/d_thunder.hpp.
 #include <game/game/d_thunder.hpp>
 #include <game/game/d_camera.hpp>
@@ -21,10 +21,12 @@ void fn_8016CF00() {}
 // 8016CF04
 void fn_8016CF04() {}
 
+namespace dPerf {
 // 8016CF08
-int fn_8016CF08(int idx) {
-    return 0;
+const GXColor *getThreadColor(int index) {
+    return nullptr;
 }
+} // namespace dPerf
 
 namespace dThunder {
 

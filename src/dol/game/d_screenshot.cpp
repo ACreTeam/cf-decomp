@@ -14,7 +14,6 @@
 using namespace dScreenshot;
 
 extern "C" {
-void fn_802B8D90(OSThread *thread);
 
 // The SD card library (wrappers return 0 / -1 unless noted).
 void fn_8021C86C(u32 size);                                      // init
@@ -170,7 +169,7 @@ static int unlock(int arg) {
 static void startThread(OSThreadFunc func, void *arg) {
     l_stack = m2d::ResAccLoader_c::getAllocator()->mpHeap->alloc(0x2800, 32);
     OSCreateThread(&l_thread, func, arg, (u8 *)l_stack + 0x2800, 0x2800, 24, OS_THREAD_DETACHED);
-    fn_802B8D30(&l_thread, fn_8016CF08(11));
+    mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(11));
     OSResumeThread(&l_thread);
     l_running = TRUE;
     l_result = RESULT_BUSY;
@@ -186,7 +185,7 @@ static BOOL endThread() {
             EGG::Heap *heap = m2d::ResAccLoader_c::getAllocator()->mpHeap;
             heap->free(l_stack);
             l_stack = NULL;
-            fn_802B8D90(&l_thread);
+            mPerf::resetThreadColor(&l_thread);
         }
         l_running = FALSE;
         return TRUE;

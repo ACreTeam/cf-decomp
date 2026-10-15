@@ -251,7 +251,7 @@ BOOL startThread(OSThreadFunc func, const Request_s *request) {
         sWriting = TRUE;
     }
     OSCreateThread(&sThread, func, &sRequest, (u8 *)sStack + NAND_STACK_SIZE, NAND_STACK_SIZE, 13, 1);
-    fn_802B8D30(&sThread, fn_8016CF08(3));
+    mPerf::setThreadColor(&sThread, dPerf::getThreadColor(3));
     OSResumeThread(&sThread);
     return TRUE;
 }
@@ -265,7 +265,7 @@ BOOL updateThread() {
         if (sStack != NULL) {
             dHeap::nandHeap_p->free(3);
             sStack = NULL;
-            fn_802B8D90(&sThread);
+            mPerf::resetThreadColor(&sThread);
         }
         if (sWriting) {
             sWriting = FALSE;

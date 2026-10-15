@@ -341,7 +341,7 @@ void free(void *ptr) { if (ptr != NULL) dHeap::netSoHeap_p->free(ptr); }
 void startWorker(void *(*entry)(void *)) {
     sWorkerStack = dHeap::netWc24Heap_p->alloc(WORKER_STACK_SIZE, 32);
     OSCreateThread(&sWorker, entry, NULL, (u8 *)sWorkerStack + WORKER_STACK_SIZE, WORKER_STACK_SIZE, WORKER_PRIORITY, OS_THREAD_DETACHED);
-    fn_802B8D30(&sWorker, fn_8016CF08(9));
+    mPerf::setThreadColor(&sWorker, dPerf::getThreadColor(9));
     OSResumeThread(&sWorker);
 }
 // 800E47F0
@@ -350,7 +350,7 @@ BOOL pollWorker() {
         if (sWorkerStack != NULL) {
             dHeap::netWc24Heap_p->free(sWorkerStack);
             sWorkerStack = NULL;
-            fn_802B8D90(&sWorker);
+            mPerf::resetThreadColor(&sWorker);
         }
         return TRUE;
     }

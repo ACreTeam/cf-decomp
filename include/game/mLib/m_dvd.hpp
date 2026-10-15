@@ -1,6 +1,7 @@
 #pragma once
 
 #include <types.h>
+#include <revolution/GX.h>
 #include <lib/egg/core/eggHeap.h>
 
 class mDvd_command_c {
@@ -51,6 +52,6 @@ public:
 }; // size 0x24
 
 namespace mDvd {
-void create(int priority, EGG::Heap *commandHeap, EGG::Heap *archiveHeap, int perfInfo); // 802AD464
+void create(int priority, EGG::Heap *commandHeap, EGG::Heap *archiveHeap, const GXColor *perfColor); // 802AD464
 s32 convertPathToEntrynum(const char *path); // 802AD4EC
 }

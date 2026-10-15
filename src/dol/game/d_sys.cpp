@@ -293,11 +293,11 @@ void init() {
     cCounter_c::clear();
     fn_8016CEF8(debug);
     reportHeapStep(0x3E9);
-    fn_802B8D30(OSGetCurrentThread(), fn_8016CF08(6));
+    mPerf::setThreadColor(OSGetCurrentThread(), dPerf::getThreadColor(6));
     archive = mHeap::g_archiveHeap;
     command = mHeap::g_commandHeap;
-    int dvdPriority = fn_8016CF08(5);
-    mDvd::create(15, command, archive, dvdPriority);
+    const GXColor *dvdColor = dPerf::getThreadColor(5);
+    mDvd::create(15, command, archive, dvdColor);
     dPhoto::create(dHeap::photoHeap_p);
     reportHeapStep(0x3FD);
     dNetMgr_c::initDwc();

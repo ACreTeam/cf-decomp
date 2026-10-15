@@ -3074,6 +3074,7 @@ dol/mLib/m_ef.cpp:
 	.ctors      start:0x804658D8 end:0x804658DC align:8
 	.data       start:0x805242D0 end:0x805243A0 align:4
 	.bss        start:0x806A5EF8 end:0x806A5F10 align:4
+	.sdata      start:0x8074CC50 end:0x8074CC58 align:4
 	.sbss       start:0x8074F0C0 end:0x8074F0D0 align:4
 
 dol/mLib/m_color.cpp:

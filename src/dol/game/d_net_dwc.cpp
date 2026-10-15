@@ -146,7 +146,7 @@ void Session_c::start(DWCUserData *data, DWCFriendData *friends, u8 num,
         OSCreateThread(&mThread, threadMain, 0,
                        sThreadStack + THREAD_STACK_SIZE, THREAD_STACK_SIZE,
                        THREAD_PRIORITY, OS_THREAD_DETACHED);
-        fn_802B8D30(&mThread, fn_8016CF08(4));
+        mPerf::setThreadColor(&mThread, dPerf::getThreadColor(4));
         OSResumeThread(&mThread);
     }
 }
@@ -209,7 +209,7 @@ void *Session_c::threadMain(void *) {
         session->resumeScheduler();
         session->setState(STATE_SCHEDULER_SUSPENDED);
     }
-    fn_802B8D90(&session->mThread);
+    mPerf::resetThreadColor(&session->mThread);
     session->setState(STATE_INITIALIZED);
     session->publishStatus();
     return 0;

@@ -174,18 +174,18 @@ fBase_c *dScene_c::createNextScene() {
 
 // 801558D0
 void dScene_c::createPerf(EGG::Heap *heap) {
-    fn_802B8DE8(heap);
+    mPerf::create(heap);
 }
 
 // 801558D4
 void dScene_c::beginPerf() {
-    fn_802B8DEC();
+    mPerf::begin();
 }
 
 // 801558D8
 void dScene_c::checkPerf() {
-    fn_802B8DF0();
-    if (fn_802B8DF8()) {
+    mPerf::update();
+    if (mPerf::isReady()) {
         if (dMain::isStopped(dMain::STOP_REASON_PERF)) {
             dMain::removeStop(dMain::STOP_REASON_PERF);
         }
@@ -198,5 +198,5 @@ void dScene_c::checkPerf() {
 
 // 80155938
 void dScene_c::endPerf() {
-    fn_802B8DF4();
+    mPerf::end();
 }
