@@ -372,6 +372,11 @@ struct dFgMngCmd_c {
     /* 0x10 */ u16 mDropItem;
 }; // size 0x12
 
+// Also read by d_fgobj_managerNP.
+extern const int sFruit[];     // 8046EFA0: the fruit of each fruit tree type (getFruit)
+extern const u8 sDirOffset[];  // 8046EFBC: the unit and its 8 neighbours
+extern const int sFruitDir[];  // 8046EFC8: the sDirOffset entries a shaken tree drops its fruit onto
+
 // 80589E90: the 0x40 field commands (destroyed by the __arraydtor 800A5D20).
 struct dFgMngCmdEntry_c : public dFgMngCmd_c {
     ~dFgMngCmdEntry_c(); // 800A4E10

@@ -534,7 +534,7 @@ dol/game/d_field_assessment.cpp:
 	.text       start:0x80091AF8 end:0x800A5D3C
 	.ctors      start:0x80465670 end:0x80465674
 	.rodata     start:0x8046EFA0 end:0x8046F1E8
-	.data       start:0x804E1808 end:0x804E3C40
+	.data       start:0x804E1808 end:0x804E3C20
 	.bss        start:0x80588D58 end:0x8058B5F8
 	.sdata      start:0x80749FB8 end:0x8074A3C8
 	.sbss       start:0x8074E338 end:0x8074E378
@@ -544,7 +544,7 @@ dol/game/d_fg_item.cpp:
 	.text       start:0x800A5D3C end:0x800A70AC
 	.ctors      start:0x80465674 end:0x80465678
 	.rodata     start:0x8046F1E8 end:0x8046F218 align:4
-	.data       start:0x804E3C40 end:0x804E58E0 align:4
+	.data       start:0x804E3C20 end:0x804E58E0 align:32
 	.bss        start:0x8058B5F8 end:0x8058B608 align:4
 	.sdata      start:0x8074A3C8 end:0x8074A3D0 align:4
 	.sbss       start:0x8074E378 end:0x8074E380 align:4

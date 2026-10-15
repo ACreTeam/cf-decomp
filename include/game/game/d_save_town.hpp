@@ -123,7 +123,7 @@ public:
     /* 0x000020 */ dPrivateData_c mPlayers[PLAYER_NUM];
     /* 0x021B20 */ dAnimalSave_c mAnimals;
     /* 0x05E260 */ dSaveBuilding_c mBuilding;  // the town flag, the gate and the building positions
-    /* 0x05EC60 */ u32 mTownChecksum;     // calcTownChecksum: +0x5EC64 up to mExtra (also a random seed)
+    /* 0x05EC60 */ u32 mTownChecksum ALIGN(32); // calcTownChecksum: +0x5EC64 up to mExtra (also a random seed)
     /* 0x05EC64 */ dSvActivity_c mActivity; // this town's jinx and the day's jinx results (d_sv_activity)
     /* 0x05EC7C */ u32 mPublicWorksBells; // inferred: donated so far; cleared when a public work is built
     /* 0x05EC80 */ dSaveShops_c mShops;
