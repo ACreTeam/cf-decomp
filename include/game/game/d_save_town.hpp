@@ -80,11 +80,8 @@ enum {
 struct dWifiTownMsg_c {
     // The first valid player (the sender), else mPlayers[0].
     dPersonalID_c *getSender() {
-        int i;
-        dPersonalID_c *player;
-        player = mPlayers;
-        for (i = 0; i < PLAYER_NUM; i++, player++) {
-            if (player->isValid()) {
+        for (int i = 0; i < PLAYER_NUM; i++) {
+            if (mPlayers[i].isValid()) {
                 return &mPlayers[i];
             }
         }
@@ -101,6 +98,8 @@ public:
         u8 language : 4;
         u8 region : 4;
     };
+    dPersonalID_c *getFriendPlayer() { return &_072CC2; }
+    dSvTownList::List_c *getTownList() { return &mTownList; }
     BOOL isHeaderVersionOK();             // 80115CDC
     BOOL isHeaderState2();                // 80115CE0
     void updateTownChecksum();            // 80115CE4: header, players, animals, mTownChecksum

@@ -46,7 +46,7 @@ static const char *lbl_804F48A8[10] = {"jj", "ue", "us", "uf", "ee", "es", "ef",
 static const char *lbl_804F48D0[6] = {"BO", "HA", "KO", "FU", "GE", "TA"};
 
 // .bss
-static u8 sRecvBuffer[0x2728]; // 8061E460: a received message, decompressed (dWifiTownMsg_c / receiveDesign's 0x8A0 bytes)
+static u8 sRecvBuffer[0x2728] ALIGN(32); // 8061E460: a received message, decompressed (dWifiTownMsg_c / receiveDesign's 0x8A0 bytes)
 static u64 sKeys[WC24_SEND_INDEX_NUM]; // 80620B88: the keys of the sends (region C) and of updateRoster
 static OSThread sThread;        // 806212A8: runs the WiiConnect24 jobs (dWifi::createThread)
 // 806215C0: the request the thread jobs get (constructed by __sinit 8017B858).
@@ -413,6 +413,9 @@ void *dWifi::checkThread(void *arg) {
 // ---- [B] 80178604..801795C4 ----
 namespace dWifi {
 
+// The debug build reported rejected messages here.
+#define RECV_REJECTED() ((void)0)
+
 // 80178604
 BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_c *header) {
     BOOL result = TRUE;
@@ -422,15 +425,26 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
             if (header->mCompressed && size != 0 && CXGetUncompressedSize(data) == sizeof(dWifiTownMsg_c)) {
                 if (CXSecureUncompressRL(data, size, sRecvBuffer) == 0) {
                     receiveTown((dWifiTownMsg_c *)sRecvBuffer, key);
+                } else {
+                    RECV_REJECTED();
                 }
             } else if (!header->mCompressed && size == sizeof(dWifiTownMsg_c)) {
                 receiveTown((dWifiTownMsg_c *)data, key);
+            } else {
+                RECV_REJECTED();
             }
+        } else {
+            RECV_REJECTED();
         }
         break;
     case WIFI_MSG_LETTER: {
-        if (dSaveData_c::isNetEnabled() && size != 0) {
+        if (!dSaveData_c::isNetEnabled()) {
+            RECV_REJECTED();
+            break;
+        }
+        if (size != 0) {
             if (header->mPartNum == 0) {
+                RECV_REJECTED();
                 break;
             }
             const void *mailData;
@@ -448,8 +462,11 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
                 dPersonalID_c *to = mail.getToPlayer();
                 if (to != NULL) {
                     dPrivateData_c *player = dPrivateData_c::get(dSaveData_c::getTown()->mPlayers, to);
-                    if (player != NULL && findFriend(from, player) >= 0) {
-                        deliver = true;
+                    if (player != NULL) {
+                        const dPrivateData_c *receiver = player;
+                        if (findFriend(from, receiver) >= 0) {
+                            deliver = true;
+                        }
                     }
                 }
             } else {
@@ -465,7 +482,8 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
                 } else {
                     dAnmPersonalID_c *animal = mail.getFromAnimal();
                     if (animal != NULL) {
-                        dSaveData_c::getWc24()->mLands[idx].copy(&animal->mLand);
+                        const dLandID_c *land = &animal->mLand;
+                        dSaveData_c::getWc24()->mLands[idx].copy(land);
                     }
                 }
             }
@@ -473,18 +491,36 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
         break;
     }
     case WIFI_MSG_AUC_LIST:
-        if (dSaveData_c::isNetEnabled() && size == 0x1E4) {
-            receiveAucListings((const dSvAucList_c *)data, key);
+        if (dSaveData_c::isNetEnabled()) {
+            if (size == 0x1E4) {
+                receiveAucListings((const dSvAucList_c *)data, key);
+            } else {
+                RECV_REJECTED();
+            }
+        } else {
+            RECV_REJECTED();
         }
         break;
     case WIFI_MSG_AUC_BIDS:
-        if (dSaveData_c::isNetEnabled() && size == 0x1E4) {
-            receiveAucBids((const dSvAucList_c *)data, key);
+        if (dSaveData_c::isNetEnabled()) {
+            if (size == 0x1E4) {
+                receiveAucBids((const dSvAucList_c *)data, key);
+            } else {
+                RECV_REJECTED();
+            }
+        } else {
+            RECV_REJECTED();
         }
         break;
     case WIFI_MSG_AUC_SALES:
-        if (dSaveData_c::isNetEnabled() && size == 0x1E4) {
-            receiveAucSales((const dSvAucList_c *)data, key);
+        if (dSaveData_c::isNetEnabled()) {
+            if (size == 0x1E4) {
+                receiveAucSales((const dSvAucList_c *)data, key);
+            } else {
+                RECV_REJECTED();
+            }
+        } else {
+            RECV_REJECTED();
         }
         break;
     case WIFI_MSG_DESIGN:
@@ -492,15 +528,27 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
             if (header->mCompressed && size != 0 && CXGetUncompressedSize(data) == 0x8A0) {
                 if (CXSecureUncompressRL(data, size, sRecvBuffer) == 0) {
                     result = receiveDesign((const dRelayDesign_c *)sRecvBuffer, key);
+                } else {
+                    RECV_REJECTED();
                 }
             } else if (!header->mCompressed && size == 0x8A0) {
                 result = receiveDesign((const dRelayDesign_c *)data, key);
+            } else {
+                RECV_REJECTED();
             }
+        } else {
+            RECV_REJECTED();
         }
         break;
     case WIFI_MSG_POST:
-        if (dSaveData_c::isNetEnabled() && size == 0x5A) {
-            receivePostPid((const dSavePostSend_c *)data, key);
+        if (dSaveData_c::isNetEnabled()) {
+            if (size == 0x5A) {
+                receivePostPid((const dSavePostSend_c *)data, key);
+            } else {
+                RECV_REJECTED();
+            }
+        } else {
+            RECV_REJECTED();
         }
         break;
     case WIFI_MSG_ANIMAL:
@@ -573,15 +621,16 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
         s8 sub = msg->mTown.getCatherineSub();
         if (category >= 0 && sub >= 0) {
             s8 player = msg->mTown.getCatherinePlayer();
-            dSaveCatherine_c *catherine = &dSaveData_c::getTown()->mShops.mCatherine;
-            catherine->set(&msg->mPlayers[player], category, sub);
+            dSaveTown_c *town = dSaveData_c::getTown();
+            town->mShops.mCatherine.set(&msg->mPlayers[player], category, sub);
         }
         for (int i = 0; i < PLAYER_NUM; i++) {
             if (msg->mPlayers[i].isValid()) {
                 category = msg->mTown.getPlayerCategory(i);
                 sub = msg->mTown.getPlayerSub(i);
                 if (category >= 0 && sub >= 0) {
-                    dSaveData_c::getTown()->mShops.mCatherine.count(category, sub);
+                    dSaveTown_c *town = dSaveData_c::getTown();
+                    town->mShops.mCatherine.count(category, sub);
                 }
             }
         }
@@ -600,11 +649,11 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
             if (player->isValid()) {
                 if (msg->mTown.isPlayerBit(i)) {
                     if (n == pick) {
-                        dSaveData_c::getTown()->_072CC2 = *player;
+                        *dSaveData_c::getTown()->getFriendPlayer() = *player;
                     }
                     n++;
-                } else if (dSaveData_c::getTown()->_072CC2 == *player) {
-                    dSaveData_c::getTown()->_072CC2.clear();
+                } else if (*dSaveData_c::getTown()->getFriendPlayer() == *player) {
+                    dSaveData_c::getTown()->getFriendPlayer()->clear();
                 }
             }
         }
@@ -664,7 +713,7 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
     }
     if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_JINX) {
         dPersonalID_c *sender = msg->getSender();
-        dSaveData_c::getTown()->mTownList.set(&sender->land, msg->mTown.mJinx);
+        dSaveData_c::getTown()->getTownList()->set(&sender->land, msg->mTown.mJinx);
     }
     if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_PLAYER_VALUE) {
         int i;
@@ -861,10 +910,6 @@ int getSendProfileId(u32 idx) {
     return 0;
 }
 
-// The send loops index the key / roster index buffers through u32 accessors (offset induction registers).
-static inline u64 *getSendKey(u32 i) { return &sKeys[i]; }
-static inline u32 getSendIndex(const u32 *indices, u32 i) { return indices[i]; }
-
 // 80179C14
 BOOL sendTown(u32 max) {
     u32 indices[WC24_SEND_INDEX_NUM];
@@ -878,21 +923,20 @@ BOOL sendTown(u32 max) {
     dNetWc24::dNetWc24MsgTag_c tag;
     dNetWc24::dNetWc24MsgTag_c *pTag = &tag;
     pTag->mBits.mKind = WIFI_MSG_TOWN;
-    u8 *buf = sRecvBuffer;
+    dWifiTownMsg_c *msg = (dWifiTownMsg_c *)sRecvBuffer;
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPersonalID_c *pid = &dPrivateData_c::getChecked(dSaveData_c::getTown()->mPlayers, i)->mPID;
-        memcpy(&buf[i * sizeof(dPersonalID_c)], pid, sizeof(dPersonalID_c));
+        memcpy(&msg->mPlayers[i], pid, sizeof(msg->mPlayers[i]));
     }
-    memcpy(&buf[PLAYER_NUM * sizeof(dPersonalID_c)], &dSaveData_c::getTown()->mVillagerMove, sizeof(dSvVillagerMove::Info_c));
+    memcpy(&msg->mTown, &dSaveData_c::getTown()->mVillagerMove, sizeof(msg->mTown));
     dNetWc24::dNetWc24Data_c data;
     setMsgData(sRecvBuffer, sizeof(dWifiTownMsg_c), &data, pTag);
-    dNetWc24::dNetWc24MsgTag_c msgTag = tag;
-    u32 size = dNetWc24::g_wc24.makeMessage(data.mData[2], data.mSize[2], NULL, 0, msgTag.mRaw);
+    u32 size = dNetWc24::g_wc24.makeMessage(data.mData[2], data.mSize[2], pTag->mRaw);
     BOOL sent = FALSE;
     for (int i = 0; i < num; i++) {
-        if (dNetWc24::g_wc24.sendMessage(getSendKey(i), size, getSendProfileId(getSendIndex(indices, i)))) {
-            dSaveData_c::getExtra()->getWc24()->setNextSend(indices[(u32)i]);
-            dSaveData_c::getExtra()->getWc24()->addBoardSendCount(1);
+        if (dNetWc24::g_wc24.sendMessage(&sKeys[i], size, getSendProfileId(indices[i]))) {
+            dSaveData_c::getWc24()->setNextSend(indices[i]);
+            dSaveData_c::getWc24()->addBoardSendCount(1);
             sent |= TRUE;
         } else if (dNetWc24::g_wc24.mLastError == NWC24_ERR_NAND_CORRUPT) {
             break;
@@ -967,7 +1011,7 @@ BOOL sendAucListings() {
 // 8017A0FC
 BOOL sendAucBids() {
     dSvAucItem_c *item;
-    dSvAucList_c *const list = dSaveData_c::getExtra()->getAucBids();
+    dSvAucList_c *list = dSaveData_c::getExtra()->getAucBids();
     item = list->mItems;
     dNetWc24::dNetWc24Data_c data;
     dNetWc24::dNetWc24MsgTag_c tag;

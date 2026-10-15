@@ -920,7 +920,7 @@ config.libs = [
             Object(Matching, "dol/game/d_sv_player_flag.cpp"),
             Object(Matching, "dol/game/d_sv_daily_rand.cpp"),
             Object(Matching, "dol/game/d_sv_wc24.cpp"),
-            Object(NonMatching, "dol/game/d_wifi.cpp"),
+            Object(Matching, "dol/game/d_wifi.cpp"),
             Object(Matching, "dol/game/d_wifi_err.cpp"),
             Object(Matching, "dol/game/d_wipe_fader.cpp"),
             Object(Matching, "dol/game/sc_data/d_sc_data_common.cpp"),
