@@ -86,11 +86,11 @@ struct Info_c {
         mFlags |= VILLAGER_MOVE_FLAG_MODEL_ROOM;
     }
 
-    int getCatherineCategory() const { return mCatherineCategory; }
-    int getCatherineSub() const { return mCatherineSub; }
-    int getCatherinePlayer() const { return mCatherinePlayer; }
-    int getPlayerCategory(int i) const { return mPlayerCategory[i]; }
-    int getPlayerSub(int i) const { return mPlayerSub[i]; }
+    s8 getCatherineCategory() const { return mCatherineCategory; }
+    s8 getCatherineSub() const { return mCatherineSub; }
+    s8 getCatherinePlayer() const { return mCatherinePlayer; }
+    s8 getPlayerCategory(int i) const { return mPlayerCategory[i]; }
+    s8 getPlayerSub(int i) const { return mPlayerSub[i]; }
     const dSaveOtherTown_c *getOtherTown() const { return &mOtherTown; }
 
     /* 0x000 */ u8 mVersion;              // VILLAGER_MOVE_VERSION; a received one must match

@@ -42,10 +42,14 @@ enum {
 // (makeMessage), [2] first.
 struct dNetWc24Data_c {
     dNetWc24Data_c() {
-        for (int i = 0; i < 4; i++) {
-            mData[i] = NULL;
-            mSize[i] = 0;
-        }
+        mData[0] = NULL;
+        mSize[0] = 0;
+        mData[1] = NULL;
+        mSize[1] = 0;
+        mData[2] = NULL;
+        mSize[2] = 0;
+        mData[3] = NULL;
+        mSize[3] = 0;
         mFriend = FRIEND_SELF;
     }
 
@@ -106,6 +110,7 @@ public:
     BOOL sendMessage(const u64 *key, u32 size, int profileId); // 800E9C74: the message makeMessage built
     // 800EA2C8: builds the message to send from two data blocks; returns its size (0: too big).
     u32 makeMessage(const void *data, u32 size, const void *data2, u32 size2, u16 tag);
+    u32 makeMessage(const void *data, u32 size, u16 tag) { return makeMessage(data, size, NULL, 0, tag); }
     BOOL sendBoardMessage(const dPostRequest_c *req); // 800E9D34: mFriend = roster entry, -1 = this console
     void receiveMessages(ReceiveCallback callback);  // 800EA0DC: (with dWifi::onReceive)
     static BOOL registerFriendRec(const u64 *key, int profileId, u32 gameCode); // 800EA800
