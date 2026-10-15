@@ -194,8 +194,6 @@ public:
     dFdAsBlock_c *getBlock(int blockX, int blockZ) { return &mBlocks[blockX][blockZ]; }
     dFdAsPos_c getRafflesiaBlock0() const { return mRafflesiaBlock; }
     dFdAsPos_c getRafflesiaUnit0() const { return mRafflesiaUnit; }
-    dFdAsPos_c getRafflesiaBlock() const { dFdAsPos_c pos = getRafflesiaBlock0(); return pos; }
-    dFdAsPos_c getRafflesiaUnit() const { dFdAsPos_c pos = getRafflesiaUnit0(); return pos; }
 
     /* 0x000 */ int mRank;                        // TownRank_e
     /* 0x004 */ int mBlockRankNum[dFdAsBlock_c::RANK_NUM];
@@ -411,7 +409,7 @@ struct dFgMngLitterFlags_c {
 // The d_fgobj_manager callback (8074E358).
 typedef void (*dFgObjCallback)(int a, int b, int c, mAng3_c *ang, int d);
 
-extern "C" dScene::dSceneChange_c *fn_80091AF8();       // 80091AF8: &dScene::gSceneChange (d_scene.hpp)
+dScene::dSceneChange_c *getSceneChange();       // 80091AF8: &dScene::gSceneChange, like dScene::getSceneChange
 BOOL isBlockedUnit(dFdBase_c *fd, int x, int z);  // 8009536C (also d_a_snowman)
 BOOL isPondEdgeUnit(dFdBase_c *fd, int x, int z); // 80095438 (also d_a_snowman)
 int fgMngProc_getGrowUpHeapSize();              // 80091B04: 0x3400, the "createGrowUpHeap" ExpHeap (thread stack)
@@ -419,6 +417,9 @@ int fgMngProc_getFgHeapSize();                  // 80091B0C: 0x2617C0, the "crea
 int fgMngProc_getElapsedDays();                 // 80091B18: days since the last processed day (at 6:00)
 void *fgMngProc_getFgObjMgr();                  // 80091C24: the d_fgobj_managerNP actor (sFgObjMgr)
 void fgMngProc_resetSync();                     // 80091C2C: unblocks the day change, resets the locks / commands
+void *fgMngProcThreadFunc(void *arg);           // 80091C54: the FG manager thread (d_sv_proc starts it)
+void startFgMngProcThread(void *(*func)(void *)); // 80091C78
+BOOL isFgMngProcThreadDone();                   // 80091D4C: TRUE (after freeing its stack) once it finished
 void fgMngTask_resetAll();                      // 80091E34: resets the 32 tasks
 void fgMngProc_procDayChange(BOOL live);        // 8009B47C: the 6:00 day change of the whole save (live: also procLiveDay)
 void fgMngProc_updateFrame();                   // 8009BCDC: per frame (d_s_stage): notices 6:00 passing, spawns shells

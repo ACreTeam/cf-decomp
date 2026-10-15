@@ -23,9 +23,6 @@
 
 // Unrecovered dependency interfaces; the implementations are outside this TU.
 BOOL sendVisitorLetter(dPrivateData_c *player);
-void *fgMngProcThreadFunc(void *);
-void startFgMngProcThread(void *(*)(void *));
-BOOL isFgMngProcThreadDone();
 
 namespace dSvProc {
 dSvProc_c sProc;
