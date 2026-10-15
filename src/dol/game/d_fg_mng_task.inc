@@ -30,21 +30,6 @@ static inline BOOL fgMngInRange(u16 id, u16 lo, u16 hi) {
     return in;
 }
 
-// 8046EFA0: the fruit of each fruit tree type (getFruit).
-static const int sFruit[] = {dItem::ITEM_IDX_APPLE, dItem::ITEM_IDX_ORANGE, dItem::ITEM_IDX_PEAR, dItem::ITEM_IDX_PEACH, dItem::ITEM_IDX_CHERRY, dItem::ITEM_IDX_COCONUT, dItem::ITEM_IDX_30000_BELLS};
-// 8046EFBC: the unit and its 8 neighbours.
-static const u8 sDirOffset[] = {
-    FG_UNIT_OFS(0, 0), FG_UNIT_OFS(-1, 0), FG_UNIT_OFS(1, 0), FG_UNIT_OFS(0, 1),
-    FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(1, 1), FG_UNIT_OFS(0, -1), FG_UNIT_OFS(-1, -1),
-    FG_UNIT_OFS(1, -1),
-};
-// 8046EFC8
-static const int sFruitDir[] = {1, 2, 3, 4, 5, 0};
-// 8046F120: the order the spots are tried in, per direction.
-static const int sSpotOrder[5][8] = {
-    {0, 3, 6, 1, 4, 7, 5, 8}, {0, 3, 6, 2, 5, 8, 4, 7}, {0, 1, 2, 3, 4, 5, 7, 8},
-    {0, 2, 6, 3, 1, 4, 5, 7}, {0, 1, 6, 3, 2, 5, 4, 8},
-};
 
 // 800A2220
 void dFgMngTask_c::reset() {
@@ -1124,6 +1109,12 @@ void dFgMngReq_c::send(BOOL local, int player, u8 scene) {
 
 // 800A4E10
 dFgMngCmdEntry_c::~dFgMngCmdEntry_c() {}
+
+// 8046F120: the order the spots are tried in, per direction.
+static const int sSpotOrder[5][8] = {
+    {0, 3, 6, 1, 4, 7, 5, 8}, {0, 3, 6, 2, 5, 8, 4, 7}, {0, 1, 2, 3, 4, 5, 7, 8},
+    {0, 2, 6, 3, 1, 4, 5, 7}, {0, 1, 6, 3, 2, 5, 4, 8},
+};
 
 // 800A4E50
 int dFgMngCmd_c::searchSpot(dFdAsPos_c *pos, int dir, dFdBase_c *fd) {

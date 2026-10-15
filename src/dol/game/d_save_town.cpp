@@ -25,14 +25,6 @@ void dSaveTown_c::updateTownChecksum() {
     mTownChecksum = calcTownChecksum();
 }
 
-static inline BOOL checkTownCrc(const dSaveTown_c *save) {
-    u32 checksum = save->calcTownChecksum();
-    if (checksum == save->mTownChecksum) {
-        return TRUE;
-    }
-    return FALSE;
-}
-
 // 80115D34
 BOOL dSaveTown_c::isTownChecksumOK(int arg) {
     if (!mHeader.isChecksumOK()) {
@@ -44,7 +36,8 @@ BOOL dSaveTown_c::isTownChecksumOK(int arg) {
     if (!mAnimals.isChecksumValid(arg)) {
         return FALSE;
     }
-    if (checkTownCrc(this)) {
+    u32 checksum = calcTownChecksum();
+    if (checksum == mTownChecksum) {
         return TRUE;
     }
     return FALSE;

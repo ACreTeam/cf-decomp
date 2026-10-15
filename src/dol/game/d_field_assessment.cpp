@@ -4,17 +4,17 @@
 // See notes/d_field_assessment.txt.
 //
 // .text 80091AF8..800A5D3C (__sinit 8009FFEC; built with -sym on, so the code of the #included
-#include <game/game/d_demo.hpp>
-#include <game/game/d_str.hpp>
 // d_fg_mng_task.inc lands after it, 800A2220..), .ctors 80465670..80465674, .rodata
-// 8046EFA0..8046F1E8, .data 804E1808..804E3C40, .bss 80588D58..8058B5F8, .sdata 80749FB8..8074A3C8,
-// .sbss 8074E338..8074E378, .sdata2 80750658..80750708. d_search_cand.hpp first: vtables come out
+// 8046EFA0..8046F1E8, .data 804E1808..804E3C20, .bss 80588D58..8058B5F8, .sdata 80749FB8..8074A3C8,
+// .sbss 8074E338..8074E378, .sdata2 80750658..80750708. Candidate headers first: vtables come out
 // in reverse definition order, and its templates' vtables follow the HostIO ones in the target.
+#include <game/game/d_fd_bk_search_cand.hpp>
 #include <game/game/d_search_cand.hpp>
 #include <game/game/d_field_assessment.hpp>
 #include <game/game/d_fg_mng_task.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/game/d_date.hpp>
+#include <game/game/d_demo.hpp>
 #include <game/game/d_effect.hpp>
 #include <game/game/d_event.hpp>
 #include <game/game/d_fg_item.hpp>
@@ -35,6 +35,7 @@
 #include <game/game/d_random.hpp>
 #include <game/game/d_recycle_bin.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_str.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <game/game/d_theater.hpp>
 #include <game/game/d_time_stamp.hpp>
@@ -74,6 +75,57 @@ static const u8 sAround5[5] = {
     FG_UNIT_OFS(-1, 0), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(0, 1), FG_UNIT_OFS(1, 1),
     FG_UNIT_OFS(1, 0),
 };
+
+const int sFruit[] = {dItem::ITEM_IDX_APPLE, dItem::ITEM_IDX_ORANGE, dItem::ITEM_IDX_PEAR, dItem::ITEM_IDX_PEACH, dItem::ITEM_IDX_CHERRY, dItem::ITEM_IDX_COCONUT, dItem::ITEM_IDX_30000_BELLS};
+const u8 sDirOffset[] = {
+    FG_UNIT_OFS(0, 0), FG_UNIT_OFS(-1, 0), FG_UNIT_OFS(1, 0), FG_UNIT_OFS(0, 1),
+    FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(1, 1), FG_UNIT_OFS(0, -1), FG_UNIT_OFS(-1, -1),
+    FG_UNIT_OFS(1, -1),
+};
+const int sFruitDir[] = {1, 2, 3, 4, 5, 0};
+
+// 8046EFE0
+static const int sTreeCheckStart[3][2] = {{0, 2}, {1, 3}, {2, 0}};
+
+// 8046EFF8: the flowers planted at random.
+static const u16 sRandomFlowers[12] = {dItem::FG_TULIP_RED, dItem::FG_TULIP_WHITE, dItem::FG_TULIP_YELLOW, dItem::FG_PANSY_WHITE, dItem::FG_PANSY_YELLOW, dItem::FG_PANSY_RED, dItem::FG_COSMOS_WHITE, dItem::FG_COSMOS_RED, dItem::FG_COSMOS_YELLOW, dItem::FG_ROSE_RED, dItem::FG_ROSE_WHITE, dItem::FG_ROSE_YELLOW};
+
+// 8046F010: the 7 x 7 units around one (without the centre).
+static const u8 sAround7x7[0x30] = {
+    FG_UNIT_OFS(-3, -3), FG_UNIT_OFS(-2, -3), FG_UNIT_OFS(-1, -3), FG_UNIT_OFS(0, -3),
+    FG_UNIT_OFS(1, -3), FG_UNIT_OFS(2, -3), FG_UNIT_OFS(3, -3), FG_UNIT_OFS(-3, -2),
+    FG_UNIT_OFS(-2, -2), FG_UNIT_OFS(-1, -2), FG_UNIT_OFS(0, -2), FG_UNIT_OFS(1, -2),
+    FG_UNIT_OFS(2, -2), FG_UNIT_OFS(3, -2), FG_UNIT_OFS(-3, -1), FG_UNIT_OFS(-2, -1),
+    FG_UNIT_OFS(-1, -1), FG_UNIT_OFS(0, -1), FG_UNIT_OFS(1, -1), FG_UNIT_OFS(2, -1),
+    FG_UNIT_OFS(3, -1), FG_UNIT_OFS(-3, 0), FG_UNIT_OFS(-2, 0), FG_UNIT_OFS(-1, 0),
+    FG_UNIT_OFS(1, 0), FG_UNIT_OFS(2, 0), FG_UNIT_OFS(3, 0), FG_UNIT_OFS(-3, 1),
+    FG_UNIT_OFS(-2, 1), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(0, 1), FG_UNIT_OFS(1, 1),
+    FG_UNIT_OFS(2, 1), FG_UNIT_OFS(3, 1), FG_UNIT_OFS(-3, 2), FG_UNIT_OFS(-2, 2),
+    FG_UNIT_OFS(-1, 2), FG_UNIT_OFS(0, 2), FG_UNIT_OFS(1, 2), FG_UNIT_OFS(2, 2),
+    FG_UNIT_OFS(3, 2), FG_UNIT_OFS(-3, 3), FG_UNIT_OFS(-2, 3), FG_UNIT_OFS(-1, 3),
+    FG_UNIT_OFS(0, 3), FG_UNIT_OFS(1, 3), FG_UNIT_OFS(2, 3), FG_UNIT_OFS(3, 3),
+};
+
+// 8046F040: the unit in front of the player, per 16th of a turn.
+static const u8 sFrontUnit[] = {
+    FG_UNIT_OFS(0, 1), FG_UNIT_OFS(1, 1), FG_UNIT_OFS(1, 1), FG_UNIT_OFS(1, 0),
+    FG_UNIT_OFS(1, 0), FG_UNIT_OFS(1, -1), FG_UNIT_OFS(1, -1), FG_UNIT_OFS(0, -1),
+    FG_UNIT_OFS(0, -1), FG_UNIT_OFS(-1, -1), FG_UNIT_OFS(-1, -1), FG_UNIT_OFS(-1, 0),
+    FG_UNIT_OFS(-1, 0), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(0, 1),
+};
+
+// 8046F050: the wilting chance in percent of the flowers 0x9E..0xBB.
+static const u8 sFlowerWiltChance[0x20] = {
+    0x05, 0x05, 0x05, 0x0F, 0x0F, 0x1E, 0x05, 0x05, 0x05, 0x0F, 0x0F, 0x1E, 0x05, 0x05, 0x05, 0x0F,
+    0x0F, 0x1E, 0x05, 0x05, 0x05, 0x0F, 0x19, 0x19, 0x1E, 0x28, 0x00, 0x0A, 0x0A, 0x14, 0x1E, 0x00,
+};
+
+// 8046F070 / 8046F084: mushroom kind rates (normal town / perfect town).
+static const f32 sMushRate[FG_MUSHROOM_KIND_NUM] = {10.0f, 30.0f, 30.0f, 30.0f, 0.0f};
+static const f32 sMushRatePerfect[FG_MUSHROOM_KIND_NUM] = {10.0f, 25.0f, 30.0f, 25.0f, 10.0f};
+
+// 8046F098
+static const f32 sShellWeights[] = {2.0f, 3.0f, 5.0f, 10.0f, 10.0f, 5.0f, 10.0f, 25.0f, 30.0f, 0.0f};
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
@@ -1132,10 +1184,12 @@ void dFgMngProc_c::destroyHeap() {
 
 // 800939E8: the day-change processing of the field for `days` days (last..now).
 void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag, BOOL arg) {
-    int seed = *(int *)((u8 *)dSaveData_c::getTown() + 0x5EC60);
+    int seed = (int)dSaveData_c::getTown()->mTownChecksum;
     dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
-    int w = fd->mBlockW - 2;
-    int h = fd->mBlockH - 2;
+    int blockW = fd->mBlockW;
+    int blockH = fd->mBlockH;
+    int w = blockW - 2;
+    int h = blockH - 2;
     if (flag) {
         markFlowerUnits(fd, w, h);
     }
@@ -1556,9 +1610,6 @@ BOOL dFgMngProc_c::isSaplingSpaceFree(dFdBase_c *fd, int *size, int x, int z) {
     return forEachAroundUnit(fd, size, x, z, isTreeObstacleAt) == 0;
 }
 
-// 8046EFE0
-static const int sTreeCheckStart[3][2] = {{0, 2}, {1, 3}, {2, 0}};
-
 // 80094C78: three staggered passes (every 4th unit) killing the saplings next to a sapling.
 void dFgMngProc_c::thinOutSaplings(dFdBase_c *fd, int *size) {
     for (int i = 0; i < 3; i++) {
@@ -1572,22 +1623,6 @@ void dFgMngProc_c::thinOutSaplings(dFdBase_c *fd, int *size) {
         }
     }
 }
-
-// 8046F010: the 7 x 7 units around one (without the centre).
-static const u8 sAround7x7[0x30] = {
-    FG_UNIT_OFS(-3, -3), FG_UNIT_OFS(-2, -3), FG_UNIT_OFS(-1, -3), FG_UNIT_OFS(0, -3),
-    FG_UNIT_OFS(1, -3), FG_UNIT_OFS(2, -3), FG_UNIT_OFS(3, -3), FG_UNIT_OFS(-3, -2),
-    FG_UNIT_OFS(-2, -2), FG_UNIT_OFS(-1, -2), FG_UNIT_OFS(0, -2), FG_UNIT_OFS(1, -2),
-    FG_UNIT_OFS(2, -2), FG_UNIT_OFS(3, -2), FG_UNIT_OFS(-3, -1), FG_UNIT_OFS(-2, -1),
-    FG_UNIT_OFS(-1, -1), FG_UNIT_OFS(0, -1), FG_UNIT_OFS(1, -1), FG_UNIT_OFS(2, -1),
-    FG_UNIT_OFS(3, -1), FG_UNIT_OFS(-3, 0), FG_UNIT_OFS(-2, 0), FG_UNIT_OFS(-1, 0),
-    FG_UNIT_OFS(1, 0), FG_UNIT_OFS(2, 0), FG_UNIT_OFS(3, 0), FG_UNIT_OFS(-3, 1),
-    FG_UNIT_OFS(-2, 1), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(0, 1), FG_UNIT_OFS(1, 1),
-    FG_UNIT_OFS(2, 1), FG_UNIT_OFS(3, 1), FG_UNIT_OFS(-3, 2), FG_UNIT_OFS(-2, 2),
-    FG_UNIT_OFS(-1, 2), FG_UNIT_OFS(0, 2), FG_UNIT_OFS(1, 2), FG_UNIT_OFS(2, 2),
-    FG_UNIT_OFS(3, 2), FG_UNIT_OFS(-3, 3), FG_UNIT_OFS(-2, 3), FG_UNIT_OFS(-1, 3),
-    FG_UNIT_OFS(0, 3), FG_UNIT_OFS(1, 3), FG_UNIT_OFS(2, 3), FG_UNIT_OFS(3, 3),
-};
 
 // 80094D50: kills a sapling with 8 or more trees (any stage) in the 7 x 7 units around it.
 void dFgMngProc_c::killCrowdedSaplings(dFdBase_c *fd, int *size) {
@@ -1781,18 +1816,20 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
     int left;
     int perBlock[FG_BLOCK_TOTAL_NUM];
     int freeBlocks[FG_BLOCK_TOTAL_NUM];
-    int pos[UT_TOTAL_NUM][2];
+    dFdAsPos_c pos[UT_TOTAL_NUM];
     fullBlocks = 0;
     left = days * 2;
     do {
         freeNum = 0;
+        cnt = perBlock;
         p = freeBlocks;
         for (i = 0; i < FG_BLOCK_TOTAL_NUM; i++) {
-            perBlock[i] = 0;
+            *cnt = 0;
             if (!(fullBlocks & (1 << i))) {
                 *p++ = i;
                 freeNum++;
             }
+            cnt++;
         }
         if (freeNum == 0) {
             break;
@@ -1817,8 +1854,8 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
         for (blockZ = 0; blockZ < FG_BLOCK_Z_NUM; blockZ++) {
             for (blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, idx++, cnt++) {
                 if (*cnt != 0) {
-                    got = collectUnits((dFdAsPos_c *)pos, fd, blockX, blockZ, dFgMngProc_c::isGrassUnit);
-                    rest = *cnt - plantGrass(fd, got, (dFdAsPos_c *)pos, *cnt);
+                    got = collectUnits(pos, fd, blockX, blockZ, dFgMngProc_c::isGrassUnit);
+                    rest = *cnt - plantGrass(fd, got, pos, *cnt);
                     left += rest;
                     if (rest > 0) {
                         fullBlocks |= 1 << idx;
@@ -2004,12 +2041,6 @@ void dFgMngProc_c::updateFlowersLaterDay(dFdBase_c *fd, int day) {
     }
 }
 
-// 8046F050: the wilting chance in percent of the flowers 0x9E..0xBB.
-static const u8 sFlowerWiltChance[0x20] = {
-    0x05, 0x05, 0x05, 0x0F, 0x0F, 0x1E, 0x05, 0x05, 0x05, 0x0F, 0x0F, 0x1E, 0x05, 0x05, 0x05, 0x0F,
-    0x0F, 0x1E, 0x05, 0x05, 0x05, 0x0F, 0x19, 0x19, 0x1E, 0x28, 0x00, 0x0A, 0x0A, 0x14, 0x1E, 0x00,
-};
-
 // 800960D4: daily wilt chance in percent of a flower (0x9E..0xBD); 0 for the gold rose.
 u32 dFgMngProc_c::getWiltChance(u16 id) {
     if (id == dItem::FG_ROSE_GOLD) {
@@ -2017,9 +2048,6 @@ u32 dFgMngProc_c::getWiltChance(u16 id) {
     }
     return sFlowerWiltChance[id - dItem::FG_TULIP_RED];
 }
-
-// 8046EFF8: the flowers planted at random.
-static const u16 sRandomFlowers[12] = {dItem::FG_TULIP_RED, dItem::FG_TULIP_WHITE, dItem::FG_TULIP_YELLOW, dItem::FG_PANSY_WHITE, dItem::FG_PANSY_YELLOW, dItem::FG_PANSY_RED, dItem::FG_COSMOS_WHITE, dItem::FG_COSMOS_RED, dItem::FG_COSMOS_YELLOW, dItem::FG_ROSE_RED, dItem::FG_ROSE_WHITE, dItem::FG_ROSE_YELLOW};
 
 // 800960F8: puts one random base-color tulip / pansy / cosmos / rose in a random block.
 void dFgMngProc_c::plantRandomFlower(dFdBase_c *fd, int w, int h) {
@@ -2191,10 +2219,6 @@ int getFlowerColor(const dItem::Item *item) {
     }
     return color;
 }
-
-// 8046F070 / 8046F084: mushroom kind rates (normal town / perfect town).
-static const f32 sMushRate[FG_MUSHROOM_KIND_NUM] = {10.0f, 30.0f, 30.0f, 30.0f, 0.0f};
-static const f32 sMushRatePerfect[FG_MUSHROOM_KIND_NUM] = {10.0f, 25.0f, 30.0f, 25.0f, 10.0f};
 
 static inline int rndInt(int max) {
     return fgMngProc_rndF(max);
@@ -3380,9 +3404,6 @@ static inline int getEggKind(const dItem::Item &item) {
 }
 
 // 80099C60: removes the eggs from the field and credits them to the town owner.
-// The loops are not fully unrolled in the target (unlike everywhere else in the TU).
-#pragma push
-#pragma opt_unroll_loops off
 void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
     u16 found[EGG_KIND_NUM];
     dPrivateData_c *player;
@@ -3397,7 +3418,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
     memset(found, 0, sizeof(found));
     player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL && !player->isFlag0(0x28) && !player->isFlag1(0x43)) {
-        for (int i = 0; i < EGG_KIND_NUM - 1; i++) {
+        for (int i = 0, count = EGG_KIND_NUM - 1; count-- > 0; i++) {
             player->mBunnyEggs[i] = 1;
         }
         player->mBunnyEggs[EGG_KIND_NUM - 1] = 18;
@@ -3425,7 +3446,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
         if (p->mPID.isValid()) {
             pid = &p->mPID;
             if (*pid == *owner) {
-                for (int j = 0; j < EGG_KIND_NUM; j++) {
+                for (int j = 0, count = EGG_KIND_NUM; count-- > 0; j++) {
                     p->mBunnyEggs[j] += found[j];
                 }
                 break;
@@ -3433,7 +3454,6 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
         }
     }
 }
-#pragma pop
 
 // 80099F4C: Bunny Day: hides the current player's eggs in the usable blocks: as evenly as possible
 // over the blocks with free units, then the rest at random; the real eggs (by kind) first, then the
@@ -3774,25 +3794,27 @@ BOOL dFgMngProc_c::buryLamp(dFdBase_c *fd) {
     seedRandomAt(fgMngProc_getLastDayTime(), seed + 0x2233);
     LampBkSearch_c blocks(fd);
     LampUtSearch_c units(fd);
+    dItem::Item lamp;
     int x, z;
     BOOL buried = FALSE;
-    dFdAsPos_c block;
-    dFdAsPos_c *pos = &block;
+    dFdAsPos_c pos;
     blocks.clear();
     blocks.search();
     blocks.removeBorder();
-    while (blocks.getNthXZ(fgMngProc_rndF(blocks.mCount), &pos->mX, &pos->mZ)) {
+    while (blocks.getNthXZ(fgMngProc_rndF(blocks.mCount), &pos.mX, &pos.mZ)) {
         units.clear();
-        units.mBlockZ = pos->mZ;
-        units.mBlockX = pos->mX;
+        units.mBlockZ = pos.mZ;
+        units.mBlockX = pos.mX;
         units.search();
         if (units.getNthXZ(fgMngProc_rndF(units.mCount), &x, &z)) {
-            dItem::Item lamp(dItem::ITEM_IDX_EMPTY_LAMP);
-            setUnitItem(fd, pos->mX, pos->mZ, x, z, lamp.mId, FALSE);
+            lamp = dItem::Item(dItem::ITEM_IDX_EMPTY_LAMP);
+            setUnitItem(fd, pos.mX, pos.mZ, x, z, lamp.mId, FALSE);
             buried = TRUE;
             break;
         }
-        blocks.remove(pos->mX + pos->mZ * blocks.mWidth);
+        int bx = pos.mX;
+        int bz = pos.mZ;
+        blocks.remove(bx + bz * blocks.mWidth);
     }
     return buried;
 }
@@ -4068,15 +4090,9 @@ void fgMngProc_procDayChange(BOOL arg) {
     dTime_c::resetOffset();
 }
 
-// 8046F098
-static const f32 sShellWeights[] = {2.0f, 3.0f, 5.0f, 10.0f, 10.0f, 5.0f, 10.0f, 25.0f, 30.0f, 0.0f};
-
 // 8009BCDC: per-frame from d_s_stage's execute: sets up the shell rates once, skips while locked
 // (fgMngProc_blockDayChange) or in busy scenes, notices 6:00 passing during play (flag 2, spawns
 // an actor at the player), then runs updateShellSpawn.
-// The shell weight loop is unrolled x3 in the target, as MWCC does with loop unrolling off.
-#pragma push
-#pragma opt_unroll_loops off
 void fgMngProc_updateFrame() {
     if (sDayChangeBlocked == 1) {
         return;
@@ -4087,7 +4103,7 @@ void fgMngProc_updateFrame() {
     if (!sShellHostIO.mInit) {
         sShellHostIO.mInit = TRUE;
         sShellHostIO.mWeightTotal = 0.0f;
-        for (int i = 0; i < FG_SHELL_KIND_NUM; i++) {
+        for (int i = 0, count = FG_SHELL_KIND_NUM; count-- > 0; i++) {
             sShellHostIO.mWeight[i] = sShellWeights[i];
             sShellHostIO.mWeightTotal += sShellWeights[i];
         }
@@ -4132,7 +4148,6 @@ void fgMngProc_updateFrame() {
     sFgMngProc.updateShellSpawn();
 }
 
-#pragma pop
 
 // 8009BEF0: body of the FG manager background thread (run by fgMngProcThreadFunc): assesses the
 // live blocks, refills the beach shells, records fg 0x56 units, spoils turnips if the clock went
@@ -4144,8 +4159,10 @@ void fgMngProc_threadMain() {
     dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     fgMngProc_updateFrame();
     if (fd != NULL) {
-        int w = fd->mBlockW - 2;
-        int h = fd->mBlockH - 2;
+        int blockW = fd->mBlockW;
+        int blockH = fd->mBlockH;
+        int w = blockW - 2;
+        int h = blockH - 2;
         for (int x = 0; x < w; x++) {
             for (int z = 0; z < h; z++) {
                 sFdAssess.getBlock(x, z)->assessLive(fd, x + 1, z + 1);
@@ -4221,8 +4238,10 @@ void fgMngProc_initTownField() {
     int salt = (int)dSaveData_c::getTown()->mTownChecksum;
     dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
     if (fd != NULL) {
-        int w = fd->mBlockW - 2;
-        int h = fd->mBlockH - 2;
+        int blockW = fd->mBlockW;
+        int blockH = fd->mBlockH;
+        int w = blockW - 2;
+        int h = blockH - 2;
         sFgMngProc.removeTreesInWater(fd, w, h);
         sFgMngProc.createHeap();
         dFgMngProc_c::setupUnitMask(fd, (u16 *)sFgMngProc.mBuffer);
@@ -4766,14 +4785,8 @@ void fgMngProc_callFgObjCallback(int a, int b, int c, int d) {
     }
 }
 
-// 8807506EC / 8046F040: the units in front of the player (by facing).
+// 807506EC: the facing angles tried (straight on, then either side).
 static const s16 sFrontAngle[] = {0, 0x1800, -0x1800};
-static const u8 sFrontUnit[] = {
-    FG_UNIT_OFS(0, 1), FG_UNIT_OFS(1, 1), FG_UNIT_OFS(1, 1), FG_UNIT_OFS(1, 0),
-    FG_UNIT_OFS(1, 0), FG_UNIT_OFS(1, -1), FG_UNIT_OFS(1, -1), FG_UNIT_OFS(0, -1),
-    FG_UNIT_OFS(0, -1), FG_UNIT_OFS(-1, -1), FG_UNIT_OFS(-1, -1), FG_UNIT_OFS(-1, 0),
-    FG_UNIT_OFS(-1, 0), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(-1, 1), FG_UNIT_OFS(0, 1),
-};
 
 // 8009D8C4: with a shovel (normal/silver/golden) held, finds a fg 0x94 unit (likely a dug hole)
 // in front of the player not under a task or another player; caller the item menu
@@ -4841,16 +4854,16 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
 
 // 8009DB80: validates a field-change request from net member `member` (unit, fg, kind, type)
 // against the field and running tasks; callers net receive fn_800DF7A0 and d_fgobj_manager.
-BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, int member) {
+BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, u8 scene) {
     BOOL ok = FALSE;
     dFdAsPos_c unit;
     unit.mX = req->mPos >> 8;
     unit.mZ = req->mPos & 0xFF;
-    int idx = fgMngLock_find(member, &unit, req->mLayer);
+    int idx = fgMngLock_find(scene, &unit, req->mLayer);
     if (idx >= 0 && !(BOOL)fgMngTask_getActive(req->mMember)) {
         return FALSE;
     }
-    dFdBase_c *fd = dField::getInfo(dField::getSceneFieldId(member));
+    dFdBase_c *fd = dField::getInfo(dField::getSceneFieldId(scene));
     dItem::Item *item = fd->getItem(req->mPos >> 8, req->mPos & 0xFF, req->mLayer);
     if (item != NULL && item->mId == req->mTarget) {
         if (idx < 0) {
@@ -4858,7 +4871,7 @@ BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, int member) {
                 ok = TRUE;
             }
         } else {
-            int idx2 = fgMngTask_find(member, &unit, req->mLayer);
+            int idx2 = fgMngTask_find(scene, &unit, req->mLayer);
             if (idx2 >= 0) {
                 dFgMngTask_c *task = fgMngTask_get(idx2);
                 if (task->mPlayer == req->mMember && task->mActive && !task->mSet) {

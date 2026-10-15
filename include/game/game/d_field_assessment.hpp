@@ -455,7 +455,7 @@ BOOL fgMngProc_isDayUpToDate();                 // 8009D6F4: the day change alre
 void fgMngProc_setFgObjCallback(dFgObjCallback func); // 8009D874
 void fgMngProc_callFgObjCallback(int a, int b, int c, int d); // 8009D87C
 BOOL fgMngProc_findHoleInFront(int *outX, int *outZ); // 8009D8C4: with a shovel, a fg 0x94 (hole?) in front
-BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, int member); // 8009DB80: a request from the net
+BOOL fgMngProc_isChangeRequestValid(const dFgMngReq_c *req, u8 scene); // 8009DB80: a request from the net
 void fgMngProc_setUnitFgSync(int x, int z, u16 fg); // 8009DD40: online, also sends it (packet 0x2B)
 void fgMngProc_recvUnitFg(const u16 *data);     // 8009DDD0: a received packet 0x2B
 BOOL fgMngProc_canCheckDayChange();             // 8009DEE4: FALSE while fading or in some scenes
