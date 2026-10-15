@@ -11,7 +11,7 @@ public:
 
     virtual bool openFilename(const char *filename);
     virtual void close();
-    virtual void readData(void *buffer, long size, long offset);
+    virtual s32 readData(void *buffer, long size, long offset); // Bytes read, or a negative error.
     virtual void writeData(const void *, long, long);
     virtual size_t getFileSize() const { return mFileSize; }
     virtual void open(const char *);

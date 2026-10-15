@@ -23,12 +23,12 @@ s64 dTimeStamp_c::getRaw() const {
 }
 
 // 8014C380
-s64 dTimeStamp_c::getTicks() {
+s64 dTimeStamp_c::getTicks() const {
     return getRaw();
 }
 
 // 8014C384
-BOOL dTimeStamp_c::isNone() {
+BOOL dTimeStamp_c::isNone() const {
     return getRaw() == TIME_STAMP_NONE;
 }
 
@@ -49,7 +49,7 @@ void dTimeStamp_c::reset() {
 }
 
 // 8014C478
-BOOL dTimeStamp_c::isToday(BOOL dayStart) {
+BOOL dTimeStamp_c::isToday(BOOL dayStart) const {
     if (dayStart) {
         dTimeStamp_c now(*dTime_c::getCurrent());
         dTimeStamp_c self(getTicks());
@@ -105,19 +105,19 @@ void dTimeStamp_c::toDayStart() {
 }
 
 // 8014C8E4
-int dTimeStamp_c::getWeekday() {
+int dTimeStamp_c::getWeekday() const {
     dTime_c cal = get();
     return cal.wday;
 }
 
 // 8014C95C
-int dTimeStamp_c::diffDays(const dTime_c &cal, BOOL dayStart, BOOL adjust) {
+int dTimeStamp_c::diffDays(const dTime_c &cal, BOOL dayStart, BOOL adjust) const {
     dTimeStamp_c other(cal);
     return diffDays(other.getTicks(), dayStart, adjust);
 }
 
 // 8014C9C4
-int dTimeStamp_c::diffDays(s64 ticks, BOOL dayStart, BOOL adjust) {
+int dTimeStamp_c::diffDays(s64 ticks, BOOL dayStart, BOOL adjust) const {
     if (dayStart) {
         dTimeStamp_c self(getTicks());
         dTimeStamp_c other(ticks);
@@ -131,7 +131,7 @@ int dTimeStamp_c::diffDays(s64 ticks, BOOL dayStart, BOOL adjust) {
 }
 
 // 8014CAA4
-int dTimeStamp_c::diffDaysFromNow(BOOL dayStart, BOOL adjust) {
+int dTimeStamp_c::diffDaysFromNow(BOOL dayStart, BOOL adjust) const {
     dTime_c cal = *dTime_c::getCurrent();
     dTimeStamp_c now(cal);
     if (dayStart) {
@@ -141,7 +141,7 @@ int dTimeStamp_c::diffDaysFromNow(BOOL dayStart, BOOL adjust) {
 }
 
 // 8014CB74
-int dTimeStamp_c::compare(const dTime_c &cal) {
+int dTimeStamp_c::compare(const dTime_c &cal) const {
     s64 other = OSCalendarTimeToTicks(&cal);
     s64 ticks = getRaw();
     if (ticks > other) {

@@ -50,8 +50,17 @@ static const u8 sPaperNum[4] = {1, 2, 3, 4};
 static const u8 sPaintNum[4] = {0, 1, 1, 1};
 static const int sSaplings[2] = {dItem::ITEM_IDX_SAPLING, dItem::ITEM_IDX_CEDAR_SAPLING};
 
-// Chances: [0] a silver tool (of 100), [1] a sale today (of 14). Set by initRates.
-static u8 sRates[2];
+namespace dSaveShop {
+struct Rates_c {
+    // Emits the TU's startup initializer at 80146D68.
+    Rates_c() : mSilverToolRate(2), mSaleRate(1) {}
+
+    u8 mSilverToolRate; // Out of 100.
+    u8 mSaleRate;       // Out of 14.
+};
+}
+
+static dSaveShop::Rates_c sRates;
 
 // 80143FE8
 void dSaveShop_c::clear() {
@@ -102,7 +111,8 @@ void dSaveShop_c::setStage(int stage) {
     } else {
         int days = mStageDate.diffDays(today.getTicks(), TRUE, FALSE) - 1;
         if (days > 0) {
-            int left = mDaysLeft - days;
+            int left = mDaysLeft;
+            left -= days;
             if (left < 0) {
                 left = 0;
             }
@@ -119,7 +129,7 @@ void dSaveShop_c::setStage(int stage) {
 }
 
 // 80144288
-BOOL dSaveShop_c::isUpgradingToday() {
+BOOL dSaveShop_c::isUpgradingToday() const {
     BOOL today = FALSE;
     if (mUpgrading && mStageDate.diffDays(*dTime_c::getCurrent(), TRUE, FALSE) == 0) {
         today = TRUE;
@@ -128,7 +138,7 @@ BOOL dSaveShop_c::isUpgradingToday() {
 }
 
 // 801442F0
-BOOL dSaveShop_c::isUpgradingOnLastDay() {
+BOOL dSaveShop_c::isUpgradingOnLastDay() const {
     BOOL today = FALSE;
     if (mUpgrading && mStageDate.diffDays(fgMngProc_getLastDayTime(), TRUE, FALSE) == 0) {
         today = TRUE;
@@ -138,8 +148,7 @@ BOOL dSaveShop_c::isUpgradingOnLastDay() {
 
 // 8014435C
 BOOL dSaveShop_c::isOpen() {
-    const dTime_c &last = fgMngProc_getLastDayTime();
-    dTimeStamp_c lastDay(last);
+    dTimeStamp_c lastDay(fgMngProc_getLastDayTime());
     if (lastDay.diffDays(*dTime_c::getCurrent(), TRUE, FALSE) != 0) {
         return FALSE;
     }
@@ -149,7 +158,7 @@ BOOL dSaveShop_c::isOpen() {
     case SHOP_STAGE_CRANNY:
         return now.hour >= 8 && now.hour < 22;
     case SHOP_STAGE_NOOK_N_GO:
-        return !(now.hour >= 1 && now.hour < 7);
+        return now.hour < 1 || now.hour >= 7;
     case SHOP_STAGE_NOOKWAY:
         return now.hour >= 8 && now.hour < 22;
     case SHOP_STAGE_NOOKINGTONS:
@@ -197,7 +206,7 @@ void dSaveShop_c::updateStage(int days) {
     }
 
     dLetter::setStringWord(0, mStage + 0x2E, "sys_STRING/STR_Unit");
-    if ((u8)mCountdown != 0x7F) {
+    if (getCountdown() != 0x7F) {
         if (days > 0) {
             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 9);
             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
@@ -242,8 +251,8 @@ void dSaveShop_c::updateStage(int days) {
                     if (left == -1) {
                         mCountdown = left;
                     } else {
-                        mUpgrading = FALSE;
                         mStage = mNextStage;
+                        mUpgrading = FALSE;
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 9);
                         if (mStageDate.diffDays(today.getTicks(), TRUE, FALSE) == 1) {
                             dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 10);
@@ -290,7 +299,8 @@ void dSaveShop_c::updateStage(int days) {
         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 9);
         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6D);
-        int left = mDaysLeft - days;
+        int left = mDaysLeft;
+        left -= days;
         if (left < 0) {
             left = 0;
         }
@@ -370,10 +380,10 @@ void dSaveShop_c::updateMail(int days) {
 
         int rank = getRank(player);
         if (rank >= 1 && !player->isFlag0(0x33)) {
-            static const u16 kind = 1;
-            static const u8 sender[2] = {0x0F, 0x00};
-            static const int paper = 0x154;
-            sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
+            static u16 kind = 1;
+            static u16 sender = 0x0F << 8;
+            static int paper = 0x154;
+            sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKS_CRANNY);
             dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
@@ -382,10 +392,10 @@ void dSaveShop_c::updateMail(int days) {
             }
         }
         if (rank >= 2 && !player->isFlag0(0x34)) {
-            static const u16 kind = 2;
-            static const u8 sender[2] = {0x0F, 0x00};
-            static const int paper = 0x154;
-            sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
+            static u16 kind = 2;
+            static u16 sender = 0x0F << 8;
+            static int paper = 0x154;
+            sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOK_N_GO);
             dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
@@ -394,10 +404,10 @@ void dSaveShop_c::updateMail(int days) {
             }
         }
         if (rank >= 3 && !player->isFlag0(0x35)) {
-            static const u16 kind = 3;
-            static const u8 sender[2] = {0x0F, 0x00};
-            static const int paper = 0x154;
-            sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
+            static u16 kind = 3;
+            static u16 sender = 0x0F << 8;
+            static int paper = 0x154;
+            sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKWAY);
             dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
@@ -406,10 +416,10 @@ void dSaveShop_c::updateMail(int days) {
             }
         }
         if (rank >= 4 && !player->isFlag0(0x36)) {
-            static const u16 kind = 4;
-            static const u8 sender[2] = {0x0F, 0x00};
-            static const int paper = 0x154;
-            sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
+            static u16 kind = 4;
+            static u16 sender = 0x0F << 8;
+            static int paper = 0x154;
+            sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKINGTONS);
             dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
@@ -418,10 +428,10 @@ void dSaveShop_c::updateMail(int days) {
             }
         }
         if (player->isNookLoyaltyLetterDue()) {
-            static const u16 kind = 5;
-            static const u8 sender[2] = {0x10, 0x00};
-            static const int paper = 0x157;
-            sMail.setupSystem(&kind, "MAIL_ETC_TPS", sender, &player->mPID, &paper);
+            static u16 kind = 5;
+            static u16 sender = 0x10 << 8;
+            static int paper = 0x157;
+            sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_SILVER_CAN);
             dLetter::setItemName(0, &gift);
             sMail.setPresent(gift.mId, 0xFF);
@@ -434,10 +444,10 @@ void dSaveShop_c::updateMail(int days) {
             if (today.get().month != MONTH_OCTOBER) {
                 player->clearFlag0(0x56);
             } else {
-                static const u16 kind = 1;
-                static const u8 sender[2] = {0x0E, 0x00};
-                static const int paper = 0x17C;
-                sMail.setupSystem(&kind, "MAIL_NPC_Pumpking", sender, &player->mPID, &paper);
+                static u16 kind = 1;
+                static u16 sender = 0x0E << 8;
+                static int paper = 0x17C;
+                sMail.setupSystem(&kind, "MAIL_NPC_Pumpking", (const u8 *)&sender, &player->mPID, &paper);
                 if (dPostOffice::deliverToPlayer(&sMail)) {
                     player->clearFlag0(0x56);
                 } else if (dPostOffice::add(&sMail)) {
@@ -449,10 +459,10 @@ void dSaveShop_c::updateMail(int days) {
             if (today.get().month != MONTH_DECEMBER || today.get().mday < 15 || today.get().mday > 24) {
                 player->clearFlag0(0x84);
             } else {
-                static const u16 kind = 2;
-                static const u8 sender[2] = {0x12, 0x00};
-                static const int paper = 0x162;
-                sMail.setupSystem(&kind, "MAIL_NPC_Pumpking", sender, &player->mPID, &paper);
+                static u16 kind = 2;
+                static u16 sender = 0x12 << 8;
+                static int paper = 0x162;
+                sMail.setupSystem(&kind, "MAIL_NPC_Pumpking", (const u8 *)&sender, &player->mPID, &paper);
                 if (dPostOffice::deliverToPlayer(&sMail)) {
                     player->clearFlag0(0x84);
                 } else if (dPostOffice::add(&sMail)) {
@@ -500,7 +510,8 @@ void dSaveShop_c::decideNextStage() {
         mVote = 4;
     } else {
         mVote = 4;
-        int n = cM::rndInt(ties) + 1;
+        int n = cM::rndInt(ties);
+        n++;
         int k = 0;
         for (int i = 0; i < 3; i++) {
             if (top == votes[i]) {
@@ -546,7 +557,7 @@ void dSaveShop_c::update() {
     dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     if (dSaveData_c::getRaw()->isFlag(0x15) && !isUpgradingToday() && !isEventToday() &&
-        cM::rndInt(14) < sRates[1]) {
+        cM::rndInt(14) < sRates.mSaleRate) {
         mSaleDate = dTimeStamp_c(*dTime_c::getCurrent());
         mSaleDate.toDayStart();
         mSaleDate.add(0, (u8)(cM::rndInt(4) + 11), 0, 0);
@@ -811,8 +822,9 @@ BOOL dSaveShop_c::isSold(int slot) {
 void dSaveShop_c::stockTools() {
     u8 used[7];
 
+    u8 *p = used;
     for (int i = 0; i < 7; i++) {
-        used[i] = FALSE;
+        *p++ = FALSE;
     }
     BOOL october = FALSE;
     dTimeStamp_c today(*dTime_c::getCurrent());
@@ -855,7 +867,7 @@ void dSaveShop_c::stockTools() {
         used[idx] = TRUE;
     }
 
-    if (mStage != SHOP_STAGE_CRANNY && cM::rndInt(100) < sRates[0]) {
+    if (mStage != SHOP_STAGE_CRANNY && cM::rndInt(100) < sRates.mSilverToolRate) {
         u16 silver;
         switch (cM::rndInt(3)) {
         case 0:
@@ -882,9 +894,10 @@ void dSaveShop_c::stockTools() {
 // 801466A0
 void dSaveShop_c::stockSeeds() {
     u8 used[12];
-    int i = 0;
-    while (i < 12) {
-        used[i++] = FALSE;
+    u8 *p = used;
+    int i = 12;
+    while (i--) {
+        *p++ = FALSE;
     }
     for (u32 i = 0; i < getSeedNum(); i++) {
         int n = cM::rndInt(12 - i);
@@ -950,7 +963,7 @@ BOOL dSaveShop_c::isSaleNow() {
 BOOL dSaveShop_c::hasFrom6() {
     for (int i = 0; i < SHOP_STOCK_NUM; i++) {
         if (!isSold(i)) {
-            dItem::Item item = *(dItem::Item *)&mStock[i];
+            dItem::Item item(mStock[i].mItem);
             if (item.getFrom() == 6) {
                 return TRUE;
             }
@@ -1023,7 +1036,7 @@ void dSaveShop_c::postNotices() {
         u16 msg = cM::rndInt(2) + 5;
         for (int i = 0; i < SHOP_STOCK_NUM; i++) {
             if (!isSold(i)) {
-                dItem::Item item = *(dItem::Item *)&mStock[i].mItem;
+                dItem::Item item(mStock[i].mItem);
                 if (item.getFrom() == 6) {
                     dLetter::setItemName(1, &item);
                     break;
@@ -1032,10 +1045,4 @@ void dSaveShop_c::postNotices() {
         }
         dNotice::postNotice(msg, "BBS_tanukichi", &date, NULL);
     }
-}
-
-// 80146D68
-void dSaveShop_c::initRates() {
-    sRates[0] = 2;
-    sRates[1] = 1;
 }

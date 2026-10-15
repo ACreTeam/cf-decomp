@@ -9,7 +9,7 @@ namespace EGG {
 class Allocator;
 class FrmHeap;
 
-class Heap : Disposer {
+class Heap : public Disposer {
 public:
     enum EHeapKind {
         HEAP_KIND_NONE,

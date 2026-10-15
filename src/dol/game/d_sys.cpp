@@ -297,7 +297,7 @@ void init() {
     archive = mHeap::g_archiveHeap;
     command = mHeap::g_commandHeap;
     int dvdPriority = fn_8016CF08(5);
-    fn_802AD464(15, command, archive, dvdPriority);
+    mDvd::create(15, command, archive, dvdPriority);
     dPhoto::create(dHeap::photoHeap_p);
     reportHeapStep(0x3FD);
     dNetMgr_c::initDwc();

@@ -2917,6 +2917,9 @@ dol/cLib/c_counter.cpp:
 
 dol/cLib/c_dylink.cpp:
 	.text       start:0x802AA11C end:0x802AAD00
+	.data       start:0x80523090 end:0x80523160 align:4
+	.sdata      start:0x8074CB18 end:0x8074CB60 align:4
+	.sbss       start:0x8074EFF8 end:0x8074F00C align:4
 
 dol/cLib/c_lib.cpp:
 	.text       start:0x802AAD00 end:0x802AB6D0
@@ -2963,7 +2966,7 @@ dol/mLib/m_dvd.cpp:
 	.text       start:0x802AD3E8 end:0x802ADBB8
 	.ctors      start:0x804658C4 end:0x804658C8
 	.data       start:0x80523AB8 end:0x80523B80
-	.bss        start:0x806A5D58 end:0x806A5DA0
+	.bss        start:0x806A5D58 end:0x806A5D9C
 	.sdata      start:0x8074CB70 end:0x8074CBA0 align:4
 	.sbss       start:0x8074F040 end:0x8074F050 align:4
 
@@ -2980,8 +2983,10 @@ dol/mLib/m_mtx.cpp:
 
 dol/mLib/m_allocator.cpp:
 	.text       start:0x802AE4F0 end:0x802AE810
-	.data       start:0x80523C78 end:0x80523C90
-	.sdata2     start:0x80752930 end:0x80752938 align:4
+	.data       start:0x80523C78 end:0x80523CF0
+	.sdata      start:0x8074CBA8 end:0x8074CBB0
+	.sbss       start:0x8074F068 end:0x8074F070 align:4
+	.sdata2     start:0x80752930 end:0x80752938
 
 dol/mLib/m_3d.cpp:
 	.text       start:0x802AE810 end:0x802B363C

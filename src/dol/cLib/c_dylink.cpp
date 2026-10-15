@@ -1,11 +1,14 @@
-#include <cstdio>
 #include <game/cLib/c_dylink.hpp>
+#include <lib/revolution/OS/OSContext.h>
 #include <runtime/rel.h>
+#include <cstdio>
 
 DynamicModuleControlBase *DynamicModuleControlBase::mFirst;
 DynamicModuleControlBase *DynamicModuleControlBase::mLast;
 
+// 802AA11C
 DynamicModuleControlBase::~DynamicModuleControlBase() {
+    forceUnlink();
     if (mpPrev != nullptr) {
         mpPrev->mpNext = mpNext;
     }
@@ -22,6 +25,7 @@ DynamicModuleControlBase::~DynamicModuleControlBase() {
     mpPrev = nullptr;
 }
 
+// 802AA1D8
 DynamicModuleControlBase::DynamicModuleControlBase() : mUsageCount(0), mLinkCount(0), mpNext(nullptr) {
     if (mFirst == nullptr) {
         mFirst = this;
@@ -33,6 +37,7 @@ DynamicModuleControlBase::DynamicModuleControlBase() : mUsageCount(0), mLinkCoun
     mLast = this;
 }
 
+// 802AA220
 bool DynamicModuleControlBase::link() {
     if (mUsageCount == 0) {
         // Only load and link if this module isn't already loaded
@@ -50,17 +55,18 @@ bool DynamicModuleControlBase::link() {
     return true;
 }
 
-// [Deadstripped, but was presumably here because of the weak virtuals]
+// 802AA2B4
 bool DynamicModuleControlBase::unlink() {
-    mUsageCount--;
-    if (mUsageCount == 0) {
-        do_unlink();
-        mLinkCount--;
-        do_unload();
+    if (mUsageCount != 0) {
+        if (--mUsageCount == 0) {
+            do_unlink();
+            do_unload();
+        }
     }
     return true;
 }
 
+// 802AA320
 bool DynamicModuleControlBase::load_async() {
     if (mUsageCount == 0) {
         return do_load_async();
@@ -68,21 +74,36 @@ bool DynamicModuleControlBase::load_async() {
     return true;
 }
 
-void DynamicModuleControlBase::dump() {}
+// 802AA344
+bool DynamicModuleControlBase::forceUnlink() {
+    if (mUsageCount != 0) {
+        mUsageCount = 0;
+        do_unlink();
+        do_unload();
+    }
+    return true;
+}
 
-size_t DynamicModuleControlBase::getModuleSize() const {
-    return 0;
+// 802AA3A8
+void DynamicModuleControlBase::dumpAll() {
+    for (DynamicModuleControlBase *module = mFirst; module != nullptr; module = module->mpNext) {
+        u16 links = module->mLinkCount;
+        u16 usage = module->mUsageCount;
+        if (links != 0 || usage != 0) {
+            module->getModuleSize();
+            module->getModuleName();
+            module->dump();
+        }
+    }
 }
 
 const char *DynamicModuleControl::sModulesDir = "/rels";
 
 size_t DynamicModuleControl::sAllocBytes;
 EGG::DvdFile *DynamicModuleControl::sDvdFile;
-mDvd_toMainRam_c *sDvdCommand;
 EGG::ExpHeap *DynamicModuleControl::sDylinkHeap;
-size_t DynamicModuleControl::sHeapMinAllocatableSize;
-size_t DynamicModuleControl::sHeapMinTotalFreeSize;
 
+// 802AA434
 DynamicModuleControl::DynamicModuleControl(const char *name, EGG::ExpHeap *heap) : DynamicModuleControlBase(),
     mpModule(nullptr),
     mpBss(nullptr),
@@ -93,46 +114,26 @@ DynamicModuleControl::DynamicModuleControl(const char *name, EGG::ExpHeap *heap)
     mChecksum(0),
     mModuleSize(0),
     mpDvdCallback(nullptr),
-    mpHeap(heap),
-    mDebugMapFile() {
+    mpHeap(heap) {
 }
 
+// 802AA4B4
 DynamicModuleControl::~DynamicModuleControl() {}
 
-const char *DynamicModuleControl::getModuleName() const {
-    return mModuleName;
-}
-
+// 802AA50C
 void DynamicModuleControl::initialize(EGG::ExpHeap *heap) {
     sDylinkHeap = heap;
-
-    sDvdFile = (EGG::DvdFile *) heap->alloc(sizeof(EGG::DvdFile), 4);
-    new(sDvdFile) EGG::DvdFile();
+    sDvdFile = new(heap, 4) EGG::DvdFile();
     sAllocBytes = sizeof(EGG::DvdFile);
-
-    sHeapMinAllocatableSize = heap->getAllocatableSize(4);
-    sHeapMinTotalFreeSize = heap->getTotalFreeSize();
 }
 
+// 802AA554
 void *DynamicModuleControl::callback(void *self) {
     DynamicModuleControl *dmc = (DynamicModuleControl *) self;
     return (void *) dmc->do_load();
 }
 
-void DynamicModuleControl::checkHeapStatus() {
-    if (mpHeap != sDylinkHeap) {
-        return;
-    }
-    size_t allocatableSize = mpHeap->getAllocatableSize(4);
-    if (sHeapMinAllocatableSize > allocatableSize) {
-        sHeapMinAllocatableSize = allocatableSize;
-    }
-    size_t totalFreeSize = mpHeap->getTotalFreeSize();
-    if (sHeapMinTotalFreeSize > totalFreeSize) {
-        sHeapMinTotalFreeSize = totalFreeSize;
-    }
-}
-
+// 802AA564
 u16 calcSum2(const u16 *data, size_t count) {
     u16 sum = 0;
     while (count > 0) {
@@ -143,6 +144,7 @@ u16 calcSum2(const u16 *data, size_t count) {
     return sum;
 }
 
+// 802AA58C
 bool DynamicModuleControl::do_load() {
     // Check if already loaded
     if (mpModule != nullptr) {
@@ -164,27 +166,29 @@ retry_load:
     char buf[0x40];
     snprintf(buf, ARRAY_SIZE(buf), "%s/%sNP.rel", sModulesDir, mModuleName);
     if (mpModule == nullptr) {
-        sDvdCommand = mDvd_toMainRam_c::create(buf, 1, mpHeap);
-        if (sDvdCommand != nullptr) {
-            sDvdCommand->waitDone();
-            checkHeapStatus();
-            OSModuleHeader *module = (OSModuleHeader *) sDvdCommand->mpData;
-            sDvdCommand->mpData = nullptr;
-            mpModule = module;
-            sDvdCommand->destroy();
-            sDvdCommand = nullptr;
-
-            if (mpModule != nullptr) {
-                mModuleSize = 0;
-                mType = MODULE_TYPE_DVD;
+        if (sDvdFile != nullptr && sDvdFile->openFilename(buf)) {
+            size_t size = sDvdFile->getFileSize();
+            if (size != 0) {
+                size = ROUND_UP(size, 32);
+                mpModule = (OSModuleHeader *) mpHeap->alloc(size, 32);
+                if (mpModule != nullptr) {
+                    if (sDvdFile->readData(mpModule, size, 0) >= 0) {
+                        mModuleSize = 0;
+                        mType = MODULE_TYPE_DVD | 8;
+                    } else {
+                        mpHeap->free(mpModule);
+                        mpModule = nullptr;
+                    }
+                }
             }
+            sDvdFile->close();
         }
     }
     if (mpModule == nullptr) {
         return false;
     }
 
-    // [The following seems to be a leftover debug check to ensure the data was correctly read]
+    // Retained checksum verification for load paths that set mModuleSize.
     if (mModuleSize > 0) {
         u16 actualChecksum = calcSum2((u16 *) mpModule, mModuleSize);
 
@@ -198,8 +202,7 @@ retry_load:
         // If the checksum fails, try to read the data 2 more times before quitting
         if (actualChecksum != mChecksum) {
             mLoadCount = 0;
-            if (attempts < 2) {
-                attempts++;
+            if (++attempts < 3) {
                 goto retry_load;
             }
             return false;
@@ -213,10 +216,10 @@ retry_load:
         }
     }
 
-    checkHeapStatus();
     return true;
 }
 
+// 802AA7AC
 bool DynamicModuleControl::do_load_async() {
     if (mpDvdCallback == nullptr) {
         if (mpModule != nullptr) {
@@ -225,7 +228,7 @@ bool DynamicModuleControl::do_load_async() {
         mpDvdCallback = mDvd_callback_c::create(callback, this);
     }
 
-    if (mpDvdCallback != nullptr && mpDvdCallback->mDone) {
+    if (mpDvdCallback != nullptr && mpDvdCallback->mDone == true) {
         mpDvdCallback->destroy();
         mpDvdCallback = nullptr;
         return true;
@@ -234,6 +237,7 @@ bool DynamicModuleControl::do_load_async() {
     return false;
 }
 
+// 802AA838
 bool DynamicModuleControl::do_unload() {
     if (mpModule != nullptr) {
         mpHeap->free(mpModule);
@@ -242,8 +246,10 @@ bool DynamicModuleControl::do_unload() {
     return true;
 }
 
+// 802AA88C
 void DynamicModuleControl::dump() {}
 
+// 802AA890
 bool DynamicModuleControl::do_link() {
     size_t fixSize;
     void *bssStart;
@@ -261,18 +267,20 @@ bool DynamicModuleControl::do_link() {
             goto fail;
         }
         mpBss = bss;
-        if (!OSLink(&mpModule->info, bss)) {
-            goto fail;
+        if (OSLink(&mpModule->info, bss)) {
+            goto linked;
         }
+        goto fail;
     } else if (fixSize + mpModule->bssSize < blockSize) {
         if (!OSLinkFixed(&mpModule->info, bssStart)) {
             goto fail;
         }
         mpHeap->resizeForMBlock(mpModule, fixSize + mpModule->bssSize);
     } else if (mpHeap->resizeForMBlock(mpModule, fixSize + mpModule->bssSize) > 0) {
-        if (!OSLinkFixed(&mpModule->info, bssStart)) {
-            goto fail;
+        if (OSLinkFixed(&mpModule->info, bssStart)) {
+            goto linked;
         }
+        goto fail;
     } else {
         void *bss = mpHeap->alloc(mpModule->bssSize, 0x20);
         if (bss == nullptr) {
@@ -284,17 +292,16 @@ bool DynamicModuleControl::do_link() {
         }
         mpHeap->resizeForMBlock(mpModule, fixSize);
     }
+linked:
     sAllocBytes += getModuleSize();
 
-    // Load map file
+    // The release build still formats the debug map path, but does not register it.
     char mapFileBuf[0x40];
     snprintf(mapFileBuf, ARRAY_SIZE(mapFileBuf), "%s/%sNP.map", "/maps", mModuleName);
-    mDebugMapFile.RegisterOnDvd(mapFileBuf, &mpModule->info);
 
     // Run prolog
     mPrologReturn = ((u32FctPtr) mpModule->prolog)();
 
-    checkHeapStatus();
     return true;
 
 fail:
@@ -310,10 +317,10 @@ fail:
     return false;
 }
 
+// 802AAAC8
 bool DynamicModuleControl::do_unlink() {
     ((voidFctPtr) mpModule->epilog)();
 
-    mDebugMapFile.Unregister();
     if (!OSUnlink(&mpModule->info)) {
         return false;
     }
@@ -326,6 +333,7 @@ bool DynamicModuleControl::do_unlink() {
     return true;
 }
 
+// 802AAB64
 size_t DynamicModuleControl::getModuleSize() const {
     if (mpModule != nullptr) {
         size_t size = EGG::ExpHeap::getSizeForMBlock(mpModule);
@@ -337,30 +345,30 @@ size_t DynamicModuleControl::getModuleSize() const {
     return 0;
 }
 
+// 802AABC0
 const char *DynamicModuleControl::getModuleTypeString() const {
     static const char *c_ModuleTypeStrings[] = { "????", "MEM", "ARAM", "DVD" };
     return c_ModuleTypeStrings[mType & 0b11];
 }
 
-DbMapFile::~DbMapFile() {
-    if (mpMapFile != nullptr) {
-        Unregister();
-    }
-}
+// 802AABD8
+void finalizeProlog() {}
 
-void DbMapFile::RegisterOnDvd(const char *path, const OSModuleInfo *moduleInfo) {
-    mpMapFile = nw4r::db::MapFile_RegistOnDvd(&mBuf, path, moduleInfo);
-}
-
-void DbMapFile::Unregister() {
-    nw4r::db::MapFile_Unregist(mpMapFile);
-    mpMapFile = nullptr;
-}
+// 802AABDC
+void finalizeEpilog() {}
 
 extern "C" {
 
-void ModuleUnresolved() {}
+// 802AABE0
+void ModuleUnresolved() {
+    u32 depth = 0;
+    u32 *frame = (u32 *) OSGetStackPointer();
+    while (frame != nullptr && frame != (u32 *) 0xFFFFFFFF && depth++ < 16) {
+        frame = (u32 *) *frame;
+    }
+}
 
+// 802AAC34
 void ModuleConstructorsX(voidFctPtr *ctors) {
     while (*ctors != nullptr) {
         (*ctors)();
@@ -368,6 +376,7 @@ void ModuleConstructorsX(voidFctPtr *ctors) {
     }
 }
 
+// 802AAC78
 void ModuleDestructorsX(voidFctPtr *dtors) {
     while (*dtors != nullptr) {
         (*dtors)();

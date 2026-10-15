@@ -1,25 +1,26 @@
 #include <game/mLib/m_allocator_dummy_heap.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <lib/egg/core/eggFrmHeap.h>
 
 mAllocatorDummyHeap_c *mAllocatorDummyHeap_c::m_instance;
+MEMiHeapHead *mAllocatorDummyHeap_c::m_heapHead;
 
-void *mAllocatorDummyHeap_c::AllocatorAllocForDummyHeap(MEMAllocator *, size_t) { return nullptr; }
+// 802AE4F0
+void *mAllocatorDummyHeap_c::AllocatorAllocForDummyHeap(MEMAllocator *, size_t) {
+    return nullptr;
+}
+
+// 802AE4F8
 void mAllocatorDummyHeap_c::AllocatorFreeForDummyHeap(MEMAllocator *, void *) {}
 
-mAllocatorDummyHeap_c::mAllocatorDummyHeap_c() {
+// 802AE4FC
+mAllocatorDummyHeap_c::mAllocatorDummyHeap_c() : EGG::Heap(m_heapHead) {
     m_instance = this;
 }
 
-mAllocatorDummyHeap_c::~mAllocatorDummyHeap_c() {}
-
-EGG::Heap::EHeapKind mAllocatorDummyHeap_c::getHeapKind() const {
-    return HEAP_KIND_NONE;
-}
-
+// 802AE540
 void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignment) {
-    const static MEMAllocatorFuncs sAllocatorFunc = {
+    static const MEMAllocatorFuncs sAllocatorFunc = {
         AllocatorAllocForDummyHeap,
         AllocatorFreeForDummyHeap
     };
@@ -29,39 +30,18 @@ void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignm
     allocator->heapParam2 = 0;
 }
 
-void *mAllocatorDummyHeap_c::alloc(size_t bytes, long alignment) {
-    return nullptr;
-}
-
-void mAllocatorDummyHeap_c::free(void *ptr) {}
-
-void mAllocatorDummyHeap_c::destroy() {}
-
-int mAllocatorDummyHeap_c::resizeForMBlock(void *ptr, size_t newSize) {
-    return 0;
-}
-
-u32 mAllocatorDummyHeap_c::getTotalFreeSize() {
-    return 0;
-}
-
-size_t mAllocatorDummyHeap_c::getAllocatableSize(long alignment) {
-    return 0;
-}
-
-size_t mAllocatorDummyHeap_c::adjust() {
-    return 0;
-}
-
+// 802AE560
 mAllocatorDummyHeap_c *mAllocatorDummyHeap_c::getInstance() {
     return m_instance;
 }
 
-mAllocator_c::mAllocator_c() : EGG::Allocator(mAllocatorDummyHeap_c::getInstance(), 4) {
-}
+// 802AE568
+mAllocator_c::mAllocator_c() : EGG::Allocator(mAllocatorDummyHeap_c::getInstance(), 4) {}
 
+// 802AE5B4
 mAllocator_c::~mAllocator_c() {}
 
+// 802AE60C
 bool mAllocator_c::attach(EGG::Heap *heap, int alignment) {
     if (heap == nullptr) {
         heap = EGG::Heap::getCurrentHeap();
@@ -72,59 +52,42 @@ bool mAllocator_c::attach(EGG::Heap *heap, int alignment) {
     return true;
 }
 
+// 802AE65C
 void *mAllocator_c::alloc(size_t size) {
     return EGG::Allocator::alloc(size);
 }
 
+// 802AE660
 void mAllocator_c::free(void *ptr) {
     EGG::Allocator::free(ptr);
 }
 
+// 802AE664
 void mAllocator_c::init(EGG::Heap *heap) {
     new(heap, 4) mAllocatorDummyHeap_c();
 }
 
-bool mHeapAllocator_c::createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt) {
+// 802AE69C
+bool mHeapAllocator_c::createExpHeap(size_t size, EGG::Heap *parent, const char *name, ulong align) {
     destroyHeap();
-    EGG::FrmHeap *heap = mHeap::createFrmHeap(size, parent, name, align, opt);
+    EGG::ExpHeap *heap = EGG::ExpHeap::create(size, parent, 0);
     if (heap == nullptr) {
         return false;
     }
-
     attach(heap, align);
+    if (name != nullptr) {
+        heap->setName(name);
+    }
     return true;
 }
 
+// 802AE724
 void mHeapAllocator_c::destroyHeap() {
-    EGG::Heap *dummyHeap = mAllocatorDummyHeap_c::getInstance();
-    if (mpHeap != dummyHeap) {
+    if (mpHeap != mAllocatorDummyHeap_c::getInstance()) {
         mpHeap->destroy();
-        mpHeap = dummyHeap;
+        mpHeap = mAllocatorDummyHeap_c::getInstance();
     }
 }
 
-size_t mHeapAllocator_c::adjustFrmHeap() {
-    EGG::Heap *dummyHeap = mAllocatorDummyHeap_c::getInstance();
-    if (mpHeap == dummyHeap) {
-        return 0;
-    }
-
-    EGG::FrmHeap *heap = EGG::Heap::dynamicCastToFrm(mpHeap);
-    return mHeap::adjustFrmHeap(heap);
-}
-
-bool mHeapAllocator_c::createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt) {
-    if (!createFrmHeap(size, parent, name, align, opt)) {
-        return false;
-    }
-
-    mHeap::saveCurrentHeap();
-    mHeap::setCurrentHeap(mpHeap);
-    return true;
-}
-
-size_t mHeapAllocator_c::adjustFrmHeapRestoreCurrent() {
-    mHeap::restoreCurrentHeap();
-    EGG::FrmHeap *heap = EGG::Heap::dynamicCastToFrm(mpHeap);
-    return mHeap::adjustFrmHeap(heap);
-}
+// 802AE780
+mAllocatorDummyHeap_c::~mAllocatorDummyHeap_c() {}

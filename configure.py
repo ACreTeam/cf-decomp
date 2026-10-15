@@ -598,7 +598,7 @@ config.libs = [
         "progress_category": "game",
         "objects": [
             Object(Matching, "dol/cLib/c_counter.cpp"),
-            Object(NonMatching, "dol/cLib/c_dylink.cpp"),
+            Object(Matching, "dol/cLib/c_dylink.cpp", extra_cflags=["-RTTI on", "-sym on"]),
             Object(Matching, "dol/cLib/c_lib.cpp"),
             Object(Matching, "dol/cLib/c_line.cpp"),
             # No verified City Folk split yet for c_m3d or c_owner_set.
@@ -641,9 +641,10 @@ config.libs = [
         "cflags": cflags_identified_game,
         "progress_category": "game",
         "objects": [
+            Object(Matching, "dol/mLib/m_dvd.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/mLib/m_heap.cpp"),
-            Object(NonMatching, "dol/mLib/m_mtx.cpp"),
-            Object(NonMatching, "dol/mLib/m_allocator.cpp"),
+            Object(Matching, "dol/mLib/m_mtx.cpp"),
+            Object(Matching, "dol/mLib/m_allocator.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/mLib/m_3d.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/mLib/m_3d/face_ex.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/mLib/m_angle.cpp"),
@@ -821,7 +822,7 @@ config.libs = [
             Object(Matching, "dol/game/d_post_box.cpp"),
             Object(Matching, "dol/game/d_quest.cpp"),
             Object(Matching, "dol/game/d_save_shops.cpp"),
-            Object(NonMatching, "dol/game/d_save_shop.cpp"),
+            Object(Matching, "dol/game/d_save_shop.cpp"),
             Object(Matching, "dol/game/d_save_shop_stalk_market.cpp"),
             Object(Matching, "dol/game/d_save_catherine.cpp"),
             Object(Matching, "dol/game/d_save_shop_tailor.cpp"),

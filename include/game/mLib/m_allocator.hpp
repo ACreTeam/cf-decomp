@@ -4,20 +4,20 @@
 #include <lib/egg/core/eggAllocator.h>
 
 /**
- * @brief An allocator class that wraps an EGG:Allocator .
+ * @brief An allocator class that wraps an EGG::Allocator.
  */
 class mAllocator_c : public EGG::Allocator {
 public:
-    mAllocator_c(); ///< Constructs a new allocator.
-    virtual ~mAllocator_c(); ///< Destroys the allocator.
+    mAllocator_c(); // 802AE568
+    virtual ~mAllocator_c(); // 802AE5B4
 
-    virtual void *alloc(size_t size);
-    virtual void free(void *ptr);
+    virtual void *alloc(size_t size) override; // 802AE65C
+    virtual void free(void *ptr) override; // 802AE660
 
-    bool attach(EGG::Heap *heap, int alignment);
+    bool attach(EGG::Heap *heap, int alignment); // 802AE60C
 
-    static void init(EGG::Heap *heap);
-};
+    static void init(EGG::Heap *heap); // 802AE664
+}; // size 0x1C
 
 /**
  * @brief An allocator with some helper functions that manage the heap
@@ -30,10 +30,6 @@ public:
     virtual ~mHeapAllocator_c() { destroyHeap(); } ///< Destroys the heap allocator.
 
     bool createExpHeap(size_t size, EGG::Heap *parent, const char *name, ulong align); // 802AE69C: name may be NULL
-    bool createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
-    bool createFrmHeapToCurrent(size_t size, EGG::Heap *parent, const char *name, ulong align, mHeap::AllocOptBit_t opt);
 
-    void destroyHeap(); ///< Destroys the underlying heap and replaces it with the dummy heap.
-    size_t adjustFrmHeap();
-    size_t adjustFrmHeapRestoreCurrent();
+    void destroyHeap(); // 802AE724: destroys the real heap and reattaches the dummy heap.
 };

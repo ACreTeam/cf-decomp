@@ -31,8 +31,8 @@ class dSaveShop_c { // 0xC4
 public:
     void clear();                                         // 80143FE8
     void setStage(int stage);                             // 8014406C: also posts the opening notice
-    BOOL isUpgradingToday();                              // 80144288
-    BOOL isUpgradingOnLastDay();                          // 801442F0
+    BOOL isUpgradingToday() const;                        // 80144288
+    BOOL isUpgradingOnLastDay() const;                    // 801442F0
     BOOL isOpen();                                        // 8014435C: by the stage's hours
     int getSalesGoal(int stage);                          // 801444B4
     void processDays(int days);                           // 80144504: daily, days since the last time
@@ -64,7 +64,8 @@ public:
     int getRank(u16 points);                              // 80146AC0
     u16 getPointsToNextRank(u16 points);                  // 80146B04
     void postNotices();                                   // 80146B90
-    static void initRates();                              // 80146D68
+
+    int getCountdown() const { return (u8)mCountdown; }
 
     /* 0x00 */ int mStage;     // SHOP_STAGE_*
     /* 0x04 */ int mNextStage;
