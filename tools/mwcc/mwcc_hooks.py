@@ -24,7 +24,7 @@ class TempTracker:
 
     def _on_temp_ret(self, p, ctx):
         obj = dbgcore.eax(ctx)
-        names = [dbgcore.funcname(p.u32(dbgcore.esp(ctx)))]
+        names = [dbgcore.funcname(p.preferred(p.u32(dbgcore.esp(ctx))))]
         for _, nm in dbgcore.callers(p, ctx, depth=0x600, limit=8)[1:]:
             if nm.rstrip('?') != names[-1].rstrip('?'):
                 names.append(nm)

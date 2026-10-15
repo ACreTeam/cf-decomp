@@ -161,8 +161,8 @@ def block_instrs(p, blk, pre, labels):
 
 def snapshot(p, labels=None):
     """([(block, [(instr, text)])], labels) for the whole function."""
-    pre = p.u8(PRE_RA_FLAG) != 0
-    blocks, b = [], p.u32(PCODE_BLOCKS)
+    pre = p.u8(p.runtime(PRE_RA_FLAG)) != 0
+    blocks, b = [], p.u32(p.runtime(PCODE_BLOCKS))
     while b and len(blocks) < 5000:
         blocks.append(b)
         b = p.u32(b)
@@ -250,12 +250,12 @@ def main():
     def on_call(site):
         def h(p, ctx):
             st['site'] = None
-            fname = p.objname(p.u32(CUR_FUNC))
+            fname = p.objname(p.u32(p.runtime(CUR_FUNC)))
             if not ppat.search(CALLS[site]) or not fpat.search(fname):
                 return
             snap, labels = snapshot(p)
             st.update({'site': site, 'fname': fname, 'before': snap, 'labels': labels, 'fires': [],
-                       'cache': {}, 'pre': p.u8(PRE_RA_FLAG) != 0})
+                       'cache': {}, 'pre': p.u8(p.runtime(PRE_RA_FLAG)) != 0})
         return h
 
     def on_return(site):
@@ -293,9 +293,9 @@ def main():
             st['rules_seen'].add(key)
             print('--- rule table for %s (opcode: handlers in call order)' % CALLS[st['site']])
             for opc in range(0x1F0):   # Peephole_OptimizeBlocks clears 0x1F0 lists
-                node, hs = p.u32(RULES + 4 * opc), []
+                node, hs = p.u32(p.runtime(RULES + 4 * opc)), []
                 while node and len(hs) < 50:
-                    hs.append(rule_name(p.u32(node + 4)))
+                    hs.append(rule_name(p.preferred(p.u32(node + 4))))
                     node = p.u32(node)
                 if hs:
                     print('  %3d %-8s %s' % (opc, p.opname(opc), ' | '.join(hs)))
@@ -311,7 +311,7 @@ def main():
         if not st['site']:
             return
         instr = ctxreg(ctx, EBX)
-        st['call'] = (instr, p.u32(ctxreg(ctx, ESI) + 4), p.u32(instr + 8),
+        st['call'] = (instr, p.preferred(p.u32(ctxreg(ctx, ESI) + 4)), p.u32(instr + 8),
                       fmt_instr(p, instr, st['pre'], st['labels']))
 
     def on_rule_ret(p, ctx):

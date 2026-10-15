@@ -155,7 +155,7 @@ def pcode_defs_uses(p, cls_code=4):
     the PCode list (block: next +0, first instruction +0x14; instruction: next +0; operand effect u16 +2,
     bit 2 = write, bit 1 = read)."""
     defs, uses = {}, {}
-    b, guard = p.u32(PCODE_BLOCKS), 0
+    b, guard = p.u32(p.runtime(PCODE_BLOCKS)), 0
     while b and guard < 100000:
         i = p.u32(b + 0x14)
         while i and guard < 100000:
@@ -205,7 +205,7 @@ def main():
     counter = VREG_COUNT + 4 * cls
 
     def chain_names(p, ctx):
-        names = [dbgcore.funcname(dbgcore.eip(ctx))]
+        names = [dbgcore.funcname(p.preferred(dbgcore.eip(ctx)))]
         for _, nm in dbgcore.callers(p, ctx):
             if nm == 'CodeGen_Generator':
                 break
@@ -222,16 +222,16 @@ def main():
         st['match'] = bool(fpat.search(st['func']))
         tt.at_generator()
         if st['match']:
-            st.update(stmts={}, estack=[], vregs={}, phase='setup', last=p.u32(counter), order=None)
+            st.update(stmts={}, estack=[], vregs={}, phase='setup', last=p.u32(p.runtime(counter)), order=None)
             if not st['handlers']:
                 seen = set()
                 for i in range(len(ENODE_KINDS)):
-                    h = p.u32(EXPR_TABLE + 4 * i)
+                    h = p.preferred(p.u32(p.runtime(EXPR_TABLE + 4 * i)))
                     if dbgcore.TEXT_LO <= h < dbgcore.TEXT_HI:
                         seen.add(h)
                 st['handlers'] = sorted(seen)
                 for h in st['handlers']:
-                    p._saved.setdefault(h, p.rd(h, 1))
+                    p._saved.setdefault(h, p.rd(p.runtime(h), 1))
                     lazy_handlers[h] = on_expr
             for h in st['handlers']:
                 p.arm(h)
@@ -253,12 +253,12 @@ def main():
             text = expr_str(p, p.u32(s + 0xA), 0, d) if kind in (4, 5, 6, 7, 8, 15) and p.u32(s + 0xA) else ''
             st['stmts'][s] = (idx, line, ST_KINDS.get(kind, 'ST%d' % kind), text)
             s, idx = p.u32(s), idx + 1
-        st['last'] = p.u32(counter)
+        st['last'] = p.u32(p.runtime(counter))
 
     def on_expr(p, ctx):
         sp = dbgcore.esp(ctx)
         es = st['estack']
-        stmt = p.u32(CUR_STMT)
+        stmt = p.u32(p.runtime(CUR_STMT))
         while es and (es[-1][0] <= sp or es[-1][2] != stmt):
             es.pop()
         es.append((sp, dbgcore.arg(p, ctx, 1), stmt))
@@ -266,12 +266,12 @@ def main():
     def on_counter(p, ctx):
         if not st['match']:
             return
-        new = p.u32(counter)
+        new = p.u32(p.runtime(counter))
         last = st['last'] if st['last'] is not None else new - 1
         if not (last < new <= last + 4):
             st['last'] = new        # a reset (new function / class), not an allocation
             return
-        stmt = p.u32(CUR_STMT)
+        stmt = p.u32(p.runtime(CUR_STMT))
         if stmt:
             st['phase'] = 'codegen'
         elif st['phase'] == 'codegen':
@@ -293,7 +293,7 @@ def main():
         pass
 
     def on_select(p, ctx):
-        if not st['match'] or p.s8(REG_CLASS) != cls:
+        if not st['match'] or p.s8(p.runtime(REG_CLASS)) != cls:
             return
         node, order = p.u32(dbgcore.arg(p, ctx, 1)), []
         while node:
@@ -302,10 +302,10 @@ def main():
         st['order'] = {vr: i + 1 for i, vr in enumerate(order)}
 
     def on_commit(p, ctx):
-        if not st['match'] or p.s8(REG_CLASS) != cls:
+        if not st['match'] or p.s8(p.runtime(REG_CLASS)) != cls:
             return
         p.watching = False
-        lo, hi, base = p.u32(0x710274 + cls * 4), p.u32(VREG_COUNT + cls * 4), p.u32(NODES)
+        lo, hi, base = p.u32(p.runtime(0x710274 + cls * 4)), p.u32(p.runtime(VREG_COUNT + cls * 4)), p.u32(p.runtime(NODES))
         d = Dumper(p)
         defs, uses = pcode_defs_uses(p, 4 if cls == GPR else 3)
         rows = []

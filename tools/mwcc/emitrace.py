@@ -47,7 +47,7 @@ def main():
     st = {'fname': None}
 
     def on_emit(p, ctx):
-        fname = p.objname(p.u32(CUR_FUNC))
+        fname = p.objname(p.u32(p.runtime(CUR_FUNC)))
         if not fname or not fpat.search(fname):
             return
         if fname != st['fname']:

@@ -58,25 +58,42 @@ class _DE(ctypes.Structure):
 
 
 class Proc:
-    """Memory access into the debugged compiler."""
+    """Raw debuggee memory access. Use runtime() for static image addresses.
+
+    Scalar reads and returned pointers are never implicitly rebased. Breakpoint
+    APIs use preferred addresses; CPU contexts retain runtime register values.
+    """
 
     def __init__(self, hp):
         self.hp = hp
+        self.image_base = 0x400000
+        self.preferred_base = 0x400000
+        self.image_size = 0
         self._ops = {}
         self.watching = False   # hardware watchpoints active (see run's `watch`)
         self._saved = {}        # breakpoint address -> original byte
         self._armed = set()
 
+    def runtime(self, address):
+        """Convert a preferred-image (Ghidra) address to a debuggee address."""
+        return address + self.image_base - self.preferred_base
+
+    def preferred(self, address):
+        """Normalize an image code/data pointer for symbol lookup; leave other pointers alone."""
+        if self.image_base <= address < self.image_base + self.image_size:
+            return address - self.image_base + self.preferred_base
+        return address
+
     def arm(self, a):
         """Enable a breakpoint registered with run(..., lazy=...)."""
         if a in self._saved and a not in self._armed:
             self._armed.add(a)
-            self.wr(a, b'\xcc')
+            self.wr(self.runtime(a), b'\xcc')
 
     def disarm(self, a):
         if a in self._armed:
             self._armed.discard(a)
-            self.wr(a, self._saved[a])
+            self.wr(self.runtime(a), self._saved[a])
 
     def s32(self, a):
         return struct.unpack('<i', self.rd(a, 4))[0]
@@ -124,9 +141,9 @@ class Proc:
         """PCode opcode mnemonic."""
         if not self._ops:
             for i in range(520):
-                ent = OPTAB + i * 0x18
+                ent = self.runtime(OPTAB) + i * 0x18
                 nmp, idx = self.u32(ent), self.u32(ent + 4)
-                if 0x690000 < nmp < 0x6C0000 and idx < 1000 and idx not in self._ops:
+                if 0x690000 < self.preferred(nmp) < 0x6C0000 and idx < 1000 and idx not in self._ops:
                     self._ops[idx] = self.cstr(nmp, 20)
         return self._ops.get(op, '?%d' % op)
 
@@ -214,13 +231,13 @@ def callers(p, ctx, depth=0x1000, limit=24):
     the chain is currently in (this drops stale words left by calls that already returned); an indirect
     call can't be checked and is accepted (name marked with '?')."""
     raw = p.rd(esp(ctx), depth) or b''
-    cur = funcstart(eip(ctx))
+    cur = funcstart(p.preferred(eip(ctx)))
     out = []
     for off in range(0, len(raw) - 3, 4):
-        ra = struct.unpack_from('<I', raw, off)[0]
+        ra = p.preferred(struct.unpack_from('<I', raw, off)[0])
         if not TEXT_LO <= ra < TEXT_HI:
             continue
-        pre = p.rd(ra - 7, 7)
+        pre = p.rd(p.runtime(ra - 7), 7)
         if not pre or len(pre) < 7:
             continue
         direct = indirect = False
@@ -253,12 +270,24 @@ def run(argv, handlers, cwd=None, lazy=None, watch=None):
         argv = argv[1:]  # debug the compiler itself, not the wrapper
     lazy = {} if lazy is None else lazy   # may grow while running (register p._saved too)
     watch = list(watch or [])[:4]
+    # Read the PE bounds, not a guessed range: scalar reads and heap pointers remain raw.
+    with open(argv[0], 'rb') as exe:
+        exe.seek(0x3C)
+        pe = struct.unpack('<I', exe.read(4))[0]
+        exe.seek(pe + 24)
+        optional = exe.read(60)
+    if struct.unpack_from('<H', optional)[0] != 0x10B:
+        raise RuntimeError('dbgcore requires a PE32 compiler')
+    preferred_base = struct.unpack_from('<I', optional, 28)[0]
+    image_size = struct.unpack_from('<I', optional, 56)[0]
     si, pi = _SI(), _PI()
     si.cb = ctypes.sizeof(_SI)
     if not k.CreateProcessW(None, ctypes.create_unicode_buffer(subprocess.list2cmdline(argv)), None, None, False, 2,
                             None, cwd, ctypes.byref(si), ctypes.byref(pi)):
         raise SystemExit('CreateProcess failed %d' % ctypes.get_last_error())
     p = Proc(pi.hp)
+    p.preferred_base = preferred_base
+    p.image_size = image_size
     saved, stepping, started = p._saved, {}, False
     exit_code = W.DWORD(0)
     de = _DE()
@@ -274,7 +303,7 @@ def run(argv, handlers, cwd=None, lazy=None, watch=None):
         if watch:   # (re)load the debug registers on every stop, so p.watching takes effect
             dr7 = 0
             for i, (a, _) in enumerate(watch):
-                struct.pack_into('<I', ctx, CTX_DR[i], a)
+                struct.pack_into('<I', ctx, CTX_DR[i], p.runtime(a))
                 if p.watching:
                     dr7 |= (1 << (2 * i)) | (0b1101 << (16 + 4 * i))  # local enable; RW=01 write, LEN=11 4 bytes
             struct.pack_into('<I', ctx, CTX_DR6, 0)
@@ -284,14 +313,19 @@ def run(argv, handlers, cwd=None, lazy=None, watch=None):
 
     while k.WaitForDebugEvent(ctypes.byref(de), 0xFFFFFFFF):
         status = 0x00010002  # DBG_CONTINUE
-        if de.code == 1:  # exception
+        if de.code == 3:  # CREATE_PROCESS_DEBUG_EVENT (64-bit host layout)
+            p.image_base = struct.unpack_from('<Q', bytes(de.u), 24)[0]
+        elif de.code == 1:  # exception
             code, = struct.unpack_from('<I', bytes(de.u), 0)
             addr, = struct.unpack_from('<Q', bytes(de.u), 16)
+            addr = p.preferred(addr)
             if code in (0x80000003, 0x4000001F):  # breakpoint (native / WOW64)
                 if not started and addr not in saved:
                     started = True  # the loader's initial breakpoint: arm ours
                     for a in list(handlers) + list(lazy):
-                        saved[a] = p.rd(a, 1)
+                        saved[a] = p.rd(p.runtime(a), 1)
+                        if not saved[a]:
+                            raise RuntimeError("Cannot read compiler breakpoint at %08X" % a)
                     for a in handlers:
                         p.arm(a)
                 elif addr in saved:
@@ -299,11 +333,11 @@ def run(argv, handlers, cwd=None, lazy=None, watch=None):
                     if addr in p._armed:
                         (handlers.get(addr) or lazy[addr])(p, ctx)
                     if addr in p._armed:   # restore, single-step, re-arm
-                        p.wr(addr, saved[addr])
+                        p.wr(p.runtime(addr), saved[addr])
                         stepping[de.tid] = addr
                         fl, = struct.unpack_from('<I', ctx, CTX_EFLAGS)
                         struct.pack_into('<I', ctx, CTX_EFLAGS, fl | 0x100)
-                    struct.pack_into('<I', ctx, CTX_EIP, addr)
+                    struct.pack_into('<I', ctx, CTX_EIP, p.runtime(addr))
                     put_ctx(ht, ctx)
                 else:
                     status = 0x80010001
@@ -313,7 +347,7 @@ def run(argv, handlers, cwd=None, lazy=None, watch=None):
                 if de.tid in stepping:
                     a = stepping.pop(de.tid)
                     if a in p._armed:
-                        p.wr(a, b'\xcc')
+                        p.wr(p.runtime(a), b'\xcc')
                 for i, (_, h) in enumerate(watch):
                     if dr6 & (1 << i):
                         h(p, ctx)

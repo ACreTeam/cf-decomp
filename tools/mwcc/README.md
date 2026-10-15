@@ -63,3 +63,20 @@ python tools/mwcc/variants.py src/d_fish_fieldNP/d_fish_field.cpp rewrites.py -f
   then read the GC 1.2.5 decompilation (github.com/rayanht/mwcc) next to Ghidra's `mwcceppc.exe`.
 
 Tools must not leave per-run folders in `build/mwcc_tools`: objdiff watches the project tree, and thousands of leftover files there made the objdiff GUI freeze when refocused. Fixed-name output folders (`regalloc/`, `peephole/`, ...) are fine; anything created per run gets deleted at the end.
+
+### Relocated compiler images
+
+The debugger reads the compiler's loaded base from the process creation event and
+its preferred base and image size from the PE header. No patched compiler or
+launcher is needed when Windows relocates it. `regalloc.py` uses the same debugger
+core as the other tools.
+
+When adding a hook, breakpoint keys, `arm`/`disarm` addresses, and hardware watch
+addresses use preferred (Ghidra) addresses. Memory methods and CPU contexts use
+runtime addresses: read a static global with `p.u32(p.runtime(GLOBAL))`. Pointers
+read from the debuggee are already runtime addresses. Use `p.preferred(pointer)`
+for symbol lookup, static code-range checks, or registering a dynamically found
+function as a breakpoint. Never rebase arbitrary integer values.
+
+Run the address-translation regression tests with
+`python -m unittest discover -s tools/mwcc -p "test_*.py"`.

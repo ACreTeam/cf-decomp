@@ -107,14 +107,14 @@ def main():
         st['list'] = {o: (i, n - i) for i, o in enumerate(objs)}
 
     def on_slot(p, ctx):
-        if p.u8(FIRST_PASS_FLAG):
+        if p.u8(p.runtime(FIRST_PASS_FLAG)):
             return       # the final re-layout: read at BP_AFTER_LAYOUT instead
         obj = dbgcore.arg(p, ctx, 1)
         info = p.u32(obj + 0x40) if p.u8(obj + 2) == 1 else 0
         if info and p.u8(info + 0xE) & 0x20:
             return       # already has a slot (the allocator returns at once)
-        caller = dbgcore.funcname(p.u32(dbgcore.esp(ctx)))
-        stmt = p.u32(CUR_STMT)
+        caller = dbgcore.funcname(p.preferred(p.u32(dbgcore.esp(ctx))))
+        stmt = p.u32(p.runtime(CUR_STMT))
         line = struct.unpack('<i', p.rd(stmt + 0x1E, 4))[0] if stmt else None
         st['slots'].append({'obj': obj, 'caller': caller, 'line': line, 'seq': len(st['slots'])})
 
@@ -122,7 +122,7 @@ def main():
         if not st['match']:
             return
         d = Dumper(p)
-        base = p.u32(LINKAGE) + p.u32(OUTGOING)
+        base = p.u32(p.runtime(LINKAGE)) + p.u32(p.runtime(OUTGOING))
         rows = []
         for s in st['slots']:
             obj = s['obj']

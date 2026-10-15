@@ -1,6 +1,6 @@
 """Watch MWCC's register allocator work on one function (Windows only).
 
-A minimal Win32 debugger: it runs the real GC 3.0a5.2 compiler on a source file (with the unit's ninja
+Using dbgcore, it runs the real GC 3.0a5.2 compiler on a source file (with the unit's ninja
 flags), stops in the graph-colouring register allocator, and prints, for each function whose name
 matches:
   - the final assignment: virtual register -> physical register, flags, degree, spill cost and the source
@@ -28,17 +28,15 @@ Coloring_CommitAssignments 00596F90, Coloring_SelectColors 005970E0, Coloring_Si
 Originally built in the fish REL phase 4 (agent D).
 """
 import argparse
-import ctypes
 import itertools
-import ctypes.wintypes as W
 import os
 import re
 import struct
-import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mwcc_cmd  # noqa: E402
+import dbgcore  # noqa: E402
 
 # --- compiler internals (GC 3.0a5.2) ---
 BP_ALLOC, BP_COMMIT, BP_SELECT, BP_SIMP = 0x596DF0, 0x596F90, 0x5970E0, 0x597300
@@ -48,65 +46,7 @@ VREG_LO, VREG_HI = 0x710274, 0x716EA0   # per-class first / end virtual register
 USED_PHYS = 0x70F2E0        # per-class 32-byte "physical register used" table
 PCODE_BLOCKS = 0x7108C8     # first PCode basic block
 OPTAB = 0x6A290C            # opcode info table (name pointer, index)
-NAME_OFF, NAMESTR_OFF = 0xC, 0xA   # Object -> HashNameNode -> chars
-CTX_SIZE = 716              # WOW64_CONTEXT
 GPR_CLASS = 4
-
-k = ctypes.WinDLL('kernel32', use_last_error=True)
-
-
-class SI(ctypes.Structure):
-    _fields_ = [('cb', W.DWORD), ('r', W.LPWSTR), ('d', W.LPWSTR), ('t', W.LPWSTR), ('x', W.DWORD * 8),
-                ('f', W.WORD), ('s', W.WORD), ('r2', ctypes.c_void_p), ('h1', W.HANDLE), ('h2', W.HANDLE),
-                ('h3', W.HANDLE)]
-
-
-class PI(ctypes.Structure):
-    _fields_ = [('hp', W.HANDLE), ('ht', W.HANDLE), ('pid', W.DWORD), ('tid', W.DWORD)]
-
-
-class DE(ctypes.Structure):
-    _fields_ = [('code', W.DWORD), ('pid', W.DWORD), ('tid', W.DWORD), ('pad', W.DWORD), ('u', ctypes.c_byte * 160)]
-
-
-class Proc:
-    def __init__(self, hp):
-        self.hp = hp
-
-    def rd(self, a, n):
-        b = ctypes.create_string_buffer(n)
-        r = ctypes.c_size_t()
-        if not k.ReadProcessMemory(self.hp, ctypes.c_void_p(a), b, n, ctypes.byref(r)):
-            return None
-        return b.raw[:r.value]
-
-    def wr(self, a, data):
-        r = ctypes.c_size_t()
-        k.WriteProcessMemory(self.hp, ctypes.c_void_p(a), data, len(data), ctypes.byref(r))
-        k.FlushInstructionCache(self.hp, ctypes.c_void_p(a), len(data))
-
-    def u32(self, a):
-        b = self.rd(a, 4)
-        return struct.unpack('<I', b)[0] if b else 0
-
-    def s16(self, a):
-        return struct.unpack('<h', self.rd(a, 2))[0]
-
-    def u16(self, a):
-        return struct.unpack('<H', self.rd(a, 2))[0]
-
-    def s8(self, a):
-        return struct.unpack('b', self.rd(a, 1))[0]
-
-    def cstr(self, a, n=200):
-        return (self.rd(a, n) or b'').split(b'\0')[0].decode('latin1')
-
-    def objname(self, o):
-        if not o:
-            return ''
-        nm = self.u32(o + NAME_OFF)
-        return self.cstr(nm + NAMESTR_OFF) if nm else '?'
-
 
 def simulate(order, neighbours, volatile=(0,) + tuple(range(3, 13)), callee_saved=tuple(range(31, 13, -1))):
     """Re-run Coloring_SelectColors: `order` is the colouring order (first coloured first), `neighbours`
@@ -241,24 +181,11 @@ def main():
         raise SystemExit('breakpoint addresses are only known for GC/3.0a5.2')
     outdir = os.path.join(mwcc_cmd.ROOT, 'build', 'mwcc_tools', 'regalloc')
     argv = mwcc_cmd.compile_argv(a.src, overlay=a.overlay, input_file=a.input, outdir=outdir)
-    if argv[0].lower().endswith('sjiswrap.exe'):
-        argv = argv[1:]  # debug the compiler itself (sjiswrap would be the debuggee otherwise)
-    cmdline = subprocess.list2cmdline(argv)
-
-    si, pi = SI(), PI()
-    si.cb = ctypes.sizeof(SI)
-    if not k.CreateProcessW(None, ctypes.create_unicode_buffer(cmdline), None, None, False, 2, None,
-                            mwcc_cmd.ROOT, ctypes.byref(si), ctypes.byref(pi)):
-        raise SystemExit('CreateProcess failed %d' % ctypes.get_last_error())
-    p = Proc(pi.hp)
-    bps, cur_func, stepping, graph = {}, [0], {}, {}
-
-    def setbp(addr):
-        bps[addr] = p.rd(addr, 1)
-        p.wr(addr, b'\xcc')
+    p = None
+    cur_func, graph = [0], {}
 
     def neighbours(vr):
-        n = p.u32(NODES) + vr * 0x1E
+        n = p.u32(p.runtime(NODES)) + vr * 0x1E
         me, e, out = p.s16(n + 0x10), p.u32(n + 0x1A), []
         while e:
             x, y = p.s16(e + 0xC), p.s16(e + 0xE)
@@ -270,17 +197,17 @@ def main():
         return p.objname(cur_func[0])
 
     def on_simplify(ctx):
-        if not fpat.search(name()) or p.s8(REG_CLASS) != GPR_CLASS:
+        if not fpat.search(name()) or p.s8(p.runtime(REG_CLASS)) != GPR_CLASS:
             return
-        used = p.rd(USED_PHYS + GPR_CLASS * 0x20, 32)
-        lo, hi, base = p.u32(VREG_LO + GPR_CLASS * 4), p.u32(VREG_HI + GPR_CLASS * 4), p.u32(NODES)
+        used = p.rd(p.runtime(USED_PHYS + GPR_CLASS * 0x20), 32)
+        lo, hi, base = p.u32(p.runtime(VREG_LO + GPR_CLASS * 4)), p.u32(p.runtime(VREG_HI + GPR_CLASS * 4)), p.u32(p.runtime(NODES))
         print('=== simplify %s: free physical %s, first vreg %d' % (name(), [i for i in range(32) if used[i] == 0], lo))
         print('   ', ' '.join('v%d:%d%s' % (x, p.s16(base + x * 0x1E + 0x16), 'C' if p.u16(base + x * 0x1E + 0x14) & 4 else '')
                              for x in range(lo, hi)
                              if p.s16(base + x * 0x1E + 0x16) > 0 or p.u16(base + x * 0x1E + 0x14) & 4))
 
     def on_select(ctx):
-        if not fpat.search(name()) or p.s8(REG_CLASS) != GPR_CLASS:
+        if not fpat.search(name()) or p.s8(p.runtime(REG_CLASS)) != GPR_CLASS:
             return
         esp = struct.unpack_from('<I', ctx, 196)[0]
         node, order = p.u32(esp + 4), []
@@ -298,14 +225,14 @@ def main():
     def opname(op, cache={}):
         if not cache:
             for i in range(520):
-                ent = OPTAB + i * 0x18
+                ent = p.runtime(OPTAB) + i * 0x18
                 nmp, idx = p.u32(ent), p.u32(ent + 4)
-                if 0x690000 < nmp < 0x6C0000 and idx < 1000 and idx not in cache:
+                if 0x690000 < p.preferred(nmp) < 0x6C0000 and idx < 1000 and idx not in cache:
                     cache[idx] = p.cstr(nmp, 20)
         return cache.get(op, '?%d' % op)
 
     def dump_pcode():
-        b, bn = p.u32(PCODE_BLOCKS), 0
+        b, bn = p.u32(p.runtime(PCODE_BLOCKS)), 0
         while b:
             print('  B%d:' % bn)
             bn += 1
@@ -327,10 +254,10 @@ def main():
     def on_commit(ctx):
         if not fpat.search(name()):
             return
-        cls = p.s8(REG_CLASS)
+        cls = p.s8(p.runtime(REG_CLASS))
         if cls != GPR_CLASS and not a.all_classes:
             return
-        lo, hi, base = p.u32(VREG_LO + cls * 4), p.u32(VREG_HI + cls * 4), p.u32(NODES)
+        lo, hi, base = p.u32(p.runtime(VREG_LO + cls * 4)), p.u32(p.runtime(VREG_HI + cls * 4)), p.u32(p.runtime(NODES))
         print('=== assignment %s, register class %d, vregs %d..%d' % (name(), cls, lo, hi - 1))
         if a.pcode and cls == GPR_CLASS:
             dump_pcode()
@@ -412,47 +339,26 @@ def main():
         print('  declaration order (declared later = lower number), then @ temporaries (inline results, CSE,')
         print('  strength reduction...) in reverse creation order. See notes/mwcc_ghidra.md 1b.')
 
-    first = True
-    de = DE()
-    while k.WaitForDebugEvent(ctypes.byref(de), 0xFFFFFFFF):
-        status = 0x00010002  # DBG_CONTINUE
-        if de.code == 1:  # exception
-            code, = struct.unpack_from('<I', bytes(de.u), 0)
-            addr, = struct.unpack_from('<Q', bytes(de.u), 16)
-            if code in (0x80000003, 0x4000001F):  # breakpoint (native / WOW64)
-                if first and addr not in bps:
-                    first = False
-                    for bp in (BP_ALLOC, BP_COMMIT, BP_SELECT, BP_SIMP):
-                        setbp(bp)
-                elif addr in bps:
-                    ht = k.OpenThread(0x1FFFFF, False, de.tid)
-                    ctx = ctypes.create_string_buffer(CTX_SIZE)
-                    struct.pack_into('<I', ctx, 0, 0x10007)
-                    k.Wow64GetThreadContext(W.HANDLE(ht), ctx)
-                    if addr == BP_ALLOC:
-                        esp = struct.unpack_from('<I', ctx, 196)[0]
-                        cur_func[0] = p.u32(esp + 4)
-                    elif addr == BP_SELECT and collect:
-                        on_select(ctx)
-                    elif addr == BP_SIMP and a.simplify:
-                        on_simplify(ctx)
-                    elif addr == BP_COMMIT:
-                        on_commit(ctx)
-                    p.wr(addr, bps[addr])                       # restore, single-step, re-arm
-                    struct.pack_into('<I', ctx, 184, addr)      # Eip
-                    fl, = struct.unpack_from('<I', ctx, 192)
-                    struct.pack_into('<I', ctx, 192, fl | 0x100)  # TF
-                    k.Wow64SetThreadContext(W.HANDLE(ht), ctx)
-                    stepping[de.tid] = addr
-                    k.CloseHandle(ht)
-            elif code in (0x80000004, 0x4000001E) and de.tid in stepping:  # single step done
-                p.wr(stepping.pop(de.tid), b'\xcc')
-            else:
-                status = 0x80010001  # DBG_EXCEPTION_NOT_HANDLED
-        elif de.code == 5:  # process exit
-            k.ContinueDebugEvent(de.pid, de.tid, status)
-            break
-        k.ContinueDebugEvent(de.pid, de.tid, status)
+    def on_alloc(proc, ctx):
+        nonlocal p
+        p = proc
+        cur_func[0] = dbgcore.arg(p, ctx, 1)
+
+    def callback(handler):
+        def wrapped(proc, ctx):
+            nonlocal p
+            p = proc
+            handler(ctx)
+        return wrapped
+
+    handlers = {BP_ALLOC: on_alloc, BP_COMMIT: callback(on_commit)}
+    if collect:
+        handlers[BP_SELECT] = callback(on_select)
+    if a.simplify:
+        handlers[BP_SIMP] = callback(on_simplify)
+    code = dbgcore.run(argv, handlers, cwd=mwcc_cmd.ROOT)
+    if code:
+        raise SystemExit('compiler exited with code %d' % code)
 
 
 if __name__ == '__main__':

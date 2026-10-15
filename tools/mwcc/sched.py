@@ -68,7 +68,7 @@ def main():
 
     def on_block(p, ctx):
         state['active'] = False
-        pre = p.u8(PRE_RA_FLAG) != 0
+        pre = p.u8(p.runtime(PRE_RA_FLAG)) != 0
         state['pre'] = pre
         if not pre and (not fpat.search(state['func']) or a.pre_ra_only):
             return
