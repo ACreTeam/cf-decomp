@@ -3053,10 +3053,13 @@ dol/mLib/m_fader_base.cpp:
 dol/mLib/m_wipe_fader.cpp:
 	.text       start:0x802B679C end:0x802B6ED4
 	.data       start:0x80524260 end:0x80524290 align:4
+	.sdata2     start:0x807529D8 end:0x80752A10
 
 dol/mLib/m_color_fader.cpp:
 	.text       start:0x802B6ED4 end:0x802B7230
-	.data       start:0x80524290 end:0x805242B4 align:4
+	.data       start:0x80524290 end:0x805242D0 align:4
+	.sdata      start:0x8074CC48 end:0x8074CC50
+	.sdata2     start:0x80752A10 end:0x80752A28 align:4
 
 dol/mLib/m_frustum.cpp:
 	.text       start:0x802B7230 end:0x802B77BC
@@ -3069,7 +3072,7 @@ dol/mLib/m_3d/m_3d_capture.cpp:
 dol/mLib/m_ef.cpp:
 	.text       start:0x802B7A6C end:0x802B8C1C
 	.ctors      start:0x804658D8 end:0x804658DC align:8
-	.data       start:0x805242C4 end:0x805243A0 align:4
+	.data       start:0x805242D0 end:0x805243A0 align:4
 	.bss        start:0x806A5EF8 end:0x806A5F10 align:4
 	.sbss       start:0x8074F0C0 end:0x8074F0D0 align:4
 

@@ -2,8 +2,6 @@
 #include <revolution/VI.h>
 #include <revolution/SC.h>
 
-mColorFader_c::~mColorFader_c() {}
-
 void mColorFader_c::setStatus(EStatus status) {
     if (status == OPAQUE) {
         mStatus = OPAQUE;
@@ -91,3 +89,5 @@ void mColorFader_c::draw() {
 
     GXEnd();
 }
+
+mColorFader_c::~mColorFader_c() {}

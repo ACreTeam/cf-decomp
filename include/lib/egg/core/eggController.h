@@ -6,8 +6,20 @@
 #include <lib/egg/math/eggVector.h>
 #include <revolution/PAD.h>
 #include <revolution/KPAD.h>
+#include <revolution/WPAD.h>
 
 namespace EGG {
+
+enum eCoreDevType {
+    cDEV_CORE = WPAD_DEV_CORE,
+    cDEV_FREESTYLE = WPAD_DEV_FREESTYLE,
+    cDEV_CLASSIC = WPAD_DEV_CLASSIC,
+    cDEV_FUTURE = WPAD_DEV_FUTURE,
+    cDEV_NOT_SUPPORTED = WPAD_DEV_NOT_SUPPORTED,
+    cDEV_NOT_FOUND = WPAD_DEV_NOT_FOUND,
+    cDEV_NULL = WPAD_DEV_NULL,
+    cDEV_UNKNOWN = WPAD_DEV_UNKNOWN
+};
 
 // Layouts from the Skyward Sword decompilation (zeldaret/ss, egg/core/eggController.h), adjusted to
 // CF's older EGG (KPADStatus is 0x84 bytes here, and the status array starts at 0x14).

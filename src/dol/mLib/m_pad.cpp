@@ -1,6 +1,7 @@
 // Based on the Skyward Sword decompilation (zeldaret/ss), m/m_pad.cpp
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_pad.hpp>
+#include <lib/egg/prim/eggBuffer.h>
 
 namespace mPad {
 
@@ -70,3 +71,6 @@ void endPad() {
 }
 
 } // namespace mPad
+
+// Retain the range-error callback used by the controller device-type buffer.
+template void EGG::TBuffer<EGG::eCoreDevType>::errRangeOver() const;
