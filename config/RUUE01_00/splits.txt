@@ -884,7 +884,7 @@ dol/game/d_nickname.cpp:
 	.data       start:0x804ECD38 end:0x804ECE38 align:4
 	.sdata      start:0x8074AE80 end:0x8074AE88 align:4
 
-dol/game/d_npc_notice.cpp:
+dol/game/d_notice.cpp:
 	.text       start:0x800EBB24 end:0x800ECD90
 	.rodata     start:0x80474DC8 end:0x80474F70 align:4
 	.data       start:0x804ECE38 end:0x804ECE68
@@ -1130,7 +1130,7 @@ dol/game/d_museum.cpp:
 dol/game/d_friend.cpp:
 	.text       start:0x8011A6C4 end:0x8011ACB4
 
-dol/game/d_notice.cpp:
+dol/game/d_sv_notice.cpp:
 	.text       start:0x8011ACB4 end:0x8011B400
 	.ctors      start:0x80465728 end:0x8046572C
 	.data       start:0x804EE4C0 end:0x804EE5D0

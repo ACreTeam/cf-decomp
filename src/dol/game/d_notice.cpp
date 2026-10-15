@@ -1,248 +1,323 @@
-// The town notice board (dNoticeBoard_c, 15 x dNotice_c) and noticeWord_c.
-// .text 8011ACB4..8011B400, sinit 8011B3B8. Notes: notes/d_notice.txt.
+#include <game/game/d_weather.hpp>
+// Bulletin board notices: posting BBS messages for dates, events and villagers, and the
+// town board note count. .text 800EBB24..800ECD90 (no static initializer).
+// Notes: notes/TUs/d_notice.txt.
+#include <game/game/d_event.hpp>
 #include <game/game/d_notice.hpp>
-#include <game/game/d_npc_notice.hpp>
+#include <game/game/d_save_data.hpp>
+#include <game/game/d_player_mgr.hpp>
+#include <game/game/d_letter.hpp>
+#include <game/game/d_script.hpp>
+#include <game/game/d_animal.hpp>
+#include <game/game/d_quest.hpp>
+#include <game/cLib/c_math.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <cstring>
+#include <game/game/d_net.hpp>
+
+namespace dNotice {
 
 // ---------------------------------------------------------------------------
-// dNotice_c
+// Bulletin board posting
 
-// 8011ACB4
-dNotice_c::dNotice_c() {}
+static u32 sNoteCount;   // lbl_8074E558
 
-// 8011ACC8
-dNotice_c::~dNotice_c() {}
+// 800EBB24
+void postNotice(u16 msgId, const char *group, const dTime_c *date, const void *sender) {
+    static dLetter::Word_c sWord;
 
-// 8011AD08
-dNotice_c &dNotice_c::operator=(const dNotice_c &other) {
-    memcpy(this, &other, sizeof(dNotice_c));
-    return *this;
-}
+    sWord.clear();
+    dLetter::loadBbsText(&sWord, msgId, group);
+    dNotice_c note;
 
-// 8011AD3C
-void dNotice_c::clear() {
-    memset(this, 0, sizeof(dNotice_c));
-}
-
-// 8011AD48
-void dNotice_c::init(const dTime_c *date) {
-    clear();
-    mFlags = 1;
-    mDate.set(date);
-}
-
-// 8011AD94
-void dNotice_c::setSender(const wchar_t *name) {
-    memcpy(mSender, name, sizeof(mSender));
-}
-
-// 8011AD9C
-void dNotice_c::setText(const wchar_t *text) {
-    memcpy(mText, text, sizeof(mText));
-}
-
-// 8011ADA8
-wchar_t *dNotice_c::getSender() {
-    return mSender;
-}
-
-// 8011ADAC
-wchar_t *dNotice_c::getText() {
-    return mText;
-}
-
-// 8011ADB4
-BOOL dNotice_c::isValid() {
-    return (u16)(mFlags & 1) != 0;
-}
-
-// 8011ADCC
-BOOL dNotice_c::isRead(int player) {
-    return (mFlags & (u16)(2 << player)) != 0;
-}
-
-// 8011ADF0
-void dNotice_c::setRead(int player) {
-    mFlags |= (u16)(2 << player);
-}
-
-// 8011AE0C
-void dNotice_c::clearRead(int player) {
-    mFlags &= ~(u16)(2 << player);
-}
-
-// 8011AE28
-u8 dNotice_c::getDay() {
-    return mDate.day;
-}
-
-// 8011AE30
-u8 dNotice_c::getMonth() {
-    return mDate.month;
-}
-
-// 8011AE38
-u16 dNotice_c::getYear() {
-    return mDate.year;
-}
-
-// 8011AE40
-BOOL dNotice_c::isFlag20() {
-    return (u16)(mFlags & 0x20) != 0;
-}
-
-// 8011AE58
-void dNotice_c::setFlag20() {
-    mFlags |= 0x20;
-}
-
-// ---------------------------------------------------------------------------
-// noticeWord_c
-
-// 8011AE68
-noticeWord_c::noticeWord_c() {
-    clear();
-}
-
-// 8011AEAC
-noticeWord_c::~noticeWord_c() {}
-
-// 8011AF04
-u32 noticeWord_c::getBufferSize() {
-    return sizeof(mBuffer);
-}
-
-// 8011AF0C
-wchar_t *noticeWord_c::getBuffer() {
-    return mBuffer;
-}
-
-// ---------------------------------------------------------------------------
-// dNoticeBoard_c
-
-// 8011AF14
-dNoticeBoard_c::dNoticeBoard_c() {}
-
-// 8011AF70
-void dNoticeBoard_c::clear() {
-    mHead = 0;
-    dNotice_c *notice = mNotices;
-    for (int i = 0; i < NOTICE_NUM; i++, notice++) {
-        notice->clear();
-    }
-    mTime.reset();
-}
-
-// 8011AFD8
-void dNoticeBoard_c::init() {
-    fn_800EBB24(1, "BBS_default", NULL, NULL);
-    fn_800EBB24(2, "BBS_default", NULL, NULL);
-    setTime(dTime_c::getCurrent());
-}
-
-// 8011B044
-dNotice_c *dNoticeBoard_c::getNotice(int i) {
-    return get(i);
-}
-
-// 8011B048
-dNotice_c *dNoticeBoard_c::get(int i) {
-    i += mHead;
-    if (i >= NOTICE_NUM) {
-        i -= NOTICE_NUM;
-    }
-    return &mNotices[i];
-}
-
-// 8011B06C
-dNotice_c *dNoticeBoard_c::at(int i) {
-    i += mHead;
-    if (i >= NOTICE_NUM) {
-        i -= NOTICE_NUM;
-    }
-    return &mNotices[i];
-}
-
-// 8011B090
-int dNoticeBoard_c::getNum() {
-    for (int i = 0; i < NOTICE_NUM; i++) {
-        if (!get(i)->isValid()) {
-            return i;
+    dTime_c time = *dTime_c::getCurrent();
+    if (date != NULL) {
+        time = *date;
+        if (time.year < 2000) {
+            time.year += 36;
+            time.normalize();
         }
     }
-    return NOTICE_NUM;
+    note.init(&time);
+    if (sender != NULL) {
+        note.setSender((const wchar_t *)sender);
+    }
+    dScript::Word_c *word = &sWord;
+    note.setText(word->getBuffer());
+    note.setFlag20();
+    dSaveData_c::getTown()->mNoticeBoard.add(&note);
+    sNoteCount++;
 }
 
-// 8011B0F4
-void dNoticeBoard_c::add(const dNotice_c *notice) {
-    int num = getNum();
-    if (num >= NOTICE_NUM) {
-        u8 head = mHead;
-        mHead++;
-        if (mHead >= NOTICE_NUM) {
-            mHead = 0;
+// 800EBCF4
+void addNotice(const dNotice_c *note) {
+    dSaveData_c::getTown()->mNoticeBoard.add(note);
+    sNoteCount++;
+}
+
+// 800EBD3C
+void removeNotice(u8 idx) {
+    dSaveData_c::getTown()->mNoticeBoard.remove(idx);
+}
+
+// 800EBD78
+dNotice_c *getNotice(int idx) {
+    return dSaveData_c::getRaw()->mNoticeBoard.getNotice(idx);
+}
+
+// 800EBDB4
+int getNoticeCount() {
+    return dSaveData_c::getRaw()->mNoticeBoard.getNum();
+}
+
+// 800EBDE0
+BOOL hasUnreadNotice() {
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
+    if (player == NULL) {
+        return TRUE;
+    }
+
+    dSaveData_c *save = dSaveData_c::getRaw();
+    int playerIdx = dPrivateData_c::find(save->mPlayers, &player->mPID);
+    if (playerIdx == -1) {
+        return FALSE;
+    }
+
+    int num = getNoticeCount();
+    for (int i = 0; i < num; i++) {
+        if (!save->mNoticeBoard.getNotice(i)->isRead(playerIdx)) {
+            return TRUE;
         }
-        mNotices[head] = *notice;
-    } else {
-        *at(num) = *notice;
+    }
+    return FALSE;
+}
+
+// 800EBEA4
+void setNoticeRead(int idx) {
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
+    dSaveTown_c *save = dSaveData_c::getTown();
+    int playerIdx = dPrivateData_c::find(save->mPlayers, &player->mPID);
+    if (playerIdx != -1) {
+        save->mNoticeBoard.setRead(idx, playerIdx);
     }
 }
 
-// 8011B180
-void dNoticeBoard_c::remove(int i) {
-    for (int j = i; j < NOTICE_NUM - 1; j++) {
-        dNotice_c *dst = at(j);
-        *dst = *at(j + 1);
+// 800EBF14
+BOOL isNoticeRead(int idx) {
+    dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
+    dSaveData_c *save = dSaveData_c::getRaw();
+    int playerIdx = dPrivateData_c::find(save->mPlayers, &player->mPID);
+    if (playerIdx == -1) {
+        return TRUE;
     }
-    at(NOTICE_NUM - 1)->clear();
+    return save->mNoticeBoard.getNotice(idx)->isRead(playerIdx);
 }
 
-// 8011B204
-void dNoticeBoard_c::sort(int count) {
-    if (count > 1) {
-        if (count > NOTICE_NUM) {
-            count = NOTICE_NUM;
+// Fixed-date notices (lbl_80474DC8): month, day, message.
+struct DateNotice_c {
+    u8 mMonth;
+    u8 mDay;
+    u16 mMsgId;
+};
+
+static const DateNotice_c sDateNotices[12] = {
+    {1, 1, 1},   {1, 15, 2},  {3, 15, 3},  {5, 6, 4},   {7, 1, 5},    {11, 12, 6},
+    {12, 9, 7},  {2, 7, 14},  {12, 20, 21}, {12, 24, 22}, {12, 27, 23}, {12, 31, 24},
+};
+
+// 800EBF94
+void postDateNotices(const dTime_c &day) {
+    const DateNotice_c *notice = sDateNotices;
+    for (int i = 0; i < 12; i++, notice++) {
+        if (day.month + 1 == notice->mMonth && day.mday == notice->mDay) {
+            postNotice(notice->mMsgId, "BBS_event", &day, NULL);
         }
-        int num = getNum();
-        dNotice_c tmp;
-        dNotice_c *a, *b;
-        for (int i = num - count; i < num - 1; i++) {
-            a = at(i);
-            for (int j = i + 1; j < num; j++) {
-                b = at(j);
-                if (a->mDate.compare(&b->mDate) == 1) {
-                    tmp = *a;
-                    *a = *b;
-                    *b = tmp;
-                }
+    }
+    if (day.month + 1 == 2 && day.mday == 29) {
+        postNotice(0x21, "BBS_event", &day, NULL);
+    }
+}
+
+// 800EC060
+void postBirthdayNotices(const dTime_c &day) {
+    int i;
+    for (i = 0; i < 4; i++) {
+        dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
+        if (player->isBirthday(day)) {
+            dLetter::setPersonalName(1, &player->mPID);
+            postNotice(cM::rndInt(4) + 0x1C, "BBS_event", &day, NULL);
+        }
+    }
+
+    for (i = 0; i < 10; i++) {
+        dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(i);
+        if (animal != NULL && animal->mID.isValid() && day.month == (u8)animal->getBirthMonth() &&
+            day.mday == (u8)animal->getBirthDay()) {
+            dLetter::setAnmPersonalName(0, &animal->mID);
+            postNotice(cM::rndInt(3) + 0x19, "BBS_event", &day, NULL);
+        }
+    }
+}
+
+// Event notices (lbl_80474DF8): event id, which of sDays to check, message.
+struct EventNotice_c {
+    int mEvent;
+    int mDay;
+    u16 mMsgId;
+};
+
+static const EventNotice_c sEventNotices[31] = {
+    {0x0E, 3, 0x08}, {0x0E, 1, 0x09}, {0x0F, 3, 0x0A}, {0x0F, 1, 0x0B},
+    {0x11, 4, 0x0C}, {0x11, 1, 0x0D}, {0x18, 5, 0x0F}, {0x19, 4, 0x10},
+    {0x19, 1, 0x35}, {0x10, 1, 0x12}, {0x1A, 1, 0x22}, {0x1B, 1, 0x23},
+    {0x1C, 1, 0x24}, {0x2E, 0, 0x26}, {0x1D, 1, 0x27}, {0x1F, 1, 0x28},
+    {0x20, 1, 0x29}, {0x21, 5, 0x2A}, {0x22, 5, 0x2B}, {0x23, 1, 0x2C},
+    {0x27, 1, 0x2C}, {0x24, 0, 0x2D}, {0x25, 1, 0x2E}, {0x26, 0, 0x2F},
+    {0x28, 0, 0x30}, {0x2B, 1, 0x31}, {0x29, 1, 0x32}, {0x2D, 0, 0x25},
+    {0x2A, 1, 0x34}, {0x16, 2, 0x14}, {0x10, 4, 0x11},
+};
+
+static const dTime_c *sDays[10]; // lbl_805BF5D8
+
+// 800EC19C
+void postEventNotices(const dTime_c &day) {
+    dTime_c d1 = day;
+    d1.add(1, 0, 0, 0);
+    dTime_c d3 = day;
+    d3.add(3, 0, 0, 0);
+    dTime_c d5 = day;
+    d5.add(5, 0, 0, 0);
+    dTime_c d6 = day;
+    d6.add(6, 0, 0, 0);
+    dTime_c d7 = day;
+    d7.add(7, 0, 0, 0);
+
+    sDays[0] = &day;
+    sDays[1] = &d1;
+    sDays[2] = &d3;
+    sDays[3] = &d5;
+    sDays[4] = &d6;
+    sDays[5] = &d7;
+
+    for (int i = 0; i < 31; i++) {
+        if (dEvent::isEventOn(reinterpret_cast<const dQuestEvent_e &>(sEventNotices[i].mEvent), sDays[sEventNotices[i].mDay])) {
+            u16 msgId = sEventNotices[i].mMsgId;
+            if (sEventNotices[i].mEvent == 0x2D && ((dSaveData_c::getTown()->_0735C2 >> 4) & 0xF) == 9) {
+                msgId = 0x33;
+            }
+            if (sEventNotices[i].mEvent == 0x10 && sEventNotices[i].mDay == 4 && d6.mday > 7) {
+                msgId = 0;
+            }
+            if (msgId != 0) {
+                dLetter::setMonthName(2, sDays[sEventNotices[i].mDay]->month);
+                dLetter::setDayName(3, sDays[sEventNotices[i].mDay]->mday);
+                postNotice(msgId, "BBS_event", &day, NULL);
             }
         }
     }
 }
 
-// 8011B2F0
-void dNoticeBoard_c::setRead(int i, int player) {
-    at(i)->setRead(player);
-}
-
-// 8011B324
-dTime_c dNoticeBoard_c::getTime() {
-    return mTime.get();
-}
-
-// 8011B328
-void dNoticeBoard_c::setTime(const dTime_c *now) {
-    mTime.set(*now);
-    mTime.toDayStart();
-}
-
-// 8011B35C
-void dNoticeBoard_c::clearRead(int player) {
-    dNotice_c *notice = mNotices;
-    for (int i = 0; i < NOTICE_NUM; i++, notice++) {
-        notice->clearRead(player);
+// 800EC4B0
+void postOctoberNotice(const dTime_c &day) {
+    if (day.month == 9 && day.wday == 1 && day.mday >= 18 && day.mday <= 24) {
+        postNotice(0x13, "BBS_event", &day, NULL);
     }
 }
 
-static noticeWord_c sWord; // lbl_805F1430
+// 800EC4F8: a notice three days before the shop changes (save+0x683D0).
+void postShopNotice(const dTime_c &day) {
+    dTimeStamp_c *time = (dTimeStamp_c *)((u8 *)dSaveData_c::getTown() + 0x683D0);
+    if (!time->isNone()) {
+        dTime_c date = time->get();
+        date.add(-3, 0, 0, 0);
+        if (dTime_c::isSameDay(date, day)) {
+            dLetter::setStringWord(0, *(u32 *)((u8 *)dSaveData_c::getTown() + 0x630C0) + 0x2E, "sys_STRING/STR_Unit");
+            u16 msgId = cM::rndInt(2) + 1;
+            date = time->get();
+            dLetter::setMonthName(2, date.month);
+            dLetter::setDayName(3, date.mday);
+            postNotice(msgId, "BBS_tanukichi", &day, NULL);
+        }
+    }
+}
+
+// 800EC72C
+void postWeatherNotice(const dTime_c &day) {
+    BOOL offline = !dWeather::getPattern(&day);
+    if (offline) {
+        postNotice(0x20, "BBS_event", &day, NULL);
+    }
+}
+
+// 800EC77C
+void postDailyNotices(const dTime_c &day) {
+    postDateNotices(day);
+    postBirthdayNotices(day);
+    postEventNotices(day);
+    postOctoberNotice(day);
+    postShopNotice(day);
+}
+
+// 800EC7C8: posts the notices for every day since the board was last updated (up to 30).
+void updateNotices(const dTime_c &now) {
+    sNoteCount = 0;
+    dSaveTown_c *save = dSaveData_c::getTown();
+    dTime_c today = now;
+    dTime_c last = save->mNoticeBoard.getTime();
+    if (!dTime_c::isSameDay(today, last)) {
+        if (dTime_c::isSameOrBeforeDay(today, last)) {
+            last.add(1, 0, 0, 0);
+            dTime_c limit = today;
+            limit.add(-30, 0, 0, 0);
+            if (dTime_c::isSameOrBeforeDay(limit, last)) {
+                last = limit;
+            }
+            while (dTime_c::isSameOrBeforeDay(today, last)) {
+                postDailyNotices(last);
+                last.add(1, 0, 0, 0);
+            }
+            postWeatherNotice(now);
+        } else {
+            postDailyNotices(now);
+            postWeatherNotice(now);
+        }
+    }
+    save->mNoticeBoard.setTime(&now);
+}
+
+// 800ECC78
+void sortNewNotices() {
+    if ((int)sNoteCount > 1) {
+        dSaveTown_c *town = dSaveData_c::getTown();
+        town->mNoticeBoard.sort(sNoteCount);
+    }
+}
+
+// 800ECCB4
+void receiveAddNotice(int unused, const void *data) {
+    dNotice_c note;
+    cLib::memCpy(&note, data, sizeof(dNotice_c));
+    addNotice(&note);
+}
+
+// 800ECD08
+void sendAddNotice(const void *data) {
+    dNet::beginPacket();
+    dNet::addPacket(data, 0x19A);
+    dNet::sendPacket(NET_PACKET_NOTICE_ADD, NET_MEMBER_NONE);
+}
+
+// 800ECD4C
+void receiveRemoveNotice(int unused, const u8 *data) {
+    removeNotice(*data);
+}
+
+// 800ECD54
+void sendRemoveNotice(u8 idx) {
+    u8 data = idx;
+    dNet::beginPacket();
+    dNet::addPacket(&data, 1);
+    dNet::sendPacket(NET_PACKET_NOTICE_REMOVE, NET_MEMBER_NONE);
+}
+
+} // namespace dNotice

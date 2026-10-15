@@ -15,7 +15,7 @@
 #include <game/game/d_animal.hpp>
 #include <game/game/d_animal_id.hpp>
 #include <game/game/d_museum.hpp>
-#include <game/game/d_notice.hpp>
+#include <game/game/d_sv_notice.hpp>
 #include <game/game/d_save_check.hpp>
 #include <game/game/d_save_dl_item.hpp>
 #include <game/game/d_bug_off.hpp>

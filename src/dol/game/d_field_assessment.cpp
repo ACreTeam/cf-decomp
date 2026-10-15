@@ -27,7 +27,7 @@
 #include <game/game/d_museum.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_npc_info.hpp>
-#include <game/game/d_npc_notice.hpp>
+#include <game/game/d_notice.hpp>
 #include <game/game/d_personal_id.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_police_box.hpp>
@@ -3926,7 +3926,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     }
     dEvent::updateSchedule(today, days != 0);
     if (days != 0) {
-        fn_800EC7C8(&today);
+        dNotice::updateNotices(today);
     }
     dSaveData_c::getTown()->mFishing.update();
     dSaveData_c::getTown()->mBugOff.update();
@@ -4063,7 +4063,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     town->mVillagerMove.setAssessment(fgMngProc_assessLiveTown());
     sFgMngRandom = NULL;
     if (days != 0) {
-        fn_800ECC78();
+        dNotice::sortNewNotices();
     }
     dTime_c::resetOffset();
 }

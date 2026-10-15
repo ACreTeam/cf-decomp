@@ -18,7 +18,7 @@
 #include <revolution/OS/OSCache.h>
 #include <revolution/OS/OSTime.h>
 #include <game/game/d_player_mgr.hpp>
-#include <game/game/d_npc_notice.hpp>
+#include <game/game/d_notice.hpp>
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_hr.hpp>
 #include <game/game/d_letter.hpp>
@@ -2116,7 +2116,7 @@ void dPrivateData_c::buildVotedBridge() {
         }
     }
     if (x >= 0 && y >= 0) {
-        fn_800EBB24(2, "BBS_office", 0, 0);
+        dNotice::postNotice(2, "BBS_office", 0, 0);
         dSaveData_c::getTown()->mMainField.setBridgeBlock(x, y);
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         clearPublicWorksVotes();
@@ -2126,7 +2126,7 @@ void dPrivateData_c::buildVotedBridge() {
 
 // 8013B9F8
 void dPrivateData_c::buildFountain() {
-    fn_800EBB24(3, "BBS_office", 0, 0);
+    dNotice::postNotice(3, "BBS_office", 0, 0);
     dSTR::requestFountain();
     dSaveData_c::getTown()->clearFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
     clearPublicWorksVotes();
@@ -2143,9 +2143,9 @@ void dPrivateData_c::buildVotedBuilding() {
     if ((u8)tallyBuildingVotes() == 1) {
         if (!a) {
             if (b) {
-                fn_800EBB24(9, "BBS_office", 0, 0);
+                dNotice::postNotice(9, "BBS_office", 0, 0);
             } else {
-                fn_800EBB24(6, "BBS_office", 0, 0);
+                dNotice::postNotice(6, "BBS_office", 0, 0);
             }
             clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6B);
             dSTR::requestWindmill();
@@ -2156,9 +2156,9 @@ void dPrivateData_c::buildVotedBuilding() {
     } else {
         if (!b) {
             if (a) {
-                fn_800EBB24(0xA, "BBS_office", 0, 0);
+                dNotice::postNotice(0xA, "BBS_office", 0, 0);
             } else {
-                fn_800EBB24(5, "BBS_office", 0, 0);
+                dNotice::postNotice(5, "BBS_office", 0, 0);
             }
             clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6A);
             dSTR::requestLighthouse();
@@ -2206,18 +2206,18 @@ void dPrivateData_c::updatePublicWorks(int days) {
         dSaveData_c::getTown()->setFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE);
         switch (dSaveData_c::getPublicWorks()) {
         case 0:
-            fn_800EBB24(1, "BBS_office", 0, 0);
+            dNotice::postNotice(1, "BBS_office", 0, 0);
             break;
         case 2:
-            fn_800EBB24(4, "BBS_office", 0, 0);
+            dNotice::postNotice(4, "BBS_office", 0, 0);
             break;
         case 3: {
             int x, y;
             dItem::Item id((u16)BUILDING_WINDMILL);
             if (dSaveData_c::getRaw()->mBuilding.mList.getPos(&x, &y, &id, 1)) {
-                fn_800EBB24(8, "BBS_office", 0, 0);
+                dNotice::postNotice(8, "BBS_office", 0, 0);
             } else {
-                fn_800EBB24(7, "BBS_office", 0, 0);
+                dNotice::postNotice(7, "BBS_office", 0, 0);
             }
             break;
         }

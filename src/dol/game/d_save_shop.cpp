@@ -18,7 +18,7 @@
 #include <game/game/d_item_def.hpp>
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_field_assessment.hpp>
-#include <game/game/d_npc_notice.hpp>
+#include <game/game/d_notice.hpp>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
 #include <game/game/d_post_office.hpp>
@@ -115,7 +115,7 @@ void dSaveShop_c::setStage(int stage) {
     u16 msg = mStage + 10;
     dTime_c date = mStageDate.get();
     date.add(1, 0, 0, 0);
-    fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
+    dNotice::postNotice(msg, "BBS_tanukichi", &date, NULL);
 }
 
 // 80144288
@@ -228,7 +228,7 @@ void dSaveShop_c::updateStage(int days) {
                         dLetter::setDayName(3, mStageDate.get().mday);
                         dTime_c date = mStageDate.get();
                         date.add(-1, 0, 0, 0);
-                        fn_800EBB24(10, "BBS_tanukichi", &date, NULL);
+                        dNotice::postNotice(10, "BBS_tanukichi", &date, NULL);
                     } else {
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 9);
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
@@ -254,7 +254,7 @@ void dSaveShop_c::updateStage(int days) {
                         u16 msg = mStage + 10;
                         dTime_c date = mStageDate.get();
                         date.add(1, 0, 0, 0);
-                        fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
+                        dNotice::postNotice(msg, "BBS_tanukichi", &date, NULL);
                         mCountdown = 37;
                     }
                 } else {
@@ -309,7 +309,7 @@ void dSaveShop_c::updateStage(int days) {
             dLetter::setDayName(3, mStageDate.get().mday);
             dTime_c date = mStageDate.get();
             date.add(-1, 0, 0, 0);
-            fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
+            dNotice::postNotice(msg, "BBS_tanukichi", &date, NULL);
         }
     } else if (days < 0) {
         if (mUpgrading) {
@@ -763,7 +763,7 @@ void dSaveShop_c::addSales(int price, int flag) {
         u16 msg = mStage + 7;
         dLetter::setMonthName(2, mStageDate.get().month);
         dLetter::setDayName(3, mStageDate.get().mday);
-        fn_800EBB24(msg, "BBS_tanukichi", dTime_c::getCurrent(), NULL);
+        dNotice::postNotice(msg, "BBS_tanukichi", dTime_c::getCurrent(), NULL);
     }
 }
 
@@ -1016,7 +1016,7 @@ void dSaveShop_c::postNotices() {
     if (isSaleToday()) {
         u16 msg = cM::rndInt(2) + 3;
         dLetter::setHour(mSaleDate.get().hour, 4, 0);
-        fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
+        dNotice::postNotice(msg, "BBS_tanukichi", &date, NULL);
     }
 
     if (hasFrom6()) {
@@ -1030,7 +1030,7 @@ void dSaveShop_c::postNotices() {
                 }
             }
         }
-        fn_800EBB24(msg, "BBS_tanukichi", &date, NULL);
+        dNotice::postNotice(msg, "BBS_tanukichi", &date, NULL);
     }
 }
 

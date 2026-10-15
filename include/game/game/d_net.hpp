@@ -180,10 +180,10 @@ enum dNetPacket_e {
     NET_PACKET_POST_SYNC = 0x2D,
     // dPostOffice::sendMail (dMail_c) -> dPostOffice::onMailPacket
     NET_PACKET_MAIL = 0x2E,
-    // d_npc_notice fn_800ECD08: a dNotice_c (0x19A bytes) added to the notice
+    // d_notice dNotice::sendAddNotice: a dNotice_c (0x19A bytes) added to the notice
     // board
     NET_PACKET_NOTICE_ADD = 0x2F,
-    // d_npc_notice fn_800ECD54: a notice index removed from the board
+    // d_notice dNotice::sendRemoveNotice: a notice index removed from the board
     NET_PACKET_NOTICE_REMOVE = 0x30,
     // d_str: claim / grant of a structure slot (1 byte, bit 6 = granted) ->
     // fn_801689A0; hedged

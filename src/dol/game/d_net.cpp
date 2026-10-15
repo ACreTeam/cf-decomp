@@ -43,7 +43,7 @@
 #include <game/game/d_mii_icon.hpp>
 #include <game/game/d_nand.hpp>
 #include <game/game/d_net_mgr.hpp>
-#include <game/game/d_npc_notice.hpp>
+#include <game/game/d_notice.hpp>
 #include <game/game/d_obj_chat.hpp>
 #include <game/game/d_obj_voice.hpp>
 #include <game/game/d_pattern_copy.hpp>

@@ -2,6 +2,7 @@
 // .text 80113158..8011524C (__sinit 80115234), .data 804EE380..804EE398, .bss 805ED1D0..805ED570,
 // .sdata 8074B018..8074B040, .sbss 8074E6F0..8074E700, .sdata2 80750AE0..80750B60.
 #include <game/game/d_bug_off.hpp>
+#include <game/game/d_notice.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -19,7 +20,6 @@ extern "C" {
 }
 
 // C++ linkage (mangled in symbols.txt).
-void fn_800EBB24(u16 kind, const char *label, const dTime_c *time, const void *arg); // 800EBB24: post a notice
 BOOL fn_800F4C08(dAnimal_c *animal, int arg);                                        // 800F4C08
 
 // {kind, sub} range for fn_800C60B4.
@@ -196,9 +196,9 @@ void dBugOff_c::postResultNotice() {
     dLetter::setItemName(1, &item);
     if (dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isValid() &&
         !dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isFromTown()) {
-        fn_800EBB24(cM::rndInt(3) + 4, "BBS_insect", &postDate, NULL);
+        dNotice::postNotice(cM::rndInt(3) + 4, "BBS_insect", &postDate, NULL);
     } else {
-        fn_800EBB24(cM::rndInt(3) + 1, "BBS_insect", &postDate, NULL);
+        dNotice::postNotice(cM::rndInt(3) + 1, "BBS_insect", &postDate, NULL);
     }
 }
 

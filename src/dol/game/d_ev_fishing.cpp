@@ -13,7 +13,7 @@
 #include <game/game/d_item_sel.hpp>
 #include <game/game/d_letter.hpp>
 #include <game/game/d_npc.hpp>
-#include <game/game/d_npc_notice.hpp>
+#include <game/game/d_notice.hpp>
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_region.hpp>
 #include <game/cLib/c_math.hpp>
@@ -183,15 +183,15 @@ void dEvFishing_c::postResultNotice() {
     if (dSaveData_c::getRaw()->mFishing.getPlayer(0)->isValid() &&
         !dSaveData_c::getRaw()->mFishing.getPlayer(0)->isFromTown()) {
         if (!mFish.isValid()) {
-            fn_800EBB24(cM::rndInt(3) + 7, "BBS_fishing", &postDate, NULL);
+            dNotice::postNotice(cM::rndInt(3) + 7, "BBS_fishing", &postDate, NULL);
         } else {
-            fn_800EBB24(cM::rndInt(3) + 10, "BBS_fishing", &postDate, NULL);
+            dNotice::postNotice(cM::rndInt(3) + 10, "BBS_fishing", &postDate, NULL);
         }
     } else {
         if (!mFish.isValid()) {
-            fn_800EBB24(cM::rndInt(3) + 1, "BBS_fishing", &postDate, NULL);
+            dNotice::postNotice(cM::rndInt(3) + 1, "BBS_fishing", &postDate, NULL);
         } else {
-            fn_800EBB24(cM::rndInt(3) + 4, "BBS_fishing", &postDate, NULL);
+            dNotice::postNotice(cM::rndInt(3) + 4, "BBS_fishing", &postDate, NULL);
         }
     }
 }

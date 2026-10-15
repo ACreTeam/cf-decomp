@@ -1096,12 +1096,12 @@ void recvMail(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 // 800E001C: NET_PACKET_NOTICE_ADD (0x2F)
 void recvNoticeAdd(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800ECCB4(member, data);
+    dNotice::receiveAddNotice(member, data);
 }
 
 // 800E0020: NET_PACKET_NOTICE_REMOVE (0x30)
 void recvNoticeRemove(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    fn_800ECD4C(member, data);
+    dNotice::receiveRemoveNotice(member, data);
 }
 
 // 800E0024: NET_PACKET_CHAT (0x52)
