@@ -60,7 +60,7 @@ void dAcNpcNml_c::talk_c::endStyleReq(int arg) {
         if (mStylePlayer != NULL) {
             setPlayerName(mStylePlayer, 0);
             dAnimal_c *self = getAnimal();
-            u16 unit = self != NULL ? fn_800F3F38(mStylePlayer->getGender(), self->mID.getLooks(1)) : 0;
+            u16 unit = self != NULL ? dNpc::getPlayerUnitMessage(mStylePlayer->getGender(), self->mID.getLooks(1)) : 0;
             if (unit == 0) {
                 clearWord(1);
             } else {
@@ -79,7 +79,7 @@ BOOL dAcNpcNml_c::talk_c::stepStyleReq(int kind) {
         setChoiceNum(2);
         setChoiceCancel(1);
         showChoice();
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
@@ -178,7 +178,7 @@ int dAcNpcNml_c::talk_c::msgStyleQuest(msgInfo_s *info) {
     if (player1->isValid()) {
         setPlayerName(player1, 0);
         u8 gender = player1->getGender();
-        u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+        u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
         if (unit == 0) {
             clearWord(1);
         } else {
@@ -188,7 +188,7 @@ int dAcNpcNml_c::talk_c::msgStyleQuest(msgInfo_s *info) {
     if (player0->isValid()) {
         setPlayerName(player0, 2);
         u8 gender = player0->getGender();
-        u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+        u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
         if (unit == 0) {
             clearWord(3);
         } else {
@@ -199,8 +199,8 @@ int dAcNpcNml_c::talk_c::msgStyleQuest(msgInfo_s *info) {
     dString::Word_c topic(style->mTopicText);
     getController()->setWord(4, &topic);
     if (idx >= 1 && idx < 4) {
-        dNpcEntry_c *entry = getEntry();
-        BOOL noOffer = entry != NULL ? entry->_28C.mTalked != 0 : TRUE;
+        dNpc::entry_c *entry = getEntry();
+        BOOL noOffer = entry != NULL ? entry->mFlags.mTalked != 0 : TRUE;
         if (!noOffer) {
             return startQuestOffer(info, 9, &talk_c::endQuestCommon, &talk_c::stepStyleAsk, FALSE);
         }

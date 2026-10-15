@@ -98,7 +98,7 @@ void dSaveData_c::updateOnSave() {
     mBugOff.checkDay();
     mExtra.mDesignBoard.validate();
     dPlayerMgr::clearSaveRequestFlags();
-    fn_800F47F4();
+    dNpc::storeBufferedMovedAnimal();
     fgMngProc_clearFg94();
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
@@ -154,7 +154,7 @@ void dSaveData_c::setupAfterLoad() {
     u16 none = 0;
     dNet::setRecord(0x2A, &none, 0);
     dPrivateData_c::saveHostToTown();
-    fn_800F47F4();
+    dNpc::storeBufferedMovedAnimal();
     dPlayerMgr::Mgr_c::getCurrentPlayer()->clearFlag1(0x3D);
     clearAllRoomMaps();
     dSTR::resetLocks();

@@ -1040,10 +1040,10 @@ void dAcNpc_c::setPermitOwner(u32 player) {
     if (!isMultiPlay() || !isNetSync()) {
         return;
     }
-    dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
     if (permit != NULL) {
-        permit->set2(player);
-        fn_800F1948(&mNpcItem, player);
+        permit->setFallbackPlayer(player);
+        dNpc::sendPermitFallbackPlayer(&mNpcItem, player);
     }
 }
 
@@ -1055,11 +1055,11 @@ BOOL dAcNpc_c::setPermitState(u32 player) {
     if (player >= 4) {
         return FALSE;
     }
-    dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
     if (permit == NULL) {
         return FALSE;
     }
-    fn_800F1638(&mNpcItem, player);
+    dNpc::sendPermitState(&mNpcItem, player);
     permit->setState(player);
     return TRUE;
 }
@@ -1069,12 +1069,12 @@ BOOL dAcNpc_c::setPermitStateSelf() {
     if (!isMultiPlay() || !isNetSync()) {
         return TRUE;
     }
-    dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
     if (permit == NULL) {
         return FALSE;
     }
     int self = dNet::getMyNo();
-    fn_800F16B0(&mNpcItem, self);
+    dNpc::sendPermitSetState(&mNpcItem, self);
     permit->setState(self);
     return TRUE;
 }
@@ -1085,11 +1085,11 @@ BOOL dAcNpc_c::setPermitFlagSelf() {
     if (!isMultiPlay() || !isNetSync()) {
         return TRUE;
     }
-    dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
     if (permit == NULL) {
         return FALSE;
     }
-    fn_800F17D0(&mNpcItem);
+    dNpc::sendPermitQuery(&mNpcItem);
     permit->setFlag(self);
     return TRUE;
 }
@@ -1102,14 +1102,14 @@ BOOL dAcNpc_c::isPermitSelf() const {
     if (!isNetActive()) {
         return TRUE;
     }
-    dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
     if (permit == NULL) {
         return FALSE;
     }
-    if (!permit->fn_800F5000()) {
+    if (!permit->isOwnedByMe()) {
         return FALSE;
     }
-    BOOL self = dNet::getMyNo() == permit->mState;
+    BOOL self = dNet::getMyNo() == permit->mOwnerPlayer;
     return self;
 }
 
@@ -1167,29 +1167,29 @@ BOOL dAcNpc_c::isLocalOwner() const {
     if (mPermitState == 2) {
         return FALSE;
     }
-    dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
     if (permit == NULL) {
         return FALSE;
     }
-    return permit->fn_800F5000() != 0;
+    return permit->isOwnedByMe() != 0;
 }
 
 // 80013630
 void dAcNpc_c::saveDaub() {
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return;
     }
-    daub->_0C = dScene::getCurrentScene();
-    dNpcDaub_c::packXZ((u8 *)daub, &mPos);
-    daub->set08((const u16 *)&mAngle.y);
+    daub->mScene = dScene::getCurrentScene();
+    dNpc::daub_c::packXZ((u8 *)daub, &mPos);
+    daub->setAngleY((const u16 *)&mAngle.y);
     if (!mLookAt.mReset) {
-        daub->set0D(mLookAt.mPitch.mCur);
-        daub->set0F(mLookAt.mYaw.mCur);
+        daub->setHeadPitch(mLookAt.mPitch.mCur);
+        daub->setHeadYaw(mLookAt.mYaw.mCur);
     }
-    daub->mFlag = 1;
+    daub->mValid = 1;
     if (isNetActive() && isLocalOwner()) {
-        dNpc::daubMng_c *mng = fn_800EFBDC(&mNpcItem.mId);
+        dNpc::daubMng_c *mng = dNpc::getDaubManagerByKey(&mNpcItem.mId);
         if (mng != NULL) {
             int id = mng->keyToId(&mNpcItem.mId);
             if (id != 0xBA) {
@@ -1211,11 +1211,11 @@ void dAcNpc_c::clearNetSync() {
 
 // 80013730
 BOOL dAcNpc_c::getPermitPlayers(int *owner, int *player) const {
-    if (fn_800EFE6C(&mNpcItem.mId)) {
-        dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+    if (dNpc::getReceivedDaub(&mNpcItem.mId)) {
+        dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
         if (permit != NULL) {
-            u8 state = permit->mState;
-            u8 other = permit->_2;
+            u8 state = permit->mOwnerPlayer;
+            u8 other = permit->mFallbackPlayer;
             if (state < 4) {
                 *owner = state;
                 *player = state;
@@ -1250,12 +1250,12 @@ BOOL dAcNpc_c::isInUse(int *player) const {
 // 80013864
 BOOL dAcNpc_c::getDaubPos(mVec3_c *pos, mAng *angleY) const {
     if (isNetSync()) {
-        const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+        const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
         if (src != NULL) {
-            dNpcDaub_c daub(*src);
-            if (daub.mFlag) {
-                dNpcDaub_c::unpackXZ((const u8 *)&daub, pos);
-                *angleY = daub.get08();
+            dNpc::daub_c daub(*src);
+            if (daub.mValid) {
+                dNpc::daub_c::unpackXZ((const u8 *)&daub, pos);
+                *angleY = daub.getAngleY();
                 return TRUE;
             }
         }
@@ -1266,12 +1266,12 @@ BOOL dAcNpc_c::getDaubPos(mVec3_c *pos, mAng *angleY) const {
 // 80013918
 BOOL dAcNpc_c::getDaubHeadAngle(mAng *headY, mAng *headX) const {
     if (isNetSync()) {
-        const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+        const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
         if (src != NULL) {
-            dNpcDaub_c daub(*src);
-            if (daub.mFlag) {
-                *headY = daub.get0D();
-                *headX = daub.get0F();
+            dNpc::daub_c daub(*src);
+            if (daub.mValid) {
+                *headY = daub.getHeadPitch();
+                *headX = daub.getHeadYaw();
                 return TRUE;
             }
         }
@@ -1284,15 +1284,15 @@ BOOL dAcNpc_c::getDaubData(void *dst, u32 size) const {
     if (!isNetSync()) {
         return FALSE;
     }
-    const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+    const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
     if (src == NULL) {
         return FALSE;
     }
-    dNpcDaub_c daub(*src);
-    if (!daub.mFlag) {
+    dNpc::daub_c daub(*src);
+    if (!daub.mValid) {
         return FALSE;
     }
-    daub.get11(dst, size);
+    daub.getNpcData(dst, size);
     return TRUE;
 }
 
@@ -1301,11 +1301,11 @@ BOOL dAcNpc_c::setDaubData(const void *src, u32 size) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
-    daub->set11(src, size);
+    daub->setNpcData(src, size);
     return TRUE;
 }
 
@@ -1314,17 +1314,17 @@ BOOL dAcNpc_c::getDaubState(u32 *state, u32 *sub) const {
     if (!isNetSync()) {
         return FALSE;
     }
-    const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+    const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
     if (src == NULL) {
         return FALSE;
     }
-    dNpcDaub_c daub(*src);
-    if (!daub.mFlag) {
+    dNpc::daub_c daub(*src);
+    if (!daub.mValid) {
         return FALSE;
     }
     u32 a = 0;
     u32 b = 0;
-    daub.get19(&a, &b);
+    daub.getAction(&a, &b);
     *state = a;
     *sub = b;
     return TRUE;
@@ -1335,12 +1335,12 @@ BOOL dAcNpc_c::getDaubMove(mVec3_c *from, mVec3_c *to, u16 *angle, f32 *speed) c
     if (!isNetSync()) {
         return FALSE;
     }
-    const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+    const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
     if (src == NULL) {
         return FALSE;
     }
-    dNpcDaub_c daub(*src);
-    if (!daub.mFlag) {
+    dNpc::daub_c daub(*src);
+    if (!daub.mValid) {
         return FALSE;
     }
     daub.getMove(from, to, angle, speed);
@@ -1360,12 +1360,12 @@ BOOL dAcNpc_c::getDaubTalk(u16 *a, u16 *b, f32 *c) const {
     if ((int)state != 3) {
         return FALSE;
     }
-    const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+    const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
     if (src == NULL) {
         return FALSE;
     }
-    dNpcDaub_c daub(*src);
-    if (!daub.mFlag) {
+    dNpc::daub_c daub(*src);
+    if (!daub.mValid) {
         return FALSE;
     }
     daub.getTalk(a, b, c);
@@ -1377,12 +1377,12 @@ BOOL dAcNpc_c::getDaubAct(u32 *a, u8 *b, f32 *c, f32 *d) const {
     if (!isNetSync()) {
         return FALSE;
     }
-    const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+    const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
     if (src == NULL) {
         return FALSE;
     }
-    dNpcDaub_c daub(*src);
-    if (!daub.mFlag) {
+    dNpc::daub_c daub(*src);
+    if (!daub.mValid) {
         return FALSE;
     }
     daub.getAct(a, b, c, d);
@@ -1397,11 +1397,11 @@ BOOL dAcNpc_c::recvDaub() {
     if (isLocalOwner() && !mRecvDaubAsOwner) {
         return FALSE;
     }
-    const dNpcDaub_c *src = fn_800EFE6C(&mNpcItem.mId);
+    const dNpc::daub_c *src = dNpc::getReceivedDaub(&mNpcItem.mId);
     if (src == NULL) {
         return FALSE;
     }
-    dNpcDaub_c *dst = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *dst = dNpc::getDaubByKey(&mNpcItem.mId);
     if (dst == NULL) {
         return FALSE;
     }
@@ -1427,12 +1427,12 @@ BOOL dAcNpc_c::checkSpotFunc(int ux, int uz, int arg) {
 
 // 80014008
 BOOL dAcNpc_c::searchSpot(mVec3_c *out, int arg, const mVec3_c *exclude, f32 dist) {
-    return fn_800F2644(out, checkSpotFunc, arg, exclude, dist);
+    return dNpc::pickOutdoorFreePos(out, checkSpotFunc, arg, exclude, dist);
 }
 
 // 80014020
 BOOL dAcNpc_c::searchSpotAny(mVec3_c *out, const mVec3_c *exclude, f32 dist) {
-    return fn_800F2644(out, NULL, 4, exclude, dist);
+    return dNpc::pickOutdoorFreePos(out, NULL, 4, exclude, dist);
 }
 
 // 80014030
@@ -1442,7 +1442,7 @@ BOOL dAcNpc_c::checkSpotFunc2(int x, int z, int arg) {
 
 // 8001404C
 BOOL dAcNpc_c::searchSpot2(mVec3_c *out, int arg, const mVec3_c *exclude, u32 type, BOOL skipTrees, BOOL allowFg94, f32 dist) {
-    return fn_800F3830(out, checkSpotFunc2, arg, exclude, type, skipTrees, allowFg94, dist);
+    return dNpc::pickOutdoorPlacementPos(out, checkSpotFunc2, arg, exclude, type, skipTrees, allowFg94, dist);
 }
 
 // 8001407C
@@ -1458,12 +1458,12 @@ static inline const dItem::Item *ptrTo(const dItem::Item &item) {
 
 static inline bool isFreePos(const mVec3_c *pos, BOOL checkA) {
     dItem::Item item((u16)0xFFF1);
-    return canPutItemAt(pos, &item, NULL, dScene::SCENE_NUM, TRUE, checkA);
+    return dNpc::canPutItemAt(pos, &item, NULL, dScene::SCENE_NUM, TRUE, checkA);
 }
 
 static inline bool isFreeUnit(int x, int z) {
     dItem::Item item((u16)0xFFF1);
-    return canPutItemOnUnit(x, z, &item, NULL, dScene::SCENE_NUM, TRUE, TRUE);
+    return dNpc::canPutItemOnUnit(x, z, &item, NULL, dScene::SCENE_NUM, TRUE, TRUE);
 }
 
 BOOL dAcNpc_c::searchFreeSideAngle(mAng *pAngle, const mVec3_c *pCenter, BOOL twoPass) {
@@ -1632,7 +1632,7 @@ BOOL dAcNpc_c::searchPosNear(mVec3_c *pPos, const mVec3_c *pCenter, f32 minDist,
             if (std::fabs(pCenter->y - p.y) < 48.0f) {
                 dItem::Item item((u16)0xFFF1);
                 dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                if (canPutItemAt(&p, &item, NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
+                if (dNpc::canPutItemAt(&p, &item, NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
                     ok = true;
                 }
             }
@@ -1698,7 +1698,7 @@ BOOL dAcNpc_c::searchPosInCircle(mVec3_c *pPos, const mVec3_c *pBase, const mVec
                 bool ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
+                    if (dNpc::canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
                         ok = true;
                     }
                 }
@@ -1768,7 +1768,7 @@ BOOL dAcNpc_c::searchPosInRect(mVec3_c *pPos, const mVec3_c *pTarget, f32 x0, f3
                 ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
+                    if (dNpc::canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
                         ok = true;
                     }
                 }
@@ -1800,7 +1800,7 @@ u32 dAcNpc_c::selectFreeSide() {
         for (int i = 0; i < 2; i++) {
             mVec3_c p = mPos;
             p.x += offX[i];
-            if (!fn_800F3D20(&p)) {
+            if (!dNpc::isPosBlockedToSouth(&p)) {
                 f32 chance = 100.0f / (cnt + 1);
                 if (cM::rndF(100.0f) <= chance) {
                     ret = ids[i];
@@ -1972,11 +1972,11 @@ int dAcNpc_c::preCreate() {
     setDemoNetSync();
 
     if (isNetSync() && mPermitState == 0) {
-        if (fn_800F5550()) {
-            dNpcPermit_c *permit = fn_800F54E0(&mNpcItem);
+        if (dNpc::isPermitSceneOwner()) {
+            dNpc::permit_c *permit = dNpc::getPermitByKey(&mNpcItem);
             if (permit != NULL) {
                 permit->clear();
-                fn_800F19C0(&mNpcItem);
+                dNpc::sendPermitClear(&mNpcItem);
                 mPermitState = 1;
             }
         }
@@ -5304,9 +5304,9 @@ int dAcNpc_c::action_c::initWait(dAcNpc_c *npc) {
     setAngle(npc->mAngle.y);
     npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     if (npc->isLocalOwner()) {
-        dNpcDaub_c *daub = fn_800EFD04(&npc->mNpcItem.mId);
+        dNpc::daub_c *daub = dNpc::getDaubByKey(&npc->mNpcItem.mId);
         if (daub != NULL) {
-            daub->set19(mActionId, mCurPrio);
+            daub->setAction(mActionId, mCurPrio);
         }
     }
     mCanChange = FALSE;
@@ -5332,9 +5332,9 @@ int dAcNpc_c::action_c::initWalk(dAcNpc_c *npc) {
     npc->setAnm(npc->mAnmSet.mWalkAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     mCanChange = FALSE;
     if (npc->isLocalOwner()) {
-        dNpcDaub_c *daub = fn_800EFD04(&npc->mNpcItem.mId);
+        dNpc::daub_c *daub = dNpc::getDaubByKey(&npc->mNpcItem.mId);
         if (daub != NULL) {
-            daub->set19(mActionId, mCurPrio);
+            daub->setAction(mActionId, mCurPrio);
             daub->setMove(&prm->mTarget, &prm->mGoal, (const u16 *)&prm->mTurnSpeed, prm->mMorph);
         }
     }
@@ -5371,9 +5371,9 @@ int dAcNpc_c::action_c::initRun(dAcNpc_c *npc) {
     npc->setAnm(npc->mAnmSet.mRunAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     mCanChange = FALSE;
     if (npc->isLocalOwner()) {
-        dNpcDaub_c *daub = fn_800EFD04(&npc->mNpcItem.mId);
+        dNpc::daub_c *daub = dNpc::getDaubByKey(&npc->mNpcItem.mId);
         if (daub != NULL) {
-            daub->set19(mActionId, mCurPrio);
+            daub->setAction(mActionId, mCurPrio);
             daub->setMove(&prm->mTarget, &prm->mGoal, (const u16 *)&prm->mTurnSpeed, prm->mMorph);
         }
     }
@@ -5412,9 +5412,9 @@ int dAcNpc_c::action_c::initTurn(dAcNpc_c *npc) {
         mCanChange = TRUE;
     }
     if (npc->isLocalOwner()) {
-        dNpcDaub_c *daub = fn_800EFD04(&npc->mNpcItem.mId);
+        dNpc::daub_c *daub = dNpc::getDaubByKey(&npc->mNpcItem.mId);
         if (daub != NULL) {
-            daub->set19(mActionId, mCurPrio);
+            daub->setAction(mActionId, mCurPrio);
             daub->setTalk((const u16 *)&prm->mAngle, (const u16 *)&prm->mTurnSpeed, prm->mMorph);
         }
     }
@@ -5810,9 +5810,9 @@ int dAcNpc_c::action_c::initAnm(dAcNpc_c *npc) {
     }
     mCanChange = FALSE;
     if (npc->isLocalOwner()) {
-        dNpcDaub_c *daub = fn_800EFD04(&npc->mNpcItem.mId);
+        dNpc::daub_c *daub = dNpc::getDaubByKey(&npc->mNpcItem.mId);
         if (daub != NULL) {
-            daub->set19(mActionId, mCurPrio);
+            daub->setAction(mActionId, mCurPrio);
             daub->setAct(anm, prm->mPlayMode, prm->mMorph, prm->mFrame);
         }
     }

@@ -11,6 +11,7 @@
 #include <game/game/d_analog_select.hpp>
 #include <game/game/d_select.hpp>
 #include <game/game/d_msg_seq.hpp>
+#include <game/game/d_msg_def.hpp>
 
 class dDemoActor_c;
 class dLandID_c;
@@ -34,9 +35,7 @@ class Rcpt_c;
 //   5 replace (word check), 6 display, 7 complete, 8 exit, 9 suspend.
 
 // Comp_c table sizes.
-#define MSG_WORD_NUM 20            // Comp_c::mWords: the message's word slots (setWord)
 #define MSG_NUM_WORD_NUM 10        // Comp_c::mNumWords: the number slots (setNumber)
-#define MSG_RANDOM_WORD_KIND_NUM 7 // Comp_c::mRandomWords: drink, object, sweets, sports, music, food, hobby
 #define MSG_CHECK_WORD_NUM 31      // Comp_c::mCheckWords: the words handed to the word checker
 #define MSG_NICKNAME_NUM 10        // nickname candidates tried (mNicknames has MSG_CHECK_WORD_NUM entries)
 

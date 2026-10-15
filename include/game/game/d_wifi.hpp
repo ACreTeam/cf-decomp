@@ -127,7 +127,7 @@ enum {
     WIFI_MSG_AUC_SALES = 4, // 0x1E4 bytes (receiveAucSales)
     WIFI_MSG_DESIGN = 5,    // 0x8A0 bytes, may be compressed (receiveDesign)
     WIFI_MSG_POST = 6,      // 0x5A bytes (receivePostPid)
-    WIFI_MSG_ANIMAL = 7,    // a villager (fn_800F4A34) when mOffset is 0x3040, then the sender's dLandID_c
+    WIFI_MSG_ANIMAL = 7,    // a villager (dNpc::receiveMovedAnimal) when mOffset is 0x3040, then the sender's dLandID_c
     WIFI_MSG_TYPE_NUM
 };
 

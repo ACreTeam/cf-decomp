@@ -16,7 +16,7 @@ typedef dAcNpcNml_c::talk_c talk_c;
 static inline void setPlayerUnit(talk_c *talk, dAnimal_c *animal, const dPlayerID_c *pid, int idx) {
     talk->setPlayerName(pid, idx);
     u8 gender = pid->mGender;
-    u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+    u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {

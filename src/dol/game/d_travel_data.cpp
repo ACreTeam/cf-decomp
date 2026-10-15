@@ -52,7 +52,7 @@ void Data_c::prepareDeparture() {
         mHasMii = 1;
     } else mHasMii = 0;
     mOutgoingAnimal.clear();
-    if (!fn_800F48A0(&mOutgoingAnimal)) mOutgoingAnimal.clear();
+    if (!dNpc::takeMovedAnimal(&mOutgoingAnimal)) mOutgoingAnimal.clear();
     mIncomingAnimal.clear();
 }
 
@@ -76,7 +76,7 @@ void Data_c::backupDeparture() {
     player->clearFlag0(PRIVATE_FLAG0_BEE_STUNG);
     fgMngProc_backupSaveFlag1A();
     dSaveData_c::getTown()->backupFlag6();
-    fn_800F4904(&mOutgoingAnimal.mID);
+    dNpc::removeMovedAnimal(&mOutgoingAnimal.mID);
     fgMngProc_stashFg94();
 }
 
@@ -87,7 +87,7 @@ void Data_c::cancelDeparture() {
     player->copy(backup);
     backup->clear();
     fgMngProc_restoreSaveFlag1A();
-    fn_800F4984(&mOutgoingAnimal);
+    dNpc::addMovedAnimal(&mOutgoingAnimal);
     mOutgoingAnimal.clear();
     fgMngProc_restoreFg94();
 }
@@ -108,7 +108,7 @@ void Data_c::prepareVisit() {
         mHasMii = 1;
     } else mHasMii = 0;
     mOutgoingAnimal.clear();
-    if (!fn_800F48A0(&mOutgoingAnimal)) mOutgoingAnimal.clear();
+    if (!dNpc::takeMovedAnimal(&mOutgoingAnimal)) mOutgoingAnimal.clear();
     mIncomingAnimal.clear();
 }
 
@@ -121,7 +121,7 @@ void Data_c::backupVisit() {
     town->mActivity.setVisitorDone(dActivityLog::isDone());
     fgMngProc_backupSaveFlag1A();
     dSaveData_c::getTown()->backupFlag6();
-    fn_800F4904(&mOutgoingAnimal.mID);
+    dNpc::removeMovedAnimal(&mOutgoingAnimal.mID);
     fgMngProc_stashFg94();
 }
 
@@ -132,7 +132,7 @@ void Data_c::cancelVisit() {
     backup->clear();
     dActivityLog::restoreTownBits();
     fgMngProc_restoreSaveFlag1A();
-    fn_800F4984(&mOutgoingAnimal);
+    dNpc::addMovedAnimal(&mOutgoingAnimal);
     mOutgoingAnimal.clear();
     fgMngProc_restoreFg94();
 }
@@ -148,9 +148,9 @@ void Data_c::finishReturn() {
     countPlayerDlItems((u8 *)mPlayerItems.mItems);
     countTownDlItems((u8 *)mTownItems.mItems, player);
     dActivityLog::applyTravelResult(mJinxOutcome);
-    fn_800F4984(&mOutgoingAnimal);
+    dNpc::addMovedAnimal(&mOutgoingAnimal);
     mOutgoingAnimal.clear();
-    fn_800F4984(&mIncomingAnimal);
+    dNpc::addMovedAnimal(&mIncomingAnimal);
     mIncomingAnimal.clear();
 }
 
@@ -178,9 +178,9 @@ void Data_c::finishVisit() {
     dActivityLog::setJinx(&town->mActivity.mJinx);
     if (mHasMii) dMiiIcon::setTravelMii(mMii);
     else dMiiIcon::setTravelMii(NULL);
-    fn_800F4984(&mOutgoingAnimal);
+    dNpc::addMovedAnimal(&mOutgoingAnimal);
     mOutgoingAnimal.clear();
-    fn_800F4984(&mIncomingAnimal);
+    dNpc::addMovedAnimal(&mIncomingAnimal);
     mIncomingAnimal.clear();
 }
 

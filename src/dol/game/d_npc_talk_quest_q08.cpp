@@ -64,7 +64,7 @@ BOOL dAcNpcNml_c::talk_c::stepVisitChoice(int kind) {
         setChoiceNum(2);
         setChoiceCancel(1);
         showChoice();
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();

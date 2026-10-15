@@ -67,7 +67,7 @@ int dAcNpcSp_c::getFaceType() {
 
 // 80061AFC
 void dAcNpcSp_c::getName(dHmnName::Word_c *name, int len) {
-    getNpcName(name, &mNpcItem, len);
+    dNpc::getNpcName(name, &mNpcItem, len);
 }
 
 // 80061B0C
@@ -77,12 +77,12 @@ u8 dAcNpcSp_c::getNameKind() {
 
 // 80061B14
 f32 dAcNpcSp_c::getHandItemOfsX() const {
-    return getSpHandItemOfs(&mNpcItem, 0);
+    return dNpc::getSpHandItemOfs(&mNpcItem, 0);
 }
 
 // 80061B20
 f32 dAcNpcSp_c::getHandItemOfsZ() const {
-    return getSpHandItemOfs(&mNpcItem, 1);
+    return dNpc::getSpHandItemOfs(&mNpcItem, 1);
 }
 
 // 80061B2C
@@ -123,8 +123,8 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
             int pDirs = fd->getRouteDirs(&p);
             int unitX = worldToUnit(p.x);
             int unitZ = worldToUnit(p.z);
-            dPlayerActor_c *player = getPlayerOnUnit(unitX, unitZ);
-            if (pDirs != 0 && (player != NULL || canPutItemAt(&p, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE))) {
+            dPlayerActor_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
+            if (pDirs != 0 && (player != NULL || dNpc::canPutItemAt(&p, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE))) {
                 if (!best || best > dist) {
                     best = dist;
                     mRouteDir = i;
@@ -147,7 +147,7 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
                 mVec3_c p = center + l_routeOfs[cur];
                 int unitX = worldToUnit(p.x);
                 int unitZ = worldToUnit(p.z);
-                dActor_c *actor = getActorOnUnit(unitX, unitZ);
+                dActor_c *actor = dNpc::getActorOnUnit(unitX, unitZ);
                 if (actor != NULL && mNpcItem.mId != actor->mParam) {
                     return mPos;
                 }
@@ -181,8 +181,8 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
                 }
                 int unitX = worldToUnit(q.x);
                 int unitZ = worldToUnit(q.z);
-                dPlayerActor_c *player = getPlayerOnUnit(unitX, unitZ);
-                BOOL ok = player != NULL || canPutItemAt(&q, &dItem::Item(), NULL, dScene::SCENE_NUM, TRUE, TRUE);
+                dPlayerActor_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
+                BOOL ok = player != NULL || dNpc::canPutItemAt(&q, &dItem::Item(), NULL, dScene::SCENE_NUM, TRUE, TRUE);
                 if (ok && (best < 0.0f || best > dist)) {
                     best = dist;
                     mRouteDir = i;
@@ -355,7 +355,7 @@ mVec3_c dAcNpcSp_c::calcFreePosToward(const mVec3_c *target) {
                 break;
             }
         }
-    } while (std::fabs(mPos.y - pos.y) < SP_STEP_HEIGHT_MAX && canPutItemAt(&pos, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE));
+    } while (std::fabs(mPos.y - pos.y) < SP_STEP_HEIGHT_MAX && dNpc::canPutItemAt(&pos, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE));
     int unitX = worldToUnit(last.x);
     int unitZ = worldToUnit(last.z);
     dFdBase_c::getUnitCenterPos(last, unitX, unitZ);

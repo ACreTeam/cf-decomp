@@ -113,9 +113,9 @@ void dAcNpcNml_c::talk_c::endRollan(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);

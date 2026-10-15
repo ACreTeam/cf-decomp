@@ -54,7 +54,7 @@
 //   80750210 0x08 string "Q06_End"
 //   80750218 0x08 string "Q06_Con"
 // External: "Q_Yes" 8074FF30, "Q_Item" 8074FF40 (sdata2), "Q_ItemFull" 8046BD6C, l_talkEntrySets (nml),
-// lbl_8059FF80 (d_item_sel .bss, item filter for fn_800F4608), dScene::gSceneChange.
+// lbl_8059FF80 (d_item_sel .bss, item filter for dNpc::selectGroupARoomItems), dScene::gSceneChange.
 
 // Message label tables of this TU read by dAcNpcNml_c::talk_c::getMsgLabel (globals; quest
 // descriptors are typed by their label part only).

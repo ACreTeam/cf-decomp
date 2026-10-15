@@ -3943,9 +3943,9 @@ void fgMngProc_procDayChange(BOOL arg) {
     save->mAnimals.mTown.syncHouses();
     save->mAnimals.mTown.updateAnimalPlaces();
     save->mAnimals.mTown.resetDailyTalkCounts();
-    fn_800EFCCC();
-    fn_800EFD48();
-    fn_800EFDD4();
+    dNpc::initDaubManagers();
+    dNpc::initNormalDaubs();
+    dNpc::initSpecialDaubs();
     dPrivateData_c::updatePublicWorks(days);
     sFgMngProc.updateFg56();
     dSaveData_c::getTown()->mFishing.checkDay();

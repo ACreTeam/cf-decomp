@@ -509,7 +509,7 @@ EGG::ExpHeap *dHeap::createGrowUpHeap(EGG::Heap *parent) {
 
 // 800B62DC
 EGG::FrmHeap *dHeap::createNpcPermitMngHeap(EGG::Heap *parent) {
-    u32 size = fn_800F5370();
+    u32 size = dNpc::getPermitHeapSize();
     npcPermitMngHeap_p = mHeap::createFrmHeap(size, parent, "dHeap::npcPermitMngHeap_p : NPC権限管理用ヒープ", 0x20, mHeap::OPT_NONE);
     report(__FUNCTION__, "NPC権限管理用ヒープ", size);
     return npcPermitMngHeap_p;

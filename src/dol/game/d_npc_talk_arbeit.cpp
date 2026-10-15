@@ -155,9 +155,9 @@ int dAcNpcNml_c::talk_c::msgArbeit(msgInfo_s *info) {
 // 80038738
 void dAcNpcNml_c::talk_c::endArbeit(int arg) {
     recordTalk(NULL);
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mCountTalk) {
         if (mpMemory != NULL) {

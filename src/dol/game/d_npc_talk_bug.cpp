@@ -37,13 +37,13 @@ int dAcNpcNml_c::talk_c::getBugOffTalkState() {
     dAnmPersonalID_c *leaderAnimal = bugOff->getAnimal(0);
     dPersonalID_c *leaderPlayer = bugOff->getPlayer(0);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (active) {
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
             state = BUGOFF_STATE_FIRST;
         } else if (leaderAnimal->isValid()) {
             if (animal->mID == *leaderAnimal) {
-                if (entry == NULL || !entry->_28C.mEventTalked) {
+                if (entry == NULL || !entry->mFlags.mEventTalked) {
                     state = BUGOFF_STATE_NPC_LEADS;
                 } else {
                     state = BUGOFF_STATE_NPC_LEADS_AGAIN;
@@ -83,9 +83,9 @@ int dAcNpcNml_c::talk_c::msgBugOff(msgInfo_s *info) {
             }
             setLooksMsg(info, label, code);
             setProcSet(&l_talkEntrySets[TALK_BUG]);
-            dNpcEntry_c *entry = getEntry();
+            dNpc::entry_c *entry = getEntry();
             if (state == BUGOFF_STATE_NPC_LEADS && entry != NULL) {
-                entry->_28C.mEventTalked = TRUE;
+                entry->mFlags.mEventTalked = TRUE;
             }
 
             dBugOff_c *bugOff = &dSaveData_c::getRaw()->mBugOff;
@@ -107,7 +107,7 @@ int dAcNpcNml_c::talk_c::msgBugOff(msgInfo_s *info) {
                 gender = leaderPlayer->player.mGender;
             }
             if (animal != NULL && gender < GENDER_OTHER) {
-                u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+                u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
                 if (unit == 0) {
                     clearWord(3);
                 } else {
@@ -132,7 +132,7 @@ void dAcNpcNml_c::talk_c::endBugOff(int arg) {
         mpMemory->onEventFlag(0);
         dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
         if (npc != NULL) {
-            fn_800F04E8(npc->getNpcIdx(), mMemoryIdx, 0);
+            dNpc::sendAnimalMemoryFlagOn(npc->getNpcIdx(), mMemoryIdx, 0);
         }
         mpMemory->mTalkCount.inc(0x44);
     }
@@ -140,8 +140,8 @@ void dAcNpcNml_c::talk_c::endBugOff(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }

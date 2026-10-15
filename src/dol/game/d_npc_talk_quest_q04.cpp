@@ -26,7 +26,7 @@ static char l_strUnit[] = "sys_STRING/STR_Unit";
 static inline void setPlayerUnit(talk_c *talk, dAnimal_c *animal, const dPlayerID_c *pid, int idx) {
     talk->setPlayerName(pid, idx);
     u8 gender = pid->mGender;
-    u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+    u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
@@ -272,7 +272,7 @@ void dAcNpcNml_c::talk_c::endClothReward(int arg) {
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
-                fn_800F0FE4(getNpcIdx(), &mItem0);
+                dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
@@ -305,7 +305,7 @@ BOOL dAcNpcNml_c::talk_c::stepClothWin(int kind) {
         startMsg();
         if (mItem1.isValid()) {
             animal->setCloth(&mItem1);
-            fn_800F1A68(getNpcIdx(), &animal->mCloth);
+            dNpc::sendAnimalCloth(getNpcIdx(), &animal->mCloth);
             dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
             npc->onDaubClothChange();
             npc->offDaubClothChanged();

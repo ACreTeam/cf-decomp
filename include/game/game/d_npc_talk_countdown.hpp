@@ -5,7 +5,7 @@
 // Year's countdown
 // (EVENT_COUNTDOWN, message file "Ev_Countdown"): the message depends on the time (23:00-23:29,
 // 23:30-23:54, 23:55-23:58, 23:59, after midnight before / after 2:00), plus a once-per-villager
-// message while the event runs (dAnimalMemory_c flag bit 0x01000000, fn_800F05C8).
+// message while the event runs (dAnimalMemory_c flag bit 0x01000000, dNpc::sendAnimalEventTalked).
 //
 // Its functions are talk procedures stored in dAcNpcNml_c::talk_c's member-function pointers. Slot
 // conventions (provisional, see d_npc_talk_arbeit.hpp): EC = message select (fills msgInfo_s via

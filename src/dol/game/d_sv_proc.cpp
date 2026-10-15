@@ -84,7 +84,7 @@ BOOL dSvProc_c::createTown() {
 }
 // 80154498
 BOOL dSvProc_c::startTown() {
-    if (!(fn_800F4D08() & 1)) {
+    if (!(dNpc::initTownAnimals() & 1)) {
         return FALSE;
     }
     dSaveData_c::getTown()->mTownInfo.init();
@@ -141,7 +141,7 @@ BOOL dSvProc_c::createVisitor() {
 }
 // 801546A8
 BOOL dSvProc_c::startVisitor() {
-    if (!(fn_800F4D08() & 1)) {
+    if (!(dNpc::initTownAnimals() & 1)) {
         return FALSE;
     }
     dSaveData_c::getTown()->mTownInfo.init();
@@ -282,7 +282,7 @@ BOOL dSvProc_c::createTitleTown() {
 }
 // 80154CC4
 BOOL dSvProc_c::startTitleTown() {
-    if (!(fn_800F4D08() & 1)) {
+    if (!(dNpc::initTownAnimals() & 1)) {
         return FALSE;
     }
     dSaveData_c::getTown()->mTownInfo.init();
@@ -354,7 +354,7 @@ void dSvProc_c::prepareTown() {
 void dSvProc_c::updateTown() {
     dSaveData_c::getTown()->mShops.update();
     dSaveData_c::getTown()->mDaily.update();
-    fn_800F3E24();
+    dNpc::initEntries();
     dNpcInfo::init();
     daSnowMan_c::clearBalls();
     dSaveData_c::getTown()->mAnimals.mTown.resetDailyTalkCounts();

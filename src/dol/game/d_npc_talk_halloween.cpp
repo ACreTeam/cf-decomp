@@ -33,9 +33,9 @@ void dAcNpcNml_c::talk_c::endCandyAsk(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -342,9 +342,9 @@ void dAcNpcNml_c::talk_c::endHalloweenCostume(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -418,9 +418,9 @@ void dAcNpcNml_c::talk_c::endHalloween(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -430,7 +430,7 @@ BOOL dAcNpcNml_c::talk_c::stepHalloweenFirst(int kind) {
         if (mpMemory != NULL) {
             mpMemory->onEventFlag(0);
             if (mpNpc != NULL) {
-                fn_800F04E8(static_cast<dAcNpcNml_c *>(mpNpc)->getNpcIdx(), mMemoryIdx, 0);
+                dNpc::sendAnimalMemoryFlagOn(static_cast<dAcNpcNml_c *>(mpNpc)->getNpcIdx(), mMemoryIdx, 0);
             }
         }
         return TRUE;

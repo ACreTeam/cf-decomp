@@ -27,8 +27,8 @@ const char *l_reactionLabels[REACTION_NUM] = {
 
 // 8005E584
 void dAcNpcNml_c::talk_c::resetActiveMood() {
-    dNpcEntry_c *entry = getEntry();
-    if (entry != NULL && (u32)entry->mTimer.getMode() > 1) {
+    dNpc::entry_c *entry = getEntry();
+    if (entry != NULL && (u32)entry->mMoodTimer.getMode() > 1) {
         resetMood();
     }
 }
@@ -469,9 +469,9 @@ int dAcNpcNml_c::talk_c::msgRe7days(msgInfo_s *info) {
 
 // 8005F8B4
 int dAcNpcNml_c::talk_c::msgReTire(msgInfo_s *info) {
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     BOOL ok = FALSE;
-    if (entry != NULL && entry->mTimer.getMode() == 4) {
+    if (entry != NULL && entry->mMoodTimer.getMode() == 4) {
         ok = TRUE;
     }
     if (ok && isReactionBlocked()) {
@@ -492,9 +492,9 @@ int dAcNpcNml_c::talk_c::msgReTire(msgInfo_s *info) {
 
 // 8005F980
 int dAcNpcNml_c::talk_c::msgReAnger(msgInfo_s *info) {
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     BOOL ok = FALSE;
-    if (entry != NULL && entry->mTimer.getMode() == 2) {
+    if (entry != NULL && entry->mMoodTimer.getMode() == 2) {
         ok = TRUE;
     }
     if (ok && isReactionBlocked()) {
@@ -515,9 +515,9 @@ int dAcNpcNml_c::talk_c::msgReAnger(msgInfo_s *info) {
 
 // 8005FA4C
 int dAcNpcNml_c::talk_c::msgReSad(msgInfo_s *info) {
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     BOOL ok = FALSE;
-    if (entry != NULL && entry->mTimer.getMode() == 3) {
+    if (entry != NULL && entry->mMoodTimer.getMode() == 3) {
         ok = TRUE;
     }
     if (ok && isReactionBlocked()) {
@@ -611,8 +611,8 @@ dItem::Item dAcNpcNml_c::talk_c::findNearItem() {
 
 // 8005FE7C
 int dAcNpcNml_c::talk_c::msgRePoison(msgInfo_s *info) {
-    dNpcEntry_c *entry = getEntry();
-    BOOL ok = entry != NULL ? !entry->_28C.mPoisonDone : FALSE;
+    dNpc::entry_c *entry = getEntry();
+    BOOL ok = entry != NULL ? !entry->mFlags.mPoisonDone : FALSE;
     dItem::Item item;
     if (ok && !dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN)) {
         ok = FALSE;
@@ -665,7 +665,7 @@ int dAcNpcNml_c::talk_c::msgReXmas(msgInfo_s *info) {
     if (now->month == 11 && now->mday == 25) {
         christmas = true;
     }
-    if (christmas && fn_800F4250(looks, now)) {
+    if (christmas && dNpc::isPastAnimalWakeTime(looks, now)) {
         gift = TRUE;
     }
     eve = FALSE;
@@ -866,9 +866,9 @@ BOOL dAcNpcNml_c::talk_c::stepBeeFaceSeen(int kind) {
 
 // 800608B8
 BOOL dAcNpcNml_c::talk_c::stepPoison(int kind) {
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->_28C.mPoisonDone = 1;
+        entry->mFlags.mPoisonDone = 1;
     }
     return TRUE;
 }
@@ -878,7 +878,7 @@ BOOL dAcNpcNml_c::talk_c::stepEventTalked(int kind) {
     if (mpMemory != NULL) {
         mpMemory->mFlags.mEventTalked = 1;
         if (mpNpc != NULL) {
-            fn_800F05C8(static_cast<dAcNpcNml_c *>(mpNpc)->getNpcIdx(), mMemoryIdx);
+            dNpc::sendAnimalEventTalked(static_cast<dAcNpcNml_c *>(mpNpc)->getNpcIdx(), mMemoryIdx);
         }
     }
     return TRUE;

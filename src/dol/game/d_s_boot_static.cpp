@@ -268,7 +268,7 @@ static sPhase_c::METHOD_RESULT_e boot(void *) {
         return sPhase_c::WAIT;
     }
     g_banner.build();
-    fn_800EFCCC();
+    dNpc::initDaubManagers();
     clearAllRoomMaps();
     dSceneCheck::fn_80081850();
     dSceneCheck::fn_80081858(dSceneCheck::fn_80081860());

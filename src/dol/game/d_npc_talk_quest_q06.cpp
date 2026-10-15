@@ -46,7 +46,7 @@ BOOL dAcNpcNml_c::talk_c::stepErrandReq(int kind) {
         setChoiceNum(2);
         setChoiceCancel(1);
         showChoice();
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
@@ -84,13 +84,13 @@ void dAcNpcNml_c::talk_c::endErrandYes(int arg) {
         const dAnmPersonalID_c *exclude = self;
         dSaveTown_c *town = dSaveData_c::getTown();
         dAnimal_c *other = town->mAnimals.mTown.pickRandomAvailableAnimal(&exclude, 1);
-        if (!fn_800F4608(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (!dNpc::selectGroupARoomItems(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_BED);
         }
         errand->clear();
         if (other != NULL && mItem0.mId != dItem::ITEM_ID_NONE) {
             setAnmPersonalName(&other->mID, 0);
-            u16 unit = fn_800F3F38(other->mID.getGender(1), self->getLooks(1));
+            u16 unit = dNpc::getPlayerUnitMessage(other->mID.getGender(1), self->getLooks(1));
             if (unit == 0) {
                 clearWord(1);
             } else {
@@ -180,7 +180,7 @@ int dAcNpcNml_c::talk_c::msgErrandQuest(msgInfo_s *info) {
         }
         dAnmPersonalID_c *recipient = errand->getAnimal(1);
         setAnmPersonalName(recipient, 0);
-        u16 unit = fn_800F3F38(recipient->getGender(1), self->getLooks(1));
+        u16 unit = dNpc::getPlayerUnitMessage(recipient->getGender(1), self->getLooks(1));
         if (unit == 0) {
             clearWord(1);
         } else {
@@ -285,7 +285,7 @@ void dAcNpcNml_c::talk_c::endErrandReward(int arg) {
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
-                fn_800F0FE4(getNpcIdx(), &mItem0);
+                dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);

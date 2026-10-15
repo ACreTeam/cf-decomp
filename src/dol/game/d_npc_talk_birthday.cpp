@@ -40,9 +40,9 @@ void dAcNpcNml_c::talk_c::endPlayerBirthday(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
@@ -78,8 +78,8 @@ int dAcNpcNml_c::talk_c::msgPlayerBirthdayCake(msgInfo_s *info) {
 // 800492B8
 int dAcNpcNml_c::talk_c::msgNpcBirthday(msgInfo_s *info) {
     u16 code = 7;
-    dNpcEntry_c *entry = getEntry();
-    if (entry != NULL && entry->_28C.mBirthdayDone) {
+    dNpc::entry_c *entry = getEntry();
+    if (entry != NULL && entry->mFlags.mBirthdayDone) {
         code = 8;
     }
     setLooksMsg(info, l_Ev_Birthday, code);
@@ -94,10 +94,10 @@ void dAcNpcNml_c::talk_c::endNpcBirthday(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
-        entry->_28C.mBirthdayDone = 1;
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mFlags.mBirthdayDone = 1;
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);

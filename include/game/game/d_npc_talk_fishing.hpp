@@ -32,7 +32,7 @@
 enum fishingState_e {
     FISHING_STATE_FIRST,             // 0 the npc's first talk of the event (memory event flag 0 not set), no fish yet
     FISHING_STATE_FIRST_FISH,        // 1 the same, a fish is recorded
-    FISHING_STATE_NPC_LEADS,         // 2 this npc leads (sets getEntry() _28C.mEventTalked)
+    FISHING_STATE_NPC_LEADS,         // 2 this npc leads (sets getEntry() mFlags.mEventTalked)
     FISHING_STATE_NPC_LEADS_AGAIN,   // 3 this npc leads, already said (mEventTalked set)
     FISHING_STATE_PLAYER_LEADS,      // 4 the current player leads
     FISHING_STATE_OTHER_PLAYER_LEADS, // 5 another player leads

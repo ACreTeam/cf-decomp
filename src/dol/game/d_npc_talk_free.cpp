@@ -373,7 +373,7 @@ int dAcNpcNml_c::talk_c::msgFreeClothes(msgInfo_s *info) {
     return FALSE;
 }
 
-// Word idx = the unit word of a player gender for the speaker's looks (fn_800F3F38), cleared when there
+// Word idx = the unit word of a player gender for the speaker's looks (dNpc::getPlayerUnitMessage), cleared when there
 // is none. The u16 parameter makes the test a clrlwi. of the argument.
 static inline void setUnitMsg(talk_c *talk, int idx, u16 unit) {
     if (unit == 0) {
@@ -407,7 +407,7 @@ int dAcNpcNml_c::talk_c::msgFreeAlways(msgInfo_s *info) {
 void dAcNpcNml_c::talk_c::setDesignWords(const dPersonalID_c *creator, const wchar_t *designName, dAnimal_c *animal) {
     setPersonalName(creator, 0);
     u8 gender = creator->player.mGender;
-    setUnitMsg(this, 1, fn_800F3F38(gender, animal->mID.getLooks(1)));
+    setUnitMsg(this, 1, dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1)));
     setLandName(&creator->land, 2);
     dString::Word_c name;
     name.set(designName, 0);
@@ -463,7 +463,7 @@ int dAcNpcNml_c::talk_c::msgFreeFriend(msgInfo_s *info) {
             if (second != NULL) {
                 u8 gender1 = first->mID.getGender(1);
                 u8 gender2 = second->mID.getGender(1);
-                int relation = fn_800F3F34(first, second);
+                int relation = dNpc::getAnimalCompatibilityRank(first, second);
                 u16 code;
                 if (gender1 == gender2) {
                     if (gender1 == 0) {
@@ -598,7 +598,7 @@ void dAcNpcNml_c::talk_c::setMemoryWords(const dPersonalID_c *pid, const dLandID
         setPersonalName(pid, 0);
         if (animal != NULL) {
             u8 gender = pid->player.mGender;
-            unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+            unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
         }
         mMsgPersonal.copy(pid);
     }
@@ -778,7 +778,7 @@ int dAcNpcNml_c::talk_c::msgFreeRumor(msgInfo_s *info) {
                 setPersonalName(player, 1);
                 if (animal != NULL) {
                     u8 gender = player->player.mGender;
-                    setUnitMsg(this, 2, fn_800F3F38(gender, animal->mID.getLooks(1)));
+                    setUnitMsg(this, 2, dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1)));
                 }
             }
             if (impress < 49) {
@@ -787,7 +787,7 @@ int dAcNpcNml_c::talk_c::msgFreeRumor(msgInfo_s *info) {
             if (villager != NULL) {
                 setAnmPersonalName(villager, 4);
                 if (animal != NULL) {
-                    setUnitMsg(this, 5, fn_800F3F38(villager->getGender(1), animal->mID.getLooks(1)));
+                    setUnitMsg(this, 5, dNpc::getPlayerUnitMessage(villager->getGender(1), animal->mID.getLooks(1)));
                 }
             }
             setLooksMsg(info, label, code);
@@ -1646,7 +1646,7 @@ int dAcNpcNml_c::talk_c::msgFreePlace(msgInfo_s *info) {
                         dAnimal_c *animal = getAnimal();
                         if (animal != NULL) {
                             u8 gender = owner->player.mGender;
-                            setUnitMsg(this, 1, fn_800F3F38(gender, animal->mID.getLooks(1)));
+                            setUnitMsg(this, 1, dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1)));
                         }
                         mMsgPersonal.copy(owner);
                     }
@@ -1715,7 +1715,7 @@ void dAcNpcNml_c::talk_c::setHostWords() {
             dAnimal_c *animal = getAnimal();
             if (animal != NULL) {
                 u8 gender = pid->player.mGender;
-                setUnitMsg(this, 1, fn_800F3F38(gender, animal->mID.getLooks(1)));
+                setUnitMsg(this, 1, dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1)));
             }
         }
     }
@@ -2071,9 +2071,9 @@ int dAcNpcNml_c::talk_c::msgFree(msgInfo_s *info) {
 // 8003EDEC
 void dAcNpcNml_c::talk_c::endFree(int arg) {
     recordTalk(NULL);
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -2175,9 +2175,9 @@ void dAcNpcNml_c::talk_c::endEtc(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);

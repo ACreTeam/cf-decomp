@@ -485,9 +485,9 @@ void dAcNpcNml_c::talk_c::endApproach(int arg) {
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -508,7 +508,7 @@ void dAcNpcNml_c::talk_c::endApFortuneItem(int arg) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     int slot = player != NULL ? player->findEmptyPocket(0) : -1;
     mItem0 = dItem::Item();
-    if (!fn_800F4510(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+    if (!dNpc::selectPresentItems(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
         mItem0 = dItem::Item();
     }
     if (mItem0.isValid()) {
@@ -608,7 +608,7 @@ void dAcNpcNml_c::talk_c::selApNicknameUndo() {
 void dAcNpcNml_c::talk_c::endApPresent(int arg) {
     endApproach(arg);
     mItem0 = dItem::Item();
-    if (!fn_800F4510(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+    if (!dNpc::selectPresentItems(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
         mItem0 = dItem::Item();
     }
     if (mItem0.isValid()) {
@@ -627,7 +627,7 @@ void dAcNpcNml_c::talk_c::endApSell(int arg) {
         mItem0 = *pick;
     }
     if (!mItem0.isValid()) {
-        if (!fn_800F4510(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (!dNpc::selectPresentItems(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             mItem0 = dItem::Item();
         }
     } else {
@@ -673,7 +673,7 @@ void dAcNpcNml_c::talk_c::endApTrade(int arg) {
         mItem0 = *pick;
     }
     if (!mItem0.isValid()) {
-        if (!fn_800F4510(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (!dNpc::selectPresentItems(&mItem0, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             mItem0 = dItem::Item();
         }
     } else {

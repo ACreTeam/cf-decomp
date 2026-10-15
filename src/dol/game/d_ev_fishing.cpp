@@ -321,7 +321,7 @@ BOOL dEvFishing_c::advance(BOOL force) {
             for (int i = 0; i < ANIMAL_NUM; i++) {
                 if (isAnimalAvailable(i, &time, FALSE, FALSE, FALSE, FALSE)) {
                     dAnimal_c *animal = getTownAnimal(i);
-                    if (!fn_800F4C08(animal, 4)) {
+                    if (!dNpc::isAnimalOnAllowedSpot(animal, 4)) {
                         if (tryNpcEntry(animal, mCursor.get(), FALSE)) {
                             entered = TRUE;
                         }
@@ -617,7 +617,7 @@ BOOL dEvFishing_c::isAnimalAvailable(int idx, const dTime_c *time, BOOL anyPlace
     if (!allowSleeping && animal->isSleepTime(time)) {
         return FALSE;
     }
-    if (fn_800F4C08(animal, 4)) {
+    if (dNpc::isAnimalOnAllowedSpot(animal, 4)) {
         return FALSE;
     }
     return TRUE;

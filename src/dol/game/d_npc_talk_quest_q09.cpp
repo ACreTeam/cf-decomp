@@ -63,7 +63,7 @@ BOOL dAcNpcNml_c::talk_c::stepInviteChoice(int kind) {
         setChoiceNum(2);
         setChoiceCancel(1);
         showChoice();
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
@@ -727,7 +727,7 @@ void dAcNpcNml_c::talk_c::selInvitePresent() {
     if (item.isValid()) {
         appt->mItem = item;
         if (res == 1 && animal->removeNewItem(&item)) {
-            fn_800F0FE4(getNpcIdx(), &item);
+            dNpc::sendAnimalNewItemRemove(getNpcIdx(), &item);
         }
     }
     setMsgProc(&talk_c::msgInvitePresent);

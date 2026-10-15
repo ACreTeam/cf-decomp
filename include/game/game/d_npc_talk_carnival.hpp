@@ -35,7 +35,7 @@ enum carnivalState_e {
     CARNIVAL_GAME3 = 12,
     CARNIVAL_GAME4 = 16,
     CARNIVAL_GAME5 = 20,
-    CARNIVAL_PLAYED = 24,    // a game was already offered (getEntry() _28C.mEventTalked)
+    CARNIVAL_PLAYED = 24,    // a game was already offered (getEntry() mFlags.mEventTalked)
     CARNIVAL_STATE_NUM = 25  // no Festivale talk
 };
 

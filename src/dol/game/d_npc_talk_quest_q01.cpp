@@ -25,7 +25,7 @@ static char l_strUnit[] = "sys_STRING/STR_Unit";
 static inline void setPlayerUnit(talk_c *talk, const dPlayerID_c *player, int idx, dAnimal_c *animal) {
     talk->setPlayerName(player, idx);
     u8 gender = player->mGender;
-    u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+    u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
@@ -259,7 +259,7 @@ void dAcNpcNml_c::talk_c::endInsectWin(int arg) {
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
-                fn_800F0FE4(getNpcIdx(), &mItem0);
+                dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
@@ -292,7 +292,7 @@ BOOL dAcNpcNml_c::talk_c::stepInsectWin(int kind) {
             quest->clear();
         }
         if (animal != NULL && mItem3.isValid() && animal->addNewItem(&mItem3)) {
-            fn_800F0E9C(getNpcIdx(), &mItem3);
+            dNpc::sendAnimalNewItemAdd(getNpcIdx(), &mItem3);
         }
         setMsgProc(&talk_c::msgInsectReward);
         startMsg();

@@ -2576,7 +2576,7 @@ BOOL dNetTransfer_c::sendPlayer() {
         data[n] = &hasAnimal;
         size[n] = sizeof(hasAnimal);
         n++;
-        dNpcAnimal_c *animal = fn_800F4858();
+        dNpc::bufferedAnimal_c *animal = dNpc::getBufferedAnimal();
         if (animal == NULL) {
             hasAnimal = FALSE;
         } else {
@@ -2597,7 +2597,7 @@ BOOL dNetTransfer_c::sendPlayer() {
         size[n] = sizeof(scene);
         if (sendDirect(NET_MEMBER_NONE, data, size, n + 1,
                        NET_DIRECT_XFER_PLAYER, 0, 1, 0)) {
-            fn_800F4868();
+            dNpc::clearBufferedAnimal();
             for (u32 no = 0; no < NET_MEMBER_MAX; no++) {
                 if (no != 0 && no != self && getNetAccepted()->isOn(no)) {
                     getNetWatched()->on(no);

@@ -106,7 +106,7 @@ BOOL dAcNpcNml_c::talk_c::stepHideReq(int kind) {
         setChoiceProc(1, &talk_c::selHideNo);
         setChoiceNum(2);
         setChoiceCancel(1);
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
@@ -240,7 +240,7 @@ int dAcNpcNml_c::talk_c::msgHideQuest(msgInfo_s *info) {
 BOOL dAcNpcNml_c::talk_c::stepHideBadend(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dSaveData_c::getTown()->mAnimals.mTown.mHideAndSeek.clearInfo();
-        fn_800F0650();
+        dNpc::sendHideAndSeekClear();
         return TRUE;
     }
     return FALSE;
@@ -329,7 +329,7 @@ int dAcNpcNml_c::talk_c::msgHideHider(msgInfo_s *info) {
             if (pid->isValid()) {
                 setPersonalName(pid, 0);
                 if (animal != NULL) {
-                    u16 unit = fn_800F3F38(pid->player.getGender(), animal->mID.getLooks(1));
+                    u16 unit = dNpc::getPlayerUnitMessage(pid->player.getGender(), animal->mID.getLooks(1));
                     if (unit == 0) {
                         clearWord(1);
                     } else {
@@ -354,7 +354,7 @@ BOOL dAcNpcNml_c::talk_c::stepHideFind(int kind) {
         dQuestPlayerAnimal_c *game = &block->mHideAndSeek;
         if (slot < 3) {
             game->setFlag(slot);
-            fn_800F0708(slot);
+            dNpc::sendHideAndSeekFlag(slot);
         }
         if (game->countUnfound() == 0) {
             if (dNet::isSessionActive()) {
@@ -408,7 +408,7 @@ BOOL dAcNpcNml_c::talk_c::stepHideOver(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dQuestPlayerAnimal_c *game = &dSaveData_c::getTown()->mAnimals.mTown.mHideAndSeek;
         game->mBase.mState = 2;
-        fn_800F06A8(2);
+        dNpc::sendHideAndSeekState(2);
         if (dNet::isSessionActive()) {
             setProcSet(&l_talkProcSets[TALK_PROC_HIDE_LOSE]);
             startMsg();
@@ -455,7 +455,7 @@ void dAcNpcNml_c::talk_c::endHideReward(int arg) {
         if (present != dItem::ITEM_ID_NONE) {
             mItem0 = present;
             if (kind == 1 && animal->removeNewItem(&present)) {
-                fn_800F0FE4(getNpcIdx(), &mItem0);
+                dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             int pocket = player->findEmptyPocket(0);
             if (pocket == -1) {
@@ -470,7 +470,7 @@ void dAcNpcNml_c::talk_c::endHideReward(int arg) {
             setItemName(&present, 2);
         }
         game->mBase.mState = 3;
-        fn_800F06A8(3);
+        dNpc::sendHideAndSeekState(3);
     }
     fgMngProc_unblockDayChange();
 }
@@ -520,10 +520,10 @@ void dAcNpcNml_c::talk_c::endHideLose(int arg) {
     dQuestPlayerAnimal_c *game = &dSaveData_c::getTown()->mAnimals.mTown.mHideAndSeek;
     if (dNet::isSessionActive()) {
         game->clearInfo();
-        fn_800F0650();
+        dNpc::sendHideAndSeekClear();
     } else {
         game->mBase.mState = 3;
-        fn_800F06A8(3);
+        dNpc::sendHideAndSeekState(3);
     }
     fgMngProc_unblockDayChange();
 }

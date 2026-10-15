@@ -31,8 +31,7 @@
 #include <game/mLib/m_mtx.hpp>
 #include <revolution/MTX.h>
 
-#define NPC_SPECIES_NUM 33                 // villager species (per-species npc tables)
-#define NPC_SPECIAL_NUM 97                 // special npcs: item ids 0x8000 + 0..96, /Npc/Special/Model/0..96
+#include <game/game/d_npc_def.hpp>
 #define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
 #define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears
 #define MANPU_TYPE_NUM 78                  // manpu (emotion mark) types (manpuMgr_c::isValidType)

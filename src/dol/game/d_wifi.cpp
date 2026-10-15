@@ -506,7 +506,7 @@ BOOL onReceive(const u64 *key, const void *data, u32 size, const dWifiMsgHeader_
     case WIFI_MSG_ANIMAL:
         if (dSaveData_c::isNetEnabled() && header->mPartNum >= 2) {
             if (header->mOffset == 0x3040) {
-                fn_800F4A34((dAnimal_c *)data);
+                dNpc::receiveMovedAnimal((dAnimal_c *)data);
             }
             if (size - header->mOffset == sizeof(dLandID_c)) {
                 int idx = dSaveData_c::getExtra()->mWc24.findKey(key);
@@ -1172,7 +1172,7 @@ void updateDaily() {
         }
 
         if (dNetWc24::g_wc24.mLastError != NWC24_ERR_NAND_CORRUPT && dSaveWc24_c::getDaysSince(&wc24->_C6C)) {
-            dAnimal_c *animal = fn_800F4A08();
+            dAnimal_c *animal = dNpc::pickMovedAnimal();
             if (animal != NULL && sendAnimal(animal)) {
                 animal->clear();
                 dSaveWc24_c::setToday(&wc24->_C6C);
@@ -1483,7 +1483,7 @@ void onDistDownload(void *data, u32 size, BOOL arg) {
                 npcs[i] = NULL;
             }
             if (npcNum != 0) {
-                fn_800F4AB8(npcs);
+                dNpc::addRandomMovedAnimal(npcs);
             }
 
             design = arc->getFile("design.bin", &fileInfo);

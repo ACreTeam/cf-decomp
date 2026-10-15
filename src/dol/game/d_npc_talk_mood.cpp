@@ -116,7 +116,7 @@ BOOL dNpcMood_c::execute(dAcNpcNml_c *npc) {
     if (npc->mpEntry == NULL) {
         return FALSE;
     }
-    dNpcTimer_c *timer = &npc->mpEntry->mTimer;
+    dNpc::timer_c *timer = &npc->mpEntry->mMoodTimer;
     int mode = timer->getMode();
     dAcNpc_c::action_c *action;
     int anm = npc->getModel()->mAnm.mAnmId;

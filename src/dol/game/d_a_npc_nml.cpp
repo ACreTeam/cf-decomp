@@ -137,7 +137,7 @@ int dAcNpcNml_c::getFaceType() {
 void dAcNpcNml_c::setAnimal() {
     mpAnimal = dSaveData_c::getTown()->mAnimals.getAnimalByKey(&mNpcItem);
     if (mpAnimal != NULL) {
-        mpEntry = fn_800F3EE8(&mpAnimal->mID);
+        mpEntry = dNpc::getEntryByAnimal(&mpAnimal->mID);
     }
 }
 
@@ -170,7 +170,7 @@ u8 dAcNpcNml_c::getNameKind() {
 // 8002EF94
 f32 dAcNpcNml_c::getHandItemOfsX() const {
     if (mpAnimal != NULL) {
-        return getAnimalHandItemOfs(mpAnimal->getSpecies(), 0);
+        return dNpc::getAnimalHandItemOfs(mpAnimal->getSpecies(), 0);
     }
     return 0.0f;
 }
@@ -178,7 +178,7 @@ f32 dAcNpcNml_c::getHandItemOfsX() const {
 // 8002EFD4
 f32 dAcNpcNml_c::getHandItemOfsZ() const {
     if (mpAnimal != NULL) {
-        return getAnimalHandItemOfs(mpAnimal->getSpecies(), 1);
+        return dNpc::getAnimalHandItemOfs(mpAnimal->getSpecies(), 1);
     }
     return 0.0f;
 }
@@ -207,14 +207,14 @@ int dAcNpcNml_c::getVoiceType() const {
     dAnimal_c *animal = mpAnimal;
     int res = 0;
     if (animal != NULL && animal->mID.isValid()) {
-        res = fn_800F3FFC(animal->mID.getLooks(1));
+        res = dNpc::getPersonalityVoiceType(animal->mID.getLooks(1));
     }
     return res;
 }
 
 // 8002F0F8
 BOOL dAcNpcNml_c::isTradeFtr(u32 idx) {
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         return (mTradeFtrFlags >> idx) & 1;
     }
     return FALSE;
@@ -222,7 +222,7 @@ BOOL dAcNpcNml_c::isTradeFtr(u32 idx) {
 
 // 8002F118
 void dAcNpcNml_c::clearTradeFtr(u32 idx) {
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         mTradeFtrFlags &= ~(1 << idx);
     }
 }
@@ -230,7 +230,7 @@ void dAcNpcNml_c::clearTradeFtr(u32 idx) {
 // 8002F138
 int dAcNpcNml_c::getTradeFtrNum() {
     int count = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
         if (isTradeFtr(i)) {
             count++;
         }
@@ -264,7 +264,7 @@ void dAcNpcNml_c::selectTradeFtrs() {
     if (animal == NULL) {
         return;
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
         dItem::Item ftr = animal->getFtr(i);
         if (isSellableFtr(&ftr)) {
             mTradeFtrFlags |= 1 << i;
@@ -280,7 +280,7 @@ void dAcNpcNml_c::selectTradeFtrs() {
     for (; remove != 0; remove--) {
         u32 num = 0;
         int sel = -1;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
             if (isTradeFtr(i)) {
                 f32 rate = 100.0f / (num + 1);
                 if (cM::rndF(100.0f) <= rate) {
@@ -297,20 +297,20 @@ void dAcNpcNml_c::selectTradeFtrs() {
 int dAcNpcNml_c::getRoomFtrIdx(u32 x, u32 z) {
     dAnimal_c *animal = mpAnimal;
     if (animal == NULL) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
     int type = 1;
     int layout = animal->getRoomLayout(&type);
     if (layout == -1) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
     EGG::Heap *heap = EGG::Heap::getCurrentHeap();
     if (heap == NULL) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
     dItem::Item *items = (dItem::Item *)heap->alloc(0x100 * sizeof(dItem::Item), 4);
     if (items == NULL) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
     for (int i = 0; i < 0x100; i++) {
         new (&items[i]) dItem::Item;
@@ -321,7 +321,7 @@ int dAcNpcNml_c::getRoomFtrIdx(u32 x, u32 z) {
     } else {
         ok = dFgData_getLayout2((u16 *)items, layout);
     }
-    int slot = 10;
+    int slot = ANIMAL_FTR_COUNT;
     if (ok) {
         slot = getRoomFtrSlot(items, x, z);
     }
@@ -331,7 +331,7 @@ int dAcNpcNml_c::getRoomFtrIdx(u32 x, u32 z) {
 
 // 8002F568
 dItem::Item dAcNpcNml_c::getRoomFtrAt(int *outX, int *outZ, int x, int z) {
-    return fn_800F1BE4(outX, outZ, x, z, NULL, 0x44);
+    return dNpc::getFurnitureCoveringUnit(outX, outZ, x, z, NULL, 0x44);
 }
 
 // 8002F574
@@ -365,7 +365,7 @@ BOOL dAcNpcNml_c::isSessionFlag(u32 bit) {
 int dAcNpcNml_c::getSoundId() {
     dAnimal_c *animal = mpAnimal;
     int id = 0xFFFF;
-    if (animal != NULL && animal->mID.isValid() && mpEntry != NULL && !mpEntry->_28C.mTalked) {
+    if (animal != NULL && animal->mID.isValid() && mpEntry != NULL && !mpEntry->mFlags.mTalked) {
         id = (u16)animal->getSoundId();
     }
     return id;
@@ -444,12 +444,12 @@ int dAcNpcNml_c::create() {
     if (dAcNpc_c::create() == NOT_READY) {
         return NOT_READY;
     }
-    dNpcEntry_c *entry = mpEntry;
+    dNpc::entry_c *entry = mpEntry;
     if (entry != NULL) {
-        entry->_28C.mTalked = 0;
-        entry->_28C.mEventTalked = 0;
-        entry->mMsg2.clear();
-        entry->mTimer.update();
+        entry->mFlags.mTalked = 0;
+        entry->mFlags.mEventTalked = 0;
+        entry->mRememberedMessage.clear();
+        entry->mMoodTimer.update();
     }
     return SUCCEEDED;
 }
@@ -470,12 +470,12 @@ BOOL dAcNpcNml_c::setDaubToolChange(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mToolChange = 1;
     } else {
@@ -509,12 +509,12 @@ BOOL dAcNpcNml_c::setDaubToolChanged(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mToolChanged = 1;
     } else {
@@ -548,12 +548,12 @@ BOOL dAcNpcNml_c::setDaubMaskChange(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mMaskChange = 1;
     } else {
@@ -587,12 +587,12 @@ BOOL dAcNpcNml_c::setDaubInHouse(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mInHouse = 1;
     } else {
@@ -626,12 +626,12 @@ BOOL dAcNpcNml_c::setDaubWatchFireworks(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mWatchFireworks = 1;
     } else {
@@ -665,12 +665,12 @@ BOOL dAcNpcNml_c::setDaubClothChange(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mClothChange = 1;
     } else {
@@ -704,12 +704,12 @@ BOOL dAcNpcNml_c::setDaubClothChanged(BOOL on) {
     if (!isLocalOwner()) {
         return FALSE;
     }
-    dNpcDaub_c *daub = fn_800EFD04(&mNpcItem.mId);
+    dNpc::daub_c *daub = dNpc::getDaubByKey(&mNpcItem.mId);
     if (daub == NULL) {
         return FALSE;
     }
     daubData_s data;
-    daub->get11(&data, sizeof(data));
+    daub->getNpcData(&data, sizeof(data));
     if (on) {
         data.mClothChanged = 1;
     } else {
@@ -1130,7 +1130,7 @@ int dAcNpcNml_c::talk_c::getNpcIdx() {
 }
 
 // 80030DBC
-dNpcEntry_c *dAcNpcNml_c::talk_c::getEntry() {
+dNpc::entry_c *dAcNpcNml_c::talk_c::getEntry() {
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
     if (npc != NULL) {
         return npc->mpEntry;
@@ -1139,7 +1139,7 @@ dNpcEntry_c *dAcNpcNml_c::talk_c::getEntry() {
 }
 
 // 80030DD8
-dNpcEntry_c *dAcNpcNml_c::talk_c::getEntry() const {
+dNpc::entry_c *dAcNpcNml_c::talk_c::getEntry() const {
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
     if (npc != NULL) {
         return npc->mpEntry;
@@ -1194,14 +1194,14 @@ void dAcNpcNml_c::talk_c::recordMemoryTalk(dAnimalMemory_c **memory, u32 *memory
             if (*memory != NULL) {
                 (*memory)->init(pid, land, NULL);
                 (*memory)->updateLetterCond(0);
-                fn_800F0208(npcIdx, *memoryIdx, (*memory)->getImpression(), (*memory)->getTalkDays(),
+                dNpc::sendAnimalMemoryInit(npcIdx, *memoryIdx, (*memory)->getImpression(), (*memory)->getTalkDays(),
                             (*memory)->getFriendship());
                 animal->recordImpression(pid);
             }
         } else {
             (*memory)->updateLetterCond(0);
             (*memory)->updateTalk(pid, land, NULL);
-            fn_800F02A8(npcIdx, *memoryIdx, (*memory)->getImpression(), (*memory)->getTalkDays(),
+            dNpc::sendAnimalMemorySet(npcIdx, *memoryIdx, (*memory)->getImpression(), (*memory)->getTalkDays(),
                         (*memory)->getFriendship());
             animal->recordImpression(pid);
         }
@@ -1325,7 +1325,7 @@ BOOL dAcNpcNml_c::talk_c::reqSell() {
             return FALSE;
         }
         if (animal->removeNewItem(&mItem0)) {
-            fn_800F0FE4(getNpcIdx(), &mItem0);
+            dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
         }
     }
     if (player->pickUp(&mItem0, FALSE)) {
@@ -1372,11 +1372,11 @@ BOOL dAcNpcNml_c::talk_c::reqBuy() {
         }
     }
     if (animal->addNewItem(&mItem0)) {
-        fn_800F0E9C(getNpcIdx(), &mItem0);
+        dNpc::sendAnimalNewItemAdd(getNpcIdx(), &mItem0);
     }
     if (mpMemory != NULL && mMemoryIdx < 16) {
         if (mpMemory->setPresent(&mItem0)) {
-            fn_800F1514(getNpcIdx(), mMemoryIdx, &mItem0);
+            dNpc::sendAnimalPresent(getNpcIdx(), mMemoryIdx, &mItem0);
         }
     }
     dItem::Item money(dItem::ITEM_IDX_100_BELLS);
@@ -1416,15 +1416,15 @@ BOOL dAcNpcNml_c::talk_c::reqTrade() {
     }
     if (mIsAnimalItem) {
         if (animal->removeNewItem(&mItem0)) {
-            fn_800F0FE4(getNpcIdx(), &mItem0);
+            dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
         }
     }
     if (animal->addNewItem(&mItem2)) {
-        fn_800F0E9C(getNpcIdx(), &mItem2);
+        dNpc::sendAnimalNewItemAdd(getNpcIdx(), &mItem2);
     }
     if (mpMemory != NULL && mMemoryIdx < 16) {
         if (mpMemory->setPresent(&mItem2)) {
-            fn_800F1514(getNpcIdx(), mMemoryIdx, &mItem2);
+            dNpc::sendAnimalPresent(getNpcIdx(), mMemoryIdx, &mItem2);
         }
     }
     requestItemAct(&mItem0, 0, 0);
@@ -1795,9 +1795,9 @@ void dAcNpcNml_c::talk_c::onTalkEnd() {
         (this->*mTalkEndProc)();
         mTalkEndProc = NULL;
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->_28C.mTalked = 1;
+        entry->mFlags.mTalked = 1;
     }
 }
 
@@ -1811,14 +1811,14 @@ const dAcNpcNml_c::talk_c::procSet_s *dAcNpcNml_c::talk_c::getProcSet(int idx) {
 
 // 800326A0
 dNpc::msgMemorySecond_c *dAcNpcNml_c::talk_c::getRememberedMsg() {
-    dNpcEntry_c *entry = getEntry();
-    return entry != NULL ? &entry->mMsg2 : NULL;
+    dNpc::entry_c *entry = getEntry();
+    return entry != NULL ? &entry->mRememberedMessage : NULL;
 }
 
 // 800326D4
 dNpc::msgMemorySecond_c *dAcNpcNml_c::talk_c::getRememberedMsg() const {
-    dNpcEntry_c *entry = getEntry();
-    return entry != NULL ? &entry->mMsg2 : NULL;
+    dNpc::entry_c *entry = getEntry();
+    return entry != NULL ? &entry->mRememberedMessage : NULL;
 }
 
 // 80032708
@@ -1842,8 +1842,8 @@ BOOL dAcNpcNml_c::talk_c::rememberMsg(const char *label, u16 code) {
     dNpc::msgMemorySecond_c *mem = getRememberedMsg();
     if (mem != NULL) {
         mem->set(label, code, mTopicKind, mTopicGroup, mTopicIdx);
-        mem->setA0(mJinxTown);
-        mem->setA4(mRumorTown);
+        mem->setJinxTown(mJinxTown);
+        mem->setRumorTown(mRumorTown);
         if (mMsgPersonal.isValid()) {
             mem->setPersonal(&mMsgPersonal);
         }
@@ -1864,10 +1864,10 @@ BOOL dAcNpcNml_c::talk_c::rememberMsg(const char *label, u16 code) {
             mem->setText(text);
         }
         if (mImpression < 50) {
-            mem->setAC(mImpression);
+            mem->setImpression(mImpression);
         }
         if (mMsgYear >= 0) {
-            mem->_A8 = mMsgYear;
+            mem->mMessageYear = mMsgYear;
         }
         return TRUE;
     }
@@ -1980,8 +1980,8 @@ int dAcNpcNml_c::talk_c::isSpeakerItchy() {
 int dAcNpcNml_c::talk_c::getVoiceMood() {
     static const int l_moodByTimer[5] = {0, 4, 1, 2, 1};
     int mood = 0;
-    dNpcEntry_c *entry = getEntry();
-    int mode = entry != NULL ? entry->mTimer.getMode() : 5;
+    dNpc::entry_c *entry = getEntry();
+    int mode = entry != NULL ? entry->mMoodTimer.getMode() : 5;
     if ((u32)mode < 5) {
         mood = l_moodByTimer[mode];
     }
@@ -2514,7 +2514,7 @@ void dAcNpcNml_c::talk_c::endReaction(int arg) {
 BOOL dAcNpcNml_c::talk_c::stepReaction(int kind) {
     dMsg::Comp_c *ctrl = getController();
     if (ctrl != NULL && ctrl->mNextMsgCode == 0) {
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
@@ -2629,9 +2629,9 @@ void dAcNpcNml_c::talk_c::endQuestTalk(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mCountTalk) {
         if (mpMemory != NULL) {
@@ -2729,14 +2729,14 @@ int dAcNpcNml_c::talk_c::startQuestOffer(msgInfo_s *info, int labelIdx, endFunc 
     if (mpNpc != NULL && static_cast<dAcNpcNml_c *>(mpNpc)->vtCC()) {
         busy = TRUE;
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (busy) {
         sub = 0;
     } else if (checkTalk) {
         if (mpMemory != NULL && mpMemory->mTalkCount.mCount == 0) {
             sub = 1;
         } else {
-            BOOL flag = entry != NULL ? entry->_28C.mTalked != 0 : TRUE;
+            BOOL flag = entry != NULL ? entry->mFlags.mTalked != 0 : TRUE;
             if (flag) {
                 sub = 2;
             }
@@ -2758,7 +2758,7 @@ int dAcNpcNml_c::talk_c::startQuestOffer(msgInfo_s *info, int labelIdx, endFunc 
     }
     default:
         if (entry != NULL) {
-            entry->_28C.mTalked = 0;
+            entry->mFlags.mTalked = 0;
         }
         msgGreeting(info);
         setTopic(dNpc::msgMemory_c::KIND_QUEST, labelIdx, 0);
@@ -2870,7 +2870,7 @@ int dAcNpcNml_c::talk_c::msgPendingQuest(msgInfo_s *info, f32 chance) {
         {&talk_c::msgHideOffer, 0x14},
     };
     if (cM::rndF(100.0f) < chance) {
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL && quest->isActive()) {
             for (int i = 0; i < 11; i++) {
@@ -2888,8 +2888,8 @@ int dAcNpcNml_c::talk_c::msgPendingQuest(msgInfo_s *info, f32 chance) {
 
 // 800349C0
 int dAcNpcNml_c::talk_c::msgQuestOffer(msgInfo_s *info) {
-    dNpcEntry_c *entry = getEntry();
-    f32 chance = (entry != NULL ? entry->_28C.mTalked != 0 : TRUE) ? 10.0f : 20.0f;
+    dNpc::entry_c *entry = getEntry();
+    f32 chance = (entry != NULL ? entry->mFlags.mTalked != 0 : TRUE) ? 10.0f : 20.0f;
     return msgPendingQuest(info, chance);
 }
 
@@ -2900,9 +2900,9 @@ void dAcNpcNml_c::talk_c::endQuestOffer(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
@@ -2970,7 +2970,7 @@ BOOL dAcNpcNml_c::talk_c::stepRequestChoice(int kind) {
         setChoiceNum(2);
         setChoiceCancel(1);
         showChoice();
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         dQuestBase_c *quest = entry != NULL ? &entry->mQuest : NULL;
         if (quest != NULL) {
             quest->clear();
@@ -3075,10 +3075,10 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                 case 0:
                     switch (sub) {
                     case 4:
-                        setMemoryWords(&mem->mPersonal, &mem->mLand, mem->_AC, &mem->mItem0, animal);
+                        setMemoryWords(&mem->mPersonal, &mem->mLand, mem->mImpression, &mem->mItem0, animal);
                         break;
                     case 6: {
-                        mJinxTown = mem->_A0;
+                        mJinxTown = mem->mJinxTown;
                         dSvTownList::Entry_c *town = getJinxTown();
                         const dSaveJinx_c *jinx = getJinx(town);
                         const dLandID_c *land = town != NULL ? &town->mLand : NULL;
@@ -3089,7 +3089,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                         break;
                     }
                     case 5: {
-                        mRumorTown = mem->_A4;
+                        mRumorTown = mem->mRumorTown;
                         u32 idx = mRumorTown;
                         if (idx < 4) {
                             otherTown = &dSaveData_c::getRaw()->mOtherTowns[idx];
@@ -3100,7 +3100,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                     setPersonalName(player, 1);
                                     if (animal != NULL) {
                                         u8 gender = player->player.mGender;
-                                        u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+                                        u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
                                         if (unit == 0) {
                                             clearWord(2);
                                         } else {
@@ -3115,7 +3115,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                 if (villager->isValid()) {
                                     setAnmPersonalName(villager, 4);
                                     if (animal != NULL) {
-                                        u16 unit = fn_800F3F38(villager->getGender(1), animal->mID.getLooks(1));
+                                        u16 unit = dNpc::getPlayerUnitMessage(villager->getGender(1), animal->mID.getLooks(1));
                                         if (unit == 0) {
                                             clearWord(5);
                                         } else {
@@ -3179,7 +3179,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                             setPersonalName(personal, 0);
                             if (animal != NULL) {
                                 u8 gender = personal->player.mGender;
-                                u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+                                u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
                                 if (unit == 0) {
                                     clearWord(1);
                                 } else {
@@ -3233,7 +3233,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                 case 2:
                     switch (sub) {
                     case 2: {
-                        int year = mem->_A8;
+                        int year = mem->mMessageYear;
                         if (year >= 0) {
                             setNumber4(year, 0);
                             mMsgYear = year;
@@ -3252,7 +3252,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                         setPlayerName(playerID, 2);
                         if (animal != NULL) {
                             u8 gender = playerID->mGender;
-                            u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+                            u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
                             if (unit == 0) {
                                 clearWord(3);
                             } else {
@@ -3275,7 +3275,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                                 dAnmPersonalID_c *recipient = errand->getAnimal(0);
                                 if (recipient->isValid()) {
                                     setAnmPersonalName(recipient, 2);
-                                    u16 unit = fn_800F3F38(recipient->getGender(1), animal->mID.getLooks(1));
+                                    u16 unit = dNpc::getPlayerUnitMessage(recipient->getGender(1), animal->mID.getLooks(1));
                                     if (unit == 0) {
                                         clearWord(3);
                                     } else {
@@ -3299,9 +3299,9 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
 // 800357DC
 void dAcNpcNml_c::talk_c::endRecall(int arg) {
     recordTalk(NULL);
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -3318,8 +3318,8 @@ static inline BOOL isWeatherIn(int mode, int want) {
 }
 
 int dAcNpcNml_c::talk_c::msgGreeting(msgInfo_s *info) {
-    dNpcEntry_c *entry = getEntry();
-    BOOL flag = entry != NULL ? entry->_28C.mTalked != 0 : TRUE;
+    dNpc::entry_c *entry = getEntry();
+    BOOL flag = entry != NULL ? entry->mFlags.mTalked != 0 : TRUE;
     if (!flag) {
         dAnimalMemory_c *memory = mpMemory;
         if (memory != NULL) {

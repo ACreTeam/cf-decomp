@@ -1437,7 +1437,7 @@ BOOL dAnimalSpot_c::pickWishSpot(dAnimal_c *animal, dAnimalBlock_c *block) {
     }
 
     setSpot(this, x, z, 0);
-    fn_800F0B64(idx, x, z, 0);
+    dNpc::sendAnimalSpot(idx, x, z, 0);
     return TRUE;
 }
 
@@ -1455,7 +1455,7 @@ BOOL dAnimalSpot_c::setHomeSpot1(dAnimal_c *animal, dAnimalBlock_c *block) {
     }
 
     setSpot(this, x, z, 1);
-    fn_800F0B64(idx, x, z, 1);
+    dNpc::sendAnimalSpot(idx, x, z, 1);
     return TRUE;
 }
 
@@ -1473,7 +1473,7 @@ BOOL dAnimalSpot_c::setHomeSpot2(dAnimal_c *animal, dAnimalBlock_c *block) {
     }
 
     setSpot(this, x, z, 2);
-    fn_800F0B64(idx, x, z, 2);
+    dNpc::sendAnimalSpot(idx, x, z, 2);
     return TRUE;
 }
 
@@ -1491,7 +1491,7 @@ BOOL dAnimalSpot_c::setHomeSpot3(dAnimal_c *animal, dAnimalBlock_c *block) {
     }
 
     setSpot(this, x, z, 3);
-    fn_800F0B64(idx, x, z, 3);
+    dNpc::sendAnimalSpot(idx, x, z, 3);
     return TRUE;
 }
 
@@ -1509,7 +1509,7 @@ BOOL dAnimalSpot_c::setTownHallSpot(dAnimal_c *animal, dAnimalBlock_c *block) {
     }
 
     setSpot(this, x, z, 0);
-    fn_800F0B64(idx, x, z, 0);
+    dNpc::sendAnimalSpot(idx, x, z, 0);
     return TRUE;
 }
 
@@ -1925,7 +1925,7 @@ BOOL dAnimal_c::getGreeting(dScript::Word_c *word, const dPersonalID_c *pid) {
 // 8011F3BC
 dItem::Item getTemplateFtr(u32 idx, const dAnimalTemplate_c *tmpl) {
     dItem::Item item;
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         switch (idx) {
         case 0: item = (int)tmpl->mFurniture[0]; break;
         case 1: item = (int)tmpl->mFurniture[1]; break;
@@ -1949,7 +1949,7 @@ dItem::Item dAnimal_c::getFtr(u32 idx) {
 
 // 8011F478
 void dAnimal_c::clearFtr(u32 idx) {
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         switch (idx) {
         case 0: mTemplate.mFurniture[0] = dItem::ITEM_ID_NONE; break;
         case 1: mTemplate.mFurniture[1] = dItem::ITEM_ID_NONE; break;
@@ -1972,7 +1972,7 @@ BOOL dAnimal_c::setFtr(u32 idx, const dItem::Item *item) {
     }
 
     BOOL res = FALSE;
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         switch (idx) {
         case 0: mTemplate.mFurniture[0] = (u16)item->mId; res = TRUE; break;
         case 1: mTemplate.mFurniture[1] = (u16)item->mId; res = TRUE; break;
@@ -1992,7 +1992,7 @@ BOOL dAnimal_c::setFtr(u32 idx, const dItem::Item *item) {
 // 8011F638
 int dAnimal_c::countFtr() {
     int count = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
         dItem::Item item = getFtr(i);
         if (item.mId != dItem::ITEM_ID_NONE && isHouseItem(&item)) {
             count++;
@@ -2004,7 +2004,7 @@ int dAnimal_c::countFtr() {
 // 8011F6B8
 int dAnimal_c::findFtr(const dItem::Item *item) {
     if (item->mId != dItem::ITEM_ID_NONE) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
             if (item->isSame(getFtr(i))) {
                 return i;
             }
@@ -2014,9 +2014,9 @@ int dAnimal_c::findFtr(const dItem::Item *item) {
 }
 
 // 8011F740
-// Furniture slot of a room placeholder item, or 10.
+// Furniture slot of a room placeholder item, or ANIMAL_FTR_COUNT.
 u32 getFtrSlotOfPlaceholder(const dItem::Item *item) {
-    u32 res = 10;
+    u32 res = ANIMAL_FTR_COUNT;
     if (isFurnitureSlotId(item->mId)) {
         int idx = getFurnitureSlotIdx(item->mId);
         if (idx != -1) {
@@ -2080,16 +2080,16 @@ u32 getRoomFtrSlot(const dItem::Item *room, u32 x, u32 z) {
         idx += x;
         return getFtrSlotOfPlaceholder(&room[idx]);
     }
-    return 10;
+    return ANIMAL_FTR_COUNT;
 }
 
 // 8011F8EC
 // Furniture slot range [*start, *end) for a size class.
 BOOL getFtrSlotRange(int *start, int *end, u32 size, BOOL wish) {
     static const int sStart[dItem::FTR_SIZE_COUNT] = {5, 1, 0};
-    static const int sEnd[dItem::FTR_SIZE_COUNT] = {10, 5, 1};
+    static const int sEnd[dItem::FTR_SIZE_COUNT] = {ANIMAL_FTR_COUNT, 5, 1};
     static const int sWishStart[dItem::FTR_SIZE_COUNT] = {5, 3, 0};
-    static const int sWishEnd[dItem::FTR_SIZE_COUNT] = {10, 5, 3};
+    static const int sWishEnd[dItem::FTR_SIZE_COUNT] = {ANIMAL_FTR_COUNT, 5, 3};
 
     if (size >= dItem::FTR_SIZE_COUNT) {
         return FALSE;
@@ -2107,23 +2107,23 @@ BOOL getFtrSlotRange(int *start, int *end, u32 size, BOOL wish) {
 }
 
 // 8011F938
-// Fixed slot for a fossil (by its position in the fossil set), or 10.
+// Fixed slot for a fossil (by its position in the fossil set), or ANIMAL_FTR_COUNT.
 int getFossilSlot(const dItem::Item *item, int start, int end, BOOL wish) {
     if (!wish) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
 
     if (item->mId == dItem::ITEM_ID_NONE) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
 
     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
     if (bitm == NULL || bitm->getKind() != dItem::KIND_FOSSIL) {
-        return 10;
+        return ANIMAL_FTR_COUNT;
     }
 
     int size = bitm->getFtrSize();
-    int res = 10;
+    int res = ANIMAL_FTR_COUNT;
     if (size >= dItem::FTR_SIZE_1x2 && size <= dItem::FTR_SIZE_2x2) {
         int fossil = 0;
         u32 raw = bitm->m_fossil;
@@ -2206,14 +2206,14 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
         wish->isWishItem(item);
         BOOL isWish = wish->isValid() ? wish->mKind == 2 : FALSE;
 
-        int start = 10;
-        int end = 10;
+        int start = ANIMAL_FTR_COUNT;
+        int end = ANIMAL_FTR_COUNT;
         if (!getFtrSlotRange(&start, &end, size, isWish)) {
             return FALSE;
         }
 
         int slot = getFossilSlot(item, start, end, isWish);
-        if (slot < 10) {
+        if (slot < ANIMAL_FTR_COUNT) {
             dItem::Item cur = getFtr(slot);
             if (cur.isSame(*item)) {
                 *out = *item;
@@ -2231,7 +2231,7 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
 
             if (setFtr(slot, item)) {
                 if (notify) {
-                    fn_800F0DD4(idx, slot, item);
+                    dNpc::sendAnimalFtrSet(idx, slot, item);
                 }
                 *out = cur;
                 return TRUE;
@@ -2241,7 +2241,7 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
             return FALSE;
         }
 
-        int pick = 10;
+        int pick = ANIMAL_FTR_COUNT;
         u32 count = 0;
         for (int i = start; i < end; i++) {
             dItem::Item cur = getFtr(i);
@@ -2254,7 +2254,7 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
             }
         }
 
-        if (pick == 10) {
+        if (pick == ANIMAL_FTR_COUNT) {
             count = 0;
             for (int i = start; i < end; i++) {
                 dItem::Item cur = getFtr(i);
@@ -2268,7 +2268,7 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
             }
         }
 
-        if (pick == 10) {
+        if (pick == ANIMAL_FTR_COUNT) {
             count = 0;
             for (int i = start; i < end; i++) {
                 dItem::Item cur = getFtr(i);
@@ -2282,11 +2282,11 @@ BOOL dAnimal_c::placeFtr(const dItem::Item *item, int idx, BOOL notify, dItem::I
             }
         }
 
-        if (pick < 10) {
+        if (pick < ANIMAL_FTR_COUNT) {
             dItem::Item cur = getFtr(pick);
             if (setFtr(pick, item)) {
                 if (notify) {
-                    fn_800F0DD4(idx, pick, item);
+                    dNpc::sendAnimalFtrSet(idx, pick, item);
                 }
                 *out = cur;
                 return TRUE;
@@ -2305,10 +2305,10 @@ BOOL dAnimal_c::throwAwayFtr() {
         return FALSE;
     }
 
-    u32 pick = 10;
+    u32 pick = ANIMAL_FTR_COUNT;
     dQuestWish_c *wish = &mQuest.mWish;
     u32 count = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
         dItem::Item item = getFtr(i);
         if (item.mId != dItem::ITEM_ID_NONE && !wish->isWishItem(&item)) {
             count++;
@@ -2319,7 +2319,7 @@ BOOL dAnimal_c::throwAwayFtr() {
         }
     }
 
-    if (pick < 10) {
+    if (pick < ANIMAL_FTR_COUNT) {
         dItem::Item item = getFtr(pick);
         clearFtr(pick);
         dSaveData_c::getTown()->mRecycleBin.add(item.mId);
@@ -2355,7 +2355,7 @@ void dAnimal_c::applyRoomFtr(dItem::Item *room) {
     for (int i = 0; i < 256; i++, room++) {
         if (isFurnitureSlotId(room->mId)) {
             u32 slot = getFtrSlotOfPlaceholder(room);
-            if (slot < 10) {
+            if (slot < ANIMAL_FTR_COUNT) {
                 dItem::Item item = getFtr(slot);
                 BOOL ok = isHouseItem(&item);
                 if (flag && ok) {
@@ -2405,7 +2405,7 @@ void dAnimal_c::validateHouse() {
         return;
     }
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
         dItem::Item item = getFtr(i);
         dItem::Item copy = item;
         if (item.mId != dItem::ITEM_ID_NONE) {
@@ -2419,7 +2419,7 @@ void dAnimal_c::validateHouse() {
     u32 count = countFtr();
     u32 i = 0;
     static dAnimalItemRange_c sRange(dItem::KIND_FTR, 0);
-    for (; i < 10 && count < 5; i++) {
+    for (; i < ANIMAL_FTR_COUNT && count < 5; i++) {
         dItem::Item item;
         if (dItemSel::select(&item, 1, reinterpret_cast<const dItemSel::Range_c *>(&sRange.mKind), 1, &dItemSel::sDefaultFilter, 0, 0, 0) && item.mId != dItem::ITEM_ID_NONE &&
             placeFtr(&item, -1, FALSE, NULL)) {
@@ -2696,7 +2696,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
         }
         setWall(&next);
         if (notify) {
-            fn_800F109C(idx, getWall());
+            dNpc::sendAnimalWall(idx, getWall());
         }
     }
 
@@ -2708,7 +2708,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
         }
         setCarpet(&next);
         if (notify) {
-            fn_800F1154(idx, getCarpet());
+            dNpc::sendAnimalCarpet(idx, getCarpet());
         }
     }
 
@@ -2718,7 +2718,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
         if (next.mId != dItem::ITEM_ID_NONE) {
             setMusic(&next);
             if (notify) {
-                fn_800F120C(idx, ptrTo(getMusic()));
+                dNpc::sendAnimalMusic(idx, ptrTo(getMusic()));
             }
         }
     }
@@ -2793,7 +2793,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
     if (countNewItems()) {
         clearNewItems();
         if (notify) {
-            fn_800F0F3C(idx);
+            dNpc::sendAnimalNewItemClear(idx);
         }
     }
 
@@ -2805,7 +2805,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
             if (state == QUEST_REQUEST_WON || state == QUEST_REQUEST_RETURN) {
                 quest->mState = QUEST_REQUEST_DISPLAYED;
                 if (notify) {
-                    fn_800F12D8(idx, QUEST_KIND_REQUEST_FOSSIL, QUEST_REQUEST_DISPLAYED);
+                    dNpc::sendAnimalQuestState(idx, QUEST_KIND_REQUEST_FOSSIL, QUEST_REQUEST_DISPLAYED);
                 }
             }
             break;
@@ -2813,7 +2813,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
             if (state == QUEST_REQUEST_WON || state == QUEST_REQUEST_RETURN) {
                 quest->mState = QUEST_REQUEST_DISPLAYED;
                 if (notify) {
-                    fn_800F12D8(idx, QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_DISPLAYED);
+                    dNpc::sendAnimalQuestState(idx, QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_DISPLAYED);
                 }
             }
             break;
@@ -2830,7 +2830,6 @@ struct dNpcPair_c;
 }
 
 // C++ linkage (mangled in symbols.txt), d_npc.
-void fn_800F46CC(const dAnmPersonalID_c *animal, int slot);
 
 // Same layout as d_npc's pair table entries for fn_800C60B4.
 struct dNpcPair_c {
@@ -3310,10 +3309,10 @@ BOOL dAnimal_c::receiveLetter(dMail_c *mail, int slot) {
     dItem::Item present = mail->getPresent();
     if (present.mId != dItem::ITEM_ID_NONE) {
         if (addNewItem(&present)) {
-            fn_800F0E9C(slot, &present);
+            dNpc::sendAnimalNewItemAdd(slot, &present);
         }
         if (mem->setPresent(&present)) {
-            fn_800F1514(slot, idx, &present);
+            dNpc::sendAnimalPresent(slot, idx, &present);
         }
     }
     return TRUE;
@@ -3413,7 +3412,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
                 break;
             }
             case 2:
-                fn_800F45A4(&present, 1, &dItemSel::sDefaultFilter, NULL, 0);
+                dNpc::selectRoomItems(&present, 1, &dItemSel::sDefaultFilter, NULL, 0);
                 break;
             default: {
                 static dNpcPair_c sPair(dItem::KIND_CLOTH, 0);
@@ -3436,7 +3435,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
             bodyIdx = rndCount(num);
         }
         dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
-        fn_800F46CC(&mID, 0);
+        dNpc::setAnimalNameWord(&mID, 0);
         sMail.clear();
         sMail.setupFromAnimal(&header, &bodyIdx, &footer, label, body, label, &mID, pid,
                               &paper);
@@ -3456,7 +3455,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         u16 header = rndCount(dLetter::getToNum(label));
         u16 body = rndCount(dLetter::getMsgNum(label));
         dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
-        fn_800F46CC(&mID, 0);
+        dNpc::setAnimalNameWord(&mID, 0);
         sMail.clear();
         sMail.setupFromAnimal(&header, &body, &footer, label, label, label, &mID, pid,
                               &paper);
@@ -3477,7 +3476,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
                 break;
             }
             case 2:
-                fn_800F45A4(&present, 1, &dItemSel::sDefaultFilter, NULL, 0);
+                dNpc::selectRoomItems(&present, 1, &dItemSel::sDefaultFilter, NULL, 0);
                 break;
             default: {
                 static dNpcPair_c sPair(dItem::KIND_CLOTH, 0);
@@ -3498,7 +3497,7 @@ BOOL dAnimal_c::writeReplyLetter(dMail_c *mail, dPrivateData_c *player) {
         u16 c = rndCount(num2);
         u16 d = rndCount(num2);
         dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
-        fn_800F46CC(&mID, 0);
+        dNpc::setAnimalNameWord(&mID, 0);
         sMail.clear();
         sMail.setupFromAnimal(&a, &b, &c, &d, &e, body, label, &mID, pid, &paper);
         dItem::Item copy = present;
@@ -3661,7 +3660,7 @@ struct dAnimalPair_c {
     /* 0x4 */ int mB;
 };
 
-// Item filter passed to fn_800F45A4 and friends: skips items in the player's catalog.
+// Item filter passed to dNpc::selectRoomItems and friends: skips items in the player's catalog.
 struct dAnimalCatalogFilter_c {
     dAnimalCatalogFilter_c(dCatalog_c *catalog, int kind) : mCatalog(catalog), _4(0), _8(kind) {}
 
@@ -3671,7 +3670,7 @@ struct dAnimalCatalogFilter_c {
 };
 
 static inline int getBITMStyle(const dItem::BITM *bitm) {
-    return bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_CUTE;
+    return bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_UNSET;
 }
 
 static inline int getBITMSeries(const dItem::BITM *bitm) {
@@ -3743,7 +3742,7 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
 
     switch (ret) {
     case 0:
-        fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
+        dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         break;
     case 1: {
         dItem::Item *p = pickNewItem(NULL, 0, FALSE);
@@ -3768,7 +3767,7 @@ u32 dAnimal_c::pickErrandReward(dItem::Item *item, int *price, dPrivateData_c *p
     }
 
     if (item->mId == dItem::ITEM_ID_NONE) {
-        fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
+        dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         ret = 3;
         if (item->mId != dItem::ITEM_ID_NONE) {
             ret = 0;
@@ -3806,10 +3805,10 @@ BOOL dAnimal_c::sendErrandThanksLetter(const dPersonalID_c *to, dAnmPersonalID_c
     u16 c = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
-    fn_800F46CC(&mID, 0);
-    fn_800F46CC(other, 1);
+    dNpc::setAnimalNameWord(&mID, 0);
+    dNpc::setAnimalNameWord(other, 1);
     looks = mID.getLooks(1);
-    fn_800F4794(other->getGender(1), looks, 2);
+    dNpc::setPlayerUnitWord(other->getGender(1), looks, 2);
 
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, label, label, label, &mID, to, &paper);
@@ -3863,7 +3862,7 @@ BOOL dAnimal_c::completeErrandRequest(u32 idx, dPrivateData_c *player, BOOL tryD
 
     if (sendErrandThanksLetter(&player->mPID, errand->getAnimal(1), &item, tryDirect)) {
         if (ret == 1 && removeNewItem(&item) && idx < ANIMAL_NUM) {
-            fn_800F0FE4(idx, &item);
+            dNpc::sendAnimalNewItemRemove(idx, &item);
         }
         errand->clear();
         return TRUE;
@@ -3938,8 +3937,8 @@ u32 dAnimal_c::pickErrandFinalReward(dItem::Item *item, int *price, dPrivateData
 
     if (item->mId == dItem::ITEM_ID_NONE) {
         dAnimalCatalogFilter_c filter(&player->mCatalog, 0x23);
-        if (!fn_800F4608(item, 1, &filter, NULL, 0)) {
-            fn_800F4608(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
+        if (!dNpc::selectGroupARoomItems(item, 1, &filter, NULL, 0)) {
+            dNpc::selectGroupARoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         }
         ret = 4;
         if (item->mId != dItem::ITEM_ID_NONE) {
@@ -3993,7 +3992,7 @@ BOOL dAnimal_c::completeErrandRequestFinal(u32 idx, dPrivateData_c *player, BOOL
 
     if (sendErrandThanksLetter(&player->mPID, errand->getAnimal(1), &item, tryDirect)) {
         if (ret == 1 && removeNewItem(&item) && idx < ANIMAL_NUM) {
-            fn_800F0FE4(idx, &item);
+            dNpc::sendAnimalNewItemRemove(idx, &item);
         }
         errand->clear();
         return TRUE;
@@ -4303,9 +4302,9 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
     switch (mode) {
     case 2: {
         dAnimalCatalogFilter_c filter(&player->mCatalog, 0x20);
-        if (fn_800F45A4(item, 1, &filter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &filter, NULL, 0)) {
             ret = 0;
-        } else if (fn_800F4668(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        } else if (dNpc::selectGroupCRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
         base = 700;
@@ -4347,7 +4346,7 @@ u32 dAnimal_c::pickInsectFishReward(dItem::Item *item, int *price, dPrivateData_
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4417,9 +4416,9 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
                 *item = *p;
             }
             base = 700;
-        } else if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        } else if (dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
-        } else if (fn_800F4668(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        } else if (dNpc::selectGroupCRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
         break;
@@ -4453,7 +4452,7 @@ u32 dAnimal_c::pickFossilReward(dItem::Item *item, int *price, dPrivateData_c *p
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4519,9 +4518,9 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
     switch (mode) {
     case 0: {
         dAnimalCatalogFilter_c filter(&player->mCatalog, 0x20);
-        if (fn_800F45A4(item, 1, &filter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &filter, NULL, 0)) {
             ret = 0;
-        } else if (fn_800F4668(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        } else if (dNpc::selectGroupCRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
         base = 700;
@@ -4563,7 +4562,7 @@ u32 dAnimal_c::pickClothReward(dItem::Item *item, int *price, dPrivateData_c *pl
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4723,7 +4722,7 @@ u32 dAnimal_c::pickFtrReward(dItem::Item *item, int *price, dPrivateData_c *play
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4768,7 +4767,7 @@ u32 dAnimal_c::pickLostItemReward(dItem::Item *item, int *price, dPrivateData_c 
     }
 
     if (item->mId == dItem::ITEM_ID_NONE || ret == 3) {
-        if (fn_800F45A4(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
+        if (dNpc::selectRoomItems(item, 1, &dItemSel::sDefaultFilter, NULL, 0)) {
             ret = 0;
         }
     }
@@ -4791,7 +4790,7 @@ int dAnimal_c::pickSickReward(dItem::Item *item, dPrivateData_c *player) {
     }
 
     dAnimalCatalogFilter_c filter(&player->mCatalog, 0x20);
-    if (fn_800F45A4(item, 1, &filter, NULL, 0)) {
+    if (dNpc::selectRoomItems(item, 1, &filter, NULL, 0)) {
         return 0;
     }
 
@@ -4832,7 +4831,7 @@ BOOL dAnimal_c::sendSickThanksLetter(const dPersonalID_c *to, const dItem::Item 
     u16 c = n > 1 ? (u16)(cM::rndInt(n - 1) + 1) : 1;
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
-    fn_800F46CC(&mID, 0);
+    dNpc::setAnimalNameWord(&mID, 0);
 
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
@@ -5010,7 +5009,7 @@ BOOL dAnimal_c::sendTunekichiLetter(const dPersonalID_c *to, BOOL invite, BOOL f
         paper = dPaper::getPaper(looks, season);
     }
 
-    fn_800F46CC(&mID, 0);
+    dNpc::setAnimalNameWord(&mID, 0);
     sMail.clear();
     sMail.setupFromAnimal(&kind, sTunekichiLabels[looks], id, to, &paper);
     if (invite) {
@@ -5058,7 +5057,7 @@ BOOL dAnimal_c::sendBirthdayLetter(const dPersonalID_c *to, const dItem::Item *p
     u16 c = pickLetterPart(dLetter::getFromNum(label));
     dItem::Item paper(dItem::ITEM_IDX_BIRTHDAY_CARD);
 
-    fn_800F46CC(&mID, 0);
+    dNpc::setAnimalNameWord(&mID, 0);
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
@@ -5106,7 +5105,7 @@ BOOL dAnimal_c::sendValentineLetter(const dPersonalID_c *to, const dItem::Item *
     }
     dItem::Item paper(dItem::ITEM_IDX_ELEGANT_PAPER);
 
-    fn_800F46CC(&mID, 0);
+    dNpc::setAnimalNameWord(&mID, 0);
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
     if (present->mId != dItem::ITEM_ID_NONE) {
@@ -5149,7 +5148,7 @@ BOOL dAnimal_c::sendNewYearLetter(const dPersonalID_c *to, int year) {
     u16 c = pickLetterPart(dLetter::getFromNum(label));
     dItem::Item paper(dItem::ITEM_IDX_NEW_YEARS_CARDS);
 
-    fn_800F46CC(&mID, 0);
+    dNpc::setAnimalNameWord(&mID, 0);
     dLetter::setNumber4(0, year);
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
@@ -5207,7 +5206,7 @@ BOOL dAnimal_c::sendMoveLetter(const dPersonalID_c *to) {
     }
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
-    fn_800F46CC(id, 0);
+    dNpc::setAnimalNameWord(id, 0);
     sMail.clear();
     sMail.setupFromAnimal(&a, &b, &c, label, label, label, id, to, &paper);
 
@@ -5387,7 +5386,7 @@ BOOL dAnimal_c::isSleepTime(const dTime_c *now) {
     if (!mID.isValid()) {
         return FALSE;
     }
-    BOOL ret = fn_800F4020(mID.getLooks(1), now);
+    BOOL ret = dNpc::isAnimalSleepTime(mID.getLooks(1), now);
     return ret;
 }
 
@@ -5523,7 +5522,7 @@ void dAnimal_c::validateUmbrella() {
 
 // 80128728
 BOOL dAnimal_c::isFtrBoxed(u32 idx) {
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         return (mBoxedFtrMask >> idx) & 1;
     }
     return FALSE;
@@ -5531,14 +5530,14 @@ BOOL dAnimal_c::isFtrBoxed(u32 idx) {
 
 // 80128748
 void dAnimal_c::setFtrBoxed(u32 idx) {
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         mBoxedFtrMask |= 1 << idx;
     }
 }
 
 // 80128768
 void dAnimal_c::clearFtrBoxed(u32 idx) {
-    if (idx < 10) {
+    if (idx < ANIMAL_FTR_COUNT) {
         mBoxedFtrMask &= ~(1 << idx);
     }
 }
@@ -5550,7 +5549,7 @@ void dAnimal_c::pickBoxedFtr() {
     while (num != 0) {
         u32 pick = -1;
         u32 count = 0;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
             if (!isFtrBoxed(i)) {
                 dItem::Item item = getFtr(i);
                 if (isHouseItem(&item)) {
@@ -5562,7 +5561,7 @@ void dAnimal_c::pickBoxedFtr() {
                 }
             }
         }
-        if (pick >= 10) {
+        if (pick >= ANIMAL_FTR_COUNT) {
             break;
         }
         setFtrBoxed(pick);
@@ -5604,7 +5603,7 @@ void dAnimal_c::pickBoxedFtrMoveOut() {
     while (num != 0) {
         u32 pick = -1;
         u32 count = 0;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
             if (!isFtrBoxed(i)) {
                 dItem::Item item = getFtr(i);
                 if (isHouseItem(&item) && !isNoneOrRoyalItem(&item) && item.getPrice() > 0) {
@@ -5616,7 +5615,7 @@ void dAnimal_c::pickBoxedFtrMoveOut() {
                 }
             }
         }
-        if (pick >= 10) {
+        if (pick >= ANIMAL_FTR_COUNT) {
             break;
         }
         setFtrBoxed(pick);
@@ -5627,7 +5626,7 @@ void dAnimal_c::pickBoxedFtrMoveOut() {
 // 80128B28
 int dAnimal_c::countBoxedFtr() {
     int count = 0;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < ANIMAL_FTR_COUNT; i++) {
         if (isFtrBoxed(i)) {
             count++;
         }
@@ -5830,7 +5829,7 @@ BOOL dAnimal_c::setVisitorLetter(dPrivateData_c *player) {
     if (ok) {
         dItem::Item item;
         if (cM::rndF(100.0f) < 25.0f) {
-            fn_800F45A4(&item, 1, &dItemSel::sDefaultFilter, NULL, 0);
+            dNpc::selectRoomItems(&item, 1, &dItemSel::sDefaultFilter, NULL, 0);
         }
         animalItem->set(&mID, &item);
         return TRUE;
@@ -6228,7 +6227,7 @@ int dAnimalBlock_c::getFreeIdx() {
 }
 
 // 80129EC0
-// Villager whose fn_800F3F30 value against animal wins under cmp; ties are picked at random.
+// Villager whose dNpc::getAnimalCompatibilityScore value against animal wins under cmp; ties are picked at random.
 dAnimal_c *findAnimalByCompat(dAnimal_c *animals, dAnimal_c *animal, BOOL (*cmp)(u32, u32), u32 best) {
     dAnimal_c *result = NULL;
 
@@ -6242,7 +6241,7 @@ dAnimal_c *findAnimalByCompat(dAnimal_c *animals, dAnimal_c *animal, BOOL (*cmp)
                     continue;
                 }
 
-                value = fn_800F3F30(animal, animals);
+                value = dNpc::getAnimalCompatibilityScore(animal, animals);
                 if (cmp(best, value)) {
                     result = animals;
                     best = value;
@@ -7192,7 +7191,7 @@ int dAnimalBlock_c::pickWishOfBestMatch(dAnimal_c *animal) {
                     continue;
                 }
 
-                int score = fn_800F3F30(animal, other);
+                int score = dNpc::getAnimalCompatibilityScore(animal, other);
                 if (best < score) {
                     result = wish->mKind;
                     best = score;
@@ -7245,7 +7244,7 @@ int dAnimalBlock_c::pickWishUnlikeWorstMatch(dAnimal_c *animal) {
                 }
 
                 u8 kind = wish->mKind;
-                u32 score = fn_800F3F30(animal, other);
+                u32 score = dNpc::getAnimalCompatibilityScore(animal, other);
                 if (best > score) {
                     best = score;
                     mask = 1 << kind;
@@ -7514,7 +7513,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
     dQuestWish_c *wish;
     u8 questKind;
     for (int i = 0; i < ANIMAL_NUM; i++) {
-        dNpcEntry_c *entry = fn_800F3E54(i);
+        dNpc::entry_c *entry = dNpc::getEntry(i);
         if (entry != NULL) {
             entry->mQuest.clear();
         }
@@ -7529,7 +7528,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             if (!animal->mID.isValid()) {
                 continue;
             }
-            dNpcEntry_c *entry = fn_800F3E54(i);
+            dNpc::entry_c *entry = dNpc::getEntry(i);
             if (entry == NULL || entry->mQuest.isActive()) {
                 continue;
             }
@@ -7543,7 +7542,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             num++;
         }
 
-        dNpcEntry_c *entry = fn_800F3E54(sel);
+        dNpc::entry_c *entry = dNpc::getEntry(sel);
         if (entry != NULL) {
             dItem::Item item;
             entry->mQuest.set(QUEST_KIND_HIDE_AND_SEEK, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
@@ -7559,7 +7558,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             if (!animal->mID.isValid()) {
                 continue;
             }
-            dNpcEntry_c *entry = fn_800F3E54(i);
+            dNpc::entry_c *entry = dNpc::getEntry(i);
             if (entry == NULL || entry->mQuest.isActive()) {
                 continue;
             }
@@ -7575,7 +7574,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             }
         }
 
-        dNpcEntry_c *entry = fn_800F3E54(sel);
+        dNpc::entry_c *entry = dNpc::getEntry(sel);
         if (entry != NULL) {
             dItem::Item item;
             entry->mQuest.set(*kind, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
@@ -7590,7 +7589,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             if (!animal->mID.isValid()) {
                 continue;
             }
-            dNpcEntry_c *entry = fn_800F3E54(i);
+            dNpc::entry_c *entry = dNpc::getEntry(i);
             if (entry == NULL || entry->mQuest.isActive()) {
                 continue;
             }
@@ -7604,7 +7603,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             num++;
         }
 
-        dNpcEntry_c *entry = fn_800F3E54(sel);
+        dNpc::entry_c *entry = dNpc::getEntry(sel);
         if (entry != NULL) {
             dItem::Item item;
             entry->mQuest.set(QUEST_KIND_STYLE, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
@@ -7620,7 +7619,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             if (!animal->mID.isValid()) {
                 continue;
             }
-            dNpcEntry_c *entry = fn_800F3E54(i);
+            dNpc::entry_c *entry = dNpc::getEntry(i);
             if (entry == NULL || entry->mQuest.isActive()) {
                 continue;
             }
@@ -7638,7 +7637,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
             num++;
         }
 
-        dNpcEntry_c *entry = fn_800F3E54(sel);
+        dNpc::entry_c *entry = dNpc::getEntry(sel);
         if (entry != NULL) {
             dItem::Item item;
             entry->mQuest.set(sAppointmentKinds[pick], &item, NULL, QUEST_DEADLINE_LIMIT, 0);
@@ -7650,7 +7649,7 @@ void dAnimalBlock_c::assignQuestCandidates() {
         if (!animal->mID.isValid()) {
             continue;
         }
-        dNpcEntry_c *entry = fn_800F3E54(i);
+        dNpc::entry_c *entry = dNpc::getEntry(i);
         if (entry == NULL || entry->mQuest.isActive()) {
             continue;
         }
@@ -7664,13 +7663,13 @@ void dAnimalBlock_c::assignQuestCandidates() {
         }
     }
 
-    fn_800F3E48();
+    dNpc::setEntryTimeNow();
 }
 
 // 8012D508
 void dAnimalBlock_c::updateQuestCandidates() {
     dTime_c *now = dTime_c::getCurrent();
-    dTime_c *last = fn_800F3E38();
+    dTime_c *last = dNpc::getEntryTime();
     dTime_c next;
     next.set(last->year, last->month, last->mday, last->hour + 1, last->min, last->sec);
     next.normalize();
@@ -7684,7 +7683,7 @@ void dAnimalBlock_c::updateQuestCandidates() {
     u32 free;
     dAnimal_c *animal;
 
-    fn_800F3E48();
+    dNpc::setEntryTimeNow();
     total = getAnimalNum();
     free = 0;
     animal = getAnimal(0);
@@ -7697,7 +7696,7 @@ void dAnimalBlock_c::updateQuestCandidates() {
             total--;
             continue;
         }
-        dNpcEntry_c *entry = fn_800F3EE8(id);
+        dNpc::entry_c *entry = dNpc::getEntryByAnimal(id);
         if (entry != NULL && !entry->mQuest.isActive() && getBusyQuestKind(id, 0, 1) == QUEST_KIND_NONE) {
             free++;
         }
@@ -7740,7 +7739,7 @@ void dAnimalBlock_c::setHarvestFestivalDone(int idx) {
     dAnimal_c *animal = getAnimal(idx);
     if (animal != NULL) {
         animal->mEvent.setFlag(0);
-        fn_800F0108(idx, animal->mEvent.mFlags);
+        dNpc::sendAnimalEventFlags(idx, animal->mEvent.mFlags);
     }
 }
 
@@ -8250,16 +8249,16 @@ BOOL dAnimalBlock_c::sendStyleLetter(const dPersonalID_c *pid0, const dPersonalI
     u16 footer = dLetter::getFromNum(label) > 1 ? (u16)(sPartBase[which] + cM::rndInt(3)) : 1;
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
-    fn_800F46CC(id, 0);
-    fn_800F4774(present, 1);
+    dNpc::setAnimalNameWord(id, 0);
+    dNpc::setItemNameWord(present, 1);
     dString::Word_c word(topic);
     dLetter::setWord(2, &word);
-    fn_800F4718(pid0, 3);
+    dNpc::setPlayerNameWord(pid0, 3);
     u8 gender0 = pid0->player.mGender;
-    fn_800F4794(gender0, id->getLooks(1), 4);
-    fn_800F4718(pid1, 5);
+    dNpc::setPlayerUnitWord(gender0, id->getLooks(1), 4);
+    dNpc::setPlayerNameWord(pid1, 5);
     u8 gender1 = pid1->player.mGender;
-    fn_800F4794(gender1, id->getLooks(1), 6);
+    dNpc::setPlayerUnitWord(gender1, id->getLooks(1), 6);
 
     sMail.clear();
     sMail.setupFromAnimal(&header, &body, &footer, label, label, label, id, to, &paper);
@@ -8500,7 +8499,7 @@ dItem::Item pickAppointmentPresent(dPrivateData_c *player, u32 kind, BOOL flag) 
         break;
     case 2:
         if (flag) {
-            fn_800F45A4(&result, 1, &dItemSel::sDefaultFilter, NULL, 0);
+            dNpc::selectRoomItems(&result, 1, &dItemSel::sDefaultFilter, NULL, 0);
         } else {
             u32 num = 0;
             dItem::Item *items = allocRoomItems(&num, player, heap);
@@ -8588,7 +8587,7 @@ BOOL sendPresentLetter(const char *label, const dPersonalID_c *to, dAnmPersonalI
     u16 footer = pickMailPart(dLetter::getFromNum(label));
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
-    fn_800F46CC(id, 0);
+    dNpc::setAnimalNameWord(id, 0);
     sMail.clear();
     sMail.setupFromAnimal(&header, &body, &footer, label, label, label, id, to, &paper);
     dItem::Item item = *present;
@@ -8660,10 +8659,10 @@ int pickAppointmentPresent2(dItem::Item *out, dPrivateData_c *player, dAnimal_c 
     int result = 2;
     if (flag) {
         dAnmItemFilter_c filter(&player->mCatalog, 0, 0x21);
-        fn_800F45A4(out, 1, &filter, NULL, 0);
+        dNpc::selectRoomItems(out, 1, &filter, NULL, 0);
         if (out->mId == dItem::ITEM_ID_NONE) {
             dAnmItemFilter_c filter2(NULL, 0, 1);
-            fn_800F4668(out, 1, &filter2, NULL, 0);
+            dNpc::selectGroupCRoomItems(out, 1, &filter2, NULL, 0);
         }
         if (out->mId != dItem::ITEM_ID_NONE) {
             result = 0;
@@ -9007,7 +9006,7 @@ int dAnimalBlock_c::pickHideAndSeekPresent(dItem::Item *out, dAnimal_c *animal) 
     dItem::Item item;
     if (r < 20) {
         dAnmItemFilter_c filter(NULL, 0, 0x21);
-        fn_800F45A4(&item, 1, &filter, NULL, 0);
+        dNpc::selectRoomItems(&item, 1, &filter, NULL, 0);
         result = 0;
     } else if (r < 40) {
         dItem::Item *wish = animal->pickNewItem(0, 0, 0);
@@ -9064,7 +9063,7 @@ BOOL sendQ10Letter(const dPersonalID_c *to, dAnmPersonalID_c *id, const dItem::I
     u16 footer = pickMailPart(dLetter::getFromNum(label));
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
 
-    fn_800F46CC(id, 0);
+    dNpc::setAnimalNameWord(id, 0);
     sMail.clear();
     sMail.setupFromAnimal(&header, &body, &footer, label, label, label, id, to, &paper);
     dItem::Item item = *present;
@@ -9732,14 +9731,14 @@ BOOL dAnimalBlock_c::updateHeldItem(int idx) {
     BOOL ret = FALSE;
     if (set && isItemDiff(cur, give)) {
         animal->setHeldItem(&give);
-        fn_800EFFA0(idx, &give);
+        dNpc::sendAnimalHeldItem(idx, &give);
         ret = TRUE;
     }
 
     if (changed) {
         u8 value = calcHeldItemChangeMinute(min, flag);
         animal->mHeldItemChangeMinute = value;
-        fn_800F0054(idx, value);
+        dNpc::sendAnimalHeldItemTime(idx, value);
     }
 
     return ret;
@@ -9772,7 +9771,7 @@ BOOL dAnimalBlock_c::updateHalloweenFlag(int idx) {
         } else {
             obj->clearFlag(0);
         }
-        fn_800F0108(idx, obj->mFlags);
+        dNpc::sendAnimalEventFlags(idx, obj->mFlags);
         return TRUE;
     }
     return FALSE;
@@ -10338,9 +10337,9 @@ void dAnimalBlock_c::updateTalkFlags(dPrivateData_c *player) {
     for (int i = 0; i < ANIMAL_NUM; i++, animal++) {
         id = &animal->mID;
         if (id->isValid()) {
-            dNpcEntry_c *entry = fn_800F3EE8(id);
+            dNpc::entry_c *entry = dNpc::getEntryByAnimal(id);
             if (entry != NULL) {
-                entry->_288.fn_800ED6E0(animal, player);
+                entry->mTalkWeight.initFromFriendship(animal, player);
             }
         }
     }
@@ -10354,9 +10353,9 @@ void dAnimalBlock_c::halveTalkFlags(int skip) {
         if (i != skip) {
             id = &animal->mID;
             if (id->isValid()) {
-                dNpcEntry_c *entry = fn_800F3EE8(id);
+                dNpc::entry_c *entry = dNpc::getEntryByAnimal(id);
                 if (entry != NULL) {
-                    entry->_288.half();
+                    entry->mTalkWeight.half();
                 }
             }
         }
@@ -11469,8 +11468,8 @@ BOOL sendVisitorLetter(dPrivateData_c *player) {
     u16 part2 = rndPart(num);
 
     dItem::Item paper(dPaper::getPaper(looks, dTime_c::getCurrent()->getSeason()));
-    fn_800F46CC(&gift->mAnimal, 0);
-    fn_800F4764(&gift->mAnimal, 8);
+    dNpc::setAnimalNameWord(&gift->mAnimal, 0);
+    dNpc::setAnimalLandNameWord(&gift->mAnimal, 8);
     sMail.clear();
     sMail.setupFromAnimal(&body, &part0, &part1, &part2, &header, bodyLabel, replyLabel, &gift->mAnimal,
                           pid, &paper);

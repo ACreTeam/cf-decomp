@@ -306,7 +306,7 @@ void init() {
     dReset::Manage_c::CreateInstance(mem2);
     dBlackWait::BlackWait_c::create(dHeap::blackWaitHeap_p);
     dHomeButton_c::create(dHeap::hbmHeap_p);
-    fn_800F5378(dHeap::npcPermitMngHeap_p);
+    dNpc::createPermitManagers(dHeap::npcPermitMngHeap_p);
     dScene_c::initNextScene();
     setFrameRate(1);
     setClearColor(nw4r::ut::Color(0x0000FF00UL));

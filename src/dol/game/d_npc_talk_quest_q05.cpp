@@ -28,7 +28,7 @@ static char l_strUnit[] = "sys_STRING/STR_Unit";
 static inline void setPlayerUnit(talk_c *talk, dAnimal_c *animal, const dPlayerID_c *pid, int idx) {
     talk->setPlayerName(pid, idx);
     u8 gender = pid->mGender;
-    u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+    u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
@@ -287,7 +287,7 @@ void dAcNpcNml_c::talk_c::endFtrReward(int arg) {
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
-                fn_800F0FE4(getNpcIdx(), &mItem0);
+                dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
@@ -312,7 +312,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrWin(int kind) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->mBase.mState = QUEST_REQUEST_WON;
-            fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_WON);
+            dNpc::sendAnimalQuestState(getNpcIdx(), QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_WON);
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
             animal->mQuest.mWish.addValue(5);
@@ -322,10 +322,10 @@ BOOL dAcNpcNml_c::talk_c::stepFtrWin(int kind) {
         }
         if (animal != NULL && mItem3.isValid()) {
             if (animal->addNewItem(&mItem3)) {
-                fn_800F0E9C(getNpcIdx(), &mItem3);
+                dNpc::sendAnimalNewItemAdd(getNpcIdx(), &mItem3);
             }
             if (mpMemory != NULL && mMemoryIdx < 16 && mpMemory->setPresent(&mItem3)) {
-                fn_800F1514(getNpcIdx(), mMemoryIdx, &mItem3);
+                dNpc::sendAnimalPresent(getNpcIdx(), mMemoryIdx, &mItem3);
             }
         }
         setMsgProc(&talk_c::msgFtrWin2);
@@ -493,7 +493,7 @@ BOOL dAcNpcNml_c::talk_c::stepFtrReturn(int kind) {
         dAnimal_c *animal = getAnimal();
         if (animal != NULL) {
             animal->mQuest.mQuest.mBase.mState = QUEST_REQUEST_RETURN;
-            fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_RETURN);
+            dNpc::sendAnimalQuestState(getNpcIdx(), QUEST_KIND_REQUEST_FTR, QUEST_REQUEST_RETURN);
         }
         return TRUE;
     }

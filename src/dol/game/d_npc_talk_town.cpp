@@ -93,7 +93,7 @@ int dAcNpcNml_c::talk_c::msgTownRumor(msgInfo_s *info) {
         setLandName(&pid.land, 0);
         setPersonalName(&pid, 1);
         u8 gender = pid.player.getGender();
-        u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+        u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
         if (unit == 0) {
             clearWord(2);
         } else {

@@ -63,7 +63,7 @@ int dAcNpcNml_c::talk_c::msgDelivery(msgInfo_s *info) {
         if (label != NULL) {
             dAnmPersonalID_c *sender = errand->getAnimal(0);
             setAnmPersonalName(sender, 2);
-            u16 unit = fn_800F3F38(sender->getGender(1), self->getLooks(1));
+            u16 unit = dNpc::getPlayerUnitMessage(sender->getGender(1), self->getLooks(1));
             if (unit == 0) {
                 clearWord(3);
             } else {
@@ -87,9 +87,9 @@ void dAcNpcNml_c::talk_c::endQuestCommon(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
@@ -419,7 +419,7 @@ BOOL dAcNpcNml_c::talk_c::stepClothesWear(int kind) {
         if (animal != NULL && mItem1.isValid()) {
             animal->setCloth(&mItem1);
             dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
-            fn_800F1A68(getNpcIdx(), &animal->mCloth);
+            dNpc::sendAnimalCloth(getNpcIdx(), &animal->mCloth);
             npc->onDaubClothChange();
             npc->offDaubClothChanged();
         }

@@ -98,11 +98,11 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     data++;
     if (hasAnimal) {
         if (myNo == 0) {
-            fn_800F4840((const dAnimal_c *)data, member);
+            dNpc::exchangeBufferedAnimalWithMember((const dAnimal_c *)data, member);
         }
         data += sizeof(dAnimal_c);
     } else if (myNo == 0) {
-        fn_800F4840(NULL, member);
+        dNpc::exchangeBufferedAnimalWithMember(NULL, member);
     }
     u8 hasMii;
     cLib::memCpy(&hasMii, data, sizeof(hasMii));
@@ -171,11 +171,11 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     tail = dl + 1;
     if (hasAnimal) {
         if (myNo == 0) {
-            fn_800F4840((const dAnimal_c *)tail, member);
+            dNpc::exchangeBufferedAnimalWithMember((const dAnimal_c *)tail, member);
         }
         tail += sizeof(dAnimal_c);
     } else if (myNo == 0) {
-        fn_800F4840(NULL, member);
+        dNpc::exchangeBufferedAnimalWithMember(NULL, member);
     }
     tail++;
     if (hasMii) {
@@ -1266,7 +1266,7 @@ void recvAnimalHeldItem(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800EFF60(&idx, &item, buf);
+    dNpc::parseAnimalHeldItemPacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         animal->setHeldItem(&item);
@@ -1280,7 +1280,7 @@ void recvAnimalHeldItemTime(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     u8 value = 0;
-    fn_800F0020(&idx, &value, buf);
+    dNpc::parseAnimalHeldItemTimePacket(&idx, &value, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         animal->mHeldItemChangeMinute = value;
@@ -1294,7 +1294,7 @@ void recvAnimalEventFlags(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     u8 value = 0;
-    fn_800F00D4(&idx, &value, buf);
+    dNpc::parseAnimalEventFlagsPacket(&idx, &value, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         animal->mEvent.mFlags = value;
@@ -1311,7 +1311,7 @@ void recvAnimalMemoryInit(int member, const u8 *data, u32 size, u32 arg,
     u8 impression = 0x32;
     u16 count = 0;
     u8 friendship = 0;
-    fn_800F0188(&idx, &kind, &impression, &count, &friendship, buf);
+    dNpc::parseAnimalMemoryPacket(&idx, &kind, &impression, &count, &friendship, buf);
     dPersonalID_c *pid;
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
@@ -1339,7 +1339,7 @@ void recvAnimalMemorySet(int member, const u8 *data, u32 size, u32 arg,
     u8 impression = 0x32;
     u16 count = 0;
     u8 friendship = 0;
-    fn_800F0188(&idx, &kind, &impression, &count, &friendship, buf);
+    dNpc::parseAnimalMemoryPacket(&idx, &kind, &impression, &count, &friendship, buf);
     dPersonalID_c *pid;
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
@@ -1365,7 +1365,7 @@ void recvAnimalFriendship(int member, const u8 *data, u32 size, u32 arg,
     int idx = -1;
     int kind = -1;
     u8 value = 0;
-    fn_800F0348(&idx, &kind, &value, buf);
+    dNpc::parseAnimalFriendshipPacket(&idx, &kind, &value, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
@@ -1383,7 +1383,7 @@ void recvAnimalMemoryFlagOn(int member, const u8 *data, u32 size, u32 arg,
     int idx = -1;
     int kind = -1;
     int bit = 0;
-    fn_800F0494(&idx, &kind, &bit, buf);
+    dNpc::parseAnimalMemoryFlagOnPacket(&idx, &kind, &bit, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
@@ -1401,7 +1401,7 @@ void recvAnimalMemoryFlagOff(int member, const u8 *data, u32 size, u32 arg,
     int idx = -1;
     int kind = -1;
     int bit = 0;
-    fn_800F0494(&idx, &kind, &bit, buf);
+    dNpc::parseAnimalMemoryFlagOnPacket(&idx, &kind, &bit, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
@@ -1418,7 +1418,7 @@ void recvAnimalEventTalked(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     int kind = -1;
-    fn_800F0580(&idx, &kind, buf);
+    dNpc::parseAnimalEventTalkedPacket(&idx, &kind, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
@@ -1468,7 +1468,7 @@ void recvAnimalFtrTouch(int member, const u8 *data, u32 size, u32 arg,
     u8 roomScene = dScene::SCENE_NUM;
     int x = -1;
     int z = -1;
-    fn_800F0770(&roomScene, &x, &z, buf);
+    dNpc::parseAnimalFtrTouchPacket(&roomScene, &x, &z, buf);
     if (roomScene < dScene::SCENE_NUM && roomScene == dScene::getCurrentScene()) {
         int handle = dFTR::getUnitMap()->getHandle(x, z, 0);
         if (handle != -1) {
@@ -1483,8 +1483,8 @@ void recvAnimalFtr(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    int slot = 10;
-    fn_800F08EC(&idx, &item, &slot, buf);
+    int slot = ANIMAL_FTR_COUNT;
+    dNpc::parseAnimalFtrPacket(&idx, &item, &slot, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid() && slot < 10U) {
         if (item == dItem::ITEM_ID_NONE) {
@@ -1502,7 +1502,7 @@ void recvAnimalPlace(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     int place = 5;
-    fn_800F0A3C(&idx, &place, buf);
+    dNpc::parseAnimalPlacePacket(&idx, &place, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid() && place < 5U) {
         animal->mPlace = place;
@@ -1517,7 +1517,7 @@ void recvAnimalSpot(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     int x = -1;
     int z = -1;
     u32 type = 4;
-    fn_800F0AFC(&idx, &x, &z, &type, buf);
+    dNpc::parseAnimalSpotPacket(&idx, &x, &z, &type, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid() && type < 4 && x != -1 &&
         z != -1) {
@@ -1538,7 +1538,7 @@ void recvAnimalSpotTime(int member, const u8 *data, u32 size, u32 arg,
     int idx = -1;
     u32 group = 2;
     s64 time = 0;
-    fn_800F0BFC(&idx, &group, &time, buf);
+    dNpc::parseAnimalSpotTimePacket(&idx, &group, &time, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid() && group < 2) {
         animal->mSpot.mGroup = group;
@@ -1552,7 +1552,7 @@ void recvAnimalSpotClear(int member, const u8 *data, u32 size, u32 arg,
     u8 buf[1];
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
-    fn_800F0CE4(&idx, buf);
+    dNpc::parseAnimalSpotClearPacket(&idx, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->mSpot.clear();
@@ -1564,9 +1564,9 @@ void recvAnimalFtrSet(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[4];
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
-    int slot = 10;
+    int slot = ANIMAL_FTR_COUNT;
     dItem::Item item;
-    fn_800F0D74(&idx, &slot, &item, buf);
+    dNpc::parseAnimalFtrSetPacket(&idx, &slot, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->setFtr(slot, &item);
@@ -1580,7 +1580,7 @@ void recvAnimalNewItemAdd(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800F0E5C(&idx, &item, buf);
+    dNpc::parseAnimalNewItemAddPacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->addNewItem(&item);
@@ -1593,7 +1593,7 @@ void recvAnimalNewItemClear(int member, const u8 *data, u32 size, u32 arg,
     u8 buf[1];
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
-    fn_800F0F14(&idx, buf);
+    dNpc::parseAnimalNewItemClearPacket(&idx, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->clearNewItems();
@@ -1607,7 +1607,7 @@ void recvAnimalNewItemRemove(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800F0FA4(&idx, &item, buf);
+    dNpc::parseAnimalNewItemRemovePacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->removeNewItem(&item);
@@ -1620,7 +1620,7 @@ void recvAnimalWall(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800F105C(&idx, &item, buf);
+    dNpc::parseAnimalWallPacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->setWall(&item);
@@ -1633,7 +1633,7 @@ void recvAnimalCarpet(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800F1114(&idx, &item, buf);
+    dNpc::parseAnimalCarpetPacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->setCarpet(&item);
@@ -1646,7 +1646,7 @@ void recvAnimalMusic(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800F11CC(&idx, &item, buf);
+    dNpc::parseAnimalMusicPacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->setMusic(&item);
@@ -1661,7 +1661,7 @@ void recvAnimalQuestState(int member, const u8 *data, u32 size, u32 arg,
     int idx = -1;
     int kind = 0x15;
     u8 state = 0;
-    fn_800F1284(&idx, &kind, &state, buf);
+    dNpc::parseAnimalQuestStatePacket(&idx, &kind, &state, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         dQuestBase_c *quest = &animal->mQuest.mQuest.mBase;
@@ -1693,7 +1693,7 @@ void recvAnimalQuestClear(int member, const u8 *data, u32 size, u32 arg,
     u8 buf[1];
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
-    fn_800F1360(&idx, buf);
+    dNpc::parseAnimalQuestClearPacket(&idx, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->clearQuestStarted();
@@ -1706,7 +1706,7 @@ void recvAnimalPlaceTimeClear(int member, const u8 *data, u32 size, u32 arg,
     u8 buf[1];
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
-    fn_800F13F0(&idx, buf);
+    dNpc::parseAnimalPlaceTimeClearPacket(&idx, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->clearPlaceChangeTime();
@@ -1721,7 +1721,7 @@ void recvAnimalPresent(int member, const u8 *data, u32 size, u32 arg,
     int idx = -1;
     int kind = -1;
     dItem::Item item;
-    fn_800F1480(&idx, &kind, &item, buf);
+    dNpc::parseAnimalPresentPacket(&idx, &kind, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         dAnimalMemory_c *memory = animal->getMemory(kind);
@@ -1737,19 +1737,19 @@ void recvPermitState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
     int state = 4;
-    fn_800F159C(&key, &state, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
+    dNpc::parsePermitStatePacket(&key, &state, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
     if (permit != NULL) {
         permit->setState(state);
         int me = getMyNo();
         if (state == me) {
             permit->setFlag(me);
             permit->setFlag(member);
-            if (permit->fn_800F5094()) {
-                permit->mFlags = 0;
+            if (permit->isReady()) {
+                permit->mAckPlayers = 0;
             }
         } else if (state < 4U) {
-            fn_800F1738(&key, state);
+            dNpc::sendPermitFlag(&key, state);
         }
     }
 }
@@ -1761,8 +1761,8 @@ void recvPermitSetState(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
     int state = 4;
-    fn_800F159C(&key, &state, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
+    dNpc::parsePermitStatePacket(&key, &state, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
     if (permit != NULL) {
         permit->setState(state);
     }
@@ -1773,12 +1773,12 @@ void recvPermitFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
-    fn_800F1728(&key, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
+    dNpc::parsePermitKeyPacket(&key, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
     if (permit != NULL) {
         permit->setFlag(member);
-        if (permit->fn_800F5094()) {
-            permit->mFlags = 0;
+        if (permit->isReady()) {
+            permit->mAckPlayers = 0;
         }
     }
 }
@@ -1788,9 +1788,9 @@ void recvPermitQuery(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
-    fn_800F1728(&key, buf);
-    if (fn_800F54E0(&key) != NULL) {
-        fn_800F1838(&key, member);
+    dNpc::parsePermitKeyPacket(&key, buf);
+    if (dNpc::getPermitByKey(&key) != NULL) {
+        dNpc::sendPermitAnswer(&key, member);
     }
 }
 
@@ -1799,14 +1799,14 @@ void recvPermitAnswer(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
-    fn_800F1728(&key, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
+    dNpc::parsePermitKeyPacket(&key, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
     if (permit != NULL) {
         int me = getMyNo();
-        if (me == permit->mState) {
+        if (me == permit->mOwnerPlayer) {
             permit->setFlag(member);
-            if (permit->fn_800F5094()) {
-                fn_800F18D0(&key, me);
+            if (permit->isReady()) {
+                dNpc::sendPermitClearState(&key, me);
                 permit->clear();
             }
         }
@@ -1820,9 +1820,9 @@ void recvPermitClearState(int member, const u8 *data, u32 size, u32 arg,
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
     int state = 4;
-    fn_800F159C(&key, &state, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
-    if (permit != NULL && permit->mState == state) {
+    dNpc::parsePermitStatePacket(&key, &state, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
+    if (permit != NULL && permit->mOwnerPlayer == state) {
         permit->clear();
     }
 }
@@ -1833,10 +1833,10 @@ void recvPermitSet2(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
     int state = 4;
-    fn_800F159C(&key, &state, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
+    dNpc::parsePermitStatePacket(&key, &state, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
     if (permit != NULL && !permit->hasState()) {
-        permit->set2(state);
+        permit->setFallbackPlayer(state);
     }
 }
 
@@ -1845,8 +1845,8 @@ void recvPermitClear(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     u8 buf[2];
     cLib::memCpy(buf, data, sizeof(buf));
     dItem::Item key;
-    fn_800F1728(&key, buf);
-    dNpcPermit_c *permit = fn_800F54E0(&key);
+    dNpc::parsePermitKeyPacket(&key, buf);
+    dNpc::permit_c *permit = dNpc::getPermitByKey(&key);
     if (permit != NULL) {
         permit->clear();
     }
@@ -1858,7 +1858,7 @@ void recvAnimalCloth(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(buf, data, sizeof(buf));
     int idx = -1;
     dItem::Item item;
-    fn_800F1A28(&idx, &item, buf);
+    dNpc::parseAnimalClothPacket(&idx, &item, buf);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal != NULL && animal->mID.isValid()) {
         animal->setCloth(&item);
@@ -2240,7 +2240,7 @@ const dNetDataFunc lbl_80473E44[NET_PACKET_NUM] = {
 // Copy handler of a daub record: the daub's current data (src is NULL).
 #define D_NET_COPY_DAUB(name, id)                                              \
     void name(void *dst, const void *, int) {                                  \
-        fn_800EFEDC(dst, id);                                                  \
+        dNpc::copyDaubRecord(dst, id);                                                  \
     }
 
 // The source of record 3 (10 bytes): three values.
@@ -2565,326 +2565,326 @@ void clearRecPlaySync7(void *rec) {
 }
 
 void clearRecDaub0(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 0);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 0);
 }
 void clearRecDaub1(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 1);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 1);
 }
 void clearRecDaub2(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 2);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 2);
 }
 void clearRecDaub3(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 3);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 3);
 }
 void clearRecDaub4(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 4);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 4);
 }
 void clearRecDaub5(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 5);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 5);
 }
 void clearRecDaub6(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 6);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 6);
 }
 void clearRecDaub7(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 7);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 7);
 }
 void clearRecDaub8(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 8);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 8);
 }
 void clearRecDaub9(void *rec) {
-    fn_800EFDD0(rec, NET_REC_DAUB + 9);
+    dNpc::copyNormalDaubRecord(rec, NET_REC_DAUB + 9);
 }
 
 void clearRecDaub10(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 10);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 10);
 }
 void clearRecDaub11(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 11);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 11);
 }
 void clearRecDaub12(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 12);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 12);
 }
 void clearRecDaub13(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 13);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 13);
 }
 void clearRecDaub14(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 14);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 14);
 }
 void clearRecDaub15(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 15);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 15);
 }
 void clearRecDaub16(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 16);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 16);
 }
 void clearRecDaub17(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 17);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 17);
 }
 void clearRecDaub18(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 18);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 18);
 }
 void clearRecDaub19(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 19);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 19);
 }
 void clearRecDaub20(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 20);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 20);
 }
 void clearRecDaub21(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 21);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 21);
 }
 void clearRecDaub22(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 22);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 22);
 }
 void clearRecDaub23(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 23);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 23);
 }
 void clearRecDaub24(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 24);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 24);
 }
 void clearRecDaub25(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 25);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 25);
 }
 void clearRecDaub26(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 26);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 26);
 }
 void clearRecDaub27(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 27);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 27);
 }
 void clearRecDaub28(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 28);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 28);
 }
 void clearRecDaub29(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 29);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 29);
 }
 void clearRecDaub30(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 30);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 30);
 }
 void clearRecDaub31(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 31);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 31);
 }
 void clearRecDaub32(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 32);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 32);
 }
 void clearRecDaub33(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 33);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 33);
 }
 void clearRecDaub34(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 34);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 34);
 }
 void clearRecDaub35(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 35);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 35);
 }
 void clearRecDaub36(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 36);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 36);
 }
 void clearRecDaub37(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 37);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 37);
 }
 void clearRecDaub38(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 38);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 38);
 }
 void clearRecDaub39(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 39);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 39);
 }
 void clearRecDaub40(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 40);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 40);
 }
 void clearRecDaub41(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 41);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 41);
 }
 void clearRecDaub42(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 42);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 42);
 }
 void clearRecDaub43(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 43);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 43);
 }
 void clearRecDaub44(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 44);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 44);
 }
 void clearRecDaub45(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 45);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 45);
 }
 void clearRecDaub46(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 46);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 46);
 }
 void clearRecDaub47(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 47);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 47);
 }
 void clearRecDaub48(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 48);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 48);
 }
 void clearRecDaub49(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 49);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 49);
 }
 void clearRecDaub50(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 50);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 50);
 }
 void clearRecDaub51(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 51);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 51);
 }
 void clearRecDaub52(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 52);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 52);
 }
 void clearRecDaub53(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 53);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 53);
 }
 void clearRecDaub54(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 54);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 54);
 }
 void clearRecDaub55(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 55);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 55);
 }
 void clearRecDaub56(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 56);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 56);
 }
 void clearRecDaub57(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 57);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 57);
 }
 void clearRecDaub58(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 58);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 58);
 }
 void clearRecDaub59(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 59);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 59);
 }
 void clearRecDaub60(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 60);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 60);
 }
 void clearRecDaub61(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 61);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 61);
 }
 void clearRecDaub62(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 62);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 62);
 }
 void clearRecDaub63(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 63);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 63);
 }
 void clearRecDaub64(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 64);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 64);
 }
 void clearRecDaub65(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 65);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 65);
 }
 void clearRecDaub66(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 66);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 66);
 }
 void clearRecDaub67(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 67);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 67);
 }
 void clearRecDaub68(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 68);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 68);
 }
 void clearRecDaub69(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 69);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 69);
 }
 void clearRecDaub70(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 70);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 70);
 }
 void clearRecDaub71(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 71);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 71);
 }
 void clearRecDaub72(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 72);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 72);
 }
 void clearRecDaub73(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 73);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 73);
 }
 void clearRecDaub74(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 74);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 74);
 }
 void clearRecDaub75(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 75);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 75);
 }
 void clearRecDaub76(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 76);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 76);
 }
 void clearRecDaub77(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 77);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 77);
 }
 void clearRecDaub78(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 78);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 78);
 }
 void clearRecDaub79(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 79);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 79);
 }
 void clearRecDaub80(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 80);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 80);
 }
 void clearRecDaub81(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 81);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 81);
 }
 void clearRecDaub82(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 82);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 82);
 }
 void clearRecDaub83(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 83);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 83);
 }
 void clearRecDaub84(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 84);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 84);
 }
 void clearRecDaub85(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 85);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 85);
 }
 void clearRecDaub86(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 86);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 86);
 }
 void clearRecDaub87(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 87);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 87);
 }
 void clearRecDaub88(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 88);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 88);
 }
 void clearRecDaub89(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 89);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 89);
 }
 void clearRecDaub90(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 90);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 90);
 }
 void clearRecDaub91(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 91);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 91);
 }
 void clearRecDaub92(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 92);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 92);
 }
 void clearRecDaub93(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 93);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 93);
 }
 void clearRecDaub94(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 94);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 94);
 }
 void clearRecDaub95(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 95);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 95);
 }
 void clearRecDaub96(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 96);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 96);
 }
 void clearRecDaub97(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 97);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 97);
 }
 void clearRecDaub98(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 98);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 98);
 }
 void clearRecDaub99(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 99);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 99);
 }
 void clearRecDaub100(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 100);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 100);
 }
 void clearRecDaub101(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 101);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 101);
 }
 void clearRecDaub102(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 102);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 102);
 }
 void clearRecDaub103(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 103);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 103);
 }
 void clearRecDaub104(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 104);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 104);
 }
 void clearRecDaub105(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 105);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 105);
 }
 void clearRecDaub106(void *rec) {
-    fn_800EFE68(rec, NET_REC_DAUB + 106);
+    dNpc::copySpecialDaubRecord(rec, NET_REC_DAUB + 106);
 }
 
 // Session event hooks (declared in d_net.hpp).
@@ -2962,7 +2962,7 @@ int sendClosePairRing(int, void *, int, int value) {
 }
 
 int sendClose2(int, void *, int, int) {
-    return fn_800F55BC();
+    return dNpc::onNetSceneClose();
 }
 
 void applyClose0(int, const void *, u32, int) {
@@ -3074,7 +3074,7 @@ void applyOpenHouseRoom(int, const void *, u32, u8 scene) {
 }
 
 void applyOpen4(int arg, const void *data, u32 size, u8 scene) {
-    fn_800F55B4(arg, (int)data, size, scene);
+    dNpc::onNetSceneOpen(arg, (int)data, size, scene);
 }
 
 // One-entry channels 807508CC / 807508D0 / 807508D4 and 807508D8 / 807508DC /
@@ -3125,7 +3125,7 @@ void applySyncBuf0_0(int, u8 *, u32) {
 }
 
 void applySyncBuf0_1(int, u8 *, u32) {
-    fn_800F55B0();
+    dNpc::resetPermits();
 }
 
 // Per member channel lbl_80474C50 / lbl_80474C5C / lbl_80474C68.
@@ -3152,7 +3152,7 @@ BOOL packSyncBuf8Animal(int member, const dNetMemberMask_c *mask, u8 *dst,
     if (!mask->isOn(member) || member == 0) {
         return FALSE;
     }
-    return fn_800F4878((dAnimal_c *)dst, member) != 0;
+    return dNpc::takeBufferedAnimal((dAnimal_c *)dst, member) != 0;
 }
 
 void unpackSyncBuf8None(const dNetMemberMask_c &, const u8 *, u32) {
@@ -3164,7 +3164,7 @@ void unpackSyncBuf8Host(const dNetMemberMask_c &, const u8 *data, u32) {
 }
 
 void unpackSyncBuf8Animal(const dNetMemberMask_c &, const u8 *data, u32) {
-    fn_800F4890((const dAnimal_c *)data);
+    dNpc::setBufferedAnimal((const dAnimal_c *)data);
 }
 
 // Fixed size channel 80750918 / 80750920 / 80750928.

@@ -2,6 +2,7 @@
 // .text 80113158..8011524C (__sinit 80115234), .data 804EE380..804EE398, .bss 805ED1D0..805ED570,
 // .sdata 8074B018..8074B040, .sbss 8074E6F0..8074E700, .sdata2 80750AE0..80750B60.
 #include <game/game/d_bug_off.hpp>
+#include <game/game/d_npc.hpp>
 #include <game/game/d_notice.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_private_data.hpp>
@@ -18,9 +19,6 @@
 // Not split yet (C linkage keeps the target names).
 extern "C" {
 }
-
-// C++ linkage (mangled in symbols.txt).
-BOOL fn_800F4C08(dAnimal_c *animal, int arg);                                        // 800F4C08
 
 // {kind, sub} range for fn_800C60B4.
 struct dBugOffItemRange_c {
@@ -297,7 +295,7 @@ BOOL dBugOff_c::advance(BOOL force) {
             for (int i = 0; i < ANIMAL_NUM; i++) {
                 if (isAnimalAvailable(i, &time, FALSE, FALSE, FALSE, FALSE)) {
                     dAnimal_c *animal = getTownAnimal(i);
-                    if (!fn_800F4C08(animal, 4)) {
+                    if (!dNpc::isAnimalOnAllowedSpot(animal, 4)) {
                         if (tryNpcEntry(animal, mCursor.get(), FALSE)) {
                             entered = TRUE;
                         }
@@ -634,7 +632,7 @@ BOOL dBugOff_c::isAnimalAvailable(int idx, const dTime_c *time, BOOL anyPlace, B
     if (!allowSleeping && animal->isSleepTime(time)) {
         return FALSE;
     }
-    if (fn_800F4C08(animal, 4)) {
+    if (dNpc::isAnimalOnAllowedSpot(animal, 4)) {
         return FALSE;
     }
     return TRUE;

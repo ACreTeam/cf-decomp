@@ -29,7 +29,7 @@
 // The Bug-Off talk state of getBugOffTalkState (label index; message code = state + 1, + 2 from state 1).
 enum bugOffState_e {
     BUGOFF_STATE_FIRST,             // 0 the npc's first talk of the event (memory event flag 0 not set)
-    BUGOFF_STATE_NPC_LEADS,         // 1 this npc leads (sets getEntry() _28C.mEventTalked)
+    BUGOFF_STATE_NPC_LEADS,         // 1 this npc leads (sets getEntry() mFlags.mEventTalked)
     BUGOFF_STATE_NPC_LEADS_AGAIN,   // 2 this npc leads, already said (mEventTalked set)
     BUGOFF_STATE_PLAYER_LEADS,      // 3 the current player leads
     BUGOFF_STATE_OTHER_PLAYER_LEADS, // 4 another player leads

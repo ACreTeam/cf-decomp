@@ -688,7 +688,7 @@ unsigned int dSvMgr_c::inodesForSize(unsigned int size) {
 }
 
 void dSvMgr_c::closeGateForSave() {
-    fn_800F47F4();
+    dNpc::storeBufferedMovedAnimal();
     mCurrentVisitor = 4;
 }
 

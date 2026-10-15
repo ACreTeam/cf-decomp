@@ -197,9 +197,9 @@ int Word_c::procRandomWordTag(int pos, int kind) {
     u8 useComp = 0;
     std::memcpy(&useComp, params + 1, 1);
     dAnimal_c *speaker = mpComp->mpRcpt->getSpeakerAnimal();
-    dNpcEntry_c *entry = fn_800F3EE8(&speaker->mID);
+    dNpc::entry_c *entry = dNpc::getEntryByAnimal(&speaker->mID);
     if (!useComp) {
-        entry = fn_800F3EE8(&speaker->mID);
+        entry = dNpc::getEntryByAnimal(&speaker->mID);
         if (entry == NULL) {
             useComp = 1;
         }
@@ -212,11 +212,11 @@ int Word_c::procRandomWordTag(int pos, int kind) {
     for (int i = 0; i < 20; i++) {
         if (useComp) {
             if ((list[i] = mpComp->getRandomWord(kind, i)) == 0 && entry != NULL) {
-                list[i] = entry->_120.get(kind, i);
+                list[i] = entry->mDialogueCache.getWord(kind, i);
             }
         } else {
             if (entry != NULL) {
-                list[i] = entry->_120.get(kind, i);
+                list[i] = entry->mDialogueCache.getWord(kind, i);
             }
             if (list[i] == 0) {
                 list[i] = mpComp->getRandomWord(kind, i);
@@ -228,7 +228,7 @@ int Word_c::procRandomWordTag(int pos, int kind) {
     if (useComp) {
         mpComp->setRandomWord(kind, slot, msgId);
     } else if (entry != NULL) {
-        entry->_120.set(kind, msgId, slot);
+        entry->mDialogueCache.setWord(kind, msgId, slot);
     }
     mpComp->setStringWord(slot, msgId, group);
     return n;
@@ -324,7 +324,7 @@ void Word_c::pickAnimalParam(u8 slot) {
     dAnimal_c *animal = mpComp->getAnimalParam(slot);
     dAnimal_c *listener = mpComp->mpRcpt->getListenerAnimal();
     if (animal == NULL) {
-        dNpcEntry_c *entry = fn_800F3EE8(&speaker->mID);
+        dNpc::entry_c *entry = dNpc::getEntryByAnimal(&speaker->mID);
         if (entry != NULL) {
             const dAnmPersonalID_c *exclude[2] = {&speaker->mID, NULL};
             u32 num = 1;
@@ -332,7 +332,7 @@ void Word_c::pickAnimalParam(u8 slot) {
                 exclude[1] = &listener->mID;
                 num = 2;
             }
-            animal = entry->_120.fn_800EDC54(slot, exclude, num);
+            animal = entry->mDialogueCache.pickAnimal(slot, exclude, num);
         }
         mpComp->setAnimalParam(animal, slot);
     }
@@ -445,12 +445,12 @@ int Word_c::procAnimalFlagBegin(int pos) {
     const wchar_t *p = getBuffer() + pos;
     dScript::getTagLength(p);
     dPlayerMgr::Mgr_c::getCurrentPlayer();
-    dNpcEntry_c *entry = fn_800F3EE8(&mpComp->mpRcpt->getSpeakerAnimal()->mID);
+    dNpc::entry_c *entry = dNpc::getEntryByAnimal(&mpComp->mpRcpt->getSpeakerAnimal()->mID);
     BOOL keep = TRUE;
     if (entry == NULL) {
         keep = FALSE;
     }
-    if (!entry->_28C.mTalked) {
+    if (!entry->mFlags.mTalked) {
         keep = FALSE;
     }
     int len = getTextLength(p, 0);
@@ -615,7 +615,7 @@ void Word_c::setAnimalWord(dScript::Word_c *word, dAnimal_c *animal, dAnimal_c *
     mAnimalID.copy(&animal->mID);
     mHasAnimalID = 1;
     u8 looks = speaker->mID.getLooks(1);
-    u16 index = fn_800F3F38(mAnimalID.getGender(0), looks);
+    u16 index = dNpc::getPlayerUnitMessage(mAnimalID.getGender(0), looks);
     if (index != 0) {
         dString::Word_c unit(index, "sys_STRING/STR_Unit");
         mpComp->setUnitWord(&unit);
@@ -1662,7 +1662,7 @@ void dMsg::Comp_c::addFriendship(s8 delta) {
             u32 memIdx = animal->getMemoryIdx(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID);
             dAnimalMemory_c *memory = animal->getMemory(memIdx);
             if (memory != NULL) {
-                fn_800F0434(&animal->mID, memIdx, memory->addFriendship(delta));
+                dNpc::sendAnimalFriendshipById(&animal->mID, memIdx, memory->addFriendship(delta));
             }
         }
     }
@@ -1765,7 +1765,7 @@ void dMsg::Comp_c::updateUnitWord() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dAnimal_c *animal = mpRcpt->getSpeakerAnimal();
     if (player != NULL && animal != NULL) {
-        u16 msgId = fn_800F3F84(&player->mPID, animal->mID.getLooks(1), animal);
+        u16 msgId = dNpc::getPlayerUnitMessageForAnimal(&player->mPID, animal->mID.getLooks(1), animal);
         if (msgId != 0) {
             dString::Word_c word(msgId, "sys_STRING/STR_Unit");
             setUnitWord(&word);

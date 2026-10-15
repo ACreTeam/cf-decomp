@@ -126,7 +126,7 @@ void dNpcMng_c::reset() {
     sResetTheaterSpots = 0;
     sShowTelop = 0;
     _8074EACF = 0;
-    fn_800F47D8();
+    dNpc::clearAnimalBuffer();
 }
 
 void dNpcMng_c::createStageHeap() {
@@ -188,9 +188,9 @@ void dNpcMng_c::placeHidersAtTownHall() {
             mVec3_c pos = mVec3_c::Zero;
             if (getTownHallPos(&pos, unitX[i], unitZ[i])) {
                 u16 key = getAnimalKey(idx);
-                dNpcDaub_c *daub = fn_800EFD04(&key);
+                dNpc::daub_c *daub = dNpc::getDaubByKey(&key);
                 if (daub != NULL) {
-                    dNpcDaub_c::packXZ((u8 *)daub, &pos);
+                    dNpc::daub_c::packXZ((u8 *)daub, &pos);
                 }
             }
         }
@@ -244,7 +244,7 @@ BOOL dNpcMng_c::pickHideSpotBuilding(mVec3_c *pos, const s8 *usedBlocks, u32 use
 // An npc can stand at pos (no item may be put there).
 static inline bool canStandAtPos(const mVec3_c *pos, dFdBase_c *field) {
     dItem::Item none;
-    return canPutItemAt(pos, &none, field, 0x44, TRUE, TRUE) != FALSE;
+    return dNpc::canPutItemAt(pos, &none, field, 0x44, TRUE, TRUE) != FALSE;
 }
 
 BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum) {
@@ -283,7 +283,7 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
                     mVec3_c spot = mVec3_c::Zero;
                     dFdBase_c::getUnitCenterPos(&spot, blockX, blockZ, unitX, unitZ - 1);
                     dItem::Item none;
-                    bool ok = canPutItemAt(&spot, &none, field, 0x44, TRUE, TRUE) != FALSE;
+                    bool ok = dNpc::canPutItemAt(&spot, &none, field, 0x44, TRUE, TRUE) != FALSE;
                     if (ok) {
                         f32 chance = 100.0f / (count + 1);
                         if (cM::rndF(100.0f) <= chance) {
@@ -293,16 +293,16 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
                             mVec3_c right = spot;
                             right.x += 14.4f;
                             dItem::Item none1;
-                            if (canPutItemAt(&left, &none1, field, 0x44, TRUE, TRUE)) {
+                            if (dNpc::canPutItemAt(&left, &none1, field, 0x44, TRUE, TRUE)) {
                                 *pos = left;
                                 dItem::Item none2;
-                                BOOL useRight = canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE) && cM::rndInt(2) == 0;
+                                BOOL useRight = dNpc::canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE) && cM::rndInt(2) == 0;
                                 if (useRight) {
                                     *pos = right;
                                 }
                             } else {
                                 dItem::Item none2;
-                                if (canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE)) {
+                                if (dNpc::canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE)) {
                                     *pos = right;
                                 }
                             }
@@ -405,11 +405,11 @@ void dNpcMng_c::hideHiders() {
             }
             if ((this->*l_pickSpot[kind])(&pos, used[0], usedNum)) {
                 u16 key = getAnimalKey(idx);
-                dNpcDaub_c *daub = fn_800EFD04(&key);
+                dNpc::daub_c *daub = dNpc::getDaubByKey(&key);
                 if (daub != NULL) {
-                    dNpcDaub_c::packXZ((u8 *)daub, &pos);
+                    dNpc::daub_c::packXZ((u8 *)daub, &pos);
                     mAng angle = 0;
-                    daub->set08((u16 *)&angle);
+                    daub->setAngleY((u16 *)&angle);
                 }
                 if (usedNum < 3) {
                     int xi = pos.x;
@@ -451,7 +451,7 @@ BOOL dNpcMng_c::createVillagers() {
     dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
     u32 num = 0;
     u8 scene = dScene::getCurrentScene();
-    BOOL online = fn_800F5550();
+    BOOL online = dNpc::isPermitSceneOwner();
     for (int i = 0; i < 10 && num < 5; i++) {
         dAnimal_c *animal = block->getAnimal(i);
         if (animal == NULL || !animal->mID.isValid() || animal->mDayPlace != 0) {
@@ -461,13 +461,13 @@ BOOL dNpcMng_c::createVillagers() {
         mAng3_c angle = mAng3_c::Zero;
         BOOL placed = FALSE;
         u16 key = getAnimalKey(i);
-        const dNpcDaub_c *recv = fn_800EFE6C(&key);
+        const dNpc::daub_c *recv = dNpc::getReceivedDaub(&key);
         if (recv != NULL) {
-            dNpcDaub_c daub(*recv);
-            if (daub.mFlag) {
-                if (scene == daub._0C) {
-                    dNpcDaub_c::unpackXZ((const u8 *)&daub, &pos);
-                    angle.y = daub.get08();
+            dNpc::daub_c daub(*recv);
+            if (daub.mValid) {
+                if (scene == daub.mScene) {
+                    dNpc::daub_c::unpackXZ((const u8 *)&daub, &pos);
+                    angle.y = daub.getAngleY();
                 } else {
                     block->getHouseFrontPos(&pos, i);
                 }
@@ -475,11 +475,11 @@ BOOL dNpcMng_c::createVillagers() {
             }
         }
         if (!placed && online) {
-            dNpcDaub_c *daub = fn_800EFD04(&key);
-            if (daub != NULL && daub->mFlag) {
-                if (daub->_0C == scene) {
-                    dNpcDaub_c::unpackXZ((const u8 *)daub, &pos);
-                    angle.y = daub->get08();
+            dNpc::daub_c *daub = dNpc::getDaubByKey(&key);
+            if (daub != NULL && daub->mValid) {
+                if (daub->mScene == scene) {
+                    dNpc::daub_c::unpackXZ((const u8 *)daub, &pos);
+                    angle.y = daub->getAngleY();
                 } else {
                     block->getHouseFrontPos(&pos, i);
                 }
@@ -495,13 +495,13 @@ BOOL dNpcMng_c::createVillagers() {
             // Post-increment preserves MWCC's argument evaluation order.
             BOOL checkA = TRUE;
             dItem::Item none;
-            if (!canPutItemAt(&pos, &none, NULL, 0x44, FALSE, checkA++)) {
+            if (!dNpc::canPutItemAt(&pos, &none, NULL, 0x44, FALSE, checkA++)) {
                 blocked = TRUE;
             }
         }
         if (blocked) {
             mVec3_c free = pos;
-            if (fn_800F2138(&free, &pos, 2)) {
+            if (dNpc::pickNearbyFreePos(&free, &pos, 2)) {
                 pos = free;
             } else {
                 block->getHouseFrontPos(&pos, i);
@@ -537,7 +537,7 @@ BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
             BOOL blocked = FALSE;
             if (!(*row >> x & 1)) {
                 dItem::Item none;
-                if (!canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
+                if (!dNpc::canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
                     blocked = TRUE;
                 }
             }
@@ -620,17 +620,17 @@ void dNpcMng_c::createHouseVillager() {
     mVec3_c pos = mVec3_c::Zero;
     mAng3_c angle = mAng3_c::Zero;
     BOOL placed = FALSE;
-    if (fn_800F5550()) {
+    if (dNpc::isPermitSceneOwner()) {
         pickHouseVillagerPos(&pos);
         angle.y = cM::rndInt(0xFFFF);
         placed = TRUE;
     }
-    const dNpcDaub_c *recv = !placed ? fn_800EFE6C(&key) : NULL;
+    const dNpc::daub_c *recv = !placed ? dNpc::getReceivedDaub(&key) : NULL;
     if (recv != NULL) {
-        dNpcDaub_c daub(*recv);
-        if (daub.mFlag) {
-            dNpcDaub_c::unpackXZ((const u8 *)&daub, &pos);
-            angle.y = daub.get08();
+        dNpc::daub_c daub(*recv);
+        if (daub.mValid) {
+            dNpc::daub_c::unpackXZ((const u8 *)&daub, &pos);
+            angle.y = daub.getAngleY();
             placed = TRUE;
         }
     }
@@ -661,7 +661,7 @@ BOOL dNpcMng_c::createPlayerHouseGuest() {
         pos.z += 64.0f;
         dAnimalMemory_c *memory = player != NULL ? animal->findMemory2(&player->mPID) : NULL;
         if (memory != NULL && memory->isEventFlag(0)) {
-            if (!fn_800F29C4(&pos, NULL, 4, NULL, 0.0f)) {
+            if (!dNpc::pickSceneFreePos(&pos, NULL, 4, NULL, 0.0f)) {
                 pos.set(256.0f, 0.0f, 464.0f);
             }
         }
@@ -780,14 +780,14 @@ void dNpcMng_c::setPosTownHallLeft(mVec3_c *pos, mAng3_c *angle, const dItem::It
 
 void dNpcMng_c::setPosRandomSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, TRUE)) {
-        fn_800F2644(pos, NULL, 4, NULL, 0.0f);
+        dNpc::pickOutdoorFreePos(pos, NULL, 4, NULL, 0.0f);
         angle->y = cM::rndInt(0xFFFF);
     }
 }
 
 void dNpcMng_c::setPosRandomPlace(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, TRUE)) {
-        fn_800F28AC(pos);
+        dNpc::pickPosWithNorthClearance(pos);
         angle->y = cM::rndInt(0xFFFF);
     }
 }
@@ -795,9 +795,9 @@ void dNpcMng_c::setPosRandomPlace(mVec3_c *pos, mAng3_c *angle, const dItem::Ite
 void dNpcMng_c::setPosHarvest(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         if (npc->isSame(dItem::Item((u16)0x801E))) {
-            fn_800F3830(pos, NULL, 4, NULL, 0x400, FALSE, TRUE, 0.0f);
+            dNpc::pickOutdoorPlacementPos(pos, NULL, 4, NULL, 0x400, FALSE, TRUE, 0.0f);
         } else {
-            fn_800F3830(pos, NULL, 4, NULL, 0, FALSE, TRUE, 0.0f);
+            dNpc::pickOutdoorPlacementPos(pos, NULL, 4, NULL, 0, FALSE, TRUE, 0.0f);
         }
         angle->y = cM::rndInt(0xFFFF);
     }
@@ -806,40 +806,40 @@ void dNpcMng_c::setPosHarvest(mVec3_c *pos, mAng3_c *angle, const dItem::Item *n
 BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc, BOOL checkPut) {
     u8 scene = dScene::getCurrentScene();
     BOOL found = FALSE;
-    const dNpcDaub_c *recv = fn_800EFE6C(&npc->mId);
+    const dNpc::daub_c *recv = dNpc::getReceivedDaub(&npc->mId);
     if (recv != NULL) {
-        dNpcDaub_c daub(*recv);
-        if (daub.mFlag && scene == daub._0C) {
-            dNpcDaub_c::unpackXZ((const u8 *)&daub, pos);
-            angle->y = daub.get08();
+        dNpc::daub_c daub(*recv);
+        if (daub.mValid && scene == daub.mScene) {
+            dNpc::daub_c::unpackXZ((const u8 *)&daub, pos);
+            angle->y = daub.getAngleY();
             found = TRUE;
         }
     }
-    BOOL online = fn_800F5550();
+    BOOL online = dNpc::isPermitSceneOwner();
     if (!found && online) {
-        dNpcDaub_c *daub = fn_800EFD04(&npc->mId);
-        if (daub != NULL && daub->mFlag && daub->_0C == scene) {
+        dNpc::daub_c *daub = dNpc::getDaubByKey(&npc->mId);
+        if (daub != NULL && daub->mValid && daub->mScene == scene) {
             mVec3_c spot = mVec3_c::Zero;
-            dNpcDaub_c::unpackXZ((const u8 *)daub, &spot);
+            dNpc::daub_c::unpackXZ((const u8 *)daub, &spot);
             BOOL blocked = FALSE;
             if (checkPut) {
                 // Post-increment preserves MWCC's argument evaluation order.
                 BOOL checkA = TRUE;
                 dItem::Item none;
-                if (!canPutItemAt(&spot, &none, NULL, 0x44, FALSE, checkA++)) {
+                if (!dNpc::canPutItemAt(&spot, &none, NULL, 0x44, FALSE, checkA++)) {
                     blocked = TRUE;
                 }
             }
             if (blocked) {
                 mVec3_c free = spot;
-                if (fn_800F2138(&free, &spot, 2)) {
+                if (dNpc::pickNearbyFreePos(&free, &spot, 2)) {
                     *pos = free;
-                    angle->y = daub->get08();
+                    angle->y = daub->getAngleY();
                     found = TRUE;
                 }
             } else {
                 *pos = spot;
-                angle->y = daub->get08();
+                angle->y = daub->getAngleY();
                 found = TRUE;
             }
         }
@@ -975,7 +975,7 @@ u32 dNpcMng_c::getLooksToday(u8 *looks, const dTime_c *time) {
     }
     *looks = 0;
     for (int i = 0; i < 6; i++) {
-        if (fn_800F42E0(i, time)) {
+        if (dNpc::isAnimalDaytime(i, time)) {
             *looks |= 1 << i;
             num++;
         }
@@ -1104,7 +1104,7 @@ BOOL dNpcMng_c::pickUnit(mVec3_c *pos, const mVec3_c *used, u32 usedNum, BOOL in
             BOOL in = inArea == FALSE || (spot.x > minX && spot.x < maxX && spot.z > minZ && spot.z < maxZ);
             if (in) {
                 dItem::Item none;
-                if (canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
+                if (dNpc::canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
                     ok = TRUE;
                 }
             }
@@ -1420,7 +1420,7 @@ BOOL dNpcMng_c::createCafeGuest() {
 }
 
 void dNpcMng_c::updateAnimalPlaces() {
-    if (!fn_800F5550()) {
+    if (!dNpc::isPermitSceneOwner()) {
         return;
     }
     if (dScene::getCurrentScene() != dScene::SCENE_FIELD) {
@@ -1520,7 +1520,7 @@ void dNpcMng_c::updateAnimalPlaces() {
                 case 0:
                     if (place != 0) {
                         animal->clearQuestStarted();
-                        fn_800F1388(i);
+                        dNpc::sendAnimalQuestClear(i);
                         if (place == 1 && !online) {
                             animal->setPlaceChangeTime(10, NULL);
                         }
@@ -1529,18 +1529,18 @@ void dNpcMng_c::updateAnimalPlaces() {
                 default:
                     if (place == 0) {
                         animal->clearPlaceChangeTime();
-                        fn_800F1418(i);
+                        dNpc::sendAnimalPlaceTimeClear(i);
                     }
                     break;
             }
             animal->mPlace = place;
-            fn_800F0A84(i, place);
+            dNpc::sendAnimalPlace(i, place);
         }
     }
 }
 
 void dNpcMng_c::applyHouseVillagerItems() {
-    if (!fn_800F5550()) {
+    if (!dNpc::isPermitSceneOwner()) {
         return;
     }
     if (dEvent::isActive(EVENT_TOY_DAY)) {
@@ -1648,13 +1648,13 @@ int dNpcMng_c::execute() {
                 case 4:
                     if (!animal->isSleepTime(NULL)) {
                         animal->mPlace = 1;
-                        fn_800F0A84(i, 1);
+                        dNpc::sendAnimalPlace(i, 1);
                     }
                     break;
                 case 1:
                     if (!flagD && animal->isSleepTime(NULL)) {
                         animal->mPlace = 4;
-                        fn_800F0A84(i, 4);
+                        dNpc::sendAnimalPlace(i, 4);
                     }
                     break;
             }
@@ -1837,19 +1837,19 @@ void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle, const dItem::It
         dFdBase_c *field = dField::getInfo(0);
         BOOL ok = FALSE;
         dItem::Item none;
-        if (canPutItemAt(&left, &none, field, 0x44, TRUE, TRUE)) {
+        if (dNpc::canPutItemAt(&left, &none, field, 0x44, TRUE, TRUE)) {
             dItem::Item none1;
-            if (canPutItemAt(&right, &none1, field, 0x44, TRUE, TRUE)) {
+            if (dNpc::canPutItemAt(&right, &none1, field, 0x44, TRUE, TRUE)) {
                 ok = TRUE;
             }
         }
         if (ok) {
             pos->x += 16.0f;
         } else {
-            fn_800F2138(pos, pos, 16);
+            dNpc::pickNearbyFreePos(pos, pos, 16);
         }
     } else {
-        fn_800F2138(pos, pos, 16);
+        dNpc::pickNearbyFreePos(pos, pos, 16);
     }
     angle->set(0, 0, 0);
 }
@@ -2256,7 +2256,7 @@ void dNpcMng_c::setPosGateA(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc
     mVec3_c exclude;
     exclude.x = 32.0f * (x + 8);
     exclude.z = 32.0f * (z + 8);
-    fn_800F2644(pos, NULL, 4, &exclude, 384.0f);
+    dNpc::pickOutdoorFreePos(pos, NULL, 4, &exclude, 384.0f);
     angle->y = cM::rndInt(0xFFFF);
 }
 
@@ -2278,7 +2278,7 @@ void dNpcMng_c::setPosGateB(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc
     mVec3_c exclude;
     exclude.x = 32.0f * (x + 8);
     exclude.z = 32.0f * (z + 8);
-    fn_800F2644(pos, NULL, 4, &exclude, 384.0f);
+    dNpc::pickOutdoorFreePos(pos, NULL, 4, &exclude, 384.0f);
     angle->y = cM::rndInt(0xFFFF);
 }
 
@@ -2395,7 +2395,7 @@ BOOL dNpcMng_c::canStandAt(dFdBase_c *field, int unitX, int unitZ) {
         }
     }
     dItem::Item none;
-    return canPutItemOnUnit(unitX, unitZ, &none, field, 0x44, TRUE, TRUE);
+    return dNpc::canPutItemOnUnit(unitX, unitZ, &none, field, 0x44, TRUE, TRUE);
 }
 
 void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {

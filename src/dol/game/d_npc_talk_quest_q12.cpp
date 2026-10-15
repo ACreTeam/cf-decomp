@@ -18,7 +18,7 @@ typedef dAcNpcNml_c::talk_c talk_c;
 static inline void setPlayerUnit(talk_c *talk, const dPlayerID_c *player, int idx, dAnimal_c *animal) {
     talk->setPlayerName(player, idx);
     u8 gender = player->mGender;
-    u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+    u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
     if (unit == 0) {
         talk->clearWord(idx + 1);
     } else {
@@ -217,7 +217,7 @@ void dAcNpcNml_c::talk_c::endLostKeyItem(int arg) {
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
-                fn_800F0FE4(getNpcIdx(), &mItem0);
+                dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
@@ -242,7 +242,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyItem(int kind) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (quest != NULL && player != NULL) {
             quest->mBase.mState = 2;
-            fn_800F12D8(getNpcIdx(), QUEST_KIND_REQUEST_6, 2);
+            dNpc::sendAnimalQuestState(getNpcIdx(), QUEST_KIND_REQUEST_6, 2);
             quest->setRequester(&player->mPID.player);
             quest->removePlayer(&player->mPID.player);
             if (!dNet::isSessionActive() && dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && animal != NULL) {
@@ -250,7 +250,7 @@ BOOL dAcNpcNml_c::talk_c::stepLostKeyItem(int kind) {
             }
             u8 minute = calcHeldItemChangeMinute((u8)dTime_c::getCurrent()->min, FALSE);
             animal->mHeldItemChangeMinute = minute;
-            fn_800F0054(getNpcIdx(), minute);
+            dNpc::sendAnimalHeldItemTime(getNpcIdx(), minute);
             if (quest->countPlayers(FALSE) == 0) {
                 dSaveTown_c *town = dSaveData_c::getTown();
                 town->mAnimals.mTown.mLostItem.setTime(*dTime_c::getCurrent());

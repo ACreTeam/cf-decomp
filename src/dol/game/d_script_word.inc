@@ -795,7 +795,7 @@ int Word_c::procUnit(int pos) {
 // 8015A0C4
 int Word_c::procAnimalUnit(int pos, void *obj, dAnmPersonalID_c *id) {
     getTagLength(getBuffer() + pos);
-    u16 index = fn_800F3F84((const dPersonalID_c *)obj, id->getLooks(1), NULL);
+    u16 index = dNpc::getPlayerUnitMessageForAnimal((const dPersonalID_c *)obj, id->getLooks(1), NULL);
     if (index != 0) {
         dString::Word_c word(index, "sys_STRING/STR_Unit");
         _18 = 0;

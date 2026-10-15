@@ -262,25 +262,25 @@ enum dNetPacket_e {
     NET_PACKET_CHAT_PRESET = 0x53,
     // d_clock dClock::sendCmd: a 1-byte clock command (dClock::Cmd_e) -> dClock::receive
     NET_PACKET_CLOCK = 0x54,
-    // d_npc fn_800EFFA0: a villager's held item (setHeldItem)
+    // d_npc dNpc::sendAnimalHeldItem: a villager's held item (setHeldItem)
     NET_PACKET_ANIMAL_HELD_ITEM = 0x55,
-    // d_npc fn_800F0054: mHeldItemChangeMinute
+    // d_npc dNpc::sendAnimalHeldItemTime: mHeldItemChangeMinute
     NET_PACKET_ANIMAL_HELD_ITEM_TIME = 0x56,
-    NET_PACKET_ANIMAL_EVENT_FLAGS = 0x57, // d_npc fn_800F0108: mEvent.mFlags
+    NET_PACKET_ANIMAL_EVENT_FLAGS = 0x57, // d_npc dNpc::sendAnimalEventFlags: mEvent.mFlags
     // cockroach manager REL: clear a home room flag (home _15BA = 30 when none
     // are left)
     NET_PACKET_COCKROACH_REMOVE = 0x58,
-    // d_npc fn_800F0208: dAnimalMemory_c::init for the sender + impression
+    // d_npc dNpc::sendAnimalMemoryInit: dAnimalMemory_c::init for the sender + impression
     NET_PACKET_ANIMAL_MEMORY_INIT = 0x59,
-    // d_npc fn_800F02A8: dAnimalMemory_c::set for the sender + impression
+    // d_npc dNpc::sendAnimalMemorySet: dAnimalMemory_c::set for the sender + impression
     NET_PACKET_ANIMAL_MEMORY_SET = 0x5A,
-    // d_npc fn_800F039C: memory setFriendship
+    // d_npc dNpc::sendAnimalFriendship: memory setFriendship
     NET_PACKET_ANIMAL_FRIENDSHIP = 0x5B,
-    // d_npc fn_800F04E8: memory onEventFlag
+    // d_npc dNpc::sendAnimalMemoryFlagOn: memory onEventFlag
     NET_PACKET_ANIMAL_MEMORY_FLAG_ON = 0x5C,
     // memory offEventFlag (no sender found)
     NET_PACKET_ANIMAL_MEMORY_FLAG_OFF = 0x5D,
-    // d_npc fn_800F05C8: memory mFlags.mEventTalked = 1
+    // d_npc dNpc::sendAnimalEventTalked: memory mFlags.mEventTalked = 1
     NET_PACKET_ANIMAL_EVENT_TALKED = 0x5E,
     // jonny REL (Gulliver): dSaveTown_c::setFlag(4)
     NET_PACKET_GULLIVER_FLAG = 0x5F,
@@ -292,61 +292,61 @@ enum dNetPacket_e {
     NET_PACKET_RECYCLE_BIN = 0x62,
     // dPostOffice::onRecycleBin -> dPostOffice::onRecycleAck
     NET_PACKET_RECYCLE_BIN_ACK = 0x63,
-    // d_npc fn_800F0650: mHideAndSeek.clearInfo
+    // d_npc dNpc::sendHideAndSeekClear: mHideAndSeek.clearInfo
     NET_PACKET_HIDE_AND_SEEK_CLEAR = 0x64,
-    // d_npc fn_800F06A8: mHideAndSeek.mBase.mState
+    // d_npc dNpc::sendHideAndSeekState: mHideAndSeek.mBase.mState
     NET_PACKET_HIDE_AND_SEEK_STATE = 0x65,
-    // d_npc fn_800F0708: mHideAndSeek.setFlag
+    // d_npc dNpc::sendHideAndSeekFlag: mHideAndSeek.setFlag
     NET_PACKET_HIDE_AND_SEEK_FLAG = 0x66,
     // dPostOffice::sendMelody (town tune) -> dPostOffice::onMelody
     NET_PACKET_MELODY = 0x67,
     // dPostOffice::onMelody -> dPostOffice::onMelodyAck
     NET_PACKET_MELODY_ACK = 0x68,
-    // d_npc fn_800F0864: the furniture at (x, z) in the current room
+    // d_npc dNpc::sendAnimalFtrTouch: the furniture at (x, z) in the current room
     // (dFTR::sendEvent); hedged
     NET_PACKET_ANIMAL_FTR_TOUCH = 0x69,
-    // d_npc fn_800F09B4: a villager's furniture slot set / cleared
+    // d_npc dNpc::sendAnimalFtr: a villager's furniture slot set / cleared
     NET_PACKET_ANIMAL_FTR = 0x6A,
-    NET_PACKET_ANIMAL_PLACE = 0x6B, // d_npc fn_800F0A84: mPlace
-    // d_npc fn_800F0B64: mSpot x, z, type (group 1)
+    NET_PACKET_ANIMAL_PLACE = 0x6B, // d_npc dNpc::sendAnimalPlace: mPlace
+    // d_npc dNpc::sendAnimalSpot: mSpot x, z, type (group 1)
     NET_PACKET_ANIMAL_SPOT = 0x6C,
-    // d_npc fn_800F0C5C: mSpot group + time
+    // d_npc dNpc::sendAnimalSpotTime: mSpot group + time
     NET_PACKET_ANIMAL_SPOT_TIME = 0x6D,
-    NET_PACKET_ANIMAL_SPOT_CLEAR = 0x6E, // d_npc fn_800F0D0C: mSpot.clear
-    // d_npc fn_800F0DD4: setFtr(slot, item)
+    NET_PACKET_ANIMAL_SPOT_CLEAR = 0x6E, // d_npc dNpc::sendAnimalSpotClear: mSpot.clear
+    // d_npc dNpc::sendAnimalFtrSet: setFtr(slot, item)
     NET_PACKET_ANIMAL_FTR_SET = 0x6F,
-    NET_PACKET_ANIMAL_NEW_ITEM_ADD = 0x70,   // d_npc fn_800F0E9C: addNewItem
-    NET_PACKET_ANIMAL_NEW_ITEM_CLEAR = 0x71, // d_npc fn_800F0F3C: clearNewItems
-    // d_npc fn_800F0FE4: removeNewItem
+    NET_PACKET_ANIMAL_NEW_ITEM_ADD = 0x70,   // d_npc dNpc::sendAnimalNewItemAdd: addNewItem
+    NET_PACKET_ANIMAL_NEW_ITEM_CLEAR = 0x71, // d_npc dNpc::sendAnimalNewItemClear: clearNewItems
+    // d_npc dNpc::sendAnimalNewItemRemove: removeNewItem
     NET_PACKET_ANIMAL_NEW_ITEM_REMOVE = 0x72,
-    NET_PACKET_ANIMAL_WALL = 0x73,   // d_npc fn_800F109C: setWall
-    NET_PACKET_ANIMAL_CARPET = 0x74, // d_npc fn_800F1154: setCarpet
-    NET_PACKET_ANIMAL_MUSIC = 0x75,  // d_npc fn_800F120C: setMusic
-    // d_npc fn_800F12D8: quest (kind 2 / 4 / 6) state raised
+    NET_PACKET_ANIMAL_WALL = 0x73,   // d_npc dNpc::sendAnimalWall: setWall
+    NET_PACKET_ANIMAL_CARPET = 0x74, // d_npc dNpc::sendAnimalCarpet: setCarpet
+    NET_PACKET_ANIMAL_MUSIC = 0x75,  // d_npc dNpc::sendAnimalMusic: setMusic
+    // d_npc dNpc::sendAnimalQuestState: quest (kind 2 / 4 / 6) state raised
     NET_PACKET_ANIMAL_QUEST_STATE = 0x76,
-    // d_npc fn_800F1388: clearQuestStarted
+    // d_npc dNpc::sendAnimalQuestClear: clearQuestStarted
     NET_PACKET_ANIMAL_QUEST_CLEAR = 0x77,
-    // d_npc fn_800F1418: clearPlaceChangeTime
+    // d_npc dNpc::sendAnimalPlaceTimeClear: clearPlaceChangeTime
     NET_PACKET_ANIMAL_PLACE_TIME_CLEAR = 0x78,
-    NET_PACKET_ANIMAL_PRESENT = 0x79, // d_npc fn_800F1514: memory setPresent
-    // d_npc fn_800F1638: dNpcPermit_c setState (+ flags, fn_800F1738 relay)
+    NET_PACKET_ANIMAL_PRESENT = 0x79, // d_npc dNpc::sendAnimalPresent: memory setPresent
+    // d_npc dNpc::sendPermitState: dNpc::permit_c setState (+ flags, dNpc::sendPermitFlag relay)
     NET_PACKET_PERMIT_STATE = 0x7A,
-    // d_npc fn_800F16B0: dNpcPermit_c setState only
+    // d_npc dNpc::sendPermitSetState: dNpc::permit_c setState only
     NET_PACKET_PERMIT_SET_STATE = 0x7B,
-    // d_npc fn_800F1738 (to one member): dNpcPermit_c setFlag(member)
+    // d_npc dNpc::sendPermitFlag (to one member): dNpc::permit_c setFlag(member)
     NET_PACKET_PERMIT_FLAG = 0x7C,
-    // d_npc fn_800F17D0: receiver answers with fn_800F1838 (0x7E)
+    // d_npc dNpc::sendPermitQuery: receiver answers with dNpc::sendPermitAnswer (0x7E)
     NET_PACKET_PERMIT_QUERY = 0x7D,
-    // d_npc fn_800F1838 (to one member): setFlag; when complete fn_800F18D0
+    // d_npc dNpc::sendPermitAnswer (to one member): setFlag; when complete dNpc::sendPermitClearState
     // (0x7F) + clear
     NET_PACKET_PERMIT_ANSWER = 0x7E,
-    // d_npc fn_800F18D0: clear when mState matches
+    // d_npc dNpc::sendPermitClearState: clear when mState matches
     NET_PACKET_PERMIT_CLEAR_STATE = 0x7F,
-    // d_npc fn_800F1948: set2(state) when there is no state yet
+    // d_npc dNpc::sendPermitFallbackPlayer: setFallbackPlayer(state) when there is no owner yet
     NET_PACKET_PERMIT_SET2 = 0x80,
-    // d_npc fn_800F19C0: dNpcPermit_c clear
+    // d_npc dNpc::sendPermitClear: dNpc::permit_c clear
     NET_PACKET_PERMIT_CLEAR = 0x81,
-    NET_PACKET_ANIMAL_CLOTH = 0x82, // d_npc fn_800F1A68: setCloth
+    NET_PACKET_ANIMAL_CLOTH = 0x82, // d_npc dNpc::sendAnimalCloth: setCloth
     NET_PACKET_NUM = 0x83,          // receive handlers 0..0x82
 };
 
@@ -1685,7 +1685,7 @@ void applySyncBuf4LogFlag(int member, u8 *data, u32 size);
 // 0x10..0x1B: the insect net slots (dInsectCatchData_c, INSECT_NET_SLOT_NUM)
 // 0x1C..0x23: the fish field records (PLAY_SYNC_REC_ID, dPlaySyncRec_c)
 #define NET_REC_INSECT 0x10
-// 0x2B..0x95: the npc daubs (dNpcDaub_c): 10 normal ones, then the specials
+// 0x2B..0x95: the npc daubs (dNpc::daub_c): 10 normal ones, then the specials
 #define NET_REC_DAUB 0x2B
 #define NET_REC_DAUB_SPECIAL 0x35
 // 0x96..0xB9: player house rooms, house * 9 + room * 3 + 0..2 (8 bytes)
@@ -1725,7 +1725,7 @@ namespace dNet {
 int sendClose0(int arg, void *buf, int size, int value);
 // 800E38C0: the pair ring update, -1
 int sendClosePairRing(int arg, void *buf, int size, int value);
-// 800E3924: fn_800F55BC
+// 800E3924: dNpc::onNetSceneClose
 int sendClose2(int arg, void *buf, int size, int value);
 // 800E3928: nothing
 void applyClose0(int arg, const void *data, u32 size, int value);
@@ -1752,7 +1752,7 @@ void applyOpenInsects(int arg, const void *data, u32 size, u8 scene);
 void applyOpenFish(int arg, const void *data, u32 size, u8 scene);
 // 800E3B54: flags the house room
 void applyOpenHouseRoom(int arg, const void *data, u32 size, u8 scene);
-// 800E3BC4: fn_800F55B4
+// 800E3BC4: dNpc::onNetSceneOpen
 void applyOpen4(int arg, const void *data, u32 size, u8 scene);
 // 807508CC = {1}: 807508D0 / 807508D4; 807508D8 = {1}: 807508DC / 807508E0.
 // 800E3BC8: -1

@@ -59,7 +59,7 @@ int dAcNpcNml_c::talk_c::msgCountdown(msgInfo_s *info) {
                 mpMemory->mFlags.mEventTalked = TRUE;
                 dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
                 if (npc != NULL) {
-                    fn_800F05C8(npc->getNpcIdx(), mMemoryIdx);
+                    dNpc::sendAnimalEventTalked(npc->getNpcIdx(), mMemoryIdx);
                 }
             }
             dNpc::msgMemorySecond_c *mem = getRememberedMsg();
@@ -82,8 +82,8 @@ void dAcNpcNml_c::talk_c::endCountdown(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }

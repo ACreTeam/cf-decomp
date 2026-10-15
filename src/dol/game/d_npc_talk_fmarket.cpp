@@ -30,7 +30,7 @@ int dAcNpcNml_c::talk_c::msgFmarket(msgInfo_s *info) {
         "Ev_FmarketNPC", "Ev_FmarketNPC", "Ev_FmarketNPC1", "Ev_FmarketNPC2",
     };
     dAnimal_c *animal = getAnimal();
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     int boxed = animal != NULL ? animal->countBoxedFtr() : 0;
     u32 kind;
     const dLandID_c *townLand = &dSaveData_c::getRaw()->mLandID;
@@ -47,7 +47,7 @@ int dAcNpcNml_c::talk_c::msgFmarket(msgInfo_s *info) {
                 kind = 0;
             }
         }
-    } else if (entry == NULL || !entry->_28C.mEventTalked) {
+    } else if (entry == NULL || !entry->mFlags.mEventTalked) {
         if (mpMemory == NULL) {
             kind = 4;
         } else {
@@ -61,7 +61,7 @@ int dAcNpcNml_c::talk_c::msgFmarket(msgInfo_s *info) {
         }
     } else {
         kind = 7;
-        if (!entry->_28C.mFmarketSale) {
+        if (!entry->mFlags.mFmarketSale) {
             kind = 6;
         }
     }
@@ -113,10 +113,10 @@ void dAcNpcNml_c::talk_c::endFmarket(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
-        entry->_28C.mEventTalked = 1;
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mFlags.mEventTalked = 1;
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
@@ -137,9 +137,9 @@ BOOL dAcNpcNml_c::talk_c::stepFmarketAsk(int kind) {
 
 // 80047B00
 void dAcNpcNml_c::talk_c::selFmarketAsk() {
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->_28C.mFmarketSale = 1;
+        entry->mFlags.mFmarketSale = 1;
         dMoney_c::onForceShow();
     }
 }
@@ -226,9 +226,9 @@ void dAcNpcNml_c::talk_c::endSaleYes(int arg) {
                 player->pickUp(&mItem0, FALSE);
             }
         }
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         if (entry != NULL) {
-            entry->_28C.mFmarketSale = 0;
+            entry->mFlags.mFmarketSale = 0;
         }
         setActProc(&talk_c::actSaleWait);
     }
@@ -281,9 +281,9 @@ void dAcNpcNml_c::talk_c::endStallTalk(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
@@ -407,9 +407,9 @@ void dAcNpcNml_c::talk_c::endStallBuy(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
@@ -504,9 +504,9 @@ BOOL dAcNpcNml_c::talk_c::stepStallBuy(int kind) {
                 player->addMoney(mPrice);
                 dAnimal_c *animal = getAnimal();
                 if (animal != NULL && mItem0.mId != dItem::ITEM_ID_NONE && animal->addNewItem(&mItem0)) {
-                    fn_800F0E9C(getNpcIdx(), &mItem0);
+                    dNpc::sendAnimalNewItemAdd(getNpcIdx(), &mItem0);
                 }
-                dNpcEntry_c *entry = getEntry();
+                dNpc::entry_c *entry = getEntry();
                 if (entry != NULL) {
                     entry->mStallBuyCount++;
                 }
@@ -558,7 +558,7 @@ void dAcNpcNml_c::talk_c::selStallNo() {
 // 80048E98
 int dAcNpcNml_c::talk_c::msgStallRefused(msgInfo_s *info) {
     setLooksMsg(info, l_Ev_FmarketPC, 5);
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
         entry->mStallRefuseCount++;
     }

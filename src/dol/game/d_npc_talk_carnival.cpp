@@ -51,7 +51,7 @@ int dAcNpcNml_c::talk_c::msgCarnival(msgInfo_s *info) {
     u32 state = CARNIVAL_STATE_NUM;
     if (active) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-        dNpcEntry_c *entry = getEntry();
+        dNpc::entry_c *entry = getEntry();
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
             // first talk at the event (endCarnival sets the flag)
             mEquip.setFromPlayer();
@@ -62,7 +62,7 @@ int dAcNpcNml_c::talk_c::msgCarnival(msgInfo_s *info) {
             } else {
                 state = CARNIVAL_GIFT;
             }
-        } else if (entry == NULL || entry->_28C.mEventTalked) { // set by setStakeMsg
+        } else if (entry == NULL || entry->mFlags.mEventTalked) { // set by setStakeMsg
             state = CARNIVAL_PLAYED;
         } else if (player == NULL || player->findEmptyPocket(0) == -1) {
             state = CARNIVAL_FULL;
@@ -148,16 +148,16 @@ void dAcNpcNml_c::talk_c::endCarnival(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
     if (mpMemory != NULL) {
         mpMemory->mTalkCount.inc(0x44);
         mpMemory->onEventFlag(0);
         dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
         if (npc != NULL) {
-            fn_800F04E8(npc->getNpcIdx(), mMemoryIdx, 0);
+            dNpc::sendAnimalMemoryFlagOn(npc->getNpcIdx(), mMemoryIdx, 0);
         }
     }
 }
@@ -308,9 +308,9 @@ BOOL dAcNpcNml_c::talk_c::setStakeMsg(msgInfo_s *info, const char *label, stepFu
             }
         }
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->_28C.mEventTalked = TRUE;
+        entry->mFlags.mEventTalked = TRUE;
     }
     setLooksMsg(info, label, code);
     if (step != NULL) {

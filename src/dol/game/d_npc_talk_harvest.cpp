@@ -82,9 +82,9 @@ void dAcNpcNml_c::talk_c::endHarvest(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }
 
@@ -192,7 +192,7 @@ BOOL dAcNpcNml_c::talk_c::stepSpotIntro(int kind) {
         dAnimal_c *animal = getAnimal();
         if (animal != NULL) {
             animal->mEvent.setFlag(1);
-            fn_800F0108(getNpcIdx(), animal->mEvent.mFlags);
+            dNpc::sendAnimalEventFlags(getNpcIdx(), animal->mEvent.mFlags);
         }
         return TRUE;
     }
@@ -285,7 +285,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotOtherHouse(u16 *code, int blockX, int blockZ,
                 dAnimal_c *animal = getAnimal();
                 if (animal != NULL) {
                     u8 gender = owner->player.mGender;
-                    u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+                    u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
                     if (unit == 0) {
                         clearWord(1);
                     } else {
@@ -328,7 +328,7 @@ BOOL dAcNpcNml_c::talk_c::checkSpotNpcHouse(u16 *code, int blockX, int blockZ, i
         int unit = 0;
         if (animal != NULL && animal->mID.isValid()) {
             u8 looks = animal->mID.getLooks(1);
-            unit = fn_800F3F38(other->mID.getGender(1), looks);
+            unit = dNpc::getPlayerUnitMessage(other->mID.getGender(1), looks);
         }
         if ((u16)unit == 0) {
             clearWord(3);

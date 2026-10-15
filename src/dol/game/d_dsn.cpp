@@ -175,7 +175,7 @@ void dDesign_c::setName(const wchar_t *name) {
 
 // 8010F8FC
 int dDesign_c::getStyle() const {
-    return mStyle < STYLE_NUM ? (STYLE_LOOK)mStyle : STYLE_CUTE;
+    return mStyle < STYLE_NUM ? (STYLE_LOOK)mStyle : STYLE_UNSET;
 }
 
 // 8010F914
@@ -211,7 +211,7 @@ BOOL dDesign_c::setFromBITM(const dItem::BITM *bitm) {
         mCreator = creator;
 
         setName(bitm->getName());
-        setStyle(bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_CUTE);
+        setStyle(bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_UNSET);
         setPalette(bitm->m_designPltt, TRUE);
         mIsPro = 0;
         if (bitm->m_proDesign) {

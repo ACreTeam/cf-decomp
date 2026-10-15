@@ -39,7 +39,7 @@ int dAcNpcNml_c::talk_c::getFishingTalkState() {
     dAnmPersonalID_c *leaderAnimal = record->getAnimal(0);
     dPersonalID_c *leaderPlayer = record->getPlayer(0);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (active) {
         if (mpMemory == NULL || !mpMemory->isEventFlag(0)) {
             if (!record->getFish().isValid()) {
@@ -49,7 +49,7 @@ int dAcNpcNml_c::talk_c::getFishingTalkState() {
             }
         } else if (leaderAnimal->isValid()) {
             if (animal->mID == *leaderAnimal) {
-                if (entry == NULL || !entry->_28C.mEventTalked) {
+                if (entry == NULL || !entry->mFlags.mEventTalked) {
                     state = FISHING_STATE_NPC_LEADS;
                 } else {
                     state = FISHING_STATE_NPC_LEADS_AGAIN;
@@ -86,7 +86,7 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
     dAnmPersonalID_c *leaderAnimal = record->getAnimal(0);
     dPersonalID_c *leaderPlayer = record->getPlayer(0);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     dSaveTown_c *town = dSaveData_c::getTown();
     dAnimal_c *animal = getAnimal();
     if ((u32)state < FISHING_STATE_NONE) {
@@ -95,7 +95,7 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
             setLooksMsg(info, label, state + 1);
             setProcSet(&l_talkEntrySets[TALK_FISHING]);
             if (state == FISHING_STATE_NPC_LEADS && entry != NULL) {
-                entry->_28C.mEventTalked = TRUE;
+                entry->mFlags.mEventTalked = TRUE;
             }
             if (item.isValid()) {
                 setItemName(&item, 0);
@@ -109,7 +109,7 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
                 gender = leaderPlayer->player.mGender;
             }
             if (animal != NULL && gender < GENDER_OTHER) {
-                u16 unit = fn_800F3F38(gender, animal->mID.getLooks(1));
+                u16 unit = dNpc::getPlayerUnitMessage(gender, animal->mID.getLooks(1));
                 if (unit == 0) {
                     clearWord(4);
                 } else {
@@ -141,7 +141,7 @@ void dAcNpcNml_c::talk_c::endFishing(int arg) {
         mpMemory->onEventFlag(0);
         dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(mpNpc);
         if (npc != NULL) {
-            fn_800F04E8(npc->getNpcIdx(), mMemoryIdx, 0);
+            dNpc::sendAnimalMemoryFlagOn(npc->getNpcIdx(), mMemoryIdx, 0);
         }
         mpMemory->mTalkCount.inc(0x44);
     }
@@ -149,8 +149,8 @@ void dAcNpcNml_c::talk_c::endFishing(int arg) {
     if (mem != NULL) {
         mem->clear();
     }
-    dNpcEntry_c *entry = getEntry();
+    dNpc::entry_c *entry = getEntry();
     if (entry != NULL) {
-        entry->mMsg.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
+        entry->mTopicMemory.set(mMessageLabel, mMessageCode, mTopicKind, mTopicGroup, mTopicIdx);
     }
 }

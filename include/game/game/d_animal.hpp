@@ -48,7 +48,8 @@ class mVec3_c;
 // Filter for the memory searches (getReplaceMemoryIdx).
 typedef BOOL (*dAnimalMemoryFilter)(const dPersonalID_c *pid, const dLandID_c *land, dPrivateData_c *players);
 
-#define ANIMAL_NUM 10        // villagers per town (dAnimalBlock_c ctor 80129A3C)
+#define ANIMAL_NUM 10       // villagers per town (dAnimalBlock_c ctor 80129A3C)
+#define ANIMAL_FTR_COUNT 10 // house furniture slots in dAnimalTemplate_c::mFurniture
 #define ANIMAL_MEMORY_NUM 16 // dAnimal_c ctor 8011E2C0
 #define ANIMAL_GREETING_LEN 16
 #define ANIMAL_NICKNAME_LEN 8
@@ -207,7 +208,7 @@ struct dAnimalTemplate_c {
     /* 0x004 */ s16 mCarpet; // setCarpet
     /* 0x006 */ s16 mWall; // setWall
     /* 0x008 */ s16 mUmbrella;      // getUmbrella / setUmbrella
-    /* 0x00A */ s16 mFurniture[10]; // house furniture slots (getTemplateFtr)
+    /* 0x00A */ s16 mFurniture[ANIMAL_FTR_COUNT]; // house furniture slots (getTemplateFtr)
     /* 0x01E */ s16 mMusic;           // music (getMusic / setMusic)
     /* 0x020 */ s16 mSoundId;        // the voice (dAcNpcNml_c::getSoundId)
     /* 0x022 */ wchar_t mNames[REGION_NUM][ANIMAL_NAME_LEN + 1];

@@ -12,7 +12,7 @@
 // pointer slots and tables ({0, -1, fn} records, called through __ptmf_scall).
 //
 // Owner (dAcNpcNml_c) offsets seen from talk_c helpers: +0x1F94 dAnimal_c * (getAnimal),
-// +0x1F98 a memory object (getEntry; u16 flags at +0x28C, dQuestBase_c at +0x23E, dNpcTimer_c at
+// +0x1F98 a memory object (getEntry; u16 flags at +0x28C, dQuestBase_c at +0x23E, dNpc::timer_c at
 // +0x250), +0x1FB0 the mood object (dNpcMood_c, size 0x1E0, d_npc_talk_mood), +0x19CC this talk_c,
 // +0x16C0 action_c, +0xE8 anmSet_c.
 
@@ -35,7 +35,6 @@ namespace dSvTownList {
 struct Entry_c; // d_sv_town_list.hpp
 }
 struct dSaveJinx_c;          // d_save_town.hpp
-class dNpcEntry_c;
 class dQuestVillager_c;
 namespace dNpc {
 class msgMemory_c;
@@ -44,7 +43,7 @@ class msgMemorySecond_c;
 
 // The villager's mood: happy / angry / sad animations and effects on a timer (d_npc_talk_mood: ctor 800493EC,
 // dtor 800494E8, non-polymorphic;
-// name inferred). State int at +0x0, a member-function pointer at +0x4, dNpcTimer_c at +0x10, three
+// name inferred). State int at +0x0, a member-function pointer at +0x4, dNpc::timer_c at +0x10, three
 // dLevelEffect_c at +0x20 / +0xB4 / +0x148, flags at +0x1DC..+0x1DF. Only the dtor matters here (the
 // weak dAcNpcNml_c dtor 8003602C calls it).
 class dAcNpcNml_c;
@@ -74,7 +73,7 @@ public:
     // Three separate effects, not an array (the ctor / dtor handle each one inline).
     /* 0x000 */ int mState;          // 1..4 (updateState), 5 = none
     /* 0x004 */ stateFunc mProc;
-    /* 0x010 */ dNpcTimer_c mTimer;  // pending mood timer: copied to the npc entry's timer by execute
+    /* 0x010 */ dNpc::timer_c mTimer;  // pending mood timer: copied to the npc entry's timer by execute
     /* 0x020 */ dLevelEffect_c mEffectL;  // "afm_mnp_happy_walk_L", "afm_mnp_sad_S"
     /* 0x0B4 */ dLevelEffect_c mEffectR;  // "afm_mnp_happy_walk_R"
     /* 0x148 */ dLevelEffect_c mEffectPun; // "afm_mnp_pun_S" (followed while mPunOn)
@@ -205,8 +204,8 @@ public:
         dAnimal_c *getAnimal();                  // the villager's dAnimal_c (owner+0x1F94)
         dAnimal_c *getAnimal() const;            // same body (const overload)
         int getNpcIdx();                         // the villager index (< 10)
-        dNpcEntry_c *getEntry();                // owner+0x1F98
-        dNpcEntry_c *getEntry() const;          // same body (const overload)
+        dNpc::entry_c *getEntry();                // owner+0x1F98
+        dNpc::entry_c *getEntry() const;          // same body (const overload)
         BOOL isHoldingTool(int toolType);            // the npc holds a tool of this type
         BOOL startMsg();                        // runs +0xEC with a stack msgInfo_s, starts the message
         void setTopic(u32 kind, u8 group, u8 idx); // +0x1F0/+0x327/+0x328 (msgMemory_c::set arguments; kind = msgMemory_c::kind_e)
@@ -432,7 +431,7 @@ public:
         int msgApproach(msgInfo_s *info);           // 800374DC EC root (nml 804A0784+0x240): isSpeakerItchy() ? ApA_Always : first of 8046C148
         void endApproach(int arg);                  // 8003759C F8 (nml 804A0784+0x240): recordTalk(0), talk count 0x44, dNpc::msgMemory_c::set
         BOOL stepApFortune(int kind);               // 8003762C 104: once idle, sets memory flag _20 (fortune remark made)
-        void endApFortuneItem(int arg);             // 8003766C F8 (fortune): lucky item into mItem0 (fn_800F4510), EC = msgApFortuneGift or msgApFortuneFull (pockets full)
+        void endApFortuneItem(int arg);             // 8003766C F8 (fortune): lucky item into mItem0 (dNpc::selectPresentItems), EC = msgApFortuneGift or msgApFortuneFull (pockets full)
         int msgApFortuneGift(msgInfo_s *info);      // 800377A8 EC ApD_Fortune, code = mMessageCode + 3
         int msgApFortuneFull(msgInfo_s *info);      // 8003781C EC ApD_Fortune, code 13
         BOOL stepApNickname(int kind);              // 80037888 104: choice 0 = selApNicknameNew
@@ -629,7 +628,7 @@ public:
         int msgEtcFlea(msgInfo_s *info);            // 8003F304 EC "Etc_Flea", record 804A0784+0x480
         // ---- d_npc_talk_carnival (.text 8003F354..80043C34) ----
         int msgCarnival(msgInfo_s *info);           // 8003F354 EC: Festivale start, {msgCarnival, endCarnival, null} at nml 804A0E48+0x90; carnivalState_e ("Ev_Carnival"), 104 = a game start by state
-        void endCarnival(int arg);                  // 8003F6A0 F8: msgMemory set, talk count 0x44, dAnimalMemory_c event flag 0 (met at the Festivale), fn_800F04E8
+        void endCarnival(int arg);                  // 8003F6A0 F8: msgMemory set, talk count 0x44, dAnimalMemory_c event flag 0 (met at the Festivale), dNpc::sendAnimalMemoryFlagOn
         BOOL stepCarnivalGift(int kind);            // 8003F758 104: give a random candy (requestItemAct), EC = msgCarnivalGift
         int msgCarnivalGift(msgInfo_s *info);       // 8003F83C EC: "Ev_Carnival" 0xD
         BOOL startCarnivalMsg(msgFunc next);        // 8003F86C once the controller is idle: EC = next, start the message
@@ -777,7 +776,7 @@ public:
         void endHalloweenCostume(int arg);          // 80044C50 F8: msgMemory set
         int msgHalloween(msgInfo_s *info);          // 80044CC8 EC (l_talkEntrySets [TALK_HALLOWEEN]): EVENT_HALLOWEEN ongoing, npc in the event, in its house; 104 = stepHalloweenFirst or stepHalloweenPresent
         void endHalloween(int arg);                 // 80044F2C F8 of msgHalloween: msgMemory set, talk count 0x44
-        BOOL stepHalloweenFirst(int kind);          // 80044FBC 104: dAnimalMemory_c event flag 0 (met on Halloween), fn_800F04E8
+        BOOL stepHalloweenFirst(int kind);          // 80044FBC 104: dAnimalMemory_c event flag 0 (met on Halloween), dNpc::sendAnimalMemoryFlagOn
         BOOL stepHalloweenPresent(int kind);        // 80045038 104: present (fn_800C60B4) into an empty pocket on code 3, session flag 0
         // ---- d_npc_talk_harvest (.text 80045154..8004664C) ----
         // Returns the knife-and-fork choice (selForkGive) when the festival is on for this npc (event flag 1,
@@ -796,7 +795,7 @@ public:
         BOOL stepForkThanks(int kind);              // 8004581C 104: requestHandActD, 104 = stepForkThanksWait
         BOOL stepForkThanksWait(int kind);          // 80045874 104: EC = msgSpotIntro
         int msgSpotIntro(msgInfo_s *info);          // 800458EC EC: "Ev_Harvest" code 7, 104 = stepSpotIntro
-        BOOL stepSpotIntro(int kind);               // 80045970 104: EC = msgHarvestSpot, dAnimalEventState_c flag 1 (fork returned), fn_800F0108
+        BOOL stepSpotIntro(int kind);               // 80045970 104: EC = msgHarvestSpot, dAnimalEventState_c flag 1 (fork returned), dNpc::sendAnimalEventFlags
 
         // Location checks of the table 8046C708, called by msgHarvestSpot with the festival spot (save town
         // +0x66745) as field block / unit (dFdBase_c::posToBlockUnit; argument names inferred). TRUE and
@@ -823,7 +822,7 @@ public:
         int getBugOffTalkState();                   // 8004664C Bug-Off state (EVENT_BUG_OFF ongoing, outdoors in the town, npc in the event)
         const procSet_s *getBugOffProcSet();        // 800468B4 l_talkEntrySets [TALK_BUG] while getBugOffTalkState() < BUGOFF_STATE_NONE, else NULL (getEventProcSet table 8046BDBC)
         int msgBugOff(msgInfo_s *info);             // 800468EC EC: code by state (getMsgLabel kind 0xC), names the bug / score / leader, may set getEntry object flag 0x4000
-        void endBugOff(int arg);                    // 80046B18 F8: dAnimalMemory_c event flag 0, fn_800F04E8, talk count 0x44, msgMemory set
+        void endBugOff(int arg);                    // 80046B18 F8: dAnimalMemory_c event flag 0, dNpc::sendAnimalMemoryFlagOn, talk count 0x44, msgMemory set
         // ---- d_npc_talk_fireworks (.text 80046BD0..800470E4) ----
         // State fireworksState_e (d_npc_talk_fireworks.hpp), FIREWORKS_STATE_NONE = no fireworks talk: not
         // started yet (within 30 min of the start), first hour, middle, last hour before the end
@@ -839,7 +838,7 @@ public:
         int getFishingTalkState();                  // 800470E4 tourney state (EVENT_FISHING_TOURNEY ongoing, outdoors in the town, npc in the event)
         const procSet_s *getFishingProcSet();       // 8004736C l_talkEntrySets [TALK_FISHING] while getFishingTalkState() < FISHING_STATE_NONE, else NULL (table 8046BDBC)
         int msgFishing(msgInfo_s *info);            // 800473A4 EC: code = state + 1 (getMsgLabel kind 0xB), names the fish / leader / size (setDecimal), may set getEntry object flag 0x4000
-        void endFishing(int arg);                   // 80047628 F8: dAnimalMemory_c event flag 0, fn_800F04E8, talk count 0x44, msgMemory set
+        void endFishing(int arg);                   // 80047628 F8: dAnimalMemory_c event flag 0, dNpc::sendAnimalMemoryFlagOn, talk count 0x44, msgMemory set
         // ---- d_npc_talk_fmarket (.text 800476E0..8004902C) ----
         // EC (l_talkProcSets [21]), the npc's own stall: "Ev_FmarketNPC*" (label table 804A2D00) by the npc's
         // boxed furniture count, the memory of the player (talk_c+0x17C, its land) and the entry flags
@@ -886,7 +885,7 @@ public:
         void resStallPrice();                       // 800489D4
         int msgStallPriceOK(msgInfo_s *info);       // 80048B0C EC: "Ev_FmarketPC" code 6 (price accepted); 104 = stepStallBuy
         // 104: the purchase: the player has room for the money (getMoneyRoom), dFTR::unitMap_c::getHandle, removeRoomFtr,
-        // addMoney, dAnimal_c::addNewItem + fn_800F0E9C, entry byte +0x289 += 1; 110 = actStallBuyWait;
+        // addMoney, dAnimal_c::addNewItem + dNpc::sendAnimalNewItemAdd, entry byte +0x289 += 1; 110 = actStallBuyWait;
         // otherwise EC = msgStallNoRoom.
         BOOL stepStallBuy(int kind);                // 80048B70
         void actStallBuyWait();                     // 80048D3C 110: waits for dFTR::list_c::get(mFtrHandle), unlocks, clears 110, EC = msgStallBought
@@ -903,8 +902,8 @@ public:
         void endPlayerBirthday(int arg);            // 80049128 F8: msgMemory set, talk count 0x44
         BOOL stepPlayerBirthday(int kind);          // 800491B8 104: present ITEM_IDX_BIRTHDAY_CAKE to talk_c+0x280, pickUp, requestItemAct; EC = msgPlayerBirthdayCake
         int msgPlayerBirthdayCake(msgInfo_s *info); // 8004926C EC: code = mMessageCode + 1; player mBirthdayHost.mHostIdx = -1
-        int msgNpcBirthday(msgInfo_s *info);        // 800492B8 EC: npc's birthday; code 7, 8 when already congratulated (getEntry() _28C.mBirthdayDone)
-        void endNpcBirthday(int arg);               // 80049344 F8: msgMemory set, sets _28C.mBirthdayDone (congratulated), talk count 0x44
+        int msgNpcBirthday(msgInfo_s *info);        // 800492B8 EC: npc's birthday; code 7, 8 when already congratulated (getEntry() mFlags.mBirthdayDone)
+        void endNpcBirthday(int arg);               // 80049344 F8: msgMemory set, sets mFlags.mBirthdayDone (congratulated), talk count 0x44
         // ---- d_npc_talk_quest_q04 (.text 80049FDC..8004B75C) ----
         int msgClothOffer(msgInfo_s *info);         // 80049FDC offer check (nml .rodata 8046BFD8): startRequestOffer(info, id 5, kind 3, stepClothAccept)
         int msgClothReq(msgInfo_s *info);           // 8004A024 EC: "Q04_Req" code (mMatchMode == 0 ? 4 : 1) + rndF(3); 104 = nml stepRequestChoice
@@ -923,7 +922,7 @@ public:
         int msgClothWin(msgInfo_s *info);           // 8004AA44 EC: "Q04_Win" code 0; F8 = endClothReward, 104 = stepClothWin
         void endClothReward(int arg);               // 8004AACC F8: reward (pickClothReward) to talk_c+0x280: pick up item or add bells
         BOOL stepClothWin(int kind);                // 8004AC68 104: quest state 1, requester = player, wish +5; EC = msgClothWin2; the npc
-        //          wears the shirt (setCloth(talk_c+0x282), fn_800F1A68, npc onDaubClothChange /
+        //          wears the shirt (setCloth(talk_c+0x282), dNpc::sendAnimalCloth, npc onDaubClothChange /
         //          offDaubClothChanged), requestHandActC, 128 = resClothWear
         void resClothWear();                        // 8004ADBC 128: npc (talk_c+0x68) offDaubClothChange / onDaubClothChanged
         int msgClothWin2(msgInfo_s *info);          // 8004ADF4 EC: "Q04_Win" code 4; 104 = stepClothWin2
@@ -991,7 +990,7 @@ public:
         void resFossilGiven();                      // 8004D688 134: EC = msgFossilWin, close the message
         int msgFossilWin(msgInfo_s *info);          // 8004D6E4 EC: "Q03_Win" code 0; F8 = endFossilWin, 104 = stepFossilWin
         void endFossilWin(int arg);                 // 8004D76C F8: reward (pickFossilReward) to talk_c+0x280: pick up item or add bells
-        BOOL stepFossilWin(int kind);               // 8004D910 104: quest state 1, fn_800F12D8(idx, 2, 1), requester = player, wish +5,
+        BOOL stepFossilWin(int kind);               // 8004D910 104: quest state 1, dNpc::sendAnimalQuestState(idx, 2, 1), requester = player, wish +5,
         //          dAnimal_c::setQuestStarted; the npc keeps the fossil (addNewItem,
         //          dAnimalMemory_c::setPresent on talk_c+0x17C / +0x180); EC = msgFossilReward,
         //          requestHandActD
@@ -1006,7 +1005,7 @@ public:
         //          104 = stepFossilCon
         BOOL stepFossilCon(int kind);               // 8004DF70 104: EC = msgFossilConPlayers
         int msgFossilConPlayers(msgInfo_s *info);   // 8004DFE8 EC: "Q03_Con" code 7 + min(players - 1, 2)
-        BOOL stepFossilReturn(int kind);            // 8004E088 104 (state 8, "Q03_Return"): quest state 2, fn_800F12D8(idx, 2, 2)
+        BOOL stepFossilReturn(int kind);            // 8004E088 104 (state 8, "Q03_Return"): quest state 2, dNpc::sendAnimalQuestState(idx, 2, 2)
         BOOL stepFossilComp(int kind);              // 8004E0FC 104 (state 9, "Q03_Comp"): quest state 4
         BOOL stepFossilAccept(int kind);            // 8004E150 104 (accept): start the quest (pickRequestItem,
         //          dQuestVillager_c::start) or join it; names; EC = msgFossilReq
@@ -1027,7 +1026,7 @@ public:
         void resFtrMatch();                         // 8004ED80 134: EC = msgFtrWin, close the message
         int msgFtrWin(msgInfo_s *info);             // 8004EDDC EC: "Q05_Win" code 0; F8 = endFtrReward, 104 = stepFtrWin
         void endFtrReward(int arg);                 // 8004EE64 F8: reward (pickFtrReward) to talk_c+0x280: pick up item or add bells
-        BOOL stepFtrWin(int kind);                  // 8004F000 104: quest state 1, fn_800F12D8(idx, 4, 1), requester = player, wish +5,
+        BOOL stepFtrWin(int kind);                  // 8004F000 104: quest state 1, dNpc::sendAnimalQuestState(idx, 4, 1), requester = player, wish +5,
         //          dAnimal_c::setQuestStarted; the npc keeps the furniture (addNewItem,
         //          dAnimalMemory_c::setPresent on talk_c+0x17C / +0x180); EC = msgFtrWin2,
         //          requestHandActD
@@ -1044,7 +1043,7 @@ public:
         int msgFtrCon(msgInfo_s *info);             // 8004F700 EC: "Q05_Con" code 0; 104 = stepFtrCon
         BOOL stepFtrCon(int kind);                  // 8004F760 104: EC = msgFtrCon2
         int msgFtrCon2(msgInfo_s *info);            // 8004F7D8 EC: "Q05_Con" code 7 + min(players - 1, 2)
-        BOOL stepFtrReturn(int kind);               // 8004F868 104 (state 11, "Q05_Return"): quest state 2, fn_800F12D8(idx, 4, 2)
+        BOOL stepFtrReturn(int kind);               // 8004F868 104 (state 11, "Q05_Return"): quest state 2, dNpc::sendAnimalQuestState(idx, 4, 2)
         BOOL stepFtrComp(int kind);                 // 8004F8DC 104 (state 12, "Q05_Comp"): quest state 4
         BOOL stepFtrAccept(int kind);               // 8004F930 104 (accept): start the quest (pickRequestItem,
         //          dQuestVillager_c::start) or join it; names, setQ5Word; EC = msgFtrReq
@@ -1211,7 +1210,7 @@ public:
         void selErrandYes();                        // 80056244 choice (yes): EC = msgErrandYes
         int msgErrandYes(msgInfo_s *info);          // 80056298 EC "Q_Yes", F8 = endErrandYes, 104 = stepErrandYes
         void endErrandYes(int arg);                 // 80056324 F8: starts the errand: deadline (pickDeadline), recipient (pickRandomAvailableAnimal),
-        //          item (fn_800F4608) to talk_c+0x280, dQuestErrand_c::start(7, ...), deadline words
+        //          item (dNpc::selectGroupARoomItems) to talk_c+0x280, dQuestErrand_c::start(7, ...), deadline words
         BOOL stepErrandYes(int kind);               // 80056534 104: once idle, EC = nml msgYes, hands talk_c+0x280 to the player (requestItemAct),
         //          sound 0x171E
         int msgErrandQuest(msgInfo_s *info);        // 800565D8 quest check (nml msgQuestTalk [0]): active errand of kind 7 that this villager gave;
@@ -1250,7 +1249,7 @@ public:
         int msgHideNo(msgInfo_s *info);             // 80057A64 EC "Q10_No"
         int msgHideQuest(msgInfo_s *info);          // 80057A90 quest check (nml msgQuestTalk [12]): game of this player; msgHideHider unless time is
         //          up, else label getMsgLabel(6, 0xC, 0) ("Q10_Badend"), 104 = stepHideBadend, addHiderFriendship(-5)
-        BOOL stepHideBadend(int kind);              // 80057C64 104: dQuestPlayerAnimal_c::clearInfo, fn_800F0650
+        BOOL stepHideBadend(int kind);              // 80057C64 104: dQuestPlayerAnimal_c::clearInfo, dNpc::sendHideAndSeekClear
         int msgHideExplain(msgInfo_s *info);        // 80057CB8 EC (nml l_talkProcSets [10]) "Q10_Explain" (minutes / hiders left as words 0 / 1), F8
         //          = endQuestCommon, 104 = stepHideExplain
         BOOL stepHideExplain(int kind);             // 80057DB0 104: setRequest1(0), 128 = resHideStart
@@ -1258,7 +1257,7 @@ public:
         //          unblocked
         int msgHideHider(msgInfo_s *info);          // 80057EA8 EC (nml l_talkProcSets [11]): hider talk "Q10_Visit" / "Q10_Find" (104 stepHideFind) /
         //          "Q10_Over" / "Q10_Wait" (104 stepHideOver); F8 = endQuestCommon
-        BOOL stepHideFind(int kind);                // 80058114 104: hider found (setFlag, fn_800F0708); all found -> l_talkProcSets [12] or
+        BOOL stepHideFind(int kind);                // 80058114 104: hider found (setFlag, dNpc::sendHideAndSeekFlag); all found -> l_talkProcSets [12] or
         //          setRequest1(0), 128 = resHideEnd; else EC = msgHideContinue; friendship +5
         void resHideEnd();                          // 80058270 128: scene exit at the game end (fn_801A6748(2)), day change blocked
         int msgHideContinue(msgInfo_s *info);       // 800582F8 EC "Q10_Continue" (hiders left as word 1)
@@ -1442,7 +1441,7 @@ public:
         static int findNearItemCb(dPlayActor_c *actor, void *npc); // 8005FC5C
         dItem::Item findNearItem();                  // 8005FDD8 the scorpion / tarantula nearest to the npc (0xFFF1 = none); struct return (r3 = result, r4 = this)
         int msgRePoison(msgInfo_s *info);           // 8005FE7C 21 "Re_Poison": npc timer flag 0x400 clear, outdoors in the town; item name of findNearItem; 104 = stepPoison
-        int msgReXmas(msgInfo_s *info);             // 8005FFE4 22 "Re_Xmas": EVENT_TOY_DAY or Dec 25, fn_800F4250(looks, time); 104 = stepEventTalked
+        int msgReXmas(msgInfo_s *info);             // 8005FFE4 22 "Re_Xmas": EVENT_TOY_DAY or Dec 25, dNpc::isPastAnimalWakeTime(looks, time); 104 = stepEventTalked
         int msgReNewyear(msgInfo_s *info);          // 800601F8 23 "Re_Newyear": EVENT_NEW_YEARS_DAY ongoing; 104 = stepEventTalked
         int msgReHarvest(msgInfo_s *info);          // 80060304 24 "Re_Harvest": EVENT_HARVEST_FESTIVAL over, dAnimalEventState_c::isInEvent; 104 = stepEventTalked
         int msgReHalloween(msgInfo_s *info);        // 80060450 25 "Re_Halloween": EVENT_HALLOWEEN over; 104 = stepEventTalked
@@ -1451,7 +1450,7 @@ public:
         BOOL stepMoveout(int kind);                 // 80060878 104: memory flags (talk_c+0x17C) |= 0x100
         BOOL stepBeeFaceSeen(int kind);             // 80060898 104: memory flags |= 0x200 (the bee face was seen; arg: the 104 slot's, unused; nml stepReaction passes it on)
         BOOL stepPoison(int kind);                 // 800608B8 104: npc timer (getEntry()) flags +0x28C |= 0x400
-        BOOL stepEventTalked(int kind);                 // 800608F0 104: memory flags |= 0x1000000; fn_800F05C8(getNpcIdx(npc), talk_c+0x180)
+        BOOL stepEventTalked(int kind);                 // 800608F0 104: memory flags |= 0x1000000; dNpc::sendAnimalEventTalked(getNpcIdx(npc), talk_c+0x180)
         BOOL stepBirthday(int kind);                 // 8006094C 104: memory flags &= ~0x800
         // Item of an insect actor: dItem::Item(ITEM_IDX_COMMON_BUTTERFLY (the first insect), actor+0x2F0, 0);
         // struct return. Maybe an inline of the actor class. Inferred.
@@ -1591,7 +1590,7 @@ public:
     // the actor (vtable 804A1310; code 8002ED4C..80030194, inline virtuals in the weak tail
     // 80036004..). Its constructor is not in the DOL.
 
-    // The 8-byte net daub data of the npc (dAcNpc_c::getDaubData / setDaubData, dNpcDaub_c::get11).
+    // The 8-byte net daub data of the npc (dAcNpc_c::getDaubData / setDaubData, dNpc::daub_c::getNpcData).
     struct daubData_s {
         u8 mToolChange : 1; // setDaubToolChange group
         u8 mToolChanged : 1; // setDaubToolChanged group
@@ -1652,7 +1651,7 @@ public:
     int getTradeFtrNum();                             // 8002F138: number of furniture flags set
     static BOOL isSellableFtr(const dItem::Item *item); // 8002F1A0: furniture/fossil with a price 1..9999
     void selectTradeFtrs();                            // 8002F254: picks the furniture flags (3.. random)
-    int getRoomFtrIdx(u32 a, u32 b);                 // 8002F3D0: room furniture slot (10 = none)
+    int getRoomFtrIdx(u32 a, u32 b);                 // 8002F3D0: room furniture slot (ANIMAL_FTR_COUNT = none)
     static dItem::Item getRoomFtrAt(int *outX, int *outZ, int x, int z); // 8002F568
     static dItem::Item getRoomFtrAtPos(int *outX, int *outZ, const mVec3_c *pos); // 8002F574
     void onSessionFlag(u32 bit);                     // 8002F5C4: set mSessionFlags bit (< 8)
@@ -1694,7 +1693,7 @@ public:
     /* 0x1C4C */ resMng_c mRes;
     /* 0x1C5C */ talk_c mNmlTalk;
     /* 0x1F94 */ dAnimal_c *mpAnimal;
-    /* 0x1F98 */ dNpcEntry_c *mpEntry;
+    /* 0x1F98 */ dNpc::entry_c *mpEntry;
     /* 0x1F9C */ clothMng_c mCloth;
     /* 0x1FAC */ u8 _1FAC[4];          // clothMng_c is 0x10; unknown 4 bytes (or alignment of 0x1FB0)
     /* 0x1FB0 */ dNpcMood_c mMood; // (d_npc_talk_mood; dtor 800494E8)
