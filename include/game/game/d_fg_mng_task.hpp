@@ -382,7 +382,7 @@ struct dFgMngCmdEntry_c : public dFgMngCmd_c {
     ~dFgMngCmdEntry_c(); // 800A4E10
 }; // size 0x12
 
-int fn_800A597C(); // 800A597C
+BOOL fgMngTask_isBusy(); // 800A597C: d_s_boot_static's setup check; always FALSE
 
 // Unit locks and field commands (d_field_assessment.cpp 80093238..800938F0). A lock (80589D80)
 // holds a unit while the players in mPendingPlayers still have to finish its task; a command

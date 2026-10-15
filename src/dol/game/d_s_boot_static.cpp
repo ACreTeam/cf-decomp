@@ -277,7 +277,7 @@ static sPhase_c::METHOD_RESULT_e boot(void *) {
     dSceneCheck::fn_80081858(dItemDebug::checkRes());
     dSceneCheck::fn_80081858(dBG::isBusy());
     dSceneCheck::fn_80081858(dItemSel::fn_800C769C());
-    dSceneCheck::fn_80081858(fn_800A597C());
+    dSceneCheck::fn_80081858(fgMngTask_isBusy());
     dSceneCheck::fn_80081858(dActivityLog::isBusy());
     dSceneCheck::fn_80081858(dSTR::fn_8016911C());
     dSceneCheck::fn_80081858(fn_8015FD10());

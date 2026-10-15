@@ -329,7 +329,7 @@ static dFgCBRate_c *sCBCarnation[CBCarnationBaseHostIO_c::CARNATION_COLOR_NUM][C
 
 // 80091AF8: returns &dScene::gSceneChange, like dScene::getSceneChange (80161CC4); identical 3-insn getters exist
 // in 6+ other TUs: 800573C4, 800D3584, 80166990, 8018DABC, 801B97A8.
-dScene::dSceneChange_c *fn_80091AF8() {
+dScene::dSceneChange_c *getSceneChange() {
     return &dScene::gSceneChange;
 }
 
@@ -1802,34 +1802,33 @@ BOOL isSapling(dItem::Item *item) {
 // redistributing what full blocks can't take.
 void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
     int rest;
-    int got;
-    int idx;
-    int *cnt;
+    int unitNum;
+    int block;
+    int *num;
     int blockX;
     int blockZ;
     int k;
     int per;
-    int *p;
+    int *freeTail;
     int i;
     int freeNum;
     u32 fullBlocks;
     int left;
-    int perBlock[FG_BLOCK_TOTAL_NUM];
+    int weedNum[FG_BLOCK_TOTAL_NUM];
     int freeBlocks[FG_BLOCK_TOTAL_NUM];
-    dFdAsPos_c pos[UT_TOTAL_NUM];
+    dFdAsPos_c units[UT_TOTAL_NUM];
     fullBlocks = 0;
     left = days * 2;
     do {
+        num = weedNum;
+        freeTail = freeBlocks;
         freeNum = 0;
-        cnt = perBlock;
-        p = freeBlocks;
-        for (i = 0; i < FG_BLOCK_TOTAL_NUM; i++) {
-            *cnt = 0;
+        for (i = 0; i < FG_BLOCK_TOTAL_NUM; num++, i++) {
+            *num = 0;
             if (!(fullBlocks & (1 << i))) {
-                *p++ = i;
+                *freeTail++ = i;
                 freeNum++;
             }
-            cnt++;
         }
         if (freeNum == 0) {
             break;
@@ -1837,28 +1836,29 @@ void dFgMngProc_c::spreadWeeds(dFdBase_c *fd, int days) {
         per = left / freeNum;
         left -= per * freeNum;
         for (i = 0; i < freeNum; i++) {
-            perBlock[freeBlocks[i]] = per;
+            weedNum[freeBlocks[i]] = per;
         }
         while (left != 0) {
             k = (int)fgMngProc_rndF(freeNum);
             freeNum--;
-            perBlock[freeBlocks[k]]++;
+            weedNum[freeBlocks[k]]++;
             for (i = k; i < freeNum; i++) {
                 freeBlocks[i] = freeBlocks[i + 1];
             }
             left--;
         }
-        cnt = perBlock;
-        idx = 0;
+
+        num = weedNum;
+        block = 0;
         left = 0;
         for (blockZ = 0; blockZ < FG_BLOCK_Z_NUM; blockZ++) {
-            for (blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, idx++, cnt++) {
-                if (*cnt != 0) {
-                    got = collectUnits(pos, fd, blockX, blockZ, dFgMngProc_c::isGrassUnit);
-                    rest = *cnt - plantGrass(fd, got, pos, *cnt);
+            for (blockX = 0; blockX < FG_BLOCK_X_NUM; blockX++, block++, num++) {
+                if (*num != 0) {
+                    unitNum = collectUnits(units, fd, blockX, blockZ, isGrassUnit);
+                    rest = *num - plantGrass(fd, unitNum, units, *num);
                     left += rest;
                     if (rest > 0) {
-                        fullBlocks |= 1 << idx;
+                        fullBlocks |= 1 << block;
                     }
                 }
             }
@@ -2374,15 +2374,21 @@ void dFgMngProc_c::putRafflesia(dFdBase_c *fd, int blockW, int blockH) {
 }
 
 // 80097148
-static inline dItem::Item *getItemAt(dFdBase_c *fd, dFdAsPos_c block, dFdAsPos_c unit) {
+static inline dItem::Item *getItemAt(dFdBase_c *fd, const dFdAsPos_c &block, const dFdAsPos_c &unit) {
     return fd->getItem(block.mX + 1, block.mZ + 1, unit.mX, unit.mZ, 0);
 }
-static inline void setItemAt(dFdBase_c *fd, dFdAsPos_c block, dFdAsPos_c unit, u16 item) {
+static inline void setItemAt(dFdBase_c *fd, const dFdAsPos_c &block, const dFdAsPos_c &unit, u16 item) {
     dFgMngProc_c::setUnitItem(fd, block.mX + 1, block.mZ + 1, unit.mX, unit.mZ, item, FALSE);
 }
+#ifdef MUST_MATCH
+// HACK: needed for matching. An ALIGN() local or parameter makes MWCC skip its IR optimizer for the
+// function, as the target was built; which declaration the original aligned is unknown.
+void dFgMngProc_c::wiltRafflesia(dFdBase_c *fd ALIGN(4)) {
+#else
 void dFgMngProc_c::wiltRafflesia(dFdBase_c *fd) {
-    if (getItemAt(fd, sFdAssess.getRafflesiaBlock(), sFdAssess.getRafflesiaUnit()) != NULL) {
-        setItemAt(fd, sFdAssess.getRafflesiaBlock(), sFdAssess.getRafflesiaUnit(), dItem::FG_WILTED_RAFFLESIA);
+#endif
+    if (getItemAt(fd, dFdAsPos_c(sFdAssess.getRafflesiaBlock0()), dFdAsPos_c(sFdAssess.getRafflesiaUnit0())) != NULL) {
+        setItemAt(fd, dFdAsPos_c(sFdAssess.getRafflesiaBlock0()), dFdAsPos_c(sFdAssess.getRafflesiaUnit0()), dItem::FG_WILTED_RAFFLESIA);
     }
 }
 
@@ -3476,7 +3482,6 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
     u32 mask;
     int *eggs;
     u32 bit;
-    int *left;
     int realBlock;
     int realNum;
     int x;
@@ -3504,14 +3509,13 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
     EECandBkUnit_c cand(fd);
     int blockNum = 0;
     block = 0;
-    left = blockLeft;
     for (bz = 1; bz < FG_BLOCK_Z_NUM + 1; bz++) {
-        for (bx = 1; bx < FG_BLOCK_X_NUM + 1; bx++, left++, block++) {
+        for (bx = 1; bx < FG_BLOCK_X_NUM + 1; bx++, block++) {
             cand.clear();
             cand.mBlockX = bx;
             cand.mBlockZ = bz;
             cand.search();
-            *left = cand.mCount;
+            blockLeft[block] = cand.mCount;
             if (cand.mCount > 0) {
                 unitNum += cand.mCount;
                 blocks[blockNum] = block;
@@ -3603,7 +3607,8 @@ void dFgMngProc_c::hideEggs(dFdBase_c *fd) {
                     egg.setFromIndex(dItem::ITEM_IDX_BUNNY_EGG_00, kind, FALSE);
                     setUnitItem(fd, realBx, realBz, x, z, egg.mId, TRUE);
                     player->mBunnyEggs[kind]--;
-                    kindLeftNum = --kindLeft[kind];
+                    kindLeftNum = kindLeft[kind] - 1;
+                    kindLeft[kind] = kindLeftNum;
                     realEggs[realBlock]--;
                     if (kindLeftNum == 0) {
                         kindNum--;
@@ -4120,7 +4125,7 @@ void fgMngProc_updateFrame() {
         if (dDemo::isDayChangeReady()) {
             dDemo::startDayChangeWarp();
             BOOL inside = dScene::isCityScene(dScene::getCurrentScene());
-            fn_80091AF8()->setReturnExitHere(0.0f);
+            getSceneChange()->setReturnExitHere(0.0f);
             nw4r::math::VEC3 pos;
             if (inside) {
                 mVec3_c *p = dSTR::getCityReturnPos();
@@ -4129,7 +4134,7 @@ void fgMngProc_updateFrame() {
                 f32 x = p->x;
                 nw4r::math::VEC3 top(x, y, z);
                 top.z += 64.0f;
-                fn_80091AF8()->request(dScene::SCENE_TOWN, (mVec3_c *)&top, 0x8C, 0, 0, 0);
+                getSceneChange()->request(dScene::SCENE_TOWN, (mVec3_c *)&top, 0x8C, 0, 0, 0);
             } else {
                 dItem::Item item((u16)0xD013);
                 int x, z;
@@ -4138,7 +4143,7 @@ void fgMngProc_updateFrame() {
                 dBGCF::setCurrentBg(1);
                 pos.y = dBGCF::getUnitY((const mVec3_c *)&pos);
                 dBGCF::setCurrentBg(0);
-                fn_80091AF8()->request(dScene::SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
+                getSceneChange()->request(dScene::SCENE_FIELD, (mVec3_c *)&pos, 0x8C, 0, 0, 0);
             }
         } else {
             dDemo::requestDayChange();

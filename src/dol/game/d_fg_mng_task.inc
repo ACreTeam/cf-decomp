@@ -689,10 +689,19 @@ void dFgMngStone_c::update() {
 }
 
 // 800A3E30
+#ifdef MUST_MATCH
+// HACK: needed for matching. An ALIGN() local or parameter makes MWCC skip its IR optimizer for the
+// function, as the target was built; which declaration the original aligned is unknown.
+void dFgMngStone_c::hit(dFdAsPos_c pos ALIGN(4)) {
+#else
 void dFgMngStone_c::hit(dFdAsPos_c pos) {
+#endif
     dSvActivity_c *activity;
     if (mTimer < 0) {
-        mPos.set(pos.mX, pos.mZ);
+        u8 z = pos.mZ;
+        u8 x = pos.mX;
+        mPos.mZ = z;
+        mPos.mX = x;
         mTimer = ((u32)(*dHR::getRate(4) * 0x898) >> 12) + 0x1D1;
     }
     int max = HIT_MAX;
@@ -1378,7 +1387,7 @@ void dFgMngProc_c::createHeap() {
     }
 }
 
-// 800A597C
-int fn_800A597C() {
-    return 0;
+// 800A597C: d_s_boot_static's setup check; always FALSE.
+BOOL fgMngTask_isBusy() {
+    return FALSE;
 }
