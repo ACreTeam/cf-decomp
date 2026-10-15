@@ -80,8 +80,11 @@ enum {
 struct dWifiTownMsg_c {
     // The first valid player (the sender), else mPlayers[0].
     dPersonalID_c *getSender() {
-        for (int i = 0; i < PLAYER_NUM; i++) {
-            if (mPlayers[i].isValid()) {
+        int i;
+        dPersonalID_c *player;
+        player = mPlayers;
+        for (i = 0; i < PLAYER_NUM; i++, player++) {
+            if (player->isValid()) {
                 return &mPlayers[i];
             }
         }

@@ -105,8 +105,8 @@ public:
 // in [mFirst, mLast) or one next to it.
 class nearBkCand_c : public reserveCand_c {
 public:
-    nearBkCand_c(int width, int height, u16 first, u16 last, BOOL adjacent)
-        : reserveCand_c(width, height), mFirst(dItem::ITEM_ID_NONE), mLast(dItem::ITEM_ID_NONE) {
+    nearBkCand_c(int width, int height, u16 first, u16 last, bool adjacent)
+        : reserveCand_c(width, height) {
         mFd = dField::getInfo(FD_ID_TOWN);
         mFirst = first;
         mLast = last;
@@ -115,8 +115,8 @@ public:
     virtual BOOL check(int x, int z);
 
     /* 0x640 */ dFdBase_c *mFd;
-    /* 0x644 */ u16 mFirst;
-    /* 0x646 */ u16 mLast;
+    /* 0x644 */ dItem::Item mFirst;
+    /* 0x646 */ dItem::Item mLast;
     /* 0x648 */ u8 mAdjacent;
 }; // size 0x64C
 
@@ -129,8 +129,6 @@ public:
     /* 0x0 */ u32 _0;
     /* 0x4 */ u32 _4;
 };
-
-static dSaveBuildingUnk_c sUnk;
 
 // Which side of the first villager house the next one goes (alternates).
 static bool sNearSide = true;
@@ -261,24 +259,23 @@ BOOL dSaveBuildingList_c::setNpcHouse(u32 no) {
                 }
             }
         }
-        // The target keeps each nearby-house candidate's address in a register.
         if ((cM::rndInt(32) & 0xF) <= 9) {
-            nearBkCand_c cand(dimensions[0], dimensions[1], BUILDING_NPC_HOUSE_0, BUILDING_NPC_HOUSE_9, sNearSide);
-            nearBkCand_c *p = &cand;
-            p->clear();
-            p->search();
-            if (p->getRandomXZ(&x, &z)) {
+            const bool adjacent = sNearSide;
+            nearBkCand_c cand(dimensions[0], dimensions[1], BUILDING_NPC_HOUSE_0, BUILDING_NPC_HOUSE_9, adjacent);
+            cand.clear();
+            cand.search();
+            if (cand.getRandomXZ(&x, &z)) {
                 if (setPos(x, z, id)) {
                     sNearSide = !sNearSide;
                     return TRUE;
                 }
             }
         }
-        nearBkCand_c cand(dimensions[0], dimensions[1], BUILDING_NPC_HOUSE_0, BUILDING_NPC_HOUSE_9, !sNearSide);
-        nearBkCand_c *p = &cand;
-        p->clear();
-        p->search();
-        if (p->getRandomXZ(&x, &z)) {
+        const bool adjacent = !sNearSide;
+        nearBkCand_c cand(dimensions[0], dimensions[1], BUILDING_NPC_HOUSE_0, BUILDING_NPC_HOUSE_9, adjacent);
+        cand.clear();
+        cand.search();
+        if (cand.getRandomXZ(&x, &z)) {
             if (setPos(x, z, id)) {
                 sNearSide = !sNearSide;
                 return TRUE;
@@ -625,6 +622,8 @@ int dSaveBuildingList_c::countHouses(int blockX, int blockZ) const {
     return count;
 }
 
+static dSaveBuildingUnk_c sUnk;
+
 // 8014B694
 dSaveBuildingUnk_c::dSaveBuildingUnk_c() {
     _0 = 0;
@@ -646,7 +645,7 @@ BOOL nearBkCand_c::check(int x, int z) {
         int blockX, blockZ;
         dBGCF::unitToBlock(&blockX, &blockZ, x, z);
         if (mFd->getBlock(blockX, blockZ) != NULL) {
-            for (u16 id = mFirst; id < mLast; id++) {
+            for (u16 id = mFirst.mId; id < mLast.mId; id++) {
                 dItem::Item item(id);
                 int hx, hz;
                 if (dSaveBuildingList_c::get()->getPos(&hx, &hz, &item, 1)) {

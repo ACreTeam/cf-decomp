@@ -1196,7 +1196,7 @@ dol/game/d_save_shop.cpp:
 	.data       start:0x804EF318 end:0x804EF360 align:4
 	.bss        start:0x805F2720 end:0x805F2AC0 align:4
 	.sdata      start:0x8074B0F8 end:0x8074B130 align:4
-	.sbss       start:0x8074E7C8 end:0x8074E7D0 align:4
+	.sbss       start:0x8074E7C8 end:0x8074E7D0
 	.sdata2     start:0x80750C40 end:0x80750C68 align:4
 
 dol/game/d_save_shop_stalk_market.cpp:

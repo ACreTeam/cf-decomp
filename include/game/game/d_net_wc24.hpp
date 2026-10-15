@@ -70,6 +70,11 @@ struct dNetWc24FriendRec_c {
 
 // The u16 message tag of dNetWc24_c::sendMessage (stored in the message header; d_wifi fn_80178604 reads
 // mKind of received ones).
+enum MsgTag_e {
+    MSG_TAG_UNCOMPRESSED_MASK = 0x7FFF,
+    MSG_TAG_COMPRESSED = 0x8000
+};
+
 union dNetWc24MsgTag_c {
     u16 mRaw;
     struct {

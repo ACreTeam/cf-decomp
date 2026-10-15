@@ -1384,8 +1384,9 @@ void dHR::collectLucky(const dHR::area_c *area, dFdBase_c *field) {
     }
 }
 
-// The literals become anonymous .sdata temporaries.
-static inline void setupMail(const u16 &kind, const u8 &sender, const dPersonalID_c *to, const int &paper) {
+// The sender and paper literals become anonymous .sdata temporaries.
+static inline void setupMail(u16 kindValue, const u8 &sender, const dPersonalID_c *to, const int &paper) {
+    const u16 kind = kindValue;
     l_mail.setupSystem(&kind, "MAIL_ETC_Happyroom", &sender, to, &paper);
 }
 

@@ -729,7 +729,9 @@ BOOL getGroundMovePos(mVec3_c *out, mVec3_c &from, const mVec3_c &to, u32 steps,
     return TRUE;
 }
 
-static inline bool isColumnNear(const int &unitX, const int &unitZ, u8 i, u8 j) {
+static inline bool isColumnNear(int x, int z, u8 i, u8 j) {
+    const int unitX = x;
+    const int unitZ = z;
     return isColumn(unitX + i - 1, unitZ + j - 1);
 }
 

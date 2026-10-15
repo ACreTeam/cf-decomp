@@ -260,9 +260,10 @@ BOOL daSnowMan_c::getWallNormal(dBGCF::acch_c *acch, mVec3_c *normal) {
     return normal->normalizeRS();
 }
 
-// The literals become anonymous .sdata temporaries.
-static inline void setupMail(dMail_c *mail, const u16 &kind, const u8 &sender, const dPersonalID_c *to,
+// The sender and paper literals become anonymous .sdata temporaries.
+static inline void setupMail(dMail_c *mail, u16 kindValue, const u8 &sender, const dPersonalID_c *to,
                              const int &paper) {
+    const u16 kind = kindValue;
     mail->setupSystem(&kind, "MAIL_NPC_snowman", &sender, to, &paper);
 }
 

@@ -188,8 +188,8 @@ public:
     void copy(const dOutfit_c *other); // 8013ADA4
     BOOL isSame(const dOutfit_c *other) const; // 8013ADAC
     BOOL hasShoes() const {
-        if (isValid()) {
-            if (mFlags.noShoes) {
+        if (mFlagByte & 1) {
+            if ((mFlagByte >> 2) & 1) {
                 return FALSE;
             }
             return TRUE;
@@ -506,7 +506,7 @@ public:
     static dPrivateData_c *getRaw(dPrivateData_c *players, int idx);               // 8013B28C
     static int getNthValid(dPrivateData_c *players, u32 n);                        // 8013B2C8
     static BOOL contains(dPrivateData_c *players, const dPersonalID_c *pid);       // 8013B344
-    static dQuestErrand_c *findErrandAll(dPrivateData_c *players, dAnmPersonalID_c *animal, int which, u32 idx); // 8013B3D4
+    static dPrivateData_c *findErrandAll(dPrivateData_c *players, dAnmPersonalID_c *animal, int which, u32 idx); // 8013B3D4
     static BOOL expireErrandAll(dPrivateData_c *players, const dTime_c *now);      // 8013B474
 
     // Public works votes (the town hall's BBS notices "BBS_office").

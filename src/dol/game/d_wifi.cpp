@@ -1,6 +1,6 @@
 // d_wifi: the WiiConnect24 letters (sending to Wii message board / registered friends, the downloaded
 // info.bin / item.bin / letters / NPC / design data) and, at its end, the friend list functions.
-// .text 80177A7C..8017C4EC. See include/game/game/d_wifi.hpp. Being matched by agents: build/wifi_work/BRIEF.md.
+// .text 80177A7C..8017C4EC. See include/game/game/d_wifi.hpp and notes/TUs/d_wifi.txt.
 #include <game/game/d_wifi.hpp>
 #include <game/game/d_friend.hpp>
 #include <game/game/d_net_mgr.hpp>
@@ -569,17 +569,17 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
         return;
     }
     if (msg->mTown.mFlags & dSvVillagerMove::VILLAGER_MOVE_FLAG_CATHERINE) {
-        int category = msg->mTown.mCatherineCategory;
-        int sub = msg->mTown.mCatherineSub;
+        s8 category = msg->mTown.getCatherineCategory();
+        s8 sub = msg->mTown.getCatherineSub();
         if (category >= 0 && sub >= 0) {
-            int player = msg->mTown.mCatherinePlayer;
+            s8 player = msg->mTown.getCatherinePlayer();
             dSaveCatherine_c *catherine = &dSaveData_c::getTown()->mShops.mCatherine;
             catherine->set(&msg->mPlayers[player], category, sub);
         }
         for (int i = 0; i < PLAYER_NUM; i++) {
             if (msg->mPlayers[i].isValid()) {
-                category = msg->mTown.mPlayerCategory[i];
-                sub = msg->mTown.mPlayerSub[i];
+                category = msg->mTown.getPlayerCategory(i);
+                sub = msg->mTown.getPlayerSub(i);
                 if (category >= 0 && sub >= 0) {
                     dSaveData_c::getTown()->mShops.mCatherine.count(category, sub);
                 }
@@ -594,8 +594,8 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
             }
         }
         int pick = cM::rndInt(num);
-        int n = 0;
         dPersonalID_c *player = msg->mPlayers;
+        int n = 0;
         for (int i = 0; i < PLAYER_NUM; i++, player++) {
             if (player->isValid()) {
                 if (msg->mTown.isPlayerBit(i)) {
@@ -684,8 +684,8 @@ void receiveTown(dWifiTownMsg_c *msg, const u64 *key) {
         int slot;
         int i;
         int j;
-        dSaveOtherTown_c *other;
-        other = &msg->mTown.mOtherTown;
+        const dSaveOtherTown_c *other;
+        other = msg->mTown.getOtherTown();
         if (other->mLand.isValid()) {
             slot = -1;
             for (i = 0; i < 4; i++) {
@@ -937,9 +937,9 @@ BOOL sendAucListings() {
         return FALSE;
     }
     tag.mBits.mKind = WIFI_MSG_AUC_LIST;
-    tag.mRaw &= 0x7FFF;
+    dNetWc24::MsgTag_e msgTag = (dNetWc24::MsgTag_e)(tag.mRaw & dNetWc24::MSG_TAG_UNCOMPRESSED_MASK);
     size = dNetWc24::g_wc24.makeMessage(dSaveData_c::getExtra()->getAucListings(), sizeof(dSvAucList_c), NULL, 0,
-                                        tag.mRaw);
+                                        msgTag);
     sent = FALSE;
     idx = targetIdx;
     target = targets;
@@ -997,18 +997,23 @@ BOOL sendAucBids() {
 
 // 8017A244
 BOOL sendAucSales() {
+    u64 *key;
+    dNetWc24::MsgTag_e msgTag;
+    u32 size;
+    BOOL sent;
+    int i;
     int num = dSaveData_c::getExtra()->getWc24()->getSentTargets(sKeys, WC24_TARGET_NUM);
     if (num <= 0) {
         return FALSE;
     }
     dNetWc24::dNetWc24MsgTag_c tag;
     tag.mBits.mKind = WIFI_MSG_AUC_SALES;
-    tag.mRaw &= 0x7FFF;
-    u32 size = dNetWc24::g_wc24.makeMessage(dSaveData_c::getExtra()->getAucSales(), sizeof(dSvAucList_c), NULL, 0,
-                                        tag.mRaw);
-    BOOL sent = FALSE;
-    u64 *key = sKeys;
-    for (int i = 0; i < num; i++) {
+    msgTag = (dNetWc24::MsgTag_e)(tag.mRaw & dNetWc24::MSG_TAG_UNCOMPRESSED_MASK);
+    size = dNetWc24::g_wc24.makeMessage(dSaveData_c::getExtra()->getAucSales(), sizeof(dSvAucList_c), NULL, 0,
+                                     msgTag);
+    sent = FALSE;
+    key = sKeys;
+    for (i = 0; i < num; i++) {
         int idx = dSaveData_c::getRawExtra()->mWc24.findKey(key);
         if (idx >= 0 && (u32)idx < WC24_SEND_INDEX_NUM) {
             if (dNetWc24::g_wc24.sendMessage(key, size, getSendProfileId(idx))) {

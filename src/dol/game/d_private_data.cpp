@@ -401,13 +401,18 @@ int dPrivateData_c::findInSave() const {
     return -1;
 }
 
+namespace dPrivateData {
+static inline const dTime_c snapshotCalendar(const dTime_c &calendar) {
+    return calendar;
+}
+} // namespace dPrivateData
+
 // 801371DC
 void dPrivateData_c::sendBankAnniversaryLetter() {
     if (isFlag0(0x28)) {
         return;
     }
-    dTime_c stamp;
-    stamp = mBankStamp.get();
+    dTime_c stamp = dPrivateData::snapshotCalendar(mBankStamp.get());
     dTime_c prev = stamp;
     prev.year--;
     dTime_c next = stamp;
@@ -446,19 +451,23 @@ void dPrivateData_c::sendBankAnniversaryLetter() {
     }
 }
 
+namespace dPrivateData {
+static inline void setupLostChildThanks(dMail_c &mail, const dPersonalID_c &pid, const u8 *senderKind) {
+    mail.clear();
+    dItem::Item paper(dPaper::getPaper(3, dTime_c::getCurrentSeason()));
+    u16 kind = cM::rndInt(3) + 1;
+    mail.setupSystem(&kind, "MAIL_NPC_maigo", senderKind, &pid, &paper);
+}
+} // namespace dPrivateData
+
 // 8013760C
 void dPrivateData_c::sendLostChildThanks() {
     if (!isFlag0(0x28) && isFlag0(0x4A) && mDaysAway > 0) {        
         static dMail_c mail;
         static u8 lbl_8074B098 = MAIL_FROM_THANK_YOU;
         s32 range[4];
-        u16 b;
-        u16 a;
 
-        mail.clear();
-        b = dPaper::getPaper(3, dTime_c::getCurrentSeason());
-        a = cM::rndInt(3) + 1;
-        mail.setupSystem(&a, "MAIL_NPC_maigo", &lbl_8074B098, &mPID, (const dItem::Item *)&b);
+        dPrivateData::setupLostChildThanks(mail, mPID, &lbl_8074B098);
         dItem::Item present;
         range[0] = 3;
         range[1] = 0x19;
@@ -542,8 +551,9 @@ void dPrivateData_c::updateBank(int days) {
         {0, 0, -1, 0x533},
     };
     // memcpy(letters, lbl_80476150, sizeof(letters));
+    SavingsLetter *letter = letters;
     if (days != 0) {
-        for (SavingsLetter *letter = letters; letter->threshold != 0; letter++) {
+        for (; letter->threshold != 0; letter++) {
             if (!isFlag0(letter->flag) && mSavings >= letter->threshold) {
                 dItem::Item present((int)letter->item);
                 if (sendLetter(letter->kind, &present, this, 0)) {
@@ -1044,13 +1054,15 @@ BOOL dPrivateData_c::addMoney(int amount) {
     if (getMoneyRoom(0) < amount) {
         return FALSE;
     }
-    int bagPrice = dItem::Item(dItem::ITEM_IDX_99000_BELLS).getPrice();
+    dItem::Item bag(dItem::ITEM_IDX_99000_BELLS);
+    int bagPrice = bag.getPrice();
     int bells = mBells + amount;
     while (bells > PRIVATE_BELLS_MAX) {
+        int added;
         int idx = findMoneyPocketMostRoom();
         dItem::Item old = mPockets[idx];
         dItem::Item money = dItem::Item::getMoneyItem(bagPrice, TRUE, NULL);
-        int added = money.getPrice();
+        added = money.getPrice();
         if (old.mId != dItem::ITEM_ID_NONE) {
             added -= old.getPrice();
         }
@@ -1076,7 +1088,7 @@ BOOL dPrivateData_c::payMoney(int amount, BOOL allowItems) {
             return FALSE;
         }
         mBells += money.getPrice();
-        money = dItem::Item();
+        money = dItem::ITEM_ID_NONE;
         setPocket(&money, idx, FALSE);
     }
     
@@ -1084,7 +1096,7 @@ BOOL dPrivateData_c::payMoney(int amount, BOOL allowItems) {
         int idx = findMoneyPocketSmallest();
         dItem::Item money = mPockets[idx];
         mBells += money.getPrice();
-        money = dItem::Item();
+        money = dItem::ITEM_ID_NONE;
         setPocket(&money, idx, FALSE);
     }
 
@@ -1331,16 +1343,13 @@ dQuestErrand_c *dPrivateData_c::findErrand(dAnmPersonalID_c *animal, int which, 
                 BOOL ok;
                 const dAnmPersonalID_c *other = errand->getAnimal(i);
 
-                // My suspicion is that this is something like *animal == *other
-                // Perhaps this is a const function and it takes const dAnmPersonalID_c& instead of a pointer.
-                same = FALSE;
-                if (other->mLand.mId == animal->mLand.mId && other->mLand.mRegion == animal->mLand.mRegion &&
+                enum LandId_e { LAND_ID_NONE = 0xFFFF };
+                LandId_e id = (LandId_e)other->mLand.mId;
+                same = (u32)id == animal->mLand.mId && other->mLand.mRegion == animal->mLand.mRegion &&
                     memcmp(other->mLand.mName, animal->mLand.mName, sizeof(animal->mLand.mName)) == 0 &&
                     other->mLand2.mId == animal->mLand2.mId && other->mLand2.mRegion == animal->mLand2.mRegion &&
                     memcmp(other->mLand2.mName, animal->mLand2.mName, sizeof(animal->mLand2.mName)) == 0 &&
-                    other->mNpcIdx == animal->mNpcIdx) {
-                    same = TRUE;
-                }
+                    other->mNpcIdx == animal->mNpcIdx;
                 if (same) {
                     ok = TRUE;
                     switch (errand->mBase.mKind) {
@@ -1566,7 +1575,9 @@ u32 dCatalog_c::countAll(int kind) {
 
 // 8013A25C
 bool dCatalog_c::isComplete(int kind) {
-    return countAll(kind) == countRegistered(kind);
+    u32 all = countAll(kind);
+    u32 registered = countRegistered(kind);
+    return registered == all;
 }
 
 // ---------------------------------------------------------------------------
@@ -1981,7 +1992,7 @@ BOOL dPrivateData_c::contains(dPrivateData_c *players, const dPersonalID_c *pid)
 }
 
 // 8013B3D4
-dQuestErrand_c *dPrivateData_c::findErrandAll(dPrivateData_c *players, dAnmPersonalID_c *animal, int which,
+dPrivateData_c *dPrivateData_c::findErrandAll(dPrivateData_c *players, dAnmPersonalID_c *animal, int which,
                                               u32 idx) {
     if (!animal->isValid()) {
         return NULL;
@@ -1991,7 +2002,7 @@ dQuestErrand_c *dPrivateData_c::findErrandAll(dPrivateData_c *players, dAnmPerso
         if (player != NULL) {
             dQuestErrand_c *errand = player->findErrand(animal, which, idx);
             if (errand != NULL) {
-                return errand;
+                return player;
             }
         }
     }
@@ -2036,16 +2047,17 @@ int dPrivateData_c::tallyBridgeVotes() {
     int ties[PLAYER_NUM];
     u8 votes[7 * 7];
     memset(votes, 0, sizeof(votes));
+    u8 *counts = votes;
     int best = 0;
     int bestIdx = -1;
     for (int i = 0; i < PLAYER_NUM; i++) {
         dPrivateData_c *player = getChecked(dSaveData_c::getTown()->mPlayers, i);
         if (player->mPID.isValid()) {
-            s8 x = player->mBridgeVoteX;
-            s8 y = player->mBridgeVoteY;
+            int x = player->mBridgeVoteX;
+            int y = player->mBridgeVoteY;
             if (x >= 0 && y >= 0) {
                 int idx = x * 7 + y;
-                u8 count = ++votes[idx];
+                int count = ++counts[idx];
                 if (count > best) {
                     bestIdx = idx;
                     best = count;
@@ -2059,7 +2071,8 @@ int dPrivateData_c::tallyBridgeVotes() {
     int num = 0;
     for (int i = 0; i < 7 * 7; i++) {
         if (votes[i] == best) {
-            ties[num++] = i;
+            ties[num] = i;
+            num++;
         }
     }
     if (num > 1) {
@@ -2079,11 +2092,13 @@ void dPrivateData_c::clearPublicWorksVotes() {
             player->clearFlag0(0x13);
         }
     }
-    dSaveData_c::getTown()->mPublicWorksDays = 0xFF;
+    dSaveTown_c *town = dSaveData_c::getTown();
+    town->mPublicWorksDays = 0xFF;
 }
 
 // 8013B848
 void dPrivateData_c::buildVotedBridge() {
+    dFdBase_c *map;
     int x = -1;
     int y = -1;
     int idx = tallyBridgeVotes();
@@ -2091,7 +2106,7 @@ void dPrivateData_c::buildVotedBridge() {
         x = idx / 7;
         y = idx % 7;
     } else {
-        dFdBase_c *map = dField::getInfo(FD_ID_TOWN);
+        map = dField::getInfo(FD_ID_TOWN);
         int count = 0;
         for (int j = 1; j < map->mBlockH - 1; j++) {
             for (int i = 1; i < map->mBlockW - 1; i++) {
@@ -2173,15 +2188,15 @@ void dPrivateData_c::buildVotedBuilding() {
 void dPrivateData_c::finishPublicWorksVote() {
     if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_PUBLIC_WORKS_VOTE)) {
         switch (dSaveData_c::getPublicWorks()) {
-        case 0:
-            buildVotedBridge();
+        case 2:
+        case 3:
+            buildVotedBuilding();
             break;
         case 1:
             buildFountain();
             break;
-        case 2:
-        case 3:
-            buildVotedBuilding();
+        case 0:
+            buildVotedBridge();
             break;
         }
     }
@@ -2196,7 +2211,8 @@ void dPrivateData_c::updatePublicWorks(int days) {
     if (dSaveData_c::getRaw()->mPublicWorksDays != 0xFF) {
         int left = dSaveData_c::getRaw()->mPublicWorksDays - days;
         left = left < 0 ? 0 : left;
-        dSaveData_c::getTown()->mPublicWorksDays = left;
+        dSaveTown_c *town = dSaveData_c::getTown();
+        town->mPublicWorksDays = left;
         if (left == 0) {
             finishPublicWorksVote();
         }
@@ -2214,7 +2230,8 @@ void dPrivateData_c::updatePublicWorks(int days) {
         case 3: {
             int x, y;
             dItem::Item id((u16)BUILDING_WINDMILL);
-            if (dSaveData_c::getRaw()->mBuilding.mList.getPos(&x, &y, &id, 1)) {
+            dSaveTown_c *raw = dSaveData_c::getRaw();
+            if (raw->mBuilding.mList.getPos(&x, &y, &id, 1)) {
                 dNotice::postNotice(8, "BBS_office", 0, 0);
             } else {
                 dNotice::postNotice(7, "BBS_office", 0, 0);
@@ -2227,44 +2244,43 @@ void dPrivateData_c::updatePublicWorks(int days) {
 
 // 8013BDA0
 BOOL dPrivateData_c::startHostVisit(int chance, int count, int flag) {
-    dSaveTown_c *town = dSaveData_c::getTown();
+    dPrivateHost_c *townHost = &dSaveData_c::getTown()->mTownHost;
     if (isFlag0Any(dSaveData_c::getTown()->mPlayers, 0x4B)) {
         return FALSE;
     }
     if (isFlag0(0x4C)) {
         return FALSE;
     }
-    dPrivateHost_c *townHost = &town->mTownHost;
     if (townHost->mCount != 0) {
         return FALSE;
     }
     if (mHost.mCount != 0) {
         return FALSE;
     }
-    if (cM::rndInt(chance) != 0) {
-        return FALSE;
-    }
-    int coin = cM::rndInt(2);
-    townHost->mIsGuest = coin == 0;
-    townHost->mCount = count;
-    townHost->mFlagC = flag;
-    townHost->mPID = mPID;
-    mHost.mIsGuest = coin - 1 == 0;
-    dPrivateData_c *host = NULL;
-    if (flag == 1) {
-        host = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    } else {
-        for (int i = 0; i < PLAYER_NUM; i++) {
-            dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
-            if (player->mPID.isValid()) {
-                host = player;
+    if (cM::rndInt(chance) == 0) {
+        int coin = cM::rndInt(2);
+        townHost->mIsGuest = coin == 0;
+        townHost->mPID = mPID;
+        townHost->mCount = count;
+        townHost->mFlagC = flag;
+        mHost.mIsGuest = coin - 1 == 0;
+        dPrivateData_c *host = NULL;
+        if (flag == 1) {
+            host = dPlayerMgr::Mgr_c::getCurrentPlayer();
+        } else {
+            for (int i = 0; i < PLAYER_NUM; i++) {
+                dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
+                if (player->mPID.isValid()) {
+                    host = player;
+                }
             }
         }
+        mHost.mPID = host->mPID;
+        mHost.mCount = count;
+        mHost.mFlagC = flag;
+        return TRUE;
     }
-    mHost.mPID = host->mPID;
-    mHost.mCount = count;
-    mHost.mFlagC = flag;
-    return TRUE;
+    return FALSE;
 }
 
 // ---------------------------------------------------------------------------
@@ -2371,7 +2387,8 @@ BOOL dPrivateData_c::isBirthday(const dTime_c& cal) const {
         return TRUE;
     }
     
-    if (mBirthday.isSame(cal.month, cal.mday)) {
+    const dBirthday_c &birthday = mBirthday;
+    if (birthday.isSame(cal.month, cal.mday)) {
         return TRUE;
     }
 
