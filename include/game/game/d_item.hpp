@@ -767,6 +767,11 @@ struct BITM {
         return static_cast<u32>(fashion) < FASHION_COUNT ? static_cast<Fashion>(fashion) : FASHION_NONE;
     }
 
+    int getEdibility() const {
+        int edibility = static_cast<s8>(m_edibility);
+        return static_cast<u32>(edibility) < EDIBILITY_COUNT ? static_cast<Edibility>(edibility) : EDIBILITY_NONE;
+    }
+
     u32 m_magic; // 0x000: 'BITM'
     s32 m_price; // 0x004
     s16 m_baseId; // 0x008

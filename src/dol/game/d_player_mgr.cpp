@@ -47,12 +47,18 @@ void fgMngTask_releaseAt(u8 scene, int x, int z, u32 layer);    // 800A3118
 
 namespace dPlayerMgr {
 
+const u8 sRemoteActionDelayFrames = 60;
+const u8 sRemoteActionAlternateDelayFrames = 60;
+const f32 sRemoteMoveSpeed = 2.0f;
+const f32 sDefaultMoveSpeed = 0.75f;
+const f32 sPlayerValue80750A7C = 12.0f;
+
 // 8074E600 / 8074E602, set by the __sinit: look-at limits (lookAt, also read by d_a_player).
-s16 sLookPitchMax = cLib::deg2bin(10.0f);
-s16 sLookYawMax = cLib::deg2bin(45.0f);
+s16 sLookPitchMax = mAng::fromDegree(10.0f);
+s16 sLookYawMax = mAng::fromDegree(45.0f);
 
 // 8074AF10
-static u8 sSnowEffectWearThreshold = 0x3F;
+u8 sSnowEffectWearThreshold = 0x3F;
 
 // 805D2440
 Mgr_c gManager;
@@ -111,7 +117,7 @@ BOOL getMoveAngle(s16 *out) {
     if (player == NULL) {
         return FALSE;
     }
-    if (out != NULL && player->_22EC != 0.0f) {
+    if (out != NULL && player->getMoveSpeed()) {
         *out = player->_22F8;
         return TRUE;
     }
@@ -361,11 +367,15 @@ void refreshEquippedUmbrellaDesign() {
         return;
     }
     dPrivateData_c *current = Mgr_c::getCurrentPlayer();
-    if (current == NULL || lbl_8074EA7D != 1) {
+    if (current == NULL) {
         return;
     }
+    if (lbl_8074EA7D != 1) {
+        return;
+    }
+    int slot = fn_8019AFE4() & 7;
     dItem::Item held = current->mEquipment.mHeld;
-    if (!isDesignSlot(fn_8019AFE4() & 7, &held)) {
+    if (!isDesignSlot(slot, &held)) {
         return;
     }
     if (dHmnToolBank_c::getItemToolType(&held) == 0xA && dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM)) {
@@ -425,7 +435,7 @@ void clearToolActionHold() {
 }
 
 // 800FC61C
-u8 isToolActionHeld() {
+BOOL isToolActionHeld() {
     return gManager.mToolActionHeld;
 }
 
@@ -485,7 +495,7 @@ BOOL canStartIdleDemo() {
     if (player == NULL) {
         return FALSE;
     }
-    return player->mState <= STATE_WALK;
+    return (u32)player->mState <= STATE_WALK;
 }
 
 // 800FC858
@@ -507,12 +517,12 @@ BOOL isNetSaveWaitState() {
 }
 
 // 800FC8EC
-BOOL setDemoWait(BOOL a) {
+void setDemoWait(BOOL a) {
     if (a) {
         startDemoWait();
-        return TRUE; // the target tail-calls the void startDemoWait; r3 is whatever it left
+    } else {
+        endDemoWait();
     }
-    return endDemoWait();
 }
 
 // 800FC8FC
@@ -568,7 +578,10 @@ BOOL canStartMovementDemo() {
         return FALSE;
     }
     int state = player->mState;
-    if (state >= STATE_IDLE && state < STATE_MOVE_TO) {
+    switch (state) {
+    case STATE_IDLE:
+    case STATE_WALK:
+    case STATE_RUN:
         return TRUE;
     }
     return FALSE;
@@ -579,7 +592,7 @@ BOOL requestDemoStart() {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }
-    if (!canStartMovementDemo()) {
+    if (canStartMovementDemo() == FALSE) {
         return FALSE;
     }
     return changeState(STATE_DEMO_START, PLAYER_INDEX_CURRENT);
@@ -700,7 +713,7 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
     }
 
     if (shirt != NULL && shirt->mId != dItem::ITEM_ID_NONE) {
-        int tmp;
+        int tmp = 0;
         if (dHmnClothMng_c::isOrgCloth(&tmp, shirt)) {
             player->_22B4 |= EQUIPMENT_CHANGE_CLOTH;
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
@@ -760,11 +773,7 @@ BOOL eatItem(const dItem::Item *item) {
     if (bitm == NULL) {
         return FALSE;
     }
-    int edibility = (s8)bitm->m_edibility;
-    if ((u32)edibility >= dItem::EDIBILITY_COUNT) {
-        edibility = dItem::EDIBILITY_NONE;
-    }
-    switch (edibility) {
+    switch (bitm->getEdibility()) {
     case dItem::EDIBILITY_FOOD:
         player->_218A = item->mId;
         return changeState(STATE_EAT, PLAYER_INDEX_CURRENT);
@@ -818,21 +827,6 @@ BOOL endDemoWait() {
             break;
         }
         break;
-    case 0xA:
-        if (dNpcInfo::tanukichi_c::get()->mJobDone != 0) {
-            if (changeState(0x84, PLAYER_INDEX_CURRENT)) {
-                player->_22DD = 1;
-                clearDemoFlags(player);
-                dNpcInfo::tanukichi_c::get()->mJobDone = 0;
-                player->_2270 |= 0x200000;
-                return TRUE;
-            }
-        } else if (isBedHairPending()) {
-            clearBedHairPending();
-            clearDemoFlags(player);
-            return changeState(STATE_BED_HAIR, PLAYER_INDEX_CURRENT);
-        }
-        break;
     case STATE_CHANGE_HELD_ITEM_DEMO:
         clearDemoFlags(player);
         return TRUE;
@@ -857,6 +851,22 @@ BOOL endDemoWait() {
             }
         }
         break;
+    case 0xA:
+        if (dNpcInfo::tanukichi_c::get()->mJobDone != 0) {
+            if (changeState(0x84, PLAYER_INDEX_CURRENT)) {
+                player->_22DD = 1;
+                clearDemoFlags(player);
+                dNpcInfo::tanukichi_c *info = dNpcInfo::tanukichi_c::get();
+                info->mJobDone = 0;
+                player->_2270 |= 0x200000;
+                return TRUE;
+            }
+        } else if (isBedHairPending()) {
+            clearBedHairPending();
+            clearDemoFlags(player);
+            return changeState(STATE_BED_HAIR, PLAYER_INDEX_CURRENT);
+        }
+        break;
     case 0x8C:
     case 0xAA:
         return TRUE;
@@ -878,11 +888,17 @@ BOOL endDemoWait() {
                 return TRUE;
             }
         }
-    }
-    if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
-        clearDemoFlags(player);
-        player->_2270 |= 0x200000;
-        return TRUE;
+        if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
+            clearDemoFlags(player);
+            player->_2270 |= 0x200000;
+            return TRUE;
+        }
+    } else {
+        if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
+            clearDemoFlags(player);
+            player->_2270 |= 0x200000;
+            return TRUE;
+        }
     }
     return FALSE;
 }
@@ -897,7 +913,7 @@ BOOL getChairPosition(mVec3_c *out, int idx) {
         return FALSE;
     }
     if (out != NULL) {
-        *out = player->mPos;
+        out->set(player->mPos.x, player->mPos.y, player->mPos.z);
     }
     return TRUE;
 }
@@ -943,7 +959,7 @@ BOOL getBedAnimationPosition(mVec3_c *out, int idx) {
         return FALSE;
     }
     if (out != NULL) {
-        *out = player->mPos;
+        out->set(player->mPos.x, player->mPos.y, player->mPos.z);
     }
     return TRUE;
 }
@@ -958,7 +974,7 @@ BOOL getBedPosition(mVec3_c *out, int idx) {
         return FALSE;
     }
     if (out != NULL) {
-        *out = player->mPos;
+        out->set(player->mPos.x, player->mPos.y, player->mPos.z);
     }
     return TRUE;
 }
@@ -1087,7 +1103,10 @@ BOOL fn_800FDB78(int type) {
 // 800FDBDC
 void fn_800FDBDC(u32 mode) {
     dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
-    if (player == NULL || !(player->_2270 & 0x10)) {
+    if (player == NULL) {
+        return;
+    }
+    if (!(player->_2270 & 0x10)) {
         return;
     }
     if (mode >= 2) {
@@ -1121,7 +1140,7 @@ BOOL canFinishToolAction() {
     if (player == NULL) {
         return TRUE;
     }
-    return (player->_2270 & 0x20) == 0;
+    return !(player->_2270 & 0x20);
 }
 
 // 800FDD04
@@ -1291,7 +1310,7 @@ BOOL changeMiiMask(u16 mii) {
     if (current == NULL) {
         return FALSE;
     }
-    memcpy(&current->mMiiId, data.mCreateID, sizeof(data.mCreateID));
+    current->mMiiId = *(const dMiiCreateID_c *)data.mCreateID;
     player->_22B6 = mii;
     dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
     dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
@@ -1405,13 +1424,15 @@ void getDemoWaitPose(int *outState, mVec3_c *outPos, s16 *outAngle) {
     case STATE_BED_WAIT:
     case STATE_CHAIR_WAIT:
         break;
-    case STATE_DEMO_WAIT:
-        if (player->mAnmId == 0x31) {
+    case STATE_DEMO_WAIT: {
+        int anm = player->mAnmId;
+        if (anm == 0x31) {
             state = STATE_CHAIR_WAIT;
-        } else if (player->mAnmId == 0x37) {
+        } else if (anm == 0x37) {
             state = STATE_BED_WAIT;
         }
         break;
+    }
     default:
         state = STATE_DEMO_WAIT;
         break;
@@ -1497,7 +1518,8 @@ BOOL lookAt(const mVec3_c *target, int a, BOOL pitch, int c) {
     s16 yaw = 0;
     s16 tilt = 0;
     if (target != NULL) {
-        yaw = (s16)(dActor_c::targetAngleY(&player->mPos, target) - player->mAngle.y);
+        s16 targetYaw = dActor_c::targetAngleY(&player->mPos, target);
+        yaw = targetYaw - player->mAngle.y;
         if (yaw > sLookYawMax) {
             yaw = sLookYawMax;
         } else if (yaw < -sLookYawMax) {
@@ -1506,7 +1528,8 @@ BOOL lookAt(const mVec3_c *target, int a, BOOL pitch, int c) {
         if (pitch) {
             mVec3_c diff = player->_0654 - *target;
             f32 dist = EGG::Math<f32>::sqrt(diff.x * diff.x + diff.z * diff.z);
-            tilt = cM::atan2s(target->y - player->_0654.y, dist);
+            f32 dy = target->y - player->_0654.y;
+            tilt = cM::atan2s(dy, dist);
             if (tilt > sLookPitchMax) {
                 tilt = sLookPitchMax;
             } else if (tilt < -sLookPitchMax) {
@@ -1620,6 +1643,12 @@ BOOL changeHeldItem(const dItem::Item *held) {
             player->_22DA = HELD_ITEM_CHANGE_REMOVE;
             player->_223C = 1;
         }
+
+        dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+        dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
+        player->_2234 = 8;
+        player->_2270 |= 0x1000000;
+        return changeState(STATE_CHANGE_HELD_ITEM, PLAYER_INDEX_CURRENT);
     } else {
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
         if (bitm == NULL) {
@@ -1647,14 +1676,6 @@ BOOL isChangingEquipment() {
         return FALSE;
     }
     switch (player->mState) {
-    case STATE_CHANGE_EQUIPMENT:
-        if (player->mAnmId == 0x24) {
-            return TRUE;
-        }
-        if (player->mAnmId == 0x26 && player->getAnm()->getFrame() < 57.0f) {
-            return TRUE;
-        }
-        break;
     case STATE_CHANGE_HELD_ITEM:
     case STATE_MII_MASK_IMMEDIATE:
     case 0x4D:
@@ -1663,6 +1684,14 @@ BOOL isChangingEquipment() {
     case STATE_CHANGE_HELD_ITEM_DEMO:
     case STATE_CHANGE_OUTFIT_AND_HELD:
         return TRUE;
+    case STATE_CHANGE_EQUIPMENT:
+        if (player->mAnmId == 0x24) {
+            return TRUE;
+        }
+        if (player->mAnmId == 0x26 && player->getAnm()->getFrame() < 57.0f) {
+            return TRUE;
+        }
+        break;
     case STATE_MII_MASK:
     case STATE_EAT_REMOVE_MASK:
         if (player->getAnm()->getFrame() < 57.0f) {
@@ -1685,9 +1714,9 @@ mVec3_c *getToolOrPlayerPosition(int idx) {
     if (player == NULL) {
         return NULL;
     }
-    u8 *obj = player->_0C34 != NULL ? (u8 *)player->_0C34 + 0x1C : NULL;
-    if (obj != NULL && obj[0x447] != 0) {
-        return (mVec3_c *)(obj + 0x270);
+    dUki_c *obj = &player->_0C34->mFloat;
+    if (obj != NULL && obj->mState != 0) {
+        return &obj->mPos[0];
     }
     return &player->mPos;
 }
@@ -1707,9 +1736,9 @@ BOOL getGroundPositionAhead(mVec3_c *out) {
     if (player == NULL) {
         return FALSE;
     }
-    s16 angle = player->mAngle.y;
-    out->x = player->mPos.x + 12.0f * nw4r::math::SinFIdx((1.0f / 256.0f) * angle);
-    out->z = player->mPos.z + 12.0f * nw4r::math::CosFIdx((1.0f / 256.0f) * angle);
+    mAng angle = player->mAngle.y;
+    out->x = player->mPos.x + 12.0f * angle.sin();
+    out->z = player->mPos.z + 12.0f * angle.cos();
     mVec3_c pos(out->x, player->mPos.y, out->z);
     out->y = dBGCF::getGroundY(&pos, FALSE);
     return TRUE;
@@ -1837,20 +1866,20 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     BOOL changeAcc = FALSE;
 
     dItem::Item shirt = equip->mShirt;
-    if (!shirt.isSame(current->mEquipment.mShirt) || ((mode == EQUIPMENT_CHANGE_SHIRT || mode == EQUIPMENT_CHANGE_DESIGN) && dHmnClothMng_c::isOrgCloth(&tmp, &shirt))) {
+    if (shirt.isNotSame(current->mEquipment.mShirt) || ((mode == EQUIPMENT_CHANGE_SHIRT || mode == EQUIPMENT_CHANGE_DESIGN) && dHmnClothMng_c::isOrgCloth(&tmp, &shirt))) {
         changeShirt = TRUE;
     }
     dItem::Item hat = equip->mHat;
-    if (!hat.isSame(current->mEquipment.mHat) || ((mode == EQUIPMENT_CHANGE_HAT || mode == EQUIPMENT_CHANGE_DESIGN) && dHmnHeadItemMng_c::isOrgCap(&tmp, &hat))) {
+    if (hat.isNotSame(current->mEquipment.mHat) || ((mode == EQUIPMENT_CHANGE_HAT || mode == EQUIPMENT_CHANGE_DESIGN) && dHmnHeadItemMng_c::isOrgCap(&tmp, &hat))) {
         changeHat = TRUE;
     }
     dItem::Item acc = equip->mAcc;
-    if (!acc.isSame(current->mEquipment.mAcc)) {
+    if (acc.isNotSame(current->mEquipment.mAcc)) {
         changeAcc = TRUE;
     }
 
     if (changeShirt && shirt.mId != dItem::ITEM_ID_NONE) {
-        int tmp2;
+        int tmp2 = 0;
         if (dHmnClothMng_c::isCloth(&shirt) || dHmnClothMng_c::isOrgCloth(&tmp2, &shirt)) {
             player->_22B4 |= EQUIPMENT_CHANGE_CLOTH;
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
@@ -1860,7 +1889,7 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
 
     if (changeHat) {
         int bone = dItem::HIDE_BONE_NONE;
-        if (hat.mId != dItem::ITEM_ID_NONE) {
+        if (hat != dItem::ITEM_ID_NONE) {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(hat);
             if (bitm != NULL) {
                 bone = getHideBone(bitm);
@@ -1876,7 +1905,7 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     }
 
     if (changeAcc) {
-        if (acc.mId == dItem::ITEM_ID_NONE) {
+        if (acc == dItem::ITEM_ID_NONE) {
             player->_22B4 = (player->_22B4 & ~EQUIPMENT_SHOW_ACCESSORY) | EQUIPMENT_HIDE_ACCESSORY;
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
             dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
@@ -1894,9 +1923,6 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     }
 
     switch (mode) {
-    case 0:
-        player->_2238 = 1;
-        return changeState(0x4E, PLAYER_INDEX_CURRENT);
     case EQUIPMENT_CHANGE_SHIRT:
     case EQUIPMENT_CHANGE_HAT:
     case EQUIPMENT_CHANGE_ACCESSORY:
@@ -1908,6 +1934,9 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
         player->_2238 = 1;
         player->_2234 = 8;
         return changeState(0x4D, PLAYER_INDEX_CURRENT);
+    case 0:
+        player->_2238 = 1;
+        return changeState(0x4E, PLAYER_INDEX_CURRENT);
     case 6:
         player->_2238 = 1;
         player->_2234 = 8;
@@ -1954,7 +1983,8 @@ static const u16 sHairBits[26] = {
 
 // 800FF94C
 BOOL hasHairFeature(u8 hair, int bit) {
-    return (sHairBits[hair] & (1 << bit)) != 0;
+    int bits = sHairBits[hair];
+    return (bits & (1 << bit)) != 0;
 }
 
 // 800FF978
@@ -2014,10 +2044,45 @@ BOOL fn_800FFB18() {
     if (player == NULL) {
         return FALSE;
     }
-    int state = player->mState;
-    if ((state >= 0xD && state < 0x17) || (state >= 0x18 && state < 0x21) || (state >= 0x3E && state < 0x48) ||
-        state == 0x7D || (state >= 0x89 && state < 0x8B) || (state >= 0x8D && state < 0x8F) ||
-        (state >= 0x99 && state < STATE_DRINK_COFFEE) || state == 0xA2) {
+    switch (player->mState) {
+    case 0xD:
+    case 0xE:
+    case 0xF:
+    case 0x10:
+    case 0x11:
+    case 0x12:
+    case 0x13:
+    case 0x14:
+    case 0x15:
+    case 0x16:
+    case 0x18:
+    case 0x19:
+    case 0x1A:
+    case 0x1B:
+    case 0x1C:
+    case 0x1D:
+    case 0x1E:
+    case 0x1F:
+    case 0x20:
+    case 0x3E:
+    case 0x3F:
+    case 0x40:
+    case 0x41:
+    case 0x42:
+    case 0x43:
+    case 0x44:
+    case 0x45:
+    case 0x46:
+    case 0x47:
+    case 0x7D:
+    case 0x89:
+    case 0x8A:
+    case 0x8D:
+    case 0x8E:
+    case 0x99:
+    case 0x9A:
+    case 0x9B:
+    case 0xA2:
         return TRUE;
     }
     return FALSE;
@@ -2038,8 +2103,12 @@ BOOL fn_800FFC38() {
     if (player == NULL) {
         return FALSE;
     }
-    int state = player->mState;
-    if ((state >= 0x51 && state < 0x54) || state == 0x5D || state == 0x7E) {
+    switch (player->mState) {
+    case 0x51:
+    case 0x52:
+    case 0x53:
+    case 0x5D:
+    case 0x7E:
         return TRUE;
     }
     return FALSE;
@@ -2051,8 +2120,29 @@ BOOL fn_800FFCA8() {
     if (player == NULL) {
         return FALSE;
     }
-    int state = player->mState;
-    if ((state >= 0x23 && state < 0x32) || (state >= STATE_SIT_DOWN && state < 0x3C)) {
+    switch (player->mState) {
+    case 0x23:
+    case 0x24:
+    case 0x25:
+    case 0x26:
+    case 0x27:
+    case 0x28:
+    case 0x29:
+    case 0x2A:
+    case 0x2B:
+    case 0x2C:
+    case 0x2D:
+    case 0x2E:
+    case 0x2F:
+    case 0x30:
+    case 0x31:
+    case 0x35:
+    case 0x36:
+    case 0x37:
+    case 0x38:
+    case 0x39:
+    case 0x3A:
+    case 0x3B:
         return TRUE;
     }
     return FALSE;
@@ -2090,8 +2180,9 @@ BOOL isFacingPosition(const mVec3_c *target, int maxAngle, f32 maxDist) {
     if (player == NULL) {
         return FALSE;
     }
+    const mVec3_c *pos = &player->mPos;
     maxDist = maxDist * maxDist;
-    mVec3_c diff = player->mPos - *target;
+    mVec3_c diff = *pos - *target;
     f32 dist = diff.x * diff.x + diff.z * diff.z;
     if (dist == 0.0f) {
         return TRUE;
@@ -2099,7 +2190,7 @@ BOOL isFacingPosition(const mVec3_c *target, int maxAngle, f32 maxDist) {
     if (dist > maxDist) {
         return FALSE;
     }
-    s16 angle = dActor_c::targetAngleY(&player->mPos, target);
+    s16 angle = dActor_c::targetAngleY(pos, target);
     return sLib::distanceAngle(angle, player->mAngle.y) <= maxAngle;
 }
 
@@ -2246,24 +2337,24 @@ BOOL setHatHideBone(u32 bone, dPlayerActor_c *player) {
     switch (bone) {
     case 0:
     case 1:
-        player->_22B4 = (player->_22B4 & ~0x3F) | 0x1;
+        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x1;
         break;
     case 2:
-        player->_22B4 = (player->_22B4 & ~0x3F) | 0x2;
+        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x2;
         break;
     case 3:
     case 4:
-        player->_22B4 = (player->_22B4 & ~0x3F) | 0x4;
+        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x4;
         break;
     case 5:
     case 6:
-        player->_22B4 = (player->_22B4 & ~0x3F) | 0x8;
+        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x8;
         break;
     case 7:
-        player->_22B4 = (player->_22B4 & ~0x3F) | 0x10;
+        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x10;
         break;
     case dItem::HIDE_BONE_NONE:
-        player->_22B4 = (player->_22B4 & ~0x1F) | 0x20;
+        player->_22B4 = (player->_22B4 & (u16)~0x1F) | 0x20;
         break;
     default:
         return FALSE;
@@ -2294,7 +2385,7 @@ BOOL receiveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner
     if (!dHandItem::start(item, b, c, d, player, (dDemoActor_c *)partner, getItemExchangeOffsetY(), f1, 0.0f, f2, 0.0f, f3)) {
         return FALSE;
     }
-    if (!dHandItem::request(dHandItem_c::STATE_LOAD, player, 16.0f)) {
+    if (dHandItem::request(dHandItem_c::STATE_LOAD, player, dHandItem::cDefaultReach) == FALSE) {
         return FALSE;
     }
     return changeState(STATE_RECEIVE_ITEM, PLAYER_INDEX_CURRENT);
@@ -2314,7 +2405,7 @@ BOOL giveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f
     if (!dHandItem::start(item, b, c, d, player, (dDemoActor_c *)partner, getItemExchangeOffsetY(), f1, 0.0f, f2, 0.0f, 0.0f)) {
         return FALSE;
     }
-    if (!dHandItem::request(dHandItem_c::STATE_APPEAR, player, 16.0f)) {
+    if (dHandItem::request(dHandItem_c::STATE_APPEAR, player, dHandItem::cDefaultReach) == FALSE) {
         return FALSE;
     }
     return changeState(STATE_GIVE_ITEM, PLAYER_INDEX_CURRENT);
@@ -2337,7 +2428,7 @@ BOOL fn_801006A8() {
     if (player == NULL) {
         return FALSE;
     }
-    if (!dHandItem::request(dHandItem::getUseType(), player, 16.0f)) {
+    if (dHandItem::request(dHandItem::getUseType(), player, dHandItem::cDefaultReach) == FALSE) {
         return FALSE;
     }
     return changeState(0x6E, PLAYER_INDEX_CURRENT);
@@ -2562,8 +2653,13 @@ BOOL fn_80100D44() {
     if (player == NULL) {
         return FALSE;
     }
-    int state = player->mState;
-    if ((state >= STATE_DEMO_START && state < 0x9) || (state >= 0x58 && state < 0x5C)) {
+    switch (player->mState) {
+    case 0x7:
+    case 0x8:
+    case 0x58:
+    case 0x59:
+    case 0x5A:
+    case 0x5B:
         return TRUE;
     }
     if (player->_2270 & 1) {
@@ -2578,8 +2674,11 @@ BOOL fn_80100DD0(int idx) {
     if (player == NULL) {
         return FALSE;
     }
-    int state = player->mState;
-    if ((state >= STATE_WALK && state < STATE_MOVE_TO) || state == 0x27 || state == 0x29) {
+    switch (player->mState) {
+    case 0x1:
+    case 0x2:
+    case 0x27:
+    case 0x29:
         return TRUE;
     }
     return FALSE;
@@ -2813,7 +2912,7 @@ void markDailyHairUpdated() {
 }
 
 // 801014BC
-u8 isBedHairPending() {
+BOOL isBedHairPending() {
     return gManager.mBedHairPending;
 }
 
@@ -2859,8 +2958,11 @@ void markSaveRequestFlagsCleared() {
 
 // 80101584
 BOOL isDesignSlot(int slot, const dItem::Item *item) {
-    if (item->isOrgDesign() && (dItem::seeker_c::get()->findLike(*item) & 7) == slot) {
-        return TRUE;
+    if (item->isOrgDesign()) {
+        int design = dItem::seeker_c::get()->findLike(*item) & 7;
+        if (design == slot) {
+            return TRUE;
+        }
     }
     return FALSE;
 }
@@ -2956,7 +3058,7 @@ int findPersonalIDSlot(const dPersonalID_c *pid) {
         int idx = dPrivateData_c::find(dSaveData_c::getTown()->mPlayers, pid);
         if (idx == -1) {
             for (int i = 0; i < PLAYER_SLOT_GUEST_COUNT; i++) {
-                const dPersonalID_c *guest = &gManager.mGuests.mPlayers[i].mPID;
+                const dPersonalID_c *guest = gManager.mGuests.mPlayers[i].getPersonalID();
                 BOOL same = FALSE;
                 if (pid->land == guest->land && pid->isSamePlayer(guest)) {
                     same = TRUE;
@@ -2980,7 +3082,7 @@ int findPlayerIDSlot(const dPlayerID_c *id) {
         int idx = dPrivateData_c::findByPlayerID(dSaveData_c::getTown()->mPlayers, id);
         if (idx == -1) {
             for (int i = 0; i < PLAYER_SLOT_GUEST_COUNT; i++) {
-                if (id->isSame(&gManager.mGuests.mPlayers[i].mPID.player)) {
+                if (id->isSame(&gManager.mGuests.mPlayers[i].getPersonalID()->player)) {
                     slot = i + PLAYER_SLOT_FIRST_GUEST;
                     break;
                 }
@@ -3074,19 +3176,19 @@ int GuestPlayers_c::getIndex(int slot) {
 // 80101C1C
 dPrivateData_c *GuestPlayers_c::get(int slot) {
     int i = getIndex(slot);
-    if (i == -1) {
-        return NULL;
+    if (i != -1) {
+        return &mPlayers[i];
     }
-    return &mPlayers[i];
+    return NULL;
 }
 
 // 80101C68
 dPrivateData_c *GuestPlayers_c::getRaw(int slot) {
     int i = getIndex(slot);
-    if (i == -1) {
-        return NULL;
+    if (i != -1) {
+        return &mPlayers[i];
     }
-    return &mPlayers[i];
+    return NULL;
 }
 
 // 80101CB4
@@ -3105,10 +3207,10 @@ void queueRemoteEquipment(int idx, int part, int item) {
 }
 
 // 80101CC0
-void setNetworkPosition(int idx, const mVec3_c *value) {
+void setRemoteActionParams(int idx, const dPlayerMngr_c::actionParam_c *value) {
     dPlayerActor_c *player = getActor(idx);
     if (player != NULL) {
-        player->_2308 = *value;
+        player->mRemoteActionParams = *value;
     }
 }
 
@@ -3155,44 +3257,65 @@ BOOL getRemoteStateInfo(void *info, u8 *scene, u8 *b, u32 idx) {
 }
 
 // 80101DC8
-BOOL cacheUnavailableActorAction(int idx, u8 b, int state, const u8 *param) {
+void cacheUnavailableActorAction(int idx, u8 b, int state, const u8 *param) {
     cacheRemoteState(idx, state);
     cacheRemoteParams(idx, param);
-    return updateActionFieldTasks(idx, b, state, param);
+    if (!updateActionFieldTasks(idx, b, state, param)) {
+        return;
+    }
 }
 
 // 80101E3C
-BOOL cacheOtherSceneAction(int idx, u8 b, int state, const u8 *param) {
+void cacheOtherSceneAction(int idx, u8 b, int state, const u8 *param) {
     cacheRemoteState(idx, state);
     cacheRemoteParams(idx, param);
-    return updateActionFieldTasks(idx, b, state, param);
+    if (!updateActionFieldTasks(idx, b, state, param)) {
+        return;
+    }
 }
 
 // 80101EB0
 BOOL updateActionFieldTasks(int idx, u8 b, int state, const u8 *param) {
     switch (state) {
     case 0x12:
-    case 0x3C:
-    case 0x3D:
-    case 0x55:
-    case 0x57:
-    case 0x5B:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
     case 0x13:
+        if (param[5] != 0) {
+            fgMngTask_procGroupAt(param[2], param[3], 0);
+        }
+        break;
+    case 0x3C:
+        fgMngTask_procGroupAt(param[0], param[1], 0);
+        break;
+    case 0x3D:
+        fgMngTask_procGroupAt(param[0], param[1], 0);
+        break;
+    case 0x40:
+        fgMngTask_procGroupAt(param[4], param[5], 0);
+        break;
     case 0x41:
         if (param[5] != 0) {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
-    case 0x40:
-        fgMngTask_procGroupAt(param[4], param[5], 0);
-        break;
     case 0x45:
         fgMngTask_procGroupAt(param[2], param[3], 0);
         break;
     case 0x46:
+        if (param[4] != 0) {
+            fgMngTask_releaseAt(b, param[2], param[3], 0);
+        } else {
+            fgMngTask_procGroupAt(param[2], param[3], 0);
+        }
+        break;
     case 0x52:
+        if (param[4] != 0) {
+            fgMngTask_releaseAt(b, param[2], param[3], 0);
+        } else {
+            fgMngTask_procGroupAt(param[2], param[3], 0);
+        }
+        break;
     case 0x53:
         if (param[4] != 0) {
             fgMngTask_releaseAt(b, param[2], param[3], 0);
@@ -3200,8 +3323,17 @@ BOOL updateActionFieldTasks(int idx, u8 b, int state, const u8 *param) {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
+    case 0x55:
+        fgMngTask_procGroupAt(param[0], param[1], 0);
+        break;
+    case 0x57:
+        fgMngTask_procGroupAt(param[0], param[1], 0);
+        break;
     case 0x59:
         fgMngTask_releaseAt(b, param[0], param[1], 0);
+        break;
+    case 0x5B:
+        fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
     case 0x7E:
         fgMngTask_procGroupAt(param[2], param[3], param[4]);
@@ -3218,15 +3350,11 @@ BOOL isSyncValueAhead(int a, int b) {
         if (a > b) {
             return TRUE;
         }
-        return FALSE;
-    }
-    if (b < 0 && a < 0) {
+    } else if (b < 0 && a < 0) {
         if (a > b) {
             return TRUE;
         }
-        return FALSE;
-    }
-    if ((b > 0 && a < 0) || (b < 0 && a > 0)) {
+    } else if ((b > 0 && a < 0) || (b < 0 && a > 0)) {
         if (b - a < 0) {
             return TRUE;
         }
@@ -3245,40 +3373,40 @@ static const u8 sActionParamLocked[STATE_COUNT] = {
 };
 
 // 801021B0
-u8 isActionParamLocked(u32 state) {
+BOOL isActionParamLocked(u32 state) {
     if (state >= STATE_COUNT) {
         return 0;
     }
     return sActionParamLocked[state];
 }
 
-// Fashion types 0x28 and 0x36..0x38 (getWearSound).
-static inline BOOL isSpecialFashion(const dItem::Item *item) {
-    int fashion = item->getFashion();
-    if (fashion == dItem::FASHION_RED_HERO || (fashion >= dItem::FASHION_GREEN_HERO && fashion < dItem::FASHION_COUNT)) {
-        return TRUE;
-    }
-    return FALSE;
-}
-
 // 801021D0
 int getWearSound(const dItem::Item *a, const dItem::Item *b) {
-    if (a->mId != dItem::ITEM_ID_NONE && isSpecialFashion(a)) {
-        return SE_WearHero;
+    if (a->mId != dItem::ITEM_ID_NONE) {
+        switch (a->getFashion()) {
+        case dItem::FASHION_RED_HERO:
+        case dItem::FASHION_GREEN_HERO:
+        case dItem::FASHION_BLUE_HERO:
+        case dItem::FASHION_HEROINE:
+            return SE_WearHero;
+        }
     }
-    if (b->mId == dItem::ITEM_ID_NONE) {
-        return SE_wear;
-    }
-    if (isSpecialFashion(b)) {
-        return SE_WearHero;
-    }
-    dItem::Item item(dItem::ITEM_IDX_PUMPKIN_HEAD);
-    if (b->isSame(item)) {
-        return SE_WearPumpkin;
-    }
-    item.setFromIndex(dItem::ITEM_IDX_KING_TUT_MASK);
-    if (b->isSame(item)) {
-        return SE_Tutankhamen;
+    if (b->mId != dItem::ITEM_ID_NONE) {
+        switch (b->getFashion()) {
+        case dItem::FASHION_RED_HERO:
+        case dItem::FASHION_GREEN_HERO:
+        case dItem::FASHION_BLUE_HERO:
+        case dItem::FASHION_HEROINE:
+            return SE_WearHero;
+        }
+        dItem::Item item(dItem::ITEM_IDX_PUMPKIN_HEAD);
+        if (b->isSame(item)) {
+            return SE_WearPumpkin;
+        }
+        item.setFromIndex(dItem::ITEM_IDX_KING_TUT_MASK);
+        if (b->isSame(item)) {
+            return SE_Tutankhamen;
+        }
     }
     return SE_wear;
 }
@@ -3290,7 +3418,8 @@ void onParticleCollision(nw4r::ef::Particle *obj, u32 kind) {
     }
     mVec3_c pos;
     if (dScene::isOutdoorScene((u8)dScene::getCurrentScene())) {
-        mVec3_c src = obj->mParameter.mPosition;
+        mVec3_c src;
+        src = obj->mParameter.mPosition;
         dWorld::toFieldPosition(&pos, &src);
     } else {
         pos = obj->mParameter.mPosition;
@@ -3309,7 +3438,7 @@ void onParticleCollision(nw4r::ef::Particle *obj, u32 kind) {
         f32 ground = check.getHeight(TRUE);
         if (pos.y <= ground) {
             const char *name = kind == SURFACE_EFFECT_SNOW ? "afi_hny_snowbreak" : "afi_hny_watersplash_a";
-            if (fabsf(ground - pos.y) <= 5.0f) {
+            if (nw4r::math::FAbs(ground - pos.y) <= 5.0f) {
                 pos.y = ground;
                 dEffect::create(name, &pos, NULL, NULL);
                 if (obj->mParticleManager != NULL) {
@@ -3328,12 +3457,7 @@ int getSurfaceEffectKind(const mVec3_c *pos) {
     }
     int attr = check.mAttr;
     if (dWeather_c::sInstance != NULL) {
-        int mode = dWeather_c::sInstance->mWeather;
-        BOOL special = FALSE;
-        if (mode == dWeather::HEAVY_RAIN || mode == dWeather::RAIN) {
-            special = TRUE;
-        }
-        if (special) {
+        if (dWeather_c::isRainKind(dWeather_c::sInstance->mWeather)) {
             return SURFACE_EFFECT_RAIN;
         }
     }
@@ -3354,14 +3478,8 @@ void createSurfaceEffects(const char *const *names, const mVec3_c *pos, const mA
     if (kind == SURFACE_EFFECT_NORMAL || kind == SURFACE_EFFECT_SAND) {
         return;
     }
-    BOOL wet = FALSE;
-    if (kind == SURFACE_EFFECT_SEA || kind == SURFACE_EFFECT_RAIN) {
-        wet = TRUE;
-    }
-    const char *effect = snowEffect;
-    if (wet) {
-        effect = wetEffect;
-    }
+    BOOL wet = kind == SURFACE_EFFECT_SEA || kind == SURFACE_EFFECT_RAIN;
+    const char *effect = wet ? wetEffect : snowEffect;
     dEffect::create(effect, pos, angle, NULL, onParticleCollision, kind);
 }
 

@@ -4,6 +4,7 @@
 #include <game/game/d_actor.hpp>
 #include <game/game/d_demo_actor.hpp>
 #include <game/game/d_private_data.hpp>
+#include <game/game/d_player_mngr.hpp>
 #include <game/mLib/m_3d/fanm.hpp>
 #include <lib/nw4r/ef/ef_particle.h>
 #include <lib/nw4r/ef/ef_particlemanager.h>
@@ -23,6 +24,8 @@ class dPlayerActor_c : public dDemoActor_c {
 public:
     using dActor_c::mPos;
     using dActor_c::mAngle;
+
+    f32 getMoveSpeed() const { return _22EC; }
 
     m3d::fanm_c *getAnm() { return (m3d::fanm_c *)_03C4; }
 
@@ -99,7 +102,7 @@ public:
     /* 0x22F0 */ u8 _22F0[0x8];
     /* 0x22F8 */ s16 _22F8;
     /* 0x22FA */ u8 _22FA[0xE];
-    /* 0x2308 */ mVec3_c _2308;
+    /* 0x2308 */ dPlayerMngr_c::actionParam_c mRemoteActionParams;
     /* 0x2314 */ u8 _2314[0x4];
 }; // size >= 0x2318
 
@@ -255,6 +258,13 @@ public:
 }; // size 0x194C0
 
 extern Mgr_c gManager;
+// Shared player tuning constants also referenced by REL actors.
+extern const u8 sRemoteActionDelayFrames;
+extern const u8 sRemoteActionAlternateDelayFrames;
+extern const f32 sRemoteMoveSpeed;
+extern const f32 sDefaultMoveSpeed;
+extern const f32 sPlayerValue80750A7C; // Player REL use; precise meaning unresolved.
+
 extern s16 sLookPitchMax; // 8074E600: 10 degrees
 extern s16 sLookYawMax;   // 8074E602: 45 degrees
 
@@ -263,7 +273,8 @@ extern s16 sLookYawMax;   // 8074E602: 45 degrees
 struct MiiData_c {
     /* 0x00 */ u8 _00[0x2C];
     /* 0x2C */ u8 mCreateID[8];
-    /* 0x34 */ u8 _34[0x14];
+    /* 0x34 */ u32 mPersonalInfo;
+    /* 0x38 */ u8 mCreatorID[4];
 };
 
 mVec3_c *getPosition(int idx); // 800FBC48
@@ -295,13 +306,13 @@ void lock(); // 800FC568
 void unlock(); // 800FC580
 void holdToolAction(); // 800FC598
 void clearToolActionHold(); // 800FC604
-u8 isToolActionHeld(); // 800FC61C
+BOOL isToolActionHeld(); // 800FC61C
 BOOL enableCurrentActor(); // 800FC630
 BOOL refreshEquippedDesign(int slot); // 800FC674
 BOOL canStartIdleDemo(); // 800FC7E8
 BOOL hasCurrentActor(); // 800FC858
 BOOL isNetSaveWaitState(); // 800FC888
-BOOL setDemoWait(BOOL a); // 800FC8EC
+void setDemoWait(BOOL a); // 800FC8EC
 BOOL fn_800FC8FC(); // 800FC8FC: Requests player state 0x88; action meaning unresolved.
 BOOL fn_800FC958(); // 800FC958: Requests player state 0x9E; action meaning unresolved.
 BOOL fn_800FC9AC(); // 800FC9AC: Tests player action states; action meaning unresolved.
@@ -451,7 +462,7 @@ void resetTimer(); // 80101408
 void reset(); // 80101424
 BOOL isDailyHairUpdated(); // 80101490
 void markDailyHairUpdated(); // 801014A4
-u8 isBedHairPending(); // 801014BC
+BOOL isBedHairPending(); // 801014BC
 void setBedHairPending(); // 801014D0
 void clearBedHairPending(); // 801014E8
 BOOL isDailyTanUpdated(); // 80101500
@@ -478,7 +489,7 @@ BOOL changeState(int state, int idx); // 80101A74
 void receiveEquipment(int idx, int part, int item); // 80101CB4
 void receiveAppearance(int idx, int kind); // 80101CB8
 void queueRemoteEquipment(int idx, int part, int item); // 80101CBC
-void setNetworkPosition(int idx, const mVec3_c *value); // 80101CC0
+void setRemoteActionParams(int idx, const dPlayerMngr_c::actionParam_c *value); // 80101CC0
 void setRemoteActionSync(int idx, int a, int b); // 80101D0C
 void setRemoteSyncValue(int idx, int value); // 80101D70
 void cacheRemoteState(int idx, int state); // 80101DA8
@@ -486,11 +497,11 @@ void cacheRemoteParams(int idx, const u8 *value); // 80101DAC
 BOOL changeNetPlayerState(int idx, int state); // 80101DB0
 BOOL getRemoteTransform(void *position, void *angle, void *flags, u32 member); // 80101DC0
 BOOL getRemoteStateInfo(void *info, u8 *scene, u8 *b, u32 idx); // 80101DC4
-BOOL cacheUnavailableActorAction(int idx, u8 b, int state, const u8 *param); // 80101DC8
-BOOL cacheOtherSceneAction(int idx, u8 b, int state, const u8 *param); // 80101E3C
+void cacheUnavailableActorAction(int idx, u8 b, int state, const u8 *param); // 80101DC8
+void cacheOtherSceneAction(int idx, u8 b, int state, const u8 *param); // 80101E3C
 BOOL updateActionFieldTasks(int idx, u8 b, int state, const u8 *param); // 80101EB0
 BOOL isSyncValueAhead(int a, int b); // 80102138
-u8 isActionParamLocked(u32 state); // 801021B0
+BOOL isActionParamLocked(u32 state); // 801021B0
 int getWearSound(const dItem::Item *a, const dItem::Item *b); // 801021D0
 void onParticleCollision(nw4r::ef::Particle *obj, u32 kind); // 801022B8
 int getSurfaceEffectKind(const mVec3_c *pos); // 80102434

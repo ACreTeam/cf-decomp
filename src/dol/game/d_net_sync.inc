@@ -773,7 +773,7 @@ void recvPlayerState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     cLib::memCpy(&value, data, sizeof(value));
     u8 state;
     cLib::memCpy(&state, data + 4, sizeof(state));
-    mVec3_c param;
+    dPlayerMngr_c::actionParam_c param;
     cLib::memCpy(&param, data + 5, 9);
     if (state == 0x60) {
         fgMngTask_finishActive(member);
@@ -795,7 +795,7 @@ void recvPlayerState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
             if (c != 0 || dPlayerMgr::isSyncValueAhead(value, x)) {
                 dPlayerMgr::setRemoteActionSync(member, c, x);
             }
-            dPlayerMgr::setNetworkPosition(member, &param);
+            dPlayerMgr::setRemoteActionParams(member, &param);
             dPlayerMgr::changeNetPlayerState(member, state);
             dPlayerMgr::setRemoteSyncValue(member, value);
             if (state == 0xE || state == 0x46 || state == 0x53) {

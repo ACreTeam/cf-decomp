@@ -366,6 +366,7 @@ class dPrivateData_c {
 public:
     // The player's option bits (_83E8, the first byte of a dSaveOption_c; d_save_data getOption).
     dSaveOption_c *getOption() { return (dSaveOption_c *)&_83E8; }
+    const dPersonalID_c *getPersonalID() const { return &mPID; }
     const dItem::Item *getHeldItem() const { return &mEquipment.mHeld; }
 
     // Checks on the current player (dPlayerMgr::Mgr_c::getCurrentPlayer) for the special npcs' appearances (d_npc_mng):
