@@ -11,7 +11,7 @@ public:
     dShadow_hostIO_c() : mHeight(2.0f) {
         mColor.r = 38; mColor.g = 42; mColor.b = 72;
     }
-    virtual ~dShadow_hostIO_c() {} // 801C8950
+    virtual ~dShadow_hostIO_c(); // 801C8950
 };
 class shadowDtcb_c : public dBGCF::dtcb_c {
 public:
@@ -21,15 +21,16 @@ public:
         mHeight = height; mRaiseWater = raiseWater;
     }
     virtual ~shadowDtcb_c() {} // 801C8B24
-    virtual void checkWall(dBGCF::wallList_c *) {} // existing weak copy 800752E0
     virtual void checkFloor(dBGCF::floorList_c *floors); // 801C8704
-    virtual void checkColumn(dBGCF::columnList_c *) {} // existing weak copy 800752E4
     /* 0x04 */ mVec3_c mPos;
     /* 0x10 */ const mMtx_c *mpView;
     /* 0x14 */ dShadow::Projection_s mProjection;
     /* 0x28 */ f32 mHeight;
     /* 0x2C */ bool mRaiseWater;
 };
+
+inline void dShadow_c::drawOpa() { drawPass(1); }
+inline void dShadow_c::drawXlu() { drawPass(0); }
 
 namespace dShadow {
 struct Bounds_c {

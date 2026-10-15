@@ -3247,10 +3247,10 @@ BOOL checkColumn(const mVec3_c *pos, f32 *radius, f32 *height, int *attr) {
 }
 
 // 800752E0
-void fn_800752E0() {}
+void dtcb_c::checkWall(wallList_c *walls) {}
 
 // 800752E4
-void fn_800752E4() {}
+void dtcb_c::checkColumn(columnList_c *columns) {}
 
 // 800752E8
 void check(const mVec3_c *min, const mVec3_c *max, dtcb_c *cb, u32 flags, int mode, int type) {

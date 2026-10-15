@@ -436,9 +436,9 @@ public:
 class dtcb_c {
 public:
     virtual ~dtcb_c() {}
-    virtual void checkWall(wallList_c *walls) = 0;
+    virtual void checkWall(wallList_c *walls); // 800752E0
     virtual void checkFloor(floorList_c *floors) = 0;
-    virtual void checkColumn(columnList_c *columns) = 0;
+    virtual void checkColumn(columnList_c *columns); // 800752E4
 };
 
 // The result of checkLine.
@@ -516,8 +516,6 @@ f32 getEdgeGroundY(const mVec3_c *pos);                                         
 f32 getUnitMinY(int unitX, int unitZ);                                              // 80074F94
 BOOL getColumnAttr(int x, int z, f32 *radius, f32 *height, int *attr);              // 80075114
 BOOL checkColumn(const mVec3_c *pos, f32 *radius, f32 *height, int *attr);          // 800751D8
-void fn_800752E0();                                                              // 800752E0
-void fn_800752E4();                                                              // 800752E4
 void check(const mVec3_c *min, const mVec3_c *max, dtcb_c *cb, u32 flags, int mode, int type); // 800752E8
 
 // Slots.

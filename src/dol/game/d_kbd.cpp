@@ -1139,17 +1139,19 @@ void calcHKB() {
 void resetSetting() {
     sSetting.mKeyboardType = 0x11;
     sSetting.m01 = 0xFA;
-    sSetting.m03 = 0;
+    sSetting.m02 = 0;
     sSetting.m04_7 = 1;
     sSetting.m04_3 = 2;
     sSetting.m05_4 = 1;
+    sSetting.m03 = 0;
     sSetting.m05_0 = 0;
-    sSetting.m02 = 0;
+    sSetting.m04_2 = 0;
+    sSetting.m04_1 = 0;
+    sSetting.m04_0 = 0;
     sSetting.m06 = 0;
     sSetting.m07 = 0;
     sSavedByte = 0;
     sSavedFlag = 0;
-    sSetting.m04_0 = 0;
 }
 
 u8 getSavedByte() {

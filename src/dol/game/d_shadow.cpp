@@ -226,6 +226,17 @@ void dShadow_c::drawQuad(const mVec3_c *pos, f32 size) {
         GXPosition3f32(curved.x, curved.y, curved.z);
     }
 }
+namespace dShadow {
+static inline void writePosition(volatile f32 *fifo, f32 x, f32 y, f32 z) {
+    *fifo = x;
+    *fifo = y;
+    *fifo = z;
+}
+static inline void writeTexCoord(volatile f32 *fifo, f32 s, f32 t) {
+    *fifo = s;
+    *fifo = t;
+}
+}
 // 801C7AFC
 void dShadow_c::drawTexture(const dShadow::Texture_c *shadow, mColor color) {
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
@@ -263,8 +274,10 @@ void dShadow_c::drawTexture(const dShadow::Texture_c *shadow, mColor color) {
     if (vertexCount < dShadow::VERTEX_CAPACITY) {
         static mVec3_c vertices[dShadow::VERTEX_CAPACITY];
         static f32 texCoords[dShadow::VERTEX_CAPACITY][2];
-        mVec3_c left(pos.x - halfWidth, pos.y, pos.z);
-        mVec3_c right(pos.x + halfWidth, pos.y, pos.z);
+        mVec3_c left;
+        left.set(pos.x - halfWidth, pos.y, pos.z);
+        mVec3_c right;
+        right.set(pos.x + halfWidth, pos.y, pos.z);
         u32 index = 0;
         for (u32 i = 0; i < u32(segments + 1); ++i) {
             mVec3_c nextLeft = left, nextRight = right;
@@ -306,12 +319,13 @@ void dShadow_c::drawTexture(const dShadow::Texture_c *shadow, mColor color) {
         GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
         GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
         GXBegin(GX_QUADS, GX_VTXFMT0, vertexCount);
+        volatile f32 *fifo = &WGPIPE.f;
         f32 (*uv)[2] = texCoords;
         for (mVec3_c *p = vertices; p < vertices + vertexCount; ++p, ++uv) {
             mVec3_c curved;
             dWorld::curvePosition(&curved, &mVec3_c(*p));
-            GXPosition3f32(curved.x, curved.y, curved.z);
-            GXTexCoord2f32((*uv)[0], (*uv)[1]);
+            dShadow::writePosition(fifo, curved.x, curved.y, curved.z);
+            dShadow::writeTexCoord(fifo, (*uv)[0], (*uv)[1]);
         }
     }
 }
@@ -446,6 +460,11 @@ void shadowDtcb_c::checkFloor(dBGCF::floorList_c *floors) {
         GXPosition3f32(curvedA.x, curvedA.y, curvedA.z);
     }
 }
+// 801C8950
+dShadow_hostIO_c::~dShadow_hostIO_c() {}
+// 801C8990
+dShadow_c::~dShadow_c() {}
+
 #define SHADOW_CHECK(name, condition) typedef char name[(condition) ? 1 : -1]
 SHADOW_CHECK(roundSize, sizeof(dShadow::Round_c) == 0x1C);
 SHADOW_CHECK(textureSize, sizeof(dShadow::Texture_c) == 0x24);

@@ -63,9 +63,9 @@ public:
     virtual int execute(); // 801C8378
     virtual int draw(); // 801C846C
     virtual int doDelete(); // 801C84B8
-    virtual ~dShadow_c() {} // 801C8990
-    virtual void drawOpa() { drawPass(1); } // 801C8B64
-    virtual void drawXlu() { drawPass(0); } // 801C8B6C
+    virtual ~dShadow_c(); // 801C8990
+    virtual void drawOpa(); // 801C8B64
+    virtual void drawXlu(); // 801C8B6C
     BOOL addRound(const mVec3_c *pos, u32 flags, mAng angle,
                   f32 sizeX, f32 scale, f32 alphaScale, f32 sizeZ, f32 heightScale); // 801C7374
     BOOL addTexture(const mVec3_c *pos, int texture, f32 width, f32 length,
