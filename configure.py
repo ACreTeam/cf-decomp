@@ -1598,6 +1598,15 @@ config.libs = [
         ],
     ),
     Rel(
+        "d_sky_auroraNP",
+        [
+            Object(Matching, "d_sky_auroraNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_sky_auroraNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(Matching, "d_sky_auroraNP/d_sky_aurora.cpp"),
+        ],
+    ),
+    Rel(
         "d_fg_drawNP",
         [
             Object(Matching, "d_fg_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
@@ -2669,15 +2678,6 @@ config.libs = [
             Object(NonMatching, "d_shop_fgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
             Object(NonMatching, "d_shop_fgNP/d_shop_fg.cpp"),
-        ],
-    ),
-    Rel(
-        "d_sky_auroraNP",
-        [
-            Object(NonMatching, "d_sky_auroraNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_sky_auroraNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
-                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_sky_auroraNP/d_sky_aurora.cpp"),
         ],
     ),
     Rel(

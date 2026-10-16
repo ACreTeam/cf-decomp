@@ -13,7 +13,7 @@
 // dBkAttrSearchCand_c             the field's acres with a block flag
 //
 // In net play the 8 town fish are shared through 8 sync records (mRecs, d_play_util's
-// "dPlaySyncHost_c": lbl_8074E840 is the dFishField_c instance).
+// "dPlaySyncHost_c": g_fishField is the dFishField_c instance).
 
 #include <types.h>
 #include <nw4r/g3d.h>
@@ -390,4 +390,4 @@ public:
 
 
 
-// The manager instance is d_play_util's lbl_8074E840.
+// The manager instance is d_play_util's g_fishField.

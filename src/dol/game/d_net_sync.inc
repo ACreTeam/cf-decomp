@@ -3054,11 +3054,11 @@ void applyOpen0(int, const void *, u32, u8) {
 }
 
 void applyOpenInsects(int, const void *, u32, u8) {
-    lbl_8074E83C = 1;
+    g_insectRespawn = 1;
 }
 
 void applyOpenFish(int, const void *, u32, u8) {
-    lbl_8074E844 = 1;
+    g_fishRespawn = 1;
 }
 
 void applyOpenHouseRoom(int, const void *, u32, u8 scene) {

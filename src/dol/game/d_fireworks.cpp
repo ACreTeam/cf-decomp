@@ -150,8 +150,8 @@ void dFireWork_c::execute(BOOL withEffect) {
         break;
     }
     }
-    if (mState != STATE_IDLE && lbl_8074E830 != NULL) {
-        lbl_8074E830->setFireworksBrightness(mBrightness);
+    if (mState != STATE_IDLE && g_sky != NULL) {
+        g_sky->setFireworksBrightness(mBrightness);
     }
 }
 

@@ -10,7 +10,7 @@
 void dStar_c::execute() {
     if (mActive && countDown() == 0) {
         mMtx_c mtx;
-        PSMTXTrans(mtx.mtx, mX, mY - lbl_8074E830->mPos.y, 0.0f);
+        PSMTXTrans(mtx.mtx, mX, mY - g_sky->mPos.y, 0.0f);
         // The original constructs this local, but does not pass it to dEffect::create.
         dEffect_c effect;
         dEffect::create("af_fld_star", &mtx);

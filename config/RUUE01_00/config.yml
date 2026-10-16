@@ -735,6 +735,7 @@ modules:
   name: d_sky_auroraNP
   symbols: config/RUUE01_00/d_sky_auroraNP/symbols.txt
   splits: config/RUUE01_00/d_sky_auroraNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_sky_rainbowNP.rel
   hash: 6ab2746a5450d2a36867ec0a8ffc924fd39b914e
   name: d_sky_rainbowNP

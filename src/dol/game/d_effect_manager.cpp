@@ -124,8 +124,8 @@ void dEffect::calc() {
     pos.x = 0.0f; pos.y = 0.0f; pos.z = 0.0f;
     PSMTXIdentity(view);
     mEf::setCamera(&pos, &view, nearZ, farZ, 2);
-    if (lbl_8074E830) {
-        view = lbl_8074E830->mMtx538;
+    if (g_sky) {
+        view = g_sky->mMtx538;
         pos.x = view._03;
         pos.y = getTranslationY(view);
         pos.z = getTranslationZ(view);
@@ -201,7 +201,7 @@ void dEffect::draw(int creator, int group) {
         if (fog && (fog->mFlags & 1)) info.SetFog(fog->mType, fog->getStart(), fog->getEnd(), fog->getNear(), fog->getFar(), fog->mColor);
         nw4r::g3d::Camera camera = m3d::getCurrentCamera();
         mMtx_c view;
-        if (lbl_8074E830) view = lbl_8074E830->mMtx538;
+        if (g_sky) view = g_sky->mMtx538;
         else camera.GetCameraMtx(&view);
         info.SetViewMtx(view);
         info.SetProjMtx(makeProjection(dCamera_c::getFovy(), dCamera_c::sInstance->getAspect()));

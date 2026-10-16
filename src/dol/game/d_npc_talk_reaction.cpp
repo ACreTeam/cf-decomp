@@ -602,7 +602,7 @@ dItem::Item dAcNpcNml_c::talk_c::findNearItem() {
     }
     npc->mNearItem = dItem::ITEM_ID_NONE;
     npc->mNearDist = 96.0f;
-    BOOL found = lbl_8074E838 != NULL ? lbl_8074E838->forEachActiveActor(findNearItemCb, npc) : FALSE;
+    BOOL found = g_playActorMng != NULL ? g_playActorMng->forEachActiveActor(findNearItemCb, npc) : FALSE;
     if (found) {
         return npc->mNearItem;
     }

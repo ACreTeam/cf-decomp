@@ -114,7 +114,7 @@ int dSky_c::create() {
 
     mStarMgr.init();
     mCreated = true;
-    lbl_8074E830 = this;
+    g_sky = this;
     return ok;
 }
 
@@ -220,7 +220,7 @@ int dSky_c::doDelete() {
     if (!ok) {
         return ok;
     }
-    lbl_8074E830 = NULL;
+    g_sky = NULL;
     return ok;
 }
 

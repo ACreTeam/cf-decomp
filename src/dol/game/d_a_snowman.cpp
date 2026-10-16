@@ -595,7 +595,7 @@ void daSnowMan_c::finalRoll() {}
 
 // 8018312C
 static BOOL isInFallBasin(const mVec3_c *pos) {
-    dFishField_c *field = lbl_8074E840;
+    dFishField_c *field = g_fishField;
     if (field == NULL) {
         return FALSE;
     }
@@ -618,7 +618,7 @@ void daSnowMan_c::initSink() {
     EGG::Quatf q;
     q.set(1.0f, 0.0f, 0.0f, 0.0f);
     mRotSpeed.slerpTo(q, 0.125f, mRotSpeed);
-    lbl_8074E840->scareFish(-1.0f, &mPos);
+    g_fishField->scareFish(-1.0f, &mPos);
     mVec3_c pos = mPos;
     dBGCF::groundChk_c chk(&mPos, dBGCF::LAYER_TOP, 0, 0);
     pos.y = chk.mWaterY;

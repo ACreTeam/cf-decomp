@@ -481,7 +481,7 @@ int dEnvironment_c::execute() {
 
     mColor color;
     mColor black(0x000000FF);
-    dSky_c *sky = lbl_8074E830;
+    dSky_c *sky = g_sky;
     if (sky != NULL) {
         color.lerp(sky->mSkyColor1, sky->mSkyColor0, 0.375f);
     } else {
