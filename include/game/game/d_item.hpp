@@ -406,6 +406,14 @@ enum FtrPartB {
     FTR_PART_B_COUNT, // 0x06
 };
 
+// What a furniture holds on top (BITM::m_ftrTable): 1 is a table for items.
+enum FtrTable {
+    FTR_TABLE_NONE, // 0x00
+    FTR_TABLE_ITEM, // 0x01
+
+    FTR_TABLE_COUNT = 3,
+};
+
 // Furniture lamp type (BITM::m_ftrLamp); 0 is none (getCategoryQ5).
 enum FtrLamp {
     FTR_LAMP_NONE, // 0x00
@@ -742,6 +750,16 @@ struct BITM {
 
     // s8 like getFtrSize: d_hr fn_800B2740 sign-extends a reused value (the extsb after a clrlwi is
     // dropped only within one block).
+    int getFtrFunc() const {
+        int func = m_ftrFunc;
+        return static_cast<u32>(func) < 0x41 ? func : 1;
+    }
+
+    int getFtrTable() const {
+        int table = m_ftrTable;
+        return static_cast<u32>(table) < FTR_TABLE_COUNT ? static_cast<FtrTable>(table) : FTR_TABLE_NONE;
+    }
+
     int getFtrPartA() const {
         int part = static_cast<s8>(m_ftrPartA);
         return static_cast<u32>(part) < FTR_PART_A_COUNT ? static_cast<FtrPartA>(part) : FTR_PART_A_NONE;
@@ -928,6 +946,21 @@ struct NpcMsgBullfest {
     u8 mMsg[6];
 };
 
+// Item name holder: a word with room for one BITM name (17 characters).
+// Vtable 8049E4EC; its functions live in the TU around 8000C14C.
+class name_c : public dScript::Word_c {
+public:
+    // Inline, but never inlined (a by-value Item): d_msg emits a weak copy, and with it the weak vtable.
+    name_c(Item item) { ::setItemName(this, item); } // 8000DD98: the item's name
+    // Inline (weak, kept in the TU around 8000C14C): d_msg's setItemName inlines the dtor (a call of the
+    // dScript::Word_c dtor) and emits a weak vtable copy.
+    virtual ~name_c() {} // 8000DDF4
+    virtual u32 getBufferSize() { return sizeof(mBuffer); } // 8000DE54
+    virtual wchar_t *getBuffer() { return mBuffer; } // 8000DE4C
+
+    wchar_t mBuffer[17]; // 0x24
+}; // sizeof = 0x48
+
 // MWCC emits vtables in reverse class-definition order, so the order of the
 // classes from here to makeToCstmSendData_c sets d_item's .data layout.
 class resLoader_c : public dDvd::brresBank_c {
@@ -937,6 +970,7 @@ public:
     virtual void onLoaded(); // 800C440C
 
     bool isLinked() const { return mIndex != INDEX_NONE; }
+    Item getItem() { return Item(mItemId); }
     void link(u16 index); // 800C3A5C
     void unlink(); // 800C3AC4
     void reset(); // 800C3B10
@@ -1200,21 +1234,6 @@ struct dlBlockList_c {
     u32 mCount; // 0x04
 };
 
-// Item name holder: a word with room for one BITM name (17 characters).
-// Vtable 8049E4EC; its functions live in the TU around 8000C14C.
-class name_c : public dScript::Word_c {
-public:
-    // Inline, but never inlined (a by-value Item): d_msg emits a weak copy, and with it the weak vtable.
-    name_c(Item item) { ::setItemName(this, item); } // 8000DD98: the item's name
-    // Inline (weak, kept in the TU around 8000C14C): d_msg's setItemName inlines the dtor (a call of the
-    // dScript::Word_c dtor) and emits a weak vtable copy.
-    virtual ~name_c() {} // 8000DDF4
-    virtual u32 getBufferSize() { return sizeof(mBuffer); } // 8000DE54
-    virtual wchar_t *getBuffer() { return mBuffer; } // 8000DE4C
-
-    wchar_t mBuffer[17]; // 0x24
-}; // sizeof = 0x48
-
 // Category-specific names (RTTI-only so far). Each adds nothing but its
 // own destructor on top of dString::Word_c.
 // The Q4/Q5/Fashion/Look ones are used only by d_a_npc_nml (inline dtors: weak copies kept there, its
@@ -1268,6 +1287,7 @@ int getNpcMsgFlagged(const dItem::Item &item, int looks, BOOL a); // 800C5454 (c
 // Npc remark of an item for the villager looks (index), 0 if none (d_item.cpp, global scope).
 int getNpcMsgBullfest(const dItem::Item &item, int index); // 800C54EC (callers pass the item's address: a reference)
 BOOL isFurnitureKind(int kind); // 800C2288
+BOOL isKindAvailable(u32 kind);
 
 // The items sent online (d_net).
 u32 countPlEquipSendable();                 // 800C47B0

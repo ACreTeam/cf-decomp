@@ -2072,7 +2072,7 @@ BOOL mvbg_c::set(f32 sizeX, f32 sizeZ, f32 height, const mVec3_c &pos, mAng ang,
 }
 
 // 80072068
-void mvbg_c::onHit(wall_c *wall, int ownerId, f32 dist) {}
+void mvbg_c::onHit(const wall_c *wall, int ownerId, f32 dist) {}
 
 // 8007206C
 mvbgList_c *getMvbgList() {

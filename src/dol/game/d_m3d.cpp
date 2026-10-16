@@ -256,8 +256,8 @@ bool m3d::mdlEx_c::create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulo
     return true;
 }
 
-void m3d::mdlEx_c::setAnm(m3d::banm_c &anm) {
-    setAnm(anm, 0.0f);
+bool m3d::mdlEx_c::setAnm(m3d::banm_c &anm) {
+    return setAnm(anm, 0.0f);
 }
 
 void m3d::mdlEx_c::play() {
@@ -269,12 +269,12 @@ void m3d::mdlEx_c::calcBlend() {
     mCallback.calcBlend();
 }
 
-void m3d::mdlEx_c::setAnm(m3d::banm_c &anm, float blendFrame) {
+bool m3d::mdlEx_c::setAnm(m3d::banm_c &anm, float blendFrame) {
     if (anm.getType() == m3d::banm_c::TYPE_ANM_CHR) {
         mCallback.setAnm(0, static_cast<m3d::anmChr_c *>(&anm), blendFrame);
     }
 
-    bmdl_c::setAnm(anm);
+    return bmdl_c::setAnm(anm);
 }
 
 bool m3d::mdlEx_c::setPartAnm(int idx, m3d::anmChr_c *anm, float blendFrame) {

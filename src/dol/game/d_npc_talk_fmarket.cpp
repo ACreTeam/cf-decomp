@@ -6,6 +6,7 @@
 #include <game/game/d_bgcf.hpp>
 #include <game/game/d_camera.hpp>
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_a_ftr.hpp>
 #include <game/game/d_money.hpp>
 #include <game/game/d_npc.hpp>
 #include <game/game/d_player_mgr.hpp>

@@ -34,7 +34,9 @@ public:
     void makeMtx(mMtx_c *matrix) { makeMtx(matrix, &mPos, mAngle.y.mAngle); }
     const mVec3_c *getPosP() const { return &mPos; }
     const mVec3_c &getPos() const { return mPos; }
+    const mVec3_c &getLastPos() const { return mLastPos; }
     const mAng3_c &getAngle() const { return mAngle; }
+    mAng getAngleY() const { return mAngle.y; }
 
     static const mVec3_c* m_tmpCtPosP;
     static const mAng3_c* m_tmpCtAngleP;

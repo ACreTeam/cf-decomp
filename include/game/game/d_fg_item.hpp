@@ -350,6 +350,8 @@ struct Item {
 
     bool isValid() const { return mId != ITEM_ID_NONE; }
     u16 getId() const { return mId; }
+    // The same furniture turned to direction dir (the id's low 2 bits).
+    Item makeDir(int dir) const { return Item((u16)((getId() & 0xFFFC) | (dir & 3))); }
 
     bool isFg() const {
         return mId < FG_COUNT;

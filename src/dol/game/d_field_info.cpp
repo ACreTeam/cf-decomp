@@ -21,6 +21,7 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_fd_block_type.hpp>
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_a_ftr.hpp>
 
 // Ext item data (0xD000 ids), see d_fg_item.cpp.
 // Units where Racco can appear (RTTI raccoCand_c; vtable 804DF990): units of BG attribute

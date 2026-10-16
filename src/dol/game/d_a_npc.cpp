@@ -17,6 +17,7 @@
 #include <game/game/d_effect.hpp>
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_a_ftr.hpp>
 #include <game/game/d_ground_attr.hpp>
 #include <game/game/d_hand_item.hpp>
 #include <game/game/d_hmn_anm.hpp>

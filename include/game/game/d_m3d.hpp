@@ -58,13 +58,13 @@ namespace m3d {
         mdlEx_c();
         virtual ~mdlEx_c();
 
-        virtual void setAnm(banm_c &anm);
+        virtual bool setAnm(banm_c &anm);
         virtual void play();
         virtual bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount, size_t *pSize);
         virtual bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong anmNum, ulong bufferOption, int viewCount, size_t *pSize);
 
         void calcBlend();
-        void setAnm(banm_c &anm, float blendFrame);
+        bool setAnm(banm_c &anm, float blendFrame);
         bool setPartAnm(int idx, anmChr_c *anm, float blendFrame);
         void setPartNode(u8 idx, const char *nodeName);
         void setPartNode(u8 idx, ulong nodeId);

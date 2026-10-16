@@ -99,7 +99,7 @@ namespace m3d {
 
         virtual scnLeaf_c::leafType_e getType() const { return TYPE_BMDL; }
         virtual void remove();
-        virtual void setAnm(m3d::banm_c &anm);
+        virtual bool setAnm(m3d::banm_c &anm);
         virtual void play();
 
         void setDrawMode(nw4r::g3d::ResMdlDrawMode mode);
@@ -184,8 +184,8 @@ namespace m3d {
         bool create(nw4r::g3d::ResMdl resMdl, mAllocator_c *allocator, ulong bufferOption, int viewCount, size_t *pSize);
         void setCallback(callback_c *callback);
 
-        void setAnm(m3d::banm_c &anm);
-        void setAnm(m3d::banm_c &anm, float blendFrame);
+        bool setAnm(m3d::banm_c &anm);
+        bool setAnm(m3d::banm_c &anm, float blendFrame);
 
         void play();
 

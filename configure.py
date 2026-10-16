@@ -1765,10 +1765,10 @@ config.libs = [
     Rel(
         "d_a_ftrNP",
         [
-            Object(NonMatching, "d_a_ftrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_ftrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_ftrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_ftrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_ftrNP/d_a_ftr.cpp"),
+            Object(Matching, "d_a_ftrNP/d_a_ftr.cpp"),
         ],
     ),
     Rel(

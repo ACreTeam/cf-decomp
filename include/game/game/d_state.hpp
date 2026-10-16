@@ -37,6 +37,7 @@ public:
 
     const char *getName() const { return mpName; }
     Method getCurrentMethod() const { return mCurrentMethod; }
+    bool isCurrentMethod(Method method) const { return mCurrentMethod == method; }
     bool isInitialized() const { return mInitialized; }
     bool isInitializing() const { return mInInitialize; }
 
