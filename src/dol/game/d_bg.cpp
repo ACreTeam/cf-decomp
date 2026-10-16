@@ -1,7 +1,7 @@
-// Background (field model) resources, namespace dBG. .text 800684A4..80069D2C, .ctors,
-// .data 804A5238..804A5508, .bss 805746E0..80575EB0, .sdata 80749BE8..80749C40,
-// .sbss 8074E1D8..8074E1E0, .sdata2 807503D0..807503F8. See include/game/game/d_bg.hpp and
-// notes/d_bg.txt.
+// Background (field model) resources, namespace dBG. .text 800684A4..80069D2C,
+// .ctors, .data 804A5238..804A5508, .bss 805746E0..80575EB0, .sdata
+// 80749BE8..80749C40, .sbss 8074E1D8..8074E1E0, .sdata2 807503D0..807503F8. See
+// include/game/game/d_bg.hpp and notes/d_bg.txt.
 #include <game/game/d_bg.hpp>
 #include <game/game/d_bgcf.hpp>
 #include <game/game/d_field_info.hpp>
@@ -21,17 +21,20 @@
 
 namespace dBG {
 
-// 8074E1D8: a byte cleared by the __sinit before the banks are built; nothing reads it. Like
-// d_footmark's l_flag and d_item's s_debugFlag (whose constructor also registers it for debugging).
+// 8074E1D8: a byte cleared by the __sinit before the banks are built; nothing
+// reads it. Like d_footmark's l_flag and d_item's s_debugFlag (whose
+// constructor also registers it for debugging).
 class flag_c {
-public:
-    flag_c() : mFlag(0) {}
+  public:
+    flag_c() : mFlag(0) {
+    }
 
     u8 mFlag;
 };
 static flag_c l_flag;
 
-// The block model materials whose texture matrix places the block's part of the field textures.
+// The block model materials whose texture matrix places the block's part of the
+// field textures.
 static const char *l_texMtxMats[] = {"m_grass", "m_soil", "m_under_grass"};
 
 // 800684A4
@@ -54,7 +57,8 @@ int bsd_c::getPoint(f32 *x, f32 *z, u32 idx) const {
 }
 
 // 80068574
-int bsd_c::getWorldPoint(f32 *x, f32 *z, int blockX, int blockZ, u32 idx) const {
+int bsd_c::getWorldPoint(f32 *x, f32 *z, int blockX, int blockZ,
+                         u32 idx) const {
     mVec3_c base;
     f32 pointX, pointZ;
     base.x = (int)(f32)(blockX * mFI_UNIT_BASE_SIZE) * UT_X_NUM;
@@ -67,13 +71,15 @@ int bsd_c::getWorldPoint(f32 *x, f32 *z, int blockX, int blockZ, u32 idx) const 
     return id;
 }
 
-// The grass colour (TEV konstant colour 1 of "m_grass") for each season (dScene::getCurrentSeasonBres).
+// The grass colour (TEV konstant colour 1 of "m_grass") for each season
+// (dScene::getCurrentSeasonBres).
 static mColor getGrassColor(u32 season) {
     static const mColor sColors[] = {
-        mColor(0x00, 0x82, 0x40, 0xFF), mColor(0x00, 0x7B, 0x4C, 0xFF), mColor(0x00, 0x70, 0x57, 0xFF),
-        mColor(0x47, 0x7A, 0x3E, 0xFF), mColor(0x7C, 0x77, 0x42, 0xFF), mColor(0x85, 0x67, 0x64, 0xFF),
-        mColor(0x85, 0x61, 0x63, 0xFF), mColor(0x7B, 0x61, 0x57, 0xFF), mColor(0x61, 0x59, 0x58, 0xFF),
-        mColor(0x78, 0xB0, 0xB8, 0xFF),
+        mColor(0x00, 0x82, 0x40, 0xFF), mColor(0x00, 0x7B, 0x4C, 0xFF),
+        mColor(0x00, 0x70, 0x57, 0xFF), mColor(0x47, 0x7A, 0x3E, 0xFF),
+        mColor(0x7C, 0x77, 0x42, 0xFF), mColor(0x85, 0x67, 0x64, 0xFF),
+        mColor(0x85, 0x61, 0x63, 0xFF), mColor(0x7B, 0x61, 0x57, 0xFF),
+        mColor(0x61, 0x59, 0x58, 0xFF), mColor(0x78, 0xB0, 0xB8, 0xFF),
     };
     if (season < 10) {
         return sColors[season];
@@ -165,7 +171,8 @@ BOOL bkLoader_c::load(void *heap, u32 kind, bkLoader_c *same) {
         return TRUE;
     }
     char path[0x28];
-    snprintf(path, sizeof(path), "/BgData/BgModel/%03d_%d.brres", mId, mVariant & 1);
+    snprintf(path, sizeof(path), "/BgData/BgModel/%03d_%d.brres", mId,
+             mVariant & 1);
     mRequested = TRUE;
     return bank_c::load(path, heap, 0);
 }
@@ -205,7 +212,8 @@ bkLoader_c *mdlBank_c::find(int id, u32 variant) {
     for (int z = 0; z < mBlockH; z++) {
         for (int x = 0; x < mBlockW; x++) {
             bkLoader_c *loader = &mLoaders[z][x];
-            if (id == loader->mId && variant == (loader->mVariant & 1) && loader->mRequested) {
+            if (id == loader->mId && variant == (loader->mVariant & 1) &&
+                loader->mRequested) {
                 return loader;
             }
         }
@@ -221,7 +229,9 @@ BOOL mdlBank_c::create(EGG::Heap *heap) {
     BOOL demo = dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_DEMO);
     area_c area;
     area.set(dScene::getScenePlayerPos());
-    m_heap_p = mHeap::createFrmHeap(0x1C8000, heap, "dBG::mdlBank_c::m_heap_p : ＢＧモデルヒープ", 0x20, mHeap::OPT_NONE);
+    m_heap_p = mHeap::createFrmHeap(
+        0x1C8000, heap, "dBG::mdlBank_c::m_heap_p : ＢＧモデルヒープ", 0x20,
+        mHeap::OPT_NONE);
     dFdBase_c *fd = dField::getInfo(0);
     if (m_heap_p != NULL && fd != NULL) {
         mBlockW = fd->mBlockW;
@@ -232,8 +242,10 @@ BOOL mdlBank_c::create(EGG::Heap *heap) {
                 if (block != NULL) {
                     int type = block->getType();
                     BOOL first = area.isIn(x, z) || demo;
-                    mLoaders[z][x].set(type, first ? bkLoader_c::KIND_FIRST : bkLoader_c::KIND_SECOND, x, z,
-                                       block->mFlag);
+                    mLoaders[z][x].set(type,
+                                       first ? bkLoader_c::KIND_FIRST
+                                             : bkLoader_c::KIND_SECOND,
+                                       x, z, block->mFlag);
                 }
             }
         }
@@ -248,7 +260,8 @@ BOOL mdlBank_c::load(u32 kind) {
     for (int z = 0; z < mBlockH; z++) {
         for (int x = 0; x < mBlockW; x++) {
             bkLoader_c *loader = &mLoaders[z][x];
-            ok &= loader->load(m_heap_p, kind, find(loader->mId, loader->mVariant & 1));
+            ok &= loader->load(m_heap_p, kind,
+                               find(loader->mId, loader->mVariant & 1));
         }
     }
     if (ok && !mAllLoaded) {
@@ -267,7 +280,8 @@ BOOL mdlBank_c::load(u32 kind) {
 }
 
 // 80069208
-void mdlBank_c::onAllLoaded() {}
+void mdlBank_c::onAllLoaded() {
+}
 
 // 8006920C
 BOOL mdlBank_c::destroy() {
@@ -301,7 +315,8 @@ bkLoader_c *mdlBank_c::getLoader(u32 blockX, u32 blockZ) {
 
 // 80069308
 BOOL mdlBank_c::isReady() {
-    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR | dScene::SCENE_ATTR_MY_TOWN)) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR |
+                                   dScene::SCENE_ATTR_MY_TOWN)) {
         return mAllLoaded;
     }
     return TRUE;
@@ -327,7 +342,8 @@ u8 *grassBank_c::getTexImage(int type) {
 }
 
 // 800693BC
-packBank_c::packBank_c() : mSeason(-1) {}
+packBank_c::packBank_c() : mSeason(-1) {
+}
 
 // 80069400
 BOOL packBank_c::load(void *heap) {
@@ -340,7 +356,8 @@ BOOL packBank_c::load(void *heap) {
     char path[0x32];
     dSaveTown_c *town = dSaveData_c::getTown();
     u8 grassType = town->mMainField.mGrassType % 3u;
-    snprintf(path, sizeof(path), "/BgData/Pack/pat%dseason%02d.brres", grassType, mSeason);
+    snprintf(path, sizeof(path), "/BgData/Pack/pat%dseason%02d.brres",
+             grassType, mSeason);
     if (bank_c::load(path, heap, 0)) {
         return TRUE;
     }
@@ -449,7 +466,8 @@ void area_c::setView() {
 // 8006989C
 BOOL area_c::isIn(int blockX, int blockZ) const {
     BOOL in = FALSE;
-    if (blockX >= mMinX && blockX <= mMaxX && blockZ >= mMinZ && blockZ <= mMaxZ) {
+    if (blockX >= mMinX && blockX <= mMaxX && blockZ >= mMinZ &&
+        blockZ <= mMaxZ) {
         in = TRUE;
     }
     return in;
@@ -495,15 +513,7 @@ BOOL isBusy() {
 }
 
 // 80069998
-bkLoader_c::~bkLoader_c() {}
-
-// 800699F8
-packBank_c::~packBank_c() {}
-
-// 80069A58
-alwaysBank_c::~alwaysBank_c() {}
-
-// 80069AB8
-roomAlwaysBank_c::~roomAlwaysBank_c() {}
+bkLoader_c::~bkLoader_c() {
+}
 
 } // namespace dBG

@@ -1,5 +1,22 @@
 #pragma once
 
+// The original builds declared strcmp before MSL's string.h (most likely a
+// precompiled/prefix header). MWCC only treats a strcmp first declared inside
+// string.h / cstring / memory.h as the library function that reads but never
+// writes memory (its stdlibfunccheck table), which lets loads be hoisted across
+// the call. Units whose loops show the original's reloads define
+// DECLARE_STRCMP_EARLY (configure.py) to get the plain declaration first:
+// d_bgi_drawNP (dBgiDraw_c::getTexIdx).
+#ifdef DECLARE_STRCMP_EARLY
+#ifdef __cplusplus
+extern "C" {
+#endif
+int strcmp(const char *, const char *);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 #ifdef __cplusplus
 #include <cstdarg>
 #include <cstddef>
@@ -53,7 +70,8 @@ typedef int BOOL;
 #define ARRAY_LAST(a) (a[ARRAY_SIZE(a) - 1])
 #define BIT_FLAG(bit) ((bit) < 0 ? 0 : 1 << (bit))
 #define ROUND_UP(x, align) (((x) + (align) - 1) & (-(align)))
-#define ROUND_UP_PTR(x, align)  ((void*)((((u32)(x)) + (align) - 1) & (~((align) - 1))))
+#define ROUND_UP_PTR(x, align)                                                 \
+    ((void *)((((u32)(x)) + (align) - 1) & (~((align) - 1))))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define CLAMP(v, min, max) ((v) < (min) ? (min) : ((v) > (max) ? (max) : (v)))
@@ -86,7 +104,8 @@ typedef int BOOL;
 // Static assert
 #define GLUE(a, b) a##b
 #define GLUE2(a, b) GLUE(a, b)
-#define STATIC_ASSERT(cond) typedef char GLUE2(static_assertion_failed, __LINE__)[(cond) ? 1 : -1]
+#define STATIC_ASSERT(cond)                                                    \
+    typedef char GLUE2(static_assertion_failed, __LINE__)[(cond) ? 1 : -1]
 #else
 #define NOINLINE
 #define ALIGN(x)
@@ -97,8 +116,8 @@ typedef int BOOL;
 #define STATIC_ASSERT(...)
 #endif
 
-// Shared helpers (from the nw4r import): string / FOURCC / rounding macros and the inline-asm
-// compatibility layer.
+// Shared helpers (from the nw4r import): string / FOURCC / rounding macros and
+// the inline-asm compatibility layer.
 #include <macros.h>
 #include <decomp/compat.h>
 #include <decomp/decomp.h>
