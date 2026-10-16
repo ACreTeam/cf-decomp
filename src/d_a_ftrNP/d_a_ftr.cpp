@@ -32,19 +32,12 @@
 #include <string.h>
 
 enum {
-    ANM_CHR = 0x1,
-    ANM_VIS = 0x2,
-    ANM_PAT = 0x4,
-    ANM_SRT = 0x8,
-    ANM_CLR = 0x10,
-};
-
-enum {
     SCENE_ATTR_NPC_ROOM = dScene::SCENE_ATTR_NPC_HOUSE | dScene::SCENE_ATTR_FTR_ROOM | dScene::SCENE_ATTR_ROOM,
     SCENE_ATTR_SHOP_ROOM = dScene::SCENE_ATTR_SHOP | dScene::SCENE_ATTR_ROOM,
 };
 
-// Unused; referencing anmChrPart_c's vtable puts anmChr_c::getType before anmVis_c::getType.
+// Unused; referencing anmChrPart_c's vtable queues anmChr_c::getType before anmVis_c::getType among the weak
+// functions. The original's equivalent is unknown; d_ftr_manager, with the same headers, must not have it.
 inline void makePartAnm() {
     m3d::anmChrPart_c anm;
 }
@@ -56,7 +49,7 @@ struct initState_c {
 
 // 0xCC
 namespace dAFtr {
-CUSTOM_BASE_PROFILE(A_FTR, daFTR_c, 0x21, 0x5B);
+CUSTOM_BASE_PROFILE(A_FTR, daFTR_c, fProf::A_FTR, fProf::DRAW_ORDER::A_FTR);
 } // namespace dAFtr
 
 // 0x454
@@ -236,7 +229,7 @@ void daFTR_c::saveSwitch() {
         int z;
         if (getUnit(&x, &z, NULL, mAng(0))) {
             u8 scene = dScene::getCurrentScene();
-            if (mProfName == fProf::A_FTR_ACT_03C) {
+            if (mProfName == fProf::FTR_ACC) {
                 setRoomMap(x, z, getLayer(), TRUE, scene);
             } else {
                 setRoomMap(x, z, getLayer(), getSwitch(), scene);
@@ -340,7 +333,7 @@ u32 daFTR_c::getAnmFrameMax(u32 idx, int types) {
 }
 
 // 0xCC8
-void daFTR_c::createAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
+void daFTR_c::createAnm(f32 rate, u32 idx, int playMode, u16 frame, int types) {
     u32 anmIdx = idx & 1;
     nw4r::g3d::ResFile res(mRes.getData());
     nw4r::g3d::ResMdl mdl = getResMdl();
@@ -382,12 +375,12 @@ void daFTR_c::createAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
 }
 
 // 0x1034
-void daFTR_c::changeAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
+void daFTR_c::changeAnm(f32 rate, u32 idx, int playMode, u16 frame, int types) {
     u32 anmIdx = idx & 1;
     nw4r::g3d::ResFile res(mRes.getData());
     if ((types & ANM_VIS) && anmIdx < res.GetResAnmVisNumEntries()) {
         nw4r::g3d::ResAnmVis anm = res.GetResAnmVis(anmIdx);
-        u16 start = frame == 0xFFFF ? mAnmVis.getFrame() : frame;
+        u16 start = frame == ANM_FRAME_CURRENT ? mAnmVis.getFrame() : frame;
         mAnmVis.setAnm(mMdl, anm, (m3d::playMode_e)playMode);
         mAnmVis.setFrame(start);
         mAnmVis.setRate(rate);
@@ -395,7 +388,7 @@ void daFTR_c::changeAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
     }
     if ((types & ANM_CLR) && anmIdx < res.GetResAnmClrNumEntries()) {
         nw4r::g3d::ResAnmClr anm = res.GetResAnmClr(anmIdx);
-        u16 start = frame == 0xFFFF ? mAnmClr.getFrame(0) : frame;
+        u16 start = frame == ANM_FRAME_CURRENT ? mAnmClr.getFrame(0) : frame;
         mAnmClr.setAnm(mMdl, anm, 0, (m3d::playMode_e)playMode);
         mAnmClr.setFrame(start, 0);
         mAnmClr.setRate(rate, 0);
@@ -403,7 +396,7 @@ void daFTR_c::changeAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
     }
     if ((types & ANM_SRT) && anmIdx < res.GetResAnmTexSrtNumEntries()) {
         nw4r::g3d::ResAnmTexSrt anm = res.GetResAnmTexSrt(anmIdx);
-        u16 start = frame == 0xFFFF ? mAnmTexSrt.getFrame(0) : frame;
+        u16 start = frame == ANM_FRAME_CURRENT ? mAnmTexSrt.getFrame(0) : frame;
         mAnmTexSrt.setAnm(mMdl, anm, 0, (m3d::playMode_e)playMode);
         mAnmTexSrt.setFrame(start, 0);
         mAnmTexSrt.setRate(rate, 0);
@@ -411,7 +404,7 @@ void daFTR_c::changeAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
     }
     if ((types & ANM_PAT) && anmIdx < res.GetResAnmTexPatNumEntries()) {
         nw4r::g3d::ResAnmTexPat anm = res.GetResAnmTexPat(anmIdx);
-        u16 start = frame == 0xFFFF ? mAnmTexPat.getFrame(0) : frame;
+        u16 start = frame == ANM_FRAME_CURRENT ? mAnmTexPat.getFrame(0) : frame;
         mAnmTexPat.setAnm(mMdl, anm, 0, (m3d::playMode_e)playMode);
         mAnmTexPat.setFrame(start, 0);
         mAnmTexPat.setRate(rate, 0);
@@ -419,7 +412,7 @@ void daFTR_c::changeAnm(f32 rate, u32 idx, int playMode, u32 frame, int types) {
     }
     if ((types & ANM_CHR) && anmIdx < res.GetResAnmChrNumEntries()) {
         nw4r::g3d::ResAnmChr anm = res.GetResAnmChr(anmIdx);
-        u16 start = frame == 0xFFFF ? mAnmChr.getFrame() : frame;
+        u16 start = frame == ANM_FRAME_CURRENT ? mAnmChr.getFrame() : frame;
         mAnmChr.setAnm(mMdl, anm, (m3d::playMode_e)playMode);
         mAnmChr.setFrame(start);
         mAnmChr.setRate(rate);
@@ -480,7 +473,7 @@ bool daFTR_c::createAnmChr(f32 rate, nw4r::g3d::ResAnmChr anm, int playMode, u32
 
 // 0x1890
 void daFTR_c::changeAnmChr(f32 rate, nw4r::g3d::ResAnmChr anm, int playMode, u32 frame) {
-    u16 start = frame == 0xFFFF ? mAnmChr.getFrame() : frame;
+    u16 start = frame == ANM_FRAME_CURRENT ? mAnmChr.getFrame() : frame;
     mAnmChr.setAnm(mMdl, anm, (m3d::playMode_e)playMode);
     mAnmChr.setFrame(start);
     mAnmChr.setRate(rate);
@@ -1327,7 +1320,7 @@ void daFTR_c::initPos() {
     }
     adjustPos();
     setMtx(TRUE);
-    if (isLamp() && kind == FTR_KIND_PLACED) {
+    if (isGyroid() && kind == FTR_KIND_PLACED) {
         u8 scene = dScene::getCurrentScene();
         int x = worldToUnit(mPos.x);
         int z = worldToUnit(mPos.z);
@@ -1338,7 +1331,7 @@ void daFTR_c::initPos() {
 
 // 0x3F74
 void daFTR_c::onHit(const dBGCF::wall_c *wall, int ownerId, f32 dist) {
-    dActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     dActor_c *owner = (dActor_c *)ownerId;
     if (owner != NULL && owner == player && mState == STATE_WAIT) {
         s16 wallAngle = cM::atan2s(wall->mNormal.x, wall->mNormal.z);
@@ -1606,7 +1599,7 @@ BOOL daFTR_c::getUnit(int *x, int *z, const mVec3_c *ofs, mAng angle) {
         dItem::Item *item = fd->getItem(units.get(i)->x, units.get(i)->z, layer);
         if (item != NULL) {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
-            if (bitm != NULL && bitm->getFtrFunc() != 0) {
+            if (bitm != NULL && bitm->getFtrFunc() != dItem::FTR_FUNC_NONE) {
                 *x = units.get(i)->x;
                 *z = units.get(i)->z;
                 return TRUE;
@@ -1698,13 +1691,13 @@ void daFTR_c::putUnits(bool send, const mVec3_c *ofs, mAng angle, BOOL setDemo) 
             PSMTXMultVec(mtx, l_back, back);
             item = getDirItem(mAng(cM::atan2s(back.x - front.x, back.z - front.z)));
         }
-        BOOL lamp = isLamp();
+        BOOL gyroid = isGyroid();
         int param = getSwitchParam();
         for (u32 i = 0; i < units.mNum; i++) {
             int x = units.get(i)->x;
             int z = units.get(i)->z;
             if (i == 0) {
-                dFTR::putFtr(dScene::getCurrentScene(), x, z, layer, getSwitch(), lamp, param, &dItem::Item(item), send);
+                dFTR::putFtr(dScene::getCurrentScene(), x, z, layer, getSwitch(), gyroid, param, &dItem::Item(item), send);
             }
             dFTR::getUnitMap()->set(this, x, z, layer);
         }
@@ -1746,7 +1739,7 @@ void daFTR_c::removeUnits(BOOL send, BOOL upper) {
 
 // 0x5770
 dItem::Item daFTR_c::getPutItem() {
-    if (getFtrFunc() == 0x28) {
+    if (getFtrFunc() == dItem::FTR_FUNC_MY_DESIGN) {
         return dItem::Item();
     }
     return dItem::Item((u16)mInfo.mItem);
@@ -1777,9 +1770,9 @@ BOOL daFTR_c::isNear(const mVec3_c *pos, const mVec3_c *other, f32 radius, f32 o
 
 // 0x5980
 BOOL daFTR_c::isFree(const mVec3_c *pos, BOOL npc, f32 playerRadius, f32 npcRadius, f32 playerSize, f32 npcSize) {
-    dActor_c *me = dPlayerMgr::getPlayerActor(4);
+    dActor_c *me = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (me != NULL) {
-        for (u32 i = 0; i < 4; i++) {
+        for (u32 i = 0; i < dPlayerMgr::PLAYER_INDEX_COUNT; i++) {
             dActor_c *player = dPlayerMgr::getPlayerActor(i);
             if (player != NULL && me != player && isNear(pos, player->getPosP(), playerRadius, playerSize)) {
                 return FALSE;
@@ -1850,7 +1843,7 @@ BOOL daFTR_c::tryMove(const mVec3_c *dir, mAng angle) {
         return FALSE;
     }
     dFdBase_c *fd = dField::getInfo(0);
-    dActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (getLayer() == 1) {
         return FALSE;
     }
@@ -2175,7 +2168,7 @@ void daFTR_c::nodeCallBack_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anm
     dTime_c now = *dTime_c::getCurrent();
     int min = now.min;
     int hour = now.hour;
-    if (mFtrFunc == 0x17 || mFtrFunc == 0x18 || mFtrFunc == 0x25) {
+    if (mFtrFunc == dItem::FTR_FUNC_WARDROBE || mFtrFunc == dItem::FTR_FUNC_ARMOIRE || mFtrFunc == dItem::FTR_FUNC_GYROID) {
         nw4r::g3d::ResNode node = resMdl.GetResNode(nodeId);
         mMtx_c mtx;
         anmRes->GetRotTrans(&mtx);
@@ -2345,15 +2338,15 @@ BOOL daFTR_c::isLampOn(daFTR_c *ftr) {
 // 0x7384
 BOOL daFTR_c::isMusicFtr(daFTR_c *ftr) {
     if (ftr != NULL) {
-        return ftr->mProfName == fProf::A_FTR_ACT_02D;
+        return ftr->mProfName == fProf::FTR_AUDIO;
     }
     return FALSE;
 }
 
 // 0x73A8
-BOOL daFTR_c::isMusicOn() {
-    if (isMusicFtr(this)) {
-        return getSwitch();
+BOOL daFTR_c::isMusicOn(daFTR_c *ftr) {
+    if (isMusicFtr(ftr)) {
+        return ftr->getSwitch();
     }
     return FALSE;
 }
@@ -2361,7 +2354,7 @@ BOOL daFTR_c::isMusicOn() {
 // 0x73F8
 BOOL daFTR_c::isTvOn() {
     u16 prof = mProfName;
-    if (prof == fProf::A_FTR_ACT_02E || prof == fProf::A_FTR_ACT_02F) {
+    if (prof == fProf::FTR_TV || prof == fProf::FTR_TV_F) {
         return getSwitch();
     }
     return FALSE;
@@ -2369,13 +2362,13 @@ BOOL daFTR_c::isTvOn() {
 
 // 0x7428
 bool daFTR_c::isSeatFtr(daFTR_c *ftr) {
-    BOOL match = ftr->mProfName == fProf::A_FTR_ACT_029 || ftr->mProfName == fProf::A_FTR_ACT_02A;
+    BOOL match = ftr->mProfName == fProf::FTR_CHAIR || ftr->mProfName == fProf::FTR_BED;
     return match;
 }
 
 // 0x7454
-BOOL daFTR_c::isLampFunc() {
-    return getFtrFunc() == 0x25;
+BOOL daFTR_c::isGyroidFunc() {
+    return getFtrFunc() == dItem::FTR_FUNC_GYROID;
 }
 
 // 0x748C
@@ -2389,23 +2382,25 @@ BOOL daFTR_c::isMusic() {
 }
 
 // 0x7494
-BOOL daFTR_c::isFtrFuncD() {
-    return (u32)(getFtrFunc() - 0xD) <= 2;
+BOOL daFTR_c::isSofa() {
+    return (u32)(getFtrFunc() - dItem::FTR_FUNC_SOFA) <= dItem::FTR_FUNC_SOFA_SEAT_ANIM - dItem::FTR_FUNC_SOFA;
 }
 
 // 0x74DC
-BOOL daFTR_c::isFtrFunc10() {
-    return (u32)(getFtrFunc() - 0x10) <= 2;
+BOOL daFTR_c::isChair() {
+    return (u32)(getFtrFunc() - dItem::FTR_FUNC_CHAIR) <= dItem::FTR_FUNC_CHAIR_SEAT_ANIM - dItem::FTR_FUNC_CHAIR;
 }
 
 // 0x7524
-BOOL daFTR_c::isFtrFunc36() {
-    return (u32)(getFtrFunc() - 0x36) <= 2;
+BOOL daFTR_c::isRightyDesk() {
+    return (u32)(getFtrFunc() - dItem::FTR_FUNC_RIGHTY_DESK) <=
+           dItem::FTR_FUNC_RIGHTY_DESK_SEAT_ANIM - dItem::FTR_FUNC_RIGHTY_DESK;
 }
 
 // 0x756C
-BOOL daFTR_c::isFtrFunc39() {
-    return (u32)(getFtrFunc() - 0x39) <= 2;
+BOOL daFTR_c::isLeftyDesk() {
+    return (u32)(getFtrFunc() - dItem::FTR_FUNC_LEFTY_DESK) <=
+           dItem::FTR_FUNC_LEFTY_DESK_SEAT_ANIM - dItem::FTR_FUNC_LEFTY_DESK;
 }
 
 // 0x75B4
@@ -2414,8 +2409,8 @@ bool daFTR_c::isSeat() {
 }
 
 // 0x75B8
-BOOL daFTR_c::isLamp() {
-    return isLampFunc();
+BOOL daFTR_c::isGyroid() {
+    return isGyroidFunc();
 }
 
 // 0x75BC
@@ -2709,9 +2704,11 @@ BOOL daFTR_c::demoCmd(int cmd) {
             sendEvent(STATE_WAIT);
             int category = getCategoryQ5(getItem());
             int func = getFtrFunc();
-            if (category != 3 && func != 0x16 && func != 0x17 && func != 0x18 && func != 0x19 && func != 0x1A &&
-                func != 0x3C && func != 0x1E && func != 0x1F && func != 0x20 && category != 8 && category != 1 &&
-                getFtrFunc() != 0x31) {
+            if (category != 3 && func != dItem::FTR_FUNC_DRESSER && func != dItem::FTR_FUNC_WARDROBE &&
+                func != dItem::FTR_FUNC_ARMOIRE && func != dItem::FTR_FUNC_CLOSET && func != dItem::FTR_FUNC_COOLER &&
+                func != dItem::FTR_FUNC_ATM && func != dItem::FTR_FUNC_AUDIO_UNUSED && func != dItem::FTR_FUNC_AUDIO &&
+                func != dItem::FTR_FUNC_AUDIO_ON_OFF_ANIM && category != 8 && category != 1 &&
+                getFtrFunc() != dItem::FTR_FUNC_PHONE) {
                 if (getLayer() == 1) {
                     int x;
                     int z;
@@ -2797,5 +2794,3 @@ void daFTR_c::drawShadow(const mVec3_c *scale) {
     }
 }
 
-// 0x86A0
-daFTR_c::~daFTR_c() {}

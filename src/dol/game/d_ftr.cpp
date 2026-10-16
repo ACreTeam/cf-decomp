@@ -312,10 +312,10 @@ void recvHoldRelease(int member, int arg) {
     l_lockList.reset(member);
 }
 
-BOOL isLamp(daFTR_c *ftr) {
+BOOL isGyroid(daFTR_c *ftr) {
     alwaysAc_c *ac = ftr;
     if (ac != NULL) {
-        return ac->isLamp();
+        return ac->isGyroid();
     }
     return FALSE;
 }
@@ -326,8 +326,8 @@ void setOwnerSwitch(u8 scene, int x, int z, u8 layer, BOOL arg) {
         alwaysAc_c *ac = getUnitMap()->get(x, z, layer);
         if (ac != NULL) {
             if (!ac->getSwitch()) {
-                if (countSwitch(isLamp, 1) >= 8) {
-                    daFTR_c *ftr = switchOffRandom(isLamp, 0);
+                if (countSwitch(isGyroid, 1) >= 8) {
+                    daFTR_c *ftr = switchOffRandom(isGyroid, 0);
                     if (ftr != NULL) {
                         setSwitch(ftr, 0, 0xFF, arg, TRUE);
                     }
@@ -717,7 +717,7 @@ void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *it
     shape_c shape;
     shape.set(*item);
     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
-    BOOL pole = bitm != NULL ? dItem::clampField(bitm->m_ftrFunc, 0x41, 1) == dItem::FTR_FUNC_FROG_WOMAN_POLE : FALSE;
+    BOOL gyroid = bitm != NULL ? dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) == dItem::FTR_FUNC_GYROID : FALSE;
     for (u32 i = 0; i < shape.getNum(); i++) {
         int ux = x + shape.getOfs(i)[0];
         int uz = z + shape.getOfs(i)[1];
@@ -733,7 +733,7 @@ void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *it
         if (upper && layer == 0) {
             setRoomMap(ux, uz, 1, on, scene);
         }
-        if (pole && on) {
+        if (gyroid && on) {
             removeRoomGyroid(ux, uz, scene);
         }
     }

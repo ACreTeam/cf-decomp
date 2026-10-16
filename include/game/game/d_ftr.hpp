@@ -48,7 +48,7 @@ public:
     virtual dItem::NpcMsg *getNpcMsg() = 0;
     virtual BOOL canSetSwitch() = 0;
     virtual int isMusic() = 0;
-    virtual BOOL isLamp() = 0;
+    virtual BOOL isGyroid() = 0;
     virtual BOOL isSwitchable() { return FALSE; }
     virtual void changeSwitch(u32 sw, BOOL keep) = 0;
 };
@@ -133,6 +133,14 @@ public:
 }; // size 0x100
 
 // A furniture the player moves.
+// hold_c::mSide (dFtrm_c::getDir): the side of the furniture the player pushes against.
+enum {
+    SIDE_FRONT,
+    SIDE_LEFT, // the furniture's own left (+X in its local space)
+    SIDE_BACK,
+    SIDE_RIGHT,
+};
+
 struct hold_c {
     hold_c();
 
@@ -192,7 +200,7 @@ list_c *getList();
 void recvHoldRequest(const void *data, int member);
 void recvHoldAnswer(BOOL ok);
 void recvHoldRelease(int member, int arg);
-BOOL isLamp(daFTR_c *ftr);
+BOOL isGyroid(daFTR_c *ftr);
 void setOwnerSwitch(u8 scene, int x, int z, u8 layer, BOOL arg);
 void recvOwnerSwitch(const void *data);
 void sendOwnerSwitch(u8 scene, int x, int z, u8 layer);

@@ -903,79 +903,79 @@ static const fProfListMg_c::fProfilePtr_c l_profiles[fProf::PROFILE_COUNT] = {
     {&dACockroach::g_profile_A_COCKROACH},
     // fProf::A_FTR
     {&dAFtr::g_profile_A_FTR},
-    // fProf::A_FTR_ACT_022
+    // fProf::FTR_LP
     {&dAFtrAct::g_profile_FTR_LP},
-    // fProf::A_FTR_ACT_023
+    // fProf::FTR_TRG
     {&dAFtrAct::g_profile_FTR_TRG},
-    // fProf::A_FTR_ACT_024
+    // fProf::FTR_SW
     {&dAFtrAct::g_profile_FTR_SW},
-    // fProf::A_FTR_ACT_025
+    // fProf::FTR_SW2
     {&dAFtrAct::g_profile_FTR_SW2},
-    // fProf::A_FTR_ACT_026
+    // fProf::FTR_FLP
     {&dAFtrAct::g_profile_FTR_FLP},
-    // fProf::A_FTR_ACT_027
+    // fProf::FTR2_W
     {&dAFtrAct::g_profile_FTR2_W},
-    // fProf::A_FTR_ACT_028
+    // fProf::FTR_FSW
     {&dAFtrAct::g_profile_FTR_FSW},
-    // fProf::A_FTR_ACT_029
+    // fProf::FTR_CHAIR
     {&dAFtrAct::g_profile_FTR_CHAIR},
-    // fProf::A_FTR_ACT_02A
+    // fProf::FTR_BED
     {&dAFtrAct::g_profile_FTR_BED},
-    // fProf::A_FTR_ACT_02B
+    // fProf::FTR_CHEST
     {&dAFtrAct::g_profile_FTR_CHEST},
-    // fProf::A_FTR_ACT_02C
+    // fProf::FTR_CLOCK
     {&dAFtrAct::g_profile_FTR_CLOCK},
-    // fProf::A_FTR_ACT_02D
+    // fProf::FTR_AUDIO
     {&dAFtrAct::g_profile_FTR_AUDIO},
-    // fProf::A_FTR_ACT_02E
+    // fProf::FTR_TV
     {&dAFtrAct::g_profile_FTR_TV},
-    // fProf::A_FTR_ACT_02F
+    // fProf::FTR_TV_F
     {&dAFtrAct::g_profile_FTR_TV_F},
-    // fProf::A_FTR_ACT_030
+    // fProf::FTR_PCART
     {&dAFtrAct::g_profile_FTR_PCART},
-    // fProf::A_FTR_ACT_031
+    // fProf::FTR_HNW
     {&dAFtrAct::g_profile_FTR_HNW},
-    // fProf::A_FTR_ACT_032
+    // fProf::FTR_FAW
     {&dAFtrAct::g_profile_FTR_FAW},
-    // fProf::A_FTR_ACT_033
+    // fProf::FTR_KILLER
     {&dAFtrAct::g_profile_FTR_KILLER},
-    // fProf::A_FTR_ACT_034
+    // fProf::FTR_CLOTH
     {&dAFtrAct::g_profile_FTR_CLOTH},
-    // fProf::A_FTR_ACT_035
+    // fProf::FTR_MYOBJ
     {&dAFtrAct::g_profile_FTR_MYOBJ},
-    // fProf::A_FTR_ACT_036
+    // fProf::FTR_TAOBJ
     {&dAFtrAct::g_profile_FTR_TAOBJ},
-    // fProf::A_FTR_ACT_037
+    // fProf::FTR_CMPS
     {&dAFtrAct::g_profile_FTR_CMPS},
-    // fProf::A_FTR_ACT_038
+    // fProf::FTR_INSTRUMENT
     {&dAFtrAct::g_profile_FTR_INSTRUMENT},
-    // fProf::A_FTR_ACT_039
+    // fProf::FTR_BK
     {&dAFtrAct::g_profile_FTR_BK},
-    // fProf::A_FTR_ACT_03A
+    // fProf::FTR_METRO
     {&dAFtrAct::g_profile_FTR_METRO},
-    // fProf::A_FTR_ACT_03B
+    // fProf::FTR_CATALOG_CW
     {&dAFtrAct::g_profile_FTR_CATALOG_CW},
-    // fProf::A_FTR_ACT_03C
+    // fProf::FTR_ACC
     {&dAFtrAct::g_profile_FTR_ACC},
-    // fProf::A_FTR_ACT_03D
+    // fProf::FTR_UMB
     {&dAFtrAct::g_profile_FTR_UMB},
-    // fProf::A_FTR_ACT_03E
+    // fProf::FTR_BALLOON
     {&dAFtrAct::g_profile_FTR_BALLOON},
-    // fProf::A_FTR_ACT_03F
+    // fProf::FTR_WINDMILL
     {&dAFtrAct::g_profile_FTR_WINDMILL},
-    // fProf::A_FTR_ACT_040
+    // fProf::FTR_MONITOR
     {&dAFtrAct::g_profile_FTR_MONITOR},
-    // fProf::A_FTR_ACT_041
+    // fProf::FTR_CICADA
     {&dAFtrAct::g_profile_FTR_CICADA},
-    // fProf::A_FTR_ACT_042
+    // fProf::FTR_TEL
     {&dAFtrAct::g_profile_FTR_TEL},
-    // fProf::A_FTR_ACT_043
+    // fProf::FTR_FLOWER
     {&dAFtrAct::g_profile_FTR_FLOWER},
-    // fProf::A_FTR_ACT_044
+    // fProf::FTR_ATM
     {&dAFtrAct::g_profile_FTR_ATM},
-    // fProf::A_FTR_ACT_045
+    // fProf::FTR_BARLEY
     {&dAFtrAct::g_profile_FTR_BARLEY},
-    // fProf::A_FTR_ACT_046
+    // fProf::FTR_ROLLER
     {&dAFtrAct::g_profile_FTR_ROLLER},
     // fProf::FTR_MANAGER
     {&dFtrManager::g_profile_FTR_MANAGER},

@@ -2064,7 +2064,7 @@ BOOL isHouseItem(const dItem::Item *item) {
     case dItem::KIND_FAKE_PICTURE_AFTER:
     case dItem::KIND_UMBRELLA:
     case dItem::KIND_FLOWER:
-        if (dItem::clampField(bitm->m_ftrFunc, 0x41, 1) != 0) {
+        if (dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) != dItem::FTR_FUNC_NONE) {
             res = TRUE;
         }
         break;
@@ -2748,7 +2748,7 @@ void dAnimal_c::applyNewItems(u32 idx, BOOL notify) {
                     case dItem::KIND_FAKE_PICTURE_BEFORE:
                     case dItem::KIND_FAKE_PICTURE_AFTER:
                     case dItem::KIND_UMBRELLA:
-                        if (dItem::clampField(bitm->m_ftrFunc, 0x41, 1) != 0) {
+                        if (dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) != dItem::FTR_FUNC_NONE) {
                             size = bitm->getFtrSize();
                         }
                         break;

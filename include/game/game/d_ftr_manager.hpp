@@ -48,6 +48,13 @@ public:
         STAND_OCCUPIED, // another actor
     };
 
+    // getSeatPos / daFtrBed_c::checkSeat.
+    enum {
+        SEAT_BLOCKED,
+        SEAT_BED,   // the bed itself, or an adjacent bed facing the same way
+        SEAT_FLOOR, // walkable furniture or level floor
+    };
+
     // Ftr/roomAlways.arc: the shared furniture resources.
     class loader_c : public dDvd::arcBank_c {
     public:
@@ -243,9 +250,9 @@ public:
     static BOOL canSit(const mVec3_c *pos, mAng angle);
     static BOOL canStandLeft(const mVec3_c *pos, mAng angle);
     static BOOL canStandRight(const mVec3_c *pos, mAng angle);
-    static BOOL getSeatPos(const mVec3_c *pos, dItem::Item item, const mVec3_c *ofs, mVec3_c *out);
-    static BOOL getSeatPosLeft(const mVec3_c *pos, dItem::Item item, mVec3_c *out);
-    static BOOL getSeatPosRight(const mVec3_c *pos, dItem::Item item, mVec3_c *out);
+    static int getSeatPos(const mVec3_c *pos, mAng angle, const mVec3_c *ofs, mVec3_c *out);
+    static int getSeatPosLeft(const mVec3_c *pos, mAng angle, mVec3_c *out);
+    static int getSeatPosRight(const mVec3_c *pos, mAng angle, mVec3_c *out);
     static void turnOnSeatSound(const mVec3_c *pos);
     static void updateSeatSound(const mVec3_c *pos);
     static void turnOffSeatSound(const mVec3_c *pos);

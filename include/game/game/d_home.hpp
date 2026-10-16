@@ -156,6 +156,7 @@ struct dHome_c {
     bool isPending() const { return _15BB.mRaw & 1; }
     dPersonalID_c *getOwner() { return &mOwner; }
     dItem::Item getLoftFtr() const { return _15B8; }
+    void setLoftFtr(dItem::Item item) { _15B8 = item; }
 
     /* 0x0000 */ dDesign_c mDesign;
     /* 0x0880 */ dPersonalID_c mOwner;

@@ -10,6 +10,7 @@
 #include <game/game/d_ftr.hpp>
 #include <game/game/d_ftr_manager.hpp>
 #include <game/game/d_a_ftr.hpp>
+#include <game/game/d_a_ftr_act.hpp>
 #include <game/game/d_base.hpp>
 #include <game/game/d_catalog.hpp>
 #include <game/game/d_date.hpp>
@@ -46,15 +47,6 @@
 #include <revolution/OS.h>
 #include <stdio.h>
 #include <string.h>
-
-extern "C" {
-BOOL fn_16_5C58(daFTR_c *ftr, const mVec3_c *pos, dItem::Item item, const mVec3_c *ofs, mVec3_c *out);
-void fn_16_A1F0(daFTR_c *ftr);
-BOOL fn_16_D740(daFTR_c *ftr);
-BOOL fn_16_D754(daFTR_c *ftr);
-BOOL fn_16_122CC(daFTR_c *ftr);
-BOOL fn_16_122E0(daFTR_c *ftr);
-}
 
 struct tvEntry_c {
     /* 0x0 */ s16 mProgram;
@@ -677,7 +669,7 @@ dActor_c *dFtrm_c::createFtr(u32 info) {
     if (dFTR::getList()->getFreeNum() != 0) {
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(dItem::Item((u16)(info >> 16)));
         if (bitm != NULL) {
-            if (bitm->getFtrFunc() == 0) {
+            if (bitm->getFtrFunc() == dItem::FTR_FUNC_NONE) {
                 return NULL;
             }
             return dActor_c::construct(bitm->getFtrFuncType(), l_instance, info, NULL, NULL);
@@ -765,7 +757,7 @@ int dFtrm_c::findPutUnit(putUnit_c *out, const mVec3_c *pos, mAng angle, BOOL fr
 
 // 0x190C
 int dFtrm_c::findPutUnit(putUnit_c *out, BOOL frontOnly) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         return findPutUnit(out, &player->mPos, player->mAngle.y.mAngle, frontOnly);
     }
@@ -823,7 +815,7 @@ int dFtrm_c::checkPutRot(u32 *info, int x, int z, int rot, dItem::Item item, u8 
     if (bitm == NULL) {
         return PUT_INVALID;
     }
-    if (bitm->getFtrFunc() == 0) {
+    if (bitm->getFtrFunc() == dItem::FTR_FUNC_NONE) {
         return PUT_INVALID;
     }
     int size = bitm->getFtrSize();
@@ -907,7 +899,7 @@ int dFtrm_c::findPutPos(u32 *info, dItem::Item item, const mVec3_c *pos, mAng an
     if (bitm == NULL) {
         return PUT_INVALID;
     }
-    if (bitm->getFtrFunc() == 0) {
+    if (bitm->getFtrFunc() == dItem::FTR_FUNC_NONE) {
         return PUT_INVALID;
     }
     if (dFTR::getList()->getFreeNum() == 0) {
@@ -958,7 +950,7 @@ int dFtrm_c::findPutPos(u32 *info, dItem::Item item, const mVec3_c *pos, mAng an
 
 // 0x2204
 int dFtrm_c::findPutPos(u32 *info, dItem::Item item, int kind) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         return findPutPos(info, item, &player->mPos, player->getAngleY(), kind);
     }
@@ -1036,12 +1028,12 @@ BOOL dFtrm_c::getDirUnit(int *x, int *z, const mVec3_c *pos, mAng angle, int dir
 int dFtrm_c::getDir(mAng angle) {
     u16 ang = angle.mAngle;
     if (ang >= 0xE000 || ang < 0x2000) {
-        return 0;
+        return dFTR::SIDE_FRONT;
     }
     if (ang < 0x6000) {
-        return 1;
+        return dFTR::SIDE_LEFT;
     }
-    return ang < 0xA000 ? 2 : 3;
+    return ang < 0xA000 ? (int)dFTR::SIDE_BACK : (int)dFTR::SIDE_RIGHT;
 }
 
 // 0x248C
@@ -1077,7 +1069,7 @@ int dFtrm_c::checkStand(const mVec3_c *pos, mAng angle, BOOL snap, BOOL player, 
 // 0x25D8
 BOOL dFtrm_c::canSit(const mVec3_c *pos, mAng angle) {
     daFTR_c *ftr = dFTR::getUnitMap()->get(pos, 0);
-    if (ftr != NULL && (ftr->isFtrFunc36() || ftr->isFtrFunc39())) {
+    if (ftr != NULL && (ftr->isRightyDesk() || ftr->isLeftyDesk())) {
         return FALSE;
     }
     if (checkStand(pos, (s16)angle, FALSE, TRUE, 32.0f) == STAND_OK) {
@@ -1090,10 +1082,10 @@ BOOL dFtrm_c::canSit(const mVec3_c *pos, mAng angle) {
 BOOL dFtrm_c::canStandLeft(const mVec3_c *pos, mAng angle) {
     daFTR_c *ftr = dFTR::getUnitMap()->get(pos, 0);
     if (ftr != NULL) {
-        if (ftr->isFtrFunc39()) {
+        if (ftr->isLeftyDesk()) {
             return FALSE;
         }
-        if (ftr->isFtrFuncD()) {
+        if (ftr->isSofa()) {
             return FALSE;
         }
         if (ftr->getFtrSize() == dItem::FTR_SIZE_1x2) {
@@ -1111,10 +1103,10 @@ BOOL dFtrm_c::canStandLeft(const mVec3_c *pos, mAng angle) {
 BOOL dFtrm_c::canStandRight(const mVec3_c *pos, mAng angle) {
     daFTR_c *ftr = dFTR::getUnitMap()->get(pos, 0);
     if (ftr != NULL) {
-        if (ftr->isFtrFunc36()) {
+        if (ftr->isRightyDesk()) {
             return FALSE;
         }
-        if (ftr->isFtrFuncD()) {
+        if (ftr->isSofa()) {
             return FALSE;
         }
         if (ftr->getFtrSize() == dItem::FTR_SIZE_1x2) {
@@ -1129,24 +1121,24 @@ BOOL dFtrm_c::canStandRight(const mVec3_c *pos, mAng angle) {
 }
 
 // 0x28D8
-BOOL dFtrm_c::getSeatPos(const mVec3_c *pos, dItem::Item item, const mVec3_c *ofs, mVec3_c *out) {
+int dFtrm_c::getSeatPos(const mVec3_c *pos, mAng angle, const mVec3_c *ofs, mVec3_c *out) {
     daFTR_c *ftr = dFTR::getUnitMap()->get(pos, 0);
-    if (ftr != NULL && ftr->mProfName == fProf::A_FTR_ACT_02A) {
-        return fn_16_5C58(ftr, pos, item, ofs, out);
+    if (ftr != NULL && ftr->mProfName == fProf::FTR_BED) {
+        return static_cast<daFtrBed_c *>(ftr)->checkSeat(pos, angle, ofs, out);
     }
-    return FALSE;
+    return SEAT_BLOCKED;
 }
 
 // 0x296C
-BOOL dFtrm_c::getSeatPosLeft(const mVec3_c *pos, dItem::Item item, mVec3_c *out) {
+int dFtrm_c::getSeatPosLeft(const mVec3_c *pos, mAng angle, mVec3_c *out) {
     static mVec3_c l_ofs(-32.0f, 0.0f, 0.0f);
-    return getSeatPos(pos, item, &l_ofs, out);
+    return getSeatPos(pos, angle, &l_ofs, out);
 }
 
 // 0x2A1C
-BOOL dFtrm_c::getSeatPosRight(const mVec3_c *pos, dItem::Item item, mVec3_c *out) {
+int dFtrm_c::getSeatPosRight(const mVec3_c *pos, mAng angle, mVec3_c *out) {
     static mVec3_c l_ofs(32.0f, 0.0f, 0.0f);
-    return getSeatPos(pos, item, &l_ofs, out);
+    return getSeatPos(pos, angle, &l_ofs, out);
 }
 
 // 0x2ACC
@@ -1397,7 +1389,7 @@ void dFtrm_c::appearList_c::clear() {
 // 0x3438
 void dFtrm_c::appearList_c::add(u16 item, const mVec3_c *pos) {
     static const f32 travelFrames = 40.0f;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         appear_c *appear = mAppear;
         for (int i = 0; i < ARRAY_SIZE(mAppear); i++, appear++) {
@@ -1728,7 +1720,7 @@ static f32 l_tvDistSq = lbl_80750524 * lbl_80750524;
 void dFtrm_c::executeTv() {
     mVec3_c pos(0.0f, 0.0f, 0.0f);
     BOOL mute = TRUE;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         mVec3_c playerPos = player->mPos;
         int nearest = -1;
@@ -1748,7 +1740,7 @@ void dFtrm_c::executeTv() {
         if (nearest != -1) {
             daFTR_c *ftr = dFTR::getList()->get(nearest);
             if (ftr != NULL) {
-                fn_16_A1F0(ftr);
+                static_cast<daFtrTv_c *>(ftr)->setNearest();
                 mVec3_c center;
                 ftr->getCenter(&center);
                 mute = FALSE;
@@ -1994,19 +1986,19 @@ void dFtrm_c::current_c::removeAll() {
 BOOL dFtrm_c::switchOn(daFTR_c *ftr) {
     if (ftr != NULL) {
         switch (ftr->getFtrFunc()) {
-        case 0x27:
+        case dItem::FTR_FUNC_MANNEQUIN:
             if (ftr != NULL) {
-                return fn_16_D740(ftr);
+                return daFtrCloth_c::switchOn(ftr);
             }
             break;
-        case 0x2A:
+        case dItem::FTR_FUNC_ACCESSORY:
             if (ftr != NULL) {
                 dItem::Item item = ftr->getItem();
                 const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
-                if (bitm != NULL && (bitm->getHideBone() == 0 || bitm->getHideBone() == 2)) {
+                if (bitm != NULL && (bitm->getHideBone() == dItem::HIDE_BONE_CAP || bitm->getHideBone() == dItem::HIDE_BONE_FULL_MASK)) {
                     ftr->mFlags.mShadow = 0;
                 }
-                return fn_16_122CC(ftr);
+                return daFtrAcc_c::requestOff(ftr);
             }
             break;
         }
@@ -2018,15 +2010,15 @@ BOOL dFtrm_c::switchOn(daFTR_c *ftr) {
 BOOL dFtrm_c::switchOff(daFTR_c *ftr) {
     if (ftr != NULL) {
         switch (ftr->getFtrFunc()) {
-        case 0x27:
+        case dItem::FTR_FUNC_MANNEQUIN:
             if (ftr != NULL) {
-                return fn_16_D754(ftr);
+                return daFtrCloth_c::switchOff(ftr);
             }
             break;
-        case 0x2A:
+        case dItem::FTR_FUNC_ACCESSORY:
             if (ftr != NULL) {
                 ftr->mFlags.mShadow = 1;
-                return fn_16_122E0(ftr);
+                return daFtrAcc_c::requestOn(ftr);
             }
             break;
         }

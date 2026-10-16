@@ -144,6 +144,9 @@ enum Kind {
 // BITM hide-bone/edibility values used when changing equipment or eating.
 // Hide-bone values 0..7 select the hat/hair visibility combinations.
 enum HideBone {
+    HIDE_BONE_CAP = 0,            // caps
+    HIDE_BONE_HAIR_ACCESSORY = 1, // ribbons, hairpins, feathers
+    HIDE_BONE_FULL_MASK = 2,      // diving mask, pumpkin head
     HIDE_BONE_ACCESSORY = 8,
     HIDE_BONE_HAND = 9,
     HIDE_BONE_NONE = 10,
@@ -165,161 +168,233 @@ enum FtrSize {
     FTR_SIZE_COUNT, // 0x03
 };
 
+// BITM::m_ftrFunc: the furniture behaviour; convFtrFunc maps it to the actor profile (d_a_ftr_act class).
 enum FtrFunc {
-    FTR_FUNC_NONE = 0,                        // None / なし
-    FTR_FUNC_SOFA,                            // Sofa / ソファ
-    FTR_FUNC_DRAWER_STORAGE,                  // Drawer storage / 引き出し型収納
-    FTR_FUNC_CABINET_STORAGE,                 // Storage with doors / 扉型収納
-    FTR_FUNC_WHOOPEE_CUSHION,                  // Whoopee cushion / ブーブークッション
-    FTR_FUNC_LIGHT_SWITCH,                    // Light switch / 電気スイッチ
-    FTR_FUNC_FLUORESCENT_LIGHT,               // Fluorescent light / 蛍光灯
-    FTR_FUNC_CANDLE,                          // Candle / ろうそく
-    FTR_FUNC_CHAIR,                           // Chair / イス
-    FTR_FUNC_BED,                             // Bed / ベッド
-    FTR_FUNC_DOGHOUSE,                        // Doghouse / いぬごや
-    FTR_FUNC_MASTER_SWORD,                    // Master Sword / マスターソード
-    FTR_FUNC_ARWING,                          // Arwing / アーウィン
-    FTR_FUNC_TRIFORCE,                        // Triforce / トライフォース
-    FTR_FUNC_BROWN_DRUM,                      // Brown drum / ちゃいろのドラムかん
-    FTR_FUNC_GREEN_DRUM,                      // Green drum / みどりのドラムかん
-    FTR_FUNC_RED_DRUM,                        // Red drum / あかいドラムかん
-    FTR_FUNC_HAZARDOUS_DRUM,                  // Hazardous drum / キケンなドラムかん
-    FTR_FUNC_YELLOW_DRUM,                     // Yellow drum / きいろいドラムかん
-    FTR_FUNC_URINAL,                          // Urinal / だんしようトイレ
-    FTR_FUNC_PIKMIN,                          // Pikmin / ピクミン
-    FTR_FUNC_ROLY_POLY_TOY,                   // Roly-poly toy / おきあがりこぼし
-    FTR_FUNC_PIGGY_BANK,                      // Piggy bank / ちょきんばこ
-    FTR_FUNC_GONG,                            // Gong / ゴング
-    FTR_FUNC_COIN,                            // Coin / コイン
-    FTR_FUNC_PIPE,                            // Pipe / どかん
-    FTR_FUNC_FIRE_FLOWER,                     // Fire Flower / ファイアフラワー
-    FTR_FUNC_FLAG,                            // Flag / はた
-    FTR_FUNC_QUESTION_BLOCK,                  // Question Block / ハテナブロック
-    FTR_FUNC_MUSHROOM,                        // Mushroom / キノコ
-    FTR_FUNC_KOOPA_TROOPA_SHELL,               // Koopa Troopa shell / ノコノコのこうら
-    FTR_FUNC_BULLET_BILL_CANNON,               // Bullet Bill cannon / キラーほうだい
-    FTR_FUNC_PINBALL_MACHINE,                 // Pinball machine / ピンボールだい
-    FTR_FUNC_PUNCHING_BAG,                    // Punching bag / サンドバッグ
-    FTR_FUNC_BOWLING_PIN,                     // Bowling pin / ボウリングのピン
-    FTR_FUNC_BEAR_POLE,                       // Bear pole / トーテムポール・アラ
-    FTR_FUNC_EAGLE_POLE,                      // Eagle pole / トーテムポール・オヤ
-    FTR_FUNC_FROG_WOMAN_POLE,                 // Frog woman pole / トーテムポール・サテ
-    FTR_FUNC_RAVEN_POLE,                      // Raven pole / トーテムポール・マア
-    FTR_FUNC_GLOBE,                           // Globe / ちきゅうぎ
-    FTR_FUNC_1UP_MUSHROOM,                    // 1-Up Mushroom / １ＵＰキノコ
-    FTR_FUNC_SPEED_BAG,                       // Speed bag / スピードバッグ
-    FTR_FUNC_GAS_PUMP,                        // Gas pump / きゅうゆき
-    FTR_FUNC_WHEELBARROW,                     // Wheelbarrow / ておしぐるま
-    FTR_FUNC_WESTERN_TOILET,                  // Western-style toilet / イス型トイレ
-    FTR_FUNC_MASSAGE_CHAIR,                   // Massage chair / マッサージいす
-    FTR_FUNC_LAB_CHAIR,                       // Lab chair / じっけんイス
-    FTR_FUNC_LAB_BENCH,                       // Lab bench / じっけんだい
-    FTR_FUNC_FLYING_SAUCER,                   // Flying saucer / そらとぶえんばん
-    FTR_FUNC_BARBECUE_GRILL,                  // Barbecue grill / バーベキューグリル
-    FTR_FUNC_HAMSTER_CAGE,                    // Hamster cage / ハムスターのかご
-    FTR_FUNC_TORCH,                           // Torch / たいまつ
-    FTR_FUNC_BIRDCAGE,                        // Birdcage / とりかご
-    FTR_FUNC_BONFIRE,                         // Bonfire / たきび
-    FTR_FUNC_CAMPFIRE,                        // Campfire / キャンプファイア
-    FTR_FUNC_SUNKEN_HEARTH,                   // Sunken hearth / いろり
-    FTR_FUNC_POTBELLY_STOVE,                  // Potbelly stove / ダルマストーブ
-    FTR_FUNC_SPACE_HEATER,                    // Space heater / ストーブ
-    FTR_FUNC_FIREPLACE,                       // Fireplace / だんろ
-    FTR_FUNC_POOL,                            // Pool / プール
-    FTR_FUNC_FIRE_BAR,                        // Fire Bar / ファイアバー
-    FTR_FUNC_OLD_SEWING_MACHINE,              // Old sewing machine / ふるいミシン
-    FTR_FUNC_STAR,                            // Star / スター
-    FTR_FUNC_MERRY_GO_ROUND,                  // Merry-go-round / メリーゴーランド
-    FTR_FUNC_METROID,                         // Metroid / メトロイド
-    FTR_FUNC_UPRIGHT_ARCADE_MACHINE,          // Upright arcade machine / アップライトゲームき
-    FTR_FUNC_LAWN_MOWER,                      // Lawn mower / しばかりき
-    FTR_FUNC_MERLION,                         // Merlion / マーライオン
-    FTR_FUNC_MODEL_RAILWAY,                   // Model railway / てつどうもけい
-    FTR_FUNC_FAN,                             // Fan / せんぷうき
-    FTR_FUNC_SPRINKLER,                       // Sprinkler / スプリンクラー
-    FTR_FUNC_TWIN_TUB_WASHER,                 // Twin-tub washing machine / にそうしきせんたくき
-    FTR_FUNC_AUTOMATIC_WASHER,                // Fully automatic washing machine / ぜんじどうせんたくき
-    FTR_FUNC_BLENDER,                         // Blender / ミキサー
-    FTR_FUNC_OUTDOOR_BATH,                    // Outdoor bath / ろてんぶろ
-    FTR_FUNC_AMAZING_MACHINE,                 // Amazing machine / すごそうなキカイ
-    FTR_FUNC_PEEING_BOY_STATUE,               // Peeing boy statue / しょうべんこぞう
-    FTR_FUNC_COOKTOP,                         // Cooktop / クッキングヒーター
-    FTR_FUNC_KITCHEN_SINK,                    // Kitchen sink / キッチンのシンク
-    FTR_FUNC_DRUM_WASHER,                     // Drum-type washing machine / ドラムしきせんたくき
-    FTR_FUNC_MICROWAVE,                       // Microwave / でんしレンジ
-    FTR_FUNC_HONEYBEE,                        // Honeybee / ミツバチ
-    FTR_FUNC_HORNET,                          // Hornet / スズメバチ
-    FTR_FUNC_BROWN_CICADA,                    // Brown cicada / アブラゼミ
-    FTR_FUNC_ROBUST_CICADA,                   // Robust cicada / ミンミンゼミ
-    FTR_FUNC_EVENING_CICADA,                  // Evening cicada / ヒグラシ
-    FTR_FUNC_MOSQUITO,                        // Mosquito / カ
-    FTR_FUNC_FLY,                             // Fly / ハエ
-    FTR_FUNC_REFRIGERATOR,                    // Refrigerator / れいぞうこ
-    FTR_FUNC_TREASURE_CHEST,                  // Treasure chest / たからばこ
-    FTR_FUNC_MUMMY_COFFIN,                    // Mummy's coffin / ミイラのひつぎ
-    FTR_FUNC_SAFE,                            // Safe / きんこ
-    FTR_FUNC_VICTORY_DARUMA,                  // Victory daruma / ひっしょうダルマ
-    FTR_FUNC_CLOTHING_CASE,                   // Clothing case / ファッションケース
-    FTR_FUNC_DARUMA,                          // Daruma / ダルマ
-    FTR_FUNC_MINI_DARUMA,                     // Mini daruma / ミニダルマ
-    FTR_FUNC_NINJA_SWORD,                     // Ninja sword / にんじゃとう
-    FTR_FUNC_COMPUTER,                        // Computer / パソコン
-    FTR_FUNC_WOODEN_CHAIR,                    // Wooden chair / 木のイス
-    FTR_FUNC_STANDARD_CLOCK,                 // Standard clock / 通常時計
-    FTR_FUNC_PENDULUM_CLOCK,                 // Pendulum clock / 振り子時計
-    FTR_FUNC_CUCKOO_CLOCK,                   // Cuckoo clock / 鳩時計
-    FTR_FUNC_CHIMING_CLOCK,                  // Chiming clock / ボンボン時計
-    FTR_FUNC_TV,                             // Television / テレビ
-    FTR_FUNC_TV_VCR_COMBO,                    // TV/VCR combo / テレビデオ
-    FTR_FUNC_F_ZERO,                         // F-Zero / エフゼロ
-    FTR_FUNC_JACK_IN_THE_BOX,                 // Jack-in-the-box / ビックリばこ
-    FTR_FUNC_VINYL_RECORD_PLAYER,             // Vinyl record player / アナログレコードプレイヤー
-    FTR_FUNC_MUSIC_BOX,                       // Music box / オルゴール
-    FTR_FUNC_DEER_SCARE,                      // Deer scare / ししおどし
-    FTR_FUNC_DRINKING_BIRD,                   // Drinking bird / みずのみドリ
-    FTR_FUNC_CLACKER_TOY,                     // Clacker toy / アメリカンクラッカー
-    FTR_FUNC_TRASH_CAN,                       // Trash can / ごみばこ
-    FTR_FUNC_MATRYOSHKA,                      // Matryoshka nesting doll / マトリョーシカ
-    FTR_FUNC_TOASTER,                         // Toaster / トースター
-    FTR_FUNC_CANDY_MACHINE,                   // Candy machine / キャンディマシン
-    FTR_FUNC_CASH_REGISTER,                   // Cash register / レジスター
-    FTR_FUNC_UNKNOWN_MACHINE,                // Unknown machine / よくわからないキカイ
-    FTR_FUNC_VISION_TESTER,                   // Vision tester / しりょくそくていき
-    FTR_FUNC_CRADLE,                          // Cradle / ゆりかご
-    FTR_FUNC_BOWLING_BALL_RETURN,             // Bowling ball return / ボウリングリターン
-    FTR_FUNC_METRONOME,                       // Metronome / メトロノーム
-    FTR_FUNC_WHEAT_FIELD,                     // Wheat field / むぎばたけ
-    FTR_FUNC_GRAMOPHONE,                      // Gramophone / ちくおんき
-    FTR_FUNC_TAPE_RECORDER,                   // Tape recorder / テープレコーダー
-    FTR_FUNC_RETRO_STEREO,                    // Retro stereo / レトロなステレオ
-    FTR_FUNC_DICE_STEREO,                     // Dice stereo / サイコロコンポ
-    FTR_FUNC_RADIO_CASSETTE_PLAYER,           // Radio cassette player / ラジカセ
-    FTR_FUNC_CD_RADIO_CASSETTE_PLAYER,        // CD radio cassette player / CDラジカセ
-    FTR_FUNC_DUAL_CASSETTE_BOOMBOX,           // Dual-cassette boombox / ダブルラジカセ
-    FTR_FUNC_ROBO_STEREO,                     // Robo stereo / ロボコンポ
-    FTR_FUNC_BABY_CARRIAGE,                   // Baby carriage / うばぐるま
-    FTR_FUNC_ROBO_DRESSER,                    // Robo dresser / ロボタンス
-    FTR_FUNC_LOCKER,                          // Locker / ロッカー
-    FTR_FUNC_REGAL_STYLE_BED,                 // Regal-style bed / ロイヤル系ベッド
-    FTR_FUNC_LONG_LOCUST,                     // Long locust / ショウリョウバッタ
-    FTR_FUNC_MOLE_CRICKET,                    // Mole cricket / オケラ
-    FTR_FUNC_WALKER_CICADA,                   // Walker cicada / ツクツクホウシ
-    FTR_FUNC_WHEELED_FURNITURE,               // Furniture with casters / ローラー付き家具
-    FTR_FUNC_BATHTUB,                         // Bathtub / ゆぶね
-    FTR_FUNC_ROCKET,                          // Rocket / ロケット
-    FTR_FUNC_MOUTH_OF_TRUTH,                  // Mouth of Truth / しんじつのくち
-    FTR_FUNC_SHAVED_ICE_MAKER,                // Shaved ice maker / かきごおりき
-    FTR_FUNC_YOSHI_EGG,                       // Yoshi's egg / ヨッシーのタマゴ
-    FTR_FUNC_BIRTHDAY_CAKE,                   // Birthday cake / バースデーケーキ
-    FTR_FUNC_FORTUNE_TELLING_PHONE,           // Fortune-telling phone / うらないテレフォン
-    FTR_FUNC_SNOW_GLOBE,                      // Snow globe / スノードーム
-    FTR_FUNC_WHITE_KATANA,                    // White katana / しろいにほんとう
-    FTR_FUNC_PAPIER_MACHE_TIGER,               // Papier-mache tiger / はりこのとら
-    FTR_FUNC_HIBACHI,                         // Hibachi / ひばち
-    FTR_FUNC_MOUNTAIN_BIKE,                   // Mountain bike / マウンテンバイク
-    FTR_FUNC_COOLER_BAG,                      // Cooler bag / クーラーバック
+    FTR_FUNC_NONE = 0x00,               // not furniture
+    FTR_FUNC_PLAIN = 0x01,              // no behaviour (most furniture, shells, fossils)
+    FTR_FUNC_INSECT = 0x02,             // insects and fish (looping animation)
+    FTR_FUNC_TOY = 0x03,                // plays its animation once when touched (globe, cradle)
+    FTR_FUNC_PUNCHING_BAG = 0x04,       // sandbag, speed bag, paper tiger
+    FTR_FUNC_SWITCH = 0x05,             // on/off (train set, deluxe range)
+    FTR_FUNC_SPINNER = 0x06,            // spins down when switched off (fan, mixer, washer)
+    FTR_FUNC_FLIP = 0x07,               // opens and closes (matryoshka, flagpole)
+    FTR_FUNC_TWO_WAY = 0x08,            // two animations (dharma, ninja sword, treasure chest)
+    FTR_FUNC_FLIP_LOOP = 0x09,          // opens, loops, closes (washer/dryer, music box)
+    FTR_FUNC_FIRE_WATER = 0x0A,         // sprinkler, sink, candle, space heater
+    FTR_FUNC_TOILET = 0x0B,             // men's toilet
+    FTR_FUNC_COMPUTER = 0x0C,
+    FTR_FUNC_SOFA = 0x0D,               // sofas and armchairs: sat on from the front
+    FTR_FUNC_SOFA_ANIM = 0x0E,          // animates continuously
+    FTR_FUNC_SOFA_SEAT_ANIM = 0x0F,     // animates while sat on (lab chair, massage chair)
+    FTR_FUNC_CHAIR = 0x10,              // chairs and benches: sat on from the front or the sides
+    FTR_FUNC_CHAIR_ANIM = 0x11,
+    FTR_FUNC_CHAIR_SEAT_ANIM = 0x12,
+    FTR_FUNC_BED = 0x13,
+    FTR_FUNC_BED_ANIM = 0x14,
+    FTR_FUNC_BED_SEAT_ANIM = 0x15,      // lab bench
+    FTR_FUNC_DRESSER = 0x16,            // storage, chest animation A
+    FTR_FUNC_WARDROBE = 0x17,           // storage, chest animation B (wardrobes, fridges)
+    FTR_FUNC_ARMOIRE = 0x18,            // storage, chest animation C
+    FTR_FUNC_CLOSET = 0x19,             // clothes closet
+    FTR_FUNC_COOLER = 0x1A,
+    FTR_FUNC_CLOCK_CHIME = 0x1B,        // chimes the hour (cabin clock, egg clock)
+    FTR_FUNC_CLOCK_SYNC = 0x1C,         // animation follows the time (classic clock)
+    FTR_FUNC_CLOCK_ANIM = 0x1D,         // looping animation
+    FTR_FUNC_AUDIO_UNUSED = 0x1E,
+    FTR_FUNC_AUDIO = 0x1F,              // phonograph, tape deck, boom box
+    FTR_FUNC_AUDIO_ON_OFF_ANIM = 0x20,  // separate on/off animations (stereos, jukebox)
+    FTR_FUNC_TV = 0x21,
+    FTR_FUNC_TV_VCR = 0x22,
+    FTR_FUNC_CART = 0x23,               // rolls when pushed from the front or back (lawn mower, stroller)
+    FTR_FUNC_CART_SIDE = 0x24,          // rolls when pushed from the sides
+    FTR_FUNC_GYROID = 0x25,
+    FTR_FUNC_CATALOG = 0x26,            // wallpaper/carpet catalog preview
+    FTR_FUNC_MANNEQUIN = 0x27,          // clothing on a mannequin
+    FTR_FUNC_MY_DESIGN = 0x28,          // a player's design
+    FTR_FUNC_ABLE_DESIGN = 0x29,        // an Able Sisters design
+    FTR_FUNC_ACCESSORY = 0x2A,          // caps and accessories on a stand
+    FTR_FUNC_UMBRELLA = 0x2B,
+    FTR_FUNC_FLOWER = 0x2C,
+    FTR_FUNC_INSTRUMENT = 0x2D,
+    FTR_FUNC_COMPASS = 0x2E,
+    FTR_FUNC_PIGGY_BANK = 0x2F,
+    FTR_FUNC_METRONOME = 0x30,
+    FTR_FUNC_PHONE = 0x31,              // lovely phone (tells fortunes)
+    FTR_FUNC_SINGING_INSECT = 0x32,     // cicadas, crickets, frog
+    FTR_FUNC_CANNON = 0x33,
+    FTR_FUNC_BALLOON = 0x34,
+    FTR_FUNC_PINWHEEL = 0x35,
+    FTR_FUNC_RIGHTY_DESK = 0x36,        // sat on from the left side
+    FTR_FUNC_RIGHTY_DESK_ANIM = 0x37,
+    FTR_FUNC_RIGHTY_DESK_SEAT_ANIM = 0x38,
+    FTR_FUNC_LEFTY_DESK = 0x39,         // sat on from the right side
+    FTR_FUNC_LEFTY_DESK_ANIM = 0x3A,
+    FTR_FUNC_LEFTY_DESK_SEAT_ANIM = 0x3B,
+    FTR_FUNC_ATM = 0x3C,
+    FTR_FUNC_WHEAT_FIELD = 0x3D,
+    FTR_FUNC_BAMBOO_GRASS = 0x3E,       // Tanabata wish
+    FTR_FUNC_ROLLER = 0x3F,             // makes a sound when pushed (wagon, chalk board)
+    FTR_FUNC_CLOCK_CUCKOO = 0x40,
 
-    FTR_FUNC_NUM
+    FTR_FUNC_COUNT = 0x41,
+};
+
+// BITM::m_ftrSfx: the furniture sound category.
+enum FtrSfx {
+    FTR_SFX_NONE = 0,                        // None / なし
+    FTR_SFX_SOFA,                            // Sofa / ソファ
+    FTR_SFX_DRAWER_STORAGE,                  // Drawer storage / 引き出し型収納
+    FTR_SFX_CABINET_STORAGE,                 // Storage with doors / 扉型収納
+    FTR_SFX_WHOOPEE_CUSHION,                  // Whoopee cushion / ブーブークッション
+    FTR_SFX_LIGHT_SWITCH,                    // Light switch / 電気スイッチ
+    FTR_SFX_FLUORESCENT_LIGHT,               // Fluorescent light / 蛍光灯
+    FTR_SFX_CANDLE,                          // Candle / ろうそく
+    FTR_SFX_CHAIR,                           // Chair / イス
+    FTR_SFX_BED,                             // Bed / ベッド
+    FTR_SFX_DOGHOUSE,                        // Doghouse / いぬごや
+    FTR_SFX_MASTER_SWORD,                    // Master Sword / マスターソード
+    FTR_SFX_ARWING,                          // Arwing / アーウィン
+    FTR_SFX_TRIFORCE,                        // Triforce / トライフォース
+    FTR_SFX_BROWN_DRUM,                      // Brown drum / ちゃいろのドラムかん
+    FTR_SFX_GREEN_DRUM,                      // Green drum / みどりのドラムかん
+    FTR_SFX_RED_DRUM,                        // Red drum / あかいドラムかん
+    FTR_SFX_HAZARDOUS_DRUM,                  // Hazardous drum / キケンなドラムかん
+    FTR_SFX_YELLOW_DRUM,                     // Yellow drum / きいろいドラムかん
+    FTR_SFX_URINAL,                          // Urinal / だんしようトイレ
+    FTR_SFX_PIKMIN,                          // Pikmin / ピクミン
+    FTR_SFX_ROLY_POLY_TOY,                   // Roly-poly toy / おきあがりこぼし
+    FTR_SFX_PIGGY_BANK,                      // Piggy bank / ちょきんばこ
+    FTR_SFX_GONG,                            // Gong / ゴング
+    FTR_SFX_COIN,                            // Coin / コイン
+    FTR_SFX_PIPE,                            // Pipe / どかん
+    FTR_SFX_FIRE_FLOWER,                     // Fire Flower / ファイアフラワー
+    FTR_SFX_FLAG,                            // Flag / はた
+    FTR_SFX_QUESTION_BLOCK,                  // Question Block / ハテナブロック
+    FTR_SFX_MUSHROOM,                        // Mushroom / キノコ
+    FTR_SFX_KOOPA_TROOPA_SHELL,               // Koopa Troopa shell / ノコノコのこうら
+    FTR_SFX_BULLET_BILL_CANNON,               // Bullet Bill cannon / キラーほうだい
+    FTR_SFX_PINBALL_MACHINE,                 // Pinball machine / ピンボールだい
+    FTR_SFX_PUNCHING_BAG,                    // Punching bag / サンドバッグ
+    FTR_SFX_BOWLING_PIN,                     // Bowling pin / ボウリングのピン
+    FTR_SFX_BEAR_POLE,                       // Bear pole / トーテムポール・アラ
+    FTR_SFX_EAGLE_POLE,                      // Eagle pole / トーテムポール・オヤ
+    FTR_SFX_FROG_WOMAN_POLE,                 // Frog woman pole / トーテムポール・サテ
+    FTR_SFX_RAVEN_POLE,                      // Raven pole / トーテムポール・マア
+    FTR_SFX_GLOBE,                           // Globe / ちきゅうぎ
+    FTR_SFX_1UP_MUSHROOM,                    // 1-Up Mushroom / １ＵＰキノコ
+    FTR_SFX_SPEED_BAG,                       // Speed bag / スピードバッグ
+    FTR_SFX_GAS_PUMP,                        // Gas pump / きゅうゆき
+    FTR_SFX_WHEELBARROW,                     // Wheelbarrow / ておしぐるま
+    FTR_SFX_WESTERN_TOILET,                  // Western-style toilet / イス型トイレ
+    FTR_SFX_MASSAGE_CHAIR,                   // Massage chair / マッサージいす
+    FTR_SFX_LAB_CHAIR,                       // Lab chair / じっけんイス
+    FTR_SFX_LAB_BENCH,                       // Lab bench / じっけんだい
+    FTR_SFX_FLYING_SAUCER,                   // Flying saucer / そらとぶえんばん
+    FTR_SFX_BARBECUE_GRILL,                  // Barbecue grill / バーベキューグリル
+    FTR_SFX_HAMSTER_CAGE,                    // Hamster cage / ハムスターのかご
+    FTR_SFX_TORCH,                           // Torch / たいまつ
+    FTR_SFX_BIRDCAGE,                        // Birdcage / とりかご
+    FTR_SFX_BONFIRE,                         // Bonfire / たきび
+    FTR_SFX_CAMPFIRE,                        // Campfire / キャンプファイア
+    FTR_SFX_SUNKEN_HEARTH,                   // Sunken hearth / いろり
+    FTR_SFX_POTBELLY_STOVE,                  // Potbelly stove / ダルマストーブ
+    FTR_SFX_SPACE_HEATER,                    // Space heater / ストーブ
+    FTR_SFX_FIREPLACE,                       // Fireplace / だんろ
+    FTR_SFX_POOL,                            // Pool / プール
+    FTR_SFX_FIRE_BAR,                        // Fire Bar / ファイアバー
+    FTR_SFX_OLD_SEWING_MACHINE,              // Old sewing machine / ふるいミシン
+    FTR_SFX_STAR,                            // Star / スター
+    FTR_SFX_MERRY_GO_ROUND,                  // Merry-go-round / メリーゴーランド
+    FTR_SFX_METROID,                         // Metroid / メトロイド
+    FTR_SFX_UPRIGHT_ARCADE_MACHINE,          // Upright arcade machine / アップライトゲームき
+    FTR_SFX_LAWN_MOWER,                      // Lawn mower / しばかりき
+    FTR_SFX_MERLION,                         // Merlion / マーライオン
+    FTR_SFX_MODEL_RAILWAY,                   // Model railway / てつどうもけい
+    FTR_SFX_FAN,                             // Fan / せんぷうき
+    FTR_SFX_SPRINKLER,                       // Sprinkler / スプリンクラー
+    FTR_SFX_TWIN_TUB_WASHER,                 // Twin-tub washing machine / にそうしきせんたくき
+    FTR_SFX_AUTOMATIC_WASHER,                // Fully automatic washing machine / ぜんじどうせんたくき
+    FTR_SFX_BLENDER,                         // Blender / ミキサー
+    FTR_SFX_OUTDOOR_BATH,                    // Outdoor bath / ろてんぶろ
+    FTR_SFX_AMAZING_MACHINE,                 // Amazing machine / すごそうなキカイ
+    FTR_SFX_PEEING_BOY_STATUE,               // Peeing boy statue / しょうべんこぞう
+    FTR_SFX_COOKTOP,                         // Cooktop / クッキングヒーター
+    FTR_SFX_KITCHEN_SINK,                    // Kitchen sink / キッチンのシンク
+    FTR_SFX_DRUM_WASHER,                     // Drum-type washing machine / ドラムしきせんたくき
+    FTR_SFX_MICROWAVE,                       // Microwave / でんしレンジ
+    FTR_SFX_HONEYBEE,                        // Honeybee / ミツバチ
+    FTR_SFX_HORNET,                          // Hornet / スズメバチ
+    FTR_SFX_BROWN_CICADA,                    // Brown cicada / アブラゼミ
+    FTR_SFX_ROBUST_CICADA,                   // Robust cicada / ミンミンゼミ
+    FTR_SFX_EVENING_CICADA,                  // Evening cicada / ヒグラシ
+    FTR_SFX_MOSQUITO,                        // Mosquito / カ
+    FTR_SFX_FLY,                             // Fly / ハエ
+    FTR_SFX_REFRIGERATOR,                    // Refrigerator / れいぞうこ
+    FTR_SFX_TREASURE_CHEST,                  // Treasure chest / たからばこ
+    FTR_SFX_MUMMY_COFFIN,                    // Mummy's coffin / ミイラのひつぎ
+    FTR_SFX_SAFE,                            // Safe / きんこ
+    FTR_SFX_VICTORY_DARUMA,                  // Victory daruma / ひっしょうダルマ
+    FTR_SFX_CLOTHING_CASE,                   // Clothing case / ファッションケース
+    FTR_SFX_DARUMA,                          // Daruma / ダルマ
+    FTR_SFX_MINI_DARUMA,                     // Mini daruma / ミニダルマ
+    FTR_SFX_NINJA_SWORD,                     // Ninja sword / にんじゃとう
+    FTR_SFX_COMPUTER,                        // Computer / パソコン
+    FTR_SFX_WOODEN_CHAIR,                    // Wooden chair / 木のイス
+    FTR_SFX_STANDARD_CLOCK,                 // Standard clock / 通常時計
+    FTR_SFX_PENDULUM_CLOCK,                 // Pendulum clock / 振り子時計
+    FTR_SFX_CUCKOO_CLOCK,                   // Cuckoo clock / 鳩時計
+    FTR_SFX_CHIMING_CLOCK,                  // Chiming clock / ボンボン時計
+    FTR_SFX_TV,                             // Television / テレビ
+    FTR_SFX_TV_VCR_COMBO,                    // TV/VCR combo / テレビデオ
+    FTR_SFX_F_ZERO,                         // F-Zero / エフゼロ
+    FTR_SFX_JACK_IN_THE_BOX,                 // Jack-in-the-box / ビックリばこ
+    FTR_SFX_VINYL_RECORD_PLAYER,             // Vinyl record player / アナログレコードプレイヤー
+    FTR_SFX_MUSIC_BOX,                       // Music box / オルゴール
+    FTR_SFX_DEER_SCARE,                      // Deer scare / ししおどし
+    FTR_SFX_DRINKING_BIRD,                   // Drinking bird / みずのみドリ
+    FTR_SFX_CLACKER_TOY,                     // Clacker toy / アメリカンクラッカー
+    FTR_SFX_TRASH_CAN,                       // Trash can / ごみばこ
+    FTR_SFX_MATRYOSHKA,                      // Matryoshka nesting doll / マトリョーシカ
+    FTR_SFX_TOASTER,                         // Toaster / トースター
+    FTR_SFX_CANDY_MACHINE,                   // Candy machine / キャンディマシン
+    FTR_SFX_CASH_REGISTER,                   // Cash register / レジスター
+    FTR_SFX_UNKNOWN_MACHINE,                // Unknown machine / よくわからないキカイ
+    FTR_SFX_VISION_TESTER,                   // Vision tester / しりょくそくていき
+    FTR_SFX_CRADLE,                          // Cradle / ゆりかご
+    FTR_SFX_BOWLING_BALL_RETURN,             // Bowling ball return / ボウリングリターン
+    FTR_SFX_METRONOME,                       // Metronome / メトロノーム
+    FTR_SFX_WHEAT_FIELD,                     // Wheat field / むぎばたけ
+    FTR_SFX_GRAMOPHONE,                      // Gramophone / ちくおんき
+    FTR_SFX_TAPE_RECORDER,                   // Tape recorder / テープレコーダー
+    FTR_SFX_RETRO_STEREO,                    // Retro stereo / レトロなステレオ
+    FTR_SFX_DICE_STEREO,                     // Dice stereo / サイコロコンポ
+    FTR_SFX_RADIO_CASSETTE_PLAYER,           // Radio cassette player / ラジカセ
+    FTR_SFX_CD_RADIO_CASSETTE_PLAYER,        // CD radio cassette player / CDラジカセ
+    FTR_SFX_DUAL_CASSETTE_BOOMBOX,           // Dual-cassette boombox / ダブルラジカセ
+    FTR_SFX_ROBO_STEREO,                     // Robo stereo / ロボコンポ
+    FTR_SFX_BABY_CARRIAGE,                   // Baby carriage / うばぐるま
+    FTR_SFX_ROBO_DRESSER,                    // Robo dresser / ロボタンス
+    FTR_SFX_LOCKER,                          // Locker / ロッカー
+    FTR_SFX_REGAL_STYLE_BED,                 // Regal-style bed / ロイヤル系ベッド
+    FTR_SFX_LONG_LOCUST,                     // Long locust / ショウリョウバッタ
+    FTR_SFX_MOLE_CRICKET,                    // Mole cricket / オケラ
+    FTR_SFX_WALKER_CICADA,                   // Walker cicada / ツクツクホウシ
+    FTR_SFX_WHEELED_FURNITURE,               // Furniture with casters / ローラー付き家具
+    FTR_SFX_BATHTUB,                         // Bathtub / ゆぶね
+    FTR_SFX_ROCKET,                          // Rocket / ロケット
+    FTR_SFX_MOUTH_OF_TRUTH,                  // Mouth of Truth / しんじつのくち
+    FTR_SFX_SHAVED_ICE_MAKER,                // Shaved ice maker / かきごおりき
+    FTR_SFX_YOSHI_EGG,                       // Yoshi's egg / ヨッシーのタマゴ
+    FTR_SFX_BIRTHDAY_CAKE,                   // Birthday cake / バースデーケーキ
+    FTR_SFX_FORTUNE_TELLING_PHONE,           // Fortune-telling phone / うらないテレフォン
+    FTR_SFX_SNOW_GLOBE,                      // Snow globe / スノードーム
+    FTR_SFX_WHITE_KATANA,                    // White katana / しろいにほんとう
+    FTR_SFX_PAPIER_MACHE_TIGER,               // Papier-mache tiger / はりこのとら
+    FTR_SFX_HIBACHI,                         // Hibachi / ひばち
+    FTR_SFX_MOUNTAIN_BIKE,                   // Mountain bike / マウンテンバイク
+    FTR_SFX_COOLER_BAG,                      // Cooler bag / クーラーバック
+
+    FTR_SFX_NUM
 };
 
 // Fashion style of clothing (BITM::m_fashion). Names and values follow sys_STRING/STR_Fashion,
@@ -693,7 +768,7 @@ enum From {
 };
 
 // Debug name tables, unreferenced in the release build.
-extern const char *sFtrFuncNames[0x98]; // 804E91E8: furniture function names
+extern const char *sFtrSfxNames[FTR_SFX_NUM]; // 804E91E8: furniture sound category names (BITM::m_ftrSfx)
 extern const char *sFromNames[FROM_COUNT]; // 804EA128: source group names
 
 // item/item.bin header; the BITM entries follow it.
@@ -753,7 +828,7 @@ struct BITM {
     // dropped only within one block).
     int getFtrFunc() const {
         int func = m_ftrFunc;
-        return static_cast<u32>(func) < 0x41 ? func : 1;
+        return static_cast<u32>(func) < FTR_FUNC_COUNT ? func : FTR_FUNC_PLAIN;
     }
 
     int getFtrTable() const {
@@ -825,7 +900,7 @@ struct BITM {
     u8 m_catalogScale; // 0x16F
     u8 _170; // 0x170
     s8 m_ftrFunc; // 0x171
-    u8 m_ftrInstr; // 0x172
+    s8 m_ftrInstr; // 0x172
     u8 m_ftrSfx; // 0x173
     s8 m_fossil; // 0x174
     u8 m_ftrHeight; // 0x175
@@ -1191,6 +1266,8 @@ struct resList_c {
 }; // sizeof = 0xA24
 
 } // namespace dItem
+
+int convFtrFunc(u32 func); // 800C1CA8: furniture function -> furniture profile
 
 class dPrivateData_c;
 

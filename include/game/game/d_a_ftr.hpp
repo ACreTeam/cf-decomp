@@ -47,6 +47,8 @@ struct ftrList_c {
 }; // size 0x14
 
 struct counter_c {
+    counter_c() { clear(); }
+
     void clear();
     void set(int count);
     BOOL calc();
@@ -55,6 +57,21 @@ struct counter_c {
 }; // size 0x4
 
 } // namespace dFTR
+
+// daFTR_c animation types (createAnm/changeAnm/playAnm).
+enum {
+    ANM_CHR = 0x1,
+    ANM_VIS = 0x2,
+    ANM_PAT = 0x4,
+    ANM_SRT = 0x8,
+    ANM_CLR = 0x10,
+    ANM_ALL = ANM_CHR | ANM_VIS | ANM_PAT | ANM_SRT | ANM_CLR,
+};
+
+// changeAnm/changeAnmChr frame: keep the animation's current frame (createAnm takes it as a plain frame).
+enum {
+    ANM_FRAME_CURRENT = 0xFFFF,
+};
 
 // daFTR_c::info_c::mKind.
 enum {
@@ -161,6 +178,8 @@ public:
 
     class lampList_c {
     public:
+        lampList_c() : mActive(false) {}
+
         BOOL init(nw4r::g3d::ResMdl mdl, BOOL on);
         BOOL set(BOOL on, BOOL fade, BOOL flicker);
         void update();
@@ -209,13 +228,16 @@ public:
         /* 0x04 */ topItem_c mItem[4];
     }; // size 0x44
 
+    // setSwitch / dFTR::requestSwitch param: none.
+    enum {
+        SWITCH_PARAM_NONE = 0xFF,
+    };
+
     typedef BOOL (daFTR_c::*initProc_t)();
     typedef void (daFTR_c::*executeProc_t)();
 
     using dActor_c::mPos;
     using dActor_c::mAngle;
-
-    virtual ~daFTR_c();
 
     static void *operator new(size_t size);
     static void operator delete(void *p);
@@ -243,7 +265,7 @@ public:
     virtual const dItem::BITM *getBITM() { return mpBITM; }
     virtual dItem::NpcMsg *getNpcMsg();
     virtual BOOL isMusic();
-    virtual BOOL isLamp();
+    virtual BOOL isGyroid();
     virtual void changeSwitch(u32 sw, BOOL keep);
     virtual BOOL isIdle() { return mState == STATE_WAIT; }
     virtual BOOL isWait() { return mState == STATE_WAIT; }
@@ -303,8 +325,8 @@ public:
     BOOL isSwitchChanging();
     void toggleSwitch(BOOL keep);
     u32 getAnmFrameMax(u32 idx, int types);
-    void createAnm(f32 rate, u32 idx, int playMode, u32 frame, int types);
-    void changeAnm(f32 rate, u32 idx, int playMode, u32 frame, int types);
+    void createAnm(f32 rate, u32 idx, int playMode, u16 frame, int types);
+    void changeAnm(f32 rate, u32 idx, int playMode, u16 frame, int types);
     void setAnmEnd(f32 rate, u32 idx, int playMode, int types);
     bool createAnmChr(f32 rate, nw4r::g3d::ResAnmChr anm, int playMode, u32 frame);
     void changeAnmChr(f32 rate, nw4r::g3d::ResAnmChr anm, int playMode, u32 frame);
@@ -389,15 +411,15 @@ public:
     static int getMoveSe();
     static BOOL isLampOn(daFTR_c *ftr);
     static BOOL isMusicFtr(daFTR_c *ftr);
-    BOOL isMusicOn();
+    static BOOL isMusicOn(daFTR_c *ftr);
     BOOL isTvOn();
     static bool isSeatFtr(daFTR_c *ftr);
-    BOOL isLampFunc();
+    BOOL isGyroidFunc();
     BOOL isLit();
-    BOOL isFtrFuncD();
-    BOOL isFtrFunc10();
-    BOOL isFtrFunc36();
-    BOOL isFtrFunc39();
+    BOOL isSofa();
+    BOOL isChair();
+    BOOL isRightyDesk();
+    BOOL isLeftyDesk();
     bool isSeat();
     static BOOL setRoomLight(int lamp);
     void initLamp();

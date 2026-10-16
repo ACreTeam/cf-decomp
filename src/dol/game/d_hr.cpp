@@ -1122,7 +1122,7 @@ int dHR::calcFromPoints(const dHR::area_c *area, dFdBase_c *field) {
                 dItem::Item *item = field->getItem(x, z, layer);
                 if (item != NULL) {
                     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
-                    if (bitm != NULL && dItem::clampField(bitm->m_ftrFunc, 0x41, 1) != 0) {
+                    if (bitm != NULL && dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) != dItem::FTR_FUNC_NONE) {
                         points += bitm->getFromNameIndex();
                     }
                 }

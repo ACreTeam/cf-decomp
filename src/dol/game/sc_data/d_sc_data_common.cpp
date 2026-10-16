@@ -62,7 +62,7 @@ const u16 g_roomBaseNum = ARRAY_SIZE(g_roomBase);
 
 u16 g_roomRes[] = {fProf::FG_DRAW,       fProf::FGOBJ_MANAGER, fProf::BGI_DRAW,
                    fProf::SHOP_FG,       fProf::FTR_MANAGER,   fProf::A_FTR,
-                   fProf::A_FTR_ACT_022, fProf::A_SIGN_TAG};
+                   fProf::FTR_LP, fProf::A_SIGN_TAG};
 const u16 g_roomResNum = ARRAY_SIZE(g_roomRes);
 
 dScene::dSceneBaseData_c g_townBase[] = {

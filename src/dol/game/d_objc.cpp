@@ -772,7 +772,7 @@ void calc() {
                     if (item != NULL && dItem::isRealItemId(item->mId)) {
                         const dItem::BITM *bitm = dItem::getBITM(item->mId);
                         if (bitm != NULL &&
-                            dItem::clampField(bitm->m_ftrFunc, 0x41, 1) == 0) {
+                            dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) == dItem::FTR_FUNC_NONE) {
                             mVec3_c pos;
                             dBGCF::unitToPos(&pos, x, z);
                             pos.y = dBGCF::getUnitBaseY(&pos);
