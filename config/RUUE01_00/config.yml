@@ -767,6 +767,7 @@ modules:
   name: d_title_demoNP
   symbols: config/RUUE01_00/d_title_demoNP/symbols.txt
   splits: config/RUUE01_00/d_title_demoNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_flagNP.rel
   hash: b601bcf0ba8edfe412cb302469f18b91b17dfb46
   name: d_flagNP
