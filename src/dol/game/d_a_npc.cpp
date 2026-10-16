@@ -1446,7 +1446,7 @@ BOOL dAcNpc_c::searchSpot2(mVec3_c *out, int arg, const mVec3_c *exclude, u32 ty
 }
 
 // 8001407C
-int dAcNpc_c::vt68() {
+int dAcNpc_c::vt68(const dItem::Item *item) {
     return 2;
 }
 
@@ -4682,7 +4682,7 @@ BOOL dAcNpc_c::toolBase_c::isNextLoaded(dAcNpc_c *npc) const {
     return mLoadState == 1;
 }
 
-BOOL dAcNpc_c::toolBase_c::change(f32 scale) {
+BOOL dAcNpc_c::toolBase_c::change(f32 scale, dAcNpc_c *npc) {
     if (!isEnable()) {
         return FALSE;
     }
