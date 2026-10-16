@@ -235,8 +235,8 @@ enum PROFILE_NAME_e {
     FIELD = 0x0A8,           // g_profile_FIELD__6dField
     WEATHER = 0x0A9,         // g_profile_WEATHER
     SKY = 0x0AA,             // g_profile_SKY
-    SKY_AURORA = 0x0AB,      // g_profile_SKY_AURORA__10dSkyAurora
-    SKY_RAINBOW = 0x0AC,     // g_profile_SKY_RAINBOW__11dSkyRainbow
+    SKY_AURORA = 0x0AB,      // g_profile_SKY_AURORA
+    SKY_RAINBOW = 0x0AC,     // g_profile_SKY_RAINBOW
     NPC_MNG = 0x0AD,         // g_profile_NPC_MNG
     HAND_ITEM = 0x0AE,       // g_profile_HAND_ITEM
     FI_MDL_MGR = 0x0AF,      // g_profile_FI_MDL_MGR
