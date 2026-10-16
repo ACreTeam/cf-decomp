@@ -9,6 +9,7 @@
 #include <game/game/d_reset.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/game/d_script.hpp>
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_string.hpp>
 #include <game/game/d_sv_auc.hpp>
@@ -145,7 +146,7 @@ void dTitleDemo_c::onMessageStart(int arg) {
     dMsg::Comp_c *controller = mpController;
     int blocks = dSvMgr_c::getRequiredBlocks();
     if (code == 5) {
-        controller->formatNumber(0, blocks, 12, 9);
+        controller->formatNumber(0, blocks, 12, dScript::NUM_FORMAT_REGION);
     }
 }
 
