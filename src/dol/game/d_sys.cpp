@@ -60,7 +60,7 @@ EGG::ExpHeap *sRootHeapMem1;
 EGG::ExpHeap *sRootHeapMem2;
 EGG::ExpHeap *sRootHeapDebug;
 bool sBootComplete;
-u8 sUnknownState;
+u8 sFaceError;
 extern sPhase_c sStartupPhase;
 static EGG::TSystem<>::Configuration sSystem;
 
@@ -120,9 +120,9 @@ void reportHeaps() {
 // 8016BA70
 void reportHeapStep(int line) {
 }
-// 8016BA74: the byte's purpose is not established; there are no writes here.
-u8 fn_8016BA74() {
-    return sUnknownState;
+// 8016BA74
+BOOL isFaceError() {
+    return sFaceError;
 }
 
 // 8016BA7C

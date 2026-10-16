@@ -35,7 +35,12 @@ public:
     const mVec3_c *getPosP() const { return &mPos; }
     const mVec3_c &getPos() const { return mPos; }
     const mVec3_c &getLastPos() const { return mLastPos; }
-    const mAng3_c &getAngle() const { return mAngle; }
+    const mAng3_c &getAngle() const {
+        return mAngle;
+    }
+    const mAng3_c &getAngle3D() const {
+        return mAngle3D;
+    }
     mAng getAngleY() const { return mAngle.y; }
 
     static const mVec3_c* m_tmpCtPosP;

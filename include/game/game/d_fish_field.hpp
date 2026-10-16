@@ -164,6 +164,7 @@ public:
 
 // A node of dFishFldShadow_c::mLinks (someone that refers to the fish; unlinked on deletion).
 struct dFishLink_c {
+    ~dFishLink_c();
     /* 0x0 */ dFishFldShadow_c *mFish;
     /* 0x4 */ dFishLink_c *mNext;
 };
@@ -391,3 +392,9 @@ public:
 
 
 // The manager instance is d_play_util's g_fishField.
+
+inline dFishLink_c::~dFishLink_c() {
+    if (mFish) {
+        mFish->removeLink(this);
+    }
+}

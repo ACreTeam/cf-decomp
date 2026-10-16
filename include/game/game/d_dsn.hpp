@@ -65,6 +65,9 @@ public:
     BOOL loadTextureB(u32 idx);                    // 8010F668: item 0x9D4 + (idx & 7)
     BOOL loadTextureC();                           // 8010F674: item 0x9DC
     BOOL loadTextureD(u32 idx);                    // 8010F67C: item 0x9DD + (idx & 3)
+    BOOL isNotSame(const dDesign_c *other) const {
+        return !isSame(other);
+    }
     BOOL isSame(const dDesign_c *other) const;     // 8010F688
     void *getTexture();                            // 8010F7B0
     void setTexture(const void *src, BOOL flush);  // 8010F7B4

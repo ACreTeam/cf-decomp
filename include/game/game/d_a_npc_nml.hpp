@@ -220,7 +220,14 @@ public:
         void recordTalk(const dLandID_c *land);   // 800310A0: recordMemoryTalk for mpMemory/mMemoryIdx unless mNoRecordTalk
         void fixMsgCode(u16 *code);               // 80031114: code 0 -> 1 (and mPickCode = 0)
         void setTopicFrom(const dNpc::msgMemory_c *mem); // 80031144: setTopic(mem->mKind, mTopicGroup, mTopicIdx)
-        void start(dAcNpc_c *npc, dActor_c *actor, const procSet_s *set); // 80031160: start (RELs; npc unused)
+        // Inferred: furniture selected for the current room conversation.
+        void setRoomFtr(const dItem::Item &item, int x, int z) {
+            mItem0 = item;
+            mFtrPosX = x;
+            mFtrPosZ = z;
+        }
+        void start(dAcNpc_c *npc, dActor_c *actor,
+                   const procSet_s *set); // 80031160: start (RELs; npc unused)
         virtual void preExecute();                 // 80031254 (+0x94): runs mActProc
         virtual void onRequestEnd(int kind);       // 8003129C (+0xA0): runs mResultProc, then mNextResultProc
         virtual void getMsgInfo(msgInfo_s *info);  // 8003134C (+0x9C)

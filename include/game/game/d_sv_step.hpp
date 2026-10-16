@@ -1,6 +1,7 @@
 #pragma once
 
-// The save manager's steps: the load and save step callbacks (d_sv_mgr, d_s_boot_static).
+// The save manager's steps: the load and save step callbacks (d_sv_mgr,
+// d_s_boot_static).
 
 #include <game/game/d_state_step.hpp>
 #include <game/game/d_sv_runtime.hpp>
@@ -12,10 +13,11 @@ class dSvMgr_c;
 template <class Step> void checkSaveResultImpl(Step *step);
 
 // RTTI confirms this wrapper adds no storage or virtual slots beyond its
-// destructor. Nonvirtual save callbacks are inferred from the matching emission order.
+// destructor. Nonvirtual save callbacks are inferred from the matching emission
+// order.
 template <class Owner, class Step>
 class dSvStep_c : public dState::step_c<Owner, Step> {
-public:
+  public:
     friend void checkSaveResultImpl<Step>(Step *step);
 
     void initializeLoad();
@@ -37,10 +39,17 @@ public:
     void createDownloadBox();
     void disableHomeAndReset();
     void enableHomeAndReset();
+    void initializeDeleteDownloadBox();
+    void deleteDownloadBox();
+    void initializeDeleteSave();
+    void startDeleteSave();
+    void waitDeleteSave();
     void saveFailed();
 
-    dSvStep_c() {}
-    virtual ~dSvStep_c() {}
+    dSvStep_c() {
+    }
+    virtual ~dSvStep_c() {
+    }
 }; // sizeof = 0x30
 
 template <class Owner, class Step>
@@ -48,15 +57,13 @@ void dSvStep_c<Owner, Step>::initializeLoad() {
     this->nextStep();
 }
 
-template <class Owner, class Step>
-void dSvStep_c<Owner, Step>::startLoad() {
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::startLoad() {
     if (dNand::loadAll()) {
         this->nextStep();
     }
 }
 
-template <class Owner, class Step>
-void dSvStep_c<Owner, Step>::waitLoad() {
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::waitLoad() {
     if (dNand::isIdle()) {
         this->nextStep();
     }
@@ -95,8 +102,7 @@ void dSvStep_c<Owner, Step>::startFullSave() {
     }
 }
 
-template <class Owner, class Step>
-void dSvStep_c<Owner, Step>::waitFullSave() {
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::waitFullSave() {
     checkSaveResultImpl(static_cast<Step *>(this));
 }
 
@@ -113,8 +119,7 @@ void dSvStep_c<Owner, Step>::startHostSave() {
     }
 }
 
-template <class Owner, class Step>
-void dSvStep_c<Owner, Step>::waitHostSave() {
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::waitHostSave() {
     checkSaveResultImpl(static_cast<Step *>(this));
 }
 
@@ -131,8 +136,7 @@ void dSvStep_c<Owner, Step>::startTownSave() {
     }
 }
 
-template <class Owner, class Step>
-void dSvStep_c<Owner, Step>::waitTownSave() {
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::waitTownSave() {
     checkSaveResultImpl(static_cast<Step *>(this));
 }
 
@@ -187,12 +191,61 @@ void dSvStep_c<Owner, Step>::enableHomeAndReset() {
     this->nextStep();
 }
 
+// The delete steps are only used by the title screen's save deletion
+// (d_title_demoNP).
 template <class Owner, class Step>
-void dSvStep_c<Owner, Step>::saveFailed() {
+void dSvStep_c<Owner, Step>::initializeDeleteDownloadBox() {
+    if (dWifi::startDeleteTasks()) {
+        this->nextStep();
+    }
 }
 
-template <class Step>
-void checkSaveResultImpl(Step *step) {
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::deleteDownloadBox() {
+    dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
+    switch (dWifi::getThreadResult()) {
+    case -1:
+        break;
+    case 0:
+        if (dWifi::getNetErrorMessage() == 0x0C) {
+            dSvRuntime::releaseMessage(demo);
+            demo->setNextMsgCode(0x0C);
+            demo->setNextMsgLabel(dSvMgr_c::mMessageLabel);
+            this->mCurrentMethod = &Step::saveFailed;
+        } else {
+            dSvRuntime::releaseMessage(demo);
+            demo->setNextMsgCode(0x13);
+            demo->setNextMsgLabel(dSvMgr_c::mMessageLabel);
+            this->mCurrentMethod = &Step::saveFailed;
+        }
+        break;
+    case 1:
+        this->nextStep();
+        break;
+    }
+}
+
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::initializeDeleteSave() {
+    this->nextStep();
+}
+
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::startDeleteSave() {
+    if (dNand::deleteAll()) {
+        this->nextStep();
+    }
+}
+
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::waitDeleteSave() {
+    checkSaveResultImpl(static_cast<Step *>(this));
+}
+
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::saveFailed() {
+}
+
+template <class Step> void checkSaveResultImpl(Step *step) {
     dMsg::Comp_c *demo = dMsg::Comp_c::mInstance;
     if (dNand::isIdle()) {
         switch (dNand::getResult()) {

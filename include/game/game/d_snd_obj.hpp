@@ -94,7 +94,7 @@ public:
     void holdSound(u32 id);          // 80011394
 
     /* 0x00 */ SoundObjPond mObj;
-}; // size 0x30
+}; // size 0x38
 
 // Holds a SoundObjFall.
 class dSndObjFall_c {
@@ -106,7 +106,7 @@ public:
     void holdSound(u32 id);          // 80011478
 
     /* 0x00 */ SoundObjFall mObj;
-}; // size 0x30
+}; // size 0x38
 
 // Holds a SoundObjRiver.
 class dSndObjRiver_c {

@@ -56,14 +56,14 @@ struct ResNodeData : ResNodeDataTypedef {
         FLAG_BILLBOARD_PARENT = (1 << 10)
     };
 
-    ulong size;                 // at 0x0
+    ulong size;               // at 0x0
     s32 toResMdlData;         // at 0x4
     s32 name;                 // at 0x8
-    ulong id;                   // at 0xC
-    ulong mtxID;                // at 0x10
-    ulong flags;                // at 0x14
+    ulong id;                 // at 0xC
+    ulong mtxID;              // at 0x10
+    ulong flags;              // at 0x14
     Billboard bbmode;         // at 0x18
-    ulong bbref_nodeid;         // at 0x1C
+    ulong bbref_nodeid;       // at 0x1C
     math::_VEC3 scale;        // at 0x20
     math::_VEC3 rot;          // at 0x2C
     math::_VEC3 translate;    // at 0x38
@@ -79,14 +79,14 @@ struct ResNodeData : ResNodeDataTypedef {
 };
 
 class ResNode : public ResCommon<ResNodeData>, public ResNodeDataTypedef {
-public:
+  public:
     NW4R_G3D_RESOURCE_FUNC_DEF(ResNode);
 
-    void PatchChrAnmResult(ChrAnmResult* pResult) const;
-    void CalcChrAnmResult(ChrAnmResult* pResult) const;
+    void PatchChrAnmResult(ChrAnmResult *pResult) const;
+    void CalcChrAnmResult(ChrAnmResult *pResult) const;
 
     ResName GetResName() const {
-        const ResNodeData& r = ref();
+        const ResNodeData &r = ref();
 
         if (r.name != 0) {
             return NW4R_G3D_OFS_TO_RESNAME(&r, r.name);
@@ -96,7 +96,7 @@ public:
     }
 
     const char *GetName() const {
-        const ResNodeData& r = ref();
+        const ResNodeData &r = ref();
 
         if (r.name != 0) {
             return NW4R_G3D_OFS_TO_RESNAME(&r, r.name).GetName();
@@ -149,8 +149,9 @@ public:
         return BILLBOARD_OFF;
     }
 
-    const math::VEC3& GetTranslate() const {
-        return ref().translate;
+    math::VEC3 GetTranslate() const {
+        return math::VEC3(ref().translate.x, ref().translate.y,
+                          ref().translate.z);
     }
 
     ResNode GetParentNode() {
@@ -181,7 +182,8 @@ public:
         return ofs_to_obj<ResNode>(ref().toPrevSibling);
     }
 
-    void EndEdit() {}
+    void EndEdit() {
+    }
 };
 
 } // namespace g3d

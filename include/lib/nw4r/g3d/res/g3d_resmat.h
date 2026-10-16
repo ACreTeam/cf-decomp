@@ -581,6 +581,7 @@ public:
     void ReleaseTexByName(const char *texName, ulong len);       // 80238C68: unbinds the slots named texName
     bool BindPlttByName(const ResPltt pltt, const char *plttName); // 80238AC8
     void ReleasePlttByName(const char *plttName, ulong len);      // 80238D6C
+    void DCStore(bool sync);                                      // 80237144: flushes the whole material
 
     ResMdl GetParent();
 

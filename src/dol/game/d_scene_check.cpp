@@ -1,5 +1,6 @@
-// The open player house rooms and the scene -> house / room lookups (dSceneCheck). .text 80081618..80081868,
-// .rodata 8046D5A0..8046D5C0, .bss 80583648..80583658. See include/game/game/d_scene_check.hpp.
+// The open player house rooms and the scene -> house / room lookups
+// (dSceneCheck). .text 80081618..80081868, .rodata 8046D5A0..8046D5C0, .bss
+// 80583648..80583658. See include/game/game/d_scene_check.hpp.
 #include <game/game/d_scene_check.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_scene.hpp>
@@ -25,10 +26,14 @@ void clearRoomOpen(int house, int room) {
 
 // 80081674
 u32 isHouseRoomScene(u8 scene) {
-    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE) ||
-        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE) ||
-        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE2 | dScene::SCENE_ATTR_PLAYER_HOUSE) ||
-        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE3 | dScene::SCENE_ATTR_PLAYER_HOUSE)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE0 |
+                                       dScene::SCENE_ATTR_PLAYER_HOUSE) ||
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE1 |
+                                       dScene::SCENE_ATTR_PLAYER_HOUSE) ||
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE2 |
+                                       dScene::SCENE_ATTR_PLAYER_HOUSE) ||
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_HOUSE3 |
+                                       dScene::SCENE_ATTR_PLAYER_HOUSE)) {
         return TRUE;
     }
     return FALSE;
@@ -72,13 +77,14 @@ BOOL fn_80081830() {
 }
 
 // 80081838
-BOOL drawCylinder(const mVec3_c &pos, const mColor &color, int arg2, const mAng3_c &angle, int arg4, f32 radius,
-                  f32 height) {
+BOOL drawCylinder(const mVec3_c &pos, const mColor &color, int arg2,
+                  const mAng3_c &angle, int arg4, f32 radius, f32 height) {
     return FALSE;
 }
 
 // 80081840
-BOOL fn_80081840() {
+BOOL drawSphere(const mVec3_c &pos, const mColor &color, int arg2, int arg3,
+                int arg4, f32 radius) {
     return FALSE;
 }
 
@@ -88,16 +94,20 @@ BOOL fn_80081848() {
 }
 
 // 80081850
-void fn_80081850() {}
+void fn_80081850() {
+}
 
 // 80081854
-void fn_80081854() {}
+void fn_80081854() {
+}
 
 // 80081858
-void fn_80081858(BOOL result) {}
+void fn_80081858(BOOL result) {
+}
 
 // 8008185C
-void fn_8008185C() {}
+void fn_8008185C() {
+}
 
 // 80081860
 BOOL fn_80081860() {

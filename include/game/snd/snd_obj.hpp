@@ -185,7 +185,7 @@ public:
     virtual void update(const nw4r::math::VEC3 *pos);    // 801DDD58: only calcParam, then mPos
     virtual void stopAll(int fadeFrames);                 // 801E1BB0
 
-    /* 0x2C */ nw4r::ut::Link mLink; // SoundSystem::mLists (offset 0x2C for every kind)
+    /* 0x2C */ nw4r::ut::Link mLink; // SoundSystem ambient list 0 (link offset 0x2C)
 }; // size 0x34
 
 // RTTI "SoundObjPond" (vtable 805039F0): in SoundSystem's ambient list 1 (mKind 5).
@@ -193,14 +193,18 @@ class SoundObjPond : public SoundObj<1> {
 public:
     SoundObjPond();          // 801DDDB8
     virtual ~SoundObjPond(); // 801DDE78
-};
+
+    /* 0x30 */ nw4r::ut::Link mLink; // SoundSystem ambient list 1 (link offset 0x30)
+}; // size 0x38
 
 // RTTI "SoundObjFall" (vtable 80503990): in SoundSystem's ambient list 2 (mKind 6).
 class SoundObjFall : public SoundObj<1> {
 public:
     SoundObjFall();          // 801DDF64
     virtual ~SoundObjFall(); // 801DE024
-};
+
+    /* 0x30 */ nw4r::ut::Link mLink; // SoundSystem ambient list 2 (link offset 0x30)
+}; // size 0x38
 
 // RTTI "SoundObjPinwheel" (vtable 80503930): volume and pitch follow the spin speed.
 class SoundObjPinwheel : public SoundObj<1> {

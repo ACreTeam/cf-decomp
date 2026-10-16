@@ -149,11 +149,13 @@ modules:
   name: d_menu_itemxxNP
   symbols: config/RUUE01_00/d_menu_itemxxNP/symbols.txt
   splits: config/RUUE01_00/d_menu_itemxxNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_ltrNP.rel
   hash: c6e13f7aa1dc459023b014bd35add3198f64a0b0
   name: d_menu_ltrNP
   symbols: config/RUUE01_00/d_menu_ltrNP/symbols.txt
   splits: config/RUUE01_00/d_menu_ltrNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_mapNP.rel
   hash: f719b6ce985510bb974c530148b6a7febb9fc09d
   name: d_menu_mapNP
@@ -667,16 +669,19 @@ modules:
   name: d_bgi_drawNP
   symbols: config/RUUE01_00/d_bgi_drawNP/symbols.txt
   splits: config/RUUE01_00/d_bgi_drawNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_bgo_drawNP.rel
   hash: b3be2402281e81f81b5c723d1cea28c28798ea2b
   name: d_bgo_drawNP
   symbols: config/RUUE01_00/d_bgo_drawNP/symbols.txt
   splits: config/RUUE01_00/d_bgo_drawNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_bgt_drawNP.rel
   hash: b9147aa702fd882324c3946b610b0acf4ef51c9b
   name: d_bgt_drawNP
   symbols: config/RUUE01_00/d_bgt_drawNP/symbols.txt
   splits: config/RUUE01_00/d_bgt_drawNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_cockroach_managerNP.rel
   hash: eff0e3f1509f18a384c41593045febf729c4a80e
   name: d_cockroach_managerNP
@@ -724,6 +729,7 @@ modules:
   name: d_org_objNP
   symbols: config/RUUE01_00/d_org_objNP/symbols.txt
   splits: config/RUUE01_00/d_org_objNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_shop_fgNP.rel
   hash: de2e7cc4310e4701c6b7e88d6fed550c55cc321a
   name: d_shop_fgNP
@@ -767,6 +773,7 @@ modules:
   name: d_title_demoNP
   symbols: config/RUUE01_00/d_title_demoNP/symbols.txt
   splits: config/RUUE01_00/d_title_demoNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_flagNP.rel
   hash: b601bcf0ba8edfe412cb302469f18b91b17dfb46
   name: d_flagNP

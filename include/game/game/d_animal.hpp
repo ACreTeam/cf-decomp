@@ -176,6 +176,9 @@ public:
     dAnimalSpot_c(); // 8011D558
     ~dAnimalSpot_c(); // 8011D594
     void clear(); // 8011D5D4
+    bool hasTime() const {
+        return !mTime.isNone();
+    }
     BOOL isValid(); // 8011D61C
     dTime_c getTime(); // 8011D650
     s64 getTimeRaw(); // 8011D654
@@ -233,6 +236,13 @@ struct dAnimalTemplate_c {
 // One villager's save record. 0x3040, alignment 32 (dDesign_c).
 class dAnimal_c {
 public:
+    enum Place_e {
+        PLACE_OUTSIDE = 0,
+        PLACE_HOME = 1,
+        PLACE_HOME_STAY = 3,
+        PLACE_ASLEEP = 4
+    };
+
     dAnimal_c(); // 8011E2C0
     ~dAnimal_c(); // 8011E39C
     void clear(); // 8011E458
@@ -448,7 +458,7 @@ public:
     /* 0x3030 */ u16 _3030_lo : 13;
     /* 0x3032 */ u8 mJoinType; // 4 when cleared; set by init
     /* 0x3033 */ u8 mDayPlace; // 3 when cleared
-    /* 0x3034 */ u8 mPlace; // 4 when cleared
+    /* 0x3034 */ u8 mPlace; // Place_e; kept byte-sized in save data
     /* 0x3035 */ u8 mSetupLoaded; // set by setSetupData; gates the checksum check
     /* 0x3036 */ u8 mHeldItemChangeMinute; // a minute (0-59); 60 or more = unset (isHeldItemChangeMinute)
     /* 0x3037 */ u8 mHabitCooldown; // decHabitCooldown

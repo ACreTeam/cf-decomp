@@ -171,13 +171,15 @@ public:
     // dAcNpc_c::toolBase_c, vtable 804A0594 = {dtor}.
     class toolBase_c {
     public:
+        enum LoadState_e { LOAD_FAILED, LOAD_LOADED, LOAD_PENDING };
+
         toolBase_c();                           // 8001D9B4
         virtual ~toolBase_c();                  // 8001DA30
         BOOL isEnable() const;                  // 8001DA8C
         void checkItem(dAcNpc_c *npc);          // 8001DAA8
         BOOL isNextReady() const;               // 8001DB58
         BOOL isNextLoaded(dAcNpc_c *npc) const; // 8001DBA8
-        BOOL change(f32 scale);                 // 8001DC3C
+        BOOL change(f32 scale, dAcNpc_c *npc);  // 8001DC3C
         void putAway();                         // 8001DCD0
         BOOL loadNext(dAcNpc_c *npc);           // 8001DD20
         void execute(dAcNpc_c *npc);            // 8001DDBC
@@ -187,7 +189,7 @@ public:
         void init() {
             mItem = dItem::ITEM_ID_NONE;
             mNextItem = dItem::ITEM_ID_NONE;
-            mLoadState = 2;
+            mLoadState = LOAD_PENDING;
             mScale = 1.0f;
             mLock = false;
         }
@@ -1383,7 +1385,7 @@ public:
     virtual mVec3_c *demoHook58();                  // 800134E8 (+0x58) look/talk target position
     virtual int demoHook64(mVec3_c *pos);           // 80016770 (+0x64)
     // dAcNpc_c's own virtuals (+0x68..+0xC0)
-    virtual int vt68();                             // 8001407C (+0x68)
+    virtual int vt68(const dItem::Item *item); // 8001407C (+0x68)
     virtual nw4r::g3d::ResFile getMdlResFile();                  // 80012914 (+0x6C)
     virtual nw4r::g3d::ResFile getTexResFile();                  // 80012938 (+0x70)
     virtual model_c *getModel() { return &mModel; }        // 8002E9A0 (+0x74)
@@ -1422,6 +1424,18 @@ public:
     mVec3_c getNode13Pos() const;                                                                        // 80012EAC
     mVec3_c getFootPos0() const;                                                                         // 80012F08
     mVec3_c getFootPos1() const;                                                                         // 80012F64
+    // Inferred from requestPermit's branches; retain int at the call boundary.
+    enum PermitResult_e {
+        PERMIT_REMOTE_START,
+        PERMIT_LOCAL_START,
+        PERMIT_REMOTE_TALK,
+        PERMIT_LOCAL_TALK,
+        PERMIT_END_SINGLE,
+        PERMIT_END_MULTI,
+        PERMIT_RELEASED
+    };
+    enum { CMD_RELEASE_PERMIT = 6 };
+
     int requestPermit(int type, u32 player, BOOL arg);                                                   // 80012FE8
     void setPermitOwner(u32 player);                                                                     // 8001318C
     BOOL setPermitState(u32 player);                                                                     // 80013204

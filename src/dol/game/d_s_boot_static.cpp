@@ -1,4 +1,5 @@
-// The boot scene's static part. .text 80107F00..8010A120. See include/game/game/d_s_boot_static.hpp.
+// The boot scene's static part. .text 80107F00..8010A120. See
+// include/game/game/d_s_boot_static.hpp.
 #include <game/game/d_s_boot_static.hpp>
 #include <lib/egg/core/eggColorFader.h>
 #include <lib/egg/core/eggHeap.h>
@@ -108,7 +109,8 @@ static sPhase_c::METHOD_RESULT_e loadFace(void *) {
     static mDvd_toMainRam_c *sCmd;
     mDvd_toMainRam_c *cmd = sCmd;
     if (cmd == NULL) {
-        cmd = sCmd = mDvd_toMainRam_c::create("/Face/RFLRes01.arc", 0, dHeap::faceResHeap_p);
+        cmd = sCmd = mDvd_toMainRam_c::create("/Face/RFLRes01.arc", 0,
+                                              dHeap::faceResHeap_p);
         if (cmd == NULL) {
             return sPhase_c::WAIT;
         }
@@ -117,7 +119,7 @@ static sPhase_c::METHOD_RESULT_e loadFace(void *) {
         return sPhase_c::WAIT;
     }
     if (!mFace::initRes(sCmd->mpData, dHeap::faceResHeap_p, FALSE)) {
-        dSys::sUnknownState = 1;
+        dSys::sFaceError = 1;
     }
     sCmd->destroy();
     sCmd = NULL;
@@ -155,7 +157,8 @@ static sPhase_c::METHOD_RESULT_e loadShutter(void *) {
     static mDvd_toMainRam_c *sCmd;
     mDvd_toMainRam_c *cmd = sCmd;
     if (cmd == NULL) {
-        cmd = sCmd = mDvd_toMainRam_c::create("/Photo/shutter.brtex", 0, dHeap::localHeap_p);
+        cmd = sCmd = mDvd_toMainRam_c::create("/Photo/shutter.brtex", 0,
+                                              dHeap::localHeap_p);
         if (cmd == NULL) {
             return sPhase_c::WAIT;
         }
@@ -186,13 +189,15 @@ static sPhase_c::METHOD_RESULT_e loadEffect(void *) {
     static mDvd_toMainRam_c *sBreffCmd;
     static mDvd_toMainRam_c *sBreftCmd;
     if (sBreffCmd == NULL) {
-        sBreffCmd = mDvd_toMainRam_c::create("/Effect/wii_animal.breff", 0, dHeap::effectResHeap_p);
+        sBreffCmd = mDvd_toMainRam_c::create("/Effect/wii_animal.breff", 0,
+                                             dHeap::effectResHeap_p);
         if (sBreffCmd == NULL) {
             return sPhase_c::WAIT;
         }
     }
     if (sBreftCmd == NULL) {
-        sBreftCmd = mDvd_toMainRam_c::create("/Effect/wii_animal.breft", 0, dHeap::effectResHeap_p);
+        sBreftCmd = mDvd_toMainRam_c::create("/Effect/wii_animal.breft", 0,
+                                             dHeap::effectResHeap_p);
         if (sBreftCmd == NULL) {
             return sPhase_c::WAIT;
         }
@@ -334,9 +339,10 @@ BOOL dScBootStatic_c::create() {
         return FALSE;
     }
     mState = STATE_SHOW;
-    mpFader = new (-4) EGG::ColorFader(0.0f, 0.0f, mVideo::m_video->mRenderModeObj.fbWidth,
-                                        mVideo::m_video->mRenderModeObj.efbHeight, nw4r::ut::Color(0x000000FF),
-                                        EGG::Fader::HIDDEN);
+    mpFader = new (-4)
+        EGG::ColorFader(0.0f, 0.0f, mVideo::m_video->mRenderModeObj.fbWidth,
+                        mVideo::m_video->mRenderModeObj.efbHeight,
+                        nw4r::ut::Color(0x000000FF), EGG::Fader::HIDDEN);
     return TRUE;
 }
 
@@ -474,9 +480,10 @@ BOOL dScBootStatic_c::StrapScreen_c::remove() {
 
 // 80108CE4
 void dScBootStatic_c::StrapScreen_c::execute() {
-    if (!mPressed && mPad::g_currentCore->downTrigger(WPAD_BUTTON_LEFT | WPAD_BUTTON_RIGHT | WPAD_BUTTON_DOWN |
-                                                     WPAD_BUTTON_UP | WPAD_BUTTON_2 | WPAD_BUTTON_1 |
-                                                     WPAD_BUTTON_B | WPAD_BUTTON_A)) {
+    if (!mPressed && mPad::g_currentCore->downTrigger(
+                         WPAD_BUTTON_LEFT | WPAD_BUTTON_RIGHT |
+                         WPAD_BUTTON_DOWN | WPAD_BUTTON_UP | WPAD_BUTTON_2 |
+                         WPAD_BUTTON_1 | WPAD_BUTTON_B | WPAD_BUTTON_A)) {
         mPressed = true;
     }
     if (mFader_c::isStatus(mFaderBase_c::HIDDEN)) {
@@ -490,7 +497,8 @@ void dScBootStatic_c::StrapScreen_c::execute() {
         }
         if (mTimer >= 1200 || (mDone && mPressed)) {
             dScBootStatic_c *boot = &l_bootStatic;
-            if (boot->mState != STATE_FADE_OUT && boot->mState != STATE_FADING) {
+            if (boot->mState != STATE_FADE_OUT &&
+                boot->mState != STATE_FADING) {
                 boot->mState = STATE_FADE_OUT;
             }
         }
@@ -603,7 +611,8 @@ void dScBootStatic_c::LoadSaveState_c::initStep() {
         {"ロード終了", (stepLoad_c::Method)&stepLoad_c::processLoadedSave},
         {"終了", (stepLoad_c::Method)&stepLoad_c::finish},
     };
-    mStep.initialize(this, "dScBootStatic_c::LoadSaveState_c::stepLoad_c", steps, 6);
+    mStep.initialize(this, "dScBootStatic_c::LoadSaveState_c::stepLoad_c",
+                     steps, 6);
 }
 
 // 80109264
@@ -658,7 +667,8 @@ void dScBootStatic_c::LoadSaveState_c::stepLoad_c::processLoadedSave() {
 }
 
 // 801094EC
-void dScBootStatic_c::LoadSaveState_c::stepLoad_c::finish() {}
+void dScBootStatic_c::LoadSaveState_c::stepLoad_c::finish() {
+}
 
 // 801094F0
 BOOL dScBootStatic_c::Wc24CheckState_c::execute() {

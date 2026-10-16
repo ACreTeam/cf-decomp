@@ -1666,19 +1666,19 @@ config.libs = [
     Rel(
         "d_menu_itemxxNP",
         [
-            Object(NonMatching, "d_menu_itemxxNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_itemxxNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_itemxxNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_itemxxNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_itemxxNP/d_menu_itemxx.cpp"),
+            Object(Matching, "d_menu_itemxxNP/d_menu_itemxx.cpp", extra_cflags=["-sym on"]),
         ],
     ),
     Rel(
         "d_menu_ltrNP",
         [
-            Object(NonMatching, "d_menu_ltrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_ltrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_ltrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_ltrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_ltrNP/d_menu_ltr.cpp"),
+            Object(Matching, "d_menu_ltrNP/d_menu_ltr.cpp"),
         ],
     ),
     Rel(
@@ -1819,19 +1819,19 @@ config.libs = [
     Rel(
         "d_a_npc_inNP",
         [
-            Object(NonMatching, "d_a_npc_inNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_inNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_inNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_inNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_inNP/d_a_npc_in.cpp"),
+            Object(Matching, "d_a_npc_inNP/d_a_npc_in.cpp", extra_cflags=["-sym on"]),
         ],
     ),
     Rel(
         "d_a_npc_outNP",
         [
-            Object(NonMatching, "d_a_npc_outNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_outNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_outNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_outNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_outNP/d_a_npc_out.cpp"),
+            Object(Matching, "d_a_npc_outNP/d_a_npc_out.cpp", extra_cflags=["-sym on"]),
         ],
     ),
     Rel(
@@ -2593,28 +2593,28 @@ config.libs = [
     Rel(
         "d_bgi_drawNP",
         [
-            Object(NonMatching, "d_bgi_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_bgi_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_bgi_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_bgi_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_bgi_drawNP/d_bgi_draw.cpp"),
+            Object(Matching, "d_bgi_drawNP/d_bgi_draw.cpp", extra_cflags=["-DDECLARE_STRCMP_EARLY"]),
         ],
     ),
     Rel(
         "d_bgo_drawNP",
         [
-            Object(NonMatching, "d_bgo_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_bgo_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_bgo_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_bgo_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_bgo_drawNP/d_bgo_draw.cpp"),
+            Object(Matching, "d_bgo_drawNP/d_bgo_draw.cpp"),
         ],
     ),
     Rel(
         "d_bgt_drawNP",
         [
-            Object(NonMatching, "d_bgt_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_bgt_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_bgt_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_bgt_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_bgt_drawNP/d_bgt_draw.cpp"),
+            Object(Matching, "d_bgt_drawNP/d_bgt_draw.cpp", shift_jis=False),
         ],
     ),
     Rel(
@@ -2674,10 +2674,10 @@ config.libs = [
     Rel(
         "d_org_objNP",
         [
-            Object(NonMatching, "d_org_objNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_org_objNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_org_objNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_org_objNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_org_objNP/d_org_obj.cpp"),
+            Object(Matching, "d_org_objNP/d_org_obj.cpp", shift_jis=False),
         ],
     ),
     Rel(
@@ -2719,10 +2719,10 @@ config.libs = [
     Rel(
         "d_title_demoNP",
         [
-            Object(NonMatching, "d_title_demoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_title_demoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_title_demoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_title_demoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_title_demoNP/d_title_demo.cpp"),
+            Object(Matching, "d_title_demoNP/d_title_demo.cpp"),
         ],
     ),
     Rel(
