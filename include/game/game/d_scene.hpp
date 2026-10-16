@@ -279,6 +279,7 @@ BOOL isCurrentSceneAttr(u32 attr); // 801625D0
 int getSceneAttrIndex(u8 scene, int attr); // 80162608: among the scenes with attr; -1 if none
 int getSceneAttrTableIndex(u8 scene, const u32 *table, int *index); // 801626A8
 BOOL isCurrentSceneMyHouse(); // 80162744
+inline bool isCurrentSceneModelRoom() { return getCurrentScene() == SCENE_RM_HAPPY_MDL; }
 BOOL isMyHouseScene(u8 scene); // 8016276C
 u16 getSceneBuilding(u8 scene); // 801627CC: its building item (0xD0xx) in the town, or 0xFFF1
 int getSceneParamA(u8 scene); // 801627F4

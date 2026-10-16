@@ -410,6 +410,7 @@ enum FtrPartB {
 enum FtrTable {
     FTR_TABLE_NONE, // 0x00
     FTR_TABLE_ITEM, // 0x01
+    FTR_TABLE_TOP,  // 0x02: goes on a table
 
     FTR_TABLE_COUNT = 3,
 };
@@ -758,6 +759,11 @@ struct BITM {
     int getFtrTable() const {
         int table = m_ftrTable;
         return static_cast<u32>(table) < FTR_TABLE_COUNT ? static_cast<FtrTable>(table) : FTR_TABLE_NONE;
+    }
+
+    int getHideBone() const {
+        int bone = static_cast<s8>(m_hideBone);
+        return static_cast<u32>(bone) < 11 ? bone : 10;
     }
 
     int getFtrPartA() const {

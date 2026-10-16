@@ -2647,10 +2647,10 @@ config.libs = [
     Rel(
         "d_ftr_managerNP",
         [
-            Object(NonMatching, "d_ftr_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_ftr_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_ftr_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_ftr_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_ftr_managerNP/d_ftr_manager.cpp"),
+            Object(Matching, "d_ftr_managerNP/d_ftr_manager.cpp"),
         ],
     ),
     Rel(

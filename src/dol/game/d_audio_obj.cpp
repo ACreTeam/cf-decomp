@@ -276,17 +276,17 @@ dSndTv_c::~dSndTv_c() { clear(); }
 // 800115BC: channel 0..10 selects the programme; other values select weather.
 bool dSndTv_c::create(EGG::Heap *heap, u32 channel) {
     switch (channel) {
-    case 0: mObj = new (heap, 4) SoundTv_00_storm; break;
-    case 1: mObj = new (heap, 4) SoundTv_01_color; break;
-    case 2: mObj = new (heap, 4) SoundTv_02_news; break;
-    case 3: mObj = new (heap, 4) SoundTv_03_drama; break;
-    case 4: mObj = new (heap, 4) SoundTv_04_song; break;
-    case 5: mObj = new (heap, 4) SoundTv_05_quiz; break;
-    case 6: mObj = new (heap, 4) SoundTv_06_travel; break;
-    case 7: mObj = new (heap, 4) SoundTv_07_hero; break;
-    case 8: mObj = new (heap, 4) SoundTv_08_variety; break;
-    case 9: mObj = new (heap, 4) SoundTv_09_movie; break;
-    case 10: mObj = new (heap, 4) SoundTv_10_soccer; break;
+    case TV_PROGRAM_STORM: mObj = new (heap, 4) SoundTv_00_storm; break;
+    case TV_PROGRAM_COLOR: mObj = new (heap, 4) SoundTv_01_color; break;
+    case TV_PROGRAM_NEWS: mObj = new (heap, 4) SoundTv_02_news; break;
+    case TV_PROGRAM_DRAMA: mObj = new (heap, 4) SoundTv_03_drama; break;
+    case TV_PROGRAM_SONG: mObj = new (heap, 4) SoundTv_04_song; break;
+    case TV_PROGRAM_QUIZ: mObj = new (heap, 4) SoundTv_05_quiz; break;
+    case TV_PROGRAM_TRAVEL: mObj = new (heap, 4) SoundTv_06_travel; break;
+    case TV_PROGRAM_HERO: mObj = new (heap, 4) SoundTv_07_hero; break;
+    case TV_PROGRAM_VARIETY: mObj = new (heap, 4) SoundTv_08_variety; break;
+    case TV_PROGRAM_MOVIE: mObj = new (heap, 4) SoundTv_09_movie; break;
+    case TV_PROGRAM_SOCCER: mObj = new (heap, 4) SoundTv_10_soccer; break;
     default: mObj = new (heap, 4) SoundTv_255_weather; break;
     }
     mOn = 0;
@@ -307,7 +307,7 @@ void dSndTv_c::clear() {
 }
 
 // 80011BA4
-bool dSndTv_c::isReady() { return mObj->isReady(); }
+BOOL dSndTv_c::isReady() { return mObj->isReady(); }
 
 // 80011BB8
 void dSndTv_c::reset() {
@@ -336,7 +336,7 @@ void dSndTv_c::execute(int frame, const mVec3_c *pos) {
 }
 
 // 80011CD0
-void dSndTv_c::setOn() {
+void dSndTv_c::setOn(BOOL unused) {
     if (!mStarted) {
         mObj->setOn(mPendingOn);
         mStarted = 1;

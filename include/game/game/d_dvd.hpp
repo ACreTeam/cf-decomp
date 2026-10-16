@@ -52,8 +52,7 @@ protected:
 // order, and d_item.o has arcBank_c's RTTI before brresBank_c's.
 class brresBank_c : public bank_c {
 public:
-    brresBank_c() {}
-    virtual ~brresBank_c() {} // 80069BD8
+    // Implicit virtual destructor; its weak copy belongs to the generated-method section.
     virtual void onLoaded() {
         nw4r::g3d::ResFile res(mpData);
         res.Init();

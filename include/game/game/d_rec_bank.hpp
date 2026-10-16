@@ -28,6 +28,7 @@ public:
         /* 0x4 */ u8 mUsed;
     }; // size 0x8
 
+    bankTbl_c() { clear(); }
     ~bankTbl_c();                                    // 8010655C
     void clear();                                    // 8010659C
     BOOL destroy();                                  // 801065B8

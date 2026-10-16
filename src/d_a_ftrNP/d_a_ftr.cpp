@@ -40,20 +40,9 @@ enum {
 };
 
 enum {
-    FTR_KIND_PLACED,
-    FTR_KIND_APPEAR,
-    FTR_KIND_HIDDEN,
-    FTR_KIND_DUMMY,
-};
-
-enum {
     SCENE_ATTR_NPC_ROOM = dScene::SCENE_ATTR_NPC_HOUSE | dScene::SCENE_ATTR_FTR_ROOM | dScene::SCENE_ATTR_ROOM,
     SCENE_ATTR_SHOP_ROOM = dScene::SCENE_ATTR_SHOP | dScene::SCENE_ATTR_ROOM,
 };
-
-static inline bool isModelRoom() {
-    return dScene::getCurrentScene() == dScene::SCENE_RM_HAPPY_MDL;
-}
 
 // Unused; referencing anmChrPart_c's vtable puts anmChr_c::getType before anmVis_c::getType.
 inline void makePartAnm() {
@@ -668,9 +657,10 @@ void daFTR_c::executeState() {
 
 // 0x2144
 BOOL daFTR_c::initAppear() {
+    static const s16 initialSpeed = 10000;
     mAppearTimer = 0;
     mAppearAngle = 0;
-    mAppearSpeed = 10000;
+    mAppearSpeed = initialSpeed;
     mAppearAmp = 0.5f;
     mBgScale = 1.0f / 3.0f;
     mScale.x = 0.0f;
@@ -691,6 +681,7 @@ BOOL daFTR_c::initAppear() {
 
 // 0x2234
 void daFTR_c::executeAppear() {
+    static const s16 acceleration = 900;
     if (mAppearTimer < 40) {
         mAppearTimer++;
         mStateTimer = 0;
@@ -723,7 +714,7 @@ void daFTR_c::executeAppear() {
         f32 prevSin = nw4r::math::SinIdx(prev);
         f32 sin = nw4r::math::SinIdx(angle);
         if (prevSin * sin < 0.0f) {
-            mAppearSpeed += 900;
+            mAppearSpeed += acceleration;
             mAppearAmp *= 0.8f;
         }
         f32 bounce = mAppearAmp * sin;
@@ -935,9 +926,10 @@ void daFTR_c::executeHidden() {}
 
 // 0x2D20
 BOOL daFTR_c::initTalk() {
+    static const s16 messageCode = 0x1D;
     attachDemoActor(this);
     setMessageLabel("sys_MESS/SYS_Player");
-    setMessageCode(0x1D);
+    setMessageCode(messageCode);
     dItem::name_c name(getItem());
     if (getLayer() == 1) {
         if (mMsgItem1.getId() == dItem::ITEM_ID_NONE) {
@@ -1228,7 +1220,7 @@ void daFTR_c::executeHook() {}
 BOOL daFTR_c::initFtr() {
     if (!mFlags.mInited) {
         clearUnit();
-        mpMgrData = dFtrm_c::getCurrent()->mpData;
+        mMgrItem = dFtrm_c::getCurrent()->mItem;
         mParent = -1;
         mInfo.mValue = mParam;
         dItem::Item item = getItem();
@@ -1658,19 +1650,24 @@ void daFTR_c::getUnits(dFTR::unitList_c *list, const mVec3_c *ofs, mAng angle, m
         list->add(x + 1, z + 1);
         break;
     }
-    case dItem::FTR_SIZE_1x2:
-        for (u32 i = 0; i < 2; i++) {
+    case dItem::FTR_SIZE_1x2: {
+        static const u32 unitCount = 2;
+        for (u32 i = 0; i < unitCount; i++) {
             PSMTXMultVec(*mtx, l_center2x1[i], center);
             int x = worldToUnit(center.x);
             int z = worldToUnit(center.z);
             list->add(x, z);
         }
         break;
+    }
     default: {
-        PSMTXMultVec(*mtx, l_center, center);
-        int x = worldToUnit(center.x);
-        int z = worldToUnit(center.z);
-        list->add(x, z);
+        static const u32 unitCount = 1;
+        for (u32 i = 0; i < unitCount; i++) {
+            PSMTXMultVec(*mtx, l_center, center);
+            int x = worldToUnit(center.x);
+            int z = worldToUnit(center.z);
+            list->add(x, z);
+        }
         break;
     }
     }
@@ -2527,8 +2524,9 @@ static const char *l_switchNodeName[] = {"v", "v1", "v2", "v3"};
 
 // 0x79F0
 void daFTR_c::switchNode_c::init(nw4r::g3d::ResMdl mdl, BOOL on) {
+    static const u32 nodeCount = ARRAY_SIZE(l_switchNodeName);
     if (mdl.IsValid()) {
-        for (u32 i = 0; i < ARRAY_SIZE(mNode); i++) {
+        for (u32 i = 0; i < nodeCount; i++) {
             mNode[i] = m3d::getNodeID(mdl, l_switchNodeName[i]);
         }
         set(on);
@@ -2642,7 +2640,8 @@ void daFTR_c::deleteLamp() {
 
 // 0x7FC4
 f32 daFTR_c::getCatalogScale() const {
-    u8 scale = 100;
+    static const f32 defaultScale = 1.0f;
+    u8 scale = defaultScale * 100;
     if (mpBITM != NULL) {
         scale = (s8)mpBITM->m_catalogScale;
     }
@@ -2668,21 +2667,21 @@ void daFTR_c::adjustPos() {
 
 // 0x80AC
 void daFTR_c::onMessageStart(int arg) {
-    if (isModelRoom() && mMsgItem2.getId() != dItem::ITEM_ID_NONE && mMessageCode == 0x16) {
+    if (dScene::isCurrentSceneModelRoom() && mMsgItem2.getId() != dItem::ITEM_ID_NONE && mMessageCode == 0x16) {
         mpController->setItemName(1, &mMsgItem2);
     }
 }
 
 // 0x8114
 void daFTR_c::onMessageEnd(int kind) {
-    if (isModelRoom() && mMsgItem2.getId() != dItem::ITEM_ID_NONE && mMessageCode == 0x1D) {
+    if (dScene::isCurrentSceneModelRoom() && mMsgItem2.getId() != dItem::ITEM_ID_NONE && mMessageCode == 0x1D) {
         mpController->setNextMsgCode(0x16);
     }
 }
 
 // 0x8178
 mVec3_c *daFTR_c::getDemoPosition() {
-    if (isModelRoom()) {
+    if (dScene::isCurrentSceneModelRoom()) {
         if (mDemoPos.isZero()) {
             if (mCenter.isZero()) {
                 return dDemoActor_c::getDemoPosition();
@@ -2701,7 +2700,7 @@ void daFTR_c::onDemoCmd(int cmd, u8 member) {
 
 // 0x8244
 BOOL daFTR_c::demoCmd(int cmd) {
-    if (isModelRoom()) {
+    if (dScene::isCurrentSceneModelRoom()) {
         switch (cmd) {
         case DEMO_CMD_SPEAK:
             sendEvent(STATE_TALK);
@@ -2756,16 +2755,18 @@ static const int l_noShadowKind[] = {dItem::KIND_SHELL};
 
 // 0x84D0
 void daFTR_c::initShadow() {
+    static const u32 itemCount = ARRAY_SIZE(l_noShadowItem);
+    static const u32 kindCount = ARRAY_SIZE(l_noShadowKind);
     dItem::Item item = getItem();
     int kind = getItemKind();
     mFlags.mShadow = 1;
-    for (const int *index = l_noShadowItem; index < l_noShadowItem + ARRAY_SIZE(l_noShadowItem); index++) {
+    for (const int *index = l_noShadowItem; index < l_noShadowItem + itemCount; index++) {
         if (item.isSame(dItem::Item(*index))) {
             mFlags.mShadow = 0;
             return;
         }
     }
-    for (const int *noShadow = l_noShadowKind; noShadow < l_noShadowKind + ARRAY_SIZE(l_noShadowKind); noShadow++) {
+    for (const int *noShadow = l_noShadowKind; noShadow < l_noShadowKind + kindCount; noShadow++) {
         if (*noShadow == kind) {
             mFlags.mShadow = 0;
             return;
@@ -2775,6 +2776,7 @@ void daFTR_c::initShadow() {
 
 // 0x85D4
 void daFTR_c::drawShadow(const mVec3_c *scale) {
+    static const f32 shadowScale = 1.0f;
     if (mFlags.mShadow && !getLayer()) {
         f32 sizeX;
         f32 sizeZ;
@@ -2791,24 +2793,9 @@ void daFTR_c::drawShadow(const mVec3_c *scale) {
             break;
         }
         mAng angle = getAngleY();
-        dShadow::requestRound(&mCenter, 2, &angle, sizeX, scale->x, 1.0f, sizeZ, 1.0f);
+        dShadow::requestRound(&mCenter, 2, &angle, sizeX, scale->x, shadowScale, sizeZ, shadowScale);
     }
 }
 
 // 0x86A0
 daFTR_c::~daFTR_c() {}
-
-// Unknown parameters; every read of them was folded into the code.
-struct param_c {
-    f32 _00;
-    int _04;
-    int _08;
-    f32 _0C;
-    int _10;
-    int _14;
-    int _18;
-    s16 _1C;
-    s16 _1E;
-    s16 _20;
-};
-extern const param_c l_param = {1.0f, 5, 1, 1.0f, 4, 2, 1, 0x1D, 900, 10000};

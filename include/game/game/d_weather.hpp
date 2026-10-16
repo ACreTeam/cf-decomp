@@ -18,7 +18,7 @@ int getPattern(const dTime_c *time);
 int getCityPattern(const dTime_c *time);
 int getWeather(const dTime_c *time);
 int getCityWeather(const dTime_c *time);
-u8 getForecast(const dTime_c *time);
+int getForecast(const dTime_c *time);
 BOOL isSnowSeason();
 } // namespace dWeather
 

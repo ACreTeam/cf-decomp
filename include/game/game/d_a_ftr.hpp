@@ -56,6 +56,14 @@ struct counter_c {
 
 } // namespace dFTR
 
+// daFTR_c::info_c::mKind.
+enum {
+    FTR_KIND_PLACED,
+    FTR_KIND_APPEAR,
+    FTR_KIND_HIDDEN,
+    FTR_KIND_DUMMY,
+};
+
 class daFTR_c : public dDemoActor_c, public dBGCF::mvbg_c, public dFTR::alwaysAc_c, public dMsg::Rcpt_c {
 public:
     enum STATE_e {
@@ -239,6 +247,7 @@ public:
     virtual void changeSwitch(u32 sw, BOOL keep);
     virtual BOOL isIdle() { return mState == STATE_WAIT; }
     virtual BOOL isWait() { return mState == STATE_WAIT; }
+    bool isBusy() { return !isWait(); }
     virtual BOOL startRotate(const mAng &angle);
     virtual BOOL startPush(const mAng &angle);
     virtual BOOL startPull(const mAng &angle);
@@ -417,7 +426,7 @@ public:
     /* 0x358 */ mAng mTargetAngle;
     /* 0x35C */ mVec3_c mTargetPos;
     /* 0x368 */ u32 mHoldId;
-    /* 0x36C */ void *mpMgrData;
+    /* 0x36C */ u32 mMgrItem;
     /* 0x370 */ mVec3_c mScale;
     /* 0x37C */ u8 mSwitchParam;
     /* 0x380 */ lamp_c mLamp;

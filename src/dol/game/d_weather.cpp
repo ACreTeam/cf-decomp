@@ -539,7 +539,7 @@ int getCityWeather(const dTime_c *time) {
     return weather;
 }
 
-u8 getForecast(const dTime_c *time) {
+int getForecast(const dTime_c *time) {
     u8 forecast = sForecast[getPattern(time)];
     if (dScene::isLateSeason(time)) {
         switch (forecast) {

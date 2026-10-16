@@ -118,6 +118,7 @@ struct dHomeRoom_c {
     void setCarpet(dItem::Item item) { mCarpet = item; } // 8007773C
     dItem::Item getCarpet() const { return mCarpet; } // 80077748
     void setSong(dItem::Item item) { mSong = item; } // 80112BAC (kept in d_model_room)
+    dItem::Item getSong() const { return mSong; }
 
     /* 0x000 */ dHomeLayer_c mLayers[HOME_LAYER_NUM];
     /* 0x400 */ dHomeRoomMap_c mMap;
@@ -154,6 +155,7 @@ struct dHome_c {
 
     bool isPending() const { return _15BB.mRaw & 1; }
     dPersonalID_c *getOwner() { return &mOwner; }
+    dItem::Item getLoftFtr() const { return _15B8; }
 
     /* 0x0000 */ dDesign_c mDesign;
     /* 0x0880 */ dPersonalID_c mOwner;
