@@ -1606,6 +1606,15 @@ config.libs = [
             Object(Matching, "d_fg_drawNP/d_fg_draw.cpp"),
         ],
     ),
+    Rel(
+        "d_menu_debug00NP",
+        [
+            Object(Matching, "d_menu_debug00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_debug00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(Matching, "d_menu_debug00NP/d_menu_debug00.cpp"),
+        ],
+    ),
 ]
 
 

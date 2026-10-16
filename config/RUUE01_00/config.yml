@@ -792,6 +792,7 @@ modules:
 - object: files/rels/d_menu_debug00NP.rel
   hash: 562d9de5efb4c80d37ae3e5a9fc384b6619e34a7
   name: d_menu_debug00NP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_menu_debug00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_debug00NP/splits.txt
 - object: files/rels/d_menu_desi00NP.rel
