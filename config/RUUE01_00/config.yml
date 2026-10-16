@@ -681,6 +681,7 @@ modules:
   name: d_bgt_drawNP
   symbols: config/RUUE01_00/d_bgt_drawNP/symbols.txt
   splits: config/RUUE01_00/d_bgt_drawNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_cockroach_managerNP.rel
   hash: eff0e3f1509f18a384c41593045febf729c4a80e
   name: d_cockroach_managerNP
