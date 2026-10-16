@@ -182,6 +182,7 @@ modules:
   name: d_paperNP
   symbols: config/RUUE01_00/d_paperNP/symbols.txt
   splits: config/RUUE01_00/d_paperNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_balloonNP.rel
   hash: 1c824f5779e1eed2c889da953a77f1bcae304fb4
   name: d_a_balloonNP
