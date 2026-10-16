@@ -176,6 +176,7 @@ modules:
   name: d_menu_titleNP
   symbols: config/RUUE01_00/d_menu_titleNP/symbols.txt
   splits: config/RUUE01_00/d_menu_titleNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_paperNP.rel
   hash: 954f4c3c43cfa75678c4673a958d482f79898d19
   name: d_paperNP
