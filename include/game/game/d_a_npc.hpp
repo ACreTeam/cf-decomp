@@ -129,6 +129,8 @@ public:
     // The three body animation ids of the npc (npc+0xE8): wait, walk, run. Size 0xC.
     class anmSet_c {
     public:
+      anmSet_c() : mWaitAnm(0), mWalkAnm(1), mRunAnm(2) {
+      }
         void setAnm0(int anmId);   // 80017F84
         void setAnm1(int anmId);   // 80017F8C
         void setAnm2(int anmId);   // 80017F94
@@ -1359,8 +1361,16 @@ public:
         virtual BOOL isLoaded(const dAcNpc_c *npc) const = 0; // ready to change clothes? (const: d_a_npc_nml 80030848 / 8003004C)
     }; // size 0x4
 
+    // Inline construction observed in REL NPC factories (including d_a_npc_cafe).
+    dAcNpc_c()
+        : mAnmRate(1.0f), mModel(this), mShadowSize(1.0f), _1B64(16.0f),
+          _1B68(1.0f), mPushTimer(0), mNetSync(true), mPermitState(0),
+          mRecvDaubAsOwner(0) {
+    }
+
     // ---- vtable 804A0200 (0xC4: 2 header words + 47 slots) ----
-    // fBase_c / dActor_c / dDemoActor_c overrides (dtor slot +0x48: 8002EA18, implicit)
+    // fBase_c / dActor_c / dDemoActor_c overrides (dtor slot +0x48: 8002EA18,
+    // implicit)
     virtual ~dAcNpc_c() {}                          // 8002EA18 (weak, after __sinit)
     virtual int create();                           // 80015C2C
     virtual int preCreate();                        // 80015808

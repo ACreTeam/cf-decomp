@@ -73,5 +73,5 @@ lbl_84_section5_3E4 = .data:0x000003E4; // type:object size:0xC
 lbl_84_section5_3F0 = .data:0x000003F0; // type:object size:0x8
 lbl_84_section5_3F8 = .data:0x000003F8; // type:object size:0xC data:string
 lbl_84_section5_408 = .data:0x00000408; // type:object size:0x8
-lbl_84_bss_8 = .bss:0x00000008; // type:object size:0x1 data:byte
+g_npcCreated__11dARmobjCafe = .bss:0x00000008; // type:object size:0x1 data:byte
 lbl_84_bss_9 = .bss:0x00000009; // type:object size:0x1 data:byte

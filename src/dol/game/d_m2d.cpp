@@ -1,7 +1,8 @@
-// Game-side m2d extensions: m2d::ResAccLoader_c (disc-loaded layout archives), m2d::SimpleEx_c (menu
-// layout helpers), m2d::tagProcessor_c and the m2d words (text shown in text boxes), m2d::AnmEx_c /
-// AnmEx2_c (animation tables), the post-draw lists and m2d::moveCalc_c. City Folk only.
-// .text 800075C0..8000AD84. See include/game/game/d_m2d.hpp and notes/d_m2d.txt.
+// Game-side m2d extensions: m2d::ResAccLoader_c (disc-loaded layout archives),
+// m2d::SimpleEx_c (menu layout helpers), m2d::tagProcessor_c and the m2d words
+// (text shown in text boxes), m2d::AnmEx_c / AnmEx2_c (animation tables), the
+// post-draw lists and m2d::moveCalc_c. City Folk only. .text
+// 800075C0..8000AD84. See include/game/game/d_m2d.hpp and notes/d_m2d.txt.
 #include <game/game/d_font.hpp>
 #include <game/game/d_m2d.hpp>
 #include <game/game/d_mii_icon.hpp>
@@ -27,7 +28,8 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_802C2538(void *buffer, int source, RFLMiddleDB *middleDB, u16 id, int, void *params); // RFLMakeIcon
+void fn_802C2538(void *buffer, int source, RFLMiddleDB *middleDB, u16 id, int,
+                 void *params); // RFLMakeIcon
 }
 
 namespace m2d {
@@ -38,10 +40,12 @@ static dLineMg_c l_callbackList;
 static dLineMg_c l_captureList;
 
 // 800075C0
-ResAccLoader_c::ResAccLoader_c() : mpArc(nullptr) {}
+ResAccLoader_c::ResAccLoader_c() : mpArc(nullptr) {
+}
 
 // 8000760C
-ResAccLoader_c::~ResAccLoader_c() {}
+ResAccLoader_c::~ResAccLoader_c() {
+}
 
 // 80007674
 bool ResAccLoader_c::load(const char *path) {
@@ -69,8 +73,7 @@ BOOL ResAccLoader_c::remove() {
 // 8000774C
 bool ResAccLoader_c::create(EGG::Heap *heap, size_t size) {
     EGG::ExpHeap *expHeap = EGG::ExpHeap::create(size, heap, 4);
-    expHeap->setName("\x82\x51\x82\x63\x83\x8A\x83\x5C\x81\x5B\x83\x58\x97\x70\x83\x71\x81\x5B\x83\x76"
-                     "(d2d::ResAccLoader_c::create)");
+    expHeap->setName("２Ｄリソ\ース用ヒープ(d2d::ResAccLoader_c::create)");
     l_resAllocator = new (expHeap, 4) mAllocator_c();
     l_resAllocator->attach(expHeap, 0x20);
     return true;
@@ -119,7 +122,8 @@ int isInPane(nw4r::lyt::Pane *pane, void *arg) {
         return 0;
     }
     const nw4r::math::MTX34 &g = pane->GetGlobalMtx();
-    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13, g._20, g._21, g._22, g._23);
+    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13,
+                       g._20, g._21, g._22, g._23);
     PSMTXInverse(mtx.m, mtx.m);
     mVec3_c pos(hit->mPos.x, hit->mPos.y, 0.0f);
     PSMTXMultVec(mtx.m, (Vec *)&pos, (Vec *)&pos);
@@ -134,7 +138,9 @@ int isInPane(nw4r::lyt::Pane *pane, void *arg) {
     } else {
         nw4r::lyt::DrawInfo drawInfo;
         nw4r::ut::Rect rect = pane->GetPaneRect(drawInfo);
-        if (pos.x >= rect.left * hit->mScale && pos.x <= rect.right * hit->mScale && pos.y >= rect.bottom * hit->mScale &&
+        if (pos.x >= rect.left * hit->mScale &&
+            pos.x <= rect.right * hit->mScale &&
+            pos.y >= rect.bottom * hit->mScale &&
             pos.y <= rect.top * hit->mScale) {
             hit->mpHit = pane;
             return 1;
@@ -145,7 +151,8 @@ int isInPane(nw4r::lyt::Pane *pane, void *arg) {
 
 // 80007A44
 bool isCircleButton(nw4r::lyt::Pane *pane) {
-    nw4r::lyt::Bounding *bounding = nw4r::ut::DynamicCast<nw4r::lyt::Bounding *>(pane);
+    nw4r::lyt::Bounding *bounding =
+        nw4r::ut::DynamicCast<nw4r::lyt::Bounding *>(pane);
     if (bounding == nullptr) {
         return false;
     }
@@ -165,7 +172,8 @@ bool isCircleButton(nw4r::lyt::Pane *pane) {
 
 // 80007B14
 bool isRectButton(nw4r::lyt::Pane *pane) {
-    nw4r::lyt::Bounding *bounding = nw4r::ut::DynamicCast<nw4r::lyt::Bounding *>(pane);
+    nw4r::lyt::Bounding *bounding =
+        nw4r::ut::DynamicCast<nw4r::lyt::Bounding *>(pane);
     if (bounding == nullptr) {
         return false;
     }
@@ -235,7 +243,8 @@ bool SimpleEx_c::build(ResAccIf_c *resAcc, const char *lytName) {
 }
 
 // 80007D9C
-void SimpleEx_c::setNumber(const char *name, int value, int digits, dScript::NumberFormat_e format) {
+void SimpleEx_c::setNumber(const char *name, int value, int digits,
+                           dScript::NumberFormat_e format) {
     nw4r::lyt::TextBox *textBox = findTextBox(name);
     dString::Word_c word;
     dScript::formatNumber(&word, value, digits, format, 0);
@@ -244,7 +253,8 @@ void SimpleEx_c::setNumber(const char *name, int value, int digits, dScript::Num
 }
 
 // 80007E48
-void SimpleEx_c::setNumberSep(const char *name, int value, int digits, dScript::NumberFormat_e format) {
+void SimpleEx_c::setNumberSep(const char *name, int value, int digits,
+                              dScript::NumberFormat_e format) {
     wchar_t *buf;
     nw4r::lyt::TextBox *textBox = findTextBox(name);
     dString::Word_c word;
@@ -311,7 +321,8 @@ f32 calcTextWidth(nw4r::lyt::TextBox *textBox, const wchar_t *str, int len) {
         len = textBox->GetStringLength();
     }
     EGG::Heap *heap = EGG::Heap::getCurrentHeap();
-    wchar_t *buf = (wchar_t *)EGG::Heap::alloc(len * sizeof(wchar_t), 0x20, heap);
+    wchar_t *buf =
+        (wchar_t *)EGG::Heap::alloc(len * sizeof(wchar_t), 0x20, heap);
     memset(buf, 0, len * sizeof(wchar_t));
     wchar_t *dst = buf;
     int i = 0;
@@ -348,7 +359,8 @@ f32 calcTextWidth(nw4r::lyt::TextBox *textBox, const wchar_t *str, int len) {
 // 80008308
 mVec3_c getTotalPos(nw4r::lyt::Pane *pane) {
     mVec3_c pos = pane->GetTranslate();
-    for (nw4r::lyt::Pane *parent = pane->GetParent(); parent != nullptr; parent = parent->GetParent()) {
+    for (nw4r::lyt::Pane *parent = pane->GetParent(); parent != nullptr;
+         parent = parent->GetParent()) {
         mVec3_c t = parent->GetTranslate();
         pos += t;
     }
@@ -384,8 +396,8 @@ nw4r::lyt::Material *getMaterial(nw4r::lyt::Pane *pane) {
 }
 
 // 80008478
-void fn_80008478(nw4r::lyt::Pane *pane) {
-    getMaterial(pane)->GetTexMapAry();
+nw4r::lyt::TexMap *getTexMaps(nw4r::lyt::Pane *pane) {
+    return getMaterial(pane)->GetTexMapAry();
 }
 
 // 8000849C
@@ -412,7 +424,8 @@ void setTevColors(nw4r::lyt::Pane *pane, const u8 *white, const u8 *black) {
 }
 
 // 800085D4
-void SimpleEx_c::copyPos(SimpleEx_c *other, const char *srcName, const char *dstName) {
+void SimpleEx_c::copyPos(SimpleEx_c *other, const char *srcName,
+                         const char *dstName) {
     nw4r::lyt::Pane *src = findPane(srcName);
     nw4r::lyt::Pane *dst = other->findPane(dstName);
     if (src != nullptr && dst != nullptr) {
@@ -439,7 +452,8 @@ f32 getDefaultScale() {
 // 80008694
 void getScreenPos(mVec3_c *pos, nw4r::lyt::Pane *pane) {
     const nw4r::math::MTX34 &g = pane->GetGlobalMtx();
-    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13, g._20, g._21, g._22, g._23);
+    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13,
+                       g._20, g._21, g._22, g._23);
     pos->x = 0.0f;
     pos->y = 0.0f;
     pos->z = 0.0f;
@@ -451,7 +465,8 @@ void getScreenLeftTop(mVec3_c *pos, nw4r::lyt::Pane *pane) {
     nw4r::lyt::DrawInfo drawInfo;
     nw4r::ut::Rect rect = pane->GetPaneRect(drawInfo);
     const nw4r::math::MTX34 &g = pane->GetGlobalMtx();
-    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13, g._20, g._21, g._22, g._23);
+    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13,
+                       g._20, g._21, g._22, g._23);
     pos->x = 0.0f;
     pos->y = 0.0f;
     pos->z = 0.0f;
@@ -465,7 +480,8 @@ void getScreenRightBottom(mVec3_c *pos, nw4r::lyt::Pane *pane) {
     nw4r::lyt::DrawInfo drawInfo;
     nw4r::ut::Rect rect = pane->GetPaneRect(drawInfo);
     const nw4r::math::MTX34 &g = pane->GetGlobalMtx();
-    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13, g._20, g._21, g._22, g._23);
+    EGG::Matrix34f mtx(g._00, g._01, g._02, g._03, g._10, g._11, g._12, g._13,
+                       g._20, g._21, g._22, g._23);
     pos->x = 0.0f;
     pos->y = 0.0f;
     pos->z = 0.0f;
@@ -480,11 +496,13 @@ bool isInPaneRect(nw4r::lyt::Pane *pane, f32 margin, const mVec2_c *pos) {
     getScreenLeftTop(&lt, pane);
     mVec3_c rb;
     getScreenRightBottom(&rb, pane);
-    return lt.x - margin <= pos->x && rb.x + margin >= pos->x && lt.y >= pos->y && rb.y <= pos->y;
+    return lt.x - margin <= pos->x && rb.x + margin >= pos->x &&
+           lt.y >= pos->y && rb.y <= pos->y;
 }
 
 // 8000897C
-void SimpleEx_c::setPosFrom(const char *srcName, const char *dstName, f32 x, f32 y) {
+void SimpleEx_c::setPosFrom(const char *srcName, const char *dstName, f32 x,
+                            f32 y) {
     nw4r::lyt::Pane *src = findPane(srcName);
     nw4r::lyt::Pane *dst = findPane(dstName);
     mVec3_c pos = src->GetTranslate();
@@ -524,7 +542,8 @@ void toColor(const GXColorS10 *in, u8 *out) {
 }
 
 // 80008ADC
-int hitButton(const mVec2_c *pos, Simple_c *lyt, int rectBase, int rectMax, int circleBase, int circleMax, f32 scale) {
+int hitButton(const mVec2_c *pos, Simple_c *lyt, int rectBase, int rectMax,
+              int circleBase, int circleMax, f32 scale) {
     hitArg_c hit;
     hit.mpHit = nullptr;
     hit.mScale = scale;
@@ -555,17 +574,20 @@ int hitButton(const mVec2_c *pos, Simple_c *lyt, int rectBase, int rectMax, int 
 }
 
 // 80008BF4
-void setVisible(nw4r::lyt::Pane *root, const char **names, int num, bool visible) {
+void setVisible(nw4r::lyt::Pane *root, const char **names, int num,
+                bool visible) {
     for (int i = 0; i < num; i++) {
         root->FindPaneByName(names[i], true)->SetVisible(visible);
     }
 }
 
 // 80008C74
-tagProcessor_c::tagProcessor_c() {}
+tagProcessor_c::tagProcessor_c() {
+}
 
 // 80008CB0
-tagProcessor_c::~tagProcessor_c() {}
+tagProcessor_c::~tagProcessor_c() {
+}
 
 // 80008D0C
 tagProcessor_c::Operation tagProcessor_c::Process(u16 ch, ContextType *pCtx) {
@@ -575,12 +597,12 @@ tagProcessor_c::Operation tagProcessor_c::Process(u16 ch, ContextType *pCtx) {
         void *data = nullptr;
         EGG::MsgRes::analyzeTag(ch, pCtx->str, &size, &cmd, &data);
         switch (cmd) {
-            case 0xFF0000:
-                procColor(0, pCtx, size, data);
-                break;
-            case 0xFE0000:
-                setColor(pCtx, (u8 *)data);
-                break;
+        case 0xFF0000:
+            procColor(0, pCtx, size, data);
+            break;
+        case 0xFE0000:
+            setColor(pCtx, (u8 *)data);
+            break;
         }
         pCtx->str = (const wchar_t *)((const u8 *)pCtx->str + (size & ~1));
         return OPERATION_DEFAULT;
@@ -589,7 +611,8 @@ tagProcessor_c::Operation tagProcessor_c::Process(u16 ch, ContextType *pCtx) {
 }
 
 // 80008DE0
-tagProcessor_c::Operation tagProcessor_c::CalcRect(nw4r::ut::Rect *pRect, u16 ch, ContextType *pCtx) {
+tagProcessor_c::Operation tagProcessor_c::CalcRect(nw4r::ut::Rect *pRect,
+                                                   u16 ch, ContextType *pCtx) {
     if (ch == 0x1A) {
         u8 size = 0;
         u32 cmd = 0;
@@ -637,10 +660,12 @@ int writeColorTag(wchar_t *buf, const u8 *color0, const u8 *color1) {
 }
 
 // 80008F80
-Word_c::Word_c() : mpTextBox(nullptr) {}
+Word_c::Word_c() : mpTextBox(nullptr) {
+}
 
 // 80008FC4
-Word_c::~Word_c() {}
+Word_c::~Word_c() {
+}
 
 // 8000901C
 void Word_c::setTextBox(nw4r::lyt::TextBox *textBox) {
@@ -808,24 +833,24 @@ int Word_c::getPosAtScreenX(f32 x) {
     mVec3_c pos;
     f32 dx;
     switch (mpTextBox->GetTextPositionH()) {
-        case 2: {
-            mVec3_c rb;
-            getScreenRightBottom(&rb, mpTextBox);
-            pos = rb;
-            f32 width = calcWidth(nullptr, 0);
-            if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
-                width *= 0.730769f;
-            }
-            dx = x - (pos.x - width);
-            break;
+    case 2: {
+        mVec3_c rb;
+        getScreenRightBottom(&rb, mpTextBox);
+        pos = rb;
+        f32 width = calcWidth(nullptr, 0);
+        if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+            width *= 0.730769f;
         }
-        default: {
-            mVec3_c lt;
-            getScreenLeftTop(&lt, mpTextBox);
-            pos = lt;
-            dx = x - pos.x;
-            break;
-        }
+        dx = x - (pos.x - width);
+        break;
+    }
+    default: {
+        mVec3_c lt;
+        getScreenLeftTop(&lt, mpTextBox);
+        pos = lt;
+        dx = x - pos.x;
+        break;
+    }
     }
     if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
         dx *= 1.368421f;
@@ -869,15 +894,16 @@ f32 Word_c::getScreenXRight(int pos) {
 // 8000986C
 f32 Word_c::getScreenX(int pos) {
     switch (mpTextBox->GetTextPositionH()) {
-        case 2:
-            return getScreenXRight(pos);
-        default:
-            return getScreenXLeft(pos);
+    case 2:
+        return getScreenXRight(pos);
+    default:
+        return getScreenXLeft(pos);
     }
 }
 
 // 800098A8
-BOOL Word_c::insertColored(const wchar_t *str, int pos, const u8 *color0, const u8 *color1) {
+BOOL Word_c::insertColored(const wchar_t *str, int pos, const u8 *color0,
+                           const u8 *color1) {
     wchar_t *buf = getBuffer();
     int size = getSize(buf);
     int strSize = getSize(str);
@@ -925,7 +951,8 @@ BOOL Word_c::insertColored(const wchar_t *str, int pos, const u8 *color0, const 
 }
 
 // 80009AA0
-BOOL Word_c::insertColor(int pos, const u8 *color0, const u8 *color1, BOOL before) {
+BOOL Word_c::insertColor(int pos, const u8 *color0, const u8 *color1,
+                         BOOL before) {
     wchar_t *buf = getBuffer();
     int size = getSize(buf);
     int at = getSizeAt(buf, pos);
@@ -990,7 +1017,8 @@ itemWord_c::itemWord_c() {
 }
 
 // 80009D3C
-itemWord_c::~itemWord_c() {}
+itemWord_c::~itemWord_c() {
+}
 
 // 80009D94
 u32 itemWord_c::getBufferSize() {
@@ -1008,7 +1036,8 @@ stringWord_c::stringWord_c() {
 }
 
 // 80009DE8
-stringWord_c::~stringWord_c() {}
+stringWord_c::~stringWord_c() {
+}
 
 // 80009E40
 u32 stringWord_c::getBufferSize() {
@@ -1026,7 +1055,8 @@ stringWordL_c::stringWordL_c() {
 }
 
 // 80009E94
-stringWordL_c::~stringWordL_c() {}
+stringWordL_c::~stringWordL_c() {
+}
 
 // 80009EEC
 u32 stringWordL_c::getBufferSize() {
@@ -1044,7 +1074,8 @@ stringWordLL_c::stringWordLL_c() {
 }
 
 // 80009F40
-stringWordLL_c::~stringWordLL_c() {}
+stringWordLL_c::~stringWordLL_c() {
+}
 
 // 80009F98
 u32 stringWordLL_c::getBufferSize() {
@@ -1057,13 +1088,18 @@ wchar_t *stringWordLL_c::getBuffer() {
 }
 
 // 80009FA8
-AnmEx_c::AnmEx_c() : mpLyt(nullptr), mpNames(nullptr), mpResAcc(nullptr), mNum(0), mCurIdx(-1), mNextIdx(-1) {}
+AnmEx_c::AnmEx_c()
+    : mpLyt(nullptr), mpNames(nullptr), mpResAcc(nullptr), mNum(0), mCurIdx(-1),
+      mNextIdx(-1) {
+}
 
 // 8000A004
-AnmEx_c::~AnmEx_c() {}
+AnmEx_c::~AnmEx_c() {
+}
 
 // 8000A05C
-void AnmEx_c::init(SimpleEx_c *lyt, ResAccIf_c *resAcc, const char **names, int num) {
+void AnmEx_c::init(SimpleEx_c *lyt, ResAccIf_c *resAcc, const char **names,
+                   int num) {
     mpLyt = lyt;
     mpResAcc = resAcc;
     mpNames = names;
@@ -1148,10 +1184,12 @@ void AnmEx_c::change(int idx) {
 }
 
 // 8000A2D8
-AnmEx2_c::AnmEx2_c() : mNumber(0) {}
+AnmEx2_c::AnmEx2_c() : mNumber(0) {
+}
 
 // 8000A31C
-AnmEx2_c::~AnmEx2_c() {}
+AnmEx2_c::~AnmEx2_c() {
+}
 
 // 8000A374
 void AnmEx2_c::setNumber(int number) {
@@ -1324,7 +1362,8 @@ bool moveCalc_c::calc() {
 }
 
 // 8000A7EC
-void moveCalc_c::set(const mVec2_c *from, const mVec2_c *to, int maxSteps, int minSteps, int decel, f32 speed) {
+void moveCalc_c::set(const mVec2_c *from, const mVec2_c *to, int maxSteps,
+                     int minSteps, int decel, f32 speed) {
     mPos.x = from->x;
     mPos.y = from->y;
     mDecel = decel;

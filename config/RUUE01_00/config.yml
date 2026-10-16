@@ -137,11 +137,13 @@ modules:
   name: d_menu_desiNP
   symbols: config/RUUE01_00/d_menu_desiNP/symbols.txt
   splits: config/RUUE01_00/d_menu_desiNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_itemNP.rel
   hash: 78978108d7fa3471d16527a33252834ff8c03033
   name: d_menu_itemNP
   symbols: config/RUUE01_00/d_menu_itemNP/symbols.txt
   splits: config/RUUE01_00/d_menu_itemNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_itemxxNP.rel
   hash: c4be7ef14b9f7cf83171eef292a6f1cf5e361890
   name: d_menu_itemxxNP
@@ -227,6 +229,7 @@ modules:
 - object: files/rels/d_a_npc_cafeNP.rel
   hash: 3fc640b31a6fdd3ec3008ca585f56719be9ed0a7
   name: d_a_npc_cafeNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_cafeNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_cafeNP/splits.txt
 - object: files/rels/d_a_npc_inNP.rel

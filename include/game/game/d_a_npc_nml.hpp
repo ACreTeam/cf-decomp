@@ -1603,6 +1603,10 @@ public:
         u8 _1[7];
     }; // size 0x8
 
+    // Inline construction observed in REL villager factories.
+    dAcNpcNml_c() {
+    }
+
     // vtable 804A1310 overrides
     // The weak tail (d_a_npc_nml.hpp section after __sinit) is isItchy, vtCC (needed first by the
     // virtual calls in talk_c), then getCloth, isInPitfall, vtC8, ~dAcNpcNml_c: inline virtuals not needed
@@ -1702,7 +1706,7 @@ public:
     /* 0x2196 */ u16 mTradeFtrFlags;        // furniture slots (bit per dAnimal_c::getFtr idx)
     /* 0x2198 */ u8 mBusy;
     /* 0x2199 */ u8 mSessionFlags;
-}; // size 0x219C
+}; // size 0x21A0; derived classes reuse tail padding starting at 0x219A
 
 // ---- d_a_npc_nml globals used by the talk TUs (placeholder names; defined in d_a_npc_nml.cpp) ----
 // Message labels: const char arrays (.rodata 8046BD54.., .sdata2 8074FF30..), defined at the top of the
