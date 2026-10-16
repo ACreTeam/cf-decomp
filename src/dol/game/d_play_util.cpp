@@ -11,12 +11,12 @@
 #include <revolution/OS/OSTime.h>
 #include <game/game/d_net.hpp>
 
-dSky_c *lbl_8074E830; // 8074E830: the sky actor
+dSky_c *g_sky; // 8074E830: the sky actor
 u32 lbl_8074E834; // 8074E834
-dPlayActorMng_c *lbl_8074E838; // 8074E838: the actor manager (findActorIf, ...)
-u8 lbl_8074E83C; // 8074E83C
-dFishField_c *lbl_8074E840; // 8074E840: the fish field (the shared records' host)
-u8 lbl_8074E844; // 8074E844: the fish field respawns on its next initSpawn
+dPlayActorMng_c *g_playActorMng; // 8074E838: the actor manager (findActorIf, ...)
+u8 g_insectRespawn; // 8074E83C
+dFishField_c *g_fishField; // 8074E840: the fish field (the shared records' host)
+u8 g_fishRespawn; // 8074E844: the fish field respawns on its next initSpawn
 
 static u8 sSyncAcks[PLAY_SYNC_REC_NUM][4]; // 805FAF38: per record, per member
 
@@ -275,8 +275,8 @@ void recvSyncAck(const dPlaySyncMsg_c *msg, int member) {
 void releaseSyncRec(int idx) {
     int id = idx + PLAY_SYNC_REC_ID;
     void *src = dNet::getRecord(id);
-    if (lbl_8074E840 != NULL) {
-        dPlaySyncRec_c *rec = &lbl_8074E840->mRecs[idx].mRec;
+    if (g_fishField != NULL) {
+        dPlaySyncRec_c *rec = &g_fishField->mRecs[idx].mRec;
         if (rec->getMember() == dNet::getMyNo()) {
             rec->setState(PLAY_SYNC_STATE_NONE);
             dNet::setRecord(id, rec, 0);

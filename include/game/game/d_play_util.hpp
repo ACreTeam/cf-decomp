@@ -32,7 +32,7 @@ typedef BOOL (*dPlayActorFunc)(dPlayActor_c *actor, void *arg);
 
 #define PLAY_PLAYER_NUM 8
 
-// The actor manager (lbl_8074E838).
+// The actor manager (g_playActorMng).
 class dPlayActorMng_c {
 public:
     BOOL findActorIf(dPlayActorFunc func, void *arg); // 801614F0: the first match
@@ -193,10 +193,10 @@ struct dPlaySyncMsg_c {
     /* 0x3 */ u8 mMember;
 }; // size 0x4
 
-extern dPlayActorMng_c *lbl_8074E838;
-extern dFishField_c *lbl_8074E840;
-extern u8 lbl_8074E83C; // set: the insect field spawns again (net; like lbl_8074E844 for the fish)
-extern u8 lbl_8074E844; // set: the fish field spawns again on its next initSpawn (net)
+extern dPlayActorMng_c *g_playActorMng;
+extern dFishField_c *g_fishField;
+extern u8 g_insectRespawn; // set: the insect field spawns again (net; like g_fishRespawn for the fish)
+extern u8 g_fishRespawn; // set: the fish field spawns again on its next initSpawn (net)
 
 // getWeatherPhaseA / getWeatherPhaseB results.
 enum {

@@ -1032,7 +1032,7 @@ void dUki_c::createSplash(const mVec3_c *pos) {
 }
 
 u8 dUki_c::getFallAlpha(const mVec3_c *pos) {
-    dFishField_c *field = lbl_8074E840;
+    dFishField_c *field = g_fishField;
     if (field == NULL) {
         return 0xFF;
     }

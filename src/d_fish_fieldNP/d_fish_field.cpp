@@ -299,7 +299,7 @@ int dFishField_c::create() {
         break;
     }
 
-    lbl_8074E840 = this;
+    g_fishField = this;
     initSpawn();
     return TRUE;
 }
@@ -375,7 +375,7 @@ int dFishField_c::doDelete() {
             m_childHeapForPlayer[i] = NULL;
         }
     }
-    lbl_8074E840 = NULL;
+    g_fishField = NULL;
     return TRUE;
 }
 
@@ -401,7 +401,7 @@ BOOL dSearchFishPos::check(int x, int z) {
     }
     switch (mPlace) {
     case dFishSpawn_c::PLACE_WATERFALL: {
-        mVec3_c fallPos = lbl_8074E840->mFallPos;
+        mVec3_c fallPos = g_fishField->mFallPos;
         static const f32 cFallAreaR = 128.0f;
         static const f32 cFallAreaRSq = cFallAreaR * cFallAreaR;
         mVec3_c d = pos - fallPos;
@@ -676,7 +676,7 @@ void dFishField_c::initSpawn() {
         initRecs();
         respawnFromRecs();
     }
-    if (!dNet::isSessionActive() || lbl_8074E844) {
+    if (!dNet::isSessionActive() || g_fishRespawn) {
         int river = 0;
         int sea = 0;
         for (int i = 0; i < 4; i++) {
@@ -692,7 +692,7 @@ void dFishField_c::initSpawn() {
         if (river != 0 || sea != 0) {
             spawn(river, sea, FALSE);
         }
-        lbl_8074E844 = 0;
+        g_fishRespawn = 0;
     }
 }
 
@@ -960,7 +960,7 @@ BOOL dFishFldShadow_c::isMine() {
     if (mIsPlayerFish == TRUE) {
         return TRUE;
     }
-    return lbl_8074E840->isRecMine(mSlot);
+    return g_fishField->isRecMine(mSlot);
 }
 
 // 0x2BDC
@@ -1045,7 +1045,7 @@ dPlaySyncRecBuf_c *dFishFldShadow_c::getRec() const {
     if (mIsPlayerFish) {
         return NULL;
     }
-    return &lbl_8074E840->mRecs[mSlot];
+    return &g_fishField->mRecs[mSlot];
 }
 
 // 0x2FD0
@@ -1779,7 +1779,7 @@ void dFishFldShadow_c::executeRelease() {
             mSpeed = 0.0f;
             mPos = mDestPos;
             mTargetPos = mDestPos;
-            lbl_8074E840->scareFish(-1.0f, &mPos);
+            g_fishField->scareFish(-1.0f, &mPos);
         } else {
             mVec3_c d = mPos - mTargetPos;
             if (!isZeroVec(d)) {
@@ -1943,7 +1943,7 @@ void dFishFldShadow_c::requestDelete() {
         mHeld = 0;
     }
     if (mIsPlayerFish == 1) {
-        lbl_8074E840->deletePlayerFish(mSlot);
+        g_fishField->deletePlayerFish(mSlot);
     } else {
         mDead = 1;
     }
@@ -2027,7 +2027,7 @@ BOOL dFishFldShadow_c::isInFallBasin(const mVec3_c *pos) {
     static const f32 cFallR = 96.0f;
     static const f32 cFallRSq = cFallR * cFallR;
     static const f32 cFallDepth = 48.0f;
-    dFishField_c *field = lbl_8074E840;
+    dFishField_c *field = g_fishField;
     mVec3_c d = *pos;
     d -= field->mFallPos;
     if (d.x * d.x + d.z * d.z < cFallRSq) {
@@ -2044,7 +2044,7 @@ BOOL dFishFldShadow_c::pushOutOfFall() {
     static const f32 cFallR = 96.0f;
     static const f32 cFallRSq = cFallR * cFallR;
     static const f32 cFallDepth = 48.0f;
-    dFishField_c *field = lbl_8074E840;
+    dFishField_c *field = g_fishField;
     mVec3_c d = mPos;
     d -= field->mFallPos;
     if (d.x * d.x + d.z * d.z < cFallRSq) {

@@ -59,4 +59,4 @@ public:
     /* 0x58E */ bool mIsCity;
 }; // size 0x590
 
-extern dSky_c *lbl_8074E830; // 8074E830 (defined in d_play_util.cpp)
+extern dSky_c *g_sky; // 8074E830 (defined in d_play_util.cpp)
