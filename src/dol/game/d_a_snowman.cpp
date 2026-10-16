@@ -1,4 +1,6 @@
-// The snowballs and the snowmen built from them. See include/game/game/d_a_snowman.hpp.
+// The snowballs and the snowmen built from them. See
+// include/game/game/d_a_snowman.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_a_snowman.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/framework/f_profile.hpp>
@@ -45,10 +47,14 @@ static const f32 cJumpRate = 1.0f / cJumpFrames;
 
 struct daSnowManParam_c {
     daSnowManParam_c()
-        : mGravityMin(-0.24f), mGravityMax(-0.24f), mGravityAir(-0.1f), mSinkRate(0.02f), mWaterFriction(0.975f),
-          mFlowRate(0.004f), mMaxFall(-32.0f), mStopSpeed(0.005f), mHoleDepthMin(-8.0f), mHoleDepthMax(-3.5f),
-          mPushDot(0.75f), mFriction(0.97f), mHitPush(0.15f), mPushRate(0.15f), mRollRateMin(0.6f), mPushRateMin(0.0f),
-          mWallBounce(0.93f), mPushDistance(4.0f), mPushFollow(0.1f), _4C(90.0f) {}
+        : mGravityMin(-0.24f), mGravityMax(-0.24f), mGravityAir(-0.1f),
+          mSinkRate(0.02f), mWaterFriction(0.975f), mFlowRate(0.004f),
+          mMaxFall(-32.0f), mStopSpeed(0.005f), mHoleDepthMin(-8.0f),
+          mHoleDepthMax(-3.5f), mPushDot(0.75f), mFriction(0.97f),
+          mHitPush(0.15f), mPushRate(0.15f), mRollRateMin(0.6f),
+          mPushRateMin(0.0f), mWallBounce(0.93f), mPushDistance(4.0f),
+          mPushFollow(0.1f), _4C(90.0f) {
+    }
 
     /* 0x00 */ f32 mGravityMin;
     /* 0x04 */ f32 mGravityMax;
@@ -80,15 +86,24 @@ inline f32 daSnowMan_c::getGravity() const {
 }
 
 daSnowMan_c::State_s daSnowMan_c::sStates[STATE_NUM] = {
-    {&daSnowMan_c::initRoll, &daSnowMan_c::executeRoll, &daSnowMan_c::finalRoll},
-    {&daSnowMan_c::initSink, &daSnowMan_c::executeSink, &daSnowMan_c::finalSink},
-    {&daSnowMan_c::initJump, &daSnowMan_c::executeJump, &daSnowMan_c::finalJump},
-    {&daSnowMan_c::initSettle, &daSnowMan_c::executeSettle, &daSnowMan_c::finalSettle},
-    {&daSnowMan_c::initBuilt, &daSnowMan_c::executeBuilt, &daSnowMan_c::finalBuilt},
-    {&daSnowMan_c::initBase, &daSnowMan_c::executeBase, &daSnowMan_c::finalBase},
-    {&daSnowMan_c::initSnowman, &daSnowMan_c::executeSnowman, &daSnowMan_c::finalSnowman},
-    {&daSnowMan_c::initTalk, &daSnowMan_c::executeTalk, &daSnowMan_c::finalTalk},
-    {&daSnowMan_c::initTalkEnd, &daSnowMan_c::executeTalkEnd, &daSnowMan_c::finalTalkEnd},
+    {&daSnowMan_c::initRoll, &daSnowMan_c::executeRoll,
+     &daSnowMan_c::finalRoll},
+    {&daSnowMan_c::initSink, &daSnowMan_c::executeSink,
+     &daSnowMan_c::finalSink},
+    {&daSnowMan_c::initJump, &daSnowMan_c::executeJump,
+     &daSnowMan_c::finalJump},
+    {&daSnowMan_c::initSettle, &daSnowMan_c::executeSettle,
+     &daSnowMan_c::finalSettle},
+    {&daSnowMan_c::initBuilt, &daSnowMan_c::executeBuilt,
+     &daSnowMan_c::finalBuilt},
+    {&daSnowMan_c::initBase, &daSnowMan_c::executeBase,
+     &daSnowMan_c::finalBase},
+    {&daSnowMan_c::initSnowman, &daSnowMan_c::executeSnowman,
+     &daSnowMan_c::finalSnowman},
+    {&daSnowMan_c::initTalk, &daSnowMan_c::executeTalk,
+     &daSnowMan_c::finalTalk},
+    {&daSnowMan_c::initTalkEnd, &daSnowMan_c::executeTalkEnd,
+     &daSnowMan_c::finalTalkEnd},
 };
 
 daSnowMan_c *daSnowMan_c::sBall[BALL_NUM];
@@ -97,7 +112,8 @@ daSnowMan_c::ball_c daSnowMan_c::sBallInfo[BALL_NUM];
 static dDvd::CommonBank_c<dDvd::brresBank_c> l_bank("/Snowball/fg_snow.brres");
 
 static inline f32 toScale(u8 scale) {
-    return dSvDateEvent::cScaleMin + scale * (dSvDateEvent::cScaleMax - dSvDateEvent::cScaleMin) / 255.0f;
+    return dSvDateEvent::cScaleMin +
+           scale * (dSvDateEvent::cScaleMax - dSvDateEvent::cScaleMin) / 255.0f;
 }
 
 static inline BOOL isHole(const dItem::Item *item) {
@@ -109,7 +125,8 @@ static inline BOOL isHole(const dItem::Item *item) {
 }
 
 // 801811D0
-CUSTOM_BASE_PROFILE(SNOWMAN, daSnowMan_c, 0x4B, 0x87);
+CUSTOM_BASE_PROFILE(SNOWMAN, daSnowMan_c, fProf::SNOWMAN,
+                    fProf::DRAW_ORDER::SNOWMAN);
 
 // 801812F4
 int daSnowMan_c::create() {
@@ -118,8 +135,12 @@ int daSnowMan_c::create() {
         return NOT_READY;
     }
     mAllocator.attach(heap, 0x20);
-    mBodyMdl.create(nw4r::g3d::ResFile(l_bank.getData()).GetResMdl("fg_snow_body"), &mAllocator, 0, 1, NULL);
-    mFaceMdl.create(nw4r::g3d::ResFile(l_bank.getData()).GetResMdl("fg_snow_face"), &mAllocator, 0, 1, NULL);
+    mBodyMdl.create(
+        nw4r::g3d::ResFile(l_bank.getData()).GetResMdl("fg_snow_body"),
+        &mAllocator, 0, 1, NULL);
+    mFaceMdl.create(
+        nw4r::g3d::ResFile(l_bank.getData()).GetResMdl("fg_snow_face"),
+        &mAllocator, 0, 1, NULL);
     mPos.y = dBGCF::getGroundY(&mPos, FALSE);
     mSpeed.set(0.0f, 0.0f, 0.0f);
     mGroundPos = mPos;
@@ -154,7 +175,8 @@ int daSnowMan_c::create() {
         mWeight = 0x80;
         changeState(STATE_ROLL);
     } else {
-        dSvDateEvent::Event_c *rec = &dSaveData_c::getTown()->mSnowmen[param - SNOWMAN];
+        dSvDateEvent::Event_c *rec =
+            &dSaveData_c::getTown()->mSnowmen[param - SNOWMAN];
         if (!rec->mValid) {
             return NOT_READY;
         }
@@ -197,19 +219,22 @@ int daSnowMan_c::draw() {
         f32 radius = getRadius();
         mMtx_c mtx;
         mpMdl->getLocalMtx(&mtx);
-        mSphere_c sphere(mVec3_c(mtx.m[0][3], mtx.m[1][3], mtx.m[2][3]), radius);
+        mSphere_c sphere(mVec3_c(mtx.m[0][3], mtx.m[1][3], mtx.m[2][3]),
+                         radius);
         if (dCamera_c::sInstance->mCullFrustum.intersectSphere(&sphere)) {
             mpMdl->entry();
             if (mState != STATE_SINK) {
                 angle = 0;
-                dShadow::requestRound(&mPos, 0, &angle, 24.0f * mScale, 1.0f, 0.5f, 0.0f, 1.0f);
+                dShadow::requestRound(&mPos, 0, &angle, 24.0f * mScale, 1.0f,
+                                      0.5f, 0.0f, 1.0f);
             }
         }
     } else {
         mFaceMdl.entry();
         mBodyMdl.entry();
         angle = 0;
-        dShadow::requestRound(&mPos, 0, &angle, 24.0f * mBodyScale, 1.0f, 0.5f, 0.0f, 1.0f);
+        dShadow::requestRound(&mPos, 0, &angle, 24.0f * mBodyScale, 1.0f, 0.5f,
+                              0.0f, 1.0f);
     }
     return SUCCEEDED;
 }
@@ -226,7 +251,8 @@ int daSnowMan_c::doDelete() {
                     int x = worldToUnit(mPos.x);
                     int z = worldToUnit(mPos.z);
                     if (mFgSet) {
-                        dField::getInfo(0)->setItemFromId(dItem::ITEM_ID_NONE, x, z, 0);
+                        dField::getInfo(0)->setItemFromId(dItem::ITEM_ID_NONE,
+                                                          x, z, 0);
                     }
                     if (!placeFg(x, z)) {
                         placeFgAround(x, z);
@@ -261,8 +287,8 @@ BOOL daSnowMan_c::getWallNormal(dBGCF::acch_c *acch, mVec3_c *normal) {
 }
 
 // The sender and paper literals become anonymous .sdata temporaries.
-static inline void setupMail(dMail_c *mail, u16 kindValue, const u8 &sender, const dPersonalID_c *to,
-                             const int &paper) {
+static inline void setupMail(dMail_c *mail, u16 kindValue, const u8 &sender,
+                             const dPersonalID_c *to, const int &paper) {
     const u16 kind = kindValue;
     mail->setupSystem(&kind, "MAIL_NPC_snowman", &sender, to, &paper);
 }
@@ -270,10 +296,12 @@ static inline void setupMail(dMail_c *mail, u16 kindValue, const u8 &sender, con
 // 80181CEC
 BOOL daSnowMan_c::sendMail() {
     static const int l_presents[] = {
-        dItem::ITEM_IDX_SNOWMAN_FRIDGE, dItem::ITEM_IDX_SNOWMAN_TABLE,    dItem::ITEM_IDX_SNOWMAN_BED,
-        dItem::ITEM_IDX_SNOWMAN_CHAIR,  dItem::ITEM_IDX_SNOWMAN_LAMP,     dItem::ITEM_IDX_SNOWMAN_SOFA,
-        dItem::ITEM_IDX_SNOWMAN_TV,     dItem::ITEM_IDX_SNOWMAN_DRESSER,  dItem::ITEM_IDX_SNOWMAN_WARDROBE,
-        dItem::ITEM_IDX_SNOWMAN_CLOCK,  dItem::ITEM_IDX_SNOWMAN_CARPET,   dItem::ITEM_IDX_SNOWMAN_WALL,
+        dItem::ITEM_IDX_SNOWMAN_FRIDGE,   dItem::ITEM_IDX_SNOWMAN_TABLE,
+        dItem::ITEM_IDX_SNOWMAN_BED,      dItem::ITEM_IDX_SNOWMAN_CHAIR,
+        dItem::ITEM_IDX_SNOWMAN_LAMP,     dItem::ITEM_IDX_SNOWMAN_SOFA,
+        dItem::ITEM_IDX_SNOWMAN_TV,       dItem::ITEM_IDX_SNOWMAN_DRESSER,
+        dItem::ITEM_IDX_SNOWMAN_WARDROBE, dItem::ITEM_IDX_SNOWMAN_CLOCK,
+        dItem::ITEM_IDX_SNOWMAN_CARPET,   dItem::ITEM_IDX_SNOWMAN_WALL,
         dItem::ITEM_IDX_SNOWMAN,
     };
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
@@ -307,16 +335,21 @@ BOOL daSnowMan_c::sendMail() {
 
 // 80181F4C
 f32 daSnowMan_c::getPushRate() const {
-    return l_param.mPushRateMin + (1.0f - l_param.mPushRateMin) * (cScaleMax - mScale) / (cScaleMax - cStackScaleMin);
+    return l_param.mPushRateMin + (1.0f - l_param.mPushRateMin) *
+                                      (cScaleMax - mScale) /
+                                      (cScaleMax - cStackScaleMin);
 }
 
 // 80181F84
 f32 daSnowMan_c::getRollRate() const {
-    return l_param.mRollRateMin + (1.0f - l_param.mRollRateMin) * (cScaleMax - mScale) / (cScaleMax - cScaleMin);
+    return l_param.mRollRateMin + (1.0f - l_param.mRollRateMin) *
+                                      (cScaleMax - mScale) /
+                                      (cScaleMax - cScaleMin);
 }
 
 // 80181FBC
-BOOL daSnowMan_c::push(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF, mAng dir) {
+BOOL daSnowMan_c::push(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF,
+                       mAng dir) {
     dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
@@ -392,7 +425,8 @@ BOOL daSnowMan_c::push(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF, mAng di
     s16 target = cM::atan2s(diff.x, diff.z);
     sLib::addCalcAngle(angle, target, 2, 0x71C);
     f32 d = dist;
-    sLib::chase(&d, reach - l_param.mPushDistance, mSpeedF + l_param.mPushFollow);
+    sLib::chase(&d, reach - l_param.mPushDistance,
+                mSpeedF + l_param.mPushFollow);
     mVec3_c ofs(0.0f, 0.0f, d);
     ofs.rotY(target);
     playerPos.x = mPos.x - ofs.x;
@@ -412,7 +446,8 @@ BOOL daSnowMan_c::push(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF, mAng di
 BOOL daSnowMan_c::canRoll() {
     if (mState == STATE_ROLL && !mHitting) {
         mVec3_c normal;
-        if (getGroundNormal(&normal) && normal.dot(mVec3_c::Ey) > 0.9396926f && !mWasPushed && !mPushed) {
+        if (getGroundNormal(&normal) && normal.dot(mVec3_c::Ey) > 0.9396926f &&
+            !mWasPushed && !mPushed) {
             return TRUE;
         }
     }
@@ -444,7 +479,8 @@ static inline bool isSteep(const mVec3_c &normal) {
 }
 
 // 80182700
-void daSnowMan_c::initRoll() {}
+void daSnowMan_c::initRoll() {
+}
 
 // 80182704
 void daSnowMan_c::executeRoll() {
@@ -456,9 +492,9 @@ void daSnowMan_c::executeRoll() {
     if (other != NULL) {
         BOOL soil = field->getDigType(&other->mPos) == 0;
         BOOL flat = !mOnSlope && !other->mOnSlope;
-        if (mObjc.isHit(0x80000008) && other->mScale >= cStackScaleMin && mPushed && soil && flat &&
-            !dDemo::isType(dDemo::TYPE_ANY) && dDemo::requestSpeak(this, NULL))
-        {
+        if (mObjc.isHit(0x80000008) && other->mScale >= cStackScaleMin &&
+            mPushed && soil && flat && !dDemo::isType(dDemo::TYPE_ANY) &&
+            dDemo::requestSpeak(this, NULL)) {
             clearDemoState();
             changeState(STATE_JUMP);
             other->changeState(STATE_SETTLE);
@@ -482,7 +518,8 @@ void daSnowMan_c::executeRoll() {
     } else {
         mHitting = false;
     }
-    mSpeed.y = mSpeed.y + mAccelY < mMaxSpeedY ? mMaxSpeedY : mSpeed.y + mAccelY;
+    mSpeed.y =
+        mSpeed.y + mAccelY < mMaxSpeedY ? mMaxSpeedY : mSpeed.y + mAccelY;
     if (mHit) {
         mPos = mHitPos;
     } else {
@@ -495,7 +532,8 @@ void daSnowMan_c::executeRoll() {
         mSpeed.x = 0.0f;
         mSpeed.z = 0.0f;
     }
-    mObjc.set(this, height, 2.0f * radius, 0x80000008, mWasPushed ? 0x40007E : 0x8040007F, mWeight, 0);
+    mObjc.set(this, height, 2.0f * radius, 0x80000008,
+              mWasPushed ? 0x40007E : 0x8040007F, mWeight, 0);
     mObjc.mParam = (u32)this;
     if (!checkGround()) {
         doBreak();
@@ -507,7 +545,8 @@ void daSnowMan_c::executeRoll() {
             f32 dot = mSpeed.dot(normal);
             if (dot < 0.0f) {
                 mSpeed -= 1.1f * (dot * normal);
-                if (!mPushed && !mWasPushed && !(mAcch.mPrevHitFlags & dBGCF::HIT_WALL)) {
+                if (!mPushed && !mWasPushed &&
+                    !(mAcch.mPrevHitFlags & dBGCF::HIT_WALL)) {
                     if (dot < -1.0) {
                         doBreak();
                         return;
@@ -591,7 +630,8 @@ void daSnowMan_c::executeRoll() {
 }
 
 // 80183128
-void daSnowMan_c::finalRoll() {}
+void daSnowMan_c::finalRoll() {
+}
 
 // 8018312C
 static BOOL isInFallBasin(const mVec3_c *pos) {
@@ -627,7 +667,9 @@ void daSnowMan_c::initSink() {
     mAlpha = 0;
 }
 
-static inline f32 getSlopeRate(f32 t) { return 0.2f + 0.5f * t; }
+static inline f32 getSlopeRate(f32 t) {
+    return 0.2f + 0.5f * t;
+}
 
 // 801832B0
 void daSnowMan_c::executeSink() {
@@ -643,7 +685,8 @@ void daSnowMan_c::executeSink() {
                 dBGCF::acch_c *collision = &acch;
                 mVec3_c pos = mPos;
                 pos.y = chk.getHeight(FALSE);
-                collision->check(16.0f, &pos, &mPos, mAngle.y, 0, dBGCF::CHECK_WALL, TRUE);
+                collision->check(16.0f, &pos, &mPos, mAngle.y, 0,
+                                 dBGCF::CHECK_WALL, TRUE);
                 if (collision->isWallHit()) {
                     mVec3_c normal;
                     if (getWallNormal(collision, &normal)) {
@@ -680,16 +723,18 @@ void daSnowMan_c::executeSink() {
         mGroundPos = mPos;
     }
     if (mInAir) {
-        mSpeed.y = mSpeed.y + mAccelY < mMaxSpeedY ? mMaxSpeedY : mSpeed.y + mAccelY;
+        mSpeed.y =
+            mSpeed.y + mAccelY < mMaxSpeedY ? mMaxSpeedY : mSpeed.y + mAccelY;
         if (onGround) {
             mSpeed -= mSpeed.dot(groundNormal) * groundNormal;
             f32 radius = getRadius();
             f32 len = mSpeed.xzLen();
             if (len > l_param.mStopSpeed) {
                 f32 rot = len / radius;
-                mVec3_c axis(groundNormal.y * mSpeed.z - groundNormal.z * mSpeed.y,
-                             groundNormal.z * mSpeed.x - groundNormal.x * mSpeed.z,
-                             groundNormal.x * mSpeed.y - groundNormal.y * mSpeed.x);
+                mVec3_c axis(
+                    groundNormal.y * mSpeed.z - groundNormal.z * mSpeed.y,
+                    groundNormal.z * mSpeed.x - groundNormal.x * mSpeed.z,
+                    groundNormal.x * mSpeed.y - groundNormal.y * mSpeed.x);
                 if (axis.normalizeRS()) {
                     mRotSpeed.setAxisRotation(axis, rot);
                 }
@@ -707,7 +752,8 @@ void daSnowMan_c::executeSink() {
         }
         if (sLib::calcTimer(&mTimer) == 0) {
             f32 range = 0.025f;
-            mAng3_c ang(mAng::fromDegree(cM::rndRange(-range, range)), mAng::fromDegree(cM::rndRange(-range, range)),
+            mAng3_c ang(mAng::fromDegree(cM::rndRange(-range, range)),
+                        mAng::fromDegree(cM::rndRange(-range, range)),
                         mAng::fromDegree(cM::rndRange(-range, range)));
             mRotSpeed.setRPY(ang.x.radian(), ang.y.radian(), ang.z.radian());
             mTimer = cM::rndInt(120) + 60;
@@ -741,11 +787,14 @@ void daSnowMan_c::executeSink() {
     calcRotation();
     f32 radius = getRadius();
     mAcch.check(radius, &mPos, &mLastPos, mAngle.y, (int)this,
-                dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS | dBGCF::CHECK_NO_WAVE_WATER, TRUE);
+                dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS |
+                    dBGCF::CHECK_NO_WAVE_WATER,
+                TRUE);
 }
 
 // 80183AA8
-void daSnowMan_c::finalSink() {}
+void daSnowMan_c::finalSink() {
+}
 
 // 80183AAC
 void daSnowMan_c::initJump() {
@@ -753,7 +802,8 @@ void daSnowMan_c::initJump() {
     dFdBase_c::snapToUnitGround(&mTargetPos, &pos);
     mStartPos = mPos;
     f32 otherScale = getOther()->mScale;
-    mTargetPos.y = mTargetPos.y + 2.0f * (15.5f * otherScale) - 0.25f * (15.5f * mScale);
+    mTargetPos.y =
+        mTargetPos.y + 2.0f * (15.5f * otherScale) - 0.25f * (15.5f * mScale);
     mVec3_c d = mTargetPos - mStartPos;
     mSpeedF = cJumpRate * d.xzLen();
     mSound.startSound(0x17E6);
@@ -810,12 +860,14 @@ void daSnowMan_c::executeSettle() {
         lerpPos(t);
         mVec3_c move = mPos - mLastPos;
         f32 rot = move.xzLen() / radius;
-        mVec3_c axis(mVec3_c::Ey.y * move.z - mVec3_c::Ey.z * move.y, mVec3_c::Ey.z * move.x - mVec3_c::Ey.x * move.z,
+        mVec3_c axis(mVec3_c::Ey.y * move.z - mVec3_c::Ey.z * move.y,
+                     mVec3_c::Ey.z * move.x - mVec3_c::Ey.x * move.z,
                      mVec3_c::Ey.x * move.y - mVec3_c::Ey.y * move.x);
         if (axis.normalizeRS()) {
             mRotSpeed.setAxisRotation(axis, rot);
             EGG::Quatf rotation;
-            dBalloonString::multiplyQuaternion(&rotation, &mRotSpeed, &mRotation);
+            dBalloonString::multiplyQuaternion(&rotation, &mRotSpeed,
+                                               &mRotation);
             mRotation = EGG::Quatf(rotation);
             mRotation.normalise();
         }
@@ -836,7 +888,8 @@ void daSnowMan_c::finalSettle() {
 }
 
 // 801841CC
-void daSnowMan_c::initBuilt() {}
+void daSnowMan_c::initBuilt() {
+}
 
 // 801841D0
 void daSnowMan_c::executeBuilt() {
@@ -847,10 +900,12 @@ void daSnowMan_c::executeBuilt() {
 }
 
 // 80184224
-void daSnowMan_c::finalBuilt() {}
+void daSnowMan_c::finalBuilt() {
+}
 
 // 80184228
-void daSnowMan_c::initBase() {}
+void daSnowMan_c::initBase() {
+}
 
 // 8018422C
 void daSnowMan_c::executeBase() {
@@ -858,10 +913,12 @@ void daSnowMan_c::executeBase() {
 }
 
 // 8018429C
-void daSnowMan_c::finalBase() {}
+void daSnowMan_c::finalBase() {
+}
 
 // 801842A0
-void daSnowMan_c::initSnowman() {}
+void daSnowMan_c::initSnowman() {
+}
 
 // 801842A4
 void daSnowMan_c::executeSnowman() {
@@ -869,7 +926,8 @@ void daSnowMan_c::executeSnowman() {
 }
 
 // 80184314
-void daSnowMan_c::finalSnowman() {}
+void daSnowMan_c::finalSnowman() {
+}
 
 // 80184318
 void daSnowMan_c::initTalk() {
@@ -878,7 +936,8 @@ void daSnowMan_c::initTalk() {
     setMessageCode((mJustBuilt ? 1 : 2) + mFace * 2);
     dHmnName::Word_c name;
     dString::loadString(&name, 50, "sys_STRING/STR_SPNpc_name");
-    setSpeakerName((const u16 *)static_cast<dScript::Word_c &>(name).getBuffer(), 2);
+    setSpeakerName(
+        (const u16 *)static_cast<dScript::Word_c &>(name).getBuffer(), 2);
     getController()->requestStart(0);
 }
 
@@ -896,7 +955,8 @@ void daSnowMan_c::executeTalk() {
 }
 
 // 80184524
-void daSnowMan_c::finalTalk() {}
+void daSnowMan_c::finalTalk() {
+}
 
 // 80184528
 void daSnowMan_c::initTalkEnd() {
@@ -929,7 +989,8 @@ void daSnowMan_c::finalTalkEnd() {
     mJustBuilt = false;
 }
 
-static inline void blendSlope(mVec3_c *out, const mVec3_c &a, f32 ka, const mVec3_c &b, f32 kb) {
+static inline void blendSlope(mVec3_c *out, const mVec3_c &a, f32 ka,
+                              const mVec3_c &b, f32 kb) {
     *out = ka * a + kb * b;
 }
 
@@ -954,7 +1015,8 @@ BOOL daSnowMan_c::checkGround() {
                 dir = mVec3_c::Ey;
             }
             f32 t = mRollDist / 2560.0f;
-            f32 depth = t * l_param.mHoleDepthMax + (1.0f - t) * l_param.mHoleDepthMin;
+            f32 depth =
+                t * l_param.mHoleDepthMax + (1.0f - t) * l_param.mHoleDepthMin;
             f32 w = nw4r::math::FSqrt(distSq) / 16.0f;
             f32 rest = 1.0f - w;
             blendSlope(&mSlopeNormal, up, rest, dir, w);
@@ -982,7 +1044,9 @@ BOOL daSnowMan_c::checkGround() {
     f32 radius = getRadius();
     mAcch.mStepHeight = 0.5f;
     mAcch.check(radius, &mPos, &mLastPos, mAngle.y, (int)this,
-                dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS | dBGCF::CHECK_NO_WAVE_WATER, TRUE);
+                dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS |
+                    dBGCF::CHECK_NO_WAVE_WATER,
+                TRUE);
     if (mAcch.mHitFlags & dBGCF::HIT_GROUND) {
         mGroundPos = mPos;
         mAccelY = getGravity();
@@ -996,7 +1060,8 @@ BOOL daSnowMan_c::checkGround() {
                 dBGCF::acch_c *collision = &acch;
                 mVec3_c pos(mPos);
                 pos.y -= radius;
-                collision->check(radius, &pos, &mPos, mAngle.y, 0, dBGCF::CHECK_WALL, TRUE);
+                collision->check(radius, &pos, &mPos, mAngle.y, 0,
+                                 dBGCF::CHECK_WALL, TRUE);
                 if (collision->isWallHit()) {
                     mVec3_c normal;
                     if (getWallNormal(collision, &normal)) {
@@ -1061,7 +1126,8 @@ static inline BOOL isHoleItem(dItem::Item *item) {
 
 static inline BOOL isBlocked(dItem::Item *item, int x, int z) {
     BOOL column = FALSE;
-    if (dBGCF::getColumnAttr(x, z, NULL, NULL, NULL) || (item != NULL && item->isSnowman())) {
+    if (dBGCF::getColumnAttr(x, z, NULL, NULL, NULL) ||
+        (item != NULL && item->isSnowman())) {
         column = TRUE;
     }
     BOOL blocked = FALSE;
@@ -1083,12 +1149,14 @@ BOOL daSnowMan_c::canPlace(int x, int z) {
     }
     dItem::Item *item = field->getItem(x, z, 0);
     dFdUnitAttr_c *attr = field->getUnitAttr();
-    if ((attr != NULL && (attr->getAttr(x, z) & dFdUnitAttr_c::STR_COL)) || dBGCF::getRouteDirs(x, z) != 0) {
+    if ((attr != NULL && (attr->getAttr(x, z) & dFdUnitAttr_c::STR_COL)) ||
+        dBGCF::getRouteDirs(x, z) != 0) {
         return FALSE;
     }
     BOOL blocked = isBlocked(item, x, z);
     bool soil = field->getDigType(x, z) == 0;
-    if ((x != playerX || z != playerZ) && dBGCF::canPutItem(x, z) && !blocked && soil) {
+    if ((x != playerX || z != playerZ) && dBGCF::canPutItem(x, z) && !blocked &&
+        soil) {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 if (dx != 0 || dz != 0) {
@@ -1097,8 +1165,9 @@ BOOL daSnowMan_c::canPlace(int x, int z) {
                     dItem::Item *around = field->getItem(ux, uz, 0);
                     BOOL aroundBlocked = isBlocked(around, ux, uz);
                     if (!dBGCF::canPutItem(ux, uz) ||
-                        (attr != NULL && (attr->getAttr(ux, uz) & dFdUnitAttr_c::STR_COL)) || aroundBlocked)
-                    {
+                        (attr != NULL &&
+                         (attr->getAttr(ux, uz) & dFdUnitAttr_c::STR_COL)) ||
+                        aroundBlocked) {
                         return FALSE;
                     }
                 }
@@ -1228,7 +1297,8 @@ void daSnowMan_c::doBreak() {
 
 // 80185598
 void daSnowMan_c::splashCallback(nw4r::ef::Particle *ptcl, u32 kind) {
-    static const char *const l_names[] = {"af_hny_hamon_S01", "afi_hny_watersplash_b"};
+    static const char *const l_names[] = {"af_hny_hamon_S01",
+                                          "afi_hny_watersplash_b"};
     if (ptcl != NULL) {
         mVec3_c pos;
         mVec3_c ptclPos;
@@ -1261,7 +1331,8 @@ void daSnowMan_c::setSplashEffect(const mVec3_c *pos) {
     dEffect::create("af_fg_snowball_wc", pos, NULL, &scale);
     u32 big = mScale > 1.0f;
     dEffect_c drops;
-    drops.createEffect("af_hny_mizutama_L2", pos, NULL, NULL, splashCallback, big);
+    drops.createEffect("af_hny_mizutama_L2", pos, NULL, NULL, splashCallback,
+                       big);
     f32 t = (mScale - 0.5f) / 0.75f;
     f32 rate;
     if (t < 0.0f) {
@@ -1340,7 +1411,8 @@ mVec3_c *daSnowMan_c::getDemoPosition() {
 
 // 80185C04
 bool daSnowMan_c::canInteract(dDemoActor_c *actor) {
-    if (!(isState(STATE_SNOWMAN) || isState(STATE_BUILT) || isState(STATE_JUMP))) {
+    if (!(isState(STATE_SNOWMAN) || isState(STATE_BUILT) ||
+          isState(STATE_JUMP))) {
         return false;
     }
     clearDemoState();
@@ -1380,9 +1452,9 @@ BOOL daSnowMan_c::checkUnit(int blockX, int blockZ, int x, int z, void *user) {
     dFdBase_c *field = dField::getInfo(0);
     int unitX = (blockX << 4) + x;
     int unitZ = (blockZ << 4) + z;
-    if (field->_24->isGroundFree(unitX, unitZ) && field->getPlantType(blockX, blockZ, x, z) != 1 &&
-        field->getPlantType(blockX, blockZ, x, z) != 0)
-    {
+    if (field->_24->isGroundFree(unitX, unitZ) &&
+        field->getPlantType(blockX, blockZ, x, z) != 1 &&
+        field->getPlantType(blockX, blockZ, x, z) != 0) {
         if (param->mNeedEmpty) {
             dItem::Item *item = field->getItem(unitX, unitZ, 0);
             if (item == NULL || item->mId != dItem::ITEM_ID_NONE) {
@@ -1391,7 +1463,8 @@ BOOL daSnowMan_c::checkUnit(int blockX, int blockZ, int x, int z, void *user) {
         }
         if (!dBGCF::getColumnAttr(unitX, unitZ, NULL, NULL, NULL)) {
             if (param->mCheckSouth) {
-                if (isBlockedUnit(field, unitX, ++unitZ) || isPondEdgeUnit(field, unitX, unitZ)) {
+                if (isBlockedUnit(field, unitX, ++unitZ) ||
+                    isPondEdgeUnit(field, unitX, unitZ)) {
                     return FALSE;
                 }
             }
@@ -1402,9 +1475,11 @@ BOOL daSnowMan_c::checkUnit(int blockX, int blockZ, int x, int z, void *user) {
 }
 
 // 80185FB0
-BOOL daSnowMan_c::pushAll(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF, mAng dir) {
+BOOL daSnowMan_c::pushAll(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF,
+                          mAng dir) {
     for (int i = 0; i < BALL_NUM; i++) {
-        if (sBall[i] != NULL && sBall[i]->push(speed, pos, angle, speedF, dir)) {
+        if (sBall[i] != NULL &&
+            sBall[i]->push(speed, pos, angle, speedF, dir)) {
             return TRUE;
         }
     }
@@ -1430,7 +1505,8 @@ BOOL daSnowMan_c::isAtUnit(int x, int z) {
 BOOL daSnowMan_c::find(mVec3_c *pos, int *idx, void *user, FindFunc func) {
     for (int i = 0; i < BALL_NUM; i++) {
         daSnowMan_c *ball = getBall(i);
-        if (ball != NULL && ball->canRoll() && func != NULL && func(&ball->mPos, i, user)) {
+        if (ball != NULL && ball->canRoll() && func != NULL &&
+            func(&ball->mPos, i, user)) {
             *pos = ball->mPos;
             *idx = i;
             return TRUE;
@@ -1490,7 +1566,8 @@ BOOL daSnowMan_c::placeBalls() {
             if (attr->getAttr(x, z)) {
                 info->mActive = false;
             } else {
-                acres.remove(((int)pos.z >> 9) * acres.mWidth + ((int)pos.x >> 9));
+                acres.remove(((int)pos.z >> 9) * acres.mWidth +
+                             ((int)pos.x >> 9));
             }
         }
     }
@@ -1508,7 +1585,8 @@ BOOL daSnowMan_c::placeBalls() {
                     daSnowManUnitParam_c param;
                     param.mCheckSouth = TRUE;
                     param.mNeedEmpty = firstTry;
-                    dBkUnitSearchCandCb_c units(blockX, blockZ, checkUnit, &param);
+                    dBkUnitSearchCandCb_c units(blockX, blockZ, checkUnit,
+                                                &param);
                     units.clear();
                     units.search();
                     int x;
@@ -1531,7 +1609,8 @@ BOOL daSnowMan_c::placeBalls() {
                 acres.removeBorder();
                 for (int j = 0; j < i; j++) {
                     mVec3_c pos = sBallInfo[j].mPos;
-                    acres.remove(((int)pos.z >> 9) * acres.mWidth + ((int)pos.x >> 9));
+                    acres.remove(((int)pos.z >> 9) * acres.mWidth +
+                                 ((int)pos.x >> 9));
                 }
             }
         }
@@ -1540,7 +1619,8 @@ BOOL daSnowMan_c::placeBalls() {
         ball_c *info = &sBallInfo[i];
         if (info->mActive) {
             mVec3_c pos = info->mPos;
-            dActor_c::construct(0x4B, dScene::getSceneParent(), i, &pos, NULL);
+            dActor_c::construct(fProf::SNOWMAN, dScene::getSceneParent(), i,
+                                &pos, NULL);
         }
     }
     return TRUE;
@@ -1564,10 +1644,13 @@ BOOL daSnowMan_c::placeSnowmen() {
                     dItem::Item *item = field->getItem(blockX, blockZ, x, z, 0);
                     if (item != NULL && item->isSnowman()) {
                         int idx = item->getSnowmanIdx();
-                        dSvDateEvent::Event_c *rec = &dSaveData_c::getTown()->mSnowmen[idx];
+                        dSvDateEvent::Event_c *rec =
+                            &dSaveData_c::getTown()->mSnowmen[idx];
                         mVec3_c pos;
                         dFdBase_c::getUnitGroundPos(&pos, blockX, blockZ, x, z);
-                        dActor_c::construct(0x4B, dScene::getSceneParent(), idx + SNOWMAN, &pos, NULL);
+                        dActor_c::construct(fProf::SNOWMAN,
+                                            dScene::getSceneParent(),
+                                            idx + SNOWMAN, &pos, NULL);
                     }
                 }
             }
@@ -1601,7 +1684,8 @@ void daSnowMan_c::removeOld() {
             for (int x = 0; x < UT_X_NUM; x++) {
                 for (int z = 0; z < UT_Z_NUM; z++) {
                     dItem::Item *item = field->getItem(blockX, blockZ, x, z, 0);
-                    if (item != NULL && item->isSnowman() && removed[item->getSnowmanIdx()]) {
+                    if (item != NULL && item->isSnowman() &&
+                        removed[item->getSnowmanIdx()]) {
                         dItem::Item none;
                         field->setItem(&none, blockX, blockZ, x, z, 0);
                     }

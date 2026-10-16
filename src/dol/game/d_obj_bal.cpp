@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_obj_bal.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_camera.hpp>
@@ -7,7 +8,8 @@
 #include <revolution/SC.h>
 #include <cstdio>
 
-CUSTOM_BASE_PROFILE(OBJ_BAL, dObjBal_c, 0xF7, 0x122);
+CUSTOM_BASE_PROFILE(OBJ_BAL, dObjBal_c, fProf::OBJ_BAL,
+                    fProf::DRAW_ORDER::OBJ_BAL);
 
 static dObjBal_c *l_this;
 
@@ -129,7 +131,8 @@ void dObjBal_c::stateIn() {
 void dObjBal_c::stateShow() {
     if (mReqItem.isNotSame(mItem)) {
         startAnm(ANM_OUT);
-        // As in the original: back to STATE_WAIT, not STATE_OUT (stateOut is never reached).
+        // As in the original: back to STATE_WAIT, not STATE_OUT (stateOut is
+        // never reached).
         mState = STATE_WAIT;
     }
 }
@@ -195,4 +198,5 @@ void dObjBal_c::hide() {
     l_this->mReqItem = dItem::ITEM_ID_NONE;
 }
 
-dObjBal_c::~dObjBal_c() {}
+dObjBal_c::~dObjBal_c() {
+}

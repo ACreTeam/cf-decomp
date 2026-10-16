@@ -1,8 +1,9 @@
-// Object collision (namespace dObjc): the pushes between actors and what the Wii remote pointer
-// points at. .text 801AD6E0..801B0230, .ctors 80465840, .data 804FB8A0..804FB9A0,
-// .bss 80625370..80625470, .sdata 8074C1E0..8074C210, .sbss 8074EAD8..8074EB08,
-// .sdata2 80751800..80751848.
-// See include/game/game/d_objc.hpp and notes/d_objc.txt.
+// Object collision (namespace dObjc): the pushes between actors and what the
+// Wii remote pointer points at. .text 801AD6E0..801B0230, .ctors 80465840,
+// .data 804FB8A0..804FB9A0, .bss 80625370..80625470, .sdata 8074C1E0..8074C210,
+// .sbss 8074EAD8..8074EB08, .sdata2 80751800..80751848. See
+// include/game/game/d_objc.hpp and notes/d_objc.txt.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_objc.hpp>
 #include <game/game/d_pad.hpp>
 #include <game/game/d_str.hpp>
@@ -28,24 +29,26 @@
 
 // The process that runs the collision every frame (RTTI "dObjc_c").
 class dObjc_c : public fBase_c {
-public:
+  public:
     virtual int create();
     virtual int doDelete();
     virtual int execute();
     virtual int draw();
-    virtual ~dObjc_c() {}
+    virtual ~dObjc_c() {
+    }
 };
 
 // Debug settings (RTTI "dObjc_hostIO_c").
 class dObjc_hostIO_c {
-public:
+  public:
     dObjc_hostIO_c() {
         _5 = 0;
         _6 = 0;
         _4 = 0;
     }
 
-    virtual ~dObjc_hostIO_c() {}
+    virtual ~dObjc_hostIO_c() {
+    }
 
     /* 0x4 */ u8 _4;
     /* 0x5 */ u8 _5;
@@ -59,8 +62,9 @@ static dpdHit_c l_dpdHit;
 static dObjc_hostIO_c l_hostIO;
 
 #ifdef MUST_MATCH
-// 806253C4: nothing in the DOL references it (an unused object, kept by the original link). Its
-// size is unknown: 0x15..0x17 bytes fit (MWCC 8-aligns .bss objects of 0x18 bytes or more).
+// 806253C4: nothing in the DOL references it (an unused object, kept by the
+// original link). Its size is unknown: 0x15..0x17 bytes fit (MWCC 8-aligns .bss
+// objects of 0x18 bytes or more).
 #pragma force_active on
 u8 lbl_806253C4[0x17];
 #pragma force_active reset
@@ -134,8 +138,8 @@ dpdTri_c::dpdTri_c() {
     mNext = NULL;
 }
 
-void dpdTri_c::set(const dBGC::poly_c &poly, u32 type, fBase_c *owner, const mVec3_c *center,
-                   u32 param) {
+void dpdTri_c::set(const dBGC::poly_c &poly, u32 type, fBase_c *owner,
+                   const mVec3_c *center, u32 param) {
     mParam = param;
     if (center != NULL) {
         mCenter = *center;
@@ -203,8 +207,9 @@ void dpdTri_c::destroy() {
     clearList();
 }
 
-void dpdQuad_c::set(const mVec3_c &p0, const mVec3_c &p1, const mVec3_c &p2, const mVec3_c &p3,
-                    u32 type, fBase_c *owner, const mVec3_c *center, u32 param) {
+void dpdQuad_c::set(const mVec3_c &p0, const mVec3_c &p1, const mVec3_c &p2,
+                    const mVec3_c &p3, u32 type, fBase_c *owner,
+                    const mVec3_c *center, u32 param) {
     dBGC::poly_c tri0(p0, p1, p2);
     dBGC::poly_c tri1(p0, p2, p3);
     if (center != NULL) {
@@ -228,8 +233,8 @@ void dpdQuad_c::regist() {
     }
 }
 
-void dpdBox_c::set(const mVec3_c &pos, f32 sizeX, f32 sizeZ, f32 height, s16 angle, u32 type,
-                   fBase_c *owner, u32 param) {
+void dpdBox_c::set(const mVec3_c &pos, f32 sizeX, f32 sizeZ, f32 height,
+                   s16 angle, u32 type, fBase_c *owner, u32 param) {
     f32 hx = 0.5f * sizeX;
     f32 hz = 0.5f * sizeZ;
     f32 nx = -hx;
@@ -334,10 +339,11 @@ static inline void rotYZ(mVec3_c *v, f32 sn, f32 cs) {
     v->z = sn * y + cs * z;
 }
 
-// Pushes end out of the column (radius, height) standing on pos, coming from start. The test is
-// done in the drum's frame at pos (turned back by its curve angle).
-static BOOL checkColumn(mVec3_c *end, const mVec3_c *start, const mVec3_c *pos, f32 radius,
-                        f32 height) {
+// Pushes end out of the column (radius, height) standing on pos, coming from
+// start. The test is done in the drum's frame at pos (turned back by its curve
+// angle).
+static BOOL checkColumn(mVec3_c *end, const mVec3_c *start, const mVec3_c *pos,
+                        f32 radius, f32 height) {
     mVec3_c center;
     mAng angle = dWorld::curvePosition(&center, pos);
     mVec3_c s(start->x, start->y, start->z);
@@ -373,7 +379,8 @@ BOOL base_c::checkPushAngle(mAng *angle) const {
     return FALSE;
 }
 
-void base_c::set(f32 radius, f32 height, u32 type, u32 mask, u8 weight, u32 param) {
+void base_c::set(f32 radius, f32 height, u32 type, u32 mask, u8 weight,
+                 u32 param) {
     mRadius = radius;
     mHeight = height;
     mType = type;
@@ -424,10 +431,11 @@ static inline mAng getHorizonAngle(const mVec3_c &eye, const mVec3_c &pos) {
     return dWorld::getHorizonAngle(&eye, &pos);
 }
 
-// 1. Pushes registered base_c apart (each pair once). 2. Casts the pointer ray: from the camera
-// eye through the pointer, 1.5 blocks long; finds where it meets the ground (the drum or a flat
-// plane at the player's height: l_dpdPos) and the nearest column, field object, furniture,
-// dpdTri_c, base_c (TYPE_DPD) or insect it hits (l_dpdHit), shortening the ray at each hit.
+// 1. Pushes registered base_c apart (each pair once). 2. Casts the pointer ray:
+// from the camera eye through the pointer, 1.5 blocks long; finds where it
+// meets the ground (the drum or a flat plane at the player's height: l_dpdPos)
+// and the nearest column, field object, furniture, dpdTri_c, base_c (TYPE_DPD)
+// or insect it hits (l_dpdHit), shortening the ray at each hit.
 void calc() {
     dCamera_c *cam;
     dPlayerActor_c *player;
@@ -509,8 +517,8 @@ void calc() {
                 }
             }
 
-            // b's side differs from a's in the target: no mDepth update, and no hit callback when b
-            // has a weight.
+            // b's side differs from a's in the target: no mDepth update, and no
+            // hit callback when b has a weight.
             if (bWeight == 0) {
                 if (depth >= b->mDepth) {
                     if (a->mType & base_c::TYPE_ONCE) {
@@ -580,7 +588,8 @@ void calc() {
     field = dField::getInfo(0);
     l_dpdPos.clear();
     l_dpdHit.clear();
-    if (cam != NULL && mPad::getCore()->getDpdValidFlag() > 0 && player != NULL && field != NULL) {
+    if (cam != NULL && mPad::getCore()->getDpdValidFlag() > 0 &&
+        player != NULL && field != NULL) {
         dBGC::column_c hitCol;
         mVec2_c screen = dPad::getRawPointer();
         mVec3_c target = cam->screenToWorld(&screen);
@@ -644,12 +653,14 @@ void calc() {
                 dBGC::poly_c *poly = polys;
                 for (u32 i = 0; i < 2; i++, poly++) {
                     mVec3_c cross;
-                    if (isFront(poly, s2) && !isFront(poly, e2) && poly->crossSeg(&cross, s2, e2)) {
+                    if (isFront(poly, s2) && !isFront(poly, e2) &&
+                        poly->crossSeg(&cross, s2, e2)) {
                         mVec3_c pos;
                         dWorld::toFieldPosition(&pos, &cross);
                         if (pos.z < 0.0f && cross.z < 0.0f) {
                             pos.z = 1.0f;
-                        } else if (dScene::isCurrentSceneAttr(9) && cross.z < 0.0f) {
+                        } else if (dScene::isCurrentSceneAttr(9) &&
+                                   cross.z < 0.0f) {
                             pos.z = 1.0f;
                         }
                         l_dpdPos.set(pos, FALSE);
@@ -683,7 +694,8 @@ void calc() {
             dBGC::poly_c *poly = polys;
             for (u32 i = 0; i < 2; i++, poly++) {
                 mVec3_c cross;
-                if (isFront(poly, s) && !isFront(poly, e) && poly->crossSeg(&cross, s, e)) {
+                if (isFront(poly, s) && !isFront(poly, e) &&
+                    poly->crossSeg(&cross, s, e)) {
                     mVec3_c pos = cross;
                     l_dpdPos.set(pos, FALSE);
                     break;
@@ -701,11 +713,14 @@ void calc() {
                     f32 colRadius;
                     f32 colHeight;
                     int attr;
-                    if (dBGCF::getColumnAttr(x, z, &colRadius, &colHeight, &attr) && attr != 1) {
+                    if (dBGCF::getColumnAttr(x, z, &colRadius, &colHeight,
+                                             &attr) &&
+                        attr != 1) {
                         mVec3_c pos;
                         dBGCF::unitToPos(&pos, x, z);
                         pos.y = dBGCF::getUnitBaseY(x, z);
-                        if (checkColumn(&end, &start, &pos, colRadius, colHeight)) {
+                        if (checkColumn(&end, &start, &pos, colRadius,
+                                        colHeight)) {
                             dItem::Item *item = field->getItem(x, z, 0);
                             BOOL hit = FALSE;
                             if (item != NULL) {
@@ -714,12 +729,17 @@ void calc() {
                                     l_dpdHit.set(pos, HIT_FG, NULL, 0);
                                     hit = TRUE;
                                 } else if (id == 0x7003) {
-                                    l_dpdHit.set(pos, HIT_STR,
-                                                 dSTR::getAcList()->search(x, z, TRUE), 0);
+                                    l_dpdHit.set(
+                                        pos, HIT_STR,
+                                        dSTR::getAcList()->search(x, z, TRUE),
+                                        0);
                                     hit = TRUE;
-                                } else if (dSTR::getAcList()->search(x, z, TRUE) != NULL) {
-                                    l_dpdHit.set(pos, HIT_STR,
-                                                 dSTR::getAcList()->search(x, z, TRUE), 0);
+                                } else if (dSTR::getAcList()->search(
+                                               x, z, TRUE) != NULL) {
+                                    l_dpdHit.set(
+                                        pos, HIT_STR,
+                                        dSTR::getAcList()->search(x, z, TRUE),
+                                        0);
                                     hit = TRUE;
                                 }
                             }
@@ -734,7 +754,8 @@ void calc() {
 
         for (dpdTri_c *tri = dpdTri_c::s_head; tri != NULL; tri = tri->mNext) {
             mVec3_c cross;
-            if (isFront(tri, start) && !isFront(tri, end) && tri->crossSeg(&cross, start, end)) {
+            if (isFront(tri, start) && !isFront(tri, end) &&
+                tri->crossSeg(&cross, start, end)) {
                 end = cross;
                 l_dpdHit.set(tri->mCenter, tri->mType,
                              fManager_c::searchBaseByID(tri->mOwnerID), 0);
@@ -743,13 +764,15 @@ void calc() {
             }
         }
 
-        if (dScene::isCurrentSceneAttr(0x210) || dScene::getCurrentScene() == 0x33) {
+        if (dScene::isCurrentSceneAttr(0x210) ||
+            dScene::getCurrentScene() == 0x33) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     dItem::Item *item = field->getItem(x, z, 0);
                     if (item != NULL && dItem::isRealItemId(item->mId)) {
                         const dItem::BITM *bitm = dItem::getBITM(item->mId);
-                        if (bitm != NULL && dItem::clampField(bitm->m_ftrFunc, 0x41, 1) == 0) {
+                        if (bitm != NULL &&
+                            dItem::clampField(bitm->m_ftrFunc, 0x41, 1) == 0) {
                             mVec3_c pos;
                             dBGCF::unitToPos(&pos, x, z);
                             pos.y = dBGCF::getUnitBaseY(&pos);
@@ -765,7 +788,8 @@ void calc() {
 
         for (base_c *obj = base_c::s_head; obj != NULL; obj = obj->mNext) {
             if (obj->mType & base_c::TYPE_DPD) {
-                if (checkColumn(&end, &start, obj->getPos(), obj->getRadius(), obj->getHeight())) {
+                if (checkColumn(&end, &start, obj->getPos(), obj->getRadius(),
+                                obj->getHeight())) {
                     param = obj->mParam;
                     base = fManager_c::searchBaseByID(obj->getID());
                     l_dpdHit.set(*obj->getPos(), obj->mType, base, param);
@@ -813,20 +837,20 @@ fBaseID_e ac_c::getID() const {
     return mActor->mUniqueID;
 }
 
-void ac_c::set(dActor_c *actor, f32 radius, f32 height, u32 type, u32 mask, u8 weight,
-               u32 param) {
+void ac_c::set(dActor_c *actor, f32 radius, f32 height, u32 type, u32 mask,
+               u8 weight, u32 param) {
     mActor = actor;
     base_c::set(radius, height, type, mask, weight, param);
 }
 
-void pos_c::set(const mVec3_c &pos, f32 radius, f32 height, u32 type, u32 mask, u8 weight,
-                u32 param) {
+void pos_c::set(const mVec3_c &pos, f32 radius, f32 height, u32 type, u32 mask,
+                u8 weight, u32 param) {
     mPos = pos;
     base_c::set(radius, height, type, mask, weight, param);
 }
 
-void acpos_c::set(dActor_c *actor, const mVec3_c &pos, f32 radius, f32 height, u32 type,
-                  u32 mask, u8 weight, u32 param) {
+void acpos_c::set(dActor_c *actor, const mVec3_c &pos, f32 radius, f32 height,
+                  u32 type, u32 mask, u8 weight, u32 param) {
     ac_c::set(actor, radius, height, type, mask, weight, param);
     mPos = pos;
 }
@@ -861,7 +885,8 @@ void ins_c::regist(const mVec3_c *pos, f32 radius, u32 param, BOOL enable) {
     mRadius = radius;
 }
 
-BOOL ins_c::check(const mVec3_c *start, const mVec3_c *end, f32 radius, u32 *param) {
+BOOL ins_c::check(const mVec3_c *start, const mVec3_c *end, f32 radius,
+                  u32 *param) {
     BOOL hit = FALSE;
     u32 dummy;
     if (param == NULL) {
@@ -879,14 +904,16 @@ BOOL ins_c::check(const mVec3_c *start, const mVec3_c *end, f32 radius, u32 *par
     step.z /= 6.0f;
     static mVec3_c s_points[7];
     for (u32 i = 0; i < 7; i++) {
-        s_points[i].set(s.x + (f32)i * step.x, s.y + (f32)i * step.y, s.z + (f32)i * step.z);
+        s_points[i].set(s.x + (f32)i * step.x, s.y + (f32)i * step.y,
+                        s.z + (f32)i * step.z);
     }
     for (; ins != NULL; ins = ins->mNext) {
         ins->mHit = FALSE;
         f32 r = radius + ins->mRadius;
         f32 rr = r * r;
         for (u32 i = 0; i <= 6; i++) {
-            if (!hit && ins->mEnabled && PSVECSquareDistance(s_points[i], ins->mCenter) <= rr) {
+            if (!hit && ins->mEnabled &&
+                PSVECSquareDistance(s_points[i], ins->mCenter) <= rr) {
                 ins->mHit = TRUE;
                 hit = TRUE;
                 *param = ins->mParam;
@@ -909,7 +936,7 @@ void ins_c::clearList() {
 
 } // namespace dObjc
 
-CUSTOM_BASE_PROFILE(OBJC, dObjc_c, 0x12A, 0x44);
+CUSTOM_BASE_PROFILE(OBJC, dObjc_c, fProf::OBJC, fProf::DRAW_ORDER::OBJC);
 
 int dObjc_c::create() {
     dObjc::base_c::create();

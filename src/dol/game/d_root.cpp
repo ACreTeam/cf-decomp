@@ -1,13 +1,15 @@
-// The root process (dRoot_c). .text 801B96A4..801B97B4, .data 804FC9A0..804FC9F8, .sdata 8074C330..8074C348,
-// .sbss 8074EB88..8074EB90, .sdata2 807519A0..807519A8. See include/game/game/d_root.hpp.
+// The root process (dRoot_c). .text 801B96A4..801B97B4, .data
+// 804FC9A0..804FC9F8, .sdata 8074C330..8074C348, .sbss 8074EB88..8074EB90,
+// .sdata2 807519A0..807519A8. See include/game/game/d_root.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_root.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_base.hpp>
 #include <game/game/d_scene.hpp>
 
-CUSTOM_BASE_PROFILE(ROOT, dRoot_c, 0, 0x12B);
+CUSTOM_BASE_PROFILE(ROOT, dRoot_c, fProf::ROOT, fProf::DRAW_ORDER::ROOT);
 
-static const ProfileName l_childProfiles[] = {0x129};
+static const ProfileName l_childProfiles[] = {fProf::DEMO};
 
 dRoot_c *dRoot_c::sInstance;
 
@@ -37,7 +39,8 @@ int dRoot_c::draw() {
 }
 
 // 801B974C
-dRoot_c::~dRoot_c() {}
+dRoot_c::~dRoot_c() {
+}
 
 // 801B97A8
 dScene::dSceneChange_c *dRoot_c::getSceneChange() {

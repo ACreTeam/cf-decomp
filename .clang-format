@@ -4,3 +4,4 @@ TabWidth: 4
 UseTab: Never
 AllowShortFunctionsOnASingleLine: None
 InsertBraces: true
+SortIncludes: Never

@@ -1,6 +1,8 @@
-// The hand item process (dHandItem_c). .text 80191500..80195290, .rodata 8047CC50..8047CE10,
-// .data 804F9DB0..804FA098, .bss 80624098..80624220, .sdata 8074BF90..8074BFA0, .sbss 8074E9F8..8074EA18,
-// .sdata2 80751600..80751678. See include/game/game/d_hand_item.hpp.
+// The hand item process (dHandItem_c). .text 80191500..80195290, .rodata
+// 8047CC50..8047CE10, .data 804F9DB0..804FA098, .bss 80624098..80624220, .sdata
+// 8074BF90..8074BFA0, .sbss 8074E9F8..8074EA18, .sdata2 80751600..80751678. See
+// include/game/game/d_hand_item.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_hand_item.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_actor.hpp>
@@ -19,7 +21,8 @@
 #include <lib/egg/math/eggMath.h>
 #include <cmath>
 
-CUSTOM_BASE_PROFILE(HAND_ITEM, dHandItem_c, 0xAE, 0xF);
+CUSTOM_BASE_PROFILE(HAND_ITEM, dHandItem_c, fProf::HAND_ITEM,
+                    fProf::DRAW_ORDER::HAND_ITEM);
 
 dHandItem_c *dHandItem_c::sInstance;
 
@@ -30,72 +33,108 @@ static const u8 l_eatHandEnd[] = {15, 30, 66};
 static const u8 l_appearGroundEnd[] = {33, 57, 63, 69, 72, 93, 64, 79};
 static const u8 l_stowGroundEnd[] = {18, 24, 60};
 
-static const f32 l_appearHandScale[] = {1.125f, 0.875f, 1.0f, 1.125f, 0.875f, 1.0f};
-static const f32 l_appearGroundScale[] = {0.0f, 1.125f, 0.875f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f};
+static const f32 l_appearHandScale[] = {1.125f, 0.875f, 1.0f,
+                                        1.125f, 0.875f, 1.0f};
+static const f32 l_appearGroundScale[] = {0.0f, 1.125f, 0.875f, 1.0f,
+                                          1.0f, 1.0f,   0.0f,   1.0f};
 
-static const dHandItem_c::stateFunc_c l_stateFuncs[dHandItem_c::STATE_NUM][dHandItem_c::VARIANT_NUM] = {
-    {{&dHandItem_c::initLoad, &dHandItem_c::execLoad}, {&dHandItem_c::initLoad, &dHandItem_c::execLoad}},
-    {{&dHandItem_c::initAppearHand, &dHandItem_c::execAppearHand}, {&dHandItem_c::initAppearGround, &dHandItem_c::execAppearGround}},
-    {{&dHandItem_c::initFallHand, NULL}, {&dHandItem_c::initFallGround, &dHandItem_c::execFallGround}},
-    {{NULL, NULL}, {&dHandItem_c::initStowGround, &dHandItem_c::execStowGround}},
-    {{&dHandItem_c::initTakeHand, &dHandItem_c::execTakeHand}, {&dHandItem_c::initTakeGround, &dHandItem_c::execTakeGround}},
-    {{&dHandItem_c::initHoldHand, &dHandItem_c::execHoldHand}, {&dHandItem_c::initHoldGround, &dHandItem_c::execHoldGround}},
-    {{&dHandItem_c::initShrinkHand, &dHandItem_c::execShrinkHand}, {&dHandItem_c::initShrinkGround, &dHandItem_c::execShrinkGround}},
-    {{&dHandItem_c::initKeepHand, &dHandItem_c::execKeepHand}, {NULL, NULL}},
-    {{&dHandItem_c::initFollowHand, &dHandItem_c::execFollowHand}, {&dHandItem_c::initFollowGround, &dHandItem_c::execFollowGround}},
-    {{NULL, NULL}, {NULL, NULL}},
-    {{&dHandItem_c::initEatHand, &dHandItem_c::execEatHand}, {NULL, NULL}},
-    {{&dHandItem_c::initUnwrapHand, &dHandItem_c::execUnwrapHand}, {NULL, NULL}},
-    {{&dHandItem_c::initShowHand, &dHandItem_c::execShowHand}, {NULL, NULL}},
+static const dHandItem_c::stateFunc_c
+    l_stateFuncs[dHandItem_c::STATE_NUM][dHandItem_c::VARIANT_NUM] = {
+        {{&dHandItem_c::initLoad, &dHandItem_c::execLoad},
+         {&dHandItem_c::initLoad, &dHandItem_c::execLoad}},
+        {{&dHandItem_c::initAppearHand, &dHandItem_c::execAppearHand},
+         {&dHandItem_c::initAppearGround, &dHandItem_c::execAppearGround}},
+        {{&dHandItem_c::initFallHand, NULL},
+         {&dHandItem_c::initFallGround, &dHandItem_c::execFallGround}},
+        {{NULL, NULL},
+         {&dHandItem_c::initStowGround, &dHandItem_c::execStowGround}},
+        {{&dHandItem_c::initTakeHand, &dHandItem_c::execTakeHand},
+         {&dHandItem_c::initTakeGround, &dHandItem_c::execTakeGround}},
+        {{&dHandItem_c::initHoldHand, &dHandItem_c::execHoldHand},
+         {&dHandItem_c::initHoldGround, &dHandItem_c::execHoldGround}},
+        {{&dHandItem_c::initShrinkHand, &dHandItem_c::execShrinkHand},
+         {&dHandItem_c::initShrinkGround, &dHandItem_c::execShrinkGround}},
+        {{&dHandItem_c::initKeepHand, &dHandItem_c::execKeepHand},
+         {NULL, NULL}},
+        {{&dHandItem_c::initFollowHand, &dHandItem_c::execFollowHand},
+         {&dHandItem_c::initFollowGround, &dHandItem_c::execFollowGround}},
+        {{NULL, NULL}, {NULL, NULL}},
+        {{&dHandItem_c::initEatHand, &dHandItem_c::execEatHand}, {NULL, NULL}},
+        {{&dHandItem_c::initUnwrapHand, &dHandItem_c::execUnwrapHand},
+         {NULL, NULL}},
+        {{&dHandItem_c::initShowHand, &dHandItem_c::execShowHand},
+         {NULL, NULL}},
 };
 
 static mVec3_c l_handOfs(0.0f, -6.0f, 0.0f);
 static const u8 l_appearHandDur[] = {
-    l_appearHandEnd[0], l_appearHandEnd[1] - l_appearHandEnd[0], l_appearHandEnd[2] - l_appearHandEnd[1],
-    l_appearHandEnd[3], l_appearHandEnd[4] - l_appearHandEnd[3], l_appearHandEnd[5] - l_appearHandEnd[4],
+    l_appearHandEnd[0],
+    l_appearHandEnd[1] - l_appearHandEnd[0],
+    l_appearHandEnd[2] - l_appearHandEnd[1],
+    l_appearHandEnd[3],
+    l_appearHandEnd[4] - l_appearHandEnd[3],
+    l_appearHandEnd[5] - l_appearHandEnd[4],
 };
 static mVec3_c l_appearHandTarget(0.0f, 0.0f, 1.0f);
 static mVec3_c l_appearHandFishTarget(0.0f, 0.0f, 1.0f);
 static const f32 l_appearHandScaleSpeed[] = {
     std::fabs(l_appearHandScale[0] / l_appearHandDur[0]),
-    std::fabs((l_appearHandScale[1] - l_appearHandScale[0]) / l_appearHandDur[1]),
-    std::fabs((l_appearHandScale[2] - l_appearHandScale[1]) / l_appearHandDur[2]),
+    std::fabs((l_appearHandScale[1] - l_appearHandScale[0]) /
+              l_appearHandDur[1]),
+    std::fabs((l_appearHandScale[2] - l_appearHandScale[1]) /
+              l_appearHandDur[2]),
     std::fabs(l_appearHandScale[3] / l_appearHandDur[3]),
-    std::fabs((l_appearHandScale[4] - l_appearHandScale[3]) / l_appearHandDur[4]),
-    std::fabs((l_appearHandScale[5] - l_appearHandScale[4]) / l_appearHandDur[5]),
+    std::fabs((l_appearHandScale[4] - l_appearHandScale[3]) /
+              l_appearHandDur[4]),
+    std::fabs((l_appearHandScale[5] - l_appearHandScale[4]) /
+              l_appearHandDur[5]),
 };
 static const u8 l_appearHandFrames = l_appearHandEnd[0];
 static mVec3_c l_takeHandTarget(0.0f, 0.0f, 1.0f);
 static mVec3_c l_takeHandFishTarget(0.0f, 0.0f, 1.0f);
 static mVec3_c l_shrinkHandTarget(-5.0f, 0.0f, -5.0f);
 static const u8 l_eatHandDur[] = {
-    l_eatHandEnd[0], l_eatHandEnd[1] - l_eatHandEnd[0], l_eatHandEnd[2] - l_eatHandEnd[1],
+    l_eatHandEnd[0],
+    l_eatHandEnd[1] - l_eatHandEnd[0],
+    l_eatHandEnd[2] - l_eatHandEnd[1],
 };
 static mVec3_c l_appearGroundTarget(0.0f, 0.0f, 17.0f);
 static mVec3_c l_appearGroundPopOfs(0.0f, 0.0f, 5.0f);
 static const u8 l_appearGroundDur[] = {
-    l_appearGroundEnd[0], l_appearGroundEnd[1] - l_appearGroundEnd[0], l_appearGroundEnd[2] - l_appearGroundEnd[1],
-    l_appearGroundEnd[3] - l_appearGroundEnd[2], l_appearGroundEnd[4] - l_appearGroundEnd[3], l_appearGroundEnd[5] - l_appearGroundEnd[4],
-    l_appearGroundEnd[6], l_appearGroundEnd[7] - l_appearGroundEnd[6],
+    l_appearGroundEnd[0],
+    l_appearGroundEnd[1] - l_appearGroundEnd[0],
+    l_appearGroundEnd[2] - l_appearGroundEnd[1],
+    l_appearGroundEnd[3] - l_appearGroundEnd[2],
+    l_appearGroundEnd[4] - l_appearGroundEnd[3],
+    l_appearGroundEnd[5] - l_appearGroundEnd[4],
+    l_appearGroundEnd[6],
+    l_appearGroundEnd[7] - l_appearGroundEnd[6],
 };
 static const f32 l_appearGroundScaleSpeed[] = {
     0.0f,
-    std::fabs((l_appearGroundScale[1] - l_appearGroundScale[0]) / l_appearGroundDur[1]),
-    std::fabs((l_appearGroundScale[2] - l_appearGroundScale[1]) / l_appearGroundDur[2]),
-    std::fabs((l_appearGroundScale[3] - l_appearGroundScale[2]) / l_appearGroundDur[3]),
-    std::fabs((l_appearGroundScale[4] - l_appearGroundScale[3]) / l_appearGroundDur[4]),
-    std::fabs((l_appearGroundScale[5] - l_appearGroundScale[4]) / l_appearGroundDur[5]),
+    std::fabs((l_appearGroundScale[1] - l_appearGroundScale[0]) /
+              l_appearGroundDur[1]),
+    std::fabs((l_appearGroundScale[2] - l_appearGroundScale[1]) /
+              l_appearGroundDur[2]),
+    std::fabs((l_appearGroundScale[3] - l_appearGroundScale[2]) /
+              l_appearGroundDur[3]),
+    std::fabs((l_appearGroundScale[4] - l_appearGroundScale[3]) /
+              l_appearGroundDur[4]),
+    std::fabs((l_appearGroundScale[5] - l_appearGroundScale[4]) /
+              l_appearGroundDur[5]),
     0.0f,
-    std::fabs((l_appearGroundScale[7] - l_appearGroundScale[6]) / l_appearGroundDur[7]),
+    std::fabs((l_appearGroundScale[7] - l_appearGroundScale[6]) /
+              l_appearGroundDur[7]),
 };
 static const u8 l_stowGroundDur[] = {
-    l_stowGroundEnd[0], l_stowGroundEnd[1] - l_stowGroundEnd[0], l_stowGroundEnd[2] - l_stowGroundEnd[1],
+    l_stowGroundEnd[0],
+    l_stowGroundEnd[1] - l_stowGroundEnd[0],
+    l_stowGroundEnd[2] - l_stowGroundEnd[1],
 };
 static mVec3_c l_groundHandOfs(-2.0f, -4.0f, 4.0f);
 static mVec3_c l_unusedOfs(0.0f, 0.0f, 17.0f);
 static mVec3_c l_shrinkGroundTarget(-2.0f, -5.0f, 0.0f);
 static mVec3_c l_stowGroundOfs(0.0f, 0.0f, 17.0f);
-
 
 // 80191530
 dHandItem_c::dHandItem_c() {
@@ -103,7 +142,8 @@ dHandItem_c::dHandItem_c() {
 }
 
 // 80191580
-dHandItem_c::~dHandItem_c() {}
+dHandItem_c::~dHandItem_c() {
+}
 
 // 801915EC
 void dHandItem_c::reset() {
@@ -130,30 +170,31 @@ void dHandItem_c::reset() {
 }
 
 // 80191664
-BOOL dHandItem_c::start(const dItem::Item *item, int kind, int useType, int variant, dDemoActor_c *actor,
-                        dDemoActor_c *partner, f32 ofsY0, f32 ofsY1, f32 fishOfsY0, f32 fishOfsY1, f32 ofsZ0,
-                        f32 ofsZ1) {
+BOOL dHandItem_c::start(const dItem::Item *item, int kind, int useType,
+                        int variant, dDemoActor_c *actor, dDemoActor_c *partner,
+                        f32 ofsY0, f32 ofsY1, f32 fishOfsY0, f32 fishOfsY1,
+                        f32 ofsZ0, f32 ofsZ1) {
     BOOL started = FALSE;
     if ((u32)mState >= STATE_NUM && actor != NULL) {
-    mKind = kind;
-    mItem = *item;
-    mUseType = useType;
-    mVariant = variant;
-    setActor(actor, 0);
-    setActor(partner, 1);
-    if (mVariant == VARIANT_GROUND) {
-        mRange = 64.0f;
-    } else {
-        mRange = 34.0f;
-    }
-    mReach = 16.0f;
-    setOfsY(0, ofsY0);
-    setOfsY(1, ofsY1);
-    setFishOfsY(0, fishOfsY0);
-    setFishOfsY(1, fishOfsY1);
-    setOfsZ(0, ofsZ0);
-    setOfsZ(1, ofsZ1);
-    started = TRUE;
+        mKind = kind;
+        mItem = *item;
+        mUseType = useType;
+        mVariant = variant;
+        setActor(actor, 0);
+        setActor(partner, 1);
+        if (mVariant == VARIANT_GROUND) {
+            mRange = 64.0f;
+        } else {
+            mRange = 34.0f;
+        }
+        mReach = 16.0f;
+        setOfsY(0, ofsY0);
+        setOfsY(1, ofsY1);
+        setFishOfsY(0, fishOfsY0);
+        setFishOfsY(1, fishOfsY1);
+        setOfsZ(0, ofsZ0);
+        setOfsZ(1, ofsZ1);
+        started = TRUE;
     }
     return started;
 }
@@ -233,7 +274,8 @@ BOOL dHandItem_c::setUseType(int type, dDemoActor_c *actor) {
 
 // 80191B48
 BOOL dHandItem_c::isWaiting() const {
-    if (mState == STATE_FALL || (mState == STATE_APPEAR && !isState(STATE_APPEAR)) ||
+    if (mState == STATE_FALL ||
+        (mState == STATE_APPEAR && !isState(STATE_APPEAR)) ||
         (mState == STATE_FOLLOW && !isState(STATE_FOLLOW))) {
         return TRUE;
     }
@@ -390,7 +432,8 @@ int dHandItem_c::execute() {
 
 // 80192128
 int dHandItem_c::draw() {
-    if ((u32)mState < STATE_NUM && mVisible && mItem.mId != dItem::ITEM_ID_NONE && mScale > 0.0f) {
+    if ((u32)mState < STATE_NUM && mVisible &&
+        mItem.mId != dItem::ITEM_ID_NONE && mScale > 0.0f) {
         mVec3_c scale(mScale, mScale, mScale);
         if (mItem.isFish()) {
             dFIObj_c *mdl = dFIMdlMgr_c::sInstance->getObj(dNet::getMyNo());
@@ -404,7 +447,8 @@ int dHandItem_c::draw() {
             if (present || mKind == KIND_WRAPPED) {
                 item.setFromIndex(dItem::ITEM_IDX_PRESENT);
             }
-            fgMngProc_callFgObjCallback(item.mId, (int)&mPos, (int)&scale, present);
+            fgMngProc_callFgObjCallback(item.mId, (int)&mPos, (int)&scale,
+                                        present);
         }
     }
     return 1;
@@ -419,7 +463,9 @@ void dHandItem_c::initLoad() {
 void dHandItem_c::execLoad() {
     BOOL ready = FALSE;
     if (mItem.isFish()) {
-        if (dFIMdlMgr_c::sInstance->request(dNet::getMyNo(), dFIMdlBank_c::TYPE_FISH, mItem, TRUE, dFIMdlBank_c::MODE_GET)) {
+        if (dFIMdlMgr_c::sInstance->request(dNet::getMyNo(),
+                                            dFIMdlBank_c::TYPE_FISH, mItem,
+                                            TRUE, dFIMdlBank_c::MODE_GET)) {
             ready = TRUE;
         }
     } else {
@@ -463,7 +509,8 @@ void dHandItem_c::initAppearHand() {
 
 // 80192554
 void dHandItem_c::appearHandGrow() {
-    sLib::chase(&mScale, l_appearHandScale[mStep], l_appearHandScaleSpeed[mStep]);
+    sLib::chase(&mScale, l_appearHandScale[mStep],
+                l_appearHandScaleSpeed[mStep]);
     if (mFrame == 12) {
         mSound.startSound(SE_toridashi);
     }
@@ -485,7 +532,8 @@ void dHandItem_c::appearHandGrow() {
 
 // 80192654
 void dHandItem_c::appearHandGrowFish() {
-    sLib::chase(&mScale, l_appearHandScale[mStep], l_appearHandScaleSpeed[mStep]);
+    sLib::chase(&mScale, l_appearHandScale[mStep],
+                l_appearHandScaleSpeed[mStep]);
     if (mFrame == 12) {
         mSound.startSound(SE_toridashi);
     }
@@ -518,8 +566,9 @@ void dHandItem_c::appearHandGrowFish() {
 // 80192818
 void dHandItem_c::execAppearHand() {
     static const StateFunc steps[] = {
-        &dHandItem_c::appearHandGrow, &dHandItem_c::appearHandGrow, &dHandItem_c::appearHandGrow,
-        &dHandItem_c::appearHandGrowFish, &dHandItem_c::appearHandGrowFish, &dHandItem_c::appearHandGrowFish,
+        &dHandItem_c::appearHandGrow,     &dHandItem_c::appearHandGrow,
+        &dHandItem_c::appearHandGrow,     &dHandItem_c::appearHandGrowFish,
+        &dHandItem_c::appearHandGrowFish, &dHandItem_c::appearHandGrowFish,
     };
     if (mStep < ARRAY_SIZE(steps)) {
         (this->*steps[mStep])();
@@ -623,7 +672,8 @@ void dHandItem_c::holdHandTrack() {
 
 // 80192D3C
 void dHandItem_c::execHoldHand() {
-    static const StateFunc steps[] = {&dHandItem_c::holdHandMoveTo, &dHandItem_c::holdHandTrack};
+    static const StateFunc steps[] = {&dHandItem_c::holdHandMoveTo,
+                                      &dHandItem_c::holdHandTrack};
     if (mStep < ARRAY_SIZE(steps)) {
         (this->*steps[mStep])();
     }
@@ -811,7 +861,9 @@ void dHandItem_c::eatHandShrink() {
 // 801936FC
 void dHandItem_c::execEatHand() {
     static const StateFunc steps[] = {
-        &dHandItem_c::eatHandToMouth, &dHandItem_c::eatHandTrack, &dHandItem_c::eatHandShrink,
+        &dHandItem_c::eatHandToMouth,
+        &dHandItem_c::eatHandTrack,
+        &dHandItem_c::eatHandShrink,
     };
     if (mStep < ARRAY_SIZE(steps)) {
         (this->*steps[mStep])();
@@ -972,8 +1024,9 @@ void dHandItem_c::appearGroundPop() {
 // 80193F28
 void dHandItem_c::execAppearGround() {
     static const StateFunc steps[] = {
-        &dHandItem_c::appearGroundWait, &dHandItem_c::appearGroundRise, &dHandItem_c::appearGroundRise,
-        &dHandItem_c::appearGroundRise, &dHandItem_c::appearGroundRise, &dHandItem_c::appearGroundDrop,
+        &dHandItem_c::appearGroundWait,    &dHandItem_c::appearGroundRise,
+        &dHandItem_c::appearGroundRise,    &dHandItem_c::appearGroundRise,
+        &dHandItem_c::appearGroundRise,    &dHandItem_c::appearGroundDrop,
         &dHandItem_c::appearGroundWaitNpc, &dHandItem_c::appearGroundPop,
     };
     if (mStep < ARRAY_SIZE(steps)) {
@@ -1138,7 +1191,8 @@ void dHandItem_c::stowGroundWait() {
             ofs.rotY(actor->getAngle().y);
             mTarget += ofs;
         }
-        mSpeed.set(std::fabs(mTarget.x - mPos.x), std::fabs(mTarget.y - mPos.y), std::fabs(mTarget.z - mPos.z));
+        mSpeed.set(std::fabs(mTarget.x - mPos.x), std::fabs(mTarget.y - mPos.y),
+                   std::fabs(mTarget.z - mPos.z));
         mSpeed /= l_stowGroundDur[mStep];
         mStep = 1;
     }
@@ -1160,7 +1214,8 @@ void dHandItem_c::stowGroundToHand() {
     if (mFrame >= l_stowGroundEnd[mStep]) {
         mStep = 2;
         mOffset = l_stowGroundOfs;
-        mSpeed.set(std::fabs(mOffset.x), std::fabs(mOffset.y), std::fabs(mOffset.z));
+        mSpeed.set(std::fabs(mOffset.x), std::fabs(mOffset.y),
+                   std::fabs(mOffset.z));
         mSpeed /= l_stowGroundDur[2];
         mScaleSpeed = mScale / l_stowGroundDur[mStep];
     }
@@ -1190,7 +1245,9 @@ void dHandItem_c::stowGroundShrink() {
 // 801949EC
 void dHandItem_c::execStowGround() {
     static const StateFunc steps[] = {
-        &dHandItem_c::stowGroundWait, &dHandItem_c::stowGroundToHand, &dHandItem_c::stowGroundShrink,
+        &dHandItem_c::stowGroundWait,
+        &dHandItem_c::stowGroundToHand,
+        &dHandItem_c::stowGroundShrink,
     };
     if (mStep < ARRAY_SIZE(steps)) {
         (this->*steps[mStep])();
@@ -1200,11 +1257,13 @@ void dHandItem_c::execStowGround() {
 namespace dHandItem {
 
 // 80194A2C
-BOOL start(const dItem::Item *item, int kind, int useType, int variant, dDemoActor_c *actor, dDemoActor_c *partner,
-           f32 ofsY0, f32 ofsY1, f32 fishOfsY0, f32 fishOfsY1, f32 ofsZ0, f32 ofsZ1) {
+BOOL start(const dItem::Item *item, int kind, int useType, int variant,
+           dDemoActor_c *actor, dDemoActor_c *partner, f32 ofsY0, f32 ofsY1,
+           f32 fishOfsY0, f32 fishOfsY1, f32 ofsZ0, f32 ofsZ1) {
     if (dHandItem_c::sInstance != NULL) {
-        return dHandItem_c::sInstance->start(item, kind, useType, variant, actor, partner, ofsY0, ofsY1,
-                                             fishOfsY0, fishOfsY1, ofsZ0, ofsZ1);
+        return dHandItem_c::sInstance->start(
+            item, kind, useType, variant, actor, partner, ofsY0, ofsY1,
+            fishOfsY0, fishOfsY1, ofsZ0, ofsZ1);
     }
     return FALSE;
 }
@@ -1228,7 +1287,8 @@ BOOL isHolder(dDemoActor_c *actor) {
 // 80194AEC
 BOOL isActive() {
     BOOL active = FALSE;
-    if (dHandItem_c::sInstance != NULL && (u32)dHandItem_c::sInstance->mState < dHandItem_c::STATE_NUM) {
+    if (dHandItem_c::sInstance != NULL &&
+        (u32)dHandItem_c::sInstance->mState < dHandItem_c::STATE_NUM) {
         active = TRUE;
     }
     return active;
@@ -1292,11 +1352,13 @@ BOOL isInRange(dDemoActor_c *actor) {
         } else {
             other = getActor(0);
         }
-        const mVec3_c *otherPos = other != NULL ? other->getPosP() : &dHandItem_c::sInstance->mPos;
+        const mVec3_c *otherPos =
+            other != NULL ? other->getPosP() : &dHandItem_c::sInstance->mPos;
         if (otherPos->xzDistTo(*pos) <= dHandItem_c::sInstance->mRange) {
             return TRUE;
         }
-        if (dHandItem_c::sInstance->isWaiting() && dHandItem_c::sInstance->mTimer == 0) {
+        if (dHandItem_c::sInstance->isWaiting() &&
+            dHandItem_c::sInstance->mTimer == 0) {
             return TRUE;
         }
     }

@@ -1,6 +1,8 @@
-// The clock and the countdown timer (dClock_c, dClock). .text 8018BAF8..8018D778, .ctors 80465828, .data
-// 804F9610..804F9880, .bss 80624010, .sdata 8074BEB8..8074BF00, .sbss 8074E9C8, .sdata2 807515C8..807515F8.
-// See include/game/game/d_clock.hpp.
+// The clock and the countdown timer (dClock_c, dClock). .text
+// 8018BAF8..8018D778, .ctors 80465828, .data 804F9610..804F9880, .bss 80624010,
+// .sdata 8074BEB8..8074BF00, .sbss 8074E9C8, .sdata2 807515C8..807515F8. See
+// include/game/game/d_clock.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_clock.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_animal.hpp>
@@ -24,14 +26,15 @@
 #include <lib/revolution/WPAD/WPAD.h>
 #include <game/snd/snd_id.hpp>
 
-CUSTOM_BASE_PROFILE(CLOCK, dClock_c, 5, 0x124);
+CUSTOM_BASE_PROFILE(CLOCK, dClock_c, fProf::CLOCK, fProf::DRAW_ORDER::CLOCK);
 
 #define SHOW_DELAY 80 // frames the clock waits before sliding in again
 
 #define SECONDS_PER_MINUTE 60
 #define SECONDS_PER_HOUR (60 * 60)
 
-// The sky animations run over the two hours from SUNRISE_HOUR and from SUNSET_HOUR.
+// The sky animations run over the two hours from SUNRISE_HOUR and from
+// SUNSET_HOUR.
 #define SUNRISE_HOUR 5
 #define DAY_HOUR 7
 #define SUNSET_HOUR 17
@@ -43,10 +46,9 @@ CUSTOM_BASE_PROFILE(CLOCK, dClock_c, 5, 0x124);
 #define TIMER_COUNT_SECONDS 11  // the count sound plays for the last 10 seconds
 #define COUNT_MAX 99
 
-
 #define MSG_WEEKDAY_GROUP "sys_2D/SYS_2D" // weekday names, Monday 1 .. Sunday 7
 #define MSG_TIMER_TIME 199                // "mm:ss" from word slots 0 and 1
-#define MSG_TIMER_RESULT 200              // the counters, from word slots 0 and 1
+#define MSG_TIMER_RESULT 200 // the counters, from word slots 0 and 1
 #define MSG_TIMER_RESULT_GROUP "sys_2D/SYS_2D_menu"
 
 namespace dClock {
@@ -92,7 +94,8 @@ int dClock_c::create() {
     mTimerAnm.setToEnd();
     mTimerLyt.setAnm(&mTimerPtrnAnm, "timer_00_timerPtrn.brlan", NULL);
     mClockState = STATE_HIDDEN;
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         resetTimer();
     } else if (isHideAndSeekHost()) {
         startHideAndSeek();
@@ -188,12 +191,16 @@ void dClock_c::updateClock() {
         case dItem::LANG_IT:
         case dItem::LANG_DE:
             // day.month: the "T_day" pane comes second
-            mClockLyt.setNumber("T_day", now.month + 1, 12, dScript::NUM_FORMAT_REGION);
-            mClockLyt.setNumber("T_month", now.mday, 12, dScript::NUM_FORMAT_REGION);
+            mClockLyt.setNumber("T_day", now.month + 1, 12,
+                                dScript::NUM_FORMAT_REGION);
+            mClockLyt.setNumber("T_month", now.mday, 12,
+                                dScript::NUM_FORMAT_REGION);
             break;
         default:
-            mClockLyt.setNumber("T_month", now.month + 1, 12, dScript::NUM_FORMAT_REGION);
-            mClockLyt.setNumber("T_day", now.mday, 12, dScript::NUM_FORMAT_REGION);
+            mClockLyt.setNumber("T_month", now.month + 1, 12,
+                                dScript::NUM_FORMAT_REGION);
+            mClockLyt.setNumber("T_day", now.mday, 12,
+                                dScript::NUM_FORMAT_REGION);
             break;
         }
         nw4r::lyt::TextBox *text = mClockLyt.findTextBox("T_yobi");
@@ -263,11 +270,13 @@ void dClock_c::updateTimer() {
     }
     if (sTimer.getFishCount() != mShownFishCount) {
         mShownFishCount = sTimer.getFishCount();
-        mTimerLyt.setNumber("T_count_01", mShownFishCount, 2, dScript::NUM_FORMAT_PLAIN);
+        mTimerLyt.setNumber("T_count_01", mShownFishCount, 2,
+                            dScript::NUM_FORMAT_PLAIN);
     }
     if (sTimer.getBugCount() != mShownBugCount) {
         mShownBugCount = sTimer.getBugCount();
-        mTimerLyt.setNumber("T_count_00", mShownBugCount, 2, dScript::NUM_FORMAT_PLAIN);
+        mTimerLyt.setNumber("T_count_00", mShownBugCount, 2,
+                            dScript::NUM_FORMAT_PLAIN);
     }
     if (sTimer.checkSec()) {
         int elapsed = sTimer.getElapsed();
@@ -278,10 +287,12 @@ void dClock_c::updateTimer() {
         mpTimerHand->SetRotate(rot);
         int remain = sTimer.getRemain();
         dString::Word_c word;
-        dScript::formatNumber(&word, remain / SECONDS_PER_MINUTE, 2, dScript::NUM_FORMAT_ZERO_PAD, 0);
+        dScript::formatNumber(&word, remain / SECONDS_PER_MINUTE, 2,
+                              dScript::NUM_FORMAT_ZERO_PAD, 0);
         dString::setWord(0, &word);
         word.clear();
-        dScript::formatNumber(&word, remain % SECONDS_PER_MINUTE, 2, dScript::NUM_FORMAT_ZERO_PAD, 0);
+        dScript::formatNumber(&word, remain % SECONDS_PER_MINUTE, 2,
+                              dScript::NUM_FORMAT_ZERO_PAD, 0);
         dString::setWord(1, &word);
         mTimerLyt.setMessage("T_time_00", MSG_TIMER_TIME, NULL);
     }
@@ -289,7 +300,8 @@ void dClock_c::updateTimer() {
 
 // 8018C4FC
 BOOL dClock_c::canShow() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (dDemo::isType(dDemo::TYPE_ANY) && !dDemo::isType(dDemo::TYPE_UITAG) &&
@@ -314,7 +326,8 @@ BOOL dClock_c::canShowClock() {
     if (sFlags & FLAG_TIMER) {
         return FALSE;
     }
-    if (dPlayerMgr::fn_800FFAC0() || dPlayerMgr::isWalking(4) || dPlayerMgr::fn_800FFB18()) {
+    if (dPlayerMgr::fn_800FFAC0() || dPlayerMgr::isWalking(4) ||
+        dPlayerMgr::fn_800FFB18()) {
         mShowDelay = SHOW_DELAY;
         return FALSE;
     }
@@ -392,7 +405,8 @@ void dClock_c::updateDayNight() {
         return;
     }
     sec += now.sec + now.min * SECONDS_PER_MINUTE;
-    mDayNightAnm.setFrame(mDayNightAnm.mFrameCtrl.calcFrame(sec, TWILIGHT_SECONDS));
+    mDayNightAnm.setFrame(
+        mDayNightAnm.mFrameCtrl.calcFrame(sec, TWILIGHT_SECONDS));
 }
 
 // 8018C8FC
@@ -644,7 +658,8 @@ BOOL Timer_c::isRunning() {
 }
 
 // 8018CF94
-void Timer_c::stateStop() {}
+void Timer_c::stateStop() {
+}
 
 // 8018CF98
 void Timer_c::stateRun() {
@@ -674,11 +689,14 @@ void Timer_c::stateRun() {
         } else {
             dObjTelop_c::request(TELOP_TIMER_END);
             dString::Word_c word;
-            dScript::formatNumber(&word, mFishCount, 2, dScript::NUM_FORMAT_PLAIN, 0);
+            dScript::formatNumber(&word, mFishCount, 2,
+                                  dScript::NUM_FORMAT_PLAIN, 0);
             dString::setWord(0, &word);
-            dScript::formatNumber(&word, mBugCount, 2, dScript::NUM_FORMAT_PLAIN, 0);
+            dScript::formatNumber(&word, mBugCount, 2,
+                                  dScript::NUM_FORMAT_PLAIN, 0);
             dString::setWord(1, &word);
-            dString::loadString(&word, MSG_TIMER_RESULT, MSG_TIMER_RESULT_GROUP);
+            dString::loadString(&word, MSG_TIMER_RESULT,
+                                MSG_TIMER_RESULT_GROUP);
             dObjChat::postText(word.getText(), dObjChat::TEXT_KIND_SYSTEM);
         }
     } else if (mFlags & FLAG_HIDE_AND_SEEK) {
@@ -715,7 +733,8 @@ void Timer_c::start(int minutes) {
 // 8018D278
 void Timer_c::startHideAndSeek() {
     reset();
-    dQuestPlayerAnimal_c *quest = &dSaveData_c::getRaw()->mAnimals.mTown.mHideAndSeek;
+    dQuestPlayerAnimal_c *quest =
+        &dSaveData_c::getRaw()->mAnimals.mTown.mHideAndSeek;
     mStart.set(quest->mBase.getTimeLimit());
     mEnd.set(quest->getEndTime(TRUE));
     mMinutes = quest->mMinutes;

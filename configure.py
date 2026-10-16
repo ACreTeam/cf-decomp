@@ -1639,10 +1639,10 @@ config.libs = [
     Rel(
         "d_profileNP",
         [
-            Object(NonMatching, "d_profileNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_profileNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_profileNP/rel_init.cpp"),
+            Object(Matching, "d_profileNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_profileNP/d_profile.cpp"),
+            Object(Matching, "d_profileNP/d_profile.cpp"),
         ],
     ),
     Rel(

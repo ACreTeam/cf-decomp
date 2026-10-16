@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <cstring>
 #include <game/game/d_str.hpp>
 #include <game/game/d_msg_comp.hpp>
@@ -17,8 +18,8 @@
 using namespace dSvRuntime;
 
 fProf::fBaseProfile_c g_profile_SV_MGR = {
-    reinterpret_cast<void *(*)()>(&dSvMgr_c::createMgr), 0xA4, 0xE1
-};
+    reinterpret_cast<void *(*)()>(&dSvMgr_c::createMgr), fProf::SV_MGR,
+    fProf::DRAW_ORDER::SV_MGR};
 
 dSvMgr_c::Method dSvMgr_c::mRequestedMode = NULL;
 int dSvMgr_c::mVisitors[3];
@@ -98,7 +99,9 @@ int dSvMgr_c::isTownTransferComplete() {
 }
 
 int dSvMgr_c::isDLDataTransferComplete() {
-    return isTransferComplete(getDLDataOffset(), offsetof(dSaveDLItemList_c, _200004)); // checksum + slots
+    return isTransferComplete(
+        getDLDataOffset(),
+        offsetof(dSaveDLItemList_c, _200004)); // checksum + slots
 }
 
 int dSvMgr_c::isPlayerTransferComplete(int player) {
@@ -230,24 +233,41 @@ void dSvMgr_c::executeIdle() {
 
 void dSvMgr_c::initializeSaveNormal() {
     static const stepSaveNormal_c::Entry steps[] = {
-        {"セーブメッセージ要求", (stepSaveNormal_c::Method)&stepSaveNormal_c::requestSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveNormal_c::Method)&stepSaveNormal_c::waitMessageLock},
-        {"HBMとReset禁止ON", (stepSaveNormal_c::Method)&stepSaveNormal_c::disableHomeAndReset},
-        {"開いているなら門を閉じる", (stepSaveNormal_c::Method)&stepSaveNormal_c::closeGate},
-        {"WiFiコネクション切断", (stepSaveNormal_c::Method)&stepSaveNormal_c::disconnectWiFi},
-        {"WC24送信開始", (stepSaveNormal_c::Method)&stepSaveNormal_c::startWC24Send},
-        {"WC24送信終了", (stepSaveNormal_c::Method)&stepSaveNormal_c::waitWC24Send},
-        {"他の村への手紙処理開始", (stepSaveNormal_c::Method)&stepSaveNormal_c::startVillageMail},
-        {"他の村への手紙処理終了", (stepSaveNormal_c::Method)&stepSaveNormal_c::waitVillageMail},
-        {"DL BOX生成初期化", (stepSaveNormal_c::Method)&stepSaveNormal_c::initializeDownloadBox},
-        {"DL BOX生成", (stepSaveNormal_c::Method)&stepSaveNormal_c::createDownloadBox},
-        {"全体セーブ初期化", (stepSaveNormal_c::Method)&stepSaveNormal_c::initializeFullSave},
-        {"全体セーブ開始", (stepSaveNormal_c::Method)&stepSaveNormal_c::startFullSave},
-        {"全体セーブ終了", (stepSaveNormal_c::Method)&stepSaveNormal_c::waitFullSave},
+        {"セーブメッセージ要求",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::requestSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::waitMessageLock},
+        {"HBMとReset禁止ON",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::disableHomeAndReset},
+        {"開いているなら門を閉じる",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::closeGate},
+        {"WiFiコネクション切断",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::disconnectWiFi},
+        {"WC24送信開始",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::startWC24Send},
+        {"WC24送信終了",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::waitWC24Send},
+        {"他の村への手紙処理開始",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::startVillageMail},
+        {"他の村への手紙処理終了",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::waitVillageMail},
+        {"DL BOX生成初期化",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::initializeDownloadBox},
+        {"DL BOX生成",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::createDownloadBox},
+        {"全体セーブ初期化",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::initializeFullSave},
+        {"全体セーブ開始",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::startFullSave},
+        {"全体セーブ終了",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::waitFullSave},
         {"終了", (stepSaveNormal_c::Method)&stepSaveNormal_c::finish},
-        {"ロック解除", (stepSaveNormal_c::Method)&stepSaveNormal_c::releaseMessageLock},
-        {"HBMとReset禁止OFF", (stepSaveNormal_c::Method)&stepSaveNormal_c::enableHomeAndReset},
-        {"メッセージ終了待ち", (stepSaveNormal_c::Method)&stepSaveNormal_c::waitMessageEnd},
+        {"ロック解除",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::releaseMessageLock},
+        {"HBMとReset禁止OFF",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::enableHomeAndReset},
+        {"メッセージ終了待ち",
+         (stepSaveNormal_c::Method)&stepSaveNormal_c::waitMessageEnd},
         {"タイトルへ", (stepSaveNormal_c::Method)&stepSaveNormal_c::gotoTitle},
         {"終了", (stepSaveNormal_c::Method)&stepSaveNormal_c::finishFinal},
         {"セーブ失敗", (stepSaveNormal_c::Method)&stepSaveNormal_c::saveFailed},
@@ -313,26 +333,55 @@ void dSvMgr_c::stepSaveNormal_c::finish() {
 
 void dSvMgr_c::initializeSaveRetireNetVst() {
     static const stepSaveRetireNetVst_c::Entry steps[] = {
-        {"通信セーブメッセージ要求", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::requestNetworkSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::waitMessageLock},
-        {"HBMとReset禁止ON", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::disableHomeAndReset},
-        {"ロード初期化", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::initializeLoad},
-        {"ロード開始", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::startLoad},
-        {"ロード完了？", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::waitLoad},
-        {"ロード処理完了", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::processLoadedSave},
-        {"成長処理前処理", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::initializeGrowth},
-        {"成長処理", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::processGrowth},
-        {"DL BOX生成初期化", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::initializeDownloadBox},
-        {"DL BOX生成", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::createDownloadBox},
-        {"全体セーブ初期化", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::initializeFullSave},
-        {"全体セーブ開始", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::startFullSave},
-        {"全体セーブ終了", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::waitFullSave},
-        {"ロック解除", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::releaseMessageLock},
-        {"HBMとReset禁止OFF", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::enableHomeAndReset},
-        {"メッセージ終了待ち", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::waitMessageEnd},
-        {"門の外へ", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::gotoOutsideGate},
-        {"終了", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::finish},
-        {"セーブ失敗", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::saveFailed},
+        {"通信セーブメッセージ要求",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             requestNetworkSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             waitMessageLock},
+        {"HBMとReset禁止ON",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             disableHomeAndReset},
+        {"ロード初期化", (stepSaveRetireNetVst_c::
+                              Method)&stepSaveRetireNetVst_c::initializeLoad},
+        {"ロード開始",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::startLoad},
+        {"ロード完了？",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::waitLoad},
+        {"ロード処理完了",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             processLoadedSave},
+        {"成長処理前処理",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             initializeGrowth},
+        {"成長処理", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+                         processGrowth},
+        {"DL BOX生成初期化",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             initializeDownloadBox},
+        {"DL BOX生成", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+                           createDownloadBox},
+        {"全体セーブ初期化",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             initializeFullSave},
+        {"全体セーブ開始", (stepSaveRetireNetVst_c::
+                                Method)&stepSaveRetireNetVst_c::startFullSave},
+        {"全体セーブ終了",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::waitFullSave},
+        {"ロック解除", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+                           releaseMessageLock},
+        {"HBMとReset禁止OFF",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             enableHomeAndReset},
+        {"メッセージ終了待ち",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+             waitMessageEnd},
+        {"門の外へ", (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::
+                         gotoOutsideGate},
+        {"終了",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::finish},
+        {"セーブ失敗",
+         (stepSaveRetireNetVst_c::Method)&stepSaveRetireNetVst_c::saveFailed},
     };
     mSaveRetireNetVst.initialize(this, "dSvMgr_c::stepSaveRetireNetVst_c",
                                  steps, 20);
@@ -344,23 +393,52 @@ void dSvMgr_c::executeSaveRetireNetVst() {
 
 void dSvMgr_c::initializeSaveConnectNetHst() {
     static const stepSaveConnectNetHst_c::Entry steps[] = {
-        {"初期化処理", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::initializeSave},
-        {"通信セーブメッセージ要求", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::requestNetworkSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::waitMessageLock},
-        {"セーブの許可待ち", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::waitSavePermission},
-        {"村＋その他データセーブ初期化", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::initializeTownSave},
-        {"村＋その他データセーブ開始", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::startTownSave},
-        {"村＋その他データセーブ終了", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::waitTownSave},
-        {"新規参入プレイヤ受信完了待ち", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::waitNewPlayer},
-        {"ともだち情報で検索", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::findFriend},
-        {"ネットホストセーブ初期化", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::initializeHostSave},
-        {"ネットホストセーブ開始", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::startHostSave},
-        {"ネットホストセーブ終了", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::waitHostSave},
-        {"ロック解除", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::releaseMessageLock},
-        {"メッセージ終了待ち", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::waitMessageEnd},
-        {"迎えデモへ", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::gotoWelcomeDemo},
-        {"終了", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::finish},
-        {"セーブ失敗", (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::saveFailed},
+        {"初期化処理", (stepSaveConnectNetHst_c::
+                            Method)&stepSaveConnectNetHst_c::initializeSave},
+        {"通信セーブメッセージ要求",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             requestNetworkSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             waitMessageLock},
+        {"セーブの許可待ち",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             waitSavePermission},
+        {"村＋その他データセーブ初期化",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             initializeTownSave},
+        {"村＋その他データセーブ開始",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             startTownSave},
+        {"村＋その他データセーブ終了",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             waitTownSave},
+        {"新規参入プレイヤ受信完了待ち",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             waitNewPlayer},
+        {"ともだち情報で検索",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::findFriend},
+        {"ネットホストセーブ初期化",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             initializeHostSave},
+        {"ネットホストセーブ開始",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             startHostSave},
+        {"ネットホストセーブ終了",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             waitHostSave},
+        {"ロック解除",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             releaseMessageLock},
+        {"メッセージ終了待ち",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::
+             waitMessageEnd},
+        {"迎えデモへ", (stepSaveConnectNetHst_c::
+                            Method)&stepSaveConnectNetHst_c::gotoWelcomeDemo},
+        {"終了",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::finish},
+        {"セーブ失敗",
+         (stepSaveConnectNetHst_c::Method)&stepSaveConnectNetHst_c::saveFailed},
     };
     mSaveConnectNetHst.initialize(this, "dSvMgr_c::stepSaveConnectNetHst_c",
                                   steps, 17);
@@ -382,19 +460,41 @@ void dSvMgr_c::stepSaveConnectNetHst_c::initializeSave() {
 
 void dSvMgr_c::initializeSaveConnectNetVst() {
     static const stepSaveConnectNetVst_c::Entry steps[] = {
-        {"通信セーブメッセージ要求", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::requestNetworkSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::waitMessageLock},
-        {"セーブの許可待ち", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::waitSavePermission},
-        {"新規参入プレイヤ受信完了待ち", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::waitNewPlayer},
-        {"ともだち情報で検索", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::findFriend},
-        {"ネットビジターセーブ初期化", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::initializeVisitorSave},
-        {"ネットビジターセーブ開始", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::startVisitorSave},
-        {"ネットビジターセーブ終了", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::waitVisitorSave},
-        {"ロック解除", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::releaseMessageLock},
-        {"メッセージ終了待ち", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::waitMessageEnd},
-        {"迎えデモへ", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::gotoWelcomeDemo},
-        {"終了", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::finish},
-        {"セーブ失敗", (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::saveFailed},
+        {"通信セーブメッセージ要求",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             requestNetworkSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             waitMessageLock},
+        {"セーブの許可待ち",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             waitSavePermission},
+        {"新規参入プレイヤ受信完了待ち",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             waitNewPlayer},
+        {"ともだち情報で検索",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::findFriend},
+        {"ネットビジターセーブ初期化",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             initializeVisitorSave},
+        {"ネットビジターセーブ開始",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             startVisitorSave},
+        {"ネットビジターセーブ終了",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             waitVisitorSave},
+        {"ロック解除",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             releaseMessageLock},
+        {"メッセージ終了待ち",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::
+             waitMessageEnd},
+        {"迎えデモへ", (stepSaveConnectNetVst_c::
+                            Method)&stepSaveConnectNetVst_c::gotoWelcomeDemo},
+        {"終了",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::finish},
+        {"セーブ失敗",
+         (stepSaveConnectNetVst_c::Method)&stepSaveConnectNetVst_c::saveFailed},
     };
     mSaveConnectNetVst.initialize(this, "dSvMgr_c::stepSaveConnectNetVst_c",
                                   steps, 13);
@@ -406,20 +506,45 @@ void dSvMgr_c::executeSaveConnectNetVst() {
 
 void dSvMgr_c::initializeSaveContinueNetHst() {
     static const stepSaveContinueNetHst_c::Entry steps[] = {
-        {"通信セーブメッセージ要求", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::requestNetworkSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::waitMessageLock},
-        {"一斉セーブ時にセーブできる状態か", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::waitCanSave},
-        {"DL BOX生成初期化", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::initializeDownloadBox},
-        {"DL BOX生成", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::createDownloadBox},
-        {"全体セーブ初期化", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::initializeFullSave},
-        {"全体セーブ開始", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::startFullSave},
-        {"全体セーブ終了", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::waitFullSave},
-        {"全マシンのセーブ終了待ち", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::waitAllMachinesSaved},
-        {"ロック解除", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::releaseMessageLock},
-        {"メッセージ終了待ち", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::waitMessageEnd},
-        {"元のシーンへ", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::gotoPreviousScene},
-        {"終了", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::finish},
-        {"セーブ失敗", (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::saveFailed},
+        {"通信セーブメッセージ要求",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             requestNetworkSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             waitMessageLock},
+        {"一斉セーブ時にセーブできる状態か",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             waitCanSave},
+        {"DL BOX生成初期化",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             initializeDownloadBox},
+        {"DL BOX生成",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             createDownloadBox},
+        {"全体セーブ初期化",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             initializeFullSave},
+        {"全体セーブ開始",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             startFullSave},
+        {"全体セーブ終了", (stepSaveContinueNetHst_c::
+                                Method)&stepSaveContinueNetHst_c::waitFullSave},
+        {"全マシンのセーブ終了待ち",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             waitAllMachinesSaved},
+        {"ロック解除",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             releaseMessageLock},
+        {"メッセージ終了待ち",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             waitMessageEnd},
+        {"元のシーンへ",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::
+             gotoPreviousScene},
+        {"終了",
+         (stepSaveContinueNetHst_c::Method)&stepSaveContinueNetHst_c::finish},
+        {"セーブ失敗", (stepSaveContinueNetHst_c::
+                            Method)&stepSaveContinueNetHst_c::saveFailed},
     };
     mSaveContinueNetHst.initialize(this, "dSvMgr_c::stepSaveContinueNetHst_c",
                                    steps, 14);
@@ -443,19 +568,43 @@ void dSvMgr_c::stepSaveContinueNetHst_c::waitAllMachinesSaved() {
 
 void dSvMgr_c::initializeSaveContinueNetVst() {
     static const stepSaveContinueNetVst_c::Entry steps[] = {
-        {"通信セーブメッセージ要求", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::requestNetworkSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::waitMessageLock},
-        {"一斉セーブ時にセーブできる状態か", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::waitCanSave},
-        {"ネットビジターセーブ初期化", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::initializeVisitorSave},
-        {"ネットビジターセーブ開始", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::startVisitorSave},
-        {"ネットビジターセーブ終了", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::waitVisitorSave},
-        {"「セーブ終了」をネットホストに送信", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::notifyHostSaveComplete},
-        {"セーブデモの終了命令がきたら", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::waitSaveDemoEnd},
-        {"ロック解除", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::releaseMessageLock},
-        {"メッセージ終了待ち", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::waitMessageEnd},
-        {"元のシーンへ", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::gotoPreviousScene},
-        {"終了", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::finish},
-        {"セーブ失敗", (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::saveFailed},
+        {"通信セーブメッセージ要求",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             requestNetworkSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             waitMessageLock},
+        {"一斉セーブ時にセーブできる状態か",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             waitCanSave},
+        {"ネットビジターセーブ初期化",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             initializeVisitorSave},
+        {"ネットビジターセーブ開始",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             startVisitorSave},
+        {"ネットビジターセーブ終了",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             waitVisitorSave},
+        {"「セーブ終了」をネットホストに送信",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             notifyHostSaveComplete},
+        {"セーブデモの終了命令がきたら",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             waitSaveDemoEnd},
+        {"ロック解除",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             releaseMessageLock},
+        {"メッセージ終了待ち",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             waitMessageEnd},
+        {"元のシーンへ",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::
+             gotoPreviousScene},
+        {"終了",
+         (stepSaveContinueNetVst_c::Method)&stepSaveContinueNetVst_c::finish},
+        {"セーブ失敗", (stepSaveContinueNetVst_c::
+                            Method)&stepSaveContinueNetVst_c::saveFailed},
     };
     mSaveContinueNetVst.initialize(this, "dSvMgr_c::stepSaveContinueNetVst_c",
                                    steps, 13);
@@ -484,24 +633,56 @@ void dSvMgr_c::stepSaveContinueNetVst_c::waitSaveDemoEnd() {
 
 void dSvMgr_c::initializeSaveInterruptNetHst() {
     static const stepSaveInterruptNetHst_c::Entry steps[] = {
-        {"初期化処理", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::initializeSave},
-        {"通信セーブメッセージ要求", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::requestNetworkSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::waitMessageLock},
-        {"一斉セーブ時にセーブできる？", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::waitCanSave},
-        {"HBMとReset禁止ON", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::disableHomeAndReset},
-        {"成長処理前処理", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::initializeGrowth},
-        {"成長処理", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::processGrowth},
-        {"DL BOX生成初期化", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::initializeDownloadBox},
-        {"DL BOX生成", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::createDownloadBox},
-        {"全体セーブ初期化", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::initializeFullSave},
-        {"全体セーブ開始", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::startFullSave},
-        {"全体セーブ終了", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::waitFullSave},
-        {"ロック解除", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::releaseMessageLock},
-        {"HBMとReset禁止OFF", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::enableHomeAndReset},
-        {"メッセージ終了待ち", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::waitMessageEnd},
-        {"元のシーンへ", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::gotoPreviousScene},
-        {"終了", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::finish},
-        {"セーブ失敗", (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::saveFailed},
+        {"初期化処理", (stepSaveInterruptNetHst_c::
+                            Method)&stepSaveInterruptNetHst_c::initializeSave},
+        {"通信セーブメッセージ要求",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             requestNetworkSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             waitMessageLock},
+        {"一斉セーブ時にセーブできる？",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             waitCanSave},
+        {"HBMとReset禁止ON",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             disableHomeAndReset},
+        {"成長処理前処理",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             initializeGrowth},
+        {"成長処理", (stepSaveInterruptNetHst_c::
+                          Method)&stepSaveInterruptNetHst_c::processGrowth},
+        {"DL BOX生成初期化",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             initializeDownloadBox},
+        {"DL BOX生成",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             createDownloadBox},
+        {"全体セーブ初期化",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             initializeFullSave},
+        {"全体セーブ開始",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             startFullSave},
+        {"全体セーブ終了",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             waitFullSave},
+        {"ロック解除",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             releaseMessageLock},
+        {"HBMとReset禁止OFF",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             enableHomeAndReset},
+        {"メッセージ終了待ち",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             waitMessageEnd},
+        {"元のシーンへ",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::
+             gotoPreviousScene},
+        {"終了",
+         (stepSaveInterruptNetHst_c::Method)&stepSaveInterruptNetHst_c::finish},
+        {"セーブ失敗", (stepSaveInterruptNetHst_c::
+                            Method)&stepSaveInterruptNetHst_c::saveFailed},
     };
     mSaveInterruptNetHst.initialize(this, "dSvMgr_c::stepSaveInterruptNetHst_c",
                                     steps, 18);
@@ -526,28 +707,65 @@ void dSvMgr_c::stepSaveInterruptNetHst_c::initializeSave() {
 
 void dSvMgr_c::initializeSaveInterruptNetVst() {
     static const stepSaveInterruptNetVst_c::Entry steps[] = {
-        {"初期化処理", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::initializeSave},
-        {"セーブメッセージ要求", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::requestSaveMessage},
-        {"メッセージロックまで待つ", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::waitMessageLock},
-        {"一斉セーブ時にセーブできる？", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::waitCanSave},
-        {"HBMとReset禁止ON", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::disableHomeAndReset},
-        {"ロード初期化", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::initializeLoad},
-        {"ロード開始", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::startLoad},
-        {"ロード完了？", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::waitLoad},
-        {"ロード処理完了", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::processLoadedSave},
-        {"成長処理前処理", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::initializeGrowth},
-        {"成長処理", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::processGrowth},
-        {"DL BOX生成初期化", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::initializeDownloadBox},
-        {"DL BOX生成", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::createDownloadBox},
-        {"全体セーブ初期化", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::initializeFullSave},
-        {"全体セーブ開始", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::startFullSave},
-        {"全体セーブ終了", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::waitFullSave},
-        {"ロック解除", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::releaseMessageLock},
-        {"HBMとReset禁止OFF", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::enableHomeAndReset},
-        {"メッセージ終了待ち", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::waitMessageEnd},
-        {"門の外へ", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::gotoOutsideGate},
-        {"終了", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::finish},
-        {"セーブ失敗", (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::saveFailed},
+        {"初期化処理", (stepSaveInterruptNetVst_c::
+                            Method)&stepSaveInterruptNetVst_c::initializeSave},
+        {"セーブメッセージ要求",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             requestSaveMessage},
+        {"メッセージロックまで待つ",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             waitMessageLock},
+        {"一斉セーブ時にセーブできる？",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             waitCanSave},
+        {"HBMとReset禁止ON",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             disableHomeAndReset},
+        {"ロード初期化",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             initializeLoad},
+        {"ロード開始", (stepSaveInterruptNetVst_c::
+                            Method)&stepSaveInterruptNetVst_c::startLoad},
+        {"ロード完了？", (stepSaveInterruptNetVst_c::
+                              Method)&stepSaveInterruptNetVst_c::waitLoad},
+        {"ロード処理完了",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             processLoadedSave},
+        {"成長処理前処理",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             initializeGrowth},
+        {"成長処理", (stepSaveInterruptNetVst_c::
+                          Method)&stepSaveInterruptNetVst_c::processGrowth},
+        {"DL BOX生成初期化",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             initializeDownloadBox},
+        {"DL BOX生成",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             createDownloadBox},
+        {"全体セーブ初期化",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             initializeFullSave},
+        {"全体セーブ開始",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             startFullSave},
+        {"全体セーブ終了",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             waitFullSave},
+        {"ロック解除",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             releaseMessageLock},
+        {"HBMとReset禁止OFF",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             enableHomeAndReset},
+        {"メッセージ終了待ち",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::
+             waitMessageEnd},
+        {"門の外へ", (stepSaveInterruptNetVst_c::
+                          Method)&stepSaveInterruptNetVst_c::gotoOutsideGate},
+        {"終了",
+         (stepSaveInterruptNetVst_c::Method)&stepSaveInterruptNetVst_c::finish},
+        {"セーブ失敗", (stepSaveInterruptNetVst_c::
+                            Method)&stepSaveInterruptNetVst_c::saveFailed},
     };
     mSaveInterruptNetVst.initialize(this, "dSvMgr_c::stepSaveInterruptNetVst_c",
                                     steps, 22);
@@ -703,12 +921,17 @@ void dSvMgr_c::stepLoad_c::finish() {
     mpOwner->finishLoad();
 }
 
-template <class A, class B> struct SvStepIs { enum { value = 0 }; };
-template <class A> struct SvStepIs<A, A> { enum { value = 1 }; };
+template <class A, class B> struct SvStepIs {
+    enum { value = 0 };
+};
+template <class A> struct SvStepIs<A, A> {
+    enum { value = 1 };
+};
 
 template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::requestSaveMessage() {
-    this->mpOwner->requestMessage(SvStepIs<Step, stepSaveNormal_c>::value ? 0x0D : 0x1B);
+    this->mpOwner->requestMessage(
+        SvStepIs<Step, stepSaveNormal_c>::value ? 0x0D : 0x1B);
     this->nextStep();
 }
 
@@ -762,14 +985,16 @@ void dSvMgr_c::stepBase_c<Owner, Step>::gotoWelcomeDemo() {
         bool returning = false;
         void *player = dPlayerMgr::Mgr_c::getNetPlayer(mCurrentVisitor);
         if ((field<u8>(player, 0x7FD4) >> 2) & 1) {
-            if (field<TownIdentity>(player, 0x7FA8).isSame(
-                    field<TownIdentity>(&dSaveData_c::getTown()->mLandID, 0))) {
+            if (field<TownIdentity>(player, 0x7FA8)
+                    .isSame(field<TownIdentity>(
+                        &dSaveData_c::getTown()->mLandID, 0))) {
                 returning = true;
                 player = &dSaveData_c::getTown()->mTownHost;
                 ((dPersonalID_c *)player)->clear();
                 field<IdentityFlags>(player, 0x2C).state = 0;
                 if (dNet::isHost()) {
-                    player = &field<u8>(dPlayerMgr::Mgr_c::getCurrentPlayer(), 0x7FA8);
+                    player = &field<u8>(dPlayerMgr::Mgr_c::getCurrentPlayer(),
+                                        0x7FA8);
                     ((dPersonalID_c *)player)->clear();
                     field<IdentityFlags>(player, 0x2C).state = 0;
                 }
@@ -804,7 +1029,9 @@ template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::waitCanSave() {
     if (SvStepIs<Step, stepSaveInterruptNetVst_c>::value ||
         SvStepIs<Step, stepSaveInterruptNetHst_c>::value) {
-        if (dNet::canSaveInterrupt()) this->nextStep();
+        if (dNet::canSaveInterrupt()) {
+            this->nextStep();
+        }
     } else if (dNet::canSaveContinue()) {
         this->nextStep();
     }
@@ -822,13 +1049,16 @@ template <class Owner, class Step>
 void dSvMgr_c::stepBase_c<Owner, Step>::findFriend() {
     if (dNet::isSessionActive()) {
         int visitor = mCurrentVisitor;
-        if (visitor >= 4) return;
+        if (visitor >= 4) {
+            return;
+        }
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(visitor);
         u64 friendCode = dNet::getMemberTime(visitor);
         int index = dWifi::findUser(&player->mFriends.mUserData);
         if (index >= 0 || index == -1) {
             if (index >= 0) {
-                dWifi::updateFriend(index, &player->mPID, player->mFriends.mName, &friendCode);
+                dWifi::updateFriend(index, &player->mPID,
+                                    player->mFriends.mName, &friendCode);
             }
             this->nextStep();
         }

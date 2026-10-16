@@ -1,7 +1,10 @@
-// d_a_c_uitag.cpp: the UI tag process (menu tabs, save button, camera message, emotion buttons, photos).
-// .text 8017E7B0..801811D0, .rodata 8047B508..8047B528, .data 804F8680..804F8D00, .sdata 8074BE18..8074BE58,
+// d_a_c_uitag.cpp: the UI tag process (menu tabs, save button, camera message,
+// emotion buttons, photos). .text 8017E7B0..801811D0, .rodata
+// 8047B508..8047B528, .data 804F8680..804F8D00, .sdata 8074BE18..8074BE58,
 // .sbss 8074E978..8074E980, .sdata2 807513F8..80751428.
-// See include/game/game/d_a_c_uitag.hpp. Names other than the class name are inferred.
+// See include/game/game/d_a_c_uitag.hpp. Names other than the class name are
+// inferred.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_a_c_uitag.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_camera.hpp>
@@ -32,14 +35,16 @@ using namespace dAcUitag;
 namespace dAcUitag {
 
 // 8017E7B0
-CUSTOM_BASE_PROFILE(AC_UITAG, dAcUitag_c, 3, 0x123);
+CUSTOM_BASE_PROFILE(AC_UITAG, dAcUitag_c, fProf::AC_UITAG,
+                    fProf::DRAW_ORDER::AC_UITAG);
 
 static int l_curTab = NO_TAB; // the selected tab
 static int l_menuIdx = -1;    // l_menusA / l_menusB
 static dAcUitag_c *l_this;
 
 // The menu of each tab.
-static const u8 l_tabMenus[dAcUitag_c::TAB_NUM] = {0x00, 0x0D, 0x03, 0x06, 0x05, 0x38, 0x02, 0x79};
+static const u8 l_tabMenus[dAcUitag_c::TAB_NUM] = {0x00, 0x0D, 0x03, 0x06,
+                                                   0x05, 0x38, 0x02, 0x79};
 
 // 8017E8FC
 int getTabMenu(int tab) {
@@ -52,8 +57,9 @@ int getTabMenu(int tab) {
 } // namespace dAcUitag
 
 static const char *l_saveBtnAnms[] = {
-    "saveBtn_00_tbBtn_Strt.brlan",   "saveBtn_00_tbBtn_Fnsh.brlan", "saveBtn_00_tbBtn_00_In.brlan",
-    "saveBtn_00_tbBtn_00_Out.brlan", "saveBtn_00_tbBtn_00_Psh.brlan",
+    "saveBtn_00_tbBtn_Strt.brlan",   "saveBtn_00_tbBtn_Fnsh.brlan",
+    "saveBtn_00_tbBtn_00_In.brlan",  "saveBtn_00_tbBtn_00_Out.brlan",
+    "saveBtn_00_tbBtn_00_Psh.brlan",
 };
 
 static const char *l_cameraAnms[] = {
@@ -125,18 +131,12 @@ int dAcUitag_c::doDelete() {
 }
 
 static void (dAcUitag_c::*l_states[])() = {
-    &dAcUitag_c::stateHidden,
-    &dAcUitag_c::stateIdle,
-    &dAcUitag_c::stateTabWait,
-    &dAcUitag_c::stateMenuRequest,
-    &dAcUitag_c::stateMenu,
-    &dAcUitag_c::stateMenuClose,
-    &dAcUitag_c::stateOpenMenuA,
-    &dAcUitag_c::stateOpenMenuB,
-    &dAcUitag_c::stateSave,
-    &dAcUitag_c::stateActionRequest,
-    &dAcUitag_c::stateEmotion,
-    &dAcUitag_c::stateEmotionWait,
+    &dAcUitag_c::stateHidden,    &dAcUitag_c::stateIdle,
+    &dAcUitag_c::stateTabWait,   &dAcUitag_c::stateMenuRequest,
+    &dAcUitag_c::stateMenu,      &dAcUitag_c::stateMenuClose,
+    &dAcUitag_c::stateOpenMenuA, &dAcUitag_c::stateOpenMenuB,
+    &dAcUitag_c::stateSave,      &dAcUitag_c::stateActionRequest,
+    &dAcUitag_c::stateEmotion,   &dAcUitag_c::stateEmotionWait,
 };
 
 static void (dAcUitag_c::*l_photoStates[])() = {
@@ -204,7 +204,8 @@ void dAcUitag_c::calcAnm() {
         u32 bit = FLAG_TAB_BTN_ANM << i;
         if (mFlags & bit) {
             if (btnAnm->mFrameCtrl.isStop()) {
-                if (mTabBtnKind[i] == TAB_BTN_PSH && mTabBtnReq[i] == TAB_BTN_PSH) {
+                if (mTabBtnKind[i] == TAB_BTN_PSH &&
+                    mTabBtnReq[i] == TAB_BTN_PSH) {
                     mTabBtnKind[i] = TAB_BTN_IN;
                     mTabBtnReq[i] = TAB_BTN_IN;
                 }
@@ -291,7 +292,8 @@ void dAcUitag_c::stateIdle() {
         } else {
             mFlags |= FLAG_NO_A_BUTTON;
             setTabFocus(tab);
-            if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A) && !dDemo::isNoDayChange() && selectTab(tab, FALSE)) {
+            if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A) &&
+                !dDemo::isNoDayChange() && selectTab(tab, FALSE)) {
                 setSaveBtnAnm(1, FALSE);
                 mState = STATE_MENU_REQUEST;
                 mMenuRetry = 10;
@@ -304,7 +306,8 @@ void dAcUitag_c::stateIdle() {
                 playSePopUp();
             }
             showBtnTutorial(&mSaveBtnLyt, 8);
-            if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A) && !dDemo::isNoDayChange()) {
+            if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A) &&
+                !dDemo::isNoDayChange()) {
                 mSaveBtnAnm.setNext(4);
                 mState = STATE_SAVE;
                 playSePush();
@@ -343,7 +346,8 @@ void dAcUitag_c::stateTabWait() {
                 selectTab(tab, TRUE);
             }
         }
-    } else if (dMenuMng_c::open(getTabMenu(l_curTab), (mFlags & FLAG_MENU_WAIT) == 0)) {
+    } else if (dMenuMng_c::open(getTabMenu(l_curTab),
+                                (mFlags & FLAG_MENU_WAIT) == 0)) {
         mFlags &= ~FLAG_MENU_WAIT;
         setCloseIcon(true);
         mState = STATE_MENU;
@@ -369,7 +373,8 @@ void dAcUitag_c::stateMenuRequest() {
 }
 
 // 8017F4D8
-void dAcUitag_c::stateMenu() {}
+void dAcUitag_c::stateMenu() {
+}
 
 // 8017F4DC
 void dAcUitag_c::stateMenuClose() {
@@ -380,8 +385,10 @@ void dAcUitag_c::stateMenuClose() {
     }
 }
 
-static const u8 l_menusA[] = {0x0D, 0x0E, 0x0F, 0x1C, 0x03, 0x04, 0x53, 0x54, 0x00, 0x01, 0x41, 0x42, 0x0A};
-static const u8 l_menusB[] = {0x43, 0x2B, 0x5D, 0x08, 0x09, 0x62, 0x64, 0x10, 0x1D, 0x1F, 0x20, 0x3F};
+static const u8 l_menusA[] = {0x0D, 0x0E, 0x0F, 0x1C, 0x03, 0x04, 0x53,
+                              0x54, 0x00, 0x01, 0x41, 0x42, 0x0A};
+static const u8 l_menusB[] = {0x43, 0x2B, 0x5D, 0x08, 0x09, 0x62,
+                              0x64, 0x10, 0x1D, 0x1F, 0x20, 0x3F};
 
 // 8017F52C
 void dAcUitag_c::stateOpenMenuA() {
@@ -451,12 +458,12 @@ void dAcUitag_c::setTabAnm(u8 anm, BOOL silent) {
     mFlags |= FLAG_TAB_ANM;
     if (!silent) {
         switch (anm) {
-            case TAB_ANM_IN:
-                playSe(0x1748);
-                break;
-            case TAB_ANM_OUT:
-                playSe(0x1749);
-                break;
+        case TAB_ANM_IN:
+            playSe(0x1748);
+            break;
+        case TAB_ANM_OUT:
+            playSe(0x1749);
+            break;
         }
     }
 }
@@ -486,11 +493,11 @@ void dAcUitag_c::setTabBtnAnm(u8 kind, int tab) {
         setTabClrAnm(tab, 1);
     }
     switch (kind) {
-        case TAB_BTN_OUT:
-            return;
-        case TAB_BTN_IN:
-            playSePopUp();
-            break;
+    case TAB_BTN_OUT:
+        return;
+    case TAB_BTN_IN:
+        playSePopUp();
+        break;
     }
 }
 
@@ -513,10 +520,14 @@ void dAcUitag_c::stopTabBtnAnm(m2d::Anm_c *anm, int tab) {
 }
 
 static const char *l_tabClrAnms[] = {
-    "tab_00_tbClrOff_00.brlan", "tab_00_tbClrOff_01.brlan", "tab_00_tbClrOff_02.brlan", "tab_00_tbClrOff_03.brlan",
-    "tab_00_tbClrOff_04.brlan", "tab_00_tbClrOff_05.brlan", "tab_00_tbClrOff_06.brlan", "tab_00_tbClrOff_07.brlan",
-    "tab_00_tbClrOn_00.brlan",  "tab_00_tbClrOn_01.brlan",  "tab_00_tbClrOn_02.brlan",  "tab_00_tbClrOn_03.brlan",
-    "tab_00_tbClrOn_04.brlan",  "tab_00_tbClrOn_05.brlan",  "tab_00_tbClrOn_06.brlan",  "tab_00_tbClrOn_07.brlan",
+    "tab_00_tbClrOff_00.brlan", "tab_00_tbClrOff_01.brlan",
+    "tab_00_tbClrOff_02.brlan", "tab_00_tbClrOff_03.brlan",
+    "tab_00_tbClrOff_04.brlan", "tab_00_tbClrOff_05.brlan",
+    "tab_00_tbClrOff_06.brlan", "tab_00_tbClrOff_07.brlan",
+    "tab_00_tbClrOn_00.brlan",  "tab_00_tbClrOn_01.brlan",
+    "tab_00_tbClrOn_02.brlan",  "tab_00_tbClrOn_03.brlan",
+    "tab_00_tbClrOn_04.brlan",  "tab_00_tbClrOn_05.brlan",
+    "tab_00_tbClrOn_06.brlan",  "tab_00_tbClrOn_07.brlan",
 };
 
 // 8017F9C0
@@ -552,7 +563,8 @@ BOOL dAcUitag_c::playTabAnm() {
 
 // 8017FAF4
 BOOL dAcUitag::canOpenTab() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (dDemo::isType(dDemo::TYPE_KEYBOARD)) {
@@ -561,8 +573,9 @@ BOOL dAcUitag::canOpenTab() {
     if (dDemo::isType(dDemo::TYPE_ANY)) {
         return FALSE;
     }
-    if (dPlayerMgr::fn_800FFCA8() || dPlayerMgr::fn_800FFAC0() || dPlayerMgr::fn_800FFBE4() ||
-        dPlayerMgr::fn_800FFC38() || dPlayerMgr::fn_800FFB18()) {
+    if (dPlayerMgr::fn_800FFCA8() || dPlayerMgr::fn_800FFAC0() ||
+        dPlayerMgr::fn_800FFBE4() || dPlayerMgr::fn_800FFC38() ||
+        dPlayerMgr::fn_800FFB18()) {
         return FALSE;
     }
     return dPlayerMgr::canStartMovementDemo() != FALSE;
@@ -624,7 +637,8 @@ int dAcUitag::getTabInput(int tab, BOOL noClose) {
     if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_2)) {
         return 5;
     }
-    if ((mPad::g_currentCore->downTrigger(WPAD_BUTTON_B) || mPad::g_currentCore->downTrigger(WPAD_BUTTON_FS_Z)) &&
+    if ((mPad::g_currentCore->downTrigger(WPAD_BUTTON_B) ||
+         mPad::g_currentCore->downTrigger(WPAD_BUTTON_FS_Z)) &&
         !noClose) {
         return dAcUitag_c::TAB_CLOSE;
     }
@@ -878,7 +892,8 @@ void dAcUitag_c::setPhotoState(int state) {
 
 // 801805B0
 void dAcUitag_c::photoStateIdle() {
-    if (!isPhotoBlocked() && mPad::g_currentCore->downTrigger(WPAD_BUTTON_1) && dPhoto::getMode() == dPhoto::MODE_NONE) {
+    if (!isPhotoBlocked() && mPad::g_currentCore->downTrigger(WPAD_BUTTON_1) &&
+        dPhoto::getMode() == dPhoto::MODE_NONE) {
         dPhoto::requestCapture();
         setPhotoState(PHOTO_STATE_SHUTTER);
     }
@@ -901,13 +916,15 @@ void dAcUitag_c::photoStateWait() {
 
 // 801806B4
 BOOL dAcUitag::isPhotoBlocked() {
-    BOOL fading = mFader_c::isStatus(mFaderBase_c::FADE_IN) || mFader_c::isStatus(mFaderBase_c::FADE_OUT);
+    BOOL fading = mFader_c::isStatus(mFaderBase_c::FADE_IN) ||
+                  mFader_c::isStatus(mFaderBase_c::FADE_OUT);
     if (fading) {
         return TRUE;
     }
-    if (dDemo::isType(dDemo::TYPE_ANY) && !dDemo::isTalking() && !dDemo::isType(dDemo::TYPE_EVENT) &&
-        !dDemo::isType(dDemo::TYPE_MENU) && !dDemo::isType(dDemo::TYPE_UITAG) && !dDemo::isType(dDemo::TYPE_KEYBOARD) &&
-        !dDemo::isType(dDemo::TYPE_9)) {
+    if (dDemo::isType(dDemo::TYPE_ANY) && !dDemo::isTalking() &&
+        !dDemo::isType(dDemo::TYPE_EVENT) && !dDemo::isType(dDemo::TYPE_MENU) &&
+        !dDemo::isType(dDemo::TYPE_UITAG) &&
+        !dDemo::isType(dDemo::TYPE_KEYBOARD) && !dDemo::isType(dDemo::TYPE_9)) {
         return TRUE;
     }
     if (dMenuMng_c::isFlag(2)) {
@@ -971,25 +988,26 @@ void dAcUitag_c::showActionTutorial() {
 // 801809E0
 void dAcUitag_c::updateCameraMsg() {
     switch (mCameraMsgState) {
-        case CAMERA_MSG_INIT:
-            if (!dDemo::isType(dDemo::TYPE_ANY)) {
-                if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FTR_ROOM)) {
-                    mCameraMsgState = CAMERA_MSG_SHOWN;
-                    mCameraMsgTimer = 300;
-                    mCameraAnm.setNext(0);
-                } else {
-                    mCameraMsgState = CAMERA_MSG_DONE;
-                }
-            }
-            break;
-        case CAMERA_MSG_SHOWN:
-            if (mCameraMsgTimer > 0) {
-                mCameraMsgTimer--;
+    case CAMERA_MSG_INIT:
+        if (!dDemo::isType(dDemo::TYPE_ANY)) {
+            if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                                    dScene::SCENE_ATTR_FTR_ROOM)) {
+                mCameraMsgState = CAMERA_MSG_SHOWN;
+                mCameraMsgTimer = 300;
+                mCameraAnm.setNext(0);
             } else {
-                mCameraAnm.setNext(1);
                 mCameraMsgState = CAMERA_MSG_DONE;
             }
-            break;
+        }
+        break;
+    case CAMERA_MSG_SHOWN:
+        if (mCameraMsgTimer > 0) {
+            mCameraMsgTimer--;
+        } else {
+            mCameraAnm.setNext(1);
+            mCameraMsgState = CAMERA_MSG_DONE;
+        }
+        break;
     }
 }
 
@@ -1029,15 +1047,18 @@ void dAcUitag_c::initAction() {
     mActionLyt.build(&mActionResAcc, "outdoor_actionBtn_00.brlyt");
     mActionAnm.init(&mActionLyt, &mActionResAcc, l_actionAnms, 2);
     mActionAnm.startEnd(1);
-    mActionLyt.setAnm(&mActionPshAnm, "outdoor_actionBtn_00_actnBtn_Psh.brlan", NULL);
+    mActionLyt.setAnm(&mActionPshAnm, "outdoor_actionBtn_00_actnBtn_Psh.brlan",
+                      NULL);
     mActionPshAnm.setToEnd();
     mActionLyt.calc();
     mActionSel = -1;
     for (int i = 0; i < ACTION_NUM; i++) {
-        mActionIconAnm[i].init(&mActionLyt, &mActionResAcc, l_actionIconAnms, 1);
+        mActionIconAnm[i].init(&mActionLyt, &mActionResAcc, l_actionIconAnms,
+                               1);
         mActionIconAnm[i].setNumber(i);
         mActionIconAnm[i].start(0);
-        mActionColorAnm[i].init(&mActionLyt, &mActionResAcc, l_actionColorAnms, 2);
+        mActionColorAnm[i].init(&mActionLyt, &mActionResAcc, l_actionColorAnms,
+                                2);
         mActionColorAnm[i].setNumber(i);
     }
     updateActionIcons(-1, FALSE);
@@ -1139,4 +1160,5 @@ void dAcUitag::playSePopUp() {
 }
 
 // 80181064
-dAcUitag_c::~dAcUitag_c() {}
+dAcUitag_c::~dAcUitag_c() {
+}

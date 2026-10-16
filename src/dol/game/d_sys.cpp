@@ -44,8 +44,6 @@
 #include <lib/egg/core/eggExpHeap.h>
 #include <lib/egg/gfx/eggDrawGX.h>
 
-
-
 namespace dSys {
 enum {
     ROOT_HEAP_ALIGNMENT = 4,
@@ -53,7 +51,7 @@ enum {
     ARCHIVE_HEAP_SIZE = 0x100,
     COMMAND_HEAP_SIZE = 0x40000,
     DYLINK_HEAP_SIZE = 0x318000,
-    PROFILE_ROOT = 1,
+    PROFILE_ROOT = fProf::S_STAGE,
     STARTUP_METHOD_NUM = 8,
 };
 
@@ -87,7 +85,8 @@ void endFrame() {
     sConfiguration->mpDisplay->endFrame();
     sConfiguration->onEndFrame();
 }
-// Unused, stripped from the DOL: its call queues getAudioMgr's weak copy right after onEndFrame.
+// Unused, stripped from the DOL: its call queues getAudioMgr's weak copy right
+// after onEndFrame.
 EGG::SimpleAudioMgr *getAudioMgr() {
     return sConfiguration->getAudioMgr();
 }
@@ -442,7 +441,8 @@ void runFrame() {
     }
     if (sStartupPhase.callMethod(NULL) == sPhase_c::DONE) {
         if (!caution && !wifiError) {
-            if (dHomeButton_c::getInstance()->mState == dHomeButton_c::STATE_OPEN) {
+            if (dHomeButton_c::getInstance()->mState ==
+                dHomeButton_c::STATE_OPEN) {
                 if (!dMain::isStopped(dMain::STOP_REASON_HOME_MENU)) {
                     dMain::addStop(dMain::STOP_REASON_HOME_MENU);
                 }

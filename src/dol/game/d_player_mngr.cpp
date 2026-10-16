@@ -2,6 +2,7 @@
 // 804FC938..804FC9A0, .bss 80625940..806259E0, .sdata 8074C318..8074C330, .sbss
 // 8074EB78..8074EB88, .sdata2 80751980..807519A0. See
 // include/game/game/d_player_mngr.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_actor.hpp>
@@ -17,7 +18,8 @@
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
 
-CUSTOM_BASE_PROFILE(PLAYER_MNGR, dPlayerMngr_c, 0xA, 0x82);
+CUSTOM_BASE_PROFILE(PLAYER_MNGR, dPlayerMngr_c, fProf::PLAYER_MNGR,
+                    fProf::DRAW_ORDER::PLAYER_MNGR);
 
 u8 dPlayerMngr_c::sRemoteScene[MEMBER_NUM] = {
     dScene::SCENE_NUM, dScene::SCENE_NUM, dScene::SCENE_NUM, dScene::SCENE_NUM};

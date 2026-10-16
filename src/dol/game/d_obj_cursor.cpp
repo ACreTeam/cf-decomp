@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_obj_cursor.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_pad.hpp>
@@ -10,7 +11,8 @@
 #include <game/snd/snd_id.hpp>
 #include <lib/revolution/WPAD/WPAD.h>
 
-CUSTOM_BASE_PROFILE(OBJ_CURSOR, dObjCursor_c, 0x2, 0x126);
+CUSTOM_BASE_PROFILE(OBJ_CURSOR, dObjCursor_c, fProf::OBJ_CURSOR,
+                    fProf::DRAW_ORDER::OBJ_CURSOR);
 
 static mVec2_c l_pos(0.0f, 0.0f);
 static f32 l_alpha;
@@ -198,7 +200,8 @@ void dObjCursor_c::calcAlpha() {
 
 void dObjCursor_c::calcRotate() {
     f32 deg;
-    if (mAnm.mCurIdx == ANM_HOLD || (mAnm.mCurIdx == ANM_RELEASE && !mAnm.isEnd())) {
+    if (mAnm.mCurIdx == ANM_HOLD ||
+        (mAnm.mCurIdx == ANM_RELEASE && !mAnm.isEnd())) {
         deg = 0.0f;
     } else {
         mVec2_c dir = dPad::getPointerDirection();
@@ -238,4 +241,5 @@ BOOL dObjCursor_c::isVisible() {
     return l_alpha > 0.0f;
 }
 
-dObjCursor_c::~dObjCursor_c() {}
+dObjCursor_c::~dObjCursor_c() {
+}

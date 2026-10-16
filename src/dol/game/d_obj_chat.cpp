@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <cstring>
 #include <game/cLib/c_lib.hpp>
 #include <game/framework/f_profile.hpp>
@@ -23,10 +24,11 @@
 namespace dObjChat {
 enum SoundId_e { SE_CHAT_MESSAGE = 0x16FE };
 static Request_c l_requests[MEMBER_NUM];
-}
+} // namespace dObjChat
 
 // 801B0B20
-CUSTOM_BASE_PROFILE(OBJ_CHAT, dObjChat_c, 0x125, 0x120);
+CUSTOM_BASE_PROFILE(OBJ_CHAT, dObjChat_c, fProf::OBJ_CHAT,
+                    fProf::DRAW_ORDER::OBJ_CHAT);
 
 namespace dObjChat {
 static u32 l_textLength = 32;
@@ -44,7 +46,8 @@ int dObjChat_c::create() {
     for (int i = 0; i < dObjChat::MEMBER_NUM; ++i) {
         mBalloons[i].init(&mRes, i);
     }
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         dObjChat::clear();
     }
     return SUCCEEDED;
@@ -529,8 +532,8 @@ void loadMemberPreset(dScript::Word_c *word, int member) {
 int getNamePresetNum() {
     int i;
     int count = dNet::isSessionActive()
-        ? dNet::getMemberNum() + DESTINATION_PRESET_NUM
-        : 1 + DESTINATION_PRESET_NUM;
+                    ? dNet::getMemberNum() + DESTINATION_PRESET_NUM
+                    : 1 + DESTINATION_PRESET_NUM;
     for (i = 0; i < MEMBER_NUM; ++i) {
         dPrivateData_c *player =
             dSaveData_c::getTown()->mHomes.getHomePlayer(i);
@@ -836,7 +839,8 @@ Balloon_c::State_e Balloon_c::getState() {
     }
     // Keep the selection signed before converting to the state enum.
     return (State_e)(dPlayerMgr::getPlayerActor(member) == NULL
-        ? (int)STATE_REMOTE : (int)STATE_PLAYER);
+                         ? (int)STATE_REMOTE
+                         : (int)STATE_PLAYER);
 }
 
 // 801B25BC
@@ -865,7 +869,8 @@ void Balloon_c::calcPlayerPos() {
         mVec3_c pos = *position;
         mVec3_c curved;
         if (member != dNet::getMyNo() &&
-            dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
+            dScene::isSceneAttr(dScene::getCurrentScene(),
+                                dScene::SCENE_ATTR_TOWN)) {
             mVec3_c horizon;
             dWorld::getHorizonPosition(&horizon, &pos);
             if (horizon.z > pos.z) {
@@ -1037,7 +1042,8 @@ BOOL Balloon_c::isEnabled() {
 
 // 801B2D2C
 void Balloon_c::updateEnabled() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         return;
     }
     int member = mMember;
@@ -1072,14 +1078,15 @@ void Balloon_c::updateText() {
         if (!dObjTelop_c::isLocked() && l_requests[mRequest].isPending()) {
             l_requests[mRequest].getWord(&mWord);
             mWord.update();
-            setTextStyle(l_requests[mRequest].isSystem()
-                ? TEXT_STYLE_PRESET : TEXT_STYLE_FREE);
+            setTextStyle(l_requests[mRequest].isSystem() ? TEXT_STYLE_PRESET
+                                                         : TEXT_STYLE_FREE);
             setWidth();
             l_requests[mRequest].startTimer();
             mAnm.setNext(ANM_IN);
             mFlags |= SHOW;
             if (l_requests[mRequest].hasSound() &&
-                mRequest != dNet::getMyNo() && !dDemo::isType(dDemo::TYPE_SCENE_START) &&
+                mRequest != dNet::getMyNo() &&
+                !dDemo::isType(dDemo::TYPE_SCENE_START) &&
                 !dDemo::isType(dDemo::TYPE_ENTER)) {
                 playSound(mPos.x);
             }
@@ -1133,8 +1140,9 @@ void Balloon_c::setColor(int color) {
 
 // 801B3188
 void Balloon_c::setTextStyle(int style) {
-    static const char *l_textAnmNames[] = {"chat_balloon_00_T_msg_free.brlan",
-                                    "chat_balloon_00_T_msg_teikei.brlan"};
+    static const char *l_textAnmNames[] = {
+        "chat_balloon_00_T_msg_free.brlan",
+        "chat_balloon_00_T_msg_teikei.brlan"};
     mLyt.setAnm(&mTextAnm, l_textAnmNames[style], NULL);
     mTextAnm.setToEnd();
 }
@@ -1142,7 +1150,7 @@ void Balloon_c::setTextStyle(int style) {
 // 801B31D4
 void Balloon_c::initAnm() {
     static const char *l_balloonAnmNames[] = {"chat_balloon_00_blnIn.brlan",
-                                    "chat_balloon_00_blnOut.brlan"};
+                                              "chat_balloon_00_blnOut.brlan"};
     mAnm.init(&mLyt, mpRes, l_balloonAnmNames, ANM_NUM);
     mAnm.start(ANM_OUT);
     mAnm.setToEnd();

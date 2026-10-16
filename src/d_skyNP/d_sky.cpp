@@ -1,4 +1,6 @@
-// REL .text 0x5C..0x1AB8, .ctors 0x0..0x4, .rodata 0x0..0xAC, .data 0x0..0x1B8, .bss 0x8..0x1C.
+// REL .text 0x5C..0x1AB8, .ctors 0x0..0x4, .rodata 0x0..0xAC, .data 0x0..0x1B8,
+// .bss 0x8..0x1C.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_sky.hpp>
 #include <game/game/d_base.hpp>
 #include <game/game/d_camera.hpp>
@@ -17,15 +19,18 @@ f32 getMoonAge(const dTime_c *now);
 f32 getOffsetY();
 f32 getOffsetZ();
 
-fProf::fBaseProfile_c g_profile_SKY = {&dSky_c_classInit, 0xAA, 5};
+fProf::fBaseProfile_c g_profile_SKY = {&dSky_c_classInit, fProf::SKY,
+                                       fProf::DRAW_ORDER::SKY};
 
 // Added to the moon's tint.
 static const GXColor sMoonAdd = {0x10, 0x10, 0x0C, 0xFF};
 
-// Unused: only __sinit touches it. Five zero-initialized 4-byte members, of which bytes 0x2..0x11
-// are then set; the layout of the original type is unknown.
+// Unused: only __sinit touches it. Five zero-initialized 4-byte members, of
+// which bytes 0x2..0x11 are then set; the layout of the original type is
+// unknown.
 struct dSkyColor_c {
-    dSkyColor_c() : r(0), g(0), b(0), a(0) {}
+    dSkyColor_c() : r(0), g(0), b(0), a(0) {
+    }
 
     u8 r, g, b, a;
 };
@@ -59,19 +64,23 @@ void *dSky_c_classInit() {
 }
 
 // 0x8C
-dSky_c::dSky_c() : mBrightness(0.0f), mCreated(false), mSeasonActorCreated(false) {}
+dSky_c::dSky_c()
+    : mBrightness(0.0f), mCreated(false), mSeasonActorCreated(false) {
+}
 
 // 0x370
-dSky_c::~dSky_c() {}
+dSky_c::~dSky_c() {
+}
 
 // 0x4BC
 int dSky_c::create() {
     mIsCity = dScene::isCityScene(dScene::getCurrentScene());
-    if (!mIsCity && !dScene::isSceneAttr(dScene::getCurrentScene(), 0x10) && !mSeasonActorCreated) {
+    if (!mIsCity && !dScene::isSceneAttr(dScene::getCurrentScene(), 0x10) &&
+        !mSeasonActorCreated) {
         if (dScene::isWinterSeasonType()) {
-            dBase_c::createBase(0xAB, this, 0, 0);
+            dBase_c::createBase(fProf::SKY_AURORA, this, 0, 0);
         } else if (!dScene::isLateSeason()) {
-            dBase_c::createBase(0xAC, this, 0, 0);
+            dBase_c::createBase(fProf::SKY_RAINBOW, this, 0, 0);
         }
         mSeasonActorCreated = true;
     }
@@ -95,9 +104,12 @@ int dSky_c::create() {
     }
 
     mAllocator.attach(heap, 0x20);
-    mMdlCloud.create(nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0), &mAllocator, 0, 1, NULL);
-    mMdlSky.create(nw4r::g3d::ResFile(mResSky.getData()).GetResMdl(0), &mAllocator, 0, 1, NULL);
-    mMdlMoon.create(nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0), &mAllocator, 0, 1, NULL);
+    mMdlCloud.create(nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0),
+                     &mAllocator, 0, 1, NULL);
+    mMdlSky.create(nw4r::g3d::ResFile(mResSky.getData()).GetResMdl(0),
+                   &mAllocator, 0, 1, NULL);
+    mMdlMoon.create(nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0),
+                    &mAllocator, 0, 1, NULL);
 
     if (mIsCity || dScene::isSceneAttr(dScene::getCurrentScene(), 0x110)) {
         mStarDraw.mMode = 1;
@@ -106,10 +118,12 @@ int dSky_c::create() {
     }
 
     mAnmCloud.create(nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0),
-                     nw4r::g3d::ResFile(mResCloud.getData()).GetResAnmTexSrt(0), &mAllocator, NULL, 1);
+                     nw4r::g3d::ResFile(mResCloud.getData()).GetResAnmTexSrt(0),
+                     &mAllocator, NULL, 1);
     mMdlCloud.setAnm(mAnmCloud);
     mAnmMoon.create(nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0),
-                    nw4r::g3d::ResFile(mResMoon.getData()).GetResAnmTexSrt(0), &mAllocator, NULL, 1);
+                    nw4r::g3d::ResFile(mResMoon.getData()).GetResAnmTexSrt(0),
+                    &mAllocator, NULL, 1);
     mMdlMoon.setAnm(mAnmMoon);
 
     mStarMgr.init();
@@ -134,8 +148,11 @@ static inline u8 addClamp(u8 value, int add) {
 
 // 0x868
 int dSky_c::draw() {
-    nw4r::g3d::ResMat cloudMat = nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0).GetResMat("m_cloud");
-    nw4r::g3d::ResMat skyMat = nw4r::g3d::ResFile(mResSky.getData()).GetResMdl(0).GetResMat("m_sky");
+    nw4r::g3d::ResMat cloudMat = nw4r::g3d::ResFile(mResCloud.getData())
+                                     .GetResMdl(0)
+                                     .GetResMat("m_cloud");
+    nw4r::g3d::ResMat skyMat =
+        nw4r::g3d::ResFile(mResSky.getData()).GetResMdl(0).GetResMat("m_sky");
 
     mColor cloudColor0;
     mColor cloudColor1;
@@ -148,12 +165,14 @@ int dSky_c::draw() {
     u8 alpha;
     if (dTime_c::getCurrent()->hour < 4 || dTime_c::getCurrent()->hour > 19) {
         alpha = 0xFF;
-    } else if (dTime_c::getCurrent()->hour == 4 || dTime_c::getCurrent()->hour == 5) {
+    } else if (dTime_c::getCurrent()->hour == 4 ||
+               dTime_c::getCurrent()->hour == 5) {
         f32 rate = dTime_c::getCurrent()->min * (1.0f / 120.0f);
         rate += (dTime_c::getCurrent()->hour - 4) * 0.5f;
         rate = 1.0f - rate;
         alpha = 255.0f * rate;
-    } else if (dTime_c::getCurrent()->hour == 18 || dTime_c::getCurrent()->hour == 19) {
+    } else if (dTime_c::getCurrent()->hour == 18 ||
+               dTime_c::getCurrent()->hour == 19) {
         f32 rate = dTime_c::getCurrent()->min * (1.0f / 120.0f);
         rate += (dTime_c::getCurrent()->hour - 18) * 0.5f;
         alpha = 255.0f * rate;
@@ -176,8 +195,10 @@ int dSky_c::draw() {
         mStarDraw.entry();
     }
 
-    if (!dScene::isSceneAttr(dScene::getCurrentScene(), 0x110) && !dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {
-        nw4r::g3d::ResMat moonMat = nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0).GetResMat(0);
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), 0x110) &&
+        !dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {
+        nw4r::g3d::ResMat moonMat =
+            nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0).GetResMat(0);
         mColor moonColor;
         moonColor.lerp(mSkyColor0, mSkyColor1, 0.125f);
         moonColor.r = addClamp(moonColor.r, sMoonAdd.r);
@@ -231,7 +252,8 @@ void dSky_c::setFireworksBrightness(f32 brightness) {
     }
 }
 
-// 0xFAC: the moon's age in days (0..28) for the animation frame. Days start at noon.
+// 0xFAC: the moon's age in days (0..28) for the animation frame. Days start at
+// noon.
 f32 getMoonAge(const dTime_c *now) {
     dTime_c base;
     base.init();
@@ -286,7 +308,8 @@ void dSky_c::calc() {
     mVec3_c cloudPos(0.0f, 32.0f, 0.0f);
     skyPos.y += getOffsetY();
     cloudPos += skyPos;
-    mPos.set(dCamera_c::sInstance->mCurrent.mYaw * 0.05f, starMaxY * inv + starMinY * rate, -1300.0f);
+    mPos.set(dCamera_c::sInstance->mCurrent.mYaw * 0.05f,
+             starMaxY * inv + starMinY * rate, -1300.0f);
     mPos.y += getOffsetY();
     mPos.z += getOffsetZ();
 
@@ -298,7 +321,8 @@ void dSky_c::calc() {
     mMdlCloud.setLocalMtx(&mCloudMtx);
     mMdlCloud.calc(false);
 
-    nw4r::g3d::ResMdl cloudMdl = nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0);
+    nw4r::g3d::ResMdl cloudMdl =
+        nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0);
     f32 scroll = 0.0f;
     if (dCamera_c::sInstance != NULL) {
         scroll = 0.0016f * getViewCenter<nw4r::math::VEC3>()->x;
@@ -306,7 +330,8 @@ void dSky_c::calc() {
         scroll = fmod(scroll, 4.0);
     }
     for (u32 i = 0; i < cloudMdl.GetResMatNumEntries(); i++) {
-        nw4r::g3d::ResTexSrt texSrt = cloudMdl.GetResMat("m_cloud").GetResTexSrt();
+        nw4r::g3d::ResTexSrt texSrt =
+            cloudMdl.GetResMat("m_cloud").GetResTexSrt();
         for (u32 j = 0; j < 3; j++) {
             nw4r::math::MTX34 srt;
             texSrt.GetEffectMtx(j, &srt);

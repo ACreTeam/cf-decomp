@@ -1,5 +1,7 @@
-// d_bg_debug: the BG debug process (dBgDebug_c) and its HostIO parameters (dBGO_bgHostIO_c).
-// .text 80186E0C..801870D0, .ctors 80465820..80465824. See include/game/game/d_bg_debug.hpp.
+// d_bg_debug: the BG debug process (dBgDebug_c) and its HostIO parameters
+// (dBGO_bgHostIO_c). .text 80186E0C..801870D0, .ctors 80465820..80465824. See
+// include/game/game/d_bg_debug.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_bg_debug.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_hr.hpp>
@@ -9,7 +11,8 @@
 #include <game/game/d_sv_auc.hpp>
 #include <game/mLib/m_vec.hpp>
 
-CUSTOM_BASE_PROFILE(BG_DEBUG, dBgDebug_c, 0xF2, 0xB);
+CUSTOM_BASE_PROFILE(BG_DEBUG, dBgDebug_c, fProf::BG_DEBUG,
+                    fProf::DRAW_ORDER::BG_DEBUG);
 
 // 80623F5C, 80623F74: unused.
 static mVec3_c l_unused0;
@@ -57,7 +60,9 @@ s16 dBgDebug_c::getGroundSeType() {
 }
 
 // 80186F20
-dBGO_bgHostIO_c::~dBGO_bgHostIO_c() {}
+dBGO_bgHostIO_c::~dBGO_bgHostIO_c() {
+}
 
 // 80186F60
-dBgDebug_c::~dBgDebug_c() {}
+dBgDebug_c::~dBgDebug_c() {
+}

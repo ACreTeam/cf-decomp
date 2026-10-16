@@ -1,7 +1,9 @@
-// The npc manager (dNpcMng_c): spawns each scene's villagers and special npcs. .text 801A6468..801AD6E0,
-// .ctors 8046583C, .rodata 8047DB98..8047E1F0, .data 804FB7C8..804FB8A0, .bss 80625190..80625370,
-// .sdata 8074C178..8074C1E0, .sbss 8074EAB8..8074EAD8, .sdata2 80751780..80751800.
-// See include/game/game/d_npc_mng.hpp.
+// The npc manager (dNpcMng_c): spawns each scene's villagers and special npcs.
+// .text 801A6468..801AD6E0, .ctors 8046583C, .rodata 8047DB98..8047E1F0, .data
+// 804FB7C8..804FB8A0, .bss 80625190..80625370, .sdata 8074C178..8074C1E0, .sbss
+// 8074EAB8..8074EAD8, .sdata2 80751780..80751800. See
+// include/game/game/d_npc_mng.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_npc_mng.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/cLib/c_math.hpp>
@@ -38,22 +40,27 @@
 #include <revolution/OS.h>
 #include <cstdio>
 
-CUSTOM_BASE_PROFILE(NPC_MNG, dNpcMng_c, 0xAD, 0xE);
+CUSTOM_BASE_PROFILE(NPC_MNG, dNpcMng_c, fProf::NPC_MNG,
+                    fProf::DRAW_ORDER::NPC_MNG);
 
-dNpcMng_c::dNpcMng_c() : m_halloweenModelHeap_p(NULL) {}
+dNpcMng_c::dNpcMng_c() : m_halloweenModelHeap_p(NULL) {
+}
 
-dNpcMng_c::~dNpcMng_c() {}
+dNpcMng_c::~dNpcMng_c() {
+}
 
 // Bit n: week n since the week of 2000-01-01 is a visit week (isWeekVisitDay).
 static const u32 l_weekBits[] = {
-    0x94A8A888, 0x494922A8, 0x22289244, 0x1444492A, 0x2888A525, 0xA44A94A5, 0xA24952AA, 0x8A451148,
-    0x45454544, 0x22912224, 0x52448889, 0x49552222, 0x5224494A, 0x912252A4, 0x29111488, 0x2A522491,
-    0x22248952, 0x52A8AA22, 0x8AA88A94, 0x14524A28, 0xA5111111, 0x24492928, 0x4912A222, 0x9244A24A,
-    0x8A48888A, 0x25225224, 0x8A224512, 0x44944A24, 0x22924449, 0x44924911, 0x91222489, 0x22A2894A,
-    0x945288AA, 0x11114448, 0x24924449, 0x22A4A222, 0x22548A49, 0x55488889, 0x89144491, 0x92914488,
-    0x89224888, 0x22AA8888, 0x12894451, 0x28948889, 0x9128A449, 0xA2244A22, 0x4892A28A, 0x5152224A,
-    0xA5245224, 0x24914448, 0x24445222, 0x28A29545, 0x22444A4A, 0x11222A91, 0x2A491225, 0x45222AA9,
-    0x44894922, 0x512894A2, 0x00222492,
+    0x94A8A888, 0x494922A8, 0x22289244, 0x1444492A, 0x2888A525, 0xA44A94A5,
+    0xA24952AA, 0x8A451148, 0x45454544, 0x22912224, 0x52448889, 0x49552222,
+    0x5224494A, 0x912252A4, 0x29111488, 0x2A522491, 0x22248952, 0x52A8AA22,
+    0x8AA88A94, 0x14524A28, 0xA5111111, 0x24492928, 0x4912A222, 0x9244A24A,
+    0x8A48888A, 0x25225224, 0x8A224512, 0x44944A24, 0x22924449, 0x44924911,
+    0x91222489, 0x22A2894A, 0x945288AA, 0x11114448, 0x24924449, 0x22A4A222,
+    0x22548A49, 0x55488889, 0x89144491, 0x92914488, 0x89224888, 0x22AA8888,
+    0x12894451, 0x28948889, 0x9128A449, 0xA2244A22, 0x4892A28A, 0x5152224A,
+    0xA5245224, 0x24914448, 0x24445222, 0x28A29545, 0x22444A4A, 0x11222A91,
+    0x2A491225, 0x45222AA9, 0x44894922, 0x512894A2, 0x00222492,
 };
 
 // The city's square, where its guests stand (pickCitySpots).
@@ -87,16 +94,19 @@ static inline u16 getAnimalKey(int idx) {
     return 0xE000 + (idx & 0x3FF);
 }
 
-static inline bool getBuildingPos(dSaveBuildingList_c *list, int *x, int *z, const dItem::Item *item) {
+static inline bool getBuildingPos(dSaveBuildingList_c *list, int *x, int *z,
+                                  const dItem::Item *item) {
     return list->getPos(x, z, item, 1) != FALSE;
 }
 
-static inline bool hasNoBuildingPos(dSaveBuildingList_c *list, int *x, int *z, const dItem::Item *item) {
+static inline bool hasNoBuildingPos(dSaveBuildingList_c *list, int *x, int *z,
+                                    const dItem::Item *item) {
     return list->getPos(x, z, item, 1) == FALSE;
 }
 
 // The block isn't one of the num blocks in used.
-static inline BOOL isFreeBlock(int blockX, int blockZ, const s8 *used, u32 num) {
+static inline BOOL isFreeBlock(int blockX, int blockZ, const s8 *used,
+                               u32 num) {
     BOOL ok = TRUE;
     for (u32 i = 0; i < num; i++) {
         if (blockX == used[i * 2] && blockZ == used[i * 2 + 1]) {
@@ -136,22 +146,29 @@ void dNpcMng_c::createStageHeap() {
     u8 scene = dScene::getCurrentScene();
     u32 size;
     if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN)) {
-        size = dAcNpcNml_c::calcHeapSize(TRUE) * 5 + dAcNpcSp_c::calcHeapSize(TRUE) * 3;
+        size = dAcNpcNml_c::calcHeapSize(TRUE) * 5 +
+               dAcNpcSp_c::calcHeapSize(TRUE) * 3;
         u32 mdlSize = dNpcMdlMng_c::getSpMdlSize();
         size += ROUND_UP(ROUND_UP(mdlSize, 32) + mHeap::frmHeapCost(0, 32), 32);
     } else if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_CITY_FIELD)) {
-        size = dAcNpcTown_c::calcHeapSize(TRUE) * 5 + dAcNpcSp_c::calcHeapSize(TRUE) * 3;
+        size = dAcNpcTown_c::calcHeapSize(TRUE) * 5 +
+               dAcNpcSp_c::calcHeapSize(TRUE) * 3;
         size += dHmnToolMng_c::getBankHeapSize();
     } else if (scene == dScene::SCENE_RM_GRACE) {
         u32 guestNum = 1;
-        size = dAcNpcTown_c::calcHeapSize(TRUE) * guestNum + dAcNpcSp_c::calcHeapSize(TRUE) * 4;
+        size = dAcNpcTown_c::calcHeapSize(TRUE) * guestNum +
+               dAcNpcSp_c::calcHeapSize(TRUE) * 4;
     } else if (scene == dScene::SCENE_RM_THEATER_SHOW) {
-        size = dAcNpcTown_c::calcHeapSize(TRUE) * 2 + dAcNpcSp_c::calcHeapSize(TRUE) * 4;
+        size = dAcNpcTown_c::calcHeapSize(TRUE) * 2 +
+               dAcNpcSp_c::calcHeapSize(TRUE) * 4;
     } else {
-        size = dAcNpcNml_c::calcHeapSize(TRUE) * 2 + dAcNpcSp_c::calcHeapSize(TRUE) * 4;
+        size = dAcNpcNml_c::calcHeapSize(TRUE) * 2 +
+               dAcNpcSp_c::calcHeapSize(TRUE) * 4;
     }
     if (size != 0) {
-        m_stageHeap_p = mHeap::createFrmHeap(size, dHeap::localHeap_p, "dNpcMng_c::stageHeap", 0x20, mHeap::OPT_NONE);
+        m_stageHeap_p =
+            mHeap::createFrmHeap(size, dHeap::localHeap_p,
+                                 "dNpcMng_c::stageHeap", 0x20, mHeap::OPT_NONE);
     }
 }
 
@@ -197,13 +214,19 @@ void dNpcMng_c::placeHidersAtTownHall() {
     }
 }
 
-BOOL dNpcMng_c::pickHideSpotBuilding(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum) {
+BOOL dNpcMng_c::pickHideSpotBuilding(mVec3_c *pos, const s8 *usedBlocks,
+                                     u32 usedNum) {
     static dItem::Item l_buildings[] = {
-        BUILDING_PLAYER_HOUSE_0, BUILDING_PLAYER_HOUSE_1, BUILDING_PLAYER_HOUSE_2, BUILDING_PLAYER_HOUSE_3,
-        BUILDING_NPC_HOUSE_0,    BUILDING_NPC_HOUSE_1,    BUILDING_NPC_HOUSE_2,    BUILDING_NPC_HOUSE_3,
-        BUILDING_NPC_HOUSE_4,    BUILDING_NPC_HOUSE_5,    BUILDING_NPC_HOUSE_6,    BUILDING_NPC_HOUSE_7,
-        BUILDING_NPC_HOUSE_8,    BUILDING_NPC_HOUSE_9,    BUILDING_TOWN_HALL,      BUILDING_SHOP,
-        BUILDING_TAILOR,         BUILDING_MUSEUM,         BUILDING_BULLETIN_BOARD,
+        BUILDING_PLAYER_HOUSE_0, BUILDING_PLAYER_HOUSE_1,
+        BUILDING_PLAYER_HOUSE_2, BUILDING_PLAYER_HOUSE_3,
+        BUILDING_NPC_HOUSE_0,    BUILDING_NPC_HOUSE_1,
+        BUILDING_NPC_HOUSE_2,    BUILDING_NPC_HOUSE_3,
+        BUILDING_NPC_HOUSE_4,    BUILDING_NPC_HOUSE_5,
+        BUILDING_NPC_HOUSE_6,    BUILDING_NPC_HOUSE_7,
+        BUILDING_NPC_HOUSE_8,    BUILDING_NPC_HOUSE_9,
+        BUILDING_TOWN_HALL,      BUILDING_SHOP,
+        BUILDING_TAILOR,         BUILDING_MUSEUM,
+        BUILDING_BULLETIN_BOARD,
     };
     u32 count = 0;
     BOOL found = FALSE;
@@ -247,7 +270,8 @@ static inline bool canStandAtPos(const mVec3_c *pos, dFdBase_c *field) {
     return dNpc::canPutItemAt(pos, &none, field, 0x44, TRUE, TRUE) != FALSE;
 }
 
-BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum) {
+BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks,
+                                 u32 usedNum) {
     dFdBase_c *field = dField::getInfo(0);
     if (field == NULL) {
         return FALSE;
@@ -266,7 +290,8 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
             if (!isFreeBlock(blockX, blockZ, usedBlocks, usedNum)) {
                 continue;
             }
-            const dFdBlock_c *block = ((const dFdBase_c *)field)->getBlock(blockX, blockZ);
+            const dFdBlock_c *block =
+                ((const dFdBase_c *)field)->getBlock(blockX, blockZ);
             if (block == NULL) {
                 continue;
             }
@@ -281,9 +306,11 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
                         continue;
                     }
                     mVec3_c spot = mVec3_c::Zero;
-                    dFdBase_c::getUnitCenterPos(&spot, blockX, blockZ, unitX, unitZ - 1);
+                    dFdBase_c::getUnitCenterPos(&spot, blockX, blockZ, unitX,
+                                                unitZ - 1);
                     dItem::Item none;
-                    bool ok = dNpc::canPutItemAt(&spot, &none, field, 0x44, TRUE, TRUE) != FALSE;
+                    bool ok = dNpc::canPutItemAt(&spot, &none, field, 0x44,
+                                                 TRUE, TRUE) != FALSE;
                     if (ok) {
                         f32 chance = 100.0f / (count + 1);
                         if (cM::rndF(100.0f) <= chance) {
@@ -293,16 +320,21 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
                             mVec3_c right = spot;
                             right.x += 14.4f;
                             dItem::Item none1;
-                            if (dNpc::canPutItemAt(&left, &none1, field, 0x44, TRUE, TRUE)) {
+                            if (dNpc::canPutItemAt(&left, &none1, field, 0x44,
+                                                   TRUE, TRUE)) {
                                 *pos = left;
                                 dItem::Item none2;
-                                BOOL useRight = dNpc::canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE) && cM::rndInt(2) == 0;
+                                BOOL useRight =
+                                    dNpc::canPutItemAt(&right, &none2, field,
+                                                       0x44, TRUE, TRUE) &&
+                                    cM::rndInt(2) == 0;
                                 if (useRight) {
                                     *pos = right;
                                 }
                             } else {
                                 dItem::Item none2;
-                                if (dNpc::canPutItemAt(&right, &none2, field, 0x44, TRUE, TRUE)) {
+                                if (dNpc::canPutItemAt(&right, &none2, field,
+                                                       0x44, TRUE, TRUE)) {
                                     *pos = right;
                                 }
                             }
@@ -317,7 +349,8 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum
     return found;
 }
 
-BOOL dNpcMng_c::pickHideSpotBuildSite(mVec3_c *pos, const s8 *usedBlocks, u32 usedNum) {
+BOOL dNpcMng_c::pickHideSpotBuildSite(mVec3_c *pos, const s8 *usedBlocks,
+                                      u32 usedNum) {
     dFdBase_c *field = getCurrentField();
     if (field == NULL) {
         return FALSE;
@@ -334,7 +367,8 @@ BOOL dNpcMng_c::pickHideSpotBuildSite(mVec3_c *pos, const s8 *usedBlocks, u32 us
             if (!isFreeBlock(blockX, blockZ, usedBlocks, usedNum)) {
                 continue;
             }
-            const dFdBlock_c *block = ((const dFdBase_c *)field)->getBlock(blockX, blockZ);
+            const dFdBlock_c *block =
+                ((const dFdBase_c *)field)->getBlock(blockX, blockZ);
             if (block == NULL) {
                 continue;
             }
@@ -349,12 +383,14 @@ BOOL dNpcMng_c::pickHideSpotBuildSite(mVec3_c *pos, const s8 *usedBlocks, u32 us
                     if (!dSaveBuildingList_c::get()->isBuildSite(x, z)) {
                         continue;
                     }
-                    if (dSaveBuildingList_c::get()->getAt(x, z, 1).mId != dItem::ITEM_ID_NONE) {
+                    if (dSaveBuildingList_c::get()->getAt(x, z, 1).mId !=
+                        dItem::ITEM_ID_NONE) {
                         continue;
                     }
                     item->getFgInfo();
                     mVec3_c spot = mVec3_c::Zero;
-                    dFdBase_c::getUnitCenterPos(&spot, blockX, blockZ, unitX, unitZ - 1);
+                    dFdBase_c::getUnitCenterPos(&spot, blockX, blockZ, unitX,
+                                                unitZ - 1);
                     if (canStandAtPos(&spot, field)) {
                         f32 chance = 100.0f / (count + 1);
                         if (cM::rndF(100.0f) <= chance) {
@@ -454,7 +490,8 @@ BOOL dNpcMng_c::createVillagers() {
     BOOL online = dNpc::isPermitSceneOwner();
     for (int i = 0; i < 10 && num < 5; i++) {
         dAnimal_c *animal = block->getAnimal(i);
-        if (animal == NULL || !animal->mID.isValid() || animal->mDayPlace != 0) {
+        if (animal == NULL || !animal->mID.isValid() ||
+            animal->mDayPlace != 0) {
             continue;
         }
         mVec3_c pos = mVec3_c::Zero;
@@ -514,14 +551,15 @@ BOOL dNpcMng_c::createVillagers() {
             block->updateHalloweenFlag(i);
             block->updateHeldItem(i);
         }
-        dActor_c::construct(0x4C, this, key, &pos, &angle);
+        dActor_c::construct(fProf::A_NPC_OUT, this, key, &pos, &angle);
         num++;
     }
     return TRUE;
 }
 
 BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
-    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(),
+                             dScene::SCENE_ATTR_VILLAGER_HOUSE)) {
         return FALSE;
     }
     dFdBase_c *field = dField::getInfo(0);
@@ -537,7 +575,8 @@ BOOL dNpcMng_c::pickHouseVillagerPos(mVec3_c *pos) {
             BOOL blocked = FALSE;
             if (!(*row >> x & 1)) {
                 dItem::Item none;
-                if (!dNpc::canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
+                if (!dNpc::canPutItemOnUnit(x, z, &none, field, 0x44, TRUE,
+                                            TRUE)) {
                     blocked = TRUE;
                 }
             }
@@ -591,7 +630,8 @@ void dNpcMng_c::createHouseVillager() {
     }
     dAnimalBlock_c *block;
     dQuestPlayerItem_c *appointment;
-    int idx = dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE);
+    int idx =
+        dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE);
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     dAnimal_c *animal = block->getAnimal(idx);
     if (animal == NULL) {
@@ -600,7 +640,7 @@ void dNpcMng_c::createHouseVillager() {
     if (!animal->mID.isValid()) {
         return;
     }
-    u16 profile = 0x4D;
+    u16 profile = fProf::A_NPC_IN;
     u16 key = getAnimalKey(idx);
     if (!dNet::isSessionActive() && block->isAppointmentAnimal(&animal->mID)) {
         appointment = &block->mAppointment;
@@ -608,13 +648,17 @@ void dNpcMng_c::createHouseVillager() {
         u8 state = appointment->mBase.getState();
         if (kind == 0x11 && state != 2) {
             dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-            if (player != NULL && player->mPID.isFromTown() && player->mPID.player.isSame(&appointment->mPlayer)) {
-                profile = 0x4E;
+            if (player != NULL && player->mPID.isFromTown() &&
+                player->mPID.player.isSame(&appointment->mPlayer)) {
+                profile = fProf::A_NPC_VISIT_NPC_HOUSE;
             }
         }
-    } else if (animal->mPlace == 0 && dPlayerMgr::Mgr_c::getCurrentPlayer() != NULL &&
-               !dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) && dEvent::isActive(EVENT_TOY_DAY)) {
-        profile = 0x77;
+    } else if (animal->mPlace == 0 &&
+               dPlayerMgr::Mgr_c::getCurrentPlayer() != NULL &&
+               !dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(
+                   PRIVATE_FLAG0_PART_TIME_JOB) &&
+               dEvent::isActive(EVENT_TOY_DAY)) {
+        profile = fProf::A_NPC_SP_JINGLE;
         key = 0x8052 + idx;
     }
     mVec3_c pos = mVec3_c::Zero;
@@ -651,7 +695,8 @@ BOOL dNpcMng_c::createPlayerHouseGuest() {
     if (dNet::isSessionActive()) {
         return FALSE;
     }
-    BOOL fromTown = dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_TOWN);
+    BOOL fromTown =
+        dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_TOWN);
     dAnimalBlock_c *block = dSaveData_c::getAnimalBlock();
     int idx = block->pickFleaMarketAnimal(fromTown, NULL, NULL);
     dAnimal_c *animal = block->getAnimalConst(idx);
@@ -659,13 +704,16 @@ BOOL dNpcMng_c::createPlayerHouseGuest() {
         mVec3_c pos(256.0f, 0.0f, 464.0f);
         mAng3_c angle(0, -0x8000, 0);
         pos.z += 64.0f;
-        dAnimalMemory_c *memory = player != NULL ? animal->findMemory2(&player->mPID) : NULL;
+        dAnimalMemory_c *memory =
+            player != NULL ? animal->findMemory2(&player->mPID) : NULL;
         if (memory != NULL && memory->isEventFlag(0)) {
             if (!dNpc::pickSceneFreePos(&pos, NULL, 4, NULL, 0.0f)) {
                 pos.set(256.0f, 0.0f, 464.0f);
             }
         }
-        if (dActor_c::construct(0x50, this, getAnimalKey(idx), &pos, &angle) != NULL) {
+        if (dActor_c::construct(fProf::A_NPC_VISIT_PLAYER_HOUSE_FLEAMARKET,
+                                this, getAnimalKey(idx), &pos,
+                                &angle) != NULL) {
             return TRUE;
         }
     }
@@ -693,7 +741,8 @@ BOOL dNpcMng_c::createAppointmentGuest() {
                 if (state == 1) {
                     quest->mState = 0;
                 }
-                if (dActor_c::construct(0x4F, this, key.mId, &pos, &angle) != NULL) {
+                if (dActor_c::construct(fProf::A_NPC_VISIT_PLAYER_HOUSE, this,
+                                        key.mId, &pos, &angle) != NULL) {
                     return TRUE;
                 }
             }
@@ -723,7 +772,8 @@ BOOL dNpcMng_c::createAnimals() {
         u32 home = dHomeList_c::getHomeFromScene(&room, scene);
         if (home < 4 && room == 0) {
             int player = dSaveData_c::getRaw()->mHomes.getPlayerOfHome(home);
-            if ((u32)player < 4 && player == dPlayerMgr::getCurrentPlayerSlot()) {
+            if ((u32)player < 4 &&
+                player == dPlayerMgr::getCurrentPlayerSlot()) {
                 createPlayerHouseVisitor();
             }
         }
@@ -743,67 +793,78 @@ BOOL dNpcMng_c::getTownHallPos(mVec3_c *pos, int unitX, int unitZ) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosTownHallA(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosTownHallA(mVec3_c *pos, mAng3_c *angle,
+                                const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         getTownHallPos(pos, 0, 4);
         angle->set(0, 0, 0);
     }
 }
 
-void dNpcMng_c::setPosTownHallRight(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosTownHallRight(mVec3_c *pos, mAng3_c *angle,
+                                    const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         getTownHallPos(pos, 1, 6);
         angle->set(0, 0, 0);
     }
 }
 
-void dNpcMng_c::setPosTownHallB(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosTownHallB(mVec3_c *pos, mAng3_c *angle,
+                                const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         getTownHallPos(pos, 0, 4);
         angle->set(0, 0, 0);
     }
 }
 
-void dNpcMng_c::setPosTownHallC(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosTownHallC(mVec3_c *pos, mAng3_c *angle,
+                                const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         getTownHallPos(pos, 0, 4);
         angle->set(0, 0, 0);
     }
 }
 
-void dNpcMng_c::setPosTownHallLeft(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosTownHallLeft(mVec3_c *pos, mAng3_c *angle,
+                                   const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         getTownHallPos(pos, -2, 6);
         angle->set(0, 0, 0);
     }
 }
 
-void dNpcMng_c::setPosRandomSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosRandomSpot(mVec3_c *pos, mAng3_c *angle,
+                                 const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, TRUE)) {
         dNpc::pickOutdoorFreePos(pos, NULL, 4, NULL, 0.0f);
         angle->y = cM::rndInt(0xFFFF);
     }
 }
 
-void dNpcMng_c::setPosRandomPlace(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosRandomPlace(mVec3_c *pos, mAng3_c *angle,
+                                  const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, TRUE)) {
         dNpc::pickPosWithNorthClearance(pos);
         angle->y = cM::rndInt(0xFFFF);
     }
 }
 
-void dNpcMng_c::setPosHarvest(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosHarvest(mVec3_c *pos, mAng3_c *angle,
+                              const dItem::Item *npc) {
     if (!getDaubPos(pos, angle, npc, FALSE)) {
         if (npc->isSame(dItem::Item((u16)0x801E))) {
-            dNpc::pickOutdoorPlacementPos(pos, NULL, 4, NULL, 0x400, FALSE, TRUE, 0.0f);
+            dNpc::pickOutdoorPlacementPos(pos, NULL, 4, NULL, 0x400, FALSE,
+                                          TRUE, 0.0f);
         } else {
-            dNpc::pickOutdoorPlacementPos(pos, NULL, 4, NULL, 0, FALSE, TRUE, 0.0f);
+            dNpc::pickOutdoorPlacementPos(pos, NULL, 4, NULL, 0, FALSE, TRUE,
+                                          0.0f);
         }
         angle->y = cM::rndInt(0xFFFF);
     }
 }
 
-BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc, BOOL checkPut) {
+BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc,
+                           BOOL checkPut) {
     u8 scene = dScene::getCurrentScene();
     BOOL found = FALSE;
     const dNpc::daub_c *recv = dNpc::getReceivedDaub(&npc->mId);
@@ -826,7 +887,8 @@ BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc,
                 // Post-increment preserves MWCC's argument evaluation order.
                 BOOL checkA = TRUE;
                 dItem::Item none;
-                if (!dNpc::canPutItemAt(&spot, &none, NULL, 0x44, FALSE, checkA++)) {
+                if (!dNpc::canPutItemAt(&spot, &none, NULL, 0x44, FALSE,
+                                        checkA++)) {
                     blocked = TRUE;
                 }
             }
@@ -847,13 +909,17 @@ BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc,
     return found;
 }
 
-BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle,
+                           const dItem::Item *npc) {
     return getDaubPos(pos, angle, npc, FALSE);
 }
 
 BOOL dNpcMng_c::isTownScene(u8 scene, u8 prevScene) {
-    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN) && !dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN | dScene::SCENE_ATTR_DEMO) &&
-        !dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN | dScene::SCENE_ATTR_CHECK_FIELD)) {
+    if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN) &&
+        !dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN |
+                                        dScene::SCENE_ATTR_DEMO) &&
+        !dScene::isSceneAttr(scene, dScene::SCENE_ATTR_TOWN |
+                                        dScene::SCENE_ATTR_CHECK_FIELD)) {
         return TRUE;
     }
     return FALSE;
@@ -869,7 +935,8 @@ BOOL dNpcMng_c::isTownPlay(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-const dNpcMng_c::Spawn_c *dNpcMng_c::findSpawn(const Spawn_c *list, u32 num, u8 scene, u8 prevScene) {
+const dNpcMng_c::Spawn_c *dNpcMng_c::findSpawn(const Spawn_c *list, u32 num,
+                                               u8 scene, u8 prevScene) {
     BOOL ok;
     BOOL eventOK;
     BOOL checkOK;
@@ -897,7 +964,8 @@ const dNpcMng_c::Spawn_c *dNpcMng_c::findSpawn(const Spawn_c *list, u32 num, u8 
     return NULL;
 }
 
-int dNpcMng_c::findSpawnIdx(const dItem::Item *npc, const Spawn_c *list, u32 num) {
+int dNpcMng_c::findSpawnIdx(const dItem::Item *npc, const Spawn_c *list,
+                            u32 num) {
     if (list == NULL || num == 0) {
         return -1;
     }
@@ -927,7 +995,8 @@ void dNpcMng_c::createSpecialNpcs() {
             mAng3_c angle = mAng3_c::Zero;
             dItem::Item npc((u16)0x804F);
             setPosFountain(&pos, &angle, &npc);
-            dActor_c::construct(0x96, this, 0x804F, &pos, &angle);
+            dActor_c::construct(fProf::A_NPC_SP_GODDESS, this, 0x804F, &pos,
+                                &angle);
         }
     }
 }
@@ -983,7 +1052,8 @@ u32 dNpcMng_c::getLooksToday(u8 *looks, const dTime_c *time) {
     return num;
 }
 
-dAnimalTemplate_c *dNpcMng_c::pickTemplate(u8 looks, const u16 *exclude, u32 num) {
+dAnimalTemplate_c *dNpcMng_c::pickTemplate(u8 looks, const u16 *exclude,
+                                           u32 num) {
     u32 count = 0;
     dAnimalTemplate_c *list = dNpcSetup::getList(&count);
     if (count == 0 || list == NULL) {
@@ -996,7 +1066,8 @@ dAnimalTemplate_c *dNpcMng_c::pickTemplate(u8 looks, const u16 *exclude, u32 num
     u32 n = 0;
     for (u32 i = 0; i < count; i++, list++) {
         int looksBit = list->mLooks;
-        if (list->mIsStarter && (looks >> looksBit & 1) && findId((int)list->mNpcIdx, exclude, num) == -1) {
+        if (list->mIsStarter && (looks >> looksBit & 1) &&
+            findId((int)list->mNpcIdx, exclude, num) == -1) {
             f32 chance = 100.0f / (n + 1);
             if (cM::rndF(100.0f) <= chance) {
                 pick = list;
@@ -1043,7 +1114,8 @@ void dNpcMng_c::setupCityGuests() {
         num = looksNum;
     }
     for (u32 i = 0; i < num; i++, grace++) {
-        dAnimalTemplate_c *tmpl = pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
+        dAnimalTemplate_c *tmpl =
+            pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
         if (tmpl == NULL) {
             break;
         }
@@ -1066,7 +1138,8 @@ void dNpcMng_c::setupCityGuests() {
         num = looksNum;
     }
     for (u32 i = 0; i < num; i++, theater++) {
-        dAnimalTemplate_c *tmpl = pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
+        dAnimalTemplate_c *tmpl =
+            pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
         if (tmpl == NULL) {
             break;
         }
@@ -1084,8 +1157,8 @@ void dNpcMng_c::setupCityGuests() {
     sResetTheaterSpots = 1;
 }
 
-BOOL dNpcMng_c::pickUnit(mVec3_c *pos, const mVec3_c *used, u32 usedNum, BOOL inArea, f32 minX, f32 minZ, f32 maxX,
-                         f32 maxZ) {
+BOOL dNpcMng_c::pickUnit(mVec3_c *pos, const mVec3_c *used, u32 usedNum,
+                         BOOL inArea, f32 minX, f32 minZ, f32 maxX, f32 maxZ) {
     if (pos == NULL) {
         return FALSE;
     }
@@ -1101,10 +1174,12 @@ BOOL dNpcMng_c::pickUnit(mVec3_c *pos, const mVec3_c *used, u32 usedNum, BOOL in
             mVec3_c spot = mVec3_c::Zero;
             dFdBase_c::getUnitCenterPos(&spot, x, z);
             BOOL ok = FALSE;
-            BOOL in = inArea == FALSE || (spot.x > minX && spot.x < maxX && spot.z > minZ && spot.z < maxZ);
+            BOOL in = inArea == FALSE || (spot.x > minX && spot.x < maxX &&
+                                          spot.z > minZ && spot.z < maxZ);
             if (in) {
                 dItem::Item none;
-                if (dNpc::canPutItemOnUnit(x, z, &none, field, 0x44, TRUE, TRUE)) {
+                if (dNpc::canPutItemOnUnit(x, z, &none, field, 0x44, TRUE,
+                                           TRUE)) {
                     ok = TRUE;
                 }
             }
@@ -1138,9 +1213,10 @@ BOOL dNpcMng_c::pickCitySpots(mVec3_c *pos, u32 num) {
     }
     mVec3_c *base = pos;
     for (u32 i = 0; i < num; i++, pos++) {
-        switch (pickUnit(pos, base, i, TRUE, cCityMinX, cCityMinZ, cCityMaxX, cCityMaxZ)) {
-            case FALSE:
-                return FALSE;
+        switch (pickUnit(pos, base, i, TRUE, cCityMinX, cCityMinZ, cCityMaxX,
+                         cCityMaxZ)) {
+        case FALSE:
+            return FALSE;
         }
     }
     return TRUE;
@@ -1242,7 +1318,9 @@ BOOL dNpcMng_c::createCityAnimals() {
                 angleRange.value = 0x10000;
                 mAng3_c angle = mAng3_c::Zero;
                 angle.y = cM::rndInt(angleRange.value - 1);
-                if (dActor_c::construct(0x51, this, key.mId, spot, &angle) != NULL && spotNum != 0) {
+                if (dActor_c::construct(fProf::A_NPC_TOWN_OUT, this, key.mId,
+                                        spot, &angle) != NULL &&
+                    spotNum != 0) {
                     spotNum--;
                     spot++;
                     placed++;
@@ -1276,12 +1354,14 @@ BOOL dNpcMng_c::createCityAnimals() {
     }
     templateSpot = &spots[placed];
     for (u32 i = 0; i < spotNum; i++) {
-        dAnimalTemplate_c *tmpl = pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
+        dAnimalTemplate_c *tmpl =
+            pickTemplate(looks, exclude, ARRAY_SIZE(l_guestExclude));
         if (tmpl != NULL) {
             u16 npcIdx = (int)tmpl->mNpcIdx;
             mAng3_c angle = mAng3_c::Zero;
             angle.y = cM::rndInt(0xFFFF);
-            dActor_c::construct(0x51, this, npcIdx, templateSpot, &angle);
+            dActor_c::construct(fProf::A_NPC_TOWN_OUT, this, npcIdx,
+                                templateSpot, &angle);
             templateSpot++;
             if (looksNum != 0) {
                 looksNum--;
@@ -1302,8 +1382,8 @@ BOOL dNpcMng_c::pickRoomSpots(mVec3_c *pos, u32 num) {
     mVec3_c *base = pos;
     for (u32 i = 0; i < num; i++, pos++) {
         switch (pickUnit(pos, base, i, FALSE, 0.0f, 0.0f, 0.0f, 0.0f)) {
-            case FALSE:
-                return FALSE;
+        case FALSE:
+            return FALSE;
         }
     }
     return TRUE;
@@ -1325,13 +1405,15 @@ BOOL dNpcMng_c::createGraceGuest() {
         if (*guest != 0xFFFF) {
             mAng3_c angle = mAng3_c::Zero;
             angle.y = cM::rndInt(0xFFFF);
-            dActor_c::construct(0x52, this, *guest, spot, &angle);
+            dActor_c::construct(fProf::A_NPC_TOWN_GRACE, this, *guest, spot,
+                                &angle);
         }
     }
     return TRUE;
 }
 
-BOOL dNpcMng_c::pickTheaterSpot(mVec3_c *pos, const mVec3_c *used, u32 usedNum) {
+BOOL dNpcMng_c::pickTheaterSpot(mVec3_c *pos, const mVec3_c *used,
+                                u32 usedNum) {
     static mVec3_c l_seats[] = {
         mVec3_c(176.0f, 0.0f, 336.0f),
         mVec3_c(208.0f, 0.0f, 400.0f),
@@ -1361,8 +1443,8 @@ BOOL dNpcMng_c::pickTheaterSpots(mVec3_c *pos, u32 num) {
     mVec3_c *base = pos;
     for (u32 i = 0; i < num; i++, pos++) {
         switch (pickTheaterSpot(pos, base, i)) {
-            case FALSE:
-                return FALSE;
+        case FALSE:
+            return FALSE;
         }
     }
     return TRUE;
@@ -1388,7 +1470,8 @@ BOOL dNpcMng_c::createTheaterGuests() {
         if (*guest != 0xFFFF) {
             mAng3_c angle = mAng3_c::Zero;
             angle.y = -0x8000;
-            dActor_c::construct(0x53, this, *guest, spot, &angle);
+            dActor_c::construct(fProf::A_NPC_TOWN_THEATER, this, *guest, spot,
+                                &angle);
         }
     }
     return TRUE;
@@ -1413,7 +1496,8 @@ BOOL dNpcMng_c::createCafeGuest() {
     }
     mVec3_c pos(336.0f, 0.0f, 240.0f);
     mAng3_c angle(0, 0x4000, 0);
-    if (dActor_c::construct(0x54, this, getAnimalKey(idx), &pos, &angle) != NULL) {
+    if (dActor_c::construct(fProf::A_NPC_CAFE, this, getAnimalKey(idx), &pos,
+                            &angle) != NULL) {
         return TRUE;
     }
     return FALSE;
@@ -1437,7 +1521,8 @@ void dNpcMng_c::updateAnimalPlaces() {
     int appointmentIdx;
     dTime_c *now;
     player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    flagD = player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE;
+    flagD =
+        player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE;
     online = dNet::isSessionActive();
     block = &dSaveData_c::getTown()->mAnimals.mTown;
     appointmentIdx = -1;
@@ -1458,7 +1543,8 @@ void dNpcMng_c::updateAnimalPlaces() {
         int place = animal->mPlace;
         if (i == appointmentIdx && animal->mDayPlace == 0) {
             if (!online) {
-                if (place == 0 && appointment->isPastMeetTime(*now, -60) && !appointment->isPastMeetTime(*now, 30)) {
+                if (place == 0 && appointment->isPastMeetTime(*now, -60) &&
+                    !appointment->isPastMeetTime(*now, 30)) {
                     place = 1;
                     quest->mState = place;
                 }
@@ -1469,69 +1555,74 @@ void dNpcMng_c::updateAnimalPlaces() {
         } else if (i == stayIdx) {
             u8 prevScene = dScene::getPrevScene();
             u8 scene = dScene::getCurrentScene();
-            BOOL inHouse = i == dScene::getSceneAttrIndex(prevScene, dScene::SCENE_ATTR_VILLAGER_HOUSE) ||
-                           i == dScene::getSceneAttrIndex(scene, dScene::SCENE_ATTR_VILLAGER_HOUSE);
+            BOOL inHouse =
+                i == dScene::getSceneAttrIndex(
+                         prevScene, dScene::SCENE_ATTR_VILLAGER_HOUSE) ||
+                i == dScene::getSceneAttrIndex(
+                         scene, dScene::SCENE_ATTR_VILLAGER_HOUSE);
             if (!inHouse) {
                 switch (place) {
-                    case 2:
-                        break;
-                    case 3:
-                        if (!block->isHomeStayTime(&animal->mID, player)) {
-                            place = 1;
-                        }
-                        break;
-                    case 1:
-                        if (block->isHomeStayTime(&animal->mID, player)) {
-                            place = 3;
-                        }
-                        break;
+                case 2:
+                    break;
+                case 3:
+                    if (!block->isHomeStayTime(&animal->mID, player)) {
+                        place = 1;
+                    }
+                    break;
+                case 1:
+                    if (block->isHomeStayTime(&animal->mID, player)) {
+                        place = 3;
+                    }
+                    break;
                 }
             }
         }
         switch (place) {
-            case 0:
-                if (!toyDay && !flagD && animal->isSleepTime(NULL) && animal->getDayPlace(1, 0, 0) == 3 &&
-                    block->getHiderSlot(&animal->mID) == 3) {
+        case 0:
+            if (!toyDay && !flagD && animal->isSleepTime(NULL) &&
+                animal->getDayPlace(1, 0, 0) == 3 &&
+                block->getHiderSlot(&animal->mID) == 3) {
+                place = 4;
+            }
+            break;
+        case 1:
+            if (!flagD && animal->isSleepTime(NULL)) {
+                if (animal->mDayPlace != 0 ||
+                    (!toyDay && animal->isLostItemRequestDone(NULL, 1))) {
                     place = 4;
                 }
-                break;
-            case 1:
-                if (!flagD && animal->isSleepTime(NULL)) {
-                    if (animal->mDayPlace != 0 || (!toyDay && animal->isLostItemRequestDone(NULL, 1))) {
-                        place = 4;
-                    }
-                }
-                if (place != 4 && animal->mDayPlace == 0 && online) {
+            }
+            if (place != 4 && animal->mDayPlace == 0 && online) {
+                place = 0;
+            }
+            break;
+        case 4:
+            if (!animal->isSleepTime(NULL)) {
+                if (animal->mDayPlace == 0 && online) {
                     place = 0;
+                } else {
+                    place = 1;
                 }
-                break;
-            case 4:
-                if (!animal->isSleepTime(NULL)) {
-                    if (animal->mDayPlace == 0 && online) {
-                        place = 0;
-                    } else {
-                        place = 1;
-                    }
-                }
-                break;
+            }
+            break;
         }
         if (animal->mPlace != place) {
             switch (animal->mPlace) {
-                case 0:
-                    if (place != 0) {
-                        animal->clearQuestStarted();
-                        dNpc::sendAnimalQuestClear(i);
-                        if (place == 1 && !online) {
-                            animal->setPlaceChangeTime(10, NULL);
-                        }
+            case 0:
+                if (place != 0) {
+                    animal->clearQuestStarted();
+                    dNpc::sendAnimalQuestClear(i);
+                    if (place == 1 && !online) {
+                        animal->setPlaceChangeTime(10, NULL);
                     }
-                    break;
-                default:
-                    if (place == 0) {
-                        animal->clearPlaceChangeTime();
-                        dNpc::sendAnimalPlaceTimeClear(i);
-                    }
-                    break;
+                }
+                break;
+            default:
+                if (place == 0) {
+                    animal->clearPlaceChangeTime();
+                    dNpc::sendAnimalPlaceTimeClear(i);
+                }
+                break;
             }
             animal->mPlace = place;
             dNpc::sendAnimalPlace(i, place);
@@ -1552,7 +1643,8 @@ void dNpcMng_c::applyHouseVillagerItems() {
     if (!dScene::isSceneAttr(dScene::getPrevScene(), dScene::SCENE_ATTR_TOWN)) {
         return;
     }
-    int idx = dScene::getSceneAttrIndex(dScene::getCurrentScene(), dScene::SCENE_ATTR_VILLAGER_HOUSE);
+    int idx = dScene::getSceneAttrIndex(dScene::getCurrentScene(),
+                                        dScene::SCENE_ATTR_VILLAGER_HOUSE);
     dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(idx);
     if (animal == NULL || !animal->mID.isValid()) {
         return;
@@ -1561,11 +1653,13 @@ void dNpcMng_c::applyHouseVillagerItems() {
 }
 
 int dNpcMng_c::preCreate() {
-    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && m_halloweenModelHeap_p == NULL) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) &&
+        m_halloweenModelHeap_p == NULL) {
         m_halloweenModelHeap_p = mHeap::createFrmHeap(
             ROUND_UP(dNpcMdlMng_c::getSpMdlSize(), 32), m_stageHeap_p,
             "dNpcMng_c::m_halloweenModelHeap_p : "
-            "\x83\x6E\x83\x8D\x83\x45\x83\x42\x83\x93\x97\x70\x83\x82\x83\x66\x83\x8B\x83\x71\x81\x5B\x83\x76",
+            "\x83\x6E\x83\x8D\x83\x45\x83\x42\x83\x93\x97\x70\x83\x82\x83\x66"
+            "\x83\x8B\x83\x71\x81\x5B\x83\x76",
             0x20, mHeap::OPT_NONE);
         mAllocator.attach(m_halloweenModelHeap_p, 0x20);
     }
@@ -1594,7 +1688,8 @@ int dNpcMng_c::create() {
     u8 scene = dScene::getCurrentScene();
     u8 prevScene = dScene::getPrevScene();
     BOOL fromBus = FALSE;
-    if (prevScene == dScene::SCENE_DM_BUS_TO_TOWN && dScene::isSceneAttr(scene, dScene::SCENE_ATTR_CITY_FIELD)) {
+    if (prevScene == dScene::SCENE_DM_BUS_TO_TOWN &&
+        dScene::isSceneAttr(scene, dScene::SCENE_ATTR_CITY_FIELD)) {
         fromBus = TRUE;
     }
     if (fromBus) {
@@ -1635,28 +1730,32 @@ int dNpcMng_c::execute() {
         mShowTelop = 0;
         sShowTelop = 0;
     }
-    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) && dNet::isSceneOwner()) {
+    if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) &&
+        dNet::isSceneOwner()) {
         dAnimalBlock_c *block = &dSaveData_c::getTown()->mAnimals.mTown;
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-        BOOL flagD = player != NULL ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB) : FALSE;
+        BOOL flagD = player != NULL
+                         ? player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)
+                         : FALSE;
         for (int i = 0; i < 10; i++) {
             dAnimal_c *animal = block->getAnimal(i);
-            if (animal == NULL || !animal->mID.isValid() || animal->mDayPlace == 0) {
+            if (animal == NULL || !animal->mID.isValid() ||
+                animal->mDayPlace == 0) {
                 continue;
             }
             switch (animal->mPlace) {
-                case 4:
-                    if (!animal->isSleepTime(NULL)) {
-                        animal->mPlace = 1;
-                        dNpc::sendAnimalPlace(i, 1);
-                    }
-                    break;
-                case 1:
-                    if (!flagD && animal->isSleepTime(NULL)) {
-                        animal->mPlace = 4;
-                        dNpc::sendAnimalPlace(i, 4);
-                    }
-                    break;
+            case 4:
+                if (!animal->isSleepTime(NULL)) {
+                    animal->mPlace = 1;
+                    dNpc::sendAnimalPlace(i, 1);
+                }
+                break;
+            case 1:
+                if (!flagD && animal->isSleepTime(NULL)) {
+                    animal->mPlace = 4;
+                    dNpc::sendAnimalPlace(i, 4);
+                }
+                break;
             }
         }
     }
@@ -1669,7 +1768,8 @@ int dNpcMng_c::draw() {
 
 BOOL dNpcMng_c::createEventNpc() {
     u8 scene = dScene::getCurrentScene();
-    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), scene, dScene::getPrevScene());
+    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs),
+                                     scene, dScene::getPrevScene());
     if (spawn != NULL) {
         mVec3_c pos = mVec3_c::Zero;
         mAng3_c angle = mAng3_c::Zero;
@@ -1724,7 +1824,8 @@ BOOL dNpcMng_c::isBugOffTime(dQuestEvent_e event) {
 // The villager hosting the current player's birthday party, or -1.
 static inline int getPlayerBirthdayHostIdx() {
     dSaveData_c *save = dSaveData_c::getRaw();
-    return save->mAnimals.mTown.getBirthdayHostIdx(dPlayerMgr::getCurrentPlayerSlot(), 1, 1, 1);
+    return save->mAnimals.mTown.getBirthdayHostIdx(
+        dPlayerMgr::getCurrentPlayerSlot(), 1, 1, 1);
 }
 
 BOOL dNpcMng_c::isVisitorBeforeTortimer(u8 scene, u8 prevScene) {
@@ -1736,7 +1837,8 @@ BOOL dNpcMng_c::isVisitorBeforeTortimer(u8 scene, u8 prevScene) {
     if (findSpawn(l_visitorNpcs, idx, scene, prevScene) != NULL) {
         return TRUE;
     }
-    if (prevScene == dScene::SCENE_DM_PL_SEL && getPlayerBirthdayHostIdx() != -1) {
+    if (prevScene == dScene::SCENE_DM_PL_SEL &&
+        getPlayerBirthdayHostIdx() != -1) {
         return TRUE;
     }
     return FALSE;
@@ -1765,12 +1867,14 @@ BOOL dNpcMng_c::isPlayerSelectVisitor() {
 }
 
 BOOL dNpcMng_c::isHolidayNpcToday() {
-    return findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM) != NULL;
+    return findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs),
+                     dScene::SCENE_FIELD, dScene::SCENE_NUM) != NULL;
 }
 
 BOOL dNpcMng_c::createHolidayNpc() {
     u8 scene = dScene::getCurrentScene();
-    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), scene, dScene::getPrevScene());
+    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs),
+                                     scene, dScene::getPrevScene());
     if (spawn != NULL) {
         mVec3_c pos = mVec3_c::Zero;
         mAng3_c angle = mAng3_c::Zero;
@@ -1783,52 +1887,53 @@ BOOL dNpcMng_c::createHolidayNpc() {
 }
 
 // The position of a building of the town (dSaveBuildingList_c::getPos).
-static inline BOOL getTownBuildingPos(dSaveTown_c *town, int *x, int *z, const dItem::Item *item) {
+static inline BOOL getTownBuildingPos(dSaveTown_c *town, int *x, int *z,
+                                      const dItem::Item *item) {
     return town->mBuilding.mList.getPos(x, z, item, 1);
 }
 
-void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle,
+                                   const dItem::Item *npc) {
     int x = 0;
     int z = 0;
     switch (dSaveData_c::getTown()->mNewConstruction) {
-        case NEW_CONSTRUCTION_BRIDGE: {
-            dFdBase_c *field = dField::getInfo(0);
-            if (field != NULL) {
-                int blockZ = dSaveData_c::getTown()->mNewConstructionBlockZ;
-                dSaveTown_c *town = dSaveData_c::getTown();
-                *pos = field->getRaccoPos(town->mNewConstructionBlockX, blockZ);
-                break;
-            }
-            return;
-        }
-        case NEW_CONSTRUCTION_FOUNTAIN: {
-            dItem::Item fountain((u16)BUILDING_FOUNTAIN);
-            getTownBuildingPos(dSaveData_c::getTown(), &x, &z, &fountain);
-            z += 3;
-            dFdBase_c::getUnitGroundPos(pos, x, z);
+    case NEW_CONSTRUCTION_BRIDGE: {
+        dFdBase_c *field = dField::getInfo(0);
+        if (field != NULL) {
+            int blockZ = dSaveData_c::getTown()->mNewConstructionBlockZ;
+            dSaveTown_c *town = dSaveData_c::getTown();
+            *pos = field->getRaccoPos(town->mNewConstructionBlockX, blockZ);
             break;
         }
-        case NEW_CONSTRUCTION_WINDMILL: {
-            dItem::Item windmill((u16)BUILDING_WINDMILL);
-            getTownBuildingPos(dSaveData_c::getTown(), &x, &z, &windmill);
-            dFdBase_c::getUnitGroundPos(pos, x, z);
-            break;
-        }
-        case NEW_CONSTRUCTION_LIGHTHOUSE: {
-            dItem::Item lighthouse((u16)BUILDING_LIGHTHOUSE);
-            getTownBuildingPos(dSaveData_c::getTown(), &x, &z, &lighthouse);
-            dFdBase_c::getUnitGroundPos(pos, x, z);
-            break;
-        }
-        default:
-            {
-                int blockZ = dSaveData_c::getTown()->mNewConstructionBlockZ;
-                dSaveTown_c *town = dSaveData_c::getTown();
-                dFdBase_c::getBlockCenterPos(pos, town->mNewConstructionBlockX, blockZ);
-            }
-            break;
+        return;
     }
-    if ((int)dSaveData_c::getTown()->mNewConstruction == NEW_CONSTRUCTION_FOUNTAIN) {
+    case NEW_CONSTRUCTION_FOUNTAIN: {
+        dItem::Item fountain((u16)BUILDING_FOUNTAIN);
+        getTownBuildingPos(dSaveData_c::getTown(), &x, &z, &fountain);
+        z += 3;
+        dFdBase_c::getUnitGroundPos(pos, x, z);
+        break;
+    }
+    case NEW_CONSTRUCTION_WINDMILL: {
+        dItem::Item windmill((u16)BUILDING_WINDMILL);
+        getTownBuildingPos(dSaveData_c::getTown(), &x, &z, &windmill);
+        dFdBase_c::getUnitGroundPos(pos, x, z);
+        break;
+    }
+    case NEW_CONSTRUCTION_LIGHTHOUSE: {
+        dItem::Item lighthouse((u16)BUILDING_LIGHTHOUSE);
+        getTownBuildingPos(dSaveData_c::getTown(), &x, &z, &lighthouse);
+        dFdBase_c::getUnitGroundPos(pos, x, z);
+        break;
+    }
+    default: {
+        int blockZ = dSaveData_c::getTown()->mNewConstructionBlockZ;
+        dSaveTown_c *town = dSaveData_c::getTown();
+        dFdBase_c::getBlockCenterPos(pos, town->mNewConstructionBlockX, blockZ);
+    } break;
+    }
+    if ((int)dSaveData_c::getTown()->mNewConstruction ==
+        NEW_CONSTRUCTION_FOUNTAIN) {
         mVec3_c left;
         left = *pos;
         mVec3_c right;
@@ -1860,7 +1965,8 @@ BOOL dNpcMng_c::isConstructionTime(u8 scene, u8 prevScene) {
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL fromTown = player != NULL ? player->mPID.isFromTown() : FALSE;
-    if (isTownPlay(scene, prevScene) && fromTown && dSaveData_c::getTown()->mNewConstruction != NEW_CONSTRUCTION_NONE) {
+    if (isTownPlay(scene, prevScene) && fromTown &&
+        dSaveData_c::getTown()->mNewConstruction != NEW_CONSTRUCTION_NONE) {
         return TRUE;
     }
     return FALSE;
@@ -1868,8 +1974,8 @@ BOOL dNpcMng_c::isConstructionTime(u8 scene, u8 prevScene) {
 
 BOOL dNpcMng_c::isCatalogTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) && !isVisitorBeforeTortimer(scene, prevScene) &&
-        player != NULL &&
+    if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) &&
+        !isVisitorBeforeTortimer(scene, prevScene) && player != NULL &&
         ((!player->isFlag0(0x76) && player->mCatalog.isComplete(8) == 1) ||
          (!player->isFlag0(0x75) && player->mCatalog.isComplete(7) == 1)) &&
         prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF) {
@@ -1879,11 +1985,13 @@ BOOL dNpcMng_c::isCatalogTime(u8 scene, u8 prevScene) {
 }
 
 // The town's player house home (its unit position).
-static inline BOOL getPlayerHousePos(dSaveTown_c *town, int *x, int *z, int home) {
+static inline BOOL getPlayerHousePos(dSaveTown_c *town, int *x, int *z,
+                                     int home) {
     return town->mBuilding.mList.getPlayerHousePos(x, z, home);
 }
 
-void dNpcMng_c::setPosPlayerHouseA(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosPlayerHouseA(mVec3_c *pos, mAng3_c *angle,
+                                   const dItem::Item *npc) {
     u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
     if (home < 4) {
         int x = 0;
@@ -1945,7 +2053,8 @@ BOOL dNpcMng_c::createVisitorNpc() {
         sResetVisited = 0;
         _8074EAD0 = 0;
     }
-    const Spawn_c *spawn = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), scene, prevScene);
+    const Spawn_c *spawn =
+        findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), scene, prevScene);
     if (spawn != NULL) {
         mVec3_c pos = mVec3_c::Zero;
         mAng3_c angle = mAng3_c::Zero;
@@ -1971,8 +2080,10 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
     if (isTownScene(scene, dScene::SCENE_NUM)) {
         dHomeList_c *homes = &dSaveData_c::getTown()->mHomes;
         dPrivateData_c *current;
-        if (homes->getHome(homes->findCurrentPlayer()) == NULL && dScene::isSceneAttr(prevScene, dScene::SCENE_ATTR_PLAYER_HOUSE) &&
-            (current = dPlayerMgr::Mgr_c::getCurrentPlayer()) != NULL && current->mPID.isFromTown()) {
+        if (homes->getHome(homes->findCurrentPlayer()) == NULL &&
+            dScene::isSceneAttr(prevScene, dScene::SCENE_ATTR_PLAYER_HOUSE) &&
+            (current = dPlayerMgr::Mgr_c::getCurrentPlayer()) != NULL &&
+            current->mPID.isFromTown()) {
             u32 home = dHomeList_c::getHomeFromScene(NULL, prevScene);
             if (home < 4) {
                 int x = 0;
@@ -1986,7 +2097,8 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle,
+                                const dItem::Item *npc) {
     u32 home = dHomeList_c::getHomeFromScene(NULL, dScene::getPrevScene());
     if (home < 4) {
         int x = 0;
@@ -2003,7 +2115,8 @@ void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle, const dItem::Item 
 
 BOOL dNpcMng_c::isBirthdayVisitTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (isTownPlay(scene, dScene::SCENE_NUM) && prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF && player != NULL &&
+    if (isTownPlay(scene, dScene::SCENE_NUM) &&
+        prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF && player != NULL &&
         player->isFlag0(0x57) && getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
@@ -2017,7 +2130,8 @@ BOOL dNpcMng_c::isBirthdayVisitTime(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosPlayerHouseB(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosPlayerHouseB(mVec3_c *pos, mAng3_c *angle,
+                                   const dItem::Item *npc) {
     u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
     if (home < 4) {
         int x = 0;
@@ -2033,7 +2147,9 @@ void dNpcMng_c::setPosPlayerHouseB(mVec3_c *pos, mAng3_c *angle, const dItem::It
 }
 
 BOOL dNpcMng_c::isLetterVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, dScene::SCENE_NUM) && dNpcInfo::resetsan_c::get()->getVisit() && prevScene == dScene::SCENE_DM_PL_SEL &&
+    if (isTownScene(scene, dScene::SCENE_NUM) &&
+        dNpcInfo::resetsan_c::get()->getVisit() &&
+        prevScene == dScene::SCENE_DM_PL_SEL &&
         getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
@@ -2047,7 +2163,8 @@ BOOL dNpcMng_c::isLetterVisitTime(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosPlayerHouseDoor(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosPlayerHouseDoor(mVec3_c *pos, mAng3_c *angle,
+                                      const dItem::Item *npc) {
     u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
     if (home < 4) {
         int x = 0;
@@ -2063,14 +2180,16 @@ void dNpcMng_c::setPosPlayerHouseDoor(mVec3_c *pos, mAng3_c *angle, const dItem:
 
 BOOL dNpcMng_c::isLetterVisitFirstTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (isLetterVisitTime(scene, prevScene) && player != NULL && !player->getLastResetCount()) {
+    if (isLetterVisitTime(scene, prevScene) && player != NULL &&
+        !player->getLastResetCount()) {
         return TRUE;
     }
     return FALSE;
 }
 
 BOOL dNpcMng_c::isLetterVisitKind1(u8 scene, u8 prevScene) {
-    if (isLetterVisitTime(scene, prevScene) && dNpcInfo::resetsan_c::get()->getVisit() == 1) {
+    if (isLetterVisitTime(scene, prevScene) &&
+        dNpcInfo::resetsan_c::get()->getVisit() == 1) {
         return TRUE;
     }
     return FALSE;
@@ -2084,7 +2203,8 @@ BOOL dNpcMng_c::isVisitor8Day(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosRaccoSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosRaccoSpot(mVec3_c *pos, mAng3_c *angle,
+                                const dItem::Item *npc) {
     if (getDaubPos(pos, angle, npc, FALSE)) {
         return;
     }
@@ -2103,28 +2223,33 @@ void dNpcMng_c::setPosRaccoSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item 
 }
 
 BOOL dNpcMng_c::isGuestVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, dScene::SCENE_NUM) && dPrivateData_c::isGuestVisitReady()) {
+    if (isTownScene(scene, dScene::SCENE_NUM) &&
+        dPrivateData_c::isGuestVisitReady()) {
         return TRUE;
     }
     return FALSE;
 }
 
-void dNpcMng_c::setPosGuestVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosGuestVisit(mVec3_c *pos, mAng3_c *angle,
+                                 const dItem::Item *npc) {
     setPosRandomPlace(pos, angle, npc);
 }
 
 BOOL dNpcMng_c::isHostVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, dScene::SCENE_NUM) && dPrivateData_c::isHostVisitReady()) {
+    if (isTownScene(scene, dScene::SCENE_NUM) &&
+        dPrivateData_c::isHostVisitReady()) {
         return TRUE;
     }
     return FALSE;
 }
 
-void dNpcMng_c::setPosHostVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosHostVisit(mVec3_c *pos, mAng3_c *angle,
+                                const dItem::Item *npc) {
     setPosRandomPlace(pos, angle, npc);
 }
 
-void dNpcMng_c::setPosFountain(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosFountain(mVec3_c *pos, mAng3_c *angle,
+                               const dItem::Item *npc) {
     int x = 0;
     int z = 0;
     dItem::Item fountain((u16)BUILDING_FOUNTAIN);
@@ -2152,7 +2277,8 @@ BOOL dNpcMng_c::hasFountain(u8 scene, u8 prevScene) {
 }
 
 BOOL dNpcMng_c::isRelayDesignVisitTime(u8 scene, u8 prevScene) {
-    if (isTownScene(scene, dScene::SCENE_NUM) && dPrivateData_c::isRelayDesignVisitReady()) {
+    if (isTownScene(scene, dScene::SCENE_NUM) &&
+        dPrivateData_c::isRelayDesignVisitReady()) {
         return TRUE;
     }
     return FALSE;
@@ -2200,17 +2326,21 @@ BOOL dNpcMng_c::isFlag13Visit(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosVisitor2(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosVisitor2(mVec3_c *pos, mAng3_c *angle,
+                               const dItem::Item *npc) {
     setPosRandomSpot(pos, angle, npc);
 }
 
 BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) &&
-        (sResetVisited == 1 || (prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF)) && player != NULL &&
-        !player->isFlag0(0x28) && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
+        (sResetVisited == 1 ||
+         (prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF)) &&
+        player != NULL && !player->isFlag0(0x28) && !player->isFlag1(0x3A) &&
+        !player->isFlag1(0x3B)) {
         dSaveExtra_c *extra = dSaveData_c::getExtra();
-        if (extra->mDistPattern.mVersion != player->mDistPatternVersion && getPlayerBirthdayHostIdx() == -1) {
+        if (extra->mDistPattern.mVersion != player->mDistPatternVersion &&
+            getPlayerBirthdayHostIdx() == -1) {
             sResetVisited = 1;
             return TRUE;
         }
@@ -2218,7 +2348,8 @@ BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle,
+                                 const dItem::Item *npc) {
     if (dScene::getPrevScene() == dScene::SCENE_DM_PL_SEL) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
@@ -2239,14 +2370,17 @@ void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item
 
 BOOL dNpcMng_c::isVisitor7Day(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    if (isTownPlay(scene, prevScene) && !dNet::isSessionActive() && dEvent::getTodayVisitor() == 7 && player != NULL &&
-        !player->isFlag0(0x28) && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
+    if (isTownPlay(scene, prevScene) && !dNet::isSessionActive() &&
+        dEvent::getTodayVisitor() == 7 && player != NULL &&
+        !player->isFlag0(0x28) && !player->isFlag1(0x3A) &&
+        !player->isFlag1(0x3B)) {
         return TRUE;
     }
     return FALSE;
 }
 
-void dNpcMng_c::setPosGateA(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosGateA(mVec3_c *pos, mAng3_c *angle,
+                            const dItem::Item *npc) {
     dItem::Item gate((u16)BUILDING_GATE);
     int x;
     int z;
@@ -2268,7 +2402,8 @@ BOOL dNpcMng_c::isVisitor4Day(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosGateB(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosGateB(mVec3_c *pos, mAng3_c *angle,
+                            const dItem::Item *npc) {
     dItem::Item gate((u16)BUILDING_GATE);
     int x;
     int z;
@@ -2289,11 +2424,13 @@ BOOL dNpcMng_c::isVisitor9Day(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosVisitor9(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosVisitor9(mVec3_c *pos, mAng3_c *angle,
+                               const dItem::Item *npc) {
     setPosRandomSpot(pos, angle, npc);
 }
 
-void dNpcMng_c::setPosVisitor5(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosVisitor5(mVec3_c *pos, mAng3_c *angle,
+                               const dItem::Item *npc) {
     angle->set(0, 0, 0);
     if (pickEmptyBlockSpot(pos)) {
         return;
@@ -2325,8 +2462,10 @@ BOOL dNpcMng_c::pickEmptyBlockSpot(mVec3_c *pos) {
     for (blockZ = 1; blockZ < 6; blockZ++) {
         for (blockX = 1; blockX < 6; blockX++) {
             dFdBlock_c *block = field->getBlock(blockX, blockZ);
-            if (dFdBlockType::getKind(block->mType) == 0xB || dFdBlockType::getKind(block->mType) == 0x2D) {
-                if (dSaveBuildingList_c::get()->countHouses(blockX, blockZ) == 0) {
+            if (dFdBlockType::getKind(block->mType) == 0xB ||
+                dFdBlockType::getKind(block->mType) == 0x2D) {
+                if (dSaveBuildingList_c::get()->countHouses(blockX, blockZ) ==
+                    0) {
                     blocks[num * 2] = blockX;
                     blocks[num * 2 + 1] = blockZ;
                     num++;
@@ -2398,13 +2537,15 @@ BOOL dNpcMng_c::canStandAt(dFdBase_c *field, int unitX, int unitZ) {
     return dNpc::canPutItemOnUnit(unitX, unitZ, &none, field, 0x44, TRUE, TRUE);
 }
 
-void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle,
+                            const dItem::Item *npc) {
     if (getDaubPos(pos, angle, npc, FALSE)) {
         return;
     }
     int x;
     int z;
-    // The aggregate keeps the field pointer in the original temporary allocation.
+    // The aggregate keeps the field pointer in the original temporary
+    // allocation.
     struct {
         dFdBase_c *ptr;
     } field = {dField::getInfo(0)};
@@ -2433,7 +2574,8 @@ void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc
     angle->y = -0x8000;
 }
 
-void dNpcMng_c::setPosCarnival(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc) {
+void dNpcMng_c::setPosCarnival(mVec3_c *pos, mAng3_c *angle,
+                               const dItem::Item *npc) {
     if (getDaubPos(pos, angle, npc, FALSE)) {
         return;
     }
@@ -2464,7 +2606,8 @@ BOOL dNpcMng_c::isNotTownFlag5(dQuestEvent_e event) {
 
 BOOL dNpcMng_c::isVisitor7Here(dQuestEvent_e event) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    if (dEvent::isVisitorHere(7) && player != NULL && !player->isFlag1(0x3A) && !player->isFlag1(0x3B)) {
+    if (dEvent::isVisitorHere(7) && player != NULL && !player->isFlag1(0x3A) &&
+        !player->isFlag1(0x3B)) {
         return TRUE;
     }
     return FALSE;
@@ -2483,26 +2626,29 @@ BOOL dNpcMng_c::isVisitor4Time(dQuestEvent_e event) {
 
 void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
     *npc = dItem::Item();
-    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs),
+                                     dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         u16 id = spawn->mNpc;
         switch (id) {
-            case 0x8025:
-            case 0x804C:
-                if (dEvent::isNowBetween(6, 0, 6, 0)) {
-                    *npc = id;
-                }
-                break;
-            case 0x804B:
-                break;
-            case 0x804A:
-            case 0x804D:
+        case 0x8025:
+        case 0x804C:
+            if (dEvent::isNowBetween(6, 0, 6, 0)) {
                 *npc = id;
-                break;
+            }
+            break;
+        case 0x804B:
+            break;
+        case 0x804A:
+        case 0x804D:
+            *npc = id;
+            break;
         }
     }
     if (npc->mId == dItem::ITEM_ID_NONE) {
-        const Spawn_c *visitor = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
+        const Spawn_c *visitor =
+            findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs),
+                      dScene::SCENE_FIELD, dScene::SCENE_NUM);
         BOOL here = FALSE;
         if (visitor != NULL) {
             if (isVisitorNpcHere(dItem::Item(visitor->mNpc))) {
@@ -2511,7 +2657,8 @@ void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
         }
         if (here) {
             *npc = visitor->mNpc;
-        } else if (dEvent::getTodayVisitor() == 3 && dEvent::isNowBetween(6, 0, 6, 0)) {
+        } else if (dEvent::getTodayVisitor() == 3 &&
+                   dEvent::isNowBetween(6, 0, 6, 0)) {
             *npc = 0x8007;
         }
     }
@@ -2525,10 +2672,12 @@ BOOL dNpcMng_c::isEventNpcHere(const dItem::Item &npc) {
     if ((npc.mId >> 12 & 0xF) != 8) {
         return FALSE;
     }
-    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs),
+                                     dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         if (npc.isSame(dItem::Item(spawn->mNpc))) {
-            if (spawn->mIsHere == NULL || spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
+            if (spawn->mIsHere == NULL ||
+                spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
                 return TRUE;
             }
         }
@@ -2540,16 +2689,19 @@ BOOL dNpcMng_c::isHolidayNpcHere(const dItem::Item &npc) {
     if ((npc.mId >> 12 & 0xF) != 8 && npc.mId != dItem::ITEM_ID_NONE) {
         return FALSE;
     }
-    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_holidayNpcs, ARRAY_SIZE(l_holidayNpcs),
+                                     dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
-        if (npc.mId != dItem::ITEM_ID_NONE || spawn->mNpc == 0x8043 || spawn->mNpc == 0x8060) {
+        if (npc.mId != dItem::ITEM_ID_NONE || spawn->mNpc == 0x8043 ||
+            spawn->mNpc == 0x8060) {
             dItem::Item spawnNpc(spawn->mNpc);
             if (npc.isSame(spawnNpc)) {
                 goto here;
             }
         } else {
         here:
-            if (spawn->mIsHere == NULL || spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
+            if (spawn->mIsHere == NULL ||
+                spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
                 return TRUE;
             }
         }
@@ -2561,10 +2713,12 @@ BOOL dNpcMng_c::isVisitorNpcHere(const dItem::Item &npc) {
     if ((npc.mId >> 12 & 0xF) != 8) {
         return FALSE;
     }
-    const Spawn_c *spawn = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), dScene::SCENE_FIELD, dScene::SCENE_NUM);
+    const Spawn_c *spawn = findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs),
+                                     dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
         if (npc.isSame(dItem::Item(spawn->mNpc))) {
-            if (spawn->mIsHere == NULL || spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
+            if (spawn->mIsHere == NULL ||
+                spawn->mIsHere((dQuestEvent_e)spawn->mEvent)) {
                 return TRUE;
             }
         }
@@ -2599,65 +2753,113 @@ BOOL dNpcMng_c::isWeekVisitDay() {
 BOOL dNpcMng_c::isWeekVisitWeek() {
     dTime_c now = *dTime_c::getCurrent();
     int kind = dWeather::getCityPattern(&now);
-    if (!((kind >= 0 && kind <= 6) || (kind >= 7 && kind <= 8) || (kind >= 16 && kind <= 18) ||
-          (kind >= 19 && kind <= 21) || (kind >= 22 && kind <= 25))) {
+    if (!((kind >= 0 && kind <= 6) || (kind >= 7 && kind <= 8) ||
+          (kind >= 16 && kind <= 18) || (kind >= 19 && kind <= 21) ||
+          (kind >= 22 && kind <= 25))) {
         return FALSE;
     }
     return (u32)(dWeather::getCityWeather(&now) - 3) > 3;
 }
 
 const dNpcMng_c::Spawn_c dNpcMng_c::l_eventNpcs[7] = {
-    {&isTownPlay, &dNpcMng_c::setPosTownHallA, &isFishingTourneyTime, EVENT_FISHING_TOURNEY, 0x79, 0x8025},
-    {&isTownPlay, &dNpcMng_c::setPosRandomSpot, NULL, EVENT_HALLOWEEN, 0x7A, 0x8006},
-    {&isTownPlay, &dNpcMng_c::setPosHarvest, &isHarvestTime, EVENT_HARVEST_FESTIVAL, 0x78, 0x801E},
-    {&isTownPlay, &dNpcMng_c::setPosRandomSpot, &isToyDayTime, EVENT_TOY_DAY, 0x77, 0x8024},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallA, NULL, EVENT_BUNNY_DAY, 0x95, 0x804A},
-    {&isTownPlay, &dNpcMng_c::setPosCarnival, NULL, EVENT_FESTIVALE, 0x9B, 0x804D},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallA, &isBugOffTime, EVENT_BUG_OFF, 0x97, 0x804C},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallA, &isFishingTourneyTime,
+     EVENT_FISHING_TOURNEY, fProf::A_NPC_SP_UOMASA, 0x8025},
+    {&isTownPlay, &dNpcMng_c::setPosRandomSpot, NULL, EVENT_HALLOWEEN,
+     fProf::A_NPC_SP_PUMPKING, 0x8006},
+    {&isTownPlay, &dNpcMng_c::setPosHarvest, &isHarvestTime,
+     EVENT_HARVEST_FESTIVAL, fProf::A_NPC_SP_FRANKLIN, 0x801E},
+    {&isTownPlay, &dNpcMng_c::setPosRandomSpot, &isToyDayTime, EVENT_TOY_DAY,
+     fProf::A_NPC_SP_JINGLE, 0x8024},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallA, NULL, EVENT_BUNNY_DAY,
+     fProf::A_NPC_SP_PYONTARO, 0x804A},
+    {&isTownPlay, &dNpcMng_c::setPosCarnival, NULL, EVENT_FESTIVALE,
+     fProf::A_NPC_SP_DANCER, 0x804D},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallA, &isBugOffTime, EVENT_BUG_OFF,
+     fProf::A_NPC_SP_BUG, 0x804C},
 };
 
 const dNpcMng_c::Spawn_c dNpcMng_c::l_holidayNpcs[25] = {
-    {&isTownPlay, &dNpcMng_c::setPosTownHallRight, &isFireworksTime, EVENT_HARVEST_FESTIVAL, 0x7E, 0x802E},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallA, &isEventActive, EVENT_COUNTDOWN, 0x7C, 0x802C},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallC, &isHolidayTime, EVENT_NEW_YEARS_DAY, 0x7D, 0x802D},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallB, &isHolidayDay, EVENT_FIREWORKS, 0x7F, 0x802F},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_JP_SETSUBUN, 0x80, 0x8030},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_JP_GIRLS_DAY, 0x81, 0x8031},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_JP_CHILDRENS_DAY, 0x82, 0x8032},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_JP_AUTUMN_MOON, 0x83, 0x8033},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_JP_TANABATA, 0x84, 0x8034},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_NA_GROUNDHOG_DAY, 0x85, 0x8035},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_NA_NATURE_DAY, 0x86, 0x8036},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_NA_LABOR_DAY, 0x87, 0x8037},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_NA_EXPLORERS_DAY, 0x88, 0x8038},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_NA_AUTUMN_MOON, 0x89, 0x8039},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_EU_MIDSUMMERS_DAY, 0x8A, 0x803A},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_EU_NAUGHTY_OR_NICE_DAY, 0x8B, 0x803B},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_EU_MIDWINTERS_DAY, 0x8C, 0x803C},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_EU_AUTUMN_MOON, 0x8D, 0x803D},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_KR_LUNAR_NEW_YEAR, 0x8E, 0x803E},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_KR_ARBOR_DAY, 0x8F, 0x803F},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_KR_TEACHERS_DAY, 0x90, 0x8040},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_KR_DAEBOREUM, 0x91, 0x8041},
-    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime, EVENT_APRIL_FOOLS_DAY, 0x92, 0x8042},
-    {&isConstructionTime, &dNpcMng_c::setPosConstruction, NULL, 0xFFFF, 0x93, 0x8043},
-    {&isCatalogTime, &dNpcMng_c::setPosPlayerHouseA, NULL, 0xFFFF, 0x94, 0x8060},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallRight, &isFireworksTime,
+     EVENT_HARVEST_FESTIVAL, fProf::A_NPC_SP_EVENT_SONCHO_07E, 0x802E},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallA, &isEventActive, EVENT_COUNTDOWN,
+     fProf::A_NPC_SP_EVENT_SONCHO_07C, 0x802C},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallC, &isHolidayTime,
+     EVENT_NEW_YEARS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_07D, 0x802D},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallB, &isHolidayDay, EVENT_FIREWORKS,
+     fProf::A_NPC_SP_EVENT_SONCHO_07F, 0x802F},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_JP_SETSUBUN, fProf::A_NPC_SP_EVENT_SONCHO_080, 0x8030},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_JP_GIRLS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_081, 0x8031},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_JP_CHILDRENS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_082, 0x8032},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_JP_AUTUMN_MOON, fProf::A_NPC_SP_EVENT_SONCHO_083, 0x8033},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_JP_TANABATA, fProf::A_NPC_SP_EVENT_SONCHO_084, 0x8034},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_NA_GROUNDHOG_DAY, fProf::A_NPC_SP_EVENT_SONCHO_085, 0x8035},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_NA_NATURE_DAY, fProf::A_NPC_SP_EVENT_SONCHO_086, 0x8036},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_NA_LABOR_DAY, fProf::A_NPC_SP_EVENT_SONCHO_087, 0x8037},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_NA_EXPLORERS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_088, 0x8038},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_NA_AUTUMN_MOON, fProf::A_NPC_SP_EVENT_SONCHO_089, 0x8039},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_EU_MIDSUMMERS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_08A, 0x803A},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_EU_NAUGHTY_OR_NICE_DAY, fProf::A_NPC_SP_EVENT_SONCHO_08B, 0x803B},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_EU_MIDWINTERS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_08C, 0x803C},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_EU_AUTUMN_MOON, fProf::A_NPC_SP_EVENT_SONCHO_08D, 0x803D},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_KR_LUNAR_NEW_YEAR, fProf::A_NPC_SP_EVENT_SONCHO_08E, 0x803E},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_KR_ARBOR_DAY, fProf::A_NPC_SP_EVENT_SONCHO_08F, 0x803F},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_KR_TEACHERS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_090, 0x8040},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_KR_DAEBOREUM, fProf::A_NPC_SP_EVENT_SONCHO_091, 0x8041},
+    {&isTownPlay, &dNpcMng_c::setPosTownHallLeft, &isHolidayTime,
+     EVENT_APRIL_FOOLS_DAY, fProf::A_NPC_SP_EVENT_SONCHO_092, 0x8042},
+    {&isConstructionTime, &dNpcMng_c::setPosConstruction, NULL, 0xFFFF,
+     fProf::A_NPC_SP_CEREMONY_SONCHO, 0x8043},
+    {&isCatalogTime, &dNpcMng_c::setPosPlayerHouseA, NULL, 0xFFFF,
+     fProf::A_NPC_SP_GOLDITEM_SONCHO, 0x8060},
 };
 
 const dNpcMng_c::Spawn_c dNpcMng_c::l_visitorNpcs[15] = {
-    {&isHouseWarmingTime, &dNpcMng_c::setPosPrevHouse, NULL, 0xFFFF, 0x5D, 0x8002},
-    {&isLetterVisitFirstTime, &dNpcMng_c::setPosPlayerHouseDoor, NULL, 0xFFFF, 0x58, 0x8011},
-    {&isResetVisitTime, &dNpcMng_c::setPosResetVisit, NULL, 0xFFFF, 0x6A, 0x8016},
-    {&isBirthdayVisitTime, &dNpcMng_c::setPosPlayerHouseB, NULL, 0xFFFF, 0x70, 0x8023},
-    {&isLetterVisitKind1, &dNpcMng_c::setPosPlayerHouseDoor, NULL, 0xFFFF, 0x58, 0x8011},
-    {&isVisitor2Day, &dNpcMng_c::setPosVisitor2, &isVisitor2Here, 0xFFFF, 0x61, 0x8001},
-    {&isFlag13Visit, &dNpcMng_c::setPosBeach, NULL, 0xFFFF, 0x6E, 0x8015},
-    {&isGuestVisitTime, &dNpcMng_c::setPosGuestVisit, NULL, 0xFFFF, 0x9D, 0x801A},
-    {&isHostVisitTime, &dNpcMng_c::setPosHostVisit, NULL, 0xFFFF, 0x9C, 0x8019},
-    {&isRelayDesignVisitTime, &dNpcMng_c::setPosRandomSpot, NULL, 0xFFFF, 0x9E, 0x8013},
-    {&isVisitor5Day, &dNpcMng_c::setPosVisitor5, NULL, 0xFFFF, 0x9F, 0x801B},
-    {&isVisitor9Day, &dNpcMng_c::setPosVisitor9, &isVisitor9Here, 0xFFFF, 0x6B, 0x801D},
-    {&isVisitor8Day, &dNpcMng_c::setPosRaccoSpot, &isNotTownFlag5, 0xFFFF, 0x6F, 0x801C},
-    {&isVisitor7Day, &dNpcMng_c::setPosGateA, &isVisitor7Here, 0xFFFF, 0x6A, 0x8016},
-    {&isVisitor4Day, &dNpcMng_c::setPosGateB, &isVisitor4Time, 0xFFFF, 0x70, 0x8023},
+    {&isHouseWarmingTime, &dNpcMng_c::setPosPrevHouse, NULL, 0xFFFF,
+     fProf::A_NPC_SP_OP_TANUKICHI, 0x8002},
+    {&isLetterVisitFirstTime, &dNpcMng_c::setPosPlayerHouseDoor, NULL, 0xFFFF,
+     fProf::A_NPC_SP_RESETSAN, 0x8011},
+    {&isResetVisitTime, &dNpcMng_c::setPosResetVisit, NULL, 0xFFFF,
+     fProf::A_NPC_SP_SEIICHI, 0x8016},
+    {&isBirthdayVisitTime, &dNpcMng_c::setPosPlayerHouseB, NULL, 0xFFFF,
+     fProf::A_NPC_SP_PERIO, 0x8023},
+    {&isLetterVisitKind1, &dNpcMng_c::setPosPlayerHouseDoor, NULL, 0xFFFF,
+     fProf::A_NPC_SP_RESETSAN, 0x8011},
+    {&isVisitor2Day, &dNpcMng_c::setPosVisitor2, &isVisitor2Here, 0xFFFF,
+     fProf::A_NPC_SP_KABURIBA, 0x8001},
+    {&isFlag13Visit, &dNpcMng_c::setPosBeach, NULL, 0xFFFF,
+     fProf::A_NPC_SP_JONNY, 0x8015},
+    {&isGuestVisitTime, &dNpcMng_c::setPosGuestVisit, NULL, 0xFFFF,
+     fProf::A_NPC_SP_MISSING_MOTHER, 0x801A},
+    {&isHostVisitTime, &dNpcMng_c::setPosHostVisit, NULL, 0xFFFF,
+     fProf::A_NPC_SP_MISSING_CHILD, 0x8019},
+    {&isRelayDesignVisitTime, &dNpcMng_c::setPosRandomSpot, NULL, 0xFFFF,
+     fProf::A_NPC_SP_MYSTERYCAT, 0x8013},
+    {&isVisitor5Day, &dNpcMng_c::setPosVisitor5, NULL, 0xFFFF,
+     fProf::A_NPC_SP_YUUTARO, 0x801B},
+    {&isVisitor9Day, &dNpcMng_c::setPosVisitor9, &isVisitor9Here, 0xFFFF,
+     fProf::A_NPC_SP_RORAN, 0x801D},
+    {&isVisitor8Day, &dNpcMng_c::setPosRaccoSpot, &isNotTownFlag5, 0xFFFF,
+     fProf::A_NPC_SP_RACCO, 0x801C},
+    {&isVisitor7Day, &dNpcMng_c::setPosGateA, &isVisitor7Here, 0xFFFF,
+     fProf::A_NPC_SP_SEIICHI, 0x8016},
+    {&isVisitor4Day, &dNpcMng_c::setPosGateB, &isVisitor4Time, 0xFFFF,
+     fProf::A_NPC_SP_PERIO, 0x8023},
 };

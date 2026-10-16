@@ -1,16 +1,20 @@
 #pragma once
 
-// Scene data (dol/game/sc_data/d_sc_data_*.cpp): one dScene::dSceneData_c per scene (sScData*, see d_scene.hpp), built from
-// a scene's own base process / resource lists plus the shared lists below (d_sc_data_common.cpp, a data-only TU:
-// .data 804F4BB0..804F4D80, .sdata 8074B5F0..8074B5F8, .sdata2 807513A8..807513B8).
-// The shared counts are extern const globals, so each scene's __sinit copies them into its dScene::dSceneDataEntry_c::mNum
-// at run time. Names are inferred; the profile ids are raw (CF's profile name list isn't recovered).
+// Scene data (dol/game/sc_data/d_sc_data_*.cpp): one dScene::dSceneData_c per
+// scene (sScData*, see d_scene.hpp), built from a scene's own base process /
+// resource lists plus the shared lists below (d_sc_data_common.cpp, a data-only
+// TU: .data 804F4BB0..804F4D80, .sdata 8074B5F0..8074B5F8, .sdata2
+// 807513A8..807513B8). The shared counts are extern const globals, so each
+// scene's __sinit copies them into its dScene::dSceneDataEntry_c::mNum at run
+// time. Names are inferred; profile ids use the City Folk fProf::PROFILE_NAME_e
+// list.
 
 #include <types.h>
 #include <game/game/d_scene.hpp>
 #include <revolution/GX.h>
 
-// Scene descriptors consumed by d_scene.cpp. Each is stored in the scene's .sdata.
+// Scene descriptors consumed by d_scene.cpp. Each is stored in the scene's
+// .sdata.
 extern dScene::dSceneData_c *sScDataField;
 extern dScene::dSceneData_c *sScDataRmHs0F1;
 extern dScene::dSceneData_c *sScDataRmHs0F2;
@@ -54,8 +58,9 @@ extern dScene::dSceneData_c *sScDataRmSample;
 
 namespace dScData {
 
-// Plain-data mirrors of the scene records (d_scene.hpp's types hold mVec3_c / mAng3_c, which have constructors, so the
-// tables are written with these and cast where d_scene's types are expected).
+// Plain-data mirrors of the scene records (d_scene.hpp's types hold mVec3_c /
+// mAng3_c, which have constructors, so the tables are written with these and
+// cast where d_scene's types are expected).
 
 // dScene::SCENE_DATA_PLAYER: the player's start (dScene::dScenePlayerData_c).
 struct PlayerData_c {
@@ -65,8 +70,9 @@ struct PlayerData_c {
     /* 0x14 */ u32 mType;
 }; // size 0x18
 
-// dScene::SCENE_DATA_ACTOR: an actor placed in the scene. mParam is the actor's parameter: a value, or a pointer (a
-// PanelData_c for the museum / room panels, an EntParam_c for the entrance actors).
+// dScene::SCENE_DATA_ACTOR: an actor placed in the scene. mParam is the actor's
+// parameter: a value, or a pointer (a PanelData_c for the museum / room panels,
+// an EntParam_c for the entrance actors).
 struct ActorData_c {
     /* 0x00 */ u16 mProfile;
     /* 0x02 */ u16 _02;
@@ -86,7 +92,8 @@ struct PanelData_c {
     /* 0x14 */ u32 mFlags;
 }; // size 0x18
 
-// dScene::SCENE_DATA_3 (scene settings): a kind and its data (a pointer to a record, or a value for some kinds).
+// dScene::SCENE_DATA_3 (scene settings): a kind and its data (a pointer to a
+// record, or a value for some kinds).
 struct Scene3Entry_c {
     /* 0x00 */ u32 mKind;
     /* 0x04 */ void *mData;
@@ -109,7 +116,8 @@ struct ExitData_c {
     /* 0x1A */ s16 mPosAngle;
 }; // size 0x1C
 
-// The scene's exit info (dScene::dSceneData_c's extra word): a list of ids and flags.
+// The scene's exit info (dScene::dSceneData_c's extra word): a list of ids and
+// flags.
 struct ExitInfo_c {
     /* 0x0 */ u16 *mList;
     /* 0x4 */ u32 mFlags;
@@ -123,24 +131,26 @@ struct SceneData_c {
 
 // Base processes and resources of every scene.
 extern dScene::dSceneBaseData_c g_commonBase[]; // 804F4BB0
-extern const u16 g_commonBaseNum;       // 807513A8: 21
-extern u16 g_commonRes[];               // 8074B5F0
-extern const u16 g_commonResNum;        // 807513AA: 2
+extern const u16 g_commonBaseNum;               // 807513A8: 21
+extern u16 g_commonRes[];                       // 8074B5F0
+extern const u16 g_commonResNum;                // 807513AA: 2
 
 // The field scenes (d_sc_data_field, d_sc_data_dm_title).
 extern dScene::dSceneBaseData_c g_fieldBase[]; // 804F4C58
-extern const u16 g_fieldBaseNum;       // 807513AC: 10
-extern u16 g_fieldRes[];               // 804F4CA8
-extern const u16 g_fieldResNum;        // 807513AE: 21
+extern const u16 g_fieldBaseNum;               // 807513AC: 10
+extern u16 g_fieldRes[];                       // 804F4CA8
+extern const u16 g_fieldResNum;                // 807513AE: 21
 
-// The room scenes (d_sc_data_rm_*, d_sc_data_dm_bus_pl_crt / dm_pl_sel / dm_save).
+// The room scenes (d_sc_data_rm_*, d_sc_data_dm_bus_pl_crt / dm_pl_sel /
+// dm_save).
 extern dScene::dSceneBaseData_c g_roomBase[]; // 804F4CD8
-extern const u16 g_roomBaseNum;       // 807513B0: 7
-extern u16 g_roomRes[];               // 804F4D10
-extern const u16 g_roomResNum;        // 807513B2: 8
+extern const u16 g_roomBaseNum;               // 807513B0: 7
+extern u16 g_roomRes[];                       // 804F4D10
+extern const u16 g_roomResNum;                // 807513B2: 8
 
-// The parameter of actor 0x0E in the happy room / theater entrances (d_sc_data_rm_happy_ent, d_sc_data_rm_theater_ent),
-// built by their __sinit. Field meanings not recovered.
+// The parameter of actor 0x0E in the happy room / theater entrances
+// (d_sc_data_rm_happy_ent, d_sc_data_rm_theater_ent), built by their __sinit.
+// Field meanings not recovered.
 struct EntParam_c {
     EntParam_c(u32 scene, u32 a, u32 b, u32 c, u32 d) {
         mScene = scene;
@@ -163,8 +173,8 @@ struct EntParam_c {
 
 // The town scene (d_sc_data_town).
 extern dScene::dSceneBaseData_c g_townBase[]; // 804F4D20
-extern const u16 g_townBaseNum;       // 807513B4: 8
-extern u16 g_townRes[];               // 804F4D60
-extern const u16 g_townResNum;        // 807513B6: 13
+extern const u16 g_townBaseNum;               // 807513B4: 8
+extern u16 g_townRes[];                       // 804F4D60
+extern const u16 g_townResNum;                // 807513B6: 13
 
 } // namespace dScData

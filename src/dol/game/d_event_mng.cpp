@@ -1,5 +1,7 @@
-// The town event announcer (dEventMng_c). .text 8018F588..8018FE10, .data 804F9930..804F9AE8,
-// .sdata 8074BF30..8074BF40. See include/game/game/d_event_mng.hpp.
+// The town event announcer (dEventMng_c). .text 8018F588..8018FE10, .data
+// 804F9930..804F9AE8, .sdata 8074BF30..8074BF40. See
+// include/game/game/d_event_mng.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_event_mng.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_msg_comp.hpp>
@@ -13,7 +15,8 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_scene.hpp>
 
-CUSTOM_BASE_PROFILE(EVENT_MNG, dEventMng_c, 0x128, 0xE7);
+CUSTOM_BASE_PROFILE(EVENT_MNG, dEventMng_c, fProf::EVENT_MNG,
+                    fProf::DRAW_ORDER::EVENT_MNG);
 
 static dEventMng_c::StateFunc l_states[] = {
     &dEventMng_c::executeWait,
@@ -53,7 +56,8 @@ void dEventMng_c::executeWait() {
             mTimer = 1200;
             dTime_c now = *dTime_c::getCurrent();
             mTimer -= now.sec * 60;
-            dCamera_c::sInstance->mRequestedMode = dCamera_c::MODE_LOOK_UP; // the countdown fireworks
+            dCamera_c::sInstance->mRequestedMode =
+                dCamera_c::MODE_LOOK_UP; // the countdown fireworks
             mState = STATE_COUNTDOWN;
         } else {
             startMessage();
@@ -63,10 +67,12 @@ void dEventMng_c::executeWait() {
     if (dScene::isCityScene(dScene::getCurrentScene())) {
         return;
     }
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         return;
     }
-    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(),
+                             dScene::SCENE_ATTR_TOWN)) {
         return;
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
@@ -103,7 +109,8 @@ void dEventMng_c::executeWait() {
         if (now.hour == 0 && now.min == 0 && now.sec <= 5) {
             mKind = KIND_COUNTDOWN;
             if (dDemo::isType(dDemo::TYPE_MENU)) {
-                fn_8019A7AC(); // d_menu_mng: sets dMenuMng_c flag 0x10 (meaning unknown)
+                fn_8019A7AC(); // d_menu_mng: sets dMenuMng_c flag 0x10 (meaning
+                               // unknown)
             }
         }
     }
@@ -166,7 +173,8 @@ void dEventMng_c::startMessage() {
 // 8018FAB0
 void dEventMng_c::endMessage() {
     if (mKind == KIND_COUNTDOWN) {
-        dCamera_c::sInstance->mRequestedMode = dCamera_c::sInstance->mDefaultMode;
+        dCamera_c::sInstance->mRequestedMode =
+            dCamera_c::sInstance->mDefaultMode;
     }
     mRcpt.getController()->detachActor();
     mState = STATE_WAIT;
@@ -183,16 +191,20 @@ int dEventMng_c::findEvent(int eventId) {
 }
 
 static int l_eventIds[dEventMng_c::EVENT_NUM] = {
-    EVENT_TOY_DAY, EVENT_HARVEST_FESTIVAL, EVENT_HALLOWEEN, EVENT_COUNTDOWN, EVENT_FISHING_TOURNEY,
-    EVENT_BUG_OFF, EVENT_FIREWORKS, EVENT_FLEA_MARKET, EVENT_FESTIVALE,
+    EVENT_TOY_DAY,   EVENT_HARVEST_FESTIVAL, EVENT_HALLOWEEN,
+    EVENT_COUNTDOWN, EVENT_FISHING_TOURNEY,  EVENT_BUG_OFF,
+    EVENT_FIREWORKS, EVENT_FLEA_MARKET,      EVENT_FESTIVALE,
 };
-static int l_startHours[dEventMng_c::EVENT_NUM] = {20, 15, 18, 23, 9, 9, 19, 6, 6};
+static int l_startHours[dEventMng_c::EVENT_NUM] = {20, 15, 18, 23, 9,
+                                                   9,  19, 6,  6};
 static int l_startMins[dEventMng_c::EVENT_NUM] = {0, 0, 0, 30, 0, 0, 0, 0, 0};
 static int l_endHours[dEventMng_c::EVENT_NUM] = {0, 21, 0, 0, 18, 18, 0, 4, 4};
 static int l_endMins[dEventMng_c::EVENT_NUM] = {0, 0, 0, 0, 0, 0, 0, 35, 35};
 static u16 l_openMsgs[dEventMng_c::EVENT_NUM] = {2, 3, 4, 5, 6, 7, 8, 9, 10};
-static u16 l_reminderMsgs[dEventMng_c::EVENT_NUM] = {12, 13, 14, 15, 16, 17, 18, 19, 20};
-static u16 l_endMsgs[dEventMng_c::EVENT_NUM] = {22, 23, 24, 25, 26, 27, 28, 0, 0};
+static u16 l_reminderMsgs[dEventMng_c::EVENT_NUM] = {12, 13, 14, 15, 16,
+                                                     17, 18, 19, 20};
+static u16 l_endMsgs[dEventMng_c::EVENT_NUM] = {22, 23, 24, 25, 26,
+                                                27, 28, 0,  0};
 
 // 8018FB6C
 int dEventMng_c::getEventId(int idx) {
@@ -205,7 +217,8 @@ BOOL dEventMng_c::isEventNow(int idx) {
     if (!dEvent::isActive(event)) {
         return FALSE;
     }
-    return dEvent::isNowBetween(getStartHour(idx), getStartMin(idx), getEndHour(idx), getEndMin(idx));
+    return dEvent::isNowBetween(getStartHour(idx), getStartMin(idx),
+                                getEndHour(idx), getEndMin(idx));
 }
 
 // 8018FC28
@@ -255,4 +268,5 @@ u16 dEventMng_c::getEndMsg(int idx) {
 }
 
 // 8018FDB4
-dEventMng_c::~dEventMng_c() {}
+dEventMng_c::~dEventMng_c() {
+}

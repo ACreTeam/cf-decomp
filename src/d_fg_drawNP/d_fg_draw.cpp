@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_fg_draw.hpp>
 #include <egg/gfxe/eggFogManager.h>
 #include <game/game/d_bg_attr.hpp>
@@ -33,7 +34,8 @@ namespace dFgDraw {
 static designLoaders_c sDesigns;
 static fgHostIO_c sHostIO;
 
-fProf::fBaseProfile_c g_profile_FG_DRAW = {&create, 0xEF, 9};
+fProf::fBaseProfile_c g_profile_FG_DRAW = {&create, fProf::FG_DRAW,
+                                           fProf::DRAW_ORDER::FG_DRAW};
 static const char *sHoleTexture = "tex_hole";
 static const char *sSoilPalette = "pl_hole_soil";
 static const char *sSandPalette = "pl_hole_sand";

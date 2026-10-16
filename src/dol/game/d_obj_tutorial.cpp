@@ -1,6 +1,9 @@
-// d_obj_tutorial.cpp: the tutorial balloon process. .text 801B6A88..801B700C, .ctors 80465848,
-// .data 804FC7B0..804FC850, .bss 80625830..80625940, .sdata 8074C2E0..8074C300, .sbss 8074EB58..8074EB70.
-// See include/game/game/d_obj_tutorial.hpp. Names other than the class names are inferred.
+// d_obj_tutorial.cpp: the tutorial balloon process. .text 801B6A88..801B700C,
+// .ctors 80465848, .data 804FC7B0..804FC850, .bss 80625830..80625940, .sdata
+// 8074C2E0..8074C300, .sbss 8074EB58..8074EB70. See
+// include/game/game/d_obj_tutorial.hpp. Names other than the class names are
+// inferred.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_obj_tutorial.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_m2d.hpp>
@@ -11,7 +14,8 @@
 #define NO_REQUEST -1
 #define NO_PRIORITY 0xFE
 
-CUSTOM_BASE_PROFILE(OBJ_TUTORIAL, dObjTutorial_c, 0x126, 0x121);
+CUSTOM_BASE_PROFILE(OBJ_TUTORIAL, dObjTutorial_c, fProf::OBJ_TUTORIAL,
+                    fProf::DRAW_ORDER::OBJ_TUTORIAL);
 
 // The requested balloon: set by request(), shown by update().
 static int l_reqA = NO_REQUEST;
@@ -63,7 +67,8 @@ int dObjTutorial_c::draw() {
 }
 
 // 801B6C04
-void dObjTutorial_c::stateWait() {}
+void dObjTutorial_c::stateWait() {
+}
 
 // 801B6C08
 void dObjTutorial_c::update() {
@@ -76,26 +81,26 @@ void dObjTutorial_c::update() {
         l_reqA = NO_REQUEST;
     }
     switch (mBalloon.getState()) {
-        case dBalloon_c::STATE_HIDE:
-            if (l_reqA != NO_REQUEST) {
-                mBalloon.setColor(l_color);
-                mBalloon.setTail(l_tail);
-                mBalloon.setWord(&l_word);
-                mBalloon.setPos(l_pos);
-                mShownA = l_reqA;
-                mShownB = l_reqB;
-                mBalloon.setNextState(dBalloon_c::STATE_OPEN);
-            }
-            break;
-        case dBalloon_c::STATE_OPEN:
-            break;
-        case dBalloon_c::STATE_SHOW:
-            if (l_reqA != mShownA || l_reqB != mShownB) {
-                mBalloon.setNextState(dBalloon_c::STATE_CLOSE);
-            }
-            break;
-        case dBalloon_c::STATE_CLOSE:
-            break;
+    case dBalloon_c::STATE_HIDE:
+        if (l_reqA != NO_REQUEST) {
+            mBalloon.setColor(l_color);
+            mBalloon.setTail(l_tail);
+            mBalloon.setWord(&l_word);
+            mBalloon.setPos(l_pos);
+            mShownA = l_reqA;
+            mShownB = l_reqB;
+            mBalloon.setNextState(dBalloon_c::STATE_OPEN);
+        }
+        break;
+    case dBalloon_c::STATE_OPEN:
+        break;
+    case dBalloon_c::STATE_SHOW:
+        if (l_reqA != mShownA || l_reqB != mShownB) {
+            mBalloon.setNextState(dBalloon_c::STATE_CLOSE);
+        }
+        break;
+    case dBalloon_c::STATE_CLOSE:
+        break;
     }
     mBalloon.execute();
 }
@@ -106,7 +111,8 @@ void dObjTutorial_c::hide() {
 }
 
 // 801B6D30
-void dObjTutorial_c::setWord(const mVec2_c *pos, const dScript::Word_c *word, int tail) {
+void dObjTutorial_c::setWord(const mVec2_c *pos, const dScript::Word_c *word,
+                             int tail) {
     l_pos = *pos;
     l_tail = tail;
     l_color = 0;
@@ -160,4 +166,5 @@ BOOL dObjTutorial_c::isEnabled() {
 }
 
 // 801B6F44
-dObjTutorial_c::~dObjTutorial_c() {}
+dObjTutorial_c::~dObjTutorial_c() {
+}

@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_a_c_uitag.hpp>
 #include <game/game/d_mail.hpp>
 #include <game/game/d_menu_debug00.hpp>
@@ -11,7 +12,8 @@
 namespace dMenuDebug00 {
 void *classInit();
 // Profile 0xE6, with execute/draw priorities from the original profile.
-fProf::fBaseProfile_c g_profile = {classInit, 0xE6, 0x119};
+fProf::fBaseProfile_c g_profile = {classInit, fProf::MENU_DEBUG00,
+                                   fProf::DRAW_ORDER::MENU_DEBUG00};
 
 // .text:0x5C
 void *classInit() {
@@ -27,8 +29,8 @@ int dMenuDebug00_c::create() {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         static u16 birthdayTextKind = 1;
         static int birthdayPaperIdx = 0x13C;
-        mail.setupFromAnimal(&birthdayTextKind, "MAIL_BO_Birthday", &animal->mID,
-                             &player->mPID, &birthdayPaperIdx);
+        mail.setupFromAnimal(&birthdayTextKind, "MAIL_BO_Birthday",
+                             &animal->mID, &player->mPID, &birthdayPaperIdx);
         onFlag(FLAG_MAIL_READY);
         dMenuMng_c::setMail(&mail);
     }

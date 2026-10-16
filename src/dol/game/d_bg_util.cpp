@@ -1,7 +1,9 @@
-// Bg helpers, namespace dBgUtil: the signs of the bg models, the room bg's wallpaper / carpet and
-// the wallpaper / carpet of each scene. .text 800767A8..80077754, .ctors, .rodata 8046D2B0,
-// .data 804A6CE0, .bss 80582E60..80582FB8, .sbss 8074E270..8074E280, .sdata2 807504B0..807504C8.
-// See include/game/game/d_bg_util.hpp and notes/d_bg_util.txt.
+// Bg helpers, namespace dBgUtil: the signs of the bg models, the room bg's
+// wallpaper / carpet and the wallpaper / carpet of each scene. .text
+// 800767A8..80077754, .ctors, .rodata 8046D2B0, .data 804A6CE0, .bss
+// 80582E60..80582FB8, .sbss 8074E270..8074E280, .sdata2 807504B0..807504C8. See
+// include/game/game/d_bg_util.hpp and notes/d_bg_util.txt.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_bg_util.hpp>
 #include <game/game/d_actor.hpp>
 #include <game/game/d_bgi_draw.hpp>
@@ -36,7 +38,8 @@ struct signData_s {
     /* 0x20 */ sign_s mSigns[1];
 };
 
-// The player house rooms (dScene::getSceneAttrTableIndex: the room, and the house in *home).
+// The player house rooms (dScene::getSceneAttrTableIndex: the room, and the
+// house in *home).
 static const u32 l_homeScenes[] = {
     dScene::SCENE_ATTR_HOUSE0 | dScene::SCENE_ATTR_PLAYER_HOUSE,
     dScene::SCENE_ATTR_HOUSE1 | dScene::SCENE_ATTR_PLAYER_HOUSE,
@@ -74,12 +77,14 @@ u8 getSignFlag() {
 }
 
 // 800767C4
-void createSign(const mVec3_c *pos, const mVec3_c *size, s16 angleY, int msg, int flag) {
+void createSign(const mVec3_c *pos, const mVec3_c *size, s16 angleY, int msg,
+                int flag) {
     l_signMsg = msg;
     l_signSize = *size;
     l_signFlag = flag;
     mAng3_c angle(0, angleY, 0);
-    dActor_c::construct(0xF6, dScene::getSceneParent(), 0, pos, &angle);
+    dActor_c::construct(fProf::A_SIGN_TAG, dScene::getSceneParent(), 0, pos,
+                        &angle);
 }
 
 // 80076840
@@ -107,7 +112,8 @@ void setBgiDraw(dBgiDraw_c *draw) {
 }
 
 // 80076A6C
-void sendRoomItem(dItem::Item item, int type, int flag0, BOOL isWallpaper, int flag1) {
+void sendRoomItem(dItem::Item item, int type, int flag0, BOOL isWallpaper,
+                  int flag1) {
     if (dNet::isSessionActive()) {
         roomItemMsg_c msg;
         msg.mItem = item.mId;
@@ -339,7 +345,8 @@ dItem::Item getSceneCarpet(u8 scene, int *type) {
         return dSaveData_c::getHomeRoom(home, room)->getCarpet();
     }
     if (scene < dScene::SCENE_NUM) {
-        if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_STORE_ROOM) || scene == dScene::SCENE_RM_HAPPY_MDL) {
+        if (dScene::isSceneAttr(scene, dScene::SCENE_ATTR_STORE_ROOM) ||
+            scene == dScene::SCENE_RM_HAPPY_MDL) {
             *type = 2;
         } else {
             *type = 0;

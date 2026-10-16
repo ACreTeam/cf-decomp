@@ -131,6 +131,7 @@ modules:
   name: d_profileNP
   symbols: config/RUUE01_00/d_profileNP/symbols.txt
   splits: config/RUUE01_00/d_profileNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_desiNP.rel
   hash: 3819062063f08b2ada1f26b64ca053e9adc04f2e
   name: d_menu_desiNP

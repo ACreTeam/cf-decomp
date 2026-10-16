@@ -1,10 +1,13 @@
-// The scene data of DM_TITLE (dScene::dSceneData_c sScDataDmTitle; see include/game/game/d_sc_data.hpp).
+// The scene data of DM_TITLE (dScene::dSceneData_c sScDataDmTitle; see
+// include/game/game/d_sc_data.hpp).
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_sc_data.hpp>
 
 namespace dScData {
 
-static u16 l_resources[] = {0x00A5, 0x004C};
-static dScene::dSceneBaseData_c l_base[] = {{0x00A5, 0}, {0x00AD, 0}};
+static u16 l_resources[] = {fProf::TITLE_DEMO, fProf::A_NPC_OUT};
+static dScene::dSceneBaseData_c l_base[] = {{fProf::TITLE_DEMO, 0},
+                                            {fProf::NPC_MNG, 0}};
 static dScene::dSceneDataEntry_c l_entries[] = {
     {dScene::SCENE_DATA_BASE, dScData::g_commonBaseNum, dScData::g_commonBase},
     {dScene::SCENE_DATA_RES, dScData::g_commonResNum, dScData::g_commonRes},

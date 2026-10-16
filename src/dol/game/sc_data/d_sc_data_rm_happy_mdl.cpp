@@ -1,9 +1,11 @@
-// The scene data of RM_HAPPY_MDL (dScene::dSceneData_c sScDataRmHappyMdl; see include/game/game/d_sc_data.hpp).
+// The scene data of RM_HAPPY_MDL (dScene::dSceneData_c sScDataRmHappyMdl; see
+// include/game/game/d_sc_data.hpp).
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_sc_data.hpp>
 
 namespace dScData {
 
-static dScene::dSceneBaseData_c l_base[] = {{0x00A3, 0}};
+static dScene::dSceneBaseData_c l_base[] = {{fProf::SV_DEMO, 0}};
 static PlayerData_c l_player = {{256.0f, 0.0f, 464.0f}, {0, -0x8000, 0}, 0, 8};
 static dScene::dSceneDataEntry_c l_entries[] = {
     {dScene::SCENE_DATA_PLAYER, 1, &l_player},
@@ -16,10 +18,12 @@ static dScene::dSceneDataEntry_c l_entries[] = {
 static ExitData_c l_exits[] = {
     {{0x32, 0x32, 0x32, 0x32}, {256.0f, 0.0f, 272.0f}, 0, 0, 0x4A, 3, 0, 0},
 };
-static dScene::dSceneExitList_c l_exitList = {(dScene::dSceneExitData_c *)l_exits, ARRAY_SIZE(l_exits)};
+static dScene::dSceneExitList_c l_exitList = {
+    (dScene::dSceneExitData_c *)l_exits, ARRAY_SIZE(l_exits)};
 static u16 l_exitInfoData[] = {0x01A6, 0x0000};
 static ExitInfo_c l_exitInfo = {l_exitInfoData, 0x01010000};
-static SceneData_c l_scene = {{ARRAY_SIZE(l_entries), l_entries, &l_exitList}, &l_exitInfo};
+static SceneData_c l_scene = {{ARRAY_SIZE(l_entries), l_entries, &l_exitList},
+                              &l_exitInfo};
 
 } // namespace dScData
 

@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_menu_mng.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_base.hpp>
@@ -22,7 +23,8 @@
 
 #define MENU_NONE 0x79
 
-CUSTOM_BASE_PROFILE(MENU_MNG, dMenuMng_c, 0xB5, 0xE6);
+CUSTOM_BASE_PROFILE(MENU_MNG, dMenuMng_c, fProf::MENU_MNG,
+                    fProf::DRAW_ORDER::MENU_MNG);
 
 static u8 s_menuNo = MENU_NONE;
 static u16 s_itemMsgParam = 0x22;
@@ -111,14 +113,47 @@ int dMenuMng_c::draw() {
 }
 
 static ProfileName l_menuProfName[MENU_RES_MENU_NUM] = {
-    0xB6, 0xB6, 0xBD, 0xC6, 0xC6, 0xC7, 0xCD, 0xCA, 0xCA, 0xCA, 0xCA, 0xE6, 0xCB, 0xC8, 0xC8, 0xC9,
-    0xC9, 0xC9, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC,
-    0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xB9, 0xB9, 0xB9, 0xB9, 0xB8, 0xB8, 0xB8, 0xB8, 0xB8, 0xB8, 0xB8,
-    0xB8, 0xB8, 0xB8, 0xB8, 0xB8, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD6, 0xD6,
-    0xD6, 0xD7, 0xD7, 0xD7, 0xD7, 0xD9, 0xD9, 0xD9, 0xD9, 0xD9, 0xD8, 0xD8, 0xD8, 0xDA, 0xDA, 0xDA,
-    0xDB, 0xBE, 0xBE, 0xBF, 0xBF, 0xC0, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC5, 0xDF, 0xBA, 0xBB,
-    0xBB, 0xE0, 0xE0, 0xE1, 0xE1, 0xDC, 0xDE, 0xDC, 0xDC, 0xDC, 0xDC, 0xDE, 0xDD, 0xE2, 0xE3, 0xE3,
-    0xE4, 0xE5, 0xE7, 0xE7, 0xE8, 0xE9, 0xEA, 0xB8, 0xB8, 0x00,
+    fProf::MENU_ITEM00,   fProf::MENU_ITEM00,   fProf::MENU_FRIEND,
+    fProf::MENU_INSC,     fProf::MENU_INSC,     fProf::MENU_CHAT,
+    fProf::MENU_MAP00,    fProf::MENU_PAPER,    fProf::MENU_PAPER,
+    fProf::MENU_PAPER,    fProf::MENU_PAPER,    fProf::MENU_DEBUG00,
+    fProf::MENU_KEYTEST,  fProf::MENU_DESI00,   fProf::MENU_DESI00,
+    fProf::MENU_EDIT,     fProf::MENU_EDIT,     fProf::MENU_EDIT,
+    fProf::MENU_HAN,      fProf::MENU_HAN,      fProf::MENU_HAN,
+    fProf::MENU_HAN,      fProf::MENU_HAN,      fProf::MENU_HAN,
+    fProf::MENU_HAN,      fProf::MENU_HAN,      fProf::MENU_HAN,
+    fProf::MENU_HAN,      fProf::MENU_HAN,      fProf::MENU_HAN,
+    fProf::MENU_HAN,      fProf::MENU_HAN,      fProf::MENU_HAN,
+    fProf::MENU_HAN,      fProf::MENU_HAN,      fProf::MENU_HAN,
+    fProf::MENU_HAN,      fProf::MENU_ITEM03,   fProf::MENU_ITEM03,
+    fProf::MENU_ITEM03,   fProf::MENU_ITEM03,   fProf::MENU_ITEM02,
+    fProf::MENU_ITEM02,   fProf::MENU_ITEM02,   fProf::MENU_ITEM02,
+    fProf::MENU_ITEM02,   fProf::MENU_ITEM02,   fProf::MENU_ITEM02,
+    fProf::MENU_ITEM02,   fProf::MENU_ITEM02,   fProf::MENU_ITEM02,
+    fProf::MENU_ITEM02,   fProf::MENU_ITEM02,   fProf::MENU_MAP01,
+    fProf::MENU_MAP02,    fProf::MENU_MAP03,    fProf::MENU_PHOTO,
+    fProf::MENU_PHOTO01,  fProf::MENU_CATALOG,  fProf::MENU_NUMBER00,
+    fProf::MENU_MUSEUM,   fProf::MENU_TIME00,   fProf::MENU_TIME00,
+    fProf::MENU_TIME00,   fProf::MENU_TIME00,   fProf::MENU_WRITE,
+    fProf::MENU_WRITE,    fProf::MENU_WRITE,    fProf::MENU_WRITE,
+    fProf::MENU_KABU,     fProf::MENU_KABU,     fProf::MENU_KABU,
+    fProf::MENU_KABU,     fProf::MENU_KABU,     fProf::MENU_BANK,
+    fProf::MENU_BANK,     fProf::MENU_BANK,     fProf::MENU_MSLCT,
+    fProf::MENU_MSLCT,    fProf::MENU_MSLCT,    fProf::MENU_MII,
+    fProf::MENU_FRIEND01, fProf::MENU_FRIEND01, fProf::MENU_FRIEND02,
+    fProf::MENU_FRIEND02, fProf::MENU_FRIEND03, fProf::MENU_FRIEND03,
+    fProf::MENU_FRIEND04, fProf::MENU_FRIEND05, fProf::MENU_FRIEND06,
+    fProf::MENU_FRIEND07, fProf::MENU_FRIEND08, fProf::MENU_FRIEND08,
+    fProf::MENU_MUSIC,    fProf::MENU_ITEM04,   fProf::MENU_ITEM05,
+    fProf::MENU_ITEM05,   fProf::MENU_POST00,   fProf::MENU_POST00,
+    fProf::MENU_POST01,   fProf::MENU_POST01,   fProf::MENU_DESI01,
+    fProf::MENU_DESI03,   fProf::MENU_DESI01,   fProf::MENU_DESI01,
+    fProf::MENU_DESI01,   fProf::MENU_DESI01,   fProf::MENU_DESI03,
+    fProf::MENU_DESI02,   fProf::MENU_NOTICE,   fProf::MENU_NOTICE00,
+    fProf::MENU_NOTICE00, fProf::MENU_NOTICE01, fProf::MENU_MELODY,
+    fProf::MENU_STAR00,   fProf::MENU_STAR00,   fProf::MENU_STAR01,
+    fProf::MENU_POINT,    fProf::MENU_HANIWA,   fProf::MENU_ITEM02,
+    fProf::MENU_ITEM02,   fProf::ROOT,
 };
 
 void dMenuMng_c::createMenu() {
@@ -144,7 +179,8 @@ void dMenuMng_c::addMenu(dMenuNd_c *node) {
 void dMenuMng_c::removeMenu(dMenuNd_c *node) {
     if (s_menuList.removeLineNode(node)) {
         dMenuRes::releaseMenuRef(node->mpOwner->getMenuNo());
-        if (s_menuList.getFirst() == nullptr && !dDemo::isType(dDemo::TYPE_MENU) && !isFlag(FLAG_NO_BGM)) {
+        if (s_menuList.getFirst() == nullptr &&
+            !dDemo::isType(dDemo::TYPE_MENU) && !isFlag(FLAG_NO_BGM)) {
             endMenuBgm();
         }
     }
@@ -867,10 +903,12 @@ BOOL dMenuMng_c::isSwitchTool(int pocket) {
     if (bone != 9) {
         return FALSE;
     }
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_ROOM)) {
         return FALSE;
     }
-    if (dScene::isCityScene(dScene::getCurrentScene()) && !dHmnToolBank_c::isHandTool(&item)) {
+    if (dScene::isCityScene(dScene::getCurrentScene()) &&
+        !dHmnToolBank_c::isHandTool(&item)) {
         return FALSE;
     }
     return TRUE;

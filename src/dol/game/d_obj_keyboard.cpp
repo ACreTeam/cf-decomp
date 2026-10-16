@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_obj_keyboard.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_a_c_uitag.hpp>
@@ -9,7 +10,8 @@
 #include <game/mLib/m_color.hpp>
 #include <string.h>
 
-CUSTOM_BASE_PROFILE(OBJ_KEYBOARD, dObjKeyboard_c, 0x7, 0x11F);
+CUSTOM_BASE_PROFILE(OBJ_KEYBOARD, dObjKeyboard_c, fProf::OBJ_KEYBOARD,
+                    fProf::DRAW_ORDER::OBJ_KEYBOARD);
 
 static u16 l_flags;
 
@@ -49,12 +51,9 @@ int dObjKeyboard_c::doDelete() {
 
 int dObjKeyboard_c::execute() {
     static void (dObjKeyboard_c::*l_stateFuncs[])() = {
-        &dObjKeyboard_c::stateWait,
-        &dObjKeyboard_c::stateOpen,
-        &dObjKeyboard_c::stateInput,
-        &dObjKeyboard_c::stateClose,
-        &dObjKeyboard_c::stateEmotionStart,
-        &dObjKeyboard_c::stateEmotion,
+        &dObjKeyboard_c::stateWait,         &dObjKeyboard_c::stateOpen,
+        &dObjKeyboard_c::stateInput,        &dObjKeyboard_c::stateClose,
+        &dObjKeyboard_c::stateEmotionStart, &dObjKeyboard_c::stateEmotion,
         &dObjKeyboard_c::stateEmotionEnd,
     };
     l_flags &= ~FLAG_KBD_UPDATED;
@@ -314,7 +313,8 @@ dObjKeyboard_c::Word_c::Word_c() {
     clear();
 }
 
-dObjKeyboard_c::Word_c::~Word_c() {}
+dObjKeyboard_c::Word_c::~Word_c() {
+}
 
 u32 dObjKeyboard_c::Word_c::getBufferSize() {
     return sizeof(mBuffer);
@@ -339,4 +339,5 @@ u8 dObjKeyboard_c::getEmotion(int slot) {
     return data->mEmotions.get(slot);
 }
 
-dObjKeyboard_c::~dObjKeyboard_c() {}
+dObjKeyboard_c::~dObjKeyboard_c() {
+}

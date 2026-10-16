@@ -1,4 +1,5 @@
 // The game camera (dCamera_c).
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_camera.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
@@ -57,7 +58,8 @@ static const cafeShot_c *getCafeShot(int shot) {
 }
 
 // 801870E4
-CUSTOM_BASE_PROFILE(CAMERA, dCamera_c, 0xA7, 0xE4);
+CUSTOM_BASE_PROFILE(CAMERA, dCamera_c, fProf::CAMERA,
+                    fProf::DRAW_ORDER::CAMERA);
 
 struct preset_c {
     /* 0x00 */ s16 mPitch;
@@ -131,28 +133,17 @@ static const preset_c l_presets[] = {
 };
 
 static const dCamera_c::transition_c l_transitions[] = {
-    {0.0f, 32.0f, 8.0f, 16.0f},
-    {0.0f, 30.0f, 5.0f, 20.0f},
-    {0.0f, 130.0f, 10.0f, 50.0f},
-    {0.0f, 42.0f, 4.0f, 20.0f},
-    {0.0f, 130.0f, 10.0f, 50.0f},
-    {0.0f, 130.0f, 20.0f, 90.0f},
-    {0.0f, 150.0f, 30.0f, 120.0f},
-    {0.0f, 30.0f, 5.0f, 20.0f},
-    {0.0f, 180.0f, 60.0f, 90.0f},
-    {0.0f, 60.0f, 20.0f, 30.0f},
-    {0.0f, 900.0f, 60.0f, 120.0f},
-    {0.0f, 180.0f, 0.0f, 120.0f},
-    {0.0f, 90.0f, 20.0f, 70.0f},
-    {0.0f, 105.0f, 40.0f, 65.0f},
-    {0.0f, 48.0f, 18.0f, 30.0f},
-    {0.0f, 90.0f, 35.0f, 55.0f},
-    {0.0f, 45.0f, 12.0f, 20.0f},
-    {0.0f, 50.0f, 12.0f, 20.0f},
-    {0.0f, 130.0f, 20.0f, 90.0f},
-    {0.0f, 28.0f, 12.0f, 16.0f},
-    {0.0f, 32.0f, 8.0f, 16.0f},
-    {60.0f, 360.0f, 180.0f, 120.0f},
+    {0.0f, 32.0f, 8.0f, 16.0f},    {0.0f, 30.0f, 5.0f, 20.0f},
+    {0.0f, 130.0f, 10.0f, 50.0f},  {0.0f, 42.0f, 4.0f, 20.0f},
+    {0.0f, 130.0f, 10.0f, 50.0f},  {0.0f, 130.0f, 20.0f, 90.0f},
+    {0.0f, 150.0f, 30.0f, 120.0f}, {0.0f, 30.0f, 5.0f, 20.0f},
+    {0.0f, 180.0f, 60.0f, 90.0f},  {0.0f, 60.0f, 20.0f, 30.0f},
+    {0.0f, 900.0f, 60.0f, 120.0f}, {0.0f, 180.0f, 0.0f, 120.0f},
+    {0.0f, 90.0f, 20.0f, 70.0f},   {0.0f, 105.0f, 40.0f, 65.0f},
+    {0.0f, 48.0f, 18.0f, 30.0f},   {0.0f, 90.0f, 35.0f, 55.0f},
+    {0.0f, 45.0f, 12.0f, 20.0f},   {0.0f, 50.0f, 12.0f, 20.0f},
+    {0.0f, 130.0f, 20.0f, 90.0f},  {0.0f, 28.0f, 12.0f, 16.0f},
+    {0.0f, 32.0f, 8.0f, 16.0f},    {60.0f, 360.0f, 180.0f, 120.0f},
 };
 
 struct titleBuilding_c {
@@ -161,10 +152,8 @@ struct titleBuilding_c {
 };
 
 static const titleBuilding_c l_titleBuildings[] = {
-    {1, {0.0f, 0.0f, 16.0f}},
-    {21, {0.0f, 0.0f, 16.0f}},
-    {23, {16.0f, 0.0f, 16.0f}},
-    {19, {16.0f, 0.0f, 16.0f}},
+    {1, {0.0f, 0.0f, 16.0f}},   {21, {0.0f, 0.0f, 16.0f}},
+    {23, {16.0f, 0.0f, 16.0f}}, {19, {16.0f, 0.0f, 16.0f}},
     {20, {32.0f, 0.0f, 16.0f}},
 };
 
@@ -201,12 +190,7 @@ static void (dCamera_c::*const l_modeFuncs[dCamera_c::MODE_NUM][2])() = {
 };
 
 static const u8 l_roomPresets[][3] = {
-    {2, 3, 4},
-    {5, 6, 7},
-    {8, 9, 10},
-    {11, 12, 13},
-    {53, 54, 55},
-    {14, 15, 16},
+    {2, 3, 4}, {5, 6, 7}, {8, 9, 10}, {11, 12, 13}, {53, 54, 55}, {14, 15, 16},
 };
 
 struct busMotion_c {
@@ -224,7 +208,7 @@ static const busMotion_c l_busMotions[] = {
 };
 
 class dCameraHIO_c {
-public:
+  public:
     dCameraHIO_c() {
         mFovy = 22.5f;
         mSecondaryFovy = 30.0f;
@@ -487,9 +471,12 @@ void dCamera_c::setClampedTarget(const mVec3_c *pos) {
 
 // 80187AF8
 static bool isMuseumExhibit(u8 scene) {
-    return scene == dScene::SCENE_RM_MM_FISH || scene == dScene::SCENE_RM_MM_INS ||
-           scene == dScene::SCENE_RM_MM_FOSSIL0 || scene == dScene::SCENE_RM_MM_FOSSIL1 ||
-           scene == dScene::SCENE_RM_MM_PIC0 || scene == dScene::SCENE_RM_MM_PIC1;
+    return scene == dScene::SCENE_RM_MM_FISH ||
+           scene == dScene::SCENE_RM_MM_INS ||
+           scene == dScene::SCENE_RM_MM_FOSSIL0 ||
+           scene == dScene::SCENE_RM_MM_FOSSIL1 ||
+           scene == dScene::SCENE_RM_MM_PIC0 ||
+           scene == dScene::SCENE_RM_MM_PIC1;
 }
 
 inline int dCamera_c::getRoomRow(u8 scene) {
@@ -525,9 +512,11 @@ static inline void getSoundTarget(mVec3_c *pos) {
 // 80187B1C
 void dCamera_c::initFollow() {
     if (dWorld::isCurve()) {
-        if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN)) {
+        if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                                dScene::SCENE_ATTR_TOWN)) {
             setPreset(0);
-        } else if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM)) {
+        } else if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                                       dScene::SCENE_ATTR_ROOM)) {
             setPreset(6);
         } else {
             setPreset(51);
@@ -540,7 +529,8 @@ void dCamera_c::initFollow() {
         setTransition(0);
     }
     if (mLifecycleState == CREATING) {
-        if (dScene::getCurrentScene() == dScene::SCENE_DM_LOAD || dScene::getCurrentScene() == dScene::SCENE_DM_SAVE) {
+        if (dScene::getCurrentScene() == dScene::SCENE_DM_LOAD ||
+            dScene::getCurrentScene() == dScene::SCENE_DM_SAVE) {
             mDesired.mTarget.set(0.0f, 0.0f, 0.0f);
         } else {
             mDesired.mTarget = *dScene::getScenePlayerPos();
@@ -579,7 +569,8 @@ void dCamera_c::execFollow() {
                 setPreset(0);
                 setTransition(7);
             }
-        } else if (!dScene::isCityScene(dScene::getCurrentScene()) && mLookUpTimer == 0 && mPreset != 20) {
+        } else if (!dScene::isCityScene(dScene::getCurrentScene()) &&
+                   mLookUpTimer == 0 && mPreset != 20) {
             startTransition();
             setPreset(20);
             setTransition(6);
@@ -664,7 +655,8 @@ void dCamera_c::execTitleSelect() {
     if (!l_titleNpcWrapped) {
         while (npc == NULL && l_titleNpcRemaining > 0) {
             dAnimal_c *animal = block->getAnimalConst(idx);
-            if (animal != NULL && animal->mID.isValid() && animal->mPlace == 0) {
+            if (animal != NULL && animal->mID.isValid() &&
+                animal->mPlace == 0) {
                 dItem::Item key = block->getAnimalKey(&animal->mID);
                 npc = dNpcList::getNmlByKey(key);
                 if (npc != NULL) {
@@ -724,7 +716,8 @@ void dCamera_c::execTitleNpc() {
 // 801884D4
 void dCamera_c::initTitleBuilding() {
     mWork.mTitle.mIndex = 0;
-    dItem::Item id = dSaveBuildingList_c::getId(l_titleBuildings[mWork.mTitle.mIndex].mBuilding);
+    dItem::Item id = dSaveBuildingList_c::getId(
+        l_titleBuildings[mWork.mTitle.mIndex].mBuilding);
     int x;
     int z;
     dSaveTown_c *town = dSaveData_c::getRaw();
@@ -739,7 +732,8 @@ void dCamera_c::initTitleBuilding() {
         mWork.mTitle.mSpeed = 0.0f;
         mWork.mTitle.mTimer = 180;
         mDesired.mTarget = pos;
-        mDesired.mTarget += mVec3_c(l_titleBuildings[mWork.mTitle.mIndex].mOffset);
+        mDesired.mTarget +=
+            mVec3_c(l_titleBuildings[mWork.mTitle.mIndex].mOffset);
     }
     setPreset(0);
 }
@@ -751,14 +745,16 @@ void dCamera_c::execTitleBuilding() {
     pos += mVec3_c(l_titleBuildings[title->mIndex].mOffset);
     sLib::chase(&title->mSpeed, 1.0f, 0.0012f);
     cLib::addCalcPos(&mDesired.mTarget, pos, 0.03125f, title->mSpeed, 0.002f);
-    if (mDesired.mTarget.distTo(pos) < 0.002f && sLib::calcTimer(&title->mTimer) == 0) {
+    if (mDesired.mTarget.distTo(pos) < 0.002f &&
+        sLib::calcTimer(&title->mTimer) == 0) {
         int x;
         int z;
         while (true) {
             if (sLib::chase(&title->mIndex, 5, 1)) {
                 title->mIndex = 0;
             }
-            dItem::Item id = dSaveBuildingList_c::getId(l_titleBuildings[title->mIndex].mBuilding);
+            dItem::Item id = dSaveBuildingList_c::getId(
+                l_titleBuildings[title->mIndex].mBuilding);
             dSaveTown_c *town = dSaveData_c::getRaw();
             if (town->mBuilding.mList.getPos(&x, &z, &id, 1)) {
                 break;
@@ -936,7 +932,8 @@ void dCamera_c::setBusBounce(u8 kind) {
         mWork.mBus.mBounceKind = 0;
     }
     mWork.mBus.mBounceTimer = l_busMotions[mWork.mBus.mBounceKind].mFrames;
-    mWork.mBus.mBounceTimer += cM::rndInt(l_busMotions[mWork.mBus.mBounceKind].mRandomFrames);
+    mWork.mBus.mBounceTimer +=
+        cM::rndInt(l_busMotions[mWork.mBus.mBounceKind].mRandomFrames);
     mWork.mBus.mBounceAngle = 0;
 }
 
@@ -947,13 +944,15 @@ void dCamera_c::setBusRoll(u8 kind) {
         mWork.mBus.mRollKind = 0;
     }
     mWork.mBus.mRollTimer = l_busMotions[mWork.mBus.mRollKind].mFrames;
-    mWork.mBus.mRollTimer += cM::rndInt(l_busMotions[mWork.mBus.mRollKind].mRandomFrames);
+    mWork.mBus.mRollTimer +=
+        cM::rndInt(l_busMotions[mWork.mBus.mRollKind].mRandomFrames);
     mWork.mBus.mRollAngle = 0;
 }
 
 // 80188EDC
 f32 dCamera_c::updateBusMotion() {
-    if (sLib::calcTimer(&mWork.mBus.mBounceTimer) == 0 && abs(mWork.mBus.mBounceAngle) < 256) {
+    if (sLib::calcTimer(&mWork.mBus.mBounceTimer) == 0 &&
+        abs(mWork.mBus.mBounceAngle) < 256) {
         if (mWork.mBus.mBounceKind == 0) {
             if (cM::rndInt(100) < 80) {
                 mWork.mBus.mBounceKind = 1;
@@ -967,7 +966,8 @@ f32 dCamera_c::updateBusMotion() {
         }
         setBusBounce(mWork.mBus.mBounceKind);
     }
-    if (sLib::calcTimer(&mWork.mBus.mRollTimer) == 0 && abs(mWork.mBus.mRollAngle) < 256) {
+    if (sLib::calcTimer(&mWork.mBus.mRollTimer) == 0 &&
+        abs(mWork.mBus.mRollAngle) < 256) {
         if (mWork.mBus.mRollKind == 0) {
             mWork.mBus.mRollKind = 1;
         } else if (mWork.mBus.mRollKind == 2) {
@@ -1373,15 +1373,20 @@ mVec3_c dCamera_c::screenToWorld(const mVec2_c *screen) const {
 }
 
 // 8018A16C
-void dCamera::worldToScreen(const dCamera_c *cam, f32 *x, f32 *y, const mVec3_c *pos) {
+void dCamera::worldToScreen(const dCamera_c *cam, f32 *x, f32 *y,
+                            const mVec3_c *pos) {
     mVec3_c view;
-    PSMTXMultVec(const_cast<dCamera_c *>(cam)->mCamera.getViewMatrix(), *pos, view);
+    PSMTXMultVec(const_cast<dCamera_c *>(cam)->mCamera.getViewMatrix(), *pos,
+                 view);
     nw4r::math::MTX44 proj;
     dCamera_c::sInstance->getProjectionMtx(&proj);
     f32 rate;
-    f32 sx = proj._00 * view.x + proj._01 * view.y + proj._02 * view.z + proj._03;
-    f32 sy = proj._10 * view.x + proj._11 * view.y + proj._12 * view.z + proj._13;
-    f32 w = proj._30 * view.x + proj._31 * view.y + proj._32 * view.z + proj._33;
+    f32 sx =
+        proj._00 * view.x + proj._01 * view.y + proj._02 * view.z + proj._03;
+    f32 sy =
+        proj._10 * view.x + proj._11 * view.y + proj._12 * view.z + proj._13;
+    f32 w =
+        proj._30 * view.x + proj._31 * view.y + proj._32 * view.z + proj._33;
     rate = 1.0f / (2.0f * w);
     m3d::getCurrentCamera();
     *x = 0.5f + sx * rate;
@@ -1389,7 +1394,8 @@ void dCamera::worldToScreen(const dCamera_c *cam, f32 *x, f32 *y, const mVec3_c 
 }
 
 // 8018A2D8
-f32 dCamera_c::calcTransitionWeight(f32 time, f32 start, f32 end, f32 easeIn, f32 easeOut) {
+f32 dCamera_c::calcTransitionWeight(f32 time, f32 start, f32 end, f32 easeIn,
+                                    f32 easeOut) {
     if (time >= end) {
         return 1.0f;
     }
@@ -1458,7 +1464,8 @@ static inline f32 scale(f32 diff, f32 rate) {
 void dCamera_c::updateTransition() {
     u32 cull = usesForegroundCulling();
     if (isTransitionActive()) {
-        f32 rate = calcTransitionWeight(mTransitionFrame, mTransition.mStart, mTransition.mEnd, mTransition.mEaseIn,
+        f32 rate = calcTransitionWeight(mTransitionFrame, mTransition.mStart,
+                                        mTransition.mEnd, mTransition.mEaseIn,
                                         mTransition.mEaseOut);
         mVec3_c diff = mDesired.mTarget - mPrevious.mTarget;
         diff *= rate;
@@ -1466,9 +1473,13 @@ void dCamera_c::updateTransition() {
         mVec3_c ofs = mDesired.mOffset - mPrevious.mOffset;
         ofs *= rate;
         mCurrent.mOffset = mPrevious.mOffset + ofs;
-        mCurrent.mPitch = mPrevious.mPitch + scale(mDesired.mPitch - mPrevious.mPitch, rate);
-        mCurrent.mYaw = mPrevious.mYaw + scale(mDesired.mYaw - mPrevious.mYaw, rate);
-        mCurrent.mDistance = mPrevious.mDistance + scale(mDesired.mDistance - mPrevious.mDistance, rate);
+        mCurrent.mPitch =
+            mPrevious.mPitch + scale(mDesired.mPitch - mPrevious.mPitch, rate);
+        mCurrent.mYaw =
+            mPrevious.mYaw + scale(mDesired.mYaw - mPrevious.mYaw, rate);
+        mCurrent.mDistance =
+            mPrevious.mDistance +
+            scale(mDesired.mDistance - mPrevious.mDistance, rate);
         mTransitionFrame += 1.0f;
         if (rate > 0.5f && cull != mCullForeground) {
             mCullForeground = cull;
@@ -1558,8 +1569,10 @@ BOOL dCamera_c::isControllable() {
 
 // 8018A9E0
 u32 dCamera_c::usesForegroundCulling() {
-    if (isLookingUp() || mMode == MODE_PLAYER_VIEW_3 || mMode == MODE_TALK || mMode == MODE_PLAYER_VIEW_8 || mMode == MODE_PLAYER_VIEW_1 ||
-        mMode == MODE_PLAYER_VIEW_21 || mMode == MODE_PLAYER_VIEW_18 || mMode == MODE_PLAYER_VIEW_13 || mMode == MODE_SOUND_TARGET_23) {
+    if (isLookingUp() || mMode == MODE_PLAYER_VIEW_3 || mMode == MODE_TALK ||
+        mMode == MODE_PLAYER_VIEW_8 || mMode == MODE_PLAYER_VIEW_1 ||
+        mMode == MODE_PLAYER_VIEW_21 || mMode == MODE_PLAYER_VIEW_18 ||
+        mMode == MODE_PLAYER_VIEW_13 || mMode == MODE_SOUND_TARGET_23) {
         return TRUE;
     }
     return FALSE;
@@ -1582,7 +1595,8 @@ BOOL dCamera_c::isPastTarget(const mVec3_c *pos, f32 size) {
 }
 
 // 8018AAE4
-f32 dCamera_c::calcTalkDistance(const mVec3_c *a, const mVec3_c *b, mVec3_c *center, f32 *zOffset) {
+f32 dCamera_c::calcTalkDistance(const mVec3_c *a, const mVec3_c *b,
+                                mVec3_c *center, f32 *zOffset) {
     mVec3_c diff = *a - *b;
     mVec3_c d;
     d.y = diff.y;
@@ -1599,8 +1613,9 @@ f32 dCamera_c::calcTalkDistance(const mVec3_c *a, const mVec3_c *b, mVec3_c *cen
 }
 
 // 8018ABD4
-f32 dCamera_c::calcThreeActorTalkDistance(const mVec3_c *a, const mVec3_c *b, const mVec3_c *c, mVec3_c *center,
-                                           f32 *zOffset) {
+f32 dCamera_c::calcThreeActorTalkDistance(const mVec3_c *a, const mVec3_c *b,
+                                          const mVec3_c *c, mVec3_c *center,
+                                          f32 *zOffset) {
     return calcTalkDistance(a, b, center, zOffset);
 }
 
@@ -1615,9 +1630,11 @@ void dCamera_c::updateOutdoorTalk() {
     f32 zOffset;
     f32 dist;
     if (mHasSecondTalkTarget) {
-        dist = calcThreeActorTalkDistance(&player, &mTalkTarget, &mTalkTarget2, &mDesired.mTarget, &zOffset);
+        dist = calcThreeActorTalkDistance(&player, &mTalkTarget, &mTalkTarget2,
+                                          &mDesired.mTarget, &zOffset);
     } else {
-        dist = calcTalkDistance(&player, &mTalkTarget, &mDesired.mTarget, &zOffset);
+        dist = calcTalkDistance(&player, &mTalkTarget, &mDesired.mTarget,
+                                &zOffset);
     }
     mDesired.mTarget.z += zOffset;
     f32 clamped;
@@ -1645,7 +1662,8 @@ void dCamera_c::updateIndoorTalk() {
     }
     mVec3_c front;
     f32 zOffset;
-    f32 dist = calcTalkDistance(&player, &mTalkTarget, &mDesired.mTarget, &zOffset);
+    f32 dist =
+        calcTalkDistance(&player, &mTalkTarget, &mDesired.mTarget, &zOffset);
     f32 clamped;
     if (dist < 72.0f) {
         clamped = 72.0f;
@@ -1826,8 +1844,9 @@ BOOL dCamera_c::setRoomView(int x, int level) {
 
 // 8018B554
 int dCamera_c::resetLookUpTimer() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_TOWN) && mMode == MODE_FOLLOW &&
-        mPreset != 20) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_TOWN) &&
+        mMode == MODE_FOLLOW && mPreset != 20) {
         mLookUpTimer = 0;
     }
     return 0;

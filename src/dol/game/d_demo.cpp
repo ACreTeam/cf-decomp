@@ -1,6 +1,8 @@
-// The demo process and request queue (dDemo_c, dDemo). .text 8018DAC8..8018F588, .ctors 8046582C, .rodata
-// 8047BF40 (type table), .data 804F98D8 (vtable), .sdata 8074BF18 (profile / RTTI), .sbss 8074E9D0..8074E9E8.
-// See include/game/game/d_demo.hpp.
+// The demo process and request queue (dDemo_c, dDemo). .text
+// 8018DAC8..8018F588, .ctors 8046582C, .rodata 8047BF40 (type table), .data
+// 804F98D8 (vtable), .sdata 8074BF18 (profile / RTTI), .sbss
+// 8074E9D0..8074E9E8. See include/game/game/d_demo.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_demo.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_cd.hpp>
@@ -14,14 +16,15 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_str.hpp>
 
-CUSTOM_BASE_PROFILE(DEMO, dDemo_c, 0x129, 0);
+CUSTOM_BASE_PROFILE(DEMO, dDemo_c, fProf::DEMO, fProf::DRAW_ORDER::DEMO);
 
 namespace dDemo {
 
 static u16 sFlags;
 static Req_c *sCurrent;
 static dNetReqPool::ReqList_c sReqList;
-static u32 sTalkActorID; // demo ID of the target of the running talk demo (getTalkActor)
+static u32 sTalkActorID;  // demo ID of the target of the running talk demo
+                          // (getTalkActor)
 static int sTalkCooldown; // frames left before a new TYPE_TALK may start
 
 // 8018DB14
@@ -82,8 +85,9 @@ int dDemo_c::draw() {
 
 namespace dDemo {
 
-// A demo type's functions (l_typeFuncs). check: may the queued request start now; start / execute: TRUE when
-// done; end: TRUE when the request may be freed.
+// A demo type's functions (l_typeFuncs). check: may the queued request start
+// now; start / execute: TRUE when done; end: TRUE when the request may be
+// freed.
 struct TypeFuncs {
     BOOL (*check)(Req_c *req);
     BOOL (*start)(Req_c *req);
@@ -200,7 +204,8 @@ static BOOL requestSync(Req_c *req) {
     return TRUE;
 }
 
-// 8018DEE8: the target is run by the scene owner: a guest asks it for the start check
+// 8018DEE8: the target is run by the scene owner: a guest asks it for the start
+// check
 static BOOL requestStart(Req_c *req) {
     if (dDemoSync::isRemote()) {
         dDemoSync::sendStart(req->mTargetID, req->mCheck);
@@ -830,7 +835,8 @@ static BOOL endDayChange(Req_c *req) {
 
 // 8018EE7C
 BOOL requestDayChange() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (isNoDayChange()) {
@@ -1049,7 +1055,8 @@ void dDemo_c::selectNext() {
     if (sCurrent != NULL) {
         return;
     }
-    for (Req_c *req = (Req_c *)sReqList.getFirst(); req != NULL; req = (Req_c *)req->getNext()) {
+    for (Req_c *req = (Req_c *)sReqList.getFirst(); req != NULL;
+         req = (Req_c *)req->getNext()) {
         if (l_typeFuncs[req->mType].check(req)) {
             sReqList.removeLineNode(req);
             sCurrent = req;
@@ -1140,7 +1147,8 @@ dDemoActor_c *getTalkActor() {
 // 8018F4A8
 BOOL isTalking() {
     BOOL ret = FALSE;
-    if (isType(TYPE_TALK) || isType(TYPE_SPEAK) || isType(TYPE_REPORT) || isType(TYPE_SPEECH)) {
+    if (isType(TYPE_TALK) || isType(TYPE_SPEAK) || isType(TYPE_REPORT) ||
+        isType(TYPE_SPEECH)) {
         ret = TRUE;
     }
     return ret;

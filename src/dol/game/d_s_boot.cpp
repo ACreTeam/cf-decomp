@@ -1,4 +1,6 @@
-// The boot scene (dScBoot_c). .text 801C9EF4..801CA0F4. See include/game/game/d_s_boot.hpp.
+// The boot scene (dScBoot_c). .text 801C9EF4..801CA0F4. See
+// include/game/game/d_s_boot.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_s_boot.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_s_boot_static.hpp>
@@ -7,7 +9,7 @@
 #include <game/mLib/m_2d.hpp>
 #include <game/mLib/m_3d/global.hpp>
 
-CUSTOM_BASE_PROFILE(BOOT, dScBoot_c, SCENE_PROF_BOOT, 0xDE);
+CUSTOM_BASE_PROFILE(BOOT, dScBoot_c, SCENE_PROF_BOOT, fProf::DRAW_ORDER::BOOT);
 
 // 801C9F4C
 void dScBoot_c::drawCallback() {
@@ -55,7 +57,8 @@ int dScBoot_c::draw() {
 }
 
 // 801CA08C
-dScBoot_c::~dScBoot_c() {}
+dScBoot_c::~dScBoot_c() {
+}
 
 // 801CA0EC
 int dScBoot_c::getKind() {

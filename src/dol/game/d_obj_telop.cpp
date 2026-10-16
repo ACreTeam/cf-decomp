@@ -1,3 +1,4 @@
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_obj_telop.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_demo.hpp>
@@ -16,7 +17,8 @@
 
 extern "C" BOOL fn_8038E36C();
 
-CUSTOM_BASE_PROFILE(OBJ_TELOP, dObjTelop_c, 0x127, 0x129);
+CUSTOM_BASE_PROFILE(OBJ_TELOP, dObjTelop_c, fProf::OBJ_TELOP,
+                    fProf::DRAW_ORDER::OBJ_TELOP);
 
 static WPADInfo l_wpadInfo;
 static dObjTelop_c::Req_c l_req;
@@ -61,7 +63,8 @@ int dObjTelop_c::create() {
     mLyt.calc();
     mLyt.mPriority = 0x8A;
     mState = 0;
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         l_req.clear();
     }
     l_req.unlock();
@@ -87,7 +90,8 @@ int dObjTelop_c::execute() {
     } else {
         mExtensionCnt = 0;
     }
-    if ((!fn_8038E36C() || dPad::isRemoteUnavailable()) && !dReset::Manage_c::GetInstance()->isShutdown()) {
+    if ((!fn_8038E36C() || dPad::isRemoteUnavailable()) &&
+        !dReset::Manage_c::GetInstance()->isShutdown()) {
         if (mNoRemoteCnt < 20) {
             mNoRemoteCnt++;
         } else if (dScene::getCurrentScene() != dScene::SCENE_DM_TITLE) {
@@ -157,7 +161,8 @@ void dObjTelop_c::setMsg() {
     mLyt.setWord("T_msg_01", &word);
     mScrollX = 160.0f;
     nw4r::lyt::TextBox *textBox = mLyt.findTextBox("T_msg_00");
-    mTextWidth = m2d::calcTextWidth(textBox, word.getText(), word.getCapacity());
+    mTextWidth =
+        m2d::calcTextWidth(textBox, word.getText(), word.getCapacity());
     if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
         mTextWidth *= 0.730769f;
     }
@@ -209,7 +214,8 @@ void dObjTelop_c::wpadCheck() {
             mWpadTimer--;
         } else {
             l_wpadResult = WPAD_ERR_BUSY;
-            if (WPADGetInfoAsync(mPad::g_currentCoreId, &l_wpadInfo, wpadInfoCallback) == WPAD_ERR_OK) {
+            if (WPADGetInfoAsync(mPad::g_currentCoreId, &l_wpadInfo,
+                                 wpadInfoCallback) == WPAD_ERR_OK) {
                 mWpadState = WPAD_STATE_INFO;
             }
         }
@@ -292,7 +298,8 @@ void dObjTelop_c::Req_c::setTimer() {
     }
 }
 
-// Lower values are higher priority: request() drops a message less urgent than the current one.
+// Lower values are higher priority: request() drops a message less urgent than
+// the current one.
 int dObjTelop_c::Req_c::getPriority(int msg) {
     switch (msg) {
     case TELOP_NONE:
@@ -394,4 +401,5 @@ void dObjTelop_c::Req_c::checkNet() {
     }
 }
 
-dObjTelop_c::~dObjTelop_c() {}
+dObjTelop_c::~dObjTelop_c() {
+}

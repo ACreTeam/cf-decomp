@@ -1,5 +1,7 @@
-// The New Year's Eve countdown process (dCd_c). .text 8018D778..8018DAC8, .rodata 8047BEF8 (scene table),
-// .data 804F9880 (vtable), .sdata 8074BF00 (profile / RTTI). See include/game/game/d_cd.hpp.
+// The New Year's Eve countdown process (dCd_c). .text 8018D778..8018DAC8,
+// .rodata 8047BEF8 (scene table), .data 804F9880 (vtable), .sdata 8074BF00
+// (profile / RTTI). See include/game/game/d_cd.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_cd.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_date.hpp>
@@ -9,7 +11,7 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/snd/snd_id.hpp>
 
-CUSTOM_BASE_PROFILE(CD, dCd_c, 0xB, 4);
+CUSTOM_BASE_PROFILE(CD, dCd_c, fProf::CD, fProf::DRAW_ORDER::CD);
 
 // Scenes in which the countdown runs (by scene index).
 static const u8 l_sceneEnabled[dScene::SCENE_NUM] = {
@@ -42,7 +44,8 @@ int dCd_c::execute() {
 
     dTime_c now = *dTime_c::getCurrent();
     if (now.month == MONTH_DECEMBER && now.mday == 31) {
-        u32 left = SECONDS_PER_DAY - (now.sec + now.min * SECONDS_PER_MINUTE + now.hour * SECONDS_PER_HOUR);
+        u32 left = SECONDS_PER_DAY - (now.sec + now.min * SECONDS_PER_MINUTE +
+                                      now.hour * SECONDS_PER_HOUR);
         u32 hours = left / SECONDS_PER_HOUR;
         left %= SECONDS_PER_HOUR;
         u32 mins = left / SECONDS_PER_MINUTE;
@@ -71,7 +74,8 @@ int dCd_c::execute() {
             mMuted = FALSE;
         }
         mPrevDigit = mDigit;
-    } else if (now.month == MONTH_JANUARY && now.mday == 1 && now.hour == 0 && now.min == 0 && now.sec == 0) {
+    } else if (now.month == MONTH_JANUARY && now.mday == 1 && now.hour == 0 &&
+               now.min == 0 && now.sec == 0) {
         if (!mNewYearDone) {
             playSe(SE_countdown_hi);
             mNewYearDone = TRUE;
@@ -81,7 +85,8 @@ int dCd_c::execute() {
 }
 
 // 8018DA60
-dCd_c::~dCd_c() {}
+dCd_c::~dCd_c() {
+}
 
 // 8018DABC
 dScene::dSceneChange_c *dCd_c::getSceneChange() {

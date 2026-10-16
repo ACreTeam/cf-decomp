@@ -1,5 +1,7 @@
-// The scene base class (dScene_c) and the scene change. .text 801553E0..8015593C, .data 804EF650..804EF668,
-// .sdata 8074B1B0..8074B1C0, .sbss 8074E800..8074E810. See include/game/game/d_scene_base.hpp.
+// The scene base class (dScene_c) and the scene change. .text
+// 801553E0..8015593C, .data 804EF650..804EF668, .sdata 8074B1B0..8074B1C0,
+// .sbss 8074E800..8074E810. See include/game/game/d_scene_base.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_scene_base.hpp>
 #include <game/game/d_base.hpp>
 #include <game/game/d_fader.hpp>
@@ -72,21 +74,24 @@ int dScene_c::preExecute() {
             sndSceneChange(m_fadeOutFrame);
         } else if (mFader_c::isStatus(mFaderBase_c::OPAQUE)) {
             int state = dNet::getSceneChangeState();
-            if (state != NET_SCENE_STATE_NONE && !dReset::Manage_c::GetInstance()->isSoftResetFade()) {
+            if (state != NET_SCENE_STATE_NONE &&
+                !dReset::Manage_c::GetInstance()->isSoftResetFade()) {
                 if (state == NET_SCENE_STATE_CLOSE) {
                     dNet::writeSceneClose(dNet::getMyNo());
                     dNet::setSceneChangeState(NET_SCENE_STATE_CLOSE_SEND);
                 } else if (state == NET_SCENE_STATE_LEAVE) {
                     if (dNet::fn_800DD818()) {
                         dNet::writeSceneLeave(dNet::getMyNo());
-                        dNet::setSceneChangeState(NET_SCENE_STATE_LEAVE_WRITTEN);
+                        dNet::setSceneChangeState(
+                            NET_SCENE_STATE_LEAVE_WRITTEN);
                     } else {
                         return NOT_READY;
                     }
                 } else if (state == NET_SCENE_STATE_HANDOVER) {
                     if (dNet::fn_800DD8C4()) {
                         dNet::writeSceneHandover();
-                        dNet::setSceneChangeState(NET_SCENE_STATE_HANDOVER_WRITTEN);
+                        dNet::setSceneChangeState(
+                            NET_SCENE_STATE_HANDOVER_WRITTEN);
                     } else {
                         return NOT_READY;
                     }
@@ -131,7 +136,8 @@ int dScene_c::preDraw() {
 }
 
 // 8015579C
-void dScene_c::postDraw(MAIN_STATE_e state) {}
+void dScene_c::postDraw(MAIN_STATE_e state) {
+}
 
 // 801557A0
 void dScene_c::initNextScene() {
@@ -146,7 +152,8 @@ fBase_c *dScene_c::createNextScene() {
     }
 
     int state = dNet::getSceneChangeState();
-    if (state != NET_SCENE_STATE_NONE && !dReset::Manage_c::GetInstance()->isSoftResetFade()) {
+    if (state != NET_SCENE_STATE_NONE &&
+        !dReset::Manage_c::GetInstance()->isSoftResetFade()) {
         if (state == NET_SCENE_STATE_CREATE) {
             dNet::enterLeaderScene();
             dNet::setSceneChangeState(NET_SCENE_STATE_CREATING);
@@ -156,11 +163,12 @@ fBase_c *dScene_c::createNextScene() {
     }
 
     if (dRoot_c::sInstance == NULL) {
-        dBase_c::createRoot(0, 0, 0);
+        dBase_c::createRoot(fProf::ROOT, 0, 0);
         return NULL;
     }
 
-    fBase_c *scene = dBase_c::createBase(m_nextScene, dRoot_c::sInstance, 0, SCENE);
+    fBase_c *scene =
+        dBase_c::createBase(m_nextScene, dRoot_c::sInstance, 0, SCENE);
     if (scene != NULL) {
         if (state != NET_SCENE_STATE_NONE) {
             dNet::setSceneChangeState(NET_SCENE_STATE_CREATED);

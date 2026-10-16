@@ -1,4 +1,6 @@
-// dFishField_c: the fish in the town (REL d_fish_fieldNP). See include/game/game/d_fish_field.hpp.
+// dFishField_c: the fish in the town (REL d_fish_fieldNP). See
+// include/game/game/d_fish_field.hpp.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_fish_field.hpp>
 #include <game/game/d_camera.hpp>
 #include <lib/egg/core/eggExpHeap.h>
@@ -24,25 +26,28 @@
 
 extern "C" {
 BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
-void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale, const mAng3_c *angle,
-                 int arg);                         // d_fgobj_managerNP
+void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale,
+                 const mAng3_c *angle,
+                 int arg); // d_fgobj_managerNP
 }
 
 void *dFishField_c_classInit();
 
-fProf::fBaseProfile_c g_profile_FISH_FIELD = {&dFishField_c_classInit, 0xB2, 0x13};
+fProf::fBaseProfile_c g_profile_FISH_FIELD = {
+    &dFishField_c_classInit, fProf::FISH_FIELD, fProf::DRAW_ORDER::FISH_FIELD};
 
 dFishParam_c sFishParam[77] = {
-    {0, 2, 1}, {1, 3, 3}, {1, 3, 4}, {2, 3, 3}, {2, 2, 3}, {3, 2, 3}, {3, 2, 3}, {0, 2, 3},
-    {0, 2, 3}, {0, 2, 2}, {1, 4, 4}, {1, 4, 3}, {2, 2, 4}, {1, 3, 3}, {3, 2, 4}, {7, 1, 1},
-    {4, 2, 1}, {1, 4, 4}, {2, 1, 1}, {3, 2, 2}, {4, 2, 2}, {1, 3, 3}, {2, 2, 1}, {2, 1, 1},
-    {2, 1, 1}, {3, 2, 2}, {5, 0, 1}, {3, 2, 1}, {5, 2, 1}, {0, 2, 3}, {0, 2, 2}, {0, 2, 2},
-    {1, 4, 3}, {3, 3, 2}, {4, 1, 0}, {5, 3, 1}, {5, 1, 1}, {0, 0, 2}, {1, 2, 4}, {0, 1, 1},
-    {0, 2, 1}, {1, 2, 2}, {1, 2, 2}, {5, 2, 1}, {2, 3, 3}, {2, 2, 2}, {1, 3, 3}, {2, 2, 0},
-    {4, 3, 2}, {2, 2, 1}, {2, 2, 2}, {3, 1, 1}, {2, 3, 2}, {2, 3, 2}, {4, 2, 2}, {4, 2, 2},
-    {3, 3, 3}, {5, 1, 0}, {5, 1, 0}, {5, 2, 2}, {6, 0, 1}, {6, 1, 1}, {6, 1, 0}, {5, 0, 0},
-    {1, 3, 3}, {2, 2, 3}, {3, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3},
-    {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {0, 0, 0}, {0, 0, 0},
+    {0, 2, 1}, {1, 3, 3}, {1, 3, 4}, {2, 3, 3}, {2, 2, 3}, {3, 2, 3}, {3, 2, 3},
+    {0, 2, 3}, {0, 2, 3}, {0, 2, 2}, {1, 4, 4}, {1, 4, 3}, {2, 2, 4}, {1, 3, 3},
+    {3, 2, 4}, {7, 1, 1}, {4, 2, 1}, {1, 4, 4}, {2, 1, 1}, {3, 2, 2}, {4, 2, 2},
+    {1, 3, 3}, {2, 2, 1}, {2, 1, 1}, {2, 1, 1}, {3, 2, 2}, {5, 0, 1}, {3, 2, 1},
+    {5, 2, 1}, {0, 2, 3}, {0, 2, 2}, {0, 2, 2}, {1, 4, 3}, {3, 3, 2}, {4, 1, 0},
+    {5, 3, 1}, {5, 1, 1}, {0, 0, 2}, {1, 2, 4}, {0, 1, 1}, {0, 2, 1}, {1, 2, 2},
+    {1, 2, 2}, {5, 2, 1}, {2, 3, 3}, {2, 2, 2}, {1, 3, 3}, {2, 2, 0}, {4, 3, 2},
+    {2, 2, 1}, {2, 2, 2}, {3, 1, 1}, {2, 3, 2}, {2, 3, 2}, {4, 2, 2}, {4, 2, 2},
+    {3, 3, 3}, {5, 1, 0}, {5, 1, 0}, {5, 2, 2}, {6, 0, 1}, {6, 1, 1}, {6, 1, 0},
+    {5, 0, 0}, {1, 3, 3}, {2, 2, 3}, {3, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3},
+    {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {1, 2, 3}, {0, 0, 0}, {0, 0, 0},
 };
 
 // searchFloat: how far / how wide a fish notices a float (by dFishParam_c::_1).
@@ -51,39 +56,44 @@ struct dFishTurnParam_c {
     f32 mSpeed;
 };
 dFishTurnParam_c sTurnParam0[5] = {
-    {0x1555, 1.2f}, {0x1C72, 1.2f}, {0x238E, 1.2f}, {0x2AAB, 1.3f}, {0x4000, 1.4f},
+    {0x1555, 1.2f}, {0x1C72, 1.2f}, {0x238E, 1.2f},
+    {0x2AAB, 1.3f}, {0x4000, 1.4f},
 };
 dFishTurnParam_c sTurnParam1[5] = {
-    {0x2000, 1.4f}, {0x2AAB, 1.4f}, {0x3555, 1.4f}, {0x4000, 1.6f}, {0x4000, 1.8f},
+    {0x2000, 1.4f}, {0x2AAB, 1.4f}, {0x3555, 1.4f},
+    {0x4000, 1.6f}, {0x4000, 1.8f},
 };
 
-// initBite: the frames the player has to pull (by dFishParam_c::_2; 1: the float was cast long).
+// initBite: the frames the player has to pull (by dFishParam_c::_2; 1: the
+// float was cast long).
 s16 sTimeParam0[6] = {17, 25, 30, 40, 80, 0};
 s16 sTimeParam1[6] = {22, 28, 35, 50, 80, 0};
 
 // rodata 0x0: draw's item model offset (0xC: 0.0f, unknown).
 static const f32 sItemOfs[3] = {0.0f, -2.0f, 2.0f};
-// rodata 0x10: the effect shadow's x / z scale, by dFishParam_c::mSize (execute).
+// rodata 0x10: the effect shadow's x / z scale, by dFishParam_c::mSize
+// (execute).
 static const f32 sShadowScale[FISH_SIZE_NUM][2] = {
-    {1.25f, 1.25f}, {1.65f, 1.0f}, {1.4f, 1.0f}, {1.33f, 0.9f}, {1.28f, 0.81f}, {1.38f, 0.61f}, {1.0f, 1.0f}, {2.66f, 0.72f},
+    {1.25f, 1.25f}, {1.65f, 1.0f},  {1.4f, 1.0f}, {1.33f, 0.9f},
+    {1.28f, 0.81f}, {1.38f, 0.61f}, {1.0f, 1.0f}, {2.66f, 0.72f},
 };
-// rodata 0x50: the ripples' scale range (dFishRipple_c::execute), by dFishParam_c::mSize.
-static const f32 sRippleScaleMin[FISH_SIZE_NUM] = {2.0f, 2.3f, 1.5f, 1.3f, 1.2f, 1.1f, 0.8f, 2.5f};
-static const f32 sRippleScaleMax[FISH_SIZE_NUM] = {2.5f, 2.8f, 2.0f, 1.8f, 1.7f, 1.6f, 3.0f, 1.3f};
+// rodata 0x50: the ripples' scale range (dFishRipple_c::execute), by
+// dFishParam_c::mSize.
+static const f32 sRippleScaleMin[FISH_SIZE_NUM] = {2.0f, 2.3f, 1.5f, 1.3f,
+                                                   1.2f, 1.1f, 0.8f, 2.5f};
+static const f32 sRippleScaleMax[FISH_SIZE_NUM] = {2.5f, 2.8f, 2.0f, 1.8f,
+                                                   1.7f, 1.6f, 3.0f, 1.3f};
 // rodata 0x90
 static const dFishSizeParam_c sSizeParams[FISH_SIZE_NUM] = {
-    {{0.3f, 0.3f, 0.3f}, 1.4f, 30, 60},
-    {{0.4f, 0.4f, 0.45f}, 1.3f, 45, 90},
-    {{0.5f, 0.5f, 0.65f}, 1.3f, 60, 120},
-    {{0.6f, 0.6f, 0.8f}, 1.2f, 75, 150},
-    {{0.8f, 0.7f, 1.0f}, 1.2f, 90, 180},
-    {{0.8f, 0.7f, 1.2f}, 1.2f, 105, 210},
-    {{0.9f, 1.0f, 1.4f}, 1.2f, 120, 240},
-    {{0.3f, 0.3f, 1.1f}, 1.2f, 75, 150},
+    {{0.3f, 0.3f, 0.3f}, 1.4f, 30, 60},   {{0.4f, 0.4f, 0.45f}, 1.3f, 45, 90},
+    {{0.5f, 0.5f, 0.65f}, 1.3f, 60, 120}, {{0.6f, 0.6f, 0.8f}, 1.2f, 75, 150},
+    {{0.8f, 0.7f, 1.0f}, 1.2f, 90, 180},  {{0.8f, 0.7f, 1.2f}, 1.2f, 105, 210},
+    {{0.9f, 1.0f, 1.4f}, 1.2f, 120, 240}, {{0.3f, 0.3f, 1.1f}, 1.2f, 75, 150},
 };
 
 dFishPlaceCheck sPlaceChecks[dFishSpawn_c::PLACE_NUM] = {
-    isRiverBlock, isPoolBlock, isWaterfallBlock, isPondBlock, isRiverMouthBlock, isOffingBlock, isSeaBlock,
+    isRiverBlock,      isPoolBlock,   isWaterfallBlock, isPondBlock,
+    isRiverMouthBlock, isOffingBlock, isSeaBlock,
 };
 
 // 0x5C
@@ -116,17 +126,23 @@ int getLostItemLikeIdx() {
 
 // 0x134
 BOOL isRiverBlock(int blockX, int blockZ, void *user) {
-    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_RIVER);
+    return dField::getInfo(0)
+        ->getBlock(blockX, blockZ)
+        ->hasFlag(BLOCK_KIND_FLAG_RIVER);
 }
 
 // 0x188
 BOOL isPoolBlock(int blockX, int blockZ, void *user) {
-    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_RACCO);
+    return dField::getInfo(0)
+        ->getBlock(blockX, blockZ)
+        ->hasFlag(BLOCK_KIND_FLAG_RACCO);
 }
 
 // 0x1D8
 BOOL isWaterfallBlock(int blockX, int blockZ, void *user) {
-    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_FALL);
+    return dField::getInfo(0)
+        ->getBlock(blockX, blockZ)
+        ->hasFlag(BLOCK_KIND_FLAG_FALL);
 }
 
 // 0x228
@@ -137,10 +153,11 @@ BOOL isPondBlock(int blockX, int blockZ, void *user) {
 // 0x274
 BOOL isRiverMouthBlock(int blockX, int blockZ, void *user) {
     dFdBlock_c *block = dField::getInfo(0)->getBlock(blockX, blockZ);
-    static const u32 cRiverFlags = BLOCK_KIND_FLAG_RIVER_S0 | BLOCK_KIND_FLAG_RIVER_S1 | BLOCK_KIND_FLAG_RIVER_S2;
+    static const u32 cRiverFlags = BLOCK_KIND_FLAG_RIVER_S0 |
+                                   BLOCK_KIND_FLAG_RIVER_S1 |
+                                   BLOCK_KIND_FLAG_RIVER_S2;
     BOOL ret = FALSE;
-    if (block->hasFlag(cRiverFlags) &&
-        block->hasFlag(BLOCK_KIND_FLAG_BEACH)) {
+    if (block->hasFlag(cRiverFlags) && block->hasFlag(BLOCK_KIND_FLAG_BEACH)) {
         ret = TRUE;
     }
     return ret;
@@ -168,15 +185,20 @@ static inline BOOL isSnowWeather(const dWeather_c *weather) {
 
 // 0x2F4
 BOOL isOffingBlock(int blockX, int blockZ, void *user) {
-    if (isRainWeather(dWeather_c::sInstance) || isSnowWeather(dWeather_c::sInstance)) {
-        return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
+    if (isRainWeather(dWeather_c::sInstance) ||
+        isSnowWeather(dWeather_c::sInstance)) {
+        return dField::getInfo(0)
+            ->getBlock(blockX, blockZ)
+            ->hasFlag(BLOCK_KIND_FLAG_BEACH);
     }
     return FALSE;
 }
 
 // 0x39C
 BOOL isSeaBlock(int blockX, int blockZ, void *user) {
-    return dField::getInfo(0)->getBlock(blockX, blockZ)->hasFlag(BLOCK_KIND_FLAG_BEACH);
+    return dField::getInfo(0)
+        ->getBlock(blockX, blockZ)
+        ->hasFlag(BLOCK_KIND_FLAG_BEACH);
 }
 
 // 0x3EC
@@ -223,7 +245,8 @@ dFishField_c::dFishField_c() {
 }
 
 // 0x610
-dFishField_c::~dFishField_c() {}
+dFishField_c::~dFishField_c() {
+}
 
 // 0x6B4
 int dFishField_c::create() {
@@ -236,7 +259,8 @@ int dFishField_c::create() {
     int n;
     heap = dHeap::localHeap_p;
     if (m_ResHeap == NULL) {
-        m_ResHeap = mHeap::createFrmHeap(0x8000, heap, "dFishField_c::m_ResHeap", 0x20, mHeap::OPT_NONE);
+        m_ResHeap = mHeap::createFrmHeap(
+            0x8000, heap, "dFishField_c::m_ResHeap", 0x20, mHeap::OPT_NONE);
     }
     ok = TRUE;
     if (!mShadowRes.load("/Fish/fsh_shadow.brres", m_ResHeap, 0)) {
@@ -247,17 +271,22 @@ int dFishField_c::create() {
     }
 
     for (i = 0; i < FISH_FIELD_FISH_NUM; i++) {
-        m_childHeap[i] = mHeap::createFrmHeap(0x1000, heap, "dFishField_c::m_childHeap", 0x20, mHeap::OPT_NONE);
+        m_childHeap[i] = mHeap::createFrmHeap(
+            0x1000, heap, "dFishField_c::m_childHeap", 0x20, mHeap::OPT_NONE);
         mFish[i] = NULL;
     }
     for (j = 0; j < FISH_FIELD_PLAYER_NUM; j++) {
-        m_childHeapForPlayer[j] =
-            mHeap::createFrmHeap(0x1000, heap, "dFishField_c::m_childHeapForPlayer", 0x20, mHeap::OPT_NONE);
+        m_childHeapForPlayer[j] = mHeap::createFrmHeap(
+            0x1000, heap, "dFishField_c::m_childHeapForPlayer", 0x20,
+            mHeap::OPT_NONE);
         mPlayerFish[j] = NULL;
     }
 
-    // The waterfall basin: the center of the first waterfall acre's basin units.
-    dFdBkSearchCandCb_c falls(dField::getInfo(0)->getBlockW(), dField::getInfo(0)->getBlockH(), isWaterfallBlock, NULL);
+    // The waterfall basin: the center of the first waterfall acre's basin
+    // units.
+    dFdBkSearchCandCb_c falls(dField::getInfo(0)->getBlockW(),
+                              dField::getInfo(0)->getBlockH(), isWaterfallBlock,
+                              NULL);
     falls.clear();
     falls.search();
     n = falls.getCount();
@@ -389,7 +418,8 @@ BOOL dFishField_c::canSpawnKey() const {
 
 // 0xE58
 BOOL dSearchFishPos::check(int x, int z) {
-    if (mAwayFromPlayers && !dFishField_c::isAwayFromPlayers(mBlockX, mBlockZ, x, z)) {
+    if (mAwayFromPlayers &&
+        !dFishField_c::isAwayFromPlayers(mBlockX, mBlockZ, x, z)) {
         return FALSE;
     }
     int unitX = (mBlockX << 4) + x;
@@ -419,7 +449,8 @@ BOOL dSearchFishPos::check(int x, int z) {
     switch (mWater) {
     case FISH_WATER_RIVER: {
         BOOL ret = FALSE;
-        if (dBGCF::isRiver(unitX, unitZ) && !dBGCF::isSea(unitX, unitZ + 1) && !dBGCF::isSea(unitX, unitZ + 2)) {
+        if (dBGCF::isRiver(unitX, unitZ) && !dBGCF::isSea(unitX, unitZ + 1) &&
+            !dBGCF::isSea(unitX, unitZ + 2)) {
             ret = TRUE;
         }
         return ret;
@@ -443,7 +474,8 @@ BOOL dBkAttrSearchCand_c::check(int x, int z) {
 
 // 0x10D0
 void dFishField_c::calcSpawn() {
-    if ((!dNet::isSessionActive() || dNet::isSceneOwner()) && sLib::calcTimer(&mSpawnTimer) == 0) {
+    if ((!dNet::isSessionActive() || dNet::isSceneOwner()) &&
+        sLib::calcTimer(&mSpawnTimer) == 0) {
         mSpawnTimer = 300;
         int river = 0;
         int sea = 0;
@@ -485,9 +517,11 @@ void dFishField_c::checkFish() {
                 deleteFish(i);
             } else {
                 int unitZ, unitX, blockZ, blockX;
-                dFdBase_c::posToBlockUnit(&blockX, &blockZ, &unitX, &unitZ, &fish->mPos);
+                dFdBase_c::posToBlockUnit(&blockX, &blockZ, &unitX, &unitZ,
+                                          &fish->mPos);
                 if (isAwayFromPlayers(blockX, blockZ, unitX, unitZ)) {
-                    if (sLib::calcTimer(&mFish[i]->mLifeTimer) == 0 && isRecMine(i)) {
+                    if (sLib::calcTimer(&mFish[i]->mLifeTimer) == 0 &&
+                        isRecMine(i)) {
                         deleteFish(i);
                     }
                 } else {
@@ -558,7 +592,8 @@ void dFishField_c::deleteAll() {
 BOOL dFishField_c::isRecChanged(int idx) {
     if (mFish[idx] != NULL && (!mFish[idx]->isMine() || mRecs[idx].mRemote)) {
         dPlaySyncRec_c *rec = &mRecs[idx].mRec;
-        if (rec->getA() != mFish[idx]->getKind() || rec->getC() != mFish[idx]->getRecId()) {
+        if (rec->getA() != mFish[idx]->getKind() ||
+            rec->getC() != mFish[idx]->getRecId()) {
             return TRUE;
         }
     }
@@ -566,9 +601,12 @@ BOOL dFishField_c::isRecChanged(int idx) {
 }
 
 // 0x16BC
-static inline int posToUnit(f32 pos) { return (int)pos >> 5; }
+static inline int posToUnit(f32 pos) {
+    return (int)pos >> 5;
+}
 
-BOOL dFishField_c::addFish(int type, int water, const mVec3_c *pos, const mAng3_c *angle) {
+BOOL dFishField_c::addFish(int type, int water, const mVec3_c *pos,
+                           const mAng3_c *angle) {
     int i, last;
     switch (water) {
     case FISH_WATER_RIVER:
@@ -623,7 +661,8 @@ BOOL dFishField_c::addFishFromRec(int type, int idx) {
         pos.y = check.mWaterY;
         mFish[idx] = new (m_childHeap[idx]) dFishFldShadow_c(&sFishParam[type]);
         mFish[idx]->mPos = mFish[idx]->mTargetPos = pos;
-        dFdBase_c::getUnitCenterPos(&mFish[idx]->mHomePos, rec->getHomeUnitX(), rec->getHomeUnitZ());
+        dFdBase_c::getUnitCenterPos(&mFish[idx]->mHomePos, rec->getHomeUnitX(),
+                                    rec->getHomeUnitZ());
         mFish[idx]->mHomePos.y = pos.y;
         mFish[idx]->mTargetAngle = mFish[idx]->mAngle = mAng3_c(0, 0, 0);
         mFish[idx]->mAllocator.attach(m_childHeap[idx], 0x20);
@@ -640,7 +679,8 @@ BOOL dFishField_c::addFishFromRec(int type, int idx) {
 }
 
 // 0x1C70
-dFishFldShadow_c *dFishField_c::addPlayerFish(int type, int mode, const mVec3_c *pos, int player) {
+dFishFldShadow_c *dFishField_c::addPlayerFish(int type, int mode,
+                                              const mVec3_c *pos, int player) {
     if (mPlayerFish[player] == NULL) {
         EGG::Heap *heap = m_childHeapForPlayer[player];
         dFishFldShadow_c *fish = new (heap) dFishFldShadow_c(&sFishParam[type]);
@@ -709,7 +749,8 @@ void dFishField_c::spawn(int riverNum, int seaNum, bool awayFromPlayers) {
     for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
         if (mFish[i] != NULL) {
             dFishFldShadow_c *fish = mFish[i];
-            free.remove(((int)fish->mHomePos.x >> 9) + ((int)fish->mHomePos.z >> 9) * free.mWidth);
+            free.remove(((int)fish->mHomePos.x >> 9) +
+                        ((int)fish->mHomePos.z >> 9) * free.mWidth);
         }
     }
     bool event = dEvent::isOngoing(sEvent);
@@ -733,7 +774,8 @@ void dFishField_c::spawn(int riverNum, int seaNum, bool awayFromPlayers) {
             dItem::Item item = town->mFishing.getFish();
             const dFishSpawn_c *spawn;
             if (event && item.isValid()) {
-                spawn = dFishInfo::getRandomSpawnBoosted(water, dItem::Item_getIdxInKind(item));
+                spawn = dFishInfo::getRandomSpawnBoosted(
+                    water, dItem::Item_getIdxInKind(item));
             } else {
                 spawn = dFishInfo::getRandomSpawn(water);
             }
@@ -789,7 +831,8 @@ void dFishField_c::spawn(int riverNum, int seaNum, bool awayFromPlayers) {
 // 0x1EC sProcs
 dFishFldShadow_c::Proc dFishFldShadow_c::sProcs[11] = {
     {&dFishFldShadow_c::initSwim, &dFishFldShadow_c::executeSwim, NULL},
-    {&dFishFldShadow_c::initApproach, &dFishFldShadow_c::executeApproach, &dFishFldShadow_c::endApproach},
+    {&dFishFldShadow_c::initApproach, &dFishFldShadow_c::executeApproach,
+     &dFishFldShadow_c::endApproach},
     {&dFishFldShadow_c::initNibble, &dFishFldShadow_c::executeNibble, NULL},
     {&dFishFldShadow_c::initBite, &dFishFldShadow_c::executeBite, NULL},
     {&dFishFldShadow_c::initEscape, &dFishFldShadow_c::executeEscape, NULL},
@@ -807,7 +850,8 @@ BOOL dFishField_c::isInView(const mVec3_c *center, const mVec3_c *pos) {
     f32 maxX = 320.0f + center->x;
     f32 minZ = center->z - 448.0f;
     f32 maxZ = 192.0f + center->z;
-    if (sLib::isInRange(pos->x, minX, maxX) && sLib::isInRange(pos->z, minZ, maxZ)) {
+    if (sLib::isInRange(pos->x, minX, maxX) &&
+        sLib::isInRange(pos->z, minZ, maxZ)) {
         return TRUE;
     }
     return FALSE;
@@ -826,13 +870,15 @@ static inline BOOL isNearUnit(int x, int z, int cx, int cz) {
     return ret;
 }
 
-BOOL dFishField_c::isAwayFromPlayers(int blockX, int blockZ, int unitX, int unitZ) {
+BOOL dFishField_c::isAwayFromPlayers(int blockX, int blockZ, int unitX,
+                                     int unitZ) {
     if (dNet::isSessionActive()) {
         int x = (blockX << 4) + unitX;
         int z = (blockZ << 4) + unitZ;
         for (int i = 0; i < 4; i++) {
             u32 px, pz;
-            if (dPlayerMgr::getUnitCoordinates(&px, &pz, i) && isNearUnit(x, z, px, pz)) {
+            if (dPlayerMgr::getUnitCoordinates(&px, &pz, i) &&
+                isNearUnit(x, z, px, pz)) {
                 return FALSE;
             }
         }
@@ -864,7 +910,8 @@ BOOL dFishField_c::scareFish(f32 radius, const mVec3_c *pos) {
     f32 radiusSq = radius * radius;
     for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
         dFishFldShadow_c *fish = mFish[i];
-        if (fish != NULL && fish->isMine() && fish->mState == dFishFldShadow_c::STATE_SWIM) {
+        if (fish != NULL && fish->isMine() &&
+            fish->mState == dFishFldShadow_c::STATE_SWIM) {
             mVec3_c d = fish->mPos;
             d -= *pos;
             if (d.x * d.x + d.z * d.z < radiusSq) {
@@ -878,12 +925,16 @@ BOOL dFishField_c::scareFish(f32 radius, const mVec3_c *pos) {
 
 // 0x2624
 dFishFldShadow_c::dFishFldShadow_c(const dFishParam_c *param)
-    : mParam(*param), mState(STATE_NONE), _1DC(0.0f, 0.0f, 0.0f), mScale(1.0f, 1.0f, 1.0f), _20C(0), mSpeed(0.0f),
-      mAnmRate(1.0f), mPlayer(-1), mHoldPlayer(-1), mRipple(this), mAlpha(0xFF), mNibbling(0), mHeld(0), mScared(0),
-      mLifeTimer(3600), mLinks(0), mHideHeld(0), mDead(0) {}
+    : mParam(*param), mState(STATE_NONE), _1DC(0.0f, 0.0f, 0.0f),
+      mScale(1.0f, 1.0f, 1.0f), _20C(0), mSpeed(0.0f), mAnmRate(1.0f),
+      mPlayer(-1), mHoldPlayer(-1), mRipple(this), mAlpha(0xFF), mNibbling(0),
+      mHeld(0), mScared(0), mLifeTimer(3600), mLinks(0), mHideHeld(0),
+      mDead(0) {
+}
 
 // 0x2788
-dFishFldShadow_c::~dFishFldShadow_c() {}
+dFishFldShadow_c::~dFishFldShadow_c() {
+}
 
 // 0x283C
 BOOL dFishFldShadow_c::create(const nw4r::g3d::ResFile &res) {
@@ -908,9 +959,12 @@ BOOL dFishFldShadow_c::create(const nw4r::g3d::ResFile &res) {
 }
 
 // 0x2970
-// The states in which a held fish hangs from its player's hand, as a negated "not one of" test: MWCC
-// only folds chains of == into a range check, and the target has four separate compares.
-#define FISH_NOT_IN_HAND(state) ((state) != STATE_SHOW_HOLD && (state) != STATE_SHOW && (state) != STATE_HOOKED && (state) != STATE_CATCH)
+// The states in which a held fish hangs from its player's hand, as a negated
+// "not one of" test: MWCC only folds chains of == into a range check, and the
+// target has four separate compares.
+#define FISH_NOT_IN_HAND(state)                                                \
+    ((state) != STATE_SHOW_HOLD && (state) != STATE_SHOW &&                    \
+     (state) != STATE_HOOKED && (state) != STATE_CATCH)
 
 void dFishFldShadow_c::calcMtx() {
     const dFishSizeParam_c *size = &sSizeParams[mParam.mSize];
@@ -920,7 +974,9 @@ void dFishFldShadow_c::calcMtx() {
         pos = mPos;
         dActor_c::makeMtx(&mtx, &pos, mTargetAngle.y);
         if (!FISH_NOT_IN_HAND(mState)) {
-            const nw4r::math::MTX34 *hand = (const nw4r::math::MTX34 *)dPlayerMgr::getHandTransform(mPlayer);
+            const nw4r::math::MTX34 *hand =
+                (const nw4r::math::MTX34 *)dPlayerMgr::getHandTransform(
+                    mPlayer);
             if (hand != NULL) {
                 _1E8.set(dFishInfo::getHoldParam(mKind), 0.0f, 0.0f);
                 mVec3_c handPos;
@@ -979,11 +1035,16 @@ int dFishFldShadow_c::searchFloat() {
         diff.y -= mPos.y;
         diff.z -= mPos.z;
         BOOL inWater = TRUE;
-        if (fl->mKind != dUki_c::KIND_SILVER_ROD && fl->mKind != dUki_c::KIND_GOLD_ROD) {
+        if (fl->mKind != dUki_c::KIND_SILVER_ROD &&
+            fl->mKind != dUki_c::KIND_GOLD_ROD) {
             inWater = FALSE;
         }
-        s16 angle = (inWater ? &sTurnParam1[mParam._1] : &sTurnParam0[mParam._1])->mAngle;
-        f32 range = 32.0f * (inWater ? &sTurnParam1[mParam._1] : &sTurnParam0[mParam._1])->mSpeed;
+        s16 angle =
+            (inWater ? &sTurnParam1[mParam._1] : &sTurnParam0[mParam._1])
+                ->mAngle;
+        f32 range = 32.0f * (inWater ? &sTurnParam1[mParam._1]
+                                     : &sTurnParam0[mParam._1])
+                                ->mSpeed;
         f32 dist = PSVECMag(diff);
         static const f32 cSplashR = 16.0f;
         if (dist < cSplashR && fl->isJustLanded()) {
@@ -1027,7 +1088,8 @@ BOOL dFishFldShadow_c::checkScared() {
             static const f32 cScareR = 80.0f;
             static const f32 cScareRSq = cScareR * cScareR;
             mVec3_c diff = mPos - player->mPos;
-            if (diff.x * diff.x + diff.z * diff.z < cScareRSq && (dPlayerMgr::isRunAnimation(i) || dPlayerMgr::fn_800FF150(i))) {
+            if (diff.x * diff.x + diff.z * diff.z < cScareRSq &&
+                (dPlayerMgr::isRunAnimation(i) || dPlayerMgr::fn_800FF150(i))) {
                 return TRUE;
             }
         }
@@ -1054,7 +1116,8 @@ void dFishFldShadow_c::calcRemote() {
     mDestPos.z = getRec()->mRec.getPosZ();
     mDestPos.y = mPos.y;
     mVec3_c diff = mDestPos - mPos;
-    sLib::addCalcAngle(&mCourse.mAngle, getRec()->mRec.getDir() << 13, 8, (int)(2.0f * mAng::DegreeToAngleCoefficient));
+    sLib::addCalcAngle(&mCourse.mAngle, getRec()->mRec.getDir() << 13, 8,
+                       (int)(2.0f * mAng::DegreeToAngleCoefficient));
     if (EGG::Mathf::sqrt(diff.x * diff.x + diff.z * diff.z) > 32.0f) {
         mSpeed = 1.0f;
         mAnmRate = 1.0f;
@@ -1065,7 +1128,8 @@ void dFishFldShadow_c::calcRemote() {
         sLib::addCalc2(&mAnmRate, 0.5f, 0.25f, 0.1f);
     }
     cLib::chasePosXZ(&mPos, mDestPos, mSpeed);
-    sLib::addCalcAngle(&mTargetAngle.y.mAngle, mCourse, 2, (int)(10.0f * mAng::DegreeToAngleCoefficient));
+    sLib::addCalcAngle(&mTargetAngle.y.mAngle, mCourse, 2,
+                       (int)(10.0f * mAng::DegreeToAngleCoefficient));
 }
 
 // 0x31A4
@@ -1125,7 +1189,8 @@ void dFishFldShadow_c::initSwim() {
         if (isOpenWater()) {
             mVec3_c d = mHomePos - mPos;
             s16 rel = -0x8000 - mCourse.mAngle;
-            BOOL ok = (rel < 0x2000 && rel >= 0 && d.x > -32.0f) || (rel > -0x2000 && rel < 0 && d.x < 32.0f);
+            BOOL ok = (rel < 0x2000 && rel >= 0 && d.x > -32.0f) ||
+                      (rel > -0x2000 && rel < 0 && d.x < 32.0f);
             if (!ok) {
                 f32 deg = cM::rndRange(30.0f, 45.0f);
                 s16 ofs = deg * mAng::DegreeToAngleCoefficient;
@@ -1228,7 +1293,8 @@ void dFishFldShadow_c::executeSwim() {
         s16 rev = cM::atan2s(check.mDir.x, check.mDir.z) + 0x8000U;
         ang = rev;
     }
-    f32 speed = 0.25f - 0.2f * nw4r::math::CosIdx((s16)(ang - mTargetAngle.y.mAngle) / 2);
+    f32 speed = 0.25f - 0.2f * nw4r::math::CosIdx(
+                                   (s16)(ang - mTargetAngle.y.mAngle) / 2);
     if (isSeaSlot() == 1) {
         speed *= 0.5f;
     }
@@ -1295,7 +1361,8 @@ void dFishFldShadow_c::executeApproach() {
             }
             mVec3_c d = *flPos - mPos;
             if (d.x * d.x + d.z * d.z > 25.0f) {
-                sLib::addCalcAngle(&mTargetAngle.y.mAngle, cM::atan2s(d.x, d.z), 4, 0x71C);
+                sLib::addCalcAngle(&mTargetAngle.y.mAngle, cM::atan2s(d.x, d.z),
+                                   4, 0x71C);
                 mCourse = mTargetAngle.y;
             }
             if (!mNibbling) {
@@ -1314,7 +1381,12 @@ void dFishFldShadow_c::executeApproach() {
             } else if (sLib::calcTimer(&mTimer) != 0) {
                 dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
                 s16 ang = cM::atan2s(check.mDir.x, check.mDir.z);
-                _1DC = check.mDir * (0.25f - 0.2f * nw4r::math::CosIdx((mAng(ang + 0x8000U) - mTargetAngle.y).mAngle / 2));
+                _1DC =
+                    check.mDir *
+                    (0.25f -
+                     0.2f * nw4r::math::CosIdx(
+                                (mAng(ang + 0x8000U) - mTargetAngle.y).mAngle /
+                                2));
                 f32 dist = EGG::Mathf::sqrt(d.x * d.x + d.z * d.z);
                 if (dist < 32.0f) {
                     f32 rate = (32.0f - dist) / 32.0f;
@@ -1351,8 +1423,9 @@ void dFishFldShadow_c::endApproach() {
 
 // 0x41B0
 void dFishFldShadow_c::initNibble() {
-    // The original tests the member function pointer isMine (always TRUE, __ptmf_test of the PTMF
-    // constants data 0x398 / 0x3A4) instead of the local: mine is unused.
+    // The original tests the member function pointer isMine (always TRUE,
+    // __ptmf_test of the PTMF constants data 0x398 / 0x3A4) instead of the
+    // local: mine is unused.
     BOOL mine = isMine();
     if (!isMine || getRec()->mRemote) {
         mPlayer = getRec()->mRec.getMember();
@@ -1419,7 +1492,8 @@ void dFishFldShadow_c::executeNibble() {
                 int left = 5 - mNibbleNum;
                 int n = left >= 1 ? left : 1;
                 f32 chance = 100.0f - 100.0f / n;
-                if (cM::rndRange(0.0f, 100.0f) > chance || sLib::chase(&mNibbleNum, 5, 1)) {
+                if (cM::rndRange(0.0f, 100.0f) > chance ||
+                    sLib::chase(&mNibbleNum, 5, 1)) {
                     if (fl->mState == dUki_c::STATE_REEL) {
                         dUki_c::setFish(mPlayer, NULL);
                         setState(STATE_ESCAPE);
@@ -1439,7 +1513,12 @@ void dFishFldShadow_c::executeNibble() {
             if (sLib::calcTimer(&mTimer) != 0 || !mine) {
                 dBGCF::groundChk_c check(&mPos, dBGCF::LAYER_WATER, 1, 0);
                 s16 ang = cM::atan2s(check.mDir.x, check.mDir.z);
-                _1DC = check.mDir * (0.25f - 0.2f * nw4r::math::CosIdx((mAng(ang + 0x8000U) - mTargetAngle.y).mAngle / 2));
+                _1DC =
+                    check.mDir *
+                    (0.25f -
+                     0.2f * nw4r::math::CosIdx(
+                                (mAng(ang + 0x8000U) - mTargetAngle.y).mAngle /
+                                2));
                 f32 dist2 = EGG::Mathf::sqrt(d.x * d.x + d.z * d.z);
                 if (dist2 < 32.0f) {
                     if (mNibbleNum == 0) {
@@ -1543,7 +1622,9 @@ void dFishFldShadow_c::executeEscape() {
     if (!isFinFish()) {
         nw4r::g3d::ResMdl mdl = mMdl.getResMdl();
         int matID = m3d::getMatID(mdl, "m0");
-        nw4r::g3d::ScnMdl::CopiedMatAccess cma(nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mMdl.getScn()), matID);
+        nw4r::g3d::ScnMdl::CopiedMatAccess cma(
+            nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mMdl.getScn()),
+            matID);
         if (cma.IsValid()) {
             GXColor color;
             nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor();
@@ -1582,7 +1663,9 @@ void dFishFldShadow_c::executeHooked() {
         held = TRUE;
     } else {
         mHoldPlayer = mPlayer;
-        held = dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
+        held = dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH,
+                                               mKind, TRUE,
+                                               dFIMdlBank_c::MODE_GET);
     }
     if (sLib::calcTimer(&mTimer) == 0 && held && isMine()) {
         setState(STATE_CATCH);
@@ -1611,7 +1694,9 @@ void dFishFldShadow_c::initCatch() {
         held = TRUE;
     } else {
         mHoldPlayer = mPlayer;
-        held = dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
+        held = dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH,
+                                               mKind, TRUE,
+                                               dFIMdlBank_c::MODE_GET);
     }
     if (held) {
         mHeld = 1;
@@ -1627,7 +1712,9 @@ void dFishFldShadow_c::executeCatch() {
         if (mKind >= FISH_NUM) {
             held = TRUE;
         } else {
-            held = dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
+            held = dFIMdlMgr_c::sInstance->request(
+                mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE,
+                dFIMdlBank_c::MODE_GET);
         }
         if (held) {
             mHeld = 1;
@@ -1651,7 +1738,8 @@ void dFishFldShadow_c::executeCatch() {
 // 0x50DC
 void dFishFldShadow_c::initShowHold() {
     mHoldPlayer = mPlayer;
-    dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
+    dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind,
+                                    TRUE, dFIMdlBank_c::MODE_GET);
     mHeld = 1;
     mTargetAngle.y = 0;
     mHideHeld = 1;
@@ -1659,7 +1747,8 @@ void dFishFldShadow_c::initShowHold() {
 
 // 0x513C
 void dFishFldShadow_c::executeShowHold() {
-    if (dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET)) {
+    if (dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH,
+                                        mKind, TRUE, dFIMdlBank_c::MODE_GET)) {
         mHoldPlayer = mPlayer;
         setState(STATE_SHOW);
     }
@@ -1686,7 +1775,8 @@ void dFishFldShadow_c::executeShow() {
 // 0x5228
 void dFishFldShadow_c::initHold() {
     mHoldPlayer = mPlayer;
-    dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET);
+    dFIMdlMgr_c::sInstance->request(mPlayer, dFIMdlBank_c::TYPE_FISH, mKind,
+                                    TRUE, dFIMdlBank_c::MODE_GET);
     mHeld = 1;
     mHideHeld = 1;
 }
@@ -1697,7 +1787,8 @@ void dFishFldShadow_c::executeHold() {
     if (hand != NULL) {
         mPos = *hand;
     }
-    if (dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH, mKind, TRUE, dFIMdlBank_c::MODE_GET)) {
+    if (dFIMdlMgr_c::sInstance->request(mHoldPlayer, dFIMdlBank_c::TYPE_FISH,
+                                        mKind, TRUE, dFIMdlBank_c::MODE_GET)) {
         mScale.set(0.0f, 0.0f, 0.0f);
         setState(STATE_RELEASE);
     }
@@ -1800,7 +1891,9 @@ void dFishFldShadow_c::executeRelease() {
         }
         nw4r::g3d::ResMdl mdl = mMdl.getResMdl();
         int matID = m3d::getMatID(mdl, "m0");
-        nw4r::g3d::ScnMdl::CopiedMatAccess cma(nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mMdl.getScn()), matID);
+        nw4r::g3d::ScnMdl::CopiedMatAccess cma(
+            nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mMdl.getScn()),
+            matID);
         if (cma.IsValid()) {
             GXColor color;
             nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor();
@@ -1861,7 +1954,8 @@ BOOL dFishFldShadow_c::pull() {
         if (kind >= 0x43 && kind < FISH_TYPE_NUM) {
             isKey = TRUE;
         }
-        if (isKey && (!player->mPID.isFromTown() || player->findEmptyPocket(0) == -1)) {
+        if (isKey &&
+            (!player->mPID.isFromTown() || player->findEmptyPocket(0) == -1)) {
             ok = FALSE;
         } else {
             BOOL isTrash = FALSE;
@@ -2011,8 +2105,9 @@ void dFishFldShadow_c::calcBgMove() {
     mPos.y = height;
     mTargetPos.y = height;
     pushOutOfFall();
-    mWallCheck.check(radius, &mPos, &mTargetPos, mTargetAngle.y, 0,
-                     dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS, 1);
+    mWallCheck.check(
+        radius, &mPos, &mTargetPos, mTargetAngle.y, 0,
+        dBGCF::CHECK_FLOOR | dBGCF::CHECK_WALL | dBGCF::CHECK_SET_POS, 1);
     mTargetPos.y = y;
     mPos.y = y;
     dBGCF::groundChk_c check2(&mPos, dBGCF::LAYER_WATER, 0, 0);
@@ -2148,10 +2243,12 @@ int dFishFldShadow_c::execute() {
             mtx.m[1][3] = pos.y;
             mtx.m[2][3] = pos.z;
             mMtx_c scale;
-            PSMTXScale(scale, sShadowScale[mParam.mSize][0], 1.0f, sShadowScale[mParam.mSize][1]);
+            PSMTXScale(scale, sShadowScale[mParam.mSize][0], 1.0f,
+                       sShadowScale[mParam.mSize][1]);
             PSMTXConcat(mtx, scale, mtx);
             mEffect.create(effects[fin], &mtx, 1);
-            mEffect.setColor(0xFF, 0xFF, 0xFF, mAlpha, EGG::Effect::RECURSIVE_0);
+            mEffect.setColor(0xFF, 0xFF, 0xFF, mAlpha,
+                             EGG::Effect::RECURSIVE_0);
         }
     }
     return TRUE;
@@ -2375,15 +2472,18 @@ dFishShadowMdl_c::dFishShadowMdl_c() : mCallback(this) {
 }
 
 // 0x6FF8
-dFishShadowMdl_c::~dFishShadowMdl_c() {}
+dFishShadowMdl_c::~dFishShadowMdl_c() {
+}
 
 // 0x7060
-BOOL dFishShadowMdl_c::create(nw4r::g3d::ResMdl mdl, mAllocator_c *allocator, ulong bufferOption, int viewCount,
+BOOL dFishShadowMdl_c::create(nw4r::g3d::ResMdl mdl, mAllocator_c *allocator,
+                              ulong bufferOption, int viewCount,
                               size_t *objSize) {
     if (!smdl_c::create(mdl, allocator, bufferOption, viewCount, objSize)) {
         return FALSE;
     }
-    nw4r::g3d::ScnMdlSimple *scn = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
+    nw4r::g3d::ScnMdlSimple *scn =
+        nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
     scn->SetScnMdlCallback(&mCallback);
     scn->EnableScnMdlCallbackTiming(nw4r::g3d::ScnObj::CALLBACK_TIMING_B);
     scn->SetScnMdlCallbackNodeID(2);
@@ -2401,14 +2501,18 @@ void dFishShadowMdl_c::calcRoot(nw4r::g3d::WorldMtxManip *manip, u16 nodeID) {
 }
 
 // 0x71A0
-dFishShadowMdl_c::mdlCallback_c::mdlCallback_c(dFishShadowMdl_c *owner) : mOwner(owner) {}
+dFishShadowMdl_c::mdlCallback_c::mdlCallback_c(dFishShadowMdl_c *owner)
+    : mOwner(owner) {
+}
 
 // 0x71B4
-dFishShadowMdl_c::mdlCallback_c::~mdlCallback_c() {}
+dFishShadowMdl_c::mdlCallback_c::~mdlCallback_c() {
+}
 
 // 0x71F4
-void dFishShadowMdl_c::mdlCallback_c::ExecCallbackB(nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl mdl,
-                                                    nw4r::g3d::FuncObjCalcWorld *funcObj) {
+void dFishShadowMdl_c::mdlCallback_c::ExecCallbackB(
+    nw4r::g3d::WorldMtxManip *manip, nw4r::g3d::ResMdl mdl,
+    nw4r::g3d::FuncObjCalcWorld *funcObj) {
     mOwner->calcRoot(manip, funcObj->GetNodeID());
 }
 
@@ -2424,7 +2528,8 @@ void *dFishFldShadow_c::operator new(size_t size, EGG::Heap *heap) {
 
 // 0x7260
 void dFishFldShadow_c::splashCallback(nw4r::ef::Particle *target, u32 kind) {
-    static const char *const sNames[] = {"af_hny_hamon_S01", "afi_hny_watersplash_b"};
+    static const char *const sNames[] = {"af_hny_hamon_S01",
+                                         "afi_hny_watersplash_b"};
     if (target == NULL) {
         return;
     }
@@ -2461,14 +2566,18 @@ void dFishFldShadow_c::splashCallback(nw4r::ef::Particle *target, u32 kind) {
 // 0x73BC
 void dFishFldShadow_c::setSplashEffect() {
     static const char *const sColumnNames[] = {
-        "af_fsh_watercolumn_SS", "af_fsh_watercolumn_S",   "af_fsh_watercolumn_M", "af_fsh_watercolumn_L",
-        "af_fsh_watercolumn_LL", "af_fsh_watercolumn_LLL", "af_fsh_watercolumn_J", "af_fsh_watercolumn__U",
+        "af_fsh_watercolumn_SS", "af_fsh_watercolumn_S",
+        "af_fsh_watercolumn_M",  "af_fsh_watercolumn_L",
+        "af_fsh_watercolumn_LL", "af_fsh_watercolumn_LLL",
+        "af_fsh_watercolumn_J",  "af_fsh_watercolumn__U",
     };
     static const char *const sDropNames[] = {
-        "af_hny_mizutama_S", "af_hny_mizutama_S", "af_hny_mizutama_M", "af_hny_mizutama_M",
-        "af_hny_mizutama_M", "af_hny_mizutama_L", "af_hny_mizutama_L", "af_hny_mizutama_M",
+        "af_hny_mizutama_S", "af_hny_mizutama_S", "af_hny_mizutama_M",
+        "af_hny_mizutama_M", "af_hny_mizutama_M", "af_hny_mizutama_L",
+        "af_hny_mizutama_L", "af_hny_mizutama_M",
     };
-    static const f32 sDropScales[] = {1.0f, 1.0f, 0.9f, 1.2f, 1.4f, 1.1f, 1.3f, 1.0f};
+    static const f32 sDropScales[] = {1.0f, 1.0f, 0.9f, 1.2f,
+                                      1.4f, 1.1f, 1.3f, 1.0f};
     u32 kind;
     switch (mParam.mSize) {
     case FISH_SIZE_HUGE:
@@ -2485,12 +2594,14 @@ void dFishFldShadow_c::setSplashEffect() {
     dEffect::create(sColumnNames[mParam.mSize], &pos, 0, NULL);
     f32 s = sDropScales[mParam.mSize];
     mVec3_c scale(s, s, s);
-    dEffect::create(sDropNames[mParam.mSize], &pos, 0, &scale, splashCallback, kind);
+    dEffect::create(sDropNames[mParam.mSize], &pos, 0, &scale, splashCallback,
+                    kind);
 }
 
 // 0x74C0
 void dFishFldShadow_c::setEscapeEffect() {
-    static const f32 sScales[] = {0.7f, 0.8f, 1.0f, 1.1f, 1.2f, 1.3f, 1.6f, 1.0f};
+    static const f32 sScales[] = {0.7f, 0.8f, 1.0f, 1.1f,
+                                  1.2f, 1.3f, 1.6f, 1.0f};
     f32 s = sScales[mParam.mSize];
     mVec3_c scale(s, s, s);
     dEffect::create("af_fsh_escape_hamon", &mPos, 0, &scale);
@@ -2530,7 +2641,8 @@ void dFishField_c::clearRecs() {
 void dFishField_c::sendRecs() {
     if (dNet::isSessionActive()) {
         for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
-            if (isRecMine(i) && mRecs[i].mRec.getState() != PLAY_SYNC_STATE_CLAIMED) {
+            if (isRecMine(i) &&
+                mRecs[i].mRec.getState() != PLAY_SYNC_STATE_CLAIMED) {
                 if (mRecs[i].mReleasePending) {
                     mRecs[i].mRec.setMember(4);
                     claimSyncRec(&mRecs[i].mRec, i);
@@ -2558,7 +2670,9 @@ void dFishField_c::recvRecs() {
                 mRecs[i].mRemote = 0;
             } else {
                 mRecs[i].mRemote = 1;
-                cLib::memCpy(&mRecs[i].mRec, dNet::getRecord(i + PLAY_SYNC_REC_ID), sizeof(dPlaySyncRec_c));
+                cLib::memCpy(&mRecs[i].mRec,
+                             dNet::getRecord(i + PLAY_SYNC_REC_ID),
+                             sizeof(dPlaySyncRec_c));
             }
         }
     }
@@ -2573,7 +2687,8 @@ void dFishField_c::initRecs() {
             } else {
                 mRecs[i].mRemote = 1;
             }
-            cLib::memCpy(&mRecs[i].mRec, dNet::getRecord(i + PLAY_SYNC_REC_ID), sizeof(dPlaySyncRec_c));
+            cLib::memCpy(&mRecs[i].mRec, dNet::getRecord(i + PLAY_SYNC_REC_ID),
+                         sizeof(dPlaySyncRec_c));
         }
     }
 }

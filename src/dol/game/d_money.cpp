@@ -1,6 +1,7 @@
-// d_money.cpp: the pocket money display. .text 8019BD78..8019C414, .data 804FAB68..804FAC60,
-// .sdata 8074C110..8074C128, .sbss 8074EAA8..8074EAB0. See include/game/game/d_money.hpp.
-// Names other than the class name are inferred.
+// d_money.cpp: the pocket money display. .text 8019BD78..8019C414, .data
+// 804FAB68..804FAC60, .sdata 8074C110..8074C128, .sbss 8074EAA8..8074EAB0. See
+// include/game/game/d_money.hpp. Names other than the class name are inferred.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_money.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_demo.hpp>
@@ -20,7 +21,7 @@
 #define MONEY_DIGITS 12
 #define MONEY_COUNT_FRAMES 30
 
-CUSTOM_BASE_PROFILE(MONEY, dMoney_c, 6, 0x125);
+CUSTOM_BASE_PROFILE(MONEY, dMoney_c, fProf::MONEY, fProf::DRAW_ORDER::MONEY);
 
 static const char *l_anmNames[MONEY_ANM_NUM] = {
     "inStore_money_00_moneyIn.brlan",
@@ -89,7 +90,8 @@ void dMoney_c::stateShown() {
 void dMoney_c::stateHidden() {
     l_flags &= ~FLAG_SHOW;
     if (isShow()) {
-        if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY)) {
+        if (!dScene::isSceneAttr(dScene::getCurrentScene(),
+                                 dScene::SCENE_ATTR_FACILITY)) {
             resetMoney();
         }
         l_flags |= FLAG_SHOW;
@@ -109,7 +111,8 @@ BOOL dMoney_c::isShow() {
     if (l_flags & FLAG_FORCE_SHOW) {
         return TRUE;
     }
-    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(),
+                             dScene::SCENE_ATTR_FACILITY)) {
         return FALSE;
     }
     if (dDemo::isType(dDemo::TYPE_ANY) && dDemo::isTalking()) {
@@ -132,7 +135,8 @@ int dMoney_c::getMoney() {
 
 // 8019C16C
 void dMoney_c::setNumber() {
-    mLyt.setNumberSep("T_money_00", mDispMoney, MONEY_DIGITS, dScript::NUM_FORMAT_REGION);
+    mLyt.setNumberSep("T_money_00", mDispMoney, MONEY_DIGITS,
+                      dScript::NUM_FORMAT_REGION);
     l_flags |= FLAG_CALC;
 }
 
@@ -164,7 +168,9 @@ void dMoney_c::updateMoney() {
         }
         setNumber();
     } else if (money != mDispMoney) {
-        if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_FACILITY) || (l_flags & FLAG_FORCE_SHOW)) {
+        if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                                dScene::SCENE_ATTR_FACILITY) ||
+            (l_flags & FLAG_FORCE_SHOW)) {
             if (dMenuMng_c::isFree()) {
                 int diff;
                 if (money > mDispMoney) {

@@ -1,4 +1,6 @@
-// The scene data of RM_MM_FOSSIL0 (dScene::dSceneData_c sScDataRmMmFossil0; see include/game/game/d_sc_data.hpp).
+// The scene data of RM_MM_FOSSIL0 (dScene::dSceneData_c sScDataRmMmFossil0; see
+// include/game/game/d_sc_data.hpp).
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_sc_data.hpp>
 
 namespace dScData {
@@ -7,11 +9,12 @@ static u32 l_ids5[] = {0x33, 0x34};
 static u32 l_ids6[] = {0x35, 0x36};
 static ColorByte_c l_palette0 = {{0x63, 0x63, 0xA5, 0xFF}, 0x7B};
 static u32 l_setting0[] = {0xE7D6B5FF, 0xDAAB0000}; // scene setting kind 9
-static u16 l_resources[] = {0x0012, 0x00F5};
+static u16 l_resources[] = {fProf::A_RMOBJ_FOSSIL, fProf::A_NAMEPLATE_MUSEUM};
 static PlayerData_c l_player = {{256.0f, 0.0f, 256.0f}, {0, -0x8000, 0}, 0, 8};
-static dScene::dSceneBaseData_c l_base[] = {{0x00A3, 0}, {0x00B0, 0}};
+static dScene::dSceneBaseData_c l_base[] = {{fProf::SV_DEMO, 0},
+                                            {fProf::FISH_MUSEUM, 0}};
 static ActorData_c l_actors[] = {
-    {0x0012, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, 0},
+    {fProf::A_RMOBJ_FOSSIL, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, 0},
 };
 static u32 l_ids0[] = {0x15, 0x16, 0x17};
 static u32 l_ids1[] = {0x2D, 0x2E, 0x2F};
@@ -51,19 +54,39 @@ static PanelData_c l_panel11 = {3, 0x23, l_ids11, 3, l_name11, 0};
 static char l_name12[] = "panel_A_12";
 static PanelData_c l_panel12 = {3, 0xF, l_ids12, 3, l_name12, 0};
 static ActorData_c l_actors1[] = {
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel0},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel1},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel2},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel3},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel4},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel5},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, -0x4000, 0}, 0, &l_panel6},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel7},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel8},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel9},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel10},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel11},
-    {0x00F5, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel12},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel0},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel1},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel2},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel3},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel4},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel5},
+    {fProf::A_NAMEPLATE_MUSEUM,
+     0,
+     {0.0f, 0.0f, 0.0f},
+     {0, -0x4000, 0},
+     0,
+     &l_panel6},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel7},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel8},
+    {fProf::A_NAMEPLATE_MUSEUM, 0, {0.0f, 0.0f, 0.0f}, {0, 0, 0}, 0, &l_panel9},
+    {fProf::A_NAMEPLATE_MUSEUM,
+     0,
+     {0.0f, 0.0f, 0.0f},
+     {0, 0, 0},
+     0,
+     &l_panel10},
+    {fProf::A_NAMEPLATE_MUSEUM,
+     0,
+     {0.0f, 0.0f, 0.0f},
+     {0, 0, 0},
+     0,
+     &l_panel11},
+    {fProf::A_NAMEPLATE_MUSEUM,
+     0,
+     {0.0f, 0.0f, 0.0f},
+     {0, 0, 0},
+     0,
+     &l_panel12},
 };
 static Scene3Entry_c l_scene3[] = {{5, &l_palette0}, {9, l_setting0}};
 static dScene::dSceneDataEntry_c l_entries[] = {
@@ -79,14 +102,37 @@ static dScene::dSceneDataEntry_c l_entries[] = {
     {dScene::SCENE_DATA_RES, ARRAY_SIZE(l_resources), l_resources},
 };
 static ExitData_c l_exits[] = {
-    {{0x1E, 0x1E, 0x1E, 0x1E}, {368.0f, 0.0f, 224.0f}, -0x4000, 0, 0x4A, 3, 0, -0x4000},
-    {{0x22, 0x22, 0x22, 0x22}, {480.0f, 0.0f, 464.0f}, -0x8000, 0, 0x4A, 3, 0, -0x8000},
-    {{0x22, 0x22, 0x22, 0x22}, {288.0f, 0.0f, 464.0f}, -0x8000, 0, 0x4A, 3, 0, -0x8000},
+    {{0x1E, 0x1E, 0x1E, 0x1E},
+     {368.0f, 0.0f, 224.0f},
+     -0x4000,
+     0,
+     0x4A,
+     3,
+     0,
+     -0x4000},
+    {{0x22, 0x22, 0x22, 0x22},
+     {480.0f, 0.0f, 464.0f},
+     -0x8000,
+     0,
+     0x4A,
+     3,
+     0,
+     -0x8000},
+    {{0x22, 0x22, 0x22, 0x22},
+     {288.0f, 0.0f, 464.0f},
+     -0x8000,
+     0,
+     0x4A,
+     3,
+     0,
+     -0x8000},
 };
-static dScene::dSceneExitList_c l_exitList = {(dScene::dSceneExitData_c *)l_exits, ARRAY_SIZE(l_exits)};
+static dScene::dSceneExitList_c l_exitList = {
+    (dScene::dSceneExitData_c *)l_exits, ARRAY_SIZE(l_exits)};
 static u16 l_exitInfoData[] = {0x01B4, 0x01B8, 0x01B6, 0x01BA};
 static ExitInfo_c l_exitInfo = {l_exitInfoData, 0x02020000};
-static SceneData_c l_scene = {{ARRAY_SIZE(l_entries), l_entries, &l_exitList}, &l_exitInfo};
+static SceneData_c l_scene = {{ARRAY_SIZE(l_entries), l_entries, &l_exitList},
+                              &l_exitInfo};
 
 } // namespace dScData
 

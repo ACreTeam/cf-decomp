@@ -1,6 +1,8 @@
-// d_obj_voice.cpp: the voice chat mark and the voice packets. .text 801B700C..801B76BC,
-// .data 804FC850..804FC938, .sdata 8074C300..8074C318, .sbss 8074EB70..8074EB78.
-// See include/game/game/d_obj_voice.hpp. Names other than the class name are inferred.
+// d_obj_voice.cpp: the voice chat mark and the voice packets. .text
+// 801B700C..801B76BC, .data 804FC850..804FC938, .sdata 8074C300..8074C318,
+// .sbss 8074EB70..8074EB78. See include/game/game/d_obj_voice.hpp. Names other
+// than the class name are inferred.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_obj_voice.hpp>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_net.hpp>
@@ -13,7 +15,8 @@
 #define VOICE_PRIORITY 0x89
 #define VOICE_ANM_NUM 2
 
-CUSTOM_BASE_PROFILE(OBJ_VOICE, dObjVoice_c, 0xF8, 0x127);
+CUSTOM_BASE_PROFILE(OBJ_VOICE, dObjVoice_c, fProf::OBJ_VOICE,
+                    fProf::DRAW_ORDER::OBJ_VOICE);
 
 static int l_anmIdx;
 static u8 l_status[NET_MEMBER_NONE];
@@ -92,7 +95,8 @@ void dObjVoice_c::playAnm() {
 
 // 801B72C4
 BOOL dObjVoice_c::isActive() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_DEMO)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_DEMO)) {
         return FALSE;
     }
     if (dSaveOption::getVoiceChat() == TRUE) {
@@ -118,7 +122,8 @@ void dObjVoice_c::queryStatus() {
         if (i == myNo) {
             l_status[i] = VOICE_MSG_NONE;
         } else if (dNet::isMember(i)) {
-            if (getOption(dPlayerMgr::Mgr_c::getNetPlayer(i))->isVoiceChat() == TRUE) {
+            if (getOption(dPlayerMgr::Mgr_c::getNetPlayer(i))->isVoiceChat() ==
+                TRUE) {
                 l_status[i] = VOICE_MSG_NONE;
             } else {
                 sendReply(VOICE_MSG_QUERY, i);
@@ -148,24 +153,26 @@ u8 dObjVoice_c::getStatus(int member) {
 void dObjVoice_c::receive(int member, const void *data) {
     u8 msg = *(const u8 *)data;
     switch (msg) {
-        case VOICE_MSG_ON:
-        case VOICE_MSG_OFF:
-            setVoice(member, msg);
-            break;
-        case VOICE_MSG_READY:
-        case VOICE_MSG_NOT_READY:
-        case VOICE_MSG_NONE:
-            l_status[member] = msg;
-            break;
-        case VOICE_MSG_QUERY:
-            int reply;
-            if (dSaveOption::getVoiceChat() == TRUE) {
-                reply = VOICE_MSG_NONE;
-            } else {
-                reply = dNetMgr_c::sInstance->mInfo.mMicActive != 0 ? VOICE_MSG_READY : VOICE_MSG_NOT_READY;
-            }
-            sendReply(reply, member);
-            break;
+    case VOICE_MSG_ON:
+    case VOICE_MSG_OFF:
+        setVoice(member, msg);
+        break;
+    case VOICE_MSG_READY:
+    case VOICE_MSG_NOT_READY:
+    case VOICE_MSG_NONE:
+        l_status[member] = msg;
+        break;
+    case VOICE_MSG_QUERY:
+        int reply;
+        if (dSaveOption::getVoiceChat() == TRUE) {
+            reply = VOICE_MSG_NONE;
+        } else {
+            reply = dNetMgr_c::sInstance->mInfo.mMicActive != 0
+                        ? VOICE_MSG_READY
+                        : VOICE_MSG_NOT_READY;
+        }
+        sendReply(reply, member);
+        break;
     }
 }
 

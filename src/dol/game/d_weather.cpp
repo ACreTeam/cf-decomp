@@ -1,4 +1,5 @@
 // Weather manager, daily pattern generation and forecast cache.
+#include <game/framework/f_profile_name.hpp>
 #include <game/game/d_event.hpp>
 #include <game/game/d_field_assessment.hpp>
 #include <game/game/d_heap.hpp>
@@ -11,7 +12,8 @@
 #include <game/game/d_weather.hpp>
 #include <game/sLib/s_lib.hpp>
 
-CUSTOM_BASE_PROFILE(WEATHER, dWeather_c, 0xA9, 0x81);
+CUSTOM_BASE_PROFILE(WEATHER, dWeather_c, fProf::WEATHER,
+                    fProf::DRAW_ORDER::WEATHER);
 dWeather_c *dWeather_c::sInstance;
 namespace dWeather {
 static dTimeStamp_c sCacheDate ALIGN(8);
@@ -195,8 +197,11 @@ dWeather_c::~dWeather_c() {
 int dWeather_c::create() {
     int result = SUCCEEDED;
     bool effects = false;
-    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM) ||
-        dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM | dScene::SCENE_ATTR_CHKP)) {
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(),
+                             dScene::SCENE_ATTR_ROOM) ||
+        dScene::isSceneAttr(dScene::getCurrentScene(),
+                            dScene::SCENE_ATTR_ROOM |
+                                dScene::SCENE_ATTR_CHKP)) {
         effects = true;
     }
     mDrawWeather = effects;
@@ -277,7 +282,8 @@ int dWeather_c::execute() {
         mWeather = weather;
     }
     if (mDrawWeather) {
-        if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_BUS)) {
+        if (dScene::isSceneAttr(dScene::getCurrentScene(),
+                                dScene::SCENE_ATTR_BUS)) {
             mRain.calcBus(mWeather);
             mSnow.calcBus(mWeather);
             mSakura.calc(dWeatherSakura::getCount());
@@ -289,7 +295,8 @@ int dWeather_c::execute() {
         mConfetti.calc();
     }
     if (mWeather == dWeather::HEAVY_RAIN || mRain.mThunder.mState) {
-        mRain.mThunder.calc(!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM));
+        mRain.mThunder.calc(!dScene::isSceneAttr(dScene::getCurrentScene(),
+                                                 dScene::SCENE_ATTR_ROOM));
     }
     if ((mWeather == dWeather::RAIN || mWeather == dWeather::HEAVY_RAIN ||
          mWeather == dWeather::SNOW || mWeather == dWeather::HEAVY_SNOW) &&
@@ -304,7 +311,8 @@ int dWeather_c::execute() {
 
 int dWeather_c::draw() {
     if (mWeather == dWeather::HEAVY_RAIN || mRain.mThunder.mState) {
-        mRain.mThunder.draw(!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM));
+        mRain.mThunder.draw(!dScene::isSceneAttr(dScene::getCurrentScene(),
+                                                 dScene::SCENE_ATTR_ROOM));
     }
     if (mDrawWeather) {
         mSnow.draw();
