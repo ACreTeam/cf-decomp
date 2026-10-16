@@ -2602,10 +2602,10 @@ config.libs = [
     Rel(
         "d_bgo_drawNP",
         [
-            Object(NonMatching, "d_bgo_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_bgo_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_bgo_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_bgo_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_bgo_drawNP/d_bgo_draw.cpp"),
+            Object(Matching, "d_bgo_drawNP/d_bgo_draw.cpp"),
         ],
     ),
     Rel(

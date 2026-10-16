@@ -675,6 +675,7 @@ modules:
   name: d_bgo_drawNP
   symbols: config/RUUE01_00/d_bgo_drawNP/symbols.txt
   splits: config/RUUE01_00/d_bgo_drawNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_bgt_drawNP.rel
   hash: b9147aa702fd882324c3946b610b0acf4ef51c9b
   name: d_bgt_drawNP
