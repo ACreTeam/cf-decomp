@@ -1030,7 +1030,7 @@ public:
         if (!(mFlag & FLAG_0) || !(mFlag & FLAG_1) || id != mCurrentFogIdx) {
             if (id < 0 || id >= NUM_FOG) {
                 GXColor color = {0, 0, 0, 0};
-                GXSetFog(GX_FOG_NONE, color, 0.0f, 0.0f, 0.0f, 0.0f);
+                GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, color);
             } else {
                 Fog(&mFogData[id]).SetGP();
             }

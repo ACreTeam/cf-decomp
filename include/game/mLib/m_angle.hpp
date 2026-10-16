@@ -108,6 +108,8 @@ public:
     /// @brief Copy constructor.
     mAng3_c(const mAng3_c &v) : x(v.x), y(v.y), z(v.z) {}
 
+    bool isZero() const { return x.mAngle == 0 && y.mAngle == 0 && z.mAngle == 0; }
+
     mAng3_c &operator=(const mAng3_c &v) {
         x = v.x;
         y = v.y;

@@ -52,7 +52,7 @@ void defaultSet() {
     GXSetCullMode(GX_CULL_NONE);
     GXSetZMode(0, GX_ALWAYS, 0);
     static const GXColor l_clearColor = {0x00000000};
-    GXSetFog(GX_FOG_NONE, l_clearColor, 0.0f, 0.0f, 0.0f, 0.0f);
+    GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, l_clearColor);
 }
 
 void draw() {

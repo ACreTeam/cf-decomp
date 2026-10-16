@@ -1597,6 +1597,15 @@ config.libs = [
             Object(Matching, "d_skyNP/d_sky.cpp"),
         ],
     ),
+    Rel(
+        "d_fg_drawNP",
+        [
+            Object(Matching, "d_fg_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_fg_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(Matching, "d_fg_drawNP/d_fg_draw.cpp"),
+        ],
+    ),
 ]
 
 

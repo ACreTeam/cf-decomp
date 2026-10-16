@@ -26,6 +26,7 @@ extern EGG::FrmHeap *itemInfoHeap_p; // アイテム情報ヒープ
 extern EGG::FrmHeap *fgDataHeap_p; // FGデータヒープ
 extern EGG::FrmHeap *fieldHeap_p; // フィールド情報ヒープ
 extern EGG::FrmHeap *fgHeap_p; // ＦＧヒープ
+inline EGG::Heap *getFgHeap() { return fgHeap_p; }
 extern EGG::FrmHeap *fgAlwaysHeap_p; // ＦＧ常駐ヒープ
 extern EGG::FrmHeap *strHeap_p; // 建物ヒープ
 extern EGG::FrmHeap *strResHeap_p; // 建物リソースヒープ

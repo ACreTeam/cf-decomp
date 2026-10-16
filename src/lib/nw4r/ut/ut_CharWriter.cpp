@@ -5,7 +5,7 @@ namespace {
 void SetupGXCommon() {
     static const nw4r::ut::Color fog = 0;
 
-    GXSetFog(GX_FOG_NONE, fog, 0.0f, 0.0f, 0.0f, 0.0f);
+    GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fog);
     GXSetTevSwapModeTable(GX_TEV_SWAP0, GX_CH_RED, GX_CH_GREEN, GX_CH_BLUE,
                           GX_CH_ALPHA);
     GXSetZTexture(GX_ZT_DISABLE, GX_TF_Z8, 0);

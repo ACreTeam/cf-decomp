@@ -5,3 +5,18 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_fg_drawNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_fg_drawNP/global_destructor_chain.c:
+	.text       start:0x0000005C end:0x000000CC
+	.dtors      start:0x00000000 end:0x00000004
+	.bss        start:0x00000000 end:0x00000004
+
+d_fg_drawNP/d_fg_draw.cpp:
+	.text       start:0x000000CC end:0x00004384
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000128
+	.data       start:0x00000000 end:0x000005C0
+	.bss        start:0x00000008 end:0x000015C0

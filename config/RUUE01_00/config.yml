@@ -686,6 +686,7 @@ modules:
   name: d_fg_drawNP
   symbols: config/RUUE01_00/d_fg_drawNP/symbols.txt
   splits: config/RUUE01_00/d_fg_drawNP/splits.txt
+  force_active: [addWithMtx__7dFgDrawFUsRC7mVec3_cRC6mMtx_c] # retained unused public entry point
 - object: files/rels/d_fish_fieldNP.rel
   hash: c616d0a5aacf713faf9d21e2c61e63589f6fb4e2
   name: d_fish_fieldNP

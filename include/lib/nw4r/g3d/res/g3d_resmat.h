@@ -579,6 +579,8 @@ public:
     // City Folk additions (names unofficial):
     bool BindTexByName(const ResTex tex, const char *texName);   // 8023886C: binds tex to every slot named texName
     void ReleaseTexByName(const char *texName, ulong len);       // 80238C68: unbinds the slots named texName
+    bool BindPlttByName(const ResPltt pltt, const char *plttName); // 80238AC8
+    void ReleasePlttByName(const char *plttName, ulong len);      // 80238D6C
 
     ResMdl GetParent();
 

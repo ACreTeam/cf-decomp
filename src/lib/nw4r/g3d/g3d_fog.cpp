@@ -86,7 +86,7 @@ void Fog::SetGP() const {
         GXSetFogRangeAdj(r.adjEnable, r.adjCenter, &r.adjTable);
     }
 
-    GXSetFog(r.type, r.color, r.startz, r.endz, r.nearz, r.farz);
+    GXSetFog(r.type, r.startz, r.endz, r.nearz, r.farz, r.color);
 }
 
 } // namespace g3d

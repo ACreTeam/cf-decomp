@@ -31,7 +31,6 @@ int fn_8041B0EC(void *, const char *, const char *);
 int fn_8041B1B0(void *, const char *, const char *);
 int fn_8041B394(void *, const char *, char **);
 u32 fn_8041ABEC(void *, char **, u32 *);
-char *fn_804571A8(char *, const char *, size_t);
 }
 
 namespace dNetWus {
@@ -259,7 +258,7 @@ BOOL dNetWus_c::inquire(const u64 *keys, int num, int validTerm, u8 *results) {
     for (;;) {
         char id[WII_ID_LENGTH + 1];
         sprintf(id, "%016llu", *keys);
-        fn_804571A8(ids, id, WII_ID_LENGTH);
+        strncat(ids, id, WII_ID_LENGTH);
         if (--remaining == 0) {
             break;
         }
