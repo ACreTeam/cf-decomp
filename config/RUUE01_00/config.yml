@@ -729,6 +729,7 @@ modules:
   name: d_org_objNP
   symbols: config/RUUE01_00/d_org_objNP/symbols.txt
   splits: config/RUUE01_00/d_org_objNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_shop_fgNP.rel
   hash: de2e7cc4310e4701c6b7e88d6fed550c55cc321a
   name: d_shop_fgNP

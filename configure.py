@@ -2674,10 +2674,10 @@ config.libs = [
     Rel(
         "d_org_objNP",
         [
-            Object(NonMatching, "d_org_objNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_org_objNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_org_objNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_org_objNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_org_objNP/d_org_obj.cpp"),
+            Object(Matching, "d_org_objNP/d_org_obj.cpp", shift_jis=False),
         ],
     ),
     Rel(
