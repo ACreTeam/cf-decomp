@@ -741,6 +741,7 @@ modules:
   name: d_sky_rainbowNP
   symbols: config/RUUE01_00/d_sky_rainbowNP/symbols.txt
   splits: config/RUUE01_00/d_sky_rainbowNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_str_managerNP.rel
   hash: fd7fb836147153cb4891099bd17ee1e1b1181a8f
   name: d_str_managerNP
