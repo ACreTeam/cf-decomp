@@ -5,3 +5,15 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_a_npc_sp_missing_childNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_a_npc_sp_missing_childNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_a_npc_sp_missing_childNP/d_a_npc_sp_missing_child.cpp:
+	.text       start:0x0000005C end:0x000090BC
+	.rodata     start:0x00000000 end:0x00000290
+	.data       start:0x00000000 end:0x00001B70
+	.bss        start:0x00000008 end:0x00000010

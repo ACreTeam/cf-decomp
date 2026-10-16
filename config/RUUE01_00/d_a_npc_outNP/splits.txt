@@ -5,3 +5,18 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_a_npc_outNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_a_npc_outNP/global_destructor_chain.c:
+	.text       start:0x0000005C end:0x000000CC
+	.dtors      start:0x00000000 end:0x00000008
+	.bss        start:0x00000000 end:0x00000004
+
+d_a_npc_outNP/d_a_npc_out.cpp:
+	.text       start:0x000000CC end:0x000141CC
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000B50
+	.data       start:0x00000000 end:0x00000398
+	.bss        start:0x00000008 end:0x0000002C

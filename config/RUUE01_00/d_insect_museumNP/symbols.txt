@@ -734,6 +734,7 @@ fn_117_18804 = .text:0x00018804; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_117_rodata_0 = .rodata:0x00000000; // type:object size:0x4 align:4 data:float
 lbl_117_rodata_4 = .rodata:0x00000004; // type:object size:0x8 align:4 data:float
 lbl_117_rodata_C = .rodata:0x0000000C; // type:object size:0x4 align:4 data:float

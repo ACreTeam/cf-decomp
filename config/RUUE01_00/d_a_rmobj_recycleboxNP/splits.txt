@@ -5,3 +5,14 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_a_rmobj_recycleboxNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_a_rmobj_recycleboxNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_a_rmobj_recycleboxNP/d_a_rmobj_recyclebox.cpp:
+	.text       start:0x0000005C end:0x000011C0
+	.rodata     start:0x00000000 end:0x00000110
+	.data       start:0x00000000 end:0x000003C0

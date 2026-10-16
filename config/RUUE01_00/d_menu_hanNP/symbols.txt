@@ -63,6 +63,7 @@ fn_148_23E0 = .text:0x000023E0; // type:function size:0xC8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_148_rodata_0 = .rodata:0x00000000; // type:object size:0x20 align:4 data:float
 lbl_148_rodata_20 = .rodata:0x00000020; // type:object size:0xC align:4 data:float
 lbl_148_data_0 = .data:0x00000000; // type:object size:0x5C

@@ -5,3 +5,14 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_a_npc_sp_op_tanukichiNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_a_npc_sp_op_tanukichiNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_a_npc_sp_op_tanukichiNP/d_a_npc_sp_op_tanukichi.cpp:
+	.text       start:0x0000005C end:0x00001BDC
+	.rodata     start:0x00000000 end:0x000000F4
+	.data       start:0x00000000 end:0x00000678

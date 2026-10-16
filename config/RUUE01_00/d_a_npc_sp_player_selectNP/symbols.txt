@@ -247,6 +247,7 @@ fn_24_A3CC = .text:0x0000A3CC; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_24_rodata_0 = .rodata:0x00000000; // type:object size:0x24 align:4 data:float
 lbl_24_rodata_24 = .rodata:0x00000024; // type:object size:0x24
 lbl_24_rodata_48 = .rodata:0x00000048; // type:object size:0x24

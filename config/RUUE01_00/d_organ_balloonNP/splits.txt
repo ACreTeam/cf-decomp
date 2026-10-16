@@ -5,3 +5,15 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_organ_balloonNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_organ_balloonNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_organ_balloonNP/d_organ_balloon.cpp:
+	.text       start:0x0000005C end:0x00001918
+	.rodata     start:0x00000000 end:0x00000080
+	.data       start:0x00000000 end:0x000001E8
+	.bss        start:0x00000008 end:0x0000000C

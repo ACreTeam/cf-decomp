@@ -5,3 +5,14 @@ Sections:
 	.rodata     type:rodata align:8
 	.data       type:data align:8
 	.bss        type:bss align:8
+
+d_menu_itemxxNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_menu_itemxxNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_menu_itemxxNP/d_menu_itemxx.cpp:
+	.text       start:0x0000005C end:0x00003448
+	.rodata     start:0x00000000 end:0x0000002C
+	.data       start:0x00000000 end:0x000001A8

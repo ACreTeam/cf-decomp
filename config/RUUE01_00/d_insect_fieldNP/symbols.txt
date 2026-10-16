@@ -943,6 +943,7 @@ fn_116_270B0 = .text:0x000270B0; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_116_rodata_0 = .rodata:0x00000000; // type:object size:0xC align:4 data:float
 lbl_116_rodata_C = .rodata:0x0000000C; // type:object size:0x54
 lbl_116_rodata_60 = .rodata:0x00000060; // type:object size:0x54

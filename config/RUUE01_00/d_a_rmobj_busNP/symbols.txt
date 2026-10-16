@@ -40,6 +40,7 @@ fn_82_1120 = .text:0x00001120; // type:function size:0x4
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_82_rodata_0 = .rodata:0x00000000; // type:object size:0x4 align:4 data:float
 lbl_82_rodata_4 = .rodata:0x00000004; // type:object size:0x18 align:4 data:float
 lbl_82_rodata_1C = .rodata:0x0000001C; // type:object size:0x24

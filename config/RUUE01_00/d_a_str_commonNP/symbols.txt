@@ -182,6 +182,7 @@ fn_101_3CAC = .text:0x00003CAC; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_101_rodata_0 = .rodata:0x00000000; // type:object size:0x8 align:4 data:float
 lbl_101_rodata_8 = .rodata:0x00000008; // type:object size:0x14 align:4 data:float
 lbl_101_rodata_1C = .rodata:0x0000001C; // type:object size:0x20 align:4 data:float

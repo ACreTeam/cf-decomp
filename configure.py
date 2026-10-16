@@ -1615,6 +1615,1656 @@ config.libs = [
             Object(Matching, "d_menu_debug00NP/d_menu_debug00.cpp"),
         ],
     ),
+    # Remaining REL scaffolds use extracted objects until their sources match.
+    # Runtime TUs are separate; game-code groups in splits.txt are provisional
+    # and may contain multiple original TUs. Do not treat them as confirmed boundaries.
+    Rel(
+        "d_profileNP",
+        [
+            Object(NonMatching, "d_profileNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_profileNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_profileNP/d_profile.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_desiNP",
+        [
+            Object(NonMatching, "d_menu_desiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_desiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_desiNP/d_menu_desi.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_itemNP",
+        [
+            Object(NonMatching, "d_menu_itemNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_itemNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_itemNP/d_menu_item.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_itemxxNP",
+        [
+            Object(NonMatching, "d_menu_itemxxNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_itemxxNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_itemxxNP/d_menu_itemxx.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_ltrNP",
+        [
+            Object(NonMatching, "d_menu_ltrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_ltrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_ltrNP/d_menu_ltr.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_mapNP",
+        [
+            Object(NonMatching, "d_menu_mapNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_mapNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_mapNP/d_menu_map.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_numberNP",
+        [
+            Object(NonMatching, "d_menu_numberNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_numberNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_numberNP/d_menu_number.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_lcrsrNP",
+        [
+            Object(NonMatching, "d_menu_lcrsrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_lcrsrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_lcrsrNP/d_menu_lcrsr.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_starNP",
+        [
+            Object(NonMatching, "d_menu_starNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_starNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_starNP/d_menu_star.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_titleNP",
+        [
+            Object(NonMatching, "d_menu_titleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_titleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_titleNP/d_menu_title.cpp"),
+        ],
+    ),
+    Rel(
+        "d_paperNP",
+        [
+            Object(NonMatching, "d_paperNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_paperNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_paperNP/d_paper.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_balloonNP",
+        [
+            Object(NonMatching, "d_a_balloonNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_balloonNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_balloonNP/d_a_balloon.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_bbs_birdNP",
+        [
+            Object(NonMatching, "d_a_bbs_birdNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_bbs_birdNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_bbs_birdNP/d_a_bbs_bird.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_cockroachNP",
+        [
+            Object(NonMatching, "d_a_cockroachNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_cockroachNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_cockroachNP/d_a_cockroach.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_ftrNP",
+        [
+            Object(NonMatching, "d_a_ftrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_ftrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_ftrNP/d_a_ftr.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_ftr_actNP",
+        [
+            Object(NonMatching, "d_a_ftr_actNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_ftr_actNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_ftr_actNP/d_a_ftr_act.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_growup_msgNP",
+        [
+            Object(NonMatching, "d_a_growup_msgNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_growup_msgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_growup_msgNP/d_a_growup_msg.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_nameplateNP",
+        [
+            Object(NonMatching, "d_a_nameplateNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_nameplateNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_nameplateNP/d_a_nameplate.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_nameplate_museumNP",
+        [
+            Object(NonMatching, "d_a_nameplate_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_nameplate_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_nameplate_museumNP/d_a_nameplate_museum.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_cafeNP",
+        [
+            Object(NonMatching, "d_a_npc_cafeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_cafeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_cafeNP/d_a_npc_cafe.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_inNP",
+        [
+            Object(NonMatching, "d_a_npc_inNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_inNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_inNP/d_a_npc_in.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_outNP",
+        [
+            Object(NonMatching, "d_a_npc_outNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_outNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_outNP/d_a_npc_out.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_sampleNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_sampleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_sampleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_sampleNP/d_a_npc_sp_sample.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_player_selectNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_player_selectNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_player_selectNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_player_selectNP/d_a_npc_sp_player_select.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_player_createNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_player_createNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_player_createNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_player_createNP/d_a_npc_sp_player_create.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_demo_resetsanNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_demo_resetsanNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_demo_resetsanNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_demo_resetsanNP/d_a_npc_sp_demo_resetsan.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_haniwaNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_haniwaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_haniwaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_haniwaNP/d_a_npc_sp_haniwa.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_bugNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_bugNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_bugNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_bugNP/d_a_npc_sp_bug.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_missing_childNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_missing_childNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_missing_childNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_missing_childNP/d_a_npc_sp_missing_child.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_missing_motherNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_missing_motherNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_missing_motherNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_missing_motherNP/d_a_npc_sp_missing_mother.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_dancerNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_dancerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_dancerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_dancerNP/d_a_npc_sp_dancer.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_pyontaroNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_pyontaroNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_pyontaroNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_pyontaroNP/d_a_npc_sp_pyontaro.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_resetsanNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_resetsanNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_resetsanNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_resetsanNP/d_a_npc_sp_resetsan.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_perikoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_perikoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_perikoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_perikoNP/d_a_npc_sp_periko.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_sonchoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_sonchoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_sonchoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_sonchoNP/d_a_npc_sp_soncho.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_event_sonchoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_event_sonchoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_event_sonchoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_event_sonchoNP/d_a_npc_sp_event_soncho.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_ceremony_sonchoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_ceremony_sonchoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_ceremony_sonchoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_ceremony_sonchoNP/d_a_npc_sp_ceremony_soncho.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_tanukichiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_tanukichiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_tanukichiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_tanukichiNP/d_a_npc_sp_tanukichi.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_op_tanukichiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_op_tanukichiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_op_tanukichiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_op_tanukichiNP/d_a_npc_sp_op_tanukichi.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_kaburibaNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_kaburibaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_kaburibaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_kaburibaNP/d_a_npc_sp_kaburiba.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_totakekeNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_totakekeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_totakekeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_totakekeNP/d_a_npc_sp_totakeke.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_tunekichiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_tunekichiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_tunekichiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_tunekichiNP/d_a_npc_sp_tunekichi.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_asamiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_asamiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_asamiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_asamiNP/d_a_npc_sp_asami.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_kinuyoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_kinuyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_kinuyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_kinuyoNP/d_a_npc_sp_kinuyo.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_cafeNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_cafeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_cafeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_cafeNP/d_a_npc_sp_cafe.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_cafe_guestNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_cafe_guestNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_cafe_guestNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_cafe_guestNP/d_a_npc_sp_cafe_guest.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_catherineNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_catherineNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_catherineNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_catherineNP/d_a_npc_sp_catherine.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_futaNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_futaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_futaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_futaNP/d_a_npc_sp_futa.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_fukoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_fukoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_fukoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_fukoNP/d_a_npc_sp_fuko.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_franklinNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_franklinNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_franklinNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_franklinNP/d_a_npc_sp_franklin.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_graceNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_graceNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_graceNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_graceNP/d_a_npc_sp_grace.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_jijyoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_jijyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_jijyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_jijyoNP/d_a_npc_sp_jijyo.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_jonnyNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_jonnyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_jonnyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_jonnyNP/d_a_npc_sp_jonny.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_kappeiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_kappeiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_kappeiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_kappeiNP/d_a_npc_sp_kappei.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_perioNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_perioNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_perioNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_perioNP/d_a_npc_sp_perio.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_raccoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_raccoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_raccoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_raccoNP/d_a_npc_sp_racco.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_roranNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_roranNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_roranNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_roranNP/d_a_npc_sp_roran.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_seiichiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_seiichiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_seiichiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_seiichiNP/d_a_npc_sp_seiichi.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_fortuneNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_fortuneNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_fortuneNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_fortuneNP/d_a_npc_sp_fortune.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_sisyoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_sisyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_sisyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_sisyoNP/d_a_npc_sp_sisyo.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_honmaNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_honmaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_honmaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_honmaNP/d_a_npc_sp_honma.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_jingleNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_jingleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_jingleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_jingleNP/d_a_npc_sp_jingle.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_uomasaNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_uomasaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_uomasaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_uomasaNP/d_a_npc_sp_uomasa.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_pumpkingNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_pumpkingNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_pumpkingNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_pumpkingNP/d_a_npc_sp_pumpking.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_kutsumigakiNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_kutsumigakiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_kutsumigakiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_kutsumigakiNP/d_a_npc_sp_kutsumigaki.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_gatekeeper_aNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_gatekeeper_aNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_gatekeeper_aNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_gatekeeper_aNP/d_a_npc_sp_gatekeeper_a.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_gatekeeper_bNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_gatekeeper_bNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_gatekeeper_bNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_gatekeeper_bNP/d_a_npc_sp_gatekeeper_b.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_goddessNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_goddessNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_goddessNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_goddessNP/d_a_npc_sp_goddess.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_mysterycatNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_mysterycatNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_mysterycatNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_mysterycatNP/d_a_npc_sp_mysterycat.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_yuutaroNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_yuutaroNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_yuutaroNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_yuutaroNP/d_a_npc_sp_yuutaro.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_yuutaro_loftNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_yuutaro_loftNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_yuutaro_loftNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_yuutaro_loftNP/d_a_npc_sp_yuutaro_loft.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_fuusenNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_fuusenNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_fuusenNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_fuusenNP/d_a_npc_sp_fuusen.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_sp_golditem_sonchoNP",
+        [
+            Object(NonMatching, "d_a_npc_sp_golditem_sonchoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_sp_golditem_sonchoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_sp_golditem_sonchoNP/d_a_npc_sp_golditem_soncho.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_town_graceNP",
+        [
+            Object(NonMatching, "d_a_npc_town_graceNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_town_graceNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_town_graceNP/d_a_npc_town_grace.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_town_outNP",
+        [
+            Object(NonMatching, "d_a_npc_town_outNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_town_outNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_town_outNP/d_a_npc_town_out.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_town_theaterNP",
+        [
+            Object(NonMatching, "d_a_npc_town_theaterNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_town_theaterNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_town_theaterNP/d_a_npc_town_theater.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_visit_npc_houseNP",
+        [
+            Object(NonMatching, "d_a_npc_visit_npc_houseNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_visit_npc_houseNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_visit_npc_houseNP/d_a_npc_visit_npc_house.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_visit_player_houseNP",
+        [
+            Object(NonMatching, "d_a_npc_visit_player_houseNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_visit_player_houseNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_visit_player_houseNP/d_a_npc_visit_player_house.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_npc_visit_player_house_fleamarketNP",
+        [
+            Object(NonMatching, "d_a_npc_visit_player_house_fleamarketNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_npc_visit_player_house_fleamarketNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_npc_visit_player_house_fleamarketNP/d_a_npc_visit_player_house_fleamarket.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_playerNP",
+        [
+            Object(NonMatching, "d_a_playerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_playerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_playerNP/d_a_player.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_atmNP",
+        [
+            Object(NonMatching, "d_a_rmobj_atmNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_atmNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_atmNP/d_a_rmobj_atm.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_busNP",
+        [
+            Object(NonMatching, "d_a_rmobj_busNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_busNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_busNP/d_a_rmobj_bus.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_barricadeNP",
+        [
+            Object(NonMatching, "d_a_rmobj_barricadeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_barricadeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_barricadeNP/d_a_rmobj_barricade.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_cafeNP",
+        [
+            Object(NonMatching, "d_a_rmobj_cafeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_cafeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_cafeNP/d_a_rmobj_cafe.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_checkpNP",
+        [
+            Object(NonMatching, "d_a_rmobj_checkpNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_checkpNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_checkpNP/d_a_rmobj_checkp.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_pointNP",
+        [
+            Object(NonMatching, "d_a_rmobj_pointNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_pointNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_pointNP/d_a_rmobj_point.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_fossilNP",
+        [
+            Object(NonMatching, "d_a_rmobj_fossilNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_fossilNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_fossilNP/d_a_rmobj_fossil.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_graceNP",
+        [
+            Object(NonMatching, "d_a_rmobj_graceNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_graceNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_graceNP/d_a_rmobj_grace.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_perm_machineNP",
+        [
+            Object(NonMatching, "d_a_rmobj_perm_machineNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_perm_machineNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_perm_machineNP/d_a_rmobj_perm_machine.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_picNP",
+        [
+            Object(NonMatching, "d_a_rmobj_picNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_picNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_picNP/d_a_rmobj_pic.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_recycleboxNP",
+        [
+            Object(NonMatching, "d_a_rmobj_recycleboxNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_recycleboxNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_recycleboxNP/d_a_rmobj_recyclebox.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_resetNP",
+        [
+            Object(NonMatching, "d_a_rmobj_resetNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_resetNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_resetNP/d_a_rmobj_reset.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_sampleNP",
+        [
+            Object(NonMatching, "d_a_rmobj_sampleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_sampleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_sampleNP/d_a_rmobj_sample.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_sewing_machineNP",
+        [
+            Object(NonMatching, "d_a_rmobj_sewing_machineNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_sewing_machineNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_sewing_machineNP/d_a_rmobj_sewing_machine.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_telNP",
+        [
+            Object(NonMatching, "d_a_rmobj_telNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_telNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_telNP/d_a_rmobj_tel.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_theaterNP",
+        [
+            Object(NonMatching, "d_a_rmobj_theaterNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_theaterNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_theaterNP/d_a_rmobj_theater.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_rmobj_mirrorballNP",
+        [
+            Object(NonMatching, "d_a_rmobj_mirrorballNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_rmobj_mirrorballNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_rmobj_mirrorballNP/d_a_rmobj_mirrorball.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_sign_tagNP",
+        [
+            Object(NonMatching, "d_a_sign_tagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_sign_tagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_sign_tagNP/d_a_sign_tag.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_strNP",
+        [
+            Object(NonMatching, "d_a_strNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_strNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_strNP/d_a_str.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_str_cdbbsNP",
+        [
+            Object(NonMatching, "d_a_str_cdbbsNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_str_cdbbsNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_str_cdbbsNP/d_a_str_cdbbs.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_str_commonNP",
+        [
+            Object(NonMatching, "d_a_str_commonNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_str_commonNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_str_commonNP/d_a_str_common.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_str_fieldNP",
+        [
+            Object(NonMatching, "d_a_str_fieldNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_str_fieldNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_str_fieldNP/d_a_str_field.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_str_townNP",
+        [
+            Object(NonMatching, "d_a_str_townNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_str_townNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_str_townNP/d_a_str_town.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_ticket_counterNP",
+        [
+            Object(NonMatching, "d_a_ticket_counterNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_ticket_counterNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_ticket_counterNP/d_a_ticket_counter.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_ufoNP",
+        [
+            Object(NonMatching, "d_a_ufoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_ufoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_ufoNP/d_a_ufo.cpp"),
+        ],
+    ),
+    Rel(
+        "d_balloon_managerNP",
+        [
+            Object(NonMatching, "d_balloon_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_balloon_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_balloon_managerNP/d_balloon_manager.cpp"),
+        ],
+    ),
+    Rel(
+        "d_bgi_drawNP",
+        [
+            Object(NonMatching, "d_bgi_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_bgi_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_bgi_drawNP/d_bgi_draw.cpp"),
+        ],
+    ),
+    Rel(
+        "d_bgo_drawNP",
+        [
+            Object(NonMatching, "d_bgo_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_bgo_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_bgo_drawNP/d_bgo_draw.cpp"),
+        ],
+    ),
+    Rel(
+        "d_bgt_drawNP",
+        [
+            Object(NonMatching, "d_bgt_drawNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_bgt_drawNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_bgt_drawNP/d_bgt_draw.cpp"),
+        ],
+    ),
+    Rel(
+        "d_cockroach_managerNP",
+        [
+            Object(NonMatching, "d_cockroach_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_cockroach_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_cockroach_managerNP/d_cockroach_manager.cpp"),
+        ],
+    ),
+    Rel(
+        "d_fgobj_managerNP",
+        [
+            Object(NonMatching, "d_fgobj_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_fgobj_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_fgobj_managerNP/d_fgobj_manager.cpp"),
+        ],
+    ),
+    Rel(
+        "d_fish_museumNP",
+        [
+            Object(NonMatching, "d_fish_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_fish_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_fish_museumNP/d_fish_museum.cpp"),
+        ],
+    ),
+    Rel(
+        "d_ftr_managerNP",
+        [
+            Object(NonMatching, "d_ftr_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_ftr_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_ftr_managerNP/d_ftr_manager.cpp"),
+        ],
+    ),
+    Rel(
+        "d_insect_fieldNP",
+        [
+            Object(NonMatching, "d_insect_fieldNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_insect_fieldNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_insect_fieldNP/d_insect_field.cpp"),
+        ],
+    ),
+    Rel(
+        "d_insect_museumNP",
+        [
+            Object(NonMatching, "d_insect_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_insect_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_insect_museumNP/d_insect_museum.cpp"),
+        ],
+    ),
+    Rel(
+        "d_org_objNP",
+        [
+            Object(NonMatching, "d_org_objNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_org_objNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_org_objNP/d_org_obj.cpp"),
+        ],
+    ),
+    Rel(
+        "d_shop_fgNP",
+        [
+            Object(NonMatching, "d_shop_fgNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_shop_fgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_shop_fgNP/d_shop_fg.cpp"),
+        ],
+    ),
+    Rel(
+        "d_sky_auroraNP",
+        [
+            Object(NonMatching, "d_sky_auroraNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_sky_auroraNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_sky_auroraNP/d_sky_aurora.cpp"),
+        ],
+    ),
+    Rel(
+        "d_sky_rainbowNP",
+        [
+            Object(NonMatching, "d_sky_rainbowNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_sky_rainbowNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_sky_rainbowNP/d_sky_rainbow.cpp"),
+        ],
+    ),
+    Rel(
+        "d_str_managerNP",
+        [
+            Object(NonMatching, "d_str_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_str_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_str_managerNP/d_str_manager.cpp"),
+        ],
+    ),
+    Rel(
+        "d_s_selectNP",
+        [
+            Object(NonMatching, "d_s_selectNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_s_selectNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_s_selectNP/d_s_select.cpp"),
+        ],
+    ),
+    Rel(
+        "d_s_stageNP",
+        [
+            Object(NonMatching, "d_s_stageNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_s_stageNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_s_stageNP/d_s_stage.cpp"),
+        ],
+    ),
+    Rel(
+        "d_title_demoNP",
+        [
+            Object(NonMatching, "d_title_demoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_title_demoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_title_demoNP/d_title_demo.cpp"),
+        ],
+    ),
+    Rel(
+        "d_flagNP",
+        [
+            Object(NonMatching, "d_flagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_flagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_flagNP/d_flag.cpp"),
+        ],
+    ),
+    Rel(
+        "d_countdown_flagNP",
+        [
+            Object(NonMatching, "d_countdown_flagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_countdown_flagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_countdown_flagNP/d_countdown_flag.cpp"),
+        ],
+    ),
+    Rel(
+        "d_organ_balloonNP",
+        [
+            Object(NonMatching, "d_organ_balloonNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_organ_balloonNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_organ_balloonNP/d_organ_balloon.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_bankNP",
+        [
+            Object(NonMatching, "d_menu_bankNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_bankNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_bankNP/d_menu_bank.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_catalogNP",
+        [
+            Object(NonMatching, "d_menu_catalogNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_catalogNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_catalogNP/d_menu_catalog.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_chatNP",
+        [
+            Object(NonMatching, "d_menu_chatNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_chatNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_chatNP/d_menu_chat.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_desi00NP",
+        [
+            Object(NonMatching, "d_menu_desi00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_desi00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_desi00NP/d_menu_desi00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_desi01NP",
+        [
+            Object(NonMatching, "d_menu_desi01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_desi01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_desi01NP/d_menu_desi01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_desi02NP",
+        [
+            Object(NonMatching, "d_menu_desi02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_desi02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_desi02NP/d_menu_desi02.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_desi03NP",
+        [
+            Object(NonMatching, "d_menu_desi03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_desi03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_desi03NP/d_menu_desi03.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_editNP",
+        [
+            Object(NonMatching, "d_menu_editNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_editNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_editNP/d_menu_edit.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friendNP",
+        [
+            Object(NonMatching, "d_menu_friendNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friendNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friendNP/d_menu_friend.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend01NP",
+        [
+            Object(NonMatching, "d_menu_friend01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend01NP/d_menu_friend01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend02NP",
+        [
+            Object(NonMatching, "d_menu_friend02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend02NP/d_menu_friend02.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend03NP",
+        [
+            Object(NonMatching, "d_menu_friend03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend03NP/d_menu_friend03.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend04NP",
+        [
+            Object(NonMatching, "d_menu_friend04NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend04NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend04NP/d_menu_friend04.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend05NP",
+        [
+            Object(NonMatching, "d_menu_friend05NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend05NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend05NP/d_menu_friend05.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend06NP",
+        [
+            Object(NonMatching, "d_menu_friend06NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend06NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend06NP/d_menu_friend06.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend07NP",
+        [
+            Object(NonMatching, "d_menu_friend07NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend07NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend07NP/d_menu_friend07.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_friend08NP",
+        [
+            Object(NonMatching, "d_menu_friend08NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_friend08NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_friend08NP/d_menu_friend08.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_hanNP",
+        [
+            Object(NonMatching, "d_menu_hanNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_hanNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_hanNP/d_menu_han.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_haniwaNP",
+        [
+            Object(NonMatching, "d_menu_haniwaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_haniwaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_haniwaNP/d_menu_haniwa.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item00NP",
+        [
+            Object(NonMatching, "d_menu_item00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item00NP/d_menu_item00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item01NP",
+        [
+            Object(NonMatching, "d_menu_item01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item01NP/d_menu_item01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item02NP",
+        [
+            Object(NonMatching, "d_menu_item02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item02NP/d_menu_item02.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item03NP",
+        [
+            Object(NonMatching, "d_menu_item03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item03NP/d_menu_item03.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item04NP",
+        [
+            Object(NonMatching, "d_menu_item04NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item04NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item04NP/d_menu_item04.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item05NP",
+        [
+            Object(NonMatching, "d_menu_item05NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item05NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item05NP/d_menu_item05.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_item06NP",
+        [
+            Object(NonMatching, "d_menu_item06NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_item06NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_item06NP/d_menu_item06.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_inscNP",
+        [
+            Object(NonMatching, "d_menu_inscNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_inscNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_inscNP/d_menu_insc.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_kabuNP",
+        [
+            Object(NonMatching, "d_menu_kabuNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_kabuNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_kabuNP/d_menu_kabu.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_keytestNP",
+        [
+            Object(NonMatching, "d_menu_keytestNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_keytestNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_keytestNP/d_menu_keytest.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_map00NP",
+        [
+            Object(NonMatching, "d_menu_map00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_map00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_map00NP/d_menu_map00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_map01NP",
+        [
+            Object(NonMatching, "d_menu_map01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_map01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_map01NP/d_menu_map01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_map02NP",
+        [
+            Object(NonMatching, "d_menu_map02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_map02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_map02NP/d_menu_map02.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_map03NP",
+        [
+            Object(NonMatching, "d_menu_map03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_map03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_map03NP/d_menu_map03.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_melodyNP",
+        [
+            Object(NonMatching, "d_menu_melodyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_melodyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_melodyNP/d_menu_melody.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_miiNP",
+        [
+            Object(NonMatching, "d_menu_miiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_miiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_miiNP/d_menu_mii.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_museumNP",
+        [
+            Object(NonMatching, "d_menu_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_museumNP/d_menu_museum.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_musicNP",
+        [
+            Object(NonMatching, "d_menu_musicNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_musicNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_musicNP/d_menu_music.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_mslctNP",
+        [
+            Object(NonMatching, "d_menu_mslctNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_mslctNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_mslctNP/d_menu_mslct.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_noticeNP",
+        [
+            Object(NonMatching, "d_menu_noticeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_noticeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_noticeNP/d_menu_notice.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_notice00NP",
+        [
+            Object(NonMatching, "d_menu_notice00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_notice00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_notice00NP/d_menu_notice00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_notice01NP",
+        [
+            Object(NonMatching, "d_menu_notice01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_notice01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_notice01NP/d_menu_notice01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_number00NP",
+        [
+            Object(NonMatching, "d_menu_number00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_number00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_number00NP/d_menu_number00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_paperNP",
+        [
+            Object(NonMatching, "d_menu_paperNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_paperNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_paperNP/d_menu_paper.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_photoNP",
+        [
+            Object(NonMatching, "d_menu_photoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_photoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_photoNP/d_menu_photo.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_photo01NP",
+        [
+            Object(NonMatching, "d_menu_photo01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_photo01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_photo01NP/d_menu_photo01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_pointNP",
+        [
+            Object(NonMatching, "d_menu_pointNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_pointNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_pointNP/d_menu_point.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_post00NP",
+        [
+            Object(NonMatching, "d_menu_post00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_post00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_post00NP/d_menu_post00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_post01NP",
+        [
+            Object(NonMatching, "d_menu_post01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_post01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_post01NP/d_menu_post01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_star00NP",
+        [
+            Object(NonMatching, "d_menu_star00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_star00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_star00NP/d_menu_star00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_star01NP",
+        [
+            Object(NonMatching, "d_menu_star01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_star01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_star01NP/d_menu_star01.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_time00NP",
+        [
+            Object(NonMatching, "d_menu_time00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_time00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_time00NP/d_menu_time00.cpp"),
+        ],
+    ),
+    Rel(
+        "d_menu_writeNP",
+        [
+            Object(NonMatching, "d_menu_writeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_menu_writeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_menu_writeNP/d_menu_write.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_layoutNP",
+        [
+            Object(NonMatching, "d_a_layoutNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_layoutNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_layoutNP/d_a_layout.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_mdlNP",
+        [
+            Object(NonMatching, "d_a_mdlNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_mdlNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_mdlNP/d_a_mdl.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_sampleNP",
+        [
+            Object(NonMatching, "d_a_sampleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_sampleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_sampleNP/d_a_sample.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_sample2NP",
+        [
+            Object(NonMatching, "d_a_sample2NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_sample2NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_sample2NP/d_a_sample2.cpp"),
+        ],
+    ),
+    Rel(
+        "d_a_sample3NP",
+        [
+            Object(NonMatching, "d_a_sample3NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(NonMatching, "d_a_sample3NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+                   cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
+            Object(NonMatching, "d_a_sample3NP/d_a_sample3.cpp"),
+        ],
+    ),
 ]
 
 

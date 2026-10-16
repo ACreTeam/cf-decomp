@@ -39,6 +39,7 @@ fn_128_24B4 = .text:0x000024B4; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_128_rodata_0 = .rodata:0x00000000; // type:object size:0x24 align:4 data:float
 lbl_128_rodata_24 = .rodata:0x00000024; // type:object size:0x8 align:4 data:float
 lbl_128_rodata_2C = .rodata:0x0000002C; // type:object size:0x8 align:4 data:float

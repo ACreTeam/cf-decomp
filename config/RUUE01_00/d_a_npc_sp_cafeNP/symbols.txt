@@ -111,6 +111,7 @@ fn_45_661C = .text:0x0000661C; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_45_rodata_0 = .rodata:0x00000000; // type:object size:0x18 align:4 data:float
 lbl_45_rodata_18 = .rodata:0x00000018; // type:object size:0x7C
 lbl_45_rodata_94 = .rodata:0x00000094; // type:object size:0xC align:4 data:float

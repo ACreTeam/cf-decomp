@@ -76,6 +76,7 @@ fn_65_2C10 = .text:0x00002C10; // type:function size:0x4
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_65_rodata_0 = .rodata:0x00000000; // type:object size:0x78 align:4 data:float
 lbl_65_rodata_78 = .rodata:0x00000078; // type:object size:0x4F0 data:4byte
 lbl_65_rodata_568 = .rodata:0x00000568; // type:object size:0x90 data:4byte

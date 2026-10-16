@@ -720,6 +720,7 @@ fn_16_19574 = .text:0x00019574; // type:function size:0x14
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_16_rodata_0 = .rodata:0x00000000; // type:object size:0x14 align:4 data:float
 lbl_16_rodata_14 = .rodata:0x00000014; // type:object size:0x4 align:4 data:float
 lbl_16_rodata_18 = .rodata:0x00000018; // type:object size:0x4 align:4 data:float

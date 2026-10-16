@@ -46,6 +46,7 @@ fn_108_2040 = .text:0x00002040; // type:function size:0x8
 _ctors = .ctors:0x00000000; // type:label scope:global
 _dtors = .dtors:0x00000000; // type:label scope:global
 __destroy_global_chain_reference = .dtors:0x00000000; // type:object size:0x4 scope:global
+__destroy_global_chain_reference_2 = .dtors:0x00000004; // type:object size:0x4 scope:local
 lbl_108_rodata_0 = .rodata:0x00000000; // type:object size:0x28 align:4 data:float
 lbl_108_rodata_28 = .rodata:0x00000028; // type:object size:0x8 align:8 data:double
 lbl_108_rodata_30 = .rodata:0x00000030; // type:object size:0x2C

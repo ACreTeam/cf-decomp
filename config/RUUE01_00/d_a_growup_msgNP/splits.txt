@@ -4,3 +4,13 @@ Sections:
 	.dtors      type:rodata align:4
 	.rodata     type:rodata align:8
 	.bss        type:bss align:8
+
+d_a_growup_msgNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_a_growup_msgNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_a_growup_msgNP/d_a_growup_msg.cpp:
+	.text       start:0x0000005C end:0x000003E4
+	.rodata     start:0x00000000 end:0x00000178
