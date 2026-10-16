@@ -1666,19 +1666,19 @@ config.libs = [
     Rel(
         "d_menu_itemxxNP",
         [
-            Object(NonMatching, "d_menu_itemxxNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_itemxxNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_itemxxNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_itemxxNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_itemxxNP/d_menu_itemxx.cpp"),
+            Object(Matching, "d_menu_itemxxNP/d_menu_itemxx.cpp", extra_cflags=["-sym on"]),
         ],
     ),
     Rel(
         "d_menu_ltrNP",
         [
-            Object(NonMatching, "d_menu_ltrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_ltrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_ltrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_ltrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_ltrNP/d_menu_ltr.cpp"),
+            Object(Matching, "d_menu_ltrNP/d_menu_ltr.cpp"),
         ],
     ),
     Rel(

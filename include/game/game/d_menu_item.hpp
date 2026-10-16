@@ -71,7 +71,7 @@ class Window_c {
     void getPocketName(dScript::Word_c *word, int pocket);     // .text:0x240
     void updateMoneyText();                                    // .text:0x374
     void reset();                                              // .text:0x3C4
-    bool remove();                                             // .text:0x434
+    BOOL remove();                                             // .text:0x434
     void calcIcons();                                          // .text:0x484
     static int positionIcon(nw4r::lyt::Pane *pane, void *arg); // .text:0x4F0
     void calcLayouts();                                        // .text:0x56C
@@ -91,19 +91,19 @@ class Window_c {
     void resetMoney();                                         // .text:0x8DC
     void calcMoney();                                          // .text:0x91C
     int hitPocket(const mVec2_c *pos, bool setOffset,
-                  float scale);                   // .text:0xA18
-    bool calcAnm();                               // .text:0xB10
-    void startAnm(int anm);                       // .text:0xB78
-    void stopAnm();                               // .text:0xBCC
-    void drawHeldItem();                          // .text:0xBF0
-    void calcHeldItem();                          // .text:0xBF8
-    void setHeldItem(dItem::Item item, int flag); // .text:0xC3C
-    bool isMoveEnd();                             // .text:0xC70
-    bool calcMove();                              // .text:0xC78
-    void startMove(const mVec2_c &pos);           // .text:0xC80
-    void calcFollow();                            // .text:0xC88
-    void startFollow();                           // .text:0xC90
-    void setMoveOffset(const mVec2_c &ofs);       // .text:0xC98
+                  float scale);                          // .text:0xA18
+    bool calcAnm();                                      // .text:0xB10
+    void startAnm(int anm);                              // .text:0xB78
+    void stopAnm();                                      // .text:0xBCC
+    void drawHeldItem();                                 // .text:0xBF0
+    void calcHeldItem();                                 // .text:0xBF8
+    void setHeldItem(const dItem::Item &item, int flag); // .text:0xC3C
+    bool isMoveEnd();                                    // .text:0xC70
+    bool calcMove();                                     // .text:0xC78
+    void startMove(const mVec2_c &pos);                  // .text:0xC80
+    void calcFollow();                                   // .text:0xC88
+    void startFollow();                                  // .text:0xC90
+    void setMoveOffset(const mVec2_c &ofs);              // .text:0xC98
 
     /* 0x0000 */ m2d::ResAccLoader_c mRes;
     /* 0x00D4 */ m2d::ResAccLoader_c mIconRes;

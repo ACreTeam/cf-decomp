@@ -149,11 +149,13 @@ modules:
   name: d_menu_itemxxNP
   symbols: config/RUUE01_00/d_menu_itemxxNP/symbols.txt
   splits: config/RUUE01_00/d_menu_itemxxNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_ltrNP.rel
   hash: c6e13f7aa1dc459023b014bd35add3198f64a0b0
   name: d_menu_ltrNP
   symbols: config/RUUE01_00/d_menu_ltrNP/symbols.txt
   splits: config/RUUE01_00/d_menu_ltrNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_mapNP.rel
   hash: f719b6ce985510bb974c530148b6a7febb9fc09d
   name: d_menu_mapNP

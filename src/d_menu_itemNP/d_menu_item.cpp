@@ -88,14 +88,14 @@ void Window_c::reset() {
 }
 
 // .text:0x434
-bool Window_c::remove() {
+BOOL Window_c::remove() {
     if (mRes.remove() == FALSE) {
-        return false;
+        return FALSE;
     }
     if (mIconRes.remove() == FALSE) {
-        return false;
+        return FALSE;
     }
-    return true;
+    return TRUE;
 }
 
 // .text:0x484
@@ -328,7 +328,7 @@ void Window_c::calcHeldItem() {
 }
 
 // .text:0xC3C
-void Window_c::setHeldItem(dItem::Item item, int flag) {
+void Window_c::setHeldItem(const dItem::Item &item, int flag) {
     mHeldIcon.setItem(item, flag, -1);
 }
 
