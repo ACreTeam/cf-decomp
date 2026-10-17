@@ -1557,7 +1557,7 @@ void writeSceneLeave(int arg);
 void writeSceneHandover();
 // 800DD960: TRUE offline / unjoined; else whether this console owns (runs) its
 // scene (FALSE without a scene). Fish / insect / NPC spawners
-BOOL isSceneOwner();
+u32 isSceneOwner();
 int countMembersInScene(u8 scene); // 800DD9E0: dNetScene_c::countMembers(scene)
 bool isAllInScene(u8 scene);       // 800DDA14: dNetScene_c::isAllIn(scene)
 // 800DDA48: dNetScene_c::getScene(member); npc_out / npc_sp_racco RELs
@@ -1688,7 +1688,8 @@ void applySyncBuf4LogFlag(int member, u8 *data, u32 size);
 // 0x2B..0x95: the npc daubs (dNpc::daub_c): 10 normal ones, then the specials
 #define NET_REC_DAUB 0x2B
 #define NET_REC_DAUB_SPECIAL 0x35
-// 0x96..0xB9: player house rooms, house * 9 + room * 3 + 0..2 (8 bytes)
+// 0x96..0xB9: the cockroaches of the player house rooms (dCockroachRecord_c), house * 9 + room * 3 + 0..2 (8
+// bytes)
 #define NET_REC_HOUSE 0x96
 
 typedef void (*dNetCopyFunc)(void *dst, const void *src, int arg);

@@ -108,7 +108,7 @@ struct dHomeRoom_c {
     dHomeLayer_c *getLayerItems(int layer); // 8013D384 (same code as getLayer)
     u8 countFlags(); // 8013D3D4
     void clearFlag(int flag); // 8013D3F8
-    BOOL isFlag(int flag) const; // 8013D430
+    u32 isFlag(int flag) const; // 8013D430
     void setFlags(u8 flags); // 8013D470
 
     // Weak (MWCC doesn't inline them; callers keep the bl). The kept copies of the wallpaper /

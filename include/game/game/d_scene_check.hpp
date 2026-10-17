@@ -20,7 +20,7 @@ enum {
                   // (dHomeList_c::getHomeFromScene's room)
 };
 
-u8 isRoomOpen(int house, int room);      // 80081618
+u32 isRoomOpen(int house, int room);     // 80081618
 void setRoomOpen(int house, int room);   // 80081634: (d_net open house room)
 void clearRoomOpen(int house, int room); // 80081654
 u32 isHouseRoomScene(u8 scene); // 80081674: a room of player house 0..3 (TRUE /

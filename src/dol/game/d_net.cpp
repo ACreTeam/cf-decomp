@@ -5125,7 +5125,7 @@ void writeSceneHandover() {
     }
 }
 
-BOOL isSceneOwner() {
+u32 isSceneOwner() {
     if (getSessionActive()) {
         int my = getNetMyNo()->get();
         if (my < NET_MEMBER_MAX) {

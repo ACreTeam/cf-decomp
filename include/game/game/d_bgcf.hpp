@@ -413,6 +413,8 @@ public:
 
     u32 isWallHit() const { return mHitFlags & HIT_WALL; }         // a wall in any direction
     u32 isStepWallHit() const { return mHitFlags & HIT_STEP_EXT; } // a step's extended wall
+    bool isFrontWallHit() const { return mHitFlags & HIT_WALL_FRONT; }
+    bool wasFrontWallHit() const { return mPrevHitFlags & HIT_WALL_FRONT; } // in the previous check
 
     void clear();                 // 800715A8
     void init();                  // 8007162C

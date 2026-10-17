@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <game/mLib/m_allocator_dummy_heap.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <lib/egg/core/eggAllocator.h>
 
@@ -15,6 +16,7 @@ public:
     virtual void free(void *ptr) override; // 802AE660
 
     bool attach(EGG::Heap *heap, int alignment); // 802AE60C
+    bool hasHeap() const { return mpHeap != mAllocatorDummyHeap_c::getInstance(); }
 
     static void init(EGG::Heap *heap); // 802AE664
 }; // size 0x1C

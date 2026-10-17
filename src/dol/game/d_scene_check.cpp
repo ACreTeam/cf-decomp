@@ -10,7 +10,7 @@ namespace dSceneCheck {
 u8 sRoomOpen[HOUSE_NUM][ROOM_NUM];
 
 // 80081618
-u8 isRoomOpen(int house, int room) {
+u32 isRoomOpen(int house, int room) {
     return sRoomOpen[house][room];
 }
 
