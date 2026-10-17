@@ -51,6 +51,7 @@
 #include <lib/egg/math/eggQuat.h>
 #include <string.h>
 #include <game/snd/snd_id.hpp>
+#include <game/game/d_a_player.hpp>
 
 // ---- top-of-file data (.rodata 804659F0..8046B0B0, .sdata2 8074FDE0..8074FE58, __sinit globals) ----
 
@@ -836,7 +837,7 @@ int dAcNpc_c::searchPlayer(u32 player, BOOL checkGround, int exclude, BOOL neare
         if (i == exclude) {
             continue;
         }
-        dPlayerActor_c *pl = dPlayerMgr::getNpcTargetActor(i);
+        dAcPlayer_c *pl = dPlayerMgr::getNpcTargetActor(i);
         if (pl == NULL) {
             continue;
         }
@@ -1824,7 +1825,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
         return FALSE;
     }
 
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     mVec3_c p = mVec3_c::Zero;
     player->getOffsetPos(&p, dist, snapToCardinal);
 
@@ -1841,7 +1842,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
             break;
         case (int)0x80020000: {
             firstPos = &hit->mPos;
-            if (dPlayerMgr::fn_800FFA50(firstPos, pAngle->mAngle, range)) {
+            if (dPlayerMgr::isATriggeredFacing(firstPos, pAngle->mAngle, range)) {
                 p = *firstPos;
             } else {
                 ok = FALSE;
@@ -1851,7 +1852,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
         case (int)0x80040000: {
             pos = &hit->mPos;
             void *ftr = NULL;
-            found = dPlayerMgr::fn_800FFA50(pos, pAngle->mAngle, range) != 0;
+            found = dPlayerMgr::isATriggeredFacing(pos, pAngle->mAngle, range) != 0;
             if (found) {
                 ftr = dFTR::getUnitMap()->get(&hit->mPos, 0);
             }
@@ -5907,7 +5908,7 @@ void dAcNpc_c::action_c::catchStep2(dAcNpc_c *npc) {
         actionPrm_c *prm = getPrm();
         int anm = prm->mItem.isFish() ? 0x64 : 0x59;
         npc->setAnm(anm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-        if (dPlayerMgr::fn_80100644(TRUE)) {
+        if (dPlayerMgr::passHandItem(TRUE)) {
             mStep = 4;
         } else {
             mStep = 3;
@@ -5917,7 +5918,7 @@ void dAcNpc_c::action_c::catchStep2(dAcNpc_c *npc) {
 
 // 80021614
 void dAcNpc_c::action_c::catchStep3(dAcNpc_c *npc) {
-    if (dPlayerMgr::fn_80100644(TRUE)) {
+    if (dPlayerMgr::passHandItem(TRUE)) {
         mStep = 4;
     }
 }
@@ -5986,7 +5987,7 @@ void dAcNpc_c::action_c::catchStep9(dAcNpc_c *npc) {
     if (!dHandItem::isState(dHandItem_c::STATE_FALL)) {
         dHandItem::setUseType(dHandItem_c::STATE_STOW, npc);
         if (dHandItem::swapActors((dDemoActor_c *)prm->mpActor)) {
-            if (dPlayerMgr::fn_801006A8()) {
+            if (dPlayerMgr::returnHandItem()) {
                 mStep = 11;
             } else {
                 mStep = 10;
@@ -6002,7 +6003,7 @@ void dAcNpc_c::action_c::catchStep10(dAcNpc_c *npc) {
     if (anm->mAnmId == 0x6D && anm->isStop()) {
         npc->setAnm(npc->mAnmSet.mWaitAnm, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
     }
-    if (dPlayerMgr::fn_801006A8()) {
+    if (dPlayerMgr::returnHandItem()) {
         mStep = 11;
     }
 }
@@ -6344,7 +6345,7 @@ void dAcNpc_c::action_c::handItemPutA(dAcNpc_c *npc) {
         actionPrm_c *prm = getPrm();
         int anmId = prm->mItem.isFish() ? 0x64 : 0x59;
         npc->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE);
-        if (dPlayerMgr::fn_80100644(FALSE)) {
+        if (dPlayerMgr::passHandItem(FALSE)) {
             mStep = 0xB;
         } else {
             mStep = 0xA;
@@ -6354,7 +6355,7 @@ void dAcNpc_c::action_c::handItemPutA(dAcNpc_c *npc) {
 
 // 8002319C
 void dAcNpc_c::action_c::handItemRetryPut(dAcNpc_c *npc) {
-    if (dPlayerMgr::fn_80100644(FALSE)) {
+    if (dPlayerMgr::passHandItem(FALSE)) {
         mStep = 0xB;
     }
 }
@@ -6509,7 +6510,7 @@ void dAcNpc_c::action_c::handItemReturnB(dAcNpc_c *npc) {
     if (!dHandItem::isState(dHandItem_c::STATE_FALL)) {
         actionPrm_c *prm = getPrm();
         dHandItem::setUseType(dHandItem_c::STATE_STOW, npc);
-        if (dHandItem::swapActors((dDemoActor_c *)prm->mpActor) && dPlayerMgr::fn_801006A8()) {
+        if (dHandItem::swapActors((dDemoActor_c *)prm->mpActor) && dPlayerMgr::returnHandItem()) {
             mStep = 0xC;
         }
     }
@@ -6781,7 +6782,7 @@ void dAcNpc_c::action_c::giveWaitHoldOut(dAcNpc_c *npc) {
         if (npc->getModel()->setAnm(anmId, m3d::PLAYMODE_INHERIT, 0.0f, 1.0f, prm->mMorph, FALSE) && npc->mFace.isValid()) {
             npc->mFace.setAnmTex(npc, anmId, m3d::PLAYMODE_INHERIT);
         }
-        if (dPlayerMgr::fn_80100644(FALSE)) {
+        if (dPlayerMgr::passHandItem(FALSE)) {
             mStep = 3;
         } else {
             mStep = 2;
@@ -6791,7 +6792,7 @@ void dAcNpc_c::action_c::giveWaitHoldOut(dAcNpc_c *npc) {
 
 // 80024860
 void dAcNpc_c::action_c::giveWaitPlayer(dAcNpc_c *npc) {
-    if (dPlayerMgr::fn_80100644(FALSE)) {
+    if (dPlayerMgr::passHandItem(FALSE)) {
         mStep = 3;
     }
 }
@@ -7747,9 +7748,9 @@ void dAcNpc_c::lookAt_c::lookFront(dAcNpc_c *npc) {
 }
 
 void dAcNpc_c::lookAt_c::lookPlayerNo(dAcNpc_c *npc, int playerNo) {
-    dPlayerActor_c *player = dPlayerMgr::getNpcTargetActor(playerNo);
+    dAcPlayer_c *player = dPlayerMgr::getNpcTargetActor(playerNo);
     if (player != NULL) {
-        // dPlayerActor_c is declared as a dActor_c only; its vtable slot +0x58 is dDemoActor_c::demoHook58.
+        // dAcPlayer_c is declared as a dActor_c only; its vtable slot +0x58 is dDemoActor_c::demoHook58.
         mVec3_c pos = *((dDemoActor_c *)player)->demoHook58();
         calcLook(npc, pos, &player->mPos);
     } else {
@@ -7865,7 +7866,7 @@ int dAcNpc_c::lookAt_c::searchPlayer(int playerNo, const dAcNpc_c *npc, const mA
         end = 4;
     }
     for (int i = start; i < end; i++) {
-        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
+        dAcPlayer_c *player = dPlayerMgr::getPlayerActor(i);
         if (player != NULL) {
             const mVec3_c *pos = player->getPosP();
             if (pos != NULL && canSee(npc, *pos, fov, range)) {
@@ -8105,7 +8106,7 @@ BOOL dAcNpc_c::viewArea_c::isOutsideAll(u32 playerNo, const mVec3_c *pos) const 
         if (i == me) {
             out = isOutside(pos);
         } else {
-            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
+            dAcPlayer_c *player = dPlayerMgr::getPlayerActor(i);
             if (player != NULL) {
                 out = isOutside(pos, player->getPosP());
             }
@@ -8143,7 +8144,7 @@ BOOL dAcNpc_c::viewArea_c::isUnitOutsideAll(u32 playerNo, int ux, int uz) const 
         if (i == 0) {
             out = isUnitOutside(ux, uz);
         } else {
-            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
+            dAcPlayer_c *player = dPlayerMgr::getPlayerActor(i);
             if (player != NULL) {
                 out = isUnitOutside(ux, uz, player->getPosP());
             }
@@ -8537,7 +8538,7 @@ void dAcNpc_c::recept_c::playerLookAt(dAcNpc_c *target) {
 void dAcNpc_c::recept_c::playerTurnTo(dAcNpc_c *target) {
     if (target != NULL) {
         int playerNo = getPlayerNo();
-        dPlayerActor_c *player = dPlayerMgr::getNpcTargetActor(playerNo);
+        dAcPlayer_c *player = dPlayerMgr::getNpcTargetActor(playerNo);
         mVec3_c *playerPos = dPlayerMgr::getPosition(playerNo);
         if (player != NULL && playerPos != NULL) {
             s16 angle = dActor_c::targetAngleY(playerPos, target->getPosP());
@@ -10290,7 +10291,7 @@ bool dAcNpc_c::recept_c::requestPlayerTurn() {
 
 // 8002CFF4
 int dAcNpc_c::recept_c::stepPlayerTurnStart() {
-    if (dPlayerMgr::fn_800FC958()) {
+    if (dPlayerMgr::turnToFront()) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 1;
@@ -10302,7 +10303,7 @@ int dAcNpc_c::recept_c::stepPlayerTurnStart() {
 
 // 8002D048
 int dAcNpc_c::recept_c::stepPlayerTurnWait() {
-    if (dPlayerMgr::fn_800FC9AC()) {
+    if (dPlayerMgr::isFacingFront()) {
         dMsg::Comp_c *ctrl = getController();
         if (ctrl != NULL) {
             ctrl->mLock = 0;

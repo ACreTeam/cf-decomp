@@ -41,6 +41,7 @@ extern "C" int abs(int);
 #include <nw4r/ut/ut_algorithm.h>
 #include <cmath>
 #include <game/snd/snd_id.hpp>
+#include <game/game/d_a_player.hpp>
 
 extern "C" long labs(long);
 
@@ -8334,7 +8335,7 @@ void action_c::enterGreeting(dAcNpcOut_c *npc) {
     npc->mCheckGround = 1;
     npc->mApproachActive = 0;
     npc->offDaubToolChange();
-    dPlayerMgr::fn_80101350();
+    dPlayerMgr::turnToTalkActor();
     npc->offDaubWatchFireworks();
 }
 
@@ -8594,7 +8595,7 @@ void action_c::enterRequestCatch(dAcNpcOut_c *npc) {
     npc->mCheckGround = 1;
     npc->mApproachActive = 0;
     npc->offDaubToolChange();
-    dPlayerMgr::fn_80101350();
+    dPlayerMgr::turnToTalkActor();
     npc->offDaubWatchFireworks();
     npc->mLostItemComplete = 1;
 }

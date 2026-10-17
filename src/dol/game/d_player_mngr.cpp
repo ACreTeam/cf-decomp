@@ -17,6 +17,7 @@
 #include <game/game/d_sv_mgr.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
+#include <game/game/d_a_player.hpp>
 
 CUSTOM_BASE_PROFILE(PLAYER_MNGR, dPlayerMngr_c, fProf::PLAYER_MNGR,
                     fProf::DRAW_ORDER::PLAYER_MNGR);
@@ -334,7 +335,7 @@ void dPlayerMngr_c::updateRemoteActors() {
             mCreated[i] = TRUE;
         } else if (mCreated[i] == TRUE &&
                    dPlayerMgr::getPlayerActorRaw(i) != NULL && !mPresent[i]) {
-            dPlayerActor_c *actor = dPlayerMgr::getPlayerActorRaw(i);
+            dAcPlayer_c *actor = dPlayerMgr::getPlayerActorRaw(i);
             if (actor->getLifecycleState() != DELETING) {
                 u32 info;
                 u8 scene;

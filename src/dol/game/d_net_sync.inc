@@ -779,11 +779,11 @@ void recvPlayerState(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
         fgMngTask_finishActive(member);
     }
     if (scene == dScene::getCurrentScene()) {
-        dPlayerActor_c *player = dPlayerMgr::getPlayerActorRaw(member);
+        dAcPlayer_c *player = dPlayerMgr::getPlayerActorRaw(member);
         if (player != NULL &&
             player->getLifecycleState() == fBase_c::DELETING) {
             dPlayerMgr::updateActionFieldTasks(member, scene, state, (const u8 *)&param);
-        } else if (player != NULL && !dPlayerMgr::fn_800FC0C0(member)) {
+        } else if (player != NULL && !dPlayerMgr::isScriptedMove(member)) {
             int x;
             u8 b;
             u8 c;

@@ -11,6 +11,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <lib/egg/math/eggMath.h>
 #include <cmath>
+#include <game/game/d_a_player.hpp>
 
 // Debug tuning of the drum (RTTI "dDrum_hostIO_c"): the far edge parameters copied by
 // dWorld::edge_c.
@@ -127,7 +128,7 @@ BOOL getHorizonPosition(mVec3_c *result, const mVec3_c *position) {
     if (dCamera_c::sInstance != NULL) {
         mVec3_c pos;
         if (position == NULL) {
-            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+            dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
             if (player == NULL) {
                 return FALSE;
             }
@@ -152,7 +153,7 @@ mAng getPlayerHorizonAngle(bool *ok) {
         ok = &dummy;
     }
     dCamera_c *camera = dCamera_c::sInstance;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (camera != NULL && player != NULL) {
         mVec3_c eye;
         curvePositionSimple(&eye, &dCamera_c::sEye);

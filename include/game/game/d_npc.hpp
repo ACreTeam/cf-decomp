@@ -24,7 +24,7 @@ class dAnimal_c;
 class dPrivateData_c;
 
 class dActor_c;
-class dPlayerActor_c;
+class dAcPlayer_c;
 namespace dScript { class Word_c; }
 namespace EGG { class Heap; }
 
@@ -486,7 +486,7 @@ void sendAnimalCloth(int idx, const void *item);                                
 typedef BOOL (*spotFunc)(int x, int z, int arg);
 
 // Spot pickers.
-dPlayerActor_c *getPlayerOnUnit(int x, int z);                                  // 800F1AE0
+dAcPlayer_c *getPlayerOnUnit(int x, int z);                                  // 800F1AE0
 dActor_c *getActorOnUnit(int x, int z);                                         // 800F1B7C
 
 dItem::Item getFurnitureCoveringUnit(int *outX, int *outZ, int x, int z, dFdBase_c *map, u8 kind); // 800F1BE4

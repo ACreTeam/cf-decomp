@@ -36,6 +36,7 @@
 #include <game/game/d_environment.hpp>
 #include <game/game/d_select.hpp>
 #include <game/game/d_npc_list.hpp>
+#include <game/game/d_a_player.hpp>
 
 // Unused; referencing anmChrPart_c's vtable queues anmChr_c::getType before anmVis_c::getType among the weak
 // functions. The original's equivalent is unknown; d_ftr_manager, with the same headers, must not have it.
@@ -1159,7 +1160,7 @@ BOOL daFtrBed_c::executeMain() {
 void daFtrBed_c::executeLie() {
     BOOL waiting = FALSE;
     dFTR::hold_c *hold = dFTR::getHoldList()->find(this);
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (!dScene::isCurrentSceneMyHouse()) {
         int house;
         if (dScene::getSceneAttrTableIndex(dScene::getCurrentScene(), l_homeScenes, &house) == HOME_SCENE_LOFT) {
@@ -1383,7 +1384,7 @@ void daFtrBed_c::executeLoft() {
         const dObjc::dpdHit_c *hit = dObjc::getDpdHit();
         if (hit != NULL) {
             if (hit->mType == dObjc::HIT_FTR_ROOM && hit->mBase.get() == this) {
-                if (dPlayerMgr::fn_800FFA50(&hit->mPos, 0x2000, 64.0f)) {
+                if (dPlayerMgr::isATriggeredFacing(&hit->mPos, 0x2000, 64.0f)) {
                     pressed = TRUE;
                 }
             } else if (hit->mType == 0x80000001 && dPad::isATriggered()) {
@@ -1719,7 +1720,7 @@ void daFtrChest_c::executeClosed() {
             }
         }
         dDemo::requestSpeak(this, NULL);
-        dPlayerMgr::fn_800FDB40();
+        dPlayerMgr::keepAnimation();
     } else if (isSyncDisabled() && mTimer.calc()) {
         setSwitch(SWITCH_OPENING, SWITCH_PARAM_NONE);
     }
@@ -1892,7 +1893,7 @@ BOOL daFtrChest_c::initMsgOpenWalk() {
     if (hold != NULL && type != -1) {
         f32 x = hold->mPushPos.x;
         f32 z = hold->mPushPos.z;
-        return dPlayerMgr::fn_800FD9E0(type, hold->mPushAngle, x, z);
+        return dPlayerMgr::openChest(type, hold->mPushAngle, x, z);
     }
     return TRUE;
 }
@@ -1934,7 +1935,7 @@ void daFtrChest_c::executeMsgMenu() {
 BOOL daFtrChest_c::initMsgClose() {
     int type = getChestType();
     if (type != -1) {
-        dPlayerMgr::fn_800FDAA4(type);
+        dPlayerMgr::closeChest(type);
         return dFTR::setSwitch(this, SWITCH_CLOSING, SWITCH_PARAM_NONE, FALSE, TRUE);
     }
     return dFTR::setSwitch(this, SWITCH_CLOSING, SWITCH_PARAM_NONE, FALSE, TRUE);
@@ -1964,7 +1965,7 @@ BOOL daFtrChest_c::initMsgTalkWalk() {
     if (hold != NULL && type != -1) {
         f32 x = hold->mPushPos.x;
         f32 z = hold->mPushPos.z;
-        return dPlayerMgr::fn_800FD9E0(type, hold->mPushAngle, x, z);
+        return dPlayerMgr::openChest(type, hold->mPushAngle, x, z);
     }
     return TRUE;
 }
@@ -2054,7 +2055,7 @@ void daFtrChest_c::executeMsgTalkEnd() {
 BOOL daFtrChest_c::initMsgTalkClose() {
     int type = getChestType();
     if (type != -1) {
-        if (dPlayerMgr::fn_800FDAA4(type)) {
+        if (dPlayerMgr::closeChest(type)) {
             return dFTR::setSwitch(this, SWITCH_CLOSING, SWITCH_PARAM_NONE, FALSE, TRUE);
         }
         return FALSE;
@@ -2493,7 +2494,7 @@ void daFtrAudio_c::executeOff() {
     if (isSwitchChanging()) {
         changeSwitch(0, FALSE);
         dDemo::requestSpeak(this, NULL);
-        dPlayerMgr::fn_800FDB40();
+        dPlayerMgr::keepAnimation();
     }
 }
 
@@ -4811,7 +4812,7 @@ void daFtrAtm_c::executeMenuEnd() {
 
 // 0x14918
 BOOL daFtrAtm_c::initPaidOff() {
-    if (dPlayerMgr::fn_80100A54()) {
+    if (dPlayerMgr::reactDebtPaid()) {
         setMessageLabel("sys_MESS/SYS_Player");
         setMessageCode(MSG_PLAYER_DEBT_PAID);
         return TRUE;
@@ -4821,7 +4822,7 @@ BOOL daFtrAtm_c::initPaidOff() {
 
 // 0x14974
 void daFtrAtm_c::executePaidOff() {
-    if (dPlayerMgr::fn_80100AB0()) {
+    if (dPlayerMgr::isReactionFinished()) {
         mpController->requestStart(0);
         setTalkState(TALK_STATE_PAID_OFF_END);
     }

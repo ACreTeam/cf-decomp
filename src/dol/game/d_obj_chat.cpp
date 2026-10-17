@@ -20,6 +20,7 @@
 #include <game/sLib/s_lib.hpp>
 #include <lib/egg/math/eggMath.h>
 #include <revolution/SC.h>
+#include <game/game/d_a_player.hpp>
 
 namespace dObjChat {
 enum SoundId_e { SE_CHAT_MESSAGE = 0x16FE };
@@ -857,7 +858,7 @@ void Balloon_c::drawLayout() {
 // 801B2620
 void Balloon_c::calcPlayerPos() {
     int member = mMember;
-    dPlayerActor_c *player = dPlayerMgr::getNpcTargetActor(member);
+    dAcPlayer_c *player = dPlayerMgr::getNpcTargetActor(member);
     if (!player) {
         return;
     }
@@ -911,9 +912,9 @@ void Balloon_c::calcAlpha() {
     mTargetAlpha = 1.0f;
     int net_no = dNet::getMyNo();
     if (mMember != net_no) {
-        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(mMember);
+        dAcPlayer_c *player = dPlayerMgr::getPlayerActor(mMember);
         if (player) {
-            dPlayerActor_c *local = dPlayerMgr::getPlayerActor(4);
+            dAcPlayer_c *local = dPlayerMgr::getPlayerActor(4);
             if (local) {
                 mVec3_c diff = local->mPos - player->mPos;
                 f32 distance =

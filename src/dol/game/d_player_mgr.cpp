@@ -31,6 +31,7 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_ground_attr.hpp>
 #include <game/snd/snd_id.hpp>
+#include <game/game/d_a_player.hpp>
 
 // Dependencies whose owners are not recovered yet.
 
@@ -80,7 +81,7 @@ Mgr_c::~Mgr_c() {}
 
 // 800FBC48
 mVec3_c *getPosition(int idx) {
-    dPlayerActor_c *player = getPlayerActor(idx);
+    dAcPlayer_c *player = getPlayerActor(idx);
     if (player == NULL) {
         return NULL;
     }
@@ -88,37 +89,37 @@ mVec3_c *getPosition(int idx) {
 }
 
 // 800FBC7C
-dPlayerActor_c *getPlayerActor(int idx) {
+dAcPlayer_c *getPlayerActor(int idx) {
     return getActor(idx);
 }
 
 // 800FBC80
-dPlayerActor_c *getPlayerActorRaw(int idx) {
+dAcPlayer_c *getPlayerActorRaw(int idx) {
     return getActorRaw(idx);
 }
 
 // 800FBC84
-dPlayerActor_c *getNpcTargetActor(int idx) {
+dAcPlayer_c *getNpcTargetActor(int idx) {
     return getActor(idx);
 }
 
 // 800FBC88
 mVec3_c *getSoundPosition(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return NULL;
     }
-    return (mVec3_c *)player->_060C;
+    return &player->mMdlCallback.mSoundPos;
 }
 
 // 800FBCBC
 BOOL getMoveAngle(s16 *out) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (out != NULL && player->getMoveSpeed()) {
-        *out = player->_22F8;
+        *out = player->mMoveAngle;
         return TRUE;
     }
     return FALSE;
@@ -126,7 +127,7 @@ BOOL getMoveAngle(s16 *out) {
 
 // 800FBD28
 s16 getYaw(int idx) {
-    dPlayerActor_c *player = getPlayerActor(idx);
+    dAcPlayer_c *player = getPlayerActor(idx);
     if (player == NULL) {
         return 0;
     }
@@ -135,34 +136,34 @@ s16 getYaw(int idx) {
 
 // 800FBD5C
 BOOL getUnitCoordinates(u32 *a, u32 *b, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
     if (a == NULL || b == NULL) {
         return FALSE;
     }
-    *a = player->_2284;
-    *b = player->_2288;
+    *a = player->mUnitX;
+    *b = player->mUnitZ;
     return TRUE;
 }
 
 // 800FBDD4
 mVec3_c *getHandPosition(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return NULL;
     }
-    return (mVec3_c *)player->_0624;
+    return &player->mMdlCallback.mHandPos;
 }
 
 // 800FBE08
 void *getHandTransform(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return NULL;
     }
-    return player->_06F0;
+    return player->mMdlCallback.mHandMtx;
 }
 
 // 800FBE3C
@@ -170,7 +171,7 @@ BOOL canStartDemo() {
     if (gManager.mLocked) {
         return FALSE;
     }
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -179,7 +180,7 @@ BOOL canStartDemo() {
 
 // 800FBE98
 BOOL canStartNetSave() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -188,15 +189,15 @@ BOOL canStartNetSave() {
         return TRUE;
     }
     switch (state) {
-    case 0x1A:
+    case STATE_FISHING_WAIT:
     case 0x24:
     case 0x26:
     case 0x28:
     case 0x5A:
     case 0x99:
-        player->_2274 |= 0x4;
+        player->mActorFlags2 |= 0x4;
         return TRUE;
-    case 0x1D:
+    case STATE_FISHING_PUT_BACK:
     case 0x5B:
         return TRUE;
     }
@@ -218,15 +219,15 @@ BOOL isDemoStartState(int state) {
 
 // 800FBFCC
 void startDemoWait() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
-    if (player != NULL && player->mState != 0x49) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
+    if (player != NULL && player->mState != STATE_EXIT_ROOM) {
         changeState(STATE_DEMO_WAIT, PLAYER_INDEX_CURRENT);
     }
 }
 
 // 800FC010
 BOOL requestDemoWait() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -237,125 +238,125 @@ BOOL requestDemoWait() {
 }
 
 // 800FC064
-void fn_800FC064(BOOL on, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+void setScriptedMove(BOOL on, int idx) {
+    dAcPlayer_c *player = getActor(idx);
     if (player != NULL) {
         if (on) {
-            player->_2270 |= 0x100000;
+            player->mActorFlags |= ACTOR_FLAG_SCRIPTED_MOVE;
         } else {
-            player->_2270 &= ~0x100000;
+            player->mActorFlags &= ~ACTOR_FLAG_SCRIPTED_MOVE;
         }
     }
 }
 
 // 800FC0C0
-u32 fn_800FC0C0(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+u32 isScriptedMove(int idx) {
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return 0;
     }
-    return (player->_2270 >> 20) & 1;
+    return (player->mActorFlags >> 20) & 1;
 }
 
 // 800FC0F8
-BOOL fn_800FC0F8() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL watchShotBalloon() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x9B) {
-        player->_2274 |= 0x100;
+    if (state == STATE_SLINGSHOT_WATCH) {
+        player->mActorFlags2 |= ACTOR_FLAG2_SHOT_BALLOON;
         return TRUE;
     }
-    if (state != 0x9A) {
+    if (state != STATE_SLINGSHOT_SHOOT) {
         return FALSE;
     }
-    if (changeState(0x9B, PLAYER_INDEX_CURRENT)) {
-        player->_2274 |= 0x100;
+    if (changeState(STATE_SLINGSHOT_WATCH, PLAYER_INDEX_CURRENT)) {
+        player->mActorFlags2 |= ACTOR_FLAG2_SHOT_BALLOON;
         return TRUE;
     }
     return FALSE;
 }
 
 // 800FC194
-BOOL fn_800FC194(const mVec3_c *target) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL landBalloonPresent(const mVec3_c *splashPos) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    u32 flags = player->_2274;
-    player->_2274 = flags & ~0x100;
-    if (flags & 0x200) {
+    u32 flags = player->mActorFlags2;
+    player->mActorFlags2 = flags & ~ACTOR_FLAG2_SHOT_BALLOON;
+    if (flags & ACTOR_FLAG2_SHOT_UFO) {
         return TRUE;
     }
     int state = player->mState;
-    if (state == STATE_IDLE || state == 0x61) {
+    if (state == STATE_IDLE || state == STATE_SURPRISED) {
         return TRUE;
     }
-    if (state != 0x9B) {
+    if (state != STATE_SLINGSHOT_WATCH) {
         return FALSE;
     }
-    if (target == NULL) {
+    if (splashPos == NULL) {
         return changeState(STATE_IDLE, PLAYER_INDEX_CURRENT);
     }
-    if (changeState(0x61, PLAYER_INDEX_CURRENT)) {
-        s16 angle = dActor_c::targetAngleY(&player->mPos, target);
-        player->_22D0 = sLib::distanceAngle(angle, player->mAngle.y) / 10;
-        player->_22C4 = angle;
+    if (changeState(STATE_SURPRISED, PLAYER_INDEX_CURRENT)) {
+        s16 angle = dActor_c::targetAngleY(&player->mPos, splashPos);
+        player->mTurnFrames = sLib::distanceAngle(angle, player->mAngle.y) / 10;
+        player->mTargetAngle = angle;
         return TRUE;
     }
     return changeState(STATE_IDLE, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC2A4
-BOOL fn_800FC2A4() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL watchShotUfo() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x9B) {
-        player->_2274 |= 0x200;
+    if (state == STATE_SLINGSHOT_WATCH) {
+        player->mActorFlags2 |= ACTOR_FLAG2_SHOT_UFO;
         return TRUE;
     }
-    if (state != 0x9A) {
+    if (state != STATE_SLINGSHOT_SHOOT) {
         return FALSE;
     }
-    if (changeState(0x9B, PLAYER_INDEX_CURRENT)) {
-        player->_2274 |= 0x200;
+    if (changeState(STATE_SLINGSHOT_WATCH, PLAYER_INDEX_CURRENT)) {
+        player->mActorFlags2 |= ACTOR_FLAG2_SHOT_UFO;
         return TRUE;
     }
     return FALSE;
 }
 
 // 800FC340
-BOOL fn_800FC340() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL finishWatchUfo() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    u32 flags = player->_2274;
-    player->_2274 = flags & ~0x200;
-    if (flags & 0x100) {
+    u32 flags = player->mActorFlags2;
+    player->mActorFlags2 = flags & ~ACTOR_FLAG2_SHOT_UFO;
+    if (flags & ACTOR_FLAG2_SHOT_BALLOON) {
         return TRUE;
     }
-    if (player->mState != 0x9B) {
+    if (player->mState != STATE_SLINGSHOT_WATCH) {
         return FALSE;
     }
     return changeState(STATE_IDLE, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC3B0
-BOOL fn_800FC3B0() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL listenToKK() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (player->mState != STATE_DEMO_WAIT) {
         return FALSE;
     }
-    return changeState(0xA1, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_LISTEN_KK, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC404
@@ -385,27 +386,27 @@ void refreshEquippedUmbrellaDesign() {
 }
 
 // 800FC4C0
-BOOL fn_800FC4C0() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL startFortuneHit() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (player->mState != STATE_DEMO_WAIT) {
         return FALSE;
     }
-    return changeState(0xA4, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_FORTUNE_HIT, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC514
-BOOL fn_800FC514() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL startFortuneFaint() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState != 0xA4) {
+    if (player->mState != STATE_FORTUNE_HIT) {
         return FALSE;
     }
-    return changeState(0xA5, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_FORTUNE_FAINT, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC568
@@ -420,9 +421,9 @@ void unlock() {
 
 // 800FC598
 void holdToolAction() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
-    if (player != NULL && (player->_2270 & 0x10)) {
-        int kind = player->_0C34->getToolType();
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
+    if (player != NULL && (player->mActorFlags & ACTOR_FLAG_TOOL_OUT)) {
+        int kind = player->mpToolBank->getToolType();
         if (kind != HMN_TOOL_UMBRELLA && kind != HMN_TOOL_BALLOON && kind != HMN_TOOL_WINDMILL) {
             gManager.mToolActionHeld = TRUE;
         }
@@ -441,17 +442,17 @@ BOOL isToolActionHeld() {
 
 // 800FC630
 BOOL enableCurrentActor() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    player->_2270 &= ~ACTOR_FLAG_DISABLED;
+    player->mActorFlags &= ~ACTOR_FLAG_DISABLED;
     return TRUE;
 }
 
 // 800FC674
 BOOL refreshEquippedDesign(int slot) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -470,17 +471,17 @@ BOOL refreshEquippedDesign(int slot) {
         return TRUE;
     }
     if (!shirt && !hat && held) {
-        player->_2274 |= 0x20;
+        player->mActorFlags2 |= 0x20;
         if (!changeHeldItem(&current->mEquipment.mHeld)) {
-            player->_2274 &= ~0x20;
+            player->mActorFlags2 &= ~0x20;
         }
     } else {
         dItem::Item *pShirt = shirt ? &current->mEquipment.mShirt : NULL;
         dItem::Item *pHat = hat ? &current->mEquipment.mHat : NULL;
         dItem::Item *pHeld = held ? &current->mEquipment.mHeld : NULL;
-        player->_2274 |= 0x20;
+        player->mActorFlags2 |= 0x20;
         if (!changeOutfitAndHeldItem(pShirt, pHat, pHeld)) {
-            player->_2274 &= ~0x20;
+            player->mActorFlags2 &= ~0x20;
         }
     }
     return TRUE;
@@ -491,7 +492,7 @@ BOOL canStartIdleDemo() {
     if (gManager.mLocked) {
         return FALSE;
     }
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -505,7 +506,7 @@ BOOL hasCurrentActor() {
 
 // 800FC888
 BOOL isNetSaveWaitState() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -526,37 +527,37 @@ void setDemoWait(BOOL a) {
 }
 
 // 800FC8FC
-BOOL fn_800FC8FC() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL flinch() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state != STATE_DEMO_WAIT && state != 0x88) {
+    if (state != STATE_DEMO_WAIT && state != STATE_FLINCH) {
         return FALSE;
     }
-    return changeState(0x88, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_FLINCH, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC958
-BOOL fn_800FC958() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL turnToFront() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (player->mState != STATE_DEMO_WAIT) {
         return FALSE;
     }
-    return changeState(0x9E, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_TURN_FRONT, PLAYER_INDEX_CURRENT);
 }
 
 // 800FC9AC
-BOOL fn_800FC9AC() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isFacingFront() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0x9E && player->mAngle.y == -0x8000) {
+    if (player->mState == STATE_TURN_FRONT && player->mAngle.y == -0x8000) {
         return TRUE;
     }
     return FALSE;
@@ -573,7 +574,7 @@ BOOL canStartMovementDemo() {
     if (gManager.mLocked) {
         return FALSE;
     }
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -600,7 +601,7 @@ BOOL requestDemoStart() {
 
 // 800FCAF4
 BOOL showCatch(const dItem::Item *item) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -609,39 +610,39 @@ BOOL showCatch(const dItem::Item *item) {
     }
     int kind = item->getKind();
     if (kind == dItem::KIND_INSECT) {
-        player->_2270 |= ACTOR_FLAG_INSECT;
+        player->mActorFlags |= ACTOR_FLAG_INSECT;
     } else if (kind == dItem::KIND_FISH) {
-        player->_2270 &= ~ACTOR_FLAG_INSECT;
+        player->mActorFlags &= ~ACTOR_FLAG_INSECT;
     } else {
         return FALSE;
     }
-    player->_218A = item->mId;
+    player->mActionItem = item->mId;
     return changeState(STATE_SHOW_CATCH, PLAYER_INDEX_CURRENT);
 }
 
 // 800FCBA8
 BOOL finishShowCatch() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (player->mState != STATE_SHOW_CATCH) {
         return FALSE;
     }
-    player->_2234 = 6;
+    player->mNextState = 6;
     return TRUE;
 }
 
 // 800FCBFC
 BOOL isShowCatchFinished() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (player->mState != STATE_SHOW_CATCH) {
         return FALSE;
     }
-    if ((u32)(player->mAnmId - 0x53) <= 1) {
+    if (player->mAnmId == 0x53 || player->mAnmId == 0x54) {
         m3d::fanm_c *anm = player->getAnm();
         if (anm != NULL && anm->isStop()) {
             return TRUE;
@@ -652,7 +653,7 @@ BOOL isShowCatchFinished() {
 
 // 800FCC74
 BOOL showCatchAt(const dItem::Item *item, const mVec3_c *pos) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -661,35 +662,35 @@ BOOL showCatchAt(const dItem::Item *item, const mVec3_c *pos) {
     }
     int kind = item->getKind();
     if (kind == dItem::KIND_INSECT) {
-        player->_2270 |= ACTOR_FLAG_INSECT;
+        player->mActorFlags |= ACTOR_FLAG_INSECT;
     } else if (kind == dItem::KIND_FISH) {
-        player->_2270 &= ~ACTOR_FLAG_INSECT;
+        player->mActorFlags &= ~ACTOR_FLAG_INSECT;
     } else {
         return FALSE;
     }
-    player->_218A = item->mId;
-    player->_2270 |= 0x1000000;
+    player->mActionItem = item->mId;
+    player->mActorFlags |= 0x1000000;
     if (pos != NULL) {
-        player->_2074 = *pos;
+        player->mShowPos = *pos;
     }
     return changeState(STATE_SHOW_CATCH_AT, PLAYER_INDEX_CURRENT);
 }
 
 // 800FCD60
-BOOL fn_800FCD60(u32 a, u32 b, BOOL c) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL putItemInHole(u32 unitX, u32 unitZ, BOOL fromTask) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    player->_2190 = a;
-    player->_2194 = b;
-    player->_2270 |= 0x1000000;
-    if (c) {
-        player->_2270 |= 0x80000000;
+    player->mTargetUnitX = unitX;
+    player->mTargetUnitZ = unitZ;
+    player->mActorFlags |= 0x1000000;
+    if (fromTask) {
+        player->mActorFlags |= 0x80000000;
     } else {
-        player->_2270 &= ~0x80000000;
+        player->mActorFlags &= ~0x80000000;
     }
-    return changeState(0x44, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_PUT_ITEM_IN_HOLE, PLAYER_INDEX_CURRENT);
 }
 
 // Invalid hide-bone values leave the model visible.
@@ -700,7 +701,7 @@ static inline int getHideBone(const dItem::BITM *bitm) {
 
 // 800FCDFC
 BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, const dItem::Item *held) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -715,7 +716,7 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
     if (shirt != NULL && shirt->mId != dItem::ITEM_ID_NONE) {
         int tmp = 0;
         if (dHmnClothMng_c::isOrgCloth(&tmp, shirt)) {
-            player->_22B4 |= EQUIPMENT_CHANGE_CLOTH;
+            player->mEquipFlags |= EQUIPMENT_CHANGE_CLOTH;
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
             dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt->mId);
         }
@@ -741,7 +742,7 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
     if (held != NULL) {
         if (held->mId == dItem::ITEM_ID_NONE) {
             if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR)) {
-                player->_22DA = HELD_ITEM_CHANGE_REMOVE;
+                player->mHeldItemChange = HELD_ITEM_CHANGE_REMOVE;
             }
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
             dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
@@ -749,7 +750,7 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
             if (bitm != NULL && getHideBone(bitm) == dItem::HIDE_BONE_HAND) {
                 if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_OUTDOOR)) {
-                    player->_22DA = HELD_ITEM_CHANGE_EQUIP;
+                    player->mHeldItemChange = HELD_ITEM_CHANGE_EQUIP;
                 }
                 dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
                 dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
@@ -759,13 +760,13 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
 
     player->_223C = 1;
     player->_2238 = 1;
-    player->_2234 = 8;
+    player->mNextState = 8;
     return changeState(STATE_CHANGE_OUTFIT_AND_HELD, PLAYER_INDEX_CURRENT);
 }
 
 // 800FD058
 BOOL eatItem(const dItem::Item *item) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -775,10 +776,10 @@ BOOL eatItem(const dItem::Item *item) {
     }
     switch (bitm->getEdibility()) {
     case dItem::EDIBILITY_FOOD:
-        player->_218A = item->mId;
+        player->mActionItem = item->mId;
         return changeState(STATE_EAT, PLAYER_INDEX_CURRENT);
     case dItem::EDIBILITY_SPECIAL:
-        player->_218A = item->mId;
+        player->mActionItem = item->mId;
         return changeState(STATE_EAT_SPECIAL, PLAYER_INDEX_CURRENT);
     }
     return FALSE;
@@ -795,7 +796,7 @@ BOOL removeMaskForEating() {
 
 // 800FD17C
 BOOL endDemoWait() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return TRUE;
     }
@@ -813,17 +814,17 @@ BOOL endDemoWait() {
                 return TRUE;
             }
         }
-        switch (player->_22DD) {
+        switch (player->mReactionKind) {
         case STATE_RUN:
         case STATE_MOVE_TO:
         case STATE_TURN_TO:
-            if (changeState(0x84, PLAYER_INDEX_CURRENT)) {
+            if (changeState(STATE_REACT, PLAYER_INDEX_CURRENT)) {
                 clearDemoFlags(player);
                 return TRUE;
             }
             break;
         case STATE_DEMO_START:
-            player->_22DD = 8;
+            player->mReactionKind = 8;
             break;
         }
         break;
@@ -832,33 +833,33 @@ BOOL endDemoWait() {
         return TRUE;
     case STATE_GET_UP:
     case 0x2D:
-    case 0x34:
-    case 0x39:
+    case STATE_CHEST_CLOSE:
+    case STATE_CHAIR_POSE:
     case 0x3A:
     case STATE_SHOW_CATCH_AT:
-    case 0x87:
+    case STATE_PHONE_HANG_UP:
     case STATE_SHOE_SHINE_END:
         clearDemoFlags(player);
         return TRUE;
-    case 0x4A:
+    case STATE_ENTER_ROOM:
     case 0x81:
     case 0x83:
-        if (player->_2274 & 0x400) {
-            player->_2274 &= ~0x400;
-            if (changeState(0x61, PLAYER_INDEX_CURRENT)) {
+        if (player->mActorFlags2 & ACTOR_FLAG2_COCKROACH) {
+            player->mActorFlags2 &= ~ACTOR_FLAG2_COCKROACH;
+            if (changeState(STATE_SURPRISED, PLAYER_INDEX_CURRENT)) {
                 clearDemoFlags(player);
                 return TRUE;
             }
         }
         break;
-    case 0xA:
+    case STATE_EXIT_DOOR:
         if (dNpcInfo::tanukichi_c::get()->mJobDone != 0) {
-            if (changeState(0x84, PLAYER_INDEX_CURRENT)) {
-                player->_22DD = 1;
+            if (changeState(STATE_REACT, PLAYER_INDEX_CURRENT)) {
+                player->mReactionKind = REACTION_JOB_DONE;
                 clearDemoFlags(player);
                 dNpcInfo::tanukichi_c *info = dNpcInfo::tanukichi_c::get();
                 info->mJobDone = 0;
-                player->_2270 |= 0x200000;
+                player->mActorFlags |= ACTOR_FLAG_RESUME_BGM;
                 return TRUE;
             }
         } else if (isBedHairPending()) {
@@ -867,22 +868,22 @@ BOOL endDemoWait() {
             return changeState(STATE_BED_HAIR, PLAYER_INDEX_CURRENT);
         }
         break;
-    case 0x8C:
+    case STATE_SCENE_START:
     case 0xAA:
         return TRUE;
     }
 
     Mgr_c::getCurrentPlayer();
-    u32 flags = player->_2270;
-    if ((flags & 0x10) && !(flags & 0x20) && !isToolActionHeld()) {
+    u32 flags = player->mActorFlags;
+    if ((flags & ACTOR_FLAG_TOOL_OUT) && !(flags & ACTOR_FLAG_TOOL_ACTIVE) && !isToolActionHeld()) {
         if (player->_208C >= 1.0f) {
-            player->_2270 |= 0x20;
+            player->mActorFlags |= ACTOR_FLAG_TOOL_ACTIVE;
             if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
                 clearDemoFlags(player);
                 return TRUE;
             }
         } else {
-            int state = player->_0C34->getToolType() == HMN_TOOL_UMBRELLA ? 0x7B : 0x21;
+            int state = player->mpToolBank->getToolType() == HMN_TOOL_UMBRELLA ? 0x7B : 0x21;
             if (changeState(state, PLAYER_INDEX_CURRENT)) {
                 clearDemoFlags(player);
                 return TRUE;
@@ -890,13 +891,13 @@ BOOL endDemoWait() {
         }
         if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
             clearDemoFlags(player);
-            player->_2270 |= 0x200000;
+            player->mActorFlags |= ACTOR_FLAG_RESUME_BGM;
             return TRUE;
         }
     } else {
         if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
             clearDemoFlags(player);
-            player->_2270 |= 0x200000;
+            player->mActorFlags |= ACTOR_FLAG_RESUME_BGM;
             return TRUE;
         }
     }
@@ -905,7 +906,7 @@ BOOL endDemoWait() {
 
 // 800FD510
 BOOL getChairPosition(mVec3_c *out, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -919,30 +920,30 @@ BOOL getChairPosition(mVec3_c *out, int idx) {
 }
 
 // Shared by the "walk to (x, z)" requests: target position at the player's height.
-static inline void setTargetXZ(dPlayerActor_c *player, f32 x, f32 z) {
+static inline void setTargetXZ(dAcPlayer_c *player, f32 x, f32 z) {
     mVec3_c target(x, player->mPos.y, z);
-    player->_2068 = target;
+    player->mTargetPos = target;
 }
 
 // 800FD588
 BOOL sitOnChair(s16 angle, int type, f32 x, f32 z) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->_2274 & 0x4000)))) {
+    if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->mActorFlags2 & 0x4000)))) {
         return FALSE;
     }
     setTargetXZ(player, x, z);
-    player->_22C4 = angle;
-    player->_224C = type;
+    player->mTargetAngle = angle;
+    player->mSeatSide = type;
     return changeState(STATE_SIT_DOWN, PLAYER_INDEX_CURRENT);
 }
 
 // 800FD664
 BOOL isChairAnimation() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -951,7 +952,7 @@ BOOL isChairAnimation() {
 
 // 800FD6A8
 BOOL getBedAnimationPosition(mVec3_c *out, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -966,7 +967,7 @@ BOOL getBedAnimationPosition(mVec3_c *out, int idx) {
 
 // 800FD720
 BOOL getBedPosition(mVec3_c *out, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -981,26 +982,26 @@ BOOL getBedPosition(mVec3_c *out, int idx) {
 
 // 800FD798
 BOOL lieOnBed(s16 angle, int type, f32 x, f32 z, int arg) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->_2274 & 0x4000)))) {
+    if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->mActorFlags2 & 0x4000)))) {
         return FALSE;
     }
     if (type != LIE_FROM_BACK && type != LIE_FROM_FRONT) {
         return FALSE;
     }
     setTargetXZ(player, x, z);
-    player->_22C4 = angle;
-    player->_224C = type;
+    player->mTargetAngle = angle;
+    player->mSeatSide = type;
     return changeState(STATE_LIE_DOWN, PLAYER_INDEX_CURRENT);
 }
 
 // 800FD88C
 BOOL getUpFromBed(int type, int arg) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1011,14 +1012,14 @@ BOOL getUpFromBed(int type, int arg) {
     if (type != 1 && type != 2) {
         return FALSE;
     }
-    player->_224C = type;
-    player->_2248 = type == 1 ? 1 : 3;
+    player->mSeatSide = type;
+    player->mSeatPose = type == 1 ? 1 : 3;
     return changeState(STATE_GET_UP, PLAYER_INDEX_CURRENT);
 }
 
 // 800FD924
 BOOL changeSeatedPose(int type) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1040,38 +1041,38 @@ BOOL changeSeatedPose(int type) {
     default:
         return FALSE;
     }
-    player->_2248 = value;
-    player->_224C = type;
-    return changeState(0x39, PLAYER_INDEX_CURRENT);
+    player->mSeatPose = value;
+    player->mSeatSide = type;
+    return changeState(STATE_CHAIR_POSE, PLAYER_INDEX_CURRENT);
 }
 
 // 800FD9E0
-BOOL fn_800FD9E0(int type, s16 angle, f32 x, f32 z) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL openChest(int type, s16 angle, f32 x, f32 z) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if ((u32)(player->mState - 0x32) <= 2) {
+    if (player->mState == STATE_CHEST_OPEN || player->mState == STATE_CHEST_WAIT || player->mState == STATE_CHEST_CLOSE) {
         return FALSE;
     }
     setTargetXZ(player, x, z);
-    player->_22C4 = angle;
-    player->_2254 = type;
-    return changeState(0x32, PLAYER_INDEX_CURRENT);
+    player->mTargetAngle = angle;
+    player->mChestType = type;
+    return changeState(STATE_CHEST_OPEN, PLAYER_INDEX_CURRENT);
 }
 
 // 800FDAA4
-BOOL fn_800FDAA4(int type) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL closeChest(int type) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x34 || state != 0x33) {
+    if (state == STATE_CHEST_CLOSE || state != STATE_CHEST_WAIT) {
         return FALSE;
     }
-    player->_2254 = type;
-    return changeState(0x34, PLAYER_INDEX_CURRENT);
+    player->mChestType = type;
+    return changeState(STATE_CHEST_CLOSE, PLAYER_INDEX_CURRENT);
 }
 
 // 800FDB10
@@ -1080,72 +1081,72 @@ BOOL hasActionActor() {
 }
 
 // 800FDB40
-void fn_800FDB40() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+void keepAnimation() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player != NULL) {
-        player->_2270 |= 0x100;
+        player->mActorFlags |= ACTOR_FLAG_KEEP_ANIMATION;
     }
 }
 
 // 800FDB78
-BOOL fn_800FDB78(int type) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL exitDoor(int type) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0xA) {
+    if (player->mState == STATE_EXIT_DOOR) {
         return TRUE;
     }
-    player->_2244 = type;
-    return changeState(0xA, PLAYER_INDEX_CURRENT);
+    player->mDoorType = type;
+    return changeState(STATE_EXIT_DOOR, PLAYER_INDEX_CURRENT);
 }
 
 // 800FDBDC
-void fn_800FDBDC(u32 mode) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+void putAwayToolForTalk(u32 mode) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return;
     }
-    if (!(player->_2270 & 0x10)) {
+    if (!(player->mActorFlags & ACTOR_FLAG_TOOL_OUT)) {
         return;
     }
     if (mode >= 2) {
-        player->_2270 &= ~0x20;
+        player->mActorFlags &= ~ACTOR_FLAG_TOOL_ACTIVE;
         return;
     }
     if (isToolActionHeld()) {
-        player->_2270 &= ~0x20;
+        player->mActorFlags &= ~ACTOR_FLAG_TOOL_ACTIVE;
         clearToolActionHold();
         return;
     }
-    int kind = player->_0C34->getToolType();
-    if ((u32)(kind - HMN_TOOL_UMBRELLA) <= 2) {
+    int kind = player->mpToolBank->getToolType();
+    if (kind == HMN_TOOL_UMBRELLA || kind == HMN_TOOL_BALLOON || kind == HMN_TOOL_WINDMILL) {
         if (mode == 0) {
             if (kind == HMN_TOOL_UMBRELLA) {
-                changeState(0x7C, PLAYER_INDEX_CURRENT);
+                changeState(STATE_CLOSE_UMBRELLA, PLAYER_INDEX_CURRENT);
             } else {
-                changeState(0x22, PLAYER_INDEX_CURRENT);
+                changeState(STATE_PUT_AWAY_TOOL, PLAYER_INDEX_CURRENT);
             }
         } else {
-            player->_2270 &= ~0x20;
+            player->mActorFlags &= ~ACTOR_FLAG_TOOL_ACTIVE;
         }
     } else {
-        changeState(0x22, PLAYER_INDEX_CURRENT);
+        changeState(STATE_PUT_AWAY_TOOL, PLAYER_INDEX_CURRENT);
     }
 }
 
 // 800FDCC0
 BOOL canFinishToolAction() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return TRUE;
     }
-    return !(player->_2270 & 0x20);
+    return !(player->mActorFlags & ACTOR_FLAG_TOOL_ACTIVE);
 }
 
 // 800FDD04
 BOOL isSceneTransitionState() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1153,7 +1154,7 @@ BOOL isSceneTransitionState() {
     if (state == STATE_DEMO_WAIT && (dDemo::isType(dDemo::TYPE_SCENE_START) || dDemo::isType(dDemo::TYPE_EXITSCENE))) {
         return TRUE;
     }
-    if ((u32)(state - 0x49) <= 1) {
+    if (state == STATE_EXIT_ROOM || state == STATE_ENTER_ROOM) {
         return TRUE;
     }
     return FALSE;
@@ -1192,7 +1193,7 @@ BOOL drinkCoffee() {
 
 // 800FDE7C
 BOOL isCoffeeAnimationFinished() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1215,7 +1216,7 @@ BOOL finishCoffee() {
 
 // 800FDF28
 f32 getCoffeeAnimationFrame() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return 0.0f;
     }
@@ -1230,7 +1231,7 @@ f32 getCoffeeAnimationFrame() {
 
 // 800FDF7C
 BOOL prepareMiiMask() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1247,7 +1248,7 @@ BOOL prepareMiiMask() {
             return FALSE;
         }
     }
-    player->_22B6 = mii;
+    player->mMiiMask = mii;
     dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
     dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
     dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
@@ -1289,7 +1290,7 @@ BOOL putOnMiiMaskImmediately() {
 
 // 800FE17C
 BOOL changeMiiMask(u16 mii) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1311,7 +1312,7 @@ BOOL changeMiiMask(u16 mii) {
         return FALSE;
     }
     current->mMiiId = *(const dMiiCreateID_c *)data.mCreateID;
-    player->_22B6 = mii;
+    player->mMiiMask = mii;
     dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_ON);
     dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HAT, dItem::ITEM_ID_NONE);
     dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, dItem::ITEM_ID_NONE);
@@ -1320,7 +1321,7 @@ BOOL changeMiiMask(u16 mii) {
 
 // 800FE2D4
 BOOL takeOffMiiMaskImmediately() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1340,69 +1341,69 @@ BOOL takeOffMiiMaskImmediately() {
 
 // 800FE360
 u32 canUseMiiMask() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return 0;
     }
-    return (player->_2270 >> 10) & 1;
+    return (player->mActorFlags >> 10) & 1;
 }
 
 // 800FE39C
-BOOL fn_800FE39C(s16 angle, int type, int target, f32 x, f32 z) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL enterDoor(s16 angle, int type, int target, f32 x, f32 z) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0x9) {
+    if (player->mState == STATE_ENTER_DOOR) {
         return TRUE;
     }
     setTargetXZ(player, x, z);
-    player->_22C4 = angle;
-    player->_2244 = type;
-    player->_2298 = target;
+    player->mTargetAngle = angle;
+    player->mDoorType = type;
+    player->mDoorTarget = target;
     if (target == -1) {
-        return changeState(0x9, PLAYER_INDEX_CURRENT);
+        return changeState(STATE_ENTER_DOOR, PLAYER_INDEX_CURRENT);
     }
-    return changeState(0xC, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_WALK_THROUGH_DOOR, PLAYER_INDEX_CURRENT);
 }
 
 // 800FE484
-BOOL fn_800FE484(s16 angle, int target, f32 x, f32 z) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL walkThroughDoor(s16 angle, int target, f32 x, f32 z) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0xC) {
+    if (player->mState == STATE_WALK_THROUGH_DOOR) {
         return TRUE;
     }
     setTargetXZ(player, x, z);
-    player->_22C4 = angle;
-    player->_2274 |= 0x20;
-    player->_2298 = target;
-    return changeState(0xC, PLAYER_INDEX_CURRENT);
+    player->mTargetAngle = angle;
+    player->mActorFlags2 |= 0x20;
+    player->mDoorTarget = target;
+    return changeState(STATE_WALK_THROUGH_DOOR, PLAYER_INDEX_CURRENT);
 }
 
 // 800FE550
-BOOL fn_800FE550(s16 angle, int type, BOOL useC, f32 x, f32 z) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL enterDoorDirect(s16 angle, int type, BOOL walkThrough, f32 x, f32 z) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0x9) {
+    if (player->mState == STATE_ENTER_DOOR) {
         return TRUE;
     }
     setTargetXZ(player, x, z);
-    player->_22C4 = angle;
-    player->_2244 = type;
-    if (useC) {
-        return changeState(0xC, PLAYER_INDEX_CURRENT);
+    player->mTargetAngle = angle;
+    player->mDoorType = type;
+    if (walkThrough) {
+        return changeState(STATE_WALK_THROUGH_DOOR, PLAYER_INDEX_CURRENT);
     }
-    return changeState(0x9, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_ENTER_DOOR, PLAYER_INDEX_CURRENT);
 }
 
 // 800FE634
-BOOL fn_800FE634() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isDoorAnimation() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1415,7 +1416,7 @@ BOOL fn_800FE634() {
 
 // 800FE688
 void getDemoWaitPose(int *outState, mVec3_c *outPos, s16 *outAngle) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return;
     }
@@ -1443,22 +1444,22 @@ void getDemoWaitPose(int *outState, mVec3_c *outPos, s16 *outAngle) {
 }
 
 // 800FE74C
-BOOL fn_800FE74C(const mVec3_c *pos, int idx, f32 speed) {
-    dPlayerActor_c *player = getActor(idx);
+BOOL moveToEscorted(const mVec3_c *pos, int idx, f32 speed) {
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
-    player->_2274 |= 0x8000;
+    player->mActorFlags2 |= ACTOR_FLAG2_ESCORTED;
     BOOL result = moveTo(pos, idx, speed);
     if (!result) {
-        player->_2274 &= ~0x8000;
+        player->mActorFlags2 &= ~ACTOR_FLAG2_ESCORTED;
     }
     return result;
 }
 
 // 800FE7E0
 BOOL moveTo(const mVec3_c *pos, int idx, f32 speed) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -1469,8 +1470,8 @@ BOOL moveTo(const mVec3_c *pos, int idx, f32 speed) {
     if (state != STATE_DEMO_WAIT) {
         return FALSE;
     }
-    player->_2068 = *pos;
-    player->_21BC = speed;
+    player->mTargetPos = *pos;
+    player->mTargetSpeed = speed;
     return changeState(STATE_MOVE_TO, idx);
 }
 
@@ -1481,7 +1482,7 @@ BOOL turnTo(s16 angle, int idx) {
 
 // 800FE89C
 BOOL turnToInFrames(s16 angle, int frames, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -1495,14 +1496,14 @@ BOOL turnToInFrames(s16 angle, int frames, int idx) {
     if (frames <= 0) {
         frames = 500;
     }
-    player->_22C4 = angle;
-    player->_22D0 = frames;
+    player->mTargetAngle = angle;
+    player->mTurnFrames = frames;
     return changeState(STATE_TURN_TO, idx);
 }
 
 // 800FE938
 BOOL lookAt(const mVec3_c *target, int a, BOOL pitch, int c) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1526,9 +1527,9 @@ BOOL lookAt(const mVec3_c *target, int a, BOOL pitch, int c) {
             yaw = -sLookYawMax;
         }
         if (pitch) {
-            mVec3_c diff = player->_0654 - *target;
+            mVec3_c diff = player->mMdlCallback.mHeadPos - *target;
             f32 dist = EGG::Math<f32>::sqrt(diff.x * diff.x + diff.z * diff.z);
-            f32 dy = target->y - player->_0654.y;
+            f32 dy = target->y - player->mMdlCallback.mHeadPos.y;
             tilt = cM::atan2s(dy, dist);
             if (tilt > sLookPitchMax) {
                 tilt = sLookPitchMax;
@@ -1537,11 +1538,11 @@ BOOL lookAt(const mVec3_c *target, int a, BOOL pitch, int c) {
             }
         }
     }
-    player->_22C8 = yaw;
-    player->_22C6 = tilt;
+    player->mLookYaw = yaw;
+    player->mLookTilt = tilt;
     player->_22CA = a;
     player->_22CC = c;
-    player->_2270 |= ACTOR_FLAG_LOOK_AT;
+    player->mActorFlags |= ACTOR_FLAG_LOOK_AT;
     return TRUE;
 }
 
@@ -1577,7 +1578,7 @@ BOOL isStartingDemo(int idx) {
 
 // 800FEAE4
 BOOL isState(int state, int idx) {
-    dPlayerActor_c *player = getActorRaw(idx);
+    dAcPlayer_c *player = getActorRaw(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -1586,7 +1587,7 @@ BOOL isState(int state, int idx) {
 
 // 800FEB34
 int getState(int idx) {
-    dPlayerActor_c *player = getActorRaw(idx);
+    dAcPlayer_c *player = getActorRaw(idx);
     if (player == NULL) {
         return 0xAB;
     }
@@ -1631,7 +1632,7 @@ BOOL changeAccessory(const dItem::Item *acc) {
 
 // 800FECF8
 BOOL changeHeldItem(const dItem::Item *held) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1640,14 +1641,14 @@ BOOL changeHeldItem(const dItem::Item *held) {
     }
     if (held->mId == dItem::ITEM_ID_NONE) {
         if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
-            player->_22DA = HELD_ITEM_CHANGE_REMOVE;
+            player->mHeldItemChange = HELD_ITEM_CHANGE_REMOVE;
             player->_223C = 1;
         }
 
         dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
         dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-        player->_2234 = 8;
-        player->_2270 |= 0x1000000;
+        player->mNextState = 8;
+        player->mActorFlags |= 0x1000000;
         return changeState(STATE_CHANGE_HELD_ITEM, PLAYER_INDEX_CURRENT);
     } else {
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
@@ -1658,29 +1659,29 @@ BOOL changeHeldItem(const dItem::Item *held) {
             return FALSE;
         }
         if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
-            player->_22DA = HELD_ITEM_CHANGE_EQUIP;
+            player->mHeldItemChange = HELD_ITEM_CHANGE_EQUIP;
             player->_223C = 1;
         }
     }
     dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
     dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-    player->_2234 = 8;
-    player->_2270 |= 0x1000000;
+    player->mNextState = 8;
+    player->mActorFlags |= 0x1000000;
     return changeState(STATE_CHANGE_HELD_ITEM, PLAYER_INDEX_CURRENT);
 }
 
 // 800FEEB0
 BOOL isChangingEquipment() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     switch (player->mState) {
     case STATE_CHANGE_HELD_ITEM:
     case STATE_MII_MASK_IMMEDIATE:
-    case 0x4D:
-    case 0x4E:
-    case 0x8B:
+    case STATE_CHANGE_DESIGN:
+    case STATE_CHANGE_EQUIPMENT_QUICK:
+    case STATE_TRICK_CHANGE:
     case STATE_CHANGE_HELD_ITEM_DEMO:
     case STATE_CHANGE_OUTFIT_AND_HELD:
         return TRUE;
@@ -1710,11 +1711,11 @@ BOOL isChangingEquipment() {
 
 // 800FEFF4
 mVec3_c *getToolOrPlayerPosition(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return NULL;
     }
-    dUki_c *obj = &player->_0C34->mFloat;
+    dUki_c *obj = &player->mpToolBank->mFloat;
     if (obj != NULL && obj->mState != 0) {
         return &obj->mPos[0];
     }
@@ -1723,16 +1724,16 @@ mVec3_c *getToolOrPlayerPosition(int idx) {
 
 // 800FF048
 mVec3_c *getCurrentSoundPositionRaw() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return NULL;
     }
-    return (mVec3_c *)player->_060C;
+    return &player->mMdlCallback.mSoundPos;
 }
 
 // 800FF080
 BOOL getGroundPositionAhead(mVec3_c *out) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1745,41 +1746,41 @@ BOOL getGroundPositionAhead(mVec3_c *out) {
 }
 
 // 800FF150
-u32 fn_800FF150(int idx) {
-    dPlayerActor_c *player = getActorRaw(idx);
+u32 isMakingNoise(int idx) {
+    dAcPlayer_c *player = getActorRaw(idx);
     if (player == NULL) {
         return 0;
     }
-    return (player->_2270 >> 13) & 1;
+    return (player->mActorFlags >> 13) & 1;
 }
 
 // 800FF188
-u32 fn_800FF188(int idx) {
-    dPlayerActor_c *player = getActorRaw(idx);
+u32 isActingOnUnit(int idx) {
+    dAcPlayer_c *player = getActorRaw(idx);
     if (player == NULL) {
         return 0;
     }
-    return (player->_2274 >> 7) & 1;
+    return (player->mActorFlags2 >> 7) & 1;
 }
 
 // 800FF1C0
 int getActionUnitAndKind(int *x, int *z, int idx) {
-    dPlayerActor_c *player = getActorRaw(idx);
+    dAcPlayer_c *player = getActorRaw(idx);
     if (player == NULL) {
         return 7;
     }
     if (x == NULL || z == NULL) {
         return 7;
     }
-    if (!(player->_2274 & 0x80) && !(player->_2270 & 0x2000)) {
+    if (!(player->mActorFlags2 & ACTOR_FLAG2_UNIT_ACTION) && !(player->mActorFlags & ACTOR_FLAG_NOISY)) {
         return 7;
     }
     switch (player->mState) {
     case STATE_WALK:
-        *x = player->_228C;
-        *z = player->_2290;
+        *x = player->mActionUnitX;
+        *z = player->mActionUnitZ;
         return 0;
-    case 0x3D:
+    case STATE_SHAKE_TREE_END:
         getActionUnitCoordinates(player, x, z);
         return 1;
     case 0x12:
@@ -1803,25 +1804,25 @@ int getActionUnitAndKind(int *x, int *z, int idx) {
 }
 
 // 800FF354
-BOOL fn_800FF354(int *outState) {
+BOOL requestBeeSting(int *outState) {
     int tmp;
     if (outState == NULL) {
         outState = &tmp;
     }
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         *outState = STATE_NONE;
         return FALSE;
     }
     *outState = player->mState;
-    if (player->_2270 & 1) {
+    if (player->mActorFlags & ACTOR_FLAG_DEMO) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x1A) {
+    if (state == STATE_FISHING_WAIT) {
         dUki_c::setFish(dNet::getMyNo(), NULL);
-        *outState = 0x1D;
-        changeState(0x1D, PLAYER_INDEX_CURRENT);
+        *outState = STATE_FISHING_PUT_BACK;
+        changeState(STATE_FISHING_PUT_BACK, PLAYER_INDEX_CURRENT);
         return FALSE;
     }
     if (state != STATE_IDLE && state != STATE_WALK) {
@@ -1831,8 +1832,8 @@ BOOL fn_800FF354(int *outState) {
         return FALSE;
     }
     Mgr_c::getCurrentPlayer()->setFlag0(PRIVATE_FLAG0_BEE_STUNG);
-    *outState = 0x62;
-    return changeState(0x62, PLAYER_INDEX_CURRENT);
+    *outState = STATE_BEE_STING;
+    return changeState(STATE_BEE_STING, PLAYER_INDEX_CURRENT);
 }
 
 // 800FF444
@@ -1840,7 +1841,7 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     if (equip == NULL) {
         return FALSE;
     }
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -1848,11 +1849,11 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
         return FALSE;
     }
     if (kind == EQUIPMENT_CHANGE_PUT_ON_MII_MASK) {
-        player->_22E4 = mode;
+        player->mEquipChangeMode = mode;
         return putOnMiiMaskImmediately();
     }
     if (kind == EQUIPMENT_CHANGE_TAKE_OFF_MII_MASK) {
-        player->_22E4 = mode;
+        player->mEquipChangeMode = mode;
         return takeOffMiiMaskImmediately();
     }
     dPrivateData_c *current = Mgr_c::getCurrentPlayer();
@@ -1881,7 +1882,7 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     if (changeShirt && shirt.mId != dItem::ITEM_ID_NONE) {
         int tmp2 = 0;
         if (dHmnClothMng_c::isCloth(&shirt) || dHmnClothMng_c::isOrgCloth(&tmp2, &shirt)) {
-            player->_22B4 |= EQUIPMENT_CHANGE_CLOTH;
+            player->mEquipFlags |= EQUIPMENT_CHANGE_CLOTH;
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
             dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_SHIRT, shirt.mId);
         }
@@ -1906,13 +1907,13 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
 
     if (changeAcc) {
         if (acc == dItem::ITEM_ID_NONE) {
-            player->_22B4 = (player->_22B4 & ~EQUIPMENT_SHOW_ACCESSORY) | EQUIPMENT_HIDE_ACCESSORY;
+            player->mEquipFlags = (player->mEquipFlags & ~EQUIPMENT_SHOW_ACCESSORY) | EQUIPMENT_HIDE_ACCESSORY;
             dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
             dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_ACCESSORY, acc.mId);
         } else {
             const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(acc);
             if (bitm != NULL && getHideBone(bitm) == dItem::HIDE_BONE_ACCESSORY) {
-                player->_22B4 = (player->_22B4 & ~EQUIPMENT_HIDE_ACCESSORY) | EQUIPMENT_SHOW_ACCESSORY;
+                player->mEquipFlags = (player->mEquipFlags & ~EQUIPMENT_HIDE_ACCESSORY) | EQUIPMENT_SHOW_ACCESSORY;
                 if (current->mMiiMask != 0) {
                     dPlayerMngr_c::setLocalAppearance(dNet::getMyNo(), APPEARANCE_MII_MASK_OFF);
                 }
@@ -1927,34 +1928,34 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     case EQUIPMENT_CHANGE_HAT:
     case EQUIPMENT_CHANGE_ACCESSORY:
         player->_2238 = 1;
-        player->_2234 = 8;
+        player->mNextState = 8;
         return changeState(STATE_CHANGE_EQUIPMENT, PLAYER_INDEX_CURRENT);
     case 4:
     case EQUIPMENT_CHANGE_DESIGN:
         player->_2238 = 1;
-        player->_2234 = 8;
-        return changeState(0x4D, PLAYER_INDEX_CURRENT);
+        player->mNextState = 8;
+        return changeState(STATE_CHANGE_DESIGN, PLAYER_INDEX_CURRENT);
     case 0:
         player->_2238 = 1;
-        return changeState(0x4E, PLAYER_INDEX_CURRENT);
-    case 6:
+        return changeState(STATE_CHANGE_EQUIPMENT_QUICK, PLAYER_INDEX_CURRENT);
+    case EQUIPMENT_CHANGE_TRICK:
         player->_2238 = 1;
-        player->_2234 = 8;
-        return changeState(0x8B, PLAYER_INDEX_CURRENT);
+        player->mNextState = 8;
+        return changeState(STATE_TRICK_CHANGE, PLAYER_INDEX_CURRENT);
     }
     return FALSE;
 }
 
 // 800FF840
 BOOL isSceneReadyForBgm() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return TRUE;
     }
-    if (player->mState == 0x8C) {
+    if (player->mState == STATE_SCENE_START) {
         return TRUE;
     }
-    if ((player->_2270 & 0x200000) && dBG::getMdlBank()->isReady()) {
+    if ((player->mActorFlags & ACTOR_FLAG_RESUME_BGM) && dBG::getMdlBank()->isReady()) {
         return TRUE;
     }
     return FALSE;
@@ -2019,28 +2020,28 @@ u8 getShoeColor(u32 idx, u32 gender) {
 }
 
 // 800FFA50
-BOOL fn_800FFA50(const mVec3_c *a, int b, f32 f) {
-    if (dPad::isATriggered() && isFacingPosition(a, b, f)) {
+BOOL isATriggeredFacing(const mVec3_c *pos, int maxAngle, f32 maxDist) {
+    if (dPad::isATriggered() && isFacingPosition(pos, maxAngle, maxDist)) {
         return TRUE;
     }
     return FALSE;
 }
 
 // 800FFAC0
-BOOL fn_800FFAC0() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isPointerWalking() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if ((player->_2270 & 0x40000000) && player->mState == STATE_WALK) {
+    if ((player->mActorFlags & ACTOR_FLAG_POINTER_WALK) && player->mState == STATE_WALK) {
         return TRUE;
     }
     return FALSE;
 }
 
 // 800FFB18
-BOOL fn_800FFB18() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+BOOL isToolState() {
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2057,10 +2058,10 @@ BOOL fn_800FFB18() {
     case 0x16:
     case 0x18:
     case 0x19:
-    case 0x1A:
+    case STATE_FISHING_WAIT:
     case 0x1B:
     case 0x1C:
-    case 0x1D:
+    case STATE_FISHING_PUT_BACK:
     case 0x1E:
     case 0x1F:
     case 0x20:
@@ -2070,7 +2071,7 @@ BOOL fn_800FFB18() {
     case 0x41:
     case 0x42:
     case 0x43:
-    case 0x44:
+    case STATE_PUT_ITEM_IN_HOLE:
     case 0x45:
     case 0x46:
     case 0x47:
@@ -2080,8 +2081,8 @@ BOOL fn_800FFB18() {
     case 0x8D:
     case 0x8E:
     case 0x99:
-    case 0x9A:
-    case 0x9B:
+    case STATE_SLINGSHOT_SHOOT:
+    case STATE_SLINGSHOT_WATCH:
     case 0xA2:
         return TRUE;
     }
@@ -2089,17 +2090,20 @@ BOOL fn_800FFB18() {
 }
 
 // 800FFBE4
-BOOL fn_800FFBE4() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+BOOL isShakingTree() {
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    return (u32)(player->mState - 0x3C) <= 1;
+    if (player->mState == STATE_SHAKE_TREE || player->mState == STATE_SHAKE_TREE_END) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 // 800FFC38
-BOOL fn_800FFC38() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+BOOL isPickUpState() {
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2107,7 +2111,7 @@ BOOL fn_800FFC38() {
     case 0x51:
     case 0x52:
     case 0x53:
-    case 0x5D:
+    case STATE_PICK_UP:
     case 0x7E:
         return TRUE;
     }
@@ -2115,8 +2119,8 @@ BOOL fn_800FFC38() {
 }
 
 // 800FFCA8
-BOOL fn_800FFCA8() {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+BOOL isFurnitureState() {
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2140,7 +2144,7 @@ BOOL fn_800FFCA8() {
     case 0x36:
     case 0x37:
     case 0x38:
-    case 0x39:
+    case STATE_CHAIR_POSE:
     case 0x3A:
     case 0x3B:
         return TRUE;
@@ -2150,7 +2154,7 @@ BOOL fn_800FFCA8() {
 
 // 800FFD10
 BOOL isActionItemState() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2163,7 +2167,7 @@ BOOL isActionItemState() {
 
 // 800FFD64
 u16 getActiveActionItem() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return dItem::ITEM_ID_NONE;
     }
@@ -2171,12 +2175,12 @@ u16 getActiveActionItem() {
     if (state != 0xE && state != 0x1F) {
         return dItem::ITEM_ID_NONE;
     }
-    return player->_218A;
+    return player->mActionItem;
 }
 
 // 800FFDC0
 BOOL isFacingPosition(const mVec3_c *target, int maxAngle, f32 maxDist) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2259,11 +2263,11 @@ BOOL isDesignEquipped(int slot) {
 
 // 80100128
 BOOL getActionAnimationFrame(f32 *out, int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
-    if ((u32)(player->mAnmId - 0x3C) <= 1) {
+    if (player->mAnmId == 0x3C || player->mAnmId == 0x3D) {
         m3d::fanm_c *anm = player->getAnm();
         if (anm != NULL) {
             *out = anm->getFrame();
@@ -2330,31 +2334,31 @@ int getPlayerSlot(u32 idx) {
 }
 
 // 80100358
-BOOL setHatHideBone(u32 bone, dPlayerActor_c *player) {
+BOOL setHatHideBone(u32 bone, dAcPlayer_c *player) {
     if (player == NULL) {
         return FALSE;
     }
     switch (bone) {
     case 0:
     case 1:
-        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x1;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x1;
         break;
     case 2:
-        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x2;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x2;
         break;
     case 3:
     case 4:
-        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x4;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x4;
         break;
     case 5:
     case 6:
-        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x8;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x8;
         break;
     case 7:
-        player->_22B4 = (player->_22B4 & (u16)~0x3F) | 0x10;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x10;
         break;
     case dItem::HIDE_BONE_NONE:
-        player->_22B4 = (player->_22B4 & (u16)~0x1F) | 0x20;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~0x1F) | 0x20;
         break;
     default:
         return FALSE;
@@ -2363,22 +2367,22 @@ BOOL setHatHideBone(u32 bone, dPlayerActor_c *player) {
 }
 
 // 80100410
-void clearDemoFlags(dPlayerActor_c *player) {
+void clearDemoFlags(dAcPlayer_c *player) {
     if (player != NULL) {
-        player->_2270 &= ~1;
-        player->_2270 &= ~0x100;
+        player->mActorFlags &= ~ACTOR_FLAG_DEMO;
+        player->mActorFlags &= ~ACTOR_FLAG_KEEP_ANIMATION;
     }
 }
 
 // 8010042C
-void getActionUnitCoordinates(dPlayerActor_c *player, int *x, int *z) {
-    *x = player->_2190;
-    *z = player->_2194;
+void getActionUnitCoordinates(dAcPlayer_c *player, int *x, int *z) {
+    *x = player->mTargetUnitX;
+    *z = player->mTargetUnitZ;
 }
 
 // 80100440
 BOOL receiveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f32 f1, f32 f2, f32 f3) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2398,7 +2402,7 @@ f32 getItemExchangeOffsetY() {
 
 // 80100550
 BOOL giveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f32 f1, f32 f2) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2412,31 +2416,31 @@ BOOL giveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f
 }
 
 // 80100644
-BOOL fn_80100644(BOOL a) {
+BOOL passHandItem(BOOL reach) {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }
-    if (a) {
-        return changeState(0x66, PLAYER_INDEX_CURRENT);
+    if (reach) {
+        return changeState(STATE_HAND_ITEM_REACH, PLAYER_INDEX_CURRENT);
     }
-    return changeState(0x67, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_HAND_ITEM_TAKE, PLAYER_INDEX_CURRENT);
 }
 
 // 801006A8
-BOOL fn_801006A8() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL returnHandItem() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (dHandItem::request(dHandItem::getUseType(), player, dHandItem::cDefaultReach) == FALSE) {
         return FALSE;
     }
-    return changeState(0x6E, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_HAND_ITEM_RETURN, PLAYER_INDEX_CURRENT);
 }
 
 // 80100714
 BOOL setShoeColor(u8 shoeColor, u8 b) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2449,63 +2453,63 @@ BOOL setShoeColor(u8 shoeColor, u8 b) {
     }
     current->mShoeColor = shoeColor;
     current->mShoeKind = b;
-    player->_2234 = 0x1E;
+    player->mNextState = 0x1E;
     return TRUE;
 }
 
 // 801007AC
-BOOL fn_801007AC() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL pickUpPhone() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if ((u32)(player->mState - 0x85) <= 2) {
+    if (player->mState == STATE_PHONE_PICK_UP || player->mState == STATE_PHONE_TALK || player->mState == STATE_PHONE_HANG_UP) {
         return FALSE;
     }
-    return changeState(0x85, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_PHONE_PICK_UP, PLAYER_INDEX_CURRENT);
 }
 
 // 80100804
-BOOL fn_80100804() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL hangUpPhone() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x87 || state != 0x86) {
+    if (state == STATE_PHONE_HANG_UP || state != STATE_PHONE_TALK) {
         return FALSE;
     }
-    return changeState(0x87, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_PHONE_HANG_UP, PLAYER_INDEX_CURRENT);
 }
 
 // 80100860
-BOOL fn_80100860() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL requestInsectBite() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x1A) {
+    if (state == STATE_FISHING_WAIT) {
         dUki_c::setFish(dNet::getMyNo(), NULL);
-        changeState(0x1D, PLAYER_INDEX_CURRENT);
+        changeState(STATE_FISHING_PUT_BACK, PLAYER_INDEX_CURRENT);
         return FALSE;
     }
     if (state != STATE_IDLE && state != STATE_WALK) {
         return FALSE;
     }
-    return changeState(0x6F, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_INSECT_BITE, PLAYER_INDEX_CURRENT);
 }
 
 // 801008E4
 BOOL isUsingNet(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
-    if (!(player->_2270 & 0x20)) {
+    if (!(player->mActorFlags & ACTOR_FLAG_TOOL_ACTIVE)) {
         return FALSE;
     }
-    if (player->_0C34 != NULL && player->_0C34->getToolType() == HMN_TOOL_NET) {
+    if (player->mpToolBank != NULL && player->mpToolBank->getToolType() == HMN_TOOL_NET) {
         return TRUE;
     }
     return FALSE;
@@ -2513,7 +2517,7 @@ BOOL isUsingNet(int idx) {
 
 // 8010094C
 BOOL isRunAnimation(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -2521,20 +2525,20 @@ BOOL isRunAnimation(int idx) {
 }
 
 // 8010098C
-BOOL fn_8010098C() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL startChat() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0x70) {
+    if (player->mState == STATE_CHAT) {
         return TRUE;
     }
-    return changeState(0x70, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_CHAT, PLAYER_INDEX_CURRENT);
 }
 
 // 801009E0
 BOOL playEmotion(u32 type) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2544,30 +2548,30 @@ BOOL playEmotion(u32 type) {
     if (player->mState == STATE_EMOTION) {
         return FALSE;
     }
-    player->_22DE = type;
+    player->mEmotion = type;
     return changeState(STATE_EMOTION, PLAYER_INDEX_CURRENT);
 }
 
 // 80100A54
-BOOL fn_80100A54() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL reactDebtPaid() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0x84) {
+    if (player->mState == STATE_REACT) {
         return FALSE;
     }
-    player->_22DD = 0;
-    return changeState(0x84, PLAYER_INDEX_CURRENT);
+    player->mReactionKind = REACTION_DEBT_PAID;
+    return changeState(STATE_REACT, PLAYER_INDEX_CURRENT);
 }
 
 // 80100AB0
-BOOL fn_80100AB0() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isReactionFinished() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState != 0x84) {
+    if (player->mState != STATE_REACT) {
         return FALSE;
     }
     if (player->mAnmId == 0x95) {
@@ -2580,56 +2584,56 @@ BOOL fn_80100AB0() {
 }
 
 // 80100B24
-BOOL fn_80100B24() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL reactToCockroaches() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->mState == 0x84) {
+    if (player->mState == STATE_REACT) {
         return FALSE;
     }
-    player->_22DD = 6;
-    return changeState(0x84, PLAYER_INDEX_CURRENT);
+    player->mReactionKind = REACTION_COCKROACH;
+    return changeState(STATE_REACT, PLAYER_INDEX_CURRENT);
 }
 
 // 80100B80
-u32 fn_80100B80() {
-    return fn_80100AB0();
+u32 isCockroachReactionFinished() {
+    return isReactionFinished();
 }
 
 // 80100B84
-BOOL fn_80100B84(f32 x, f32 z) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL openMailbox(f32 x, f32 z) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if ((u32)(player->mState - 0x72) <= 1) {
+    if (player->mState == STATE_MAILBOX_OPEN || player->mState == STATE_MAILBOX_CLOSE) {
         return FALSE;
     }
     setTargetXZ(player, x, z);
-    return changeState(0x72, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_MAILBOX_OPEN, PLAYER_INDEX_CURRENT);
 }
 
 // 80100C28
-BOOL fn_80100C28() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL closeMailbox() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x73 || state != 0x72) {
+    if (state == STATE_MAILBOX_CLOSE || state != STATE_MAILBOX_OPEN) {
         return FALSE;
     }
-    return changeState(0x73, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_MAILBOX_CLOSE, PLAYER_INDEX_CURRENT);
 }
 
 // 80100C84
-BOOL fn_80100C84(BOOL a) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL requestFaint(BOOL a) {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (player->_2270 & 1) {
+    if (player->mActorFlags & ACTOR_FLAG_DEMO) {
         return FALSE;
     }
     int state = player->mState;
@@ -2640,16 +2644,16 @@ BOOL fn_80100C84(BOOL a) {
         return FALSE;
     }
     if (!a) {
-        player->_2274 |= 1;
+        player->mActorFlags2 |= 1;
     } else {
-        player->_2274 &= ~1;
+        player->mActorFlags2 &= ~1;
     }
-    return changeState(0x74, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_FAINT, PLAYER_INDEX_CURRENT);
 }
 
 // 80100D44
-BOOL fn_80100D44() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isSafeFromInsects() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2662,15 +2666,15 @@ BOOL fn_80100D44() {
     case 0x5B:
         return TRUE;
     }
-    if (player->_2270 & 1) {
+    if (player->mActorFlags & ACTOR_FLAG_DEMO) {
         return TRUE;
     }
     return dDemo::isType(dDemo::TYPE_9) != 0;
 }
 
 // 80100DD0
-BOOL fn_80100DD0(int idx) {
-    dPlayerActor_c *player = getActor(idx);
+BOOL isScaringCockroaches(int idx) {
+    dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
     }
@@ -2685,40 +2689,40 @@ BOOL fn_80100DD0(int idx) {
 }
 
 // 80100E3C
-BOOL fn_80100E3C() {
+BOOL boardBus() {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }
-    return changeState(0x8F, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_BUS_BOARD, PLAYER_INDEX_CURRENT);
 }
 
 // 80100E7C
-BOOL fn_80100E7C() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isOnBus() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    return player->mState == 0x90;
+    return player->mState == STATE_BUS_BOARDED;
 }
 
 // 80100EC0
-BOOL fn_80100EC0() {
+BOOL rideBus() {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }
-    return changeState(0x91, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_BUS_RIDE, PLAYER_INDEX_CURRENT);
 }
 
 // 80100F00
-BOOL fn_80100F00(s16 angle, f32 frame) {
-    dPlayerActor_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
+BOOL getOffBus(s16 angle, f32 frame) {
+    dAcPlayer_c *player = getActorRaw(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     player->mAngle.x = 0;
     player->mAngle.y = angle;
     player->mAngle.z = 0;
-    if (changeState(0x92, PLAYER_INDEX_CURRENT)) {
+    if (changeState(STATE_BUS_GET_OFF, PLAYER_INDEX_CURRENT)) {
         m3d::fanm_c *anm = player->getAnm();
         if (anm != NULL) {
             anm->setFrame(frame);
@@ -2729,40 +2733,40 @@ BOOL fn_80100F00(s16 angle, f32 frame) {
 }
 
 // 80100F98
-BOOL fn_80100F98() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL isOffBus() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    return player->mState == 0x93;
+    return player->mState == STATE_BUS_GOT_OFF;
 }
 
 // 80100FDC
-BOOL fn_80100FDC() {
+BOOL leaveBus() {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }
-    return changeState(0x94, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_BUS_LEAVE, PLAYER_INDEX_CURRENT);
 }
 
 // 8010101C
-u8 fn_8010101C() {
-    return gManager._194A8;
+u8 isAxeInFountain() {
+    return gManager.mAxeInFountain;
 }
 
 // 80101030
-void fn_80101030() {
-    gManager._194A8 = TRUE;
+void setAxeInFountain() {
+    gManager.mAxeInFountain = TRUE;
 }
 
 // 80101048
-void fn_80101048() {
-    gManager._194A8 = FALSE;
+void clearAxeInFountain() {
+    gManager.mAxeInFountain = FALSE;
 }
 
 // 80101060
 BOOL changeHeldItemForDemo(const dItem::Item *held) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2780,7 +2784,7 @@ BOOL changeHeldItemForDemo(const dItem::Item *held) {
         if (getHideBone(bitm) != dItem::HIDE_BONE_HAND) {
             return FALSE;
         }
-        player->_22DA = HELD_ITEM_CHANGE_EQUIP;
+        player->mHeldItemChange = HELD_ITEM_CHANGE_EQUIP;
         player->_223C = 1;
         dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
         dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
@@ -2789,44 +2793,44 @@ BOOL changeHeldItemForDemo(const dItem::Item *held) {
 }
 
 // 80101168
-BOOL fn_80101168() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL receiveGoddessItem() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     if (player->mState != STATE_DEMO_WAIT) {
         return FALSE;
     }
-    return changeState(0x95, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_GODDESS_ITEM, PLAYER_INDEX_CURRENT);
 }
 
 // 801011BC
-BOOL fn_801011BC() {
+BOOL canGoddessLeave() {
     return TRUE;
 }
 
 // 801011C4
 BOOL getScriptedActionPosition(mVec3_c *out) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
-    if (!(player->_2270 & 0x10)) {
+    if (!(player->mActorFlags & ACTOR_FLAG_TOOL_OUT)) {
         return FALSE;
     }
-    if (player->mState != 0x95) {
+    if (player->mState != STATE_GODDESS_ITEM) {
         return FALSE;
     }
-    if (player->_2234 != 0x20) {
+    if (player->mNextState != 0x20) {
         return FALSE;
     }
-    *out = player->_20EC;
+    *out = player->mScriptedActionPos;
     return TRUE;
 }
 
 // 8010125C
 BOOL startShoeShine(s16 frames, f32 speed) {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2834,15 +2838,15 @@ BOOL startShoeShine(s16 frames, f32 speed) {
         return FALSE;
     }
     mVec3_c target(1082.0f, 0.0f, 390.0f);
-    player->_2068 = target;
-    player->_21BC = speed;
-    player->_22D0 = frames;
+    player->mTargetPos = target;
+    player->mTargetSpeed = speed;
+    player->mTurnFrames = frames;
     return changeState(STATE_SHOE_SHINE_START, PLAYER_INDEX_CURRENT);
 }
 
 // 801012FC
 BOOL finishShoeShine() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
@@ -2853,19 +2857,19 @@ BOOL finishShoeShine() {
 }
 
 // 80101350
-BOOL fn_80101350() {
-    dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
+BOOL turnToTalkActor() {
+    dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0x76) {
+    if (state == STATE_TURN_TO_TALKER) {
         return TRUE;
     }
     if (state != STATE_DEMO_WAIT) {
         return FALSE;
     }
-    return changeState(0x76, PLAYER_INDEX_CURRENT);
+    return changeState(STATE_TURN_TO_TALKER, PLAYER_INDEX_CURRENT);
 }
 
 // 801013B4
@@ -2893,8 +2897,8 @@ void reset() {
     gManager.mDailyHairUpdated = 0;
     clearBedHairPending();
     gManager.mDailyTanUpdated = 0;
-    gManager._194A7 = 0;
-    gManager._194A8 = 0;
+    gManager.mCockroachNoticed = 0;
+    gManager.mAxeInFountain = 0;
     gManager.mLocked = 0;
     gManager.mToolActionHeld = 0;
     gManager.mSaveRequestFlagsCleared = 0;
@@ -2937,13 +2941,13 @@ void markDailyTanUpdated() {
 }
 
 // 8010152C
-u8 fn_8010152C() {
-    return gManager._194A7;
+u8 isCockroachNoticed() {
+    return gManager.mCockroachNoticed;
 }
 
 // 80101540
-void fn_80101540() {
-    gManager._194A7 = TRUE;
+void markCockroachNoticed() {
+    gManager.mCockroachNoticed = TRUE;
 }
 
 // 80101558
@@ -2973,22 +2977,22 @@ u32 getHeapSize() {
 }
 
 // 80101600
-u32 fn_80101600() {
+u32 getGeneralHeapSize() {
     return 0x1800;
 }
 
 // 80101608
-u32 fn_80101608() {
+u32 getHeadHeapSize() {
     return 0xC00;
 }
 
 // 80101610
-u32 fn_80101610() {
+u32 getAccessoryHeapSize() {
     return 0x800;
 }
 
 // 80101618
-u32 fn_80101618() {
+u32 getMiiHeapSize() {
     return 0x38820;
 }
 
@@ -3100,29 +3104,29 @@ void setChangeStateCallback(Mgr_c::ChangeStateFn fn, int idx) {
 }
 
 // 801019A4
-void setActor(dPlayerActor_c *actor, u32 idx) {
+void setActor(dAcPlayer_c *actor, u32 idx) {
     if (idx < PLAYER_INDEX_COUNT) {
         gManager.mActors[idx] = actor;
     }
 }
 
 // 801019C4
-dPlayerActor_c *getActor(int idx) {
+dAcPlayer_c *getActor(int idx) {
     if ((u32)idx > PLAYER_INDEX_CURRENT) {
         return NULL;
     }
     if (idx == PLAYER_INDEX_CURRENT) {
         idx = dNet::getMyNo();
     }
-    dPlayerActor_c *actor = gManager.mActors[idx];
-    if (actor != NULL && (actor->_2270 & ACTOR_FLAG_DISABLED)) {
+    dAcPlayer_c *actor = gManager.mActors[idx];
+    if (actor != NULL && (actor->mActorFlags & ACTOR_FLAG_DISABLED)) {
         return NULL;
     }
     return actor;
 }
 
 // 80101A28
-dPlayerActor_c *getActorRaw(int idx) {
+dAcPlayer_c *getActorRaw(int idx) {
     if ((u32)idx > PLAYER_INDEX_CURRENT) {
         return NULL;
     }
@@ -3208,7 +3212,7 @@ void queueRemoteEquipment(int idx, int part, int item) {
 
 // 80101CC0
 void setRemoteActionParams(int idx, const dPlayerMngr_c::actionParam_c *value) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player != NULL) {
         player->mRemoteActionParams = *value;
     }
@@ -3216,18 +3220,18 @@ void setRemoteActionParams(int idx, const dPlayerMngr_c::actionParam_c *value) {
 
 // 80101D0C
 void setRemoteActionSync(int idx, int a, int b) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player != NULL && !isActionParamLocked(player->mState)) {
-        player->_2230 = a;
-        player->_226C = b;
+        player->mRemoteSyncA = a;
+        player->mRemoteSyncB = b;
     }
 }
 
 // 80101D70
 void setRemoteSyncValue(int idx, int value) {
-    dPlayerActor_c *player = getActor(idx);
+    dAcPlayer_c *player = getActor(idx);
     if (player != NULL) {
-        player->_2280 = value;
+        player->mSyncValue = value;
     }
 }
 
@@ -3285,10 +3289,10 @@ BOOL updateActionFieldTasks(int idx, u8 b, int state, const u8 *param) {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
-    case 0x3C:
+    case STATE_SHAKE_TREE:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
-    case 0x3D:
+    case STATE_SHAKE_TREE_END:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
     case 0x40:
@@ -3484,7 +3488,7 @@ void createSurfaceEffects(const char *const *names, const mVec3_c *pos, const mA
 }
 
 // 801025B8
-BOOL fn_801025B8() {
+BOOL isBusy() {
     return FALSE;
 }
 

@@ -25,6 +25,7 @@
 #include <game/snd/snd_id.hpp>
 
 #include <game/game/d_fgobj_manager.hpp>
+#include <game/game/d_a_player.hpp>
 
 void *dFishField_c_classInit();
 
@@ -691,7 +692,7 @@ dFishFldShadow_c *dFishField_c::addPlayerFish(int type, int mode,
         res = nw4r::g3d::ResFile(mShadowRes.getData());
         fish->create(res);
         if (mode == 1) {
-            dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(player);
+            dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(player);
             if (actor != NULL) {
                 fish->mTargetAngle.y = actor->mAngle.y;
             }
@@ -1078,13 +1079,13 @@ BOOL dFishFldShadow_c::checkScared() {
         return TRUE;
     }
     for (int i = 0; i < 4; i++) {
-        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
+        dAcPlayer_c *player = dPlayerMgr::getPlayerActor(i);
         if (player != NULL) {
             static const f32 cScareR = 80.0f;
             static const f32 cScareRSq = cScareR * cScareR;
             mVec3_c diff = mPos - player->mPos;
             if (diff.x * diff.x + diff.z * diff.z < cScareRSq &&
-                (dPlayerMgr::isRunAnimation(i) || dPlayerMgr::fn_800FF150(i))) {
+                (dPlayerMgr::isRunAnimation(i) || dPlayerMgr::isMakingNoise(i))) {
                 return TRUE;
             }
         }
@@ -2353,7 +2354,7 @@ void dFishFrog_c::execAway(dFishFldShadow_c *fish) {
     if (mCroakWait != 0) {
         mCroakWait--;
     }
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         mVec3_c pos = player->mPos;
         f32 dist = (fish->mPos - pos).xzLen();
@@ -2368,7 +2369,7 @@ void dFishFrog_c::execNear(dFishFldShadow_c *fish) {
     if (mCroakWait != 0) {
         mCroakWait--;
     }
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         mVec3_c pos = player->mPos;
         f32 dist = (fish->mPos - pos).xzLen();

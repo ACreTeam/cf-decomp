@@ -6,6 +6,7 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_a_player.hpp>
 
 namespace dDemoSync {
 
@@ -155,7 +156,7 @@ void receive(int member, const u8 *data, u32 size) {
         u32 demoId = readDemoId(data);
         u8 arg = data[5];
         dDemoActor_c *actor = dDemoActor_c::findByDemoID(demoId);
-        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(member);
+        dAcPlayer_c *player = dPlayerMgr::getPlayerActor(member);
         if (actor == NULL || player == NULL) {
             if (cmd == DEMO_SYNC_START) {
                 if (member != dNet::getMyNo()) {

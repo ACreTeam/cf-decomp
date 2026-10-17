@@ -20,6 +20,7 @@
 #include <game/mLib/m_mtx.hpp>
 #include <game/snd/snd_id.hpp>
 #include <cmath>
+#include <game/game/d_a_player.hpp>
 
 // Debug parameters (RTTI "dBgoDraw_HIO_c").
 class dBgoDraw_HIO_c {
@@ -660,7 +661,7 @@ void dBgoDraw_c::calcGrassTrans() {
         return;
     }
     mVec3_c pos;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         pos = player->getPos();
     } else {
@@ -722,7 +723,7 @@ void dBgoDraw_c::calcSeaDist() {
     }
     mVec3_c pos;
     bool ok;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         pos = player->getPos();
         ok = true;

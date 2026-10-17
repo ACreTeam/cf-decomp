@@ -30,6 +30,7 @@
 #include <game/cLib/c_math.hpp>
 #include <revolution/MTX.h>
 #include <string.h>
+#include <game/game/d_a_player.hpp>
 
 enum {
     SCENE_ATTR_NPC_ROOM = dScene::SCENE_ATTR_NPC_HOUSE | dScene::SCENE_ATTR_FTR_ROOM | dScene::SCENE_ATTR_ROOM,

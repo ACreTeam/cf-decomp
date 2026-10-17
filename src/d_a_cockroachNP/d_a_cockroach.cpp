@@ -692,7 +692,7 @@ bool daCockroachBase_c::isPlayerNear(f32 radius, int player) {
 
 // 0x2700
 bool daCockroachBase_c::isPlayerIdle(int player) {
-    return !dPlayerMgr::fn_80100DD0(player);
+    return !dPlayerMgr::isScaringCockroaches(player);
 }
 
 // 0x272C

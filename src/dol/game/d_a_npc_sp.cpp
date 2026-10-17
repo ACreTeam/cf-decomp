@@ -123,7 +123,7 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
             int pDirs = fd->getRouteDirs(&p);
             int unitX = worldToUnit(p.x);
             int unitZ = worldToUnit(p.z);
-            dPlayerActor_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
+            dAcPlayer_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
             if (pDirs != 0 && (player != NULL || dNpc::canPutItemAt(&p, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE))) {
                 if (!best || best > dist) {
                     best = dist;
@@ -181,7 +181,7 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
                 }
                 int unitX = worldToUnit(q.x);
                 int unitZ = worldToUnit(q.z);
-                dPlayerActor_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
+                dAcPlayer_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
                 BOOL ok = player != NULL || dNpc::canPutItemAt(&q, &dItem::Item(), NULL, dScene::SCENE_NUM, TRUE, TRUE);
                 if (ok && (best < 0.0f || best > dist)) {
                     best = dist;

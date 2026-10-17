@@ -15,6 +15,7 @@
 #include <game/game/d_reset.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/game/d_str.hpp>
+#include <game/game/d_a_player.hpp>
 
 CUSTOM_BASE_PROFILE(DEMO, dDemo_c, fProf::DEMO, fProf::DRAW_ORDER::DEMO);
 
@@ -327,7 +328,7 @@ static BOOL startTalk(Req_c *req) {
                 sendCommand(actor, req->mCheck);
                 return TRUE;
             }
-            dPlayerMgr::fn_800FDBDC(state);
+            dPlayerMgr::putAwayToolForTalk(state);
             req->mStep = STEP_WAIT_PLAYER;
             return FALSE;
         }
@@ -412,7 +413,7 @@ static BOOL endSpeak(Req_c *req) {
 
 // 8018E560
 BOOL requestSpeak(dDemoActor_c *actor, dDemoActor_c *target) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }
@@ -667,7 +668,7 @@ static BOOL endReport(Req_c *req) {
 
 // 8018EAE4
 BOOL requestReport(dDemoActor_c *actor) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }
@@ -746,7 +747,7 @@ static BOOL end10(Req_c *req) {
 
 // 8018ECA0
 BOOL request10() {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }

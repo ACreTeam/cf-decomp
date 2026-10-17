@@ -7,6 +7,7 @@
 #include <game/game/d_world.hpp>
 #include <revolution/SC.h>
 #include <cstdio>
+#include <game/game/d_a_player.hpp>
 
 CUSTOM_BASE_PROFILE(OBJ_BAL, dObjBal_c, fProf::OBJ_BAL,
                     fProf::DRAW_ORDER::OBJ_BAL);
@@ -59,7 +60,7 @@ int dObjBal_c::draw() {
 }
 
 void dObjBal_c::calcPos() {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == nullptr) {
         return;
     }

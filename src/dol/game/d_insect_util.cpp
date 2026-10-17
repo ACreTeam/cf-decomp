@@ -16,6 +16,7 @@
 #include <lib/egg/math/eggMath.h>
 #include <lib/egg/math/eggQuat.h>
 #include <float.h>
+#include <game/game/d_a_player.hpp>
 
 #define UNIT_OF(v) ((int)(v) >> 5)
 
@@ -320,10 +321,10 @@ bool playerCheck_c::isHittingStone(const mVec3_c &pos) const {
 bool playerCheck_c::isDisturbing(f32 radius) const {
     for (int i = 0; i < INSECT_UTIL_PLAYER_NUM; i++) {
         if (isValid(i) == true && isNear(i, radius) == true) {
-            if (dPlayerMgr::fn_800FF150(i) == TRUE) {
+            if (dPlayerMgr::isMakingNoise(i) == TRUE) {
                 return true;
             }
-            if (dPlayerMgr::fn_800FF188(i) == TRUE) {
+            if (dPlayerMgr::isActingOnUnit(i) == TRUE) {
                 int unitX = 0;
                 int unitZ = 0;
                 if (dPlayerMgr::getActionUnitAndKind(&unitX, &unitZ, i) == 0) {

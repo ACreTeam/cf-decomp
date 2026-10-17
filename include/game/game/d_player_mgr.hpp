@@ -18,93 +18,8 @@ class dHmnToolBank_c;
 // (getMyNo). Player slots (mSlots): 0-3 town players (dSaveData_c::mPlayers),
 // 4-6 visiting players (GuestPlayers_c), 7 none.
 
-// The player actor (lives in the d_a_player REL; its constructor runs dDemoActor_c's). Only the fields this TU
-// uses.
-class dPlayerActor_c : public dDemoActor_c {
-public:
-    using dActor_c::mPos;
-    using dActor_c::mAngle;
-
-    f32 getMoveSpeed() const { return _22EC; }
-
-    m3d::fanm_c *getAnm() { return (m3d::fanm_c *)_03C4; }
-
-    /* 0x00BA */ u8 _00BA[0x30A]; // dDemoActor_c ends at 0xBA (mDemoFlags); MWCC packs into its tail padding
-    /* 0x03C4 */ u8 _03C4[0x8];
-    /* 0x03CC */ u8 _03CC[0x240];
-    /* 0x060C */ u8 _060C[0x18];
-    /* 0x0624 */ u8 _0624[0x30];
-    /* 0x0654 */ mVec3_c _0654;
-    /* 0x0660 */ u8 _0660[0x90];
-    /* 0x06F0 */ u8 _06F0[0x4];
-    /* 0x06F4 */ u8 _06F4[0x540];
-    /* 0x0C34 */ dHmnToolBank_c *_0C34;
-    /* 0x0C38 */ u8 _0C38[0x1430];
-    /* 0x2068 */ mVec3_c _2068;
-    /* 0x2074 */ mVec3_c _2074;
-    /* 0x2080 */ u8 _2080[0xC];
-    /* 0x208C */ f32 _208C;
-    /* 0x2090 */ u8 _2090[0x5C];
-    /* 0x20EC */ mVec3_c _20EC;
-    /* 0x20F8 */ u8 _20F8[0x92];
-    /* 0x218A */ u16 _218A;
-    /* 0x218C */ u8 _218C[0x4];
-    /* 0x2190 */ int _2190;
-    /* 0x2194 */ int _2194;
-    /* 0x2198 */ u8 _2198[0x24];
-    /* 0x21BC */ f32 _21BC;
-    /* 0x21C0 */ u8 _21C0[0x60];
-    /* 0x2220 */ int mAnmId;
-    /* 0x2224 */ u8 _2224[0x8];
-    /* 0x222C */ int mState;
-    /* 0x2230 */ int _2230;
-    /* 0x2234 */ int _2234;
-    /* 0x2238 */ int _2238;
-    /* 0x223C */ int _223C;
-    /* 0x2240 */ u8 _2240[0x4];
-    /* 0x2244 */ int _2244;
-    /* 0x2248 */ int _2248;
-    /* 0x224C */ int _224C;
-    /* 0x2250 */ u8 _2250[0x4];
-    /* 0x2254 */ int _2254;
-    /* 0x2258 */ u8 _2258[0x14];
-    /* 0x226C */ int _226C;
-    /* 0x2270 */ u32 _2270;
-    /* 0x2274 */ u32 _2274;
-    /* 0x2278 */ u8 _2278[0x8];
-    /* 0x2280 */ int _2280;
-    /* 0x2284 */ u32 _2284;
-    /* 0x2288 */ u32 _2288;
-    /* 0x228C */ int _228C;
-    /* 0x2290 */ int _2290;
-    /* 0x2294 */ u8 _2294[0x4];
-    /* 0x2298 */ int _2298;
-    /* 0x229C */ u8 _229C[0x18];
-    /* 0x22B4 */ u16 _22B4;
-    /* 0x22B6 */ u16 _22B6;
-    /* 0x22B8 */ u8 _22B8[0xC];
-    /* 0x22C4 */ s16 _22C4;
-    /* 0x22C6 */ s16 _22C6;
-    /* 0x22C8 */ s16 _22C8;
-    /* 0x22CA */ s16 _22CA;
-    /* 0x22CC */ s16 _22CC;
-    /* 0x22CE */ u8 _22CE[0x2];
-    /* 0x22D0 */ s16 _22D0;
-    /* 0x22D2 */ u8 _22D2[0x8];
-    /* 0x22DA */ u8 _22DA;
-    /* 0x22DB */ u8 _22DB[0x2];
-    /* 0x22DD */ u8 _22DD;
-    /* 0x22DE */ u8 _22DE;
-    /* 0x22DF */ u8 _22DF[0x5];
-    /* 0x22E4 */ u8 _22E4;
-    /* 0x22E5 */ u8 _22E5[0x7];
-    /* 0x22EC */ f32 _22EC;
-    /* 0x22F0 */ u8 _22F0[0x8];
-    /* 0x22F8 */ s16 _22F8;
-    /* 0x22FA */ u8 _22FA[0xE];
-    /* 0x2308 */ dPlayerMngr_c::actionParam_c mRemoteActionParams;
-    /* 0x2314 */ u8 _2314[0x4];
-}; // size >= 0x2318
+// The player actor: include/game/game/d_a_player.hpp.
+class dAcPlayer_c;
 
 namespace dPlayerMgr {
 
@@ -120,28 +35,78 @@ enum State {
     STATE_CHANGE_HELD_ITEM = 0x06,
     STATE_DEMO_START = 0x07,
     STATE_DEMO_WAIT = 0x08,
+    STATE_ENTER_DOOR = 0x09,         // d_a_str (door_knob_in)
+    STATE_EXIT_DOOR = 0x0A,          // d_a_str at scene start (door_knob_out)
+    STATE_WALK_THROUGH_DOOR = 0x0C,  // d_a_str
+    STATE_FISHING_WAIT = 0x1A,       // the bobber is in the water
+    STATE_FISHING_PUT_BACK = 0x1D,
+    STATE_PUT_AWAY_TOOL = 0x22,      // before a talk
     STATE_LIE_DOWN = 0x2A,
     STATE_GET_UP = 0x2C,
     STATE_BED_WAIT = 0x2E,
+    STATE_CHEST_OPEN = 0x32,
+    STATE_CHEST_WAIT = 0x33,
+    STATE_CHEST_CLOSE = 0x34,
     STATE_SIT_DOWN = 0x35,
     STATE_CHAIR_WAIT = 0x38,
+    STATE_CHAIR_POSE = 0x39,         // changeSeatedPose
+    STATE_SHAKE_TREE = 0x3C,         // dFgobjManager::startShakeTree
+    STATE_SHAKE_TREE_END = 0x3D,
+    STATE_PUT_ITEM_IN_HOLE = 0x44,
+    STATE_EXIT_ROOM = 0x49,          // requestExit
+    STATE_ENTER_ROOM = 0x4A,         // at scene start
     STATE_MII_MASK_IMMEDIATE = 0x4B,
     STATE_MII_MASK = 0x4C,
+    STATE_CHANGE_DESIGN = 0x4D,      // changeEquipment
+    STATE_CHANGE_EQUIPMENT_QUICK = 0x4E, // changeEquipment mode 0
     STATE_CHANGE_HAIR = 0x4F,
     STATE_CHANGE_MII_MASK = 0x50,
+    STATE_PICK_UP = 0x5D,            // the item goes into an empty pocket
     STATE_SHOW_CATCH = 0x5F,
     STATE_SHOW_CATCH_AT = 0x60,
+    STATE_SURPRISED = 0x61,          // turns to a target, then an emotion bubble
+    STATE_BEE_STING = 0x62,
     STATE_RECEIVE_ITEM = 0x63,
+    STATE_HAND_ITEM_REACH = 0x66,    // dHandItem
+    STATE_HAND_ITEM_TAKE = 0x67,
     STATE_GIVE_ITEM = 0x6A,
+    STATE_HAND_ITEM_RETURN = 0x6E,
+    STATE_INSECT_BITE = 0x6F,
+    STATE_CHAT = 0x70,               // d_menu_chat
     STATE_EMOTION = 0x71,
+    STATE_MAILBOX_OPEN = 0x72,
+    STATE_MAILBOX_CLOSE = 0x73,
+    STATE_FAINT = 0x74,              // af_ply_kizetsu
+    STATE_TURN_TO_TALKER = 0x76,
     STATE_EAT = 0x78,
     STATE_EAT_REMOVE_MASK = 0x79,
+    STATE_CLOSE_UMBRELLA = 0x7C,
+    STATE_REACT = 0x84,              // dAcPlayer_c::mReactionKind (REACTION_*)
+    STATE_PHONE_PICK_UP = 0x85,      // d_a_rmobj_tel
+    STATE_PHONE_TALK = 0x86,
+    STATE_PHONE_HANG_UP = 0x87,
+    STATE_FLINCH = 0x88,             // Resetti
+    STATE_TRICK_CHANGE = 0x8B,       // EQUIPMENT_CHANGE_TRICK (af_ply_trick)
+    STATE_SCENE_START = 0x8C,
+    STATE_BUS_BOARD = 0x8F,          // daStrBus_c
+    STATE_BUS_BOARDED = 0x90,
+    STATE_BUS_RIDE = 0x91,
+    STATE_BUS_GET_OFF = 0x92,
+    STATE_BUS_GOT_OFF = 0x93,
+    STATE_BUS_LEAVE = 0x94,
+    STATE_GODDESS_ITEM = 0x95,       // the fountain goddess returns the axe
     STATE_EAT_SPECIAL = 0x97,
     STATE_CHANGE_HELD_ITEM_DEMO = 0x98,
+    STATE_SLINGSHOT_SHOOT = 0x9A,
+    STATE_SLINGSHOT_WATCH = 0x9B,    // a shot balloon / UFO falls
     STATE_DRINK_COFFEE = 0x9C,
     STATE_FINISH_COFFEE = 0x9D,
+    STATE_TURN_FRONT = 0x9E,
     STATE_BED_HAIR = 0x9F,
     STATE_CHANGE_OUTFIT_AND_HELD = 0xA0,
+    STATE_LISTEN_KK = 0xA1,
+    STATE_FORTUNE_HIT = 0xA4,        // af_ply_fortune_hit
+    STATE_FORTUNE_FAINT = 0xA5,
     STATE_SHOE_SHINE_START = 0xA6,
     STATE_SHOE_SHINE = 0xA7,
     STATE_SHOE_SHINE_END = 0xA8,
@@ -172,6 +137,7 @@ enum EquipmentChangeMode {
     EQUIPMENT_CHANGE_HAT = 2,
     EQUIPMENT_CHANGE_ACCESSORY = 3,
     EQUIPMENT_CHANGE_DESIGN = 5,
+    EQUIPMENT_CHANGE_TRICK = 6, // a Halloween trick (STATE_TRICK_CHANGE)
 };
 
 enum AppearanceChange {
@@ -180,10 +146,36 @@ enum AppearanceChange {
     APPEARANCE_MII_MASK_OFF = 0x12,
 };
 
+// dAcPlayer_c::mActorFlags. Unnamed bits are still literals.
 enum ActorFlag {
+    ACTOR_FLAG_DEMO = 0x1,               // cleared by clearDemoFlags
+    ACTOR_FLAG_TOOL_OUT = 0x10,          // a tool is held ready
+    ACTOR_FLAG_TOOL_ACTIVE = 0x20,       // the tool is in use (canFinishToolAction)
     ACTOR_FLAG_LOOK_AT = 0x40,
+    ACTOR_FLAG_KEEP_ANIMATION = 0x100,   // skip the idle animation reset; cleared on a state change
+    ACTOR_FLAG_MII_MASK_OK = 0x400,      // canUseMiiMask
+    ACTOR_FLAG_NOISY = 0x2000,           // tool swings, digging, tumbling, fireworks (isMakingNoise)
     ACTOR_FLAG_INSECT = 0x8000,
+    ACTOR_FLAG_SCRIPTED_MOVE = 0x100000, // an NPC walks the player (setScriptedMove)
+    ACTOR_FLAG_RESUME_BGM = 0x200000,    // isSceneReadyForBgm
     ACTOR_FLAG_DISABLED = 0x2000000,
+    ACTOR_FLAG_POINTER_WALK = 0x40000000, // cleared every input frame; isPointerWalking
+};
+
+// dAcPlayer_c::mActorFlags2. Unnamed bits are still literals.
+enum ActorFlag2 {
+    ACTOR_FLAG2_UNIT_ACTION = 0x80,      // isActingOnUnit
+    ACTOR_FLAG2_SHOT_BALLOON = 0x100,    // watchShotBalloon
+    ACTOR_FLAG2_SHOT_UFO = 0x200,        // watchShotUfo
+    ACTOR_FLAG2_COCKROACH = 0x400,       // set with markCockroachNoticed; STATE_SURPRISED at the door
+    ACTOR_FLAG2_ESCORTED = 0x8000,       // moveToEscorted
+};
+
+// dAcPlayer_c::mReactionKind: the STATE_REACT variant.
+enum Reaction {
+    REACTION_DEBT_PAID = 0,  // reactDebtPaid
+    REACTION_JOB_DONE = 1,   // Nook's part-time job is done
+    REACTION_COCKROACH = 6,  // reactToCockroaches
 };
 
 enum EquipmentVisibility {
@@ -241,7 +233,7 @@ public:
     /* 0x00000 */ ChangeStateFn mChangeState[PLAYER_INDEX_COUNT]; // set by setChangeStateCallback, called by changeState
     /* 0x00010 */ int _10[PLAYER_INDEX_COUNT];
     /* 0x00020 */ int _20;
-    /* 0x00024 */ dPlayerActor_c *mActors[PLAYER_INDEX_COUNT];    // set by setActor
+    /* 0x00024 */ dAcPlayer_c *mActors[PLAYER_INDEX_COUNT];    // set by setActor
     /* 0x00034 */ int mSlots[PLAYER_INDEX_COUNT];                 // player index per network member (getPlayerSlot), 7 = none
     /* 0x00044 */ u8 _44[0x1C];
     /* 0x00060 */ GuestPlayers_c mGuests;
@@ -249,8 +241,8 @@ public:
     /* 0x194A4 */ u8 mDailyHairUpdated;
     /* 0x194A5 */ u8 mBedHairPending;
     /* 0x194A6 */ u8 mDailyTanUpdated;
-    /* 0x194A7 */ u8 _194A7;
-    /* 0x194A8 */ u8 _194A8;
+    /* 0x194A7 */ u8 mCockroachNoticed; // markCockroachNoticed
+    /* 0x194A8 */ u8 mAxeInFountain;     // setAxeInFountain
     /* 0x194A9 */ u8 mLocked;                    // lock / unlock
     /* 0x194AA */ u8 mToolActionHeld;
     /* 0x194AB */ u8 mSaveRequestFlagsCleared;
@@ -278,9 +270,9 @@ struct MiiData_c {
 };
 
 mVec3_c *getPosition(int idx); // 800FBC48
-dPlayerActor_c *getPlayerActor(int idx); // 800FBC7C
-dPlayerActor_c *getPlayerActorRaw(int idx); // 800FBC80
-dPlayerActor_c *getNpcTargetActor(int idx); // 800FBC84
+dAcPlayer_c *getPlayerActor(int idx); // 800FBC7C
+dAcPlayer_c *getPlayerActorRaw(int idx); // 800FBC80
+dAcPlayer_c *getNpcTargetActor(int idx); // 800FBC84
 mVec3_c *getSoundPosition(int idx); // 800FBC88
 BOOL getMoveAngle(s16 *out); // 800FBCBC
 s16 getYaw(int idx); // 800FBD28
@@ -292,16 +284,16 @@ BOOL canStartNetSave(); // 800FBE98
 BOOL isDemoStartState(int state); // 800FBF84
 void startDemoWait(); // 800FBFCC
 BOOL requestDemoWait(); // 800FC010
-void fn_800FC064(BOOL on, int idx); // 800FC064: Player action/flag helper; purpose unresolved.
-u32 fn_800FC0C0(int idx); // 800FC0C0: Player action/flag helper; purpose unresolved.
-BOOL fn_800FC0F8(); // 800FC0F8: Requests player state 0x9B; action meaning unresolved.
-BOOL fn_800FC194(const mVec3_c *target); // 800FC194: Requests player state 0x0, 0x61; action meaning unresolved.
-BOOL fn_800FC2A4(); // 800FC2A4: Requests player state 0x9B; action meaning unresolved.
-BOOL fn_800FC340(); // 800FC340: Requests player state 0x0; action meaning unresolved.
-BOOL fn_800FC3B0(); // 800FC3B0: Requests player state 0xA1; action meaning unresolved.
+void setScriptedMove(BOOL on, int idx); // 800FC064: ACTOR_FLAG_SCRIPTED_MOVE (the gatekeeper / the lost child walk the player)
+u32 isScriptedMove(int idx); // 800FC0C0: d_net_sync ignores remote states meanwhile
+BOOL watchShotBalloon(); // 800FC0F8: a shot balloon pops: STATE_SLINGSHOT_SHOOT -> STATE_SLINGSHOT_WATCH
+BOOL landBalloonPresent(const mVec3_c *splashPos); // 800FC194: the present landed (d_fgobj_manager); STATE_SURPRISED at a water splash
+BOOL watchShotUfo(); // 800FC2A4: a shot UFO falls (d_a_ufo)
+BOOL finishWatchUfo(); // 800FC340: the UFO flew off: idle
+BOOL listenToKK(); // 800FC3B0: STATE_LISTEN_KK (d_a_npc_sp_totakeke)
 void refreshEquippedUmbrellaDesign(); // 800FC404
-BOOL fn_800FC4C0(); // 800FC4C0: Requests player state 0xA4; action meaning unresolved.
-BOOL fn_800FC514(); // 800FC514: Requests player state 0xA5; action meaning unresolved.
+BOOL startFortuneHit(); // 800FC4C0: STATE_FORTUNE_HIT (d_a_npc_sp_fortune)
+BOOL startFortuneFaint(); // 800FC514: STATE_FORTUNE_FAINT after STATE_FORTUNE_HIT
 void lock(); // 800FC568
 void unlock(); // 800FC580
 void holdToolAction(); // 800FC598
@@ -313,9 +305,9 @@ BOOL canStartIdleDemo(); // 800FC7E8
 BOOL hasCurrentActor(); // 800FC858
 BOOL isNetSaveWaitState(); // 800FC888
 void setDemoWait(BOOL a); // 800FC8EC
-BOOL fn_800FC8FC(); // 800FC8FC: Requests player state 0x88; action meaning unresolved.
-BOOL fn_800FC958(); // 800FC958: Requests player state 0x9E; action meaning unresolved.
-BOOL fn_800FC9AC(); // 800FC9AC: Tests player action states; action meaning unresolved.
+BOOL flinch(); // 800FC8FC: STATE_FLINCH (Resetti shouts)
+BOOL turnToFront(); // 800FC958: STATE_TURN_FRONT (dAcNpc_c::recept_c::stepPlayerTurnStart)
+BOOL isFacingFront(); // 800FC9AC: STATE_TURN_FRONT done (angle 0x8000)
 BOOL beginDemoWait(); // 800FCA04
 BOOL canStartMovementDemo(); // 800FCA28
 BOOL requestDemoStart(); // 800FCAA0
@@ -323,7 +315,7 @@ BOOL showCatch(const dItem::Item *item); // 800FCAF4
 BOOL finishShowCatch(); // 800FCBA8
 BOOL isShowCatchFinished(); // 800FCBFC
 BOOL showCatchAt(const dItem::Item *item, const mVec3_c *pos); // 800FCC74
-BOOL fn_800FCD60(u32 a, u32 b, BOOL c); // 800FCD60: Requests player state 0x44; action meaning unresolved.
+BOOL putItemInHole(u32 unitX, u32 unitZ, BOOL fromTask); // 800FCD60: STATE_PUT_ITEM_IN_HOLE (d_menu_item00 / d_menu_item03)
 BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, const dItem::Item *held); // 800FCDFC
 BOOL eatItem(const dItem::Item *item); // 800FD058
 BOOL removeMaskForEating(); // 800FD130
@@ -349,12 +341,12 @@ BOOL getBedPosition(mVec3_c *out, int idx); // 800FD720
 BOOL lieOnBed(s16 angle, int type, f32 x, f32 z, int arg); // 800FD798; last argument unused in this build
 BOOL getUpFromBed(int type, int arg); // 800FD88C; second argument unused in this build
 BOOL changeSeatedPose(int type); // 800FD924
-BOOL fn_800FD9E0(int type, s16 angle, f32 x, f32 z); // 800FD9E0: Requests player state 0x32; action meaning unresolved.
-BOOL fn_800FDAA4(int type); // 800FDAA4: Requests player state 0x34; action meaning unresolved.
+BOOL openChest(int type, s16 angle, f32 x, f32 z); // 800FD9E0: STATE_CHEST_OPEN (daFtrChest_c)
+BOOL closeChest(int type); // 800FDAA4: STATE_CHEST_CLOSE
 BOOL hasActionActor(); // 800FDB10
-void fn_800FDB40(); // 800FDB40: Player action/flag helper; purpose unresolved.
-BOOL fn_800FDB78(int type); // 800FDB78: Requests player state 0xA; action meaning unresolved.
-void fn_800FDBDC(u32 mode); // 800FDBDC: Requests player state 0x7C, 0x22; action meaning unresolved.
+void keepAnimation(); // 800FDB40: ACTOR_FLAG_KEEP_ANIMATION (furniture that starts a talk)
+BOOL exitDoor(int type); // 800FDB78: STATE_EXIT_DOOR (d_a_str at scene start)
+void putAwayToolForTalk(u32 mode); // 800FDBDC: dDemo::startTalk: STATE_PUT_AWAY_TOOL / STATE_CLOSE_UMBRELLA
 BOOL canFinishToolAction(); // 800FDCC0
 BOOL isSceneTransitionState(); // 800FDD04
 BOOL changeHair(u32 hair, u32 color); // 800FDD8C
@@ -369,12 +361,12 @@ BOOL putOnMiiMaskImmediately(); // 800FE140
 BOOL changeMiiMask(u16 mii); // 800FE17C
 BOOL takeOffMiiMaskImmediately(); // 800FE2D4
 u32 canUseMiiMask(); // 800FE360
-BOOL fn_800FE39C(s16 angle, int type, int target, f32 x, f32 z); // 800FE39C: Requests player state 0x9, 0xC; action meaning unresolved.
-BOOL fn_800FE484(s16 angle, int target, f32 x, f32 z); // 800FE484: Requests player state 0xC; action meaning unresolved.
-BOOL fn_800FE550(s16 angle, int type, BOOL useC, f32 x, f32 z); // 800FE550: Requests player state 0xC, 0x9; action meaning unresolved.
-BOOL fn_800FE634(); // 800FE634: Tests player animation IDs; animation meaning unresolved.
+BOOL enterDoor(s16 angle, int type, int target, f32 x, f32 z); // 800FE39C: STATE_ENTER_DOOR, STATE_WALK_THROUGH_DOOR with a target (d_a_str)
+BOOL walkThroughDoor(s16 angle, int target, f32 x, f32 z); // 800FE484: STATE_WALK_THROUGH_DOOR (d_a_str)
+BOOL enterDoorDirect(s16 angle, int type, BOOL walkThrough, f32 x, f32 z); // 800FE550: STATE_ENTER_DOOR / STATE_WALK_THROUGH_DOOR (d_a_str)
+BOOL isDoorAnimation(); // 800FE634: animation 5 or 8 (d_a_str)
 void getDemoWaitPose(int *outState, mVec3_c *outPos, s16 *outAngle); // 800FE688
-BOOL fn_800FE74C(const mVec3_c *pos, int idx, f32 speed); // 800FE74C: moveTo with flag 0x8000 set on _2274; flag meaning unresolved.
+BOOL moveToEscorted(const mVec3_c *pos, int idx, f32 speed); // 800FE74C: moveTo with ACTOR_FLAG2_ESCORTED (the gatekeeper)
 BOOL moveTo(const mVec3_c *pos, int idx, f32 speed); // 800FE7E0
 BOOL turnTo(s16 angle, int idx); // 800FE88C
 BOOL turnToInFrames(s16 angle, int frames, int idx); // 800FE89C
@@ -395,22 +387,22 @@ BOOL isChangingEquipment(); // 800FEEB0
 mVec3_c *getToolOrPlayerPosition(int idx); // 800FEFF4
 mVec3_c *getCurrentSoundPositionRaw(); // 800FF048
 BOOL getGroundPositionAhead(mVec3_c *out); // 800FF080
-u32 fn_800FF150(int idx); // 800FF150: Player action/flag helper; purpose unresolved.
-u32 fn_800FF188(int idx); // 800FF188: Player action/flag helper; purpose unresolved.
+u32 isMakingNoise(int idx); // 800FF150: ACTOR_FLAG_NOISY: scares insects and fish
+u32 isActingOnUnit(int idx); // 800FF188: ACTOR_FLAG2_UNIT_ACTION (dInsectUtil::playerCheck_c)
 int getActionUnitAndKind(int *x, int *z, int idx); // 800FF1C0
-BOOL fn_800FF354(int *outState); // 800FF354: Requests player state 0x1D, 0x62; action meaning unresolved.
+BOOL requestBeeSting(int *outState); // 800FF354: STATE_BEE_STING; ends fishing first (d_insect_field)
 BOOL changeEquipment(const dEquip_c *equip, int mode, int kind); // 800FF444: mode selects the animation; kind selects normal/Mii-mask changes.
 BOOL isSceneReadyForBgm(); // 800FF840
 BOOL canHoldEquippedItem(); // 800FF8B0
 BOOL hasHairFeature(u8 hair, int bit); // 800FF94C
 BOOL currentHairHasFeature(int bit); // 800FF978
 u8 getShoeColor(u32 idx, u32 gender); // 800FF9C4
-BOOL fn_800FFA50(const mVec3_c *a, int b, f32 f); // 800FFA50: Player action/flag helper; purpose unresolved.
-BOOL fn_800FFAC0(); // 800FFAC0: Tests player action states; action meaning unresolved.
-BOOL fn_800FFB18(); // 800FFB18: Tests player action states; action meaning unresolved.
-BOOL fn_800FFBE4(); // 800FFBE4: Tests player action states; action meaning unresolved.
-BOOL fn_800FFC38(); // 800FFC38: Tests player action states; action meaning unresolved.
-BOOL fn_800FFCA8(); // 800FFCA8: Tests player action states; action meaning unresolved.
+BOOL isATriggeredFacing(const mVec3_c *pos, int maxAngle, f32 maxDist); // 800FFA50: A pressed while isFacingPosition
+BOOL isPointerWalking(); // 800FFAC0: walking with ACTOR_FLAG_POINTER_WALK (d_obj_cursor, d_clock)
+BOOL isToolState(); // 800FFB18: net, axe, rod, shovel, slingshot, dandelion, fireworks, bubbles
+BOOL isShakingTree(); // 800FFBE4: STATE_SHAKE_TREE / STATE_SHAKE_TREE_END
+BOOL isPickUpState(); // 800FFC38: STATE_PICK_UP and its variants
+BOOL isFurnitureState(); // 800FFCA8: holding / moving furniture, bed and chair states
 BOOL isActionItemState(); // 800FFD10
 u16 getActiveActionItem(); // 800FFD64
 BOOL isFacingPosition(const mVec3_c *target, int maxAngle, f32 maxDist); // 800FFDC0
@@ -428,47 +420,47 @@ void clearPlayerSlot(u32 idx); // 80100258
 void clearPlayers(); // 8010027C
 void clearSaveRequestFlags(); // 801002BC
 int getPlayerSlot(u32 idx); // 80100330
-BOOL setHatHideBone(u32 bone, dPlayerActor_c *player); // 80100358
-void clearDemoFlags(dPlayerActor_c *player); // 80100410
-void getActionUnitCoordinates(dPlayerActor_c *player, int *x, int *z); // 8010042C
+BOOL setHatHideBone(u32 bone, dAcPlayer_c *player); // 80100358
+void clearDemoFlags(dAcPlayer_c *player); // 80100410
+void getActionUnitCoordinates(dAcPlayer_c *player, int *x, int *z); // 8010042C
 BOOL receiveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f32 f1, f32 f2, f32 f3); // 80100440
 f32 getItemExchangeOffsetY(); // 80100548
 BOOL giveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f32 f1, f32 f2); // 80100550
-BOOL fn_80100644(BOOL a); // 80100644: Requests player state 0x66, 0x67; action meaning unresolved.
-BOOL fn_801006A8(); // 801006A8: Requests player state 0x6E; action meaning unresolved.
+BOOL passHandItem(BOOL reach); // 80100644: STATE_HAND_ITEM_REACH / STATE_HAND_ITEM_TAKE (dAcNpc_c::action_c)
+BOOL returnHandItem(); // 801006A8: STATE_HAND_ITEM_RETURN (dAcNpc_c::action_c)
 BOOL setShoeColor(u8 shoeColor, u8 b); // 80100714
-BOOL fn_801007AC(); // 801007AC: Requests player state 0x85; action meaning unresolved.
-BOOL fn_80100804(); // 80100804: Requests player state 0x87; action meaning unresolved.
-BOOL fn_80100860(); // 80100860: Requests player state 0x1D, 0x6F; action meaning unresolved.
+BOOL pickUpPhone(); // 801007AC: STATE_PHONE_PICK_UP (d_a_rmobj_tel)
+BOOL hangUpPhone(); // 80100804: STATE_PHONE_HANG_UP after STATE_PHONE_TALK
+BOOL requestInsectBite(); // 80100860: STATE_INSECT_BITE (d_insect_field, d_insect_museum)
 BOOL isUsingNet(int idx); // 801008E4
 BOOL isRunAnimation(int idx); // 8010094C
-BOOL fn_8010098C(); // 8010098C: Requests player state 0x70; action meaning unresolved.
+BOOL startChat(); // 8010098C: STATE_CHAT (d_menu_chat)
 BOOL playEmotion(u32 type); // 801009E0
-BOOL fn_80100A54(); // 80100A54: Requests player state 0x84; action meaning unresolved.
-BOOL fn_80100AB0(); // 80100AB0: Tests player animation IDs; animation meaning unresolved.
-BOOL fn_80100B24(); // 80100B24: Requests player state 0x84; action meaning unresolved.
-u32 fn_80100B80(); // 80100B80: Player action/flag helper; purpose unresolved.
-BOOL fn_80100B84(f32 x, f32 z); // 80100B84: Requests player state 0x72; action meaning unresolved.
-BOOL fn_80100C28(); // 80100C28: Requests player state 0x73; action meaning unresolved.
-BOOL fn_80100C84(BOOL a); // 80100C84: Requests player state 0x74; action meaning unresolved.
-BOOL fn_80100D44(); // 80100D44: Tests player action states; action meaning unresolved.
-BOOL fn_80100DD0(int idx); // 80100DD0: Tests player action states; action meaning unresolved.
-BOOL fn_80100E3C(); // 80100E3C: Requests player state 0x8F; action meaning unresolved.
-BOOL fn_80100E7C(); // 80100E7C: Tests player action states; action meaning unresolved.
-BOOL fn_80100EC0(); // 80100EC0: Requests player state 0x91; action meaning unresolved.
-BOOL fn_80100F00(s16 angle, f32 frame); // 80100F00: Requests player state 0x92; action meaning unresolved.
-BOOL fn_80100F98(); // 80100F98: Tests player action states; action meaning unresolved.
-BOOL fn_80100FDC(); // 80100FDC: Requests player state 0x94; action meaning unresolved.
-u8 fn_8010101C(); // 8010101C: Accesses the manager flag at 194A8; purpose unresolved.
-void fn_80101030(); // 80101030: Accesses the manager flag at 194A8; purpose unresolved.
-void fn_80101048(); // 80101048: Accesses the manager flag at 194A8; purpose unresolved.
+BOOL reactDebtPaid(); // 80100A54: STATE_REACT, REACTION_DEBT_PAID (daFtrAtm_c)
+BOOL isReactionFinished(); // 80100AB0: STATE_REACT's animation (0x95) stopped
+BOOL reactToCockroaches(); // 80100B24: STATE_REACT, REACTION_COCKROACH (d_cockroach_manager)
+u32 isCockroachReactionFinished(); // 80100B80: isReactionFinished (d_cockroach_manager)
+BOOL openMailbox(f32 x, f32 z); // 80100B84: STATE_MAILBOX_OPEN (daStrPost_c, before MENU_POST00)
+BOOL closeMailbox(); // 80100C28: STATE_MAILBOX_CLOSE after the post menu
+BOOL requestFaint(BOOL a); // 80100C84: STATE_FAINT (d_insect_field)
+BOOL isSafeFromInsects(); // 80100D44: demo, pitfall or ACTOR_FLAG_DEMO: insects leave the player alone
+BOOL isScaringCockroaches(int idx); // 80100DD0: walking, running, pushing or pulling (d_a_cockroach)
+BOOL boardBus(); // 80100E3C: STATE_BUS_BOARD (daStrBus_c)
+BOOL isOnBus(); // 80100E7C: STATE_BUS_BOARDED
+BOOL rideBus(); // 80100EC0: STATE_BUS_RIDE
+BOOL getOffBus(s16 angle, f32 frame); // 80100F00: STATE_BUS_GET_OFF
+BOOL isOffBus(); // 80100F98: STATE_BUS_GOT_OFF
+BOOL leaveBus(); // 80100FDC: STATE_BUS_LEAVE
+u8 isAxeInFountain(); // 8010101C: Mgr_c::mAxeInFountain (the goddess appears)
+void setAxeInFountain(); // 80101030: the player REL, when an axe drops into the fountain
+void clearAxeInFountain(); // 80101048
 BOOL changeHeldItemForDemo(const dItem::Item *held); // 80101060
-BOOL fn_80101168(); // 80101168: Requests player state 0x95; action meaning unresolved.
-BOOL fn_801011BC(); // 801011BC: Constant stub; intended use unresolved.
+BOOL receiveGoddessItem(); // 80101168: STATE_GODDESS_ITEM (d_a_npc_sp_goddess)
+BOOL canGoddessLeave(); // 801011BC: always TRUE (d_a_npc_sp_goddess)
 BOOL getScriptedActionPosition(mVec3_c *out); // 801011C4
 BOOL startShoeShine(s16 frames, f32 speed); // 8010125C
 BOOL finishShoeShine(); // 801012FC
-BOOL fn_80101350(); // 80101350: Requests player state 0x76; action meaning unresolved.
+BOOL turnToTalkActor(); // 80101350: STATE_TURN_TO_TALKER (d_a_npc_out)
 BOOL beginDemo(); // 801013B4
 u32 *getTimer(); // 801013F4
 void resetTimer(); // 80101408
@@ -480,24 +472,24 @@ void setBedHairPending(); // 801014D0
 void clearBedHairPending(); // 801014E8
 BOOL isDailyTanUpdated(); // 80101500
 void markDailyTanUpdated(); // 80101514
-u8 fn_8010152C(); // 8010152C: Accesses the manager flag at 194A7; purpose unresolved.
-void fn_80101540(); // 80101540: Accesses the manager flag at 194A7; purpose unresolved.
+u8 isCockroachNoticed(); // 8010152C: Mgr_c::mCockroachNoticed
+void markCockroachNoticed(); // 80101540: the player REL, entering a house with cockroaches
 BOOL areSaveRequestFlagsCleared(); // 80101558
 void markSaveRequestFlagsCleared(); // 8010156C
 BOOL isDesignSlot(int slot, const dItem::Item *item); // 80101584
 u32 getHeapSize(); // 801015F4
-u32 fn_80101600(); // 80101600: Constant stub; intended use unresolved.
-u32 fn_80101608(); // 80101608: Constant stub; intended use unresolved.
-u32 fn_80101610(); // 80101610: Constant stub; intended use unresolved.
-u32 fn_80101618(); // 80101618: Constant stub; intended use unresolved.
+u32 getGeneralHeapSize(); // 80101600: the player REL's general heap
+u32 getHeadHeapSize(); // 80101608: the player REL's head heap
+u32 getAccessoryHeapSize(); // 80101610: the player REL's accessory heap
+u32 getMiiHeapSize(); // 80101618: dAcPlayer_c::m_heap_Mii_p
 int getCurrentPlayerSlot(); // 801017B8
 void clearGuests(); // 801017DC
 int findPersonalIDSlot(const dPersonalID_c *pid); // 801017EC
 int findPlayerIDSlot(const dPlayerID_c *id); // 801018DC
 void setChangeStateCallback(Mgr_c::ChangeStateFn fn, int idx); // 80101990
-void setActor(dPlayerActor_c *actor, u32 idx); // 801019A4
-dPlayerActor_c *getActor(int idx); // 801019C4
-dPlayerActor_c *getActorRaw(int idx); // 80101A28
+void setActor(dAcPlayer_c *actor, u32 idx); // 801019A4
+dAcPlayer_c *getActor(int idx); // 801019C4
+dAcPlayer_c *getActorRaw(int idx); // 80101A28
 BOOL changeState(int state, int idx); // 80101A74
 void receiveEquipment(int idx, int part, int item); // 80101CB4
 void receiveAppearance(int idx, int kind); // 80101CB8
@@ -520,5 +512,5 @@ void onParticleCollision(nw4r::ef::Particle *obj, u32 kind); // 801022B8
 int getSurfaceEffectKind(const mVec3_c *pos); // 80102434
 void createSurfaceEffects(const char *const *names, const mVec3_c *pos, const mAng3_c *angle,
                           const char *wetEffect, const char *snowEffect); // 801024F8
-BOOL fn_801025B8(); // 801025B8: Player action/flag helper; purpose unresolved.
+BOOL isBusy(); // 801025B8: always FALSE (d_s_boot_static)
 } // namespace dPlayerMgr

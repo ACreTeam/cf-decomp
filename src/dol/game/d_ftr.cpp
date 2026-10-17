@@ -14,6 +14,7 @@
 #include <game/game/d_scene.hpp>
 #include <nw4r/g3d.h>
 #include <string.h>
+#include <game/game/d_a_player.hpp>
 
 namespace dFTR {
 
@@ -1314,7 +1315,7 @@ BOOL canReachExit() {
         return TRUE;
     }
     memset(l_reach, 0, sizeof(l_reach));
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         int x;
         int z;

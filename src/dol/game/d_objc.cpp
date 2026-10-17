@@ -26,6 +26,7 @@
 #include <lib/egg/math/eggMath.h>
 #include <revolution/MTX.h>
 #include <cmath>
+#include <game/game/d_a_player.hpp>
 
 // The process that runs the collision every frame (RTTI "dObjc_c").
 class dObjc_c : public fBase_c {
@@ -438,7 +439,7 @@ static inline mAng getHorizonAngle(const mVec3_c &eye, const mVec3_c &pos) {
 // or insect it hits (l_dpdHit), shortening the ray at each hit.
 void calc() {
     dCamera_c *cam;
-    dPlayerActor_c *player;
+    dAcPlayer_c *player;
     dFdBase_c *field;
     u32 param;
     fBase_c *base;

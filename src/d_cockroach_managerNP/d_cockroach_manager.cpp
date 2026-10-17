@@ -282,12 +282,12 @@ dHomeRoom_c *dCockroachManager_c::getRoom() {
 
 // 0xB24
 bool dCockroachManager_c::startPlayerReaction() {
-    return dPlayerMgr::fn_80100B24() == 1;
+    return dPlayerMgr::reactToCockroaches() == 1;
 }
 
 // 0xB50
 void dCockroachManager_c::executeTalk() {
-    if (dPlayerMgr::fn_80100B80() == TRUE) {
+    if (dPlayerMgr::isCockroachReactionFinished() == TRUE) {
         switch (mTalkStep) {
         case 0:
             attachDemoActor(this);

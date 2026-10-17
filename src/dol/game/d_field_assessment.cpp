@@ -64,6 +64,7 @@
 #include <game/game/d_scene_base.hpp>
 #include <game/game/d_item_sel.hpp>
 #include <game/game/d_a_snowman.hpp>
+#include <game/game/d_a_player.hpp>
 
 // 80750658: the first money rock of each player (5 each).
 static const u16 sStoneKindBase[4] = {
@@ -1617,7 +1618,7 @@ void dFgMngProc_c::putShellOnBeach(dFdBase_c *fd, int blockX,
         bx = blockX + 1;
         num = 0;
         if (avoidPlayer) {
-            dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+            dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
             if (player == NULL) {
                 return;
             }
@@ -4924,7 +4925,7 @@ static const s8 sAroundZ5[] = {0, 0, 0, -1, 1};
 // can fg 0x95 into 0x9D.
 void fgMngProc_waterAround(int member, const dFdAsPos_c *pos) {
     dFdBase_c *fd = dField::getInfo(FD_ID_TOWN);
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     const s8 *dx;
     const s8 *dz;
     BOOL a;
@@ -5277,7 +5278,7 @@ BOOL fgMngProc_findHoleInFront(int *outX, int *outZ) {
           held == dItem::Item(dItem::ITEM_IDX_GOLDEN_SHOVEL).mId)) {
         return FALSE;
     }
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }

@@ -33,6 +33,7 @@
 #include <lib/egg/math/eggMath.h>
 #include <revolution/MTX.h>
 #include <cmath>
+#include <game/game/d_a_player.hpp>
 
 static const f32 cJumpFrames = 60;
 
@@ -350,7 +351,7 @@ f32 daSnowMan_c::getRollRate() const {
 // 80181FBC
 BOOL daSnowMan_c::push(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF,
                        mAng dir) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;
     }
@@ -1142,7 +1143,7 @@ BOOL daSnowMan_c::canPlace(int x, int z) {
     dFdBase_c *field = getCurrentField();
     int playerX = -1;
     int playerZ = -1;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player != NULL) {
         playerX = worldToUnit(player->mPos.x);
         playerZ = worldToUnit(player->mPos.z);

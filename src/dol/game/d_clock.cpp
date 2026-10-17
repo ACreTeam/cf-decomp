@@ -326,8 +326,8 @@ BOOL dClock_c::canShowClock() {
     if (sFlags & FLAG_TIMER) {
         return FALSE;
     }
-    if (dPlayerMgr::fn_800FFAC0() || dPlayerMgr::isWalking(4) ||
-        dPlayerMgr::fn_800FFB18()) {
+    if (dPlayerMgr::isPointerWalking() || dPlayerMgr::isWalking(4) ||
+        dPlayerMgr::isToolState()) {
         mShowDelay = SHOW_DELAY;
         return FALSE;
     }

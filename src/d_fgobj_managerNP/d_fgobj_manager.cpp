@@ -29,6 +29,7 @@
 #include <game/game/d_bgm.hpp>
 #include <game/game/d_play_util.hpp>
 #include <game/game/d_insect_field.hpp>
+#include <game/game/d_a_player.hpp>
 
 namespace dFgobjManager {
 
@@ -1444,10 +1445,10 @@ void dFgObj_c::procThrow() {
             dEffect::create("af_hny_watercolumn_L", &pos, NULL, NULL);
             dEffect::create("af_hny_mizutama_L", &pos, NULL, NULL,
                             &dFgobjManager::rippleParticleCallback, 0);
-            dPlayerMgr::fn_800FC194(&pos);
+            dPlayerMgr::landBalloonPresent(&pos);
             mSnd.startSound(0x17C7);
         } else {
-            dPlayerMgr::fn_800FC194(NULL);
+            dPlayerMgr::landBalloonPresent(NULL);
         }
         kill();
         break;
@@ -2899,7 +2900,7 @@ BOOL swayPlantAt(int player, int x, int z, const mVec3_c *pos, f32 radius) {
 void dFgObjMng_c::swayPlantsNearPlayer() {
     int x, z, unitZ;
     int player = dNet::getMyNo();
-    dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(player);
+    dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(player);
     if (actor != NULL && actor->getSpeedF() >= 1.0f) {
         mVec3_c pos = actor->getPos();
         x = (int)pos.x >> 5;
@@ -3092,7 +3093,7 @@ void procRemoteCmd(dFgMngCmd_c *cmd) {
     }
     case FG_MNG_KIND_BURY:
         if (cmd->mNewItem != 0xFFF1) {
-            dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(cmd->mPlayer);
+            dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(cmd->mPlayer);
             if (actor != NULL) {
                 spawnBuryMoney(cmd->mPlayer, cmd->mItem, cmd->mPos >> 8,
                                cmd->mPos & 0xFF, actor->getPosP());
@@ -3857,7 +3858,7 @@ int getRequestResult(int idx) {
         switch (st->mKind) {
         case FG_MNG_KIND_BURY:
             if (st->mItem != dItem::ITEM_ID_NONE) {
-                dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(4);
+                dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(4);
                 if (actor != NULL) {
                     const mVec3_c *actorPos = actor->getPosP();
                     u16 base = st->mBaseItem;
@@ -4005,7 +4006,7 @@ int playPutEffect(int idx) {
     }
     switch (st->mState) {
     case dFgMngPlayerState_c::STATE_ACCEPTED: {
-        dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(4);
+        dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(4);
         if (fd != NULL && actor != NULL) {
             const mVec3_c *actorPos = actor->getPosP();
             if (dScene::isSceneAttr(dScene::getCurrentScene(),
@@ -4125,7 +4126,7 @@ BOOL findPutSpot(int kind, int *outX, int *outZ, u8 *outLayer) {
     BOOL ret;
     const int *order;
     fd = dField::getInfo(0);
-    dPlayerActor_c *actor = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(4);
     ret = FALSE;
     if (fd != NULL && actor != NULL) {
         pos = actor->getPosP();

@@ -3,6 +3,7 @@
 #include <game/game/d_demo.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_player_mgr.hpp>
+#include <game/game/d_a_player.hpp>
 
 // Inferred: the cafe room object tracks creation of its villager actor (module
 // 84).

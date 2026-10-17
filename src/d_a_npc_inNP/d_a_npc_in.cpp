@@ -11,6 +11,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/snd/snd_id.hpp>
 #include <climits>
+#include <game/game/d_a_player.hpp>
 
 namespace dANpcIn {
 static inline int getEventId(const dAnimalBlock_c *block) {

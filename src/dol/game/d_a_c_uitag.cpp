@@ -573,9 +573,9 @@ BOOL dAcUitag::canOpenTab() {
     if (dDemo::isType(dDemo::TYPE_ANY)) {
         return FALSE;
     }
-    if (dPlayerMgr::fn_800FFCA8() || dPlayerMgr::fn_800FFAC0() ||
-        dPlayerMgr::fn_800FFBE4() || dPlayerMgr::fn_800FFC38() ||
-        dPlayerMgr::fn_800FFB18()) {
+    if (dPlayerMgr::isFurnitureState() || dPlayerMgr::isPointerWalking() ||
+        dPlayerMgr::isShakingTree() || dPlayerMgr::isPickUpState() ||
+        dPlayerMgr::isToolState()) {
         return FALSE;
     }
     return dPlayerMgr::canStartMovementDemo() != FALSE;

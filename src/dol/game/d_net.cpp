@@ -59,6 +59,7 @@
 #include <game/game/d_demo.hpp>
 #include <game/game/d_net_wc24.hpp>
 #include <game/game/d_obj_telop.hpp>
+#include <game/game/d_a_player.hpp>
 
 // The free functions are in namespace dNet (d_net.hpp); the classes and the
 // .inc handlers call them unqualified.

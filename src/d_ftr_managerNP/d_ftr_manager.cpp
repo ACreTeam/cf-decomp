@@ -47,6 +47,7 @@
 #include <revolution/OS.h>
 #include <stdio.h>
 #include <string.h>
+#include <game/game/d_a_player.hpp>
 
 struct tvEntry_c {
     /* 0x0 */ s16 mProgram;
@@ -443,7 +444,7 @@ void dFtrm_c::checkTalk() {
                         talk = TRUE;
                     }
                 } else if (type == dObjc::HIT_FTR || type == dObjc::HIT_FTR_ROOM) {
-                    if (dPlayerMgr::fn_800FFA50(&hit->mPos, 0x3000, 64.0f)) {
+                    if (dPlayerMgr::isATriggeredFacing(&hit->mPos, 0x3000, 64.0f)) {
                         ftrHit = hit;
                         talk = TRUE;
                     }
@@ -757,7 +758,7 @@ int dFtrm_c::findPutUnit(putUnit_c *out, const mVec3_c *pos, mAng angle, BOOL fr
 
 // 0x190C
 int dFtrm_c::findPutUnit(putUnit_c *out, BOOL frontOnly) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         return findPutUnit(out, &player->mPos, player->mAngle.y.mAngle, frontOnly);
     }
@@ -950,7 +951,7 @@ int dFtrm_c::findPutPos(u32 *info, dItem::Item item, const mVec3_c *pos, mAng an
 
 // 0x2204
 int dFtrm_c::findPutPos(u32 *info, dItem::Item item, int kind) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         return findPutPos(info, item, &player->mPos, player->getAngleY(), kind);
     }
@@ -1389,7 +1390,7 @@ void dFtrm_c::appearList_c::clear() {
 // 0x3438
 void dFtrm_c::appearList_c::add(u16 item, const mVec3_c *pos) {
     static const f32 travelFrames = 40.0f;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         appear_c *appear = mAppear;
         for (int i = 0; i < ARRAY_SIZE(mAppear); i++, appear++) {
@@ -1720,7 +1721,7 @@ static f32 l_tvDistSq = lbl_80750524 * lbl_80750524;
 void dFtrm_c::executeTv() {
     mVec3_c pos(0.0f, 0.0f, 0.0f);
     BOOL mute = TRUE;
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(dPlayerMgr::PLAYER_INDEX_CURRENT);
     if (player != NULL) {
         mVec3_c playerPos = player->mPos;
         int nearest = -1;

@@ -6,6 +6,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <revolution/MTX.h>
+#include <game/game/d_a_player.hpp>
 
 // The model heap's name ("... : general OBJ heap" in SJIS). Used by create (d_a_rmobj_model.cpp).
 char daRmobj_c::model_c::m_frmHeapName[] = "daRmobj_c::m_frmHeap_p : \x89\xAE\x93\xE0OBJ\x83\x71\x81\x5B\x83\x76";
@@ -468,7 +469,7 @@ bool daRmobj_c::model_c::isStopSrt() {
 }
 
 void daRmobj_c::setLookPos(const mVec3_c *min, const mVec3_c *max) {
-    dPlayerActor_c *player = dPlayerMgr::getPlayerActor(4);
+    dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return;
     }

@@ -24,6 +24,7 @@
 #include <game/game/d_npc_list.hpp>
 #include <game/game/d_demo_actor.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/game/d_a_player.hpp>
 
 namespace dNpc {
 
@@ -2313,9 +2314,9 @@ static inline int getFtrFunc(const dItem::BITM *bitm) {
 }
 
 // 800F1AE0: the player standing on unit (x, z).
-dPlayerActor_c *getPlayerOnUnit(int x, int z) {
+dAcPlayer_c *getPlayerOnUnit(int x, int z) {
     for (int i = 0; i < PLAYER_NUM; i++) {
-        dPlayerActor_c *player = dPlayerMgr::getPlayerActor(i);
+        dAcPlayer_c *player = dPlayerMgr::getPlayerActor(i);
         if (player != NULL) {
             f32 fx = player->mPos.x;
             f32 fz = player->mPos.z;

@@ -291,7 +291,7 @@ static sPhase_c::METHOD_RESULT_e boot(void *) {
     dSceneCheck::fn_80081858(fn_8010DBFC());
     dSceneCheck::fn_80081858(fn_800F59CC());
     dSceneCheck::fn_80081858(fn_800F59D4());
-    dSceneCheck::fn_80081858(dPlayerMgr::fn_801025B8());
+    dSceneCheck::fn_80081858(dPlayerMgr::isBusy());
     dSceneCheck::fn_80081858(dSvAuc_c::isBusy());
     dSceneCheck::fn_80081858(dHR::isBusy());
     dSceneCheck::fn_80081858(dNand::fn_800D3574());
