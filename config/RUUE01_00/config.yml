@@ -247,6 +247,7 @@ modules:
 - object: files/rels/d_a_npc_sp_sampleNP.rel
   hash: d12d2a9ee298e84859fa19e021250bb1e77abe6b
   name: d_a_npc_sp_sampleNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_sampleNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_sampleNP/splits.txt
 - object: files/rels/d_a_npc_sp_player_selectNP.rel

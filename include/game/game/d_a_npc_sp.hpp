@@ -43,6 +43,12 @@ public:
         u32 _0 : 24;
     }; // size 0x4
 
+    // Inline construction observed in the REL special npc factories
+    // (d_a_npc_sp_sample).
+    dAcNpcSp_c()
+        : mWaitTimer(0), mLookTimer(0), mWallTimer(0), mSoundPlayed(0) {
+    }
+
     // ---- vtable 804A4C30 (0xE8) ----
     // Inline virtuals come out in the weak tail after __sinit in reverse declaration order (getWanderMinDist,
     // getWanderMaxDist, then the dtor), so the dtor is declared first.
