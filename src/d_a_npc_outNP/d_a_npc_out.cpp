@@ -10,13 +10,7 @@ mVec3_c getNpcDoorPos(daSTR_c *, const mVec3_c *, int, float);
 void requestNpcEnter(daSTR_c *);
 void requestNpcExit(daSTR_c *);
 } // namespace dAStr
-namespace dFgObjManager {
-void requestPitfallEnter(int, int, int);
-void requestPitfallExit(int, int, int);
-int findNpcPickupRecord(int, int, int);
-int getPickupState(int);
-void clearPickupRecord(int);
-} // namespace dFgObjManager
+#include <game/game/d_fgobj_manager.hpp>
 
 #include <game/game/d_field_assessment.hpp>
 extern "C" int abs(int);
@@ -1266,7 +1260,7 @@ bool dAcNpcOut_c::hasPendingUnit() const {
 // .text 28BC
 void dAcNpcOut_c::releasePendingUnit() {
     if (!isMultiPlay() && hasPendingUnit()) {
-        dFgObjManager::requestPitfallExit(dNet::getMyNo(), mPendingUnitX,
+        dFgobjManager::requestPitfallExit(dNet::getMyNo(), mPendingUnitX,
                                           mPendingUnitZ);
         clearPendingUnit();
     }
@@ -1278,12 +1272,12 @@ BOOL dAcNpcOut_c::checkLostItemPickup() {
         return FALSE;
     }
     int x = worldToUnit(mPos.x), z = worldToUnit(mPos.z);
-    int record = dFgObjManager::findNpcPickupRecord((s8)getNpcIdx(), x, z);
+    int record = dFgobjManager::requestNpcPitfall((s8)getNpcIdx(), x, z);
     if (record == -1) {
         return FALSE;
     }
-    int state = dFgObjManager::getPickupState(record);
-    dFgObjManager::clearPickupRecord(record);
+    int state = dFgobjManager::getRequestResult(record);
+    dFgobjManager::clearRequest(record);
     return state == 1;
 }
 
@@ -7451,7 +7445,7 @@ void action_c::stepPitfall00(dAcNpcOut_c *npc) {
             float pz = npc->mPos.z;
             int x = (int)px >> 5;
             int z = (int)pz >> 5;
-            dFgObjManager::requestPitfallEnter(dNet::getMyNo(), x, z);
+            dFgobjManager::requestPitfallEnter(dNet::getMyNo(), x, z);
             mStep = 1;
         }
     }
@@ -7507,7 +7501,7 @@ BOOL action_c::escapePitfall(dAcNpcOut_c *npc) {
         float pz = npc->mPos.z;
         x = (int)px >> 5;
         z = (int)pz >> 5;
-        dFgObjManager::requestPitfallExit(dNet::getMyNo(), x, z);
+        dFgobjManager::requestPitfallExit(dNet::getMyNo(), x, z);
         npc->clearPendingUnit();
         npc->mAnmSet.setAnm0(0);
         npc->mMood.mDisabled = 0;

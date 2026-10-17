@@ -26,42 +26,42 @@
 
 // The action of a field request / command / task / player state. dFgMngTask_c::mKind,
 // dFgMngReq_c::mKind and dFgMngCmd_c::mKind are 5-bit fields; dFgMngPlayerState_c::mKind holds
-// the same value (fn_111_8C30 stores it, fn_111_8D8C copies it into the request).
-// The "_FULL" kinds are the base kind + 1: fn_111_8C30 bumps KIND_PICK_UP / KIND_DIG_UP /
+// the same value (dFgobjManager::requestAction stores it, dFgobjManager::sendRequest copies it into the request).
+// The "_FULL" kinds are the base kind + 1: dFgobjManager::requestAction bumps KIND_PICK_UP / KIND_DIG_UP /
 // KIND_PICK_UP_SPECIAL when dPrivateData_c::findEmptyPocket fails (and the item is not a
 // design), and refuses when the player already has an active task. Their tasks wait
 // (dFgMngTask_c::update skips them, cancel keeps them active) until the player swaps
 // (KIND_SWAP for PICK_UP_FULL / PICK_UP_SPECIAL_FULL, KIND_BURY with an item for DIG_UP_FULL;
 // fgMngState_canAct, fgMngProc_isChangeRequestValid, fgMngTask_replace).
 enum dFgMngKind_e {
-    FG_MNG_KIND_DROP,                 // 0x00 an item dropped beside the target (fruit / shake item / stone money: planFruit, planShakeItem, dFgMngStone_c::drop, the drops of dFgMngCmd_c::exec); 0 also means "none" in dFgMngPlayerState_c (clearPlayer, fgobj fn_111_A548)
-    FG_MNG_KIND_SHAKE_TREE,           // 0x01 fgobj fn_111_9274 (tool type 0): tree of stage > 1; plan() plans the drops (planFruit / planShakeItem); procGroup / getGroupNum
+    FG_MNG_KIND_DROP,                 // 0x00 an item dropped beside the target (fruit / shake item / stone money: planFruit, planShakeItem, dFgMngStone_c::drop, the drops of dFgMngCmd_c::exec); 0 also means "none" in dFgMngPlayerState_c (clearPlayer, dFgobjManager::getRequestResult)
+    FG_MNG_KIND_SHAKE_TREE,           // 0x01 dFgobjManager::shakeTree (tool type 0): tree of stage > 1; plan() plans the drops (planFruit / planShakeItem); procGroup / getGroupNum
     FG_MNG_KIND_SHAKE_TREE_SPECIAL,   // 0x02 as SHAKE_TREE, chosen instead for trees 0x17 / 0x54 when fgMngProc_canEditField (offline only; what drops is handled outside plan(), hedged)
-    FG_MNG_KIND_PICK_UP,              // 0x03 fgobj fn_111_9DFC / fn_111_A088: pick up an item / flower / dandelion / design fg 0x74..0x93; new item NONE
+    FG_MNG_KIND_PICK_UP,              // 0x03 dFgobjManager::pickUpTown / dFgobjManager::pickUpRoom: pick up an item / flower / dandelion / design fg 0x74..0x93; new item NONE
     FG_MNG_KIND_PICK_UP_FULL,         // 0x04 PICK_UP with a full pocket (waits for KIND_SWAP)
-    FG_MNG_KIND_PULL,                 // 0x05 fn_111_9DFC: weeds 0x57..0x5A, clover 0xE0, wilted flowers; proc counts weeds (dActivityLog::onPullWeeds)
-    FG_MNG_KIND_CHOP_TREE,            // 0x06 fgobj fn_111_94AC (tool type 1, axe): unit flag = hits so far, felled into the stump (FgInfo::_00) at a per-stage hit count; proc counts felled trees (fn_800C77B8, stat 1)
+    FG_MNG_KIND_PULL,                 // 0x05 dFgobjManager::pickUpTown: weeds 0x57..0x5A, clover 0xE0, wilted flowers; proc counts weeds (dActivityLog::onPullWeeds)
+    FG_MNG_KIND_CHOP_TREE,            // 0x06 dFgobjManager::chopTree (tool type 1, axe): unit flag = hits so far, felled into the stump (FgInfo::_00) at a per-stage hit count; proc counts felled trees (fn_800C77B8, stat 1)
     FG_MNG_KIND_CHOP_TREE_SPECIAL,    // 0x07 as CHOP_TREE for trees 0x17 / 0x54 when fgMngProc_canEditField (hedged, see 0x02)
-    FG_MNG_KIND_DIG_HOLE,             // 0x08 fgobj fn_111_9880 (tool type 2, shovel): empty diggable ground, weeds, flowers -> hole fg 0x94
-    FG_MNG_KIND_DIG_UP,               // 0x09 fn_111_9880: a buried item (dFdBase_c::isBuried) or a planted red turnip 0x95..0x9D (gives ITEM_IDX_RED_TURNIP_00 + n)
+    FG_MNG_KIND_DIG_HOLE,             // 0x08 dFgobjManager::dig (tool type 2, shovel): empty diggable ground, weeds, flowers -> hole fg 0x94
+    FG_MNG_KIND_DIG_UP,               // 0x09 dFgobjManager::dig: a buried item (dFdBase_c::isBuried) or a planted red turnip 0x95..0x9D (gives ITEM_IDX_RED_TURNIP_00 + n)
     FG_MNG_KIND_DIG_UP_FULL,          // 0x0A DIG_UP with a full pocket (waits for KIND_BURY with an item)
-    FG_MNG_KIND_DIG_OUT,              // 0x0B fn_111_9880: stumps 0x05..0x10, dead trees 0x01..0x04, 0x95 / 0x9D, saplings (FgInfo stage 0)
+    FG_MNG_KIND_DIG_OUT,              // 0x0B dFgobjManager::dig: stumps 0x05..0x10, dead trees 0x01..0x04, 0x95 / 0x9D, saplings (FgInfo stage 0)
     FG_MNG_KIND_BLOCKED,              // 0x0C tool blocked: an item (BITM / furniture) or another player on the unit, undiggable ground, rafflesia; no field change (exec / Req::proc return TRUE)
     FG_MNG_KIND_HIT_ROCK,             // 0x0D axe / shovel on a rock 0x5B..0x5F, an ext object 0xD000.., another player's money rock; no field change
     FG_MNG_KIND_HIT_MONEY_ROCK,       // 0x0E own money rock 0x60..0x73 ((id - 0x60) / 5 == dPlayerMgr::getCurrentPlayerSlot()), offline: dFgMngReq_c::proc -> dFgMngStone_c::hit
-    FG_MNG_KIND_WATER,                // 0x0F fgobj fn_111_9CE8 (tool type 4): watering; dFgMngReq_c::proc / send -> fgMngProc_waterAround
-    FG_MNG_KIND_PUT,                  // 0x10 fgobj fn_111_A878 / fn_111_A994: put an item down on the unit in front
-    FG_MNG_KIND_SWAP,                 // 0x11 fgobj fn_111_A8D4: put the held item down at the active (pocket-full) task's unit
-    FG_MNG_KIND_PUT_PENDING,          // 0x12 fn_111_A994 when the player has an active task: put down elsewhere; proc() then finishes the linked task (mLinkPos)
-    FG_MNG_KIND_BURY,                 // 0x13 fn_111_9880 on a hole 0x94 (also d_menu_item00): bury / plant the held item (fgMngProc_getBuryFg), or fill the hole when none; Req::proc maps an fg to getPlantedFg
-    FG_MNG_KIND_FILL_HOLE,            // 0x14 fgobj fn_111_A204: hole 0x94 -> NONE (stage 1)
-    FG_MNG_KIND_PICK_UP_SPECIAL,      // 0x15 fn_111_9DFC: fg 0xE1 or a KIND_MUSH_FTR item; proc counts 0xE1 (dActivityLog::onFindClover); hedged name
+    FG_MNG_KIND_WATER,                // 0x0F dFgobjManager::water (tool type 4): watering; dFgMngReq_c::proc / send -> fgMngProc_waterAround
+    FG_MNG_KIND_PUT,                  // 0x10 dFgobjManager::putHeldItem / dFgobjManager::putItemAside: put an item down on the unit in front
+    FG_MNG_KIND_SWAP,                 // 0x11 dFgobjManager::swapItem: put the held item down at the active (pocket-full) task's unit
+    FG_MNG_KIND_PUT_PENDING,          // 0x12 dFgobjManager::putItemAside when the player has an active task: put down elsewhere; proc() then finishes the linked task (mLinkPos)
+    FG_MNG_KIND_BURY,                 // 0x13 dFgobjManager::dig on a hole 0x94 (also d_menu_item00): bury / plant the held item (fgMngProc_getBuryFg), or fill the hole when none; Req::proc maps an fg to getPlantedFg
+    FG_MNG_KIND_FILL_HOLE,            // 0x14 dFgobjManager::fillHole: hole 0x94 -> NONE (stage 1)
+    FG_MNG_KIND_PICK_UP_SPECIAL,      // 0x15 dFgobjManager::pickUpTown: fg 0xE1 or a KIND_MUSH_FTR item; proc counts 0xE1 (dActivityLog::onFindClover); hedged name
     FG_MNG_KIND_PICK_UP_SPECIAL_FULL, // 0x16 PICK_UP_SPECIAL with a full pocket
     FG_MNG_KIND_MISS,                 // 0x17 a tool used on nothing it can affect (empty unit / other fg); no field change
-    FG_MNG_KIND_PLANT,                // 0x18 fgobj fn_111_A788(kind 0x18) (player, d_menu_item00): plant the item in front (fgMngProc_getPlantedFg); fgobj fn_111_6C84 effect
-    FG_MNG_KIND_PITFALL,              // 0x19 fgobj fn_111_A300 / fn_111_A424 (player, d_a_npc_out): a buried ITEM_IDX_PITFALL_SEED -> hole 0x94
-    FG_MNG_KIND_PUT_DESIGN,           // 0x1A fgobj fn_111_AA00 (d_menu_desi00): fg 0x74 + player * 8 + slot; fn_111_A878 for a design item; fn_111_6D64 effect; fgMngTask_canAdd lets it be replaced
-    FG_MNG_KIND_BALLOON,              // 0x1B fgobj fn_111_6E80 (called only by d_a_balloonNP): an item lands on the field (player 0); hedged name
+    FG_MNG_KIND_PLANT,                // 0x18 dFgobjManager::putItem(kind 0x18) (player, d_menu_item00): plant the item in front (fgMngProc_getPlantedFg); dFgobjManager::spawnPickUp effect
+    FG_MNG_KIND_PITFALL,              // 0x19 dFgobjManager::requestPitfall / dFgobjManager::requestNpcPitfall (player, d_a_npc_out): a buried ITEM_IDX_PITFALL_SEED -> hole 0x94
+    FG_MNG_KIND_PUT_DESIGN,           // 0x1A dFgobjManager::putDesign (d_menu_desi00): fg 0x74 + player * 8 + slot; dFgobjManager::putHeldItem for a design item; dFgobjManager::spawnPickUpSpecial effect; fgMngTask_canAdd lets it be replaced
+    FG_MNG_KIND_BALLOON,              // 0x1B dFgobjManager::landBalloonItem (called only by d_a_balloonNP): an item lands on the field (player 0); hedged name
     FG_MNG_KIND_NONE,                 // 0x1C dFgMngCmd_c::init (a free command)
 };
 
@@ -219,11 +219,15 @@ BOOL fgMngTask_canAdd(u8 scene, dFdAsPos_c pos);                                
 
 // Per-player state (0x24) of dFgMngState_c.
 struct dFgMngPlayerState_c {
+    void setPos(dFdAsPos_c pos) { mPos = pos; }
+    dFdAsPos_c getPos() const { return mPos; }
+    int getPlayer() const { return mPlayer; }
+
     enum State_e {
-        STATE_NONE,     // 0 clearPlayer; fgobj fn_111_A548 returns 2 (nothing pending)
-        STATE_WAIT,     // 1 fgobj fn_111_8C30: a request was made, no answer yet (fn_111_A548 returns 0)
+        STATE_NONE,     // 0 clearPlayer; dFgobjManager::getRequestResult returns 2 (nothing pending)
+        STATE_WAIT,     // 1 dFgobjManager::requestAction: a request was made, no answer yet (dFgobjManager::getRequestResult returns 0)
         STATE_ACCEPTED, // 2 dFgMngReq_c::send (local), fgMngCmd_apply (accepted), fgobj offline path
-        STATE_REJECTED, // 3 dFgMngReq_c::send (refused), fgMngCmd_apply (!mLocal), fgobj failures (fn_111_A548 returns 2)
+        STATE_REJECTED, // 3 dFgMngReq_c::send (refused), fgMngCmd_apply (!mLocal), fgobj failures (dFgobjManager::getRequestResult returns 2)
     };
 
     /* 0x00 */ u32 mPlayer;  // low 2 bits
@@ -231,11 +235,12 @@ struct dFgMngPlayerState_c {
     /* 0x08 */ int mState;
     /* 0x0C */ int mKind;
     /* 0x10 */ u16 mItem;
+    /* 0x12 */ u16 mBaseItem; // the unit's item when requested (d_fgobj_managerNP)
     /* 0x14 */ dFdAsPos_c mPos;
     /* 0x1C */ u8 mLayer;
-    /* 0x1D */ u8 _1D;
+    /* 0x1D */ u8 mStage; // the tree stage / hit count (dFgMngReq_c::mStage)
     /* 0x1E */ s8 mDay;
-    /* 0x20 */ u32 _20;
+    /* 0x20 */ u32 mB2;   // dFgMngReq_c::mB2
 }; // size 0x24
 
 // A unit position packed into a halfword: x in the high byte, z in the low byte
@@ -303,7 +308,7 @@ BOOL fgMngState_canAct(int player, int x, int z);                   // 800A46FC
 // A field request (from the player's action).
 struct dFgMngReq_c {
     BOOL proc(dFgMngPlayerState_c *st);                 // 800A4868
-    void send(BOOL local, int player, u8 scene);        // 800A4B78
+    void send(u8 local, int player, u8 scene);          // 800A4B78
 
     /* 0x0 */ u8 mMember : 2; // the requesting net member
     /* 0x0 */ u8 mPlayer : 2;

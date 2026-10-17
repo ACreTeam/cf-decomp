@@ -27,8 +27,7 @@
 // Cedar-light registration/release in the foreground-object manager REL.
 // These wrappers only call unidentified manager functions; ownership is not yet
 // known.
-extern "C" void fn_111_7BC4(int x, int z, f32 frame);
-extern "C" void fn_111_7C90(int x, int z);
+#include <game/game/d_fgobj_manager.hpp>
 
 namespace dFgDraw {
 static designLoaders_c sDesigns;
@@ -470,7 +469,7 @@ BOOL entry_c::init(const dItem::Item &item, int x, int z, int kind,
     mCullRadius = getCullRadius(mCullKind);
     getItemPosition(&mPos, mItem, x, z, upper);
     if (item == dItem::FG_CEDAR_LIGHTS) {
-        fn_111_7BC4(x, z, (int)cM::rndInt(240));
+        dFgobjManager::startDecoAnm(x, z, (int)cM::rndInt(240));
     }
     setupResources();
     if (isHidden(mUnitX, mUnitZ)) {
@@ -614,7 +613,7 @@ dItem::Item getUnitItem(int x, int z, int *height, BOOL *upper,
 // .text 1784
 BOOL entry_c::release() {
     if (mItem == dItem::FG_CEDAR_LIGHTS) {
-        fn_111_7C90(mUnitX, mUnitZ);
+        dFgobjManager::endDecoAnm(mUnitX, mUnitZ);
     }
     mKind = DRAW_MODEL;
     mItem = dItem::ITEM_ID_NONE;

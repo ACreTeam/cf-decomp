@@ -822,7 +822,7 @@ void recvFgMngReq(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     dFgMngReq_c req;
     cLib::memCpy(&req, data, sizeof(req));
     int valid = fgMngProc_isChangeRequestValid(&req, scene);
-    req.send((u8)valid, member, scene);
+    req.send(valid, member, scene);
 }
 
 // 800DF804: NET_PACKET_FG_MNG_CMD (0x29)

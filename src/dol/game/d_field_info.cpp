@@ -494,7 +494,7 @@ int dFdBase_c::canPutItem(int unitX, int unitZ) const {
 }
 
 // 8008CF6C
-int dFdBase_c::canPutItem(const nw4r::math::VEC3 *pos) {
+u32 dFdBase_c::canPutItem(const nw4r::math::VEC3 *pos) {
     f32 x = pos->x;
     f32 z = pos->z;
     return canPutItem((int)x >> 5, (int)z >> 5);

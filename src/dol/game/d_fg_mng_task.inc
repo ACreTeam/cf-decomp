@@ -1040,7 +1040,7 @@ done:
 }
 
 // 800A4B78
-void dFgMngReq_c::send(BOOL local, int player, u8 scene) {
+void dFgMngReq_c::send(u8 local, int player, u8 scene) {
     dFdAsPos_c pos(mPos >> 8, mPos & 0xFF);
     if (mKind == FG_MNG_KIND_WATER) {
         fgMngProc_waterAround(player, &pos);

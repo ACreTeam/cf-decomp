@@ -162,8 +162,8 @@ enum dNetPacket_e {
     // player actor (d_a_player REL fn_80_2C64C) -> everyone: value, state,
     // 9-byte param; drives the remote player
     NET_PACKET_PLAYER_STATE = 0x27,
-    // = NET_PACKET_FG_MNG_REQ: dFgMngReq_c to the host (fgobj REL fn_111_8D8C);
-    // host validates and answers
+    // = NET_PACKET_FG_MNG_REQ: dFgMngReq_c to the host
+    // (dFgobjManager::sendRequest); host validates and answers
     NET_PACKET_FG_MNG_REQ = 0x28,
     // = NET_PACKET_FG_MNG_CMD: dFgMngCmd_c (dFgMngReq_c::send, fgMngCmd_apply);
     // clients apply it

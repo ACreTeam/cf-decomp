@@ -235,7 +235,7 @@ public:
     void clearWatered();                                                                 // 8008CCE8
     int bgCall_80073D2C(void *arg, int unitX, int unitZ, int arg2);                      // 8008CD5C
     int canPutItem(int unitX, int unitZ) const;                                          // 8008CEE4: an item can be put (BG flag 0x27 bit 0)
-    int canPutItem(const nw4r::math::VEC3 *pos);                                         // 8008CF6C
+    u32 canPutItem(const nw4r::math::VEC3 *pos);                                         // 8008CF6C
     int isGrassGround(int unitX, int unitZ) const;                                       // 8008CFB4: SOIL, SOILX, CLIFF_* (BG flag 0x28 bit 6)
     int isBeachGround(int unitX, int unitZ) const;                                       // 8008D03C: WAVE_S/SE2/SW2 (BG flag 0x28 bit 5)
     int canNpcPutItem(int unitX, int unitZ) const;                                       // 8008D0C4: BG flag 0x27 bit 1 (clear on TOWN_NO_NPC)
@@ -257,6 +257,10 @@ public:
     static int getBgDataSize();                                                          // 8008E2D0
 
     dFdUnitAttr_c *getUnitAttr() const { return _24; }
+
+    BOOL setItem(const dItem::Item &item, int unitX, int unitZ, int layer) {
+        return setItem(&item, unitX, unitZ, layer);
+    }
 
     inline void setItemFromId(u16 id, int ux, int uz, int layer) {
         dItem::Item fg;

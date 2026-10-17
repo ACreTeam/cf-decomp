@@ -34,7 +34,7 @@ public:
     virtual void vf38(f32 value);                      // 0x38
     virtual void vf3C(f32 value);                      // 0x3C
     virtual void vf40();
-    virtual void vf44();
+    virtual void vf44(const nw4r::math::VEC3 *vec);    // 0x44 (d_fgobj_manager: the wind direction)
     virtual void vf48(const nw4r::math::VEC3 *vec);    // 0x48
     virtual void vf4C();
     virtual void setColor(u8 r, u8 g, u8 b, u8 a, ERecursive recursive); // 0x50 (d_fish_field)

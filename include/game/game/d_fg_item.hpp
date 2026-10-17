@@ -310,7 +310,8 @@ inline bool isRealItemId(u16 id) {
 
 // One field object (804E3C40 table, 0x20 bytes each).
 struct FgInfo {
-    u16 _00; // 0x00
+    s16 mStump;    // 0x00: what a chopped tree becomes (d_fgobj_managerNP
+                   // chopTree)
     s16 mDropItem; // 0x02: item a grown tree drops (or ITEM_ID_NONE)
     u16 _04; // 0x04
     s16 mPlantItem; // 0x06: item that plants this object (or ITEM_ID_NONE)
@@ -350,6 +351,81 @@ struct Item {
 
     bool isValid() const { return mId != ITEM_ID_NONE; }
     u16 getId() const { return mId; }
+
+    // Field object kinds by id range (d_fgobj_managerNP).
+    bool isBroadleafTree() const {
+        return mId >= FG_TREE_SAPLING && mId <= FG_TREE_BELLS;
+    }
+    bool isAppleTree() const {
+        return mId >= FG_APPLE_TREE_SAPLING && mId <= FG_APPLE_TREE_FRUIT;
+    }
+    bool isOrangeTree() const {
+        return mId >= FG_ORANGE_TREE_SAPLING && mId <= FG_ORANGE_TREE_FRUIT;
+    }
+    bool isPearTree() const {
+        return mId >= FG_PEAR_TREE_SAPLING && mId <= FG_PEAR_TREE_FRUIT;
+    }
+    bool isPeachTree() const {
+        return mId >= FG_PEACH_TREE_SAPLING && mId <= FG_PEACH_TREE_FRUIT;
+    }
+    bool isCherryTree() const {
+        return mId >= FG_CHERRY_TREE_SAPLING && mId <= FG_CHERRY_TREE_FRUIT;
+    }
+    bool isPalmTree() const {
+        return mId >= FG_PALM_SAPLING && mId <= FG_PALM_FRUIT;
+    }
+    bool isMoneyTree() const {
+        return mId >= FG_MONEY_TREE_SAPLING && mId <= FG_MONEY_TREE;
+    }
+    bool isCedarTree() const {
+        return mId >= FG_CEDAR_SAPLING && mId <= FG_CEDAR_LIGHTS;
+    }
+    bool isDandelion() const {
+        return mId >= FG_DANDELION && mId <= FG_DANDELION_PUFF;
+    }
+    bool isDeadSapling() const {
+        return mId >= FG_DEAD_SAPLING && mId <= FG_DEAD_PALM_SAPLING;
+    }
+    bool isWeed() const {
+        return mId >= FG_WEED_A && mId <= FG_WEED_D;
+    }
+    bool isClover() const {
+        return mId >= FG_CLOVER && mId <= FG_LUCKY_CLOVER;
+    }
+    bool isRedTurnip() const {
+        return mId >= FG_RED_TURNIP_WILTED &&
+               mId <= FG_RED_TURNIP_WILTED_WATERED;
+    }
+    bool isStump() const {
+        return mId >= FG_STUMP_FIRST && mId <= FG_STUMP_LAST;
+    }
+    bool isStone() const {
+        return mId >= FG_STONE_A && mId <= FG_STONE_E;
+    }
+    bool isMoneyRock() const {
+        return mId >= FG_MONEY_ROCK_FIRST && mId <= FG_MONEY_ROCK_LAST;
+    }
+    bool isHole() const {
+        return mId >= FG_HOLE && mId <= FG_HOLE;
+    }
+    bool isRafflesia() const {
+        return mId >= FG_RAFFLESIA && mId <= FG_RAFFLESIA;
+    }
+    bool isWiltedRafflesia() const {
+        return mId >= FG_WILTED_RAFFLESIA && mId <= FG_WILTED_RAFFLESIA;
+    }
+    bool isDesignP0() const {
+        return mId >= FG_DESIGN_P0_0 && mId <= FG_DESIGN_P0_7;
+    }
+    bool isDesignP1() const {
+        return mId >= FG_DESIGN_P1_0 && mId <= FG_DESIGN_P1_7;
+    }
+    bool isDesignP2() const {
+        return mId >= FG_DESIGN_P2_0 && mId <= FG_DESIGN_P2_7;
+    }
+    bool isDesignP3() const {
+        return mId >= FG_DESIGN_P3_0 && mId <= FG_DESIGN_P3_7;
+    }
 
     bool isFg() const {
         return mId < FG_COUNT;

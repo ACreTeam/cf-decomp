@@ -692,6 +692,7 @@ modules:
   name: d_fgobj_managerNP
   symbols: config/RUUE01_00/d_fgobj_managerNP/symbols.txt
   splits: config/RUUE01_00/d_fgobj_managerNP/splits.txt
+  force_active: [__global_destructor_chain, lUnusedTreeParams, lUnusedRodataTail]
 - object: files/rels/d_fg_drawNP.rel
   hash: 186ac0bd184d51a7238b37756268d742553f3544
   name: d_fg_drawNP

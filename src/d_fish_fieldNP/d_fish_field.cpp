@@ -24,12 +24,7 @@
 #include <game/game/d_net.hpp>
 #include <game/snd/snd_id.hpp>
 
-extern "C" {
-BOOL fn_111_AEA4(int a, void *b, void *c, int d); // d_fgobj_managerNP
-void fn_111_6770(u16 item, const mVec3_c *pos, const mVec3_c *scale,
-                 const mAng3_c *angle,
-                 int arg); // d_fgobj_managerNP
-}
+#include <game/game/d_fgobj_manager.hpp>
 
 void *dFishField_c_classInit();
 
@@ -1969,9 +1964,9 @@ BOOL dFishFldShadow_c::pull() {
                     isTrash = TRUE;
                 }
             }
-            u32 b;
-            u32 a;
-            if (isTrash && !fn_111_AEA4(0x10, &b, &a, 0)) {
+            int b;
+            int a;
+            if (isTrash && !dFgobjManager::findPutSpot(0x10, &b, &a, NULL)) {
                 ok = FALSE;
             } else {
                 ok = TRUE;
@@ -2272,7 +2267,8 @@ int dFishFldShadow_c::draw() {
         mVec3_c ofs(sItemOfs);
         pos += ofs;
         mAng3_c angle(0, 0, 0);
-        fn_111_6770(item.mId, &pos, &mScale, &angle, 0);
+        dFgobjManager::fgObjCallback(item.mId, (int)&pos, (int)&mScale, &angle,
+                                     0);
     }
     return TRUE;
 }

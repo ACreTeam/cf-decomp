@@ -416,6 +416,7 @@ int fgMngProc_getGrowUpHeapSize();              // 80091B04: 0x3400, the "create
 int fgMngProc_getFgHeapSize();                  // 80091B0C: 0x2617C0, the "createFgHeap" FrmHeap (m_heap)
 int fgMngProc_getElapsedDays();                 // 80091B18: days since the last processed day (at 6:00)
 void *fgMngProc_getFgObjMgr();                  // 80091C24: the d_fgobj_managerNP actor (sFgObjMgr)
+extern void *sFgObjMgr;                         // 8074E338: the d_fgobj_managerNP actor (set by its create)
 void fgMngProc_resetSync();                     // 80091C2C: unblocks the day change, resets the locks / commands
 void *fgMngProcThreadFunc(void *arg);           // 80091C54: the FG manager thread (d_sv_proc starts it)
 void startFgMngProcThread(void *(*func)(void *)); // 80091C78
