@@ -354,17 +354,17 @@ bool m3d::bmdl_c::getNodeWorldMtxMultVec(ulong idx, const nw4r::math::VEC3 &in, 
     return true;
 }
 
-void m3d::bmdl_c::setAnm(m3d::banm_c &anm) {
+bool m3d::bmdl_c::setAnm(m3d::banm_c &anm) {
     if (anm.getType() == banm_c::TYPE_ANM_SHP) {
         nw4r::g3d::ScnMdl *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdl>(mpScn);
-        scnMdl->SetAnmObj(anm.getObj(), nw4r::g3d::ScnMdl::ANMOBJTYPE_NOT_SPECIFIED);
+        return scnMdl->SetAnmObj(anm.getObj(), nw4r::g3d::ScnMdl::ANMOBJTYPE_NOT_SPECIFIED);
     } else {
         nw4r::g3d::ScnMdlSimple *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
         if (anm.getType() == banm_c::TYPE_ANM_CHR) {
             mpAnm = &anm;
         }
 
-        scnMdl->SetAnmObj(anm.getObj(), nw4r::g3d::ScnMdl::ANMOBJTYPE_NOT_SPECIFIED);
+        return scnMdl->SetAnmObj(anm.getObj(), nw4r::g3d::ScnMdl::ANMOBJTYPE_NOT_SPECIFIED);
     }
 }
 
@@ -749,8 +749,8 @@ void m3d::mdl_c::remove() {
     m3d::smdl_c::remove();
 }
 
-void m3d::mdl_c::setAnm(m3d::banm_c &anm) {
-    setAnm(anm, 0.0f);
+bool m3d::mdl_c::setAnm(m3d::banm_c &anm) {
+    return setAnm(anm, 0.0f);
 }
 
 void m3d::mdl_c::play() {
@@ -758,12 +758,12 @@ void m3d::mdl_c::play() {
     mCallback.calcBlend();
 }
 
-void m3d::mdl_c::setAnm(m3d::banm_c &anm, float blendFrame) {
+bool m3d::mdl_c::setAnm(m3d::banm_c &anm, float blendFrame) {
     if (anm.getType() == m3d::banm_c::TYPE_ANM_CHR) {
         mCallback.setBlendFrame(blendFrame);
     }
 
-    bmdl_c::setAnm(anm);
+    return bmdl_c::setAnm(anm);
 }
 
 void m3d::mdl_c::setCallback(m3d::mdl_c::callback_c *callback) {

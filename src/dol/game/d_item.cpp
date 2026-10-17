@@ -33,8 +33,8 @@ void __register_global_object(void *object, void *dtor, void *node);
 }
 
 
-// 804E91E8: furniture function names (debug). Unreferenced in the release build.
-const char *dItem::sFtrFuncNames[0x98] = {
+// 804E91E8: furniture sound category names (BITM::m_ftrSfx, debug). Unreferenced in the release build.
+const char *dItem::sFtrSfxNames[FTR_SFX_NUM] = {
     "なし", "ソ\ファ", "引き出し型収納", "扉型収納", "ブーブークッション", "電気スイッチ", "蛍光灯", "ろうそく", "イス", "ベッド", "いぬごや",
     "マスターソ\ード", "アーウィン", "トライフォース", "ちゃいろのドラムかん", "みどりのドラムかん", "あかいドラムかん", "キケンなドラムかん", "きいろいドラムかん",
     "だんしようトイレ", "ピクミン", "おきあがりこぼし", "ちょきんばこ", "ゴング", "コイン", "どかん", "ファイアフラワー", "はた", "ハテナブロック",
@@ -557,8 +557,8 @@ static const u16 sFromNameIndex[FROM_COUNT] = {
     0x320, 0xFA, 0xFA, 0xFA, 0xFA, 0x58, 0x19C, 0x0,
 };
 
-// 80471C78: furniture function -> type (convFtrFunc)
-static const u16 sFtrFuncTypes[0x41] = {
+// 80471C78: furniture function (dItem::FtrFunc) -> actor profile (convFtrFunc)
+static const u16 sFtrFuncTypes[dItem::FTR_FUNC_COUNT] = {
     0x21, 0x22, 0x22, 0x23, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x32, 0x32, 0x40,
     0x29, 0x29, 0x29, 0x29, 0x29, 0x29, 0x2A, 0x2A, 0x2A, 0x2B, 0x2B, 0x2B, 0x2B,
     0x2B, 0x2C, 0x2C, 0x2C, 0x2D, 0x2D, 0x2D, 0x2E, 0x2F, 0x30, 0x30, 0x31, 0x3B,
@@ -568,19 +568,19 @@ static const u16 sFtrFuncTypes[0x41] = {
 
 // 800C1CA8
 int convFtrFunc(u32 func) {
-    if (func < 0x41) {
+    if (func < dItem::FTR_FUNC_COUNT) {
         return sFtrFuncTypes[func];
     }
-    return 0x21;
+    return fProf::A_FTR;
 }
 
 // 800C1CCC
 int BITM::getFtrFuncType() const {
-    int func = static_cast<u32>(m_ftrFunc) < 0x41 ? m_ftrFunc : 1;
-    if (func != 0) {
+    int func = static_cast<u32>(m_ftrFunc) < FTR_FUNC_COUNT ? m_ftrFunc : FTR_FUNC_PLAIN;
+    if (func != FTR_FUNC_NONE) {
         return convFtrFunc(func);
     }
-    return convFtrFunc(1);
+    return convFtrFunc(FTR_FUNC_PLAIN);
 }
 
 // 800C1CF8
@@ -2321,18 +2321,18 @@ int getCategoryQ5(const Item &item) {
         }
 
         s8 func = bitm->m_ftrFunc;
-        switch (static_cast<u32>(func) < 0x41 ? func : 1) {
-        case 27:
-        case 28:
-        case 29:
-        case 64:
+        switch (static_cast<u32>(func) < FTR_FUNC_COUNT ? func : FTR_FUNC_PLAIN) {
+        case FTR_FUNC_CLOCK_CHIME:
+        case FTR_FUNC_CLOCK_SYNC:
+        case FTR_FUNC_CLOCK_ANIM:
+        case FTR_FUNC_CLOCK_CUCKOO:
             return 7;
-        case 30:
-        case 31:
-        case 32:
+        case FTR_FUNC_AUDIO_UNUSED:
+        case FTR_FUNC_AUDIO:
+        case FTR_FUNC_AUDIO_ON_OFF_ANIM:
             return 8;
-        case 33:
-        case 34:
+        case FTR_FUNC_TV:
+        case FTR_FUNC_TV_VCR:
             return 9;
         }
     }

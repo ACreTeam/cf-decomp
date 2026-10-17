@@ -45,6 +45,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
     PRIVATE_FLAG0_FISHING_ENTERED = 0x2D,       // the player entered this fishing tourney (d_ev_fishing)
+    PRIVATE_FLAG0_CARD_REISSUE = 0x46,          // a new shopping card was asked for at the ATM; mailed on the next day
+                                                // (dPrivateData_c::updateBank), isCardMissing is FALSE meanwhile
     PRIVATE_FLAG0_MOM_FIRST_LETTER = 0x4F,      // Mom's first letter was delivered (dMotherMail::sendFirst)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter

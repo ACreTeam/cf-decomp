@@ -14,6 +14,7 @@ namespace cM {
     /// @brief v * v. As an inline its operand is evaluated once and the calls in an expression are
     /// evaluated right to left (a + b squares b first), which the bg and world code rely on.
     inline f32 square(f32 v) { return v * v; }
+    inline int absI(int v) { return v < 0 ? -v : v; }
 
     // RNG utilities
     void initRnd(ulong seed); ///< Initializes ::s_rnd with the given seed.

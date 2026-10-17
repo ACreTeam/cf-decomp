@@ -2072,7 +2072,7 @@ BOOL mvbg_c::set(f32 sizeX, f32 sizeZ, f32 height, const mVec3_c &pos, mAng ang,
 }
 
 // 80072068
-void mvbg_c::onHit(wall_c *wall, int ownerId, f32 dist) {}
+void mvbg_c::onHit(const wall_c *wall, int ownerId, f32 dist) {}
 
 // 8007206C
 mvbgList_c *getMvbgList() {
@@ -2736,10 +2736,6 @@ int getFtrSe(int attr) {
     return -1;
 }
 
-static inline int absI(int v) {
-    return v < 0 ? -v : v;
-}
-
 // 800737E4
 BOOL checkWalkable(int unitX, int unitZ, int dir, int toX, int toZ) {
     mVec3_c pos;
@@ -2762,11 +2758,11 @@ BOOL checkWalkable(int unitX, int unitZ, int dir, int toX, int toZ) {
     pos.y = chk.getHeight(FALSE);
     int x, z;
     posToUnit(&x, &z, &pos);
-    int dx = absI(x - toX);
+    int dx = cM::absI(x - toX);
     if (dx > 1) {
         return FALSE;
     }
-    int dz = absI(z - toZ);
+    int dz = cM::absI(z - toZ);
     if (dz > 1) {
         return FALSE;
     }

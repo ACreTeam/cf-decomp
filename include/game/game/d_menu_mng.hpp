@@ -69,6 +69,16 @@ public:
     static void clearInputBuf();
     static BOOL openInput(u8 menu, const u16 *str, int len);
 
+    // openMenu / openItemSel menus (only the ones named so far).
+    enum {
+        MENU_ITEM_SELECT = 0x32,
+        MENU_BANK_DEPOSIT = 0x4A,
+        MENU_BANK_WITHDRAW = 0x4B,
+        MENU_BANK_PAY = 0x4C,
+        MENU_MUSIC = 0x5D,
+        MENU_STORAGE = 0x5E,
+    };
+
     static BOOL openMenu(u8 menu);
     static dMail_c *getMail();
     static void setMail(const dMail_c *mail);

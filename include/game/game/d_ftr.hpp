@@ -13,6 +13,7 @@
 
 namespace dItem {
 struct BITM;
+struct NpcMsg;
 }
 class daFTR_c;
 
@@ -21,35 +22,35 @@ namespace dFTR {
 // The furniture interface of daFTR_c (at +0x158).
 class alwaysAc_c {
 public:
-    virtual void vf08() = 0;
+    virtual BOOL tryMove(const mVec3_c *dir, mAng angle) = 0;
     virtual int sendEvent(int event) = 0;
-    virtual void vf10() = 0;
-    virtual f32 getTopY() = 0;
-    virtual BOOL isPosTop() = 0;
+    virtual int getFtrFunc() = 0;
+    virtual f32 getTopY() const = 0;
+    virtual BOOL canWalkOn() = 0;
     virtual BOOL setSwitch(int sw, int param) = 0;
     virtual int getSwitchBit(int sw) = 0;
     virtual BOOL isSyncDisabled() = 0;
     virtual int getSwitchParam() = 0;
-    virtual void vf2C() = 0;
-    virtual BOOL isSwitchOn() = 0;
-    virtual void vf34() = 0;
+    virtual void onSwitchSent() = 0;
+    virtual BOOL getSwitch() = 0;
+    virtual int getTopKind() = 0;
     virtual int getLayer() = 0;
-    virtual BOOL push(const mAng &angle) = 0;
-    virtual BOOL move(const mVec3_c *dir) = 0;
-    virtual BOOL pull(const mAng &angle) = 0;
-    virtual BOOL rotateLeft(const mAng &angle) = 0;
-    virtual BOOL rotateRight(const mAng &angle) = 0;
+    virtual BOOL canRotate(const mAng &angle) = 0;
+    virtual BOOL canMove(const mVec3_c *dir) = 0;
+    virtual BOOL startRotate(const mAng &angle) = 0;
+    virtual BOOL startPush(const mAng &angle) = 0;
+    virtual BOOL startPull(const mAng &angle) = 0;
     virtual const dItem::BITM *getBITM() = 0;
     virtual BOOL startHold() = 0;
     virtual dItem::Item getItem() = 0;
-    virtual BOOL getUnit(int *x, int *z, int layer, s16 *angle) = 0;
-    virtual BOOL isMoving() = 0;
-    virtual void vf64() = 0;
+    virtual BOOL getUnit(int *x, int *z, const mVec3_c *ofs, mAng angle) = 0;
+    virtual BOOL isIdle() = 0;
+    virtual dItem::NpcMsg *getNpcMsg() = 0;
     virtual BOOL canSetSwitch() = 0;
     virtual int isMusic() = 0;
-    virtual BOOL isLamp() = 0;
+    virtual BOOL isGyroid() = 0;
     virtual BOOL isSwitchable() { return FALSE; }
-    virtual void vf78() = 0;
+    virtual void changeSwitch(u32 sw, BOOL keep) = 0;
 };
 
 class alwaysBank_c : public dDvd::arcBank_c {
@@ -104,8 +105,8 @@ public:
 class unitMap_c {
 public:
     void clear();
-    BOOL set(daFTR_c *ftr, int x, int z, int layer);
-    BOOL remove(daFTR_c *ftr, int x, int z, int layer);
+    BOOL set(daFTR_c *ftr, int x, int z, u8 layer);
+    BOOL remove(daFTR_c *ftr, int x, int z, u8 layer);
     int getHandle(int x, int z, int layer);
     daFTR_c *get(int x, int z, int layer);
     daFTR_c *get(const mVec3_c *pos, int layer);
@@ -116,6 +117,8 @@ public:
 // The furniture actors of the room (up to dScene::getSceneParamA of the scene).
 class list_c {
 public:
+    enum { MAX = 64 };
+
     list_c() { clear(); }
 
     void clear();
@@ -126,25 +129,33 @@ public:
     int find(daFTR_c *ftr);
     daFTR_c *get(u32 handle);
 
-    /* 0x000 */ daFTR_c *mFtr[64];
+    /* 0x000 */ daFTR_c *mFtr[MAX];
 }; // size 0x100
 
 // A furniture the player moves.
+// hold_c::mSide (dFtrm_c::getDir): the side of the furniture the player pushes against.
+enum {
+    SIDE_FRONT,
+    SIDE_LEFT, // the furniture's own left (+X in its local space)
+    SIDE_BACK,
+    SIDE_RIGHT,
+};
+
 struct hold_c {
     hold_c();
 
     void clear();
-    void set(int handle, const mVec3_c &a, const mVec3_c &b, f32 c, const mVec3_c &d, const mVec3_c &e, s16 angle,
-             u8 flag);
+    void set(int handle, const mVec3_c &playerLastPos, const mVec3_c &playerPos, f32 dist, const mVec3_c &centerPos,
+             const mVec3_c &pushPos, s16 pushAngle, u8 side);
 
     /* 0x00 */ int mHandle;
-    /* 0x04 */ mVec3_c _04;
-    /* 0x10 */ mVec3_c _10;
-    /* 0x1C */ f32 _1C;
-    /* 0x20 */ mVec3_c _20;
-    /* 0x2C */ mVec3_c _2C;
-    /* 0x38 */ s16 mAngle;
-    /* 0x3A */ u8 _3A;
+    /* 0x04 */ mVec3_c mPlayerLastPos;
+    /* 0x10 */ mVec3_c mPlayerPos;
+    /* 0x1C */ f32 mDist;
+    /* 0x20 */ mVec3_c mCenterPos;
+    /* 0x2C */ mVec3_c mPushPos;
+    /* 0x38 */ s16 mPushAngle;
+    /* 0x3A */ u8 mSide;
 }; // size 0x3C
 
 class holdList_c {
@@ -155,22 +166,22 @@ public:
     hold_c *find(daFTR_c *ftr);
     daFTR_c *getFtr(int layer);
     void startHold();
-    BOOL isMoving();
-    BOOL push(s16 angle);
-    BOOL pull(s16 angle);
-    BOOL pushLeft();
-    BOOL pullLeft();
-    BOOL pushRight();
-    BOOL pullRight();
-    BOOL move(s16 angle);
+    BOOL isIdle();
+    BOOL canRotate(s16 angle);
+    BOOL startRotate(s16 angle);
+    BOOL canRotateLeft();
+    BOOL startRotateLeft();
+    BOOL canRotateRight();
+    BOOL startRotateRight();
+    BOOL canMove(s16 angle);
     mVec3_c *getDir(s16 angle);
-    BOOL moveForward();
-    BOOL rotateLeft();
-    BOOL moveBack();
-    BOOL rotateRight();
+    BOOL canPush();
+    BOOL startPush();
+    BOOL canPull();
+    BOOL startPull();
     void clear();
-    BOOL set(int handle, f32 c, const mVec3_c &a, const mVec3_c &b, const mVec3_c &d, const mVec3_c &e, s16 angle,
-             u8 flag);
+    BOOL set(int handle, f32 dist, const mVec3_c &playerLastPos, const mVec3_c &playerPos, const mVec3_c &centerPos,
+             const mVec3_c &pushPos, s16 pushAngle, u8 side);
     static BOOL isHoldScene();
 
     /* 0x00 */ hold_c mHold[2];
@@ -189,7 +200,7 @@ list_c *getList();
 void recvHoldRequest(const void *data, int member);
 void recvHoldAnswer(BOOL ok);
 void recvHoldRelease(int member, int arg);
-BOOL isLamp(daFTR_c *ftr);
+BOOL isGyroid(daFTR_c *ftr);
 void setOwnerSwitch(u8 scene, int x, int z, u8 layer, BOOL arg);
 void recvOwnerSwitch(const void *data);
 void sendOwnerSwitch(u8 scene, int x, int z, u8 layer);
@@ -203,12 +214,12 @@ BOOL requestSwitch(int x, int z, u8 layer, int sw, u8 param, BOOL arg, BOOL send
 void recvSwitch(const void *data);
 void sendRoomFlag(u8 scene, BOOL on, int member);
 BOOL setRoomFlag(u8 scene, u8 on);
-void setRoomFlag(u8 scene, u8 on, BOOL send);
+void requestRoomFlag(u8 scene, u8 on);
 void recvRoomFlag(const void *data);
 void setUnitItem(u8 scene, int x, int z, dItem::Item *item, BOOL send);
 void recvUnitItem(u8 scene, const void *data);
-void putFtr(u8 scene, int x, int z, int layer, BOOL on, BOOL gyroid, int gyroidValue, const dItem::Item *item,
-            u8 send);
+void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid, u8 gyroidValue, const dItem::Item *item,
+            bool send);
 void recvPutFtr(u8 scene, const void *data);
 void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *item, BOOL upper, BOOL send);
 void recvRemoveFtr(u8 scene, const void *data);
@@ -244,23 +255,3 @@ BOOL canReachExit();
 
 } // namespace dFTR
 
-// The furniture actor (d_a_ftr / d_a_ftr_act).
-class daFTR_c : public dDemoActor_c, public dBGCF::mvbg_c, public dFTR::alwaysAc_c, public dMsg::Rcpt_c {
-public:
-    virtual void vf188();
-    virtual BOOL canWalkOn();
-    virtual void vf190();
-    virtual void vf194();
-    virtual int getTopKind();
-    virtual void vf19C();
-    virtual void vf1A0();
-    virtual void vf1A4();
-    virtual void vf1A8();
-    virtual void onSwitchSent();
-    virtual u32 getSwitch();
-    virtual void vf1B4();
-    virtual void vf1B8();
-    virtual BOOL canSwitch();
-    virtual void vf1C0();
-    virtual void changeSwitch(u32 sw, int arg);
-};

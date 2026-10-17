@@ -351,6 +351,8 @@ struct Item {
 
     bool isValid() const { return mId != ITEM_ID_NONE; }
     u16 getId() const { return mId; }
+    // The same furniture turned to direction dir (the id's low 2 bits).
+    Item makeDir(int dir) const { return Item((u16)((getId() & 0xFFFC) | (dir & 3))); }
 
     // Field object kinds by id range (d_fgobj_managerNP).
     bool isBroadleafTree() const {

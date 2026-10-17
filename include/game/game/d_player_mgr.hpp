@@ -329,11 +329,24 @@ BOOL eatItem(const dItem::Item *item); // 800FD058
 BOOL removeMaskForEating(); // 800FD130
 BOOL endDemoWait(); // 800FD17C
 BOOL getChairPosition(mVec3_c *out, int idx); // 800FD510
+// sitOnChair type: the side of the seat (dFTR::SIDE_*) the player sits down from.
+enum {
+    SIT_FROM_FRONT,
+    SIT_FROM_RIGHT,
+    SIT_FROM_LEFT,
+};
+
+// lieOnBed type: the side of the bed the player lies down from.
+enum {
+    LIE_FROM_BACK = 1,
+    LIE_FROM_FRONT,
+};
+
 BOOL sitOnChair(s16 angle, int type, f32 x, f32 z); // 800FD588
 BOOL isChairAnimation(); // 800FD664
 BOOL getBedAnimationPosition(mVec3_c *out, int idx); // 800FD6A8
 BOOL getBedPosition(mVec3_c *out, int idx); // 800FD720
-BOOL lieOnBed(s16 angle, int type, f32 x, f32 z); // 800FD798
+BOOL lieOnBed(s16 angle, int type, f32 x, f32 z, int arg); // 800FD798; last argument unused in this build
 BOOL getUpFromBed(int type, int arg); // 800FD88C; second argument unused in this build
 BOOL changeSeatedPose(int type); // 800FD924
 BOOL fn_800FD9E0(int type, s16 angle, f32 x, f32 z); // 800FD9E0: Requests player state 0x32; action meaning unresolved.

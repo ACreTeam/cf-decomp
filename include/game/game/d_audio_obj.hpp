@@ -73,6 +73,22 @@ public:
 namespace EGG { class Heap; }
 class SoundTv_base;
 
+// TV programmes (/Ftr/tv_program%d.brres), named after their SoundTv_* classes.
+enum TV_PROGRAM_e {
+    TV_PROGRAM_STORM,
+    TV_PROGRAM_COLOR,
+    TV_PROGRAM_NEWS,
+    TV_PROGRAM_DRAMA,
+    TV_PROGRAM_SONG,
+    TV_PROGRAM_QUIZ,
+    TV_PROGRAM_TRAVEL,
+    TV_PROGRAM_HERO,
+    TV_PROGRAM_VARIETY,
+    TV_PROGRAM_MOVIE,
+    TV_PROGRAM_SOCCER,
+    TV_PROGRAM_WEATHER = 0xFF, // /Ftr/tv_program_<forecast>.brres
+};
+
 // The TV programme sound adapter. The programme is allocated by create() from the selected heap.
 class dSndTv_c {
 public:
@@ -81,11 +97,11 @@ public:
 
     bool create(EGG::Heap *heap, u32 channel); // 800115BC: channels 0..10, other values use weather
     void clear();                              // 80011B3C
-    bool isReady();                            // 80011BA4
+    BOOL isReady();                            // 80011BA4
     void reset();                              // 80011BB8
     void stop();                               // 80011C08
     void execute(int frame, const mVec3_c *pos); // 80011C50
-    void setOn();                              // 80011CD0
+    void setOn(BOOL unused);                   // 80011CD0: the argument is not read
     void mute();                               // 80011D2C
 
     /* 0x00 */ SoundTv_base *mObj;

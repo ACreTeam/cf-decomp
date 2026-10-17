@@ -980,7 +980,7 @@ BOOL getBedPosition(mVec3_c *out, int idx) {
 }
 
 // 800FD798
-BOOL lieOnBed(s16 angle, int type, f32 x, f32 z) {
+BOOL lieOnBed(s16 angle, int type, f32 x, f32 z, int arg) {
     dPlayerActor_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
@@ -989,7 +989,7 @@ BOOL lieOnBed(s16 angle, int type, f32 x, f32 z) {
     if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->_2274 & 0x4000)))) {
         return FALSE;
     }
-    if (type != 1 && type != 2) {
+    if (type != LIE_FROM_BACK && type != LIE_FROM_FRONT) {
         return FALSE;
     }
     setTargetXZ(player, x, z);

@@ -14,6 +14,13 @@ class FrmHeap;
 // its resources and gives it back with release().
 namespace dRecBank {
 
+// An unclaimed resource-heap slot. Its initialization belongs to the member constructor.
+struct slot_c {
+    slot_c() : mIndex(0xFFFF) {}
+
+    u16 mIndex;
+};
+
 class bankTbl_c {
 public:
     struct entry_c {
@@ -21,6 +28,7 @@ public:
         /* 0x4 */ u8 mUsed;
     }; // size 0x8
 
+    bankTbl_c() { clear(); }
     ~bankTbl_c();                                    // 8010655C
     void clear();                                    // 8010659C
     BOOL destroy();                                  // 801065B8

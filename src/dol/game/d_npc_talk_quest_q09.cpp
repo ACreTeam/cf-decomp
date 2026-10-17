@@ -6,6 +6,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_a_ftr.hpp>
 #include <game/game/d_hr.hpp>
 #include <game/game/d_money.hpp>
 #include <game/game/d_npc.hpp>

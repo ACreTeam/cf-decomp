@@ -5,6 +5,7 @@
 #include <game/game/d_str.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_a_ftr.hpp>
 #include <game/game/d_shop_layout.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>

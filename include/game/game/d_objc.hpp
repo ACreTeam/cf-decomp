@@ -67,6 +67,7 @@ public:
 enum {
     HIT_FG = 0x80010000,     // a field object (tree, ...) on a column unit
     HIT_FTR = 0x80020000,    // furniture placed outdoors (indoor scenes)
+    HIT_FTR_ROOM = 0x80040000, // a furniture actor's dpdBox_c (daFTR_c)
     HIT_INSECT = 0x80080000, // an ins_c
     HIT_STR = 0x80100000,    // a town structure
 };

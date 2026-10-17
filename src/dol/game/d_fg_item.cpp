@@ -590,7 +590,7 @@ BOOL Item::hasFtrFunc() const {
     if (isRealItemId(mId)) {
         const BITM *bitm = infoBank_c::get()->getBITM(Item(mId));
         if (bitm != NULL) {
-            return clampField(bitm->m_ftrFunc, 0x41, 1) != 0;
+            return clampField(bitm->m_ftrFunc, FTR_FUNC_COUNT, FTR_FUNC_PLAIN) != FTR_FUNC_NONE;
         }
     }
     return FALSE;

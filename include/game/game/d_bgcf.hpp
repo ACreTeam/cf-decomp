@@ -155,8 +155,9 @@ struct unitDat_c {
 // dBGCF::mvbg_c, vtable 804A6C88. Linked into the mvbgList_c (add / remove).
 class mvbg_c {
 public:
+    mvbg_c() { init(); }
     virtual ~mvbg_c() {}                                 // 80076700
-    virtual void onHit(wall_c *wall, int ownerId, f32 dist); // 80072068
+    virtual void onHit(const wall_c *wall, int ownerId, f32 dist); // 80072068
 
     void init(); // 80071EC8
     mAng getAngle() const { return mAngle; }

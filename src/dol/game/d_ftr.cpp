@@ -1,5 +1,6 @@
 // Furniture: the furniture actors' shared state, room unit map and online sync.
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_a_ftr.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/game/d_field.hpp>
 #include <game/game/d_field_info.hpp>
@@ -157,7 +158,7 @@ void unitMap_c::clear() {
     }
 }
 
-BOOL unitMap_c::set(daFTR_c *ftr, int x, int z, int layer) {
+BOOL unitMap_c::set(daFTR_c *ftr, int x, int z, u8 layer) {
     u8 &handle = mHandle[layer & 1][z & 0xF][x & 0xF];
     int idx = getList()->find(ftr);
     if (idx != -1) {
@@ -167,7 +168,7 @@ BOOL unitMap_c::set(daFTR_c *ftr, int x, int z, int layer) {
     return FALSE;
 }
 
-BOOL unitMap_c::remove(daFTR_c *ftr, int x, int z, int layer) {
+BOOL unitMap_c::remove(daFTR_c *ftr, int x, int z, u8 layer) {
     u8 &handle = mHandle[layer & 1][z & 0xF][x & 0xF];
     int idx = getList()->find(ftr);
     if (idx != -1) {
@@ -311,10 +312,10 @@ void recvHoldRelease(int member, int arg) {
     l_lockList.reset(member);
 }
 
-BOOL isLamp(daFTR_c *ftr) {
+BOOL isGyroid(daFTR_c *ftr) {
     alwaysAc_c *ac = ftr;
     if (ac != NULL) {
-        return ac->isLamp();
+        return ac->isGyroid();
     }
     return FALSE;
 }
@@ -324,9 +325,9 @@ void setOwnerSwitch(u8 scene, int x, int z, u8 layer, BOOL arg) {
     if (scene == current && dScene::isSceneAttr(current, dScene::SCENE_ATTR_ROOM)) {
         alwaysAc_c *ac = getUnitMap()->get(x, z, layer);
         if (ac != NULL) {
-            if (!ac->isSwitchOn()) {
-                if (countSwitch(isLamp, 1) >= 8) {
-                    daFTR_c *ftr = switchOffRandom(isLamp, 0);
+            if (!ac->getSwitch()) {
+                if (countSwitch(isGyroid, 1) >= 8) {
+                    daFTR_c *ftr = switchOffRandom(isGyroid, 0);
                     if (ftr != NULL) {
                         setSwitch(ftr, 0, 0xFF, arg, TRUE);
                     }
@@ -449,8 +450,7 @@ BOOL setSwitch(daFTR_c *ftr, int sw, int param, BOOL arg, BOOL send) {
         alwaysAc_c *ac = ftr;
         int x;
         int z;
-        s16 angle = 0;
-        if (ac->getUnit(&x, &z, 0, &angle)) {
+        if (ac->getUnit(&x, &z, NULL, mAng(0))) {
             return setSwitch(x, z, ac->getLayer(), sw, param, arg, send);
         }
     }
@@ -481,8 +481,7 @@ BOOL requestSwitch(daFTR_c *ftr, int sw, u8 param, BOOL arg, BOOL send) {
         alwaysAc_c *ac = ftr;
         int x;
         int z;
-        s16 angle = 0;
-        if (ac->getUnit(&x, &z, 0, &angle)) {
+        if (ac->getUnit(&x, &z, NULL, mAng(0))) {
             return requestSwitch(x, z, ac->getLayer(), sw, param, arg, send);
         }
     }
@@ -566,7 +565,7 @@ BOOL setRoomFlag(u8 scene, u8 on) {
     return FALSE;
 }
 
-void setRoomFlag(u8 scene, u8 on, BOOL send) {
+void requestRoomFlag(u8 scene, u8 on) {
     if (setRoomFlag(scene, on)) {
         sendRoomFlag(scene, on, 4);
     }
@@ -637,8 +636,8 @@ struct putPacket_c {
     u32 mGyroid : 1;
 };
 
-void putFtr(u8 scene, int x, int z, int layer, BOOL on, BOOL gyroid, int gyroidValue, const dItem::Item *item,
-            u8 send) {
+void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid, u8 gyroidValue, const dItem::Item *item,
+            bool send) {
     dScene::isSceneAttr(scene, dScene::SCENE_ATTR_ROOM);
     dItem::Item ftrItem = *item;
     dFdBase_c *fd;
@@ -718,7 +717,7 @@ void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *it
     shape_c shape;
     shape.set(*item);
     const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
-    BOOL pole = bitm != NULL ? dItem::clampField(bitm->m_ftrFunc, 0x41, 1) == dItem::FTR_FUNC_FROG_WOMAN_POLE : FALSE;
+    BOOL gyroid = bitm != NULL ? dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) == dItem::FTR_FUNC_GYROID : FALSE;
     for (u32 i = 0; i < shape.getNum(); i++) {
         int ux = x + shape.getOfs(i)[0];
         int uz = z + shape.getOfs(i)[1];
@@ -734,7 +733,7 @@ void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *it
         if (upper && layer == 0) {
             setRoomMap(ux, uz, 1, on, scene);
         }
-        if (pole && on) {
+        if (gyroid && on) {
             removeRoomGyroid(ux, uz, scene);
         }
     }
@@ -769,7 +768,7 @@ f32 getGroundY(int x, int z) {
     daFTR_c *ftr = getUnitMap()->get(x, z, 0);
     alwaysAc_c *ac = ftr;
     if (ftr != NULL) {
-        if (ac->isPosTop()) {
+        if (ac->canWalkOn()) {
             return ftr->getPosP()->y;
         }
         return ac->getTopY();
@@ -841,28 +840,28 @@ inline hold_c::hold_c() {}
 
 void hold_c::clear() {
     mHandle = -1;
-    _04.set(0.0f, 0.0f, 0.0f);
-    _10.set(0.0f, 0.0f, 0.0f);
-    _1C = 0.0f;
-    _20.set(0.0f, 0.0f, 0.0f);
-    _2C.set(0.0f, 0.0f, 0.0f);
-    mAngle = 0;
-    _3A = 0;
+    mPlayerLastPos.set(0.0f, 0.0f, 0.0f);
+    mPlayerPos.set(0.0f, 0.0f, 0.0f);
+    mDist = 0.0f;
+    mCenterPos.set(0.0f, 0.0f, 0.0f);
+    mPushPos.set(0.0f, 0.0f, 0.0f);
+    mPushAngle = 0;
+    mSide = 0;
 }
 
-void hold_c::set(int handle, const mVec3_c &a, const mVec3_c &b, f32 c, const mVec3_c &d, const mVec3_c &e,
-                 s16 angle, u8 flag) {
+void hold_c::set(int handle, const mVec3_c &playerLastPos, const mVec3_c &playerPos, f32 dist,
+                 const mVec3_c &centerPos, const mVec3_c &pushPos, s16 pushAngle, u8 side) {
     if (handle == -1) {
         return;
     }
     mHandle = handle;
-    _04 = a;
-    _10 = b;
-    _1C = c;
-    _20 = d;
-    _2C = e;
-    mAngle = angle;
-    _3A = flag;
+    mPlayerLastPos = playerLastPos;
+    mPlayerPos = playerPos;
+    mDist = dist;
+    mCenterPos = centerPos;
+    mPushPos = pushPos;
+    mPushAngle = pushAngle;
+    mSide = side;
 }
 
 static holdList_c l_holdList;
@@ -906,7 +905,7 @@ void holdList_c::startHold() {
     hold_c *upperHold = get(1);
     if (upper != NULL && upperHold != NULL) {
         BOOL ok = TRUE;
-        if (upper->getBITM()->_188_2 && upperHold->_3A) {
+        if (upper->getBITM()->_188_2 && upperHold->mSide) {
             ok = FALSE;
         }
         if (ok && upper->startHold()) {
@@ -917,7 +916,7 @@ void holdList_c::startHold() {
     hold_c *lowerHold = get(0);
     if (lower != NULL && lowerHold != NULL) {
         BOOL ok = TRUE;
-        if (lower->getBITM()->_188_2 && lowerHold->_3A) {
+        if (lower->getBITM()->_188_2 && lowerHold->mSide) {
             ok = FALSE;
         }
         if (ok && lower->startHold()) {
@@ -926,51 +925,51 @@ void holdList_c::startHold() {
     }
 }
 
-BOOL holdList_c::isMoving() {
+BOOL holdList_c::isIdle() {
     alwaysAc_c *ac = getFtr(0);
     if (ac != NULL) {
-        return ac->isMoving();
+        return ac->isIdle();
     }
     return FALSE;
 }
 
-BOOL holdList_c::push(s16 angle) {
+BOOL holdList_c::canRotate(s16 angle) {
     alwaysAc_c *ac = getFtr(0);
     if (ac != NULL) {
-        return ac->push(mAng(angle));
+        return ac->canRotate(mAng(angle));
     }
     return FALSE;
 }
 
-BOOL holdList_c::pull(s16 angle) {
+BOOL holdList_c::startRotate(s16 angle) {
     alwaysAc_c *ac = getFtr(0);
     if (ac != NULL) {
-        return ac->pull(mAng(angle));
+        return ac->startRotate(mAng(angle));
     }
     return FALSE;
 }
 
-BOOL holdList_c::pushLeft() {
-    return push(-0x4000);
+BOOL holdList_c::canRotateLeft() {
+    return canRotate(-0x4000);
 }
 
-BOOL holdList_c::pullLeft() {
-    return pull(-0x4000);
+BOOL holdList_c::startRotateLeft() {
+    return startRotate(-0x4000);
 }
 
-BOOL holdList_c::pushRight() {
-    return push(0x4000);
+BOOL holdList_c::canRotateRight() {
+    return canRotate(0x4000);
 }
 
-BOOL holdList_c::pullRight() {
-    return pull(0x4000);
+BOOL holdList_c::startRotateRight() {
+    return startRotate(0x4000);
 }
 
-BOOL holdList_c::move(s16 angle) {
+BOOL holdList_c::canMove(s16 angle) {
     hold_c *hold = get(0);
     alwaysAc_c *ac = getFtr(0);
     if (hold != NULL && ac != NULL) {
-        return ac->move(getDir(angle + hold->mAngle));
+        return ac->canMove(getDir(angle + hold->mPushAngle));
     }
     return FALSE;
 }
@@ -982,28 +981,28 @@ mVec3_c *holdList_c::getDir(s16 angle) {
     return &dir;
 }
 
-BOOL holdList_c::moveForward() {
-    return move(0);
+BOOL holdList_c::canPush() {
+    return canMove(0);
 }
 
-BOOL holdList_c::rotateLeft() {
+BOOL holdList_c::startPush() {
     hold_c *hold = get(0);
     alwaysAc_c *ac = getFtr(0);
     if (hold != NULL && ac != NULL) {
-        return ac->rotateLeft(mAng(hold->mAngle));
+        return ac->startPush(mAng(hold->mPushAngle));
     }
     return FALSE;
 }
 
-BOOL holdList_c::moveBack() {
-    return move(-0x8000);
+BOOL holdList_c::canPull() {
+    return canMove(-0x8000);
 }
 
-BOOL holdList_c::rotateRight() {
+BOOL holdList_c::startPull() {
     hold_c *hold = get(0);
     alwaysAc_c *ac = getFtr(0);
     if (hold != NULL && ac != NULL) {
-        return ac->rotateRight(mAng(hold->mAngle));
+        return ac->startPull(mAng(hold->mPushAngle));
     }
     return FALSE;
 }
@@ -1014,12 +1013,12 @@ void holdList_c::clear() {
     }
 }
 
-BOOL holdList_c::set(int handle, f32 c, const mVec3_c &a, const mVec3_c &b, const mVec3_c &d, const mVec3_c &e,
-                     s16 angle, u8 flag) {
+BOOL holdList_c::set(int handle, f32 dist, const mVec3_c &playerLastPos, const mVec3_c &playerPos,
+                     const mVec3_c &centerPos, const mVec3_c &pushPos, s16 pushAngle, u8 side) {
     if (handle != -1) {
         alwaysAc_c *ac = getList()->get(handle);
         if (ac != NULL) {
-            mHold[ac->getLayer() & 1].set(handle, a, b, c, d, e, angle, flag);
+            mHold[ac->getLayer() & 1].set(handle, playerLastPos, playerPos, dist, centerPos, pushPos, pushAngle, side);
             return TRUE;
         }
         return FALSE;
@@ -1208,7 +1207,7 @@ daFTR_c *switchOffRandom(filter_t filter, int arg) {
 BOOL switchOffAll() {
     for (u32 i = 0; i < dScene::getSceneParamA(dScene::getCurrentScene()); i++) {
         daFTR_c *ftr = getList()->get(i);
-        if (ftr != NULL && ftr->canSwitch() && ftr->getSwitch()) {
+        if (ftr != NULL && ftr->isMusic() && ftr->getSwitch()) {
             return setSwitch(ftr, 0, 0xFF, FALSE, TRUE);
         }
     }
@@ -1218,7 +1217,7 @@ BOOL switchOffAll() {
 BOOL playMusic(const dItem::Item *item) {
     for (u32 i = 0; i < dScene::getSceneParamA(dScene::getCurrentScene()); i++) {
         daFTR_c *ftr = getList()->get(i);
-        if (ftr != NULL && ftr->canSwitch() && !ftr->getSwitch() && ftr->isSwitchable() &&
+        if (ftr != NULL && ftr->isMusic() && !ftr->getSwitch() && ftr->isSwitchable() &&
             item->getKind() == dItem::KIND_MUSIC) {
             return setSwitch(ftr, 1, (u8)dItem::seeker_c::get()->findLike(*item), FALSE, TRUE);
         }
