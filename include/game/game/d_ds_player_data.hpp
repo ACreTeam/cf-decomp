@@ -14,6 +14,8 @@ class Word_c;
 
 namespace dDsPlayerData {
 
+#define DS_SAVE_BUFFER_SIZE 0x40000 // the save image received from the DS (clearBuffer)
+
 int getDsRegion();                                        // 80085388
 u16 swap16(u16 value);                                    // 8008538C: DS data is little endian
 u16 calcChecksum(const u16 *data, int size);              // 8008539C: sum of the u16s
@@ -21,7 +23,8 @@ u16 convertKrChar(u16 c);                                 // 80085400
 
 // One player of a save (the pointer from getPlayer).
 void getPlayerName(const u8 *player, dScript::Word_c *word); // 80085484
-u8 getOption(const u8 *player);                           // 800855C8: option bit 0 (dSaveOption_c::mKana)
+BOOL getOption(
+    const u8 *player); // 800855C8: option bit 0 (dSaveOption_c::mKana)
 u8 getHairColor(const u8 *player);                        // 80085610
 u8 getHair(const u8 *player);                             // 80085658: converted to a City Folk hair style
 u8 getFace(const u8 *player);                             // 80085734
@@ -43,7 +46,7 @@ BOOL isState2(const u8 *save);                            // 80085C58
 u32 isUsable(const u8 *save);                             // 80085C88: state is neither 2 nor 0x1C
 
 // The whole save image (two copies).
-void clearBuffer(u8 *buf);                                // 80085CE0: 0x40000 bytes
+void clearBuffer(u8 *buf);                                // 80085CE0: DS_SAVE_BUFFER_SIZE bytes
 u8 *getSave(u8 *buf, int idx);                            // 80085CEC
 u8 *selectSave(u8 *buf);                                  // 80085D3C: the copy to use, or NULL
 

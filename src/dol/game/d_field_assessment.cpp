@@ -3820,7 +3820,7 @@ void dFgMngProc_c::collectEggs(dFdBase_c *fd) {
     int i;
     memset(found, 0, sizeof(found));
     player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player != NULL && !player->isFlag0(0x28) && !player->isFlag1(0x43)) {
+    if (player != NULL && !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) && !player->isFlag1(0x43)) {
         for (int i = 0, count = EGG_KIND_NUM - 1; count-- > 0; i++) {
             player->mBunnyEggs[i] = 1;
         }
@@ -4465,7 +4465,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
         if (player != NULL && player->mPID.isValid()) {
             int flag = i + 0x1B;
-            if (player->isFlag0(0x28)) {
+            if (player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
                 if (days != 0) {
                     dSaveData_c::getTown()->setFlag(flag);
                 }
@@ -4478,7 +4478,7 @@ void fgMngProc_procDayChange(BOOL arg) {
     }
     if (dSaveData_c::getTown()->mTownInfo.findEndEvent(EVENT_BUNNY_DAY) >= 0) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-        if (player != NULL && !player->isFlag0(0x28)) {
+        if (player != NULL && !player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
             player->setFlag1(0x43);
         }
     }
@@ -4488,7 +4488,7 @@ void fgMngProc_procDayChange(BOOL arg) {
             dPlayerMgr::markSaveRequestFlagsCleared();
             dPlayerMgr::clearSaveRequestFlags();
         }
-        if (player->isFlag0(0x28)) {
+        if (player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
             player->updateTanDaily(days);
         }
     }

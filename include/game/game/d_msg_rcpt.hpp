@@ -6,7 +6,10 @@
 class dAnimal_c;
 
 // getVoiceMode / getForcedVoiceMode: no override (Voice_c::calc keeps its own mode). The modes 0..2 follow
-// the talk voice option (dSaveOption::getVoiceMode: 0 = the receiver's mode, 1, 2); their meaning is not confirmed.
+// the talk voice option (dSaveOption::getVoiceMode); names from the SYS_Start voice choice.
+#define VOICE_MODE_ANIMALESE 0 // the speaker's own voice
+#define VOICE_MODE_BEBEBESE 1
+#define VOICE_MODE_SILENT 2 // "Shhhh!"
 #define VOICE_MODE_NONE 3
 
 namespace dMsg {

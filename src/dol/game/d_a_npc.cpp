@@ -8249,7 +8249,7 @@ void dAcNpc_c::footstep_c::playSound(dAcNpc_c *npc) {
         u8 attr = 0xFF;
         int id;
         dItem::Item item = npc->mNpcItem;
-        if (item.isSame(dItem::Item((u16)0x8029))) {
+        if (item.isSame(dItem::Item((u16)SP_NPC_GUIDE))) {
             id = SE_walk_pyoko1;
         } else {
             id = dGroundAttr::getFootstepSe(&npc->mPos, &attr);

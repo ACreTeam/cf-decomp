@@ -69,6 +69,13 @@ struct dPostRequest_c;
 namespace dWifi {
 
 // sWc24State: what checkThread found.
+// getThreadResult: the last thread job's result.
+enum ThreadResult_e {
+    THREAD_RESULT_BUSY = -1, // the job still runs
+    THREAD_RESULT_FAILED = 0,
+    THREAD_RESULT_OK = 1,
+};
+
 enum Wc24State_e {
     WC24_STATE_UNKNOWN, // not checked yet
     WC24_STATE_ON,      // WiiConnect24 can be used (dNetWc24::dNetWc24_c::canUseFriends)
@@ -189,10 +196,10 @@ BOOL isNetOn();                                          // 80177D24: WiiConnect
 BOOL isIdle();                                           // 80177D6C: idle (d_reset waits for it before a reset / quitting)
 void reset();                                            // 80177DAC: (d_reset soft reset)
 BOOL startRegisterFriends();                             // 80177FEC: starts registerFriendsThread (the friend list's updateSave)
-int getThreadResult();                                   // 80178374: the last thread job's result; -1 while it runs (retries busy jobs)
+int getThreadResult();                                   // 80178374: THREAD_RESULT_*; retries busy jobs
 int startSetupDownload();                                // 801781D8: (d_sv_mgr)
 int startDaily();                                        // 801782EC: (d_sv_mgr)
-int getNetErrorMessage();                                // 80178448: (d_sv_mgr; 0x0C)
+int getNetErrorMessage();                                // 80178448: a SYS_Save_and_Load code (SV_MSG_NAND_DAMAGED)
 BOOL hasRoster();                                        // 8017AF60: the NWC24 friend list was read (dWifi::updateRosterThread)
 u32 getRosterType(int i);                                // 8017AF7C: roster entry i's type (1: a friend with a key)
 u8 *getRosterInfo(int i);                                // 8017AF90: roster entry i's data

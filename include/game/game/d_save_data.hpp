@@ -62,13 +62,13 @@ void clearChanged(dSaveOption_c *opt);                 // 8010D82C
 void reset(dSaveOption_c *opt);                        // 8010D83C: defaults, nothing changed
 void setNewPlayerDefaults(dSaveOption_c *opt);         // 8010D870: kana off unless a player of the town has it on
 int getKana();                                         // 8010D944
-void setKana(u8 on);                                   // 8010D950
+void setKana(BOOL on);                                 // 8010D950
 int getVoiceMode();                                    // 8010D970
-void setVoiceMode(u8 mode);                            // 8010D97C
+void setVoiceMode(int mode);                           // 8010D97C
 BOOL getKeySe();                                       // 8010D99C
-void setKeySe(u8 on);                                  // 8010D9A8
+void setKeySe(BOOL on);                                // 8010D9A8
 BOOL isTutorialOff();                                  // 8010D9C8
-void setTutorialOff(u8 off);                           // 8010D9D4
+void setTutorialOff(BOOL off);                         // 8010D9D4
 BOOL getVoiceChat();                                   // 8010D9FC
 void setVoiceChat(u8 on);                              // 8010DA08
 BOOL getVoiceSound();                                  // 8010DA28

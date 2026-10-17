@@ -114,6 +114,22 @@ class Manage_c {
     void shutdownListen();                                       // 800846A0
     void closeListen();                                          // 800846EC
     BOOL finish(); // 80084738: polled by d_reset until idle
+    // The connection is being stopped (or is already).
+    BOOL isStopping() const {
+        return (u32)mStep >= STEP_STOP_CONNECTION;
+    }
+    // The transfer ended with a result (the connection is being stopped).
+    BOOL isTransferDone() const {
+        return (u32)mStep >= STEP_STOP_CONNECTION && mResult != RESULT_NONE;
+    }
+    // A listen received the data successfully.
+    BOOL isReceived() const {
+        return (u32)mStep >= STEP_WAIT_CLOSE && mResult == RESULT_SUCCESS;
+    }
+    // Back to idle (after cancel / the end of a transfer).
+    BOOL isDone() const {
+        return (u32)mStep >= STEP_DONE;
+    }
 
     /* 0x000 */ dNetDsDownload::Application_c mApplication;
     /* 0x19C */ dNetDsDownload::Connection_c mConnection;

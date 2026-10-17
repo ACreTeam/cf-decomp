@@ -6961,7 +6961,7 @@ BOOL dAnimalBlock_c::isHomeStayTime(const dAnmPersonalID_c *id, dPrivateData_c *
         return FALSE;
     }
 
-    if (!player->mPID.isFromTown() && player->isFlag0(0x28)) {
+    if (!player->mPID.isFromTown() && player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         return FALSE;
     }
 

@@ -105,7 +105,7 @@ int dAcUitag_c::create() {
         mFlags |= FLAG_NO_SAVE;
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player != NULL && player->isFlag0(0x28)) {
+    if (player != NULL && player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         mFlags |= FLAG_NO_SAVE;
     }
     return SUCCEEDED;

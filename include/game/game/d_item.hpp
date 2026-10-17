@@ -1301,6 +1301,10 @@ public:
 
 class dCatalog_c;
 
+// 800C51D8: adds the items of a DS catalog bit mask (dDsPlayerData::getCatalog)
+// to catalog.
+void addCatalogItems(void *addr, dCatalog_c *catalog);
+
 namespace dItem {
 
 // View over downloadable-item blocks in the save (0x2000 bytes each).

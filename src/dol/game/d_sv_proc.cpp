@@ -183,9 +183,9 @@ BOOL dSvProc_c::finishVisitorPlayer() {
 // 80154840
 BOOL dSvProc_c::prepareLoad() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    mWasVisitor = player ? player->isFlag0(0x28) : FALSE;
+    mWasVisitor = player ? player->isFlag0(PRIVATE_FLAG0_TRAVELLING) : FALSE;
     if (player->mPID.land == dSaveData_c::getTown()->mLandID) {
-        player->clearFlag0(0x28);
+        player->clearFlag0(PRIVATE_FLAG0_TRAVELLING);
     }
     loadResources();
     return TRUE;

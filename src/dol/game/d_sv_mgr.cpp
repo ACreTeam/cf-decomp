@@ -27,7 +27,8 @@ int dSvMgr_c::mCurrentVisitor = 4;
 int dSvMgr_c::mPlayerIndex = 3;
 const char *dSvMgr_c::mMessageLabel = "SYS_MESS/SYS_Save_and_Load";
 // Unreferenced in the DOL and RELs; its original name is unknown.
-const char *lbl_8074C3CC = "SYS_MESS/SYS_NetworkError";
+// The label of the network error messages (also used by d_a_npc_sp_player_select).
+const char *sNetErrorMessageLabel = "SYS_MESS/SYS_NetworkError";
 
 u16 sLoadErrorMessage;
 

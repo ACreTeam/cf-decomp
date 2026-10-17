@@ -1251,7 +1251,7 @@ void Seq_c::procFlag0x28Jump() {
     const u8 *params = dScript::getTagParams(mpChar);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL choice = TRUE;
-    if (player != NULL && player->isFlag0(0x28)) {
+    if (player != NULL && player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         choice = FALSE;
     }
     mpComp->setNextMsgCode(getJumpCode(params, choice, 2));

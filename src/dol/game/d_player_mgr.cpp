@@ -1239,7 +1239,7 @@ BOOL prepareMiiMask() {
         return FALSE;
     }
     u16 mii = 0;
-    if (!current->isFlag0(0x28)) {
+    if (!current->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         if (!canUseMiiMask()) {
             return FALSE;
         }

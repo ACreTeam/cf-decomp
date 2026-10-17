@@ -190,4 +190,27 @@ protected:
     stepSaveInterruptNetVst_c mSaveInterruptNetVst; // 0x27C
 }; // sizeof = 0x2AC
 
+// sys_MESS/SYS_Save_and_Load message codes (dSvMgr_c::mMessageLabel, sLoadErrorMessage).
+enum {
+    SV_MSG_NAND_DAMAGED = 0x0C, // "The Wii system memory has been damaged."
+    SV_MSG_NAND_ERROR = 0x12,   // "Could not access Wii system memory."
+};
+
+// sys_MESS/SYS_NetworkError message codes (sNetErrorMessageLabel).
+enum {
+    NET_ERROR_MSG_RESTRICTED = 0x13,   // Parental Controls restrict network features
+    NET_ERROR_MSG_WC24_NAND = 0x15,    // WC24 errors: 0x15 + dWifi::getErrorMessage() (0..9)
+    NET_ERROR_MSG_WC24_UPDATE = 0x16,  // a system update is required
+    NET_ERROR_MSG_WC24_RESET = 0x17,   // "Reset and try again."
+    NET_ERROR_MSG_WC24_BUSY = 0x18,    // "temporarily unavailable"
+    NET_ERROR_MSG_WC24_OFF = 0x19,     // WiiConnect24 is off in Wii Options
+    NET_ERROR_MSG_WC24_NO_INTERNET = 0x1A,
+    NET_ERROR_MSG_WC24_BUSY2 = 0x1B,
+    NET_ERROR_MSG_WC24_BUSY3 = 0x1C,
+    NET_ERROR_MSG_WC24_NAND2 = 0x1D,
+    NET_ERROR_MSG_WC24_RESET2 = 0x1E,
+    NET_ERROR_MSG_WC24_OTHER = 0x1F,   // any other error (refer to the manual)
+};
+
+extern const char *sNetErrorMessageLabel; // 8074C3CC: "SYS_MESS/SYS_NetworkError"
 extern u16 sLoadErrorMessage; // 8074EB98 (d_nand clears it after deleting the save)

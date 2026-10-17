@@ -28,6 +28,7 @@
 // the Flag1 functions on mFlags1). Shared by many systems; most indices are still literals, named here as
 // their meanings are found.
 enum dPrivateFlag0_e {
+    PRIVATE_FLAG0_ROVER_GREETED = 0x01,         // Rover greeted the player at the player select (d_a_npc_sp_player_select)
     PRIVATE_FLAG0_BEE_STUNG = 0x02,             // stung by bees (state 0x62 after dDemo::request9): villagers react
                                                 // (d_npc_talk_reaction, d_msg, d_animal); cleared by the
                                                 // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
@@ -41,6 +42,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
     PRIVATE_FLAG0_HRA_JOINED = 0x27,            // the HRA's welcome letter was delivered
+    PRIVATE_FLAG0_TRAVELLING = 0x28,            // out on a trip with the DS (dTravelData::Data_c sets it on departure;
+                                                // dSvProc_c::prepareLoad clears it back in the home town)
     PRIVATE_FLAG0_HRA_HOUSE_MODEL = 0x2A,       // the HRA's house model present was sent (70000 points)
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
@@ -59,6 +62,7 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START = 0x36,
     PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,
     PRIVATE_FLAG1_BUG_OFF_JUDGED = 0x38,
+    PRIVATE_FLAG1_BIRTHDAY_GREETED = 0x45, // Rover wished a happy birthday at the player select
 };
 #define PRIVATE_SAVINGS_MAX 999999999
 #define PRIVATE_BELLS_MAX 99999
@@ -556,7 +560,7 @@ public:
     /* 0x1140 */ dDesignList_c mOrgDesigns;
     /* 0x5560 */ dSvStarSign::Sign_c mStarSign; // the constellation being drawn (d_sv_star_sign)
     /* 0x55CE */ dItemPairRing_c mItemPairRing; // d_npc_info / d_net (NET_PACKET_NPC_SPOT_A_FLAG)
-    /* 0x55F4 */ u32 _55F4;
+    /* 0x55F4 */ u32 mTravelCount; // +1 on each DS trip (dTravelData); a returning copy must match the save
     /* 0x55F8 */ u32 mDistPatternVersion; // the downloaded pattern version last seen (d_field_assessment)
     /* 0x55FC */ dBirthdayHost_c mBirthdayHost;
     /* 0x5608 */ dAnimalItem_c mVisitorLetter;

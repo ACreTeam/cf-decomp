@@ -552,6 +552,6 @@ BOOL fn_800AC278();                 // 800AC278: returns TRUE (d_bg_debug)
 void fn_800AC280();                 // 800AC280 (d_bg_debug)
 BOOL fn_800AC284();                 // 800AC284: returns TRUE (d_bg_debug)
 BOOL fn_800B094C();                 // 800B094C: returns FALSE (no callers)
-void fn_800B468C();                 // 800B468C (no callers)
+void fn_800B468C();                 // 800B468C (empty)
 void fn_800B4690(dSvMdlRm_c *room); // 800B4690 (receiveModelRoom passes its room)
 }

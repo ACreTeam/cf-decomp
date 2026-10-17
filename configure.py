@@ -1846,10 +1846,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_player_selectNP",
         [
-            Object(NonMatching, "d_a_npc_sp_player_selectNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_player_selectNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_player_selectNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_player_selectNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_player_selectNP/d_a_npc_sp_player_select.cpp"),
+            Object(Matching, "d_a_npc_sp_player_selectNP/d_a_npc_sp_player_select.cpp", extra_cflags=["-sym on"]),
         ],
     ),
     Rel(

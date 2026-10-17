@@ -93,7 +93,7 @@ int getKana() {
 }
 
 // 8010D950
-void setKana(u8 v) {
+void setKana(BOOL v) {
     dSaveData_c::sOption.mKana = v;
     dSaveData_c::sOption.mKanaChanged = 1;
 }
@@ -104,7 +104,7 @@ int getVoiceMode() {
 }
 
 // 8010D97C
-void setVoiceMode(u8 v) {
+void setVoiceMode(int v) {
     dSaveData_c::sOption.mVoiceMode = v;
     dSaveData_c::sOption.mVoiceModeChanged = 1;
 }
@@ -115,7 +115,7 @@ BOOL getKeySe() {
 }
 
 // 8010D9A8
-void setKeySe(u8 v) {
+void setKeySe(BOOL v) {
     dSaveData_c::sOption.mKeySe = v;
     dSaveData_c::sOption.mKeySeChanged = 1;
 }
@@ -126,7 +126,7 @@ BOOL isTutorialOff() {
 }
 
 // 8010D9D4
-void setTutorialOff(u8 v) {
+void setTutorialOff(BOOL v) {
     dSaveData_c::sOption.mNoTutorial = v;
     dSaveData_c::sOption.mNoTutorialChanged = 1;
 }

@@ -880,7 +880,7 @@ void buildSchedule(const dTime_c &now, BOOL reset) {
 
     active = sActive;
     for (i = 0; i < EVENT_NUM && num < EVENT_ACTIVE_NUM; i++) {
-        if (i == EVENT_BUNNY_DAY && player != NULL && player->isFlag0(0x28)) {
+        if (i == EVENT_BUNNY_DAY && player != NULL && player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
             continue;
         }
         if (isEventOn(reinterpret_cast<const dQuestEvent_e &>(i), &t)) {

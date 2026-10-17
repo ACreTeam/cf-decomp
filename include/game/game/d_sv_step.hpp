@@ -37,13 +37,16 @@ class dSvStep_c : public dState::step_c<Owner, Step> {
     void waitTownSave();
     void initializeDownloadBox();
     void createDownloadBox();
-    void disableHomeAndReset();
-    void enableHomeAndReset();
+    // The delete steps come before disableHomeAndReset:
+    // d_a_npc_sp_player_select's stepDelete_c instantiates them in this order
+    // (d_title_demo uses no HBM steps).
     void initializeDeleteDownloadBox();
     void deleteDownloadBox();
     void initializeDeleteSave();
     void startDeleteSave();
     void waitDeleteSave();
+    void disableHomeAndReset();
+    void enableHomeAndReset();
     void saveFailed();
 
     dSvStep_c() {

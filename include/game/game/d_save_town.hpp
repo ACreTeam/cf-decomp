@@ -63,6 +63,7 @@ enum {
 
 // Town flags: 64 bits at dSaveTown_c::mFlags, indexed 0..63. Most indices are not named yet.
 enum {
+    SAVE_FLAG_ROVER_GREETED = 0, // Rover greeted a returning player at the player select (d_a_npc_sp_player_select)
     SAVE_FLAG_TURNIPS_SPOILED = 1, // set when the clock is changed or goes back within the week, cleared each new week (inferred)
     SAVE_FLAG_BUILD_WINDMILL = 7,    // dSTR::buildPublicWorks builds it (in place of the lighthouse)
     SAVE_FLAG_BUILD_LIGHTHOUSE = 8,  // dSTR::buildPublicWorks builds it (in place of the windmill)

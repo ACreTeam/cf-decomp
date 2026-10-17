@@ -40,8 +40,8 @@ void Data_c::prepareDeparture() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dSaveOption::store(player->getOption());
     mPlayer.copy(player);
-    mPlayer.setFlag0(0x28);
-    mPlayer._55F4++;
+    mPlayer.setFlag0(PRIVATE_FLAG0_TRAVELLING);
+    mPlayer.mTravelCount++;
     if (dNpcInfo::gatekeeperA_c::get()->mEscorting) mPlayer.mHost.mFlagB = 1;
     mPocketMaskLE = pocketMask(player);
     addPlayerDlItems((u8 *)mPlayerItems.mItems, player);
@@ -70,9 +70,9 @@ void Data_c::backupDeparture() {
     }
     for (int i = 0; i < PLAYER_MAIL_COUNT; i++) player->clearLetter(i);
     player->mBells = 0;
-    player->setFlag0(0x28);
+    player->setFlag0(PRIVATE_FLAG0_TRAVELLING);
     if (!dPrivateData_c::isFlag0Any(dSaveData_c::getTown()->mPlayers, 0x4B)) player->setFlag0(0x4B);
-    player->_55F4++;
+    player->mTravelCount++;
     player->clearFlag0(PRIVATE_FLAG0_BEE_STUNG);
     fgMngProc_backupSaveFlag1A();
     dSaveData_c::getTown()->backupFlag6();

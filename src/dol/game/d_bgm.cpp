@@ -508,7 +508,7 @@ void StgField_c::checkHome() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     u32 id = -1;
     if (player != NULL) {
-        if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(0x28)) {
+        if ((!dNet::isSessionActive() || dNet::getMemberNum() < 2) && getPlayerHome() == NULL && !player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
             id = BGM_ARBEIT_PRE;
         } else if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
             id = BGM_ARBEIT;

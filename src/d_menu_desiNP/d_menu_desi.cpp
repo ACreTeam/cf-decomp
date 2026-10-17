@@ -246,7 +246,7 @@ bool Desi_c::setupMii() {
     dMiiCreateID_c *id = &player->mMiiId;
     BOOL found = FALSE;
     u16 index;
-    if (player->isFlag0(0x28)) {
+    if (player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         if (dMiiIcon::getTravelDB()) {
             found = TRUE;
             index = 0xFFFE;

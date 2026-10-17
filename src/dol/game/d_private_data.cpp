@@ -55,7 +55,7 @@ BOOL dPrivateData_c::isHostVisitReady() {
     if (player == NULL) {
         return FALSE;
     }
-    if (player->isFlag0(0x28)) {
+    if (player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         return FALSE;
     }
     if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
@@ -79,7 +79,7 @@ BOOL dPrivateData_c::isGuestVisitReady() {
     if (player == NULL) {
         return FALSE;
     }
-    if (player->isFlag0(0x28)) {
+    if (player->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         return FALSE;
     }
     if (player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
@@ -409,7 +409,7 @@ static inline const dTime_c snapshotCalendar(const dTime_c &calendar) {
 
 // 801371DC
 void dPrivateData_c::sendBankAnniversaryLetter() {
-    if (isFlag0(0x28)) {
+    if (isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         return;
     }
     dTime_c stamp = dPrivateData::snapshotCalendar(mBankStamp.get());
@@ -462,7 +462,7 @@ static inline void setupLostChildThanks(dMail_c &mail, const dPersonalID_c &pid,
 
 // 8013760C
 void dPrivateData_c::sendLostChildThanks() {
-    if (!isFlag0(0x28) && isFlag0(0x4A) && mDaysAway > 0) {        
+    if (!isFlag0(PRIVATE_FLAG0_TRAVELLING) && isFlag0(0x4A) && mDaysAway > 0) {
         static dMail_c mail;
         static u8 lbl_8074B098 = MAIL_FROM_THANK_YOU;
         s32 range[4];
@@ -502,7 +502,7 @@ BOOL dPrivateData_c::sendLetter(u16 kind, const dItem::Item *present, dPrivateDa
 
 // 80137898
 void dPrivateData_c::updateBank(int days) {
-    if (isFlag0(0x28)) {
+    if (isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         return;
     }
     BOOL closed = dSaveData_c::getTown()->mTimeOffset.isChanged() != 0;
@@ -606,7 +606,7 @@ void dPrivateData_c::updateTan(int days) {
 void dPrivateData_c::updateTanDaily(int days) {
     if (!dPlayerMgr::isDailyTanUpdated()) {
         dPlayerMgr::markDailyTanUpdated();
-        if (isFlag0(0x28)) {
+        if (isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
             return;
         }
     }

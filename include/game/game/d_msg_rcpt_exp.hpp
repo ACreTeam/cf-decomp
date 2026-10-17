@@ -15,7 +15,10 @@ public:
     }
 
 protected:
-    /* 0x24 */ u8 _0024[0x18];
+  // Run once by the receiver's onRequestEnd (d_a_npc_sp_player_select), cleared
+  // unless it set a new one.
+  /* 0x24 */ typename dState::base_c<T>::Method mRequestEndMethod;
+  /* 0x30 */ u8 _0030[0xC];
 }; // sizeof = 0x3C
 
 #endif

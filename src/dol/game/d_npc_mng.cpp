@@ -2336,7 +2336,7 @@ BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
     if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) &&
         (sResetVisited == 1 ||
          (prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF)) &&
-        player != NULL && !player->isFlag0(0x28) && !player->isFlag1(0x3A) &&
+        player != NULL && !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) && !player->isFlag1(0x3A) &&
         !player->isFlag1(0x3B)) {
         dSaveExtra_c *extra = dSaveData_c::getExtra();
         if (extra->mDistPattern.mVersion != player->mDistPatternVersion &&
@@ -2372,7 +2372,7 @@ BOOL dNpcMng_c::isVisitor7Day(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (isTownPlay(scene, prevScene) && !dNet::isSessionActive() &&
         dEvent::getTodayVisitor() == 7 && player != NULL &&
-        !player->isFlag0(0x28) && !player->isFlag1(0x3A) &&
+        !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) && !player->isFlag1(0x3A) &&
         !player->isFlag1(0x3B)) {
         return TRUE;
     }
