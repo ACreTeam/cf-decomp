@@ -75,6 +75,8 @@ struct mAng {
 
     s16 mAngle; ///< The rotation.
 
+    static const float MinDegree;
+    static const float MaxDegree;
     static const float AngleToDegreeCoefficient;
     static const float DegreeToAngleCoefficient;
     static const float AngleToRadianCoefficient;

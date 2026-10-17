@@ -30,8 +30,7 @@ namespace cM {
     T rndRange(T min, T max) {
         f32 r = cM::rndF(max - min);
         f32 m = min;
-        m += r;
-        return m;
+        return m + r;
     }
 
 } // namespace cM
