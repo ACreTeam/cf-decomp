@@ -3,6 +3,7 @@
 #include <game/game/d_animal.hpp>
 #include <game/game/d_demo.hpp>
 #include <game/game/d_ftr.hpp>
+#include <game/game/d_ftr_manager.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_money.hpp>
 #include <game/game/d_player_mgr.hpp>
@@ -10,11 +11,6 @@
 #include <game/game/d_scene.hpp>
 #include <game/snd/snd_id.hpp>
 #include <climits>
-
-// Undecompiled furniture-manager exports. The predicate checks a furniture
-// virtual and module-15 state; the second export is an unidentified empty hook.
-extern "C" BOOL fn_115_3044(int);
-extern "C" void fn_115_1978(int);
 
 namespace dANpcIn {
 static inline int getEventId(const dAnimalBlock_c *block) {
@@ -95,8 +91,8 @@ int dAcNpcIn_c::removeRoomFtr(int obj, int x, int z) {
             dNpc::sendAnimalFtr(getNpcIdx(), &empty, idx);
         }
     }
-    if (obj != INVALID_FTR_HANDLE && fn_115_3044(obj)) {
-        fn_115_1978(obj);
+    if (obj != INVALID_FTR_HANDLE && dFtrm_c::canTalk(obj)) {
+        dFtrm_c::sendEvent(obj);
         dNpc::sendAnimalFtrTouch((u8)dScene::getCurrentScene(), (u8)x, (u8)z);
         return 1;
     }
