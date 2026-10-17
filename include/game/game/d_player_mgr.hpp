@@ -447,7 +447,7 @@ BOOL playEmotion(u32 type); // 801009E0
 BOOL fn_80100A54(); // 80100A54: Requests player state 0x84; action meaning unresolved.
 BOOL fn_80100AB0(); // 80100AB0: Tests player animation IDs; animation meaning unresolved.
 BOOL fn_80100B24(); // 80100B24: Requests player state 0x84; action meaning unresolved.
-BOOL fn_80100B80(); // 80100B80: Player action/flag helper; purpose unresolved.
+u32 fn_80100B80(); // 80100B80: Player action/flag helper; purpose unresolved.
 BOOL fn_80100B84(f32 x, f32 z); // 80100B84: Requests player state 0x72; action meaning unresolved.
 BOOL fn_80100C28(); // 80100C28: Requests player state 0x73; action meaning unresolved.
 BOOL fn_80100C84(BOOL a); // 80100C84: Requests player state 0x74; action meaning unresolved.

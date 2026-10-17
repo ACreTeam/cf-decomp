@@ -484,7 +484,7 @@ void dFdBase_c::setBorderUnits() {
 }
 
 // 8008CEE4
-int dFdBase_c::canPutItem(int unitX, int unitZ) const {
+u32 dFdBase_c::canPutItem(int unitX, int unitZ) const {
     if (_24 != NULL && !_24->isGroundFree(unitX, unitZ)) {
         return 0;
     }

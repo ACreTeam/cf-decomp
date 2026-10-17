@@ -149,7 +149,7 @@ void dFishMusCommonMove_c::setEscapeAngleY(dFishMusBase_c *other, const dFishMus
     f32 dist = mHitDir.dot(side);
     int angle;
     if (isCornered(other)) {
-        angle = cM::rndRange<long>(0x471C, 0x71C7);
+        angle = cM::rndRange<long>(DEG_TO_ANGLE(100), DEG_TO_ANGLE(160));
     } else {
         angle = 16384.0f * (1.0f - nw4r::math::FAbs(dist) / (mpData->mHitLength + otherData->mHitLength));
     }

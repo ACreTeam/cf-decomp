@@ -1756,10 +1756,10 @@ config.libs = [
     Rel(
         "d_a_cockroachNP",
         [
-            Object(NonMatching, "d_a_cockroachNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_cockroachNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_cockroachNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_cockroachNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_cockroachNP/d_a_cockroach.cpp"),
+            Object(Matching, "d_a_cockroachNP/d_a_cockroach.cpp"),
         ],
     ),
     Rel(
@@ -2620,10 +2620,10 @@ config.libs = [
     Rel(
         "d_cockroach_managerNP",
         [
-            Object(NonMatching, "d_cockroach_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_cockroach_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_cockroach_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_cockroach_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_cockroach_managerNP/d_cockroach_manager.cpp"),
+            Object(Matching, "d_cockroach_managerNP/d_cockroach_manager.cpp"),
         ],
     ),
     Rel(

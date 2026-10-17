@@ -686,6 +686,7 @@ modules:
 - object: files/rels/d_cockroach_managerNP.rel
   hash: eff0e3f1509f18a384c41593045febf729c4a80e
   name: d_cockroach_managerNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_cockroach_managerNP/symbols.txt
   splits: config/RUUE01_00/d_cockroach_managerNP/splits.txt
 - object: files/rels/d_fgobj_managerNP.rel

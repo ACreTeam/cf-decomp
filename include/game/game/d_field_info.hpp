@@ -234,7 +234,7 @@ public:
     BOOL isWatered(int unitX, int unitZ) const;                                          // 8008CCC4
     void clearWatered();                                                                 // 8008CCE8
     int bgCall_80073D2C(void *arg, int unitX, int unitZ, int arg2);                      // 8008CD5C
-    int canPutItem(int unitX, int unitZ) const;                                          // 8008CEE4: an item can be put (BG flag 0x27 bit 0)
+    u32 canPutItem(int unitX, int unitZ) const;                                          // 8008CEE4: an item can be put (BG flag 0x27 bit 0)
     u32 canPutItem(const nw4r::math::VEC3 *pos);                                         // 8008CF6C
     int isGrassGround(int unitX, int unitZ) const;                                       // 8008CFB4: SOIL, SOILX, CLIFF_* (BG flag 0x28 bit 6)
     int isBeachGround(int unitX, int unitZ) const;                                       // 8008D03C: WAVE_S/SE2/SW2 (BG flag 0x28 bit 5)

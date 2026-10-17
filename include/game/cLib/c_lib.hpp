@@ -67,6 +67,9 @@ namespace cLib {
     /// @brief Smoothly moves towards a target using a ratio and maximum step, without a minimum step.
     void addCalcPos2(mVec3_c *currentPos, const mVec3_c &targetPos, float ratio, float maxStep);
 
+    /// @brief addCalcPos2 on the X/Z coordinates only.
+    void addCalcPosXZ2(mVec3_c *currentPos, const mVec3_c &targetPos, float ratio, float maxStep);
+
     /** @brief Moves @p currentPos towards @p targetPos by a fixed @p step amount.
      * @details If the applied step overshoots the target, the position is snapped exactly to the target.
      * @param currentPos The position to be updated.

@@ -203,10 +203,10 @@ BOOL hitQuad(const HitQuad_c *a, const HitCyl_c *b, mVec3_c *push) {
     return FALSE;
 }
 
-// Speculative stand-in. The REL's constant pool has -1.0f and FLT_EPSILON here (made after hitCyl's constants and
-// before dFishMusBaseMove_c::execute's) but no code uses them: a function the linker stripped, or code the optimizer
-// removed, created them. d_a_cockroachNP has the same unreferenced pair. 
-// Should take a look after d_a_cockroachNP.
+// Speculative stand-in. The REL's constant pool creates -1.0f and FLT_EPSILON here (after hitCyl's constants, before
+// dFishMusBaseMove_c::execute's), but their first users (dFishMusCommonMove_c::setTargetAngleX, the isZero checks)
+// come much later and nothing compiled in between uses them: a function the linker stripped made them. They are
+// pool entries, not named constants: those keep a second copy for their users (d_a_cockroachNP's sRadius).
 BOOL isOppositeDir(f32 dot) {
     return __fabsf(dot - -1.0f) <= FLT_EPSILON;
 }

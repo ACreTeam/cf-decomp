@@ -294,7 +294,7 @@ void dHomeRoom_c::clearFlag(int flag) {
 }
 
 // 8013D430
-BOOL dHomeRoom_c::isFlag(int flag) const {
+u32 dHomeRoom_c::isFlag(int flag) const {
     u8 masks[] = {1, 2, 4};
     return (mFlags & masks[flag]) != 0;
 }
