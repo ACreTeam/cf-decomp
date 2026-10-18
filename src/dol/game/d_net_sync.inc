@@ -958,9 +958,9 @@ void recvRoomItem(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
 
 } // namespace dNet
 
-// 8074E510: overrides the NET_PACKET_INSECT_FIELD handler when set.
-typedef void (*dNetPingFunc)(int member);
-dNetPingFunc lbl_8074E510;
+// 8074E510: overrides the NET_PACKET_INSECT_FIELD handler when set
+// (d_insect_fieldNP's catch messages).
+dNetInsectFunc lbl_8074E510;
 
 namespace dNet {
 
@@ -1006,7 +1006,7 @@ struct dNetPingMsg_c {
 // 800DFBF8: NET_PACKET_INSECT_FIELD (0x40)
 void recvInsectField(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
     if (lbl_8074E510 != NULL) {
-        lbl_8074E510(member);
+        lbl_8074E510(member, data, size, arg);
         return;
     }
     dNetPingMsg_c out;

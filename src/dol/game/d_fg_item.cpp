@@ -606,11 +606,11 @@ BOOL Item::isUsable() const {
 }
 
 // 800A6B5C
-BOOL Item::isFlower() const {
+bool Item::isFlower() const {
     if (mId >= 0x9E && mId <= 0xBC) {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 // 800A6B80
@@ -657,7 +657,7 @@ BOOL Item::isFish() {
 }
 
 // 800A6C84
-BOOL Item::isDust() {
+bool Item::isDust() const {
     return getKind() == KIND_DUST;
 }
 

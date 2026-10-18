@@ -177,7 +177,7 @@ public:
     BOOL push(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF, mAng dir);
     BOOL canRoll();
     BOOL hit(const mVec3_c *pos);
-    BOOL getWallNormal(mVec3_c *normal);
+    bool getWallNormal(mVec3_c *normal);
 
     void initRoll();
     void executeRoll();
@@ -227,7 +227,7 @@ public:
     static BOOL checkUnit(int blockX, int blockZ, int x, int z, void *user);
     static BOOL pushAll(f32 speed, mVec3_c *pos, s16 *angle, f32 *speedF, mAng dir);
     static BOOL isAtUnit(int x, int z);
-    static BOOL find(mVec3_c *pos, int *idx, void *user, FindFunc func);
+    static bool find(mVec3_c *pos, int *idx, void *user, FindFunc func);
     static BOOL checkBreakAll(const mVec3_c *pos, f32 radius);
     static BOOL placeBalls();
     static BOOL placeSnowmen();

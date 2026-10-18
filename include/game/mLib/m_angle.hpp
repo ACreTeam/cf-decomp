@@ -26,6 +26,7 @@ struct mAng {
     }
 
     operator s16() { return mAngle; }
+    operator s16() const { return mAngle; }
 
     BOOL chase(short target, short step) {
         return sLib::chase(&mAngle, target, step);
@@ -54,8 +55,8 @@ struct mAng {
     /// @brief Addition operator.
     mAng operator+(const mAng &v) const { return mAng(mAngle + v.mAngle); }
 
-    /// @brief Subtraction operator.
-    mAng operator-(const mAng &v) const { return mAng(mAngle - v.mAngle); }
+    // Binary subtraction uses the s16 conversion and integer promotion.
+
 
     /// @brief Computes the sine of the angle.
     float sin() const { return nw4r::math::SinIdx(mAngle); }

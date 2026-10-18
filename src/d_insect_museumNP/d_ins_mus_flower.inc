@@ -281,7 +281,8 @@ void dInsMusFlower_c::stateThreat() {
     if (mScare.isScared() == true) {
         const dInsMusFlowerParam_c *param = getFlowerParam(mType);
         if ((u16)dInsectUtil::secToFrame(param->mThreatTime) <= mTimer) {
-            mAng diff = mPlayerCheck.getAngleTo(dPlayerMgr::PLAYER_INDEX_CURRENT) - mAngle.y;
+            mAng angle = mPlayerCheck.getAngleTo(dPlayerMgr::PLAYER_INDEX_CURRENT);
+            mAng diff = angle - mAngle.y;
             s16 absDiff = __fabsf(diff.mAngle);
             if (absDiff > 0xE39) {
                 setAnmRate(-1.0f);

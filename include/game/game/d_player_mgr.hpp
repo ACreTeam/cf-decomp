@@ -573,7 +573,7 @@ BOOL setShoeColor(u8 shoeColor, u8 b); // 80100714
 BOOL pickUpPhone(); // 801007AC: STATE_PHONE_PICK_UP (d_a_rmobj_tel)
 BOOL hangUpPhone(); // 80100804: STATE_PHONE_HANG_UP after STATE_PHONE_TALK
 u32 requestInsectBite(); // 80100860: STATE_INSECT_BITE (d_insect_field, d_insect_museum)
-BOOL isUsingNet(int idx); // 801008E4
+bool isUsingNet(int idx); // 801008E4
 BOOL isRunAnimation(int idx); // 8010094C
 BOOL startChat(); // 8010098C: STATE_CHAT (d_menu_chat)
 BOOL playEmotion(u32 type); // 801009E0
@@ -584,7 +584,7 @@ u32 isCockroachReactionFinished(); // 80100B80: isReactionFinished (d_cockroach_
 BOOL openMailbox(f32 x, f32 z); // 80100B84: STATE_MAILBOX_OPEN (daStrPost_c, before MENU_POST00)
 BOOL closeMailbox(); // 80100C28: STATE_MAILBOX_CLOSE after the post menu
 BOOL requestFaint(BOOL a); // 80100C84: STATE_FAINT (d_insect_field)
-BOOL isSafeFromInsects(); // 80100D44: demo, pitfall or ACTOR_FLAG_DEMO: insects leave the player alone
+bool isSafeFromInsects(); // 80100D44: demo, pitfall or ACTOR_FLAG_DEMO: insects leave the player alone
 BOOL isScaringCockroaches(int idx); // 80100DD0: walking, running, pushing or pulling (d_a_cockroach)
 BOOL boardBus(); // 80100E3C: STATE_BUS_BOARD (daStrBus_c)
 BOOL isOnBus(); // 80100E7C: STATE_BUS_BOARDED

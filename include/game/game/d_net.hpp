@@ -1792,3 +1792,8 @@ extern const s8 lbl_80473E00[NET_DIRECT_NUM];
 extern const dNetRecvFunc lbl_80473E10[NET_DIRECT_NUM];
 // receive handlers by packet id (callBlockHandlers)
 extern const dNetDataFunc lbl_80473E44[NET_PACKET_NUM];
+
+// 8074E510 (d_net_sync.inc): the NET_PACKET_INSECT_FIELD handler while set
+// (d_insect_fieldNP sets it in create, clears it in doDelete).
+typedef void (*dNetInsectFunc)(int member, const u8 *data, u32 size, u32 arg);
+extern dNetInsectFunc lbl_8074E510;

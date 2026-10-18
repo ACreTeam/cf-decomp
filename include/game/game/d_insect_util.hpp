@@ -26,13 +26,21 @@ public:
     bool isEscaping() const;
     bool hasEscapeLimit() const;
     f32 getRate() const;
+    // The insect flees at once: the value goes to three times the limit
+    // (d_insect_fieldNP kinds).
+    void setMax() {
+        mValue = (int)(3.0f * (int)mLimit);
+    }
+    void setEscapeMax() {
+        mValue = (int)(3.0f * (int)mEscapeLimit);
+    }
 
     /* 0x0 */ f32 mValue;
     /* 0x4 */ f32 mLimit;
     /* 0x8 */ f32 mEscapeLimit;
 };
 
-typedef bool (*itemCheckFunc)(dItem::Item *item, const mVec3_c *pos);
+typedef bool (*itemCheckFunc)(const dItem::Item *item, const mVec3_c *pos);
 
 class itemSearch_c {
 public:
@@ -43,6 +51,9 @@ public:
     bool isFound() const;
     void getPos(mVec3_c *out) const;
     int getWidth(f32 radius) const;
+    dItem::Item getItem() const {
+        return mItem;
+    } // weak copy in d_insect_fieldNP (.text A870)
 
     /* 0x00 */ itemCheckFunc mCheck;
     /* 0x04 */ mVec3_c mPos;
@@ -55,7 +66,7 @@ public:
     ~siteSearch_c();
     void search(mVec3_c &center, f32 radius);
     bool isFound() const;
-    void setPos(mVec3_c &pos);
+    mVec3_c getPos();
     f32 getRadius() const;
     int getWidth(f32 radius) const;
 
@@ -68,12 +79,12 @@ public:
     ~playerCheck_c();
     bool isValid(int player) const;
     void setPos(const mVec3_c &pos);
-    BOOL isNetPlayer(int player) const;
+    bool isNetPlayer(int player) const;
     bool isNear(int player, f32 radius) const;
     bool isShaking(const mVec3_c &pos, int player) const;
     bool isShakingNear(const mVec3_c &pos, int player) const;
-    bool isDigging(const mVec3_c &pos) const;
-    bool isHittingStone(const mVec3_c &pos) const;
+    BOOL isDigging(const mVec3_c &pos, int player) const;
+    BOOL isHittingStone(const mVec3_c &pos) const;
     bool isDisturbing(f32 radius) const;
     void getPlayerPos(mVec3_c *out, int player) const;
     f32 getPlayerSpeed(int player) const;
@@ -134,9 +145,10 @@ int secToFrame(f32 sec);
 BOOL getGroundMovePos(mVec3_c *out, mVec3_c &from, const mVec3_c &to, u32 steps, BOOL noStoneBus, BOOL noSea,
                       f32 minDy, f32 maxDy);
 void getLandPos(mVec3_c *out, const mVec3_c &pos, u32 mode, BOOL noStoneBus);
-BOOL isExcludedFlower(dItem::Item *item);
-BOOL isRaining();
-BOOL isSnowing();
+// A flower spot filter for the insects (by position); always FALSE.
+BOOL isExcludedFlower(const mVec3_c *pos);
+bool isRaining();
+bool isSnowing();
 void moveTo(mVec3_c *pos, mAng *angle, const mVec3_c &target, f32 speed, f32 turnDeg);
 void easeMove(mVec3_c *out, const mVec3_c &from, const mVec3_c &to, u32 total, int frame);
 void easeMoveXZ(mVec3_c *out, const mVec3_c &from, const mVec3_c &to, u32 total, int frame);

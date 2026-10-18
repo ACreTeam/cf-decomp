@@ -2498,7 +2498,7 @@ u32 requestInsectBite() {
 }
 
 // 801008E4
-BOOL isUsingNet(int idx) {
+bool isUsingNet(int idx) {
     dAcPlayer_c *player = getActor(idx);
     if (player == NULL) {
         return FALSE;
@@ -2649,7 +2649,7 @@ BOOL requestFaint(BOOL a) {
 }
 
 // 80100D44
-BOOL isSafeFromInsects() {
+bool isSafeFromInsects() {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;

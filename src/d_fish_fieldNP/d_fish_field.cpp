@@ -1381,7 +1381,7 @@ void dFishFldShadow_c::executeApproach() {
                     check.mDir *
                     (0.25f -
                      0.2f * nw4r::math::CosIdx(
-                                (mAng(ang + 0x8000U) - mTargetAngle.y).mAngle /
+                                (s16)(mAng(ang + 0x8000U) - mTargetAngle.y) /
                                 2));
                 f32 dist = EGG::Mathf::sqrt(d.x * d.x + d.z * d.z);
                 if (dist < 32.0f) {
@@ -1513,7 +1513,7 @@ void dFishFldShadow_c::executeNibble() {
                     check.mDir *
                     (0.25f -
                      0.2f * nw4r::math::CosIdx(
-                                (mAng(ang + 0x8000U) - mTargetAngle.y).mAngle /
+                                (s16)(mAng(ang + 0x8000U) - mTargetAngle.y) /
                                 2));
                 f32 dist2 = EGG::Mathf::sqrt(d.x * d.x + d.z * d.z);
                 if (dist2 < 32.0f) {

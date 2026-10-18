@@ -38,7 +38,7 @@ def unit_for(src):
     raise SystemExit('%s is not a unit in objdiff.json (run configure.py?)' % src)
 
 
-def functions(path):
+def functions(path, all_symbols=False):
     d = open(path, 'rb').read()
     shoff, = struct.unpack('>I', d[0x20:0x24])
     es, n, _ = struct.unpack('>HHH', d[0x2E:0x34])
@@ -50,7 +50,7 @@ def functions(path):
         strtab = secs[s[6]]
         for k in range(0, s[5], 16):
             nm, _, _, info, _, shn = struct.unpack('>IIIBBH', d[s[4] + k:s[4] + k + 16])
-            if info & 0xF == 2 and shn:
+            if (all_symbols and info & 0xF in (1, 2) or info & 0xF == 2) and shn:
                 o = strtab[4] + nm
                 out.append(d[o:d.index(b'\0', o)].decode('latin1'))
     return out
@@ -120,8 +120,9 @@ def _score_unit(src, input_file, overlay, maps, diff_funcs, work, func_regex):
     if r.returncode != 0 or not os.path.exists(obj):
         return {'ok': False, 'error': r.stdout[-3000:], 'results': []}
     tnames = set(functions(target))
+    tsyms = set(functions(target, all_symbols=True))
     # a mapping only applies when our name isn't already in the target (objdiff.json can carry stale ones)
-    ours_to_target = {o: t for o, t in ours_to_target.items() if o not in tnames and t in tnames}
+    ours_to_target = {o: t for o, t in ours_to_target.items() if o not in tsyms and t in tsyms}
     renames = {o: t for o, t in ours_to_target.items() if o != t}
     diffobj = obj
     if renames:
@@ -188,9 +189,16 @@ def main():
     ap.add_argument('-f', '--func', default='.', help='regex on our mangled function names')
     ap.add_argument('--diff', action='store_true', help='print instruction diffs for functions below 100')
     ap.add_argument('--map', action='append', default=[], help='extra "targetName=ourName" pairs')
+    ap.add_argument('--map-file', action='append', default=[],
+                    help='file of "targetName=ourName" lines (functions or data; # comments), repeatable')
     ap.add_argument('--keep', action='store_true', help='keep the work folder under build/mwcc_tools (deleted by default)')
     a = ap.parse_args()
     fre = re.compile(a.func)
+    for mf in a.map_file:
+        for line in open(mf, encoding='utf-8'):
+            line = line.split('#', 1)[0].strip()
+            if '=' in line:
+                a.map.append(line)
     res = score_unit(a.src, a.input, a.overlay, a.map, func_regex=a.func,
                      diff_funcs=_AllNames() if a.diff else None, keep=a.keep)
     if a.keep and res.get('work'):

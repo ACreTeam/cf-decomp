@@ -131,7 +131,83 @@ struct dInsectSpawnList_c {
 //   bits 40..42 state (INSECT_NET_STATE_*)
 //   bits 43..47 unused
 struct dInsectCatchData_c {
-    /* 0x0 */ u8 mTypeSerial; // type (INSECT_NET_TYPE_MASK), serial bit 0 (INSECT_NET_SERIAL_LO)
+    dInsectCatchData_c()
+        : mTypeSerial(0), mSerial(0), mPosX(0), mPosXZ(0), mPosZ(0), mState(0) {
+    }
+
+    // d_insect_fieldNP's accessors.
+    u32 getType() const {
+        return mTypeSerial & 0x7F;
+    }
+    u16 getSerial() const {
+        return ((mTypeSerial >> 7) & 1) + mSerial * 2;
+    }
+    u32 getReq() const {
+        return mPosX & 0xF;
+    } // bits 16..19: 0xF = another player's catch request
+    u32 getPosX() const {
+        return ((mPosX >> 4) & 0xF) + (mPosXZ & 0x3F) * 0x10;
+    } // x / 4
+    u32 getPosZ() const {
+        return ((mPosXZ >> 6) & 3) + mPosZ * 4;
+    } // z / 4
+    u32 getState() const {
+        return mState & 7;
+    }
+    u32 getPerch() const {
+        return (mState >> 3) & 0x1F;
+    } // bits 43..47: the dragonfly's perch (1: an item, 0: a site)
+    void setPerch(u32 perch) {
+        mState = (mState & 7) | ((perch & 0x1F) << 3);
+    }
+    void setType(u32 type) {
+        mTypeSerial &= ~0x7F;
+        mTypeSerial |= type & 0x7F;
+    }
+    void setSerial(u16 serial) {
+        mTypeSerial &= ~0x80;
+        mTypeSerial |= (serial & 1) << 7;
+        mSerial &= ~0xFF;
+        mSerial |= (serial >> 1) & 0xFF;
+    }
+    void clearReq() {
+        mPosX &= ~0xF;
+    }
+    void setReq(u32 req) {
+        mPosX &= ~0xF;
+        mPosX |= req & 0xF;
+    } // the kinds: their state (the owner's)
+    void setPosX(f32 x) {
+        mPosX &= ~0xF0;
+        mPosX |= ((u32)x << 2) & 0xF0;
+        mPosXZ &= ~0x3F;
+        mPosXZ |= ((u32)x >> 6) & 0x3F;
+    }
+    void setPosZ(f32 z) {
+        mPosXZ &= ~0xC0;
+        mPosXZ |= ((u32)z << 4) & 0xC0;
+        mPosZ &= ~0xFF;
+        mPosZ |= ((u32)z >> 4) & 0xFF;
+    }
+    void setState(u32 state) {
+        mState &= ~7;
+        mState |= state & 7;
+    }
+    // bits 43..47: the player a mole cricket runs from (the owner's choice).
+    u32 getPlayer() const {
+        return (mState >> 3) & 0x1F;
+    }
+    void setPlayer(u32 player) {
+        mState = ((player << 3) & 0xF8) | (mState & 7);
+    }
+
+    /* 0x0 */ union {
+        u8 mTypeSerial;
+        struct {
+            u8 mSerialLow : 1;
+            u8 mInsectType : 7;
+        };
+    };
     /* 0x1 */ u8 mSerial;     // serial bits 1..8
     /* 0x2 */ u8 mPosX;       // bits 0..3 unknown, bits 4..7 x/4 bits 0..3
     /* 0x3 */ u8 mPosXZ;      // bits 0..5 x/4 bits 4..9, bits 6..7 z/4 bits 0..1
@@ -164,13 +240,13 @@ BOOL isNpcCatchable(int type);                                         // 800BDA
 u8 getBugOffScore(const dItem::Item *item);                            // 800BDA94: of an insect item (Bug-Off host REL)
 const char *getModelName(int type);                                    // 800BDAC8
 void setAntsAttracted();                                               // 800BDADC: candy or spoiled turnips lying around
-u8 isAntsAttracted();                                                  // 800BDAE8: d_insect_fieldNP spawns an ant
+BOOL isAntsAttracted(); // 800BDAE8: d_insect_fieldNP spawns an ant
 void clearAntsAttracted();                                             // 800BDAF0
 void setFliesAttracted();                                              // 800BDAFC: trash or spoiled turnips lying around
-u8 isFliesAttracted();                                                 // 800BDB08: d_insect_fieldNP spawns a fly
+BOOL isFliesAttracted(); // 800BDB08: d_insect_fieldNP spawns a fly
 void clearFliesAttracted();                                            // 800BDB10
 void setPos(const mVec3_c &pos);                                       // 800BDB1C: dFgMngProc_c::setUnitItem
-u8 hasPos();                                                           // 800BDB48
+bool hasPos();                                                         // 800BDB48
 mVec3_c *getPos();                                                     // 800BDB50
 void clearPos();                                                       // 800BDB5C
 u8 getActiveTimeMask(int type);                                        // 800BDB68: INSECT_TIME_MASK(slot) bits

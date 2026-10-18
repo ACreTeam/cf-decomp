@@ -798,9 +798,11 @@ void dAcPlayer_c::executeNetSwing() {
             }
             break;
         case 2:
-            if (_2266 != dItem::ITEM_ID_NONE && _2200 <= 0.0f && mInsectLink.mpInsect == NULL &&
-                getNpcToolReaction() == TRUE && g_playActorMng != NULL &&
-                fn_116_1CDC(g_playActorMng, &mScriptedActionPos)) {
+            if (_2266 != dItem::ITEM_ID_NONE && _2200 <= 0.0f &&
+                mInsectLink.mpInsect == NULL && getNpcToolReaction() == TRUE &&
+                g_playActorMng != NULL &&
+                reinterpret_cast<dInsectField_c *>(g_playActorMng)
+                    ->addFlea(&mScriptedActionPos)) {
                 mActorFlags2 |= dPlayerMgr::ACTOR_FLAG2_NET_SPAWNED_INSECT;
             }
             if (mActorFlags2 & dPlayerMgr::ACTOR_FLAG2_NET_SPAWNED_INSECT) {
@@ -817,7 +819,8 @@ void dAcPlayer_c::executeNetSwing() {
         }
         int result = 1;
         if (mActorFlags2 & dPlayerMgr::ACTOR_FLAG2_NET_SPAWNED_INSECT) {
-            void *insect = fn_116_1D34(g_playActorMng);
+            void *insect =
+                reinterpret_cast<dInsectField_c *>(g_playActorMng)->getFlea();
             if (insect != NULL) {
                 mInsectLink.set(insect);
             } else {
@@ -825,7 +828,8 @@ void dAcPlayer_c::executeNetSwing() {
             }
         }
         if (mInsectLink.mpInsect != NULL) {
-            result = fn_116_7DC4(mInsectLink.mpInsect, mPlayerNo);
+            result = static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)
+                         ->tryCatch(mPlayerNo);
         }
         if (mAnm.getRate() == 0.0f || mAnm.isStop()) {
             switch (result) {
@@ -914,7 +918,7 @@ void dAcPlayer_c::checkNetInsect() {
     } else if (kind == dItem::KIND_GOLD_NET) {
         radius = 9.9f;
     }
-    radius -= fn_116_5B1C();
+    radius -= dInsectField::getObjcRadiusAdd();
     if (radius <= 0.0f) {
         radius = 0.1f;
     }

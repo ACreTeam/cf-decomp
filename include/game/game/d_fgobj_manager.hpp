@@ -402,7 +402,11 @@ inline f32 getDistXZSq(const mVec3_c &a, const mVec3_c &b) {
     return (a - b).xzLenSq();
 }
 
-BOOL isSwingPlantAt(int x, int z); // .text 83C8 (also d_insect_field)
+bool isSwingPlantAt(int x, int z); // .text 83C8 (also d_insect_field)
+// World position overload (the insects pass mPos.x / mPos.z).
+inline bool isSwingPlantAt(f32 x, f32 z) {
+    return isSwingPlantAt((int)x >> 5, (int)z >> 5);
+}
 void rippleParticleCallback(nw4r::ef::Particle *particle,
                             u32 arg);                         // .text 84EC
 void procTaskAt(u32 scene, const dFdAsPos_c *pos, u32 layer); // .text 85DC

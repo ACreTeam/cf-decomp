@@ -381,15 +381,8 @@ public:
     /* 0x4C */ int mPlace;          // dFishSpawn_c::Place_e
 }; // size 0x50
 
-// The field's acres with a block flag (dFdBlock_c::hasFlag(mMask)).
-class dBkAttrSearchCand_c : public dFdBkSearchCand_c {
-public:
-    virtual BOOL check(int x, int z); // 0x1074
-
-    /* 0x24 */ int mMask;
-}; // size 0x28
-
-
+// The field's acres with a block flag (check 0x1074).
+#include <game/game/d_bk_attr_search_cand.hpp>
 
 // The manager instance is d_play_util's g_fishField.
 

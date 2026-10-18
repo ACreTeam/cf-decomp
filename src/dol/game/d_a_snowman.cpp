@@ -467,11 +467,11 @@ BOOL daSnowMan_c::hit(const mVec3_c *pos) {
 }
 
 // 801826B4
-BOOL daSnowMan_c::getWallNormal(mVec3_c *normal) {
+bool daSnowMan_c::getWallNormal(mVec3_c *normal) {
     if (mAcch.isWallHit() && normal != NULL && getWallNormal(&mAcch, normal)) {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 static inline bool isSteep(const mVec3_c &normal) {
@@ -1503,17 +1503,17 @@ BOOL daSnowMan_c::isAtUnit(int x, int z) {
 }
 
 // 80186110
-BOOL daSnowMan_c::find(mVec3_c *pos, int *idx, void *user, FindFunc func) {
+bool daSnowMan_c::find(mVec3_c *pos, int *idx, void *user, FindFunc func) {
     for (int i = 0; i < BALL_NUM; i++) {
         daSnowMan_c *ball = getBall(i);
         if (ball != NULL && ball->canRoll() && func != NULL &&
             func(&ball->mPos, i, user)) {
             *pos = ball->mPos;
             *idx = i;
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // 801861D0

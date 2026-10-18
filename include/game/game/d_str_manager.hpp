@@ -21,3 +21,7 @@ public:
     /* 0x64 */ u8 mCreated : 1;
     /* 0x68 */ mAllocator_c mAllocator; // the structure models (d_a_bbs_bird)
 };
+
+// d_str_managerNP .bss 0xA: a flag d_insect_fieldNP reads
+// (dInsFldBase_c::isSceneChanging: TRUE when it is 1). Name unknown.
+extern u8 lbl_123_bss_A;

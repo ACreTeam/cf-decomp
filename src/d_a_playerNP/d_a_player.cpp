@@ -814,7 +814,7 @@ int dAcPlayer_c::create() {
 // .text 0xABC
 int dAcPlayer_c::doDelete() {
     if (mInsectLink.mpInsect != NULL) {
-        fn_116_675C(mInsectLink.mpInsect);
+        static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->cancelHold();
         if (mInsectLink.mpInsect != NULL) {
             dInsectField::removeNpcLink(mInsectLink.mpInsect, &mInsectLink);
         }

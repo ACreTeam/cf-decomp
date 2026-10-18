@@ -357,7 +357,7 @@ public:
 
     BOOL isContinuous();                         // 8006E2C8
     f32 getHeight(BOOL withColumn);         // 8006E31C
-    BOOL isUnderWater(f32 y);               // 8006E400
+    bool isUnderWater(f32 y);               // 8006E400
     void setSlope(f32 prevY, f32 y, mAng ang); // 8006E42C
     void check(const mVec3_c *pos, int type, int mode); // 8006E4AC
 
@@ -548,7 +548,7 @@ BOOL setSoilX(int unitX, int unitZ);                                 // 80076260
 void fn_800762C8();                                               // 800762C8
 void updateUnitAnm();                                                // 800762CC
 void fn_800762E0();                                               // 800762E0
-BOOL isNearFall(int unitX, int unitZ);                               // 800762E4
-BOOL isNearFall(const mVec3_c *pos);                                 // 80076370
+bool isNearFall(int unitX, int unitZ);                            // 800762E4
+bool isNearFall(const mVec3_c *pos);                              // 80076370
 
 } // namespace dBGCF

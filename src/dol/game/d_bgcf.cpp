@@ -923,11 +923,11 @@ f32 groundChk_c::getHeight(BOOL withColumn) {
 }
 
 // 8006E400
-BOOL groundChk_c::isUnderWater(f32 y) {
+bool groundChk_c::isUnderWater(f32 y) {
     if (mWater != BG_WATER_NONE) {
         return y <= mWaterY;
     }
-    return FALSE;
+    return false;
 }
 
 // 8006E42C
@@ -3668,22 +3668,22 @@ void updateUnitAnm() {
 void fn_800762E0() {}
 
 // 800762E4
-BOOL isNearFall(int unitX, int unitZ) {
+bool isNearFall(int unitX, int unitZ) {
     for (int z = unitZ - 1; z <= unitZ + 1; z++) {
         for (int x = unitX - 1; x <= unitX + 1; x++) {
             switch (getUnitAttr(x, z)) {
             case BG_ATTR_FALL_S:
             case BG_ATTR_FALL_SW:
             case BG_ATTR_FALL_SE:
-                return TRUE;
+                return true;
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 // 80076370
-BOOL isNearFall(const mVec3_c *pos) {
+bool isNearFall(const mVec3_c *pos) {
     int unitX, unitZ;
     posToUnit(&unitX, &unitZ, pos);
     return isNearFall(unitX, unitZ);

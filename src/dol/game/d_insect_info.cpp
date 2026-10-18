@@ -1081,7 +1081,7 @@ static int sRarityMax[INSECT_RARITY_NUM] = {1000, 149, 99, 39, 19};
 // and clears the flag.
 static u8 sAntsAttracted;
 static u8 sFliesAttracted;
-static u8 sHasPos;
+static bool sHasPos;
 // 8059AD8C
 static mVec3_c sPos(0.0f, 0.0f, 0.0f);
 
@@ -1279,7 +1279,7 @@ void setAntsAttracted() {
 }
 
 // 800BDAE8
-u8 isAntsAttracted() {
+BOOL isAntsAttracted() {
     return sAntsAttracted;
 }
 
@@ -1294,7 +1294,7 @@ void setFliesAttracted() {
 }
 
 // 800BDB08
-u8 isFliesAttracted() {
+BOOL isFliesAttracted() {
     return sFliesAttracted;
 }
 
@@ -1305,12 +1305,12 @@ void clearFliesAttracted() {
 
 // 800BDB1C
 void setPos(const mVec3_c &pos) {
-    sHasPos = TRUE;
+    sHasPos = true;
     sPos = pos;
 }
 
 // 800BDB48
-u8 hasPos() {
+bool hasPos() {
     return sHasPos;
 }
 
@@ -1321,7 +1321,7 @@ mVec3_c *getPos() {
 
 // 800BDB5C
 void clearPos() {
-    sHasPos = FALSE;
+    sHasPos = false;
 }
 
 // 800BDB68

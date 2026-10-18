@@ -1,79 +1,124 @@
 #pragma once
 
-// d_insect_fieldNP (REL): only what other modules call so far. Not decompiled
-// yet; names unknown.
+// The insect manager dInsectField_c. See d_ins_fld_base.hpp for the REL
+// overview.
 
-#include <types.h>
-#include <game/mLib/m_vec.hpp>
+#include <game/game/d_ins_fld_base.hpp>
 
-class dPlayActorMng_c;
-class mVec3_c;
+// The manager. Its instance is g_playActorMng (set in create, cleared in
+// doDelete).
+class dInsectField_c : public fBase_c {
+  public:
+    // addPlayerInsect's mode.
+    enum PlayerInsectMode_e {
+        PLAYER_INSECT_SHOW = 0,    // a dInsFldShow_c: only the held model
+        PLAYER_INSECT_RELEASE = 1, // the insect itself, let go from the pocket
+    };
 
-// .text 1C74: called by d_fgobj_managerNP when a fallen honeycomb has landed.
-// Unless the REL's flag at .bss 0x14 is set (fn_116_16524), it creates insect
-// type 0xC (the bees) at pos through fn_116_B28 (with the manager's +0xB4 as
-// the last argument). Its first argument is the DOL pointer g_playActorMng
-// (8074E838), which d_insect_fieldNP also writes. The owning class and so the
-// mangled name are not known until that REL is decompiled.
-extern "C" void fn_116_1C74(dPlayActorMng_c *mng, const mVec3_c *pos);
+    enum {
+        SPAWN_INTERVAL = 30, // mSpawnTimer: frames between calcSpawn's spawns
+    };
+
+    dInsectField_c();          // 0x250
+    virtual ~dInsectField_c(); // 0x4B0
+
+    virtual int create(); // 0x25EE4
+    virtual int preCreate() {
+        return SUCCEEDED;
+    } // 0x270B0 (weak)
+    virtual int doDelete(); // 0x85C
+    virtual int execute();  // 0x52C
+    virtual void postExecute(MAIN_STATE_e state) {
+    } // 0x270AC (weak)
+    virtual int draw(); // 0x7A0
+    virtual void postDraw(MAIN_STATE_e state) {
+    } // 0x270A8 (weak)
+    virtual void deleteReady() {
+    } // 0x270A4 (weak)
+    virtual bool createHeap() {
+        return true;
+    } // 0x2709C (weak)
+
+    void
+    addActive(dInsFldBase_c *insect); // 0x9B4: mActive list, mId = mNextId++
+    void removeActive(dInsFldBase_c *insect); // 0x9EC
+    void addPending(
+        dInsFldBase_c *insect); // 0xA1C: mPending list (waiting for the model)
+    void removePending(dInsFldBase_c *insect); // 0xA44
+    void addDying(dInsFldBase_c *insect);      // 0xA74
+    void removeDying(dInsFldBase_c *insect);   // 0xA9C
+    // Adds a town insect of type at pos (heaps: list, default m_objHeap) and
+    // fills its net slot.
+    BOOL addInsect(int type, const mVec3_c &pos, const mAng3_c *angle,
+                   dInsectField::heapList_c *list); // 0xB28
+    dInsFldBase_c *addPlayerInsect(int type, int mode, const mVec3_c *pos,
+                                   int player); // 0xF7C
+    BOOL deleteInsect(
+        dInsFldBase_c *insect); // 0x144C: removes a held (SPAWN_PLAYER) insect
+    void addHoneycombBees(const mVec3_c *pos); // 0x1C74
+    BOOL addFlea(const mVec3_c *pos);          // 0x1CDC
+    dInsFldBase_c *getFlea();                  // 0x1D34
+
+    BOOL addInsectFromNet(int type, int idx,
+                          dInsectField::heapList_c *list); // 0xDB0
+    BOOL createPending();                     // 0x10F8: FALSE while one waits
+    BOOL destroyAllDying();                   // 0x12AC
+    BOOL destroyDying(dInsFldBase_c *insect); // 0x131C
+    void calcSpawn();                         // 0x1550: every 30 frames
+    void addFromNet();                        // 0x1608: the slots others filled
+    BOOL removeInsect(dInsFldBase_c *insect); // 0x1688: doDelete, to mDying
+    BOOL isLifeOver(dInsFldBase_c *insect);   // 0x17A0
+    BOOL isNetChanged(dInsFldBase_c *insect); // 0x1838: its net slot moved on
+    void spawn(int num, BOOL awayFromPlayers); // 0x1898
+    void initSpawn();                          // 0x1B94
+    BOOL deleteAll();                          // 0x1D40
+    void sendSlots();                          // 0x51AC
+    void initSlots();                          // 0x5200
+    // A catch request of member: TRUE if the slot still holds that insect.
+    BOOL acceptCatch(int member, dInsectField::catchMsg_c *msg); // 0x525C
+
+    // The manager instance: the DOL keeps it in g_playActorMng, typed as its
+    // own view of the manager (dPlayActorMng_c, d_play_util.hpp).
+    static dInsectField_c *getInstance() {
+        return reinterpret_cast<dInsectField_c *>(g_playActorMng);
+    }
+
+    /* 0x000 fBase_c (vtable at 0x060) */
+    /* 0x064 */ dSearchCandXZCore_c *mSearch[INSECT_FIELD_SEARCH_NUM];
+    /* 0x0A8 */ dInsectField::heapList_c
+        m_objHeap; // 12 x 0x1000 (one per net slot)
+    /* 0x0B4 */ dInsectField::heapList_c
+        m_objHeapPermanent; // 3 x 0x1400 (honeycomb bees, flea)
+    /* 0x0C0 */ dInsectField::heapList_c
+        m_objHeapPlayer;                    // 4 x 0x1000 (addPlayerInsect)
+    /* 0x0CC */ EGG::FrmHeap *m_parentHeap; // 0x69400 in dHeap::localHeap_p
+    /* 0x0D0 */ EGG::FrmHeap *m_ResHeap[INSECT_FIELD_BANK_NUM]; // 0x5800 each
+    /* 0x10C */ dInsFldBank_c mBanks[INSECT_FIELD_BANK_NUM];
+    /* 0x760 */ dInsFldBase_c *mPending; // created once their bank is loaded
+    /* 0x764 */ dInsFldBase_c *mActive;
+    /* 0x768 */ dInsFldBase_c *mDying;
+    /* 0x76C */ dInsFldBase_c
+        *mNetInsects[INSECT_UTIL_PLAYER_NUM]; // per player: the insect in its
+                                              // net
+    /* 0x77C */ int mNextId;
+    /* 0x780 */ int mSpawnTimer; // SPAWN_INTERVAL frames between spawns
+    /* 0x784 */ u8 mCreated;
+    /* 0x785 */ u8 mDeleting;
+    /* 0x786 */ u8 mWasOwner; // last frame's "this console runs the scene"
+    /* 0x787 */ dInsectCatchData_c mCatchData[INSECT_NET_SLOT_NUM];
+}; // size 0x7D0
 
 namespace dInsectField {
-void addNpcLink(void *insect, void *link);    // .text 6584
-void removeNpcLink(void *insect, void *link); // .text 65B0
+extern fProf::fBaseProfile_c g_profile_INSECT_FIELD; // .data 0
 } // namespace dInsectField
 
-// .text 675C: called by the player's doDelete on the insect it holds a link to,
-// before unlinking. Owner / name unknown until d_insect_fieldNP is decompiled.
-extern "C" void fn_116_675C(void *insect);
-
-// More of the REL's functions the player REL calls (owners / names unknown).
-// .text 1CDC: unless the REL's flag at .bss 0x40 is set, creates insect type 0x38 at pos
-// (fn_116_B28); the player's net swing (STATE 0x0D) calls it at the tool position.
-extern "C" BOOL fn_116_1CDC(dPlayActorMng_c *mng, const mVec3_c *pos);
-// .text 1D34: the REL's .bss 0x40 (an insect, or NULL).
-extern "C" void *fn_116_1D34(dPlayActorMng_c *mng);
-// .text 5B1C: a float constant of the REL (the net reach is shortened by it).
-extern "C" f32 fn_116_5B1C();
-// .text F7C: creates an insect held by a player (STATE_SHOW_CATCH), like dFishField_c::addPlayerFish:
-// the catalog type (dItem::seeker_c::findLike), a mode, the hand position, the player.
-extern "C" void *fn_116_F7C(dPlayActorMng_c *mng, int type, int mode, const mVec3_c *pos, int player);
-// .text 66EC: moves the held insect to pos.
-extern "C" void fn_116_66EC(void *insect, const mVec3_c *pos);
-// .text 6708: scales the insect's held model (dFIMdlMgr_c).
-extern "C" void fn_116_6708(void *insect, const mVec3_c *scale);
-// .text 6900: resets the insect for being held (caught in the net).
-extern "C" void fn_116_6900(void *insect);
-// .text 7DC4: the net reaches the insect: 0 = nothing, 1 = missed, 2 = caught.
-extern "C" int fn_116_7DC4(void *insect, int player);
-// .text 67F8: lets the held insect go (STATE_SHOW_CATCH_AT, the player releases it).
-extern "C" void fn_116_67F8(void *insect);
-
-// The field insect actor of d_insect_fieldNP (not decompiled): only what other modules read.
-class dInsectFieldActor_c {
-public:
-    u8 _000[0x1A0];
-    /* 0x1A0 */ mVec3_c mPos; // the player looks at it while it flies off (STATE_SHOW_CATCH_AT)
-    u8 _1AC[0x2F0 - 0x1AC];
-    /* 0x2F0 */ int mType; // dInsectType_e (0xC: the bees)
-};
-
-// A node of an insect's link list (someone who refers to the insect; unlinked on
-// deletion). Same layout as dANpcOut::insectLink_s (d_a_npc_out.hpp).
-struct dInsectLink_c {
-    ~dInsectLink_c() {
-        if (mpInsect) {
-            dInsectField::removeNpcLink(mpInsect, this);
+inline void dInsFldBase_c::releasePlayer() {
+    if (mPlayer != INSECT_FIELD_PLAYER_NONE) {
+        dFIMdlMgr_c::sInstance->release(mPlayer);
+        dInsectField_c *mng = dInsectField_c::getInstance();
+        if (mng->mNetInsects[mPlayer] == this) {
+            mng->mNetInsects[mPlayer] = NULL;
         }
+        mPlayer = INSECT_FIELD_PLAYER_NONE;
     }
-    // Moves the link to insect (none: just unlinks).
-    void set(void *insect) {
-        if (mpInsect) {
-            dInsectField::removeNpcLink(mpInsect, this);
-        }
-        if (insect) {
-            dInsectField::addNpcLink(insect, this);
-        }
-    }
-    /* 0x0 */ void *mpInsect;
-    /* 0x4 */ dInsectLink_c *mpNext;
-}; // size 0x8
+}

@@ -1777,7 +1777,8 @@ void dFgObjAnm_c::procHoneycomb() {
     case 2:
         if (--mTimer < 0) {
             if (g_playActorMng != NULL) {
-                fn_116_1C74(g_playActorMng, &mSndPos);
+                reinterpret_cast<dInsectField_c *>(g_playActorMng)
+                    ->addHoneycombBees(&mSndPos);
             }
             mTimer = 60;
             mStep = 3;
@@ -2917,18 +2918,18 @@ void dFgObjMng_c::swayPlantsNearPlayer() {
 namespace dFgobjManager {
 
 // .text:0x83C8
-BOOL isSwingPlantAt(int x, int z) {
+bool isSwingPlantAt(int x, int z) {
     dFgObjMng_c *mgr = (dFgObjMng_c *)fgMngProc_getFgObjMgr();
     if (mgr->mSwingNum == 0) {
-        return FALSE;
+        return false;
     }
     for (int i = 0; i < dFgObjMng_c::SWING_NUM; i++) {
         dFgObjSwingPlant_c *obj = &mgr->mSwingObjs[i];
         if (obj->mType == 0x13 && isObjAt(obj, x, z)) {
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 // .text:0x84EC: a particle that reaches water leaves a ripple and disappears.

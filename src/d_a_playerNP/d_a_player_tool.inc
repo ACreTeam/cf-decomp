@@ -30,7 +30,7 @@ void dAcPlayer_c::initNetCatch() {
         }
         mActionItem = dItem::Item(dItem::ITEM_IDX_COMMON_BUTTERFLY).getId();
         if (mInsectLink.mpInsect != NULL) {
-            fn_116_6900(mInsectLink.mpInsect);
+            static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->initHold();
             const int &type = (int)((dInsectFieldActor_c *)mInsectLink.mpInsect)->mType;
             dItem::Item item(dItem::ITEM_IDX_COMMON_BUTTERFLY, type, FALSE);
             mActionItem = item.getId();
@@ -52,9 +52,10 @@ void dAcPlayer_c::initNetCatch() {
         if (g_playActorMng != NULL) {
             mInsectLink.set(g_playActorMng->mNetInsects[mPlayerNo]);
             if (mInsectLink.mpInsect != NULL) {
-                fn_116_6900(mInsectLink.mpInsect);
+                static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->initHold();
                 mVec3_c scale(0.0f, 0.0f, 1.0f);
-                fn_116_6708(mInsectLink.mpInsect, &scale);
+                static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)
+                    ->setHeldScale(&scale);
             }
         }
     }
@@ -72,20 +73,20 @@ void dAcPlayer_c::executeNetCatch() {
     if (insect != NULL) {
         if (mAnm.isStop()) {
             mVec3_c scale(1.0f, 1.0f, 1.0f);
-            fn_116_6708(insect, &scale);
+            static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         } else if (mAnm.checkFrame(l_showEndFrame)) {
             mVec3_c scale(1.0f, 1.0f, 1.0f);
-            fn_116_6708(insect, &scale);
+            static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         } else if (frame <= l_showFrame) {
             mVec3_c scale(0.0f, 0.0f, 1.0f);
-            fn_116_6708(insect, &scale);
+            static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         } else if (frame > l_showFrame && frame < l_showEndFrame) {
             f32 s = 0.056f * (mAnm.getFrame() - l_showFrame);
             if (s > 1.0f) {
                 s = 1.0f;
             }
             mVec3_c scale(s, s, 1.0f);
-            fn_116_6708(insect, &scale);
+            static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         }
         if (frame > 119.0f && mAnmId == HMN_ANM_NET_GET1) {
             createCatchEffect(static_cast<dPlayActor_c *>(insect));
@@ -98,9 +99,10 @@ void dAcPlayer_c::executeNetCatch() {
     } else if (mInsectLink.mpInsect == NULL && g_playActorMng != NULL) {
         mInsectLink.set(g_playActorMng->mNetInsects[mPlayerNo]);
         if (mInsectLink.mpInsect != NULL) {
-            fn_116_6900(mInsectLink.mpInsect);
+            static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->initHold();
             mVec3_c scale(0.0f, 0.0f, 1.0f);
-            fn_116_6708(mInsectLink.mpInsect, &scale);
+            static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)
+                ->setHeldScale(&scale);
         }
     }
 }
@@ -169,14 +171,14 @@ void dAcPlayer_c::executeNetPocket() {
     if (insect != NULL) {
         if (mAnm.checkFrame(20.0f)) {
             mVec3_c scale(0.0f, 0.0f, 0.0f);
-            fn_116_6708(insect, &scale);
+            static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         } else if (mAnm.getFrame() < 20.0f) {
             f32 s = 1.0f - 0.056f * mAnm.getFrame();
             if (s < 0.0f) {
                 s = 0.0f;
             }
             mVec3_c scale(s, s, 1.0f);
-            fn_116_6708(insect, &scale);
+            static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         }
     }
     if (mPlayerNo == dNet::getMyNo()) {
@@ -206,7 +208,7 @@ void dAcPlayer_c::endNetPocket(int nextState) {
         mpToolBank->setNetWait(m3d::FORWARD_LOOP, 8.0f);
     }
     if (mInsectLink.mpInsect != NULL) {
-        fn_116_675C(mInsectLink.mpInsect);
+        static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->cancelHold();
     }
     if (mInsectLink.mpInsect != NULL) {
         dInsectField::removeNpcLink(mInsectLink.mpInsect, &mInsectLink);

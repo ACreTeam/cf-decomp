@@ -474,14 +474,14 @@ struct Item {
     BOOL hasFtrFunc() const; // 800A6A8C
     BOOL isUsable() const; // 800A6B14
 
-    BOOL isFlower() const; // 800A6B5C
+    bool isFlower() const; // 800A6B5C
     BOOL isWiltedFlower(); // 800A6B80
     BOOL isTree(); // 800A6BA4
     BOOL isFruitTree(); // 800A6BE4
     BOOL isFg74(); // 800A6C08
     BOOL isInsect(); // 800A6C2C
     BOOL isFish(); // 800A6C58
-    BOOL isDust(); // 800A6C84
+    bool isDust() const; // 800A6C84
     BOOL isMushroom(); // 800A6CB0
     BOOL isShell(); // 800A6CDC
     BOOL isAnyFlower(); // 800A6D08

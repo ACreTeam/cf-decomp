@@ -236,6 +236,9 @@ public:
     u8 getScene(); // 80162D9C
     void setScene(u8 scene) { mScene = scene; }
     void setChanging(BOOL changing) { mChanging = changing; }
+    bool isChanging() const {
+        return mChanging;
+    }
     BOOL request(u8 scene, int wipeIn, int wipeOut, BOOL force); // 80162DA4
     BOOL request(u8 scene, const mVec3_c *pos, u32 type, s16 angle, int wipeIn, int wipeOut); // 80162F40
     int getExitDest(u32 idx, u8 *scene, mVec3_c *pos, u32 *type, s16 *angle, int *blockX, int *blockZ); // 80163154

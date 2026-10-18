@@ -203,11 +203,9 @@ bool siteSearch_c::isFound() const {
     return !mPos.isZero();
 }
 
-void siteSearch_c::setPos(mVec3_c &pos) {
-    f32 z = pos.z;
-    f32 y = pos.y;
-    f32 x = pos.x;
-    mPos.set(x, y, z);
+mVec3_c siteSearch_c::getPos() {
+    mVec3_c pos(mPos);
+    return pos;
 }
 
 f32 siteSearch_c::getRadius() const {
@@ -236,7 +234,7 @@ void playerCheck_c::setPos(const mVec3_c &pos) {
     mPos = pos;
 }
 
-BOOL playerCheck_c::isNetPlayer(int player) const {
+bool playerCheck_c::isNetPlayer(int player) const {
     if (isValid(player) == true) {
         return dPlayerMgr::isUsingNet(player);
     }
@@ -276,7 +274,7 @@ bool playerCheck_c::isShakingNear(const mVec3_c &pos, int player) const {
     return false;
 }
 
-bool playerCheck_c::isDigging(const mVec3_c &pos) const {
+BOOL playerCheck_c::isDigging(const mVec3_c &pos, int) const {
     int unitX = 0;
     int unitZ = 0;
     for (int i = 0; i < INSECT_UTIL_PLAYER_NUM; i++) {
@@ -284,11 +282,11 @@ bool playerCheck_c::isDigging(const mVec3_c &pos) const {
             int x, z;
             toUnit(&x, &z, pos.x, pos.z);
             if (x == unitX && z == unitZ) {
-                return true;
+                return TRUE;
             }
         }
     }
-    return false;
+    return FALSE;
 }
 
 static inline dItem::Item *getUnitItem(const int &unitX, const int &unitZ) {
@@ -299,7 +297,7 @@ static inline u32 isStone(u16 id) {
     return id >= dItem::FG_STONE_FIRST && id <= dItem::FG_STONE_LAST;
 }
 
-bool playerCheck_c::isHittingStone(const mVec3_c &pos) const {
+BOOL playerCheck_c::isHittingStone(const mVec3_c &pos) const {
     int unitX = 0;
     int unitZ = 0;
     for (int i = 0; i < INSECT_UTIL_PLAYER_NUM; i++) {
@@ -310,12 +308,12 @@ bool playerCheck_c::isHittingStone(const mVec3_c &pos) const {
             if (x == unitX && z == unitZ) {
                 dItem::Item *item = getUnitItem(unitX, unitZ);
                 if (item != NULL && isStone(item->mId) == TRUE) {
-                    return true;
+                    return TRUE;
                 }
             }
         }
     }
-    return false;
+    return FALSE;
 }
 
 bool playerCheck_c::isDisturbing(f32 radius) const {
@@ -821,11 +819,11 @@ void getLandPos(mVec3_c *out, const mVec3_c &pos, u32 mode, BOOL noStoneBus) {
     }
 }
 
-BOOL isExcludedFlower(dItem::Item *item) {
+BOOL isExcludedFlower(const mVec3_c *pos) {
     return FALSE;
 }
 
-BOOL isRaining() {
+bool isRaining() {
     if (dWeather_c::sInstance != NULL) {
         int weather = dWeather_c::sInstance->mWeather;
         return weather == dWeather::HEAVY_RAIN || weather == dWeather::RAIN;
@@ -833,7 +831,7 @@ BOOL isRaining() {
     return TRUE;
 }
 
-BOOL isSnowing() {
+bool isSnowing() {
     if (dWeather_c::sInstance != NULL) {
         int weather = dWeather_c::sInstance->mWeather;
         return weather == dWeather::HEAVY_SNOW || weather == dWeather::SNOW;
