@@ -561,6 +561,7 @@ dol/game/d_fg_obj.cpp:
 dol/game/d_fltg.cpp:
 	.text       start:0x800A7368 end:0x800A75B0
 	.bss        start:0x8058B6D8 end:0x8058B6F0
+	.sdata2     start:0x80750728 end:0x80750730
 
 dol/game/d_font.cpp:
 	.text       start:0x800A75B0 end:0x800A773C

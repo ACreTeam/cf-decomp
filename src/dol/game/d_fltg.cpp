@@ -1,8 +1,10 @@
-// The flying targets list (dFltg). Proposed TU: .text 800A7368..800A75B0, .bss 8058B6D8..8058B6F0.
+// The flying targets list (dFltg). Proposed TU: .text 800A7368..800A75B0, .bss 8058B6D8..8058B6F0, .sdata2 80750728..80750730.
 // See include/game/game/d_fltg.hpp.
 #include <game/game/d_fltg.hpp>
 
 namespace dFltg {
+
+const f32 cFlyHeight = 112.0f;
 
 static actor_c *l_actor[FLTG_MAX];
 

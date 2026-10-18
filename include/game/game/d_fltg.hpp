@@ -9,10 +9,9 @@
 #include <game/game/d_actor.hpp>
 #include <game/game/d_snd_obj.hpp>
 
-// 112.0f (.sdata2 80750728, owner not split yet): the flying height above the ground (d_a_balloon, d_a_ufo).
-extern "C" const f32 lbl_80750728;
-
 namespace dFltg {
+
+extern const f32 cFlyHeight; // 80750728: 112.0f, the flying height above the ground (d_a_balloon, d_a_ufo)
 
 #define FLTG_MAX 5
 

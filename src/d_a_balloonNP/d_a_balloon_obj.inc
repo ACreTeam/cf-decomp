@@ -436,7 +436,7 @@ void daBalloon_c::calcGold1() {
         mItemPos = mKnotPos;
         mItemPos.y = mKnotPos.y - 8.0f;
         if (mFallSpeed > -0.275f) {
-            f32 maxY = lbl_80750728 + dBGCF::getEdgeGroundY(&mPos);
+            f32 maxY = dFltg::cFlyHeight + dBGCF::getEdgeGroundY(&mPos);
             if (!isZero(mAccelY) || mPos.y > maxY) {
                 mFallSpeed = 0.0f;
             } else {
@@ -564,7 +564,7 @@ void daBalloon_c::initOne() {
     mPos.z = mBalloonPos[0].z =
         dFdBase_c::getRaccoDist(dFdBase_c::getOtherRaccoIdx(mRaccoIdx));
     mPos.y = dBGCF::getEdgeGroundY(&mPos);
-    mPos.y += lbl_80750728;
+    mPos.y += dFltg::cFlyHeight;
     mBalloonPos[0].y = mPos.y;
     mLastPos = mPos;
     mKnotPos = mPos;
@@ -590,7 +590,7 @@ void daBalloon_c::initThree() {
     mRaccoIdx = dFltg::getOtherRaccoIdx(this);
     mPos.z = dFdBase_c::getRaccoDist(dFdBase_c::getOtherRaccoIdx(mRaccoIdx));
     mPos.y = dBGCF::getEdgeGroundY(&mPos);
-    mPos.y += lbl_80750728;
+    mPos.y += dFltg::cFlyHeight;
     mLastPos = mPos;
     mKnotPos = mPos;
     mKnotPos.y -= 15.0f;
@@ -718,8 +718,8 @@ void daBalloon_c::calcGround() {
     if (ground < aheadGround) {
         mAccelY = 0.4375f * nw4r::math::FAbs(mSpeedF);
     }
-    if ((mAccelY < 0.0f && mPos.y - ground < lbl_80750728) ||
-        (mAccelY > 0.0f && mPos.y - aheadGround > lbl_80750728)) {
+    if ((mAccelY < 0.0f && mPos.y - ground < dFltg::cFlyHeight) ||
+        (mAccelY > 0.0f && mPos.y - aheadGround > dFltg::cFlyHeight)) {
         mAccelY = 0.0f;
     }
 }

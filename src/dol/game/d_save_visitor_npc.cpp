@@ -74,11 +74,12 @@ void dSaveVisitorNpc_c::update() {
             }
         }
 
-        if (free > 0 && !dSaveData_c::getRaw()->isFlag(0x12) && !dSaveData_c::getRaw()->isFlag(0x13) &&
+        if (free > 0 && !dSaveData_c::getRaw()->isFlag(SAVE_FLAG_UFO_SHOT) &&
+            !dSaveData_c::getRaw()->isFlag(SAVE_FLAG_UFO_SHOT_BEFORE) &&
             cM::rndInt(100) < 30) {
             int day = getFreeDay(5);
             if (day != -1) {
-                mDays[day] = VISITOR_NPC_6;
+                mDays[day] = VISITOR_NPC_UFO;
                 free--;
                 num++;
             }

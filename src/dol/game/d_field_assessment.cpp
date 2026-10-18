@@ -39,6 +39,7 @@
 #include <game/game/d_random.hpp>
 #include <game/game/d_recycle_bin.hpp>
 #include <game/game/d_save_data.hpp>
+#include <game/game/d_save_visitor_npc.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_sv_mgr.hpp>
 #include <game/game/d_theater.hpp>
@@ -1467,14 +1468,14 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     dSaveData_c::getTown()->mPoliceBox.refill(days);
     dSaveData_c::getTown()->mRecycleBin.update(last, days);
     clearShopRoomMaps();
-    if ((u8)dEvent::getTodayVisitor() == 6) {
-        dSaveData_c::getTown()->clearFlag(0x12);
-        dSaveData_c::getTown()->clearFlag(0x13);
+    if ((u8)dEvent::getTodayVisitor() == VISITOR_NPC_UFO) {
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_UFO_SHOT);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_UFO_SHOT_BEFORE);
     }
-    if (dSaveData_c::getRaw()->isFlag(0x12)) {
-        dSaveData_c::getTown()->setFlag(0x13);
+    if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_UFO_SHOT)) {
+        dSaveData_c::getTown()->setFlag(SAVE_FLAG_UFO_SHOT_BEFORE);
     }
-    dSaveData_c::getTown()->clearFlag(0x12);
+    dSaveData_c::getTown()->clearFlag(SAVE_FLAG_UFO_SHOT);
     dSTR::removeUfo();
     dSaveData_c::getTown()->clearFlag(0x19);
     if (dSaveData_c::getRaw()->isFlag(0x13)) {

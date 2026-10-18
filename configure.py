@@ -2575,10 +2575,10 @@ config.libs = [
     Rel(
         "d_a_ufoNP",
         [
-            Object(NonMatching, "d_a_ufoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_ufoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_ufoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_ufoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_ufoNP/d_a_ufo.cpp"),
+            Object(Matching, "d_a_ufoNP/d_a_ufo.cpp"),
         ],
     ),
     Rel(

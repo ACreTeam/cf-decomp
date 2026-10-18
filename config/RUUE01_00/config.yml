@@ -666,6 +666,7 @@ modules:
   name: d_a_ufoNP
   symbols: config/RUUE01_00/d_a_ufoNP/symbols.txt
   splits: config/RUUE01_00/d_a_ufoNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_balloon_managerNP.rel
   hash: 8c40db270adf28fc5d966740870080aa092e5fd6
   name: d_balloon_managerNP

@@ -12,7 +12,7 @@ enum {
     VISITOR_NPC_SATURDAY,     // 3: every Saturday, 19:30-0:00
     VISITOR_NPC_NONE,         // 4: nobody
     VISITOR_NPC_WISP,         // 5: 20:00-6:00, chance grows with the weeks skipped (VISITOR_WISP)
-    VISITOR_NPC_6,            // 6: 30% a week, not twice in a row (town flags 0x12/0x13)
+    VISITOR_NPC_UFO,          // 6: the UFO (d_a_ufo); 30% a week unless SAVE_FLAG_UFO_SHOT(_BEFORE)
     VISITOR_NPC_RANDOM_FIRST, // 7..9: two a week (dEvent::pickRandomVisitor)
     VISITOR_NPC_RANDOM_LAST = VISITOR_NPC_RANDOM_FIRST + 2,
 };
