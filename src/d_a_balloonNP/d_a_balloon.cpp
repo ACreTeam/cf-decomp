@@ -78,13 +78,10 @@ dBalloonMng_c::~dBalloonMng_c() {
 // .text:0x1D8
 int dBalloonMng_c::create() {
     if (m_frmHeap_p == nullptr) {
-        // "dBaloonMng_c::m_frmHeap_pÔºöÈ¢®Ëàπ„Éû„Éç„Éº„Ç∏„É£„Éº" (balloon manager;
-        // "Baloon" sic)
+        // The balloon manager's heap ("Baloon" sic).
         m_frmHeap_p =
             mHeap::createFrmHeap(0x7800, dHeap::localHeap_p,
-                                 "dBaloonMng_c::m_frmHeap_"
-                                 "p\x81\x46\x95\x97\x91\x44\x83\x7D\x83\x6C\x81"
-                                 "\x5B\x83\x57\x83\x83\x81\x5B",
+                                 "dBaloonMng_c::m_frmHeap_pÅFïóëDÉ}ÉlÅ[ÉWÉÉÅ[",
                                  0x20, mHeap::OPT_NONE);
         mAllocator.attach(m_frmHeap_p, 0x20);
     }

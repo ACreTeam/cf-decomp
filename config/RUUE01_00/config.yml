@@ -671,6 +671,7 @@ modules:
   name: d_balloon_managerNP
   symbols: config/RUUE01_00/d_balloon_managerNP/symbols.txt
   splits: config/RUUE01_00/d_balloon_managerNP/splits.txt
+  force_active: [__global_destructor_chain, g_profile_BALLOON_MNG__9dABalloon]
 - object: files/rels/d_bgi_drawNP.rel
   hash: cf64d4c25f5069675717616cdcc56a4297d3ab62
   name: d_bgi_drawNP

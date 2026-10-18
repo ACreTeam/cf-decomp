@@ -1741,7 +1741,7 @@ config.libs = [
             Object(Matching, "d_a_balloonNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_a_balloonNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(Matching, "d_a_balloonNP/d_a_balloon.cpp"),
+            Object(Matching, "d_a_balloonNP/d_a_balloon.cpp", shift_jis=False),
         ],
     ),
     Rel(
@@ -2584,10 +2584,10 @@ config.libs = [
     Rel(
         "d_balloon_managerNP",
         [
-            Object(NonMatching, "d_balloon_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_balloon_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_balloon_managerNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_balloon_managerNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_balloon_managerNP/d_balloon_manager.cpp"),
+            Object(Matching, "d_balloon_managerNP/d_balloon_manager.cpp", shift_jis=False),
         ],
     ),
     Rel(
