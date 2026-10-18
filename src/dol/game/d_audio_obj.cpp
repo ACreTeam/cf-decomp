@@ -149,7 +149,7 @@ void dSndObjInsect_c::startSound(u32 id) { mObj.startSound(id, NULL); }
 // 80010F08
 void dSndObjInsect_c::holdSound(u32 id) { mObj.holdSound(id); }
 // 80010F18
-bool dSndObjInsect_c::isSounding() { return mObj.isSounding(); }
+BOOL dSndObjInsect_c::isSounding() { return mObj.isSounding(); }
 
 // 80010F1C
 dSndObjSimple_c::dSndObjSimple_c() {}

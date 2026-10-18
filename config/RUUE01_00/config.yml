@@ -731,6 +731,7 @@ modules:
 - object: files/rels/d_insect_museumNP.rel
   hash: b032b8d5dd60f54df935cafec27dce43bdfe7876
   name: d_insect_museumNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_insect_museumNP/symbols.txt
   splits: config/RUUE01_00/d_insect_museumNP/splits.txt
 - object: files/rels/d_org_objNP.rel

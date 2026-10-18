@@ -572,7 +572,7 @@ BOOL returnHandItem(); // 801006A8: STATE_HAND_ITEM_RETURN (dAcNpc_c::action_c)
 BOOL setShoeColor(u8 shoeColor, u8 b); // 80100714
 BOOL pickUpPhone(); // 801007AC: STATE_PHONE_PICK_UP (d_a_rmobj_tel)
 BOOL hangUpPhone(); // 80100804: STATE_PHONE_HANG_UP after STATE_PHONE_TALK
-BOOL requestInsectBite(); // 80100860: STATE_INSECT_BITE (d_insect_field, d_insect_museum)
+u32 requestInsectBite(); // 80100860: STATE_INSECT_BITE (d_insect_field, d_insect_museum)
 BOOL isUsingNet(int idx); // 801008E4
 BOOL isRunAnimation(int idx); // 8010094C
 BOOL startChat(); // 8010098C: STATE_CHAT (d_menu_chat)

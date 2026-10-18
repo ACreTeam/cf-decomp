@@ -48,6 +48,15 @@ namespace EGG {
         /// @brief Dot product.
         f32 dot(const Vector3f &v) const { return x * v.x + y * v.y + z * v.z; }
 
+        Vector3f operator+(const Vector3f &v) const { return Vector3f(x + v.x, y + v.y, z + v.z); }
+        Vector3f operator*(f32 f) const { return Vector3f(x * f, y * f, z * f); }
+        Vector3f cross(const Vector3f &v) const {
+            f32 cx = y * v.z - z * v.y;
+            f32 cy = z * v.x - x * v.z;
+            f32 cz = x * v.y - y * v.x;
+            return Vector3f(cx, cy, cz);
+        }
+
         void setCross(const Vector3f &a, const Vector3f &b); // 800681FC, shared by quaternion helpers.
 
         void set(float x, float y, float z) {

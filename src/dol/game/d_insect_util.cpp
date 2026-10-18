@@ -1019,8 +1019,4 @@ u8 getRandom(u8 min, u8 max) {
     return min + cM::rndF(max - min);
 }
 
-mVec3_c axis_c::getFront() const {
-    return mFront;
-}
-
 } // namespace dInsectUtil

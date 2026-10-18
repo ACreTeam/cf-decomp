@@ -16,6 +16,7 @@ namespace dInsectUtil {
 
 class scare_c {
 public:
+    scare_c() : mValue(0.0f), mLimit(0.0f), mEscapeLimit(0.0f) {}
     void init();
     void clear();
     void setLimit(int limit);
@@ -118,7 +119,9 @@ public:
     mAng getAngleX() const;
     mAng getAngleY() const;
     mAng getAngleZ() const;
-    mVec3_c getFront() const;
+    mVec3_c getSide() const { return mSide; }
+    mVec3_c getUp() const { return mUp; }
+    mVec3_c getFront() const { return mFront; }
 
     /* 0x00 */ mVec3_c mSide;
     /* 0x0C */ mVec3_c mUp;

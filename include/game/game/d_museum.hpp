@@ -47,7 +47,7 @@ public:
     int getDonor(const dItem::Item &item);                      // 801199D0: MUSEUM_DONOR_*
     int getDonor(int kind, int idx);                            // 80119A1C
     int getDonorKind(const dItem::Item &item);                  // 80119A94: MUSEUM_DONATED_BY_* / NOT_DONATED
-    BOOL isDonated(const dItem::Item &item);                    // 80119AF8
+    u32 isDonated(const dItem::Item &item);                     // 80119AF8
     BOOL isDonated(int kind, int idx);                          // 80119B24
     void donate(const dItem::Item &item);                       // 80119B50: by the current player
     void deletePlayer(int player);                              // 80119BE4: player's donations -> DELETED

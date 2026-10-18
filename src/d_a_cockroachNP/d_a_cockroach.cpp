@@ -78,8 +78,6 @@ int daCockroach_c::create() {
 }
 
 // 0x258
-// The target re-reads mState for changeState (merged only after register allocation): no IR common subexpressions.
-#pragma opt_common_subs off
 int daCockroach_c::execute() {
     mVec3_c camPos = dCamera_c::sInstance->getEyePos();
     mSnd.setPos(&camPos);
@@ -88,12 +86,11 @@ int daCockroach_c::execute() {
     mTimer++;
     checkState();
     if (mPrevState != mState) {
-        changeState(mState);
+        changeState(getState());
     }
     daCockroachBase_c::execute();
     return TRUE;
 }
-#pragma opt_common_subs reset
 
 // 0x2F8
 int daCockroach_c::draw() {

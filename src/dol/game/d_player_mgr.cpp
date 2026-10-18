@@ -2480,7 +2480,7 @@ BOOL hangUpPhone() {
 }
 
 // 80100860
-BOOL requestInsectBite() {
+u32 requestInsectBite() {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;

@@ -8,6 +8,12 @@
 
 namespace EGG {
 struct Quatf : public Vector3f {
+    using Vector3f::operator*;
+    Quatf() {}
+    Quatf(f32 fw, Vector3f v) : Vector3f(v), w(fw) {}
+
+    Quatf operator*(const Quatf &q) const { return Quatf(w * q.w - dot(q), cross(q) + q * w + *this * q.w); }
+
     void set(f32 fw, f32 fx, f32 fy, f32 fz);                // 804450F0
     void setRPY(f32 roll, f32 pitch, f32 yaw);               // 8044524C: radians
     void setAxisRotation(const Vector3f &axis, f32 rot);     // 8044527C: radians

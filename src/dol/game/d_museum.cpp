@@ -166,7 +166,7 @@ int dMuseum_c::getDonorKind(const dItem::Item &item) {
 }
 
 // 80119AF8
-BOOL dMuseum_c::isDonated(const dItem::Item &item) {
+u32 dMuseum_c::isDonated(const dItem::Item &item) {
     return getDonor(item) != MUSEUM_DONOR_NONE;
 }
 
@@ -309,25 +309,25 @@ BOOL dMuseum_c::hasAnyDonation() {
     u32 i;
     for (i = 0; i < MUSEUM_FOSSIL_NUM; i++) {
         dItem::Item item(dItem::ITEM_IDX_AMBER, i, FALSE);
-        if ((u32)isDonated(item) == TRUE) {
+        if (isDonated(item) == TRUE) {
             return TRUE;
         }
     }
     for (i = 0; i < MUSEUM_PICTURE_NUM; i++) {
         dItem::Item item(dItem::ITEM_IDX_DYNAMIC_PAINTING, i, FALSE);
-        if ((u32)isDonated(item) == TRUE) {
+        if (isDonated(item) == TRUE) {
             return TRUE;
         }
     }
     for (i = 0; i < MUSEUM_INSECT_NUM; i++) {
         dItem::Item item(dItem::ITEM_IDX_COMMON_BUTTERFLY, i, FALSE);
-        if ((u32)isDonated(item) == TRUE) {
+        if (isDonated(item) == TRUE) {
             return TRUE;
         }
     }
     for (i = 0; i < MUSEUM_FISH_NUM; i++) {
         dItem::Item item(dItem::ITEM_IDX_BITTERLING, i, FALSE);
-        if ((u32)isDonated(item) == TRUE) {
+        if (isDonated(item) == TRUE) {
             return TRUE;
         }
     }

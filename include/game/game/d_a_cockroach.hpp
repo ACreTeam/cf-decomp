@@ -99,6 +99,8 @@ public:
     mVec3_c calcTargetPos();
     void setTarget();
 
+    int &getState() { return mState; }
+
     /* 0x1F4 */ int mState;
     /* 0x1F8 */ int mPrevState;
     /* 0x1FC */ StateFunc mStateFunc;
