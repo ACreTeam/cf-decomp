@@ -1412,9 +1412,9 @@ static const fProfListMg_c::fProfilePtr_c l_profiles[fProf::PROFILE_COUNT] = {
     {&dCountdownFlag::g_profile_COUNTDOWN_FLAG},
     // fProf::ORGAN_BALLOON
     {&dOrganBalloon::g_profile_ORGAN_BALLOON},
-    // fProf::A_BALLOON_120
+    // fProf::BALLOON_MNG
     {&dABalloon::g_profile_BALLOON_MNG},
-    // fProf::A_BALLOON_121
+    // fProf::BALLOON
     {&dABalloon::g_profile_BALLOON},
     // fProf::A_UFO
     {&dAUfo::g_profile_A_UFO},

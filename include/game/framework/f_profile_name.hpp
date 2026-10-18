@@ -353,8 +353,8 @@ enum PROFILE_NAME_e {
     FLAG = 0x11D,             // g_profile_FLAG__5dFlag
     COUNTDOWN_FLAG = 0x11E,   // g_profile_COUNTDOWN_FLAG__14dCountdownFlag
     ORGAN_BALLOON = 0x11F,    // g_profile_ORGAN_BALLOON__13dOrganBalloon
-    A_BALLOON_120 = 0x120,    // g_profile_BALLOON_MNG__9dABalloon
-    A_BALLOON_121 = 0x121,    // g_profile_BALLOON__9dABalloon
+    BALLOON_MNG = 0x120,    // g_profile_BALLOON_MNG__9dABalloon
+    BALLOON = 0x121,    // g_profile_BALLOON__9dABalloon
     A_UFO = 0x122,            // g_profile_A_UFO__5dAUfo
     STR_MANAGER = 0x123,      // g_profile_STR_MANAGER__11dStrManager
     A_BBS_BIRD = 0x124,       // g_profile_A_BBS_BIRD__9dABbsBird
@@ -660,8 +660,8 @@ enum DRAW_ORDER_e {
     FLAG = 0x03C,
     COUNTDOWN_FLAG = 0x03D,
     ORGAN_BALLOON = 0x03E,
-    A_BALLOON_120 = 0x03F,
-    A_BALLOON_121 = 0x040,
+    BALLOON_MNG = 0x03F,
+    BALLOON = 0x040,
     A_UFO = 0x041,
     STR_MANAGER = 0x018,
     A_BBS_BIRD = 0x042,

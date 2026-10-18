@@ -197,6 +197,7 @@ modules:
   name: d_a_balloonNP
   symbols: config/RUUE01_00/d_a_balloonNP/symbols.txt
   splits: config/RUUE01_00/d_a_balloonNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_bbs_birdNP.rel
   hash: 127526cb8464ad5966210bab9f8797db5c09efb0
   name: d_a_bbs_birdNP

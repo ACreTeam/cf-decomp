@@ -107,8 +107,12 @@ void dLineDrawProc_c::draw(BOOL opa) {
     mLineNum = 0;
 }
 
-// 800CDB40
-dLineDrawProc_c::~dLineDrawProc_c() {}
+// Stripped-function witness: the implicit dtor (800CDB40) is emitted right
+// after its first user, so an unused function that destroys a dLineDrawProc_c
+// stood here; the link strips it. Its original body is unknown.
+void dLineDrawProc_deleteWitness(dLineDrawProc_c *proc) {
+    delete proc;
+}
 
 // 800CDBB0
 BOOL dLineDrawProc_c::create(EGG::Heap *heap, u32 lineMax) {

@@ -54,6 +54,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_SUNTAN = 0x50,                // d_a_player: 15 min (dPlayerMgr timer) outdoors on summer days, 10:00-17:00
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
+    PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
 };
@@ -513,6 +514,8 @@ public:
     BOOL hasInvite();                // 801396F4
 
     void incNewcomerTip(); // 8013974C: next newcomer tip, wraps after 9
+    // Through this const getter the caller re-reads the field after its compare (d_a_balloon).
+    u8 getShotBalloonNum() const { return mShotBalloonNum; }
 
     // Errand.
     dQuestErrand_c *findErrand(dAnmPersonalID_c *animal, int which, u32 idx); // 80139770
@@ -641,7 +644,7 @@ public:
     /* 0x8696 */ u8 mNewcomerTip; // next newcomer tip (Ev_Arbeit message 6 + mNewcomerTip, 0..8)
     /* 0x8697 */ u8 _8697;
     /* 0x8698 */ u8 _8698;
-    /* 0x8699 */ u8 _8699;
+    /* 0x8699 */ u8 mShotBalloonNum; // present balloons shot down, up to 8 (then a golden slingshot balloon may come)
     /* 0x869A */ s8 mBridgeVoteX;    // the block voted for the new bridge (-1: none; tallyBridgeVotes)
     /* 0x869B */ s8 mBridgeVoteY;
     /* 0x869C */ u8 mBuildingVote;   // 1 windmill, 2 lighthouse (tallyBuildingVotes)

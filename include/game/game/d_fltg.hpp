@@ -7,6 +7,10 @@
 
 #include <types.h>
 #include <game/game/d_actor.hpp>
+#include <game/game/d_snd_obj.hpp>
+
+// 112.0f (.sdata2 80750728, owner not split yet): the flying height above the ground (d_a_balloon, d_a_ufo).
+extern "C" const f32 lbl_80750728;
 
 namespace dFltg {
 
@@ -14,8 +18,11 @@ namespace dFltg {
 
 class actor_c : public dActor_c {
 public:
-    virtual int getKind();     // vtable 0x4C: 0 balloon, 1 UFO
-    virtual int getRaccoIdx(); // vtable 0x50: the balloon/UFO route (dFdBase_c::getOtherRaccoIdx)
+    virtual int getKind() = 0;               // vtable 0x4C: 0 balloon, 1 UFO
+    virtual int getRaccoIdx() { return -1; } // vtable 0x50: the balloon/UFO route (dFdBase_c::getOtherRaccoIdx)
+    // actor_c's vtable and these inlines are weak copies in d_a_balloonNP / d_a_ufoNP.
+
+    /* 0x0A0 */ dSndObjSimple_c mSnd;
 };
 
 void clear();                          // 800A7368 (from the str manager, d_str_managerNP)

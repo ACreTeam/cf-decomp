@@ -822,7 +822,7 @@ void dPrivateData_c::clear() {
     mHost.mFlagB = 0;
     _8697 = 0;
     _8698 = 0;
-    _8699 = 0;
+    mShotBalloonNum = 0;
     mWc24LetterDate.clear();
     mBirthdayHost.clear();
     mVisitorLetter.clear();

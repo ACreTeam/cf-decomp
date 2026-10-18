@@ -28,7 +28,8 @@ public:
     }; // size 0x1C
 
     dLineDrawProc_c();                  // 800CD670
-    virtual ~dLineDrawProc_c();         // 800CDB40
+    // No user-declared dtor: the implicit one (800CDB40) is inlined by its
+    // users (d_a_balloonNP).
     virtual void drawOpa(); // 800CDCE4
     virtual void drawXlu(); // 800CDCDC
 

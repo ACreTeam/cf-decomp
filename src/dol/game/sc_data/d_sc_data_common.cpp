@@ -48,8 +48,8 @@ u16 g_fieldRes[] = {
     fProf::A_NAMEPLATE,
     fProf::A_GROWUP_MSG,
     fProf::A_UFO,
-    fProf::A_BALLOON_121,
-    fProf::A_BALLOON_120,
+    fProf::BALLOON,
+    fProf::BALLOON_MNG,
 };
 const u16 g_fieldResNum = ARRAY_SIZE(g_fieldRes);
 
