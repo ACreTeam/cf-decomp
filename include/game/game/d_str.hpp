@@ -287,6 +287,8 @@ public:
     virtual int getUnitX() = 0;       // 0x0C
     virtual int getUnitZ() = 0;       // 0x10
     virtual int getBuildingIdx() = 0; // 0x14: the dBuildingInfo_c index, -1 if none
+    virtual BOOL
+    setDoorState(int state) = 0; // 0x18: daSTR_c's door (DOOR_STATE_*)
 };
 
 // The structure actors that exist (805FF230; daSTR_c adds / removes itself).
@@ -334,9 +336,14 @@ int getSlotIdx(const dItem::Item *item);          // 80168948: the building inde
 void recvLock(const u8 *data, int member);        // 801689A0: NET_PACKET_STR_LOCK
 void recvUnlock(const u8 *data, int member);      // 80168A4C: NET_PACKET_STR_UNLOCK
 void resetLocks();                                // 80168B90: (the soft reset)
-void lock(const dItem::Item *item);               // 80168CAC: this member enters
-int getLockState(const dItem::Item *item);        // 80168D60
-void unlock(const dItem::Item *item, int member); // 80168DC0: the member leaves every building
+void lock(const dItem::Item &item);               // 80168CAC: this member enters
+// getLockState: the building's net lock (lock / recvLock).
+enum {
+    LOCK_STATE_NONE,
+    LOCK_STATE_LOCKED, // this member holds the lock and may enter
+};
+int getLockState(const dItem::Item &item);        // 80168D60
+void unlock(const dItem::Item &item, int member); // 80168DC0: the member leaves every building
 BOOL isPartyFlag();                               // 80168F84 (8074E868)
 void setPartyFlag();                              // 80168F8C
 void clearPartyFlag();                            // 80168F98

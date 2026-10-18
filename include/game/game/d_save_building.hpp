@@ -13,6 +13,7 @@
 #include <game/game/d_item.hpp>
 #include <game/game/d_dsn.hpp>
 #include <revolution/GX/GXTypes.h>
+#include <game/mLib/m_color.hpp>
 
 enum {
     BUILDING_BUILD_SITE = 0xD000,       // obj_buildsite "建設予定地" (construction site)
@@ -134,10 +135,19 @@ struct dBuildingInfo_c {
     // no mPos entry in dSaveBuildingList_c and no actor of its own from
     // dStrm_c::createBuildings (dItem::Item::getExtFlag).
     /* 0x11 */ u8 mMultiple;
-    /* 0x14 */ const char *mPolygons[10]; // polygon* names (city buildings)
+    // polygon* names (city buildings); d_a_str copies the whole set.
+    struct polygons_s {
+        const char *mNames[10];
+    };
+    /* 0x14 */ polygons_s mPolygons;
     // The colour of mPolygons when lit; d_a_str builds an mColor from its RGB
     // with alpha 0xFF. A plain GXColor: the table is static const data.
     /* 0x3C */ GXColor mPolyColor;
+
+    // The lit colour of mPolygons, opaque.
+    mColor getPolyColor() const {
+        return mColor(mPolyColor.r, mPolyColor.g, mPolyColor.b, 0xFF);
+    }
 }; // size 0x40
 
 

@@ -29,7 +29,9 @@ int getSceneHouse(u8 scene);    // 80081704: its house, -1 if none
 int getSceneRoom(u8 scene);     // 800817A0: its room, -1 if none
 
 // Debug hooks (empty in this build).
-BOOL fn_80081830(); // 80081830: (no callers)
+// 80081830: a debug line (d_a_strNP: from above a structure down to its centre)
+BOOL drawLine(const mVec3_c &start, const mVec3_c &end, const mColor &color,
+              int arg3, int arg4, int arg5);
 // 80081838: a debug cylinder (dSTR::isAtFountainFront)
 BOOL drawCylinder(const mVec3_c &pos, const mColor &color, int arg2,
                   const mAng3_c &angle, int arg4, f32 radius, f32 height);

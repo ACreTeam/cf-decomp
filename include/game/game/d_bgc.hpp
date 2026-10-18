@@ -146,6 +146,11 @@ public:
     }
 
     void set(const vecXZ_c &start, const vecXZ_c &end, const vecXZ_c &normal); // 8006BAA0
+    void set(const vecXZ_c &start, const vecXZ_c &end) {
+        vecXZ_c normal;
+        normal.setNormal(start, end);
+        set(start, end, normal);
+    }
     f32 calcD() const;                                                          // 8006BB08
     f32 calcDist(const vecXZ_c &p) const;                                       // 8006BB2C
     BOOL cross(vecXZ_c *out, const vecXZ_c &a, const vecXZ_c &b) const;         // 8006BB54

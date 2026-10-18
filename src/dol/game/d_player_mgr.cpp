@@ -1346,7 +1346,7 @@ u32 canUseMiiMask() {
 }
 
 // 800FE39C
-BOOL enterDoor(s16 angle, int type, int target, f32 x, f32 z) {
+BOOL enterDoor(f32 x, f32 z, s16 angle, int type, int target) {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
@@ -1365,7 +1365,7 @@ BOOL enterDoor(s16 angle, int type, int target, f32 x, f32 z) {
 }
 
 // 800FE484
-BOOL walkThroughDoor(s16 angle, int target, f32 x, f32 z) {
+BOOL walkThroughDoor(f32 x, f32 z, s16 angle, int target) {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
@@ -1381,7 +1381,7 @@ BOOL walkThroughDoor(s16 angle, int target, f32 x, f32 z) {
 }
 
 // 800FE550
-BOOL enterDoorDirect(s16 angle, int type, BOOL walkThrough, f32 x, f32 z) {
+BOOL enterDoorDirect(f32 x, f32 z, s16 angle, int type, BOOL walkThrough) {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;

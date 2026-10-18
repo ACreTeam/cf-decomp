@@ -1119,8 +1119,8 @@ void dSTR::resetLocks() {
 }
 
 // 80168CAC
-void dSTR::lock(const dItem::Item *item) {
-    int idx = getSlotIdx(item);
+void dSTR::lock(const dItem::Item &item) {
+    int idx = getSlotIdx(&item);
     if (dNet::isHost() || !dNet::isSessionActive()) {
         l_lock[idx].mMembers |= 1;
         l_lock[idx].mState = 1;
@@ -1136,21 +1136,21 @@ void dSTR::lock(const dItem::Item *item) {
 }
 
 // 80168D60
-int dSTR::getLockState(const dItem::Item *item) {
-    if (item->isExtId()) {
-        return l_lock[getSlotIdx(item)].mState;
+int dSTR::getLockState(const dItem::Item &item) {
+    if (item.isExtId()) {
+        return l_lock[getSlotIdx(&item)].mState;
     }
     return 0;
 }
 
 // 80168DC0
-void dSTR::unlock(const dItem::Item *item, int member) {
-    if (dNet::isHost() || !dNet::isSessionActive() || *item == dItem::ITEM_ID_NONE) {
+void dSTR::unlock(const dItem::Item &item, int member) {
+    if (dNet::isHost() || !dNet::isSessionActive() || item == dItem::ITEM_ID_NONE) {
         for (int i = 0; i < BUILDING_NUM; i++) {
             l_lock[i].mMembers &= ~(1 << member);
         }
     } else {
-        u8 idx = getSlotIdx(item);
+        u8 idx = getSlotIdx(&item);
         dNet::beginPacket();
         dNet::addPacket(&idx, sizeof(idx));
         dNet::sendPacket(NET_PACKET_STR_UNLOCK, 0);

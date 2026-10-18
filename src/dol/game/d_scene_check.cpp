@@ -72,7 +72,8 @@ int getSceneRoom(u8 scene) {
 }
 
 // 80081830
-BOOL fn_80081830() {
+BOOL drawLine(const mVec3_c &start, const mVec3_c &end, const mColor &color,
+              int arg3, int arg4, int arg5) {
     return FALSE;
 }
 

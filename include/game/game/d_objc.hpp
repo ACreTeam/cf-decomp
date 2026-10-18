@@ -70,6 +70,7 @@ enum {
     HIT_FTR_ROOM = 0x80040000, // a furniture actor's dpdBox_c (daFTR_c)
     HIT_INSECT = 0x80080000, // an ins_c
     HIT_STR = 0x80100000,    // a town structure
+    HIT_STR_DOOR = 0x80200000, // a structure's automatic door (daSTR_c::mDpdQuad)
 };
 
 // base_c types of the actors (with base_c::TYPE_DPD) and their usual collision mask.

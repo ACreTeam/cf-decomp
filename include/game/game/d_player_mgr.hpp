@@ -502,9 +502,14 @@ BOOL putOnMiiMaskImmediately(); // 800FE140
 BOOL changeMiiMask(u16 mii); // 800FE17C
 BOOL takeOffMiiMaskImmediately(); // 800FE2D4
 u32 canUseMiiMask(); // 800FE360
-BOOL enterDoor(s16 angle, int type, int target, f32 x, f32 z); // 800FE39C: STATE_ENTER_DOOR, STATE_WALK_THROUGH_DOOR with a target (d_a_str)
-BOOL walkThroughDoor(s16 angle, int target, f32 x, f32 z); // 800FE484: STATE_WALK_THROUGH_DOOR (d_a_str)
-BOOL enterDoorDirect(s16 angle, int type, BOOL walkThrough, f32 x, f32 z); // 800FE550: STATE_ENTER_DOOR / STATE_WALK_THROUGH_DOOR (d_a_str)
+BOOL enterDoor(f32 x, f32 z, s16 angle, int type,
+               int target); // 800FE39C: STATE_ENTER_DOOR,
+                            // STATE_WALK_THROUGH_DOOR with a target (d_a_str)
+BOOL walkThroughDoor(f32 x, f32 z, s16 angle,
+                     int target); // 800FE484: STATE_WALK_THROUGH_DOOR (d_a_str)
+BOOL enterDoorDirect(f32 x, f32 z, s16 angle, int type,
+                     BOOL walkThrough); // 800FE550: STATE_ENTER_DOOR /
+                                        // STATE_WALK_THROUGH_DOOR (d_a_str)
 BOOL isDoorAnimation(); // 800FE634: animation 5 or 8 (d_a_str)
 void getDemoWaitPose(int *outState, mVec3_c *outPos, s16 *outAngle); // 800FE688
 BOOL moveToEscorted(const mVec3_c *pos, int idx, f32 speed); // 800FE74C: moveTo with ACTOR_FLAG2_ESCORTED (the gatekeeper)

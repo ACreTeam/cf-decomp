@@ -50,10 +50,16 @@ public:
     }
 
     void* GetData() {
-        return ofs_to_ptr<void>(ref().toVtxPosArray);
+        ResVtxPosData &r = ref();
+        return r.toVtxPosArray != 0
+                   ? reinterpret_cast<u8 *>(&r) + r.toVtxPosArray
+                   : NULL;
     }
     const void* GetData() const {
-        return ofs_to_ptr<void>(ref().toVtxPosArray);
+        const ResVtxPosData &r = ref();
+        return r.toVtxPosArray != 0
+                   ? reinterpret_cast<const u8 *>(&r) + r.toVtxPosArray
+                   : NULL;
     }
 
     ulong GetID() const {

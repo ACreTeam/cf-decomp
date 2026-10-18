@@ -696,9 +696,9 @@ void dSvMgr_c::executeSaveInterruptNetHst() {
 // 801BDED0
 void dSvMgr_c::stepSaveInterruptNetHst_c::initializeSave() {
     dItem::Item item((u16)0xFFF1);
-    dSTR::unlock(&item, 1);
-    dSTR::unlock(&item, 2);
-    dSTR::unlock(&item, 3);
+    dSTR::unlock(item, 1);
+    dSTR::unlock(item, 2);
+    dSTR::unlock(item, 3);
     dFTR::recvHoldRelease(1, 0);
     dFTR::recvHoldRelease(2, 0);
     dFTR::recvHoldRelease(3, 0);

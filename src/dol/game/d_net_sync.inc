@@ -2925,7 +2925,7 @@ void onMemberLeft(int member, const dNetMemberMask_c *) {
     clearAllRoomMaps();
     if (isHost()) {
         dItem::Item item((u16)0xFFF1);
-        dSTR::unlock(&item, member);
+        dSTR::unlock(item, member);
     }
     dFootmark::getEditor()->clearMarks2();
     clearRecord(member + NET_REC_MEMBER_A);

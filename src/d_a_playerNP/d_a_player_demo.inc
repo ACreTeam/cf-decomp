@@ -473,7 +473,7 @@ void dAcPlayer_c::initEnterDoor() {
         mSpeedF = mTargetSpeed = 0.0f;
         daSTR_c *str = dSTR::getAcList()->searchNearest(mPos, FALSE);
         if (str != NULL) {
-            _22A4[0] = fn_99_48DC(str);
+            _22A4[0] = dAStr::getEnterWait(str);
             if (_22A4[0] == 0) {
                 sLib::chaseAngle(&mAngle.y.mAngle, mTargetAngle, mTurnFrames);
                 mSpeedF = mTargetSpeed = 0.2f;
@@ -502,7 +502,7 @@ void dAcPlayer_c::initEnterDoor() {
         mSpeedF = mTargetSpeed = 0.0f;
         daSTR_c *str = dSTR::getAcList()->searchNearest(mPos, FALSE);
         if (str != NULL) {
-            _22A4[0] = fn_99_48DC(str);
+            _22A4[0] = dAStr::getEnterWait(str);
             if (_22A4[0] == 0) {
                 setAnm(mDoorType == 2 ? HMN_ANM_DOOR_IN1 : HMN_ANM_NODOOR_IN1, l_endFrame, 0.0f, 1.0f, 16.0f,
                        m3d::FORWARD_ONCE, TRUE);
@@ -598,7 +598,7 @@ void dAcPlayer_c::initExitDoor() {
     _22A4[0] = 0;
     daSTR_c *str = dSTR::getAcList()->searchNearest(mPos, FALSE);
     if (str != NULL) {
-        _22A4[0] = fn_99_490C(str);
+        _22A4[0] = dAStr::getExitWait(str);
         if (_22A4[0] == 0) {
             if (mDoorType == 2) {
                 mAnm.setRate(1.0f);
