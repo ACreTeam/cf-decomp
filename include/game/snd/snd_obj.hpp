@@ -17,7 +17,8 @@
 // Every object is linked into one list (SoundObjBase::sFirst) while it exists. Member and method names
 // are inferred from what the code does.
 //
-// The inline virtual bodies are in snd_obj_inline.hpp, which only SoundObj.cpp and d_audio_obj.cpp include.
+// The inline virtual bodies are included selectively through snd_obj_inline.hpp. SoundObj.cpp and
+// d_audio_obj.cpp hold the weak copies; d_menu_number needs the pending-parse file-selection effect.
 // Defining SoundObj<N>'s inline virtuals here would make every includer (all of d_a_npc.hpp's) instantiate
 // its getters in MWCC's end-of-file pending loop. That leaves the compiler's current-function file info
 // pointing into this header, so with -sym on and -ipa file the TU's first generated function that creates

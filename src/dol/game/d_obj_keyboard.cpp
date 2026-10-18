@@ -39,7 +39,7 @@ int dObjKeyboard_c::doDelete() {
     if (!mCur.remove()) {
         return NOT_READY;
     }
-    if (!mKbd.remove(1)) {
+    if (!mKbd.remove(dKbd::Mng_c::REMOVE_MODE_SAVE_INPUT_MODE)) {
         return NOT_READY;
     }
     if (!mRes.remove()) {
@@ -85,7 +85,7 @@ void dObjKeyboard_c::stateWait() {
 
 void dObjKeyboard_c::stateOpen() {
     l_flags |= FLAG_OPEN;
-    mKbd.init(1);
+    mKbd.init(dKbd::Mng_c::INIT_MODE_KEYBOARD);
     if (mKbd.loadRes() && mKbd.create()) {
         mKbd.setMaxLength(TEXT_LEN + 1);
         mState = STATE_INPUT;
@@ -144,7 +144,7 @@ void dObjKeyboard_c::stateInput() {
 }
 
 void dObjKeyboard_c::stateClose() {
-    if (mKbd.remove(1)) {
+    if (mKbd.remove(dKbd::Mng_c::REMOVE_MODE_SAVE_INPUT_MODE)) {
         mState = STATE_WAIT;
         l_flags &= ~FLAG_OPEN;
     }

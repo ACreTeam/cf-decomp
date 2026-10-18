@@ -1,6 +1,7 @@
-// d_kbd.cpp (.text 800C7BE4..800CB0CC, .rodata 80472E40..80472E50, .data 804EAA10..804EAFF8,
-// .bss 8059FFA8..805A02C0, .sdata 8074A9D0..8074AA58, .sbss 8074E498..8074E4B0, .sdata2 80750840..80750860).
-// See include/game/game/d_kbd.hpp and notes/TUs/d_kbd.txt.
+// d_kbd.cpp (.text 800C7BE4..800CB0CC, .rodata 80472E40..80472E50, .data
+// 804EAA10..804EAFF8, .bss 8059FFA8..805A02C0, .sdata 8074A9D0..8074AA58, .sbss
+// 8074E498..8074E4B0, .sdata2 80750840..80750860). See
+// include/game/game/d_kbd.hpp and notes/TUs/d_kbd.txt.
 #include <game/game/d_kbd.hpp>
 #include <game/game/d_font.hpp>
 #include <game/game/d_letter.hpp>
@@ -28,7 +29,8 @@ namespace dKbd {
 // The thread that creates and sets up the manager.
 OSThread sThread;
 
-// The keyboard settings between uses (read back from the manager when the keyboard is removed).
+// The keyboard settings between uses (read back from the manager when the
+// keyboard is removed).
 textinput::extend::memo::Setting sSetting;
 u8 sSavedByte;
 u8 sSavedFlag;
@@ -40,9 +42,11 @@ BOOL sSignWindowOpen;
 wchar_t sCandidateText[2];
 
 static void createThread(OSThreadFunc func, void *arg) {
-    void *stack = m2d::ResAccLoader_c::getAllocator()->mpHeap->alloc(THREAD_STACK_SIZE, 0x20);
+    void *stack = m2d::ResAccLoader_c::getAllocator()->mpHeap->alloc(
+        THREAD_STACK_SIZE, 0x20);
     sThreadStack = stack;
-    OSCreateThread(&sThread, func, arg, (u8 *)stack + THREAD_STACK_SIZE, THREAD_STACK_SIZE, 28, 1);
+    OSCreateThread(&sThread, func, arg, (u8 *)stack + THREAD_STACK_SIZE,
+                   THREAD_STACK_SIZE, 28, 1);
     mPerf::setThreadColor(&sThread, dPerf::getThreadColor(11));
     OSResumeThread(&sThread);
 }
@@ -97,9 +101,11 @@ void myManager_c::draw() {
     }
 }
 
-ResLoader_c::ResLoader_c() : mpArc(NULL), mHeapCreated(false) {}
+ResLoader_c::ResLoader_c() : mpArc(NULL), mHeapCreated(false) {
+}
 
-ResLoader_c::~ResLoader_c() {}
+ResLoader_c::~ResLoader_c() {
+}
 
 BOOL ResLoader_c::load() {
     EGG::Heap *heap = mAllocator.mpHeap;
@@ -144,9 +150,11 @@ BOOL ResLoader_c::createHeap(EGG::Heap *parent, size_t size) {
     return created;
 }
 
-Event_c::Event_c() : mEvents(0) {}
+Event_c::Event_c() : mEvents(0) {
+}
 
-Event_c::~Event_c() {}
+Event_c::~Event_c() {
+}
 
 void Event_c::onOK() {
     mEvents |= EVENT_OK;
@@ -200,9 +208,11 @@ void Event_c::onSE(textinput::sound::SE seId) {
     }
 }
 
-void Listener_c::vt_0x0C() {}
+void Listener_c::vt_0x0C() {
+}
 
-void Listener_c::vt_0x10() {}
+void Listener_c::vt_0x10() {
+}
 
 void Listener_c::onKey(textinput::input::KeyEvent *event) {
     mRequest = REQUEST_NONE;
@@ -259,10 +269,10 @@ void Listener_c::onKey(textinput::input::KeyEvent *event) {
         mDigit = code - L'0';
         break;
     case KEY_DIGIT_10:
-        mDigit = 10;
+        mDigit = DIGIT_10;
         break;
     case KEY_DIGIT_11:
-        mDigit = 11;
+        mDigit = DIGIT_11;
         break;
     case KEY_SPECIAL_1:
         mSpecialKey = 1;
@@ -316,13 +326,13 @@ int Listener_c::getDigit() {
     if (digit <= 9) {
         return digit;
     }
-    if (digit == 10) {
-        return 10;
+    if (digit == DIGIT_10) {
+        return DIGIT_10;
     }
-    if (digit == 11) {
-        return 11;
+    if (digit == DIGIT_11) {
+        return DIGIT_11;
     }
-    return -1;
+    return DIGIT_RESULT_NONE;
 }
 
 u8 Listener_c::getSpecialKey() {
@@ -338,12 +348,14 @@ int Listener_c::getEmotion() {
 }
 
 // Drops the PC keyboard's input mode.
-static void resetInputMode(textinput::keyboard::pctype::LayoutByNW4R *keyboard) {
+static void
+resetInputMode(textinput::keyboard::pctype::LayoutByNW4R *keyboard) {
     keyboard->mKeyState.setInputMode(0);
     keyboard->vt_0x144();
 }
 
-static void refreshKeyboard(textinput::keyboard::pctype::LayoutByNW4R *keyboard) {
+static void
+refreshKeyboard(textinput::keyboard::pctype::LayoutByNW4R *keyboard) {
     keyboard->vt_0x13C();
 }
 
@@ -368,16 +380,20 @@ static BOOL confirmKana(textinput::inputform::LayoutByNW4R *form) {
     return TRUE;
 }
 
-static textinput::keyboard::cellphonetype::Candidate *getCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
+static textinput::keyboard::cellphonetype::Candidate *
+getCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
     return &keypad->mCandidate;
 }
 
 // Inputs the keypad character being picked.
-static BOOL confirmCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
+static BOOL
+confirmCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
     if (keypad->mCandidate.mpKey != NULL) {
         wchar_t c = keypad->mCandidate.mpKey->mChars[keypad->mCandidate.mIndex];
-        textinput::keyboard::cellphonetype::KeyCommand command = {c, 0x100, keypad->mCandidate.mpKey};
-        keypad->sendCommand(textinput::CommandReceiver::INPUT_COMMAND_KEY, &command);
+        textinput::keyboard::cellphonetype::KeyCommand command = {
+            c, 0x100, keypad->mCandidate.mpKey};
+        keypad->sendCommand(textinput::CommandReceiver::INPUT_COMMAND_KEY,
+                            &command);
         keypad->mCandidate.mIndex = 0;
         keypad->mCandidate.mpKey = NULL;
         return TRUE;
@@ -385,15 +401,18 @@ static BOOL confirmCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *k
     return FALSE;
 }
 
-static void closeSignWindow(textinput::keyboard::signtype::LayoutByNW4R *window) {
+static void
+closeSignWindow(textinput::keyboard::signtype::LayoutByNW4R *window) {
     if (window->isActive()) {
         window->close();
     }
 }
 
-Mng_c::Mng_c() : mpManager(NULL), mFlags(0), mCreateStep(CREATE_STEP_START) {}
+Mng_c::Mng_c() : mpManager(NULL), mFlags(0), mCreateStep(CREATE_STEP_START) {
+}
 
-Mng_c::~Mng_c() {}
+Mng_c::~Mng_c() {
+}
 
 BOOL Mng_c::init(int mode) {
     if (mFlags & FLAG_INIT) {
@@ -405,7 +424,7 @@ BOOL Mng_c::init(int mode) {
     }
     mAllocator.createExpHeap(0x57800, heap, NULL, 8);
     mFlags |= FLAG_INIT;
-    if (mode != 0 || !dSaveOption::getKeySe()) {
+    if (mode != INIT_MODE_PAD || !dSaveOption::getKeySe()) {
         mFlags &= ~FLAG_CELL_PHONE;
         sSetting.mKeyboardType = 0x11;
     } else {
@@ -548,7 +567,8 @@ void Mng_c::buildLayout() {
 
 BOOL Mng_c::remove(int mode) {
     if (mpManager != NULL) {
-        if (mCreateStep == CREATE_STEP_MANAGER || mCreateStep == CREATE_STEP_SETUP) {
+        if (mCreateStep == CREATE_STEP_MANAGER ||
+            mCreateStep == CREATE_STEP_SETUP) {
             if (isThreadDone()) {
                 if (mCreateStep == CREATE_STEP_MANAGER) {
                     initManager();
@@ -558,7 +578,7 @@ BOOL Mng_c::remove(int mode) {
                 return FALSE;
             }
         }
-        if (mode == 0) {
+        if (mode == REMOVE_MODE_SAVE_SETTING) {
             saveSetting();
         } else {
             saveInputMode();
@@ -581,7 +601,8 @@ BOOL Mng_c::remove(int mode) {
     return TRUE;
 }
 
-myManager_c::~myManager_c() {}
+myManager_c::~myManager_c() {
+}
 
 void Mng_c::calc() {
     if (!(mFlags & FLAG_OPEN)) {
@@ -604,12 +625,16 @@ void Mng_c::calcClear() {
     mEvent.mEvents = 0;
 }
 
-// The pointer stays off the keyboard; the direction buttons come from the remote or the pad.
+// The pointer stays off the keyboard; the direction buttons come from the
+// remote or the pad.
 void Mng_c::updatePointerOff() {
     mVec2_c pos(1000.0f, 1000.0f);
-    u32 trig = mPad::g_currentCore->mCoreStatus[0].trig & dPad::BUTTON_DIRECTION;
-    u32 hold = mPad::g_currentCore->mCoreStatus[0].hold & dPad::BUTTON_DIRECTION;
-    u32 release = mPad::g_currentCore->mCoreStatus[0].release & dPad::BUTTON_DIRECTION;
+    u32 trig =
+        mPad::g_currentCore->mCoreStatus[0].trig & dPad::BUTTON_DIRECTION;
+    u32 hold =
+        mPad::g_currentCore->mCoreStatus[0].hold & dPad::BUTTON_DIRECTION;
+    u32 release =
+        mPad::g_currentCore->mCoreStatus[0].release & dPad::BUTTON_DIRECTION;
     if (trig == 0 && hold == 0 && release == 0) {
         trig = dPad::getTriggered() & dPad::BUTTON_DIRECTION;
         hold = dPad::getHeld() & dPad::BUTTON_DIRECTION;
@@ -638,7 +663,8 @@ BOOL Mng_c::updatePointer() {
     u32 trig = mPad::g_currentCore->mCoreStatus[0].trig;
     u32 hold = mPad::g_currentCore->mCoreStatus[0].hold;
     u32 release = mPad::g_currentCore->mCoreStatus[0].release;
-    if ((trig & dPad::BUTTON_DIRECTION) == 0 && (hold & dPad::BUTTON_DIRECTION) == 0 &&
+    if ((trig & dPad::BUTTON_DIRECTION) == 0 &&
+        (hold & dPad::BUTTON_DIRECTION) == 0 &&
         (release & dPad::BUTTON_DIRECTION) == 0) {
         trig |= dPad::getTriggered() & dPad::BUTTON_DIRECTION;
         hold |= dPad::getHeld() & dPad::BUTTON_DIRECTION;
@@ -647,7 +673,8 @@ BOOL Mng_c::updatePointer() {
     if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A)) {
         mFlags |= FLAG_CHANGED;
     }
-    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_B) && (mFlags & FLAG_CELL_PHONE)) {
+    if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_B) &&
+        (mFlags & FLAG_CELL_PHONE)) {
         mFlags |= FLAG_CHANGED;
     }
     if (trig & dPad::BUTTON_DIRECTION) {
@@ -722,7 +749,8 @@ BOOL Mng_c::isTextChanged() {
         return TRUE;
     }
     if (mFlags & FLAG_CELL_PHONE) {
-        textinput::keyboard::cellphonetype::Candidate *candidate = getCandidate(mpManager->getCellPhoneKeyboard());
+        textinput::keyboard::cellphonetype::Candidate *candidate =
+            getCandidate(mpManager->getCellPhoneKeyboard());
         if (mFlags & FLAG_CANDIDATE) {
             if (candidate->mpKey == NULL) {
                 mFlags &= ~FLAG_CANDIDATE;
@@ -824,11 +852,13 @@ void Mng_c::setPos(mVec3_c pos) {
     }
     pos.y -= 23.0f;
     if (mFlags & FLAG_CELL_PHONE) {
-        textinput::keyboard::cellphonetype::LayoutByNW4R *keypad = mpManager->getCellPhoneKeyboard();
+        textinput::keyboard::cellphonetype::LayoutByNW4R *keypad =
+            mpManager->getCellPhoneKeyboard();
         keypad->getLayout()->GetRootPane()->SetTranslate(pos);
         keypad->refreshState();
     } else {
-        textinput::keyboard::pctype::LayoutByNW4R *keyboard = mpManager->getPCKeyboard();
+        textinput::keyboard::pctype::LayoutByNW4R *keyboard =
+            mpManager->getPCKeyboard();
         keyboard->getLayout()->GetRootPane()->SetTranslate(pos);
         keyboard->refreshState();
     }
@@ -882,7 +912,8 @@ void Mng_c::saveCursorPos() {
 void Mng_c::resetCursor() {
     setCursorPos(mCursorPos);
     if (!(mFlags & FLAG_CELL_PHONE)) {
-        textinput::keyboard::pctype::LayoutByNW4R *keyboard = mpManager->getPCKeyboard();
+        textinput::keyboard::pctype::LayoutByNW4R *keyboard =
+            mpManager->getPCKeyboard();
         keyboard->onActive();
         refreshKeyboard(keyboard);
     }
@@ -910,7 +941,8 @@ static const char *l_keyboardChangeNames[] = {
 };
 
 void Mng_c::setupLayout() {
-    m2d::setVisible(mpManager->getToolBar()->getLayout()->GetRootPane(), l_keyboardChangeNames, 3, false);
+    m2d::setVisible(mpManager->getToolBar()->getLayout()->GetRootPane(),
+                    l_keyboardChangeNames, 3, false);
     nw4r::lyt::Layout *layout = mpManager->getInputForm()->getLayout();
     nw4r::lyt::Pane *root = layout->GetRootPane();
     mVec3_c pos = root->GetTranslate();
@@ -920,13 +952,17 @@ void Mng_c::setupLayout() {
     nw4r::lyt::DrawInfo drawInfo;
     layout->CalculateMtx(drawInfo);
     root->SetVisible(false);
-    mpManager->getPredictLanguageSelectDialog()->getLayout()->GetRootPane()->SetVisible(false);
+    mpManager->getPredictLanguageSelectDialog()
+        ->getLayout()
+        ->GetRootPane()
+        ->SetVisible(false);
     mpManager->getCandidateBox()->getLayout()->GetRootPane()->SetVisible(false);
 }
 
 const wchar_t *Mng_c::getInputText() {
     if (mFlags & FLAG_CELL_PHONE) {
-        textinput::keyboard::cellphonetype::Candidate *candidate = getCandidate(mpManager->getCellPhoneKeyboard());
+        textinput::keyboard::cellphonetype::Candidate *candidate =
+            getCandidate(mpManager->getCellPhoneKeyboard());
         wchar_t c;
         if (candidate->mpKey != NULL) {
             c = candidate->mpKey->mChars[candidate->mIndex];
@@ -976,7 +1012,8 @@ BOOL Mng_c::getComposedText(wchar_t *buf, int size) {
         memcpy(buf + pos, input, inputLen * sizeof(wchar_t));
     }
     if (pos < textLen) {
-        memcpy(buf + (pos + inputLen), text + pos, (textLen - pos) * sizeof(wchar_t));
+        memcpy(buf + (pos + inputLen), text + pos,
+               (textLen - pos) * sizeof(wchar_t));
     }
     return TRUE;
 }
@@ -992,7 +1029,8 @@ BOOL Mng_c::isKanaInput() {
 }
 
 void Mng_c::setABC() {
-    if (getConsoleRegion() == CONSOLE_REGION_JP && !(mFlags & FLAG_CELL_PHONE)) {
+    if (getConsoleRegion() == CONSOLE_REGION_JP &&
+        !(mFlags & FLAG_CELL_PHONE)) {
         mpManager->getPCKeyboard()->setABC(true);
     }
 }
@@ -1033,7 +1071,8 @@ BOOL Mng_c::isUpdated() {
     return mpManager->getPCKeyboard()->isCapsOn();
 }
 
-// Unused, stripped from the DOL: its call keeps the keypad's inline slot 0x40 (800CB09C) in d_kbd.
+// Unused, stripped from the DOL: its call keeps the keypad's inline slot 0x40
+// (800CB09C) in d_kbd.
 int Mng_c::getKeypadState() {
     return mpManager->getCellPhoneKeyboard()->vt_0x40();
 }
@@ -1088,9 +1127,11 @@ void Mng_c::saveInputMode() {
     sSetting.m05_4 = setting.m05_4;
 }
 
-Cur_c::Cur_c() {}
+Cur_c::Cur_c() {
+}
 
-Cur_c::~Cur_c() {}
+Cur_c::~Cur_c() {
+}
 
 BOOL Cur_c::load() {
     return mRes.load("Layout/keyboard_cur.arc");

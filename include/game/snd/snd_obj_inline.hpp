@@ -1,8 +1,9 @@
 #pragma once
 #include <game/snd/snd_obj.hpp>
 
-// The inline virtual bodies of the sound objects (see snd_obj.hpp for why they are kept out of it). Only the
-// TUs that build these objects include this: SoundObj.cpp and d_audio_obj.cpp, which hold the weak copies.
+// The inline virtual bodies of the sound objects (see snd_obj.hpp for why they are kept out of it).
+// TUs that need these bodies include this. SoundObj.cpp and d_audio_obj.cpp hold the weak copies;
+// d_menu_number also needs their pending-parse effect on literal-function section placement.
 
 inline f32 SoundObjBase::getVolume() {
     return mVolume;

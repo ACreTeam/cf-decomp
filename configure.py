@@ -1693,10 +1693,10 @@ config.libs = [
     Rel(
         "d_menu_numberNP",
         [
-            Object(NonMatching, "d_menu_numberNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_numberNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_numberNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_numberNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_numberNP/d_menu_number.cpp"),
+            Object(Matching, "d_menu_numberNP/d_menu_number.cpp"),
         ],
     ),
     Rel(
