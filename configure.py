@@ -1684,10 +1684,10 @@ config.libs = [
     Rel(
         "d_menu_mapNP",
         [
-            Object(NonMatching, "d_menu_mapNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_mapNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_mapNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_mapNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_mapNP/d_menu_map.cpp"),
+            Object(Matching, "d_menu_mapNP/d_menu_map.cpp"),
         ],
     ),
     Rel(

@@ -161,6 +161,7 @@ modules:
   name: d_menu_mapNP
   symbols: config/RUUE01_00/d_menu_mapNP/symbols.txt
   splits: config/RUUE01_00/d_menu_mapNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_numberNP.rel
   hash: 22df5d550e6f8d2342e91567fa167e327b5dfb6d
   name: d_menu_numberNP
