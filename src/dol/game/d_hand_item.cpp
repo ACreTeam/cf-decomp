@@ -1382,12 +1382,11 @@ BOOL getPos(mVec3_c *pos) {
 }
 
 // 80194D20
-void getItem(dItem::Item *item) {
+dItem::Item getItem() {
     if (dHandItem_c::sInstance != NULL) {
-        *item = dHandItem_c::sInstance->mItem;
-    } else {
-        *item = dItem::ITEM_ID_NONE;
+        return dHandItem_c::sInstance->mItem;
     }
+    return dItem::ITEM_ID_NONE;
 }
 
 } // namespace dHandItem

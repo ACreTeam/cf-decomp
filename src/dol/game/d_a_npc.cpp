@@ -1838,9 +1838,9 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
         const dObjc::dpdHit_c *hit = dObjc::getDpdHit();
         int type = hit != NULL ? (int)hit->mType : 0;
         switch (type) {
-        case (int)0x80000001:
+        case (int)dObjc::TYPE_PLAYER:
             break;
-        case (int)0x80020000: {
+        case (int)dObjc::HIT_FTR: {
             firstPos = &hit->mPos;
             if (dPlayerMgr::isATriggeredFacing(firstPos, pAngle->mAngle, range)) {
                 p = *firstPos;
@@ -1849,7 +1849,7 @@ BOOL dAcNpc_c::getPointedUnit(int *pUnitX, int *pUnitZ, const mAng *pAngle, int 
             }
             break;
         }
-        case (int)0x80040000: {
+        case (int)dObjc::HIT_FTR_ROOM: {
             pos = &hit->mPos;
             void *ftr = NULL;
             found = dPlayerMgr::isATriggeredFacing(pos, pAngle->mAngle, range) != 0;
@@ -2020,7 +2020,7 @@ int dAcNpc_c::create() {
     mLookAt.init(mModel.mMdl.getResMdl());
     mAction.init(this);
     mEar.init(nw4r::g3d::ResFile(getMdlResFile()).GetResMdl(0), getEarType());
-    mObjc.set(this, 16.0f, 32.0f, 0x80000002, 0x8040007F, 0x80, mNpcItem.mId);
+    mObjc.set(this, 16.0f, 32.0f, dObjc::TYPE_NPC, dObjc::MASK_DEFAULT, 0x80, mNpcItem.mId);
     return SUCCEEDED;
 }
 

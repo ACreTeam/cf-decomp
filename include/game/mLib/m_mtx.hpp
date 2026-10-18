@@ -68,6 +68,11 @@ public:
     mMtx_c &concat(const mMtx_c &other) { PSMTXConcat(*this, other, *this); return *this; }
     mMtx_c &trans(const mVec3_c &v) { PSMTXTrans(*this, v.x, v.y, v.z); return *this; }
     mMtx_c &trans(float x, float y, float z) { PSMTXTrans(*this, x, y, z); return *this; }
+
+    /// @brief Multiplies the matrix by a scale matrix (this = this * scale).
+    void scaleM(float x, float y, float z) { mMtx_c m; PSMTXScale(m, x, y, z); PSMTXConcat(*this, m, *this); }
+    /// @brief Multiplies the matrix by a translation matrix (this = this * trans).
+    void transM(float x, float y, float z) { mMtx_c m; PSMTXTrans(m, x, y, z); PSMTXConcat(*this, m, *this); }
     mMtx_c &ZXYrotM(const mAng3_c &ang) { ZXYrotM(ang.x, ang.y, ang.z); return *this; }
 
     float transX() const { return getTranslation().x; }

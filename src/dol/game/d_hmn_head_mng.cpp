@@ -123,7 +123,7 @@ dHmnHeadMng_c::dHmnHeadMng_c() : mBufIdx(4) {}
 
 dHmnHeadMng_c::~dHmnHeadMng_c() {}
 
-void dHmnHeadMng_c::setBufIdx(u8 idx) {
+void dHmnHeadMng_c::setBufIdx(int idx) {
     mBufIdx = idx;
 }
 

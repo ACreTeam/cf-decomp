@@ -437,28 +437,28 @@ void dUki_c::initBite() {
         if (fish != NULL) {
             switch (fish->mParam.mSize) {
             case FISH_SIZE_TINY:
-                dRumble::start(5, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_S, false);
                 break;
             case FISH_SIZE_SMALL:
-                dRumble::start(5, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_S, false);
                 break;
             case FISH_SIZE_MEDIUM:
-                dRumble::start(6, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_M, false);
                 break;
             case FISH_SIZE_NARROW:
-                dRumble::start(6, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_M, false);
                 break;
             case FISH_SIZE_LARGE:
-                dRumble::start(6, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_M, false);
                 break;
             case FISH_SIZE_XLARGE:
-                dRumble::start(6, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_M, false);
                 break;
             case FISH_SIZE_HUGE:
-                dRumble::start(7, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_L, false);
                 break;
             case FISH_SIZE_FIN:
-                dRumble::start(7, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_SINK_L, false);
                 break;
             }
         }
@@ -738,28 +738,28 @@ void dUki_c::nibble() {
         if (fish != NULL) {
             switch (fish->mParam.mSize) {
             case FISH_SIZE_TINY:
-                dRumble::start(2, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_S, false);
                 break;
             case FISH_SIZE_SMALL:
-                dRumble::start(2, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_S, false);
                 break;
             case FISH_SIZE_MEDIUM:
-                dRumble::start(3, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_M, false);
                 break;
             case FISH_SIZE_LARGE:
-                dRumble::start(3, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_M, false);
                 break;
             case FISH_SIZE_NARROW:
-                dRumble::start(3, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_M, false);
                 break;
             case FISH_SIZE_XLARGE:
-                dRumble::start(3, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_M, false);
                 break;
             case FISH_SIZE_HUGE:
-                dRumble::start(4, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_L, false);
                 break;
             case FISH_SIZE_FIN:
-                dRumble::start(4, false);
+                dRumble::start(dRumble::PATTERN_FLOAT_NIBBLE_L, false);
                 break;
             }
         }

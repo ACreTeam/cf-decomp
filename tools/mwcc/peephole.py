@@ -23,6 +23,7 @@ Pass ids (--pass is a regex on them), in the order they run for one function at 
                 `extsh vB,r3` fusion: an `addi r3` between them (argument placement) blocks it.
   gopt-peep     Peephole_OptimizeBlocks, pre-RA, basic rule set
   opt-vn        value numbering (005976E0; 1.2.5 ValueNumbering_PerformValueNumbering); also runs post-RA
+  opt-fold      PCode constant/operand folding (00622A20), after value numbering
   opt-add       COpt_AddPropagation (00622070)
   lvl-merge, lvl-fwd   the merge / forward pass again, inside the -O3/-O4 pipeline (005966F0/005964C0)
   gopt-fwd1     Peephole_VisitBlocksWithMultipleInstructions(f, 1)
@@ -85,6 +86,7 @@ _P = {   # pass id -> description
     'opt-copy': 'COpt_CopyPropagation (00621D00)',
     'opt-add': 'COpt_AddPropagation (00622070)',
     'opt-vn': 'value numbering (005976E0)',
+    'opt-fold': 'PCode constant/operand folding (00622A20)',
 }
 # call site -> pass id. The "after" breakpoint is the call's return address (call + 5).
 CALLS = {
@@ -93,6 +95,8 @@ CALLS = {
     0x4693A8: 'pre-merge', 0x4695E9: 'pre-fwd', 0x4695FD: 'pre-peep',
     0x4693D6: 'pre-dead', 0x4693F3: 'post-dead', 0x469537: 'post-merge', 0x469542: 'post-peep',
 }
+for _a in (0x5964CE, 0x596570, 0x5966A0, 0x5966FE, 0x5967A6):
+    CALLS[_a] = 'opt-fold'
 for _a in (0x59642E, 0x596489, 0x59649D, 0x5964D6, 0x59654F, 0x596569, 0x596591, 0x5965F8, 0x596602,
            0x596659, 0x596683, 0x5966B5, 0x5966C4, 0x596706, 0x59676D, 0x596785, 0x59679F, 0x596808):
     CALLS[_a] = 'opt-copy'
@@ -253,6 +257,8 @@ def main():
             fname = p.objname(p.u32(p.runtime(CUR_FUNC)))
             if not ppat.search(CALLS[site]) or not fpat.search(fname):
                 return
+            for bp in lazy_handlers:
+                p.arm(bp)
             snap, labels = snapshot(p)
             st.update({'site': site, 'fname': fname, 'before': snap, 'labels': labels, 'fires': [],
                        'cache': {}, 'pre': p.u8(p.runtime(PRE_RA_FLAG)) != 0})
@@ -263,6 +269,8 @@ def main():
             if st['site'] != site:
                 return
             st['site'] = None
+            for bp in lazy_handlers:
+                p.disarm(bp)
             after, labels = snapshot(p, st['labels'])
             d = diff_snap(st['before'], after, labels)
             if not d and not st['fires'] and not a.all:
@@ -335,12 +343,13 @@ def main():
             st['dead'] = None
             record(p, 'dead result (00621260)', blk, text)
 
-    handlers = {BP_PEEPBLOCK: on_block, BP_RULE_CALL: on_rule_call, BP_RULE_RET: on_rule_ret,
+    lazy_handlers = {BP_PEEPBLOCK: on_block, BP_RULE_CALL: on_rule_call, BP_RULE_RET: on_rule_ret,
                 BP_DEAD: on_dead, BP_DEAD + 5: on_dead_done}
+    handlers = {}
     for site in CALLS:
         handlers[site] = on_call(site)
         handlers[site + 5] = on_return(site)
-    rc = dbgcore.run(argv, handlers, cwd=mwcc_cmd.ROOT)
+    rc = dbgcore.run(argv, handlers, cwd=mwcc_cmd.ROOT, lazy=lazy_handlers)
     if rc:
         print('compiler exited with %d' % rc)
 

@@ -22,7 +22,7 @@ public:
 
     dHmnBodyMng_c();  // 800B6AD4: mBufIdx = 4 (none)
     ~dHmnBodyMng_c(); // 800B6AE0
-    void setBufIdx(u8 idx); // 800B6B20
+    void setBufIdx(int idx); // 800B6B20
     BOOL setBody(int no);   // 800B6B28: copies body file no into the buffer, then binds it
     void *getData() const;  // 800B6BB8: the buffer's data (NULL without a buffer)
     void bind();            // 800B6BF0

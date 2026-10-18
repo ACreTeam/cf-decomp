@@ -6,10 +6,6 @@
 #include <revolution/SC.h>
 #include <stdio.h>
 
-extern "C" BOOL
-fn_802C4404(dMiiCreateID_c *id,
-            u16 *index); // Finds an official Mii database index.
-
 namespace dMenuDesi {
 static const char *l_miiLogo[] = {"miiLogo", NULL};
 static const char *l_miiFace = "miiFace";

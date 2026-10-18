@@ -233,6 +233,16 @@ void resetHold();
 void requestHold(const mVec3_c *pos);
 int getHoldState();
 void releaseHold();
+// The player's furniture actions; each one is a hold request (requestHold / getHoldState / releaseHold).
+void requestPull(const mVec3_c *pos);   // 800AB5C8: the bed (STATE_LIE_DOWN)
+int getPullState();                     // 800AB5CC
+void requestRotate(const mVec3_c *pos); // 800AB5D0: getting up from the bed (STATE_GET_UP)
+int getRotateState();                   // 800AB5D4
+void releaseRotate();                   // 800AB5D8
+void requestMove(const mVec3_c *pos);   // 800AB5DC: rolling over in the bed
+int getMoveState();                     // 800AB5E0
+void requestPush(const mVec3_c *pos); // 800AB4C4: requestHold (the chair pose push)
+int getPushState();                  // 800AB4C8: getHoldState
 BOOL canNpcWalk(int x, int z);
 BOOL isHoldDisabledScene();
 void clearHomeFlags();

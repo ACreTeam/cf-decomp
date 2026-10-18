@@ -188,7 +188,7 @@ public:
     void setSlingWait(m3d::playMode_e mode, f32 blend);      // 800BC39C
     void releaseBalloon(const mAng *angle);            // 800BC400
     void calcBalloonInit(const mMtx_c *mtx);                 // 800BC448
-    u8 isBalloonFly();                                       // 800BC468
+    BOOL isBalloonFly();                                     // 800BC468
     BOOL isBalloonGone();                                    // 800BC484
     void startFlower();                                      // 800BC4BC
     void calcWind(const mVec3_c *pos);                       // 800BC51C

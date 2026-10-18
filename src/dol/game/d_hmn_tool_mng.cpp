@@ -1044,7 +1044,7 @@ void dHmnToolBank_c::calcBalloonInit(const mMtx_c *mtx) {
 }
 
 // 800BC468
-u8 dHmnToolBank_c::isBalloonFly() {
+BOOL dHmnToolBank_c::isBalloonFly() {
     if (mpBalloon == NULL) {
         return FALSE;
     }

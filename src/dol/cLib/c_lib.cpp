@@ -151,7 +151,7 @@ bool chasePos(mVec3_c *currentPos, const mVec3_c &targetPos, float step) {
     return false;
 }
 
-bool chasePosXZ(mVec3_c *currentPos, const mVec3_c &targetPos, float step) {
+BOOL chasePosXZ(mVec3_c *currentPos, const mVec3_c &targetPos, float step) {
     mVec3_c offset;
     float distance;
     

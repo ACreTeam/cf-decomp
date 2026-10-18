@@ -80,6 +80,7 @@ namespace cLib {
     bool chasePos(mVec3_c *currentPos, const mVec3_c &targetPos, float step);
 
     /// @brief chasePos on the XZ plane (y is left as is).
-    bool chasePosXZ(mVec3_c *currentPos, const mVec3_c &targetPos, float step);
+    /// BOOL: the player REL normalises the result (x != 0) when it stores it in a bool.
+    BOOL chasePosXZ(mVec3_c *currentPos, const mVec3_c &targetPos, float step);
 
 } // namespace cLib

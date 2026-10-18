@@ -415,6 +415,13 @@ int requestAction(dFgMngState_c *state, int player, int kind, dFdAsPos_c pos,
                   u16 item, u16 baseItem, u8 stage, u8 layer, int b2,
                   s8 day);        // .text 8C30
 void sendRequest(u8 idx, int b2); // .text 8D8C
+// useTool / useToolAtTask: the tool.
+enum {
+    USE_TOOL_SHAKE = 0, // shakeTree (no tool)
+    USE_TOOL_AXE = 1,   // chopTree
+    USE_TOOL_SHOVEL = 2, // dig
+    USE_TOOL_WATERING = 4, // water
+};
 int useTool(int player, int x, int z, int tool, int b2,
             u16 heldItem);                                     // .text 90C4
 int useToolAtTask(int player, int tool, int b2, u16 heldItem); // .text 91E8
@@ -432,6 +439,12 @@ int pickUpRoom(int player, int x, int z);       // .text A088
 int fillHole(int player, int x, int z, int b2); // .text A204
 int requestPitfall(int player, int x, int z);   // .text A300
 int requestNpcPitfall(int npc, int x, int z);   // .text A424 (d_a_npc_out)
+// getRequestResult: the answer to a player request (requestAction / useTool).
+enum {
+    REQUEST_RESULT_WAIT = 0,     // no answer yet
+    REQUEST_RESULT_ACCEPTED = 1,
+    REQUEST_RESULT_REJECTED = 2, // refused, or nothing pending
+};
 int getRequestResult(int idx);                  // .text A548 (d_a_npc_out)
 int putItem(int player, int kind, u16 item);    // .text A788
 int putHeldItem(int player, u16 item);          // .text A878

@@ -70,6 +70,12 @@ def compile_log(src, input_file=None, overlay=None, keep=True, runner=None):
         if os.path.exists(stale):
             os.remove(stale)
     argv = mwcc_cmd.compile_argv(src, compiler=cc, overlay=overlay, input_file=copy, outdir=tmp)
+    # The scratch copy still needs quoted includes beside the original input,
+    # particularly TUs split across .inc files. Prefer variant siblings first.
+    source_dirs = dict.fromkeys(os.path.dirname(os.path.abspath(os.path.join(mwcc_cmd.ROOT, path)))
+                                for path in (input_file or src, src))
+    for directory in source_dirs:
+        argv.extend(['-i', directory])
     if runner is not None:
         if runner(argv, tmp) != 0:
             raise SystemExit('compile failed')

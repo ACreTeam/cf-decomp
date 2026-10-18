@@ -212,6 +212,6 @@ dDemoActor_c *getActor(u32 idx);                          // 80194BAC
 BOOL isInRange(dDemoActor_c *actor);                      // 80194BCC
 void release(dDemoActor_c *actor);                        // 80194CB0
 BOOL getPos(mVec3_c *pos);                                // 80194CEC
-void getItem(dItem::Item *item);                          // 80194D20
+dItem::Item getItem();                                    // 80194D20: by value (the player REL never constructs the local)
 
 } // namespace dHandItem

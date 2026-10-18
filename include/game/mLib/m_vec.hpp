@@ -149,6 +149,14 @@ public:
 
     /// @brief Assignment operator.
     mVec3_c &operator=(const mVec3_c &v) { x = v.x; y = v.y; z = v.z; return *this; }
+    using EGG::Vector3f::set;
+    void set(const mVec3_c &v) {
+        f32 z = v.z;
+        f32 y = v.y;
+        f32 x = v.x;
+        set(x, y, z);
+    }
+    void set(const nw4r::math::VEC3 &v) { set(v.x, v.y, v.z); }
     mVec3_c &operator=(const nw4r::math::VEC3 &v) { x = v.x; y = v.y; z = v.z; return *this; }
 
     /// @brief Float cast operator.
@@ -206,6 +214,7 @@ public:
     bool operator!=(const mVec3_c &v) const { return x != v.x || y != v.y || z != v.z; }
 
     float xzDistTo(const mVec3_c &other) const { return (*this - other).xzLen(); }
+    float xzDistSqTo(const mVec3_c &other) const { return (*this - other).xzLenSq(); }
 
     float xzLen() const {
         return EGG::Mathf::sqrt(x * x + z * z);

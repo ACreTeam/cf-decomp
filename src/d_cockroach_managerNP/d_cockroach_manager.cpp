@@ -162,7 +162,7 @@ BOOL dCockroachManager_c::hasCockroaches() {
 }
 
 // 0x5B0
-u8 dCockroachManager_c::isSpawned() {
+BOOL dCockroachManager_c::isSpawned() {
     return mSpawned;
 }
 

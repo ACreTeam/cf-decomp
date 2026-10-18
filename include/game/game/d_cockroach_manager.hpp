@@ -97,7 +97,7 @@ public:
     daCockroachBase_c *createCockroach(const mVec3_c *pos, const mAng3_c *angle, u8 idx);
     void kill(u8 idx);
     BOOL hasCockroaches();
-    u8 isSpawned();
+    BOOL isSpawned(); // BOOL: the player REL compares the result as a word (cmpwi)
     dCockroachRecord_c *getRecord(u8 idx);
     void setRecord(const dCockroachRecord_c *record);
     mVec3_c getAreaMin() const;

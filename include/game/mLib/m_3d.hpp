@@ -202,22 +202,6 @@ namespace m3d {
     };
 }
 
-// ---- proc (was m_3d/proc.hpp)
-namespace m3d {
-    class proc_c : public scnLeaf_c {
-    public:
-        virtual ~proc_c() {}
-        virtual scnLeaf_c::leafType_e getType() const { return scnLeaf_c::TYPE_PROC; };
-
-        virtual void drawOpa() {}
-        virtual void drawXlu() {}
-
-        bool create(mAllocator_c *allocator, size_t *size);
-    };
-
-    void proc_c_drawProc(nw4r::g3d::ScnProc *proc, bool drawOpa);
-}
-
 // ---- banm (was m_3d/banm.hpp)
 namespace m3d {
     enum playMode_e {
@@ -333,6 +317,22 @@ namespace m3d {
             return create2(mdl, anmChr, allocator);
         }
     };
+}
+
+// ---- proc (was m_3d/proc.hpp)
+namespace m3d {
+    class proc_c : public scnLeaf_c {
+    public:
+        virtual ~proc_c() {}
+        virtual scnLeaf_c::leafType_e getType() const { return scnLeaf_c::TYPE_PROC; };
+
+        virtual void drawOpa() {}
+        virtual void drawXlu() {}
+
+        bool create(mAllocator_c *allocator, size_t *size);
+    };
+
+    void proc_c_drawProc(nw4r::g3d::ScnProc *proc, bool drawOpa);
 }
 
 // ---- anm_chr_blend (was m_3d/anm_chr_blend.hpp)

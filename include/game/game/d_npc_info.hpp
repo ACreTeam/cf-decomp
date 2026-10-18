@@ -324,7 +324,7 @@ public:
     ~goddess_c() {}
     static goddess_c *get();        // 800F7D70
     void clear();                   // 800F7D78
-    void setItem(dItem::Item item); // 800F7D88
+    void setItem(const dItem::Item &item); // 800F7D88
     dItem::Item getItem();          // 800F7D94
 
     /* 0x0 */ dItem::Item mItem;

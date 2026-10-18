@@ -3318,16 +3318,16 @@ int useTool(int player, int x, int z, int tool, int b2, u16 heldItem) {
         if (item != NULL) {
             dFdAsPos_c pos(x, z);
             switch (tool) {
-            case 0:
+            case USE_TOOL_SHAKE:
                 ret = shakeTree(player, item, &pos, b2);
                 break;
-            case 1:
+            case USE_TOOL_AXE:
                 ret = chopTree(player, item, &pos, b2);
                 break;
-            case 2:
+            case USE_TOOL_SHOVEL:
                 ret = dig(player, fd, item, pos, heldItem, b2);
                 break;
-            case 4:
+            case USE_TOOL_WATERING:
                 ret = water(player, item, &pos, b2);
                 break;
             }

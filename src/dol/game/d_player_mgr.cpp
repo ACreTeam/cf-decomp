@@ -37,9 +37,6 @@
 
 extern "C" {
 extern u8 lbl_8074EA7D;
-
-BOOL fn_802C4404(dMiiCreateID_c *mii, u16 *out);
-
 }
 
 // The field task code (d_fg_mng_task.inc, #included by d_field_assessment.cpp).
@@ -163,7 +160,7 @@ void *getHandTransform(int idx) {
     if (player == NULL) {
         return NULL;
     }
-    return player->mMdlCallback.mHandMtx;
+    return &player->mMdlCallback.mHandMtx;
 }
 
 // 800FBE3C
@@ -190,15 +187,15 @@ BOOL canStartNetSave() {
     }
     switch (state) {
     case STATE_FISHING_WAIT:
-    case 0x24:
-    case 0x26:
-    case 0x28:
-    case 0x5A:
-    case 0x99:
-        player->mActorFlags2 |= 0x4;
+    case STATE_FTR_HOLD:
+    case STATE_FTR_PUSH_START:
+    case STATE_FTR_PULL_START:
+    case STATE_PITFALL_STRUGGLE:
+    case STATE_SLINGSHOT_AIM:
+        player->mActorFlags2 |= ACTOR_FLAG2_STOP_FOR_SAVE;
         return TRUE;
     case STATE_FISHING_PUT_BACK:
-    case 0x5B:
+    case STATE_PITFALL_CLIMB_OUT:
         return TRUE;
     }
     return FALSE;
@@ -209,7 +206,7 @@ BOOL isDemoStartState(int state) {
     switch (state) {
     case STATE_IDLE:
     case STATE_WALK:
-    case 0x23:
+    case STATE_FTR_GRAB:
     case STATE_BED_WAIT:
     case STATE_CHAIR_WAIT:
         return TRUE;
@@ -255,7 +252,7 @@ u32 isScriptedMove(int idx) {
     if (player == NULL) {
         return 0;
     }
-    return (player->mActorFlags >> 20) & 1;
+    return (player->mActorFlags & ACTOR_FLAG_SCRIPTED_MOVE) != 0;
 }
 
 // 800FC0F8
@@ -471,17 +468,17 @@ BOOL refreshEquippedDesign(int slot) {
         return TRUE;
     }
     if (!shirt && !hat && held) {
-        player->mActorFlags2 |= 0x20;
+        player->mActorFlags2 |= ACTOR_FLAG2_EQUIP_FROM_MENU;
         if (!changeHeldItem(&current->mEquipment.mHeld)) {
-            player->mActorFlags2 &= ~0x20;
+            player->mActorFlags2 &= ~ACTOR_FLAG2_EQUIP_FROM_MENU;
         }
     } else {
         dItem::Item *pShirt = shirt ? &current->mEquipment.mShirt : NULL;
         dItem::Item *pHat = hat ? &current->mEquipment.mHat : NULL;
         dItem::Item *pHeld = held ? &current->mEquipment.mHeld : NULL;
-        player->mActorFlags2 |= 0x20;
+        player->mActorFlags2 |= ACTOR_FLAG2_EQUIP_FROM_MENU;
         if (!changeOutfitAndHeldItem(pShirt, pHat, pHeld)) {
-            player->mActorFlags2 &= ~0x20;
+            player->mActorFlags2 &= ~ACTOR_FLAG2_EQUIP_FROM_MENU;
         }
     }
     return TRUE;
@@ -629,7 +626,7 @@ BOOL finishShowCatch() {
     if (player->mState != STATE_SHOW_CATCH) {
         return FALSE;
     }
-    player->mNextState = 6;
+    player->mStep = 6;
     return TRUE;
 }
 
@@ -669,7 +666,7 @@ BOOL showCatchAt(const dItem::Item *item, const mVec3_c *pos) {
         return FALSE;
     }
     player->mActionItem = item->mId;
-    player->mActorFlags |= 0x1000000;
+    player->mActorFlags |= ACTOR_FLAG_MENU_ACTION;
     if (pos != NULL) {
         player->mShowPos = *pos;
     }
@@ -684,11 +681,11 @@ BOOL putItemInHole(u32 unitX, u32 unitZ, BOOL fromTask) {
     }
     player->mTargetUnitX = unitX;
     player->mTargetUnitZ = unitZ;
-    player->mActorFlags |= 0x1000000;
+    player->mActorFlags |= ACTOR_FLAG_MENU_ACTION;
     if (fromTask) {
-        player->mActorFlags |= 0x80000000;
+        player->mActorFlags |= ACTOR_FLAG_HOLE_FROM_TASK;
     } else {
-        player->mActorFlags &= ~0x80000000;
+        player->mActorFlags &= ~ACTOR_FLAG_HOLE_FROM_TASK;
     }
     return changeState(STATE_PUT_ITEM_IN_HOLE, PLAYER_INDEX_CURRENT);
 }
@@ -758,9 +755,9 @@ BOOL changeOutfitAndHeldItem(const dItem::Item *shirt, const dItem::Item *hat, c
         }
     }
 
-    player->_223C = 1;
-    player->_2238 = 1;
-    player->mNextState = 8;
+    player->mHeldEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
+    player->mEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
+    player->mStep = 8;
     return changeState(STATE_CHANGE_OUTFIT_AND_HELD, PLAYER_INDEX_CURRENT);
 }
 
@@ -824,7 +821,7 @@ BOOL endDemoWait() {
             }
             break;
         case STATE_DEMO_START:
-            player->mReactionKind = 8;
+            player->mReactionKind = REACTION_NONE;
             break;
         }
         break;
@@ -832,18 +829,18 @@ BOOL endDemoWait() {
         clearDemoFlags(player);
         return TRUE;
     case STATE_GET_UP:
-    case 0x2D:
+    case STATE_GET_OUT_OF_BED:
     case STATE_CHEST_CLOSE:
     case STATE_CHAIR_POSE:
-    case 0x3A:
+    case STATE_CHAIR_STAND_UP:
     case STATE_SHOW_CATCH_AT:
     case STATE_PHONE_HANG_UP:
     case STATE_SHOE_SHINE_END:
         clearDemoFlags(player);
         return TRUE;
     case STATE_ENTER_ROOM:
-    case 0x81:
-    case 0x83:
+    case STATE_ARRIVE_UPSTAIRS:
+    case STATE_ARRIVE_DOWNSTAIRS:
         if (player->mActorFlags2 & ACTOR_FLAG2_COCKROACH) {
             player->mActorFlags2 &= ~ACTOR_FLAG2_COCKROACH;
             if (changeState(STATE_SURPRISED, PLAYER_INDEX_CURRENT)) {
@@ -869,14 +866,14 @@ BOOL endDemoWait() {
         }
         break;
     case STATE_SCENE_START:
-    case 0xAA:
+    case STATE_SCENE_START_HIDDEN:
         return TRUE;
     }
 
     Mgr_c::getCurrentPlayer();
     u32 flags = player->mActorFlags;
     if ((flags & ACTOR_FLAG_TOOL_OUT) && !(flags & ACTOR_FLAG_TOOL_ACTIVE) && !isToolActionHeld()) {
-        if (player->_208C >= 1.0f) {
+        if (player->mToolScale.x >= 1.0f) {
             player->mActorFlags |= ACTOR_FLAG_TOOL_ACTIVE;
             if (changeState(STATE_IDLE, PLAYER_INDEX_CURRENT)) {
                 clearDemoFlags(player);
@@ -932,7 +929,7 @@ BOOL sitOnChair(s16 angle, int type, f32 x, f32 z) {
         return FALSE;
     }
     int state = player->mState;
-    if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->mActorFlags2 & 0x4000)))) {
+    if (!(state == STATE_IDLE || state == STATE_WALK || (state == STATE_FTR_GRAB && (player->mActorFlags2 & ACTOR_FLAG2_POINTER_FTR)))) {
         return FALSE;
     }
     setTargetXZ(player, x, z);
@@ -987,7 +984,7 @@ BOOL lieOnBed(s16 angle, int type, f32 x, f32 z, int arg) {
         return FALSE;
     }
     int state = player->mState;
-    if (!(state == STATE_IDLE || state == STATE_WALK || (state == 0x23 && (player->mActorFlags2 & 0x4000)))) {
+    if (!(state == STATE_IDLE || state == STATE_WALK || (state == STATE_FTR_GRAB && (player->mActorFlags2 & ACTOR_FLAG2_POINTER_FTR)))) {
         return FALSE;
     }
     if (type != LIE_FROM_BACK && type != LIE_FROM_FRONT) {
@@ -1345,7 +1342,7 @@ u32 canUseMiiMask() {
     if (player == NULL) {
         return 0;
     }
-    return (player->mActorFlags >> 10) & 1;
+    return (player->mActorFlags & ACTOR_FLAG_MII_MASK_OK) != 0;
 }
 
 // 800FE39C
@@ -1378,7 +1375,7 @@ BOOL walkThroughDoor(s16 angle, int target, f32 x, f32 z) {
     }
     setTargetXZ(player, x, z);
     player->mTargetAngle = angle;
-    player->mActorFlags2 |= 0x20;
+    player->mActorFlags2 |= ACTOR_FLAG2_EQUIP_FROM_MENU;
     player->mDoorTarget = target;
     return changeState(STATE_WALK_THROUGH_DOOR, PLAYER_INDEX_CURRENT);
 }
@@ -1642,13 +1639,13 @@ BOOL changeHeldItem(const dItem::Item *held) {
     if (held->mId == dItem::ITEM_ID_NONE) {
         if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
             player->mHeldItemChange = HELD_ITEM_CHANGE_REMOVE;
-            player->_223C = 1;
+            player->mHeldEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
         }
 
         dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
         dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-        player->mNextState = 8;
-        player->mActorFlags |= 0x1000000;
+        player->mStep = 8;
+        player->mActorFlags |= ACTOR_FLAG_MENU_ACTION;
         return changeState(STATE_CHANGE_HELD_ITEM, PLAYER_INDEX_CURRENT);
     } else {
         const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*held);
@@ -1660,13 +1657,13 @@ BOOL changeHeldItem(const dItem::Item *held) {
         }
         if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_TOWN) || (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_CITY_FIELD) && dHmnToolBank_c::isHandTool(held))) {
             player->mHeldItemChange = HELD_ITEM_CHANGE_EQUIP;
-            player->_223C = 1;
+            player->mHeldEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
         }
     }
     dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
     dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
-    player->mNextState = 8;
-    player->mActorFlags |= 0x1000000;
+    player->mStep = 8;
+    player->mActorFlags |= ACTOR_FLAG_MENU_ACTION;
     return changeState(STATE_CHANGE_HELD_ITEM, PLAYER_INDEX_CURRENT);
 }
 
@@ -1751,7 +1748,7 @@ u32 isMakingNoise(int idx) {
     if (player == NULL) {
         return 0;
     }
-    return (player->mActorFlags >> 13) & 1;
+    return (player->mActorFlags & ACTOR_FLAG_NOISY) != 0;
 }
 
 // 800FF188
@@ -1760,7 +1757,7 @@ u32 isActingOnUnit(int idx) {
     if (player == NULL) {
         return 0;
     }
-    return (player->mActorFlags2 >> 7) & 1;
+    return (player->mActorFlags2 & ACTOR_FLAG2_UNIT_ACTION) != 0;
 }
 
 // 800FF1C0
@@ -1783,20 +1780,20 @@ int getActionUnitAndKind(int *x, int *z, int idx) {
     case STATE_SHAKE_TREE_END:
         getActionUnitCoordinates(player, x, z);
         return 1;
-    case 0x12:
+    case STATE_AXE_CHOP:
         getActionUnitCoordinates(player, x, z);
         return 2;
-    case 0x13:
+    case STATE_AXE_HIT:
         getActionUnitCoordinates(player, x, z);
         return 3;
-    case 0xD:
+    case STATE_NET_SWING:
         *x = (int)player->mPos.x >> 5;
         *z = (int)player->mPos.z >> 5;
         return 4;
-    case 0x40:
+    case STATE_SHOVEL_DIG:
         getActionUnitCoordinates(player, x, z);
         return 5;
-    case 0x41:
+    case STATE_SHOVEL_HIT:
         getActionUnitCoordinates(player, x, z);
         return 6;
     }
@@ -1927,20 +1924,20 @@ BOOL changeEquipment(const dEquip_c *equip, int mode, int kind) {
     case EQUIPMENT_CHANGE_SHIRT:
     case EQUIPMENT_CHANGE_HAT:
     case EQUIPMENT_CHANGE_ACCESSORY:
-        player->_2238 = 1;
-        player->mNextState = 8;
+        player->mEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
+        player->mStep = 8;
         return changeState(STATE_CHANGE_EQUIPMENT, PLAYER_INDEX_CURRENT);
     case 4:
     case EQUIPMENT_CHANGE_DESIGN:
-        player->_2238 = 1;
-        player->mNextState = 8;
+        player->mEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
+        player->mStep = 8;
         return changeState(STATE_CHANGE_DESIGN, PLAYER_INDEX_CURRENT);
     case 0:
-        player->_2238 = 1;
+        player->mEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
         return changeState(STATE_CHANGE_EQUIPMENT_QUICK, PLAYER_INDEX_CURRENT);
     case EQUIPMENT_CHANGE_TRICK:
-        player->_2238 = 1;
-        player->mNextState = 8;
+        player->mEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
+        player->mStep = 8;
         return changeState(STATE_TRICK_CHANGE, PLAYER_INDEX_CURRENT);
     }
     return FALSE;
@@ -2021,7 +2018,7 @@ u8 getShoeColor(u32 idx, u32 gender) {
 
 // 800FFA50
 BOOL isATriggeredFacing(const mVec3_c *pos, int maxAngle, f32 maxDist) {
-    if (dPad::isATriggered() && isFacingPosition(pos, maxAngle, maxDist)) {
+    if (dPad::isATriggered() && isFacingPosition(maxDist, pos, maxAngle)) {
         return TRUE;
     }
     return FALSE;
@@ -2046,44 +2043,44 @@ BOOL isToolState() {
         return FALSE;
     }
     switch (player->mState) {
-    case 0xD:
-    case 0xE:
-    case 0xF:
-    case 0x10:
-    case 0x11:
-    case 0x12:
-    case 0x13:
-    case 0x14:
-    case 0x15:
-    case 0x16:
-    case 0x18:
-    case 0x19:
+    case STATE_NET_SWING:
+    case STATE_NET_CATCH:
+    case STATE_NET_POCKET:
+    case STATE_AXE_SWING:
+    case STATE_AXE_STRIKE:
+    case STATE_AXE_CHOP:
+    case STATE_AXE_HIT:
+    case STATE_AXE_MISS:
+    case STATE_AXE_BREAK:
+    case STATE_AXE_BREAK_MSG:
+    case STATE_FISHING_CAST_MISS:
+    case STATE_FISHING_CAST:
     case STATE_FISHING_WAIT:
-    case 0x1B:
-    case 0x1C:
+    case STATE_FISHING_HOOKED:
+    case STATE_FISHING_FAIL:
     case STATE_FISHING_PUT_BACK:
-    case 0x1E:
-    case 0x1F:
-    case 0x20:
-    case 0x3E:
-    case 0x3F:
-    case 0x40:
-    case 0x41:
-    case 0x42:
-    case 0x43:
+    case STATE_FISHING_LAND:
+    case STATE_FISHING_GET:
+    case STATE_FISHING_PUT_AWAY:
+    case STATE_SHOVEL_START:
+    case STATE_SHOVEL_WAIT:
+    case STATE_SHOVEL_DIG:
+    case STATE_SHOVEL_HIT:
+    case STATE_SHOVEL_MISS:
+    case STATE_SHOVEL_SWING_LOW:
     case STATE_PUT_ITEM_IN_HOLE:
-    case 0x45:
-    case 0x46:
-    case 0x47:
-    case 0x7D:
-    case 0x89:
-    case 0x8A:
-    case 0x8D:
-    case 0x8E:
-    case 0x99:
+    case STATE_SHOVEL_BURY:
+    case STATE_SHOVEL_DIG_UP_ITEM:
+    case STATE_SHOW_DUG_ITEM:
+    case STATE_SHAKE_UMBRELLA:
+    case STATE_WATER:
+    case STATE_BLOW_DANDELION:
+    case STATE_FIREWORKS:
+    case STATE_CRACKER:
+    case STATE_SLINGSHOT_AIM:
     case STATE_SLINGSHOT_SHOOT:
     case STATE_SLINGSHOT_WATCH:
-    case 0xA2:
+    case STATE_BLOW_BUBBLES:
         return TRUE;
     }
     return FALSE;
@@ -2108,11 +2105,11 @@ BOOL isPickUpState() {
         return FALSE;
     }
     switch (player->mState) {
-    case 0x51:
-    case 0x52:
-    case 0x53:
+    case STATE_PICK_UP_REACH:
+    case STATE_PICK_UP_ITEM:
+    case STATE_PICK_UP_ITEM_MSG:
     case STATE_PICK_UP:
-    case 0x7E:
+    case STATE_PICK_UP_UNIT_ITEM:
         return TRUE;
     }
     return FALSE;
@@ -2125,28 +2122,28 @@ BOOL isFurnitureState() {
         return FALSE;
     }
     switch (player->mState) {
-    case 0x23:
-    case 0x24:
-    case 0x25:
-    case 0x26:
-    case 0x27:
-    case 0x28:
-    case 0x29:
-    case 0x2A:
-    case 0x2B:
-    case 0x2C:
-    case 0x2D:
-    case 0x2E:
-    case 0x2F:
-    case 0x30:
-    case 0x31:
-    case 0x35:
-    case 0x36:
-    case 0x37:
-    case 0x38:
+    case STATE_FTR_GRAB:
+    case STATE_FTR_HOLD:
+    case STATE_FTR_ROTATE:
+    case STATE_FTR_PUSH_START:
+    case STATE_FTR_PUSH:
+    case STATE_FTR_PULL_START:
+    case STATE_FTR_PULL:
+    case STATE_LIE_DOWN:
+    case STATE_GET_INTO_BED:
+    case STATE_GET_UP:
+    case STATE_GET_OUT_OF_BED:
+    case STATE_BED_WAIT:
+    case STATE_BED_ROLL:
+    case STATE_BED_ROLL_OVER:
+    case STATE_BED_ROLL_BLOCKED:
+    case STATE_SIT_DOWN:
+    case STATE_SIT_DOWN_FRONT:
+    case STATE_SIT_DOWN_SIDE:
+    case STATE_CHAIR_WAIT:
     case STATE_CHAIR_POSE:
-    case 0x3A:
-    case 0x3B:
+    case STATE_CHAIR_STAND_UP:
+    case STATE_CHAIR_FACE_FRONT:
         return TRUE;
     }
     return FALSE;
@@ -2159,7 +2156,7 @@ BOOL isActionItemState() {
         return FALSE;
     }
     int state = player->mState;
-    if (state == 0xE || state == 0x1F) {
+    if (state == STATE_NET_CATCH || state == STATE_FISHING_GET) {
         return TRUE;
     }
     return FALSE;
@@ -2172,14 +2169,14 @@ u16 getActiveActionItem() {
         return dItem::ITEM_ID_NONE;
     }
     int state = player->mState;
-    if (state != 0xE && state != 0x1F) {
+    if (state != STATE_NET_CATCH && state != STATE_FISHING_GET) {
         return dItem::ITEM_ID_NONE;
     }
-    return player->mActionItem;
+    return player->mActionItem.mId;
 }
 
 // 800FFDC0
-BOOL isFacingPosition(const mVec3_c *target, int maxAngle, f32 maxDist) {
+BOOL isFacingPosition(f32 maxDist, const mVec3_c *target, int maxAngle) {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;
@@ -2341,24 +2338,24 @@ BOOL setHatHideBone(u32 bone, dAcPlayer_c *player) {
     switch (bone) {
     case 0:
     case 1:
-        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x1;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~EQUIPMENT_HAT_STYLE) | EQUIPMENT_HAT_CAP;
         break;
     case 2:
-        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x2;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~EQUIPMENT_HAT_STYLE) | EQUIPMENT_HAT_FULL_MASK;
         break;
     case 3:
     case 4:
-        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x4;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~EQUIPMENT_HAT_STYLE) | EQUIPMENT_HAT_MASK;
         break;
     case 5:
     case 6:
-        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x8;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~EQUIPMENT_HAT_STYLE) | EQUIPMENT_HAT_MASK_2;
         break;
     case 7:
-        player->mEquipFlags = (player->mEquipFlags & (u16)~0x3F) | 0x10;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~EQUIPMENT_HAT_STYLE) | EQUIPMENT_HAT_OVER_HEAD;
         break;
     case dItem::HIDE_BONE_NONE:
-        player->mEquipFlags = (player->mEquipFlags & (u16)~0x1F) | 0x20;
+        player->mEquipFlags = (player->mEquipFlags & (u16)~EQUIPMENT_HAT_ANY) | EQUIPMENT_HAT_NONE;
         break;
     default:
         return FALSE;
@@ -2453,7 +2450,7 @@ BOOL setShoeColor(u8 shoeColor, u8 b) {
     }
     current->mShoeColor = shoeColor;
     current->mShoeKind = b;
-    player->mNextState = 0x1E;
+    player->mStep = 0x1E;
     return TRUE;
 }
 
@@ -2658,12 +2655,12 @@ BOOL isSafeFromInsects() {
         return FALSE;
     }
     switch (player->mState) {
-    case 0x7:
-    case 0x8:
-    case 0x58:
-    case 0x59:
-    case 0x5A:
-    case 0x5B:
+    case STATE_DEMO_START:
+    case STATE_DEMO_WAIT:
+    case STATE_PITFALL_TRIGGER:
+    case STATE_PITFALL_FALL:
+    case STATE_PITFALL_STRUGGLE:
+    case STATE_PITFALL_CLIMB_OUT:
         return TRUE;
     }
     if (player->mActorFlags & ACTOR_FLAG_DEMO) {
@@ -2679,10 +2676,10 @@ BOOL isScaringCockroaches(int idx) {
         return FALSE;
     }
     switch (player->mState) {
-    case 0x1:
-    case 0x2:
-    case 0x27:
-    case 0x29:
+    case STATE_WALK:
+    case STATE_RUN:
+    case STATE_FTR_PUSH:
+    case STATE_FTR_PULL:
         return TRUE;
     }
     return FALSE;
@@ -2785,7 +2782,7 @@ BOOL changeHeldItemForDemo(const dItem::Item *held) {
             return FALSE;
         }
         player->mHeldItemChange = HELD_ITEM_CHANGE_EQUIP;
-        player->_223C = 1;
+        player->mHeldEquipStep = dAcPlayer_c::EQUIP_STEP_LOAD;
         dPlayerMngr_c::setLocalPlayerEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
         dPlayerMngr_c::setLocalEquip(dNet::getMyNo(), dEquip_c::PART_HELD, held->mId);
     }
@@ -2821,7 +2818,7 @@ BOOL getScriptedActionPosition(mVec3_c *out) {
     if (player->mState != STATE_GODDESS_ITEM) {
         return FALSE;
     }
-    if (player->mNextState != 0x20) {
+    if (player->mStep != 0x20) {
         return FALSE;
     }
     *out = player->mScriptedActionPos;
@@ -2941,7 +2938,7 @@ void markDailyTanUpdated() {
 }
 
 // 8010152C
-u8 isCockroachNoticed() {
+BOOL isCockroachNoticed() {
     return gManager.mCockroachNoticed;
 }
 
@@ -3281,10 +3278,10 @@ void cacheOtherSceneAction(int idx, u8 b, int state, const u8 *param) {
 // 80101EB0
 BOOL updateActionFieldTasks(int idx, u8 b, int state, const u8 *param) {
     switch (state) {
-    case 0x12:
+    case STATE_AXE_CHOP:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
-    case 0x13:
+    case STATE_AXE_HIT:
         if (param[5] != 0) {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
@@ -3295,51 +3292,51 @@ BOOL updateActionFieldTasks(int idx, u8 b, int state, const u8 *param) {
     case STATE_SHAKE_TREE_END:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
-    case 0x40:
+    case STATE_SHOVEL_DIG:
         fgMngTask_procGroupAt(param[4], param[5], 0);
         break;
-    case 0x41:
+    case STATE_SHOVEL_HIT:
         if (param[5] != 0) {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
-    case 0x45:
+    case STATE_SHOVEL_BURY:
         fgMngTask_procGroupAt(param[2], param[3], 0);
         break;
-    case 0x46:
+    case STATE_SHOVEL_DIG_UP_ITEM:
         if (param[4] != 0) {
             fgMngTask_releaseAt(b, param[2], param[3], 0);
         } else {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
-    case 0x52:
+    case STATE_PICK_UP_ITEM:
         if (param[4] != 0) {
             fgMngTask_releaseAt(b, param[2], param[3], 0);
         } else {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
-    case 0x53:
+    case STATE_PICK_UP_ITEM_MSG:
         if (param[4] != 0) {
             fgMngTask_releaseAt(b, param[2], param[3], 0);
         } else {
             fgMngTask_procGroupAt(param[2], param[3], 0);
         }
         break;
-    case 0x55:
+    case STATE_PULL_WEED:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
-    case 0x57:
+    case STATE_STAMP_HOLE:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
-    case 0x59:
+    case STATE_PITFALL_FALL:
         fgMngTask_releaseAt(b, param[0], param[1], 0);
         break;
-    case 0x5B:
+    case STATE_PITFALL_CLIMB_OUT:
         fgMngTask_procGroupAt(param[0], param[1], 0);
         break;
-    case 0x7E:
+    case STATE_PICK_UP_UNIT_ITEM:
         fgMngTask_procGroupAt(param[2], param[3], param[4]);
         break;
     default:

@@ -535,6 +535,7 @@ modules:
   name: d_a_playerNP
   symbols: config/RUUE01_00/d_a_playerNP/symbols.txt
   splits: config/RUUE01_00/d_a_playerNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_atmNP.rel
   hash: 17a7ddd97432818af2c8a303e2b9d0f88c622f1a
   name: d_a_rmobj_atmNP

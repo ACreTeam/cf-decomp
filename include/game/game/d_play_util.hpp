@@ -43,6 +43,8 @@ public:
     /* 0x138 */ dPlayActor_c *mPlayers[PLAY_PLAYER_NUM];
     /* 0x158 */ u8 _158[0x764 - 0x158];
     /* 0x764 */ dPlayActor_c *mActors;
+    /* 0x768 */ u8 _768[4];
+    /* 0x76C */ void *mNetInsects[4]; // per member: the insect in its net (remote players)
 };
 
 #define PLAY_SYNC_REC_NUM 8

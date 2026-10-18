@@ -111,7 +111,7 @@ dHmnBodyMng_c::dHmnBodyMng_c() : mBufIdx(4) {}
 
 dHmnBodyMng_c::~dHmnBodyMng_c() {}
 
-void dHmnBodyMng_c::setBufIdx(u8 idx) {
+void dHmnBodyMng_c::setBufIdx(int idx) {
     mBufIdx = idx;
 }
 

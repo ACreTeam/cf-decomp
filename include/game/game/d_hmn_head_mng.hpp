@@ -22,7 +22,7 @@ public:
 
     dHmnHeadMng_c();  // 800B92FC: mBufIdx = 4 (none)
     ~dHmnHeadMng_c(); // 800B9308
-    void setBufIdx(u8 idx);           // 800B9348
+    void setBufIdx(int idx);           // 800B9348
     BOOL setHead(int no, int kind);   // 800B9350: copies the head into the other half of the buffer, then binds it
     void *getData() const;            // 800B93FC: the buffer's current data (NULL without a buffer)
     void bind();                      // 800B943C

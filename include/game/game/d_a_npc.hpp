@@ -836,6 +836,10 @@ public:
     public:
         // Data block passed by the emotion action: animation id, manpu type, stop the others.
         struct startData_s {
+            enum AnmId { ANM_NONE = 0x1BC };
+
+            AnmId getAnmId() const { return (AnmId)mAnmId; }
+
             /* 0x0 */ u32 mAnmId;
             /* 0x4 */ u8 mType;
             /* 0x5 */ u8 mStopOthers;
@@ -1585,6 +1589,15 @@ extern mAng l_pointAngle;                      // 0x4000 getPointedUnit angle (d
 
 // Shared with the NPC RELs (d_a_npc_out etc.).
 struct emotionData_s {
+    enum Phase { START = 0, LOOP = 1 };
+
+    const dAcNpc_c::manpuMgr_c::startData_s *getPhaseData(Phase phase) const {
+        // The start and loop records occupy consecutive eight-byte slots.
+        return (const dAcNpc_c::manpuMgr_c::startData_s *)((const u8 *)this + sizeof(mStart) * phase);
+    }
+
+    m3d::playMode_e getMode() const { return (m3d::playMode_e)mMode; }
+
     /* 0x00 */ dAcNpc_c::manpuMgr_c::startData_s mStart; // mAnmId 0: the wait animation of the npc
     /* 0x08 */ dAcNpc_c::manpuMgr_c::startData_s mLoop;  // mAnmId 0x1BC: none (end)
     /* 0x10 */ u32 mMode;                                // m3d::playMode_e of mStart

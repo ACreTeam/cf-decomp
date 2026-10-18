@@ -3,13 +3,6 @@
 #include <game/game/d_event.hpp>
 #include <game/game/d_play_util.hpp>
 #include <game/game/d_a_str.hpp>
-// Inferred names for exports from the structure and field-object RELs.
-namespace dAStr {
-extern const float cNpcDoorOffset;
-mVec3_c getNpcDoorPos(daSTR_c *, const mVec3_c *, int, float);
-void requestNpcEnter(daSTR_c *);
-void requestNpcExit(daSTR_c *);
-} // namespace dAStr
 #include <game/game/d_fgobj_manager.hpp>
 
 #include <game/game/d_field_assessment.hpp>
@@ -1392,7 +1385,7 @@ BOOL dAcNpcOut_c::isPlayerPushing() {
         return FALSE;
     }
     dAcNpc_c::objc_c *objc = &mObjc;
-    if (!objc->mHitType || !objc->isHit(0x80000001)) {
+    if (!objc->mHitType || !objc->isHit(dObjc::TYPE_PLAYER)) {
         return FALSE;
     }
     dActor_c *actor =

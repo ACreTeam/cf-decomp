@@ -12,7 +12,6 @@
 // RVLFaceLib functions not named yet.
 extern "C" {
 RFLErrcode fn_802B96B0(); // RFLGetAsyncStatus
-BOOL fn_802C4404(dMiiCreateID_c *id, u16 *index); // the official database index of a create ID
 RFLErrcode fn_802C4BE8(RFLStoreData *data, RFLDataSource source, u16 index);
 u32 fn_802C4F78(u16 num); // RFLGetMiddleDBBufferSize
 void fn_802C4F80(RFLMiddleDB *db, int type, void *buf, u16 num); // RFLInitMiddleDB

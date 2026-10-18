@@ -493,7 +493,7 @@ void daSnowMan_c::executeRoll() {
     if (other != NULL) {
         BOOL soil = field->getDigType(&other->mPos) == 0;
         BOOL flat = !mOnSlope && !other->mOnSlope;
-        if (mObjc.isHit(0x80000008) && other->mScale >= cStackScaleMin &&
+        if (mObjc.isHit(dObjc::TYPE_SNOWBALL) && other->mScale >= cStackScaleMin &&
             mPushed && soil && flat && !dDemo::isType(dDemo::TYPE_ANY) &&
             dDemo::requestSpeak(this, NULL)) {
             clearDemoState();
@@ -533,8 +533,8 @@ void daSnowMan_c::executeRoll() {
         mSpeed.x = 0.0f;
         mSpeed.z = 0.0f;
     }
-    mObjc.set(this, height, 2.0f * radius, 0x80000008,
-              mWasPushed ? 0x40007E : 0x8040007F, mWeight, 0);
+    mObjc.set(this, height, 2.0f * radius, dObjc::TYPE_SNOWBALL,
+              mWasPushed ? 0x40007E : dObjc::MASK_DEFAULT, mWeight, 0);
     mObjc.mParam = (u32)this;
     if (!checkGround()) {
         doBreak();
@@ -876,7 +876,7 @@ void daSnowMan_c::executeSettle() {
         mPos = mTargetPos;
         changeState(STATE_BASE);
     }
-    mObjc.set(this, radius, 2.0f * radius, 0x80000010, 0x8040007F, mWeight, 0);
+    mObjc.set(this, radius, 2.0f * radius, dObjc::TYPE_SNOWMAN, dObjc::MASK_DEFAULT, mWeight, 0);
     mObjc.mParam = 0;
     mObjc.regist();
 }

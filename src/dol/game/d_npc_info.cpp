@@ -1206,7 +1206,7 @@ void goddess_c::clear() {
 }
 
 // 800F7D88
-void goddess_c::setItem(dItem::Item item) {
+void goddess_c::setItem(const dItem::Item &item) {
     mItem = item;
 }
 

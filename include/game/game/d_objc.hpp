@@ -72,6 +72,16 @@ enum {
     HIT_STR = 0x80100000,    // a town structure
 };
 
+// base_c types of the actors (with base_c::TYPE_DPD) and their usual collision mask.
+enum {
+    TYPE_PLAYER = 0x80000001,   // dAcPlayer_c::mObjc
+    TYPE_NPC = 0x80000002,      // dAcNpc_c::mObjc
+    TYPE_SNOWBALL = 0x80000008, // a snowball being rolled (daSnowMan_c)
+    TYPE_SNOWMAN = 0x80000010,  // a finished snowman (daSnowMan_c)
+    TYPE_ACTION = 0x20,         // dAcPlayer_c::mObjcPos: the tool / action cylinder
+    MASK_DEFAULT = 0x8040007F,
+};
+
 // NULL while nothing was hit (a zero position).
 const dpdPos_c *getDpdPos(); // 801AD6E0
 const dpdHit_c *getDpdHit(); // 801AD724
@@ -83,7 +93,7 @@ const dpdHit_c *getDpdHit(); // 801AD724
 class base_c {
 public:
     // Returns the weight to use against other (see mWeight) and may scale the push (rate).
-    typedef u8 (*weightFunc)(base_c *self, base_c *other, f32 *rate);
+    typedef u8 (*weightFunc)(const base_c *self, const base_c *other, f32 *rate);
     typedef void (*hitFunc)(base_c *other);
 
     enum {

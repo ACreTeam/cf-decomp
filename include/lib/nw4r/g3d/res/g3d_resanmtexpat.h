@@ -103,6 +103,7 @@ public:
 
     bool Bind(const ResFile file);
     void Release();
+    void fn_8023A41C(const char *texName); // 8023A41C (unnamed; d_a_player resets the eye / mouth textures with it)
 
     ResFile GetParent() const;
 

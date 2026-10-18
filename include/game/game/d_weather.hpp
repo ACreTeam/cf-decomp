@@ -39,6 +39,9 @@ class dWeather_c : public fBase_c {
     static BOOL isRainKind(int weather) {
         return weather == dWeather::HEAVY_RAIN || weather == dWeather::RAIN;
     }
+    static BOOL isSnowKind(int weather) {
+        return weather == dWeather::HEAVY_SNOW || weather == dWeather::SNOW;
+    }
     static dWeather_c *sInstance;
     dWeatherRain::Rain_c mRain;
     dWeatherSnowDraw_c mSnow;

@@ -87,7 +87,7 @@ class dPlayerMngr_c : public fBase_c {
     static void setLocalEquip(int idx, u8 part, u16 item); // 801B8898
     static int updateEquip(int idx, int part);             // 801B8918
     static BOOL isEquipLoaded(int idx, u8 part);           // 801B8AC4
-    static u8 isEquipChecked(int idx);                     // 801B8BB8
+    static BOOL isEquipChecked(int idx);                   // 801B8BB8
     static void clearEquipChecked(int idx);                // 801B8BC4
     static dHmnCloth_c *getCloth(u32 idx);                 // 801B8BD4
     static dHmnHeadItem_c *getHeadItem(u32 idx);           // 801B8C04
@@ -115,7 +115,7 @@ class dPlayerMngr_c : public fBase_c {
     static u8 getRemoteState(u32 idx);                               // 801B94FC
     static void setRemoteParam(u32 idx, const actionParam_c *param); // 801B9518
     static BOOL getRemoteParam(u32 idx, actionParam_c *param);       // 801B9548
-    static u8 isRemotePresent(u32 idx);                              // 801B9588
+    static BOOL isRemotePresent(u32 idx);                            // 801B9588
     int getRemoteCreateState(int state);                             // 801B95B0
     static void requestSync();                                       // 801B9610
     static void clearAllEquip();                                     // 801B961C

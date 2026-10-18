@@ -599,7 +599,7 @@ BOOL dPlayerMngr_c::isEquipLoaded(int idx, u8 part) {
 }
 
 // 801B8BB8
-u8 dPlayerMngr_c::isEquipChecked(int idx) {
+BOOL dPlayerMngr_c::isEquipChecked(int idx) {
     return sEquipChecked[idx];
 }
 
@@ -937,7 +937,7 @@ BOOL dPlayerMngr_c::getRemoteParam(u32 idx, actionParam_c *param) {
 }
 
 // 801B9588
-u8 dPlayerMngr_c::isRemotePresent(u32 idx) {
+BOOL dPlayerMngr_c::isRemotePresent(u32 idx) {
     if (sInstance == NULL || idx >= MEMBER_NUM) {
         return FALSE;
     }

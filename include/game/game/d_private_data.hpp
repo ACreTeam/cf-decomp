@@ -51,6 +51,9 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_CARD_REISSUE = 0x46,          // a new shopping card was asked for at the ATM; mailed on the next day
                                                 // (dPrivateData_c::updateBank), isCardMissing is FALSE meanwhile
     PRIVATE_FLAG0_MOM_FIRST_LETTER = 0x4F,      // Mom's first letter was delivered (dMotherMail::sendFirst)
+    PRIVATE_FLAG0_SUNTAN = 0x50,                // d_a_player: 15 min (dPlayerMgr timer) outdoors on summer days, 10:00-17:00
+    PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
+    PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
 };
@@ -58,6 +61,7 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_FISHING_JOINED = 0x11, // 0x11..0x13: dNpcInfo::uomasa_c
     PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
     PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
+    PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
     PRIVATE_FLAG1_BUG_OFF_JOINED = 0x35, // 0x35..0x38: dNpcInfo::bug_c
     PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START = 0x36,
     PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,
@@ -181,6 +185,9 @@ public:
 
     u8 mData[8];
 };
+
+// RFL_Database.c 802C4404 (unnamed): the official database index of a create ID; FALSE if not found.
+extern "C" BOOL fn_802C4404(dMiiCreateID_c *id, u16 *index);
 
 // A saved outfit (0xC); 8 of these at dPrivateData_c+0x7F40 (mOutfits).
 class dOutfit_c {
@@ -360,6 +367,7 @@ enum dFortune_e {
     FORTUNE_FRIENDSHIP, // 2 approach: villagers of the same gender
     FORTUNE_MONEY,      // 3 field assessment doubles the money-tree chance
     FORTUNE_ITEM,       // 4 approach / rollan: item luck
+    FORTUNE_BAD,        // 5 the player trips while walking fast (d_a_player)
 };
 
 struct dSaveOption_c;
@@ -370,6 +378,12 @@ class dPlayerPostBox_c;
 
 class dPrivateData_c {
 public:
+    enum HairColor { DEFAULT_COLOR = 0 };
+
+    HairColor getHairColor() const {
+        return mHairColor >= 8 ? DEFAULT_COLOR : (HairColor)mHairColor;
+    }
+
     // The player's option bits (_83E8, the first byte of a dSaveOption_c; d_save_data getOption).
     dSaveOption_c *getOption() { return (dSaveOption_c *)&_83E8; }
     const dPersonalID_c *getPersonalID() const { return &mPID; }
@@ -415,6 +429,10 @@ public:
     void dailyUpdate(int days);       // 80137DA4
 
     // Items.
+    void registerCatalogItem(const dItem::Item &item, BOOL force) {
+        mCatalog.registerItem(item.getId(), force);
+    }
+
     void setPocket(const dItem::Item *item, int idx, BOOL flag); // 80137F58
     // Empties a pocket (d_a_npc_nml talk_c 800315D4 / 800319F4: the inlined local takes the stack
     // slot below the caller's own Item locals).
@@ -435,6 +453,7 @@ public:
 
     // Flag bits.
     BOOL isFlag0(u32 flag) const; // 80138580
+    void setMiiMask(u8 mask) { mMiiMask = mask; }
     void setFlag0(u32 flag);      // 801385C0
     void clearFlag0(u32 flag);    // 801385F0
     BOOL isFlag1(u32 flag);       // 80138620
