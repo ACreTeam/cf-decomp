@@ -173,6 +173,7 @@ modules:
   name: d_menu_lcrsrNP
   symbols: config/RUUE01_00/d_menu_lcrsrNP/symbols.txt
   splits: config/RUUE01_00/d_menu_lcrsrNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_starNP.rel
   hash: 542138d103276202707bb71e3b1c5406567fea99
   name: d_menu_starNP

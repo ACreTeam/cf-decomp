@@ -1702,10 +1702,10 @@ config.libs = [
     Rel(
         "d_menu_lcrsrNP",
         [
-            Object(NonMatching, "d_menu_lcrsrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_lcrsrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_lcrsrNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_lcrsrNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_lcrsrNP/d_menu_lcrsr.cpp"),
+            Object(Matching, "d_menu_lcrsrNP/d_menu_lcrsr.cpp"),
         ],
     ),
     Rel(
