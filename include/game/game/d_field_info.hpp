@@ -177,7 +177,8 @@ public:
         : mBlocks(NULL), mBlockW(0), mBlockH(0), mUnitW(0), mUnitH(0), mWorldW(0.0f), mWorldH(0.0f), mBg(0),
           _24(NULL) {}
     virtual ~dFdBase_c() {}                                                              // 8008ECE4
-    virtual BOOL getAttr(f32 *height, f32 *param, int *attr, int x, int z);              // 8008D3A0
+    virtual BOOL getAttr(f32 *radius, f32 *height, int *attr, int x,
+                         int z); // 8008D3A0
     virtual void release(EGG::Heap *heap) {}                                             // 8008ED24
     virtual int getKind() = 0;
 

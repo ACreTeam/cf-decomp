@@ -2969,7 +2969,7 @@ bool dInsFldBase_c::isSceneChanging() {
     if (dInsectField::getSceneChange()->isChanging() == TRUE) {
         return true;
     }
-    return lbl_123_bss_A == 1;
+    return dStrm_c::sDoorEntered == 1;
 }
 
 // 0x7740

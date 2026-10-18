@@ -1018,7 +1018,8 @@ int dSTR::getCurBuilding(int *unitX, int *unitZ) {
 
 // A building and where it stands, packed (getCurBuildingCode).
 static inline u32 makeBuildingCode(int x, int z, int idx) {
-    return (x & 0xFF) | ((z & 0xFF) << 8) | (dSTR::getBuildingInfo(idx)->_08 << 16);
+    return (x & 0xFF) | ((z & 0xFF) << 8) |
+           (dSTR::getBuildingInfo(idx)->mProfile << 16);
 }
 
 // 80168824
@@ -1039,7 +1040,7 @@ int dSTR::getCurBuildingType() {
         if (idx == BUILDING_SHOP - BUILDING_BUILD_SITE) {
             return (dSaveData_c::getTown()->mShops.mShop.mStage & 3) == SHOP_STAGE_CRANNY ? BUILDING_TYPE_2 : BUILDING_TYPE_1;
         }
-        return getBuildingInfo(idx)->_0A;
+        return getBuildingInfo(idx)->mType;
     }
     return 0;
 }
@@ -1804,7 +1805,7 @@ int getCurBuildingKind(u8 *other) {
             *other = TRUE;
             return BUILDING_TYPE_2;
         }
-        return info->_0A; // the attr d_field_info reads too
+        return info->mType;
     }
     return BUILDING_TYPE_0;
 }

@@ -18,6 +18,10 @@ namespace dItem {
 
 enum {
     ITEM_ID_NONE = 0xFFF1,
+    // A unit taken by a structure (inferred): a stone column for the field
+    // (dFdBase_c::getAttr), a structure hit for dObjc; dStrm_c::clearStrUnits
+    // leaves it on the structure units.
+    ITEM_ID_STR_UNIT = 0x7003,
 
     // Field objects index the fg info table directly.
     FG_COUNT = 0xE5,
@@ -453,9 +457,9 @@ struct Item {
     int getExtIndex() const {
         return isExtId() ? mId & 0xFFF : -1;
     }
-    f32 getExtValueA() const; // 800A6370
-    f32 getExtValueB() const; // 800A6404
-    BOOL getExtFlag() const; // 800A6498
+    f32 getExtValueA() const; // 800A6370: dBuildingInfo_c::mColRadius
+    f32 getExtValueB() const; // 800A6404: dBuildingInfo_c::mColHeight
+    BOOL getExtFlag() const;  // 800A6498: dBuildingInfo_c::mMultiple
 
     BOOL isOrgDesign() const; // 800A651C
     // BITM kind, or KIND_NONE for unencoded ids or missing entries.

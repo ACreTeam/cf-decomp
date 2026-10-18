@@ -729,7 +729,7 @@ void calc() {
                                 if (ITEM_NAME_TYPE(id) == 0) {
                                     l_dpdHit.set(pos, HIT_FG, NULL, 0);
                                     hit = TRUE;
-                                } else if (id == 0x7003) {
+                                } else if (id == dItem::ITEM_ID_STR_UNIT) {
                                     l_dpdHit.set(
                                         pos, HIT_STR,
                                         dSTR::getAcList()->search(x, z, TRUE),

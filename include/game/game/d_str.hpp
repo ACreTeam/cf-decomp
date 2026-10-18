@@ -323,8 +323,10 @@ const char *getBuildingResName(int idx);          // 80168414: the STR_* name, w
 void copyCol(int unitX, int unitZ, const char *name);    // 801685A4: dBGCF::copyUnits of its collision
 void flattenCol(int unitX, int unitZ, const char *name); // 80168628: dBGCF::flattenUnits of its collision
 int getCurBuilding(int *unitX, int *unitZ);       // 801686AC: the building the player is in, -1 if none
-u32 getCurBuildingCode();                         // 80168824: x | z << 8 | dBuildingInfo_c::_08 << 16
-int getCurBuildingType();                         // 80168888: dBuildingInfo_c::_0A (the shop by its stage)
+u32 getCurBuildingCode(); // 80168824: x | z << 8 | dBuildingInfo_c::mProfile <<
+                          // 16
+int getCurBuildingType(); // 80168888: dBuildingInfo_c::mType (the shop by its
+                          // stage)
 u32 countMembers(u8 mask);                        // 801688F0: set bits of the low 4
 int getSlotIdx(const dItem::Item *item);          // 80168948: the building index, 0 if none
 

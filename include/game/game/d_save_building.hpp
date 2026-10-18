@@ -12,6 +12,7 @@
 #include <types.h>
 #include <game/game/d_item.hpp>
 #include <game/game/d_dsn.hpp>
+#include <revolution/GX/GXTypes.h>
 
 enum {
     BUILDING_BUILD_SITE = 0xD000,       // obj_buildsite "建設予定地" (construction site)
@@ -111,17 +112,32 @@ enum {
 struct dBuildingInfo_c {
     /* 0x00 */ const char *mModel;  // obj_*
     /* 0x04 */ const char *mName;   // the Japanese name
-    /* 0x08 */ u16 _08;             // in dSTR::getCurBuildingCode
-    /* 0x0A */ u8 _0A;              // BUILDING_TYPE_* (dSTR::getCurBuildingType)
+    // The building actor's profile (dStrm_c::createBuildings,
+    // dSTR::getCurBuildingCode).
+    /* 0x08 */ u16 mProfile;
+    // BUILDING_TYPE_* (dSTR::getCurBuildingType).
+    /* 0x0A */ u8 mType;
+    // No readers found; 0 only for the gate and GracieGrace.
     /* 0x0B */ u8 _0B;
-    /* 0x0C */ u8 _0C;
+    // The window lights flicker when they come on (d_a_str:
+    // dSTR::light_c::set's flicker).
+    /* 0x0C */ u8 mLightFlicker;
+    // 0 in every entry; no readers found.
     /* 0x0D */ u8 _0D;
     /* 0x0E */ u8 mField;           // BUILDING_FIELD_* bits
-    /* 0x0F */ u8 mValueA;          // dItem::Item::getExtValueA (the collision height)
-    /* 0x10 */ u8 mValueB;          // dItem::Item::getExtValueB
-    /* 0x11 */ u8 mFlag;            // dItem::Item::getExtFlag
+    // A column at the building's units (dFdBase_c::getAttr ->
+    // dBGCF::getColumnAttr), e.g. the street lamps; 0 = none.
+    // dItem::Item::getExtValueA / getExtValueB.
+    /* 0x0F */ u8 mColRadius;
+    /* 0x10 */ u8 mColHeight;
+    // The building stands in many places (only the construction site): it has
+    // no mPos entry in dSaveBuildingList_c and no actor of its own from
+    // dStrm_c::createBuildings (dItem::Item::getExtFlag).
+    /* 0x11 */ u8 mMultiple;
     /* 0x14 */ const char *mPolygons[10]; // polygon* names (city buildings)
-    /* 0x3C */ u8 _3C[4];
+    // The colour of mPolygons when lit; d_a_str builds an mColor from its RGB
+    // with alpha 0xFF. A plain GXColor: the table is static const data.
+    /* 0x3C */ GXColor mPolyColor;
 }; // size 0x40
 
 
@@ -133,6 +149,9 @@ struct dSaveBuildingPos_c {
 }; // size 0x2
 
 #define BUILD_SITE_NUM 100
+
+// The building table index of a building id (dSTR::getBuildingInfo).
+#define BUILDING_INDEX(id) ((id) - BUILDING_BUILD_SITE)
 
 // Where each building stands (dSaveBuilding_c::mList, dSaveTown_c+0x5EB04). Its CRC is checked by
 // dSaveData_c::isExtraGood.

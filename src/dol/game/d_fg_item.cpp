@@ -403,7 +403,7 @@ u16 Item::getMoneyItem(int amount, BOOL roundUp, int *remainder) {
 // 800A6370
 f32 Item::getExtValueA() const {
     if (isExtId()) {
-        int value = dSTR::getBuildingInfo(getExtIndex())->mValueA;
+        int value = dSTR::getBuildingInfo(getExtIndex())->mColRadius;
         return value;
     }
     return 0.0f;
@@ -412,7 +412,7 @@ f32 Item::getExtValueA() const {
 // 800A6404
 f32 Item::getExtValueB() const {
     if (isExtId()) {
-        int value = dSTR::getBuildingInfo(getExtIndex())->mValueB;
+        int value = dSTR::getBuildingInfo(getExtIndex())->mColHeight;
         return value;
     }
     return 0.0f;
@@ -421,7 +421,7 @@ f32 Item::getExtValueB() const {
 // 800A6498
 BOOL Item::getExtFlag() const {
     if (isExtId()) {
-        return dSTR::getBuildingInfo(getExtIndex())->mFlag != 0;
+        return dSTR::getBuildingInfo(getExtIndex())->mMultiple != 0;
     }
     return FALSE;
 }

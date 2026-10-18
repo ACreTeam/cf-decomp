@@ -590,7 +590,7 @@ int dFdBase_c::getBgAttr(int unitX, int unitZ) const {
 }
 
 // 8008D3A0
-BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
+BOOL dFdBase_c::getAttr(f32 *radius, f32 *height, int *attr, int x, int z) {
     dItem::Item fg;
     dItem::Item *item = getItem(x, z, 0);
     if (item != NULL) {
@@ -598,8 +598,8 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
             f32 value = item->getExtValueA();
             BOOL valid = value != 0.0f;
             if (valid && (_24 == NULL || !_24->getAttr(x, z))) {
-                *height = value;
-                *param = item->getExtValueB();
+                *radius = value;
+                *height = item->getExtValueB();
                 *attr = BG_ATTR_WOOD;
                 return TRUE;
             }
@@ -607,18 +607,18 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
             fg = dSaveBuildingList_c::get()->getAt(x, z, 2);
             if (fg.isExtId()) {
                 const dBuildingInfo_c *info = dSTR::getBuildingInfo(fg.getExtIndex());
-                f32 value = (int)info->mValueA;
+                f32 value = (int)info->mColRadius;
                 if (value != 0.0f) {
-                    f32 p = (int)info->mValueB;
-                    *height = value;
-                    *param = p;
+                    f32 p = (int)info->mColHeight;
+                    *radius = value;
+                    *height = p;
                     *attr = BG_ATTR_WOOD;
                     return TRUE;
                 }
             }
-        } else if (item->mId == 0x7003) {
-            *height = 16.0f;
-            *param = 48.0f;
+        } else if (item->mId == dItem::ITEM_ID_STR_UNIT) {
+            *radius = 16.0f;
+            *height = 48.0f;
             *attr = 0x13;
             return TRUE;
         }
@@ -626,8 +626,8 @@ BOOL dFdBase_c::getAttr(f32 *height, f32 *param, int *attr, int x, int z) {
         if (info != NULL) {
             f32 value = (s8)info->_08[0];
             if (value != 0.0f) {
-                *height = value;
-                *param = (s8)info->_08[1];
+                *radius = value;
+                *height = (s8)info->_08[1];
                 *attr = (s8)info->_08[2];
                 return TRUE;
             }
