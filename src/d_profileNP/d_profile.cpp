@@ -1372,9 +1372,9 @@ static const fProfListMg_c::fProfilePtr_c l_profiles[fProf::PROFILE_COUNT] = {
     {&dAStrField::g_profile_STR_FOUNTAIN},
     // fProf::A_STR_FIELD_10B
     {&dAStrField::g_profile_STR_UFO},
-    // fProf::A_STR_COMMON_10C
+    // fProf::STR_BUS
     {&dAStrCommon::g_profile_STR_BUS},
-    // fProf::A_STR_COMMON_10D
+    // fProf::STR_BUS_STOP
     {&dAStrCommon::g_profile_STR_BUS_STOP},
     // fProf::A_STR_TOWN_10E
     {&dAStrTown::g_profile_STR_TOWN},

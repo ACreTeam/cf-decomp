@@ -337,8 +337,8 @@ public:
 
     void clear();                                                                   // 80072080
     BOOL calc(mvbg_c *mvbg, const mVec3_c &pos, mAng ang, const mVec3_c &scale);    // 8007208C
-    BOOL add(f32 sizeX, f32 sizeZ, f32 height, mvbg_c *mvbg, const mVec3_c &pos, mAng ang,
-             const mVec3_c *scale);                                                 // 80072478
+    BOOL add(f32 sizeX, f32 sizeZ, f32 height, mvbg_c *mvbg, const mVec3_c &pos, mAng ang = mAng(0),
+             const mVec3_c *scale = NULL);                                          // 80072478
     BOOL remove(mvbg_c *mvbg);                                                      // 80072518
     BOOL isOutside(const mVec3_c &center, const mVec3_c &half, const mVec3_c *a,
                    const mVec3_c *b);                                               // 80072588

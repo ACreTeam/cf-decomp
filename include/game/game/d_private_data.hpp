@@ -56,6 +56,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
+    PRIVATE_FLAG0_CITY_VISITED = 0x70,          // got off the bus in the city once (d_a_str_common, inferred)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
     PRIVATE_FLAG0_REDD_VISITED = 0x83,          // entered Crazy Redd's tent in the city (d_a_str; inferred)
 };

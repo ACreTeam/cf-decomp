@@ -1387,13 +1387,13 @@ int dSTR::getCurLanguage() {
 }
 
 // 8016982C
-void dSTR::requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg4) {
+void dSTR::requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, bool showDisp, BOOL arg4) {
     int type = 2;
     if (arg2) {
         type = 1;
     }
     info->mType = type;
-    info->_4 = arg3;
+    info->mShowDisp = showDisp;
     int x;
     int z;
     if (toTown) {

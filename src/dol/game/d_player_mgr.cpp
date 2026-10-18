@@ -2686,7 +2686,7 @@ BOOL isScaringCockroaches(int idx) {
 }
 
 // 80100E3C
-BOOL boardBus() {
+BOOL boardBus(s16 angle) {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }

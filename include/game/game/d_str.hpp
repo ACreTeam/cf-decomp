@@ -310,8 +310,8 @@ public:
 struct busInfo_c {
     busInfo_c() : mType(0) {}
 
-    /* 0x0 */ int mType; // 1 or 2
-    /* 0x4 */ u8 _4;
+    /* 0x0 */ int mType; // 0: none, 1: the opening ride (Rover, d_a_str_common), 2: a ride
+    /* 0x4 */ bool mShowDisp; // the bus model's disp_xct node is shown (d_a_str_common)
 };
 
 f32 calcLerp(f32 t, f32 a, f32 b);                // 80167FA4: a + t * (b - a)
@@ -362,7 +362,7 @@ int getTownRegion();                              // 8016976C: getLanguageArea(g
 int getTownLanguage();                            // 80169790: dSaveData_c::getTownLanguage
 int getCurRegion();                               // 801697BC: getTownRegion, 0 in a 9 scene (the city)
 int getCurLanguage();                             // 801697F4: getTownLanguage, 0 in a 9 scene
-void requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg4); // 8016982C
+void requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, bool showDisp, BOOL arg4); // 8016982C
 
 dScene::dSceneChange_c *getSceneChange(); // 80166990: &dScene::gSceneChange (this TU's copy)
 hostIO_c *getHostIO();             // 80166A7C: the function-local hostIO_c

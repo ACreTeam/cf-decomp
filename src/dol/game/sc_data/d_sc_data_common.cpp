@@ -37,7 +37,7 @@ u16 g_fieldRes[] = {
     fProf::A_STR_FIELD_0FB,
     fProf::A_STR_CDBBS,
     fProf::A_BBS_BIRD,
-    fProf::A_STR_COMMON_10C,
+    fProf::STR_BUS,
     fProf::SKY,
     fProf::SKY_AURORA,
     fProf::SKY_RAINBOW,
@@ -77,7 +77,7 @@ u16 g_townRes[] = {
     fProf::FG_DRAW,          fProf::FGOBJ_MANAGER,  fProf::SKY,
     fProf::SKY_AURORA,       fProf::SKY_RAINBOW,    fProf::BGT_DRAW,
     fProf::A_RMOBJ_ATM,      fProf::STR_MANAGER,    fProf::A_STR,
-    fProf::A_STR_COMMON_10C, fProf::A_STR_TOWN_112, fProf::A_SIGN_TAG,
+    fProf::STR_BUS, fProf::A_STR_TOWN_112, fProf::A_SIGN_TAG,
     fProf::A_GROWUP_MSG,
 };
 const u16 g_townResNum = ARRAY_SIZE(g_townRes);

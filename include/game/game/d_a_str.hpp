@@ -145,8 +145,9 @@ class daSTR_c : public dDemoActor_c,
         /* 0x20 */ nw4r::g3d::ScnMdl *mScnMdl;
     }; // size 0x24
 
+    // No user-declared dtor: the implicit one is inlined into the
+    // subclasses' dtors (d_a_str_common).
     daSTR_c();
-    virtual ~daSTR_c();
 
     virtual int create();
     virtual int preDelete();

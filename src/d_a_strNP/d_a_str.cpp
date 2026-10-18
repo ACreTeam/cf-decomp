@@ -1779,10 +1779,6 @@ void daSTR_c::onSceneChange(u8 scene) {
     }
 }
 
-// .text:0x4F70
-daSTR_c::~daSTR_c() {
-}
-
 #ifdef MUST_MATCH
 // Unused (dead-stripped by the linker): only needs m3d's weak inlines in the
 // target's order (callback_c::timingC, timingB, anmChr_c::getType), ahead of

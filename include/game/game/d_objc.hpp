@@ -80,6 +80,7 @@ enum {
     TYPE_SNOWBALL = 0x80000008, // a snowball being rolled (daSnowMan_c)
     TYPE_SNOWMAN = 0x80000010,  // a finished snowman (daSnowMan_c)
     TYPE_ACTION = 0x20,         // dAcPlayer_c::mObjcPos: the tool / action cylinder
+    TYPE_BUS_STOP = 0x40,       // daStrBusStop_c::mAcPos: keeps the npcs (mask TYPE_NPC) off the stop
     MASK_DEFAULT = 0x8040007F,
 };
 

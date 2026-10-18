@@ -333,8 +333,8 @@ enum PROFILE_NAME_e {
     A_STR_FIELD_109 = 0x109,  // g_profile_STR_HARVEST__10dAStrField
     A_STR_FIELD_10A = 0x10A,  // g_profile_STR_FOUNTAIN__10dAStrField
     A_STR_FIELD_10B = 0x10B,  // g_profile_STR_UFO__10dAStrField
-    A_STR_COMMON_10C = 0x10C, // g_profile_STR_BUS__11dAStrCommon
-    A_STR_COMMON_10D = 0x10D, // g_profile_STR_BUS_STOP__11dAStrCommon
+    STR_BUS = 0x10C,          // g_profile_STR_BUS__11dAStrCommon
+    STR_BUS_STOP = 0x10D,     // g_profile_STR_BUS_STOP__11dAStrCommon
     A_STR_TOWN_10E = 0x10E,   // g_profile_STR_TOWN__9dAStrTown
     A_STR_TOWN_10F = 0x10F,   // g_profile_STR_ATM__9dAStrTown
     A_STR_TOWN_110 = 0x110,   // g_profile_STR_BARBER__9dAStrTown
@@ -640,8 +640,8 @@ enum DRAW_ORDER_e {
     A_STR_FIELD_109 = 0x028,
     A_STR_FIELD_10A = 0x029,
     A_STR_FIELD_10B = 0x037,
-    A_STR_COMMON_10C = 0x02A,
-    A_STR_COMMON_10D = 0x02B,
+    STR_BUS = 0x02A,
+    STR_BUS_STOP = 0x02B,
     A_STR_TOWN_10E = 0x02C,
     A_STR_TOWN_10F = 0x02D,
     A_STR_TOWN_110 = 0x02E,

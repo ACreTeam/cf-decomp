@@ -591,7 +591,7 @@ BOOL closeMailbox(); // 80100C28: STATE_MAILBOX_CLOSE after the post menu
 BOOL requestFaint(BOOL a); // 80100C84: STATE_FAINT (d_insect_field)
 bool isSafeFromInsects(); // 80100D44: demo, pitfall or ACTOR_FLAG_DEMO: insects leave the player alone
 BOOL isScaringCockroaches(int idx); // 80100DD0: walking, running, pushing or pulling (d_a_cockroach)
-BOOL boardBus(); // 80100E3C: STATE_BUS_BOARD (daStrBus_c)
+BOOL boardBus(s16 angle); // 80100E3C: STATE_BUS_BOARD (daStrBusStop_c; the angle is not used)
 BOOL isOnBus(); // 80100E7C: STATE_BUS_BOARDED
 BOOL rideBus(); // 80100EC0: STATE_BUS_RIDE
 BOOL getOffBus(s16 angle, f32 frame); // 80100F00: STATE_BUS_GET_OFF
