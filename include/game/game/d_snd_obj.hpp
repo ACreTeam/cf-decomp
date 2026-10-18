@@ -20,7 +20,7 @@ public:
     void setPos(const mVec3_c *pos); // 80010EA0
     void startSound(u32 id);         // 80010EF4
     void holdSound(u32 id);          // 80010F08
-    bool isSounding();               // 80010F18
+    BOOL isSounding();               // 80010F18
 
     /* 0x00 */ SoundObjInsect mObj;
 }; // size 0x30

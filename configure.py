@@ -2665,10 +2665,10 @@ config.libs = [
     Rel(
         "d_insect_museumNP",
         [
-            Object(NonMatching, "d_insect_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_insect_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_insect_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_insect_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_insect_museumNP/d_insect_museum.cpp"),
+            Object(Matching, "d_insect_museumNP/d_insect_museum.cpp"),
         ],
     ),
     Rel(
