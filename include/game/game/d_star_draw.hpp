@@ -50,11 +50,18 @@ public:
 
     enum { LINE_NUM = 0x425 }; // lines in sLines, before its terminator
 
+    enum MODE_e {
+        MODE_NORMAL,
+        MODE_NO_SIGNS, // no constellations (dSky_c in the city, rooms and the
+                       // gate)
+        MODE_CHART, // d_menu_star's chart: with a dark background, every star
+                    // opaque
+    };
     typedef BOOL (*StarFilter)(int star, const dStarDraw_c *draw);
     typedef BOOL (*LineFilter)(u16 line, const dStarDraw_c *draw);
 
     dStarDraw_c()
-        : mResFile(NULL), m0AC(0.0f), m0B0(0.0f), mMode(0), mCreated(false), mSign(NULL), mSignIdx(-1),
+        : mResFile(NULL), mZoomRate(0.0f), mZoom(0.0f), mMode(MODE_NORMAL), mCreated(false), mSign(NULL), mSignIdx(-1),
           mSelStar(-1), mSelLine(-1), mWhiteLines(false) {}
 
     virtual void drawXlu(); // 80164D14
@@ -98,8 +105,8 @@ public:
     /* 0x048 */ mAng mAngle;
     /* 0x04A */ u8 mAlpha;
     /* 0x04C */ star_c mStars[8];
-    /* 0x0AC */ f32 m0AC;
-    /* 0x0B0 */ f32 m0B0;
+    /* 0x0AC */ f32 mZoomRate;
+    /* 0x0B0 */ f32 mZoom;
     /* 0x0B4 */ mAllocator_c mAllocator;
     /* 0x0D0 */ dDvd::brresBank_c mRes;
     /* 0x128 */ int mMode;  // 1: no constellations, 2: with a dark background

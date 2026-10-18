@@ -179,6 +179,7 @@ modules:
   name: d_menu_starNP
   symbols: config/RUUE01_00/d_menu_starNP/symbols.txt
   splits: config/RUUE01_00/d_menu_starNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_titleNP.rel
   hash: 70bd093b257ad0e4a65800bc01fffa11686aa6ae
   name: d_menu_titleNP

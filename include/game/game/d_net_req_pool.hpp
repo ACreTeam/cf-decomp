@@ -13,7 +13,7 @@ enum {
     REQ_POOL_NUM = 32,
 };
 
-class Req_c : public dPriLineNd_c {
+class Req_c : public dLineNdPr_c {
 public:
     Req_c() { mPriority = 0xFF; } // 80082044 (weak)
     void clear();                 // 80081F04: frees the node (mState 0)

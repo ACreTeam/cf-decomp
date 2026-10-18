@@ -242,7 +242,7 @@ void playSePan(int se, f32 pan) {
 }
 
 // 8000F928
-void fn_8000F928(int se) {
+void holdSe(int se) {
     SoundSystem::getInstance()->holdSe(se);
 }
 

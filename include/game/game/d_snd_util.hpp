@@ -32,6 +32,7 @@ void setSoundVolume(f32 volume, int frames);        // 8000F540: the sound manag
 void setAmbientPos(const mVec3_c *pos);             // 8000F6C0: updates the positional ambient sound (d_bgm)
 void playSe(int se);                                // 8000F828: plays a sound effect
 void playSePan(int se, f32 pan);                    // 8000F8A0: plays a sound effect with a pan
+void holdSe(int se);                               // 8000F928: holds a looping effect for this frame
 const u8 *getDefaultTownTune();                     // 8000F9A0: the default town tune
 void syncTownTune();                                // 8000FA0C: hands the saved town tune to the sound system
 void playMelody(const u8 *notes);                   // 8000FA98: plays a melody with the given notes
@@ -64,7 +65,6 @@ void fn_8000F2B0();                                          // 8000F2B0: museum
 int fn_8000F4D8();                                           // 8000F4D8: K.K. playback value (dBgm StgCafe_c)
 void fn_8000F738(int arg);                                   // 8000F738: (dBgm StgRoom_c)
 void fn_8000F7B0(int arg);                                   // 8000F7B0: (dBgm StgBus_c)
-void fn_8000F928(int se);                                    // 8000F928: a sound effect (d_money, d_msg)
 void fn_8000FB10(u32 arg);                                   // 8000FB10: no callers
 void fn_80010304(f32 arg);                                   // 80010304: no callers
 }

@@ -111,10 +111,11 @@ int dSky_c::create() {
     mMdlMoon.create(nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0),
                     &mAllocator, 0, 1, NULL);
 
-    if (mIsCity || dScene::isSceneAttr(dScene::getCurrentScene(), 0x110)) {
-        mStarDraw.mMode = 1;
+    if (mIsCity || dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM |
+                                           dScene::SCENE_ATTR_CHKP)) {
+        mStarDraw.mMode = dStarDraw_c::MODE_NO_SIGNS;
     } else {
-        mStarDraw.mMode = 0;
+        mStarDraw.mMode = dStarDraw_c::MODE_NORMAL;
     }
 
     mAnmCloud.create(nw4r::g3d::ResFile(mResCloud.getData()).GetResMdl(0),
@@ -195,7 +196,8 @@ int dSky_c::draw() {
         mStarDraw.entry();
     }
 
-    if (!dScene::isSceneAttr(dScene::getCurrentScene(), 0x110) &&
+    if (!dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM |
+                                 dScene::SCENE_ATTR_CHKP) &&
         !dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {
         nw4r::g3d::ResMat moonMat =
             nw4r::g3d::ResFile(mResMoon.getData()).GetResMdl(0).GetResMat(0);
@@ -265,7 +267,8 @@ f32 getMoonAge(const dTime_c *now) {
 
 // 0x10B8
 f32 getOffsetY() {
-    if (dScene::isSceneAttr(dScene::getCurrentScene(), 0x110)) {
+    if (dScene::isSceneAttr(dScene::getCurrentScene(), dScene::SCENE_ATTR_ROOM |
+                                dScene::SCENE_ATTR_CHKP)) {
         return 256.0f;
     }
     if (dScene::isSceneAttr(dScene::getCurrentScene(), 0x4000)) {

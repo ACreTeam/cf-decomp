@@ -238,7 +238,7 @@ int dFishMus_c::create() {
 
 // 0xE44
 int dFishMus_c::execute() {
-    fn_8000F928(SE_bubble);
+    holdSe(SE_bubble);
     for (dFishMusBaseObj_c **link = &mObjList; *link != NULL; link = &(*link)->mNext) {
         dFishMusBaseObj_c *&obj = *link;
         obj->execute();

@@ -178,8 +178,8 @@ void dStarDraw_c::calc(const mVec3_c *pos, const mAng &angle) {
     f32 t = tanAng(mAng(11.25f * mAng::DegreeToAngleCoefficient));
     f32 half = 0.5f; // really? I couldn't match this otherwise though.
     f32 slope = t * (trans.z * half);
-    f32 scale = 1.0f - m0AC * half;
-    f32 offset = slope * (m0B0 * m0AC);
+    f32 scale = 1.0f - mZoomRate * half;
+    f32 offset = slope * (mZoom * mZoomRate);
     trans.y += offset;
     trans.z *= scale;
 
@@ -391,7 +391,7 @@ int dStarDraw_c::findSign(const mVec2_c *pos, f32 radius) {
 
 // 80164D14
 void dStarDraw_c::drawXlu() {
-    if (mMode == 2) {
+    if (mMode == MODE_CHART) {
         m3d::resetMaterial();
         nw4r::g3d::G3DState::Invalidate();
         drawBackground();
@@ -585,7 +585,7 @@ void dStarDraw_c::drawBackground() {
 
 // 80165700
 u8 dStarDraw_c::calcAlpha(const nw4r::math::VEC3 *pos) {
-    if (mMode == 2) {
+    if (mMode == MODE_CHART) {
         return 0xFF;
     }
     f32 y = pos->y - mPos.y;

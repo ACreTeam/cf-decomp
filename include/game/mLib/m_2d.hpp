@@ -177,4 +177,20 @@ public:
     /* 0x94 */ u32 mFlags;
 };
 
+// Draws a depth-only quad behind 2D layouts (RTTI "m2d::zBuffClear_c").
+// Keep its destructor implicit so its weak copy stays in the generated-method section.
+class zBuffClear_c : public Base_c {
+  public:
+    virtual void draw();
+
+    void set(f32 top, f32 bottom, f32 left, f32 right, f32 z);
+
+    /* 0x10 */ f32 mTop;
+    /* 0x14 */ f32 mBottom;
+    /* 0x18 */ f32 mLeft;
+    /* 0x1C */ f32 mRight;
+    /* 0x20 */ f32 mZ;
+    /* 0x24 */ bool mAlphaTest;
+};
+
 } // namespace m2d

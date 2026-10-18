@@ -163,7 +163,7 @@ void dMoney_c::updateMoney() {
                 mDispMoney -= mCountStep;
             }
             if (l_flags & FLAG_SHOW) {
-                fn_8000F928(SE_Lev_MONEY_DISP_MOVE);
+                holdSe(SE_Lev_MONEY_DISP_MOVE);
             }
         }
         setNumber();

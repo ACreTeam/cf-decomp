@@ -1244,17 +1244,17 @@ void initCallbackList() {
 }
 
 // 8000A4F0
-void addCallback(callbackNode_c *node) {
+void addCallback(order3DMdl_c *node) {
     l_callbackList.insertByPriority(node);
 }
 
 // 8000A4FC
 void executeCallbacks() {
-    callbackNode_c *node = (callbackNode_c *)l_callbackList.getFirst();
+    order3DMdl_c *node = (order3DMdl_c *)l_callbackList.getFirst();
     while (node != nullptr) {
         node->execute();
-        callbackNode_c *cur = node;
-        node = (callbackNode_c *)node->getNext();
+        order3DMdl_c *cur = node;
+        node = (order3DMdl_c *)node->getNext();
         l_callbackList.removeLineNode(cur);
     }
     l_callbackList.init();

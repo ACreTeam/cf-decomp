@@ -237,7 +237,7 @@ void Window_c::calcMoney() {
             } else {
                 mDisplayedMoney -= mMoneyStep;
             }
-            fn_8000F928(SE_Lev_MONEY_DISP_MOVE);
+            holdSe(SE_Lev_MONEY_DISP_MOVE);
         }
         updateMoneyText();
     } else if (money != mDisplayedMoney) {

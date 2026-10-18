@@ -1711,10 +1711,10 @@ config.libs = [
     Rel(
         "d_menu_starNP",
         [
-            Object(NonMatching, "d_menu_starNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_starNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_starNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_starNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_starNP/d_menu_star.cpp"),
+            Object(Matching, "d_menu_starNP/d_menu_star.cpp"),
         ],
     ),
     Rel(

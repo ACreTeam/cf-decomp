@@ -220,15 +220,15 @@ class AnmEx2_c : public AnmEx_c {
     /* 0x40 */ u32 mFlags;
 }; // size 0x44
 
-// A node of the post-draw callback list.
-class callbackNode_c : public dPriLineNd_c {
+// A node of the post-draw callback list (class name from d_menu_starNP RTTI).
+class order3DMdl_c : public dLineNdPr_c {
   public:
     virtual void execute() = 0;
 };
 
 // A node of the capture list: copies the frame buffer into a texture after
 // drawing.
-class captureNode_c : public dPriLineNd_c {
+class captureNode_c : public dLineNdPr_c {
   public:
     void execute();                                        // 8000A5D0
     void clear();                                          // 8000A6B8
@@ -243,7 +243,7 @@ class captureNode_c : public dPriLineNd_c {
 };
 
 void initCallbackList();                 // 8000A4E8
-void addCallback(callbackNode_c *node);  // 8000A4F0
+void addCallback(order3DMdl_c *node);  // 8000A4F0
 void executeCallbacks();                 // 8000A4FC
 void initCaptureList();                  // 8000A55C
 void addCapture(captureNode_c *node);    // 8000A564

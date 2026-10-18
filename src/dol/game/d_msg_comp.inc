@@ -1683,9 +1683,9 @@ void dMsg::Comp_c::updateCursor() {
         if (isState(&dMsg::Comp_c::executeComplete)) {
             if (mWaitIcon) {
                 if (mWaitIconSe) {
-                    fn_8000F928(SE_PLEASE_WAIT_TSUUSHIN);
+                    holdSe(SE_PLEASE_WAIT_TSUUSHIN);
                 } else {
-                    fn_8000F928(SE_PLEASE_WAIT);
+                    holdSe(SE_PLEASE_WAIT);
                 }
                 showWaitIcon();
             } else if (mLock) {

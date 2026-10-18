@@ -10,14 +10,14 @@ void dLineMg_c::init() {
 }
 
 // 800CD5A0
-bool dLineMg_c::insertByPriority(dPriLineNd_c *node) {
+bool dLineMg_c::insertByPriority(dLineNdPr_c *node) {
     if (mpFirst == NULL) {
         mpFirst = node;
         mpLast = node;
         return true;
     }
     cLineNd_c *prev = mpFirst;
-    for (dPriLineNd_c *cur = (dPriLineNd_c *)prev->getNext(); cur != NULL; cur = (dPriLineNd_c *)cur->getNext()) {
+    for (dLineNdPr_c *cur = (dLineNdPr_c *)prev->getNext(); cur != NULL; cur = (dLineNdPr_c *)cur->getNext()) {
         if (cur->mPriority > node->mPriority) {
             insertLineNode(node, prev);
             return true;

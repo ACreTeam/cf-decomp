@@ -13,23 +13,6 @@
 
 namespace m2d {
 
-// Draws a quad that only writes depth, to clear the Z buffer behind 2D layouts (RTTI
-// "m2d::zBuffClear_c"). Member names unofficial.
-class zBuffClear_c : public Base_c {
-public:
-    virtual ~zBuffClear_c() {}
-    virtual void draw();
-
-    void set(f32 top, f32 bottom, f32 left, f32 right, f32 z);
-
-    /* 0x10 */ f32 mTop;
-    /* 0x14 */ f32 mBottom;
-    /* 0x18 */ f32 mLeft;
-    /* 0x1C */ f32 mRight;
-    /* 0x20 */ f32 mZ;
-    /* 0x24 */ bool mAlphaTest;
-};
-
 nw4r::ut::List l_list;
 mAllocator_c *l_allocator;
 
