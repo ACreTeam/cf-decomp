@@ -6,3 +6,4 @@
 
 // Special npc item ids (names after ac-decomp's SP_NPC_*); most are still literals.
 #define SP_NPC_GUIDE 0x8029 // Rover (the player select, d_a_npc_sp_player_select)
+#define SP_NPC_GODDESS 0x804F // the fountain's goddess (d_a_npc_sp_goddess, d_a_str_field)

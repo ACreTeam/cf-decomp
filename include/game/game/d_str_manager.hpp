@@ -33,7 +33,7 @@ class dStrm_c : public fBase_c {
 
     // Debug parameters (the HIO tool); constant in the release build.
     static BOOL isDrawDebug(); // 0xAC0
-    static u8 isToyDay();      // 0xAC8: sToyDay
+    static BOOL isToyDay();    // 0xAC8: sToyDay
     static BOOL isUseHostIO(); // 0xAD4
     static f32 getOffsetY();   // 0xADC: added to the structures' height
     static f32 getScale();     // 0xAEC: the structures' model scale

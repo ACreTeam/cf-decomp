@@ -1338,39 +1338,39 @@ static const fProfListMg_c::fProfilePtr_c l_profiles[fProf::PROFILE_COUNT] = {
     {&dObjStaffroll::g_profile_OBJ_STAFFROLL},
     // fProf::A_STR
     {&dAStr::g_profile_A_STR},
-    // fProf::A_STR_FIELD_0FB
+    // fProf::STR_PL
     {&dAStrField::g_profile_STR_PL},
-    // fProf::A_STR_FIELD_0FC
+    // fProf::STR_POST
     {&dAStrField::g_profile_STR_POST},
-    // fProf::A_STR_FIELD_0FD
+    // fProf::STR_NPC
     {&dAStrField::g_profile_STR_NPC},
-    // fProf::A_STR_FIELD_0FE
+    // fProf::STR_OFFICE
     {&dAStrField::g_profile_STR_OFFICE},
-    // fProf::A_STR_FIELD_0FF
+    // fProf::STR_SHOP
     {&dAStrField::g_profile_STR_SHOP},
-    // fProf::A_STR_FIELD_100
+    // fProf::STR_MUSEUM
     {&dAStrField::g_profile_STR_MUSEUM},
-    // fProf::A_STR_FIELD_101
+    // fProf::STR_RESERVE
     {&dAStrField::g_profile_STR_RESERVE},
-    // fProf::A_STR_FIELD_102
+    // fProf::STR_CHKP
     {&dAStrField::g_profile_STR_CHKP},
-    // fProf::A_STR_FIELD_103
+    // fProf::STR_TAILOR
     {&dAStrField::g_profile_STR_TAILOR},
     // fProf::A_STR_CDBBS
     {&dAStrCdbbs::g_profile_A_STR_CDBBS},
-    // fProf::A_STR_FIELD_105
+    // fProf::STR_BBS
     {&dAStrField::g_profile_STR_BBS},
-    // fProf::A_STR_FIELD_106
+    // fProf::STR_LIGHT_HS
     {&dAStrField::g_profile_STR_LIGHT_HS},
-    // fProf::A_STR_FIELD_107
+    // fProf::STR_WINDMILL
     {&dAStrField::g_profile_STR_WINDMILL},
-    // fProf::A_STR_FIELD_108
+    // fProf::STR_TENT
     {&dAStrField::g_profile_STR_TENT},
-    // fProf::A_STR_FIELD_109
+    // fProf::STR_HARVEST
     {&dAStrField::g_profile_STR_HARVEST},
-    // fProf::A_STR_FIELD_10A
+    // fProf::STR_FOUNTAIN
     {&dAStrField::g_profile_STR_FOUNTAIN},
-    // fProf::A_STR_FIELD_10B
+    // fProf::STR_UFO
     {&dAStrField::g_profile_STR_UFO},
     // fProf::STR_BUS
     {&dAStrCommon::g_profile_STR_BUS},
@@ -1404,7 +1404,7 @@ static const fProfListMg_c::fProfilePtr_c l_profiles[fProf::PROFILE_COUNT] = {
     {&dAStrTown::g_profile_STR_ORGAN},
     // fProf::A_STR_TOWN_11B
     {&dAStrTown::g_profile_STR_CHEST},
-    // fProf::A_STR_FIELD_11C
+    // fProf::STR_CURNIVAL
     {&dAStrField::g_profile_STR_CURNIVAL},
     // fProf::FLAG
     {&dFlag::g_profile_FLAG},

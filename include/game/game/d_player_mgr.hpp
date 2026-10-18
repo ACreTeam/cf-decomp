@@ -597,7 +597,7 @@ BOOL rideBus(); // 80100EC0: STATE_BUS_RIDE
 BOOL getOffBus(s16 angle, f32 frame); // 80100F00: STATE_BUS_GET_OFF
 BOOL isOffBus(); // 80100F98: STATE_BUS_GOT_OFF
 BOOL leaveBus(); // 80100FDC: STATE_BUS_LEAVE
-u8 isAxeInFountain(); // 8010101C: Mgr_c::mAxeInFountain (the goddess appears)
+BOOL isAxeInFountain(); // 8010101C: Mgr_c::mAxeInFountain (the goddess appears)
 void setAxeInFountain(); // 80101030: the player REL, when an axe drops into the fountain
 void clearAxeInFountain(); // 80101048
 BOOL changeHeldItemForDemo(const dItem::Item *held); // 80101060

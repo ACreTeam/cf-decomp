@@ -75,6 +75,7 @@ enum {
     SAVE_FLAG_UFO_SHOT = 0x12,       // the UFO was shot down today (d_a_ufo; becomes SAVE_FLAG_UFO_SHOT_BEFORE)
     SAVE_FLAG_UFO_SHOT_BEFORE = 0x13, // the UFO was shot down on an earlier day (d_field_assessment, inferred)
     SAVE_FLAG_UFO_FLOWN = 0x16,      // the UFO flew over the town today (d_a_ufo)
+    SAVE_FLAG_UFO_STR_DRAW = 0x19,   // the crashed UFO (daStrUFO_c) is drawn this frame: read and cleared each frame
     SAVE_FLAG_FLAG6_BACKUP = 0x1A,   // backupFlag6; restored to flag 6 by startFgMngProcThread
     SAVE_FLAG_BUS_NET_EVENT_DONE = 0x1F, // set by the player-create NPC REL after its scene on the bus to the city
 };

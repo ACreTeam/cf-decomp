@@ -20,6 +20,9 @@ enum {
     SHOP_STAGE_NOOKINGTONS, // Nookington's
 };
 
+// sys_STRING/STR_Unit: the store's name ("Nook's Cranny"), + SHOP_STAGE_*.
+#define SHOP_NAME_UNIT_MSG 0x2E
+
 #define SHOP_STOCK_NUM 36
 
 // Nook's store (NH SaveShop): dSaveShops_c::mShop. Stock slots: 0..5 tools, 6 medicine, 7..13 seed bags,

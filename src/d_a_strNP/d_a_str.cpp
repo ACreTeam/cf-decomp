@@ -169,7 +169,7 @@ BOOL daSTR_c::isInDoorRange(const mVec3_c *pos, const s16 *angle, f32 range) {
         mVec3_c min, max;
         const u32 &dir = (u32)mEntArea->getBox(&min, &max, getPos(), 0) >> 16;
         if (mBuildingIdx == BUILDING_INDEX(BUILDING_GATE) &&
-            (u8)(dSaveBuilding_c::get()->mGateType % 3u) == 0) {
+            dSaveBuilding_c::get()->getGateType() == 0) {
             min.x -= GATE_DOOR_WIDEN;
             max.x += GATE_DOOR_WIDEN;
         }
@@ -477,7 +477,7 @@ BOOL daSTR_c::isNight() {
 // .text:0x15EC
 BOOL daSTR_c::isWindowLit() {
     BOOL lit = FALSE;
-    if (isNight() && getCheckMsg() == -1) {
+    if (isNight() && getCheckMsg() == DOOR_MSG_NONE) {
         lit = TRUE;
     }
     return lit;
@@ -1017,7 +1017,7 @@ BOOL daSTR_c::initDoorClosed() {
 // Asks for the door's message, then starts talking.
 inline void daSTR_c::requestDoorTalk() {
     int msg = getCheckMsg();
-    if (msg == -1) {
+    if (msg == DOOR_MSG_NONE) {
         mFlags &= ~FLAG_MSG;
     } else {
         mMsgCode = msg;
@@ -1097,7 +1097,7 @@ void daSTR_c::executeDoorOpenIn() {
     }
     if (mDoorTimer != 0 && --mDoorTimer == 0) {
         int se = getDoorEndSe();
-        if (se != -1) {
+        if (se != DOOR_MELODY_NONE) {
             playSeAt(&mPos, se);
         }
     }
@@ -1133,7 +1133,7 @@ void daSTR_c::executeDoorOpenOut() {
     }
     if (mDoorTimer != 0 && --mDoorTimer == 0) {
         int se = getDoorEndSe();
-        if (se != -1) {
+        if (se != DOOR_MELODY_NONE) {
             playSeAt(&mPos, se);
         }
         mDoorTimer = 0;
@@ -1288,7 +1288,7 @@ void daSTR_c::executeCheckLock() {
     } else if (dSTR::getLockState(dItem::Item(mBuildingId)) ==
                dSTR::LOCK_STATE_LOCKED) {
         int msg = getLockedMsg();
-        if (msg != -1) {
+        if (msg != DOOR_MSG_NONE) {
             mMsgCode = msg;
             mTalkKind = TALK_KIND_LOCKED;
             setState(STATE_TALK_PUT_AWAY);

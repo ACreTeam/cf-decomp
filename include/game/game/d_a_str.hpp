@@ -68,6 +68,32 @@ class daSTR_c : public dDemoActor_c,
         STATE_NUM,
     };
 
+    // The door messages (sys_MESS/SYS_Door: getCheckMsg / getLockedMsg).
+    enum {
+        DOOR_MSG_NONE = -1,
+        DOOR_MSG_FOR_SALE = 0x01,    // "On sale now! Inquire at town hall..."
+        DOOR_MSG_NOOK_OUT = 0x02,    // "I'm out now. Come back later. Tom Nook"
+        DOOR_MSG_SHOP_CLOSED = 0x03, // + the store's stage: its opening hours
+        DOOR_MSG_SHOP_REMODELING = 0x07,
+        DOOR_MSG_TAILOR_CLOSED = 0x08, // "OPEN 8:00 a.m. / CLOSED 11:00 p.m."
+        DOOR_MSG_NPC_ASLEEP = 0x15,    // 0x15..0x1A: by the personality
+        DOOR_MSG_NPC_OUT = 0x1B,       // 0x1B..0x20
+        DOOR_MSG_NPC_SICK = 0x21,      // 0x21..0x26
+        DOOR_MSG_LOCKED = 0x27,        // "It's locked..."
+        DOOR_MSG_NPC_CLEANING = 0x28,  // 0x28..0x2D: a visit is due soon
+        DOOR_MSG_NPC_NUM = 6,          // the messages of each villager kind
+    };
+
+    // getDoorEndSe: the melody played at the door once it closes behind the
+    // player (playSeAt, SoundMelody::playAt's kind).
+    enum {
+        DOOR_MELODY_NONE = -1,
+        DOOR_MELODY_HOUSE,  // SE_MELODY_DOOR
+        DOOR_MELODY_SHOP,   // SE_MELODY_DOOR_TANUKICHI
+        DOOR_MELODY_OFFICE, // SE_MELODY_DOOR_PUB
+        DOOR_MELODY_TAILOR, // SE_MELODY_DOOR_ABLE
+    };
+
     // mTalkKind: the door message's kind (onTalkStart).
     enum {
         TALK_KIND_MSG = 0,    // getCheckMsg's message, then the talk ends
@@ -234,17 +260,17 @@ class daSTR_c : public dDemoActor_c,
         return FALSE;
     }
     virtual int getDoorEndSe() {
-        return -1;
+        return DOOR_MELODY_NONE;
     }
     virtual BOOL isDoorCentered() const {
         return TRUE;
     }
     virtual int getDoorType() const;
     virtual int getCheckMsg() {
-        return -1;
+        return DOOR_MSG_NONE;
     }
     virtual int getLockedMsg() {
-        return -1;
+        return DOOR_MSG_NONE;
     }
     virtual int getMsg1AC() {
         return -1;

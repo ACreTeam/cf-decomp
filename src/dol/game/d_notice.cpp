@@ -231,7 +231,8 @@ void postShopNotice(const dTime_c &day) {
         dTime_c date = time->get();
         date.add(-3, 0, 0, 0);
         if (dTime_c::isSameDay(date, day)) {
-            dLetter::setStringWord(0, *(u32 *)((u8 *)dSaveData_c::getTown() + 0x630C0) + 0x2E, "sys_STRING/STR_Unit");
+            dLetter::setStringWord(0, dSaveData_c::getTown()->mShops.mShop.mStage + SHOP_NAME_UNIT_MSG,
+                                   "sys_STRING/STR_Unit");
             u16 msgId = cM::rndInt(2) + 1;
             date = time->get();
             dLetter::setMonthName(2, date.month);

@@ -2747,7 +2747,7 @@ BOOL leaveBus() {
 }
 
 // 8010101C
-u8 isAxeInFountain() {
+BOOL isAxeInFountain() {
     return gManager.mAxeInFountain;
 }
 

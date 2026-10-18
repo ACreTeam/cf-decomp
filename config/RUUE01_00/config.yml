@@ -791,6 +791,7 @@ modules:
   name: d_flagNP
   symbols: config/RUUE01_00/d_flagNP/symbols.txt
   splits: config/RUUE01_00/d_flagNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_countdown_flagNP.rel
   hash: 278445771a41c36ef3e8f3d9158972a7c504d311
   name: d_countdown_flagNP

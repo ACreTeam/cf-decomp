@@ -33,6 +33,8 @@ enum dPrivateFlag0_e {
                                                 // (d_npc_talk_reaction, d_msg, d_animal); cleared by the
                                                 // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
     PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
+    PRIVATE_FLAG0_HOUSE_TOUR = 0x0C,            // a new player has no house yet: Nook is out for the house tour (his
+                                                // store is closed), the free houses are on sale (d_a_str_field; inferred)
     PRIVATE_FLAG0_PART_TIME_JOB = 0x0D,         // Nook's part-time job is under way: set for a new player
                                                 // (dSvProc_c::initializePlayer); villagers talk about the
                                                 // newcomer (d_npc_talk_arbeit), no event announcements,

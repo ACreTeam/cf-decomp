@@ -345,7 +345,7 @@ BOOL dStrm_c::isDrawDebug() {
 }
 
 // 0xAC8
-u8 dStrm_c::isToyDay() {
+BOOL dStrm_c::isToyDay() {
     return sToyDay;
 }
 

@@ -1685,6 +1685,8 @@ void applySyncBuf4LogFlag(int member, u8 *data, u32 size);
 // 0x10..0x1B: the insect net slots (dInsectCatchData_c, INSECT_NET_SLOT_NUM)
 // 0x1C..0x23: the fish field records (PLAY_SYNC_REC_ID, dPlaySyncRec_c)
 #define NET_REC_INSECT 0x10
+// 0x26..0x29: the players' mailbox door states (daStrPost_c, d_a_str_field), one per house
+#define NET_REC_MAILBOX 0x26
 // 0x2B..0x95: the npc daubs (dNpc::daub_c): 10 normal ones, then the specials
 #define NET_REC_DAUB 0x2B
 #define NET_REC_DAUB_SPECIAL 0x35

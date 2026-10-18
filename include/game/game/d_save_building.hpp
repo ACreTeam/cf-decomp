@@ -216,6 +216,9 @@ public:
     /* 0x156 */ u8 _156[2];
 }; // size 0x158
 
+// The gate's looks (dSaveBuilding_c::mGateType: obj_check0..2, obj_fade_model_c0..2).
+#define GATE_TYPE_NUM 3
+
 // The town's buildings (dSaveTown_c::mBuilding, +0x5E260).
 class dSaveBuilding_c {
 public:
@@ -223,9 +226,10 @@ public:
     void setGateType();                                    // 80149C50: 0..2
     void initTownFlag();                                   // 80149C88: the default flag, by this town
     static dSaveBuilding_c *get();                         // 8014B6A0
+    u8 getGateType() const { return mGateType % (u32)GATE_TYPE_NUM; }
 
     /* 0x000 */ dDesign_c mTownFlag;
-    /* 0x880 */ u8 mGateType;                              // 0..2
+    /* 0x880 */ u8 mGateType;                              // 0..GATE_TYPE_NUM - 1
     /* 0x881 */ u8 _881[0x1F];
     /* 0x8A0 */ u8 mHouseVariant;                          // 0..4: the villager houses' look
     /* 0x8A1 */ u8 _8A1[3];

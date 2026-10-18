@@ -17,6 +17,8 @@ class dPrivateData_c;
 #define HOME_SCENE_LOFT 3
 #define HOME_LAYER_NUM 2
 #define HOME_SIZE_NUM 5
+// The roof colours (obj_myhome_common roof_color frames).
+#define HOME_ROOF_COLOR_NUM 12
 
 // One 16x16 layer of a room (floor items, then items placed on top).
 struct dHomeLayer_c {
@@ -153,7 +155,7 @@ struct dHome_c {
     void setFlagCount(int count); // 8013DD5C
     u8 getFlagMask(u8 count); // 8013DE5C
 
-    bool isPending() const { return _15BB.mRaw & 1; }
+    bool isFlagPending() const { return _15BB.mRaw & 1; }
     dPersonalID_c *getOwner() { return &mOwner; }
     dItem::Item getLoftFtr() const { return _15B8; }
     void setLoftFtr(dItem::Item item) { _15B8 = item; }
@@ -163,16 +165,16 @@ struct dHome_c {
     /* 0x08AC */ dHomeRoom_c mRooms[HOME_ROOM_NUM];
     /* 0x15B4 */ u8 mSize; // 0..4
     /* 0x15B5 */ u8 mNextSize; // applied by update()
-    /* 0x15B6 */ u8 _15B6;
-    /* 0x15B7 */ u8 _15B7;
+    /* 0x15B6 */ u8 mRoofColor;     // daStrPl_c's roof_color frame
+    /* 0x15B7 */ u8 mNextRoofColor; // applied by update()
     /* 0x15B8 */ dItem::Item _15B8; // registered in the owner's catalog
     /* 0x15BA */ u8 _15BA; // days counter (30 after init)
     /* 0x15BB */ union {
         u8 mRaw;
         struct {
             u8 _0 : 6;
-            u8 mApplied : 1; // set by update() when mPending was set
-            u8 mPending : 1;
+            u8 mHasFlag : 1;     // the house flies its flag (a full-size house: daStrPl_c, dFlag_c; inferred)
+            u8 mFlagPending : 1; // becomes mHasFlag on the next day's update()
         } mBits;
     } _15BB;
 }; // size 0x15C0

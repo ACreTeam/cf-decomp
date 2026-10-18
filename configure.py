@@ -2548,10 +2548,10 @@ config.libs = [
     Rel(
         "d_a_str_fieldNP",
         [
-            Object(NonMatching, "d_a_str_fieldNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_str_fieldNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_str_fieldNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_str_fieldNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_str_fieldNP/d_a_str_field.cpp"),
+            Object(Matching, "d_a_str_fieldNP/d_a_str_field.cpp"),
         ],
     ),
     Rel(
@@ -2728,10 +2728,10 @@ config.libs = [
     Rel(
         "d_flagNP",
         [
-            Object(NonMatching, "d_flagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_flagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_flagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_flagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_flagNP/d_flag.cpp"),
+            Object(Matching, "d_flagNP/d_flag.cpp"),
         ],
     ),
     Rel(

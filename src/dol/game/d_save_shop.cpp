@@ -206,7 +206,7 @@ void dSaveShop_c::updateStage(int days) {
         }
     }
 
-    dLetter::setStringWord(0, mStage + 0x2E, "sys_STRING/STR_Unit");
+    dLetter::setStringWord(0, mStage + SHOP_NAME_UNIT_MSG, "sys_STRING/STR_Unit");
     if (getCountdown() != 0x7F) {
         if (days > 0) {
             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 9);
@@ -1022,7 +1022,7 @@ void dSaveShop_c::postNotices() {
         return;
     }
 
-    dLetter::setStringWord(0, mStage + 0x2E, "sys_STRING/STR_Unit");
+    dLetter::setStringWord(0, mStage + SHOP_NAME_UNIT_MSG, "sys_STRING/STR_Unit");
     dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
     dTime_c date = today.get();

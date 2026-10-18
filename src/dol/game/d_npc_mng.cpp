@@ -2074,7 +2074,7 @@ BOOL dNpcMng_c::isHouseWarmingTime(u8 scene, u8 prevScene) {
     if (player == NULL) {
         return FALSE;
     }
-    if (player->isFlag0(0xC)) {
+    if (player->isFlag0(PRIVATE_FLAG0_HOUSE_TOUR)) {
         return FALSE;
     }
     if (isTownScene(scene, dScene::SCENE_NUM)) {

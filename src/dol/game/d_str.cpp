@@ -937,7 +937,7 @@ const char *dSTR::getBuildingResName(int idx) {
     static char l_npcHouseName[50];
 
     if (idx == BUILDING_GATE - BUILDING_BUILD_SITE) {
-        u32 type = (u8)(dSaveData_c::getRaw()->mBuilding.mGateType % 3u);
+        u32 type = dSaveData_c::getRaw()->mBuilding.getGateType();
         return type < ARRAY_SIZE(l_gateName) ? l_gateName[type] : l_gateName[0];
     }
     if (dSaveBuildingList_c::isNpcHouse(idx)) {

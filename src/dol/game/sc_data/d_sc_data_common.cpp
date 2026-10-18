@@ -34,7 +34,7 @@ u16 g_fieldRes[] = {
     fProf::BGO_DRAW,
     fProf::STR_MANAGER,
     fProf::A_STR,
-    fProf::A_STR_FIELD_0FB,
+    fProf::STR_PL,
     fProf::A_STR_CDBBS,
     fProf::A_BBS_BIRD,
     fProf::STR_BUS,

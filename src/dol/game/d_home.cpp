@@ -312,8 +312,8 @@ void dHome_c::clear() {
     }
     mNextSize = 0;
     mSize = 0;
-    _15B7 = 0;
-    _15B6 = 0;
+    mNextRoofColor = 0;
+    mRoofColor = 0;
     _15B8 = dItem::ITEM_ID_NONE;
     _15BB.mRaw = 0;
 }
@@ -321,7 +321,7 @@ void dHome_c::clear() {
 // 8013D4FC
 void dHome_c::init(u32 style) {
     // 80750BE8
-    static const u8 sStyleSizes[4] = {0, 1, 2, 3};
+    static const u8 sStyleRoofColors[4] = {0, 1, 2, 3};
     clear();
     mDesign.clear();
     mDesign.setFromItem(dItem::ITEM_IDX_RED_LEAF + (style & 3));
@@ -329,9 +329,9 @@ void dHome_c::init(u32 style) {
     for (int i = 0; i < HOME_ROOM_NUM; i++) {
         mRooms[i].init(style, i);
     }
-    u8 size = sStyleSizes[style & 3];
-    _15B7 = size;
-    _15B6 = size;
+    u8 roofColor = sStyleRoofColors[style & 3];
+    mNextRoofColor = roofColor;
+    mRoofColor = roofColor;
     _15B8 = dItem::Item(sHomeItems[style & 3]);
     _15BA = 30;
 }
@@ -422,7 +422,7 @@ int dHome_c::getRoomId(int room) {
 // 8013D920
 void dHome_c::update(int days, BOOL isCurrent) {
     if (days != 0) {
-        if (isPending()) {
+        if (isFlagPending()) {
             _15BB.mRaw = (u8)(_15BB.mRaw | 2) & 0xFE;
         }
         if (mSize != mNextSize && mNextSize < HOME_SIZE_NUM) {
@@ -430,7 +430,7 @@ void dHome_c::update(int days, BOOL isCurrent) {
             dSTR::getTownUnitAttr()->setAll();
             dField::reloadHomes();
         }
-        _15B6 = _15B7;
+        mRoofColor = mNextRoofColor;
     }
     if (mOwner.isValid() == 1U) {
         updateFlags(days, isCurrent);

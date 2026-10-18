@@ -77,6 +77,8 @@ public:
         MENU_BANK_PAY = 0x4C,
         MENU_MUSIC = 0x5D,
         MENU_STORAGE = 0x5E,
+        MENU_MAILBOX = 0x61, // the mailbox's letters (daStrPost_c)
+        MENU_BBS = 0x6D,     // the bulletin board (daStrBbs_c)
     };
 
     static BOOL openMenu(u8 menu);
