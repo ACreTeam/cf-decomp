@@ -6,6 +6,8 @@
 
 #define DEG_TO_ANGLE(x) (0x10000 * x / 360)
 #define ANGLE_360_DIV(x) (0x10000 / x)
+#define ANGLE_PER_DEGREE 182 // the integer step of one degree (0x10000 / 360, truncated)
+#define ANGLE_PER_DEGREE_F (0x10000 / 360.0f)
 
 /// @brief A one-dimensional short angle vector.
 /// @ingroup mlib

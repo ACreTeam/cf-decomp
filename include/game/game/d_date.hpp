@@ -102,6 +102,7 @@ enum dTime_Weekday_e {
 #define MONTHDAY(m, d) (((m) << 8) | (d)) // month 0-based, as dTime_c::month
 
 #define TIME_DAY_START_HOUR 6 // the game day starts at 6:00 (the day change)
+#define TIME_NIGHT_START_HOUR 18 // night is TIME_NIGHT_START_HOUR..TIME_DAY_START_HOUR
 #define TIME_DAYS_PER_WEEK 7
 #define TIME_SECONDS_PER_MINUTE 60
 #define TIME_SECONDS_PER_HOUR 3600

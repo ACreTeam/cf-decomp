@@ -14,6 +14,10 @@ extern const float cNpcDoorOffset;
 mVec3_c getNpcDoorPos(daSTR_c *str, const mVec3_c *pos, int door, float offset);
 BOOL requestNpcEnter(daSTR_c *str); // d_a_strNP .text 4774: the door opens for an entering player
 BOOL requestNpcExit(daSTR_c *str);  // d_a_strNP .text 4828
+// The structures' view area (dSTR::viewArea_c) from dSTR::getHostIO(), scaled.
+f32 getViewFront();     // d_a_strNP .text 198: hostIO _14
+f32 getViewBack();      // d_a_strNP .text 148: hostIO _0C
+f32 getViewHalfWidth(); // d_a_strNP .text 1E8: hostIO _16
 } // namespace dAStr
 
 // d_a_strNP .text 48DC: 0x24 (frames to wait for the door) if the structure has an opening

@@ -1747,10 +1747,10 @@ config.libs = [
     Rel(
         "d_a_bbs_birdNP",
         [
-            Object(NonMatching, "d_a_bbs_birdNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_bbs_birdNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_bbs_birdNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_bbs_birdNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_bbs_birdNP/d_a_bbs_bird.cpp"),
+            Object(Matching, "d_a_bbs_birdNP/d_a_bbs_bird.cpp"),
         ],
     ),
     Rel(
