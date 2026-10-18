@@ -497,7 +497,8 @@ inline bool canPlaceEmptyItemOnUnit(int x, int z, dFdBase_c *map) {
     return canPutItemOnUnit(x, z, &none, map, dScene::SCENE_FIELD, TRUE, TRUE);
 }
 
-BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
+BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item &item, dFdBase_c *map,
+                  u8 kind, BOOL allowFg94, BOOL checkA); // 800F20D0
 
 BOOL pickNearbyFreePos(mVec3_c *out, const mVec3_c *pos, u32 radius);           // 800F2138
 BOOL isUnitWithinDistance(const mVec3_c *pos, int x, int z, f32 dist);          // 800F22FC

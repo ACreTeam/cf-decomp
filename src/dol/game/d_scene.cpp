@@ -892,7 +892,7 @@ static BOOL getBuildingExit(u16 building, u8 *scene, mVec3_c *pos, u32 *type, s1
     dItem::Item item(building);
     int x, z;
     dSaveTown_c *save = dSaveData_c::getTown();
-    if (save->mBuilding.mList.getPos(&x, &z, &item, flags)) {
+    if (save->mBuilding.mList.getPos(&x, &z, item, flags)) {
         dSTR::entArea_c *bld = dSTR::getColBank()->getEntArea(building);
         if (bld != NULL) {
             if (flags & 1) {

@@ -721,7 +721,7 @@ void dCamera_c::initTitleBuilding() {
     int x;
     int z;
     dSaveTown_c *town = dSaveData_c::getRaw();
-    if (town->mBuilding.mList.getPos(&x, &z, &id, 1)) {
+    if (town->mBuilding.mList.getPos(&x, &z, id, 1)) {
         mVec3_c pos;
         pos.x = x * 32;
         pos.z = z * 32;
@@ -756,7 +756,7 @@ void dCamera_c::execTitleBuilding() {
             dItem::Item id = dSaveBuildingList_c::getId(
                 l_titleBuildings[title->mIndex].mBuilding);
             dSaveTown_c *town = dSaveData_c::getRaw();
-            if (town->mBuilding.mList.getPos(&x, &z, &id, 1)) {
+            if (town->mBuilding.mList.getPos(&x, &z, id, 1)) {
                 break;
             }
         }

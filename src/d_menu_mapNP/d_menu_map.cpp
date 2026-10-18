@@ -150,7 +150,7 @@ void dMenuMap_c::createIcons() {
         mIcons[i].setVisible(l_iconPushPane, false);
         mIcons[i].setVisible(l_playerPane, false);
         dItem::Item item = buildings[i];
-        if (dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1)) {
+        if (dSaveBuildingList_c::get()->getPos(&x, &z, item, 1)) {
             x -= UT_BASE_NUM;
             z -= UT_BASE_NUM;
             pos.x = scaleX * (x - MAP_UNIT_CENTER);

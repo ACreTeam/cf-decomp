@@ -102,7 +102,7 @@ void dStrm_c::createBuildings() {
         placed = FALSE;
         if (!item.getExtFlag()) {
             dItem::Item copy(id);
-            if (list->getPos(&x, &z, &copy, field)) {
+            if (list->getPos(&x, &z, copy, field)) {
                 placed = TRUE;
             }
         }
@@ -196,7 +196,7 @@ void dStrm_c::init() {
                 }
             }
             if (dSaveBuildingList_c::get()->getPos(
-                    &x, &z, &dItem::Item((u16)BUILDING_TOWN_HALL),
+                    &x, &z, dItem::Item((u16)BUILDING_TOWN_HALL),
                     BUILDING_FIELD_TOWN)) {
                 dSTR::getTownUnitAttr()->setAttr(x - 1, z + 2,
                                                  dFdUnitAttr_c::STR_DEL |
@@ -218,7 +218,7 @@ void dStrm_c::init() {
                                                      dFdUnitAttr_c::STR_INS);
             }
             if (dSaveBuildingList_c::get()->getPos(
-                    &x, &z, &dItem::Item((u16)BUILDING_GATE),
+                    &x, &z, dItem::Item((u16)BUILDING_GATE),
                     BUILDING_FIELD_TOWN)) {
                 dSTR::getTownUnitAttr()->setAttr(x - 2, z + 1,
                                                  dFdUnitAttr_c::STR_DEL |

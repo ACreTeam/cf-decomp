@@ -1454,13 +1454,9 @@ int dAcNpc_c::vt68(const dItem::Item *item) {
 
 // ---- dAcNpc_c: free unit / position search helpers (80014084..800155D0) ----
 
-static inline const dItem::Item *ptrTo(const dItem::Item &item) {
-    return &item;
-}
-
 static inline bool isFreePos(const mVec3_c *pos, BOOL checkA) {
     dItem::Item item((u16)0xFFF1);
-    return dNpc::canPutItemAt(pos, &item, NULL, dScene::SCENE_NUM, TRUE, checkA);
+    return dNpc::canPutItemAt(pos, item, NULL, dScene::SCENE_NUM, TRUE, checkA);
 }
 
 static inline bool isFreeUnit(int x, int z) {
@@ -1634,7 +1630,8 @@ BOOL dAcNpc_c::searchPosNear(mVec3_c *pPos, const mVec3_c *pCenter, f32 minDist,
             if (std::fabs(pCenter->y - p.y) < 48.0f) {
                 dItem::Item item((u16)0xFFF1);
                 dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                if (dNpc::canPutItemAt(&p, &item, NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
+                if (dNpc::canPutItemAt(&p, item, NULL, dScene::SCENE_NUM,
+                                       holeCheck, checkA)) {
                     ok = true;
                 }
             }
@@ -1700,7 +1697,9 @@ BOOL dAcNpc_c::searchPosInCircle(mVec3_c *pPos, const mVec3_c *pBase, const mVec
                 bool ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (dNpc::canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
+                    if (dNpc::canPutItemAt(&q, dItem::Item((u16)0xFFF1), NULL,
+                                           dScene::SCENE_NUM, holeCheck,
+                                           checkA)) {
                         ok = true;
                     }
                 }
@@ -1770,7 +1769,9 @@ BOOL dAcNpc_c::searchPosInRect(mVec3_c *pPos, const mVec3_c *pTarget, f32 x0, f3
                 ok = false;
                 if (std::fabs(pTarget->y - q.y) < 48.0f) {
                     dNpc::holeCheck_e holeCheck = dNpc::CHECK_HOLES;
-                    if (dNpc::canPutItemAt(&q, ptrTo(dItem::Item((u16)0xFFF1)), NULL, dScene::SCENE_NUM, holeCheck, checkA)) {
+                    if (dNpc::canPutItemAt(&q, dItem::Item((u16)0xFFF1), NULL,
+                                           dScene::SCENE_NUM, holeCheck,
+                                           checkA)) {
                         ok = true;
                     }
                 }

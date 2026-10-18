@@ -1202,21 +1202,21 @@ void Seq_c::procBuildingJump() {
     }
     case JUMP_BUILDING_FOUNTAIN: {
         dItem::Item item((u16)BUILDING_FOUNTAIN);
-        if (dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1)) {
+        if (dSaveBuildingList_c::get()->getPos(&x, &z, item, 1)) {
             choice = TRUE;
         }
         break;
     }
     case JUMP_BUILDING_WINDMILL: {
         dItem::Item item((u16)BUILDING_WINDMILL);
-        if (dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1)) {
+        if (dSaveBuildingList_c::get()->getPos(&x, &z, item, 1)) {
             choice = TRUE;
         }
         break;
     }
     case JUMP_BUILDING_LIGHTHOUSE: {
         dItem::Item item((u16)BUILDING_LIGHTHOUSE);
-        if (dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1)) {
+        if (dSaveBuildingList_c::get()->getPos(&x, &z, item, 1)) {
             choice = TRUE;
         }
         break;

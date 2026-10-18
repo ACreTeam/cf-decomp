@@ -3222,7 +3222,7 @@ BOOL action_c::findRouteWalkPos(mVec3_c *pos, dAcNpcOut_c *npc) {
                         dFdBase_c::getUnitCenterPos(&candidate, cx, cz);
                         dItem::Item empty;
                         empty.mId = dItem::ITEM_ID_NONE;
-                        bool canPut = dNpc::canPutItemAt(&candidate, &empty,
+                        bool canPut = dNpc::canPutItemAt(&candidate, empty,
                                                          NULL, 0x44, 1, 1) != 0;
                         if (canPut) {
                             mVec3_c diff = candidate - npc->mPos;
@@ -3254,7 +3254,7 @@ BOOL action_c::findRouteWalkPos(mVec3_c *pos, dAcNpcOut_c *npc) {
                                 dItem::Item empty;
                                 empty.mId = dItem::ITEM_ID_NONE;
                                 bool canPut =
-                                    dNpc::canPutItemAt(&candidate, &empty, NULL,
+                                    dNpc::canPutItemAt(&candidate, empty, NULL,
                                                        0x44, 1, 1) != 0;
                                 if (canPut) {
                                     mVec3_c diff = candidate - npc->mPos;

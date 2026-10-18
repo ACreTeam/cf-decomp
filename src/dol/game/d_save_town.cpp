@@ -139,7 +139,7 @@ void dSaveTown_c::resetSaveTime() {
 
 // The save pointer is fetched before the item.
 static inline BOOL findFgItem(dSaveTown_c *save, int *x, int *z, dItem::Item *item) {
-    return save->mBuilding.mList.getPos(x, z, item, 1);
+    return save->mBuilding.mList.getPos(x, z, *item, 1);
 }
 
 // 801161F0: read by dPrivateData_c's "BBS_office" notices

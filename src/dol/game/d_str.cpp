@@ -563,7 +563,7 @@ BOOL dFdUnitAttr_c::setBuilding(u16 building) {
         int idx = item.getExtIndex();
         int x, z;
         dItem::Item id(building);
-        if (list->getPos(&x, &z, &id, mField)) {
+        if (list->getPos(&x, &z, id, mField)) {
             dBGCF::unitDat_c *data = dSTR::getColBank()->getCol(idx);
             if (data != NULL) {
                 for (int uz = 0; uz < 16; uz++) {
@@ -868,7 +868,7 @@ mVec3_c dSTR::entArea_c::calcFrontPos(u16 id, int bg, f32 dist) {
         dItem::Item item(id);
         int x;
         int z;
-        if (list->getPos(&x, &z, &item, info->mField)) {
+        if (list->getPos(&x, &z, item, info->mField)) {
             return calcFrontPos(x, z, bg, dist);
         }
     }
@@ -1398,7 +1398,7 @@ void dSTR::requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg
     int z;
     if (toTown) {
         dItem::Item item = BUILDING_BUS_STOP;
-        dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1);
+        dSaveBuildingList_c::get()->getPos(&x, &z, item, 1);
         mVec3_c pos;
         dBGCF::unitToPos(&pos, x, z);
         pos.x -= 32.0f;
@@ -1415,7 +1415,7 @@ void dSTR::requestBus(busInfo_c *info, BOOL toTown, BOOL arg2, u8 arg3, BOOL arg
         getSceneChange()->request(dScene::SCENE_FIELD, &pos, 8, 0, wipeIn, wipeOut);
     } else {
         dItem::Item item = BUILDING_CITY_BUS_STOP;
-        dSaveBuildingList_c::get()->getPos(&x, &z, &item, 2);
+        dSaveBuildingList_c::get()->getPos(&x, &z, item, 2);
         mVec3_c pos;
         dBGCF::unitToPos(&pos, x, z);
         pos.x += 32.0f;
@@ -1462,7 +1462,7 @@ static void setBuildingNearTownHall(u16 id, int unitX, int unitZ) {
 static void removeBuilding(u16 id) {
     int x, z;
     dItem::Item item(id);
-    if (dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1)) {
+    if (dSaveBuildingList_c::get()->getPos(&x, &z, item, 1)) {
         dSaveBuildingList_c::get()->remove(id);
     }
 }
@@ -1508,7 +1508,7 @@ void removeUfo() { removeBuilding(BUILDING_UFO); }
 
 // Where a building stands (its Item a temporary at each call).
 static inline BOOL getBuildingPos(int *x, int *z, const dItem::Item &id) {
-    return dSaveBuildingList_c::get()->getPos(x, z, &id, 1);
+    return dSaveBuildingList_c::get()->getPos(x, z, id, 1);
 }
 
 // 80169C48
@@ -1605,7 +1605,7 @@ BOOL getEntranceSidePos(mVec3_c *out, const dItem::Item &item, int side) {
                 ofs.y = 0.0f;
                 int x, z;
                 dItem::Item id = item;
-                if (dSaveBuildingList_c::get()->getPos(&x, &z, &id, 1)) {
+                if (dSaveBuildingList_c::get()->getPos(&x, &z, id, 1)) {
                     mVec3_c pos;
                     dBGCF::unitToPos(&pos, x, z);
                     dBGCF::setCurrentBg(1);

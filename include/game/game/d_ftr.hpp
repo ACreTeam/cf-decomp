@@ -218,10 +218,11 @@ void requestRoomFlag(u8 scene, u8 on);
 void recvRoomFlag(const void *data);
 void setUnitItem(u8 scene, int x, int z, dItem::Item *item, BOOL send);
 void recvUnitItem(u8 scene, const void *data);
-void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid, u8 gyroidValue, const dItem::Item *item,
-            bool send);
+void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid,
+            u8 gyroidValue, const dItem::Item &item, bool send);
 void recvPutFtr(u8 scene, const void *data);
-void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *item, BOOL upper, BOOL send);
+void removeFtr(u8 scene, int x, int z, int layer, BOOL on,
+               const dItem::Item &item, BOOL upper, BOOL send);
 void recvRemoveFtr(u8 scene, const void *data);
 f32 getGroundY(const mVec3_c *pos);
 f32 getGroundY(int x, int z);

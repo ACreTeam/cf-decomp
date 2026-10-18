@@ -193,7 +193,8 @@ public:
     BOOL setPlayerHouses();                                // 8014ADB0
     void setFromField();                                   // 8014AEF4: the buildings placed in the town field
     dItem::Item getAt(int x, int z, int mask) const;             // 8014B034: the building at a unit, or none
-    BOOL getPos(int *x, int *z, const dItem::Item *id, int mask) const; // 8014B0F0
+    BOOL getPos(int *x, int *z, const dItem::Item &id,
+                int mask) const;                               // 8014B0F0
     BOOL setPos(int x, int z, dItem::Item id, BOOL updateCrc); // 8014B1C0
     BOOL setPos(int x, int z, dItem::Item id);             // 8014B2CC
     BOOL remove(dItem::Item id);                           // 8014B2FC

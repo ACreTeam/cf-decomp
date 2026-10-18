@@ -393,7 +393,7 @@ mVec3_c dInsFldMoth_c::getTownHallPos() const {
     int z = 0;
     mVec3_c pos(0.0f, 0.0f, 0.0f);
     dItem::Item building((u16)BUILDING_TOWN_HALL);
-    if (dSaveBuildingList_c::get()->getPos(&x, &z, &building, 1)) {
+    if (dSaveBuildingList_c::get()->getPos(&x, &z, building, 1)) {
         dFdBase_c::getUnitCenterPos(pos, x, z);
     }
     return pos;
@@ -405,7 +405,7 @@ mVec3_c dInsFldMoth_c::getGatePos() const {
     int z = 0;
     mVec3_c pos(0.0f, 0.0f, 0.0f);
     dItem::Item building((u16)BUILDING_GATE);
-    if (dSaveBuildingList_c::get()->getPos(&x, &z, &building, 1)) {
+    if (dSaveBuildingList_c::get()->getPos(&x, &z, building, 1)) {
         dFdBase_c::getUnitCenterPos(pos, x, z);
     }
     return pos;

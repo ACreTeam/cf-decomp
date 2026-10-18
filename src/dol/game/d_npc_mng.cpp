@@ -96,12 +96,12 @@ static inline u16 getAnimalKey(int idx) {
 
 static inline bool getBuildingPos(dSaveBuildingList_c *list, int *x, int *z,
                                   const dItem::Item *item) {
-    return list->getPos(x, z, item, 1) != FALSE;
+    return list->getPos(x, z, *item, 1) != FALSE;
 }
 
 static inline bool hasNoBuildingPos(dSaveBuildingList_c *list, int *x, int *z,
                                     const dItem::Item *item) {
-    return list->getPos(x, z, item, 1) == FALSE;
+    return list->getPos(x, z, *item, 1) == FALSE;
 }
 
 // The block isn't one of the num blocks in used.
@@ -267,7 +267,7 @@ BOOL dNpcMng_c::pickHideSpotBuilding(mVec3_c *pos, const s8 *usedBlocks,
 // An npc can stand at pos (no item may be put there).
 static inline bool canStandAtPos(const mVec3_c *pos, dFdBase_c *field) {
     dItem::Item none;
-    return dNpc::canPutItemAt(pos, &none, field, 0x44, TRUE, TRUE) != FALSE;
+    return dNpc::canPutItemAt(pos, none, field, 0x44, TRUE, TRUE) != FALSE;
 }
 
 BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks,
@@ -309,8 +309,8 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks,
                     dFdBase_c::getUnitCenterPos(&spot, blockX, blockZ, unitX,
                                                 unitZ - 1);
                     dItem::Item none;
-                    bool ok = dNpc::canPutItemAt(&spot, &none, field, 0x44,
-                                                 TRUE, TRUE) != FALSE;
+                    bool ok = dNpc::canPutItemAt(&spot, none, field, 0x44, TRUE,
+                                                 TRUE) != FALSE;
                     if (ok) {
                         f32 chance = 100.0f / (count + 1);
                         if (cM::rndF(100.0f) <= chance) {
@@ -320,12 +320,12 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks,
                             mVec3_c right = spot;
                             right.x += 14.4f;
                             dItem::Item none1;
-                            if (dNpc::canPutItemAt(&left, &none1, field, 0x44,
+                            if (dNpc::canPutItemAt(&left, none1, field, 0x44,
                                                    TRUE, TRUE)) {
                                 *pos = left;
                                 dItem::Item none2;
                                 BOOL useRight =
-                                    dNpc::canPutItemAt(&right, &none2, field,
+                                    dNpc::canPutItemAt(&right, none2, field,
                                                        0x44, TRUE, TRUE) &&
                                     cM::rndInt(2) == 0;
                                 if (useRight) {
@@ -333,7 +333,7 @@ BOOL dNpcMng_c::pickHideSpotTree(mVec3_c *pos, const s8 *usedBlocks,
                                 }
                             } else {
                                 dItem::Item none2;
-                                if (dNpc::canPutItemAt(&right, &none2, field,
+                                if (dNpc::canPutItemAt(&right, none2, field,
                                                        0x44, TRUE, TRUE)) {
                                     *pos = right;
                                 }
@@ -532,7 +532,7 @@ BOOL dNpcMng_c::createVillagers() {
             // Post-increment preserves MWCC's argument evaluation order.
             BOOL checkA = TRUE;
             dItem::Item none;
-            if (!dNpc::canPutItemAt(&pos, &none, NULL, 0x44, FALSE, checkA++)) {
+            if (!dNpc::canPutItemAt(&pos, none, NULL, 0x44, FALSE, checkA++)) {
                 blocked = TRUE;
             }
         }
@@ -887,7 +887,7 @@ BOOL dNpcMng_c::getDaubPos(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc,
                 // Post-increment preserves MWCC's argument evaluation order.
                 BOOL checkA = TRUE;
                 dItem::Item none;
-                if (!dNpc::canPutItemAt(&spot, &none, NULL, 0x44, FALSE,
+                if (!dNpc::canPutItemAt(&spot, none, NULL, 0x44, FALSE,
                                         checkA++)) {
                     blocked = TRUE;
                 }
@@ -1889,7 +1889,7 @@ BOOL dNpcMng_c::createHolidayNpc() {
 // The position of a building of the town (dSaveBuildingList_c::getPos).
 static inline BOOL getTownBuildingPos(dSaveTown_c *town, int *x, int *z,
                                       const dItem::Item *item) {
-    return town->mBuilding.mList.getPos(x, z, item, 1);
+    return town->mBuilding.mList.getPos(x, z, *item, 1);
 }
 
 void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle,
@@ -1942,9 +1942,9 @@ void dNpcMng_c::setPosConstruction(mVec3_c *pos, mAng3_c *angle,
         dFdBase_c *field = dField::getInfo(0);
         BOOL ok = FALSE;
         dItem::Item none;
-        if (dNpc::canPutItemAt(&left, &none, field, 0x44, TRUE, TRUE)) {
+        if (dNpc::canPutItemAt(&left, none, field, 0x44, TRUE, TRUE)) {
             dItem::Item none1;
-            if (dNpc::canPutItemAt(&right, &none1, field, 0x44, TRUE, TRUE)) {
+            if (dNpc::canPutItemAt(&right, none1, field, 0x44, TRUE, TRUE)) {
                 ok = TRUE;
             }
         }
@@ -2269,7 +2269,7 @@ BOOL dNpcMng_c::hasFountain(u8 scene, u8 prevScene) {
     if (isTownPlay(scene, prevScene)) {
         dItem::Item fountain((u16)BUILDING_FOUNTAIN);
         dSaveTown_c *town = dSaveData_c::getTown();
-        if (town->mBuilding.mList.getPos(&x, &z, &fountain, 1)) {
+        if (town->mBuilding.mList.getPos(&x, &z, fountain, 1)) {
             found = TRUE;
         }
     }
@@ -2308,7 +2308,7 @@ BOOL dNpcMng_c::isFlag13Visit(u8 scene, u8 prevScene) {
             dItem::Item ufo((u16)BUILDING_UFO);
             int x;
             int z;
-            if (!dSaveBuildingList_c::get()->getPos(&x, &z, &ufo, 1)) {
+            if (!dSaveBuildingList_c::get()->getPos(&x, &z, ufo, 1)) {
                 ok = FALSE;
             }
         }
@@ -2384,7 +2384,7 @@ void dNpcMng_c::setPosGateA(mVec3_c *pos, mAng3_c *angle,
     dItem::Item gate((u16)BUILDING_GATE);
     int x;
     int z;
-    dSaveBuildingList_c::get()->getPos(&x, &z, &gate, 1);
+    dSaveBuildingList_c::get()->getPos(&x, &z, gate, 1);
     x &= 0xF0;
     z &= 0xF0;
     mVec3_c exclude;
@@ -2407,7 +2407,7 @@ void dNpcMng_c::setPosGateB(mVec3_c *pos, mAng3_c *angle,
     dItem::Item gate((u16)BUILDING_GATE);
     int x;
     int z;
-    dSaveBuildingList_c::get()->getPos(&x, &z, &gate, 1);
+    dSaveBuildingList_c::get()->getPos(&x, &z, gate, 1);
     x &= 0xF0;
     z &= 0xF0;
     mVec3_c exclude;
@@ -2552,7 +2552,7 @@ void dNpcMng_c::setPosBeach(mVec3_c *pos, mAng3_c *angle,
     dRandom_c rnd(0x9D);
     rnd.initFromDateAndLandId(*dTime_c::getCurrent(), 0x61);
     dItem::Item ufo((u16)BUILDING_UFO);
-    dSaveBuildingList_c::get()->getPos(&x, &z, &ufo, 1);
+    dSaveBuildingList_c::get()->getPos(&x, &z, ufo, 1);
     int units[32];
     int x0;
     int unitX;

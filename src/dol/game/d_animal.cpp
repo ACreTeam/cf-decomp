@@ -1251,7 +1251,7 @@ BOOL getOtherPlayerHouseSpot(int *x, int *z, dAnimal_c *animal, dAnimalBlock_c *
 // The save pointer is fetched before the item copy is made.
 static inline BOOL findFgItem(dSaveTown_c *save, int *x, int *z, const dItem::Item &item) {
     dItem::Item copy = item;
-    return save->mBuilding.mList.getPos(x, z, &copy, 1);
+    return save->mBuilding.mList.getPos(x, z, copy, 1);
 }
 
 // 8011DA10
@@ -5868,7 +5868,7 @@ BOOL dAnimal_c::isItemInMyBlock(const dItem::Item *item) {
     int x = -1;
     int z = -1;
     dItem::Item copy = *item;
-    bool nf = !town->mBuilding.mList.getPos(&x, &z, &copy, 1);
+    bool nf = !town->mBuilding.mList.getPos(&x, &z, copy, 1);
     if (nf) {
         return FALSE;
     }

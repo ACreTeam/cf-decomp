@@ -2152,9 +2152,9 @@ void dPrivateData_c::buildFountain() {
 void dPrivateData_c::buildVotedBuilding() {
     int x, y;
     dItem::Item id1((u16)BUILDING_WINDMILL);
-    BOOL a = dSaveBuildingList_c::get()->getPos(&x, &y, &id1, 1);
+    BOOL a = dSaveBuildingList_c::get()->getPos(&x, &y, id1, 1);
     dItem::Item id2((u16)BUILDING_LIGHTHOUSE);
-    BOOL b = dSaveBuildingList_c::get()->getPos(&x, &y, &id2, 1);
+    BOOL b = dSaveBuildingList_c::get()->getPos(&x, &y, id2, 1);
     if ((u8)tallyBuildingVotes() == 1) {
         if (!a) {
             if (b) {
@@ -2231,7 +2231,7 @@ void dPrivateData_c::updatePublicWorks(int days) {
             int x, y;
             dItem::Item id((u16)BUILDING_WINDMILL);
             dSaveTown_c *raw = dSaveData_c::getRaw();
-            if (raw->mBuilding.mList.getPos(&x, &y, &id, 1)) {
+            if (raw->mBuilding.mList.getPos(&x, &y, id, 1)) {
                 dNotice::postNotice(8, "BBS_office", 0, 0);
             } else {
                 dNotice::postNotice(7, "BBS_office", 0, 0);

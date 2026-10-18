@@ -222,7 +222,7 @@ u16 dSaveBuildingList_c::getPlayerHouseId(u32 no) {
 // 8014A034
 BOOL dSaveBuildingList_c::getPlayerHousePos(int *x, int *z, int no) const {
     dItem::Item id(getPlayerHouseId(no));
-    return getPos(x, z, &id, 1);
+    return getPos(x, z, id, 1);
 }
 
 // 8014A098
@@ -300,7 +300,7 @@ BOOL dSaveBuildingList_c::removeNpcHouse(u32 no) {
 BOOL dSaveBuildingList_c::getNpcHousePos(int *x, int *z, u32 no) const {
     if (no < 10) {
         dItem::Item id(getNpcHouseId(no));
-        return getPos(x, z, &id, 1);
+        return getPos(x, z, id, 1);
     }
     return FALSE;
 }
@@ -479,7 +479,7 @@ dItem::Item dSaveBuildingList_c::getAt(int x, int z, int mask) const {
         u16 id = getId(i);
         dItem::Item item(id);
         int bx, bz;
-        if (getPos(&bx, &bz, &item, mask) && bx == x && bz == z) {
+        if (getPos(&bx, &bz, item, mask) && bx == x && bz == z) {
             return id;
         }
     }
@@ -487,9 +487,10 @@ dItem::Item dSaveBuildingList_c::getAt(int x, int z, int mask) const {
 }
 
 // 8014B0F0
-BOOL dSaveBuildingList_c::getPos(int *x, int *z, const dItem::Item *id, int mask) const {
-    if (id->isExtId()) {
-        int idx = id->getExtIndex();
+BOOL dSaveBuildingList_c::getPos(int *x, int *z, const dItem::Item &id,
+                                 int mask) const {
+    if (id.isExtId()) {
+        int idx = id.getExtIndex();
         if (mask & dSTR::getBuildingInfo(idx)->mField) {
             const dSaveBuildingPos_c *pos = &mPos[idx];
             if (pos->mX != 0 && pos->mZ != 0) {
@@ -601,7 +602,7 @@ int dSaveBuildingList_c::countHouses(int blockX, int blockZ) const {
     int x, z;
     for (u32 i = BUILDING_PLAYER_HOUSE_0 - BUILDING_BUILD_SITE; i <= BUILDING_PLAYER_HOUSE_3 - BUILDING_BUILD_SITE; i++) {
         dItem::Item id(getId(i));
-        if (getPos(&x, &z, &id, 1)) {
+        if (getPos(&x, &z, id, 1)) {
             int bx, bz;
             dBGCF::unitToBlock(&bx, &bz, x, z);
             if (bx == blockX && bz == blockZ) {
@@ -611,7 +612,7 @@ int dSaveBuildingList_c::countHouses(int blockX, int blockZ) const {
     }
     for (u32 i = BUILDING_NPC_HOUSE_0 - BUILDING_BUILD_SITE; i <= BUILDING_NPC_HOUSE_9 - BUILDING_BUILD_SITE; i++) {
         dItem::Item id(getId(i));
-        if (getPos(&x, &z, &id, 1)) {
+        if (getPos(&x, &z, id, 1)) {
             int bx, bz;
             dBGCF::unitToBlock(&bx, &bz, x, z);
             if (bx == blockX && bz == blockZ) {
@@ -648,7 +649,7 @@ BOOL nearBkCand_c::check(int x, int z) {
             for (u16 id = mFirst.mId; id < mLast.mId; id++) {
                 dItem::Item item(id);
                 int hx, hz;
-                if (dSaveBuildingList_c::get()->getPos(&hx, &hz, &item, 1)) {
+                if (dSaveBuildingList_c::get()->getPos(&hx, &hz, item, 1)) {
                     int hbx, hbz;
                     dBGCF::unitToBlock(&hbx, &hbz, hx, hz);
                     BOOL adjacent = (blockX == hbx && blockZ == hbz) || (blockX == hbx && blockZ == hbz + 1) ||
@@ -678,7 +679,7 @@ BOOL insidePlHsBkCand_c::check(int x, int z) {
             if ((mPlayers >> i) & 1) {
                 dItem::Item item((u16)id);
                 int hx, hz;
-                if (dSaveBuildingList_c::get()->getPos(&hx, &hz, &item, 1)) {
+                if (dSaveBuildingList_c::get()->getPos(&hx, &hz, item, 1)) {
                     int hbx, hbz;
                     dBGCF::unitToBlock(&hbx, &hbz, hx, hz);
                     if (blockX == hbx && blockZ == hbz) {

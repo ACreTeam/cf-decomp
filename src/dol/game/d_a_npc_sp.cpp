@@ -124,7 +124,10 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
             int unitX = worldToUnit(p.x);
             int unitZ = worldToUnit(p.z);
             dAcPlayer_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
-            if (pDirs != 0 && (player != NULL || dNpc::canPutItemAt(&p, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE))) {
+            if (pDirs != 0 &&
+                (player != NULL ||
+                 dNpc::canPutItemAt(&p, mNpcItem, NULL, dScene::SCENE_NUM, TRUE,
+                                    TRUE))) {
                 if (!best || best > dist) {
                     best = dist;
                     mRouteDir = i;
@@ -182,7 +185,9 @@ mVec3_c dAcNpcSp_c::getRouteStep(const mVec3_c *target) {
                 int unitX = worldToUnit(q.x);
                 int unitZ = worldToUnit(q.z);
                 dAcPlayer_c *player = dNpc::getPlayerOnUnit(unitX, unitZ);
-                BOOL ok = player != NULL || dNpc::canPutItemAt(&q, &dItem::Item(), NULL, dScene::SCENE_NUM, TRUE, TRUE);
+                BOOL ok = player != NULL ||
+                          dNpc::canPutItemAt(&q, dItem::Item(), NULL,
+                                             dScene::SCENE_NUM, TRUE, TRUE);
                 if (ok && (best < 0.0f || best > dist)) {
                     best = dist;
                     mRouteDir = i;
@@ -355,7 +360,9 @@ mVec3_c dAcNpcSp_c::calcFreePosToward(const mVec3_c *target) {
                 break;
             }
         }
-    } while (std::fabs(mPos.y - pos.y) < SP_STEP_HEIGHT_MAX && dNpc::canPutItemAt(&pos, &mNpcItem, NULL, dScene::SCENE_NUM, TRUE, TRUE));
+    } while (std::fabs(mPos.y - pos.y) < SP_STEP_HEIGHT_MAX &&
+             dNpc::canPutItemAt(&pos, mNpcItem, NULL, dScene::SCENE_NUM, TRUE,
+                                TRUE));
     int unitX = worldToUnit(last.x);
     int unitZ = worldToUnit(last.z);
     dFdBase_c::getUnitCenterPos(last, unitX, unitZ);
@@ -604,5 +611,6 @@ void dAcNpcSp_c::moveFtrToPoliceBox() {
         return;
     }
     dSaveData_c::getTown()->mPoliceBox.push(id);
-    fd->setItem(&dItem::Item(), unitX, unitZ, 0);
+    dItem::Item none;
+    fd->setItem(&none, unitX, unitZ, 0);
 }

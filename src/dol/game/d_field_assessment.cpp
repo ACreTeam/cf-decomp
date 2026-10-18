@@ -4554,7 +4554,7 @@ void fgMngProc_updateFrame() {
             } else {
                 dItem::Item item((u16)0xD013);
                 int x, z;
-                dSaveBuildingList_c::get()->getPos(&x, &z, &item, 1);
+                dSaveBuildingList_c::get()->getPos(&x, &z, item, 1);
                 dFdBase_c::getUnitCenterPos(&pos, x, z);
                 dBGCF::setCurrentBg(1);
                 pos.y = dBGCF::getUnitY((const mVec3_c *)&pos);

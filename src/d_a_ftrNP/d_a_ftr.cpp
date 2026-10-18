@@ -1698,7 +1698,9 @@ void daFTR_c::putUnits(bool send, const mVec3_c *ofs, mAng angle, BOOL setDemo) 
             int x = units.get(i)->x;
             int z = units.get(i)->z;
             if (i == 0) {
-                dFTR::putFtr(dScene::getCurrentScene(), x, z, layer, getSwitch(), gyroid, param, &dItem::Item(item), send);
+                dFTR::putFtr(dScene::getCurrentScene(), x, z, layer,
+                             getSwitch(), gyroid, param, dItem::Item(item),
+                             send);
             }
             dFTR::getUnitMap()->set(this, x, z, layer);
         }
@@ -1725,8 +1727,9 @@ void daFTR_c::removeUnits(BOOL send, BOOL upper) {
                 int z = units.get(i)->z;
                 dItem::Item *item = fd->getItem(x, z, getLayer());
                 if (item != NULL && item->hasFtrFunc()) {
-                    dFTR::removeFtr(dScene::getCurrentScene(), x, z, (u8)getLayer(), getSwitch(), &dItem::Item(*item), upper,
-                                    send);
+                    dFTR::removeFtr(dScene::getCurrentScene(), x, z,
+                                    (u8)getLayer(), getSwitch(),
+                                    dItem::Item(*item), upper, send);
                 }
                 dFTR::unitMap_c *map = dFTR::getUnitMap();
                 map->remove(this, x, z, layer);

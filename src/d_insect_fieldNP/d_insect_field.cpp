@@ -1521,7 +1521,7 @@ BOOL checkHouseLight(int blockX, int blockZ, int unitX, int unitZ, void *user) {
     int hallOfsX[6] = {-1, -2, -3, 1, 2, 3};
     int hallOfsZ[6] = {2, 2, 1, 2, 2, 1};
     dItem::Item item((u16)BUILDING_TOWN_HALL);
-    if (dSaveBuildingList_c::get()->getPos(&hx, &hz, &item, 1)) {
+    if (dSaveBuildingList_c::get()->getPos(&hx, &hz, item, 1)) {
         for (int j = 0; j < 6; j++) {
             if (x == hx + hallOfsX[j] && z == hz + hallOfsZ[j]) {
                 return TRUE;

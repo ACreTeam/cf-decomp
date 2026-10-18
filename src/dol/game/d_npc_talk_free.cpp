@@ -721,19 +721,19 @@ int dAcNpcNml_c::talk_c::msgFreeRumor(msgInfo_s *info) {
             list = &dSaveData_c::getRaw()->mBuilding.mList;
             if (other->mHasFountain) {
                 dItem::Item fountain((u16)BUILDING_FOUNTAIN);
-                bool built = list->getPos(&x, &z, &fountain, 1);
+                bool built = list->getPos(&x, &z, fountain, 1);
                 mask = built ? mask | 0x80 : mask | 0x40;
                 num++;
             }
             if (other->mHasWindmill) {
                 dItem::Item windmill((u16)BUILDING_WINDMILL);
-                bool built = list->getPos(&x, &z, &windmill, 1);
+                bool built = list->getPos(&x, &z, windmill, 1);
                 mask = built ? mask | 0x200 : mask | 0x100;
                 num++;
             }
             if (other->mHasLighthouse) {
                 dItem::Item lighthouse((u16)BUILDING_LIGHTHOUSE);
-                bool built = list->getPos(&x, &z, &lighthouse, 1);
+                bool built = list->getPos(&x, &z, lighthouse, 1);
                 mask = built ? mask | 0x800 : mask | 0x400;
                 num++;
             }
@@ -1566,7 +1566,7 @@ BOOL dAcNpcNml_c::talk_c::isBuildingNear(const dItem::Item *building, int xMin, 
     int z = 0;
     dItem::Item item = *building;
     dSaveTown_c *town = dSaveData_c::getTown();
-    bool found = town->mBuilding.mList.getPos(&x, &z, &item, 1);
+    bool found = town->mBuilding.mList.getPos(&x, &z, item, 1);
     if (found && x >= xMin && x <= xMax && z >= zMin && z <= zMax) {
         return TRUE;
     }

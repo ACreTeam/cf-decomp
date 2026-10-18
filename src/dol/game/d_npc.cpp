@@ -2441,10 +2441,12 @@ BOOL canPutItemOnUnit(int x, int z, const dItem::Item *item, dFdBase_c *map, u8 
 }
 
 // 800F20D0
-BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item *item, dFdBase_c *map, u8 kind, BOOL allowFg94, BOOL checkA) {
+BOOL canPutItemAt(const mVec3_c *pos, const dItem::Item &item, dFdBase_c *map,
+                  u8 kind, BOOL allowFg94, BOOL checkA) {
     f32 x = pos->x;
     f32 z = pos->z;
-    return canPutItemOnUnit((int)x >> 5, (int)z >> 5, item, map, kind, allowFg94, checkA);
+    return canPutItemOnUnit((int)x >> 5, (int)z >> 5, &item, map, kind,
+                            allowFg94, checkA);
 }
 
 // 800F2138: a random free unit closest to `pos`, searching up to `radius` rings out.
@@ -2890,7 +2892,7 @@ BOOL pickOutdoorPlacementUnit(int *outX, int *outZ, spotFunc func, int arg, cons
         int fx = 0;
         int fz = 0;
         dItem::Item item((u16)BUILDING_GATE);
-        bool found = dSaveBuildingList_c::get()->getPos(&fx, &fz, &item, 1);
+        bool found = dSaveBuildingList_c::get()->getPos(&fx, &fz, item, 1);
         if (found) {
             u32 bx = (fx >> 4) - 1;
             u32 bz = (fz >> 4) - 1;
@@ -2980,11 +2982,14 @@ BOOL pickOutdoorPlacementPos(mVec3_c *out, spotFunc func, int arg, const mVec3_c
                 mVec3_c right = *out;
                 right.x += step;
                 dItem::Item none;
-                if (canPutItemAt(&left, &none, NULL, dScene::SCENE_NUM, TRUE, TRUE)) {
+                if (canPutItemAt(&left, none, NULL, dScene::SCENE_NUM, TRUE,
+                                 TRUE)) {
                     *out = leftHalf;
                     BOOL useRight = FALSE;
                     dItem::Item none2;
-                    if (canPutItemAt(&right, &none2, NULL, dScene::SCENE_NUM, TRUE, TRUE) && cM::rndInt(2) == 0) {
+                    if (canPutItemAt(&right, none2, NULL, dScene::SCENE_NUM,
+                                     TRUE, TRUE) &&
+                        cM::rndInt(2) == 0) {
                         useRight = TRUE;
                     }
                     if (useRight) {
@@ -2992,7 +2997,8 @@ BOOL pickOutdoorPlacementPos(mVec3_c *out, spotFunc func, int arg, const mVec3_c
                     }
                 } else {
                     dItem::Item none2;
-                    if (canPutItemAt(&right, &none2, NULL, dScene::SCENE_NUM, TRUE, TRUE)) {
+                    if (canPutItemAt(&right, none2, NULL, dScene::SCENE_NUM,
+                                     TRUE, TRUE)) {
                         *out = rightHalf;
                     } else if (!dAcNpc_c::isMultiPlay()) {
                         dItem::Item *l = map->getItem(x - 1, z, 0);

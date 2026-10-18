@@ -637,10 +637,10 @@ struct putPacket_c {
     u32 mGyroid : 1;
 };
 
-void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid, u8 gyroidValue, const dItem::Item *item,
-            bool send) {
+void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid,
+            u8 gyroidValue, const dItem::Item &item, bool send) {
     dScene::isSceneAttr(scene, dScene::SCENE_ATTR_ROOM);
-    dItem::Item ftrItem = *item;
+    dItem::Item ftrItem = item;
     dFdBase_c *fd;
     u8 current = dScene::getCurrentScene();
     if (current == scene) {
@@ -652,7 +652,7 @@ void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid, u8 gyroidVal
     if (fd != NULL) {
         fd->getKind();
         shape_c shape;
-        shape.set(*item);
+        shape.set(item);
         for (u32 i = 0; i < shape.getNum(); i++) {
             int ux = x + shape.getOfs(i)[0];
             int uz = z + shape.getOfs(i)[1];
@@ -684,8 +684,8 @@ void putFtr(u8 scene, int x, int z, u8 layer, BOOL on, BOOL gyroid, u8 gyroidVal
 void recvPutFtr(u8 scene, const void *data) {
     const putPacket_c *packet = (const putPacket_c *)data;
     dItem::Item item((u16)packet->mItem);
-    putFtr(scene, packet->mX, packet->mZ, packet->mLayer, packet->mOn, packet->mGyroid, packet->mGyroidValue, &item,
-           FALSE);
+    putFtr(scene, packet->mX, packet->mZ, packet->mLayer, packet->mOn,
+           packet->mGyroid, packet->mGyroidValue, item, FALSE);
 }
 
 struct removePacket_c {
@@ -702,8 +702,9 @@ static inline bool clearItemFailed(dFdBase_c *fd, int x, int z, int layer) {
     return !fd->setItem(&none, x, z, layer);
 }
 
-void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *item, BOOL upper, BOOL send) {
-    dItem::Item ftrItem = *item;
+void removeFtr(u8 scene, int x, int z, int layer, BOOL on,
+               const dItem::Item &item, BOOL upper, BOOL send) {
+    dItem::Item ftrItem = item;
     dFdBase_c *fd;
     u8 current = dScene::getCurrentScene();
     if (current == scene) {
@@ -716,8 +717,8 @@ void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *it
         return;
     }
     shape_c shape;
-    shape.set(*item);
-    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(*item);
+    shape.set(item);
+    const dItem::BITM *bitm = dItem::infoBank_c::get()->getBITM(item);
     BOOL gyroid = bitm != NULL ? dItem::clampField(bitm->m_ftrFunc, dItem::FTR_FUNC_COUNT, dItem::FTR_FUNC_PLAIN) == dItem::FTR_FUNC_GYROID : FALSE;
     for (u32 i = 0; i < shape.getNum(); i++) {
         int ux = x + shape.getOfs(i)[0];
@@ -755,7 +756,8 @@ void removeFtr(u8 scene, int x, int z, int layer, BOOL on, const dItem::Item *it
 void recvRemoveFtr(u8 scene, const void *data) {
     const removePacket_c *packet = (const removePacket_c *)data;
     dItem::Item item((u16)packet->mItem);
-    removeFtr(scene, packet->mX, packet->mZ, packet->mLayer, packet->mOn, &item, packet->mUpper, FALSE);
+    removeFtr(scene, packet->mX, packet->mZ, packet->mLayer, packet->mOn, item,
+              packet->mUpper, FALSE);
 }
 
 f32 getGroundY(const mVec3_c *pos) {

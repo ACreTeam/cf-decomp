@@ -1630,7 +1630,7 @@ BOOL dBgiDraw_c::isTownBuildingRoom() {
             BUILDING_FIELD_TOWN) {
             dItem::Item building(id);
             int unitX, unitZ;
-            if (dSaveBuildingList_c::get()->getPos(&unitX, &unitZ, &building,
+            if (dSaveBuildingList_c::get()->getPos(&unitX, &unitZ, building,
                                                    1)) {
                 int blockX, blockZ;
                 dBGCF::unitToBlock(&blockX, &blockZ, unitX, unitZ);
