@@ -278,6 +278,7 @@ class daSTR_c : public dDemoActor_c,
     BOOL isNoDoor();
     BOOL isAutoDoor();
     BOOL isHingedDoor();
+    BOOL isLightFlicker() const;
     BOOL hasMsg() const {
         return (mFlags >> 1) & 1;
     }

@@ -484,8 +484,8 @@ BOOL daSTR_c::isWindowLit() {
 }
 
 // .text:0x165C: the window lights flicker on (dBuildingInfo_c::mLightFlicker).
-static BOOL isFlicker(const daSTR_c *str) {
-    return dSTR::getBuildingInfo(str->mBuildingIdx)->mLightFlicker != 0;
+BOOL daSTR_c::isLightFlicker() const {
+    return dSTR::getBuildingInfo(mBuildingIdx)->mLightFlicker != 0;
 }
 
 // .text:0x1690
@@ -877,10 +877,10 @@ int daSTR_c::preExecute() {
     updateSoundPos();
     executeState();
     executeDoorState();
-    mWindowLight.execute(isWindowLit(), isFlicker(this));
-    mNeonLight.execute(isNeonOn(), isFlicker(this));
-    mEtcLight.execute(isEtcLightOn(), isFlicker(this));
-    mFadeWindowLight.execute(isWindowLit(), isFlicker(this));
+    mWindowLight.execute(isWindowLit(), isLightFlicker());
+    mNeonLight.execute(isNeonOn(), isLightFlicker());
+    mEtcLight.execute(isEtcLightOn(), isLightFlicker());
+    mFadeWindowLight.execute(isWindowLit(), isLightFlicker());
     executeExtra();
     return SUCCEEDED;
 }
