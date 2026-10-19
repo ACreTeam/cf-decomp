@@ -129,12 +129,12 @@ void getSoundPos(const mVec3_c *src, mVec3_c *dst) {
 }
 
 // 8000EE60
-void fn_8000EE60() {
+void sndFadeOut() {
     SoundSystem::getInstance()->fadeOut();
 }
 
 // 8000EEC8
-void fn_8000EEC8() {
+void sndFadeIn() {
     SoundSystem::getInstance()->fadeIn();
 }
 

@@ -12,7 +12,7 @@ void dSaveVisitorNpc_c::clear() {
     mWeekStart.reset();
     mEventDay.reset();
     for (int i = 0; i < VISITOR_NPC_DAY_NUM; i++) {
-        mDays[i] = VISITOR_NPC_NOT_SET;
+        mDays[i] = VISITOR_NOT_SET;
     }
 }
 
@@ -33,7 +33,7 @@ void dSaveVisitorNpc_c::update() {
 
         int i;
         int last = 0;
-        if (mDays[0] != VISITOR_NPC_NOT_SET) {
+        if (mDays[0] != VISITOR_NOT_SET) {
             for (i = 5; i >= 1; i--) {
                 if (dEvent::isRandomVisitor(mDays[i])) {
                     last = mDays[i];
@@ -43,16 +43,16 @@ void dSaveVisitorNpc_c::update() {
         }
 
         for (i = 1; i <= 5; i++) {
-            mDays[i] = VISITOR_NPC_NOT_SET;
+            mDays[i] = VISITOR_NOT_SET;
         }
-        mDays[0] = VISITOR_NPC_SUNDAY;
-        mDays[6] = VISITOR_NPC_SATURDAY;
+        mDays[0] = VISITOR_JOAN;
+        mDays[6] = VISITOR_KK;
 
         int free = 5;
         dTime_c t = mWeekStart.get();
         for (i = 1; i <= 5; i++) {
             if (dEvent::getTownEventOn(&t) != -1) {
-                mDays[i] = VISITOR_NPC_TOWN_EVENT;
+                mDays[i] = VISITOR_TOWN_EVENT;
                 free--;
             }
             t.add(1, 0, 0, 0);
@@ -68,7 +68,7 @@ void dSaveVisitorNpc_c::update() {
             }
             if (cM::rndInt(100) < chance) {
                 int day = getFreeDay(-1);
-                mDays[day] = VISITOR_NPC_WISP;
+                mDays[day] = VISITOR_WISP;
                 num = 1;
                 free--;
             }
@@ -79,7 +79,7 @@ void dSaveVisitorNpc_c::update() {
             cM::rndInt(100) < 30) {
             int day = getFreeDay(5);
             if (day != -1) {
-                mDays[day] = VISITOR_NPC_UFO;
+                mDays[day] = VISITOR_UFO;
                 free--;
                 num++;
             }
@@ -100,8 +100,8 @@ void dSaveVisitorNpc_c::update() {
         }
 
         for (i = 1; i <= 5; i++) {
-            if (mDays[i] == VISITOR_NPC_NOT_SET) {
-                mDays[i] = VISITOR_NPC_NONE;
+            if (mDays[i] == VISITOR_NOT_SET) {
+                mDays[i] = VISITOR_NONE;
             }
         }
 
@@ -145,13 +145,13 @@ u8 dSaveVisitorNpc_c::getDay(int wday) {
 int dSaveVisitorNpc_c::getFreeDay(int exclude) {
     int num = 0;
     for (int i = 1; i <= 5; i++) {
-        if (mDays[i] == VISITOR_NPC_NOT_SET && exclude != i) {
+        if (mDays[i] == VISITOR_NOT_SET && exclude != i) {
             num++;
         }
     }
     int r = cM::rndInt(num);
     for (int i = 1; i <= 5; i++) {
-        if (mDays[i] == VISITOR_NPC_NOT_SET && exclude != i) {
+        if (mDays[i] == VISITOR_NOT_SET && exclude != i) {
             if (r == 0) {
                 return i;
             }

@@ -102,7 +102,7 @@ int daUfo_c::create() {
     mAnmClr.create(mdl, file.GetResAnmClr("obj_ufo0_n"), allocator, NULL, 1);
     mMdl.setAnm(mAnmClr);
     dTime_c now = *dTime_c::getCurrent();
-    mVisitorDay = dEvent::isVisitorHere(VISITOR_NPC_UFO);
+    mVisitorDay = dEvent::isVisitorHere(VISITOR_UFO);
     mChance = cM::rndInt(UFO_CHANCE_NUM);
     mLastMinute = now.min;
     mObjc.mHitFunc = hitCallback;

@@ -314,6 +314,7 @@ public:
     void init();              // 800F7D38
     void set(int visit);      // 800F7D4C
     int getVisit();           // 800F7D54
+    void setSorryType(int type) { mSorryType = type; } // d_a_npc_sp_resetsan
 
     /* 0x0 */ int mVisit;
     /* 0x4 */ u8 _4[4];

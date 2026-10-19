@@ -163,7 +163,7 @@ public:
     void setPosPlayerHouseDoor(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ABAE4
     static BOOL isLetterVisitFirstTime(u8 scene, u8 prevScene); // 801ABBA0
     static BOOL isLetterVisitKind1(u8 scene, u8 prevScene); // 801ABC1C
-    static BOOL isVisitor8Day(u8 scene, u8 prevScene);      // 801ABC60
+    static BOOL isPascalDay(u8 scene, u8 prevScene);      // 801ABC60
     void setPosRaccoSpot(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ABCC8
     static BOOL isGuestVisitTime(u8 scene, u8 prevScene);   // 801ABD7C
     void setPosGuestVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ABDC0
@@ -172,29 +172,29 @@ public:
     void setPosFountain(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ABE0C
     static BOOL hasFountain(u8 scene, u8 prevScene);        // 801ABEC8
     static BOOL isRelayDesignVisitTime(u8 scene, u8 prevScene); // 801ABF44
-    static BOOL isVisitor2Day(u8 scene, u8 prevScene);      // 801ABF88
-    static BOOL isVisitor5Day(u8 scene, u8 prevScene);      // 801ABFCC
+    static BOOL isJoanDay(u8 scene, u8 prevScene);      // 801ABF88
+    static BOOL isWispDay(u8 scene, u8 prevScene);      // 801ABFCC
     static BOOL isFlag13Visit(u8 scene, u8 prevScene);      // 801AC010
-    void setPosVisitor2(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC150
+    void setPosJoan(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC150
     static BOOL isResetVisitTime(u8 scene, u8 prevScene);   // 801AC154
     void setPosResetVisit(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC278
-    static BOOL isVisitor7Day(u8 scene, u8 prevScene);      // 801AC374
+    static BOOL isWendellDay(u8 scene, u8 prevScene);      // 801AC374
     void setPosGateA(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC438
-    static BOOL isVisitor4Day(u8 scene, u8 prevScene);      // 801AC520
+    static BOOL isNoVisitorDay(u8 scene, u8 prevScene);      // 801AC520
     void setPosGateB(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC588
-    static BOOL isVisitor9Day(u8 scene, u8 prevScene);      // 801AC670
-    void setPosVisitor9(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC6B4
-    void setPosVisitor5(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC6B8
+    static BOOL isSaharahDay(u8 scene, u8 prevScene);      // 801AC670
+    void setPosSaharah(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC6B4
+    void setPosWisp(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AC6B8
     BOOL pickEmptyBlockSpot(mVec3_c *pos);       // 801AC7BC: a block of kind 0xB / 0x2D without houses
     BOOL pickBlockSpot(mVec3_c *pos, int blockX, int blockZ); // 801ACA4C
     BOOL canStandAt(dFdBase_c *field, int unitX, int unitZ); // 801ACB54: an fg item with free units behind
     void setPosBeach(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ACC58
     void setPosCarnival(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ACDC8
-    static BOOL isVisitor2Here(dQuestEvent_e event);        // 801ACE8C
-    static BOOL isVisitor9Here(dQuestEvent_e event);        // 801ACEBC
+    static BOOL isJoanHere(dQuestEvent_e event);        // 801ACE8C
+    static BOOL isSaharahHere(dQuestEvent_e event);        // 801ACEBC
     static BOOL isNotTownFlag5(dQuestEvent_e event);        // 801ACEEC
-    static BOOL isVisitor7Here(dQuestEvent_e event);        // 801ACF1C
-    static BOOL isVisitor4Time(dQuestEvent_e event);        // 801ACF94
+    static BOOL isWendellHere(dQuestEvent_e event);        // 801ACF1C
+    static BOOL isPeteGateTime(dQuestEvent_e event);        // 801ACF94
     static void getTodayEventNpc(dItem::Item *npc);         // 801ACFFC
 
     static void setShowTelop();                  // 801AD168: (q10) the telop at the next execute

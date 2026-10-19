@@ -12,12 +12,15 @@
 #define SP_NPC_POST_GIRL2 0x800B // Phyllis (d_a_npc_sp_periko: dAcNpcSpPerimi_c)
 #define SP_NPC_MAMEDANUKI0 0x800F // Timmy (d_a_npc_sp_tanukichi: dAcNpcSpMamekichi_c; d_sc_data_rm_shop3_f2)
 #define SP_NPC_MAMEDANUKI1 0x8010 // Tommy (d_a_npc_sp_tanukichi: dAcNpcSpTubukichi_c)
+#define SP_NPC_RESETSAN 0x8011 // Mr. Resetti after a reset (d_a_npc_sp_resetsan)
+#define SP_NPC_RACKETSAN 0x8012 // Don Resetti after the fifth reset (d_a_npc_sp_resetsan)
 #define SP_NPC_KAPPN 0x8014 // Kapp'n, the bus driver (d_a_npc_sp_player_create: the stop announcements)
 #define SP_NPC_MISSING_CHILD 0x8019 // Katie, the lost kitten (d_a_npc_sp_missing_child, d_a_npc_sp_gatekeeper_a)
 #define SP_NPC_MISSING_MOTHER 0x801A // Katie's mother (d_a_npc_sp_missing_mother, d_a_npc_sp_missing_child)
 #define SP_NPC_GATEKEEPER_A 0x8026 // Copper, the gatekeeper (d_a_npc_sp_gatekeeper_a)
 #define SP_NPC_GATEKEEPER_B 0x8027 // Booker, the other gatekeeper (d_a_npc_sp_gatekeeper_a/b)
 #define SP_NPC_GUIDE 0x8029 // Rover (the player select, d_a_npc_sp_player_select)
+#define SP_NPC_SONCHO_EVENT 0x802C // Tortimer at the countdown (d_npc_mng l_holidayNpcs); d_a_npc_sp_soncho awake
 #define SP_NPC_CONV_MASTER 0x8044 // Tom Nook in Nook 'n' Go (d_a_npc_sp_tanukichi preCreate)
 #define SP_NPC_SUPER_MASTER 0x8045 // Tom Nook in Nookway
 #define SP_NPC_DEPART_MASTER 0x8046 // Tom Nook in Nookington's

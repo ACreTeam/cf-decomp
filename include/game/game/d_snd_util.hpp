@@ -19,6 +19,8 @@ void sndResetStart(int frames);                     // 8000E6F8: (d_reset)
 void getSoundPos(const mVec3_c *src, mVec3_c *dst); // 8000EDD0: field is curved, else into view space.
 void sndMenuOpen();                                 // 8000EF30: a menu opened (dBgm VolStateMenu_c)
 void sndMenuClose();                                // 8000EF98: the menu closed (dBgm VolStateMenu_c)
+void sndFadeOut();                                  // 8000EE60: SoundSystem fadeOut (d_a_npc_sp_resetsan's fake reset)
+void sndFadeIn();                                   // 8000EEC8: SoundSystem fadeIn
 void sndTalkStart();                                // 8000F000: a conversation started (dBgm VolStateTalk_c)
 void sndTalkEnd();                                  // 8000F068: the conversation ended (dBgm VolStateTalk_c)
 void sndStartBgm(u32 id, int fadeIn);                  // 8000F0D0: start the BGM.
@@ -58,8 +60,6 @@ void fn_8000E868();                                          // 8000E868: (d_res
 void fn_8000E9C0();                                          // 8000E9C0: (d_wifi_err)
 void fn_8000EB20();                                          // 8000EB20: (d_caution)
 void fn_8000EC78();                                          // 8000EC78: (d_caution)
-void fn_8000EE60();                                          // 8000EE60: no callers
-void fn_8000EEC8();                                          // 8000EEC8: no callers
 void fn_8000F248();                                          // 8000F248: museum room change keeping the music (dBgm StgMuseum_c)
 void fn_8000F2B0();                                          // 8000F2B0: museum room change done (dBgm StgMuseum_c)
 int fn_8000F4D8();                                           // 8000F4D8: K.K. playback value (dBgm StgCafe_c)

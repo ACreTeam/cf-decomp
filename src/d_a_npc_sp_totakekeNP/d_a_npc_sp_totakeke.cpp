@@ -185,7 +185,7 @@ int dAcNpcSpTotakeke_c::create() {
     dNpcInfo::totakeke_c::get()->mPlayReq = 0;
     if (isLocalOwner()) {
         changeState(STATE_IDLE);
-        if (!dEvent::isVisitorHere(VISITOR_NPC_SATURDAY)) {
+        if (!dEvent::isVisitorHere(VISITOR_KK)) {
             mDaub.mActive = 0;
         } else {
             mDaub.mActive = 1;
@@ -667,7 +667,7 @@ void dAcNpcSpTotakeke_c::talk_c::start(dActor_c *target) {
     mpActActor = target;
     switch (mKind) {
     case KIND_TALK:
-        if (!dEvent::isVisitorHere(VISITOR_NPC_SATURDAY)) {
+        if (!dEvent::isVisitorHere(VISITOR_KK)) {
             mMsgCode = MSG_DONE_TODAY;
         } else if (dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(
                        PRIVATE_FLAG0_PART_TIME_JOB)) {

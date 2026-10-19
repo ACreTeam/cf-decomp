@@ -305,11 +305,13 @@ modules:
 - object: files/rels/d_a_npc_sp_pyontaroNP.rel
   hash: 674706a8ccb27a0751b9ced54499629ee1c54d35
   name: d_a_npc_sp_pyontaroNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_pyontaroNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_pyontaroNP/splits.txt
 - object: files/rels/d_a_npc_sp_resetsanNP.rel
   hash: 9004ef60803acaf471bf0de9d6bfe13811ea8bbb
   name: d_a_npc_sp_resetsanNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_resetsanNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_resetsanNP/splits.txt
 - object: files/rels/d_a_npc_sp_perikoNP.rel
@@ -321,6 +323,7 @@ modules:
 - object: files/rels/d_a_npc_sp_sonchoNP.rel
   hash: 92369e6d5a9122402c36284f3e2773a54210b6f4
   name: d_a_npc_sp_sonchoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_sonchoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_sonchoNP/splits.txt
 - object: files/rels/d_a_npc_sp_event_sonchoNP.rel
@@ -343,11 +346,13 @@ modules:
 - object: files/rels/d_a_npc_sp_op_tanukichiNP.rel
   hash: 6f3f57ece6e2cdfdc5f8b1f9cc5ded4f6b12557c
   name: d_a_npc_sp_op_tanukichiNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_op_tanukichiNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_op_tanukichiNP/splits.txt
 - object: files/rels/d_a_npc_sp_kaburibaNP.rel
   hash: 376610f76c8c32fb72b7187589fc0eb6b898bf33
   name: d_a_npc_sp_kaburibaNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_kaburibaNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_kaburibaNP/splits.txt
 - object: files/rels/d_a_npc_sp_totakekeNP.rel

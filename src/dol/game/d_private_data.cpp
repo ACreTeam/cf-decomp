@@ -1201,7 +1201,7 @@ void dPrivateData_c::setResetCount(u8 value) {
 // 80139314
 void dPrivateData_c::syncResetCount() {
     if (mLastResetCount > mResetCount) {
-        setFlag0(0x58);
+        setFlag0(PRIVATE_FLAG0_RESET_COUNT_DROPPED);
     }
     mLastResetCount = mResetCount;
 }

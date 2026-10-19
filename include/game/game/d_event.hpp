@@ -70,11 +70,23 @@ enum {
     EVENT_LAMP_SAME_DAY,           // the saved lamp date is today
 };
 
-// dEvent::getTodayVisitor() (only the one the field manager uses is named).
+// What comes to town on a day of the week (dSaveVisitorNpc_c::mDays, getTodayVisitor). Kinds are
+// inferred from the visiting hours in isVisitorHere, from who sets them and from the npcs that check them.
 enum dVisitor_e {
-    VISITOR_WISP = 5, // isVisitorHere: 20:00..6:00; procEvents buries a lamp on his day
-    VISITOR_WENDELL = 7, // d_a_npc_sp_seiichi
-    VISITOR_SAHARAH = 9, // d_a_npc_sp_roran
+    VISITOR_NOT_SET,    // 0: not decided yet
+    VISITOR_TOWN_EVENT, // 1: a weekday with a town event, no visitor
+    VISITOR_JOAN,       // 2: every Sunday, 6:00-12:00 (d_a_npc_sp_kaburiba)
+    VISITOR_KK,         // 3: every Saturday, 19:30-0:00 (K.K. Slider, d_a_npc_sp_totakeke; npc 0x8007)
+    VISITOR_NONE,       // 4: nobody; Pete waits at the gate at mail time (d_npc_mng)
+    VISITOR_WISP,       // 5: 20:00-6:00, chance grows with the weeks skipped; procEvents buries a lamp
+    VISITOR_UFO,        // 6: the UFO (d_a_ufo); 30% a week unless SAVE_FLAG_UFO_SHOT(_BEFORE)
+    VISITOR_WENDELL,    // 7: random, 6:00-0:00 (d_a_npc_sp_seiichi)
+    VISITOR_PASCAL,     // 8: random (d_a_npc_sp_racco)
+    VISITOR_SAHARAH,    // 9: random, 6:00-0:00 (d_a_npc_sp_roran)
+
+    // Two of the random visitors come a week (pickRandomVisitor).
+    VISITOR_RANDOM_FIRST = VISITOR_WENDELL,
+    VISITOR_RANDOM_LAST = VISITOR_SAHARAH,
 };
 
 #define EVENT_ACTIVE_NUM 10
@@ -176,7 +188,7 @@ dTime_c *getToday();                                           // 8008A7FC
 BOOL isNowBetween(const int &startHour, const int &startMin, const int &endHour, const int &endMin); // 8008A808
 BOOL isNowBefore(const int &hour, const int &min);             // 8008AA44
 
-// Today's visitor from the weekly schedule (dSaveData_c::mVisitorNpc, VISITOR_NPC_*). The kinds are inferred from
+// Today's visitor from the weekly schedule (dSaveData_c::mVisitorNpc, dVisitor_e). The kinds are inferred from
 // their hours (2: 6:00-12:00, Joan?); 7..9 are picked at random.
 BOOL isRandomVisitor(int kind);                                // 8008AB3C: 7..9
 int pickRandomVisitor(int a, int b);                           // 8008AB5C: one of 7..9 other than a and b

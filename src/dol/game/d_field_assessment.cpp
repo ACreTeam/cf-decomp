@@ -1468,7 +1468,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     dSaveData_c::getTown()->mPoliceBox.refill(days);
     dSaveData_c::getTown()->mRecycleBin.update(last, days);
     clearShopRoomMaps();
-    if ((u8)dEvent::getTodayVisitor() == VISITOR_NPC_UFO) {
+    if ((u8)dEvent::getTodayVisitor() == VISITOR_UFO) {
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_UFO_SHOT);
         dSaveData_c::getTown()->clearFlag(SAVE_FLAG_UFO_SHOT_BEFORE);
     }

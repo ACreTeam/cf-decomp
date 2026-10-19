@@ -91,7 +91,7 @@ class daUfo_c : public dFltg::actor_c {
     /* 0x298 */ s16 mBobSpeed;
     /* 0x29A */ s16 mBobPhase;
     /* 0x29C */ f32 mBobAmp;
-    /* 0x2A0 */ bool mVisitorDay; // dEvent::isVisitorHere(VISITOR_NPC_UFO)
+    /* 0x2A0 */ bool mVisitorDay; // dEvent::isVisitorHere(VISITOR_UFO)
     /* 0x2A4 */ u32 mChance;      // of appearing at the next check (of 8)
     /* 0x2A8 */ u32 mLastMinute;
 }; // size 0x2AC

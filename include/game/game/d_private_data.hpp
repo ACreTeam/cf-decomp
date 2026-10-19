@@ -48,6 +48,8 @@ enum dPrivateFlag0_e {
                                                 // (dSvProc_c::initializePlayer); villagers talk about the
                                                 // newcomer (d_npc_talk_arbeit), no event announcements,
                                                 // villager memories / letters, quests (inferred)
+    PRIVATE_FLAG0_OP_NOOK_GREETED = 0x0E,       // Nook greeted the new player on the house tour (d_a_npc_sp_op_tanukichi)
+    PRIVATE_FLAG0_TORTIMER_MET = 0x0F,          // Tortimer's first talk at the town hall was heard (d_a_npc_sp_soncho)
     PRIVATE_FLAG0_GOLDEN_CAN_RECEIVED = 0x11,   // Pelly handed over the golden watering can (d_a_npc_sp_periko)
     PRIVATE_FLAG0_JOINED_AS_VISITOR = 0x12,     // made by dSvProc_c::initializeVisitor; Mom's first letter differs (inferred)
     PRIVATE_FLAG0_PUBLIC_WORKS_VOTED = 0x13,    // voted in the current public works vote (d_a_npc_sp_periko; cleared
@@ -101,6 +103,10 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
+    PRIVATE_FLAG0_RESET_COUNT_DROPPED = 0x58,   // the reset count went down (syncResetCount; Resetti's tenth lecture)
+    PRIVATE_FLAG0_RESETTI_SORRY_1 = 0x59,       // Resetti's "How sorry are ya?" quiz: the first of four was asked
+    PRIVATE_FLAG0_RESETTI_SORRY_2 = 0x5A,       // ... the second (d_a_npc_sp_resetsan; all cleared after the fourth)
+    PRIVATE_FLAG0_RESETTI_SORRY_3 = 0x5B,       // ... the third
     PRIVATE_FLAG0_RESET_CENTER_SHOVEL = 0x5C,   // Resetti's first visit is over: the silver shovel was taken (d_a_npc_sp_demo_resetsan)
     PRIVATE_FLAG0_RESET_CENTER_VISIT2 = 0x5D,   // the Reset Surveillance Center's second visit was talked through
     PRIVATE_FLAG0_RESET_CENTER_VISIT3 = 0x5E,   // ... the third

@@ -117,7 +117,7 @@ BOOL requestExitScene(dDemoActor_c *actor, int exit);   // 8018E85C
 BOOL request7();                                        // 8018EA68 (d_a_c_uitag, d_sv_demo)
 BOOL isActive7();                                       // 8018EA70 (d_sv_demo)
 BOOL finish7();                                         // 8018EA78 (d_sv_demo)
-BOOL requestReport(dDemoActor_c *actor);                // 8018EAE4
+BOOL requestReport(dDemoActor_c *actor, dDemoActor_c *target); // 8018EAE4 (target unused; d_a_npc_sp_resetsan)
 BOOL request9();                                        // 8018EB8C (d_player_mgr)
 BOOL finish9();                                         // 8018EBD8
 BOOL isActive9();                                       // 8018EC18

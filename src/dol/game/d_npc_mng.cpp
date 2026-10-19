@@ -2195,9 +2195,9 @@ BOOL dNpcMng_c::isLetterVisitKind1(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-BOOL dNpcMng_c::isVisitor8Day(u8 scene, u8 prevScene) {
+BOOL dNpcMng_c::isPascalDay(u8 scene, u8 prevScene) {
     dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 8) {
+    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == VISITOR_PASCAL) {
         return TRUE;
     }
     return FALSE;
@@ -2284,15 +2284,15 @@ BOOL dNpcMng_c::isRelayDesignVisitTime(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-BOOL dNpcMng_c::isVisitor2Day(u8 scene, u8 prevScene) {
-    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 2) {
+BOOL dNpcMng_c::isJoanDay(u8 scene, u8 prevScene) {
+    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == VISITOR_JOAN) {
         return TRUE;
     }
     return FALSE;
 }
 
-BOOL dNpcMng_c::isVisitor5Day(u8 scene, u8 prevScene) {
-    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 5) {
+BOOL dNpcMng_c::isWispDay(u8 scene, u8 prevScene) {
+    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == VISITOR_WISP) {
         return TRUE;
     }
     return FALSE;
@@ -2326,7 +2326,7 @@ BOOL dNpcMng_c::isFlag13Visit(u8 scene, u8 prevScene) {
     return FALSE;
 }
 
-void dNpcMng_c::setPosVisitor2(mVec3_c *pos, mAng3_c *angle,
+void dNpcMng_c::setPosJoan(mVec3_c *pos, mAng3_c *angle,
                                const dItem::Item *npc) {
     setPosRandomSpot(pos, angle, npc);
 }
@@ -2369,7 +2369,7 @@ void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle,
     }
 }
 
-BOOL dNpcMng_c::isVisitor7Day(u8 scene, u8 prevScene) {
+BOOL dNpcMng_c::isWendellDay(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (isTownPlay(scene, prevScene) && !dNet::isSessionActive() &&
         dEvent::getTodayVisitor() == VISITOR_WENDELL && player != NULL &&
@@ -2396,9 +2396,9 @@ void dNpcMng_c::setPosGateA(mVec3_c *pos, mAng3_c *angle,
     angle->y = cM::rndInt(0xFFFF);
 }
 
-BOOL dNpcMng_c::isVisitor4Day(u8 scene, u8 prevScene) {
+BOOL dNpcMng_c::isNoVisitorDay(u8 scene, u8 prevScene) {
     dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 4) {
+    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == VISITOR_NONE) {
         return TRUE;
     }
     return FALSE;
@@ -2419,19 +2419,19 @@ void dNpcMng_c::setPosGateB(mVec3_c *pos, mAng3_c *angle,
     angle->y = cM::rndInt(0xFFFF);
 }
 
-BOOL dNpcMng_c::isVisitor9Day(u8 scene, u8 prevScene) {
-    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == 9) {
+BOOL dNpcMng_c::isSaharahDay(u8 scene, u8 prevScene) {
+    if (isTownPlay(scene, prevScene) && dEvent::getTodayVisitor() == VISITOR_SAHARAH) {
         return TRUE;
     }
     return FALSE;
 }
 
-void dNpcMng_c::setPosVisitor9(mVec3_c *pos, mAng3_c *angle,
+void dNpcMng_c::setPosSaharah(mVec3_c *pos, mAng3_c *angle,
                                const dItem::Item *npc) {
     setPosRandomSpot(pos, angle, npc);
 }
 
-void dNpcMng_c::setPosVisitor5(mVec3_c *pos, mAng3_c *angle,
+void dNpcMng_c::setPosWisp(mVec3_c *pos, mAng3_c *angle,
                                const dItem::Item *npc) {
     angle->set(0, 0, 0);
     if (pickEmptyBlockSpot(pos)) {
@@ -2594,19 +2594,19 @@ void dNpcMng_c::setPosCarnival(mVec3_c *pos, mAng3_c *angle,
     dFdBase_c::getUnitCenterPos(pos, x, z);
 }
 
-BOOL dNpcMng_c::isVisitor2Here(dQuestEvent_e event) {
-    return dEvent::isVisitorHere(2) != FALSE;
+BOOL dNpcMng_c::isJoanHere(dQuestEvent_e event) {
+    return dEvent::isVisitorHere(VISITOR_JOAN) != FALSE;
 }
 
-BOOL dNpcMng_c::isVisitor9Here(dQuestEvent_e event) {
-    return dEvent::isVisitorHere(9) != FALSE;
+BOOL dNpcMng_c::isSaharahHere(dQuestEvent_e event) {
+    return dEvent::isVisitorHere(VISITOR_SAHARAH) != FALSE;
 }
 
 BOOL dNpcMng_c::isNotTownFlag5(dQuestEvent_e event) {
     return dSaveData_c::getRaw()->isFlag(5) == FALSE;
 }
 
-BOOL dNpcMng_c::isVisitor7Here(dQuestEvent_e event) {
+BOOL dNpcMng_c::isWendellHere(dQuestEvent_e event) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (dEvent::isVisitorHere(VISITOR_WENDELL) && player != NULL &&
         !player->isFlag1(PRIVATE_FLAG1_WENDELL_DESIGN) &&
@@ -2616,7 +2616,7 @@ BOOL dNpcMng_c::isVisitor7Here(dQuestEvent_e event) {
     return FALSE;
 }
 
-BOOL dNpcMng_c::isVisitor4Time(dQuestEvent_e event) {
+BOOL dNpcMng_c::isPeteGateTime(dQuestEvent_e event) {
     dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (!dNet::isSessionActive() && dPlayerMgr::getCurrentPlayerSlot() < 4) {
         dTime_c *now = dTime_c::getCurrent();
@@ -2660,7 +2660,7 @@ void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
         }
         if (here) {
             *npc = visitor->mNpc;
-        } else if (dEvent::getTodayVisitor() == 3 &&
+        } else if (dEvent::getTodayVisitor() == VISITOR_KK &&
                    dEvent::isNowBetween(6, 0, 6, 0)) {
             *npc = 0x8007;
         }
@@ -2845,7 +2845,7 @@ const dNpcMng_c::Spawn_c dNpcMng_c::l_visitorNpcs[15] = {
      fProf::A_NPC_SP_PERIO, 0x8023},
     {&isLetterVisitKind1, &dNpcMng_c::setPosPlayerHouseDoor, NULL, 0xFFFF,
      fProf::A_NPC_SP_RESETSAN, 0x8011},
-    {&isVisitor2Day, &dNpcMng_c::setPosVisitor2, &isVisitor2Here, 0xFFFF,
+    {&isJoanDay, &dNpcMng_c::setPosJoan, &isJoanHere, 0xFFFF,
      fProf::A_NPC_SP_KABURIBA, 0x8001},
     {&isFlag13Visit, &dNpcMng_c::setPosBeach, NULL, 0xFFFF,
      fProf::A_NPC_SP_JONNY, 0x8015},
@@ -2855,14 +2855,14 @@ const dNpcMng_c::Spawn_c dNpcMng_c::l_visitorNpcs[15] = {
      fProf::A_NPC_SP_MISSING_CHILD, 0x8019},
     {&isRelayDesignVisitTime, &dNpcMng_c::setPosRandomSpot, NULL, 0xFFFF,
      fProf::A_NPC_SP_MYSTERYCAT, 0x8013},
-    {&isVisitor5Day, &dNpcMng_c::setPosVisitor5, NULL, 0xFFFF,
+    {&isWispDay, &dNpcMng_c::setPosWisp, NULL, 0xFFFF,
      fProf::A_NPC_SP_YUUTARO, 0x801B},
-    {&isVisitor9Day, &dNpcMng_c::setPosVisitor9, &isVisitor9Here, 0xFFFF,
+    {&isSaharahDay, &dNpcMng_c::setPosSaharah, &isSaharahHere, 0xFFFF,
      fProf::A_NPC_SP_RORAN, 0x801D},
-    {&isVisitor8Day, &dNpcMng_c::setPosRaccoSpot, &isNotTownFlag5, 0xFFFF,
+    {&isPascalDay, &dNpcMng_c::setPosRaccoSpot, &isNotTownFlag5, 0xFFFF,
      fProf::A_NPC_SP_RACCO, 0x801C},
-    {&isVisitor7Day, &dNpcMng_c::setPosGateA, &isVisitor7Here, 0xFFFF,
+    {&isWendellDay, &dNpcMng_c::setPosGateA, &isWendellHere, 0xFFFF,
      fProf::A_NPC_SP_SEIICHI, 0x8016},
-    {&isVisitor4Day, &dNpcMng_c::setPosGateB, &isVisitor4Time, 0xFFFF,
+    {&isNoVisitorDay, &dNpcMng_c::setPosGateB, &isPeteGateTime, 0xFFFF,
      fProf::A_NPC_SP_PERIO, 0x8023},
 };

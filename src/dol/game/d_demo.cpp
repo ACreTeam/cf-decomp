@@ -667,7 +667,7 @@ static BOOL endReport(Req_c *req) {
 }
 
 // 8018EAE4
-BOOL requestReport(dDemoActor_c *actor) {
+BOOL requestReport(dDemoActor_c *actor, dDemoActor_c *target) {
     dAcPlayer_c *player = dPlayerMgr::getPlayerActor(4);
     if (player == NULL) {
         return FALSE;

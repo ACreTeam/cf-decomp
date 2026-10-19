@@ -1046,7 +1046,7 @@ BOOL isNowBefore(const int &hour, const int &min) {
 // 8008AB3C
 BOOL isRandomVisitor(int x) {
     BOOL ret = FALSE;
-    if (x >= 7 && x <= 9) {
+    if (x >= VISITOR_RANDOM_FIRST && x <= VISITOR_RANDOM_LAST) {
         ret = TRUE;
     }
     return ret;
@@ -1062,7 +1062,7 @@ int pickRandomVisitor(int a, int b) {
         num--;
     }
     int r = cM::rndInt(num);
-    for (int i = 7; i <= 9; i++) {
+    for (int i = VISITOR_RANDOM_FIRST; i <= VISITOR_RANDOM_LAST; i++) {
         if (i != a && i != b) {
             if (r <= 0) {
                 return i;
@@ -1086,26 +1086,26 @@ BOOL isVisitorHere(int kind) {
     }
     int startHour, startMin, endHour, endMin;
     switch (kind) {
-    case 2:
+    case VISITOR_JOAN:
         startHour = 6;
         startMin = 0;
         endHour = 12;
         endMin = 0;
         break;
-    case 3:
+    case VISITOR_KK:
         startHour = 19;
         startMin = 30;
         endHour = 0;
         endMin = 0;
         break;
-    case 5:
+    case VISITOR_WISP:
         startHour = 20;
         startMin = 0;
         endHour = 6;
         endMin = 0;
         break;
-    case 7:
-    case 9:
+    case VISITOR_WENDELL:
+    case VISITOR_SAHARAH:
         startHour = 6;
         startMin = 0;
         endHour = 0;

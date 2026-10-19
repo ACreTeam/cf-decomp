@@ -49,9 +49,11 @@
 #define NPC_EAR_TYPE_REDD 43 // Crazy Redd's ear parameter preset (d_a_npc_sp_tunekichi)
 #define NPC_EAR_TYPE_GRACIE 45 // Gracie's ear parameter preset (d_a_npc_sp_grace)
 #define NPC_EAR_TYPE_SAHARAH 48 // Saharah's ear parameter preset (d_a_npc_sp_roran)
+#define NPC_EAR_TYPE_JOAN 49 // Joan's ear parameter preset (d_a_npc_sp_kaburiba)
 #define NPC_EAR_TYPE_KK_SLIDER 50 // K.K. Slider's ear parameter preset (d_a_npc_sp_totakeke)
 #define NPC_EAR_TYPE_PASCAL 56 // Pascal's ear parameter preset (d_a_npc_sp_racco)
 #define NPC_EAR_TYPE_CELESTE 51 // Celeste's ear parameter preset (d_a_npc_sp_fuko)
+#define NPC_EAR_TYPE_TORTIMER 52 // Tortimer's ear parameter preset (d_a_npc_sp_soncho)
 #define NPC_EAR_TYPE_PAVE 57 // Pave's ear parameter preset (d_a_npc_sp_dancer)
 #define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
 #define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears
@@ -446,7 +448,7 @@ public:
     // calc(). RTTI dAcNpc_c::action_c, vtable 804A0428 = {dtor}.
     class action_c : public move_c {
     public:
-        enum emotion_e { EMOTION_CRY = 8, EMOTION_CLAP = 0x1A, EMOTION_SOB = 0x3A, EMOTION_NONE = 0x53 }; // CLAP: HMN_ANM_MR_CLAP1
+        enum emotion_e { EMOTION_CRY = 8, EMOTION_CLAP = 0x1A, EMOTION_SIGH = 0x1C, EMOTION_SOB = 0x3A, EMOTION_NONE = 0x53 }; // CLAP: HMN_ANM_MR_CLAP1; SIGH: HMN_ANM_MR_TAME1 -> TAME2
 
         typedef int (action_c::*initFunc_t)(dAcNpc_c *npc);
         typedef void (action_c::*execFunc_t)(dAcNpc_c *npc);
