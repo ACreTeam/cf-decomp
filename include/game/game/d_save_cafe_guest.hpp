@@ -20,8 +20,8 @@ class dSaveCafeGuest_c { // 0x4
 public:
     void clear();              // 80149608
     void update();             // 80149650: daily, rolls the slots
-    u8 getCurrentGuest();      // 801498DC: by the time of day; CAFE_GUEST_NONE if not rolled today
-    u8 getGuest(int slot);     // 80149A8C: CAFE_GUEST_NONE if not rolled today
+    int getCurrentGuest();     // 801498DC: by the time of day; CAFE_GUEST_NONE if not rolled today
+    int getGuest(int slot);    // 80149A8C: CAFE_GUEST_NONE if not rolled today
 
     /* 0x0 */ u8 mGuests[4]; // CAFE_GUEST_*: morning, noon, afternoon, night
 };

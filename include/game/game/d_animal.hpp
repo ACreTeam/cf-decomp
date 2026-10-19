@@ -133,6 +133,13 @@ public:
     void decGreetingWait(int num); // 8011D28C
     BOOL setPresent(const dItem::Item *item); // 8011D2C8
     void updateLetterCond(int value); // 8011D3B4
+    // onEventFlag / isEventFlag bits during the flea market (d_npc_talk_fmarket,
+    // d_a_npc_visit_player_house_fleamarket). Bit 0 is also the "event greeting given" bit of the
+    // bug-off / fishing / carnival / halloween talks.
+    enum StallEventFlag_e {
+        EVENT_FLAG_STALL_ARRIVED, // 0 the villager came to the player's stall (actStallArrive)
+        EVENT_FLAG_STALL_LOOKED,  // 1 the villager looked around the stall (endStallLook)
+    };
     void onEventFlag(u32 bit); // 8011D3F0
     void offEventFlag(u32 bit); // 8011D410
     BOOL isEventFlag(u32 bit); // 8011D430

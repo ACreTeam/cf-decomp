@@ -50,8 +50,8 @@ class daRmobjPermMachine_c : public daRmobj_c {
     void executeSpecialMake(); // 0x9F4
 
     // Used by Harriet.
-    u8 isPermDone();         // 0xADC
-    u8 isSpecialMakeDone();  // 0xAE4
+    BOOL isPermDone();        // 0xADC
+    BOOL isSpecialMakeDone(); // 0xAE4
     void startSwitchSound(); // 0xAEC
 
     static daRmobjPermMachine_c *m_instance; // .bss 0x8: set while it exists

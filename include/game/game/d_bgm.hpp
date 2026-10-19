@@ -361,7 +361,7 @@ public:
     virtual void end();                               // 8007AD94
 
     void mute();                                      // 8007ADD4
-    void fn_8007ADF4();                               // 8007ADF4
+    void fadeUnmute();                                // 8007ADF4: fade channel 0xD, then unmute
     void unmute();                                    // 8007AE3C
 
     /* 0x08 */ u8 mMute;

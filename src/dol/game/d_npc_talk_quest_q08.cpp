@@ -378,7 +378,7 @@ void dAcNpcNml_c::talk_c::actVisitArrive() {
             reqMsgClose();
             dCamera_c::sInstance->startTalkView(npc->demoHook58());
             clearActProc();
-            dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(0);
+            dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_VISIT_FLAG_ARRIVED);
         }
     }
 }
@@ -511,7 +511,7 @@ int dAcNpcNml_c::talk_c::msgVisitFirst(msgInfo_s *info) {
         &talk_c::msgVisitFurniture,
         &talk_c::msgVisitLayout,
     };
-    if (!dSaveData_c::getRaw()->mAnimals.mTown.mAppointment.isFlag(1)) {
+    if (!dSaveData_c::getRaw()->mAnimals.mTown.mAppointment.isFlag(QUEST_VISIT_FLAG_TALKED)) {
         setLooksMsg(info, l_Q08_First, 0);
         setHookProc(&talk_c::endVisitFirst);
         return TRUE;
@@ -533,7 +533,7 @@ int dAcNpcNml_c::talk_c::msgVisitFirst(msgInfo_s *info) {
 // 8005E2BC
 void dAcNpcNml_c::talk_c::endVisitFirst(int arg) {
     endQuestCommon(arg);
-    dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(1);
+    dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_VISIT_FLAG_TALKED);
 }
 
 static const char l_Q08_Wait[] = "Q08_Wait";

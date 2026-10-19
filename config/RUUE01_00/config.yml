@@ -387,6 +387,7 @@ modules:
 - object: files/rels/d_a_npc_sp_cafe_guestNP.rel
   hash: 91728c4e9f894e2e3720467e170fce5043133b11
   name: d_a_npc_sp_cafe_guestNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_cafe_guestNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_cafe_guestNP/splits.txt
 - object: files/rels/d_a_npc_sp_catherineNP.rel
@@ -560,16 +561,19 @@ modules:
 - object: files/rels/d_a_npc_visit_npc_houseNP.rel
   hash: de0c80e0c1c6fc2d4ce92541651abb6a079a7cde
   name: d_a_npc_visit_npc_houseNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_visit_npc_houseNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_visit_npc_houseNP/splits.txt
 - object: files/rels/d_a_npc_visit_player_houseNP.rel
   hash: 0f04e8b65c499f0ecb5549cfc1c6f910f92ca3e1
   name: d_a_npc_visit_player_houseNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_visit_player_houseNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_visit_player_houseNP/splits.txt
 - object: files/rels/d_a_npc_visit_player_house_fleamarketNP.rel
   hash: cd70432cb3a8df0224b5f0454ffe641e5513e3d3
   name: d_a_npc_visit_player_house_fleamarketNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_visit_player_house_fleamarketNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_visit_player_house_fleamarketNP/splits.txt
 - object: files/rels/d_a_playerNP.rel

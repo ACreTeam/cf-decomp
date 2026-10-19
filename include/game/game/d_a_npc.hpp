@@ -51,6 +51,7 @@
 #define NPC_EAR_TYPE_REDD 43 // Crazy Redd's ear parameter preset (d_a_npc_sp_tunekichi)
 #define NPC_EAR_TYPE_GRACIE 45 // Gracie's ear parameter preset (d_a_npc_sp_grace)
 #define NPC_EAR_TYPE_SHRUNK 46 // Dr. Shrunk's ear parameter preset (d_a_npc_sp_sisyo; Frillard has none)
+#define NPC_EAR_TYPE_HARRIET 47 // Harriet's ear parameter preset (d_a_npc_sp_catherine)
 #define NPC_EAR_TYPE_SAHARAH 48 // Saharah's ear parameter preset (d_a_npc_sp_roran)
 #define NPC_EAR_TYPE_JOAN 49 // Joan's ear parameter preset (d_a_npc_sp_kaburiba)
 #define NPC_EAR_TYPE_KK_SLIDER 50 // K.K. Slider's ear parameter preset (d_a_npc_sp_totakeke)

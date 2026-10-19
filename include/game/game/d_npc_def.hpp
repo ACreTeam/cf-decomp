@@ -22,6 +22,7 @@
 #define SP_NPC_GATEKEEPER_A 0x8026 // Copper, the gatekeeper (d_a_npc_sp_gatekeeper_a)
 #define SP_NPC_GATEKEEPER_B 0x8027 // Booker, the other gatekeeper (d_a_npc_sp_gatekeeper_a/b)
 #define SP_NPC_GUIDE 0x8029 // Rover (the player select, d_a_npc_sp_player_select)
+#define SP_NPC_CAFE_GUEST 0x802A // the Roost's guest seat in the scene data (d_a_npc_sp_cafe_guest: no guest today)
 #define SP_NPC_SONCHO_EVENT 0x802C // Tortimer at the countdown (d_npc_mng l_holidayNpcs); d_a_npc_sp_soncho awake
 #define SP_NPC_CONV_MASTER 0x8044 // Tom Nook in Nook 'n' Go (d_a_npc_sp_tanukichi preCreate)
 #define SP_NPC_SUPER_MASTER 0x8045 // Tom Nook in Nookway
@@ -30,3 +31,4 @@
 #define SP_NPC_RESETTI 0x8050 // Mr. Resetti at the Reset Surveillance Center (d_a_npc_sp_demo_resetsan, RM_RESET)
 #define SP_NPC_DON 0x8051 // Don Resetti at the Reset Surveillance Center (d_a_npc_sp_demo_resetsan, RM_RESET)
 #define SP_NPC_RESETTI_OFF 0x805C // Mr. Resetti off duty, model "mof" (the cafe guest; the center's first visit)
+#define SP_NPC_DON_OFF 0x805D // Don Resetti off duty, model "mod" (the cafe guest, d_a_npc_sp_cafe_guest)

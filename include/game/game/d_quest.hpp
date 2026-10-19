@@ -128,6 +128,27 @@ enum dQuestErrandState_e {
     QUEST_ERRAND_FINAL_LATE = 4, // clothes handed over after the deadline
 };
 
+// dQuestBase_c::mState of an appointment (dQuestPlayerItem_c, QUEST_KIND_APPOINTMENT_0 / _1).
+enum dQuestAppointmentState_e {
+    QUEST_APPOINTMENT_DONE = 2, // the visit is over (d_a_npc_visit_npc_house doDelete; isAppointmentSoon)
+};
+
+// dQuestPlayerItem_c::isFlag / setFlag bits of an invitation to the villager's house
+// (QUEST_KIND_APPOINTMENT_0: d_npc_talk_quest_q09, d_a_npc_visit_npc_house).
+enum dQuestInviteFlag_e {
+    QUEST_INVITE_FLAG_WELCOMED,      // 0 the welcome at the door was shown (stepInviteWelcome)
+    QUEST_INVITE_FLAG_TALKED,        // 1 the first talk in the house is over (endInviteFirst)
+    QUEST_INVITE_FLAG_TRADE_OFFERED, // 2 the villager offered to sell furniture (selInviteTradeOffer)
+    QUEST_INVITE_FLAG_TRADED,        // 3 the player bought a piece (endInviteTradeYes)
+};
+
+// dQuestPlayerItem_c::isFlag / setFlag bits of a villager's visit to the player's house
+// (QUEST_KIND_APPOINTMENT_1: d_npc_talk_quest_q08, d_a_npc_visit_player_house).
+enum dQuestVisitFlag_e {
+    QUEST_VISIT_FLAG_ARRIVED, // 0 the villager came in (actVisitArrive)
+    QUEST_VISIT_FLAG_TALKED,  // 1 the first talk in the house is over (endVisitFirst)
+};
+
 #define QUEST_ERRAND_HANDLER_NUM 10 // lbl_805F2680, one per errand kind
 
 // 0x02. What a villager currently wants (mKind < 8) and how much (0-100).
@@ -161,6 +182,7 @@ public:
     BOOL isActive() const;                                       // 8013F7E8: isValidKind(mKind)
     int getKind() const { return mKind; }                        // inline (d_a_npc_nml msgPendingQuest compares it as int)
     u8 getState() const { return mState; }                       // inline (d_npc_talk_quest_q13 msgStyleQuest)
+    void setState(u8 state) { mState = state; }                  // inline (d_a_npc_visit_npc_house doDelete)
     void set(int kind, const dItem::Item *item, dTime_c *limit, u8 deadline, u8 state); // 8013F7F0
     int getType() const;                                         // 8013F848
     int getSubType() const;                                      // 8013F850: dQuestErrandType_e

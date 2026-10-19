@@ -52,6 +52,7 @@ enum {
 
 enum {
     CATHERINE_PLAYER_NONE = 7,  // mCatherinePlayer after init
+    PLAYER_VALUE_HARRIET = 1,   // mPlayerValue: got a new hairstyle / a makeover at Shampoodle (d_a_npc_sp_catherine)
     PLAYER_VALUE_NUM = 10,      // mPlayerValue is < this
     PUBLIC_WORKS_NEWS_DAYS = 10, // mPublicWorksDays after a public work is built
     ASSESSMENT_INITIAL = 4,     // mOtherTown._103 after init

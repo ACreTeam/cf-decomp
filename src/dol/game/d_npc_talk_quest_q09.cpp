@@ -349,7 +349,7 @@ int dAcNpcNml_c::talk_c::msgInviteWelcome(msgInfo_s *info) {
 // 8005B674
 BOOL dAcNpcNml_c::talk_c::stepInviteWelcome(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
-        dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(0);
+        dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_INVITE_FLAG_WELCOMED);
         return TRUE;
     }
     return FALSE;
@@ -426,7 +426,7 @@ static const char l_Q09_Trade2[] = "Q09_Trade2";
 
 // 8005B940
 int dAcNpcNml_c::talk_c::msgInviteTradeOffer(msgInfo_s *info) {
-    if (dSaveData_c::getRaw()->mAnimals.mTown.mAppointment.isFlag(3)) {
+    if (dSaveData_c::getRaw()->mAnimals.mTown.mAppointment.isFlag(QUEST_INVITE_FLAG_TRADED)) {
         return FALSE;
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
@@ -452,12 +452,12 @@ int dAcNpcNml_c::talk_c::msgInviteFirst(msgInfo_s *info) {
         &talk_c::msgInviteTradeOffer,
     };
     dQuestPlayerItem_c *appt = &dSaveData_c::getRaw()->mAnimals.mTown.mAppointment;
-    if (!appt->isFlag(1)) {
+    if (!appt->isFlag(QUEST_INVITE_FLAG_TALKED)) {
         setLooksMsg(info, l_Q09_First, 0);
         setHookProc(&talk_c::endInviteFirst);
         return TRUE;
     }
-    if (appt->isFlag(2) && !appt->isFlag(3)) {
+    if (appt->isFlag(QUEST_INVITE_FLAG_TRADE_OFFERED) && !appt->isFlag(QUEST_INVITE_FLAG_TRADED)) {
         setLooksMsg(info, l_Q09_Trade2, 0);
         setHookProc(&talk_c::endQuestCommon);
         return TRUE;
@@ -479,7 +479,7 @@ int dAcNpcNml_c::talk_c::msgInviteFirst(msgInfo_s *info) {
 // 8005BBD0
 void dAcNpcNml_c::talk_c::endInviteFirst(int arg) {
     endQuestCommon(arg);
-    dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(1);
+    dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_INVITE_FLAG_TALKED);
 }
 
 // 8005BC04
@@ -496,7 +496,7 @@ BOOL dAcNpcNml_c::talk_c::stepInviteTradeOffer(int kind) {
 
 // 8005BC98
 void dAcNpcNml_c::talk_c::selInviteTradeOffer() {
-    dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(2);
+    dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_INVITE_FLAG_TRADE_OFFERED);
     dMoney_c::onForceShow();
 }
 
@@ -621,7 +621,7 @@ void dAcNpcNml_c::talk_c::endInviteTradeYes(int arg) {
                 player->pickUp(&mItem0, FALSE);
             }
         }
-        dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(3);
+        dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_INVITE_FLAG_TRADED);
         setActProc(&talk_c::actInviteTradeWait);
     }
 }

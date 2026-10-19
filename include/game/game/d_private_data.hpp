@@ -36,6 +36,9 @@ enum dPrivateFlag0_e {
                                                 // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
     PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
     PRIVATE_FLAG0_PETE_MET = 0x04,              // talked to Pete the mail carrier once (d_a_npc_sp_perio)
+    PRIVATE_FLAG0_HARRIET_MET = 0x05,           // Harriet's first-visit greeting was heard (d_a_npc_sp_catherine)
+    PRIVATE_FLAG0_HARRIET_MAKEOVER_TOLD = 0x06, // Harriet explained her Mii makeovers once
+    PRIVATE_FLAG0_HARRIET_MAKEOVER_DONE = 0x07, // ... and gave one (the first one is free)
     PRIVATE_FLAG0_NOOK_POINTS_TOLD = 0x08,      // Nook explained the Tom Nook Point System (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_SHOP_VOTE_DECIDED = 0x09,     // Nook decided on the store's future: his thanks for the advice are
                                                 // due (d_a_npc_sp_tanukichi; inferred)
@@ -170,6 +173,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_JOB_POCKETS_FULL = 0x88,      // the job is given again once the pockets have room
 };
 enum dPrivateFlag1_e {
+    PRIVATE_FLAG1_HARRIET_STYLED = 0x1, // Harriet styled the hair / gave a makeover today (d_a_npc_sp_catherine)
     PRIVATE_FLAG1_REDD_VISITED = 0x3, // talked to Crazy Redd today: the shorter welcome (d_a_npc_sp_tunekichi)
     PRIVATE_FLAG1_CAFE_TALKED = 0x4, // talked to Brewster today (d_a_npc_sp_cafe)
     PRIVATE_FLAG1_MABEL_TALKED = 0x8, // talked to Mabel today: the shorter welcome (d_a_npc_sp_kinuyo)
@@ -183,6 +187,11 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
     PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
     PRIVATE_FLAG1_GRACIE_CHECKED_HERE = 0x1B, // Gracie gave a fashion check during this visit (cleared when she leaves)
+    PRIVATE_FLAG1_CAFE_PELLY_TALKED = 0x1C, // talked to the Roost's guest today: Pelly (d_a_npc_sp_cafe_guest)
+    PRIVATE_FLAG1_CAFE_PHYLLIS_TALKED = 0x1D, // ... Phyllis
+    PRIVATE_FLAG1_CAFE_KAPPN_TALKED = 0x1E,   // ... Kapp'n
+    PRIVATE_FLAG1_CAFE_RESETTI_TALKED = 0x20, // ... Mr. Resetti
+    PRIVATE_FLAG1_CAFE_DON_TALKED = 0x21,     // ... Don Resetti
     PRIVATE_FLAG1_NOOK_POINT_PRESENT = 0x27, // exchanged today's present at Nook's point machine (d_a_rmobj_point)
     PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
     PRIVATE_FLAG1_KK_TALKED = 0x30, // talked to K.K. Slider today (dNpcInfo::totakeke_c, town players)
@@ -805,7 +814,7 @@ public:
     /* 0x866F */ u8 mFlags2[PRIVATE_FLAGS2_NUM / 8];
     /* 0x867F */ u8 mFlags3[PRIVATE_FLAGS3_NUM / 8];
     /* 0x868F */ u8 mShopVote;       // the Nookington's vote (d_save_shop)
-    /* 0x8690 */ u8 _8690;
+    /* 0x8690 */ u8 mHarrietVisits; // the hair stylings at Shampoodle, up to 15 (d_a_npc_sp_catherine)
     /* 0x8691 */ u8 mCafeVisits;                  // the days with a coffee at the Roost (max 15; d_a_npc_sp_cafe)
     /* 0x8692 */ u8 mSableTalkDays;  // days Sable was talked to (PRIVATE_FLAG0_SABLE_TALKED), up to 11 (isGracieStoryReady)
     /* 0x8693 */ u8 mNookPurchases;  // up to 50 (d_a_npc_sp_tanukichi; isNookLoyaltyLetterDue)

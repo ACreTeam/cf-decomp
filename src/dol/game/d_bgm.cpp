@@ -1330,7 +1330,7 @@ void StgBarber_c::mute() {
     l_mgr.mute(0xF, 0xD2, 0);
 }
 
-void StgBarber_c::fn_8007ADF4() {
+void StgBarber_c::fadeUnmute() {
     l_mgr.mute(0xD, 0, 0x3C);
     unmute();
 }

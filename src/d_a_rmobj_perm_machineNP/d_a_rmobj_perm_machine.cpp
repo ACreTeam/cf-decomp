@@ -178,12 +178,12 @@ void daRmobjPermMachine_c::executeSpecialMake() {
 }
 
 // .text 0xADC
-u8 daRmobjPermMachine_c::isPermDone() {
+BOOL daRmobjPermMachine_c::isPermDone() {
     return mPermDone;
 }
 
 // .text 0xAE4
-u8 daRmobjPermMachine_c::isSpecialMakeDone() {
+BOOL daRmobjPermMachine_c::isSpecialMakeDone() {
     return mSpecialMakeDone;
 }
 

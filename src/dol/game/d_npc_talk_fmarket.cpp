@@ -331,7 +331,7 @@ void dAcNpcNml_c::talk_c::actStallArrive() {
             reqMsgClose();
             clearActProc();
             if (mpMemory != NULL) {
-                mpMemory->onEventFlag(0);
+                mpMemory->onEventFlag(dAnimalMemory_c::EVENT_FLAG_STALL_ARRIVED);
             }
         }
     }
@@ -371,7 +371,7 @@ int dAcNpcNml_c::talk_c::msgStallLook(msgInfo_s *info) {
 // 800485D0
 void dAcNpcNml_c::talk_c::endStallLook(int arg) {
     if (mpMemory != NULL) {
-        mpMemory->onEventFlag(1);
+        mpMemory->onEventFlag(dAnimalMemory_c::EVENT_FLAG_STALL_LOOKED);
     }
 }
 

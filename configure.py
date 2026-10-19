@@ -2044,19 +2044,19 @@ config.libs = [
     Rel(
         "d_a_npc_sp_cafe_guestNP",
         [
-            Object(NonMatching, "d_a_npc_sp_cafe_guestNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_cafe_guestNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_cafe_guestNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_cafe_guestNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_cafe_guestNP/d_a_npc_sp_cafe_guest.cpp"),
+            Object(Matching, "d_a_npc_sp_cafe_guestNP/d_a_npc_sp_cafe_guest.cpp"),
         ],
     ),
     Rel(
         "d_a_npc_sp_catherineNP",
         [
-            Object(NonMatching, "d_a_npc_sp_catherineNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_catherineNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_catherineNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_catherineNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_catherineNP/d_a_npc_sp_catherine.cpp"),
+            Object(Matching, "d_a_npc_sp_catherineNP/d_a_npc_sp_catherine.cpp"),
         ],
     ),
     Rel(
@@ -2323,28 +2323,28 @@ config.libs = [
     Rel(
         "d_a_npc_visit_npc_houseNP",
         [
-            Object(NonMatching, "d_a_npc_visit_npc_houseNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_visit_npc_houseNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_visit_npc_houseNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_visit_npc_houseNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_visit_npc_houseNP/d_a_npc_visit_npc_house.cpp"),
+            Object(Matching, "d_a_npc_visit_npc_houseNP/d_a_npc_visit_npc_house.cpp"),
         ],
     ),
     Rel(
         "d_a_npc_visit_player_houseNP",
         [
-            Object(NonMatching, "d_a_npc_visit_player_houseNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_visit_player_houseNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_visit_player_houseNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_visit_player_houseNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_visit_player_houseNP/d_a_npc_visit_player_house.cpp"),
+            Object(Matching, "d_a_npc_visit_player_houseNP/d_a_npc_visit_player_house.cpp"),
         ],
     ),
     Rel(
         "d_a_npc_visit_player_house_fleamarketNP",
         [
-            Object(NonMatching, "d_a_npc_visit_player_house_fleamarketNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_visit_player_house_fleamarketNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_visit_player_house_fleamarketNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_visit_player_house_fleamarketNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_visit_player_house_fleamarketNP/d_a_npc_visit_player_house_fleamarket.cpp"),
+            Object(Matching, "d_a_npc_visit_player_house_fleamarketNP/d_a_npc_visit_player_house_fleamarket.cpp"),
         ],
     ),
     Rel(

@@ -404,7 +404,8 @@ extern u8 sSnowEffectWearThreshold; // 8074E5F8?: snow wear above it counts as s
 
 // Output of RFLGetCharInfo; the create ID goes to dPrivateData_c::mMiiId.
 struct MiiData_c {
-    /* 0x00 */ u8 _00[0x2C];
+    /* 0x00 */ wchar_t mName[10]; // d_a_npc_sp_catherine: the Mii's name
+    /* 0x14 */ u8 _14[0x18];
     /* 0x2C */ u8 mCreateID[8];
     /* 0x34 */ u32 mPersonalInfo;
     /* 0x38 */ GXColor mFavoriteColor; // d_a_player: the "b0" material's TEV KColor (putOnMiiMask)
@@ -537,6 +538,12 @@ u32 isMakingNoise(int idx); // 800FF150: ACTOR_FLAG_NOISY: scares insects and fi
 u32 isActingOnUnit(int idx); // 800FF188: ACTOR_FLAG2_UNIT_ACTION (dInsectUtil::playerCheck_c)
 int getActionUnitAndKind(int *x, int *z, int idx); // 800FF1C0
 BOOL requestBeeSting(int *outState); // 800FF354: STATE_BEE_STING; ends fishing first (d_insect_field)
+// changeEquipment's kind (inferred from d_a_npc_sp_catherine / d_a_npc_sp_jijyo).
+enum EquipChangeKind_e {
+    EQUIP_CHANGE_NORMAL = 0,       // the clothes only
+    EQUIP_CHANGE_MII_MASK_ON = 1,  // ... and the Mii mask stays / goes back on
+    EQUIP_CHANGE_MII_MASK_OFF = 2, // ... and the Mii mask comes off
+};
 BOOL changeEquipment(const dEquip_c *equip, int mode, int kind); // 800FF444: mode selects the animation; kind selects normal/Mii-mask changes.
 BOOL isSceneReadyForBgm(); // 800FF840
 BOOL canHoldEquippedItem(); // 800FF8B0
