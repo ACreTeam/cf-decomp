@@ -3669,10 +3669,6 @@ struct dAnimalCatalogFilter_c {
     /* 0x8 */ int _8;
 };
 
-static inline int getBITMStyle(const dItem::BITM *bitm) {
-    return bitm->m_style < STYLE_NUM ? (STYLE_LOOK)bitm->m_style : STYLE_UNSET;
-}
-
 static inline int getBITMSeries(const dItem::BITM *bitm) {
     int series = bitm->m_series;
     int ret = 0;
@@ -4481,7 +4477,7 @@ BOOL dAnimal_c::isClothRequestMatch(const dItem::Item *item, int mode, const dIt
     case QUEST_MATCH_ANY: {
         int style = mTemplate.mDislikedStyle;
         BOOL other = !item->isSame(favorite);
-        if (other && style != getBITMStyle(bitm)) {
+        if (other && style != bitm->getLook()) {
             ret = TRUE;
         }
         break;
@@ -4489,7 +4485,7 @@ BOOL dAnimal_c::isClothRequestMatch(const dItem::Item *item, int mode, const dIt
     case QUEST_MATCH_LIKED_STYLE: {
         int style = mTemplate.mLikedStyle;
         BOOL other = !item->isSame(favorite);
-        if (other && style == getBITMStyle(bitm)) {
+        if (other && style == bitm->getLook()) {
             ret = TRUE;
         }
         break;

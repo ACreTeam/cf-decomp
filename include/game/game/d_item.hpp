@@ -6,6 +6,7 @@
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_script.hpp>
 #include <game/game/d_string.hpp>
+#include <game/game/d_dsn.hpp>
 #include <lib/nw4r/ut/ut_list.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 
@@ -915,6 +916,11 @@ struct BITM {
     int getEdibility() const {
         int edibility = static_cast<s8>(m_edibility);
         return static_cast<u32>(edibility) < EDIBILITY_COUNT ? static_cast<Edibility>(edibility) : EDIBILITY_NONE;
+    }
+
+    int getLook() const {
+        u8 look = static_cast<u8>(m_style);
+        return look < STYLE_NUM ? (STYLE_LOOK)look : STYLE_CUTE;
     }
 
     u32 m_magic; // 0x000: 'BITM'
