@@ -535,7 +535,7 @@ public:
     static futa_c *get();        // 800F8BF8
     void clear();                // 800F8C00
     void setGreeted(u8 greeted); // 800F8C0C
-    u8 isGreeted();              // 800F8C14
+    BOOL isGreeted();            // 800F8C14
 
     /* 0x0 */ u8 mGreeted;
 }; // size 0x1
