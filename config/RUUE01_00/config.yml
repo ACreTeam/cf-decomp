@@ -408,6 +408,7 @@ modules:
   splits: config/RUUE01_00/d_a_npc_sp_fukoNP/splits.txt
 - object: files/rels/d_a_npc_sp_franklinNP.rel
   hash: f0cca6ba8416693e6ba0258acf896622e9e0e529
+  force_active: [__global_destructor_chain]
   name: d_a_npc_sp_franklinNP
   symbols: config/RUUE01_00/d_a_npc_sp_franklinNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_franklinNP/splits.txt

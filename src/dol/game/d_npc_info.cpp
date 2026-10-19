@@ -388,7 +388,7 @@ franklin_c *franklin_c::get() {
 // 800F6520
 void franklin_c::clear() {
     mHandedOver = 0;
-    _1 = 0;
+    mHandedOverHere = 0;
     mAskedForHelp = 0;
     mThanked = 0;
     mTalked = 0;
@@ -434,7 +434,7 @@ void franklin_c::relocate() {
     } else if (mTalked) {
         mRelocated = 1;
     }
-    _1 = 0;
+    mHandedOverHere = 0;
     mTalkedHere = 0;
     mGaveHere = 0;
 }
