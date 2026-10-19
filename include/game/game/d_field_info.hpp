@@ -289,6 +289,8 @@ enum {
 // World coordinate -> unit index (units of mFI_UNIT_BASE_SIZE = 32): truncates to int, then shifts, so
 // small negative values map to 0 (unlike dBGCF::posToUnit).
 inline int worldToUnit(f32 value) { return (int)value >> 5; }
+// World coordinate -> block (acre) index (blocks of 16 units = 512, lbl_80750520), as worldToUnit.
+inline int worldToBlock(f32 value) { return (int)value >> 9; }
 
 inline dFdBase_c *getCurrentField() { return dField::getInfo(FD_ID_CURRENT); }
 

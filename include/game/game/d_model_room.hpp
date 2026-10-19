@@ -68,3 +68,14 @@ struct dSvMdlRm_c : public dHomeRoom_c {
 int getModelRoomRnd(const dTime_c &time, u32 max); // 80111A2C: 0..max-1, fixed for the date
 dTime_c getModelRoomDate(); // 80111ABC: first Sunday of this (game day's) month
 int getModelRoomTheme(); // 80111C40: the theme of the month, 0..5
+
+// The model room themes (getModelRoomTheme; names from Lyle's NPC_honma.bmg, d_a_npc_sp_honma).
+enum {
+    MODEL_ROOM_THEME_SCORE,     // the highest evaluation score
+    MODEL_ROOM_THEME_FENG_SHUI, // the best feng shui
+    MODEL_ROOM_THEME_ADULT,     // the most "grown-up" feel
+    MODEL_ROOM_THEME_KIDDY,     // the cutest
+    MODEL_ROOM_THEME_NEW,       // the most avant-garde
+    MODEL_ROOM_THEME_OLD,       // the most nostalgic
+    MODEL_ROOM_THEME_NUM
+};

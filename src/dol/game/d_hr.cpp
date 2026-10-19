@@ -1503,7 +1503,7 @@ BOOL dHR::calcBounds(int *minX, int *maxX, int *minZ, int *maxZ, dFdBase_c *fiel
 }
 
 // 800B094C
-BOOL fn_800B094C() {
+BOOL dHR::onJoinAcademy() {
     return FALSE;
 }
 

@@ -475,21 +475,25 @@ modules:
 - object: files/rels/d_a_npc_sp_honmaNP.rel
   hash: 055a38c35841b31ef6b5a2afad879be6b86b52b8
   name: d_a_npc_sp_honmaNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_honmaNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_honmaNP/splits.txt
 - object: files/rels/d_a_npc_sp_jingleNP.rel
   hash: 1e7e3417fbbbe1c058c7c35c311eba544c6384ac
   name: d_a_npc_sp_jingleNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_jingleNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_jingleNP/splits.txt
 - object: files/rels/d_a_npc_sp_uomasaNP.rel
   hash: cf91af6524237074192475bed9236c789a9e53db
   name: d_a_npc_sp_uomasaNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_uomasaNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_uomasaNP/splits.txt
 - object: files/rels/d_a_npc_sp_pumpkingNP.rel
   hash: b43bbd2a39141dbd2465173d72e39dab9ee8ad6d
   name: d_a_npc_sp_pumpkingNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_pumpkingNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_pumpkingNP/splits.txt
 - object: files/rels/d_a_npc_sp_kutsumigakiNP.rel

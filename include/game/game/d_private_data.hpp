@@ -71,6 +71,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
+    PRIVATE_FLAG0_LYLE_MET = 0x1F,              // Lyle introduced the HRA once (d_a_npc_sp_honma; joining sets HRA_RATED)
     PRIVATE_FLAG0_KATRINA_MET = 0x20,           // talked to Katrina the fortune teller (d_a_npc_sp_fortune)
     PRIVATE_FLAG0_GATEKEEPER_MET = 0x21,        // the gatekeeper's first greeting was shown (d_a_npc_sp_gatekeeper_a)
     PRIVATE_FLAG0_CAFE_SERVED = 0x22,           // had a coffee at the Roost once (the date is mCafeDate; d_a_npc_sp_cafe)

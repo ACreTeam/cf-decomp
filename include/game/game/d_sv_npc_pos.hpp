@@ -16,6 +16,7 @@ struct KindPos_c {
     void set(int kind, const mVec3_c *pos);      // 80150544
     void update(u8 kind, const mVec3_c *pos);   // 80150594: kind and position only (d_a_npc_sp_jingle)
     mVec3_c getPos() const;                     // 801505D4: the unit's center
+    int getKind() const { return mKind; }        // int: d_a_npc_sp_jingle's scene compares (cmpw, kind first)
 
     /* 0x0 */ u8 mUnitX;
     /* 0x1 */ u8 mUnitZ;
