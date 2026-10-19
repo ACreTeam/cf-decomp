@@ -145,7 +145,7 @@ tanukichi_c *tanukichi_c::get() {
 // 800F5BB0
 void tanukichi_c::clear() {
     mJobDone = 0;
-    _1 = 0;
+    mTwinsGreeted = 0;
     mTimeSpecialTold = 0;
 }
 
@@ -881,7 +881,7 @@ dItem::Item *soncho_c::getPresent() {
 }
 
 // 800F7394
-void soncho_c::setPresent(dItem::Item item) {
+void soncho_c::setPresent(const dItem::Item &item) {
     if (dAcNpc_c::isPlayerFromThisTown()) {
         dPlayerMgr::Mgr_c::getCurrentPlayer()->mSonchoPresent = item;
     } else {

@@ -133,11 +133,6 @@ class daStrBroker_c : public daStrTown_c {
         MSG_ANIMAL_INVITED_REFUSED_AGAIN = 0x49,
     };
 
-    // sys_STRING/STR_SPNpc_name: "?????" (setReddName before the first visit).
-    enum {
-        NAME_UNKNOWN = 0x34,
-    };
-
     virtual int doDelete();
     virtual int getVoiceMode();
     virtual void onMessageStart(int arg);

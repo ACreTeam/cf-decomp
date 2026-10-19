@@ -32,6 +32,15 @@
 #include <revolution/MTX.h>
 
 #include <game/game/d_npc_def.hpp>
+// Tom Nook's ear parameter presets per store stage (d_a_npc_sp_tanukichi).
+#define NPC_EAR_TYPE_NOOK_CRANNY 26
+#define NPC_EAR_TYPE_NOOK_N_GO 27
+#define NPC_EAR_TYPE_NOOKWAY 28
+#define NPC_EAR_TYPE_NOOKINGTONS 29
+#define NPC_EAR_TYPE_TWINS 30 // Timmy and Tommy's ear parameter preset (d_a_npc_sp_tanukichi)
+#define NPC_EAR_TYPE_MISSING_CHILD 32 // Katie's ear parameter preset (inferred)
+#define NPC_EAR_TYPE_PELLY 35 // Pelly's ear parameter preset (d_a_npc_sp_periko)
+#define NPC_EAR_TYPE_PHYLLIS 36 // Phyllis's ear parameter preset (d_a_npc_sp_periko)
 #define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
 #define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears
 #define MANPU_TYPE_NUM 78                  // manpu (emotion mark) types (manpuMgr_c::isValidType)
@@ -146,6 +155,8 @@ public:
     // dAcNpc_c::objc_c, vtable 804A05B8 {ac_c::getPos, ac_c::getID, dtor}.
     class objc_c : public dObjc::ac_c {
     public:
+        enum Weight_e { WEIGHT_DEFAULT = 0x80, WEIGHT_IMMOVABLE = 0xFF };
+
         objc_c();                           // 80017FDC
         virtual ~objc_c();                  // 8001802C
         void onWeightFlag(ulong bit);       // 8001806C
@@ -423,7 +434,7 @@ public:
     // calc(). RTTI dAcNpc_c::action_c, vtable 804A0428 = {dtor}.
     class action_c : public move_c {
     public:
-        enum emotion_e { EMOTION_NONE = 0x53 };
+        enum emotion_e { EMOTION_CRY = 8, EMOTION_CLAP = 0x1A, EMOTION_SOB = 0x3A, EMOTION_NONE = 0x53 }; // CLAP: HMN_ANM_MR_CLAP1
 
         typedef int (action_c::*initFunc_t)(dAcNpc_c *npc);
         typedef void (action_c::*execFunc_t)(dAcNpc_c *npc);
@@ -450,7 +461,7 @@ public:
         void calcAfter(dAcNpc_c *npc);                                                                       // 8001EC10
         BOOL request(int action, int prio, const mVec3_c &pos, const mAng &angle, const mAng &turnSpeed, int turnMode, const moveParam_c &moveParam, f32 arriveDist = l_8074FDE4, f32 morph = cNpcMorphFrames); // 8001EC78
         BOOL requestWait(int prio, f32 morph = cNpcMorphFrames);                                                               // 8001EDAC
-        BOOL requestWalk(int prio, const mVec3_c &pos, const mAng &turnSpeed, int turnMode, const moveParam_c &moveParam, f32 arriveDist, f32 morph); // 8001EE04
+        BOOL requestWalk(int prio, const mVec3_c &pos, f32 arriveDist, const mAng &turnSpeed, int turnMode, const moveParam_c &moveParam, f32 morph); // 8001EE04
         BOOL requestRun(int prio, const mVec3_c &pos, const mAng &turnSpeed, int turnMode, const moveParam_c &moveParam, f32 arriveDist, f32 morph); // 8001EE50
         BOOL requestTurn(int prio, const mAng &angle, const mAng &turnSpeed, int turnMode, f32 morph = cNpcMorphFrames);       // 8001EE9C
         BOOL requestTurnWalk(int prio, const mVec3_c &pos, const mAng &angle, const mAng &turnSpeed, int turnMode, const moveParam_c &moveParam, f32 arriveDist, f32 morph); // 8001EED0
@@ -1421,6 +1432,8 @@ public:
     mAng getAngleYTo(const dActor_c *actor) const;                                                       // 80012BB8
     mAng getAngleYToPlayer(int player) const;                                                            // 80012BF4
     BOOL calcOfsPos(mVec3_c *out, const mVec3_c *ofs);                                                   // 80012C30 non-const (scheduling)
+    // getSidePos: unobstructed, blocked on both sides, or a usable detour.
+    enum SidePosResult_e { SIDE_POS_CLEAR, SIDE_POS_BLOCKED, SIDE_POS_DETOUR };
     int getSidePos(mVec3_c *out);                                                                        // 80012CFC
     void setRecept(recept_c *recept);                                                                    // 80012DA8
     mVec3_c getBodyPos() const;                                                                          // 80012DBC

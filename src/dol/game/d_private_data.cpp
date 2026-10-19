@@ -642,10 +642,10 @@ void dPrivateData_c::dailyUpdate(int days) {
                 mCityVisitDays++;
             }
         }
-        if (isFlag0(0x1A)) {
-            clearFlag0(0x1A);
-            if (_8691 < 15) {
-                _8691++;
+        if (isFlag0(PRIVATE_FLAG0_CAFE_VISIT)) {
+            clearFlag0(PRIVATE_FLAG0_CAFE_VISIT);
+            if (mCafeVisits < 15) {
+                mCafeVisits++;
             }
         }
         updateGracieStep();
@@ -810,7 +810,7 @@ void dPrivateData_c::clear() {
     mShopVote = 0;
     mLastWc24Sender.clear();
     mDebt = 0;
-    _83BE.clear();
+    mCafeDate.clear();
     _83C2.clear();
     mSavings = 0;
     mErrand.clear();
@@ -2510,7 +2510,7 @@ BOOL dPrivateData_c::isBedHeadVisible() const {
 }
 
 // 8013C7C0
-u8 dPrivateData_c::getGracieStep() {
+int dPrivateData_c::getGracieStep() {
     return mGracieStep;
 }
 

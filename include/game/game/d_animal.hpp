@@ -203,6 +203,7 @@ public:
 
 // Per-species template record, copied whole into dAnimal_c+0x1824 by dAnimal_c::init (8011E688).
 struct dAnimalTemplate_c {
+    s16 getCloth() const { return mCloth; } // the original shirt (d_a_npc_sp_periko)
     s16 getUmbrella() const { return mUmbrella; }
     s8 getLikedStyle() const { return mLikedStyle; }
 

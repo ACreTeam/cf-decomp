@@ -17,6 +17,7 @@
 #include <game/game/d_mail.hpp>
 #include <game/game/d_msg.hpp>
 #include <game/game/d_net.hpp>
+#include <game/game/d_npc_info.hpp>
 #include <game/game/d_play_util.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_post_office.hpp>
@@ -936,7 +937,7 @@ void daSnowMan_c::initTalk() {
     setMessageLabel("npc_SP/NPC_snowman");
     setMessageCode((mJustBuilt ? 1 : 2) + mFace * 2);
     dHmnName::Word_c name;
-    dString::loadString(&name, 50, "sys_STRING/STR_SPNpc_name");
+    dString::loadString(&name, dNpcInfo::SP_NAME_SNOWMAN, "sys_STRING/STR_SPNpc_name");
     setSpeakerName(
         (const u16 *)static_cast<dScript::Word_c &>(name).getBuffer(), 2);
     getController()->requestStart(0);

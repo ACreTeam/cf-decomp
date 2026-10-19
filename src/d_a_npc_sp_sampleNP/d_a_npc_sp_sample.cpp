@@ -113,10 +113,8 @@ void dAcNpcSpSample_c::executeIdle() {
 }
 // .text 0x4B0
 void dAcNpcSpSample_c::initFollow() {
-    mAction.requestWalk(
-        PRIORITY_IDLE,
-        *dPlayerMgr::getPosition(dPlayerMgr::PLAYER_INDEX_CURRENT),
-        l_walkTurnSpeed, 0, l_moveParamWalk, l_defaultAnmRate, cNpcMorphFrames);
+    mAction.requestWalk(PRIORITY_IDLE, *dPlayerMgr::getPosition(dPlayerMgr::PLAYER_INDEX_CURRENT),
+        l_defaultAnmRate, l_walkTurnSpeed, 0, l_moveParamWalk, cNpcMorphFrames);
 }
 // .text 0x514
 void dAcNpcSpSample_c::executeFollow() {

@@ -481,7 +481,7 @@ BOOL getBedAnimationPosition(mVec3_c *out, int idx); // 800FD6A8
 BOOL getBedPosition(mVec3_c *out, int idx); // 800FD720
 BOOL lieOnBed(s16 angle, int type, f32 x, f32 z, int arg); // 800FD798; last argument unused in this build
 BOOL getUpFromBed(int type, int arg); // 800FD88C; second argument unused in this build
-BOOL changeSeatedPose(int type); // 800FD924
+BOOL changeSeatedPose(int type, int unused); // 800FD924: every caller passes 0 as unused
 BOOL openChest(int type, s16 angle, f32 x, f32 z); // 800FD9E0: STATE_CHEST_OPEN (daFtrChest_c)
 BOOL closeChest(int type); // 800FDAA4: STATE_CHEST_CLOSE
 BOOL hasActionActor(); // 800FDB10

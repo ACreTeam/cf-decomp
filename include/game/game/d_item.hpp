@@ -819,6 +819,11 @@ struct BITM {
         return static_cast<u32>(kind) < KIND_COUNT ? kind : KIND_NONE;
     }
 
+    int getFrom() const {
+        int from = m_from;
+        return static_cast<u32>(from) < FROM_COUNT ? from : FROM_NONE;
+    }
+
     int getFtrSize() const {
         int size = static_cast<s8>(m_ftrSize);
         return static_cast<u32>(size) < FTR_SIZE_COUNT ? static_cast<FtrSize>(size) : FTR_SIZE_1x1;

@@ -3437,9 +3437,8 @@ void action_c::executeWander(dAcNpcOut_c *npc) {
                 mAng angle(0);
                 if (npc->checkTargetAngle(&angle, &pos, &l_frontAngle) &&
                     horizontalDistance(pos, npc->mPos) > l_8074FE14) {
-                    npc->mAction.requestWalk(
-                        PRIORITY_IDLE, pos, l_walkTurnSpeed, 0, l_moveParamWalk,
-                        l_defaultAnmRate, cNpcMorphFrames);
+                    npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_defaultAnmRate, l_walkTurnSpeed,
+                        0, l_moveParamWalk, cNpcMorphFrames);
                 } else {
                     npc->mAction.requestTurnWalk(
                         PRIORITY_IDLE, pos, angle, l_turnSpeed, 0, l_moveParamWalk,
@@ -5598,9 +5597,8 @@ void action_c::stepHalloweenChase00(dAcNpcOut_c *npc) {
                 npc->checkTargetAngle(&angle, &wanderPos, &l_frontAngle);
             if (isFront &&
                 horizontalDistance(wanderPos, npc->mPos) > l_8074FE14) {
-                npc->mAction.requestWalk(PRIORITY_IDLE, wanderPos,
-                                         l_walkTurnSpeed, 0, l_moveParamWalk,
-                                         l_defaultAnmRate, cNpcMorphFrames);
+                npc->mAction.requestWalk(PRIORITY_IDLE, wanderPos, l_defaultAnmRate,
+                    l_walkTurnSpeed, 0, l_moveParamWalk, cNpcMorphFrames);
             } else {
                 npc->mAction.requestTurnWalk(PRIORITY_IDLE, wanderPos, angle,
                                              l_turnSpeed, 0, l_moveParamWalk,
@@ -7371,9 +7369,8 @@ void action_c::executeVisitWait(dAcNpcOut_c *npc) {
             dAcNpc_c::searchPosNear(&pos, &npc->mPos, l_8074FE14, l_8074FE10)) {
             mAng angle(0);
             if (npc->checkTargetAngle(&angle, &pos, &l_frontAngle)) {
-                npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_walkTurnSpeed, 0,
-                                         l_moveParamWalk, l_defaultAnmRate,
-                                         cNpcMorphFrames);
+                npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_defaultAnmRate, l_walkTurnSpeed, 0,
+                    l_moveParamWalk, cNpcMorphFrames);
             } else {
                 npc->mAction.requestTurnWalk(PRIORITY_IDLE, pos, angle,
                                              l_turnSpeed, 0, l_moveParamWalk,

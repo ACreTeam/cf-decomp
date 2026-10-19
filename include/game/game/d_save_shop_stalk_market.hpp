@@ -25,6 +25,9 @@ public:
     int calcPrice(f32 max, f32 min); // 80147984: mBuyPrice times a random rate in [min, max)
     void invalidate(); // 80147A08
 
+    // The price on weekday wday, in the morning or afternoon (d_a_npc_sp_tanukichi).
+    int getPrice(int wday, int pm) const { return mPrices[(wday << 1) + pm].get(); }
+
     /* 0x00 */ dSaveMoney_c mBuyPrice; // Joan's price, 90..110
     /* 0x04 */ dSaveMoney_c mPrices[STALK_MARKET_PRICE_NUM];
     /* 0x3C */ int mTrend; // STALK_MARKET_TREND_*

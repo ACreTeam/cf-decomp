@@ -539,25 +539,25 @@ const dAnmPersonalID_c *dQuestErrandList_c::getSender() const {
 }
 
 // 80140C4C
-void dQuestErrandList_c::startChangeCloth() {
+void dQuestErrandList_c::startFirstJob() {
     dQuestErrand_c *errand = getErrand(0);
     dItem::Item item;
-    errand->start(QUEST_KIND_FIRSTJOB_CHANGE_CLOTH, NULL, NULL, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
+    errand->start(QUEST_KIND_FIRSTJOB_START, NULL, NULL, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
     clearAnimals();
 }
 
 // 80140CB0
+void dQuestErrandList_c::startChangeCloth() {
+    dQuestErrand_c *errand = getErrand(0);
+    dItem::Item item;
+    errand->start(QUEST_KIND_FIRSTJOB_CHANGE_CLOTH, NULL, NULL, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
+}
+
+// 80140D00
 void dQuestErrandList_c::startPlantFlower() {
     dQuestErrand_c *errand = getErrand(0);
     dItem::Item item;
     errand->start(QUEST_KIND_FIRSTJOB_PLANT_FLOWER, NULL, NULL, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
-}
-
-// 80140D00
-void dQuestErrandList_c::start11() {
-    dQuestErrand_c *errand = getErrand(0);
-    dItem::Item item;
-    errand->start(QUEST_KIND_FIRSTJOB_11, NULL, NULL, &item, NULL, QUEST_DEADLINE_LIMIT, 0);
 }
 
 // 80140D50
@@ -1605,7 +1605,7 @@ int dQuestBase_c::getKindType(int kind) {
 int dQuestBase_c::getKindSubType(int kind) {
     int result = QUEST_ERRAND_TYPE_NONE;
     if (getKindType(kind) == QUEST_TYPE_ERRAND) {
-        if (kind < QUEST_KIND_FIRSTJOB_CHANGE_CLOTH) {
+        if (kind < QUEST_KIND_FIRSTJOB_START) {
             result = QUEST_ERRAND_TYPE_REQUEST;
         } else if (kind < QUEST_KIND_APPOINTMENT_0) {
             result = QUEST_ERRAND_TYPE_FIRSTJOB;

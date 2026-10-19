@@ -25,7 +25,7 @@ public:
     // optional: the calls on an unbound one do nothing.
     class model_c : public dDvd::brresBank_c {
     public:
-        BOOL remove();                                        // 80063778: unloads, removes everything
+        bool remove();                                        // 80063778: unloads, removes everything
         bool entry();                                         // 800638A8: the model's entry (draw)
         nw4r::math::MTX34 *getNodeMtx(const char *name);      // 800638CC: a static copy, NULL if none
         mVec3_c *getNodePos(const char *name);                // 80063960: a static copy (zero if none)

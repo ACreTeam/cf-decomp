@@ -1015,7 +1015,7 @@ BOOL getUpFromBed(int type, int arg) {
 }
 
 // 800FD924
-BOOL changeSeatedPose(int type) {
+BOOL changeSeatedPose(int type, int unused) {
     dAcPlayer_c *player = getActor(PLAYER_INDEX_CURRENT);
     if (player == NULL) {
         return FALSE;

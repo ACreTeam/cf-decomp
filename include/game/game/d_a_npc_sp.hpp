@@ -89,7 +89,7 @@ public:
     BOOL checkStuck();                             // 80062A44: pushed for 120 frames while moving
     void initWander();                             // 80062A9C
     BOOL resetWanderDaub(wanderDaub_s *daub);          // 80062ED8
-    void resetLookTimer();                         // 80062F10
+    void resetLookTimer(wanderDaub_s *daub = NULL); // 80062F10: every caller passes NULL (unused)
     void executeRemoteWander(wanderDaub_s *daub);  // 80062F50
     void moveFtrToPoliceBox();                     // 800630D4: the furniture under the npc -> police box
 

@@ -67,7 +67,7 @@ public:
     static BOOL isAllVillagersMet(); // 800F5BC4
 
     /* 0x0 */ u8 mJobDone;
-    /* 0x1 */ u8 _1;
+    /* 0x1 */ u8 mTwinsGreeted;
     /* 0x2 */ u8 mTimeSpecialTold;
 }; // size 0x3
 
@@ -223,6 +223,8 @@ public:
     ~cafe_c() {}
     static cafe_c *get(); // 800F72E8
     void clear();         // 800F72F0
+    void setTalked() { mTalked = 1; } // d_a_npc_sp_cafe
+    void setServed() { mServed = 1; } // d_a_npc_sp_cafe
 
     /* 0x0 */ u8 mTalked;
     /* 0x1 */ u8 mServed;
@@ -236,7 +238,7 @@ public:
     void clear();           // 800F730C
 
     dItem::Item *getPresent();         // 800F734C
-    void setPresent(dItem::Item item); // 800F7394
+    void setPresent(const dItem::Item &item); // 800F7394
     void setTalked();                  // 800F73F0
     void setFullTold();                // 800F743C
     void setTalkedAfter();             // 800F7488
@@ -403,6 +405,62 @@ public:
     /* 0x3B */ u8 mPerforming;
 }; // size 0x3C
 
+// The names of sys_STRING/STR_SPNpc_name (getSpNameStr; ENG text).
+enum SpName_e {
+    SP_NAME_JOAN = 0x01,
+    SP_NAME_TOM_NOOK = 0x02,
+    SP_NAME_REDD = 0x03,
+    SP_NAME_HARRIET = 0x04,
+    SP_NAME_BLATHERS = 0x05,
+    SP_NAME_JACK = 0x06,
+    SP_NAME_KK = 0x07,
+    SP_NAME_SABLE = 0x08,
+    SP_NAME_MABEL = 0x09,
+    SP_NAME_PELLY = 0x0A,
+    SP_NAME_PHYLLIS = 0x0B,
+    SP_NAME_ROVER = 0x0C,
+    SP_NAME_TORTIMER = 0x0D,
+    SP_NAME_CELESTE = 0x0E,
+    SP_NAME_TOMMY = 0x0F,
+    SP_NAME_TIMMY = 0x10,
+    SP_NAME_RESETTI = 0x11,
+    SP_NAME_DON = 0x12,
+    SP_NAME_BLANCA = 0x13,
+    SP_NAME_KAPPN = 0x14,
+    SP_NAME_GULLIVER = 0x15,
+    SP_NAME_WENDELL = 0x16,
+    SP_NAME_BREWSTER = 0x17,
+    SP_NAME_LYLE = 0x18,
+    SP_NAME_KATIE = 0x19,
+    SP_NAME_KAITLIN = 0x1A,
+    SP_NAME_ZIPPER = 0x1B,
+    SP_NAME_PASCAL = 0x1C,
+    SP_NAME_SAHARAH = 0x1D,
+    SP_NAME_FRANKLIN = 0x1E,
+    SP_NAME_GRACIE = 0x1F,
+    SP_NAME_SHRUNK = 0x20,
+    SP_NAME_FRILLARD = 0x21,
+    SP_NAME_KATRINA = 0x22,
+    SP_NAME_PETE = 0x23,
+    SP_NAME_JINGLE = 0x24,
+    SP_NAME_CHIP = 0x25,
+    SP_NAME_COPPER = 0x26,
+    SP_NAME_BOOKER = 0x27,
+    SP_NAME_LABELLE = 0x28,
+    SP_NAME_KICKS = 0x29,
+    SP_NAME_NAT = 0x2A,
+    SP_NAME_PAVE = 0x2B,
+    SP_NAME_LLOID = 0x2C,
+    SP_NAME_SERENA = 0x2D,
+    SP_NAME_WISP = 0x2E,
+    SP_NAME_UNKNOWN = 0x2F, // "?????"
+    SP_NAME_CLERK = 0x30,
+    SP_NAME_EMCEE = 0x31,
+    SP_NAME_SNOWMAN = 0x32,
+    SP_NAME_PHINEAS = 0x33,
+    SP_NAME_UNKNOWN_REDD = 0x34, // "?????" (Redd before the first visit)
+};
+
 u16 getSpNameStr(const dItem::Item *npc); // 800F88AC
 int getSpSound(const dItem::Item *npc);   // 800F88E0
 int getSpVoice(const dItem::Item *npc);   // 800F8914
@@ -415,6 +473,8 @@ public:
     ~gatekeeperA_c() {}
     static gatekeeperA_c *get(); // 800F8A84
     void clear();                // 800F8A8C
+    void setEscorting(u8 escorting) { mEscorting = escorting; }
+    void setAtGate(u8 atGate) { mAtGate = atGate; }
 
     /* 0x0 */ u8 mEscorting;
     /* 0x1 */ u8 mAtGate;

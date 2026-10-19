@@ -232,9 +232,8 @@ void dAcNpcSpPlayerSelect_c::stepFirstDemo_c::waitFade() {
 }
 // .text 0xCB0
 void dAcNpcSpPlayerSelect_c::stepFirstDemo_c::initWalk() {
-    mpOwner->mAction.requestWalk(0, mpOwner->mHomePos, l_walkTurnSpeed, 0,
-                                 l_moveParamWalk, l_defaultAnmRate,
-                                 cNpcMorphFrames);
+    mpOwner->mAction.requestWalk(0, mpOwner->mHomePos, l_defaultAnmRate, l_walkTurnSpeed, 0,
+        l_moveParamWalk, cNpcMorphFrames);
     nextStep();
 }
 // .text 0xD80

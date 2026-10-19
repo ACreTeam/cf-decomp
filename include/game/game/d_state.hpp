@@ -156,13 +156,14 @@ public:
         return NULL;
     }
 
+    // d_a_npc_sp_missing_child passes nameLookup = false.
     void initialize(Owner *owner, const char *name, const Entry *steps,
-                    unsigned int count) {
+                    unsigned int count, bool nameLookup = true) {
         mpOwner = owner;
         mpSteps = steps;
         mStepCount = count;
         this->mpName = name;
-        this->mInitialized = true;
+        this->mInitialized = nameLookup;
         this->mCurrentMethod = steps[0].execute;
     }
 

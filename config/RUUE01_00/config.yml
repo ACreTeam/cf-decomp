@@ -285,6 +285,7 @@ modules:
   name: d_a_npc_sp_missing_childNP
   symbols: config/RUUE01_00/d_a_npc_sp_missing_childNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_missing_childNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_missing_motherNP.rel
   hash: 1dc11bc0e75686dabf4a8788ed84d9939f90ede1
   name: d_a_npc_sp_missing_motherNP
@@ -308,6 +309,7 @@ modules:
 - object: files/rels/d_a_npc_sp_perikoNP.rel
   hash: 40763f349938f6ece927e51d58f917fb947f1686
   name: d_a_npc_sp_perikoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_perikoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_perikoNP/splits.txt
 - object: files/rels/d_a_npc_sp_sonchoNP.rel
@@ -318,6 +320,7 @@ modules:
 - object: files/rels/d_a_npc_sp_event_sonchoNP.rel
   hash: 4adb306027c282258317d987b3b7499f701261d7
   name: d_a_npc_sp_event_sonchoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_event_sonchoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_event_sonchoNP/splits.txt
 - object: files/rels/d_a_npc_sp_ceremony_sonchoNP.rel

@@ -2102,7 +2102,8 @@ int dAcNpc_c::execute() {
                     if (getDaubMove(&from, &to, &angle, &speed)) {
                         if ((int)type != action->mActionId || from != action->mTarget || to != action->mGoal) {
                             if ((int)type == 1) {
-                                action->requestWalk(2, from, l_walkTurnSpeed, 0, l_moveParamWalk, 1.0f, speed);
+                                action->requestWalk(2, from, 1.0f, l_walkTurnSpeed, 0,
+                                    l_moveParamWalk, speed);
                             } else {
                                 action->requestRun(2, from, l_runTurnSpeed, 0, l_moveParamRun, 2.0f, speed);
                             }
@@ -5077,8 +5078,8 @@ BOOL dAcNpc_c::action_c::requestWait(int prio, f32 morph) {
     return request(ACTION_WAIT, prio, mVec3_c::Zero, mAng(0), mAng(0), 0, l_moveParamStop, 1.0f, morph);
 }
 
-BOOL dAcNpc_c::action_c::requestWalk(int prio, const mVec3_c &pos, const mAng &turnSpeed, int turnMode,
-                                     const moveParam_c &moveParam, f32 arriveDist, f32 morph) {
+BOOL dAcNpc_c::action_c::requestWalk(int prio, const mVec3_c &pos, f32 arriveDist, const mAng &turnSpeed,
+                                     int turnMode, const moveParam_c &moveParam, f32 morph) {
     return request(ACTION_WALK, prio, pos, mAng(0), turnSpeed, turnMode, moveParam, arriveDist, morph);
 }
 

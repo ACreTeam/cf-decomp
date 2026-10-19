@@ -480,7 +480,8 @@ int dAcNpcSp_c::executeWander(wanderDaub_s *daub) {
             if (isWanderWalk() && searchWanderPos(&pos)) {
                 mAng angle = 0;
                 if (checkTargetAngle(&angle, &pos, &l_frontAngle)) {
-                    action->requestWalk(0, pos, l_walkTurnSpeed, 0, l_moveParamWalk, l_defaultAnmRate, cNpcMorphFrames);
+                    action->requestWalk(0, pos, l_defaultAnmRate, l_walkTurnSpeed, 0,
+                        l_moveParamWalk, cNpcMorphFrames);
                 } else {
                     action->requestTurnWalk(0, pos, angle, l_turnSpeed, 0, l_moveParamWalk, l_defaultAnmRate, cNpcMorphFrames);
                 }
@@ -538,7 +539,7 @@ int dAcNpcSp_c::vtE4() {
 }
 
 // 80062F10
-void dAcNpcSp_c::resetLookTimer() {
+void dAcNpcSp_c::resetLookTimer(wanderDaub_s *daub) {
     mLookTimer = SP_LOOK_WAIT_MIN + cM::rndF(SP_LOOK_WAIT_RAND);
 }
 

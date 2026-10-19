@@ -134,7 +134,7 @@ public:
     /* 0x05E260 */ dSaveBuilding_c mBuilding;  // the town flag, the gate and the building positions
     /* 0x05EC60 */ u32 mTownChecksum ALIGN(32); // calcTownChecksum: +0x5EC64 up to mExtra (also a random seed)
     /* 0x05EC64 */ dSvActivity_c mActivity; // this town's jinx and the day's jinx results (d_sv_activity)
-    /* 0x05EC7C */ u32 mPublicWorksBells; // inferred: donated so far; cleared when a public work is built
+    /* 0x05EC7C */ s32 mPublicWorksBells; // donated so far (signed: d_a_npc_sp_periko compares it with cmpw); cleared when a public work is built
     /* 0x05EC80 */ dSaveShops_c mShops;
     /* 0x0632E0 */ dSaveTimeOffset_c mTimeOffset; // dTime_c::loadOffset / saveOffset
     /* 0x0632F0 */ dEvFishing_c mFishing;    // fishing tourney standings (d_ev_fishing)

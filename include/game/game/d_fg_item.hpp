@@ -355,6 +355,9 @@ struct Item {
 
     bool isValid() const { return mId != ITEM_ID_NONE; }
     u16 getId() const { return mId; }
+    // The same item with the variant v in the id's low 2 bits (d_a_npc_sp_tanukichi: stationery). Defined
+    // before makeDir, so its weak copy tail-calls makeDir.
+    Item makeVariant(int v) const { return makeDir(v); }
     // The same furniture turned to direction dir (the id's low 2 bits).
     Item makeDir(int dir) const { return Item((u16)((getId() & 0xFFFC) | (dir & 3))); }
 

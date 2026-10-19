@@ -20,6 +20,19 @@ enum {
     SHOP_STAGE_NOOKINGTONS, // Nookington's
 };
 
+// dPrivateData_c::mShopVote / dSaveShop_c::mVote: Nook's question "What do you look for in a store?"
+// (npc_SP/NPC_tanukichi). Each answer stands for the store stage it favours.
+enum {
+    SHOP_VOTE_NONE,    // not asked yet
+    SHOP_VOTE_HOURS,   // "Good hours.": Nook 'n' Go
+    SHOP_VOTE_BALANCE, // "Balance.": Nookway
+    SHOP_VOTE_VARIETY, // "Variety.": Nookington's
+    SHOP_VOTE_NOTHING, // "Nothing much."
+};
+
+// sellAndNotify: no stock slot was sold (catalog orders, items the player sells).
+#define SHOP_SLOT_NONE 0xFF
+
 // sys_STRING/STR_Unit: the store's name ("Nook's Cranny"), + SHOP_STAGE_*.
 #define SHOP_NAME_UNIT_MSG 0x2E
 
@@ -52,7 +65,7 @@ public:
     int getPaperNum();                                    // 80146014
     int getPaintNum();                                    // 80146024
     u16 getItem(int slot);                                // 80146034: ITEM_IDX_SOLD_OUT_SIGN_00 once sold
-    void sellAndNotify(int scene, int slot, int unitX, int unitZ, int price, int flag); // 801460B0
+    void sellAndNotify(u8 scene, u8 slot, u8 unitX, u8 unitZ, int price, int flag); // 801460B0
     void addSales(int price, int flag);                   // 80146170
     void sell(int scene, int slot, int unitX, int unitZ); // 801462F4: marks the slot sold, clears its unit
     BOOL isSold(int slot);                                // 80146400: TRUE for slots out of range
@@ -69,6 +82,14 @@ public:
     void postNotices();                                   // 80146B90
 
     int getCountdown() const { return (u8)mCountdown; }
+    // The Nookington's vote is under way (d_a_npc_sp_tanukichi).
+    BOOL isVoteCountdown() const {
+        BOOL ret = FALSE;
+        if (mCountdown >= 1 && mCountdown <= 7) {
+            ret = TRUE;
+        }
+        return ret;
+    }
 
     /* 0x00 */ int mStage;     // SHOP_STAGE_*
     /* 0x04 */ int mNextStage;

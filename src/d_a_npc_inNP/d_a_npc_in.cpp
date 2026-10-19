@@ -420,9 +420,8 @@ void State_c::executeIdle(dAcNpcIn_c *npc) {
             mAng angle(0);
             if (npc->checkTargetAngle(&angle, &pos, &l_frontAngle) &&
                 distanceXZ(pos, npc->mPos) > cWanderMinDist) {
-                npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_walkTurnSpeed, 0,
-                                         l_moveParamWalk, l_defaultAnmRate,
-                                         cNpcMorphFrames);
+                npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_defaultAnmRate, l_walkTurnSpeed, 0,
+                    l_moveParamWalk, cNpcMorphFrames);
             } else {
                 npc->mAction.requestTurnWalk(PRIORITY_IDLE, pos, angle,
                                              l_turnSpeed, 0, l_moveParamWalk,
@@ -641,9 +640,8 @@ void State_c::executeFmarket(dAcNpcIn_c *npc) {
             mAng angle(0);
             if (npc->checkTargetAngle(&angle, &pos, &l_frontAngle) &&
                 distanceXZ(pos, npc->mPos) > cWanderMinDist) {
-                npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_walkTurnSpeed, 0,
-                                         l_moveParamWalk, l_defaultAnmRate,
-                                         cNpcMorphFrames);
+                npc->mAction.requestWalk(PRIORITY_IDLE, pos, l_defaultAnmRate, l_walkTurnSpeed, 0,
+                    l_moveParamWalk, cNpcMorphFrames);
             } else {
                 npc->mAction.requestTurnWalk(PRIORITY_IDLE, pos, angle,
                                              l_turnSpeed, 0, l_moveParamWalk,
@@ -786,9 +784,8 @@ void State_c::executeSick(dAcNpcIn_c *npc) {
                 mAng angle(0);
                 if (npc->checkTargetAngle(&angle, &pos, &l_frontAngle) &&
                     distanceXZ(pos, npc->mPos) > cWanderMinDist) {
-                    action->requestWalk(PRIORITY_IDLE, pos, l_walkTurnSpeed, 0,
-                                        npc->mMoveParam, l_defaultAnmRate,
-                                        cNpcMorphFrames);
+                    action->requestWalk(PRIORITY_IDLE, pos, l_defaultAnmRate, l_walkTurnSpeed, 0,
+                        npc->mMoveParam, cNpcMorphFrames);
                 } else {
                     action->requestTurnWalk(PRIORITY_IDLE, pos, angle,
                                             l_walkTurnSpeed, 0, npc->mMoveParam,

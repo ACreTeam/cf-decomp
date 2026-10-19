@@ -14,6 +14,7 @@
 #include <game/game/d_catalog.hpp>
 
 #define PLAYER_POCKETS_COUNT 15
+#define POCKET_FLAG_ERRAND 5 // getPocketFlag: an item of Nook's part-time job errands (d_a_npc_sp_tanukichi)
 #define PLAYER_MAIL_COUNT 10
 #define PLAYER_ORG_DESIGN_COUNT 8
 #define PLAYER_OUTFIT_COUNT 8
@@ -28,24 +29,40 @@
 // the Flag1 functions on mFlags1). Shared by many systems; most indices are still literals, named here as
 // their meanings are found.
 enum dPrivateFlag0_e {
-    PRIVATE_FLAG0_ROVER_GREETED = 0x01,         // Rover greeted the player at the player select (d_a_npc_sp_player_select)
+    PRIVATE_FLAG0_FUND_EXPLAINED = 0x00,        // Pelly / Phyllis explained the town fund once (d_a_npc_sp_periko)
+    PRIVATE_FLAG0_ROVER_GREETED = 0x01,        // Rover greeted the player at the player select (d_a_npc_sp_player_select)
     PRIVATE_FLAG0_BEE_STUNG = 0x02,             // stung by bees (state 0x62 after dDemo::request9): villagers react
                                                 // (d_npc_talk_reaction, d_msg, d_animal); cleared by the
                                                 // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
     PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
+    PRIVATE_FLAG0_NOOK_POINTS_TOLD = 0x08,      // Nook explained the Tom Nook Point System (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_SHOP_VOTE_DECIDED = 0x09,     // Nook decided on the store's future: his thanks for the advice are
+                                                // due (d_a_npc_sp_tanukichi; inferred)
+    PRIVATE_FLAG0_SHOP_OPENED = 0x0A,           // the store was upgraded: Nook's grand (re)opening greeting is due
+                                                // (d_a_npc_sp_tanukichi; inferred)
+    PRIVATE_FLAG0_HOUSE_RENOVATING = 0x0B,      // Nook renovates the house after the loan was paid off; the new loan
+                                                // follows when it is done (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_HOUSE_TOUR = 0x0C,            // a new player has no house yet: Nook is out for the house tour (his
                                                 // store is closed), the free houses are on sale (d_a_str_field; inferred)
     PRIVATE_FLAG0_PART_TIME_JOB = 0x0D,         // Nook's part-time job is under way: set for a new player
                                                 // (dSvProc_c::initializePlayer); villagers talk about the
                                                 // newcomer (d_npc_talk_arbeit), no event announcements,
                                                 // villager memories / letters, quests (inferred)
+    PRIVATE_FLAG0_GOLDEN_CAN_RECEIVED = 0x11,   // Pelly handed over the golden watering can (d_a_npc_sp_periko)
     PRIVATE_FLAG0_JOINED_AS_VISITOR = 0x12,     // made by dSvProc_c::initializeVisitor; Mom's first letter differs (inferred)
+    PRIVATE_FLAG0_PUBLIC_WORKS_VOTED = 0x13,    // voted in the current public works vote (d_a_npc_sp_periko; cleared
+                                                // by dPrivateData_c::clearPublicWorksVotes)
     PRIVATE_FLAG0_REDD_MEMBER = 0x14,           // a member of Crazy Redd's: let in without an invitation, gets every
                                                 // unsold item checked (dSaveShopGallery_c::check; inferred)
+    PRIVATE_FLAG0_HOUSE_COMPLETE = 0x19,        // the last loan was paid off: the house gets its flag
+    PRIVATE_FLAG0_CAFE_VISIT = 0x1A,            // coffee at the Roost counted today: dailyUpdate raises mCafeVisits
+                                                // (d_a_npc_sp_cafe)
+                                                // (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
     PRIVATE_FLAG0_GATEKEEPER_MET = 0x21,        // the gatekeeper's first greeting was shown (d_a_npc_sp_gatekeeper_a)
+    PRIVATE_FLAG0_CAFE_SERVED = 0x22,           // had a coffee at the Roost once (the date is mCafeDate; d_a_npc_sp_cafe)
     PRIVATE_FLAG0_HRA_JOINED = 0x27,            // the HRA's welcome letter was delivered
     PRIVATE_FLAG0_TRAVELLING = 0x28,            // out on a trip with the DS (dTravelData::Data_c sets it on departure;
                                                 // dSvProc_c::prepareLoad clears it back in the home town)
@@ -57,8 +74,16 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
     PRIVATE_FLAG0_FISHING_ENTERED = 0x2D,       // the player entered this fishing tourney (d_ev_fishing)
+    PRIVATE_FLAG0_NEWCOMER_DONE = 0x30,         // the newcomer talks at the town hall are over: Pelly / Phyllis
+                                                // serve normally (npc_SP/NPC_periko_0 before; inferred); set when
+                                                // Nook's part-time job starts (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_JOB_CHANGED = 0x31,           // the part-timer put the work clothes on (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_JOB_SCOLDED = 0x32,           // ... and was scolded once for taking them off
+    PRIVATE_FLAG0_BRIDGE_SURVEY_HEARD = 0x38,   // Pelly / Phyllis explained the bridge survey once
+    PRIVATE_FLAG0_TOWER_SURVEY_HEARD = 0x39,    // ... the lighthouse / windmill survey once
     PRIVATE_FLAG0_CARD_REISSUE = 0x46,          // a new shopping card was asked for at the ATM; mailed on the next day
                                                 // (dPrivateData_c::updateBank), isCardMissing is FALSE meanwhile
+    PRIVATE_FLAG0_LOST_CHILD_MET = 0x47,        // Katie was met once (d_a_npc_sp_missing_child: first-meeting message)
     PRIVATE_FLAG0_LOST_CHILD_RETURNED = 0x48,  // Katie was brought home to her town (d_travel_data,
                                                 // d_a_npc_sp_gatekeeper_a; inferred)
     PRIVATE_FLAG0_LOST_CHILD_THANKS = 0x4A,     // her thank-you letter is due (sendLostChildThanks clears it)
@@ -67,14 +92,36 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
-    PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
+    PRIVATE_FLAG0_FUND_DONATED = 0x66,          // donated to the town fund (d_a_npc_sp_periko)
+    PRIVATE_FLAG0_BRIDGE_THANKED = 0x67,        // Pelly's thanks for the bridge were heard
+    PRIVATE_FLAG0_FOUNTAIN_THANKED = 0x68,      // ... for the fountain
+    PRIVATE_FLAG0_TOWER_THANKED = 0x69,         // ... for the lighthouse / windmill
+    PRIVATE_FLAG0_LIGHTHOUSE_REBUILT_THANKED = 0x6A, // ... for the lighthouse after a conversion (cleared when
+                                                // it is built: dPrivateData_c::buildVotedBuilding)
+    PRIVATE_FLAG0_WINDMILL_REBUILT_THANKED = 0x6B, // ... for the windmill after a conversion
+    PRIVATE_FLAG0_SHOP_VOTE_RESULT = 0x6D,      // Nook tells the result of the store vote when the player leaves
+                                                // (d_a_npc_sp_tanukichi; inferred)
+    PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,      // the player entered this Bug-Off (cleared once the letter is sent)
     PRIVATE_FLAG0_CITY_VISITED = 0x70,          // got off the bus in the city once (d_a_str_common, inferred)
+    PRIVATE_FLAG0_GYROID_ASKED = 0x71,          // Brewster asked about the player's gyroids (d_a_npc_sp_cafe)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
     PRIVATE_FLAG0_REDD_TURNED_AWAY = 0x77,      // Redd turned the player away at the door (d_a_str_town); villagers
                                                 // then talk about his invitations (d_npc_talk_free; inferred)
-    PRIVATE_FLAG0_REDD_VISITED = 0x83,          // entered Crazy Redd's tent in the city (d_a_str; inferred)
+    PRIVATE_FLAG0_DRAMA_NOOK_HEARD = 0x78,      // Nook's talk about Labelle (npc_SP/NPC_drama6) was heard
+                                                // (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_DRAMA_PELLY_HEARD = 0x7D,     // Pelly's sigh (npc_SP/NPC_drama4) was heard: one of the three flags of
+                                                // Gracie story step 2 (dPrivateData_c::updateGracieStep)
+    PRIVATE_FLAG0_PUBLIC_WORKS_BUILT = 0x7F,    // a public work was finished (set for every player): Pelly thanks the
+                                                // donors (d_a_npc_sp_periko)
+    PRIVATE_FLAG0_HOUSE_FLAG_TOLD = 0x81,       // Nook talked about the house's flag (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_REDD_VISITED = 0x83,         // entered Crazy Redd's tent in the city (d_a_str; inferred)
+    PRIVATE_FLAG0_JOB_HELLO = 0x86,             // the part-timer has to say hello to everyone before the next job
+                                                // (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_JOB_HELLO_AGAIN = 0x87,       // ... before the job is given again
+    PRIVATE_FLAG0_JOB_POCKETS_FULL = 0x88,      // the job is given again once the pockets have room
 };
 enum dPrivateFlag1_e {
+    PRIVATE_FLAG1_CAFE_TALKED = 0x4, // talked to Brewster today (d_a_npc_sp_cafe)
     PRIVATE_FLAG1_FISHING_JOINED = 0x11, // 0x11..0x13: dNpcInfo::uomasa_c
     PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
     PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
@@ -86,6 +133,8 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,
     PRIVATE_FLAG1_BUG_OFF_JUDGED = 0x38,
     PRIVATE_FLAG1_BIRTHDAY_GREETED = 0x45, // Rover wished a happy birthday at the player select
+    PRIVATE_FLAG1_CAFE_SERVED = 0x4B,    // had a coffee at the Roost today (d_a_npc_sp_cafe)
+    PRIVATE_FLAG1_CAFE_VALENTINE = 0x4C, // ... on Valentine's Day (hot chocolate)
 };
 #define PRIVATE_SAVINGS_MAX 999999999
 #define PRIVATE_BELLS_MAX 99999
@@ -473,6 +522,7 @@ public:
     // Flag bits.
     BOOL isFlag0(u32 flag) const; // 80138580
     void setMiiMask(u8 mask) { mMiiMask = mask; }
+    int getCafeVisits() const { return mCafeVisits; }
     void setFlag0(u32 flag);      // 801385C0
     void clearFlag0(u32 flag);    // 801385F0
     BOOL isFlag1(u32 flag);       // 80138620
@@ -557,6 +607,7 @@ public:
     static BOOL expireErrandAll(dPrivateData_c *players, const dTime_c *now);      // 8013B474
 
     // Public works votes (the town hall's BBS notices "BBS_office").
+    enum { BUILDING_VOTE_WINDMILL = 1, BUILDING_VOTE_LIGHTHOUSE = 2 }; // mBuildingVote
     static int tallyBuildingVotes();         // 8013B4F8: 1 windmill / 2 lighthouse by mBuildingVote (ties: random)
     static int tallyBridgeVotes();           // 8013B5CC: the most voted block (x * 7 + y), -1 when no votes
     static void clearPublicWorksVotes();     // 8013B7A4
@@ -576,7 +627,7 @@ public:
 
     // GracieGrace.
     BOOL isBedHeadVisible() const;   // 8013C71C: bed head hair, no Mii mask, a hat that doesn't hide the hair
-    u8 getGracieStep();              // 8013C7C0
+    int getGracieStep();             // 8013C7C0 (callers compare the full register: not u8)
     BOOL isGracieStoryReady() const; // 8013C7CC
     void updateGracieStep();         // 8013C878: advances mGracieStep as its flags are set (dailyUpdate)
     dOutfit_c *getOutfit(int i);     // 8013CAD8
@@ -619,7 +670,7 @@ public:
     /* 0x7FA8 */ dPrivateHost_c mHost;         // a visit with another player (startHostVisit; mirrored in dSaveTown_c::mTownHost)
     /* 0x7FD6 */ dSaveMotherMail_c mMotherMail;
     /* 0x7FEE */ dQuestErrandList_c mErrand;
-    /* 0x83BE */ dYMD_c _83BE;
+    /* 0x83BE */ dYMD_c mCafeDate;                // the day of the last coffee at the Roost (d_a_npc_sp_cafe)
     /* 0x83C2 */ dYMD_c _83C2;
     /* 0x83C6 */ dYMD_c mWc24LetterDate; // the day WC24 letters were last sent (d_wifi isLetterDayOver)
     /* 0x83CA */ dItem::Item mSonchoPresent;
@@ -654,7 +705,7 @@ public:
     /* 0x867F */ u8 mFlags3[PRIVATE_FLAGS3_NUM / 8];
     /* 0x868F */ u8 mShopVote;       // the Nookington's vote (d_save_shop)
     /* 0x8690 */ u8 _8690;
-    /* 0x8691 */ u8 _8691;
+    /* 0x8691 */ u8 mCafeVisits;                  // the days with a coffee at the Roost (max 15; d_a_npc_sp_cafe)
     /* 0x8692 */ u8 mCityVisitDays;  // days with flag0 0x17 (city visit, inferred), up to 11 (isGracieStoryReady)
     /* 0x8693 */ u8 mNookPurchases;  // up to 50 (d_a_npc_sp_tanukichi; isNookLoyaltyLetterDue)
     /* 0x8694 */ u8 mResetCount;     // Mr. Resetti visits (d_a_npc_sp_resetsan), 9 when over 10

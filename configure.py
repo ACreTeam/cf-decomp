@@ -1891,10 +1891,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_missing_childNP",
         [
-            Object(NonMatching, "d_a_npc_sp_missing_childNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_missing_childNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_missing_childNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_missing_childNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_missing_childNP/d_a_npc_sp_missing_child.cpp"),
+            Object(Matching, "d_a_npc_sp_missing_childNP/d_a_npc_sp_missing_child.cpp"),
         ],
     ),
     Rel(
@@ -1936,10 +1936,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_perikoNP",
         [
-            Object(NonMatching, "d_a_npc_sp_perikoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_perikoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_perikoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_perikoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_perikoNP/d_a_npc_sp_periko.cpp"),
+            Object(Matching, "d_a_npc_sp_perikoNP/d_a_npc_sp_periko.cpp"),
         ],
     ),
     Rel(
@@ -1954,10 +1954,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_event_sonchoNP",
         [
-            Object(NonMatching, "d_a_npc_sp_event_sonchoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_event_sonchoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_event_sonchoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_event_sonchoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_event_sonchoNP/d_a_npc_sp_event_soncho.cpp"),
+            Object(Matching, "d_a_npc_sp_event_sonchoNP/d_a_npc_sp_event_soncho.cpp"),
         ],
     ),
     Rel(
@@ -1972,10 +1972,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_tanukichiNP",
         [
-            Object(NonMatching, "d_a_npc_sp_tanukichiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_tanukichiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_tanukichiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_tanukichiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_tanukichiNP/d_a_npc_sp_tanukichi.cpp"),
+            Object(Matching, "d_a_npc_sp_tanukichiNP/d_a_npc_sp_tanukichi.cpp"),
         ],
     ),
     Rel(
@@ -2035,10 +2035,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_cafeNP",
         [
-            Object(NonMatching, "d_a_npc_sp_cafeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_cafeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_cafeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_cafeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_cafeNP/d_a_npc_sp_cafe.cpp"),
+            Object(Matching, "d_a_npc_sp_cafeNP/d_a_npc_sp_cafe.cpp"),
         ],
     ),
     Rel(

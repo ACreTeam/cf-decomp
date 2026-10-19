@@ -38,9 +38,9 @@ enum dQuestKind_e {
     // QUEST_TYPE_ERRAND. Errand type REQUEST = 7-8, FIRSTJOB = 9-16.
     QUEST_KIND_ERRAND_REQUEST,                 // 7  ?
     QUEST_KIND_ERRAND_REQUEST_FINAL,           // 8  ?
-    QUEST_KIND_FIRSTJOB_CHANGE_CLOTH,          // 9  ? starts the job
-    QUEST_KIND_FIRSTJOB_PLANT_FLOWER,          // 10 ?
-    QUEST_KIND_FIRSTJOB_11,                    // 11 unknown, no AC counterpart
+    QUEST_KIND_FIRSTJOB_START,                 // 9  introductions before receiving the uniform
+    QUEST_KIND_FIRSTJOB_CHANGE_CLOTH,          // 10 changing into the work uniform
+    QUEST_KIND_FIRSTJOB_PLANT_FLOWER,          // 11 planting the supplied flowers and saplings
     QUEST_KIND_FIRSTJOB_DELIVER_FTR,           // 12 exotic bed (index 0x640, item 0xB710)
     QUEST_KIND_FIRSTJOB_SEND_LETTER,           // 13 letter to a villager
     QUEST_KIND_FIRSTJOB_DELIVER_CARPET,        // 14 exotic rug (index 0x319, item 0xA2C0)
@@ -237,9 +237,9 @@ public:
     void resetState(u8 state);                                   // 80140B60
     dItem::Item *getItem() const;                                // 80140BC0
     const dAnmPersonalID_c *getSender() const;                   // 80140BE8
-    void startChangeCloth();                                     // 80140C4C
-    void startPlantFlower();                                     // 80140CB0
-    void start11();                                              // 80140D00
+    void startFirstJob();                                        // 80140C4C
+    void startChangeCloth();                                     // 80140CB0
+    void startPlantFlower();                                     // 80140D00
     void startDeliverFtr();                                      // 80140D50
     void startDeliverFtrAgain();                                 // 80140E00: avoids the last sender
     void startSendLetter();                                      // 80140F28

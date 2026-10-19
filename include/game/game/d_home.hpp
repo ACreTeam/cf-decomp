@@ -156,6 +156,8 @@ struct dHome_c {
     u8 getFlagMask(u8 count); // 8013DE5C
 
     bool isFlagPending() const { return _15BB.mRaw & 1; }
+    int getSize() const { return mSize; }         // d_a_npc_sp_tanukichi
+    int getNextSize() const { return mNextSize; } // d_a_npc_sp_tanukichi
     dPersonalID_c *getOwner() { return &mOwner; }
     dItem::Item getLoftFtr() const { return _15B8; }
     void setLoftFtr(dItem::Item item) { _15B8 = item; }

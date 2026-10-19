@@ -423,7 +423,7 @@ void daStrBroker_c::setReddName() {
     }
     if (!visited) {
         dHmnName::Word_c name;
-        dString::loadString(&name, NAME_UNKNOWN, "sys_STRING/STR_SPNpc_name");
+        dString::loadString(&name, dNpcInfo::SP_NAME_UNKNOWN_REDD, "sys_STRING/STR_SPNpc_name");
         setSpeakerName(
             (const u16 *)static_cast<dScript::Word_c &>(name).getBuffer(),
             GENDER_MALE);

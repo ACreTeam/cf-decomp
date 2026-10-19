@@ -34,7 +34,7 @@ int daRmobj_c::preDelete() {
     return dDemoActor_c::preDelete() != FALSE;
 }
 
-BOOL daRmobj_c::model_c::remove() {
+bool daRmobj_c::model_c::remove() {
     if (unload(FALSE)) {
         if (isCreated()) {
             mMdl.remove();
@@ -58,9 +58,9 @@ BOOL daRmobj_c::model_c::remove() {
             mHeap::destroyFrmHeap(m_frmHeap_p);
             m_frmHeap_p = NULL;
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool daRmobj_c::model_c::entry() {
