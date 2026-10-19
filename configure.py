@@ -2098,37 +2098,37 @@ config.libs = [
     Rel(
         "d_a_npc_sp_jijyoNP",
         [
-            Object(NonMatching, "d_a_npc_sp_jijyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_jijyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_jijyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_jijyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_jijyoNP/d_a_npc_sp_jijyo.cpp"),
+            Object(Matching, "d_a_npc_sp_jijyoNP/d_a_npc_sp_jijyo.cpp"),
         ],
     ),
     Rel(
         "d_a_npc_sp_jonnyNP",
         [
-            Object(NonMatching, "d_a_npc_sp_jonnyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_jonnyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_jonnyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_jonnyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_jonnyNP/d_a_npc_sp_jonny.cpp"),
+            Object(Matching, "d_a_npc_sp_jonnyNP/d_a_npc_sp_jonny.cpp"),
         ],
     ),
     Rel(
         "d_a_npc_sp_kappeiNP",
         [
-            Object(NonMatching, "d_a_npc_sp_kappeiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_kappeiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_kappeiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_kappeiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_kappeiNP/d_a_npc_sp_kappei.cpp"),
+            Object(Matching, "d_a_npc_sp_kappeiNP/d_a_npc_sp_kappei.cpp"),
         ],
     ),
     Rel(
         "d_a_npc_sp_perioNP",
         [
-            Object(NonMatching, "d_a_npc_sp_perioNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_perioNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_perioNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_perioNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_perioNP/d_a_npc_sp_perio.cpp"),
+            Object(Matching, "d_a_npc_sp_perioNP/d_a_npc_sp_perio.cpp"),
         ],
     ),
     Rel(
@@ -2170,10 +2170,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_sisyoNP",
         [
-            Object(NonMatching, "d_a_npc_sp_sisyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_sisyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_sisyoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_sisyoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_sisyoNP/d_a_npc_sp_sisyo.cpp"),
+            Object(Matching, "d_a_npc_sp_sisyoNP/d_a_npc_sp_sisyo.cpp"),
         ],
     ),
     Rel(

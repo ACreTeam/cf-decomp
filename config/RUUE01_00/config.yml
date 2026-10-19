@@ -424,16 +424,19 @@ modules:
 - object: files/rels/d_a_npc_sp_jonnyNP.rel
   hash: 3936e9ea4c6eb6a5645b9d3cd88007752c690adc
   name: d_a_npc_sp_jonnyNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_jonnyNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_jonnyNP/splits.txt
 - object: files/rels/d_a_npc_sp_kappeiNP.rel
   hash: 90038f7ff6238c5617109a03b618f8455873585b
   name: d_a_npc_sp_kappeiNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_kappeiNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_kappeiNP/splits.txt
 - object: files/rels/d_a_npc_sp_perioNP.rel
   hash: 32a449df06bf0c9a648d07731ee7e4088112888e
   name: d_a_npc_sp_perioNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_perioNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_perioNP/splits.txt
 - object: files/rels/d_a_npc_sp_raccoNP.rel
@@ -463,6 +466,7 @@ modules:
 - object: files/rels/d_a_npc_sp_sisyoNP.rel
   hash: 898d5063a57a1e09e93990c78e769959c3f28708
   name: d_a_npc_sp_sisyoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_sisyoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_sisyoNP/splits.txt
 - object: files/rels/d_a_npc_sp_honmaNP.rel

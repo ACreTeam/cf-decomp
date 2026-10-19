@@ -284,7 +284,7 @@ enum dNetPacket_e {
     NET_PACKET_ANIMAL_EVENT_TALKED = 0x5E,
     // jonny REL (Gulliver): dSaveTown_c::setFlag(4)
     NET_PACKET_GULLIVER_FLAG = 0x5F,
-    // jonny REL (Gulliver): the sender's PID -> dSaveTown_c::_072CEE
+    // jonny REL (Gulliver): the sender's PID -> dSaveTown_c::mGulliverHelper
     NET_PACKET_GULLIVER_PLAYER = 0x60,
     // d_obj_voice dObjVoice_c::send: 1 byte -> dObjVoice_c::receive
     NET_PACKET_VOICE = 0x61,

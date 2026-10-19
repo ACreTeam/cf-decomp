@@ -66,7 +66,7 @@ int dAcNpcSp_c::getFaceType() {
 }
 
 // 80061AFC
-void dAcNpcSp_c::getName(dHmnName::Word_c *name, int len) {
+void dAcNpcSp_c::getName(dHmnName::Word_c *name, int len) const {
     dNpc::getNpcName(name, &mNpcItem, len);
 }
 

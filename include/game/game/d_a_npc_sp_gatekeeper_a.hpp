@@ -688,7 +688,7 @@ class dAcNpcSpGkA_c : public dAcNpcSp_c, public dState::mode_c<dAcNpcSpGkA_c> {
     virtual int doDelete();                                // 0xB90
     virtual void onDemoCmd(int cmd, u8 member);            // 0xCB8
     virtual int canSpeak(dDemoActor_c *actor);             // 0x15A0
-    virtual void getName(dHmnName::Word_c *name, int len); // 0xCCBC
+    virtual void getName(dHmnName::Word_c *name, int len) const; // 0xCCBC
     virtual int getSoundId();                              // 0x15FC
     virtual int vtB0();                                    // 0xC54
 

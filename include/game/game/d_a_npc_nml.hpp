@@ -1625,7 +1625,7 @@ public:
     virtual int doDelete();                        // 8002F914
     virtual bool canInteract(dDemoActor_c *actor); // 8002ED4C (+0x4C)
     virtual int canSpeak(dDemoActor_c *actor);   // 8002EDE4 (+0x60)
-    virtual void getName(dHmnName::Word_c *name, int len); // 8002EF5C (+0x88)
+    virtual void getName(dHmnName::Word_c *name, int len) const; // 8002EF5C (+0x88)
     virtual u8 getNameKind();                      // 8002EF74 (+0x8C): gender, 2 = no animal
     virtual f32 getHandItemOfsX() const;                          // 8002EF94 (+0x90)
     virtual f32 getHandItemOfsZ() const;                          // 8002EFD4 (+0x94)

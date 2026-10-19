@@ -3053,7 +3053,7 @@ BOOL dAcNpcSpGkA_c::isAnyFriendInSession() {
 
 // .text:0xCCBC fn_66_CCBC (0x134): dAcNpcSpGkA_c::getName(dHmnName::Word_c
 // *name, int len)
-void dAcNpcSpGkA_c::getName(dHmnName::Word_c *name, int len) {
+void dAcNpcSpGkA_c::getName(dHmnName::Word_c *name, int len) const {
     BOOL noName = isCurrentMethod(&dAcNpcSpGkA_c::executeComeInNet) ||
                   isCurrentMethod(&dAcNpcSpGkA_c::executeSeeOffNetHst) ||
                   isCurrentMethod(&dAcNpcSpGkA_c::executeSeeOffNetVst);

@@ -227,7 +227,7 @@ void fn_8000F738(int arg) {
 }
 
 // 8000F7B0
-void fn_8000F7B0(int arg) {
+void sndSetSceneFade(int arg) {
     SoundSystem::getInstance()->setSceneFade(arg);
 }
 

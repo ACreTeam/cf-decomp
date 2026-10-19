@@ -1908,14 +1908,14 @@ void recvCockroachRemove(int member, const u8 *data, u32 size, u32 arg,
 
 // 800E1AC0: NET_PACKET_GULLIVER_FLAG (0x5F)
 void recvGulliverFlag(int member, const u8 *data, u32 size, u32 arg, u8 scene) {
-    dSaveData_c::getTown()->setFlag(4);
+    dSaveData_c::getTown()->setFlag(SAVE_FLAG_GULLIVER_AWAKE);
 }
 
 // 800E1AE8: NET_PACKET_GULLIVER_PLAYER (0x60)
 void recvGulliverPlayer(int member, const u8 *data, u32 size, u32 arg,
                         u8 scene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayerRaw(member);
-    dSaveData_c::getTown()->_072CEE.copy(&player->mPID);
+    dSaveData_c::getTown()->mGulliverHelper.copy(&player->mPID);
 }
 
 #ifdef BUGFIXES

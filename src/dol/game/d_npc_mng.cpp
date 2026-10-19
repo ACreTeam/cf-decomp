@@ -83,7 +83,7 @@ u8 dNpcMng_c::sShowTelop;
 u8 dNpcMng_c::_8074EACD;
 u8 dNpcMng_c::sResetVisited;
 u8 dNpcMng_c::_8074EACF;
-u8 dNpcMng_c::_8074EAD0;
+u8 dNpcMng_c::sGulliverVisitorMet;
 
 static mVec3_c l_graceSpot;
 static mVec3_c l_theaterSpots[2];
@@ -1859,7 +1859,7 @@ BOOL dNpcMng_c::isPlayerSelectVisitor() {
         if (isResetVisitTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
             return TRUE;
         }
-        if (isBirthdayVisitTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
+        if (isDistMailVisitTime(dScene::SCENE_FIELD, dScene::SCENE_DM_PL_SEL)) {
             return TRUE;
         }
     }
@@ -2051,7 +2051,7 @@ BOOL dNpcMng_c::createVisitorNpc() {
     u8 prevScene = dScene::getPrevScene();
     if (scene == dScene::SCENE_DM_TITLE) {
         sResetVisited = 0;
-        _8074EAD0 = 0;
+        sGulliverVisitorMet = 0;
     }
     const Spawn_c *spawn =
         findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs), scene, prevScene);
@@ -2113,11 +2113,11 @@ void dNpcMng_c::setPosPrevHouse(mVec3_c *pos, mAng3_c *angle,
     }
 }
 
-BOOL dNpcMng_c::isBirthdayVisitTime(u8 scene, u8 prevScene) {
+BOOL dNpcMng_c::isDistMailVisitTime(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (isTownPlay(scene, dScene::SCENE_NUM) &&
         prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF && player != NULL &&
-        player->isFlag0(0x57) && getPlayerBirthdayHostIdx() == -1) {
+        player->isFlag0(PRIVATE_FLAG0_DIST_MAIL_PENDING) && getPlayerBirthdayHostIdx() == -1) {
         u32 home = dSaveData_c::getTown()->mHomes.findCurrentPlayer();
         if (home < 4) {
             int x = 0;
@@ -2841,7 +2841,7 @@ const dNpcMng_c::Spawn_c dNpcMng_c::l_visitorNpcs[15] = {
      fProf::A_NPC_SP_RESETSAN, 0x8011},
     {&isResetVisitTime, &dNpcMng_c::setPosResetVisit, NULL, 0xFFFF,
      fProf::A_NPC_SP_SEIICHI, 0x8016},
-    {&isBirthdayVisitTime, &dNpcMng_c::setPosPlayerHouseB, NULL, 0xFFFF,
+    {&isDistMailVisitTime, &dNpcMng_c::setPosPlayerHouseB, NULL, 0xFFFF,
      fProf::A_NPC_SP_PERIO, 0x8023},
     {&isLetterVisitKind1, &dNpcMng_c::setPosPlayerHouseDoor, NULL, 0xFFFF,
      fProf::A_NPC_SP_RESETSAN, 0x8011},

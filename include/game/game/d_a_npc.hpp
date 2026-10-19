@@ -43,11 +43,14 @@
 #define NPC_EAR_TYPE_MISSING_MOTHER 33 // her mother's ear parameter preset (d_a_npc_sp_missing_mother)
 #define NPC_EAR_TYPE_PELLY 35 // Pelly's ear parameter preset (d_a_npc_sp_periko)
 #define NPC_EAR_TYPE_PHYLLIS 36 // Phyllis's ear parameter preset (d_a_npc_sp_periko)
+#define NPC_EAR_TYPE_PETE 37 // Pete's ear parameter preset (d_a_npc_sp_perio)
 #define NPC_EAR_TYPE_SABLE 38 // Sable's ear parameter preset (d_a_npc_sp_asami)
 #define NPC_EAR_TYPE_MABEL 39 // Mabel's ear parameter preset (d_a_npc_sp_kinuyo)
+#define NPC_EAR_TYPE_LABELLE 40 // Labelle's ear parameter preset (d_a_npc_sp_jijyo)
 #define NPC_EAR_TYPE_KATRINA 42 // Katrina's ear parameter preset (d_a_npc_sp_fortune)
 #define NPC_EAR_TYPE_REDD 43 // Crazy Redd's ear parameter preset (d_a_npc_sp_tunekichi)
 #define NPC_EAR_TYPE_GRACIE 45 // Gracie's ear parameter preset (d_a_npc_sp_grace)
+#define NPC_EAR_TYPE_SHRUNK 46 // Dr. Shrunk's ear parameter preset (d_a_npc_sp_sisyo; Frillard has none)
 #define NPC_EAR_TYPE_SAHARAH 48 // Saharah's ear parameter preset (d_a_npc_sp_roran)
 #define NPC_EAR_TYPE_JOAN 49 // Joan's ear parameter preset (d_a_npc_sp_kaburiba)
 #define NPC_EAR_TYPE_KK_SLIDER 50 // K.K. Slider's ear parameter preset (d_a_npc_sp_totakeke)
@@ -614,6 +617,8 @@ public:
         void execMoveParam(dAcNpc_c *npc);                                                                   // 800269B0
 
         void setGait(u32 gait) { mPrevGait = mGait; mGait = gait; }
+        // An inline compare: keeps `isAction(a) || isAction(a + 1)` as two compares (d_a_npc_sp_jijyo).
+        BOOL isAction(int id) const { return mActionId == id; }
         emotion_e getEmotion() const {
             emotion_e emotion = (emotion_e)mEmotion;
             return emotion;
@@ -1422,7 +1427,7 @@ public:
     virtual toolBase_c *getTool() { return NULL; }         // 8002E9A8 (+0x7C)
     virtual void vt80() {}                                 // 8002EA0C (+0x80) (recept_c::setPartner)
     virtual void vt84() {}                                 // 8002EA10 (+0x84) (talk_c::finish, on the partner)
-    virtual void getName(dHmnName::Word_c *name, int len) = 0; // (+0x88)
+    virtual void getName(dHmnName::Word_c *name, int len) const = 0; // (+0x88)
     virtual u8 getNameKind() = 0;                          // (+0x8C)
     virtual f32 getHandItemOfsX() const { return 0.0f; }                    // 8002E9F8 (+0x90)
     virtual f32 getHandItemOfsZ() const { return 0.0f; }                    // 8002EA00 (+0x94)
@@ -1494,7 +1499,7 @@ public:
     BOOL getDaubTalk(u16 *a, u16 *b, f32 *c) const;                                                      // 80013C98
     BOOL getDaubAct(u32 *a, u8 *b, f32 *c, f32 *d) const;                                                // 80013DA4
     BOOL recvDaub();                                                                                     // 80013E64
-    static BOOL isPlayerFromThisTown();                                                                  // 80013F1C
+    static bool isPlayerFromThisTown();                                                                  // 80013F1C
     static BOOL checkSpotFunc(int ux, int uz, int arg);                                                  // 80013F98
     static BOOL searchSpot(mVec3_c *out, int arg, const mVec3_c *exclude, f32 dist);                     // 80014008
     static BOOL searchSpotAny(mVec3_c *out, const mVec3_c *exclude, f32 dist);                           // 80014020

@@ -17,6 +17,8 @@
 #define SP_NPC_KAPPN 0x8014 // Kapp'n, the bus driver (d_a_npc_sp_player_create: the stop announcements)
 #define SP_NPC_MISSING_CHILD 0x8019 // Katie, the lost kitten (d_a_npc_sp_missing_child, d_a_npc_sp_gatekeeper_a)
 #define SP_NPC_MISSING_MOTHER 0x801A // Katie's mother (d_a_npc_sp_missing_mother, d_a_npc_sp_missing_child)
+#define SP_NPC_SISYO 0x8020 // Dr. Shrunk at the theater (d_a_npc_sp_sisyo)
+#define SP_NPC_KYOSYO 0x8021 // Master Frillard at the theater (d_a_npc_sp_sisyo on his programs)
 #define SP_NPC_GATEKEEPER_A 0x8026 // Copper, the gatekeeper (d_a_npc_sp_gatekeeper_a)
 #define SP_NPC_GATEKEEPER_B 0x8027 // Booker, the other gatekeeper (d_a_npc_sp_gatekeeper_a/b)
 #define SP_NPC_GUIDE 0x8029 // Rover (the player select, d_a_npc_sp_player_select)

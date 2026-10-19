@@ -18,6 +18,7 @@
 #include <game/game/d_sv_proc.hpp>
 #include <game/game/d_wifi.hpp>
 #include <game/mLib/m_fader.hpp>
+#include <game/snd/snd_system.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <cstring>
 
@@ -181,7 +182,7 @@ void dAcNpcSpPlayerCreate_c::executeTunnelExitCheck() {
 void dAcNpcSpPlayerCreate_c::initNextSceneWait() {
     mTimer = PC_NEXT_SCENE_WAIT;
     dCamera_c::sInstance->startBusWideView();
-    dBgm::l_mgr.mStgBus.fn_8007BF90(2);
+    dBgm::l_mgr.mStgBus.setSceneFade(SoundSystem::SCENE_FADE_IN);
     mAction.requestAnm(PRIORITY_DEMO, HMN_ANM_XCT_SITDOWN_TURN1, 0.0f,
                        cNpcMorphFrames, m3d::PLAYMODE_INHERIT, 0);
 }
@@ -230,7 +231,7 @@ void dAcNpcSpPlayerCreate_c::executeBusDemo() {
 // .text 0xEF0
 void dAcNpcSpPlayerCreate_c::stepDemoBus_c::init() {
     dBgm::l_mgr.mStgBus.setMute(1);
-    dBgm::l_mgr.mStgBus.fn_8007BF90(2);
+    dBgm::l_mgr.mStgBus.setSceneFade(SoundSystem::SCENE_FADE_IN);
     nextStep();
 }
 
@@ -702,7 +703,7 @@ void dAcNpcSpPlayerCreate_c::talk_c::onRequestEnd(int kind) {
 // .text 0x2B60
 void dAcNpcSpPlayerCreate_c::talk_c::startFrontView() {
     dCamera_c::sInstance->startBusFrontView();
-    dBgm::l_mgr.mStgBus.fn_8007BF90(1);
+    dBgm::l_mgr.mStgBus.setSceneFade(SoundSystem::SCENE_FADE_OUT);
     changeMode(&talk_c::executeCamera);
 }
 

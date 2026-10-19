@@ -378,7 +378,7 @@ void StgField_c::mute2D() {
     mMute2D = 1;
 }
 
-void StgField_c::fn_800786E8() {
+void StgField_c::fadeUnmute2D() {
     l_mgr.mute(0x1A, 0, 0x1E);
     unmute2D();
 }
@@ -1736,8 +1736,8 @@ void StgBus_c::setMute(BOOL on) {
     mMuteReq = on == FALSE;
 }
 
-void StgBus_c::fn_8007BF90(int arg) {
-    fn_8000F7B0(arg);
+void StgBus_c::setSceneFade(int arg) {
+    sndSetSceneFade(arg);
 }
 
 void StgBus_c::mute() {

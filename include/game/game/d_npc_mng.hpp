@@ -157,7 +157,7 @@ public:
     BOOL createVisitorNpc();                     // 801AB52C
     static BOOL isHouseWarmingTime(u8 scene, u8 prevScene); // 801AB62C
     void setPosPrevHouse(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AB760
-    static BOOL isBirthdayVisitTime(u8 scene, u8 prevScene); // 801AB830
+    static BOOL isDistMailVisitTime(u8 scene, u8 prevScene); // 801AB830: Pete brings a distribution letter
     void setPosPlayerHouseB(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801AB940
     static BOOL isLetterVisitTime(u8 scene, u8 prevScene);  // 801ABA0C
     void setPosPlayerHouseDoor(mVec3_c *pos, mAng3_c *angle, const dItem::Item *npc); // 801ABAE4
@@ -222,7 +222,9 @@ public:
     static u8 _8074EACD;                         // cleared by d_scene
     static u8 sResetVisited;                     // 8074EACE
     static u8 _8074EACF;                         // cleared on the title scene (d_sv_proc)
-    static u8 _8074EAD0;                         // cleared on the title scene and by dSaveData_c::refreshTown
+    static u8 sGulliverVisitorMet;               // 8074EAD0: Gulliver introduced himself to a visitor (d_a_npc_sp_jonny;
+                                                 // PRIVATE_FLAG1_GULLIVER_MET for town players); cleared on the title
+                                                 // scene and by dSaveData_c::refreshTown
     static int sHideAndSeekState;                // 8074C180: HideAndSeekState_e
     static u16 sGraceGuest;                      // 8074C184: Gracie's guest (npc index, 0xFFFF none)
     static u16 sTheaterGuests[2];                // 8074C188

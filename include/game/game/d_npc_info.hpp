@@ -302,6 +302,7 @@ public:
     ~kappei_c() {}
     static kappei_c *get(); // 800F7D18
     void clear();           // 800F7D20
+    void setLyleTalked(u8 talked) { mLyleTalked = talked; } // d_a_npc_sp_kappei
 
     /* 0x0 */ u8 mLyleTalked;
 }; // size 0x1

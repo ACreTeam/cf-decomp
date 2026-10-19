@@ -73,7 +73,7 @@ void dSaveTown_c::clearTown() {
     mVillageMelody.clear();
     getAuction()->clear();
     mItemVersion = dItem::BITM::getVersion();
-    _072CEE.clear();
+    mGulliverHelper.clear();
     setNewConstruction(NEW_CONSTRUCTION_NONE, 0, 0);
 }
 

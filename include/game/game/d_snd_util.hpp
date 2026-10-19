@@ -26,6 +26,7 @@ void sndTalkEnd();                                  // 8000F068: the conversatio
 void sndStartBgm(u32 id, int fadeIn);                  // 8000F0D0: start the BGM.
 void sndStopBgm(int fade);                             // 8000F158: stop the BGM.
 void sndSetWeather(int weather);                    // 8000F1D0: the weather for the ambient sounds (dBgm Player_c)
+void sndSetSceneFade(int state);                    // 8000F7B0: SoundSystem::setSceneFade (SceneFade_e; dBgm StgBus_c)
 u32 getMusicPlayerBgm(int song);                    // 8000F318: a music player song's BGM id.
 BOOL sndIsKKPlaying();                                 // 8000F390: K.K. Slider is playing (dBgm StgCafe_c)
 u32 getKKSongBgm(int song);                         // 8000F3F8: a K.K. song's BGM id.
@@ -64,7 +65,6 @@ void fn_8000F248();                                          // 8000F248: museum
 void fn_8000F2B0();                                          // 8000F2B0: museum room change done (dBgm StgMuseum_c)
 int fn_8000F4D8();                                           // 8000F4D8: K.K. playback value (dBgm StgCafe_c)
 void fn_8000F738(int arg);                                   // 8000F738: (dBgm StgRoom_c)
-void fn_8000F7B0(int arg);                                   // 8000F7B0: (dBgm StgBus_c)
 void fn_8000FB10(u32 arg);                                   // 8000FB10: no callers
 void fn_80010304(f32 arg);                                   // 80010304: no callers
 }

@@ -153,7 +153,7 @@ return -1;
 }
 
 // 8002EF5C
-void dAcNpcNml_c::getName(dHmnName::Word_c *name, int len) {
+void dAcNpcNml_c::getName(dHmnName::Word_c *name, int len) const {
     if (mpAnimal != NULL) {
         mpAnimal->mID.setWord(name, len);
     }

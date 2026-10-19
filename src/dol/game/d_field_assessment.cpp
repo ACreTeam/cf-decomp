@@ -4423,7 +4423,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->clearFlag(0x10);
         dNpcInfo::reset();
         dSaveData_c::getTown()->clearFlag(0x14);
-        dSaveData_c::getTown()->clearFlag(4);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_GULLIVER_AWAKE);
         dSaveData_c::getTown()->clearFlag(5);
         dSaveData_c::getTown()->mNpcSpotA.init();
         for (int i = 0; i < PLAYER_NUM; i++) {
@@ -4435,7 +4435,7 @@ void fgMngProc_procDayChange(BOOL arg) {
         dSaveData_c::getTown()->mNpcSpotB.clear();
         dSaveData_c::getTown()->mHarvestSpot.clear();
         dSaveData_c::getTown()->mPlayerFlag.init();
-        dSaveData_c::getTown()->_072CEE.clear();
+        dSaveData_c::getTown()->mGulliverHelper.clear();
         for (int i = 0; i < PLAYER_NUM; i++) {
             dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
             if (player != NULL && player->mPID.isValid()) {

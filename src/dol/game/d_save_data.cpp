@@ -133,7 +133,7 @@ void dSaveData_c::refreshTown() {
     dTimeStamp_c lastDay = dSaveData_c::getTown()->mTownInfo.mLastDay;
     dEvent::buildSchedule(lastDay.get(), TRUE);
     dClock::resetTimer();
-    dNpcMng_c::_8074EAD0 = 0;
+    dNpcMng_c::sGulliverVisitorMet = 0;
     dPlayerMgr::clearEquipmentManagers();
 }
 

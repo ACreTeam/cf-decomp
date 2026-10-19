@@ -251,7 +251,7 @@ BOOL dSvProc_c::finishLoad() {
         dSvStarSign::List_c::registerPlayerSign();
         checkSummerMorningStart();
         if (dPostOffice::canGetDistMail()) {
-            player->setFlag0(0x57);
+            player->setFlag0(PRIVATE_FLAG0_DIST_MAIL_PENDING);
         }
         sendVisitorLetter(player);
         if (player) {

@@ -124,7 +124,7 @@ public:
     void mute2C();                                    // 80078610
     void fn_80078658();                               // 80078658
     void mute2D();                                    // 800786A0
-    void fn_800786E8();                               // 800786E8
+    void fadeUnmute2D();                              // 800786E8: fades the BGM back after mute2D (d_a_npc_sp_perio)
     void set30(int value);                            // 80078730
     void play34();                                    // 80078738
     void mute38();                                    // 800787BC
@@ -402,6 +402,9 @@ public:
 
 class StgTheater_c : public StgBase_c {
 public:
+    // playShow: the show (d_a_npc_sp_sisyo: Dr. Shrunk / Master Frillard).
+    enum ShowType_e { SHOW_TYPE_SISYO, SHOW_TYPE_KYOSYO };
+
     StgTheater_c();                                   // 8007B1DC
     virtual ~StgTheater_c();                          // 8007B234
     virtual void start(u32 param);                    // 8007B28C
@@ -511,7 +514,7 @@ public:
     virtual void end();                               // 8007BF38
 
     void setMute(BOOL on);                            // 8007BF80
-    void fn_8007BF90(int arg);                        // 8007BF90
+    void setSceneFade(int arg);                       // 8007BF90: sndSetSceneFade (SoundSystem::SceneFade_e)
     void mute();                                      // 8007BF98
     void unmute();                                    // 8007BFE0
 

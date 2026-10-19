@@ -70,6 +70,7 @@ class SoundSystem {
     };
 
     enum SceneFade_e {
+        SCENE_FADE_NONE = 0, // the scene sound at full volume, no fade state (d_a_npc_sp_kappei's side view)
         SCENE_FADE_OUT = 1,
         SCENE_FADE_IN = 2,
     };

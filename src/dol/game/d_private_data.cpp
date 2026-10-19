@@ -820,8 +820,8 @@ void dPrivateData_c::clear() {
     mHost.mCount = 0;
     mHost.mIsGuest = 0;
     mHost.mFlagB = 0;
-    _8697 = 0;
-    _8698 = 0;
+    mKappnCityMsg = 0;
+    mKappnTownMsg = 0;
     mShotBalloonNum = 0;
     mWc24LetterDate.clear();
     mBirthdayHost.clear();
@@ -2522,7 +2522,7 @@ BOOL dPrivateData_c::isGracieStoryReady() const {
     if (!isFlag0(0x73)) {
         return FALSE;
     }
-    if (!isFlag0(0x74)) {
+    if (!isFlag0(PRIVATE_FLAG0_GRACE_BOUGHT)) {
         return FALSE;
     }
     if (mSableTalkDays < 11) {
@@ -2548,10 +2548,10 @@ void dPrivateData_c::updateGracieStep() {
         }
         break;
     case 2:
-        if (isFlag0(0x7D) && isFlag0(0x7B) && isFlag0(0x7C)) {
+        if (isFlag0(0x7D) && isFlag0(PRIVATE_FLAG0_DRAMA_LABELLE_HEARD) && isFlag0(0x7C)) {
             mGracieStep++;
             clearFlag0(0x7D);
-            clearFlag0(0x7B);
+            clearFlag0(PRIVATE_FLAG0_DRAMA_LABELLE_HEARD);
             clearFlag0(0x7C);
         }
         break;
@@ -2570,9 +2570,9 @@ void dPrivateData_c::updateGracieStep() {
         }
         break;
     case 6:
-        if (isFlag0(0x7B) && isFlag0(0x7C)) {
+        if (isFlag0(PRIVATE_FLAG0_DRAMA_LABELLE_HEARD) && isFlag0(0x7C)) {
             mGracieStep++;
-            clearFlag0(0x7B);
+            clearFlag0(PRIVATE_FLAG0_DRAMA_LABELLE_HEARD);
             clearFlag0(0x7C);
         }
         break;
@@ -2583,9 +2583,9 @@ void dPrivateData_c::updateGracieStep() {
         }
         break;
     case 9:
-        if (isFlag0(0x7B)) {
+        if (isFlag0(PRIVATE_FLAG0_DRAMA_LABELLE_HEARD)) {
             mGracieStep++;
-            clearFlag0(0x7B);
+            clearFlag0(PRIVATE_FLAG0_DRAMA_LABELLE_HEARD);
         }
         break;
     }

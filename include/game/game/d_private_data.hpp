@@ -35,6 +35,7 @@ enum dPrivateFlag0_e {
                                                 // (d_npc_talk_reaction, d_msg, d_animal); cleared by the
                                                 // APPEARANCE_CLEAR_BEE_STING appearance change and on moving out
     PRIVATE_FLAG0_JOAN_MET = 0x03,              // dNpcInfo::kaburiba_c
+    PRIVATE_FLAG0_PETE_MET = 0x04,              // talked to Pete the mail carrier once (d_a_npc_sp_perio)
     PRIVATE_FLAG0_NOOK_POINTS_TOLD = 0x08,      // Nook explained the Tom Nook Point System (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_SHOP_VOTE_DECIDED = 0x09,     // Nook decided on the store's future: his thanks for the advice are
                                                 // due (d_a_npc_sp_tanukichi; inferred)
@@ -72,6 +73,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_CAFE_SERVED = 0x22,           // had a coffee at the Roost once (the date is mCafeDate; d_a_npc_sp_cafe)
     PRIVATE_FLAG0_GRACIE_CHECKED = 0x23,       // Gracie gave a fashion check once (d_a_npc_sp_grace)
     PRIVATE_FLAG0_GRACIE_PERFECT = 0x24,       // ... and found the outfit perfect once
+    PRIVATE_FLAG0_KAPPN_MET = 0x25,             // talked to Kapp'n on his bus once (d_a_npc_sp_kappei: first-ride messages)
+    PRIVATE_FLAG0_BUS_RETURN_RIDDEN = 0x26,     // rode Kapp'n's bus back from the city once (or visited the city)
     PRIVATE_FLAG0_HRA_JOINED = 0x27,            // the HRA's welcome letter was delivered
     PRIVATE_FLAG0_TRAVELLING = 0x28,            // out on a trip with the DS (dTravelData::Data_c sets it on departure;
                                                 // dSvProc_c::prepareLoad clears it back in the home town)
@@ -83,6 +86,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
     PRIVATE_FLAG0_FISHING_ENTERED = 0x2D,       // the player entered this fishing tourney (d_ev_fishing)
+    PRIVATE_FLAG0_THEATER_SEEN = 0x2E,          // saw a show at the Marquee (d_a_npc_sp_sisyo: the first show
+                                                // has the newcomer's announcement and an encore)
     PRIVATE_FLAG0_NEWCOMER_DONE = 0x30,         // the newcomer talks at the town hall are over: Pelly / Phyllis
                                                 // serve normally (npc_SP/NPC_periko_0 before; inferred); set when
                                                 // Nook's part-time job starts (d_a_npc_sp_tanukichi)
@@ -103,6 +108,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
+    PRIVATE_FLAG0_DIST_MAIL_PENDING = 0x57,     // a distribution letter waits (dPostOffice::canGetDistMail at load):
+                                                // Pete brings it to the house (d_a_npc_sp_perio, d_npc_mng)
     PRIVATE_FLAG0_RESET_COUNT_DROPPED = 0x58,   // the reset count went down (syncResetCount; Resetti's tenth lecture)
     PRIVATE_FLAG0_RESETTI_SORRY_1 = 0x59,       // Resetti's "How sorry are ya?" quiz: the first of four was asked
     PRIVATE_FLAG0_RESETTI_SORRY_2 = 0x5A,       // ... the second (d_a_npc_sp_resetsan; all cleared after the fourth)
@@ -131,6 +138,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_GYROID_ASKED = 0x71,          // Brewster asked about the player's gyroids (d_a_npc_sp_cafe)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
     PRIVATE_FLAG0_ABLE_BOUGHT = 0x73,           // bought something from Mabel at the Able Sisters (d_a_npc_sp_kinuyo)
+    PRIVATE_FLAG0_GRACE_BOUGHT = 0x74,          // bought something from Labelle at GracieGrace (d_a_npc_sp_jijyo);
+                                                // Gracie's story waits for it (updateGracieStep)
     PRIVATE_FLAG0_GOLDEN_NET_GIVEN = 0x75,      // Tortimer gave the golden net (insect catalog complete; d_a_npc_sp_golditem_soncho)
     PRIVATE_FLAG0_GOLDEN_ROD_GIVEN = 0x76,      // Tortimer gave the golden fishing rod (all fish)
     PRIVATE_FLAG0_REDD_TURNED_AWAY = 0x77,     // Redd turned the player away at the door (d_a_str_town); villagers
@@ -141,6 +150,8 @@ enum dPrivateFlag0_e {
                                                 // (d_a_npc_sp_kinuyo)
     PRIVATE_FLAG0_DRAMA_SABLE_HEARD = 0x7A,     // Sable's talk at the sewing machine (npc_SP/NPC_drama2) was heard
                                                 // (d_a_npc_sp_asami; dPrivateData_c::updateGracieStep)
+    PRIVATE_FLAG0_DRAMA_LABELLE_HEARD = 0x7B,   // Labelle's sigh at GracieGrace (npc_SP/NPC_drama3) was heard
+                                                // (d_a_npc_sp_jijyo; dPrivateData_c::updateGracieStep)
     PRIVATE_FLAG0_DRAMA_GRACIE_HEARD = 0x7C,    // Gracie's sigh (npc_SP/NPC_drama5) was heard: one of the flags of Gracie
                                                 // story steps 2 and 6 (d_a_npc_sp_grace, updateGracieStep)
     PRIVATE_FLAG0_DRAMA_PELLY_HEARD = 0x7D,     // Pelly's sigh (npc_SP/NPC_drama4) was heard: one of the three flags of
@@ -162,6 +173,7 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_REDD_VISITED = 0x3, // talked to Crazy Redd today: the shorter welcome (d_a_npc_sp_tunekichi)
     PRIVATE_FLAG1_CAFE_TALKED = 0x4, // talked to Brewster today (d_a_npc_sp_cafe)
     PRIVATE_FLAG1_MABEL_TALKED = 0x8, // talked to Mabel today: the shorter welcome (d_a_npc_sp_kinuyo)
+    PRIVATE_FLAG1_PETE_TALKED = 0x9, // talked to Pete today: he is busy (d_a_npc_sp_perio)
     PRIVATE_FLAG1_NOOK_VISIT_POINTS = 0xA, // got today's visitor points at Nook's point machine (d_a_rmobj_point)
     PRIVATE_FLAG1_GRACIE_TALKED = 0xD, // talked to Gracie today (d_a_npc_sp_grace)
     PRIVATE_FLAG1_GRACIE_CHECKED = 0xE, // Gracie gave a fashion check today
@@ -189,6 +201,7 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_WENDELL_DIST_OFFERED = 0x44, // he offered the distributed design (counts as got
                                                // once saved: d_save_data, d_field_assessment)
     PRIVATE_FLAG1_WISP_FOUND = 0x3C, // reached Wisp tonight: he waits shown / hidden (d_a_npc_sp_yuutaro)
+    PRIVATE_FLAG1_GULLIVER_MET = 0x3D, // Gulliver introduced himself (d_a_npc_sp_jonny; visitors: dNpcMng_c::sGulliverVisitorMet)
     PRIVATE_FLAG1_BIRTHDAY_GREETED = 0x45, // Rover wished a happy birthday at the player select
     PRIVATE_FLAG1_PHINEAS_PRIZE = 0x40, // got today's prize from Phineas (d_a_npc_sp_fuusen)
     PRIVATE_FLAG1_REDD_BOUGHT_1 = 0x48, // bought from Crazy Redd today: once, twice, three times (d_a_npc_sp_tunekichi)
@@ -297,13 +310,15 @@ public:
 // (d_a_npc_sp_sisyo), used in chat (d_menu_chat, d_obj_keyboard, d_a_c_uitag).
 class dPrivateEmotions_c {
 public:
+    enum { SLOT_NUM = 4, EMPTY = 0xFF };
+
     BOOL isValid(int i); // 8013AAAC
     u8 get(int i); // 8013AACC
     void set(int i, u8 value); // 8013AAD4
     void clear(); // 8013AADC
     int findEmpty(); // 8013AAF4
 
-    u8 mSlots[4];
+    u8 mSlots[SLOT_NUM];
 };
 
 // The player's Mii (an RFL create ID, 8 bytes) at dPrivateData_c+0x83ED (d_player_mgr fills it from the Mii data).
@@ -600,6 +615,11 @@ public:
     bool isFlag0(u32 flag) const; // 80138580 (bool: d_a_npc_sp_yuutaro compares == TRUE with cmplwi)
     void setMiiMask(u8 mask) { mMiiMask = mask; }
     int getCafeVisits() const { return mCafeVisits; }
+    // Kapp'n's last stories (d_a_npc_sp_kappei; u32: the story test is an unsigned compare).
+    u32 getKappnCityMsg() const { return mKappnCityMsg; }
+    void setKappnCityMsg(u32 no) { mKappnCityMsg = no; }
+    u32 getKappnTownMsg() const { return mKappnTownMsg; }
+    void setKappnTownMsg(u32 no) { mKappnTownMsg = no; }
     void setFlag0(u32 flag);      // 801385C0
     void clearFlag0(u32 flag);    // 801385F0
     BOOL isFlag1(u32 flag);       // 80138620
@@ -792,8 +812,8 @@ public:
     /* 0x8694 */ u8 mResetCount;     // Mr. Resetti visits (d_a_npc_sp_resetsan), 9 when over 10
     /* 0x8695 */ u8 mLastResetCount; // mResetCount when last synced (syncResetCount)
     /* 0x8696 */ u8 mNewcomerTip; // next newcomer tip (Ev_Arbeit message 6 + mNewcomerTip, 0..8)
-    /* 0x8697 */ u8 _8697;
-    /* 0x8698 */ u8 _8698;
+    /* 0x8697 */ u8 mKappnCityMsg; // Kapp'n's last story on the way to the city (d_a_npc_sp_kappei; not twice in a row)
+    /* 0x8698 */ u8 mKappnTownMsg; // ... on the way back to the town
     /* 0x8699 */ u8 mShotBalloonNum; // present balloons shot down, up to 8 (then a golden slingshot balloon may come)
     /* 0x869A */ s8 mBridgeVoteX;    // the block voted for the new bridge (-1: none; tallyBridgeVotes)
     /* 0x869B */ s8 mBridgeVoteY;

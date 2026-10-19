@@ -6,6 +6,15 @@
 
 #define SHOP_GRACE_STOCK_NUM 23
 
+// dSaveShopGrace_c::getSaleStage: the sale from the 15th / 21st / 26th of a season's last month
+// (d_a_npc_sp_jijyo: 20% / 30% / 50% off; the last one is the clearance sale).
+enum {
+    GRACE_SALE_NONE,
+    GRACE_SALE_STAGE_1,
+    GRACE_SALE_STAGE_2,
+    GRACE_SALE_STAGE_3,
+};
+
 // GracieGrace: dSaveShops_c::mShopGrace. The stock follows the season (4 layout types, by month); in the
 // last month of a season she has a sale from the 15th (stages 1..3 from the 15th / 21st / 26th) during
 // which more and more of the stock is sold off. Source: src/dol/game/d_save_shop_grace.cpp.

@@ -1415,7 +1415,7 @@ BOOL dAcNpc_c::recvDaub() {
 // ---- dAcNpc_c static helpers: town check, free spot search (80013F1C..8001407C) ----
 
 // 80013F1C
-BOOL dAcNpc_c::isPlayerFromThisTown() {
+bool dAcNpc_c::isPlayerFromThisTown() {
     const dLandID_c &land = dSaveData_c::getTown()->mLandID;
     return dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID.land == land;
 }

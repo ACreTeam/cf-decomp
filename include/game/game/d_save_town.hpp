@@ -65,6 +65,7 @@ enum {
 enum {
     SAVE_FLAG_ROVER_GREETED = 0, // Rover greeted a returning player at the player select (d_a_npc_sp_player_select)
     SAVE_FLAG_TURNIPS_SPOILED = 1, // set when the clock is changed or goes back within the week, cleared each new week (inferred)
+    SAVE_FLAG_GULLIVER_AWAKE = 4,  // Gulliver was woken up on the beach (d_a_npc_sp_jonny; cleared by d_field_assessment)
     SAVE_FLAG_RACCO_APPEARED = 5,  // Pascal came to the beach today (d_a_npc_sp_racco: he does not come back)
     SAVE_FLAG_BUILD_WINDMILL = 7,    // dSTR::buildPublicWorks builds it (in place of the lighthouse)
     SAVE_FLAG_BUILD_LIGHTHOUSE = 8,  // dSTR::buildPublicWorks builds it (in place of the windmill)
@@ -174,7 +175,7 @@ public:
     /* 0x072CC0 */ dSvPlayerFlag::Flag_c mPlayerFlag;
     /* 0x072CC1 */ u8 _072CC1;
     /* 0x072CC2 */ dPersonalID_c mFriendPlayer; // a random player of a friend town (d_wifi receiveTown, TOWN_640C8_FLAG_PLAYER_BITS); Gracie's fashionista (d_a_npc_sp_grace)
-    /* 0x072CEE */ dPersonalID_c _072CEE;   // cleared by clearTown
+    /* 0x072CEE */ dPersonalID_c mGulliverHelper; // brought Gulliver his spaceship part (d_a_npc_sp_jonny); cleared by clearTown
     /* 0x072D1A */ dSvTownList::List_c mTownList; // other towns and their jinxes
     /* 0x072DDA */ dPoliceBox_c mPoliceBox;
     /* 0x072DF2 */ dRecycleBin_c mRecycleBin;
