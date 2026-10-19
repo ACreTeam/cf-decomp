@@ -134,7 +134,7 @@ void setLandName(int slot, const dLandID_c *land);             // 800CBC10: town
 void setAnmPersonalName(int slot, const dAnmPersonalID_c *animal);    // 800CBC70: villager name word
 void setWord(int slot, dScript::Word_c *word);             // 800CBCD4: slot = a copy of word
 void setStringWord(int slot, u16 index, const char *group);      // 800CBD30: slot = BMG string group[index]
-void setItemName(int slot, const dItem::Item *item);           // 800CBDA0: item name word
+void setItemName(int slot, const dItem::Item &item);           // 800CBDA0: item name word
 dScript::Word_c *getWord(u8 slot);                         // 800CBDF4: word slot
 void setNumber(int slot, int value, int digits, dScript::NumberFormat_e format); // 800CBE0C: number word (nothing when value < 0)
 void setNumber4(int slot, int value);                         // 800CBEB4

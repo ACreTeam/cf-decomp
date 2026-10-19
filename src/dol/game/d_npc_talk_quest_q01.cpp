@@ -138,7 +138,7 @@ int dAcNpcNml_c::talk_c::msgInsectQuest(msgInfo_s *info) {
             setPlayerUnit(this, requester, 2, animal);
         }
         if (quest->mBase.mItem.isValid()) {
-            setItemName(&quest->mBase.mItem, 5);
+            setItemName(quest->mBase.mItem, 5);
         }
         return TRUE;
     }
@@ -255,7 +255,7 @@ void dAcNpcNml_c::talk_c::endInsectWin(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
@@ -264,7 +264,7 @@ void dAcNpcNml_c::talk_c::endInsectWin(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         default:
             if (price > 0 && player != NULL) {
@@ -441,7 +441,7 @@ BOOL dAcNpcNml_c::talk_c::stepInsectAccept(int kind) {
             }
             dItem::Item *item = &quest->mBase.mItem;
             if (item->isValid()) {
-                setItemName(item, 5);
+                setItemName(*item, 5);
             }
             setMsgProc(l_insectReqMsg);
             startMsg();

@@ -326,7 +326,7 @@ BOOL daSnowMan_c::sendMail() {
         idx = cM::rndInt(13);
     }
     present.setFromIndex(l_presents[idx]);
-    dLetter::setItemName(0, &present);
+    dLetter::setItemName(0, present);
     setupMail(&l_mail, idx + 1, 5, &to, dItem::ITEM_IDX_SNOWMAN_PAPER);
     l_mail.setPresent(present.mId, 0xFF);
     if (dPostOffice::add(&l_mail)) {

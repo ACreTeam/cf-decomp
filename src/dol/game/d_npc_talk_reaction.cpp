@@ -636,7 +636,7 @@ int dAcNpcNml_c::talk_c::msgRePoison(msgInfo_s *info) {
             setStepProc(&talk_c::stepPoison);
             mCountTalk = 1;
             if (item.isValid()) {
-                setItemName(&item, 0);
+                setItemName(item, 0);
             }
             return TRUE;
         }

@@ -411,11 +411,11 @@ int dAcNpcNml_c::talk_c::msgInviteFurniture(msgInfo_s *info) {
     }
     setLooksMsg(info, l_Q09_Furniture, code);
     if (item.isValid()) {
-        setItemName(&item, 0);
+        setItemName(item, 0);
     }
     dItem::Item music = animal->getMusic();
     if (item.isValid()) {
-        setItemName(&music, 1);
+        setItemName(music, 1);
     }
     return TRUE;
 }
@@ -564,7 +564,7 @@ int dAcNpcNml_c::talk_c::msgInviteTrade(msgInfo_s *info) {
         setStepProc(step);
     }
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 0);
+        setItemName(mItem0, 0);
     }
     if (mPrice > 0) {
         setNumber(mPrice, 3, 12, dScript::NUM_FORMAT_REGION);

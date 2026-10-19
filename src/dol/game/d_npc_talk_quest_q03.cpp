@@ -172,7 +172,7 @@ int dAcNpcNml_c::talk_c::msgFossilQuest(msgInfo_s *info) {
         if ((dQuestMatchMode_e)quest->mMatchMode == QUEST_MATCH_ANY) {
             getController()->setStringWord(5, 0x63, l_strUnit);
         } else if (quest->mBase.mItem.isValid()) {
-            setItemName(&quest->mBase.mItem, 5);
+            setItemName(quest->mBase.mItem, 5);
         }
         return TRUE;
     }
@@ -229,7 +229,7 @@ void dAcNpcNml_c::talk_c::resFossilGive() {
             if (player != NULL) {
                 dItem::Item item = player->mPockets[slot];
                 if (item.isValid()) {
-                    setItemName(&item, 6);
+                    setItemName(item, 6);
                 }
                 mItem3 = item;
                 player->clearPocket(slot);
@@ -288,7 +288,7 @@ void dAcNpcNml_c::talk_c::endFossilWin(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
@@ -297,7 +297,7 @@ void dAcNpcNml_c::talk_c::endFossilWin(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         default:
             if (price > 0 && player != NULL) {
@@ -513,7 +513,7 @@ BOOL dAcNpcNml_c::talk_c::stepFossilAccept(int kind) {
             } else {
                 dItem::Item *item = &quest->mBase.mItem;
                 if (item->isValid()) {
-                    setItemName(item, 5);
+                    setItemName(*item, 5);
                 }
             }
             setMsgProc(l_fossilReqMsg);

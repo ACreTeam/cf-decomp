@@ -146,7 +146,7 @@ int dAcNpcNml_c::talk_c::msgClothQuest(msgInfo_s *info) {
             setPlayerUnit(this, animal, requester, 2);
         }
         if (quest->mBase.mItem.isValid()) {
-            setItemName(&quest->mBase.mItem, 5);
+            setItemName(quest->mBase.mItem, 5);
         }
         setQ4Word(quest->mMatchMode, 6);
         return TRUE;
@@ -206,7 +206,7 @@ void dAcNpcNml_c::talk_c::resClothSelect() {
                 BOOL match = animal->isClothRequestMatch(&mItem0, animal->mQuest.mQuest.mMatchMode,
                                                          &animal->mQuest.mQuest.mBase.mItem);
                 if (mItem0.isValid()) {
-                    setItemName(&mItem0, 7);
+                    setItemName(mItem0, 7);
                 }
                 mItem1 = mItem0;
                 requestItemActEx(7, &mItem0, 0, 0, 0, 2);
@@ -268,7 +268,7 @@ void dAcNpcNml_c::talk_c::endClothReward(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
@@ -277,7 +277,7 @@ void dAcNpcNml_c::talk_c::endClothReward(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         default:
             if (price > 0 && player != NULL) {
@@ -525,7 +525,7 @@ BOOL dAcNpcNml_c::talk_c::stepClothAccept(int kind) {
             }
             const dItem::Item *want = &quest->mBase.mItem;
             if (want->isValid()) {
-                setItemName(want, 5);
+                setItemName(*want, 5);
             }
             setQ4Word(quest->mMatchMode, 6);
             setMsgProc(l_clothReqMsg);

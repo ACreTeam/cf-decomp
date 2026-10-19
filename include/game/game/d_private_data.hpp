@@ -87,6 +87,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_LOST_CHILD_RETURNED = 0x48,  // Katie was brought home to her town (d_travel_data,
                                                 // d_a_npc_sp_gatekeeper_a; inferred)
     PRIVATE_FLAG0_LOST_CHILD_THANKS = 0x4A,     // her thank-you letter is due (sendLostChildThanks clears it)
+    PRIVATE_FLAG0_AUCTION_VISITED = 0x4E,       // Lloid was talked to in the auction house once (d_a_npc_sp_haniwa)
     PRIVATE_FLAG0_MOM_FIRST_LETTER = 0x4F,      // Mom's first letter was delivered (dMotherMail::sendFirst)
     PRIVATE_FLAG0_SUNTAN = 0x50,                // d_a_player: 15 min (dPlayerMgr timer) outdoors on summer days, 10:00-17:00
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
@@ -128,6 +129,7 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
     PRIVATE_FLAG1_LOST_CHILD_PENDING = 0x32,    // cleared when Katie is brought home (d_travel_data,
                                                 // d_a_npc_sp_gatekeeper_a; inferred)
+    PRIVATE_FLAG1_LOST_MOTHER_MET = 0x33,       // Katie's mother was talked to (d_a_npc_sp_missing_mother: repeat message)
     PRIVATE_FLAG1_BUG_OFF_JOINED = 0x35, // 0x35..0x38: dNpcInfo::bug_c
     PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START = 0x36,
     PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,

@@ -94,7 +94,7 @@ void dEvFishing_c::sendResultLetters() {
             dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
             dLetter::formatNumber(3, toDisplaySize(getSize(0)), 4, dScript::NUM_FORMAT_REGION);
             dSaveTown_c *town = dSaveData_c::getTown();
-            dLetter::setItemName(0, &town->mFishing.getItem(0));
+            dLetter::setItemName(0, town->mFishing.getItem(0));
             dLetter::setMonthName(1, date.month);
             dLetter::setDayName(2, date.mday);
             dLetter::setLandName(3, getLandID());
@@ -134,7 +134,7 @@ void dEvFishing_c::sendResultLetters() {
             dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
             dLetter::formatNumber(3, toDisplaySize(getSize(0)), 4, dScript::NUM_FORMAT_REGION);
             dSaveTown_c *town = dSaveData_c::getTown();
-            dLetter::setItemName(0, &town->mFishing.getItem(0));
+            dLetter::setItemName(0, town->mFishing.getItem(0));
             dLetter::setMonthName(1, date.month);
             dLetter::setDayName(2, date.mday);
             dLetter::setLandName(3, getLandID());
@@ -179,7 +179,7 @@ void dEvFishing_c::postResultNotice() {
     }
     dSaveData_c *save = dSaveData_c::getRaw();
     dItem::Item item = save->mFishing.getItem(0);
-    dLetter::setItemName(1, &item);
+    dLetter::setItemName(1, item);
     if (dSaveData_c::getRaw()->mFishing.getPlayer(0)->isValid() &&
         !dSaveData_c::getRaw()->mFishing.getPlayer(0)->isFromTown()) {
         if (!mFish.isValid()) {

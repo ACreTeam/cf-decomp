@@ -171,7 +171,7 @@ void dAcPlayer_c::stepDigUpMsg() {
             setMessageCode(code);
             getController()->requestStart(0);
             if (code == 0xB) {
-                getController()->setItemName(0, &_2188);
+                getController()->setItemName(0, _2188);
             }
             mStep = 11;
             putInPocket(&_2188);

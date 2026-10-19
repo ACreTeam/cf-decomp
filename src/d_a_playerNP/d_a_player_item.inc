@@ -326,7 +326,7 @@ void dAcPlayer_c::stepPickUpMsg() {
             setMessageCode(code);
             getController()->requestStart(0);
             if (code == 0x2F) {
-                getController()->setItemName(0, &_2188);
+                getController()->setItemName(0, _2188);
             }
             mStep = 11;
         }

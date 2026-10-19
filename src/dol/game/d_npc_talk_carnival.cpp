@@ -284,7 +284,7 @@ BOOL dAcNpcNml_c::talk_c::setStakeMsg(msgInfo_s *info, const char *label, stepFu
                 mItem0 = player->mPockets[pickRandomBit(mask, num, 15)];
             }
             if (mItem0.isValid()) {
-                setItemName(&mItem0, 1);
+                setItemName(mItem0, 1);
             }
             code = 3;
             step = next;
@@ -301,7 +301,7 @@ BOOL dAcNpcNml_c::talk_c::setStakeMsg(msgInfo_s *info, const char *label, stepFu
             if (num != 0 && mask != 0) {
                 mItem0 = player->mPockets[pickRandomBit(mask, num, 15)];
                 if (mItem0.isValid()) {
-                    setItemName(&mItem0, 0);
+                    setItemName(mItem0, 0);
                 }
                 code = 5;
                 step = next;
@@ -421,7 +421,7 @@ int dAcNpcNml_c::talk_c::msgCarnival1Result(msgInfo_s *info) {
     case 15:
         mItem0.setFromIndex(dItem::ITEM_IDX_BLUE_CANDY, cM::rndInt(4), FALSE);
         if (mItem0.isValid()) {
-            setItemName(&mItem0, 2);
+            setItemName(mItem0, 2);
         }
         step = &dAcNpcNml_c::talk_c::stepCarnival1Prize;
         break;
@@ -780,7 +780,7 @@ int dAcNpcNml_c::talk_c::msgCarnival2Won(msgInfo_s *info) {
     setLooksMsg(info, l_Ev_Carnival2, 28);
     mItem0.setFromIndex(dItem::ITEM_IDX_BLUE_CANDY, cM::rndInt(4), FALSE);
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 2);
+        setItemName(mItem0, 2);
     }
     setStepProc(&dAcNpcNml_c::talk_c::stepCarnival2Prize);
     return TRUE;
@@ -1040,7 +1040,7 @@ int dAcNpcNml_c::talk_c::msgCarnival3Draw(msgInfo_s *info) {
 BOOL dAcNpcNml_c::talk_c::stepCarnival3Won(int kind) {
     mItem0.setFromIndex(dItem::ITEM_IDX_BLUE_CANDY, cM::rndInt(4), FALSE);
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 2);
+        setItemName(mItem0, 2);
     }
     setStepProc(&dAcNpcNml_c::talk_c::stepCarnival3Prize);
     return TRUE;
@@ -1257,7 +1257,7 @@ void dAcNpcNml_c::talk_c::selCarnival4Color() {
 
     mItem0 = l_candies[mAnswer < 4 ? mAnswer : cM::rndInt(4)];
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 2);
+        setItemName(mItem0, 2);
     }
     setStepProc(&dAcNpcNml_c::talk_c::stepCarnival4Prize);
 }
@@ -1551,7 +1551,7 @@ void dAcNpcNml_c::talk_c::selCarnival5Color() {
 
     mItem0 = l_candies[mAnswer < 4 ? mAnswer : cM::rndInt(4)];
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 2);
+        setItemName(mItem0, 2);
     }
     setStepProc(&dAcNpcNml_c::talk_c::stepCarnival5Prize);
 }

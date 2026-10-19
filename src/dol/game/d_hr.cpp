@@ -1705,7 +1705,7 @@ void dHR::remark_c::setWords(dMsg::Comp_c *demo) const {
             demo->setWord(0, &name);
         }
         dItem::Item item = getItem();
-        demo->setItemName(1, &item);
+        demo->setItemName(1, item);
     }
 }
 

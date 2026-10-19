@@ -740,7 +740,7 @@ void dAcNpcSpCafe_c::talk_c::onMessageStart(int arg) {
     case MSG_RETURNED:
     case MSG_RETURNED + 1:
     case MSG_RETURNED + 2:
-        setItemName(&mItem, 0);
+        setItemName(mItem, 0);
         break;
     }
 }

@@ -512,7 +512,7 @@ void dAcNpcNml_c::talk_c::endApFortuneItem(int arg) {
         mItem0 = dItem::Item();
     }
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 0);
+        setItemName(mItem0, 0);
         mGiveFlag = 1;
     }
     if ((u32)slot < 15) {
@@ -612,7 +612,7 @@ void dAcNpcNml_c::talk_c::endApPresent(int arg) {
         mItem0 = dItem::Item();
     }
     if (mItem0.isValid()) {
-        setItemName(&mItem0, 0);
+        setItemName(mItem0, 0);
     }
 }
 
@@ -657,7 +657,7 @@ void dAcNpcNml_c::talk_c::endApSell(int arg) {
                 }
             }
         }
-        setItemName(&mItem0, 0);
+        setItemName(mItem0, 0);
         setNumber(mPrice, 0, 12, dScript::NUM_FORMAT_REGION);
     }
 }
@@ -681,8 +681,8 @@ void dAcNpcNml_c::talk_c::endApTrade(int arg) {
     }
     mItem2 = pickWantedPocketItem(this, NULL);
     if (mItem0.isValid() && mItem2.isValid()) {
-        setItemName(&mItem2, 0);
-        setItemName(&mItem0, 1);
+        setItemName(mItem2, 0);
+        setItemName(mItem0, 1);
     }
 }
 
@@ -711,7 +711,7 @@ void dAcNpcNml_c::talk_c::endApWant(int arg) {
                 mPrice = room;
             }
         }
-        setItemName(&mItem0, 0);
+        setItemName(mItem0, 0);
         setNumber(mPrice, 0, 12, dScript::NUM_FORMAT_REGION);
     }
 }

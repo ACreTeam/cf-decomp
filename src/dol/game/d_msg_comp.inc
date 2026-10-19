@@ -1524,8 +1524,8 @@ void dMsg::Comp_c::setAnmPersonalName(int idx, const dAnmPersonalID_c *id) {
 }
 
 // 801A566C
-void dMsg::Comp_c::setItemName(int idx, const dItem::Item *item) {
-    dItem::name_c name(*item);
+void dMsg::Comp_c::setItemName(int idx, const dItem::Item &item) {
+    dItem::name_c name(item);
     setWord(idx, &name);
 }
 

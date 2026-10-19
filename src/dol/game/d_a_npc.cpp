@@ -8371,7 +8371,7 @@ void dAcNpc_c::recept_c::setAnmPersonalName(const dAnmPersonalID_c *id, int idx)
     getController()->setAnmPersonalName(idx, id);
 }
 
-void dAcNpc_c::recept_c::setItemName(const dItem::Item *item, int idx) {
+void dAcNpc_c::recept_c::setItemName(const dItem::Item &item, int idx) {
     getController()->setItemName(idx, item);
 }
 

@@ -345,6 +345,11 @@ public:
     void setCandyAsked();   // 800F7F20
     void resetEncounter();  // 800F7FE0
     void resetCandyHints(); // 800F7FF8
+    // d_a_npc_sp_dancer talk_c::start / onMessageEnd (a separate get() each time).
+    void setNoCandyTold() { mNoCandyTold = 1; }
+    void setWrongCandyTold() { mWrongCandyTold = 1; }
+    void setTooFewTold() { mTooFewTold = 1; }
+    void setGiftGiven() { mGiftGiven = 1; }
 
     /* 0x0 */ u8 mTalked;
     /* 0x1 */ u8 mCandyAsked[4]; // by dSaveTown_c::mDailyRand (candy colour)

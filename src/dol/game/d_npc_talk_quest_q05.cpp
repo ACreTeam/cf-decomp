@@ -221,7 +221,7 @@ void dAcNpcNml_c::talk_c::resFtrSelect() {
                 u32 result = animal->checkFtrRequest(&mItem0, animal->mQuest.mQuest.mMatchMode,
                                                      animal->mQuest.mQuest.mMatchParam);
                 if (mItem0.isValid()) {
-                    setItemName(&mItem0, 6);
+                    setItemName(mItem0, 6);
                 }
                 requestItemActEx(7, &mItem0, 0, 0, 0, 2);
                 if (result == 0) {
@@ -283,7 +283,7 @@ void dAcNpcNml_c::talk_c::endFtrReward(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
@@ -292,7 +292,7 @@ void dAcNpcNml_c::talk_c::endFtrReward(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 4);
+            setItemName(mItem0, 4);
             break;
         default:
             if (price > 0 && player != NULL) {

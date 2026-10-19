@@ -3132,7 +3132,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                         if (memory != NULL) {
                             const dItem::Item *item = &memory->mLastClothes;
                             if (item->isValid()) {
-                                setItemName(item, 0);
+                                setItemName(*item, 0);
                                 fashion = item->getFashion();
                                 dItem::nameFashion_c fashionName;
                                 setFashionName(&fashionName, fashion);
@@ -3197,12 +3197,12 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                     case 0: {
                         item0 = &mem->mItem0;
                         if (item0->isValid()) {
-                            setItemName(item0, 0);
+                            setItemName(*item0, 0);
                             mItem4 = *item0;
                         }
                         dItem::Item *item1 = &mem->mItem1;
                         if (item1->isValid()) {
-                            setItemName(item1, 1);
+                            setItemName(*item1, 1);
                             mItem5 = *item1;
                         }
                         break;
@@ -3210,12 +3210,12 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                     case 2: {
                         item0 = &mem->mItem0;
                         if (item0->isValid()) {
-                            setItemName(item0, 0);
+                            setItemName(*item0, 0);
                             mItem4 = *item0;
                         }
                         dItem::Item *item1 = &mem->mItem1;
                         if (item1->isValid()) {
-                            setItemName(item1, 1);
+                            setItemName(*item1, 1);
                             mItem5 = *item1;
                         }
                         break;
@@ -3223,7 +3223,7 @@ int dAcNpcNml_c::talk_c::msgRecall(msgInfo_s *info) {
                     case 3: {
                         item0 = &mem->mItem0;
                         if (item0->isValid()) {
-                            setItemName(item0, 0);
+                            setItemName(*item0, 0);
                             mItem4 = *item0;
                         }
                         break;

@@ -3306,7 +3306,7 @@ void setAnimalLandNameWord(const dAnmPersonalID_c *animal, int slot) {
 // 800F4774
 void setItemNameWord(const dItem::Item *item, int slot) {
     if (item->mId != dItem::ITEM_ID_NONE) {
-        dLetter::setItemName(slot, item);
+        dLetter::setItemName(slot, *item);
     }
 }
 

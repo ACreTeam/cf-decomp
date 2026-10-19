@@ -39,8 +39,10 @@
 #define NPC_EAR_TYPE_NOOKINGTONS 29
 #define NPC_EAR_TYPE_TWINS 30 // Timmy and Tommy's ear parameter preset (d_a_npc_sp_tanukichi)
 #define NPC_EAR_TYPE_MISSING_CHILD 32 // Katie's ear parameter preset (inferred)
+#define NPC_EAR_TYPE_MISSING_MOTHER 33 // her mother's ear parameter preset (d_a_npc_sp_missing_mother)
 #define NPC_EAR_TYPE_PELLY 35 // Pelly's ear parameter preset (d_a_npc_sp_periko)
 #define NPC_EAR_TYPE_PHYLLIS 36 // Phyllis's ear parameter preset (d_a_npc_sp_periko)
+#define NPC_EAR_TYPE_PAVE 57 // Pave's ear parameter preset (d_a_npc_sp_dancer)
 #define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
 #define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears
 #define MANPU_TYPE_NUM 78                  // manpu (emotion mark) types (manpuMgr_c::isValidType)
@@ -1157,7 +1159,7 @@ public:
         void setPersonalName(const dPersonalID_c *id, int idx);                                 // 80028ED4
         void setPlayerName(const dPlayerID_c *id, int idx);                                     // 80028EE8
         void setAnmPersonalName(const dAnmPersonalID_c *id, int idx);                           // 80028EFC
-        void setItemName(const dItem::Item *item, int idx);                                     // 80028F10
+        void setItemName(const dItem::Item &item, int idx);                                     // 80028F10
         void setMonthName(int month, int idx);                                                  // 80028F24
         void setDayName(int day, int idx);                                                      // 80028F38
         void setTime(int hour, int amPmIdx, int hourIdx);                                       // 80028F4C

@@ -467,7 +467,7 @@ void dAcNpcNml_c::talk_c::endHideReward(int arg) {
             } else {
                 player->setPocket(&present, pocket, FALSE);
             }
-            setItemName(&present, 2);
+            setItemName(present, 2);
         }
         game->mBase.mState = 3;
         dNpc::sendHideAndSeekState(3);

@@ -201,7 +201,7 @@ int dAcNpcNml_c::talk_c::msgErrandFinalQuest(msgInfo_s *info) {
                 getController()->setStringWord(3, unit2, "sys_STRING/STR_Unit");
             }
         }
-        setItemName(&errand->mBase.mItem, 4);
+        setItemName(errand->mBase.mItem, 4);
         return TRUE;
     }
     return FALSE;
@@ -365,7 +365,7 @@ void dAcNpcNml_c::talk_c::endErrandFinalReward(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 5);
+            setItemName(mItem0, 5);
             break;
         case 1:
             if (animal != NULL && animal->removeNewItem(&mItem0)) {
@@ -374,7 +374,7 @@ void dAcNpcNml_c::talk_c::endErrandFinalReward(int arg) {
             if (player != NULL) {
                 player->pickUp(&mItem0, FALSE);
             }
-            setItemName(&mItem0, 5);
+            setItemName(mItem0, 5);
             break;
         default:
             if (price > 0 && player != NULL) {

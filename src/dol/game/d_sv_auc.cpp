@@ -448,7 +448,7 @@ BOOL dSvAucItem_c::isMyWon() const {
 }
 
 // 8010BAB4
-BOOL dSvAucItem_c::isOpenToday() const {
+bool dSvAucItem_c::isOpenToday() const {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid() && !mSold) {
         return dSvAuc_c::getToday() == getDay() && dSvAuc_c::getTodayType() == 2;
     }
@@ -456,7 +456,7 @@ BOOL dSvAucItem_c::isOpenToday() const {
 }
 
 // 8010BB58
-BOOL dSvAucItem_c::isNotToday() const {
+bool dSvAucItem_c::isNotToday() const {
     if (dItem::isRealItemId(mItem.mId) && mSeller.isValid()) {
         u16 day = mDay;
         u32 today = dSvAuc_c::getToday();
@@ -516,7 +516,7 @@ BOOL dSvAucItem_c::sendResult(u32 player, u16 kind, int money, const dItem::Item
                 dLetter::setLandName(0, &mSeller.land);
                 dLetter::setPersonalName(1, &mSeller);
                 if (dItem::isRealItemId(mItem.mId)) {
-                    dLetter::setItemName(2, &mItem);
+                    dLetter::setItemName(2, mItem);
                 }
                 dLetter::setLandName(3, &mHighBidder.land);
                 dLetter::setPersonalName(4, &mHighBidder);
@@ -894,7 +894,7 @@ BOOL dSvAuc_c::has(const dSvAucItem_c *item) const {
 }
 
 // 8010D108
-BOOL dSvAuc_c::hasOpenToday() const {
+bool dSvAuc_c::hasOpenToday() const {
     for (u32 i = 0; i < 9; i++) {
         if (getItemConst(i)->isOpenToday()) {
             return TRUE;

@@ -160,7 +160,7 @@ public:
     void setPlayerName(int idx, const dPlayerID_c *id);            // 801A548C
     void setLandName(int idx, const dLandID_c *id);                // 801A5544
     void setAnmPersonalName(int idx, const dAnmPersonalID_c *id);  // 801A55F8
-    void setItemName(int idx, const dItem::Item *item);            // 801A566C
+    void setItemName(int idx, const dItem::Item &item);            // 801A566C
     void clearWord(int idx);                                       // 801A56D0
     void setWord(int idx, const dScript::Word_c *word);            // 801A57D8
     void setStringWord(int idx, u16 msgId, const char *group);       // 801A5874: word idx = BMG string msgId of group

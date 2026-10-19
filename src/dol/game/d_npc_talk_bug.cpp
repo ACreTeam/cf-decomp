@@ -95,7 +95,7 @@ int dAcNpcNml_c::talk_c::msgBugOff(msgInfo_s *info) {
             dAnimal_c *animal = getAnimal();
             dItem::Item item = bugOff->getItem(0);
             if (item.isValid()) {
-                setItemName(&item, 0);
+                setItemName(item, 0);
             }
             formatNumber(bugOff->getScore(0), 1, 6, dScript::NUM_FORMAT_REGION);
             gender = GENDER_OTHER;

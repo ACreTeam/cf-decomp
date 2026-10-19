@@ -958,7 +958,7 @@ void dAcNpcSpEvSonchoHf_c::talkHarvestFestival_c::onStart() {
 // .text 0x4854
 void dAcNpcSpEvSoncho_c::talk_c::onMessageStart(int arg) {
     if (dNpcInfo::soncho_c::get()->getPresent()->mId != dItem::ITEM_ID_NONE) {
-        setItemName(dNpcInfo::soncho_c::get()->getPresent(), 0);
+        setItemName(*dNpcInfo::soncho_c::get()->getPresent(), 0);
     }
 }
 

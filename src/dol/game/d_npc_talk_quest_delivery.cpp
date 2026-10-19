@@ -69,7 +69,7 @@ int dAcNpcNml_c::talk_c::msgDelivery(msgInfo_s *info) {
             } else {
                 getController()->setStringWord(3, unit, "sys_STRING/STR_Unit");
             }
-            setItemName(&errand->mBase.mItem, 4);
+            setItemName(errand->mBase.mItem, 4);
             setLooksMsg(info, label, 0);
             setProcSet(&l_talkEntrySets[TALK_QUEST_DELIVERY]);
             setStepProc(step);

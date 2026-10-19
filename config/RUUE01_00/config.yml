@@ -273,6 +273,7 @@ modules:
 - object: files/rels/d_a_npc_sp_haniwaNP.rel
   hash: e23972eb7e09c13abd052071f4fb0584ec76fb47
   name: d_a_npc_sp_haniwaNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_haniwaNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_haniwaNP/splits.txt
 - object: files/rels/d_a_npc_sp_bugNP.rel
@@ -280,6 +281,7 @@ modules:
   name: d_a_npc_sp_bugNP
   symbols: config/RUUE01_00/d_a_npc_sp_bugNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_bugNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_missing_childNP.rel
   hash: 8ac0baf1ff37f39a2c495b9111d9e9517c96a5f6
   name: d_a_npc_sp_missing_childNP
@@ -291,9 +293,11 @@ modules:
   name: d_a_npc_sp_missing_motherNP
   symbols: config/RUUE01_00/d_a_npc_sp_missing_motherNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_missing_motherNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_dancerNP.rel
   hash: 56d1a437ae9e7509962dbc8b06f37bcddb690627
   name: d_a_npc_sp_dancerNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_dancerNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_dancerNP/splits.txt
 - object: files/rels/d_a_npc_sp_pyontaroNP.rel

@@ -252,7 +252,7 @@ int dAcNpcNml_c::talk_c::msgArbeitGiven(msgInfo_s *info) {
         if (!dItemSel::select(&mItem0, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0)) {
             mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_RUG);
         }
-        setItemName(&mItem0, 1);
+        setItemName(mItem0, 1);
         dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (current != NULL) {
             current->pickUp(&mItem0, FALSE);
@@ -307,7 +307,7 @@ int dAcNpcNml_c::talk_c::msgArbeitFtrReward(msgInfo_s *info) {
     if (!dItemSel::select(&mItem0, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, NULL, 0, 0)) {
         mItem0.setFromIndex(dItem::ITEM_IDX_EXOTIC_BED);
     }
-    setItemName(&mItem0, 0);
+    setItemName(mItem0, 0);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         player->pickUp(&mItem0, FALSE);

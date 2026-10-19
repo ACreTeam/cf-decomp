@@ -45,8 +45,8 @@ public:
     BOOL isMyUnsold() const;                                       // 8010B8BC
     BOOL isMyWon() const;                                          // 8010B9C0
     u32 getDay() const { return mDay; }
-    BOOL isOpenToday() const;                                      // 8010BAB4
-    BOOL isNotToday() const;                                       // 8010BB58
+    bool isOpenToday() const;                                      // 8010BAB4
+    bool isNotToday() const;                                       // 8010BB58
     void take();                                             // 8010BBD8: the current player received it
     BOOL hasMyBid() const;                                         // 8010BC64
     BOOL isOver(u32 day, const dLandID_c *land) const;             // 8010BCF0
@@ -86,6 +86,17 @@ struct dSvAucList_c {
     /* 0x04 */ dSvAucItem_c mItems[PLAYER_NUM];
 }; // size 0x1E4
 
+// Day types (getDayType), a two-week cycle: Sunday of an even week and Saturday
+// of an odd week take items for display, the next weekend day after them takes
+// bids (inferred names).
+enum {
+    AUC_DAY_DISPLAY,      // items are taken for display
+    AUC_DAY_WAIT_BID,     // Monday..Friday after the display Sunday
+    AUC_DAY_BID,          // bids are taken
+    AUC_DAY_AFTER_BID,    // the Monday after the bidding Sunday
+    AUC_DAY_WAIT_DISPLAY, // Tuesday..Friday before the display Saturday
+};
+
 // The auction (dSaveTown_c::mAuction).
 class dSvAuc_c {
 public:
@@ -122,9 +133,14 @@ public:
     BOOL addListing(const dSvAucItem_c *item, const u64 *sender); // 8010CE2C
     int find(const dSvAucItem_c *item) const;                      // 8010CFC8
     BOOL has(const dSvAucItem_c *item) const;                      // 8010D0D8
-    BOOL hasOpenToday() const;                                     // 8010D108
+    bool hasOpenToday() const;                                     // 8010D108
     BOOL hasMyUnsold() const;                                      // 8010D16C
     BOOL hasMyWon() const;                                         // 8010D1D0
+    // An unsold or won item waits to be handed to the current player
+    // (d_a_npc_sp_haniwa).
+    BOOL hasMyReturns() const {
+        return hasMyUnsold() || hasMyWon();
+    }
     BOOL hasListedToday(const dPersonalID_c *pid) const;           // 8010D234
     BOOL hasMyBidToday() const;                                    // 8010D36C
     static void sendListing(const dSvAucItem_c *item);       // 8010D3F8

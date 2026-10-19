@@ -386,7 +386,7 @@ void dSaveShop_c::updateMail(int days) {
             static int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKS_CRANNY);
-            dLetter::setItemName(0, &gift);
+            dLetter::setItemName(0, gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x33);
@@ -398,7 +398,7 @@ void dSaveShop_c::updateMail(int days) {
             static int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOK_N_GO);
-            dLetter::setItemName(0, &gift);
+            dLetter::setItemName(0, gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x34);
@@ -410,7 +410,7 @@ void dSaveShop_c::updateMail(int days) {
             static int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKWAY);
-            dLetter::setItemName(0, &gift);
+            dLetter::setItemName(0, gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x35);
@@ -422,7 +422,7 @@ void dSaveShop_c::updateMail(int days) {
             static int paper = 0x154;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_NOOKINGTONS);
-            dLetter::setItemName(0, &gift);
+            dLetter::setItemName(0, gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x36);
@@ -434,7 +434,7 @@ void dSaveShop_c::updateMail(int days) {
             static int paper = 0x157;
             sMail.setupSystem(&kind, "MAIL_ETC_TPS", (const u8 *)&sender, &player->mPID, &paper);
             dItem::Item gift(dItem::ITEM_IDX_SILVER_CAN);
-            dLetter::setItemName(0, &gift);
+            dLetter::setItemName(0, gift);
             sMail.setPresent(gift.mId, 0xFF);
             if (dPostOffice::add(&sMail)) {
                 player->setFlag0(0x18);
@@ -1039,7 +1039,7 @@ void dSaveShop_c::postNotices() {
             if (!isSold(i)) {
                 dItem::Item item(mStock[i].mItem);
                 if (item.getFrom() == 6) {
-                    dLetter::setItemName(1, &item);
+                    dLetter::setItemName(1, item);
                     break;
                 }
             }

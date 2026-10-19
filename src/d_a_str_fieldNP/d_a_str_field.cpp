@@ -662,7 +662,7 @@ int daStrReserve_c::getBoardMsg() {
 void daStrReserve_c::onMessageStart(int arg) {
     dItem::Item fruit = dSaveData_c::getTown()->mTownInfo.mFruit;
     dMsg::Comp_c *comp = mpController;
-    comp->setItemName(1, &fruit);
+    comp->setItemName(1, fruit);
     comp->setStringWord(2,
                         (dSaveData_c::getTown()->mShops.mShop.mStage & 3) +
                             SHOP_NAME_UNIT_MSG,

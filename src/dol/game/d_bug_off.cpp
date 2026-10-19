@@ -94,7 +94,7 @@ static inline void setLetterWords(dBugOff_c *bugOff) {
     dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
     dLetter::formatNumber(3, bugOff->getScore(0), 4, dScript::NUM_FORMAT_REGION);
     dItem::Item item = bugOff->getItem(0);
-    dLetter::setItemName(0, &item);
+    dLetter::setItemName(0, item);
     dLetter::setMonthName(1, date.month);
     dLetter::setDayName(2, date.mday);
     dLetter::setLandName(3, getLandID());
@@ -115,7 +115,7 @@ void dBugOff_c::sendResultLetters() {
             dTime_c date = stamp.get();
             dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
             dLetter::formatNumber(3, getScore(0), 4, dScript::NUM_FORMAT_REGION);
-            dLetter::setItemName(0, &getItem(0));
+            dLetter::setItemName(0, getItem(0));
             dLetter::setMonthName(1, date.month);
             dLetter::setDayName(2, date.mday);
             dLetter::setLandName(3, getLandID());
@@ -153,7 +153,7 @@ void dBugOff_c::sendResultLetters() {
             dTime_c date = stamp.get();
             dLetter::formatNumber(0, date.year, 4, dScript::NUM_FORMAT_PLAIN);
             dLetter::formatNumber(3, getScore(0), 4, dScript::NUM_FORMAT_REGION);
-            dLetter::setItemName(0, &getItem(0));
+            dLetter::setItemName(0, getItem(0));
             dLetter::setMonthName(1, date.month);
             dLetter::setDayName(2, date.mday);
             dLetter::setLandName(3, getLandID());
@@ -191,7 +191,7 @@ void dBugOff_c::postResultNotice() {
         dLetter::setAnmPersonalName(0, dSaveData_c::getRaw()->mBugOff.getAnimal(0));
     }
     dItem::Item item = getItem(0);
-    dLetter::setItemName(1, &item);
+    dLetter::setItemName(1, item);
     if (dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isValid() &&
         !dSaveData_c::getRaw()->mBugOff.getPlayer(0)->isFromTown()) {
         dNotice::postNotice(cM::rndInt(3) + 4, "BBS_insect", &postDate, NULL);

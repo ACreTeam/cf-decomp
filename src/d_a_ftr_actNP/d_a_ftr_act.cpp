@@ -2405,12 +2405,12 @@ BOOL daFtrAudio_c::initDemoTalk() {
             music = animal->getMusic();
         }
         setMessageCode(MSG_SONG_TITLE);
-        mpController->setItemName(1, &music);
+        mpController->setItemName(1, music);
     } else {
         dItem::Item music = getCurrentRoomSong();
         if (music.getKind() == dItem::KIND_MUSIC) {
             setMessageCode(MSG_SONG_TITLE);
-            mpController->setItemName(1, &music);
+            mpController->setItemName(1, music);
         } else {
             setMessageCode(MSG_NO_MUSIC);
         }

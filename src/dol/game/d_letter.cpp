@@ -608,8 +608,8 @@ void setStringWord(int slot, u16 index, const char *group) {
 }
 
 // 800CBDA0
-void setItemName(int slot, const dItem::Item *item) {
-    dItem::name_c name(*item);
+void setItemName(int slot, const dItem::Item &item) {
+    dItem::name_c name(item);
     dLetter::setWord(slot, &name);
 }
 

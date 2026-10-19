@@ -364,7 +364,7 @@ void dAcNpcNml_c::talk_c::endStyleReward(int arg) {
     mItem0 = block->pickStylePresent(player);
     if (mItem0.isValid()) {
         player->pickUp(&mItem0, 0);
-        setItemName(&mItem0, 5);
+        setItemName(mItem0, 5);
     }
     block->mStyle.mBase.mState = 2;
 }
@@ -509,7 +509,7 @@ void dAcNpcNml_c::talk_c::endStyleItem(int arg) {
     mItem0 = block->pickStylePresent(player);
     if (mItem0.isValid()) {
         player->pickUp(&mItem0, 0);
-        setItemName(&mItem0, 5);
+        setItemName(mItem0, 5);
     }
     dQuestPlayerPair_c *style = &block->mStyle;
     if ((style->_5E >> 1) & 1) {

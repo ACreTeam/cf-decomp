@@ -98,7 +98,7 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
                 entry->mFlags.mEventTalked = TRUE;
             }
             if (item.isValid()) {
-                setItemName(&item, 0);
+                setItemName(item, 0);
             }
             gender = GENDER_OTHER;
             if (leaderAnimal->isValid()) {
@@ -118,9 +118,9 @@ int dAcNpcNml_c::talk_c::msgFishing(msgInfo_s *info) {
             }
             dItem::Item fish = record->getItem(0);
             if (fish.isValid()) {
-                setItemName(&fish, 5);
+                setItemName(fish, 5);
             } else if (item.isValid()) {
-                setItemName(&item, 5);
+                setItemName(item, 5);
             }
             setDecimal(dEvFishing_c::toDisplaySize(record->getSize(0)), 1, 1);
 

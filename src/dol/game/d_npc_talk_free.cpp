@@ -355,7 +355,7 @@ int dAcNpcNml_c::talk_c::msgFreeClothes(msgInfo_s *info) {
         const char *label = getMsgLabel(TALK_FREE, FREE_GROUP_A, FREE_A_CLOTHES);
         if (label != NULL) {
             mItem0 = item;
-            setItemName(&item, 0);
+            setItemName(item, 0);
             u32 fashion = item.getFashion();
             dItem::nameFashion_c fashionName;
             setFashionName(&fashionName, fashion);
@@ -613,7 +613,7 @@ void dAcNpcNml_c::talk_c::setMemoryWords(const dPersonalID_c *pid, const dLandID
         mImpression = impress;
     }
     if (item->isValid()) {
-        setItemName(item, 4);
+        setItemName(*item, 4);
         mItem4 = *item;
     }
 }
@@ -806,12 +806,12 @@ void dAcNpcNml_c::talk_c::setJinxWords(const dSaveJinx_c *jinx, const dLandID_c 
     switch (condition) {
     case JINX_COND_CATCH_BUG: {
         dItem::Item item(dItem::ITEM_IDX_COMMON_BUTTERFLY, value, FALSE);
-        setItemName(&item, 0);
+        setItemName(item, 0);
         break;
     }
     case JINX_COND_CATCH_FISH: {
         dItem::Item item(dItem::ITEM_IDX_BITTERLING, value, FALSE);
-        setItemName(&item, 0);
+        setItemName(item, 0);
         break;
     }
     }
@@ -1069,8 +1069,8 @@ int dAcNpcNml_c::talk_c::msgFreeBug(msgInfo_s *info) {
         if (secondIdx != firstIdx && (u32)secondIdx < 64) {
             second.setFromIndex(dItem::ITEM_IDX_COMMON_BUTTERFLY,secondIdx, FALSE);
         }
-        setItemName(&first, 0);
-        setItemName(&second, 1);
+        setItemName(first, 0);
+        setItemName(second, 1);
         mItem4 = first;
         mItem5 = second;
         return TRUE;
@@ -1113,8 +1113,8 @@ int dAcNpcNml_c::talk_c::msgFreeFish(msgInfo_s *info) {
         if (secondIdx != firstIdx && (u32)secondIdx < 64) {
             second.setFromIndex(dItem::ITEM_IDX_BITTERLING,secondIdx, FALSE);
         }
-        setItemName(&first, 0);
-        setItemName(&second, 1);
+        setItemName(first, 0);
+        setItemName(second, 1);
         mItem4 = first;
         mItem5 = second;
         return TRUE;
@@ -1137,7 +1137,7 @@ int dAcNpcNml_c::talk_c::msgFreeFossil(msgInfo_s *info) {
         if (fossil.isValid()) {
             item = fossil;
         }
-        setItemName(&item, 0);
+        setItemName(item, 0);
         mItem4 = item;
         return TRUE;
     }

@@ -443,7 +443,7 @@ int dAcNpcNml_c::talk_c::msgVisitFurniture(msgInfo_s *info) {
     }
     pickRoomFtrMsg(&msg, &item, count, 1, looks);
     if (item.isValid()) {
-        setItemName(&item, 0);
+        setItemName(item, 0);
     }
     setLooksMsg(info, l_Q08_Furniture, msg);
     return TRUE;

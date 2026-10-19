@@ -647,7 +647,7 @@ void dFtrm_c::destroyFrmHeap() {
 }
 
 // 0x13CC
-dActor_c *dFtrm_c::createWallFtr(u32 idx, dItem::Item item) {
+dActor_c *dFtrm_c::createWallFtr(u32 idx, const dItem::Item &item) {
     int x;
     int z;
     if (getWallUnit(&x, &z, idx)) {

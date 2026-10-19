@@ -226,7 +226,7 @@ public:
     static s16 getPushAngle();
     static f32 getPushDist();
     static int getDir(mAng angle);
-    static dActor_c *createWallFtr(u32 idx, dItem::Item item);
+    static dActor_c *createWallFtr(u32 idx, const dItem::Item &item);
     static dActor_c *createFtr(int x, int z, dItem::Item item, int rot, u8 layer, int kind);
     static dActor_c *createFtr(u32 info);
     static int checkPutUnit(putUnit_c *out, int x, int z, int layer, const mVec3_c *pos);

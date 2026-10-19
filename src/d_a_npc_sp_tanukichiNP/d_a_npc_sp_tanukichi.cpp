@@ -1483,7 +1483,7 @@ void dAcNpcSpTanukiBase_c::talk_c::onMessageStart(int arg) {
         town->mShops.mShop.sellAndNotify(dScene::getCurrentScene(),
                                          SHOP_SLOT_NONE, 0, 0, mPrice,
                                          !dAcNpc_c::isPlayerFromThisTown());
-        dLetter::setItemName(0, &mItem);
+        dLetter::setItemName(0, mItem);
         static dMail_c l_mail;
         u16 kind = 0;
         switch (dSaveData_c::getTown()->mShops.mShop.mStage) {
@@ -1523,7 +1523,7 @@ void dAcNpcSpTanukiBase_c::talk_c::onMessageStart(int arg) {
     case MSG_PRICE_SILVER_TOOL:
     case MSG_ROOF_PAINT_OUT_OF_TOWN:
     case MSG_PRICE_ROOF_PAINT:
-        setItemName(&mItem, 0);
+        setItemName(mItem, 0);
         setNumber(mPrice, 4, 7, dScript::NUM_FORMAT_REGION);
         break;
     case MSG_PRICE_AFTER_PREVIEW:

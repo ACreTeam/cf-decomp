@@ -935,12 +935,12 @@ BOOL daFTR_c::initTalk() {
         }
     }
     if (dItem::isRealItemId(mMsgItem0.getId())) {
-        mpController->setItemName(0, &mMsgItem0);
+        mpController->setItemName(0, mMsgItem0);
     } else {
         mpController->clearWord(0);
     }
     if (dItem::isRealItemId(mMsgItem1.getId())) {
-        mpController->setItemName(1, &mMsgItem1);
+        mpController->setItemName(1, mMsgItem1);
     } else {
         mpController->clearWord(1);
     }
@@ -2667,7 +2667,7 @@ void daFTR_c::adjustPos() {
 // 0x80AC
 void daFTR_c::onMessageStart(int arg) {
     if (dScene::isCurrentSceneModelRoom() && mMsgItem2.getId() != dItem::ITEM_ID_NONE && mMessageCode == 0x16) {
-        mpController->setItemName(1, &mMsgItem2);
+        mpController->setItemName(1, mMsgItem2);
     }
 }
 

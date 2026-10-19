@@ -173,7 +173,7 @@ int dAcNpcNml_c::talk_c::msgSale(msgInfo_s *info) {
         setStepProc(step);
     }
     if (mItem0.mId != dItem::ITEM_ID_NONE) {
-        setItemName(&mItem0, 0);
+        setItemName(mItem0, 0);
     }
     if (mPrice > 0) {
         setNumber(mPrice, 3, 12, dScript::NUM_FORMAT_REGION);
@@ -427,7 +427,7 @@ int dAcNpcNml_c::talk_c::msgStallItem(msgInfo_s *info) {
     }
     if (found) {
         if (mItem0.mId != dItem::ITEM_ID_NONE) {
-            setItemName(&mItem0, 0);
+            setItemName(mItem0, 0);
         }
         setProcSet(&l_talkProcSets[TALK_PROC_STALL_ITEM]);
         setLooksMsg(info, l_Ev_FmarketPC, 4);
