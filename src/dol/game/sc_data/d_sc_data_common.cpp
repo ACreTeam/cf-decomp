@@ -77,7 +77,7 @@ u16 g_townRes[] = {
     fProf::FG_DRAW,          fProf::FGOBJ_MANAGER,  fProf::SKY,
     fProf::SKY_AURORA,       fProf::SKY_RAINBOW,    fProf::BGT_DRAW,
     fProf::A_RMOBJ_ATM,      fProf::STR_MANAGER,    fProf::A_STR,
-    fProf::STR_BUS, fProf::A_STR_TOWN_112, fProf::A_SIGN_TAG,
+    fProf::STR_BUS, fProf::STR_BROKER, fProf::A_SIGN_TAG,
     fProf::A_GROWUP_MSG,
 };
 const u16 g_townResNum = ARRAY_SIZE(g_townRes);

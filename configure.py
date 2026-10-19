@@ -2557,10 +2557,10 @@ config.libs = [
     Rel(
         "d_a_str_townNP",
         [
-            Object(NonMatching, "d_a_str_townNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_str_townNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_str_townNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_str_townNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_str_townNP/d_a_str_town.cpp"),
+            Object(Matching, "d_a_str_townNP/d_a_str_town.cpp"),
         ],
     ),
     Rel(

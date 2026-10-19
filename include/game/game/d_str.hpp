@@ -406,24 +406,26 @@ void putUfo();               // 80169BF4: moves the UFO to its spot
 void removeUfo();            // 80169C38
 
 void buildPublicWorks();  // 80169C48: builds the public works whose SAVE_FLAG_BUILD_* is set
-void updateFlag14();      // 80169ED8: town flag 14 with a 1 in 10 chance (meaning unknown)
+void updateResetOpen();   // 80169ED8: SAVE_FLAG_RESET_OPEN with a 1 in 10 chance (daily)
 BOOL requestWindmill();   // 80169F20: sets SAVE_FLAG_BUILD_WINDMILL
 BOOL requestLighthouse(); // 80169F4C: sets SAVE_FLAG_BUILD_LIGHTHOUSE
 BOOL requestFountain();   // 80169F78: sets SAVE_FLAG_BUILD_FOUNTAIN
 // 80169FA4: the spot beside a building's entrance (side 0: left, else right), FALSE if none.
 BOOL getEntranceSidePos(mVec3_c *out, const dItem::Item &item, int side);
 
-// A counter and two flags (meaning unknown; d_sv_proc calls resetCount).
+// Crazy Redd's door (daStrBroker_c, d_a_str_town): how often the player talked at the door, and two flags
+// that pick his next refusal message (A: after the first "not a member", B: after "no invitation"). d_sv_proc
+// calls resetCount.
 void resetCount();      // 8016A208: clears the counter and both flags
 void clearCount();      // 8016A230 (8074E878)
 u32 getCount();         // 8016A23C
 void incCount();        // 8016A244: counts up to 0x100
 void clearFlagA();      // 8016A25C (8074E87C)
 void setFlagA(u8 flag); // 8016A264
-u8 getFlagA();          // 8016A26C
+BOOL getFlagA();        // 8016A26C
 void clearFlagB();      // 8016A274 (8074E87D)
 void setFlagB(u8 flag); // 8016A27C
-u8 getFlagB();          // 8016A284
+BOOL getFlagB();        // 8016A284
 
 mVec3_c *getCityReturnPos(); // 8016A28C: where the player arrives back in the town from the city
 // 8016A2F8: whether pos / angle are at the fountain's front (in the town); its spots to front / base.

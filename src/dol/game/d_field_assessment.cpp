@@ -1436,7 +1436,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     for (int i = 0; i < num; i++) {
         updateTrees(fd, w, h);
     }
-    dSTR::updateFlag14();
+    dSTR::updateResetOpen();
     dSaveData_c::getTown()->mHomes.updateAll(days);
     createHeap();
     dFgMngProc_c::setupUnitMask(fd, (u16 *)mBuffer);

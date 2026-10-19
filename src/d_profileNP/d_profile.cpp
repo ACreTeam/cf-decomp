@@ -1376,33 +1376,33 @@ static const fProfListMg_c::fProfilePtr_c l_profiles[fProf::PROFILE_COUNT] = {
     {&dAStrCommon::g_profile_STR_BUS},
     // fProf::STR_BUS_STOP
     {&dAStrCommon::g_profile_STR_BUS_STOP},
-    // fProf::A_STR_TOWN_10E
+    // fProf::STR_TOWN
     {&dAStrTown::g_profile_STR_TOWN},
-    // fProf::A_STR_TOWN_10F
+    // fProf::STR_ATM
     {&dAStrTown::g_profile_STR_ATM},
-    // fProf::A_STR_TOWN_110
+    // fProf::STR_BARBER
     {&dAStrTown::g_profile_STR_BARBER},
-    // fProf::A_STR_TOWN_111
+    // fProf::STR_HAPPY
     {&dAStrTown::g_profile_STR_HAPPY},
-    // fProf::A_STR_TOWN_112
+    // fProf::STR_BROKER
     {&dAStrTown::g_profile_STR_BROKER},
-    // fProf::A_STR_TOWN_113
+    // fProf::STR_FORTUNE
     {&dAStrTown::g_profile_STR_FORTUNE},
-    // fProf::A_STR_TOWN_114
+    // fProf::STR_GRACE
     {&dAStrTown::g_profile_STR_GRACE},
-    // fProf::A_STR_TOWN_115
+    // fProf::STR_RESET
     {&dAStrTown::g_profile_STR_RESET},
-    // fProf::A_STR_TOWN_116
+    // fProf::STR_LAMP
     {&dAStrTown::g_profile_STR_LAMP},
-    // fProf::A_STR_TOWN_117
+    // fProf::STR_AUCTION
     {&dAStrTown::g_profile_STR_AUCTION},
-    // fProf::A_STR_TOWN_118
+    // fProf::STR_THEATER
     {&dAStrTown::g_profile_STR_THEATER},
-    // fProf::A_STR_TOWN_119
+    // fProf::STR_TW_FOUNTAIN
     {&dAStrTown::g_profile_STR_TW_FOUNTAIN},
-    // fProf::A_STR_TOWN_11A
+    // fProf::STR_ORGAN
     {&dAStrTown::g_profile_STR_ORGAN},
-    // fProf::A_STR_TOWN_11B
+    // fProf::STR_CHEST
     {&dAStrTown::g_profile_STR_CHEST},
     // fProf::STR_CURNIVAL
     {&dAStrField::g_profile_STR_CURNIVAL},

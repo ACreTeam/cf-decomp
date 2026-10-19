@@ -75,7 +75,7 @@ protected:
     char mMessageLabel[61]; // 0x04; copy limit 60, extra terminator byte
     u16 mMessageCode; // 0x42
     u16 mSpeakerName[9]; // 0x44
-    u8 mSpeakerNameKind; // 0x56; the name frame: 0/1 = the npc's gender, 2 = other (clear); dAcNpc_c::getNameKind
+    u8 mSpeakerNameKind; // 0x56; the name frame (GENDER_*): the npc's gender, GENDER_OTHER = clear; dAcNpc_c::getNameKind
     int mVoiceType; // 0x58; initialized to 1, meaning not yet established
     Comp_c *mpController; // 0x5C; controller keeps the reciprocal link
     const EGG::MsgRes::MessageHeader *mpBmgData; // 0x60; cleared on init and nonempty message-label changes

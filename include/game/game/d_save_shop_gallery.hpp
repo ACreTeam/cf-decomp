@@ -29,7 +29,7 @@ public:
     int getPictureRate();      // 80148A40: 50 + dHR::getPictureRate
     int getFtrRate();          // 80148A64: 50 + dHR::getFtrRate
     BOOL isChecked(int slot);  // 80148A88
-    void check(int slot);      // 80148ABC: every unsold slot unless the player has flag0 0x14
+    void check(int slot);      // 80148ABC: every unsold slot unless the player has PRIVATE_FLAG0_REDD_MEMBER
     void clearChecked();       // 80148B70
     BOOL isOpen();             // 80148BAC: closed from 1:00 to 10:00
 

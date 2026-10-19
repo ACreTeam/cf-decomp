@@ -1556,11 +1556,11 @@ void buildPublicWorks() {
 }
 
 // 80169ED8
-void updateFlag14() {
+void updateResetOpen() {
     if (cM::rndInt(10) == 6) {
-        dSaveData_c::getTown()->setFlag(14); // unnamed town flag
+        dSaveData_c::getTown()->setFlag(SAVE_FLAG_RESET_OPEN);
     } else {
-        dSaveData_c::getTown()->clearFlag(14);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_RESET_OPEN);
     }
 }
 
@@ -1648,13 +1648,13 @@ void clearFlagA() { setFlagA(FALSE); }
 // 8016A264 (the target's symbols merge it into clearFlagA, which tail-calls it)
 void setFlagA(u8 flag) { l_flagA = flag; }
 // 8016A26C
-u8 getFlagA() { return l_flagA; }
+BOOL getFlagA() { return l_flagA; }
 // 8016A274
 void clearFlagB() { setFlagB(FALSE); }
 // 8016A27C (merged into clearFlagB likewise)
 void setFlagB(u8 flag) { l_flagB = flag; }
 // 8016A284
-u8 getFlagB() { return l_flagB; }
+BOOL getFlagB() { return l_flagB; }
 
 // 8016A28C
 mVec3_c *getCityReturnPos() {

@@ -3502,7 +3502,7 @@ int getOpenNext(const mVec3_c *pos) {
 // 80075D74
 BOOL lockNext(int idx) {
     if (sCurBg != NULL) {
-        if (idx == -1) {
+        if (idx == BGCF_NEXT_ALL) {
             sCurBg->setFlags();
             return TRUE;
         }
@@ -3547,7 +3547,7 @@ int getLockedNext(const mVec3_c *pos) {
 // 80075ED0
 BOOL unlockNext(int idx) {
     if (sCurBg != NULL) {
-        if (idx == -1) {
+        if (idx == BGCF_NEXT_ALL) {
             sCurBg->clearFlags();
             return TRUE;
         }

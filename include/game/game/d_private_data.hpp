@@ -40,6 +40,8 @@ enum dPrivateFlag0_e {
                                                 // newcomer (d_npc_talk_arbeit), no event announcements,
                                                 // villager memories / letters, quests (inferred)
     PRIVATE_FLAG0_JOINED_AS_VISITOR = 0x12,     // made by dSvProc_c::initializeVisitor; Mom's first letter differs (inferred)
+    PRIVATE_FLAG0_REDD_MEMBER = 0x14,           // a member of Crazy Redd's: let in without an invitation, gets every
+                                                // unsold item checked (dSaveShopGallery_c::check; inferred)
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
@@ -60,6 +62,8 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,       // the player entered this Bug-Off (cleared once the letter is sent)
     PRIVATE_FLAG0_CITY_VISITED = 0x70,          // got off the bus in the city once (d_a_str_common, inferred)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
+    PRIVATE_FLAG0_REDD_TURNED_AWAY = 0x77,      // Redd turned the player away at the door (d_a_str_town); villagers
+                                                // then talk about his invitations (d_npc_talk_free; inferred)
     PRIVATE_FLAG0_REDD_VISITED = 0x83,          // entered Crazy Redd's tent in the city (d_a_str; inferred)
 };
 enum dPrivateFlag1_e {

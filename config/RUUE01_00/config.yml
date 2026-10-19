@@ -656,6 +656,7 @@ modules:
   name: d_a_str_townNP
   symbols: config/RUUE01_00/d_a_str_townNP/symbols.txt
   splits: config/RUUE01_00/d_a_str_townNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_ticket_counterNP.rel
   hash: 694e9d4d89431bfd9d7222ffe651c2d24464902b
   name: d_a_ticket_counterNP

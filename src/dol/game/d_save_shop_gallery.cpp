@@ -183,7 +183,7 @@ BOOL dSaveShopGallery_c::isChecked(int slot) {
 
 // 80148ABC
 void dSaveShopGallery_c::check(int slot) {
-    if (dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(0x14)) {
+    if (dPlayerMgr::Mgr_c::getCurrentPlayerRaw()->isFlag0(PRIVATE_FLAG0_REDD_MEMBER)) {
         if (slot < 0 || slot >= SHOP_GALLERY_STOCK_NUM) {
             return;
         }

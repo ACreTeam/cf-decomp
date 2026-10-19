@@ -2021,11 +2021,11 @@ int dAcNpcNml_c::talk_c::msgFreeKK(msgInfo_s *info) {
         }
     }
     if (ok && player != NULL && player->mPID.isFromTown()) {
-        if (player->isFlag0(0x14)) {
+        if (player->isFlag0(PRIVATE_FLAG0_REDD_MEMBER)) {
             if (cM::rndInt(100) < 50) {
                 idx = 0;
             }
-        } else if (player->isFlag0(0x77)) {
+        } else if (player->isFlag0(PRIVATE_FLAG0_REDD_TURNED_AWAY)) {
             u32 num = dPrivateData_c::count(dSaveData_c::getRaw()->mPlayers);
             if (num != 0 && num <= 4 && cM::rndInt(100) < l_playerChance[num - 1]) {
                 idx = 1;

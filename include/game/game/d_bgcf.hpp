@@ -537,6 +537,8 @@ BOOL isSlopeStep(const mVec3_c *pos);                                // 80075B9C
 int getNext(int unitX, int unitZ);                                   // 80075C98
 int getOpenNext(int unitX, int unitZ);                               // 80075CD8
 int getOpenNext(const mVec3_c *pos);                                 // 80075D3C
+// lockNext / unlockNext: idx BGCF_NEXT_ALL sets / clears every next area's flag.
+#define BGCF_NEXT_ALL -1
 BOOL lockNext(int idx);                                              // 80075D74
 BOOL isNextLocked(const mVec3_c *pos);                               // 80075DC8
 int getLockedNext(int unitX, int unitZ);                             // 80075E30
