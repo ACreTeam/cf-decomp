@@ -112,9 +112,16 @@ public:
     void relocate();                                 // 800F6634
     void setSpot(const mVec3_c *center, f32 radius); // 800F66AC
     BOOL isTalked();                                 // 800F67B0
+    // d_a_npc_sp_franklin
+    void setHandedOver() {
+        mHandedOver = 1;
+        mHandedOverHere = 1;
+    }
+    void setAskedForHelp() { mAskedForHelp = 1; }
+    void setThanked() { mThanked = 1; }
 
     /* 0x0 */ u8 mHandedOver;
-    /* 0x1 */ u8 _1;
+    /* 0x1 */ u8 mHandedOverHere;
     /* 0x2 */ u8 mAskedForHelp;
     /* 0x3 */ u8 mThanked;
     /* 0x4 */ u8 mTalkedHere;

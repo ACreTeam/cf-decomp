@@ -58,6 +58,7 @@
 #define NPC_EAR_TYPE_CELESTE 51 // Celeste's ear parameter preset (d_a_npc_sp_fuko)
 #define NPC_EAR_TYPE_TORTIMER 52 // Tortimer's ear parameter preset (d_a_npc_sp_soncho)
 #define NPC_EAR_TYPE_PAVE 57 // Pave's ear parameter preset (d_a_npc_sp_dancer)
+#define NPC_EAR_TYPE_FRANKLIN 59 // Franklin's ear parameter preset (d_a_npc_sp_franklin)
 #define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
 #define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears
 #define MANPU_TYPE_NUM 78                  // manpu (emotion mark) types (manpuMgr_c::isValidType)
