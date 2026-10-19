@@ -462,7 +462,7 @@ static inline void setupLostChildThanks(dMail_c &mail, const dPersonalID_c &pid,
 
 // 8013760C
 void dPrivateData_c::sendLostChildThanks() {
-    if (!isFlag0(PRIVATE_FLAG0_TRAVELLING) && isFlag0(0x4A) && mDaysAway > 0) {
+    if (!isFlag0(PRIVATE_FLAG0_TRAVELLING) && isFlag0(PRIVATE_FLAG0_LOST_CHILD_THANKS) && mDaysAway > 0) {
         static dMail_c mail;
         static u8 lbl_8074B098 = MAIL_FROM_THANK_YOU;
         s32 range[4];
@@ -474,9 +474,9 @@ void dPrivateData_c::sendLostChildThanks() {
         dItemSel::select(&present, 1, reinterpret_cast<const dItemSel::Range_c *>(range), 1, &dItemSel::sDefaultFilter, 0, 0, 0);
         mail.setPresent(present.mId, 0xFF);
         if (dPostOffice::deliverToPlayer(&mail)) {
-            clearFlag0(0x4A);
+            clearFlag0(PRIVATE_FLAG0_LOST_CHILD_THANKS);
         } else if (dPostOffice::add(&mail)) {
-            clearFlag0(0x4A);
+            clearFlag0(PRIVATE_FLAG0_LOST_CHILD_THANKS);
         }
     }
 }

@@ -15,6 +15,8 @@ public:
 
 class Data_c {
 public:
+    // Placement new for a heap block (d_a_npc_sp_gatekeeper_a create).
+    static void *operator new(size_t, void *p) { return p; }
     Data_c();               // 80084840
     ~Data_c();              // 80084910
     void prepareDeparture(); // 80084990

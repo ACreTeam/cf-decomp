@@ -12,6 +12,22 @@
 #include <lib/dwc/dwc.h>
 #include <types.h>
 
+// Nintendo Wi-Fi Connection error codes (the number shown to the player, dNetFriend::Error_c::mCode / mDetail)
+// that pick a sys_MESS/SYS_NetworkError message (d_a_npc_sp_gatekeeper_a getNetErrorMsg / checkNetError).
+// Named after those messages; Nintendo's own names are unknown.
+#define NET_ERROR_CODE_NO_INTERNET 20100    // NET_ERROR_MSG_NO_INTERNET: "Unable to connect to the Internet."
+#define NET_ERROR_CODE_SERVER_BUSY 20101    // NET_ERROR_MSG_WFC_BUSY: high traffic, or the service is down
+#define NET_ERROR_CODE_LOGIN_FIRST 20102    // 20102..20999 (but SERVICE_ENDED): NET_ERROR_MSG_WFC_ERROR
+#define NET_ERROR_CODE_SERVICE_ENDED 20110  // NET_ERROR_MSG_WFC_DISCONTINUED: the service has been discontinued
+#define NET_ERROR_CODE_LOGIN_LAST 20999
+#define NET_ERROR_CODE_BUSY_FIRST 23000     // 23000..23999: NET_ERROR_MSG_WFC_BUSY
+#define NET_ERROR_CODE_BUSY_LAST 23999
+#define NET_ERROR_CODE_NAND_FULL 29000      // NET_ERROR_MSG_NAND_FULL: not enough Wii system memory
+#define NET_ERROR_CODE_NAND_CORRUPTED 29001 // NET_ERROR_MSG_NAND_CORRUPTED
+#define NET_ERROR_CODE_INTERNET_FIRST 50000 // 50000..59999: NET_ERROR_MSG_NO_INTERNET
+#define NET_ERROR_CODE_INTERNET_LAST 59999
+#define NET_ERROR_CODE_NO_RESPONSE 80430    // NET_ERROR_MSG_NO_RESPONSE / MSG_TOWN_NO_RESPONSE: "There is no response."
+
 // Manager states (mState).
 enum dNetMgrState_e {
     NET_MGR_STATE_NONE = 0,
@@ -67,6 +83,16 @@ class dNetMgr_c {
     BOOL setRecvBuf(u8 member, u8 *buf, u32 size);
     BOOL send(u8 member, const void *data, u32 size);
     BOOL canSend(u8 member);
+    // getErrorKind: what went wrong, by the error state / kind / code.
+    enum {
+        ERROR_KIND_NONE,
+        ERROR_KIND_GATE_CLOSED,  // state 0xF or code 0xB: the town's gate is closed
+        ERROR_KIND_TOWN_FULL,    // state 0x10 or code 0xC: the town has no room
+        ERROR_KIND_TOWN_BUSY,    // code 0x17: someone else is joining
+        ERROR_KIND_OTHER,        // any other recoverable error (see the detail code)
+        ERROR_KIND_RESTART,      // dNetDwc::ERROR_RESTART_REQUIRED
+        ERROR_KIND_PERMANENT,    // dNetDwc::ERROR_PERMANENT
+    };
     static int getErrorKind();
     static void fn_800E55B0();
     u8 getFriendStatus(int idx, void *dst, u32 *size);

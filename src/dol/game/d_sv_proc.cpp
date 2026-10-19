@@ -239,14 +239,14 @@ BOOL dSvProc_c::finishLoad() {
         if (!mWasVisitor && !dNpcMng_c::isPlayerSelectVisitor()) {
             if (player->getResetCount() == 0) {
                 dNpcInfo::resetsan_c::get()->set(1);
-            } else if (player->isFlag0(0x29)) {
+            } else if (player->isFlag0(PRIVATE_FLAG0_PLAYING_UNSAVED)) {
                 dNpcInfo::resetsan_c::get()->set(1);
             }
             if (dNpcInfo::resetsan_c::get()->getVisit() == 1) {
                 player->syncResetCount();
             }
         }
-        player->setFlag0(0x29);
+        player->setFlag0(PRIVATE_FLAG0_PLAYING_UNSAVED);
         dPrivateData_c::loadHostFromTown();
         dSvStarSign::List_c::registerPlayerSign();
         checkSummerMorningStart();
@@ -379,7 +379,7 @@ void dSvProc_c::initializePlayer() {
     player->mMotherMail.mLastDate.set(&day);
     player->setFlag0(PRIVATE_FLAG0_HOUSE_TOUR);
     player->setFlag0(PRIVATE_FLAG0_PART_TIME_JOB);
-    player->setFlag0(0x29);
+    player->setFlag0(PRIVATE_FLAG0_PLAYING_UNSAVED);
     if (now.month == MONTH_OCTOBER) {
         player->setFlag0(0x56);
     }

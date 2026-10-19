@@ -3101,7 +3101,7 @@ void dNetJoinDone_c::setAllDone(u8 v) {
     mAllDone = v;
 }
 
-u8 dNetJoinDone_c::getAllDone() const {
+BOOL dNetJoinDone_c::getAllDone() const {
     return mAllDone;
 }
 
@@ -4988,7 +4988,7 @@ BOOL isJoinPlayersReady() {
     return getNetTransfer()->isAllReady();
 }
 
-u8 isItemsReceived() {
+BOOL isItemsReceived() {
     return getNetTransfer()->mItemsRecv;
 }
 
@@ -5021,7 +5021,7 @@ BOOL isJoinDoneAll() {
     return getNetJoinDone()->isAllDone();
 }
 
-u8 getJoinAllDone() {
+BOOL getJoinAllDone() {
     return getNetJoinDone()->getAllDone();
 }
 

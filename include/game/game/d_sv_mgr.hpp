@@ -194,10 +194,26 @@ protected:
 enum {
     SV_MSG_NAND_DAMAGED = 0x0C, // "The Wii system memory has been damaged."
     SV_MSG_NAND_ERROR = 0x12,   // "Could not access Wii system memory."
+    SV_MSG_SAVING_NET = 0x0D,   // "Saving... Please do not touch RESET or the Power Button."
+    SV_MSG_SAVING_VISIT = 0x1B, // "Saving... Please do not touch the Power Button or RESET."
+    SV_MSG_VISITOR_CAME = 0x1E, // "<name> has come over to play."
+    SV_MSG_VISITOR_LEFT = 0x20, // "<name> is going home."
 };
 
 // sys_MESS/SYS_NetworkError message codes (sNetErrorMessageLabel).
 enum {
+    NET_ERROR_MSG_WFC_ERROR = 0x01,        // "Unable to connect to Nintendo Wi-Fi Connection."
+    NET_ERROR_MSG_WFC_BUSY = 0x02,         // "high traffic volumes, or the service is down"
+    NET_ERROR_MSG_WFC_DISCONTINUED = 0x03, // the service for this software has been discontinued
+    NET_ERROR_MSG_NAND_FULL = 0x04,        // "not enough available space in Wii system memory"
+    NET_ERROR_MSG_NAND_CORRUPTED = 0x05,   // "The Wii system memory has been corrupted."
+    NET_ERROR_MSG_NO_INTERNET = 0x06,      // "Unable to connect to the Internet."
+    NET_ERROR_MSG_NO_RESPONSE = 0x07,      // "There is no response." (friend roster)
+    NET_ERROR_MSG_DISCONNECTED = 0x08,     // "You have been disconnected from Nintendo Wi-Fi Connection."
+    NET_ERROR_MSG_COMM_ERROR = 0x09,       // "Communication error. Please try again."
+    NET_ERROR_MSG_DOWNLOAD_FAILED = 0x0A,  // "Download failed."
+    NET_ERROR_MSG_WFC_RESET = 0x0B,        // "an error has occurred. Reset and try again."
+    NET_ERROR_MSG_DISCONNECTED2 = 0x0C,    // same text as NET_ERROR_MSG_DISCONNECTED
     NET_ERROR_MSG_RESTRICTED = 0x13,   // Parental Controls restrict network features
     NET_ERROR_MSG_WC24_NAND = 0x15,    // WC24 errors: 0x15 + dWifi::getErrorMessage() (0..9)
     NET_ERROR_MSG_WC24_UPDATE = 0x16,  // a system update is required

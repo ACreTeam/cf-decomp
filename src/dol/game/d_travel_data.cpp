@@ -170,9 +170,9 @@ void Data_c::finishVisit() {
     if (host->mFlagB && host->mPID.land == dSaveData_c::getTown()->mLandID) {
         host->clear();
         townHost->clear();
-        player->setFlag0(0x48);
-        player->setFlag0(0x4A);
-        player->clearFlag1(0x32);
+        player->setFlag0(PRIVATE_FLAG0_LOST_CHILD_RETURNED);
+        player->setFlag0(PRIVATE_FLAG0_LOST_CHILD_THANKS);
+        player->clearFlag1(PRIVATE_FLAG1_LOST_CHILD_PENDING);
     }
     dSaveTown_c *town = dSaveData_c::getTown();
     dActivityLog::setJinx(&town->mActivity.mJinx);

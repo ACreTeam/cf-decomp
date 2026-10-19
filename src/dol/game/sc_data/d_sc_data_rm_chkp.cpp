@@ -1,6 +1,7 @@
 // The scene data of RM_CHKP (dScene::dSceneData_c sScDataRmChkp; see
 // include/game/game/d_sc_data.hpp).
 #include <game/framework/f_profile_name.hpp>
+#include <game/game/d_npc_def.hpp>
 #include <game/game/d_sc_data.hpp>
 
 namespace dScData {
@@ -16,7 +17,7 @@ static ActorData_c l_actors[] = {
      {320.0f, 0.0f, 304.0f},
      {0, 0, 0},
      0,
-     (void *)0x8026},
+     (void *)SP_NPC_GATEKEEPER_A},
     {fProf::A_NPC_SP_GATEKEEPER_B,
      0,
      {192.0f, 0.0f, 304.0f},

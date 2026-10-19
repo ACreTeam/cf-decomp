@@ -470,6 +470,7 @@ modules:
   name: d_a_npc_sp_gatekeeper_aNP
   symbols: config/RUUE01_00/d_a_npc_sp_gatekeeper_aNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_gatekeeper_aNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_gatekeeper_bNP.rel
   hash: e7610de4c094faa87ee1895eeac4d132f6581ade
   name: d_a_npc_sp_gatekeeper_bNP

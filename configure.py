@@ -2224,10 +2224,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_gatekeeper_aNP",
         [
-            Object(NonMatching, "d_a_npc_sp_gatekeeper_aNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_gatekeeper_aNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_gatekeeper_aNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_gatekeeper_aNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_gatekeeper_aNP/d_a_npc_sp_gatekeeper_a.cpp"),
+            Object(Matching, "d_a_npc_sp_gatekeeper_aNP/d_a_npc_sp_gatekeeper_a.cpp"),
         ],
     ),
     Rel(

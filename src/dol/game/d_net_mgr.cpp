@@ -295,29 +295,29 @@ BOOL dNetMgr_c::canSend(u8 member) {
 int dNetMgr_c::getErrorKind() {
     dNetMgr_c *mgr = sInstance;
     if (!mgr->mInfo.mError.mState) {
-        return 0;
+        return ERROR_KIND_NONE;
     }
     switch (mgr->mInfo.mError.mKind) {
-    case 2:
-        return 5;
-    case 3:
-        return 6;
+    case dNetDwc::ERROR_RESTART_REQUIRED:
+        return ERROR_KIND_RESTART;
+    case dNetDwc::ERROR_PERMANENT:
+        return ERROR_KIND_PERMANENT;
     }
     if (mgr->mInfo.mError.getState() == 0xF) {
-        return 1;
+        return ERROR_KIND_GATE_CLOSED;
     }
     if (mgr->mInfo.mError.getState() == 0x10) {
-        return 2;
+        return ERROR_KIND_TOWN_FULL;
     }
     switch (mgr->mInfo.mError.mCode) {
     case 0xB:
-        return 1;
+        return ERROR_KIND_GATE_CLOSED;
     case 0xC:
-        return 2;
+        return ERROR_KIND_TOWN_FULL;
     case 0x17:
-        return 3;
+        return ERROR_KIND_TOWN_BUSY;
     }
-    return 4;
+    return ERROR_KIND_OTHER;
 }
 
 void dNetMgr_c::fn_800E55B0() {

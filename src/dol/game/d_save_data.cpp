@@ -102,7 +102,7 @@ void dSaveData_c::updateOnSave() {
     fgMngProc_clearFg94();
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
-        player->clearFlag0(0x29);
+        player->clearFlag0(PRIVATE_FLAG0_PLAYING_UNSAVED);
         if (player->isFlag1(0x44)) {
             player->mDistPatternVersion = getExtra()->mDistPattern.mVersion;
             player->setFlag1(0x3B);

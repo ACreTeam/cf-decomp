@@ -7,6 +7,7 @@
 #include <game/game/d_sv_runtime.hpp>
 #include <game/game/d_wifi.hpp>
 #include <game/game/d_date.hpp>
+#include <game/game/d_npc.hpp>
 
 class dSvMgr_c;
 
@@ -26,17 +27,27 @@ class dSvStep_c : public dState::step_c<Owner, Step> {
     void initializeVisitorSave();
     void startVisitorSave();
     void waitVisitorSave();
+    // The DL items and npc saves: d_a_npc_sp_gatekeeper_a ("追加データセーブ",
+    // "NPCセーブ").
+    void initializeItemSave();
+    void startItemSave();
+    void waitItemSave();
+    void initializeNpcSave();
+    void startNpcSave();
+    void waitNpcSave();
     void initializeFullSave();
     void startFullSave();
     void waitFullSave();
     void initializeHostSave();
     void startHostSave();
     void waitHostSave();
+    void initializeDownloadBox();
+    void createDownloadBox();
+    // After the download box: d_a_npc_sp_gatekeeper_a's talk_c::stepGoOutDsAppli_c
+    // instantiates full save, download box, town save in this order.
     void initializeTownSave();
     void startTownSave();
     void waitTownSave();
-    void initializeDownloadBox();
-    void createDownloadBox();
     // The delete steps come before disableHomeAndReset:
     // d_a_npc_sp_player_select's stepDelete_c instantiates them in this order
     // (d_title_demo uses no HBM steps).
@@ -87,6 +98,38 @@ void dSvStep_c<Owner, Step>::startVisitorSave() {
 
 template <class Owner, class Step>
 void dSvStep_c<Owner, Step>::waitVisitorSave() {
+    checkSaveResultImpl(static_cast<Step *>(this));
+}
+
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::initializeItemSave() {
+    this->nextStep();
+}
+
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::startItemSave() {
+    if (dNand::saveDLItems()) {
+        this->nextStep();
+    }
+}
+
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::waitItemSave() {
+    checkSaveResultImpl(static_cast<Step *>(this));
+}
+
+template <class Owner, class Step>
+void dSvStep_c<Owner, Step>::initializeNpcSave() {
+    dNpc::takeMovedAnimalToBuffer(1);
+    this->nextStep();
+}
+
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::startNpcSave() {
+    if (dNand::saveAnimals()) {
+        this->nextStep();
+    }
+}
+
+template <class Owner, class Step> void dSvStep_c<Owner, Step>::waitNpcSave() {
     checkSaveResultImpl(static_cast<Step *>(this));
 }
 

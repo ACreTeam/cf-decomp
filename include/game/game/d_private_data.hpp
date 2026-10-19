@@ -45,15 +45,23 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
+    PRIVATE_FLAG0_GATEKEEPER_MET = 0x21,        // the gatekeeper's first greeting was shown (d_a_npc_sp_gatekeeper_a)
     PRIVATE_FLAG0_HRA_JOINED = 0x27,            // the HRA's welcome letter was delivered
     PRIVATE_FLAG0_TRAVELLING = 0x28,            // out on a trip with the DS (dTravelData::Data_c sets it on departure;
                                                 // dSvProc_c::prepareLoad clears it back in the home town)
+    PRIVATE_FLAG0_PLAYING_UNSAVED = 0x29,       // set when the game is loaded / a player is made (dSvProc_c),
+                                                // cleared by saving (dSaveData_c) and by the gatekeeper's WFC
+                                                // connection: still set at the next load = quit without saving
+                                                // (Mr. Resetti visits)
     PRIVATE_FLAG0_HRA_HOUSE_MODEL = 0x2A,       // the HRA's house model present was sent (70000 points)
     PRIVATE_FLAG0_HRA_WIDE_HOUSE_MODEL = 0x2B,  // the HRA's wide house model present was sent (100000 points)
     PRIVATE_FLAG0_HRA_TWO_STORY_MODEL = 0x2C,   // the HRA's two-story model present was sent (150000 points)
     PRIVATE_FLAG0_FISHING_ENTERED = 0x2D,       // the player entered this fishing tourney (d_ev_fishing)
     PRIVATE_FLAG0_CARD_REISSUE = 0x46,          // a new shopping card was asked for at the ATM; mailed on the next day
                                                 // (dPrivateData_c::updateBank), isCardMissing is FALSE meanwhile
+    PRIVATE_FLAG0_LOST_CHILD_RETURNED = 0x48,  // Katie was brought home to her town (d_travel_data,
+                                                // d_a_npc_sp_gatekeeper_a; inferred)
+    PRIVATE_FLAG0_LOST_CHILD_THANKS = 0x4A,     // her thank-you letter is due (sendLostChildThanks clears it)
     PRIVATE_FLAG0_MOM_FIRST_LETTER = 0x4F,      // Mom's first letter was delivered (dMotherMail::sendFirst)
     PRIVATE_FLAG0_SUNTAN = 0x50,                // d_a_player: 15 min (dPlayerMgr timer) outdoors on summer days, 10:00-17:00
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
@@ -71,6 +79,8 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
     PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
     PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
+    PRIVATE_FLAG1_LOST_CHILD_PENDING = 0x32,    // cleared when Katie is brought home (d_travel_data,
+                                                // d_a_npc_sp_gatekeeper_a; inferred)
     PRIVATE_FLAG1_BUG_OFF_JOINED = 0x35, // 0x35..0x38: dNpcInfo::bug_c
     PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START = 0x36,
     PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,

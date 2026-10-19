@@ -934,7 +934,7 @@ class dNetJoinDone_c {
     void reset();
     BOOL isAllDone() const; // 800D996C: set for every present member
     void setAllDone(u8 v);  // 800D99E4
-    u8 getAllDone() const;  // 800D99EC
+    BOOL getAllDone() const; // 800D99EC
 
     /* 0x0 */ u8 mDone[NET_MEMBER_MAX];
     /* 0x4 */ u8 mAllDone;
@@ -1502,7 +1502,7 @@ void startDisconnect();
 BOOL isJoinPlayersReady();
 // 800DD280: dNetTransfer_c::mItemsRecv (set when the last NET_DIRECT_XFER_ITEMS
 // part arrived); gatekeeper
-u8 isItemsReceived();
+BOOL isItemsReceived();
 // 800DD2A4: request member valid, its Mii received, transfer past its start
 // steps; d_sv_mgr waitNewPlayer
 BOOL isNewPlayerReady();
@@ -1517,7 +1517,7 @@ BOOL requestTown();
 BOOL isJoinDoneAll();
 // 800DD3F8: dNetJoinDone_c::getAllDone (NET_DIRECT_JOIN_DONE_HOST /
 // NET_PACKET_JOIN_DONE_HOST from the host); gatekeeper
-u8 getJoinAllDone();
+BOOL getJoinAllDone();
 void resetJoinDone(); // 800DD41C: dNetJoinDone_c::init; gatekeeper
 // 800DD440: dNetTransfer_c::mFinish: adds the joiner to mMembers / its scene
 // (NET_PACKET_JOIN_DONE / _HOST, NET_DIRECT_JOIN_DONE); gatekeeper
