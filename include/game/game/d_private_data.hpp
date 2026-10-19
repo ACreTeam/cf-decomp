@@ -97,6 +97,7 @@ enum dPrivateFlag0_e {
                                                 // Nook's part-time job starts (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_JOB_CHANGED = 0x31,           // the part-timer put the work clothes on (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_JOB_SCOLDED = 0x32,           // ... and was scolded once for taking them off
+    PRIVATE_FLAG0_GODDESS_MET = 0x37,           // talked to the fountain goddess once (d_a_npc_sp_goddess: first the axe question)
     PRIVATE_FLAG0_BRIDGE_SURVEY_HEARD = 0x38,   // Pelly / Phyllis explained the bridge survey once
     PRIVATE_FLAG0_TOWER_SURVEY_HEARD = 0x39,    // ... the lighthouse / windmill survey once
     PRIVATE_FLAG0_CARD_REISSUE = 0x46,          // a new shopping card was asked for at the ATM; mailed on the next day
@@ -112,6 +113,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
+    PRIVATE_FLAG0_BLANCA_MET = 0x54,            // Blanca asked about her face once (d_a_npc_sp_mysterycat: first-meeting message)
     PRIVATE_FLAG0_DIST_MAIL_PENDING = 0x57,     // a distribution letter waits (dPostOffice::canGetDistMail at load):
                                                 // Pete brings it to the house (d_a_npc_sp_perio, d_npc_mng)
     PRIVATE_FLAG0_RESET_COUNT_DROPPED = 0x58,   // the reset count went down (syncResetCount; Resetti's tenth lecture)
@@ -138,6 +140,7 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_SHOP_VOTE_RESULT = 0x6D,      // Nook tells the result of the store vote when the player leaves
                                                 // (d_a_npc_sp_tanukichi; inferred)
     PRIVATE_FLAG0_BUG_OFF_ENTERED = 0x6E,      // the player entered this Bug-Off (cleared once the letter is sent)
+    PRIVATE_FLAG0_KICKS_SWAP_ASKED = 0x6F,     // Kicks offered shoes of the other kind (d_a_npc_sp_kutsumigaki)
     PRIVATE_FLAG0_CITY_VISITED = 0x70,          // got off the bus in the city once (d_a_str_common, inferred)
     PRIVATE_FLAG0_GYROID_ASKED = 0x71,          // Brewster asked about the player's gyroids (d_a_npc_sp_cafe)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
@@ -194,7 +197,8 @@ enum dPrivateFlag1_e {
     PRIVATE_FLAG1_CAFE_RESETTI_TALKED = 0x20, // ... Mr. Resetti
     PRIVATE_FLAG1_CAFE_DON_TALKED = 0x21,     // ... Don Resetti
     PRIVATE_FLAG1_NOOK_POINT_PRESENT = 0x27, // exchanged today's present at Nook's point machine (d_a_rmobj_point)
-    PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
+    PRIVATE_FLAG1_SHOES_SHINED = 0x29, // Kicks shined the shoes today (d_a_npc_sp_kutsumigaki)
+    PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); set by the goddess's talk end
     PRIVATE_FLAG1_KK_TALKED = 0x30, // talked to K.K. Slider today (dNpcInfo::totakeke_c, town players)
     PRIVATE_FLAG1_KK_REQUESTED = 0x31, // asked K.K. for a song today (ditto)
     PRIVATE_FLAG1_LOST_CHILD_PENDING = 0x32,    // cleared when Katie is brought home (d_travel_data,
@@ -518,7 +522,7 @@ public:
     /* 0x881 */ u8 mSendPending; // d_wifi sends it once a day while set
     /* 0x882 */ u8 mDays;        // days until the next step (update)
     /* 0x883 */ u8 mActive;      // a design is being relayed
-    /* 0x884 */ u8 _884;
+    /* 0x884 */ u8 mFaceDrawn;   // a player of this town drew it as Blanca's face (d_a_npc_sp_mysterycat)
     /* 0x885 */ u8 mHops;        // friends it passed through; stops at 8 (isHopLimit)
 };
 
@@ -829,7 +833,7 @@ public:
     /* 0x869B */ s8 mBridgeVoteY;
     /* 0x869C */ u8 mBuildingVote;   // 1 windmill, 2 lighthouse (tallyBuildingVotes)
     /* 0x869D */ u8 mCafeCounts[5]; // per cafe guest (d_a_npc_sp_cafe_guest)
-    /* 0x86A2 */ u8 _86A2;
+    /* 0x86A2 */ u8 mShoeShineCount; // shoe shines by Kicks, counted up to 15 (d_a_npc_sp_kutsumigaki)
     /* 0x86A3 */ u8 mGracieStep;    // GracieGrace story step 0..10 (updateGracieStep; Gracie, the Able sisters, ...)
     /* 0x86A4 */ u8 mGracieChecks;  // Gracie's fashion checks, counted up to 3 (isGracieStoryReady; d_a_npc_sp_grace)
     /* 0x86A5 */ u8 mHouseSize;     // the house size (syncHouseSize; d_msg house size jump)

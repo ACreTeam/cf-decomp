@@ -2627,8 +2627,8 @@ BOOL dNpcMng_c::isPeteGateTime(dQuestEvent_e event) {
     return FALSE;
 }
 
-void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
-    *npc = dItem::Item();
+void dNpcMng_c::getTodayEventNpc(u16 *npc) {
+    *npc = dItem::ITEM_ID_NONE;
     const Spawn_c *spawn = findSpawn(l_eventNpcs, ARRAY_SIZE(l_eventNpcs),
                                      dScene::SCENE_FIELD, dScene::SCENE_NUM);
     if (spawn != NULL) {
@@ -2648,7 +2648,7 @@ void dNpcMng_c::getTodayEventNpc(dItem::Item *npc) {
             break;
         }
     }
-    if (npc->mId == dItem::ITEM_ID_NONE) {
+    if (*npc == dItem::ITEM_ID_NONE) {
         const Spawn_c *visitor =
             findSpawn(l_visitorNpcs, ARRAY_SIZE(l_visitorNpcs),
                       dScene::SCENE_FIELD, dScene::SCENE_NUM);

@@ -195,7 +195,8 @@ public:
     static BOOL isNotTownFlag5(dQuestEvent_e event);        // 801ACEEC
     static BOOL isWendellHere(dQuestEvent_e event);        // 801ACF1C
     static BOOL isPeteGateTime(dQuestEvent_e event);        // 801ACF94
-    static void getTodayEventNpc(dItem::Item *npc);         // 801ACFFC
+    // Writes a special NPC ID, or ITEM_ID_NONE. Always initializes the output.
+    static void getTodayEventNpc(u16 *npc);                  // 801ACFFC
 
     static void setShowTelop();                  // 801AD168: (q10) the telop at the next execute
 

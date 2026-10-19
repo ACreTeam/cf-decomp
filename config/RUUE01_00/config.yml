@@ -510,16 +510,19 @@ modules:
 - object: files/rels/d_a_npc_sp_gatekeeper_bNP.rel
   hash: e7610de4c094faa87ee1895eeac4d132f6581ade
   name: d_a_npc_sp_gatekeeper_bNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_gatekeeper_bNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_gatekeeper_bNP/splits.txt
 - object: files/rels/d_a_npc_sp_goddessNP.rel
   hash: da32c861256a3d6aee3424a9bc1204cf9fe45d26
   name: d_a_npc_sp_goddessNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_goddessNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_goddessNP/splits.txt
 - object: files/rels/d_a_npc_sp_mysterycatNP.rel
   hash: 8f40f494fb60fb4b768fdbe7c0706708eef7ff4b
   name: d_a_npc_sp_mysterycatNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_mysterycatNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_mysterycatNP/splits.txt
 - object: files/rels/d_a_npc_sp_yuutaroNP.rel

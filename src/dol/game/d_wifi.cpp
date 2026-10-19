@@ -817,7 +817,7 @@ BOOL receiveDesign(const dRelayDesign_c *board, const u64 *sender) {
     }
     dRelayDesign_c *mine = &dSaveData_c::getExtra()->mDesignBoard;
     if (mine->mDays != 0 && mine->mActive != 0) {
-        return mine->_884 == 0;
+        return mine->mFaceDrawn == 0;
     }
     if (mine->mDesign.mCreator.isValid()) {
         return TRUE;

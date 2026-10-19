@@ -143,10 +143,10 @@ void dRelayDesign_c::clear() {
     mKind = 2;
     mSendPending = 0;
     mActive = 0;
-    _884 = 0;
+    mFaceDrawn = 0;
     mHops = 0;
     mDays = 0;
-    dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x54);
+    dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, PRIVATE_FLAG0_BLANCA_MET);
 }
 
 // 80136694

@@ -549,7 +549,9 @@ BOOL isSceneReadyForBgm(); // 800FF840
 BOOL canHoldEquippedItem(); // 800FF8B0
 BOOL hasHairFeature(u8 hair, int bit); // 800FF94C
 BOOL currentHairHasFeature(int bit); // 800FF978
-u8 getShoeColor(u32 idx, u32 gender); // 800FF9C4
+// dPrivateData_c::mShoeKind: the kind of shoes (getShoeColor also takes SHOE_KIND_CURRENT).
+enum ShoeKind_e { SHOE_KIND_MALE, SHOE_KIND_FEMALE, SHOE_KIND_CURRENT };
+u8 getShoeColor(u32 look, u32 kind); // 800FF9C4: the shoe colour of a look (dItem::Look_e) for a ShoeKind_e
 BOOL isATriggeredFacing(const mVec3_c *pos, int maxAngle, f32 maxDist); // 800FFA50: A pressed while isFacingPosition
 BOOL isPointerWalking(); // 800FFAC0: walking with ACTOR_FLAG_POINTER_WALK (d_obj_cursor, d_clock)
 BOOL isToolState(); // 800FFB18: net, axe, rod, shovel, slingshot, dandelion, fireworks, bubbles
@@ -581,7 +583,7 @@ f32 getItemExchangeOffsetY(); // 80100548
 BOOL giveItem(const dItem::Item *item, int b, int c, int d, dActor_c *partner, f32 f1, f32 f2); // 80100550
 BOOL passHandItem(BOOL reach); // 80100644: STATE_HAND_ITEM_REACH / STATE_HAND_ITEM_TAKE (dAcNpc_c::action_c)
 BOOL returnHandItem(); // 801006A8: STATE_HAND_ITEM_RETURN (dAcNpc_c::action_c)
-BOOL setShoeColor(u8 shoeColor, u8 b); // 80100714
+BOOL setShoeColor(u8 shoeColor, u8 shoeKind); // 80100714
 BOOL pickUpPhone(); // 801007AC: STATE_PHONE_PICK_UP (d_a_rmobj_tel)
 BOOL hangUpPhone(); // 80100804: STATE_PHONE_HANG_UP after STATE_PHONE_TALK
 u32 requestInsectBite(); // 80100860: STATE_INSECT_BITE (d_insect_field, d_insect_museum)
