@@ -67,8 +67,8 @@ void executeSound() {
 }
 
 // 8000E2A0
-void fn_8000E2A0(int arg) {
-    SoundManager::getInstance()->setupStage(arg);
+BOOL sndSetupStage(int scene) {
+    return SoundManager::getInstance()->setupStage(scene);
 }
 
 // 8000E408: scene start.

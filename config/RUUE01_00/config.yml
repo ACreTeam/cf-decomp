@@ -221,16 +221,19 @@ modules:
 - object: files/rels/d_a_growup_msgNP.rel
   hash: 5cc9196dbbb68c2e719b10e002a912f44e2348e1
   name: d_a_growup_msgNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_growup_msgNP/symbols.txt
   splits: config/RUUE01_00/d_a_growup_msgNP/splits.txt
 - object: files/rels/d_a_nameplateNP.rel
   hash: d3a0a14c622fb13737c17e6c4593a02f780d7c1a
   name: d_a_nameplateNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_nameplateNP/symbols.txt
   splits: config/RUUE01_00/d_a_nameplateNP/splits.txt
 - object: files/rels/d_a_nameplate_museumNP.rel
   hash: 8d4b1cefe08f2f11111e1affc17a96ad4991d6b9
   name: d_a_nameplate_museumNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_nameplate_museumNP/symbols.txt
   splits: config/RUUE01_00/d_a_nameplate_museumNP/splits.txt
 - object: files/rels/d_a_npc_cafeNP.rel
@@ -688,6 +691,7 @@ modules:
 - object: files/rels/d_a_sign_tagNP.rel
   hash: 668e8a59530e207a6eacb87b8840522fe39eca0f
   name: d_a_sign_tagNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_sign_tagNP/symbols.txt
   splits: config/RUUE01_00/d_a_sign_tagNP/splits.txt
 - object: files/rels/d_a_strNP.rel
@@ -805,6 +809,7 @@ modules:
 - object: files/rels/d_shop_fgNP.rel
   hash: de2e7cc4310e4701c6b7e88d6fed550c55cc321a
   name: d_shop_fgNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_shop_fgNP/symbols.txt
   splits: config/RUUE01_00/d_shop_fgNP/splits.txt
 - object: files/rels/d_skyNP.rel
@@ -838,6 +843,7 @@ modules:
 - object: files/rels/d_s_stageNP.rel
   hash: a07d9eba811fbb2f315cb70423b3223f1e9cf09d
   name: d_s_stageNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_s_stageNP/symbols.txt
   splits: config/RUUE01_00/d_s_stageNP/splits.txt
 - object: files/rels/d_title_demoNP.rel

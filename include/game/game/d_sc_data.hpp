@@ -85,11 +85,11 @@ struct ActorData_c {
 // A panel actor's parameter: its item ids and the layout pane it shows them on.
 struct PanelData_c {
     /* 0x00 */ u32 mKind;
-    /* 0x04 */ s32 mRoom; // -1: none
+    /* 0x04 */ s32 mMsgCode; // a fossil's description message (d_a_nameplate_museum), -1: none
     /* 0x08 */ u32 *mIds;
     /* 0x0C */ u32 mCount;
     /* 0x10 */ char *mName;
-    /* 0x14 */ u32 mFlags;
+    /* 0x14 */ u8 mSolid; // the actor has collision (dObjc)
 }; // size 0x18
 
 // dScene::SCENE_DATA_3 (scene settings): a kind and its data (a pointer to a

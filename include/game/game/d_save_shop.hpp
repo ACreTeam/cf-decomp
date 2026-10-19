@@ -33,6 +33,26 @@ enum {
 // sellAndNotify: no stock slot was sold (catalog orders, items the player sells).
 #define SHOP_SLOT_NONE 0xFF
 
+// The stock slots of dSaveShop_c (getItem), by kind; *_NUM is the most a stage stocks.
+enum {
+    SHOP_SLOT_TOOL = 0, // tools
+    SHOP_SLOT_TOOL_NUM = 6,
+    SHOP_SLOT_MEDICINE = 6,
+    SHOP_SLOT_SEED = 7, // seed bags
+    SHOP_SLOT_SEED_NUM = 7,
+    SHOP_SLOT_SAPLING = 14,
+    SHOP_SLOT_SAPLING_NUM = 3,
+    SHOP_SLOT_FTR = 17,
+    SHOP_SLOT_FTR_NUM = 8,
+    SHOP_SLOT_WALL = 25,
+    SHOP_SLOT_WALL_NUM = 3,
+    SHOP_SLOT_CARPET = 28,
+    SHOP_SLOT_CARPET_NUM = 3,
+    SHOP_SLOT_PAPER = 31, // stationery
+    SHOP_SLOT_PAPER_NUM = 4,
+    SHOP_SLOT_PAINT = 35,
+};
+
 // sys_STRING/STR_Unit: the store's name ("Nook's Cranny"), + SHOP_STAGE_*.
 #define SHOP_NAME_UNIT_MSG 0x2E
 

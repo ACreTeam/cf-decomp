@@ -17,12 +17,12 @@ public:
     void setProgram(u8 program);            // 8016CD84
     BOOL isKyosyoProgram() const;           // 8016CD8C: mProgram is one of Frillard's (1..29, flag 0 in 8047B130)
     u8 drawSisyoProgram();                  // 8016CDC4: a random Dr. Shrunk program + 1
-    void setFlag9(u8 on);                   // 8016CE80: setting one of _9 / mOpen clears the other
+    void setTicket(u8 on);                  // 8016CE80: setting one of mTicket / mOpen clears the other
     void setOpen(u8 on);                    // 8016CE98: (dtk merged it into 8016CE80)
 
     /* 0x4 */ u8 mProgram; // today's program index + 1 (0: none)
     /* 0x5 */ u8 _5[4];
-    /* 0x9 */ u8 _9;
+    /* 0x9 */ u8 mTicket; // a ticket was bought for the next show (d_a_ticket_counter)
     /* 0xA */ u8 mOpen;    // nonzero while a show is on
 }; // size 0xC
 

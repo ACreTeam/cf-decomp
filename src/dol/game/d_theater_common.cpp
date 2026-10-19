@@ -11,7 +11,7 @@ namespace dTheater {
 common_c g_common;
 
 // 8016CCCC
-common_c::common_c() : mProgram(0), _9(0), mOpen(0) {
+common_c::common_c() : mProgram(0), mTicket(0), mOpen(0) {
     memset(_5, 0, sizeof(_5));
 }
 
@@ -21,7 +21,7 @@ common_c::~common_c() {}
 // 8016CD64
 void common_c::clear() {
     mProgram = 0;
-    _9 = 0;
+    mTicket = 0;
     mOpen = 0;
     memset(_5, 0, sizeof(_5));
 }
@@ -55,8 +55,8 @@ u8 common_c::drawSisyoProgram() {
 }
 
 // 8016CE80
-void common_c::setFlag9(u8 on) {
-    _9 = on;
+void common_c::setTicket(u8 on) {
+    mTicket = on;
     if (on) {
         setOpen(0);
     }
@@ -66,7 +66,7 @@ void common_c::setFlag9(u8 on) {
 void common_c::setOpen(u8 on) {
     mOpen = on;
     if (on) {
-        setFlag9(0);
+        setTicket(0);
     }
 }
 

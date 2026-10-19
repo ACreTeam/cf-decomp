@@ -52,11 +52,11 @@ void sndSetSeaDist(f32 dist);                       // 800101F4: the distance to
 void sndStartReverb();                              // 8001009C: starts the reverb
 bool isSummerMorningStart();                        // 8001026C: no callers in the DOL or the RELs
 void checkSummerMorningStart();                     // 80010274: at game start (d_sv_proc): 16 Mar..15 Sep, 6:00..9:59
+BOOL sndSetupStage(int scene);                      // 8000E2A0: loads the scene's sound (d_s_stage: FALSE until done)
 void clearSummerMorningStart();                     // 800102F8: also cleared by sndInitThread and the first sndSceneStart after a reset
 
 extern "C" {
 void fn_8000E06C();                                          // 8000E06C: empty (d_sys)
-void fn_8000E2A0(int arg);                                   // 8000E2A0: no callers
 void fn_8000E868();                                          // 8000E868: (d_reset)
 void fn_8000E9C0();                                          // 8000E9C0: (d_wifi_err)
 void fn_8000EB20();                                          // 8000EB20: (d_caution)

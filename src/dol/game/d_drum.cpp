@@ -191,7 +191,7 @@ edge_c::edge_c() : mPos(0.0f, 0.0f, 0.0f) {
     mParam = l_hostIO.mEdge;
 }
 
-edge_c::edge_c(const mVec3_c &pos) {
+void edge_c::set(const mVec3_c &pos) {
     mPos = pos;
     mParam = l_hostIO.mEdge;
 }

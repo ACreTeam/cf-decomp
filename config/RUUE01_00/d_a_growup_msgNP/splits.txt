@@ -2,7 +2,7 @@ Sections:
 	.text       type:code align:4
 	.ctors      type:rodata align:4
 	.dtors      type:rodata align:4
-	.rodata     type:rodata align:8
+	.data       type:data align:8
 	.bss        type:bss align:8
 
 d_a_growup_msgNP/global_destructor_chain.c:
@@ -13,4 +13,4 @@ d_a_growup_msgNP/rel_init.cpp:
 
 d_a_growup_msgNP/d_a_growup_msg.cpp:
 	.text       start:0x0000005C end:0x000003E4
-	.rodata     start:0x00000000 end:0x00000178
+	.data       start:0x00000000 end:0x00000178

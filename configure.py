@@ -1783,28 +1783,28 @@ config.libs = [
     Rel(
         "d_a_growup_msgNP",
         [
-            Object(NonMatching, "d_a_growup_msgNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_growup_msgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_growup_msgNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_growup_msgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_growup_msgNP/d_a_growup_msg.cpp"),
+            Object(Matching, "d_a_growup_msgNP/d_a_growup_msg.cpp"),
         ],
     ),
     Rel(
         "d_a_nameplateNP",
         [
-            Object(NonMatching, "d_a_nameplateNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_nameplateNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_nameplateNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_nameplateNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_nameplateNP/d_a_nameplate.cpp"),
+            Object(Matching, "d_a_nameplateNP/d_a_nameplate.cpp"),
         ],
     ),
     Rel(
         "d_a_nameplate_museumNP",
         [
-            Object(NonMatching, "d_a_nameplate_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_nameplate_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_nameplate_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_nameplate_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_nameplate_museumNP/d_a_nameplate_museum.cpp"),
+            Object(Matching, "d_a_nameplate_museumNP/d_a_nameplate_museum.cpp"),
         ],
     ),
     Rel(
@@ -2512,10 +2512,10 @@ config.libs = [
     Rel(
         "d_a_sign_tagNP",
         [
-            Object(NonMatching, "d_a_sign_tagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_sign_tagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_sign_tagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_sign_tagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_sign_tagNP/d_a_sign_tag.cpp"),
+            Object(Matching, "d_a_sign_tagNP/d_a_sign_tag.cpp"),
         ],
     ),
     Rel(
@@ -2530,10 +2530,10 @@ config.libs = [
     Rel(
         "d_a_str_cdbbsNP",
         [
-            Object(NonMatching, "d_a_str_cdbbsNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_str_cdbbsNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_str_cdbbsNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_str_cdbbsNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_str_cdbbsNP/d_a_str_cdbbs.cpp"),
+            Object(Matching, "d_a_str_cdbbsNP/d_a_str_cdbbs.cpp"),
         ],
     ),
     Rel(
@@ -2566,10 +2566,10 @@ config.libs = [
     Rel(
         "d_a_ticket_counterNP",
         [
-            Object(NonMatching, "d_a_ticket_counterNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_ticket_counterNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_ticket_counterNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_ticket_counterNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_ticket_counterNP/d_a_ticket_counter.cpp"),
+            Object(Matching, "d_a_ticket_counterNP/d_a_ticket_counter.cpp"),
         ],
     ),
     Rel(
@@ -2683,10 +2683,10 @@ config.libs = [
     Rel(
         "d_shop_fgNP",
         [
-            Object(NonMatching, "d_shop_fgNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_shop_fgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_shop_fgNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_shop_fgNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_shop_fgNP/d_shop_fg.cpp"),
+            Object(Matching, "d_shop_fgNP/d_shop_fg.cpp"),
         ],
     ),
     Rel(
@@ -2710,10 +2710,10 @@ config.libs = [
     Rel(
         "d_s_stageNP",
         [
-            Object(NonMatching, "d_s_stageNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_s_stageNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_s_stageNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_s_stageNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_s_stageNP/d_s_stage.cpp"),
+            Object(Matching, "d_s_stageNP/d_s_stage.cpp"),
         ],
     ),
     Rel(

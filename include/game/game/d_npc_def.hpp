@@ -6,6 +6,7 @@
 
 // Special npc item ids (names after ac-decomp's SP_NPC_*); most are still literals.
 #define SP_NPC_KABUPEDDLER 0x8001 // Joan, the turnip seller (d_a_npc_sp_kaburiba; d_a_npc_sp_gatekeeper_b)
+#define SP_NPC_SHOP_MASTER 0x8002 // Tom Nook (d_a_npc_sp_op_tanukichi; the nameplate of an empty house)
 #define SP_NPC_BROKER 0x8003 // Crazy Redd (npc_SP/NPC_tunekichi; d_a_str_town)
 #define SP_NPC_TOTAKEKE 0x8007 // K.K. Slider (d_a_npc_sp_totakeke; d_a_npc_sp_gatekeeper_b)
 #define SP_NPC_SABLE 0x8008 // Sable (d_a_npc_sp_kinuyo: Mabel's talk partner)

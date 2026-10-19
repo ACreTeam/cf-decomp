@@ -50,7 +50,7 @@ namespace dWorld {
     class edge_c {
     public:
         edge_c();                                                // 80082D74
-        edge_c(const mVec3_c &pos);                              // 80082DA8
+        void set(const mVec3_c &pos);                            // 80082DA8: the edge at pos (d_s_stage: the camera center)
 
         /* 0x00 */ mVec3_c mPos;
         /* 0x0C */ mVec3_c mParam; // x: margin, y: drop rate, z: pull rate (hostIO 420, 1/6, 1/15)
