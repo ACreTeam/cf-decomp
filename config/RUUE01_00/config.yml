@@ -397,6 +397,7 @@ modules:
   splits: config/RUUE01_00/d_a_npc_sp_catherineNP/splits.txt
 - object: files/rels/d_a_npc_sp_futaNP.rel
   hash: 051bfe5ef18443bae18435147e03f0c1b6d67fb4
+  force_active: [__global_destructor_chain]
   name: d_a_npc_sp_futaNP
   symbols: config/RUUE01_00/d_a_npc_sp_futaNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_futaNP/splits.txt

@@ -1753,6 +1753,6 @@ void futa_c::setGreeted(u8 greeted) {
 }
 
 // 800F8C14
-u8 futa_c::isGreeted() {
+BOOL futa_c::isGreeted() {
     return mGreeted;
 }

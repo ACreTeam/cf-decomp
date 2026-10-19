@@ -2062,10 +2062,10 @@ config.libs = [
     Rel(
         "d_a_npc_sp_futaNP",
         [
-            Object(NonMatching, "d_a_npc_sp_futaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_npc_sp_futaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_npc_sp_futaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_npc_sp_futaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_npc_sp_futaNP/d_a_npc_sp_futa.cpp"),
+            Object(Matching, "d_a_npc_sp_futaNP/d_a_npc_sp_futa.cpp"),
         ],
     ),
     Rel(
