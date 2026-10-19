@@ -8,6 +8,7 @@
 // completion order), so its classes must complete before d_dvd.hpp's and ours.
 #include <game/game/d_bgcf.hpp>
 #include <game/game/d_dvd.hpp>
+#include <game/game/d_str_debug.hpp>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <game/mLib/m_vec.hpp>
 #include <cstring>
@@ -432,7 +433,6 @@ mVec3_c *getCityReturnPos(); // 8016A28C: where the player arrives back in the t
 BOOL isAtFountainFront(const mVec3_c &pos, const s16 &angle, mVec3_c *front, mVec3_c *base, BOOL draw);
 void playRoomSe();                            // 8016A548: the room's ambient sound (houses, shop, office, tailor)
 BOOL getBusStopBox(mVec3_c *min, mVec3_c *max); // 8016A614: the box around the bus stop
-BOOL fn_8016A87C();                           // 8016A87C: FALSE (meaning unknown)
 int getCurBuildingKind(u8 *other);            // 8016A884: the current scene's building type (0: none)
 
 } // namespace dSTR

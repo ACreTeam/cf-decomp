@@ -1775,7 +1775,7 @@ BOOL area_c::isInside(const mVec3_c &pos) const {
 }
 
 // 8016A87C
-BOOL fn_8016A87C() { return FALSE; }
+BOOL isForceClosed() { return FALSE; }
 
 // 8016A884
 int getCurBuildingKind(u8 *other) {

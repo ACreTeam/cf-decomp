@@ -77,8 +77,11 @@ public:
         MENU_BANK_PAY = 0x4C,
         MENU_MUSIC = 0x5D,
         MENU_STORAGE = 0x5E,
+        MENU_RECYCLE_BOX = 0x60, // the town hall's recycle box (daRmobjRB_c)
         MENU_MAILBOX = 0x61, // the mailbox's letters (daStrPost_c)
+        MENU_FLAG_DESIGN = 0x6B, // the house flag's design, asked for on the phone (daRmobjTel_c)
         MENU_BBS = 0x6D,     // the bulletin board (daStrBbs_c)
+        MENU_POINT_PRESENT = 0x75, // the presents of Nook's point machine (daRmobjPoint_c)
     };
 
     static BOOL openMenu(u8 menu);

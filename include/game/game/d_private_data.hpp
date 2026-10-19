@@ -123,9 +123,11 @@ enum dPrivateFlag0_e {
 };
 enum dPrivateFlag1_e {
     PRIVATE_FLAG1_CAFE_TALKED = 0x4, // talked to Brewster today (d_a_npc_sp_cafe)
+    PRIVATE_FLAG1_NOOK_VISIT_POINTS = 0xA, // got today's visitor points at Nook's point machine (d_a_rmobj_point)
     PRIVATE_FLAG1_FISHING_JOINED = 0x11, // 0x11..0x13: dNpcInfo::uomasa_c
     PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
     PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
+    PRIVATE_FLAG1_NOOK_POINT_PRESENT = 0x27, // exchanged today's present at Nook's point machine (d_a_rmobj_point)
     PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
     PRIVATE_FLAG1_LOST_CHILD_PENDING = 0x32,    // cleared when Katie is brought home (d_travel_data,
                                                 // d_a_npc_sp_gatekeeper_a; inferred)
@@ -262,6 +264,8 @@ extern "C" BOOL fn_802C4404(dMiiCreateID_c *id, u16 *index);
 // A saved outfit (0xC); 8 of these at dPrivateData_c+0x7F40 (mOutfits).
 class dOutfit_c {
 public:
+    enum { FLAG_VALID = 1 << 0 };
+
     dOutfit_c(); // 8013AB98
     ~dOutfit_c(); // 8013ABD0
 
@@ -280,12 +284,25 @@ public:
         return TRUE;
     }
 
-    BOOL isValid() const {
-        return mFlags.valid;
+    bool isValid() const {
+        return mFlagByte & FLAG_VALID;
     }
 
     BOOL isMale() const {
         return mFlags.male;
+    }
+
+    // The outfit, after setting Gracie's default clothes while it is not valid (d_a_rmobj_grace; d_wifi has
+    // the same code as its local getShownOutfit).
+    dOutfit_c *getShown() {
+        if (isValid()) {
+            return this;
+        }
+        mEquip.mShirt = dItem::Item(dItem::ITEM_IDX_GRACIES_TOP);
+        mEquip.mHat = dItem::Item(dItem::ITEM_IDX_GRACIE_HAT);
+        mEquip.mHeld = dItem::Item();
+        mEquip.mAcc = dItem::Item();
+        return this;
     }
 
     BOOL noShoes() const {

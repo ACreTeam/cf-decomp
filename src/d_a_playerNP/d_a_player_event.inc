@@ -120,7 +120,7 @@ void dAcPlayer_c::initPhonePickUp() {
     static const f32 l_z = 399.0f;
 
     setAnm(HMN_ANM_TEL1, l_moveFrames, l_y, 1.0f, 16.0f, m3d::FORWARD_ONCE, FALSE);
-    fn_95_1B8();
+    daRmobjTel_c::pickUp();
     mTargetPos.set(l_x, l_y, l_z);
     mTargetPos.y = dBGCF::getGroundY(&mTargetPos, FALSE);
     mVec3_c diff = mTargetPos - mPos;
@@ -153,7 +153,7 @@ void dAcPlayer_c::endPhonePickUp(int nextState) {}
 // .text 0x1E8E0
 void dAcPlayer_c::initPhoneTalk() {
     setAnmNoMorph(HMN_ANM_TEL_WAIT1, m3d::FORWARD_LOOP);
-    fn_95_1E4();
+    daRmobjTel_c::talk();
 }
 
 // .text 0x1E90C
@@ -170,7 +170,7 @@ void dAcPlayer_c::endPhoneTalk(int nextState) {}
 void dAcPlayer_c::initPhoneHangUp() {
     setAnm(HMN_ANM_TEL1, 12.0f, 0.0f, 1.0f, 16.0f, m3d::REVERSE_ONCE, FALSE);
     mAnm.setFrame(mAnm.mFrameMax - 1.0f);
-    fn_95_210();
+    daRmobjTel_c::hangUp();
 }
 
 // .text 0x1E9C0

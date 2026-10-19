@@ -564,11 +564,13 @@ modules:
   name: d_a_rmobj_barricadeNP
   symbols: config/RUUE01_00/d_a_rmobj_barricadeNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_barricadeNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_cafeNP.rel
   hash: 87a8ac3d70f23e8e5793aeb797ceb0e17fa68042
   name: d_a_rmobj_cafeNP
   symbols: config/RUUE01_00/d_a_rmobj_cafeNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_cafeNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_checkpNP.rel
   hash: 7a2cd172c335c2b1f7227885c611f96a3af81c2a
   name: d_a_rmobj_checkpNP
@@ -584,6 +586,7 @@ modules:
   name: d_a_rmobj_fossilNP
   symbols: config/RUUE01_00/d_a_rmobj_fossilNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_fossilNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_graceNP.rel
   hash: 359d58a1be97c9cc24dfd392867bc9c7cd6973e2
   name: d_a_rmobj_graceNP
@@ -599,11 +602,13 @@ modules:
   name: d_a_rmobj_picNP
   symbols: config/RUUE01_00/d_a_rmobj_picNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_picNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_recycleboxNP.rel
   hash: 727c2da5a2423c16e13c32119a5c625965fef1e6
   name: d_a_rmobj_recycleboxNP
   symbols: config/RUUE01_00/d_a_rmobj_recycleboxNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_recycleboxNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_resetNP.rel
   hash: 27f6de8050f28eca14a04488f744f2fa10b14470
   name: d_a_rmobj_resetNP
@@ -614,16 +619,19 @@ modules:
   name: d_a_rmobj_sampleNP
   symbols: config/RUUE01_00/d_a_rmobj_sampleNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_sampleNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_sewing_machineNP.rel
   hash: 13873ab06fddd8c83e38a6a3bc722dcd1b884ff9
   name: d_a_rmobj_sewing_machineNP
   symbols: config/RUUE01_00/d_a_rmobj_sewing_machineNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_sewing_machineNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_telNP.rel
   hash: 28337972e0a2f8bfd29654f4ac3f3ee01418a5ba
   name: d_a_rmobj_telNP
   symbols: config/RUUE01_00/d_a_rmobj_telNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_telNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_rmobj_theaterNP.rel
   hash: 8725dc35b1d34115fb7f6426fab3b5ab7faa1f5e
   name: d_a_rmobj_theaterNP
@@ -634,6 +642,7 @@ modules:
   name: d_a_rmobj_mirrorballNP
   symbols: config/RUUE01_00/d_a_rmobj_mirrorballNP/symbols.txt
   splits: config/RUUE01_00/d_a_rmobj_mirrorballNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_sign_tagNP.rel
   hash: 668e8a59530e207a6eacb87b8840522fe39eca0f
   name: d_a_sign_tagNP

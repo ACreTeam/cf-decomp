@@ -3,6 +3,7 @@
 
 #include <game/framework/f_profile_name.hpp>
 #include <game/game/d_environment.hpp>
+#include <game/game/d_str.hpp>
 #include <egg/math/eggMath.h>
 #include <game/framework/f_profile.hpp>
 #include <game/game/d_actor.hpp>

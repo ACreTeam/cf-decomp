@@ -85,7 +85,7 @@ public:
         /* 0x190 */ mAllocator_c mAllocator;
     };
 
-    virtual ~daRmobj_c();                  // 80064F40
+    // No user-declared dtor: the implicit one (80064F40, then its thunk) is inlined into the RELs' dtors.
     virtual int preCreate();               // 800636C4
     virtual int preDelete();               // 8006374C
     virtual int preExecute();              // 800636F0

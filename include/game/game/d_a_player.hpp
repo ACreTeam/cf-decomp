@@ -1273,7 +1273,7 @@ class dAcPlayer_c : public dDemoActor_c, public dMsg::Rcpt_c {
     // ---- State 0x8B STATE_TRICK_CHANGE (halloween_change1): mStep 8 / 9
     void executeTrickChange();             // .text 1E098
     void setToolPartAnm(f32 blend, BOOL bothArms); // .text 1E2B4: the held tool's arm animation (mPartAnm)
-    // ---- States 0x85..0x87 STATE_PHONE_* (tel1 / tel_wait1): the phone (d_a_rmobj_tel fn_95_*)
+    // ---- States 0x85..0x87 STATE_PHONE_* (tel1 / tel_wait1): the phone (daRmobjTel_c::pickUp / talk / hangUp)
     void initPhonePickUp();                // .text 1E71C: walk to (304, 399), face north
     void executePhonePickUp();             // .text 1E848
     void endPhonePickUp(int nextState);    // .text 1E8DC

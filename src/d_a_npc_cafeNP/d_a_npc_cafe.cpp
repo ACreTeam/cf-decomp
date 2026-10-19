@@ -4,12 +4,8 @@
 #include <game/game/d_net.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_a_player.hpp>
+#include <game/game/d_a_rmobj_cafe.hpp>
 
-// Inferred: the cafe room object tracks creation of its villager actor (module
-// 84).
-namespace dARmobjCafe {
-extern u8 g_npcCreated;
-}
 
 namespace dANpcCafe {
 // .text 0x5C

@@ -7,12 +7,17 @@
 #include <game/framework/f_base.hpp>
 #include <game/game/d_fireworks.hpp>
 #include <game/game/d_light.hpp>
-#include <game/game/d_str.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_color.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/math.h>
 #include <revolution/GX.h>
+
+// Only declared here (d_str.hpp): the users of the lights, e.g. d_a_rmobj_theater, don't include the town
+// structures (d_str.hpp's dDvd::brresBank_c subclasses change their weak function order).
+namespace dSTR {
+class light_c;
+}
 
 // The sun and the moon: a far light turning with the time of day.
 class dEnvLight_c : public dLight::FarLight_c {
@@ -313,6 +318,15 @@ public:
     }
     virtual ~dFixSpotSwitchLight_c() {
         sInstance = NULL;
+    }
+    // Switches the light on or off at once (d_a_rmobj_mirrorball).
+    void setOnImmediate(u8 on) {
+        mOn = on;
+        if (mOn) {
+            mRatio = 1.0f;
+        } else {
+            mRatio = 0.0f;
+        }
     }
     virtual void calc();
 

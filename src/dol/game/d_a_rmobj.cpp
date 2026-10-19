@@ -496,5 +496,3 @@ mVec3_c *daRmobj_c::getDemoPosition() {
     }
     return &mLookPos;
 }
-
-daRmobj_c::~daRmobj_c() {}

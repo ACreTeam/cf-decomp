@@ -40,7 +40,7 @@ BASE_PROFILE(STR_TOWN, daStrTown_c)
 
 // .text:0xF0: the windows are lit from 18:00 to 23:00.
 BOOL daStrTown_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -106,7 +106,7 @@ BASE_PROFILE(STR_BARBER, daStrBarber_c)
 
 // .text:0x55C: open from 8:00 to 21:00.
 BOOL daStrBarber_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -119,7 +119,7 @@ BOOL daStrBarber_c::isNight() {
 
 // .text:0x604
 BOOL daStrBarber_c::isEtcLightOn() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -132,7 +132,7 @@ BOOL daStrBarber_c::isEtcLightOn() {
 
 // .text:0x6AC
 int daStrBarber_c::getCheckMsg() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return DOOR_MSG_BARBER_CLOSED;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -153,7 +153,7 @@ BASE_PROFILE(STR_HAPPY, daStrHappy_c)
 
 // .text:0x7FC
 BOOL daStrHappy_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -166,7 +166,7 @@ BOOL daStrHappy_c::isNight() {
 
 // .text:0x8A4
 BOOL daStrHappy_c::isEtcLightOn() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -323,7 +323,7 @@ void daStrBroker_c::onMessageEnd(int kind) {
 
 // .text:0xE48: open from 10:00 to 1:00.
 BOOL daStrBroker_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -448,7 +448,7 @@ BASE_PROFILE(STR_FORTUNE, daStrFortune_c)
 
 // .text:0x13E4
 BOOL daStrFortune_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -461,7 +461,7 @@ BOOL daStrFortune_c::isNight() {
 
 // .text:0x148C: open from 10:00.
 int daStrFortune_c::getCheckMsg() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return DOOR_MSG_FORTUNE_CLOSED;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -479,7 +479,7 @@ BASE_PROFILE(STR_GRACE, daStrGrace_c)
 
 // .text:0x15D4
 BOOL daStrGrace_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -492,7 +492,7 @@ BOOL daStrGrace_c::isNight() {
 
 // .text:0x167C
 BOOL daStrGrace_c::isEtcLightOn() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -505,7 +505,7 @@ BOOL daStrGrace_c::isEtcLightOn() {
 
 // .text:0x1724: open from 9:00 to 21:00.
 int daStrGrace_c::getCheckMsg() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return DOOR_MSG_GRACE_CLOSED;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -535,7 +535,7 @@ BASE_PROFILE(STR_THEATER, daStrTheater_c)
 
 // .text:0x1924
 BOOL daStrTheater_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -548,7 +548,7 @@ BOOL daStrTheater_c::isNight() {
 
 // .text:0x19CC
 BOOL daStrTheater_c::isNeonOn() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -561,7 +561,7 @@ BOOL daStrTheater_c::isNeonOn() {
 
 // .text:0x1A74
 BOOL daStrTheater_c::isEtcLightOn() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     dTime_c now = *dTime_c::getCurrent();
@@ -690,7 +690,7 @@ int daStrReset_c::execute() {
 
 // .text:0x2274
 BOOL daStrReset_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     return mIsOpen;
@@ -707,7 +707,7 @@ BASE_PROFILE(STR_ATM, daStrAtm_c)
 
 // .text:0x2364
 BOOL daStrAtm_c::isNight() {
-    return !dSTR::fn_8016A87C();
+    return !dSTR::isForceClosed();
 }
 
 // ---------------------------------------------------------------------------
@@ -746,7 +746,7 @@ int daStrLamp_c::doDelete() {
 
 // .text:0x24CC: lit from 18:00 to 6:00, and all day in bad weather.
 BOOL daStrLamp_c::isNight() {
-    if (dSTR::fn_8016A87C()) {
+    if (dSTR::isForceClosed()) {
         return FALSE;
     }
     if (dWeather_c::sInstance != NULL &&
