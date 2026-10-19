@@ -191,6 +191,7 @@ struct dHomeList_c {
     static int getHomeFromScene(int *room, u8 scene); // 8013E04C
     dHome_c *getHome(u32 home); // 8013E0A8
     const dHome_c *getHome(u32 home) const; // 8013E0C4
+    dHome_c *getCurrentPlayerHome() { return getHome(findCurrentPlayer()); } // NULL: no house (d_a_npc_sp_asami)
     int getPlayerOfHome(u32 home); // 8013E0E0
     dPrivateData_c *getHomePlayer(u32 home); // 8013E158
     dPrivateData_c *getHomePlayerRaw(u32 home); // 8013E18C

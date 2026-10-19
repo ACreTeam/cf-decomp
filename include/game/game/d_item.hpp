@@ -10,6 +10,7 @@
 #include <nw4r/g3d/res/g3d_resfile.h>
 
 void setItemName(dScript::Word_c *word, dItem::Item item); // 800C0FF4: the item's name (d_item.cpp)
+void setItemFashionName(dScript::Word_c *word, dItem::Item item); // 800C1108: the item's fashion theme (d_item.cpp)
 
 // Item definition tables loaded from /Item/item.arc.
 // RTTI names place these under the dItem namespace.
@@ -459,6 +460,46 @@ enum Fashion {
     FASHION_HEROINE,         // 0x38 heroine
 
     FASHION_COUNT, // 0x39
+};
+
+// Item colour (BITM colour A / B, getColorA). Names follow sys_STRING/STR_Color, whose entry N + 1 is
+// colour N (setColorName).
+enum Color {
+    COLOR_NEUTRAL,  // 0x00
+    COLOR_YELLOW,   // 0x01
+    COLOR_RED,      // 0x02
+    COLOR_ORANGE,   // 0x03
+    COLOR_GREEN,    // 0x04
+    COLOR_BLUE,     // 0x05
+    COLOR_WHITE,    // 0x06
+    COLOR_BLACK,    // 0x07
+    COLOR_PURPLE,   // 0x08
+    COLOR_BROWN,    // 0x09
+    COLOR_PINK,     // 0x0A
+    COLOR_GRAY,     // 0x0B
+    COLOR_COLORFUL, // 0x0C
+    COLOR_AQUA,     // 0x0D
+    COLOR_BEIGE,    // 0x0E
+
+    COLOR_COUNT, // 0x0F
+};
+
+// Look of clothing (BITM::m_style, getStyle / getClothStyle). Names follow sys_STRING/STR_Look, whose
+// entry N + 1 is look N (setLookName).
+enum Look {
+    LOOK_CUTE,     // 0x00
+    LOOK_COOL,     // 0x01
+    LOOK_SUBTLE,   // 0x02
+    LOOK_GAUDY,    // 0x03
+    LOOK_STRANGE,  // 0x04
+    LOOK_FUNKY,    // 0x05
+    LOOK_REFINED,  // 0x06
+    LOOK_FRESH,    // 0x07
+    LOOK_STYLISH,  // 0x08
+    LOOK_STRIKING, // 0x09
+    LOOK_NONE,     // 0x0A
+
+    LOOK_COUNT, // 0x0B
 };
 
 // Furniture part A (BITM::m_ftrPartA); 0 is none (getCategoryQ5).
@@ -1333,7 +1374,14 @@ struct dlBlockList_c {
 // keep nameCategoryQ5_c defined before nameSeriesQ5_c).
 class nameFashion_c : public dString::Word_c {
 public:
+    nameFashion_c() {}
+    nameFashion_c(Item item) { setItemFashionName(this, item); } // weak (d_a_npc_sp_kinuyo)
     virtual ~nameFashion_c() {} // weak 80036274 (d_a_npc_nml)
+};
+// Used by d_a_npc_sp_grace (setColorName).
+class nameColor_c : public dString::Word_c {
+public:
+    virtual ~nameColor_c() {}
 };
 class nameLook_c : public dString::Word_c {
 public:
@@ -1370,6 +1418,7 @@ int getCategoryQ5(const dItem::Item &item); // 800C52DC
 // Word setters of d_item.cpp (global scope).
 void setFurnitureName(dScript::Word_c *name, u32 series); // 800C10B0
 void setFashionName(dScript::Word_c *name, u32 fashion); // 800C116C
+void setColorName(dScript::Word_c *name, u32 color);    // 800C11EC
 void setLookName(dScript::Word_c *name, int look);      // 800C1244
 void setQ4LookName(dScript::Word_c *name, int look);    // 800C12A4
 void setSeriesName(dScript::Word_c *name, u32 series);  // 800C1328

@@ -42,7 +42,7 @@ BOOL daRmobjBus_c::startTunnelExit() {
 }
 
 // .text 0x384
-u8 daRmobjBus_c::isTunnelExitStarted() {
+BOOL daRmobjBus_c::isTunnelExitStarted() {
     if (m_instance != NULL) {
         return m_instance->mTunnelExitStarted;
     }

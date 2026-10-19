@@ -73,6 +73,8 @@ enum {
 // dEvent::getTodayVisitor() (only the one the field manager uses is named).
 enum dVisitor_e {
     VISITOR_WISP = 5, // isVisitorHere: 20:00..6:00; procEvents buries a lamp on his day
+    VISITOR_WENDELL = 7, // d_a_npc_sp_seiichi
+    VISITOR_SAHARAH = 9, // d_a_npc_sp_roran
 };
 
 #define EVENT_ACTIVE_NUM 10

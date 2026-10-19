@@ -8,11 +8,19 @@
 
 namespace dSvPlayerFlag {
 
+// Flag_c::mState: what Saharah trades in this town.
+enum State_e {
+    STATE_FLOORING = 1, // old flooring for new carpets
+    STATE_WALLPAPER = 2, // old wallpaper for new wallpaper
+};
+
 struct Flag_c {
     void init();         // 801510A0: the state = 1 or 2 at random
     void clear(int idx); // 801510EC: clears villager idx's bit of the current player
     int get(int idx);    // 8015112C: the state when the current player is from this town, has flag1 0x10 and
                          // villager idx's bit set, else 0
+
+    int getState() const { return mState; }
 
     /* 0x0 */ u8 mState;
 }; // size 0x1

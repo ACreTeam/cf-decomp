@@ -103,10 +103,10 @@ void dSaveData_c::updateOnSave() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
         player->clearFlag0(PRIVATE_FLAG0_PLAYING_UNSAVED);
-        if (player->isFlag1(0x44)) {
+        if (player->isFlag1(PRIVATE_FLAG1_WENDELL_DIST_OFFERED)) {
             player->mDistPatternVersion = getExtra()->mDistPattern.mVersion;
-            player->setFlag1(0x3B);
-            player->clearFlag1(0x44);
+            player->setFlag1(PRIVATE_FLAG1_WENDELL_DIST_DESIGN);
+            player->clearFlag1(PRIVATE_FLAG1_WENDELL_DIST_OFFERED);
         }
         player->mDaysPassed = 0;
     }

@@ -11,9 +11,9 @@ namespace dSvPlayerFlag {
 // 801510A0
 void Flag_c::init() {
     if (cM::rndInt(2) == 0) {
-        mState = 1;
+        mState = STATE_FLOORING;
     } else {
-        mState = 2;
+        mState = STATE_WALLPAPER;
     }
 }
 
@@ -27,7 +27,7 @@ int Flag_c::get(int idx) {
     if (!dAcNpc_c::isPlayerFromThisTown()) {
         return 0;
     }
-    if (!dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(0x10)) {
+    if (!dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag1(PRIVATE_FLAG1_SAHARAH_ASKED)) {
         return 0;
     }
     int bits = dPlayerMgr::Mgr_c::getCurrentPlayer()->mVillagerDailyBits;

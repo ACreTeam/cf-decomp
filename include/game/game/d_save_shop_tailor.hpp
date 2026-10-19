@@ -17,7 +17,7 @@ public:
     dDesign_c *getDesign(int idx);                                       // 80147F80: idx % 8
     u16 getItem(int slot);                                               // 80147FA0: ITEM_IDX_SOLD_OUT_SIGN_00 once sold
     void update();                                                       // 80148004: daily, restocks
-    void sellAndNotify(int scene, int slot, int unitX, int unitZ, int price, int flag); // 80148210
+    void sellAndNotify(u8 scene, u8 slot, u8 unitX, u8 unitZ, int price, int flag); // 80148210
     void sell(int scene, int slot, int unitX, int unitZ);                // 801482BC: marks the slot sold, clears its unit
     BOOL isSold(int slot);                                               // 801483A4: TRUE for slots out of range
 

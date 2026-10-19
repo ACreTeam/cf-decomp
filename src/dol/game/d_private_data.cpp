@@ -636,10 +636,10 @@ void dPrivateData_c::dailyUpdate(int days) {
     if (days != 0) {
         memset(mFlags1, 0, sizeof(mFlags1));
         mVillagerDailyBits = 0;
-        if (isFlag0(0x17)) {
-            clearFlag0(0x17);
-            if (mCityVisitDays < 11) {
-                mCityVisitDays++;
+        if (isFlag0(PRIVATE_FLAG0_SABLE_TALKED)) {
+            clearFlag0(PRIVATE_FLAG0_SABLE_TALKED);
+            if (mSableTalkDays < 11) {
+                mSableTalkDays++;
             }
         }
         if (isFlag0(PRIVATE_FLAG0_CAFE_VISIT)) {
@@ -832,7 +832,7 @@ void dPrivateData_c::clear() {
 }
 
 // 80138580
-BOOL dPrivateData_c::isFlag0(u32 flag) const {
+bool dPrivateData_c::isFlag0(u32 flag) const {
     if (flag < PRIVATE_FLAGS0_NUM) {
         return (mFlags0[(int)flag >> 3] & (1 << (flag & 7))) != 0;
     }
@@ -1833,7 +1833,7 @@ void dOutfit_c::copy(const dOutfit_c *other) {
 }
 
 // 8013ADAC
-BOOL dOutfit_c::isSame(const dOutfit_c *other) const {
+BOOL dOutfit_c::isSame(const dOutfit_c *other, BOOL flag) const {
     BOOL same = mFlags.valid;
     if (same) {
         same = other->mFlags.valid;
@@ -2516,7 +2516,7 @@ int dPrivateData_c::getGracieStep() {
 
 // 8013C7CC
 BOOL dPrivateData_c::isGracieStoryReady() const {
-    if (_86A4 < 3) {
+    if (mGracieChecks < 3) {
         return FALSE;
     }
     if (!isFlag0(0x73)) {
@@ -2525,7 +2525,7 @@ BOOL dPrivateData_c::isGracieStoryReady() const {
     if (!isFlag0(0x74)) {
         return FALSE;
     }
-    if (mCityVisitDays < 11) {
+    if (mSableTalkDays < 11) {
         return FALSE;
     }
     return dSaveData_c::getTown()->mShops.mShop.mCountdown != 0x7F;
@@ -2541,10 +2541,10 @@ void dPrivateData_c::updateGracieStep() {
         }
         break;
     case 1:
-        if (isFlag0(0x79) && isFlag0(0x7A)) {
+        if (isFlag0(0x79) && isFlag0(PRIVATE_FLAG0_DRAMA_SABLE_HEARD)) {
             mGracieStep++;
             clearFlag0(0x79);
-            clearFlag0(0x7A);
+            clearFlag0(PRIVATE_FLAG0_DRAMA_SABLE_HEARD);
         }
         break;
     case 2:
@@ -2577,9 +2577,9 @@ void dPrivateData_c::updateGracieStep() {
         }
         break;
     case 8:
-        if (isFlag0(0x7A)) {
+        if (isFlag0(PRIVATE_FLAG0_DRAMA_SABLE_HEARD)) {
             mGracieStep++;
-            clearFlag0(0x7A);
+            clearFlag0(PRIVATE_FLAG0_DRAMA_SABLE_HEARD);
         }
         break;
     case 9:

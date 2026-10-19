@@ -210,6 +210,15 @@ public:
     virtual ~dFixFarSwitchLight_c() {
         sInstance = NULL;
     }
+    // Switches the light on or off at once (d_a_npc_sp_totakeke).
+    void setOn(u8 on) {
+        mOn = on;
+        if (mOn) {
+            mRatio = 1.0f;
+        } else {
+            mRatio = 0.0f;
+        }
+    }
     virtual void calc();
 
     /* 0x28 */ nw4r::ut::Color mColorOff;

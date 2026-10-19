@@ -550,6 +550,7 @@ public:
 class State_c {
 public:
     enum Flag_e {
+        FLAG_KK_SHOW = 1, // K.K. Slider's show at the Roost (d_a_npc_sp_totakeke)
         FLAG_ENTER = 2,
         FLAG_4 = 4,
         FLAG_8 = 8,

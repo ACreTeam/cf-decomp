@@ -8,7 +8,7 @@
 #include <game/framework/f_base.hpp>
 #include <game/game/d_dvd.hpp>
 #include <game/game/d_actor.hpp>
-#include <game/game/d_debug_page.hpp>
+#include <game/game/d_debug_page_inline.hpp>
 #include <game/game/d_a_npc_sp.hpp>
 #include <game/game/d_a_rmobj.hpp>
 #include <game/game/d_effect.hpp>

@@ -5,7 +5,7 @@
 // (fBase_c, dActor_c, dDebugPage_c, then the npc classes).
 #include <game/framework/f_base.hpp>
 #include <game/game/d_actor.hpp>
-#include <game/game/d_debug_page.hpp>
+#include <game/game/d_debug_page_inline.hpp>
 #include <game/game/d_a_npc_sp.hpp>
 
 // Nat, the host of the Bug-Off (REL d_a_npc_sp_bugNP, profile A_NPC_SP_BUG).

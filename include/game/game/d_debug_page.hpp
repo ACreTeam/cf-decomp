@@ -3,23 +3,14 @@
 
 #include <types.h>
 
-// A page of the debug menu (RTTI "dDebugPage_c"). The special npcs (bug,
-// catherine, fortune, franklin, cafe ...) derive their own page from it; the
-// menu is stripped from this build, so every page method is an empty inline
-// and nothing registers the pages (the RELs keep only the vtables). The
-// method names are provisional.
+// Debug-menu page interface. The method names are inferred.
+// Pages that use the default implementations include d_debug_page_inline.hpp.
 class dDebugPage_c {
   public:
-    // Weak copies come out in reverse declaration order.
-    virtual void open() {
-    }
-    virtual void close() {
-    }
-    virtual void execute() {
-    }
-    virtual BOOL isActive() {
-        return FALSE;
-    }
+    virtual void open();
+    virtual void close();
+    virtual void execute();
+    virtual BOOL isActive();
 }; // size 0x4
 
 #endif

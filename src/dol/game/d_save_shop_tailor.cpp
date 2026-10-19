@@ -90,8 +90,8 @@ void dSaveShopTailor_c::update() {
 }
 
 // 80148210
-void dSaveShopTailor_c::sellAndNotify(int scene, int slot, int unitX, int unitZ, int price, int flag) {
-    if ((u32)slot != 0xFF) {
+void dSaveShopTailor_c::sellAndNotify(u8 scene, u8 slot, u8 unitX, u8 unitZ, int price, int flag) {
+    if (slot != 0xFF) {
         sell(scene, slot, unitX, unitZ);
     }
     if (dNet::isSessionActive() && dNet::getMemberNum() > 1) {

@@ -30,6 +30,13 @@ class dTime_c;
 class dFdBase_c;
 struct dAnimalTemplate_c;
 
+// The city's square, where its guests stand (pickCitySpots) and the moved-out villagers stroll
+// (d_a_npc_town_out).
+extern const f32 cCityMinX; // 512.0f
+extern const f32 cCityMinZ; // 288.0f
+extern const f32 cCityMaxX; // 1024.0f
+extern const f32 cCityMaxZ; // 672.0f
+
 class dNpcMng_c : public fBase_c {
 public:
     // A special npc of the spawn tables (l_eventNpcs, l_holidayNpcs, l_visitorNpcs): it comes when mCheck

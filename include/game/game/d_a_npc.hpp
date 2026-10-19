@@ -38,10 +38,20 @@
 #define NPC_EAR_TYPE_NOOKWAY 28
 #define NPC_EAR_TYPE_NOOKINGTONS 29
 #define NPC_EAR_TYPE_TWINS 30 // Timmy and Tommy's ear parameter preset (d_a_npc_sp_tanukichi)
+#define NPC_EAR_TYPE_GUIDE 31 // Rover's ear parameter preset (d_a_npc_sp_player_create; player_select still literal)
 #define NPC_EAR_TYPE_MISSING_CHILD 32 // Katie's ear parameter preset (inferred)
 #define NPC_EAR_TYPE_MISSING_MOTHER 33 // her mother's ear parameter preset (d_a_npc_sp_missing_mother)
 #define NPC_EAR_TYPE_PELLY 35 // Pelly's ear parameter preset (d_a_npc_sp_periko)
 #define NPC_EAR_TYPE_PHYLLIS 36 // Phyllis's ear parameter preset (d_a_npc_sp_periko)
+#define NPC_EAR_TYPE_SABLE 38 // Sable's ear parameter preset (d_a_npc_sp_asami)
+#define NPC_EAR_TYPE_MABEL 39 // Mabel's ear parameter preset (d_a_npc_sp_kinuyo)
+#define NPC_EAR_TYPE_KATRINA 42 // Katrina's ear parameter preset (d_a_npc_sp_fortune)
+#define NPC_EAR_TYPE_REDD 43 // Crazy Redd's ear parameter preset (d_a_npc_sp_tunekichi)
+#define NPC_EAR_TYPE_GRACIE 45 // Gracie's ear parameter preset (d_a_npc_sp_grace)
+#define NPC_EAR_TYPE_SAHARAH 48 // Saharah's ear parameter preset (d_a_npc_sp_roran)
+#define NPC_EAR_TYPE_KK_SLIDER 50 // K.K. Slider's ear parameter preset (d_a_npc_sp_totakeke)
+#define NPC_EAR_TYPE_PASCAL 56 // Pascal's ear parameter preset (d_a_npc_sp_racco)
+#define NPC_EAR_TYPE_CELESTE 51 // Celeste's ear parameter preset (d_a_npc_sp_fuko)
 #define NPC_EAR_TYPE_PAVE 57 // Pave's ear parameter preset (d_a_npc_sp_dancer)
 #define NPC_EAR_TYPE_NUM 60                // ear parameter types (l_earParams, getEarType)
 #define NPC_EAR_TYPE_NONE NPC_EAR_TYPE_NUM // getEarType(): no ears

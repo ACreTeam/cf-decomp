@@ -470,7 +470,7 @@ struct Item {
     int getFrom() const; // 800A6608
     int getFashion() const; // 800A6684
     int getStyle() const; // 800A6700
-    int getClothStyle(); // 800A677C: tail-calls getStyle
+    int getClothStyle() const; // 800A677C: tail-calls getStyle
     int getColorA() const; // 800A6780
     int getColorB() const; // 800A680C
     int getPartA() const; // 800A689C

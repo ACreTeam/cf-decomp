@@ -1691,6 +1691,8 @@ void applySyncBuf4LogFlag(int member, u8 *data, u32 size);
 #define NET_REC_SEWING_CLOTH 0x25
 // 0x26..0x29: the players' mailbox door states (daStrPost_c, d_a_str_field), one per house
 #define NET_REC_MAILBOX 0x26
+// Pascal (d_a_npc_sp_racco): his state and swim unit (2 bytes)
+#define NET_REC_RACCO 0x2A
 // 0x2B..0x95: the npc daubs (dNpc::daub_c): 10 normal ones, then the specials
 #define NET_REC_DAUB 0x2B
 #define NET_REC_DAUB_SPECIAL 0x35

@@ -65,6 +65,7 @@ enum {
 enum {
     SAVE_FLAG_ROVER_GREETED = 0, // Rover greeted a returning player at the player select (d_a_npc_sp_player_select)
     SAVE_FLAG_TURNIPS_SPOILED = 1, // set when the clock is changed or goes back within the week, cleared each new week (inferred)
+    SAVE_FLAG_RACCO_APPEARED = 5,  // Pascal came to the beach today (d_a_npc_sp_racco: he does not come back)
     SAVE_FLAG_BUILD_WINDMILL = 7,    // dSTR::buildPublicWorks builds it (in place of the lighthouse)
     SAVE_FLAG_BUILD_LIGHTHOUSE = 8,  // dSTR::buildPublicWorks builds it (in place of the windmill)
     SAVE_FLAG_BUILD_FOUNTAIN = 9,    // dSTR::buildPublicWorks builds it
@@ -74,9 +75,11 @@ enum {
     SAVE_FLAG_WINDMILL_BUILT = 13,   // setNewConstruction(NEW_CONSTRUCTION_WINDMILL) only once
     SAVE_FLAG_RESET_OPEN = 0x0E,     // 1 day in 10 (dSTR::updateResetOpen): the city's reset building opens at 20:00
                                      // (daStrReset_c; inferred)
-    SAVE_FLAG_UFO_SHOT = 0x12,       // the UFO was shot down today (d_a_ufo; becomes SAVE_FLAG_UFO_SHOT_BEFORE)
+    SAVE_FLAG_WISP_WEEDING = 0x11,   // Wisp's weeding wish (d_a_npc_sp_yuutaro_loft): the next town update removes the weeds
+    SAVE_FLAG_UFO_SHOT = 0x12,      // the UFO was shot down today (d_a_ufo; becomes SAVE_FLAG_UFO_SHOT_BEFORE)
     SAVE_FLAG_UFO_SHOT_BEFORE = 0x13, // the UFO was shot down on an earlier day (d_field_assessment, inferred)
     SAVE_FLAG_UFO_FLOWN = 0x16,      // the UFO flew over the town today (d_a_ufo)
+    SAVE_FLAG_GRACIE_IN_SHOP = 0x17, // 1 day in 10 (dSaveShopGrace_c::update): Gracie is in her shop (d_a_npc_sp_grace)
     SAVE_FLAG_UFO_STR_DRAW = 0x19,   // the crashed UFO (daStrUFO_c) is drawn this frame: read and cleared each frame
     SAVE_FLAG_FLAG6_BACKUP = 0x1A,   // backupFlag6; restored to flag 6 by startFgMngProcThread
     SAVE_FLAG_BUS_NET_EVENT_DONE = 0x1F, // set by the player-create NPC REL after its scene on the bus to the city
@@ -105,8 +108,17 @@ public:
         u8 language : 4;
         u8 region : 4;
     };
-    dPersonalID_c *getFriendPlayer() { return &_072CC2; }
+    dPersonalID_c *getFriendPlayer() { return &mFriendPlayer; }
     dSvTownList::List_c *getTownList() { return &mTownList; }
+    dSaveShopGallery_c *getShopGallery() { return &mShops.mShopGallery; }
+    dSvStarSign::Sign_c *getStarSign(int i) {
+        dSvStarSign::Sign_c *sign = mStarSigns.get(i);
+        return sign;
+    }
+    // The player's bits of the constellations not seen yet (d_a_npc_sp_fuko).
+    u16 &getStarSignNew(int player) { return mStarSigns.mNew[player]; }
+    const dSvStarSign::List_c *getStarSigns() const { return &mStarSigns; }
+    dSvStarSign::List_c *getStarSignList() { return &mStarSigns; }
     BOOL isHeaderVersionOK();             // 80115CDC
     BOOL isHeaderState2();                // 80115CE0
     void updateTownChecksum();            // 80115CE4: header, players, animals, mTownChecksum
@@ -118,6 +130,7 @@ public:
     static int getPublicWorks();          // 801161F0: PUBLIC_WORKS_*; dPrivateData_c's "BBS_office" notices
     int getRandomOtherTown() const;       // 80116310: a random valid mOtherTowns slot, or -1
     void setNewConstruction(int kind, int blockX, int blockZ); // 8011641C: NEW_CONSTRUCTION_*
+    int getNewConstruction() const { return mNewConstruction; } // NEW_CONSTRUCTION_*
     BOOL isFlag(int idx) const;           // 801164D0: out-of-range indices are FALSE
     void setFlag(int idx);                // 80116510
     void clearFlag(int idx);              // 80116540
@@ -160,7 +173,7 @@ public:
     /* 0x06D5C0 */ dHomeList_c mHomes;
     /* 0x072CC0 */ dSvPlayerFlag::Flag_c mPlayerFlag;
     /* 0x072CC1 */ u8 _072CC1;
-    /* 0x072CC2 */ dPersonalID_c _072CC2;   // a random player of a friend town (d_wifi receiveTown, TOWN_640C8_FLAG_PLAYER_BITS)
+    /* 0x072CC2 */ dPersonalID_c mFriendPlayer; // a random player of a friend town (d_wifi receiveTown, TOWN_640C8_FLAG_PLAYER_BITS); Gracie's fashionista (d_a_npc_sp_grace)
     /* 0x072CEE */ dPersonalID_c _072CEE;   // cleared by clearTown
     /* 0x072D1A */ dSvTownList::List_c mTownList; // other towns and their jinxes
     /* 0x072DDA */ dPoliceBox_c mPoliceBox;

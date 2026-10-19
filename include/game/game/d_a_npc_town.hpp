@@ -11,6 +11,9 @@
 
 class dAcNpcTown_c : public dAcNpcNml_c {
 public:
+    // Explicit inline (like dAcNpcNml_c's): an implicit one puts the RELs' header weak inlines out of order.
+    dAcNpcTown_c() {}
+
     virtual int preCreate();      // 80063650
     virtual int getSoundId();     // 800635CC (+0xA0): the voice, only once
     virtual u32 getHeapSize();    // 80063648 (+0xB4)

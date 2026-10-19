@@ -58,4 +58,4 @@ lbl_129_data_1BC = .data:0x000001BC; // type:object size:0xC
 lbl_129_data_1C8 = .data:0x000001C8; // type:object size:0x8
 lbl_129_data_1D0 = .data:0x000001D0; // type:object size:0xF data:string
 lbl_129_data_1E0 = .data:0x000001E0; // type:object size:0x8
-lbl_129_bss_8 = .bss:0x00000008; // type:object size:0x4 data:4byte
+s_instance__15dOrganBalloon_c = .bss:0x00000008; // type:object size:0x4 data:4byte

@@ -373,6 +373,18 @@ struct totakekePacket_c {
 class totakeke_c {
 public:
     ~totakeke_c() {}
+    // mRequestKind: what the song was picked by.
+    enum RequestKind_e {
+        REQUEST_GOOD,        // the mood ("How ya feelin'?"): FROM_MUSIC_GOKIGEN
+        REQUEST_GRUMPY,      // FROM_MUSIC_FUKIGEN
+        REQUEST_LAZY,        // FROM_MUSIC_MATTARI
+        REQUEST_SAD,         // FROM_MUSIC_BLUE
+        REQUEST_HARD_TO_SAY, // FROM_MUSIC_UNKNOWN
+        REQUEST_PICK,        // K.K.'s pick
+        REQUEST_FIRST,       // the first-meeting song
+        REQUEST_TITLE,       // a title typed in
+        REQUEST_NONE
+    };
     static totakeke_c *get(); // 800F800C
     void clear();             // 800F8018
     void resetSong();         // 800F8074
@@ -389,6 +401,11 @@ public:
     BOOL isOnStage();                                    // 800F8740
     void fromPacket(const totakekePacket_c *packet);     // 800F87B8
     void toPacket(totakekePacket_c *packet);             // 800F8840
+    // The requested song (weak copy in d_a_npc_sp_totakeke).
+    dItem::Item getSong() const { return mSong; }
+    void clearReceived() { mReceived = 0; } // d_a_npc_sp_totakeke
+    void clearPlayReq() { mPlayReq = 0; }
+    void setWorkWarned() { mWorkWarned = 1; }
 
     /* 0x00 */ u8 mTalked;
     /* 0x01 */ u8 mRequested;

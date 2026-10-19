@@ -2336,8 +2336,9 @@ BOOL dNpcMng_c::isResetVisitTime(u8 scene, u8 prevScene) {
     if (!dNet::isSessionActive() && isTownPlay(scene, prevScene) &&
         (sResetVisited == 1 ||
          (prevScene == dScene::SCENE_DM_PL_SEL && !_8074EACF)) &&
-        player != NULL && !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) && !player->isFlag1(0x3A) &&
-        !player->isFlag1(0x3B)) {
+        player != NULL && !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) &&
+        !player->isFlag1(PRIVATE_FLAG1_WENDELL_DESIGN) &&
+        !player->isFlag1(PRIVATE_FLAG1_WENDELL_DIST_DESIGN)) {
         dSaveExtra_c *extra = dSaveData_c::getExtra();
         if (extra->mDistPattern.mVersion != player->mDistPatternVersion &&
             getPlayerBirthdayHostIdx() == -1) {
@@ -2371,9 +2372,10 @@ void dNpcMng_c::setPosResetVisit(mVec3_c *pos, mAng3_c *angle,
 BOOL dNpcMng_c::isVisitor7Day(u8 scene, u8 prevScene) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
     if (isTownPlay(scene, prevScene) && !dNet::isSessionActive() &&
-        dEvent::getTodayVisitor() == 7 && player != NULL &&
-        !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) && !player->isFlag1(0x3A) &&
-        !player->isFlag1(0x3B)) {
+        dEvent::getTodayVisitor() == VISITOR_WENDELL && player != NULL &&
+        !player->isFlag0(PRIVATE_FLAG0_TRAVELLING) &&
+        !player->isFlag1(PRIVATE_FLAG1_WENDELL_DESIGN) &&
+        !player->isFlag1(PRIVATE_FLAG1_WENDELL_DIST_DESIGN)) {
         return TRUE;
     }
     return FALSE;
@@ -2606,8 +2608,9 @@ BOOL dNpcMng_c::isNotTownFlag5(dQuestEvent_e event) {
 
 BOOL dNpcMng_c::isVisitor7Here(dQuestEvent_e event) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayerRaw();
-    if (dEvent::isVisitorHere(7) && player != NULL && !player->isFlag1(0x3A) &&
-        !player->isFlag1(0x3B)) {
+    if (dEvent::isVisitorHere(VISITOR_WENDELL) && player != NULL &&
+        !player->isFlag1(PRIVATE_FLAG1_WENDELL_DESIGN) &&
+        !player->isFlag1(PRIVATE_FLAG1_WENDELL_DIST_DESIGN)) {
         return TRUE;
     }
     return FALSE;

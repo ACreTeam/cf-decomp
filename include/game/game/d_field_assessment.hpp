@@ -430,7 +430,7 @@ void fgMngProc_initTownField();                 // 8009C244: one-off field setup
 void fgMngProc_initOnCreate();                  // 8009C41C: from dFgMngProc_c::create
 int fgMngProc_assessLiveTown();                 // 8009C520: sFdAssess.assessLiveTown()
 dFdAsWorst_c *fgMngProc_getWorstBlock();        // 8009C52C: the lowest-rated block and its main fault (Pelly)
-u16 fgMngProc_getWeedNum();                     // 8009C53C: re-assesses the live town, returns its weed count
+int fgMngProc_getWeedNum();                     // 8009C53C: re-assesses the live town, returns its weed count
 BOOL fgMngProc_isSelfMember(int member);        // 8009C568: TRUE offline, else whether `member` is this console
 BOOL fgMngProc_canEditField();                  // 8009C5B4
 u16 fgMngProc_getMemberHeldItem(int member);    // 8009C638: ITEM_ID_NONE without a player

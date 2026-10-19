@@ -265,9 +265,11 @@ modules:
   name: d_a_npc_sp_player_createNP
   symbols: config/RUUE01_00/d_a_npc_sp_player_createNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_player_createNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_demo_resetsanNP.rel
   hash: 75186742435a58eb287a8a736358147c5589a514
   name: d_a_npc_sp_demo_resetsanNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_demo_resetsanNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_demo_resetsanNP/splits.txt
 - object: files/rels/d_a_npc_sp_haniwaNP.rel
@@ -330,6 +332,7 @@ modules:
 - object: files/rels/d_a_npc_sp_ceremony_sonchoNP.rel
   hash: bec61ef428c2cc579ee1bd41b857887e61d3ac6f
   name: d_a_npc_sp_ceremony_sonchoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_ceremony_sonchoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_ceremony_sonchoNP/splits.txt
 - object: files/rels/d_a_npc_sp_tanukichiNP.rel
@@ -350,21 +353,25 @@ modules:
 - object: files/rels/d_a_npc_sp_totakekeNP.rel
   hash: 0f127a1ca08105b55f17af179f224c3c868e4b01
   name: d_a_npc_sp_totakekeNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_totakekeNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_totakekeNP/splits.txt
 - object: files/rels/d_a_npc_sp_tunekichiNP.rel
   hash: e7695992cbf339257c35bcf6ab5b77ce77a9aadd
   name: d_a_npc_sp_tunekichiNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_tunekichiNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_tunekichiNP/splits.txt
 - object: files/rels/d_a_npc_sp_asamiNP.rel
   hash: 5e7aff25b425585dfdc080c649192ad9eefd0aac
   name: d_a_npc_sp_asamiNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_asamiNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_asamiNP/splits.txt
 - object: files/rels/d_a_npc_sp_kinuyoNP.rel
   hash: 19d2157f8f3f0a169a0f6fda228a5e953083a655
   name: d_a_npc_sp_kinuyoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_kinuyoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_kinuyoNP/splits.txt
 - object: files/rels/d_a_npc_sp_cafeNP.rel
@@ -389,6 +396,7 @@ modules:
   splits: config/RUUE01_00/d_a_npc_sp_futaNP/splits.txt
 - object: files/rels/d_a_npc_sp_fukoNP.rel
   hash: 68580f4bc0bdcdb03fe78d87123b9618dd1b6c59
+  force_active: [__global_destructor_chain]
   name: d_a_npc_sp_fukoNP
   symbols: config/RUUE01_00/d_a_npc_sp_fukoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_fukoNP/splits.txt
@@ -402,6 +410,7 @@ modules:
   name: d_a_npc_sp_graceNP
   symbols: config/RUUE01_00/d_a_npc_sp_graceNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_graceNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_jijyoNP.rel
   hash: 5af9c9750450937203d0ba29504352e25ebada72
   name: d_a_npc_sp_jijyoNP
@@ -425,11 +434,13 @@ modules:
 - object: files/rels/d_a_npc_sp_raccoNP.rel
   hash: f132f72c3b7c23acfe1b405fe310137b557287cd
   name: d_a_npc_sp_raccoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_raccoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_raccoNP/splits.txt
 - object: files/rels/d_a_npc_sp_roranNP.rel
   hash: c4b011c7347117cdf4198a52254b036bd380f419
   name: d_a_npc_sp_roranNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_roranNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_roranNP/splits.txt
 - object: files/rels/d_a_npc_sp_seiichiNP.rel
@@ -437,11 +448,13 @@ modules:
   name: d_a_npc_sp_seiichiNP
   symbols: config/RUUE01_00/d_a_npc_sp_seiichiNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_seiichiNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_fortuneNP.rel
   hash: c61cb9e4d6cde7e65a40c8b5fe399142862c14b1
   name: d_a_npc_sp_fortuneNP
   symbols: config/RUUE01_00/d_a_npc_sp_fortuneNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_fortuneNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_npc_sp_sisyoNP.rel
   hash: 898d5063a57a1e09e93990c78e769959c3f28708
   name: d_a_npc_sp_sisyoNP
@@ -496,36 +509,43 @@ modules:
 - object: files/rels/d_a_npc_sp_yuutaroNP.rel
   hash: 2a477d71ae5208843aad0e7b9194aff9158e5e79
   name: d_a_npc_sp_yuutaroNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_yuutaroNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_yuutaroNP/splits.txt
 - object: files/rels/d_a_npc_sp_yuutaro_loftNP.rel
   hash: be5f197977ffc45ef0298195fb2ba07ffe8e1b2a
   name: d_a_npc_sp_yuutaro_loftNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_yuutaro_loftNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_yuutaro_loftNP/splits.txt
 - object: files/rels/d_a_npc_sp_fuusenNP.rel
   hash: 62d6db574df6550ca2b4681ec7358899620f932e
   name: d_a_npc_sp_fuusenNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_fuusenNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_fuusenNP/splits.txt
 - object: files/rels/d_a_npc_sp_golditem_sonchoNP.rel
   hash: 4d4ef57b9e779f2cdae29c125fc08bb98b81059f
   name: d_a_npc_sp_golditem_sonchoNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_sp_golditem_sonchoNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_sp_golditem_sonchoNP/splits.txt
 - object: files/rels/d_a_npc_town_graceNP.rel
   hash: eb7c2f93654f2c367aff7da75b2a0a42a42736fc
   name: d_a_npc_town_graceNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_town_graceNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_town_graceNP/splits.txt
 - object: files/rels/d_a_npc_town_outNP.rel
   hash: 6790da571dd79df5597e2f16fbf0a7acb8709d7b
   name: d_a_npc_town_outNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_town_outNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_town_outNP/splits.txt
 - object: files/rels/d_a_npc_town_theaterNP.rel
   hash: cec5cb6ac61afb7ed567a61be67c70588e9a53a9
   name: d_a_npc_town_theaterNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_a_npc_town_theaterNP/symbols.txt
   splits: config/RUUE01_00/d_a_npc_town_theaterNP/splits.txt
 - object: files/rels/d_a_npc_visit_npc_houseNP.rel

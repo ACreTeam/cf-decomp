@@ -54,15 +54,22 @@ enum dPrivateFlag0_e {
                                                 // by dPrivateData_c::clearPublicWorksVotes)
     PRIVATE_FLAG0_REDD_MEMBER = 0x14,           // a member of Crazy Redd's: let in without an invitation, gets every
                                                 // unsold item checked (dSaveShopGallery_c::check; inferred)
+    PRIVATE_FLAG0_REDD_REFERRAL_ASKED = 0x15,   // Redd asked for a referral and handed out an invitation (d_a_npc_sp_tunekichi)
+    PRIVATE_FLAG0_REDD_REFERRAL_PAID = 0x16,    // Redd paid the reward for a referred new member (d_a_npc_sp_tunekichi)
+    PRIVATE_FLAG0_SABLE_TALKED = 0x17,          // talked to Sable today: dailyUpdate counts mSableTalkDays (d_a_npc_sp_asami)
     PRIVATE_FLAG0_HOUSE_COMPLETE = 0x19,        // the last loan was paid off: the house gets its flag
     PRIVATE_FLAG0_CAFE_VISIT = 0x1A,            // coffee at the Roost counted today: dailyUpdate raises mCafeVisits
                                                 // (d_a_npc_sp_cafe)
                                                 // (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_GRACIE_MET = 0x1B,           // Gracie was talked to once (d_a_npc_sp_grace)
     PRIVATE_FLAG0_HRA_RATED = 0x1C,             // the house takes part in the HRA's weekly ratings and model room choice (inferred)
     PRIVATE_FLAG0_HRA_NO_LETTER = 0x1D,         // no weekly HRA rating letter (inferred)
     PRIVATE_FLAG0_HRA_HAS_RESULT = 0x1E,        // mHRAInfo holds the last rating (score, remark, series)
+    PRIVATE_FLAG0_KATRINA_MET = 0x20,           // talked to Katrina the fortune teller (d_a_npc_sp_fortune)
     PRIVATE_FLAG0_GATEKEEPER_MET = 0x21,        // the gatekeeper's first greeting was shown (d_a_npc_sp_gatekeeper_a)
     PRIVATE_FLAG0_CAFE_SERVED = 0x22,           // had a coffee at the Roost once (the date is mCafeDate; d_a_npc_sp_cafe)
+    PRIVATE_FLAG0_GRACIE_CHECKED = 0x23,       // Gracie gave a fashion check once (d_a_npc_sp_grace)
+    PRIVATE_FLAG0_GRACIE_PERFECT = 0x24,       // ... and found the outfit perfect once
     PRIVATE_FLAG0_HRA_JOINED = 0x27,            // the HRA's welcome letter was delivered
     PRIVATE_FLAG0_TRAVELLING = 0x28,            // out on a trip with the DS (dTravelData::Data_c sets it on departure;
                                                 // dSvProc_c::prepareLoad clears it back in the home town)
@@ -87,12 +94,23 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_LOST_CHILD_RETURNED = 0x48,  // Katie was brought home to her town (d_travel_data,
                                                 // d_a_npc_sp_gatekeeper_a; inferred)
     PRIVATE_FLAG0_LOST_CHILD_THANKS = 0x4A,     // her thank-you letter is due (sendLostChildThanks clears it)
+    PRIVATE_FLAG0_KK_MET = 0x4D,                // K.K. Slider was met (his first-meeting song; dNpcInfo::totakeke_c::isMet)
     PRIVATE_FLAG0_AUCTION_VISITED = 0x4E,       // Lloid was talked to in the auction house once (d_a_npc_sp_haniwa)
     PRIVATE_FLAG0_MOM_FIRST_LETTER = 0x4F,      // Mom's first letter was delivered (dMotherMail::sendFirst)
     PRIVATE_FLAG0_SUNTAN = 0x50,                // d_a_player: 15 min (dPlayerMgr timer) outdoors on summer days, 10:00-17:00
     PRIVATE_FLAG0_DUG_GOLD_SCOOP = 0x51,        // a gold shovel was dug up (d_a_player: SYS_Player message 0x2C once)
     PRIVATE_FLAG0_DUG_GOLD_PACHINKO = 0x52,     // a gold slingshot was dug up (d_a_player: SYS_Player message 0x2E once)
     PRIVATE_FLAG0_BALLOON_GOLD_PACHINKO = 0x53, // the golden slingshot balloon was shot down (d_a_balloon)
+    PRIVATE_FLAG0_RESET_CENTER_SHOVEL = 0x5C,   // Resetti's first visit is over: the silver shovel was taken (d_a_npc_sp_demo_resetsan)
+    PRIVATE_FLAG0_RESET_CENTER_VISIT2 = 0x5D,   // the Reset Surveillance Center's second visit was talked through
+    PRIVATE_FLAG0_RESET_CENTER_VISIT3 = 0x5E,   // ... the third
+    PRIVATE_FLAG0_RESET_CENTER_VISIT4 = 0x5F,   // ... the fourth
+    PRIVATE_FLAG0_RESET_CENTER_DON_VISIT = 0x60, // ... the first visit with Don there
+    PRIVATE_FLAG0_DON_MET = 0x61,               // Don was met in the center (isDonAtCafe: he may be the cafe guest)
+    PRIVATE_FLAG0_WISP_MET = 0x62,              // Wisp introduced himself (d_a_npc_sp_yuutaro: shorter greeting after)
+    PRIVATE_FLAG0_WISP_LAMP_LOST_TOLD = 0x63,   // Wisp told the player that his lamp is lost
+    PRIVATE_FLAG0_WISP_LAMP_RETURNED = 0x64,    // the player brought Wisp his lamp once
+    PRIVATE_FLAG0_WISP_SUMMONED = 0x65,         // Wisp was called from the magic lamp once (d_a_npc_sp_yuutaro_loft)
     PRIVATE_FLAG0_FUND_DONATED = 0x66,          // donated to the town fund (d_a_npc_sp_periko)
     PRIVATE_FLAG0_BRIDGE_THANKED = 0x67,        // Pelly's thanks for the bridge were heard
     PRIVATE_FLAG0_FOUNTAIN_THANKED = 0x68,      // ... for the fountain
@@ -106,37 +124,70 @@ enum dPrivateFlag0_e {
     PRIVATE_FLAG0_CITY_VISITED = 0x70,          // got off the bus in the city once (d_a_str_common, inferred)
     PRIVATE_FLAG0_GYROID_ASKED = 0x71,          // Brewster asked about the player's gyroids (d_a_npc_sp_cafe)
     PRIVATE_FLAG0_EVENT_LETTER_HELD = 0x72,     // a Bug-Off / fishing tourney result letter waits in mFutureSelfLetter
-    PRIVATE_FLAG0_REDD_TURNED_AWAY = 0x77,      // Redd turned the player away at the door (d_a_str_town); villagers
+    PRIVATE_FLAG0_ABLE_BOUGHT = 0x73,           // bought something from Mabel at the Able Sisters (d_a_npc_sp_kinuyo)
+    PRIVATE_FLAG0_GOLDEN_NET_GIVEN = 0x75,      // Tortimer gave the golden net (insect catalog complete; d_a_npc_sp_golditem_soncho)
+    PRIVATE_FLAG0_GOLDEN_ROD_GIVEN = 0x76,      // Tortimer gave the golden fishing rod (all fish)
+    PRIVATE_FLAG0_REDD_TURNED_AWAY = 0x77,     // Redd turned the player away at the door (d_a_str_town); villagers
                                                 // then talk about his invitations (d_npc_talk_free; inferred)
     PRIVATE_FLAG0_DRAMA_NOOK_HEARD = 0x78,      // Nook's talk about Labelle (npc_SP/NPC_drama6) was heard
                                                 // (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_DRAMA_MABEL_HEARD = 0x79,     // Mabel's talk about her sister (npc_SP/NPC_drama1) was heard
+                                                // (d_a_npc_sp_kinuyo)
+    PRIVATE_FLAG0_DRAMA_SABLE_HEARD = 0x7A,     // Sable's talk at the sewing machine (npc_SP/NPC_drama2) was heard
+                                                // (d_a_npc_sp_asami; dPrivateData_c::updateGracieStep)
+    PRIVATE_FLAG0_DRAMA_GRACIE_HEARD = 0x7C,    // Gracie's sigh (npc_SP/NPC_drama5) was heard: one of the flags of Gracie
+                                                // story steps 2 and 6 (d_a_npc_sp_grace, updateGracieStep)
     PRIVATE_FLAG0_DRAMA_PELLY_HEARD = 0x7D,     // Pelly's sigh (npc_SP/NPC_drama4) was heard: one of the three flags of
                                                 // Gracie story step 2 (dPrivateData_c::updateGracieStep)
     PRIVATE_FLAG0_PUBLIC_WORKS_BUILT = 0x7F,    // a public work was finished (set for every player): Pelly thanks the
                                                 // donors (d_a_npc_sp_periko)
+    PRIVATE_FLAG0_GRACIE_STEP_SEEN = 0x80,      // cleared when the Gracie story step changes (updateGracieStep); while
+                                                // set, Gracie skips her story talk (d_a_npc_sp_grace; set elsewhere, inferred)
     PRIVATE_FLAG0_HOUSE_FLAG_TOLD = 0x81,       // Nook talked about the house's flag (d_a_npc_sp_tanukichi)
+    PRIVATE_FLAG0_CHARM_TOLD = 0x82,            // Katrina revealed this month's town charm (d_a_npc_sp_fortune; cleared monthly by d_sv_activity)
     PRIVATE_FLAG0_REDD_VISITED = 0x83,         // entered Crazy Redd's tent in the city (d_a_str; inferred)
+    PRIVATE_FLAG0_KK_FIRST_SONG = 0x85,         // K.K.'s first-meeting song was taken home (d_a_npc_sp_totakeke)
     PRIVATE_FLAG0_JOB_HELLO = 0x86,             // the part-timer has to say hello to everyone before the next job
                                                 // (d_a_npc_sp_tanukichi)
     PRIVATE_FLAG0_JOB_HELLO_AGAIN = 0x87,       // ... before the job is given again
     PRIVATE_FLAG0_JOB_POCKETS_FULL = 0x88,      // the job is given again once the pockets have room
 };
 enum dPrivateFlag1_e {
+    PRIVATE_FLAG1_REDD_VISITED = 0x3, // talked to Crazy Redd today: the shorter welcome (d_a_npc_sp_tunekichi)
     PRIVATE_FLAG1_CAFE_TALKED = 0x4, // talked to Brewster today (d_a_npc_sp_cafe)
+    PRIVATE_FLAG1_MABEL_TALKED = 0x8, // talked to Mabel today: the shorter welcome (d_a_npc_sp_kinuyo)
     PRIVATE_FLAG1_NOOK_VISIT_POINTS = 0xA, // got today's visitor points at Nook's point machine (d_a_rmobj_point)
+    PRIVATE_FLAG1_GRACIE_TALKED = 0xD, // talked to Gracie today (d_a_npc_sp_grace)
+    PRIVATE_FLAG1_GRACIE_CHECKED = 0xE, // Gracie gave a fashion check today
+    PRIVATE_FLAG1_GRACIE_DISCOUNT = 0xF, // ... with a perfect result: 10% off (cleared when she leaves)
+    PRIVATE_FLAG1_SAHARAH_ASKED = 0x10, // Saharah asked the resident to collect old flooring / wallpaper (dSvPlayerFlag)
     PRIVATE_FLAG1_FISHING_JOINED = 0x11, // 0x11..0x13: dNpcInfo::uomasa_c
     PRIVATE_FLAG1_FISHING_TALKED_BEFORE_START = 0x12,
     PRIVATE_FLAG1_FISHING_RESULT_HEARD = 0x13,
+    PRIVATE_FLAG1_GRACIE_CHECKED_HERE = 0x1B, // Gracie gave a fashion check during this visit (cleared when she leaves)
     PRIVATE_FLAG1_NOOK_POINT_PRESENT = 0x27, // exchanged today's present at Nook's point machine (d_a_rmobj_point)
     PRIVATE_FLAG1_FOUNTAIN_AXE = 0x2A, // d_a_player: no axe into the fountain (checkAxeIntoFountain); not set there
+    PRIVATE_FLAG1_KK_TALKED = 0x30, // talked to K.K. Slider today (dNpcInfo::totakeke_c, town players)
+    PRIVATE_FLAG1_KK_REQUESTED = 0x31, // asked K.K. for a song today (ditto)
     PRIVATE_FLAG1_LOST_CHILD_PENDING = 0x32,    // cleared when Katie is brought home (d_travel_data,
                                                 // d_a_npc_sp_gatekeeper_a; inferred)
     PRIVATE_FLAG1_LOST_MOTHER_MET = 0x33,       // Katie's mother was talked to (d_a_npc_sp_missing_mother: repeat message)
+    PRIVATE_FLAG1_KK_SONG_GIVEN = 0x34, // got today's copy of K.K.'s song (d_a_npc_sp_totakeke)
     PRIVATE_FLAG1_BUG_OFF_JOINED = 0x35, // 0x35..0x38: dNpcInfo::bug_c
     PRIVATE_FLAG1_BUG_OFF_TALKED_BEFORE_START = 0x36,
     PRIVATE_FLAG1_BUG_OFF_RESULT_HEARD = 0x37,
     PRIVATE_FLAG1_BUG_OFF_JUDGED = 0x38,
+    PRIVATE_FLAG1_WENDELL_FED = 0x39,        // fed Wendell today: "need more" (d_a_npc_sp_seiichi)
+    PRIVATE_FLAG1_WENDELL_DESIGN = 0x3A,     // got a design from Wendell today (he stays away)
+    PRIVATE_FLAG1_WENDELL_DIST_DESIGN = 0x3B, // got the distributed design from him today (ditto)
+    PRIVATE_FLAG1_WENDELL_DIST_OFFERED = 0x44, // he offered the distributed design (counts as got
+                                               // once saved: d_save_data, d_field_assessment)
+    PRIVATE_FLAG1_WISP_FOUND = 0x3C, // reached Wisp tonight: he waits shown / hidden (d_a_npc_sp_yuutaro)
     PRIVATE_FLAG1_BIRTHDAY_GREETED = 0x45, // Rover wished a happy birthday at the player select
+    PRIVATE_FLAG1_PHINEAS_PRIZE = 0x40, // got today's prize from Phineas (d_a_npc_sp_fuusen)
+    PRIVATE_FLAG1_REDD_BOUGHT_1 = 0x48, // bought from Crazy Redd today: once, twice, three times (d_a_npc_sp_tunekichi)
+    PRIVATE_FLAG1_REDD_BOUGHT_2 = 0x49,
+    PRIVATE_FLAG1_REDD_BOUGHT_3 = 0x4A,
     PRIVATE_FLAG1_CAFE_SERVED = 0x4B,    // had a coffee at the Roost today (d_a_npc_sp_cafe)
     PRIVATE_FLAG1_CAFE_VALENTINE = 0x4C, // ... on Valentine's Day (hot chocolate)
 };
@@ -273,7 +324,8 @@ public:
     void setDefault(); // 8013AC78
     void setFromPlayer(); // 8013ACE8
     void copy(const dOutfit_c *other); // 8013ADA4
-    BOOL isSame(const dOutfit_c *other) const; // 8013ADAC
+    // flag: Gracie passes TRUE against the mannequin's outfit, FALSE against the saved outfits (unused).
+    BOOL isSame(const dOutfit_c *other, BOOL flag) const; // 8013ADAC
     BOOL hasShoes() const {
         if (mFlagByte & 1) {
             if ((mFlagByte >> 2) & 1) {
@@ -539,12 +591,14 @@ public:
     void clear();                                                          // 801383EC
 
     // Flag bits.
-    BOOL isFlag0(u32 flag) const; // 80138580
+    bool isFlag0(u32 flag) const; // 80138580 (bool: d_a_npc_sp_yuutaro compares == TRUE with cmplwi)
     void setMiiMask(u8 mask) { mMiiMask = mask; }
     int getCafeVisits() const { return mCafeVisits; }
     void setFlag0(u32 flag);      // 801385C0
     void clearFlag0(u32 flag);    // 801385F0
     BOOL isFlag1(u32 flag);       // 80138620
+    // Every villager may give an old carpet / wallpaper for Saharah again (dSvPlayerFlag).
+    void setAllVillagerBits() { mVillagerDailyBits = 0xFFFF; }
     void setFlag1(u32 flag);      // 80138660
     void clearFlag1(u32 flag);    // 80138690
     void setFlag2(u32 flag);      // 801386C0
@@ -647,9 +701,11 @@ public:
     // GracieGrace.
     BOOL isBedHeadVisible() const;   // 8013C71C: bed head hair, no Mii mask, a hat that doesn't hide the hair
     int getGracieStep();             // 8013C7C0 (callers compare the full register: not u8)
+    int getSableTalkDays() const { return mSableTalkDays; } // compared signed (d_a_npc_sp_asami)
     BOOL isGracieStoryReady() const; // 8013C7CC
     void updateGracieStep();         // 8013C878: advances mGracieStep as its flags are set (dailyUpdate)
     dOutfit_c *getOutfit(int i);     // 8013CAD8
+    dDesign_c *getOrgDesign(u32 i) { return &mOrgDesigns.mDesigns[i % PLAYER_ORG_DESIGN_COUNT]; } // d_a_npc_sp_kinuyo
 
 
     BOOL isChecksumOK() const {
@@ -725,7 +781,7 @@ public:
     /* 0x868F */ u8 mShopVote;       // the Nookington's vote (d_save_shop)
     /* 0x8690 */ u8 _8690;
     /* 0x8691 */ u8 mCafeVisits;                  // the days with a coffee at the Roost (max 15; d_a_npc_sp_cafe)
-    /* 0x8692 */ u8 mCityVisitDays;  // days with flag0 0x17 (city visit, inferred), up to 11 (isGracieStoryReady)
+    /* 0x8692 */ u8 mSableTalkDays;  // days Sable was talked to (PRIVATE_FLAG0_SABLE_TALKED), up to 11 (isGracieStoryReady)
     /* 0x8693 */ u8 mNookPurchases;  // up to 50 (d_a_npc_sp_tanukichi; isNookLoyaltyLetterDue)
     /* 0x8694 */ u8 mResetCount;     // Mr. Resetti visits (d_a_npc_sp_resetsan), 9 when over 10
     /* 0x8695 */ u8 mLastResetCount; // mResetCount when last synced (syncResetCount)
@@ -739,7 +795,7 @@ public:
     /* 0x869D */ u8 mCafeCounts[5]; // per cafe guest (d_a_npc_sp_cafe_guest)
     /* 0x86A2 */ u8 _86A2;
     /* 0x86A3 */ u8 mGracieStep;    // GracieGrace story step 0..10 (updateGracieStep; Gracie, the Able sisters, ...)
-    /* 0x86A4 */ u8 _86A4;
+    /* 0x86A4 */ u8 mGracieChecks;  // Gracie's fashion checks, counted up to 3 (isGracieStoryReady; d_a_npc_sp_grace)
     /* 0x86A5 */ u8 mHouseSize;     // the house size (syncHouseSize; d_msg house size jump)
     /* 0x86A6 */ u8 _86A6[0x1A];
 }; // size 0x86C0

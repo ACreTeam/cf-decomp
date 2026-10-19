@@ -493,7 +493,7 @@ int Item::getStyle() const {
 }
 
 // 800A677C
-int Item::getClothStyle() {
+int Item::getClothStyle() const {
     return getStyle();
 }
 

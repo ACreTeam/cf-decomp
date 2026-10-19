@@ -40,7 +40,7 @@ class daRmobjBus_c : public daRmobj_c {
 
     // Used by Kapp'n (FALSE / 0 without the bus).
     static BOOL startTunnelExit();   // 0x364: setStep(STEP_TUNNEL_EXIT)
-    static u8 isTunnelExitStarted(); // 0x384
+    static BOOL isTunnelExitStarted(); // 0x384
     static void reloadSeason();      // 0x3A4: after a season change
     static BOOL isSeasonReloaded();  // 0x3E8
 

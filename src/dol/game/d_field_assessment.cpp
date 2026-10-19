@@ -1490,7 +1490,7 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
         spoilAllKabu();
     }
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
-    if (player != NULL && player->isFlag1(0x44)) {
+    if (player != NULL && player->isFlag1(PRIVATE_FLAG1_WENDELL_DIST_OFFERED)) {
         player->mDistPatternVersion =
             dSaveData_c::getExtra()->mDistPattern.mVersion;
     }
@@ -1506,9 +1506,9 @@ void dFgMngProc_c::processDays(dTime_c *now, dTime_c *last, int days, BOOL flag,
     }
     fgMngProc_seedRandom(now, seed + 0x222C);
     plantClovers(fd, *last, num, w, h);
-    if (dSaveData_c::getRaw()->isFlag(0x11)) {
+    if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_WISP_WEEDING)) {
         removeWeeds(fd);
-        dSaveData_c::getTown()->clearFlag(0x11);
+        dSaveData_c::getTown()->clearFlag(SAVE_FLAG_WISP_WEEDING);
     }
     num = days;
     if ((u32)days > 50) {
@@ -4728,7 +4728,7 @@ dFdAsWorst_c *fgMngProc_getWorstBlock() {
 
 // 8009C53C: re-assesses the live town and returns its weed count
 // (sFdAssess.mGrassNum); caller d_a_npc_sp_yuutaro_loft.
-u16 fgMngProc_getWeedNum() {
+int fgMngProc_getWeedNum() {
     fgMngProc_assessLiveTown();
     return sFdAssess.mGrassNum;
 }

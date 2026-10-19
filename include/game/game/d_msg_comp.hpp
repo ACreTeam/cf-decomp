@@ -208,6 +208,7 @@ public:
 
     bool isState(StateFunc state) const { return this->mCurrentMethod == state; }
     dSelect::Comp_c *getSelect() { return &mSelect; }
+    int getAnswer() { return mSelect.mCursor; } // the answer taken (mSelect)
     dMsgAnalogSelect_c *getAnalogSelect() { return &mAnalogSelect; }
 
     /* 0x0000 */ // fBase_c (vtable at +0x60)
