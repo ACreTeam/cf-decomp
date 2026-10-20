@@ -32,8 +32,14 @@ public:
         MSG_FRIEND_CODE = 0x1B,     // "Friend Code"
         MSG_FRIEND_COMMENT = 0x1C,  // "Comment"
         MSG_EMOTION_BASE = 0x32,    // + the emotion id: "Anger" (0x33), "Shock", "Laughter" ...
-        MSG_MIC_CHAT = 0x50,        // "Mic Chat"
+        MSG_PLAY = 0x30,            // "Play"
+    MSG_MIC_CHAT = 0x50,        // "Mic Chat"
         MSG_GENRE_GREETINGS = 0x65, // "Greetings"; the next ones are "Questions", "Commands", "Places", "Comments"
+    };
+
+    // The first argument of request: who asks. b is then the id of the thing to explain.
+    enum REQUEST_e {
+        REQUEST_MAIL_LETTER = 8, // the letter under the cursor in the post office menu (REL d_menu_mslct); b = the letter
     };
 
     virtual int create();   // 801B6ADC

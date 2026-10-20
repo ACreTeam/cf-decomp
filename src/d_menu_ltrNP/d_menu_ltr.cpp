@@ -301,10 +301,10 @@ void Window_c::setMovePos(const mVec2_c &pos) {
 
 // .text:0x9F8
 void Icon_c::create(m2d::ResAccIf_c *res) {
-    build(res, "ltr_icon_00.brlyt");
-    setAnm(&mTexAnm, "ltr_icon_00_ltrIcn_texPtn.brlan", nullptr);
-    setAnm(&mVanishAnm, "ltr_icon_00_ltrIcn_Vanish.brlan", nullptr);
-    setAnm(&mRotateAnm, "ltr_icon_00_Fc_rotate.brlan", nullptr);
+    mLyt.build(res, "ltr_icon_00.brlyt");
+    mLyt.setAnm(&mTexAnm, "ltr_icon_00_ltrIcn_texPtn.brlan", nullptr);
+    mLyt.setAnm(&mVanishAnm, "ltr_icon_00_ltrIcn_Vanish.brlan", nullptr);
+    mLyt.setAnm(&mRotateAnm, "ltr_icon_00_Fc_rotate.brlan", nullptr);
     mFlags = 0;
     setSelected(false);
     setNoChoice(false);
@@ -313,62 +313,62 @@ void Icon_c::create(m2d::ResAccIf_c *res) {
 
 // .text:0xAA0
 void Icon_c::setPos(const mVec2_c *pos) {
-    mPos.x = pos->x;
-    mPos.y = pos->y;
+    mLyt.mPos.x = pos->x;
+    mLyt.mPos.y = pos->y;
 }
 
 // .text:0xAB4
 void Icon_c::calcLayout() {
-    calc();
+    mLyt.calc();
 }
 
 // .text:0xAC4
 void Icon_c::drawLayout() {
-    entry();
+    mLyt.entry();
 }
 
 // .text:0xAC8
 void Icon_c::setRootPos(const mVec3_c *pos) {
-    getRootPane()->SetTranslate(*pos);
+    mLyt.getRootPane()->SetTranslate(*pos);
 }
 
 // .text:0xB0C
 void Icon_c::setScale(const mVec2_c &scale) {
-    getRootPane()->SetScale(scale);
+    mLyt.getRootPane()->SetScale(scale);
 }
 
 // .text:0xB48
 void Icon_c::setAlpha(u8 alpha) {
-    getRootPane()->SetAlpha(alpha);
+    mLyt.getRootPane()->SetAlpha(alpha);
 }
 
 // .text:0xB78
 // Returns a reference to a converted temporary, like
 // dMenuItem::Icon_c::getRootPos.
 const mVec3_c &Icon_c::getRootPos() {
-    return getRootPane()->GetTranslate();
+    return mLyt.getRootPane()->GetTranslate();
 }
 
 // .text:0xBB4
 void Icon_c::setSelected(bool selected) {
     static const char *baseAnmNames[BASE_ANM_COUNT] = {
         "ltr_icon_00_normalBase.brlan", "ltr_icon_00_selectBase.brlan"};
-    setAnm(&mBaseAnm, baseAnmNames[selected], nullptr);
+    mLyt.setAnm(&mBaseAnm, baseAnmNames[selected], nullptr);
     mBaseAnm.setToEnd();
-    setVisible("checkFc_00", selected);
-    calc();
+    mLyt.setVisible("checkFc_00", selected);
+    mLyt.calc();
 }
 
 // .text:0xC34
 void Icon_c::setNoChoice(bool visible) {
-    setVisible("noChoice_00", visible);
+    mLyt.setVisible("noChoice_00", visible);
 }
 
 // .text:0xC44
 void Icon_c::setMark(bool visible) {
-    setVisible("ltrIcnFc", visible);
+    mLyt.setVisible("ltrIcnFc", visible);
     if (visible) {
-        calc();
+        mLyt.calc();
     }
 }
 
@@ -376,8 +376,8 @@ void Icon_c::setMark(bool visible) {
 void Icon_c::setMail(dMail_c *mail, int unused) {
     int valid = !mail->isEmpty();
     bool visible = valid != 0;
-    setVisible("ltrIcnBase", visible);
-    setVisible("ltrIcn", visible);
+    mLyt.setVisible("ltrIcnBase", visible);
+    mLyt.setVisible("ltrIcn", visible);
     if (valid) {
         mTexAnm.setFrame(getTexFrame(mail));
         mVanishAnm.setFrame(0.0f);
@@ -417,14 +417,14 @@ bool Icon_c::calcVanish() {
         return true;
     }
     mVanishAnm.play();
-    calc();
+    mLyt.calc();
     return false;
 }
 
 // .text:0xE9C
 void Icon_c::calcRotate() {
     mRotateAnm.play();
-    calc();
+    mLyt.calc();
 }
 
 } // namespace dMenuLtr

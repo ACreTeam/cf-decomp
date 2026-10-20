@@ -30,6 +30,14 @@ struct dPostRequest_c : public dNetWc24::dNetWc24Data_c {
 
 namespace dPostOffice {
 
+// The sync states (getSyncState) while a letter is sent to the host's post office (sendMail).
+enum MAIL_SYNC_e {
+    MAIL_SYNC_SENT = 3,          // the letter is on its way
+    MAIL_SYNC_ACCEPTED = 4,      // the host added it
+    MAIL_SYNC_ACCEPTED_FULL = 5, // ... and its post office is full now
+    MAIL_SYNC_REJECTED = 6,      // the host's post office was full
+};
+
 // Delivery of the held letters.
 int getToPlayerIdx(dMail_c *mail);              // 8010263C: -1 not to a player, -2 other town, -3 no such player
 dPrivateData_c *getSender(dMail_c *mail);      // 801026C0: the local player sending a letter to another town

@@ -8726,14 +8726,14 @@ u32 dAcNpc_c::recept_c::fn_80029B20() {
 
 bool dAcNpc_c::recept_c::isMenuSel01() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B348();
+        return dMenuMng_c::isSelNotResident();
     }
     return false;
 }
 
 bool dAcNpc_c::recept_c::isMenuSel20() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B358();
+        return dMenuMng_c::isSelPostFull();
     }
     return false;
 }
@@ -8754,14 +8754,14 @@ bool dAcNpc_c::recept_c::isMenuSelSlot(int slot) {
 
 bool dAcNpc_c::recept_c::isMenuSel40() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B3DC();
+        return dMenuMng_c::isSelMailTaken();
     }
     return false;
 }
 
 bool dAcNpc_c::recept_c::isMenuSel80() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B350();
+        return dMenuMng_c::isSelNotFriend();
     }
     return false;
 }
@@ -8771,11 +8771,11 @@ dTime_c dAcNpc_c::recept_c::getMenuResult() {
 }
 
 u32 dAcNpc_c::recept_c::fn_80029CDC() {
-    return fn_8019B28C();
+    return dMenuMng_c::getPickedStarSign();
 }
 
 u16 dAcNpc_c::recept_c::fn_80029CE0() {
-    return fn_8019B240();
+    return dMenuMng_c::getPickedItem();
 }
 
 void dAcNpc_c::recept_c::setFeel(u32 feel, u32 who, f32 frame) {
@@ -9512,26 +9512,26 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x72);
                 break;
             case 0x29:
-                fn_8019B294(mReq.mMenuArgD0);
+                dMenuMng_c::setPickedStarSign(mReq.mMenuArgD0);
                 ok = dMenuMng_c::openMenu(0x73);
                 break;
             case 0x2A:
                 ok = dMenuMng_c::openMenu(0x74);
                 break;
             case 0x2B:
-                ok = dMenuMng_c::openMenu(0x1F);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_INPUT_STAR_SIGN_NAME);
                 break;
             case 0x2C:
-                ok = dMenuMng_c::openMenu(0x20);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_INPUT_STAR_SIGN_NAME_2);
                 break;
             case 0x2D:
-                ok = dMenuMng_c::openMenu(0x21);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_INPUT_SONG);
                 break;
             case 0x2E:
                 ok = dMenuMng_c::openMenu(0x37);
                 break;
             case 0x2F:
-                ok = dMenuMng_c::openInput(0x22, mReq.mpInputBuf, 10);
+                ok = dMenuMng_c::openInput(dMenuMng_c::MENU_INPUT_CATCHPHRASE, mReq.mpInputBuf, 10);
                 break;
             case 0x30:
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_AUCTION_MIN);
@@ -9543,10 +9543,10 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x11);
                 break;
             case 0x33:
-                ok = dMenuMng_c::openInput(0x23, mReq.mpInputBuf, 8);
+                ok = dMenuMng_c::openInput(dMenuMng_c::MENU_INPUT_NICKNAME, mReq.mpInputBuf, 8);
                 break;
             case 0x34:
-                ok = dMenuMng_c::openInput(0x24, mReq.mpInputBuf, 16);
+                ok = dMenuMng_c::openInput(dMenuMng_c::MENU_INPUT_GREETING, mReq.mpInputBuf, 16);
                 break;
             }
             if (ok && mReqStep == 1) {

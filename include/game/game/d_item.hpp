@@ -1084,6 +1084,7 @@ struct NpcMsgBullfest {
 class name_c : public dScript::Word_c {
 public:
     // Inline, but never inlined (a by-value Item): d_msg emits a weak copy, and with it the weak vtable.
+    name_c() {} // an empty name, filled by set (d_menu_hanNP's song request)
     name_c(Item item) { ::setItemName(this, item); } // 8000DD98: the item's name
     // Inline (weak, kept in the TU around 8000C14C): d_msg's setItemName inlines the dtor (a call of the
     // dScript::Word_c dtor) and emits a weak vtable copy.

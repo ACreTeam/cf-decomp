@@ -39,6 +39,7 @@ void holdSe(int se);                               // 8000F928: holds a looping 
 const u8 *getDefaultTownTune();                     // 8000F9A0: the default town tune
 void syncTownTune();                                // 8000FA0C: hands the saved town tune to the sound system
 void playMelody(const u8 *notes);                   // 8000FA98: plays a melody with the given notes
+void playMelodyNote(u32 note);                      // 8000FB10: plays one note of the town tune editor (d_menu_melody)
 int getTownTuneState();                             // 8000FB88: the town tune player state (< 0: idle)
 BOOL isTownTunePlaying();                           // 8000FBF4: whether the town tune player is busy
 void playTune(u32 id);                              // 8000FC1C: plays a tune (with the saved town tune)
@@ -65,6 +66,5 @@ void fn_8000F248();                                          // 8000F248: museum
 void fn_8000F2B0();                                          // 8000F2B0: museum room change done (dBgm StgMuseum_c)
 int fn_8000F4D8();                                           // 8000F4D8: K.K. playback value (dBgm StgCafe_c)
 void fn_8000F738(int arg);                                   // 8000F738: (dBgm StgRoom_c)
-void fn_8000FB10(u32 arg);                                   // 8000FB10: no callers
 void fn_80010304(f32 arg);                                   // 80010304: no callers
 }

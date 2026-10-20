@@ -11,7 +11,10 @@
 // are inferred (the item window in d_menu_item is the model).
 namespace dMenuLtr {
 
-class Icon_c : public m2d::SimpleEx_c {
+// Not derived from m2d::SimpleEx_c: the layout is the first member. A derived class
+// would get a vtable of its own, and the menus that construct the icons (d_menu_mslct)
+// store the SimpleEx_c vtable.
+class Icon_c {
   public:
     enum BASE_ANM_e { BASE_ANM_NORMAL, BASE_ANM_SELECTED, BASE_ANM_COUNT };
 
@@ -31,6 +34,7 @@ class Icon_c : public m2d::SimpleEx_c {
     bool calcVanish();                       // .text:0xE3C
     void calcRotate();                       // .text:0xE9C
 
+    /* 0x000 */ m2d::SimpleEx_c mLyt;
     /* 0x098 */ m2d::Anm_c mTexAnm; // the letter picture (getTexFrame)
     /* 0x0BC */ m2d::Anm_c mVanishAnm;
     /* 0x0E0 */ m2d::Anm_c mBaseAnm; // BASE_ANM_e

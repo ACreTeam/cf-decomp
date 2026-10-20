@@ -4840,7 +4840,7 @@ void dAcPlayer_c::initEquipment() {
             }
         } else if (player->mMiiMask) {
             u16 index = 0;
-            if (fn_802C4404(&player->mMiiId, &index)) {
+            if (RFLSearchOfficialData(&player->mMiiId, &index)) {
                 miiMask = TRUE;
                 mMiiMask = index;
             } else {
@@ -5613,14 +5613,14 @@ void dAcPlayer_c::checkMiiFace() {
             if (dMiiIcon::getTravelDB() != NULL) {
                 mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_FACE;
             }
-        } else if (fn_802C40A8() != 0) {
+        } else if (RFLGetOfficialDataNum() != 0) {
             mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_MASK_OK | dPlayerMgr::ACTOR_FLAG_MII_FACE;
         }
     } else if (dNet::isSessionActive()) {
         if (!fn_8010D9F4() && dMiiIcon::getMemberDB(mPlayerNo) != NULL) {
             mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_FACE;
         }
-    } else if (fn_802C40A8() != 0) {
+    } else if (RFLGetOfficialDataNum() != 0) {
         mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_FACE;
     }
 }

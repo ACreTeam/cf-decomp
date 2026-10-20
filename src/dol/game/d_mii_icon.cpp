@@ -46,7 +46,7 @@ void net_c::init(int myNo) {
         }
     }
     u16 index = 0;
-    if (fn_802C4404(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index)) {
+    if (RFLSearchOfficialData(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index)) {
         if (fn_802C60B4(mMyData, 0, 0, index, 1) != RFLErrcode_Success) {
             mError[myNo] |= 1;
         } else {
@@ -125,7 +125,7 @@ BOOL net_c::isDone(int member) {
 void *travel_c::get() {
     if (!dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         u16 index = 0;
-        if (fn_802C4404(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index)) {
+        if (RFLSearchOfficialData(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index)) {
             if (fn_802C4BE8(&mData, RFLDataSource_Official, index) != RFLErrcode_Success) {
                 mError |= 1;
             } else {

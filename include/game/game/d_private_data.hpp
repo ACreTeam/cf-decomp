@@ -345,7 +345,7 @@ public:
 };
 
 // RFL_Database.c 802C4404 (unnamed): the official database index of a create ID; FALSE if not found.
-extern "C" BOOL fn_802C4404(dMiiCreateID_c *id, u16 *index);
+extern "C" BOOL RFLSearchOfficialData(dMiiCreateID_c *id, u16 *index);
 
 // A saved outfit (0xC); 8 of these at dPrivateData_c+0x7F40 (mOutfits).
 class dOutfit_c {

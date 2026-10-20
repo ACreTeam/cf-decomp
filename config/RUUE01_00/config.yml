@@ -1061,16 +1061,19 @@ modules:
   name: d_menu_melodyNP
   symbols: config/RUUE01_00/d_menu_melodyNP/symbols.txt
   splits: config/RUUE01_00/d_menu_melodyNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_miiNP.rel
   hash: bf02a23c0862da6cfa1cea3b68ae6720226ade79
   name: d_menu_miiNP
   symbols: config/RUUE01_00/d_menu_miiNP/symbols.txt
   splits: config/RUUE01_00/d_menu_miiNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_museumNP.rel
   hash: 239e06487c0274788539c6c1d6b56187a727aec9
   name: d_menu_museumNP
   symbols: config/RUUE01_00/d_menu_museumNP/symbols.txt
   splits: config/RUUE01_00/d_menu_museumNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_musicNP.rel
   hash: f5753eda8c8366df9061baafe0b5c3da24f0b4cc
   name: d_menu_musicNP
@@ -1081,6 +1084,7 @@ modules:
   name: d_menu_mslctNP
   symbols: config/RUUE01_00/d_menu_mslctNP/symbols.txt
   splits: config/RUUE01_00/d_menu_mslctNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_noticeNP.rel
   hash: 2287c01556463285ab2b34b70c5ac4234c4c6b00
   name: d_menu_noticeNP

@@ -910,7 +910,7 @@ void dAcNpcSpCatherine_c::talk_c::onMessageEnd(int kind) {
         break;
     case MSG_PICK_MII: {
         u16 index;
-        if (!fn_802C4404(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId,
+        if (!RFLSearchOfficialData(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId,
                          &index)) {
             mMiiIndex = MII_INDEX_NONE;
         } else {
@@ -1571,7 +1571,7 @@ void dAcNpcSpCatherine_c::talk_c::finishPerm() {
 // .text 0x3578
 u16 dAcNpcSpCatherine_c::talk_c::getMiiIndex() {
     u16 index;
-    if (fn_802C4404(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index) ==
+    if (RFLSearchOfficialData(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index) ==
         FALSE) {
         return MII_INDEX_NONE;
     }

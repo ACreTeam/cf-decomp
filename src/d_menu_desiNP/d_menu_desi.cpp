@@ -243,7 +243,7 @@ bool Desi_c::setupMii() {
             index = 0xFFFE;
         }
     } else {
-        if (fn_802C4404(id, &index)) {
+        if (RFLSearchOfficialData(id, &index)) {
             found = TRUE;
         }
     }

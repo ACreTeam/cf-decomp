@@ -162,10 +162,14 @@ void dMenuFriend_c::subStateWaitReopen() {
 // .text:0x588
 void dMenuFriend_c::subStateOpenMenu() {
     static const u8 openMenu[OPEN_MENU_NUM] = {
-        dMenuMng_c::MENU_HAN_14,    dMenuMng_c::MENU_HAN_15,
-        dMenuMng_c::MENU_HAN_16,    dMenuMng_c::MENU_HAN_17,
-        dMenuMng_c::MENU_HAN_19,    dMenuMng_c::MENU_HAN_1A,
-        dMenuMng_c::MENU_HAN_18,    dMenuMng_c::MENU_FRIEND_CODE_ADD,
+        dMenuMng_c::MENU_INPUT_NEW_FRIEND_NAME,
+        dMenuMng_c::MENU_INPUT_NEW_FRIEND_TOWN,
+        dMenuMng_c::MENU_INPUT_FRIEND_NAME,
+        dMenuMng_c::MENU_INPUT_FRIEND_TOWN,
+        dMenuMng_c::MENU_INPUT_NEW_FRIEND_COMMENT,
+        dMenuMng_c::MENU_INPUT_FRIEND_COMMENT,
+        dMenuMng_c::MENU_INPUT_MY_FRIEND_NAME,
+        dMenuMng_c::MENU_FRIEND_CODE_ADD,
         dMenuMng_c::MENU_FRIEND_CODE_EDIT};
     if (dMenuMng_c::openSub(openMenu[mNextMenu])) {
         setSubState(SUB_IDLE);

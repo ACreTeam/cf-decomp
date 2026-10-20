@@ -78,17 +78,21 @@ class dMenuFriend_c : public dMenuBase_c {
         NO_FOCUS = -1,
         // Number of menus requestOpenMenu selects from (l_openMenu).
         OPEN_MENU_NUM = 9,
-        // l_openMenu index: the name input after a friend is added by code
-        // (MENU_HAN_14; friend08).
+        // l_openMenu indexes of the text entry menus (dMenuHan_c). A friend
+        // added by code (friend08) is asked for its name, town and comment in
+        // turn (MENU_INPUT_NEW_FRIEND_*); the friend roster (friend04)
+        // rewrites the name, town (asked after the name) and comment of a
+        // friend (MENU_INPUT_FRIEND_*); the frame's text box (friend06) opens
+        // the player's own friend name (MENU_INPUT_MY_FRIEND_NAME).
         OPEN_MENU_NEW_FRIEND_NAME = 0,
-        // l_openMenu index: the menu the frame's comment text box opens
-        // (MENU_HAN_18; friend06).
-        OPEN_MENU_COMMENT = 6,
-        // l_openMenu indexes of the friend roster (friend04): rewrite the
-        // name (MENU_HAN_16) and the comment (MENU_HAN_1A) of a friend, add a
-        // friend by code, reenter a friend's code.
+        OPEN_MENU_NEW_FRIEND_TOWN = 1,
         OPEN_MENU_FRIEND_NAME = 2,
+        OPEN_MENU_FRIEND_TOWN = 3,
+        OPEN_MENU_NEW_FRIEND_COMMENT = 4,
         OPEN_MENU_FRIEND_COMMENT = 5,
+        OPEN_MENU_MY_FRIEND_NAME = 6,
+        // l_openMenu indexes of the friend code entry (dMenuFriend08_c): add a
+        // friend, reenter the code of a friend.
         OPEN_MENU_CODE_ADD = 7,
         OPEN_MENU_CODE_EDIT = 8,
     };

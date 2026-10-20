@@ -194,7 +194,7 @@ void dMenuFriend06_c::startReopenAnm() {
 // .text:0x744
 void dMenuFriend06_c::startCommentAnm() {
     startAnm(&mLyt, l_allPane, ANM_WIN_OUT, STATE_CLOSE, FALSE);
-    dMenuFriend_c::requestOpenMenu(dMenuFriend_c::OPEN_MENU_COMMENT);
+    dMenuFriend_c::requestOpenMenu(dMenuFriend_c::OPEN_MENU_MY_FRIEND_NAME);
     dMenuFriend_c::startTextBoxUp();
     playSeSubMenuPush();
 }

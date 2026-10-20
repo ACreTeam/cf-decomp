@@ -170,9 +170,16 @@ namespace dAcUitag {
 
 // The indices of openMenuA (the menu table l_menusA); only the ones named so far.
 enum MenuA_e {
+    MENU_A_DESIGN_SELECT = 1, // menu 0x0E: the design menu for the design in getDesignIndex
+    MENU_A_EDIT_DESIGN = 2,   // menu 0x0F: the design editor
     MENU_A_ITEM = 8,    // menu 0x00: the item menu
     MENU_A_ITEM_1 = 9,  // menu 0x01: the item menu, second kind
     MENU_A_WRITE = 10,  // menu 0x41: the letter writing menu
+};
+
+// The indices of openMenuB (the menu table l_menusB); only the ones named so far.
+enum MenuB_e {
+    MENU_B_EDIT_PRO = 7, // menu 0x10: the pro design editor
 };
 
 int getTabMenu(int tab); // 8017E8FC: the menu of a tab

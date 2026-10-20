@@ -56,6 +56,14 @@ public:
     static void setResult(u8 result);
     // The item argument of the item menus (s_C104); returns the previous one.
     static u16 setMenuItem(u16 item); // 8019AD38
+    // The item a menu picked (shares s_C104 with the item argument): the song
+    // the K.K. request menu (REL d_menu_hanNP) found.
+    static u16 getPickedItem();       // 8019B240
+    static void setPickedItem(u16 item); // 8019B248
+    // The constellation slot the constellation menus work on (shares s_picked
+    // with the picked design).
+    static u32 getPickedStarSign();       // 8019B28C
+    static void setPickedStarSign(u32 slot); // 8019B294
     static void requestClose(); // 8019A7AC
     static void clearCloseRequest(); // 8019A7B4
     static bool isCloseRequested(); // 8019A7BC
@@ -88,14 +96,28 @@ public:
         MENU_EDIT_DESIGN = 0x0F,   // the design editor (REL d_menu_editNP)
         MENU_EDIT_PRO = 0x10,      // ... for a pro design (four textures)
         MENU_EDIT_FACE = 0x11,     // ... for the face design (the cat model)
-        MENU_HAN_14 = 0x14, // dMenuHan_c text input menus (REL d_menu_hanNP), opened by the friend menu tab bar
-        MENU_HAN_15 = 0x15,
-        MENU_HAN_16 = 0x16,
-        MENU_HAN_17 = 0x17,
-        MENU_HAN_18 = 0x18,
-        MENU_HAN_19 = 0x19,
-        MENU_HAN_1A = 0x1A,
+        // The text entry menus (REL d_menu_hanNP, dMenuHan_c).
+        MENU_INPUT_PLAYER_NAME = 0x12, // "What's your name?"
+        MENU_INPUT_TOWN_NAME = 0x13,   // "What's your town's name?"
+        MENU_INPUT_NEW_FRIEND_NAME = 0x14, // friend menu: name of the friend added by code; next the town
+        MENU_INPUT_NEW_FRIEND_TOWN = 0x15, // ... his town; next the comment
+        MENU_INPUT_FRIEND_NAME = 0x16,     // friend roster: rewrite the name of a friend; next the town
+        MENU_INPUT_FRIEND_TOWN = 0x17,     // ... his town, then the entry is registered
+        MENU_INPUT_MY_FRIEND_NAME = 0x18,  // the player's own friend name, typed in the frame's text box
+        MENU_INPUT_NEW_FRIEND_COMMENT = 0x19, // the comment of the new friend, may be empty; registers the entry
+        MENU_INPUT_FRIEND_COMMENT = 0x1A,     // friend roster: rewrite the comment of a friend
+        MENU_INPUT_SAY = 0x1B,           // "Say it!"
+        MENU_INPUT_DESIGN_NAME = 0x1C,   // the name of a design, back to the design editor
+        MENU_INPUT_PRO_DESIGN_NAME = 0x1D, // ... of a pro design
+        MENU_INPUT_MESSAGE = 0x1E,       // "What's the exact message?"
+        MENU_INPUT_STAR_SIGN_NAME = 0x1F, // the name of a constellation
+        MENU_INPUT_STAR_SIGN_NAME_2 = 0x20, // ... same menu
+        MENU_INPUT_SONG = 0x21,          // the K.K. song request: the song named becomes getPickedItem
+        MENU_INPUT_CATCHPHRASE = 0x22,   // opened by openInput with the current text
+        MENU_INPUT_NICKNAME = 0x23,
+        MENU_INPUT_GREETING = 0x24,
         MENU_ITEM_SELECT = 0x32,
+        MENU_MUSEUM = 0x3C, // the museum's donation list (REL d_menu_museumNP)
         MENU_FRIEND_TOWN = 0x55, // "Go to which town?": the online friends' towns (REL d_menu_friend03NP)
         MENU_FRIEND_TOWN_B = 0x56, // ... same menu
         MENU_FRIEND04 = 0x57, // friend roster (REL d_menu_friend04), the first tab of dMenuFriend_c
@@ -112,6 +134,9 @@ public:
         MENU_BANK_DEPOSIT = 0x4A,
         MENU_BANK_WITHDRAW = 0x4B,
         MENU_BANK_PAY = 0x4C,
+        MENU_POST_TOWN = 0x4D,       // the letters to hand in at the post office, for the town (REL d_menu_mslct)
+        MENU_POST_OTHER_TOWN = 0x4E, // ... letters to other towns
+        MENU_POST_FUTURE = 0x4F,     // ... the letter to the future self
         MENU_ADDRESS = 0x53,        // the addressee of the menu manager's mail (REL d_menu_friend02)
         MENU_ADDRESS_LETTER = 0x54, // ... of the letter getPickedLetter of the player
         MENU_FRIEND_SELECT = 0x51,       // the Wii friend picker (REL d_menu_friend01NP); updates the roster first
@@ -169,6 +194,23 @@ public:
     static BOOL isSelSlot(int slot);
     static void onSelSlot(int slot);
 
+    // The bits of the selection mask the post office menu (REL d_menu_mslct) reports to the clerk
+    // (d_a_npc_sp_periko); the bits 1 << (slot + 1) are the players whose mailbox is full.
+    enum SEL_MASK_e {
+        SEL_NOT_RESIDENT = 0x01, // a letter to a villager or player that doesn't live here was returned
+        SEL_POST_FULL = 0x20,    // the post office is full
+        SEL_MAIL_TAKEN = 0x40,   // at least one letter was taken
+        SEL_NOT_FRIEND = 0x80,   // a letter to another town was returned, the recipient isn't a friend
+    };
+    static BOOL isSelNotResident();
+    static BOOL isSelNotFriend();
+    static BOOL isSelPostFull();
+    static BOOL isSelMailTaken();
+    static void onSelNotResident();
+    static void onSelNotFriend();
+    static void onSelPostFull();
+    static void onSelMailTaken();
+
     static void setTime(const dTime_c *time);
     static dTime_c getTime();
 
@@ -214,8 +256,6 @@ BOOL fn_8019AE00();
 BOOL fn_8019AE2C();
 BOOL fn_8019AE58();
 BOOL fn_8019AEE4();
-u16 fn_8019B240();
-void fn_8019B248(u16 arg);
 u32 fn_8019B250();
 void fn_8019B258(u32 arg);
 u16 fn_8019B260();
@@ -223,19 +263,9 @@ void fn_8019B268(u16 arg);
 u32 fn_8019B270();
 u32 fn_8019B278();
 void fn_8019B280(u32 a, u32 b);
-u32 fn_8019B28C();
-void fn_8019B294(u32 arg);
 BOOL fn_8019B29C();
 BOOL fn_8019B2C4();
 BOOL fn_8019B2EC();
-BOOL fn_8019B348();
-BOOL fn_8019B350();
-BOOL fn_8019B358();
-BOOL fn_8019B3DC();
-void fn_8019B3E4();
-void fn_8019B3EC();
-void fn_8019B3F4();
-void fn_8019B418();
 BOOL fn_8019B4EC();
 BOOL fn_8019B4F8();
 BOOL fn_8019B504();

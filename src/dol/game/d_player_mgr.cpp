@@ -1241,7 +1241,7 @@ BOOL prepareMiiMask() {
         if (!canUseMiiMask()) {
             return FALSE;
         }
-        if (!fn_802C4404(&current->mMiiId, &mii)) {
+        if (!RFLSearchOfficialData(&current->mMiiId, &mii)) {
             return FALSE;
         }
     }

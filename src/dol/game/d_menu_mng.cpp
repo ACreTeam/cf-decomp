@@ -461,22 +461,22 @@ void dMenuMng_c::clearInputBuf() {
 
 BOOL fn_8019ADD4() {
     dMenuMng_c::clearInputBuf();
-    return dMenuMng_c::open(0x12, FALSE);
+    return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_PLAYER_NAME, FALSE);
 }
 
 BOOL fn_8019AE00() {
     dMenuMng_c::clearInputBuf();
-    return dMenuMng_c::open(0x13, FALSE);
+    return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_TOWN_NAME, FALSE);
 }
 
 BOOL fn_8019AE2C() {
     dMenuMng_c::clearInputBuf();
-    return dMenuMng_c::open(0x1B, FALSE);
+    return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_SAY, FALSE);
 }
 
 BOOL fn_8019AE58() {
     dMenuMng_c::clearInputBuf();
-    return dMenuMng_c::open(0x1E, FALSE);
+    return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_MESSAGE, FALSE);
 }
 
 BOOL dMenuMng_c::openInput(u8 menu, const u16 *str, int len) {
@@ -580,11 +580,11 @@ dDesign_c *dMenuMng_c::getDesign() {
     return &l_design;
 }
 
-u16 fn_8019B240() {
+u16 dMenuMng_c::getPickedItem() {
     return s_C104;
 }
 
-void fn_8019B248(u16 arg) {
+void dMenuMng_c::setPickedItem(u16 arg) {
     s_C104 = arg;
 }
 
@@ -617,27 +617,27 @@ void fn_8019B280(u32 a, u32 b) {
     s_EA8C = b;
 }
 
-u32 fn_8019B28C() {
+u32 dMenuMng_c::getPickedStarSign() {
     return s_picked;
 }
 
-void fn_8019B294(u32 arg) {
+void dMenuMng_c::setPickedStarSign(u32 arg) {
     s_picked = arg;
 }
 
 BOOL fn_8019B29C() {
     dMenuMng_c::clearSelMask();
-    return dMenuMng_c::openMenu(0x4D);
+    return dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_TOWN);
 }
 
 BOOL fn_8019B2C4() {
     dMenuMng_c::clearSelMask();
-    return dMenuMng_c::openMenu(0x4E);
+    return dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_OTHER_TOWN);
 }
 
 BOOL fn_8019B2EC() {
     dMenuMng_c::clearSelMask();
-    return dMenuMng_c::openMenu(0x4F);
+    return dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_FUTURE);
 }
 
 void dMenuMng_c::clearSelMask() {
@@ -652,16 +652,16 @@ void dMenuMng_c::onSelMask(u16 bit) {
     s_selMask |= bit;
 }
 
-BOOL fn_8019B348() {
-    return dMenuMng_c::isSelMask(0x1);
+BOOL dMenuMng_c::isSelNotResident() {
+    return isSelMask(SEL_NOT_RESIDENT);
 }
 
-BOOL fn_8019B350() {
-    return dMenuMng_c::isSelMask(0x80);
+BOOL dMenuMng_c::isSelNotFriend() {
+    return isSelMask(SEL_NOT_FRIEND);
 }
 
-BOOL fn_8019B358() {
-    return dMenuMng_c::isSelMask(0x20);
+BOOL dMenuMng_c::isSelPostFull() {
+    return isSelMask(SEL_POST_FULL);
 }
 
 int dMenuMng_c::countSelSlots() {
@@ -680,20 +680,20 @@ BOOL dMenuMng_c::isSelSlot(int slot) {
     return (s_selMask & bit) != 0;
 }
 
-BOOL fn_8019B3DC() {
-    return dMenuMng_c::isSelMask(0x40);
+BOOL dMenuMng_c::isSelMailTaken() {
+    return isSelMask(SEL_MAIL_TAKEN);
 }
 
-void fn_8019B3E4() {
-    dMenuMng_c::onSelMask(0x1);
+void dMenuMng_c::onSelNotResident() {
+    onSelMask(SEL_NOT_RESIDENT);
 }
 
-void fn_8019B3EC() {
-    dMenuMng_c::onSelMask(0x80);
+void dMenuMng_c::onSelNotFriend() {
+    onSelMask(SEL_NOT_FRIEND);
 }
 
-void fn_8019B3F4() {
-    dMenuMng_c::onSelMask(0x20);
+void dMenuMng_c::onSelPostFull() {
+    onSelMask(SEL_POST_FULL);
 }
 
 void dMenuMng_c::onSelSlot(int slot) {
@@ -701,8 +701,8 @@ void dMenuMng_c::onSelSlot(int slot) {
     s_selMask |= bit;
 }
 
-void fn_8019B418() {
-    dMenuMng_c::onSelMask(0x40);
+void dMenuMng_c::onSelMailTaken() {
+    onSelMask(SEL_MAIL_TAKEN);
 }
 
 void dMenuMng_c::setTime(const dTime_c *time) {

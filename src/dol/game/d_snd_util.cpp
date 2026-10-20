@@ -262,9 +262,9 @@ void playMelody(const u8 *notes) {
     SoundSystem::getInstance()->playMelody(notes);
 }
 
-// 8000FB10
-void fn_8000FB10(u32 arg) {
-    SoundSystem::getInstance()->playJingle(arg);
+// 8000FB10: plays one note of the town tune editor (d_menu_melody)
+void playMelodyNote(u32 note) {
+    SoundSystem::getInstance()->playJingle(note);
 }
 
 // 8000FB88: the town tune player state (< 0: idle)

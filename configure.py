@@ -2908,10 +2908,10 @@ config.libs = [
     Rel(
         "d_menu_hanNP",
         [
-            Object(NonMatching, "d_menu_hanNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_hanNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_hanNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_hanNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_hanNP/d_menu_han.cpp"),
+            Object(Matching, "d_menu_hanNP/d_menu_han.cpp"),
         ],
     ),
     Rel(
@@ -3052,28 +3052,28 @@ config.libs = [
     Rel(
         "d_menu_melodyNP",
         [
-            Object(NonMatching, "d_menu_melodyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_melodyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_melodyNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_melodyNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_melodyNP/d_menu_melody.cpp"),
+            Object(Matching, "d_menu_melodyNP/d_menu_melody.cpp"),
         ],
     ),
     Rel(
         "d_menu_miiNP",
         [
-            Object(NonMatching, "d_menu_miiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_miiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_miiNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_miiNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_miiNP/d_menu_mii.cpp"),
+            Object(Matching, "d_menu_miiNP/d_menu_mii.cpp"),
         ],
     ),
     Rel(
         "d_menu_museumNP",
         [
-            Object(NonMatching, "d_menu_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_museumNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_museumNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_museumNP/d_menu_museum.cpp"),
+            Object(Matching, "d_menu_museumNP/d_menu_museum.cpp"),
         ],
     ),
     Rel(
@@ -3088,10 +3088,10 @@ config.libs = [
     Rel(
         "d_menu_mslctNP",
         [
-            Object(NonMatching, "d_menu_mslctNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_mslctNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_mslctNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_mslctNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_mslctNP/d_menu_mslct.cpp"),
+            Object(Matching, "d_menu_mslctNP/d_menu_mslct.cpp"),
         ],
     ),
     Rel(
