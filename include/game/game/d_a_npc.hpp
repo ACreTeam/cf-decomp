@@ -1223,8 +1223,8 @@ public:
         static u16 getMenuItem();                                                               // 80029A18
         static u32 fn_80029A50();                                                               // 80029A50
         static u32 fn_80029A84();                                                               // 80029A84
-        static u32 fn_80029AB8();                                                               // 80029AB8
-        static u32 fn_80029AEC();                                                               // 80029AEC
+        static u32 getMenuPosX();                                                               // 80029AB8
+        static u32 getMenuPosZ();                                                               // 80029AEC
         static u32 fn_80029B20();                                                               // 80029B20
         static bool isMenuSel01();                                                              // 80029B54
         static bool isMenuSel20();                                                              // 80029B94

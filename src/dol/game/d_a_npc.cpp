@@ -8684,7 +8684,7 @@ BOOL dAcNpc_c::recept_c::removeMenuSelItems() {
 
 u16 dAcNpc_c::recept_c::getMenuItem() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019AD30();
+        return dMenuMng_c::getMenuItem();
     }
     return dItem::ITEM_ID_NONE;
 }
@@ -8703,16 +8703,16 @@ u32 dAcNpc_c::recept_c::fn_80029A84() {
     return 0;
 }
 
-u32 dAcNpc_c::recept_c::fn_80029AB8() {
+u32 dAcNpc_c::recept_c::getMenuPosX() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B270();
+        return dMenuMng_c::getPickedPosX();
     }
     return 0;
 }
 
-u32 dAcNpc_c::recept_c::fn_80029AEC() {
+u32 dAcNpc_c::recept_c::getMenuPosZ() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019B278();
+        return dMenuMng_c::getPickedPosZ();
     }
     return 0;
 }
@@ -9403,7 +9403,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = TRUE;
                 break;
             case 0x05:
-                ok = fn_8019AEE4();
+                ok = dMenuMng_c::openMap01();
                 break;
             case 0x06:
                 ok = dMenuMng_c::openMenu(0x3D);
@@ -9422,22 +9422,22 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x50);
                 break;
             case 0x0B:
-                ok = fn_8019ADD4();
+                ok = dMenuMng_c::openPlayerNameInput();
                 break;
             case 0x0C:
-                ok = fn_8019AE00();
+                ok = dMenuMng_c::openTownNameInput();
                 break;
             case 0x0D:
                 ok = dMenuMng_c::openMenu(mReq.mMenuNo);
                 break;
             case 0x0E:
-                ok = fn_8019B4EC();
+                ok = dMenuMng_c::openFriendSelect();
                 break;
             case 0x0F:
-                ok = fn_8019B4F8();
+                ok = dMenuMng_c::openWriteSelf();
                 break;
             case 0x10:
-                ok = fn_8019B504();
+                ok = dMenuMng_c::openPhoto01();
                 break;
             case 0x11:
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_TURNIP_COUNT);
@@ -9467,7 +9467,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_FRIEND_TOWN);
                 break;
             case 0x1A:
-                ok = fn_8019AE2C();
+                ok = dMenuMng_c::openSayInput();
                 break;
             case 0x1B:
                 ok = dMenuMng_c::openMenu(0x5F);
@@ -9491,16 +9491,16 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_TURNIP_PRICE);
                 break;
             case 0x22:
-                ok = fn_8019AE58();
+                ok = dMenuMng_c::openMessageInput();
                 break;
             case 0x23:
-                ok = fn_8019B29C();
+                ok = dMenuMng_c::openPostTown();
                 break;
             case 0x24:
-                ok = fn_8019B2C4();
+                ok = dMenuMng_c::openPostOtherTown();
                 break;
             case 0x25:
-                ok = fn_8019B2EC();
+                ok = dMenuMng_c::openPostFuture();
                 break;
             case 0x26:
                 ok = dMenuMng_c::openMenu(0x3F);

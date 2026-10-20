@@ -168,7 +168,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnivalGift(int kind) {
         mItem0.setFromIndex(dItem::ITEM_IDX_BLUE_CANDY, cM::rndInt(4), FALSE);
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL && player->findEmptyPocket(0) != -1) {
-            player->pickUp(&mItem0, FALSE);
+            player->pickUp(mItem0, FALSE);
         }
         requestItemAct(&mItem0, 0, 0);
         setMsgProc(&dAcNpcNml_c::talk_c::msgCarnivalGift);
@@ -455,7 +455,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival1Prize(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0 && mItem0.isValid()) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
-            player->pickUp(&mItem0, FALSE);
+            player->pickUp(mItem0, FALSE);
         }
         requestItemAct(&mItem0, 0, 0);
         setMsgProc(&dAcNpcNml_c::talk_c::msgCarnival1Prize);
@@ -791,7 +791,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival2Prize(int kind) {
     if (mItem0.isValid()) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
-            player->pickUp(&mItem0, FALSE);
+            player->pickUp(mItem0, FALSE);
         }
         requestItemAct(&mItem0, 0, 0);
         setMsgProc(&dAcNpcNml_c::talk_c::msgCarnival2Prize);
@@ -1051,7 +1051,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival3Prize(int kind) {
     if (getController() != NULL && getController()->mNextMsgCode == 0) {
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
-            player->pickUp(&mItem0, FALSE);
+            player->pickUp(mItem0, FALSE);
         }
         requestItemAct(&mItem0, 0, 0);
         setMsgProc(&dAcNpcNml_c::talk_c::msgCarnival3Prize);
@@ -1268,7 +1268,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival4Prize(int kind) {
         if (mItem0.isValid()) {
             dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             requestItemAct(&mItem0, 0, 0);
         }
@@ -1562,7 +1562,7 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival5Prize(int kind) {
         if (mItem0.isValid()) {
             dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             requestItemAct(&mItem0, 0, 0);
         }

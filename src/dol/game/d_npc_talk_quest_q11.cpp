@@ -352,7 +352,7 @@ void dAcNpcNml_c::talk_c::endSickReward(int arg) {
     mItem0 = item;
     if (mItem0.isValid()) {
         if (player != NULL) {
-            player->pickUp(&mItem0, FALSE);
+            player->pickUp(mItem0, FALSE);
         }
         setItemName(mItem0, 4);
     }

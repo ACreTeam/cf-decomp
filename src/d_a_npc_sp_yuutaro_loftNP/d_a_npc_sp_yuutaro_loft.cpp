@@ -414,7 +414,7 @@ void dAcNpcSpYuutaroLoft_c::talk_c::onAnswer(int arg) {
         dItem::Item item;
         dItemSel::select(&item, 1, &range, 1, &filter, NULL, 0, NULL);
         takeLamp();
-        player->pickUp(&item, FALSE);
+        player->pickUp(item, FALSE);
         setItemName(item, 0);
         switch (kind) {
         case dItem::KIND_FTR:

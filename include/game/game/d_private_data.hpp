@@ -615,7 +615,7 @@ public:
         setPocket(&none, idx, FALSE);
     }
     int findEmptyPocket(int start);                                        // 801380EC
-    BOOL pickUp(const dItem::Item *item, BOOL flag);                       // 8013812C
+    BOOL pickUp(const dItem::Item &item, BOOL flag);                       // 8013812C
     int countPockets(BOOL (*fn)(const dItem::Item *), u16 *mask);          // 801381B4
     int countPocketsFlag(BOOL (*fn)(const dItem::Item *, int), u16 *mask); // 8013828C
     void setPocketFlag(int idx, int flag);                                 // 8013834C

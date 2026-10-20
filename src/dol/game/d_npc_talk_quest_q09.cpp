@@ -618,7 +618,7 @@ void dAcNpcNml_c::talk_c::endInviteTradeYes(int arg) {
                 player->payMoney(mPrice, FALSE);
             }
             if (mItem0.isValid()) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
         }
         dSaveData_c::getTown()->mAnimals.mTown.mAppointment.setFlag(QUEST_INVITE_FLAG_TRADED);

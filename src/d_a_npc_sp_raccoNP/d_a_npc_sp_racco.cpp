@@ -824,7 +824,7 @@ void dAcNpcSpRakosuke_c::talk_c::giveTreasure() {
     dItemSel::select(&item, 1, &range, 1, &dItemSel::sDefaultFilter, NULL, 0,
                      NULL);
     requestItemAct(&item, 0, 0);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&item, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(item, FALSE);
 }
 
 // .text 0x22B8

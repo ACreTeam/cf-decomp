@@ -1026,7 +1026,7 @@ void dAcNpcSpTotakeke_c::talk_c::afterSong() {
                 PRIVATE_FLAG1_KK_SONG_GIVEN);
             mpController->setNextMsgCode(MSG_GIFT);
             dItem::Item song = dNpcInfo::totakeke_c::get()->getSong();
-            dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&song, FALSE);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(song, FALSE);
             int idx = dItem::seeker_c::get()->findLike(song);
             dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag2(idx);
         } else {
@@ -1049,7 +1049,7 @@ void dAcNpcSpTotakeke_c::talk_c::afterSong() {
                 PRIVATE_FLAG1_KK_SONG_GIVEN);
             mpController->setNextMsgCode(MSG_FIRST_GIFT);
             dItem::Item song = dNpcInfo::totakeke_c::get()->getSong();
-            dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&song, FALSE);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(song, FALSE);
             int idx = dItem::seeker_c::get()->findLike(song);
             dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag2(idx);
         } else {

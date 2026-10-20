@@ -224,7 +224,7 @@ void dAcNpcNml_c::talk_c::endSaleYes(int arg) {
                 player->payMoney(mPrice, FALSE);
             }
             if (mItem0.mId != dItem::ITEM_ID_NONE) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
         }
         dNpc::entry_c *entry = getEntry();

@@ -1934,7 +1934,7 @@ int dlBlockList_c::countOwned(dPrivateData_c *player) {
     for (u8 *p = mpBlocks; p < mpBlocks + (mCount << 13); p += 0x2000) {
         if (((dSaveDLItem_c *)p)->isUsed()) {
             Item item = ((dSaveDLItem_c *)p)->getItem();
-            if (item.mId != ITEM_ID_NONE && player->pickUp(&item, TRUE)) {
+            if (item.mId != ITEM_ID_NONE && player->pickUp(item, TRUE)) {
                 count++;
             }
         }

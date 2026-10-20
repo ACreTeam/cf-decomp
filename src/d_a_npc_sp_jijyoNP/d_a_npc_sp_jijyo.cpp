@@ -865,7 +865,7 @@ void dAcNpcSpJijyo_c::talk_c::onAnswer(int arg) {
                     }
                     if (dPlayerMgr::Mgr_c::getCurrentPlayer()->payMoney(mPrice,
                                                                         TRUE)) {
-                        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem,
+                        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem,
                                                                       FALSE);
                         onBought();
                     } else {
@@ -883,7 +883,7 @@ void dAcNpcSpJijyo_c::talk_c::onAnswer(int arg) {
             case ANSWER_BUY:
                 if (dPlayerMgr::Mgr_c::getCurrentPlayer()->payMoney(mPrice,
                                                                     TRUE)) {
-                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem,
+                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem,
                                                                   FALSE);
                     onBought();
                 } else {
@@ -894,7 +894,7 @@ void dAcNpcSpJijyo_c::talk_c::onAnswer(int arg) {
                 if (dPlayerMgr::Mgr_c::getCurrentPlayer()->countPockets(
                         NULL, NULL) >= 1) {
                     dPlayerMgr::Mgr_c::getCurrentPlayer()->subSavings(mPrice);
-                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem,
+                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem,
                                                                   FALSE);
                     onBought();
                 } else {
@@ -912,7 +912,7 @@ void dAcNpcSpJijyo_c::talk_c::onAnswer(int arg) {
                 if (dPlayerMgr::Mgr_c::getCurrentPlayer()->countPockets(
                         NULL, NULL) >= 1) {
                     dPlayerMgr::Mgr_c::getCurrentPlayer()->subSavings(mPrice);
-                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem,
+                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem,
                                                                   FALSE);
                     onBought();
                 } else {

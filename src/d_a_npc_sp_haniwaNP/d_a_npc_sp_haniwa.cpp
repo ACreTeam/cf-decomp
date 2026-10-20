@@ -436,7 +436,7 @@ void dAcNpcSpHaniwa_c::talk_c::onMessageEnd(int kind) {
         break;
     case MSG_TAKE_IT: {
         dSvAucItem_c *item = dSvAuc_c::get()->getItem(mSlot);
-        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&item->mItem, FALSE);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(item->mItem, FALSE);
         item->take();
         dFTR::sendEvent(mFtrHandle);
         break;

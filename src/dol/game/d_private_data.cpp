@@ -710,12 +710,12 @@ int dPrivateData_c::findEmptyPocket(int start) {
 }
 
 // 8013812C
-BOOL dPrivateData_c::pickUp(const dItem::Item *item, BOOL flag) {
+BOOL dPrivateData_c::pickUp(const dItem::Item &item, BOOL flag) {
     int idx = findEmptyPocket(0);
     if (idx == -1) {
         return FALSE;
     }
-    dItem::Item pick = item->getPickItem();
+    dItem::Item pick = item.getPickItem();
     setPocket(&pick, idx, flag);
     return TRUE;
 }

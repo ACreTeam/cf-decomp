@@ -912,21 +912,21 @@ void dAcPlayer_c::stepPocketFull() {
     case 3:
         switch (mMsgStep) {
         case MSG_STEP_SWAP:
-            if (_2188.isValid() && fn_8019AC04(_2188.getId())) {
+            if (_2188.isValid() && dMenuMng_c::openSwapPickUp(_2188.getId())) {
                 mStep = 4;
             } else {
                 setState(dPlayerMgr::STATE_IDLE);
             }
             break;
         case MSG_STEP_SWAP_DUG:
-            if (_2188.isValid() && fn_8019AC44(_2188.getId())) {
+            if (_2188.isValid() && dMenuMng_c::openSwapDug(_2188.getId())) {
                 mStep = 4;
             } else {
                 setState(dPlayerMgr::STATE_IDLE);
             }
             break;
         case MSG_STEP_SWAP_INSECT:
-            if (_2188.isValid() && fn_8019AC84(_2188.getId())) {
+            if (_2188.isValid() && dMenuMng_c::openSwapInsect(_2188.getId())) {
                 mStep = 4;
             } else {
                 setState(dPlayerMgr::STATE_IDLE);
@@ -934,7 +934,7 @@ void dAcPlayer_c::stepPocketFull() {
             break;
         case MSG_STEP_SWAP_FISH:
             mShowPos = mpToolBank->mFloat.mTarget;
-            if (_2188.isValid() && fn_8019ACC4(_2188.getId(), &mShowPos)) {
+            if (_2188.isValid() && dMenuMng_c::openSwapFish(_2188.getId(), &mShowPos)) {
                 mStep = 4;
             } else {
                 setState(dPlayerMgr::STATE_IDLE);

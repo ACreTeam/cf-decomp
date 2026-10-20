@@ -592,7 +592,7 @@ void dAcNpcSpFranklin_c::talk_c::takeKnifeFork() {
 
 // 0x1704
 void dAcNpcSpFranklin_c::talk_c::pickUpGift() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, FALSE);
 }
 
 // 0x173C

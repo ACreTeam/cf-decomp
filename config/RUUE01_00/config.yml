@@ -985,6 +985,7 @@ modules:
   name: d_menu_haniwaNP
   symbols: config/RUUE01_00/d_menu_haniwaNP/symbols.txt
   splits: config/RUUE01_00/d_menu_haniwaNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_item00NP.rel
   hash: a9b62739194972926f5c03c8de4808464120b56c
   name: d_menu_item00NP
@@ -1025,6 +1026,7 @@ modules:
   name: d_menu_inscNP
   symbols: config/RUUE01_00/d_menu_inscNP/symbols.txt
   splits: config/RUUE01_00/d_menu_inscNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_kabuNP.rel
   hash: 4b1df99c84b964d0a3484570ae2f366720caccc4
   name: d_menu_kabuNP
@@ -1036,6 +1038,7 @@ modules:
   name: d_menu_keytestNP
   symbols: config/RUUE01_00/d_menu_keytestNP/symbols.txt
   splits: config/RUUE01_00/d_menu_keytestNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_map00NP.rel
   hash: 60a1942012fccc78310d38598841037db94082fd
   name: d_menu_map00NP
@@ -1155,6 +1158,7 @@ modules:
   name: d_menu_writeNP
   symbols: config/RUUE01_00/d_menu_writeNP/symbols.txt
   splits: config/RUUE01_00/d_menu_writeNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_layoutNP.rel
   hash: 440550834ca3c5e315b2d87590ede15e1dbe4115
   name: d_a_layoutNP

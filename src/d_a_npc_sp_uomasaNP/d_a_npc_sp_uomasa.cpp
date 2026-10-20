@@ -990,7 +990,7 @@ void dAcNpcSpUomasa_c::talk_c::removeFish() {
 
 // .text 0x2988
 void dAcNpcSpUomasa_c::talk_c::pickUpFish() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mFish, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mFish, FALSE);
 }
 
 // .text 0x29C0
@@ -1005,13 +1005,13 @@ void dAcNpcSpUomasa_c::talk_c::setForceNextKeep() {
 
 // .text 0x29E0
 void dAcNpcSpUomasa_c::talk_c::pickUpPrize() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mPrize, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mPrize, FALSE);
 }
 
 // .text 0x2A18
 void dAcNpcSpUomasa_c::talk_c::pickUpRod() {
     dItem::Item rod(dItem::ITEM_IDX_FISHING_ROD);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&rod, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(rod, FALSE);
     dNpcInfo::uomasa_c::get()->setJoined();
     dMoney_c::offForceShow();
 }

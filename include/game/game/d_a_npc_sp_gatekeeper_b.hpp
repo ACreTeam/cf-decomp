@@ -86,7 +86,7 @@ class dAcNpcSpGkB_c : public dAcNpcSp_c, public dState::mode_c<dAcNpcSpGkB_c> {
         };
 
         // How many items the player took from the lost and found
-        // (fn_8019B250 after reqMenu1B).
+        // (dMenuMng_c::getLostTakenNum after reqMenu1B).
         enum {
             LOST_ITEMS_NONE,
             LOST_ITEMS_ONE,

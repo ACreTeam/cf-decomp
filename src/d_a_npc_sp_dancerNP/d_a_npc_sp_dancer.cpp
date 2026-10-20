@@ -438,7 +438,7 @@ void dAcNpcSpDancer_c::talk_c::removeCandy() {
 }
 // .text 0x116C
 void dAcNpcSpDancer_c::talk_c::receiveGift() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mGift, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mGift, FALSE);
     dSaveData_c::getTown()->mDailyRand.change();
     if (dNpcInfo::dancer_c::get()->isCandyAsked()) {
         mpController->setNextMsgCode(

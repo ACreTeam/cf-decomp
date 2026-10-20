@@ -16,6 +16,9 @@ public:
     // The special tab (its icon is only shown while a menu is open; selecting it closes the menu).
     enum { TAB_CLOSE = 7 };
 
+    // The tab of the insect and fish encyclopedia (REL d_menu_inscNP).
+    enum { TAB_INSC = 2 };
+
     // The tab of the chat menu (REL d_menu_chat).
     enum { TAB_CHAT = 4 };
 
@@ -179,6 +182,7 @@ enum MenuA_e {
 
 // The indices of openMenuB (the menu table l_menusB); only the ones named so far.
 enum MenuB_e {
+    MENU_B_ITEM_SELECT = 1, // menu 0x2B: the pocket picker (after dMenuMng_c::setPocketMask)
     MENU_B_EDIT_PRO = 7, // menu 0x10: the pro design editor
 };
 

@@ -2547,7 +2547,7 @@ BOOL dAcNpcSpTanukiBase_c::talk_c::buy() {
         getPlayerHome()->mNextRoofColor = color;
         getController()->setNextMsgCode(MSG_ROOF_PAINT_BOUGHT);
     } else {
-        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, 0);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, 0);
         getController()->setNextMsgCode(MSG_BOUGHT);
     }
     int points = mPrice / 100;
@@ -2794,12 +2794,12 @@ void dAcNpcSpTanukiBase_c::talk_c::askPaperAgain() {
 
 // .text 0x6588
 void dAcNpcSpTanukiBase_c::talk_c::giveItem() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, 0);
 }
 
 // .text 0x65C0
 void dAcNpcSpTanukiBase_c::talk_c::giveErrandItem() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, 3);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, 3);
 }
 
 // .text 0x65F8: one random bag of tulips, pansies, cosmos and roses each, and
@@ -2807,18 +2807,18 @@ void dAcNpcSpTanukiBase_c::talk_c::giveErrandItem() {
 void dAcNpcSpTanukiBase_c::talk_c::giveSeeds() {
     dItem::Item tulips((int)dItem::ITEM_IDX_RED_TULIP_BAG, cM::rndInt(3),
                        FALSE);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&tulips, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(tulips, 0);
     dItem::Item pansies((int)dItem::ITEM_IDX_WHITE_PANSY_BAG, cM::rndInt(3),
                         FALSE);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&pansies, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(pansies, 0);
     dItem::Item cosmos((int)dItem::ITEM_IDX_WHITE_COSMOS_BAG, cM::rndInt(3),
                        FALSE);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&cosmos, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(cosmos, 0);
     dItem::Item roses((int)dItem::ITEM_IDX_RED_ROSE_BAG, cM::rndInt(3), FALSE);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&roses, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(roses, 0);
     for (int i = 0; i < JOB_SAPLING_NUM; i++) {
         dItem::Item sapling((int)dItem::ITEM_IDX_SAPLING);
-        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&sapling, 0);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(sapling, 0);
     }
 }
 

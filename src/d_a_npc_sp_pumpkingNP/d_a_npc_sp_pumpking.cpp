@@ -711,7 +711,7 @@ void dAcNpcSpPumpking_c::talk_c::onThanksDone() {
 
 // 0x1B28
 void dAcNpcSpPumpking_c::talk_c::pickUpGift() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mGift, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mGift, FALSE);
 }
 
 // 0x1B60

@@ -397,7 +397,7 @@ void dAcNpcSpKaburiba_c::talk_c::onAnswer(int arg) {
                         break;
                     }
                     dItem::Item turnips(dItem::ITEM_IDX_100_TURNIPS);
-                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&turnips,
+                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(turnips,
                                                                   FALSE);
                     num -= TURNIP_POCKET;
                 }
@@ -405,7 +405,7 @@ void dAcNpcSpKaburiba_c::talk_c::onAnswer(int arg) {
                     dItem::Item turnips(
                         dItem::ITEM_IDX_10_TURNIPS,
                         (num - (TURNIP_BUNCH - 1)) / TURNIP_BUNCH, FALSE);
-                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&turnips,
+                    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(turnips,
                                                                   FALSE);
                 }
                 mItem = dItem::Item(dItem::ITEM_IDX_100_TURNIPS);
@@ -455,7 +455,7 @@ void dAcNpcSpKaburiba_c::talk_c::onAnswer(int arg) {
                 dPlayerMgr::Mgr_c::getCurrentPlayer()->payMoney(RED_SEED_PRICE,
                                                                 FALSE);
                 mItem = dItem::Item(dItem::ITEM_IDX_RED_TURNIP_SEED);
-                dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, FALSE);
+                dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, FALSE);
                 dSaveData_c::getTown()->mShops.mStalkMarket.invalidate();
                 mpController->setNextMsgCode(MSG_THANKS);
                 mSeedBought = TRUE;

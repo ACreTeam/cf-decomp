@@ -255,7 +255,7 @@ int dAcNpcNml_c::talk_c::msgArbeitGiven(msgInfo_s *info) {
         setItemName(mItem0, 1);
         dPrivateData_c *current = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (current != NULL) {
-            current->pickUp(&mItem0, FALSE);
+            current->pickUp(mItem0, FALSE);
         }
         break;
     }
@@ -310,7 +310,7 @@ int dAcNpcNml_c::talk_c::msgArbeitFtrReward(msgInfo_s *info) {
     setItemName(mItem0, 0);
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (player != NULL) {
-        player->pickUp(&mItem0, FALSE);
+        player->pickUp(mItem0, FALSE);
     }
     setLooksMsg(info, l_Ev_Arbeit, 0x15);
     setStepProc(&talk_c::stepArbeitFtrReward);

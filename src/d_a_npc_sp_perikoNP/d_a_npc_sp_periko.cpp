@@ -980,7 +980,7 @@ void dAcNpcSpPerikoBase_c::talk_c::endBestReport() {
         setNextMessage(MSG_GREAT_PLACE, LABEL_OWN);
     } else if (perfectDays >= 15) {
         dItem::Item can(dItem::ITEM_IDX_GOLDEN_CAN);
-        bool picked = player->pickUp(&can, FALSE);
+        bool picked = player->pickUp(can, FALSE);
         if (picked) {
             player->setFlag0(PRIVATE_FLAG0_GOLDEN_CAN_RECEIVED);
             setNextMessage(MSG_GOLDEN_CAN, LABEL_OWN);
@@ -1805,8 +1805,8 @@ void dAcNpcSpPerikoBase_c::talk_c::endBridgeMap() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (lbl_8074EA7D == 1) {
         player->setFlag0(PRIVATE_FLAG0_PUBLIC_WORKS_VOTED);
-        voteZ = fn_80029AEC();
-        player->mBridgeVoteX = fn_80029AB8();
+        voteZ = getMenuPosZ();
+        player->mBridgeVoteX = getMenuPosX();
         player->mBridgeVoteY = voteZ;
         setNextMessage(MSG_BRIDGE_VOTED, LABEL_OWN);
     } else {

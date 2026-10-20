@@ -706,12 +706,12 @@ void dAcNpcSpPyontaro_c::talk_c::removeFoil() {
 
 // .text 0x1A78
 void dAcNpcSpPyontaro_c::talk_c::pickUpPrize() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, FALSE);
 }
 
 // .text 0x1AB0
 void dAcNpcSpPyontaro_c::talk_c::buyShovel() {
     dItem::Item shovel(dItem::ITEM_IDX_SHOVEL);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&shovel, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(shovel, FALSE);
     dPlayerMgr::Mgr_c::getCurrentPlayer()->payMoney(shovel.getPrice(), FALSE);
 }

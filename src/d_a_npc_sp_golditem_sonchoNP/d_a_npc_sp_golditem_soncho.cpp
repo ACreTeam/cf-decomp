@@ -387,7 +387,7 @@ void dAcNpcSpGoldItemSoncho_c::talk_c::giveItem() {
         player->setFlag0(PRIVATE_FLAG0_GOLDEN_ROD_GIVEN);
     }
     requestItemAct(&item, 0, 0);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&item, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(item, FALSE);
 }
 
 // .text 0xE88

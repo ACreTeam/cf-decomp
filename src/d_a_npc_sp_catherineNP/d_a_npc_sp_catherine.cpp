@@ -1298,11 +1298,11 @@ void dAcNpcSpCatherine_c::talk_c::takeOffAccessories() {
     dItem::Item hat = dPlayerMgr::Mgr_c::getCurrentPlayer()->mEquipment.mHat;
     if (hat.getId() != dItem::ITEM_ID_NONE &&
         hat.getKind() != dItem::KIND_ORG_CAP) {
-        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&hat, FALSE);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(hat, FALSE);
     }
     dItem::Item acc = dPlayerMgr::Mgr_c::getCurrentPlayer()->mEquipment.mAcc;
     if (acc.getId() != dItem::ITEM_ID_NONE) {
-        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&acc, FALSE);
+        dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(acc, FALSE);
     }
     mEquipOrig.setFromPlayer();
     mEquip.mHeld = mEquipOrig.mHeld;

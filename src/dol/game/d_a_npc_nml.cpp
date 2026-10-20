@@ -1328,7 +1328,7 @@ BOOL dAcNpcNml_c::talk_c::reqSell() {
             dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
         }
     }
-    if (player->pickUp(&mItem0, FALSE)) {
+    if (player->pickUp(mItem0, FALSE)) {
         player->payMoney(mPrice, FALSE);
     }
     dItem::Item money(dItem::ITEM_IDX_100_BELLS);
@@ -1441,7 +1441,7 @@ BOOL dAcNpcNml_c::talk_c::reqGive() {
     if (player->findEmptyPocket(0) == -1 || !mItem0.isValid()) {
         return TRUE;
     }
-    player->pickUp(&mItem0, mGiveFlag);
+    player->pickUp(mItem0, mGiveFlag);
     requestItemAct(&mItem0, mGiveFlag, 0);
     return TRUE;
 }

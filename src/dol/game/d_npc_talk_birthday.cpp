@@ -55,7 +55,7 @@ BOOL dAcNpcNml_c::talk_c::stepPlayerBirthday(int kind) {
         mItem0.setFromIndex(dItem::ITEM_IDX_BIRTHDAY_CAKE);
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
         if (player != NULL) {
-            player->pickUp(&mItem0, TRUE);
+            player->pickUp(mItem0, TRUE);
         }
         requestItemAct(&mItem0, 1, 0);
         setMsgProc(&talk_c::msgPlayerBirthdayCake);

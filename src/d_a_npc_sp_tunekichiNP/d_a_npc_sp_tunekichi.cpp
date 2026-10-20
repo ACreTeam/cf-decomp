@@ -436,7 +436,7 @@ void dAcNpcSpTunekichi_c::talk_c::start(dActor_c *target) {
                 PRIVATE_FLAG0_REDD_REFERRAL_ASKED);
             dItem::Item card(dItem::ITEM_IDX_INVITE_CARD);
             dItem::Item invite = card.makeVariant(0);
-            dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&invite, FALSE);
+            dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(invite, FALSE);
         }
         break;
     case KIND_TALK:
@@ -657,7 +657,7 @@ BOOL dAcNpcSpTunekichi_c::talk_c::buy() {
     }
     dPlayerMgr::Mgr_c::getCurrentPlayer()->payMoney(mItem.getPrice() * 2,
                                                     FALSE);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, FALSE);
     dSaveTown_c *town = dSaveData_c::getTown();
     town->mVillagerMove.setPlayerValue(dPlayerMgr::getCurrentPlayerSlot(), 2);
     town = dSaveData_c::getTown();

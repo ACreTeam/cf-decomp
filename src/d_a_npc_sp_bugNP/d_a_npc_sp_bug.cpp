@@ -835,13 +835,13 @@ void dAcNpcSpBug_c::talk_c::setForceNext() {
 
 // .text 0x226C
 void dAcNpcSpBug_c::talk_c::pickUpPrize() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mPrize, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mPrize, FALSE);
 }
 
 // .text 0x22A4
 void dAcNpcSpBug_c::talk_c::pickUpNet() {
     dItem::Item net(dItem::ITEM_IDX_NET);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&net, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(net, FALSE);
     dNpcInfo::bug_c::get()->setJoined();
     dMoney_c::offForceShow();
 }

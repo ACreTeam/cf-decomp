@@ -1037,7 +1037,7 @@ BOOL dAcNpcSpKinuyo_c::talk_c::buy() {
         return FALSE;
     }
     dPlayerMgr::Mgr_c::getCurrentPlayer()->payMoney(mItem.getPrice(), FALSE);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, FALSE);
     dSaveTown_c *town = dSaveData_c::getTown();
     town->mShops.mShopTailor.sellAndNotify(
         dScene::getCurrentScene(), dShopLayout_getSlot(mUnitX, mUnitZ),

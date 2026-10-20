@@ -63,6 +63,7 @@ private:
 class FrameCtrl_c {
 public:
     enum ANM_FLAG_e {
+        LOOP = 0, // plays forward and repeats
         NO_LOOP = BIT_FLAG(0),
         REVERSE = BIT_FLAG(1),
     };

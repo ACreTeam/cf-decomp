@@ -773,7 +773,7 @@ BOOL dAcUitag::openMenuB(int idx) {
     }
     l_menuIdx = idx;
     l_this->mState = dAcUitag_c::STATE_OPEN_MENU_B;
-    fn_8019A7A4();
+    dMenuMng_c::onNoBgm();
     return TRUE;
 }
 

@@ -130,7 +130,7 @@ void daRmobjPoint_c::executeMenu() {
             static u16 kind = 6;
             static u8 senderKind = MAIL_FROM_TNPS;
             static int paper = dItem::ITEM_IDX_NOOK_PAPER;
-            dItem::Item present = fn_8019AD30();
+            dItem::Item present = dMenuMng_c::getMenuItem();
             dLetter::setItemName(0, present);
             mail.setupSystem(&kind, "MAIL_ETC_TPS", &senderKind,
                              &dPlayerMgr::Mgr_c::getCurrentPlayer()->mPID,

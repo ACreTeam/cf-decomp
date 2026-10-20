@@ -60,6 +60,35 @@ public:
     // the K.K. request menu (REL d_menu_hanNP) found.
     static u16 getPickedItem();       // 8019B240
     static void setPickedItem(u16 item); // 8019B248
+    static void onNoBgm(); // 8019A7A4: the menu opened by dAcUitag keeps the BGM off
+    // The pockets-full swap menus (REL d_menu_item03NP) for a picked-up, dug-up, caught insect or fish item.
+    static BOOL openSwapPickUp(u16 item);                      // 8019AC04
+    static BOOL openSwapDug(u16 item);                         // 8019AC44
+    static BOOL openSwapInsect(u16 item);                      // 8019AC84
+    static BOOL openSwapFish(u16 item, const mVec3_c *pos);    // 8019ACC4
+    static u16 getMenuItem();                                  // 8019AD30
+    // The text input menus (REL d_menu_hanNP), with a cleared input buffer.
+    static BOOL openPlayerNameInput(); // 8019ADD4
+    static BOOL openTownNameInput();   // 8019AE00
+    static BOOL openSayInput();        // 8019AE2C: Resetti's "Say it!"
+    static BOOL openMessageInput();    // 8019AE58
+    static BOOL openMap01();           // 8019AEE4
+    // What the player took in the lost and found menu (REL d_menu_item05NP): how many, and the item if one.
+    static u32 getLostTakenNum();             // 8019B250
+    static void setLostTakenNum(u32 num);     // 8019B258
+    static u16 getLostTakenItem();            // 8019B260
+    static void setLostTakenItem(u16 item);   // 8019B268
+    // The spot picked on the map (REL d_menu_map02NP), e.g. the bridge Pelly takes votes for.
+    static u32 getPickedPosX();               // 8019B270
+    static u32 getPickedPosZ();               // 8019B278
+    static void setPickedPos(u32 x, u32 z);   // 8019B280
+    // The post office hand-in menus (REL d_menu_mslctNP), with a cleared selection mask.
+    static BOOL openPostTown();      // 8019B29C
+    static BOOL openPostOtherTown(); // 8019B2C4
+    static BOOL openPostFuture();    // 8019B2EC
+    static BOOL openFriendSelect();  // 8019B4EC
+    static BOOL openWriteSelf();     // 8019B4F8
+    static BOOL openPhoto01();       // 8019B504
     // The constellation slot the constellation menus work on (shares s_picked
     // with the picked design).
     static u32 getPickedStarSign();       // 8019B28C
@@ -91,6 +120,7 @@ public:
 
     // openMenu / openItemSel menus (only the ones named so far).
     enum {
+        MENU_KEYTEST = 0x0C, // the keyboard test menu (REL d_menu_keytestNP)
         MENU_DESIGN = 0x0D,        // the design menu from its tab (REL d_menu_desi00)
         MENU_DESIGN_SELECT = 0x0E, // the design menu for the design in getDesignIndex
         MENU_EDIT_DESIGN = 0x0F,   // the design editor (REL d_menu_editNP)
@@ -106,7 +136,7 @@ public:
         MENU_INPUT_MY_FRIEND_NAME = 0x18,  // the player's own friend name, typed in the frame's text box
         MENU_INPUT_NEW_FRIEND_COMMENT = 0x19, // the comment of the new friend, may be empty; registers the entry
         MENU_INPUT_FRIEND_COMMENT = 0x1A,     // friend roster: rewrite the comment of a friend
-        MENU_INPUT_SAY = 0x1B,           // "Say it!"
+        MENU_INPUT_SAY = 0x1B,           // "Say it!" (Resetti)
         MENU_INPUT_DESIGN_NAME = 0x1C,   // the name of a design, back to the design editor
         MENU_INPUT_PRO_DESIGN_NAME = 0x1D, // ... of a pro design
         MENU_INPUT_MESSAGE = 0x1E,       // "What's the exact message?"
@@ -116,7 +146,13 @@ public:
         MENU_INPUT_CATCHPHRASE = 0x22,   // opened by openInput with the current text
         MENU_INPUT_NICKNAME = 0x23,
         MENU_INPUT_GREETING = 0x24,
+        MENU_SWAP_PICK_UP = 0x25, // pockets full: swap for a picked-up item (REL d_menu_item03NP)
+        MENU_SWAP_DUG = 0x26,     // ... a dug-up item
+        MENU_SWAP_INSECT = 0x27,  // ... a caught insect
+        MENU_SWAP_FISH = 0x28,    // ... a caught fish
         MENU_ITEM_SELECT = 0x32,
+        MENU_MAP01 = 0x35,   // REL d_menu_map01NP
+        MENU_PHOTO01 = 0x39, // REL d_menu_photo01NP
         MENU_MUSEUM = 0x3C, // the museum's donation list (REL d_menu_museumNP)
         MENU_FRIEND_TOWN = 0x55, // "Go to which town?": the online friends' towns (REL d_menu_friend03NP)
         MENU_FRIEND_TOWN_B = 0x56, // ... same menu
@@ -126,6 +162,10 @@ public:
         MENU_FRIEND07 = 0x5A, // mic chat
         MENU_FRIEND_CODE_ADD = 0x5B, // friend code entry for a new friend, asks his name next (REL d_menu_friend08)
         MENU_FRIEND_CODE_EDIT = 0x5C, // ... to change the key of the friend being edited
+        MENU_WRITE_LETTER = 0x41,   // write a letter on the stationery of the pocket getPickedLetter (REL d_menu_writeNP)
+        MENU_REWRITE_LETTER = 0x42, // ... edit the letter in slot getPickedLetter of the player
+        MENU_WRITE_BOARD = 0x43,    // a message for the bulletin board of the friend (setPostType 1)
+        MENU_WRITE_SELF = 0x44,     // a message sent to the player's own Wii (setPostType 0)
         MENU_TURNIP_COUNT = 0x45, // how many turnips (REL d_menu_kabu)
         MENU_TURNIP_PRICE = 0x46, // the turnip price
         MENU_DONATION = 0x47,     // the public works donation
@@ -141,7 +181,7 @@ public:
         MENU_ADDRESS_LETTER = 0x54, // ... of the letter getPickedLetter of the player
         MENU_FRIEND_SELECT = 0x51,       // the Wii friend picker (REL d_menu_friend01NP); updates the roster first
         MENU_FRIEND_SELECT_KNOWN = 0x52, // ... for a roster that is already known
-        MENU_MUSIC = 0x5D,
+        MENU_MUSIC = 0x5D, // the K.K. music list (REL d_menu_musicNP)
         MENU_STORAGE = 0x5E,
         MENU_DESIGN_TAKE = 0x65, // the slot for a design taken from the tailor (REL d_menu_desi01)
         MENU_TOWN_FLAG_DESIGN = 0x66, // the town flag's design (REL d_menu_desi03)
@@ -154,6 +194,7 @@ public:
         MENU_FLAG_DESIGN = 0x6B, // the house flag's design, asked for on the phone (daRmobjTel_c)
         MENU_BBS = 0x6D,     // the bulletin board (daStrBbs_c)
         MENU_POINT_PRESENT = 0x75, // the presents of Nook's point machine (daRmobjPoint_c)
+        MENU_HANIWA = 0x76, // the gyroids to take out of the storage (REL d_menu_haniwaNP), opened by the cafe
     };
 
     static BOOL openMenu(u8 menu);
@@ -245,29 +286,5 @@ public:
 extern mVec3_c g_menuPos;
 
 extern "C" {
-void fn_8019A7A4();
-BOOL fn_8019AC04(u16 arg);
-BOOL fn_8019AC44(u16 arg);
-BOOL fn_8019AC84(u16 arg);
-BOOL fn_8019ACC4(u16 arg, const mVec3_c *pos);
-u16 fn_8019AD30();
-BOOL fn_8019ADD4();
-BOOL fn_8019AE00();
-BOOL fn_8019AE2C();
-BOOL fn_8019AE58();
-BOOL fn_8019AEE4();
-u32 fn_8019B250();
-void fn_8019B258(u32 arg);
-u16 fn_8019B260();
-void fn_8019B268(u16 arg);
-u32 fn_8019B270();
-u32 fn_8019B278();
-void fn_8019B280(u32 a, u32 b);
-BOOL fn_8019B29C();
-BOOL fn_8019B2C4();
-BOOL fn_8019B2EC();
-BOOL fn_8019B4EC();
-BOOL fn_8019B4F8();
-BOOL fn_8019B504();
 extern u8 lbl_8074EA7D;
 }

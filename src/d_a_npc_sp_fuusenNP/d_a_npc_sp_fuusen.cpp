@@ -368,5 +368,5 @@ void dAcNpcSpFuusen_c::talk_c::onRequestEnd(int kind) {
 // .text 0x1024
 void dAcNpcSpFuusen_c::talk_c::givePrize() {
     requestItemAct(&mPrize, 0, 0);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mPrize, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mPrize, FALSE);
 }

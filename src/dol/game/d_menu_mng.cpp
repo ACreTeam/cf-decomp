@@ -256,7 +256,7 @@ BOOL dMenuMng_c::isMenuEnd() {
     return isFree();
 }
 
-void fn_8019A7A4() {
+void dMenuMng_c::onNoBgm() {
     dMenuMng_c::onFlag(dMenuMng_c::FLAG_NO_BGM);
 }
 
@@ -392,32 +392,32 @@ void dMenuMng_c::removeSelItems() {
     s_selMask = 0;
 }
 
-BOOL fn_8019AC04(u16 arg) {
-    BOOL ok = dMenuMng_c::open(0x25, FALSE);
+BOOL dMenuMng_c::openSwapPickUp(u16 arg) {
+    BOOL ok = dMenuMng_c::open(dMenuMng_c::MENU_SWAP_PICK_UP, FALSE);
     if (ok) {
         s_C104 = arg;
     }
     return ok;
 }
 
-BOOL fn_8019AC44(u16 arg) {
-    BOOL ok = dMenuMng_c::open(0x26, FALSE);
+BOOL dMenuMng_c::openSwapDug(u16 arg) {
+    BOOL ok = dMenuMng_c::open(dMenuMng_c::MENU_SWAP_DUG, FALSE);
     if (ok) {
         s_C104 = arg;
     }
     return ok;
 }
 
-BOOL fn_8019AC84(u16 arg) {
-    BOOL ok = dMenuMng_c::open(0x27, FALSE);
+BOOL dMenuMng_c::openSwapInsect(u16 arg) {
+    BOOL ok = dMenuMng_c::open(dMenuMng_c::MENU_SWAP_INSECT, FALSE);
     if (ok) {
         s_C104 = arg;
     }
     return ok;
 }
 
-BOOL fn_8019ACC4(u16 arg, const mVec3_c *pos) {
-    BOOL ok = dMenuMng_c::open(0x28, FALSE);
+BOOL dMenuMng_c::openSwapFish(u16 arg, const mVec3_c *pos) {
+    BOOL ok = dMenuMng_c::open(dMenuMng_c::MENU_SWAP_FISH, FALSE);
     if (ok) {
         s_C104 = arg;
         g_menuPos = *pos;
@@ -425,7 +425,7 @@ BOOL fn_8019ACC4(u16 arg, const mVec3_c *pos) {
     return ok;
 }
 
-u16 fn_8019AD30() {
+u16 dMenuMng_c::getMenuItem() {
     return s_C104;
 }
 
@@ -459,22 +459,22 @@ void dMenuMng_c::clearInputBuf() {
     memset(l_inputBuf, 0, sizeof(l_inputBuf));
 }
 
-BOOL fn_8019ADD4() {
+BOOL dMenuMng_c::openPlayerNameInput() {
     dMenuMng_c::clearInputBuf();
     return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_PLAYER_NAME, FALSE);
 }
 
-BOOL fn_8019AE00() {
+BOOL dMenuMng_c::openTownNameInput() {
     dMenuMng_c::clearInputBuf();
     return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_TOWN_NAME, FALSE);
 }
 
-BOOL fn_8019AE2C() {
+BOOL dMenuMng_c::openSayInput() {
     dMenuMng_c::clearInputBuf();
     return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_SAY, FALSE);
 }
 
-BOOL fn_8019AE58() {
+BOOL dMenuMng_c::openMessageInput() {
     dMenuMng_c::clearInputBuf();
     return dMenuMng_c::open(dMenuMng_c::MENU_INPUT_MESSAGE, FALSE);
 }
@@ -488,8 +488,8 @@ BOOL dMenuMng_c::openInput(u8 menu, const u16 *str, int len) {
     return TRUE;
 }
 
-BOOL fn_8019AEE4() {
-    return dMenuMng_c::open(0x35, FALSE);
+BOOL dMenuMng_c::openMap01() {
+    return dMenuMng_c::open(dMenuMng_c::MENU_MAP01, FALSE);
 }
 
 BOOL dMenuMng_c::openAuctionBid(u32 minimum) {
@@ -588,31 +588,31 @@ void dMenuMng_c::setPickedItem(u16 arg) {
     s_C104 = arg;
 }
 
-u32 fn_8019B250() {
+u32 dMenuMng_c::getLostTakenNum() {
     return s_picked;
 }
 
-void fn_8019B258(u32 arg) {
+void dMenuMng_c::setLostTakenNum(u32 arg) {
     s_picked = arg;
 }
 
-u16 fn_8019B260() {
+u16 dMenuMng_c::getLostTakenItem() {
     return s_C104;
 }
 
-void fn_8019B268(u16 arg) {
+void dMenuMng_c::setLostTakenItem(u16 arg) {
     s_C104 = arg;
 }
 
-u32 fn_8019B270() {
+u32 dMenuMng_c::getPickedPosX() {
     return s_picked;
 }
 
-u32 fn_8019B278() {
+u32 dMenuMng_c::getPickedPosZ() {
     return s_EA8C;
 }
 
-void fn_8019B280(u32 a, u32 b) {
+void dMenuMng_c::setPickedPos(u32 a, u32 b) {
     s_picked = a;
     s_EA8C = b;
 }
@@ -625,17 +625,17 @@ void dMenuMng_c::setPickedStarSign(u32 arg) {
     s_picked = arg;
 }
 
-BOOL fn_8019B29C() {
+BOOL dMenuMng_c::openPostTown() {
     dMenuMng_c::clearSelMask();
     return dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_TOWN);
 }
 
-BOOL fn_8019B2C4() {
+BOOL dMenuMng_c::openPostOtherTown() {
     dMenuMng_c::clearSelMask();
     return dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_OTHER_TOWN);
 }
 
-BOOL fn_8019B2EC() {
+BOOL dMenuMng_c::openPostFuture() {
     dMenuMng_c::clearSelMask();
     return dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_FUTURE);
 }
@@ -713,16 +713,16 @@ dTime_c dMenuMng_c::getTime() {
     return l_time;
 }
 
-BOOL fn_8019B4EC() {
-    return dMenuMng_c::open(0x51, FALSE);
+BOOL dMenuMng_c::openFriendSelect() {
+    return dMenuMng_c::open(dMenuMng_c::MENU_FRIEND_SELECT, FALSE);
 }
 
-BOOL fn_8019B4F8() {
-    return dMenuMng_c::open(0x44, FALSE);
+BOOL dMenuMng_c::openWriteSelf() {
+    return dMenuMng_c::open(dMenuMng_c::MENU_WRITE_SELF, FALSE);
 }
 
-BOOL fn_8019B504() {
-    return dMenuMng_c::open(0x39, FALSE);
+BOOL dMenuMng_c::openPhoto01() {
+    return dMenuMng_c::open(dMenuMng_c::MENU_PHOTO01, FALSE);
 }
 
 void dMenuMng_c::setFriendIdx(int idx) {

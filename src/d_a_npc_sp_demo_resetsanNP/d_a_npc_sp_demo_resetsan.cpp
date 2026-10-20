@@ -725,7 +725,7 @@ void dAcNpcSpDemoResetsanBase_c::talk_c::giveShovel() {
 // .text 0x1B94
 void dAcNpcSpDemoResetsanBase_c::talk_c::pickUpShovel() {
     dItem::Item shovel(dItem::ITEM_IDX_SILVER_SHOVEL);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&shovel, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(shovel, 0);
     dPlayerMgr::Mgr_c::getCurrentPlayer()->setFlag0(
         PRIVATE_FLAG0_RESET_CENTER_SHOVEL);
 }

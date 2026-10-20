@@ -2917,10 +2917,10 @@ config.libs = [
     Rel(
         "d_menu_haniwaNP",
         [
-            Object(NonMatching, "d_menu_haniwaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_haniwaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_haniwaNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_haniwaNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_haniwaNP/d_menu_haniwa.cpp"),
+            Object(Matching, "d_menu_haniwaNP/d_menu_haniwa.cpp"),
         ],
     ),
     Rel(
@@ -2989,10 +2989,10 @@ config.libs = [
     Rel(
         "d_menu_inscNP",
         [
-            Object(NonMatching, "d_menu_inscNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_inscNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_inscNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_inscNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_inscNP/d_menu_insc.cpp"),
+            Object(Matching, "d_menu_inscNP/d_menu_insc.cpp"),
         ],
     ),
     Rel(
@@ -3007,10 +3007,10 @@ config.libs = [
     Rel(
         "d_menu_keytestNP",
         [
-            Object(NonMatching, "d_menu_keytestNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_keytestNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_keytestNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_keytestNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_keytestNP/d_menu_keytest.cpp"),
+            Object(Matching, "d_menu_keytestNP/d_menu_keytest.cpp"),
         ],
     ),
     Rel(
@@ -3079,10 +3079,10 @@ config.libs = [
     Rel(
         "d_menu_musicNP",
         [
-            Object(NonMatching, "d_menu_musicNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_musicNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_musicNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_musicNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_musicNP/d_menu_music.cpp"),
+            Object(Matching, "d_menu_musicNP/d_menu_music.cpp"),
         ],
     ),
     Rel(
@@ -3214,10 +3214,10 @@ config.libs = [
     Rel(
         "d_menu_writeNP",
         [
-            Object(NonMatching, "d_menu_writeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_writeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_writeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_writeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_writeNP/d_menu_write.cpp"),
+            Object(Matching, "d_menu_writeNP/d_menu_write.cpp"),
         ],
     ),
     Rel(

@@ -490,7 +490,7 @@ void dAcNpcSpRoran_c::talk_c::removeOld() {
 
 // .text 0x1288
 void dAcNpcSpRoran_c::talk_c::pickUpNew() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mItem, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mItem, FALSE);
 }
 
 // .text 0x12C0

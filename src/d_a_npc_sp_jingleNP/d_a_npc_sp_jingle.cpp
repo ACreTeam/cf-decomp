@@ -608,7 +608,7 @@ void dAcNpcSpJingle_c::talk_c::giveGift() {
     dItemSel::select(&gift, 1, &range, 1, &dItemSel::sDefaultFilter, NULL, 0,
                      NULL);
     requestItemAct(&gift, 1, 0);
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&gift, TRUE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(gift, TRUE);
 }
 
 // .text 0x15E8

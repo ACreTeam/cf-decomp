@@ -266,7 +266,7 @@ void dAcNpcNml_c::talk_c::endClothReward(int arg) {
         switch (result) {
         case 0:
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             setItemName(mItem0, 4);
             break;
@@ -275,7 +275,7 @@ void dAcNpcNml_c::talk_c::endClothReward(int arg) {
                 dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             setItemName(mItem0, 4);
             break;

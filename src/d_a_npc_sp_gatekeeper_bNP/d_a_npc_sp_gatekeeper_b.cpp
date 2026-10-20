@@ -395,10 +395,10 @@ void dAcNpcSpGkB_c::talk_c::onRequestEnd(int kind) {
 
 // .text 0x1B64
 void dAcNpcSpGkB_c::talk_c::onLostAndFoundMenuEnd() {
-    int taken = fn_8019B250();
+    int taken = dMenuMng_c::getLostTakenNum();
     if (taken != LOST_ITEMS_NONE) {
         if (taken == LOST_ITEMS_ONE) {
-            dItem::Item item(fn_8019B260());
+            dItem::Item item(dMenuMng_c::getLostTakenItem());
             setItemName(item, 0);
             mpController->setNextMsgCode(MSG_LOST_ITEM_TAKEN);
         } else {

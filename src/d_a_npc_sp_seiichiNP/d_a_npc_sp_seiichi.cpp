@@ -667,7 +667,7 @@ void dAcNpcSpSeiichi_c::talk_c::returnFood() {
 
 // .text 0x1D44
 void dAcNpcSpSeiichi_c::talk_c::pickUpFood() {
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(&mFood, FALSE);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(mFood, FALSE);
     mpController->setNextMsgCode(MSG_STILL_HUNGRY);
 }
 

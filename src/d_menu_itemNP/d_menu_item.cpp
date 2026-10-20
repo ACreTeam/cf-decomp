@@ -438,7 +438,7 @@ bool needsSpecialHandling(const dItem::Item *item) {
 void Icon_c::setSelected(int selected) {
     static const char *baseAnmNames[BASE_ANM_COUNT] = {
         "item_icon_00_normalBase.brlan", "item_icon_00_selectBase.brlan"};
-    setAnm(&mBaseAnm, baseAnmNames[selected], nullptr);
+    mLyt.setAnm(&mBaseAnm, baseAnmNames[selected], nullptr);
     mBaseAnm.setToEnd();
     if (selected != BASE_ANM_NORMAL) {
         mIconFlags |= FLAG_ROTATE;
@@ -447,7 +447,7 @@ void Icon_c::setSelected(int selected) {
     } else {
         mIconFlags &= ~FLAG_ROTATE;
     }
-    calc();
+    mLyt.calc();
 }
 
 // .text:0x1070
@@ -462,11 +462,11 @@ void Icon_c::setMark(bool visible) {
 // .text:0x1098
 void Icon_c::create(m2d::ResAccIf_c *res, m2d::Anm_c *itemAnm) {
     mpItemAnm = itemAnm;
-    build(res, "item_icon_00.brlyt");
+    mLyt.build(res, "item_icon_00.brlyt");
     mGiftLyt.build(res, "gift_icon_00.brlyt");
     mGiftLyt.setVisible("icnBase", false);
     mMarkLyt.build(res, "item_mark_00.brlyt");
-    setAnm(&mRotateAnm, "item_icon_00_Fc_rotate.brlan", nullptr);
+    mLyt.setAnm(&mRotateAnm, "item_icon_00_Fc_rotate.brlan", nullptr);
     mIconFlags = 0;
     mGiftType = GIFT_ANM_NONE;
     setGiftAnm(GIFT_ANM_PRESENT);
@@ -477,8 +477,8 @@ void Icon_c::create(m2d::ResAccIf_c *res, m2d::Anm_c *itemAnm) {
 
 // .text:0x116C
 void Icon_c::setPos(const mVec2_c *pos) {
-    mPos.x = pos->x;
-    mPos.y = pos->y;
+    mLyt.mPos.x = pos->x;
+    mLyt.mPos.y = pos->y;
     mGiftLyt.mPos.x = pos->x;
     mGiftLyt.mPos.y = pos->y;
     mMarkLyt.mPos.x = pos->x;
@@ -490,14 +490,14 @@ void Icon_c::calcLayouts() {
     if (mIconFlags & FLAG_GIFT) {
         mGiftLyt.calc();
     }
-    calc();
+    mLyt.calc();
     mMarkLyt.calc();
 }
 
 // .text:0x1200
 void Icon_c::drawLayouts() {
     if (!(mIconFlags & FLAG_HIDDEN)) {
-        entry();
+        mLyt.entry();
         if (mIconFlags & FLAG_GIFT) {
             mGiftLyt.entry();
         }
@@ -509,7 +509,7 @@ void Icon_c::drawLayouts() {
 void Icon_c::calcRotate() {
     if (mIconFlags & FLAG_ROTATE) {
         mRotateAnm.play();
-        calc();
+        mLyt.calc();
     }
 }
 
@@ -535,14 +535,14 @@ void Icon_c::setGiftAnm(int gift) {
         static const char *itemNames[GIFT_ANM_COUNT] = {
             "item_icon_00_present.brlan", "item_icon_00_present.brlan",
             "item_icon_00_egg.brlan"};
-        setAnm(&mPresentAnm, itemNames[gift], nullptr);
+        mLyt.setAnm(&mPresentAnm, itemNames[gift], nullptr);
     }
     mGiftType = gift;
 }
 
 // .text:0x1374
 void Icon_c::setRootPos(const mVec3_c *pos) {
-    getRootPane()->SetTranslate(*pos);
+    mLyt.getRootPane()->SetTranslate(*pos);
     mGiftLyt.getRootPane()->SetTranslate(*pos);
     mMarkLyt.getRootPane()->SetTranslate(*pos);
 }
@@ -551,7 +551,7 @@ void Icon_c::setRootPos(const mVec3_c *pos) {
 // The target returns a reference to a converted temporary. Preserve this
 // original lifetime bug.
 const mVec3_c &Icon_c::getRootPos() {
-    return getRootPane()->GetTranslate();
+    return mLyt.getRootPane()->GetTranslate();
 }
 
 // .text:0x1440
@@ -572,14 +572,14 @@ void Icon_c::setItem(dItem::Item item, int flag, int unused) {
         mIconFlags &= ~FLAG_GIFT;
     }
     bool visible = valid != 0;
-    m2d::SimpleEx_c::setVisible("icnBase", visible);
-    m2d::SimpleEx_c::setVisible("icn", visible);
+    mLyt.setVisible("icnBase", visible);
+    mLyt.setVisible("icn", visible);
     static const char *backName = "txtBack_00";
-    m2d::SimpleEx_c::setVisible(backName, visible);
+    mLyt.setVisible(backName, visible);
     static const char *text0 = "TextBox_00";
-    m2d::SimpleEx_c::setVisible(text0, visible);
+    mLyt.setVisible(text0, visible);
     static const char *text1 = "TextBox_01";
-    m2d::SimpleEx_c::setVisible(text1, visible);
+    mLyt.setVisible(text1, visible);
     if (valid) {
         const dItem::BITM *info = dItem::infoBank_c::get()->getBITM(item);
         int raw = (s16)info->m_icon;
@@ -587,10 +587,10 @@ void Icon_c::setItem(dItem::Item item, int flag, int unused) {
         if ((u32)raw < ICON_PATTERN_COUNT) {
             icon = raw;
         }
-        bind(mpItemAnm);
+        mLyt.bind(mpItemAnm);
         mpItemAnm->setFrame(icon);
-        calc();
-        unbind(mpItemAnm);
+        mLyt.calc();
+        mLyt.unbind(mpItemAnm);
         int kind = info->getKind();
         int count = -1;
         if (kind == dItem::KIND_MONEY) {
@@ -607,14 +607,14 @@ void Icon_c::setItem(dItem::Item item, int flag, int unused) {
             count = dItem::seeker_c::get()->findLike(item) + 1;
         }
         if (count == -1) {
-            m2d::SimpleEx_c::setVisible(backName, false);
-            m2d::SimpleEx_c::setVisible(text1, false);
-            m2d::SimpleEx_c::setVisible(text0, false);
+            mLyt.setVisible(backName, false);
+            mLyt.setVisible(text1, false);
+            mLyt.setVisible(text0, false);
         } else {
-            setNumber(text0, count, 2, dScript::NUM_FORMAT_REGION);
-            setNumber(text1, count, 2, dScript::NUM_FORMAT_REGION);
+            mLyt.setNumber(text0, count, 2, dScript::NUM_FORMAT_REGION);
+            mLyt.setNumber(text1, count, 2, dScript::NUM_FORMAT_REGION);
         }
-        calc();
+        mLyt.calc();
     }
 }
 
@@ -630,7 +630,7 @@ bool Icon_c::calcGift() {
     mGiftAnm.play();
     mGiftLyt.calc();
     mPresentAnm.play();
-    calc();
+    mLyt.calc();
     return false;
 }
 

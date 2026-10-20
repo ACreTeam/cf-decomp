@@ -1292,7 +1292,7 @@ void dAcNpcSpEvSoncho_c::talk_c::giveItem() {
 // .text 0x5614
 void dAcNpcSpEvSoncho_c::talk_c::pickUpPresent() {
     dItem::Item *present = dNpcInfo::soncho_c::get()->getPresent();
-    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(present, 0);
+    dPlayerMgr::Mgr_c::getCurrentPlayer()->pickUp(*present, 0);
 }
 
 // .text 0x5654: a knife and fork dropped near him.

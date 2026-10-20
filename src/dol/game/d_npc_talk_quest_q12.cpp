@@ -211,7 +211,7 @@ void dAcNpcNml_c::talk_c::endLostKeyItem(int arg) {
         switch (res) {
         case 0:
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             setItemName(mItem0, 2);
             break;
@@ -220,7 +220,7 @@ void dAcNpcNml_c::talk_c::endLostKeyItem(int arg) {
                 dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             setItemName(mItem0, 2);
             break;

@@ -8,6 +8,7 @@
 #include <game/game/d_demo.hpp>
 #include <game/game/d_hmn_anm.hpp>
 #include <game/game/d_home.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_money.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
@@ -1111,7 +1112,7 @@ void dAcNpcSpCafe_c::talk_c::openGyroidMenu() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(0xFFFF);
     }
-    reqMenu0D(0x76, 0);
+    reqMenu0D(dMenuMng_c::MENU_HANIWA, 0);
 }
 
 // .text 0x2DDC

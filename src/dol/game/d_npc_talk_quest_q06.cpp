@@ -96,7 +96,7 @@ void dAcNpcNml_c::talk_c::endErrandYes(int arg) {
             } else {
                 getController()->setStringWord(1, unit, "sys_STRING/STR_Unit");
             }
-            if (player != NULL && player->pickUp(&mItem0, 2)) {
+            if (player != NULL && player->pickUp(mItem0, 2)) {
                 errand->start(QUEST_KIND_ERRAND_REQUEST, self, &other->mID, &mItem0, now, mErrandDeadline, QUEST_ERRAND_DELIVERING);
                 dTime_c deadline = errand->mBase.getDeadline(*now);
                 setTime(deadline.hour, 6, 0);
@@ -279,7 +279,7 @@ void dAcNpcNml_c::talk_c::endErrandReward(int arg) {
         switch (kind) {
         case 0:
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             setItemName(mItem0, 5);
             break;
@@ -288,7 +288,7 @@ void dAcNpcNml_c::talk_c::endErrandReward(int arg) {
                 dNpc::sendAnimalNewItemRemove(getNpcIdx(), &mItem0);
             }
             if (player != NULL) {
-                player->pickUp(&mItem0, FALSE);
+                player->pickUp(mItem0, FALSE);
             }
             setItemName(mItem0, 5);
             break;

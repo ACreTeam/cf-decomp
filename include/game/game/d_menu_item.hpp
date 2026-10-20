@@ -16,7 +16,10 @@ enum {
     MONEY_STEP_MODULUS = 5,
     ICON_PATTERN_COUNT = 0x174
 };
-class Icon_c : public m2d::SimpleEx_c {
+// Not derived from m2d::SimpleEx_c: the layout is the first member. A derived class would get a vtable of
+// its own in every TU that constructs the icons (d_menu_insc), but the target's constructor stores the
+// SimpleEx_c vtable.
+class Icon_c {
   public:
     enum FLAG_e { FLAG_GIFT = 1, FLAG_HIDDEN = 2, FLAG_ROTATE = 4 };
     enum BASE_ANM_e { BASE_ANM_NORMAL, BASE_ANM_SELECTED, BASE_ANM_COUNT };
@@ -42,6 +45,7 @@ class Icon_c : public m2d::SimpleEx_c {
     void setItem(dItem::Item item, int flag, int unused);   // .text:0x1440
     bool calcGift();                                        // .text:0x1720
 
+    /* 0x000 */ m2d::SimpleEx_c mLyt;
     /* 0x098 */ m2d::Anm_c *mpItemAnm;
     /* 0x09C */ m2d::Anm_c mPresentAnm;
     /* 0x0C0 */ m2d::SimpleEx_c mGiftLyt;

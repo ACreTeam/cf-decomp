@@ -39,6 +39,7 @@ public:
 
     // The first argument of request: who asks. b is then the id of the thing to explain.
     enum REQUEST_e {
+        REQUEST_MENU = 0, // a button of a menu (REL d_menu_music, d_menu_museum); b = the UIballoon message
         REQUEST_MAIL_LETTER = 8, // the letter under the cursor in the post office menu (REL d_menu_mslct); b = the letter
     };
 
