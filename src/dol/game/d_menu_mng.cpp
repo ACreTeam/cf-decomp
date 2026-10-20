@@ -45,7 +45,7 @@ static u32 s_picked;
 static u32 s_EA8C;
 static int s_friendIdx;
 static int s_postType;
-static BOOL s_EA98;
+static BOOL s_netError;
 static int s_toolPocket;
 static int s_toolNext;
 
@@ -520,11 +520,11 @@ BOOL dMenuMng_c::openLetter(const dMail_c *mail) {
     return ok;
 }
 
-void fn_8019AFBC(u32 arg) {
-    s_picked = arg;
+void dMenuMng_c::setPickedLetter(u32 slot) {
+    s_picked = slot;
 }
 
-u32 fn_8019AFC4() {
+u32 dMenuMng_c::getPickedLetter() {
     return s_picked;
 }
 
@@ -729,19 +729,19 @@ void dMenuMng_c::setFriendIdx(int idx) {
     s_friendIdx = idx;
 }
 
-bool fn_8019B518() {
-    return s_EA98;
+bool dMenuMng_c::isNetError() {
+    return s_netError;
 }
 
-void fn_8019B52C() {
-    s_EA98 = TRUE;
+void dMenuMng_c::onNetError() {
+    s_netError = TRUE;
 }
 
-void fn_8019B538() {
-    s_EA98 = FALSE;
+void dMenuMng_c::offNetError() {
+    s_netError = FALSE;
 }
 
-u8 *dMenuMng_c::getFriendInfo() {
+wchar_t *dMenuMng_c::getFriendInfo() {
     if (dWifi::isWc24On() == FALSE) {
         return nullptr;
     }

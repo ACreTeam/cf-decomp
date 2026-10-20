@@ -9464,7 +9464,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x6C);
                 break;
             case 0x19:
-                ok = dMenuMng_c::openMenu(0x55);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_FRIEND_TOWN);
                 break;
             case 0x1A:
                 ok = fn_8019AE2C();

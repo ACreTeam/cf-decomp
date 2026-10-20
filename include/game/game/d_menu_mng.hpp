@@ -46,6 +46,10 @@ public:
     static m2d::ResAccLoader_c *getWiiMenuResAcc();
     static m2d::ResAccLoader_c *getWiiMenu2ResAcc();
     static BOOL isMenuEnd();
+    // The friend roster couldn't be fetched (the friend picker failed).
+    static bool isNetError();
+    static void onNetError();
+    static void offNetError();
     static void onFlag(u32 flag);
     static void offFlag(u32 flag);
     static bool isFlag(u32 flag);
@@ -84,7 +88,22 @@ public:
         MENU_EDIT_DESIGN = 0x0F,   // the design editor (REL d_menu_editNP)
         MENU_EDIT_PRO = 0x10,      // ... for a pro design (four textures)
         MENU_EDIT_FACE = 0x11,     // ... for the face design (the cat model)
+        MENU_HAN_14 = 0x14, // dMenuHan_c text input menus (REL d_menu_hanNP), opened by the friend menu tab bar
+        MENU_HAN_15 = 0x15,
+        MENU_HAN_16 = 0x16,
+        MENU_HAN_17 = 0x17,
+        MENU_HAN_18 = 0x18,
+        MENU_HAN_19 = 0x19,
+        MENU_HAN_1A = 0x1A,
         MENU_ITEM_SELECT = 0x32,
+        MENU_FRIEND_TOWN = 0x55, // "Go to which town?": the online friends' towns (REL d_menu_friend03NP)
+        MENU_FRIEND_TOWN_B = 0x56, // ... same menu
+        MENU_FRIEND04 = 0x57, // friend roster (REL d_menu_friend04), the first tab of dMenuFriend_c
+        MENU_FRIEND05 = 0x58, // visiting friends
+        MENU_FRIEND06 = 0x59, // friend code
+        MENU_FRIEND07 = 0x5A, // mic chat
+        MENU_FRIEND_CODE_ADD = 0x5B, // friend code entry for a new friend, asks his name next (REL d_menu_friend08)
+        MENU_FRIEND_CODE_EDIT = 0x5C, // ... to change the key of the friend being edited
         MENU_TURNIP_COUNT = 0x45, // how many turnips (REL d_menu_kabu)
         MENU_TURNIP_PRICE = 0x46, // the turnip price
         MENU_DONATION = 0x47,     // the public works donation
@@ -93,6 +112,10 @@ public:
         MENU_BANK_DEPOSIT = 0x4A,
         MENU_BANK_WITHDRAW = 0x4B,
         MENU_BANK_PAY = 0x4C,
+        MENU_ADDRESS = 0x53,        // the addressee of the menu manager's mail (REL d_menu_friend02)
+        MENU_ADDRESS_LETTER = 0x54, // ... of the letter getPickedLetter of the player
+        MENU_FRIEND_SELECT = 0x51,       // the Wii friend picker (REL d_menu_friend01NP); updates the roster first
+        MENU_FRIEND_SELECT_KNOWN = 0x52, // ... for a roster that is already known
         MENU_MUSIC = 0x5D,
         MENU_STORAGE = 0x5E,
         MENU_DESIGN_TAKE = 0x65, // the slot for a design taken from the tailor (REL d_menu_desi01)
@@ -119,6 +142,9 @@ public:
     static dMail_c *getMail();
     static void setMail(const dMail_c *mail);
     static BOOL openLetter(const dMail_c *mail);
+    // The letter slot of the player the menus work on (shares s_picked with the picked design).
+    static void setPickedLetter(u32 slot); // 8019AFBC
+    static u32 getPickedLetter();          // 8019AFC4
 
     // The design slot the design menu (REL d_menu_desi00) hands to the menu it opens.
     static u8 getDesignIndex();           // 8019AD48
@@ -147,7 +173,7 @@ public:
     static dTime_c getTime();
 
     static void setFriendIdx(int idx);
-    static u8 *getFriendInfo();
+    static wchar_t *getFriendInfo();
     static void setPostType(int type);
     static wchar_t *getPostMsg();
     static wchar_t *getPostTitle();
@@ -188,8 +214,6 @@ BOOL fn_8019AE00();
 BOOL fn_8019AE2C();
 BOOL fn_8019AE58();
 BOOL fn_8019AEE4();
-void fn_8019AFBC(u32 arg);
-u32 fn_8019AFC4();
 u16 fn_8019B240();
 void fn_8019B248(u16 arg);
 u32 fn_8019B250();
@@ -215,8 +239,5 @@ void fn_8019B418();
 BOOL fn_8019B4EC();
 BOOL fn_8019B4F8();
 BOOL fn_8019B504();
-bool fn_8019B518();
-void fn_8019B52C();
-void fn_8019B538();
 extern u8 lbl_8074EA7D;
 }

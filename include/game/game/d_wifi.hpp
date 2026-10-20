@@ -202,7 +202,7 @@ int startDaily();                                        // 801782EC: (d_sv_mgr)
 int getNetErrorMessage();                                // 80178448: a SYS_Save_and_Load code (SV_MSG_NAND_DAMAGED)
 BOOL hasRoster();                                        // 8017AF60: the NWC24 friend list was read (dWifi::updateRosterThread)
 u32 getRosterType(int i);                                // 8017AF7C: roster entry i's type (1: a friend with a key)
-u8 *getRosterInfo(int i);                                // 8017AF90: roster entry i's data
+wchar_t *getRosterInfo(int i);                            // 8017AF90: roster entry i's name
 int getNandResourceSize();                               // 8017B18C: dNetWc24 dNetWc24::getDownloadResourceSize (d_sv_mgr: NAND resource size)
 int getNandAuxSize();                                    // 8017B190: dNetWc24 dNetWc24::getDownloadAuxSize (d_sv_mgr: NAND auxiliary size)
 

@@ -19,6 +19,9 @@ public:
     // The tab of the chat menu (REL d_menu_chat).
     enum { TAB_CHAT = 4 };
 
+    // The tab of the friend menu (REL d_menu_friendNP and its sub menus).
+    enum { TAB_FRIEND = 6 };
+
     // mTabBtnAnm kinds (l_tabBtnAnms).
     enum TabBtnAnm_e {
         TAB_BTN_IN,  // "tab_00_dpdIn": the pointer is on the tab
@@ -164,6 +167,13 @@ public:
 }; // size 0xA24
 
 namespace dAcUitag {
+
+// The indices of openMenuA (the menu table l_menusA); only the ones named so far.
+enum MenuA_e {
+    MENU_A_ITEM = 8,    // menu 0x00: the item menu
+    MENU_A_ITEM_1 = 9,  // menu 0x01: the item menu, second kind
+    MENU_A_WRITE = 10,  // menu 0x41: the letter writing menu
+};
 
 int getTabMenu(int tab); // 8017E8FC: the menu of a tab
 BOOL canOpenTab();       // 8017FAF4

@@ -1383,8 +1383,8 @@ u32 dWifi::getRosterType(int i) {
 }
 
 // 8017AF90: the entry's data (d_menu_mng)
-u8 *dWifi::getRosterInfo(int i) {
-    return lbl_8074E944[i].mInfo;
+wchar_t *dWifi::getRosterInfo(int i) {
+    return lbl_8074E944[i].mName;
 }
 
 namespace dWifi {

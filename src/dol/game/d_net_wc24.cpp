@@ -388,7 +388,7 @@ u32 dNetWc24_c::getFriends(dNetWc24Friend_c *friends, u32 max) {
             if (readFriend(i, &info)) {
                 friends[num].mIdx = i;
                 friends[num].mType = info.mType;
-                memcpy(friends[num].mInfo, info.mName, sizeof(info.mName));
+                memcpy(friends[num].mName, info.mName, sizeof(info.mName));
                 num++;
                 if (num >= max) {
                     break;

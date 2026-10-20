@@ -25,7 +25,14 @@ public:
 
     // Message ids of setMsg / request in "sys_2D/SYS_2D_UIballoon".
     enum UIBALLOON_MSG_e {
+        MSG_TOWN = 0x63,            // the town name (setMsg sets the town word for TOWN_MSG)
+        MSG_ANOTHER_TOWN = 0x64,    // "Another Town"
+        MSG_FRIEND_ROSTER = 0x19,   // "Friend Roster"
+        MSG_FRIEND_VISIT = 0x1A,    // "Visiting Friends"
+        MSG_FRIEND_CODE = 0x1B,     // "Friend Code"
+        MSG_FRIEND_COMMENT = 0x1C,  // "Comment"
         MSG_EMOTION_BASE = 0x32,    // + the emotion id: "Anger" (0x33), "Shock", "Laughter" ...
+        MSG_MIC_CHAT = 0x50,        // "Mic Chat"
         MSG_GENRE_GREETINGS = 0x65, // "Greetings"; the next ones are "Questions", "Commands", "Places", "Comments"
     };
 

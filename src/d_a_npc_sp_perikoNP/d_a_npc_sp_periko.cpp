@@ -1765,7 +1765,7 @@ void dAcNpcSpPerikoBase_c::talk_c::endFriendBoardMenu() {
             dMenuMng_c::setupPost(FALSE);
             setNextMessage(MSG_PREPARE_BOARD_POST, LABEL_OWN);
         }
-    } else if (fn_8019B518()) {
+    } else if (dMenuMng_c::isNetError()) {
         mpOwner->mTalk.mNoMouth = 1;
         clearSpeakerName();
         setNetErrorMsg();

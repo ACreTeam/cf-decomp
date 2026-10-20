@@ -25,7 +25,8 @@ public:
     void clear();                                                   // 8014EB20
     void clearSend();                                               // 8014EB2C
 
-    /* 0x0 */ u8 _bits : 6;
+    /* 0x0 */ u8 _bits : 5;
+    /* 0x0 */ u8 mHasMessage : 1;                   // dFriend_c: the friend has a message (d_menu_friendNP)
     /* 0x0 */ u8 mSend : 1;                          // marked to be sent to
     /* 0x0 */ u8 mRegistered : 1;                    // in the console's friend roster (roster entries only)
 }; // size 0x1

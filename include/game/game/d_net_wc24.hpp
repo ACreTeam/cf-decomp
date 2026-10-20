@@ -62,7 +62,7 @@ struct dNetWc24Data_c {
 struct dNetWc24Friend_c {
     /* 0x00 */ u32 mIdx;      // the NWC24 friend list index (= the dSaveWc24_c roster index)
     /* 0x04 */ u32 mType;     // 1: a friend registered with a key
-    /* 0x08 */ u8 mInfo[0x18];
+    /* 0x08 */ wchar_t mName[0xC]; // the friend's name
 }; // size 0x20
 
 // A friend record of the NWC24 friend list kept for a registered friend (registerFriendRec).

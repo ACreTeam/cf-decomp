@@ -926,46 +926,55 @@ modules:
   name: d_menu_friendNP
   symbols: config/RUUE01_00/d_menu_friendNP/symbols.txt
   splits: config/RUUE01_00/d_menu_friendNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend01NP.rel
   hash: 4c134002c1b7f71ca0257c45d75d93d48468457d
   name: d_menu_friend01NP
   symbols: config/RUUE01_00/d_menu_friend01NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend01NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend02NP.rel
   hash: d760df49f51dbfed4cdc4eeb610310724192fe26
   name: d_menu_friend02NP
   symbols: config/RUUE01_00/d_menu_friend02NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend02NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend03NP.rel
   hash: df908f4cd3023337d3bb91e6ddebc0a39e01e9dc
   name: d_menu_friend03NP
   symbols: config/RUUE01_00/d_menu_friend03NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend03NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend04NP.rel
   hash: fdc32e6f6c1a4fa9495342d37bd5a01c005b95cd
   name: d_menu_friend04NP
   symbols: config/RUUE01_00/d_menu_friend04NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend04NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend05NP.rel
   hash: 28f917843d29416822c8ce021189ac0f444335fb
   name: d_menu_friend05NP
   symbols: config/RUUE01_00/d_menu_friend05NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend05NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend06NP.rel
   hash: a4b993d015b6e3e6c402711c4b05c57e005e234e
   name: d_menu_friend06NP
   symbols: config/RUUE01_00/d_menu_friend06NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend06NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend07NP.rel
   hash: 0ca34fc469a55775b1fbc88c067c2f21f4bf4ea7
   name: d_menu_friend07NP
   symbols: config/RUUE01_00/d_menu_friend07NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend07NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_friend08NP.rel
   hash: 883d351223e62f722e91cb70af23dcb0b391f423
   name: d_menu_friend08NP
   symbols: config/RUUE01_00/d_menu_friend08NP/symbols.txt
   splits: config/RUUE01_00/d_menu_friend08NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_hanNP.rel
   hash: f41632847230948248b7526549e454f95f0bce2d
   name: d_menu_hanNP
