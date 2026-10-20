@@ -109,7 +109,7 @@ void dCountDownFlag_c::drawProc_c::setupGX() {
     GXInitTexObjLOD(&texObj, GX_LINEAR, GX_LINEAR, minLod, maxLod, 0.0f, FALSE,
                     FALSE, GX_ANISO_1);
     GXLoadTexObj(&texObj, GX_TEXMAP0);
-    nw4r::math::MTX34 mtx;
+    mMtx_c mtx;
     getViewMtx(&mtx);
     PSMTXConcat(mtx, mMtx, mtx);
     GXLoadPosMtxImm(mtx, GX_PNMTX0);

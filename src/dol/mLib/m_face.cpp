@@ -128,8 +128,8 @@ bool model_c::change(RFLDataSource source, u16 index, RFLMiddleDB *middleDB) {
 }
 
 // 802B3E20
-void model_c::setMtx(const nw4r::math::MTX34 *mtx) {
-    RFLSetMtx(this, *mtx);
+void model_c::setMtx(const mMtx_c *mtx) {
+    RFLSetMtx(this, mtx->m);
 }
 
 // 802B3E30

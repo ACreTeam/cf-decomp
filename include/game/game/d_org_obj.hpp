@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 #include <types.h>
 #include <game/mLib/m_3d.hpp>
 #include <game/framework/f_base.hpp>
@@ -72,7 +73,7 @@ class dOrgObj_c : public fBase_c {
     void bindCloth();
     BOOL createCloth();
     BOOL executeCloth();
-    void calcCloth(const nw4r::math::MTX34 *mtx);
+    void calcCloth(const mMtx_c *mtx);
     BOOL drawCloth();
     BOOL removeCloth();
     void setClothAnm(int anm);
@@ -80,14 +81,14 @@ class dOrgObj_c : public fBase_c {
     void bindUmb();
     BOOL createUmb();
     BOOL executeUmb();
-    void calcUmb(const nw4r::math::MTX34 *mtx);
+    void calcUmb(const mMtx_c *mtx);
     BOOL drawUmb();
     BOOL removeUmb();
 
     void bindCap();
     BOOL createCap();
     BOOL executeCap();
-    void calcCap(const nw4r::math::MTX34 *mtx);
+    void calcCap(const mMtx_c *mtx);
     BOOL drawCap();
     BOOL removeCap();
 
@@ -95,11 +96,11 @@ class dOrgObj_c : public fBase_c {
     BOOL createCat();
     BOOL executeCat();
     BOOL drawCat();
-    void calcCat(const nw4r::math::MTX34 *mtx);
+    void calcCat(const mMtx_c *mtx);
     BOOL removeCat();
 
     // Places every model at mtx (NULL: the debug position).
-    void calc(const nw4r::math::MTX34 *mtx);
+    void calc(const mMtx_c *mtx);
 
     BOOL isDraw(int kind) const {
         return (mDrawFlags >> kind) & 1;

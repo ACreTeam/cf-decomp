@@ -647,7 +647,7 @@ bool dStarDraw_c::drawStar(pos_c *star, f32 scale, const nw4r::ut::Color *color)
         GXSetTevColor(GX_TEVREG0, c);
     }
 
-    nw4r::g3d::Draw1Mat1ShpDirectly(nw4r::g3d::ResMat(NULL), mResFile.GetResMdl(0).GetResShp(0), &mtx, &mtx, 0, NULL,
+    nw4r::g3d::Draw1Mat1ShpDirectly(nw4r::g3d::ResMat(NULL), mResFile.GetResMdl(0).GetResShp(0), mtx, mtx, 0, NULL,
                                     NULL);
     return true;
 }

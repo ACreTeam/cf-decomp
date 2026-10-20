@@ -115,7 +115,7 @@ void dEffect::calc() {
     mMtx_c view;
     f32 x, y, width, height, nearZ, farZ;
     fn_8024C6BC(&camera, &pos);
-    camera.GetCameraMtx(&view);
+    camera.GetCameraMtx(view);
     camera.GetViewport(&x, &y, &width, &height, &nearZ, &farZ);
     mEf::setCamera(&pos, &view, nearZ, farZ, 0);
     mEf::setCamera(&pos, &view, nearZ, farZ, 7);
@@ -185,7 +185,7 @@ void dEffect::draw(int creator, int group) {
         else info.mFogType = GX_FOG_NONE;
         nw4r::g3d::Camera camera = m3d::getCurrentCamera();
         mMtx_c view;
-        camera.GetCameraMtx(&view);
+        camera.GetCameraMtx(view);
         info.SetViewMtx(view);
         info.SetProjMtx(makeProjection(dCamera_c::getFovy(), dCamera_c::sInstance->getAspect()));
         break;
@@ -202,7 +202,7 @@ void dEffect::draw(int creator, int group) {
         nw4r::g3d::Camera camera = m3d::getCurrentCamera();
         mMtx_c view;
         if (g_sky) view = g_sky->mMtx538;
-        else camera.GetCameraMtx(&view);
+        else camera.GetCameraMtx(view);
         info.SetViewMtx(view);
         info.SetProjMtx(makeProjection(dCamera_c::getFovy(), dCamera_c::sInstance->getAspect()));
         break;

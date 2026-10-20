@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 
 // The m3d model / animation classes. In the original they were defined in ONE file: their weak inline
 // functions share one weak .text section in every object, e.g. the fish REL's
@@ -32,9 +33,9 @@ namespace m3d {
         bool getOption(ulong option, ulong *value) const;
         void setScale(float x, float y, float z);
         void setScale(const nw4r::math::VEC3 &scale);
-        void setLocalMtx(const nw4r::math::MTX34 *mtx);
-        void getLocalMtx(nw4r::math::MTX34 *mtx) const;
-        void getViewMtx(nw4r::math::MTX34 *mtx) const;
+        void setLocalMtx(const mMtx_c *mtx);
+        void getLocalMtx(mMtx_c *mtx) const;
+        void getViewMtx(mMtx_c *mtx) const;
         void calc(bool keepEnabledAfter);
         void calcVtx(bool keepEnabledAfter);
         void setPriorityDraw(int prioOpa, int prioXlu);
@@ -103,7 +104,7 @@ namespace m3d {
         virtual void play();
 
         void setDrawMode(nw4r::g3d::ResMdlDrawMode mode);
-        bool getNodeWorldMtx(ulong idx, nw4r::math::MTX34 *mtx) const;
+        bool getNodeWorldMtx(ulong idx, mMtx_c *mtx) const;
         bool getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) const;
         bool getNodeWorldMtxMultVec(ulong idx, const nw4r::math::VEC3 &in, nw4r::math::VEC3 &out) const;
 

@@ -70,11 +70,11 @@ bool daRmobj_c::model_c::entry() {
     return false;
 }
 
-nw4r::math::MTX34 *daRmobj_c::model_c::getNodeMtx(const char *name) {
+mMtx_c *daRmobj_c::model_c::getNodeMtx(const char *name) {
     if (isCreated()) {
         int node = m3d::getNodeID(mMdl.getResMdl(), name);
         if (node != -1) {
-            static nw4r::math::MTX34 l_mtx;
+            static mMtx_c l_mtx;
             mMdl.getNodeWorldMtx(node, &l_mtx);
             return &l_mtx;
         }
@@ -84,7 +84,7 @@ nw4r::math::MTX34 *daRmobj_c::model_c::getNodeMtx(const char *name) {
 
 mVec3_c *daRmobj_c::model_c::getNodePos(const char *name) {
     static mVec3_c l_pos;
-    nw4r::math::MTX34 *mtx = getNodeMtx(name);
+    mMtx_c *mtx = getNodeMtx(name);
     if (mtx != NULL) {
         PSMTXMultVec(mtx->m, mVec3_c::Zero, l_pos);
         return &l_pos;
@@ -92,9 +92,9 @@ mVec3_c *daRmobj_c::model_c::getNodePos(const char *name) {
     return &l_pos;
 }
 
-nw4r::math::MTX34 *daRmobj_c::model_c::getNodeMtx(int node) {
+mMtx_c *daRmobj_c::model_c::getNodeMtx(int node) {
     if (isCreated() && node != -1) {
-        static nw4r::math::MTX34 l_mtx;
+        static mMtx_c l_mtx;
         mMdl.getNodeWorldMtx(node, &l_mtx);
         return &l_mtx;
     }
@@ -103,7 +103,7 @@ nw4r::math::MTX34 *daRmobj_c::model_c::getNodeMtx(int node) {
 
 mVec3_c *daRmobj_c::model_c::getNodePos(int node) {
     static mVec3_c l_pos;
-    nw4r::math::MTX34 *mtx = getNodeMtx(node);
+    mMtx_c *mtx = getNodeMtx(node);
     if (mtx != NULL) {
         PSMTXMultVec(mtx->m, mVec3_c::Zero, l_pos);
         return &l_pos;

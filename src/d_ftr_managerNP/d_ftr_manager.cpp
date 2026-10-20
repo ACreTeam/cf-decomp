@@ -1178,7 +1178,7 @@ void dFtrm_c::transAnm_c::nodeCallBack_c::timingB(ulong nodeId, nw4r::g3d::World
                                                   nw4r::g3d::ResMdl resMdl) {
     if (nodeId == 0) {
         mMtx_c mtx;
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mVec3_c zero(0.0f, 0.0f, 0.0f);
         PSMTXMultVec(mtx, zero, mPos);
     }

@@ -138,11 +138,11 @@ int dInsFldBeetle_c::draw() {
 void dInsFldBeetle_c::calcMtx() {
     mMtx_c mtx;
     mMtx_c rot;
-    fn_80444FE4(&rot, &mRot);
+    fn_80444FE4(rot, &mRot);
     dActor_c::makeMtx(&mtx, &mPos, 0);
     mtx.concat(rot);
     mMtx_c wobble;
-    fn_80444FE4(&wobble, &mWobble);
+    fn_80444FE4(wobble, &mWobble);
     mtx.concat(wobble);
     mMdl.setLocalMtx(&mtx);
 }

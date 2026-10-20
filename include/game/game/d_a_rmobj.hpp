@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 
 // The room object actor base daRmobj_c (RTTI "daRmobj_c", "daRmobj_c::model_c"). DOL TU d_a_rmobj.cpp
 // (.text 800636C4..80064FB4) and d_a_rmobj_model.cpp (model_c::create, 80064FB4..80065230). The room objects (RELs d_a_rmobj_*NP: atm, bus, cafe, checkp, fossil, grace,
@@ -27,9 +28,9 @@ public:
     public:
         bool remove();                                        // 80063778: unloads, removes everything
         bool entry();                                         // 800638A8: the model's entry (draw)
-        nw4r::math::MTX34 *getNodeMtx(const char *name);      // 800638CC: a static copy, NULL if none
+        mMtx_c *getNodeMtx(const char *name);      // 800638CC: a static copy, NULL if none
         mVec3_c *getNodePos(const char *name);                // 80063960: a static copy (zero if none)
-        nw4r::math::MTX34 *getNodeMtx(int node);              // 800639FC
+        mMtx_c *getNodeMtx(int node);              // 800639FC
         mVec3_c *getNodePos(int node);                        // 80063A64
         void setRate(f32 rate);                               // 80063B00: all the animations
         BOOL setAnm(u32 idx, m3d::playMode_e mode, f32 blend); // 80063B68: animation idx of every kind

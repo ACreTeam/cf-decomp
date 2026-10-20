@@ -34,7 +34,7 @@ void dBalloonString_c::setInitialDirection(const mVec3_c &dir) {
     mVec3_c cross(axis.y * direction.z - axis.z * direction.y,
                  axis.z * direction.x - axis.x * direction.z,
                  axis.x * direction.y - axis.y * direction.x);
-    fn_80444FE4(&mDrawMtx, &mRotation);
+    fn_80444FE4(mDrawMtx, &mRotation);
     PSMTXScale(scale, mScale.x, mScale.y, mScale.z);
     PSMTXConcat(mDrawMtx, scale, mDrawMtx);
 }
@@ -67,7 +67,7 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
         mRotation.y *= -1.0f;
         mRotation.z *= -1.0f;
     }
-    fn_80444FE4(&mDrawMtx, &mRotation);
+    fn_80444FE4(mDrawMtx, &mRotation);
     PSMTXScale(scale, mScale.x, mScale.y, mScale.z);
     PSMTXConcat(mDrawMtx, scale, mDrawMtx);
 }

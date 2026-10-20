@@ -192,9 +192,9 @@ void Particle_c::draw(nw4r::g3d::ResShp shape, const mMtx_c &view) {
     tint.lerp(black, sColors[mColor], 0.4f);
     GXSetTevKColor(GX_KCOLOR0, tint);
 
-    nw4r::g3d::G3DState::SetViewPosNrmMtxArray(&matrix, NULL, NULL);
-    nw4r::g3d::Draw1Mat1ShpDirectly(nw4r::g3d::ResMat(NULL), shape, &matrix,
-                                    &normal, 0, NULL, NULL);
+    nw4r::g3d::G3DState::SetViewPosNrmMtxArray(matrix, NULL, NULL);
+    nw4r::g3d::Draw1Mat1ShpDirectly(nw4r::g3d::ResMat(NULL), shape, matrix,
+                                    normal, 0, NULL, NULL);
 }
 
 } // namespace dWeatherConfetti

@@ -104,6 +104,14 @@ public:
     union {
         f32 m[3][4];
         f32 arr[12];
+        // Storage aliases used by mMtx_c and the NW4R matrix APIs.
+        f32 a[12];
+        Mtx mtx;
+        struct {
+            f32 _00, _01, _02, _03;
+            f32 _10, _11, _12, _13;
+            f32 _20, _21, _22, _23;
+        };
     };
 
 public:

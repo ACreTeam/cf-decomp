@@ -127,12 +127,6 @@ void dOrganBalloon_c::calcMtx() {
     }
 }
 
-// @HACK: Keep this scalar read inline: it gives the matrix-copy temporary the
-// creation order needed by MWCC's FPR allocator (see the TU notes).
-static inline f32 getMatrixElement(const mMtx_c &mtx, int i) {
-    return mtx.a[i];
-}
-
 // .text 0x794
 const mMtx_c *dOrganBalloonString_c::calcInit(const mMtx_c *mtx) {
     // Folded named statics: their initializers are the tail of .rodata.
@@ -140,9 +134,7 @@ const mMtx_c *dOrganBalloonString_c::calcInit(const mMtx_c *mtx) {
     static const int POINT_NUM = 8;
     mSwingPhase = 0;
     mSwingAngle = 4096.0f * mSwingPhase.sin();
-    for (int i = 0; i < 12; i++) {
-        mTransform.a[i] = getMatrixElement(*mtx, i);
-    }
+    mTransform = *mtx;
     mVec3_c *points = mPoints;
     mVec3_c *tangents = mTangents;
     mVec3_c *offsets = mVelocities;

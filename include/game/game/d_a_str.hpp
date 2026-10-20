@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 
 // The structure actor: the base class of the town and city buildings (REL
 // d_a_strNP, profile A_STR, RTTI daSTR_c). The RELs d_a_str_town,
@@ -285,7 +286,7 @@ class daSTR_c : public dDemoActor_c,
         return TRUE;
     }
     virtual void drawMdl();
-    virtual nw4r::math::MTX34 *getShadowMtx() {
+    virtual mMtx_c *getShadowMtx() {
         return NULL;
     }
     virtual nw4r::math::VEC3 *getShadowScale() {
@@ -318,8 +319,8 @@ class daSTR_c : public dDemoActor_c,
     BOOL checkDoorFront();
     BOOL isInDoorRange(const mVec3_c *pos, const s16 *angle, f32 range);
     nw4r::g3d::ScnMdl *getScnMdl();
-    void calcMtx(f32 offsetY, f32 offsetZ, nw4r::math::MTX34 *mtx);
-    void drawShadow(nw4r::math::MTX34 *mtx);
+    void calcMtx(f32 offsetY, f32 offsetZ, mMtx_c *mtx);
+    void drawShadow(mMtx_c *mtx);
     void setup();
     void createMdl();
     BOOL isCulled();
@@ -432,5 +433,5 @@ int getExitWait(daSTR_c *str);
 BOOL isFadeMode(); // FALSE (d_a_str_town: the fade model's draw priority)
 // The field position of a point in a structure's model space.
 void toFieldPos(mVec3_c *out, const mVec3_c *local,
-                const nw4r::math::MTX34 *mtx);
+                const mMtx_c *mtx);
 } // namespace dAStr

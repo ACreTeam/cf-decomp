@@ -211,7 +211,7 @@ void dInsMusTumbleBug_c::ball_c::draw() {
     mMtx_c rotMtx;
     mVec3_c pos = mPos; // unused, needed to match
     dActor_c::makeMtx(&mtx, &mPos, 0);
-    fn_80444FE4(&rotMtx, &mRot);
+    fn_80444FE4(rotMtx, &mRot);
     PSMTXConcat(mtx, rotMtx, mtx);
     mMdl.setLocalMtx(&mtx);
     mMdl.entry();

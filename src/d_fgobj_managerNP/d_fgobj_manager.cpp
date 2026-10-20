@@ -1216,7 +1216,7 @@ void dFgObjAnm_c::mdlCallback_c::timingB(ulong nodeId,
                                          nw4r::g3d::ResMdl resMdl) {
     if (mpOwner != NULL && nodeId == mNodeId) {
         mMtx_c m;
-        manip->GetMatrix(&m);
+        manip->GetMatrix(m);
         nw4r::math::MTX34 t;
         PSMTXTrans(t, 0.0f, mOffsetY, 0.0f);
         PSMTXConcat(m, t, m);

@@ -3230,7 +3230,7 @@ void daFtrKiller_c::executeOn() {
     int node = m3d::getNodeID(mMdl.getResMdl(), "v");
     if (node != -1) {
         mMdl.calc(false);
-        nw4r::math::MTX34 mtx;
+        mMtx_c mtx;
         mMdl.getNodeWorldMtx(node, &mtx);
         mVec3_c pos(0.0f, 0.0f, 0.0f);
         PSMTXMultVec(mtx, mVec3_c::Zero, pos);
@@ -3582,9 +3582,9 @@ void daFtrCmps_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g
             rot = angle - mAngle.y;
         }
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.YrotM(mAng(rot));
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 }
 

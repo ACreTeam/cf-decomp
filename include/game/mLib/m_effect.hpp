@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 #include <lib/nw4r/ef.h>
 #include <lib/egg/util/eggEffect.hpp>
 #include <game/mLib/m_vec.hpp>
@@ -94,7 +95,7 @@ void shutdown(); // 802B7B0C
 void setCallbackHeap(EGG::Heap *); // 802B7BFC
 void beginCalc(); // 802B7DE8
 void endCalc(); // 802B7E0C
-void setCamera(const nw4r::math::VEC3 *, const nw4r::math::MTX34 *, f32, f32, int); // 802B7E10
+void setCamera(const nw4r::math::VEC3 *, const mMtx_c *, f32, f32, int); // 802B7E10
 void draw(nw4r::ef::DrawInfo *, int, int); // 802B7E30
 void setResource(void *breff, void *breft); // 802B7C04: the resident .breff/.breft (d_s_boot_static)
 }

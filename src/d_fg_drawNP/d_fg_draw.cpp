@@ -658,8 +658,8 @@ void entry_c::drawModel(const mMtx_c &view) {
     if (!(mFlags & HIDDEN)) {
         nw4r::g3d::ResMat mat = mModel.GetResMat(0);
         nw4r::g3d::ResShp shp = mModel.GetResShp(0);
-        nw4r::g3d::G3DState::SetViewPosNrmMtxArray(&model, NULL, NULL);
-        nw4r::g3d::Draw1Mat1ShpDirectly(mat, shp, &model, &normal, 0, NULL,
+        nw4r::g3d::G3DState::SetViewPosNrmMtxArray(model, NULL, NULL);
+        nw4r::g3d::Draw1Mat1ShpDirectly(mat, shp, model, normal, 0, NULL,
                                         NULL);
     }
     if (hasShadow()) {
@@ -692,8 +692,8 @@ void entry_c::drawModel(const mMtx_c &view) {
                 model.XrotM(angle);
                 PSMTXConcat(viewMtx, model, model);
                 normal = model;
-                nw4r::g3d::G3DState::SetViewPosNrmMtxArray(&model, NULL, NULL);
-                nw4r::g3d::Draw1Mat1ShpDirectly(mat, shp, &model, &normal, 0,
+                nw4r::g3d::G3DState::SetViewPosNrmMtxArray(model, NULL, NULL);
+                nw4r::g3d::Draw1Mat1ShpDirectly(mat, shp, model, normal, 0,
                                                 NULL, NULL);
             }
         }

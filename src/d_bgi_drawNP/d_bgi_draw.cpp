@@ -735,7 +735,7 @@ BOOL dBgiDraw_c::getNodePos(mVec3_c *pos, int blockX, int blockZ,
         if (mMdl.getScn() != NULL) {
             int id = m3d::getNodeID(mMdl.getResMdl(), name);
             if (id != -1) {
-                nw4r::math::MTX34 mtx;
+                mMtx_c mtx;
                 mMdl.getNodeWorldMtx(id, &mtx);
                 PSMTXMultVec(mtx, mVec3_c::Zero, *pos);
                 return TRUE;
@@ -825,13 +825,13 @@ void dBgiDraw_c::sunNodeCallBack_c::timingA(ulong nodeId,
                                             nw4r::g3d::ChrAnmResult *anmRes,
                                             nw4r::g3d::ResMdl resMdl) {
     nw4r::g3d::ResNode node = resMdl.GetResNode(nodeId);
-    nw4r::math::MTX34 mtx;
-    anmRes->GetRotTrans(&mtx);
+    mMtx_c mtx;
+    anmRes->GetRotTrans(mtx);
     const nw4r::math::VEC3 &trans = node.GetTranslate();
     mtx._03 = trans.x;
     mtx._13 = trans.y;
     mtx._23 = trans.z;
-    anmRes->SetRotTrans(&mtx);
+    anmRes->SetRotTrans(mtx);
 }
 
 namespace dBgiDraw {
@@ -949,7 +949,7 @@ int dBgiDraw_c::create() {
             mClockMdl.setCallback(&mClockNodeCallBack);
             mClockMdl.calc(false);
             if (mClockNodeCallBack.mHourNode != -1) {
-                nw4r::math::MTX34 mtx;
+                mMtx_c mtx;
                 mClockMdl.getNodeWorldMtx(mClockNodeCallBack.mHourNode, &mtx);
                 PSMTXMultVec(mtx, mVec3_c::Zero, mSndPos);
             }
@@ -1303,14 +1303,14 @@ void dBgiDraw_c::nodeCallBack_c::timingA(ulong nodeId,
         minutes *= 60;
         minutes += min;
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.ZrotM(-(s16)((minutes << 16) / 720));
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     } else if (nodeId == mMinuteNode) {
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.ZrotM(-(s16)((min << 16) / 60));
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 }
 
@@ -1358,7 +1358,7 @@ BOOL dBgiDraw_c::block_c::create(mAllocator_c *allocator) {
         mAnmSrt.setPlayMode((m3d::playMode_e)0, 0);
         mMdl.setAnm(mAnmSrt);
     }
-    nw4r::math::MTX34 mtx;
+    mMtx_c mtx;
     PSMTXTrans(mtx, 0.0f, 0.0f, 0.0f);
     mMdl.setLocalMtx(&mtx);
     if (dScene::getCurrentScene() == dScene::SCENE_RM_GRACE) {
@@ -1461,7 +1461,7 @@ BOOL dBgiDraw_c::block_c::getNodePos(mVec3_c *pos, const char *name) const {
     if (mMdl.getScn() != NULL) {
         int id = m3d::getNodeID(mMdl.getResMdl(), name);
         if (id != -1) {
-            nw4r::math::MTX34 mtx;
+            mMtx_c mtx;
             mMdl.getNodeWorldMtx(id, &mtx);
             PSMTXMultVec(mtx, mVec3_c::Zero, *pos);
             return TRUE;

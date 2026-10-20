@@ -2490,11 +2490,12 @@ BOOL dFishShadowMdl_c::create(nw4r::g3d::ResMdl mdl, mAllocator_c *allocator,
 // 0x7128
 void dFishShadowMdl_c::calcRoot(nw4r::g3d::WorldMtxManip *manip, u16 nodeID) {
     mMtx_c mtx;
-    manip->GetMatrix(&mtx);
+    manip->GetMatrix(mtx);
     mMtx_c rot;
     rot.YrotS(mAngle);
     mtx.concat(rot);
-    manip->SetMatrix(mtx);
+    const nw4r::math::MTX34 &matrix = mtx;
+    manip->SetMatrix(matrix);
 }
 
 // 0x71A0

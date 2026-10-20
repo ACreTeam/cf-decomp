@@ -537,7 +537,7 @@ void daBalloon_c::setPopColor(int color) {
 mVec3_c *daBalloon_c::getNodePos(m3d::bmdl_c *mdl, const char *node) {
     static mVec3_c pos;
     if (mdl->getScn() != nullptr) {
-        nw4r::math::MTX34 mtx;
+        mMtx_c mtx;
         int id = m3d::getNodeID(mdl->getResMdl(), node);
         if (id != -1) {
             mdl->getNodeWorldMtx(id, &mtx);
@@ -737,7 +737,8 @@ void daBalloon_c::calcMtx() {
             mMtx_c t2;
             t2.trans(mPivot);
             PSMTXConcat(mtx[i], t2, mtx[i]);
-            mMdl[i].setLocalMtx(&mtx[i]);
+            const mMtx_c &matrix = mtx[i];
+            mMdl[i].setLocalMtx(&matrix);
             mMdl[i].calc(false);
         }
     }

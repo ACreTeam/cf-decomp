@@ -181,7 +181,7 @@ void dBgoDraw_c::block_c::setMaterials(u32 blockX, u32 blockZ, u32 flags) {
                     mtx.concat(mMtx_c::createTrans(
                         0.0f, dBgoDraw::l_riverTransY, 0.0f));
                 }
-                if (srt.SetEffectMtx(l_riverSrtIdx, &mtx)) {
+                if (srt.SetEffectMtx(l_riverSrtIdx, mtx)) {
                     srt.ref().flag &=
                         ~(nw4r::g3d::TexSrt::FLAGSET_IDENTITY
                           << l_riverSrtIdx * nw4r::g3d::TexSrt::NUM_OF_FLAGS);
@@ -209,7 +209,7 @@ void dBgoDraw_c::block_c::setMaterials(u32 blockX, u32 blockZ, u32 flags) {
                                         dBgoDraw::l_HIO.mOceanScaleY, 1.0f);
                 mtx.concat(mMtx_c::createTrans(
                     0.0f, dBgoDraw::l_HIO.mOceanTransY, 0.0f));
-                if (srt.SetEffectMtx(l_oceanSrtIdx, &mtx)) {
+                if (srt.SetEffectMtx(l_oceanSrtIdx, mtx)) {
                     srt.ref().flag &=
                         ~(nw4r::g3d::TexSrt::FLAGSET_IDENTITY
                           << l_oceanSrtIdx * nw4r::g3d::TexSrt::NUM_OF_FLAGS);
@@ -246,7 +246,7 @@ void dBgoDraw_c::block_c::setMaterials(u32 blockX, u32 blockZ, u32 flags) {
         if (mat.IsValid()) {
             nw4r::g3d::ResTexSrt srt = mat.GetResTexSrt();
             if (srt.IsExist(l_grassSrtIdx) &&
-                srt.SetEffectMtx(l_grassSrtIdx, &mtx)) {
+                srt.SetEffectMtx(l_grassSrtIdx, mtx)) {
                 srt.ref().flag &=
                     ~(nw4r::g3d::TexSrt::FLAGSET_IDENTITY
                       << l_grassSrtIdx * nw4r::g3d::TexSrt::NUM_OF_FLAGS);
@@ -262,7 +262,7 @@ void dBgoDraw_c::block_c::setMaterials(u32 blockX, u32 blockZ, u32 flags) {
         if (mat.IsValid()) {
             nw4r::g3d::ResTexSrt srt = mat.GetResTexSrt();
             if (srt.IsExist(l_stoneSrtIdx) &&
-                srt.SetEffectMtx(l_stoneSrtIdx, &mtx)) {
+                srt.SetEffectMtx(l_stoneSrtIdx, mtx)) {
                 srt.ref().flag &=
                     ~(nw4r::g3d::TexSrt::FLAGSET_IDENTITY
                       << l_stoneSrtIdx * nw4r::g3d::TexSrt::NUM_OF_FLAGS);

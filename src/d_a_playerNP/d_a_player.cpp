@@ -595,33 +595,33 @@ void dAcPlayer_c::myMdlCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult
                                            nw4r::g3d::ResMdl resMdl) {
     mMtx_c mtx;
     if (nodeId == mBaseNode) {
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.YrotM(mAng(mBaseRotY));
         if (dHmnAnm_c::isCurve(mAnmId)) {
             dHmnAnm_c::curveMtx(&mtx, &mtx, mCurveBaseY);
         }
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     } else if (nodeId == mFeelNode) {
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         nw4r::math::_VEC3 trans = resMdl.GetResNode(nodeId).ref().translate;
         mtx._03 = trans.x;
         mtx._13 = trans.y;
         mtx._23 = trans.z;
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     } else if (nodeId == mHeadNode) {
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.XrotM(mAng(mHeadRotX));
         mtx.YrotM(mAng(mHeadRotY));
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     } else if (nodeId == mRootNode) {
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.XrotM(mAng(mRootRotX));
         if (dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_ROOM) && dHmnAnm_c::getFlag(mAnmId)) {
             nw4r::math::_VEC3 trans = resMdl.GetResNode(nodeId).ref().translate;
             mtx._03 = trans.x;
             mtx._23 = trans.z;
         }
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 }
 
@@ -631,7 +631,7 @@ void dAcPlayer_c::myMdlCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxMani
     mMtx_c mtx;
     mVec3_c pos(0.0f, 0.0f, 0.0f);
     if (nodeId == mRootNode) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         pos.set(mtx._03, mtx._13, mtx._23);
         dWorld::toFieldPosition(&mSoundPos, &pos);
         mRootY = mSoundPos.y;
@@ -658,31 +658,31 @@ void dAcPlayer_c::myMdlCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxMani
         }
         }
     } else if (nodeId == mBaseNode) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         pos.set(mtx._03, mtx._13, mtx._23);
         dWorld::toFieldPosition(&mBasePos, &pos);
     } else if (nodeId == mHandNode) {
-        manip->GetMatrix(&mHandMtx);
+        manip->GetMatrix(mHandMtx);
         pos.set(mHandMtx._03, mHandMtx._13, mHandMtx._23);
         dWorld::toFieldPosition(&mHandPos, &pos);
     } else if (nodeId == mRHandNode) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         pos.set(mtx._03, mtx._13, mtx._23);
         dWorld::toFieldPosition(&mRHandPos, &pos);
     } else if (nodeId == mRFootNode) {
-        manip->GetMatrix(&mRFootMtx);
+        manip->GetMatrix(mRFootMtx);
         pos.set(mRFootMtx._03, mRFootMtx._13, mRFootMtx._23);
         dWorld::toFieldPosition(&mRFootPos, &pos);
     } else if (nodeId == mLFootNode) {
-        manip->GetMatrix(&mLFootMtx);
+        manip->GetMatrix(mLFootMtx);
         pos.set(mLFootMtx._03, mLFootMtx._13, mLFootMtx._23);
         dWorld::toFieldPosition(&mLFootPos, &pos);
     } else if (nodeId == mHeadNode) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         pos.set(mtx._03, mtx._13, mtx._23);
         dWorld::toFieldPosition(&mHeadPos, &pos);
     } else if (nodeId == mFeelNode) {
-        manip->GetMatrix(&mFeelMtx);
+        manip->GetMatrix(mFeelMtx);
     }
 }
 

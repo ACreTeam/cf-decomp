@@ -160,8 +160,8 @@ void beginCalc() {
 void endCalc() {}
 
 // 802B7E10
-void setCamera(const nw4r::math::VEC3 *pos, const nw4r::math::MTX34 *mtx, f32 nearZ, f32 farZ, int group) {
-    EGG::EffectManager::sEffectManager->setCamera(pos, mtx, nearZ, farZ, group, false);
+void setCamera(const nw4r::math::VEC3 *pos, const mMtx_c *mtx, f32 nearZ, f32 farZ, int group) {
+    EGG::EffectManager::sEffectManager->setCamera(pos, *mtx, nearZ, farZ, group, false);
 }
 
 // 802B7E30
@@ -200,7 +200,7 @@ bool effect_c::createEffect(const char *name, ulong creator, const mVec3_c *pos,
     if (!createEffect(name, creator)) return false;
     mMtx_c mtx;
     makeMtx(pos, angle, scale, &mtx);
-    setMtx(&mtx);
+    setMtx(mtx);
     update();
     return true;
 }
@@ -208,7 +208,7 @@ bool effect_c::createEffect(const char *name, ulong creator, const mVec3_c *pos,
 // 802B8070
 bool effect_c::createEffect(const char *name, ulong creator, const mMtx_c *mtx) {
     if (!createEffect(name, creator)) return false;
-    setMtx(mtx);
+    setMtx(*mtx);
     update();
     return true;
 }
@@ -251,7 +251,7 @@ bool effect_c::follow(const mVec3_c *pos, const mAng3_c *angle, const mVec3_c *s
     if (!mHandle.IsValid()) return false;
     mMtx_c mtx;
     makeMtx(pos, angle, scale, &mtx);
-    setMtx(&mtx);
+    setMtx(mtx);
     update();
     return true;
 }
@@ -259,7 +259,7 @@ bool effect_c::follow(const mVec3_c *pos, const mAng3_c *angle, const mVec3_c *s
 // 802B844C
 bool effect_c::follow(const mMtx_c *mtx) {
     if (!mHandle.IsValid()) return false;
-    setMtx(mtx);
+    setMtx(*mtx);
     update();
     return true;
 }
@@ -307,7 +307,7 @@ bool levelEffect_c::createEffect(const char *name, ulong creator, const mVec3_c 
     if (!createEffect(name, creator)) return false;
     mMtx_c mtx;
     makeMtx(pos, angle, scale, &mtx);
-    setMtx(&mtx);
+    setMtx(mtx);
     update();
     return true;
 }
@@ -315,7 +315,7 @@ bool levelEffect_c::createEffect(const char *name, ulong creator, const mVec3_c 
 // 802B875C
 bool levelEffect_c::createEffect(const char *name, ulong creator, const mMtx_c *mtx) {
     if (!createEffect(name, creator)) return false;
-    setMtx(mtx);
+    setMtx(*mtx);
     update();
     return true;
 }
@@ -394,7 +394,7 @@ BOOL oneEmitter_c::create(const char *name, const mVec3_c *pos, const mAng3_c *a
     EGG::ExOneEmitter emitter(this);
     emitter.create();
     emitter.setPos(pos);
-    setMtx(&mtx);
+    setMtx(mtx);
     update();
     emitter.update();
     return TRUE;
@@ -408,7 +408,7 @@ BOOL oneEmitter_c::create(const char *name, const mMtx_c *mtx) {
     EGG::ExOneEmitter emitter(this);
     emitter.create();
     emitter.setPos(&pos);
-    setMtx(mtx);
+    setMtx(*mtx);
     update();
     emitter.update();
     return TRUE;

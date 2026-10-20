@@ -54,9 +54,9 @@ const float cNpcDoorOffset = 16.0f;
 
 // .text:0x108
 void toFieldPos(mVec3_c *out, const mVec3_c *local,
-                const nw4r::math::MTX34 *mtx) {
+                const mMtx_c *mtx) {
     mVec3_c pos;
-    PSMTXMultVec(*mtx, *local, pos);
+    PSMTXMultVec(mtx->m, *local, pos);
     dWorld::toFieldPosition(out, &pos);
 }
 
@@ -489,8 +489,8 @@ BOOL daSTR_c::isLightFlicker() const {
 }
 
 // .text:0x1690
-void daSTR_c::calcMtx(f32 offsetY, f32 offsetZ, nw4r::math::MTX34 *mtx) {
-    nw4r::math::MTX34 buf;
+void daSTR_c::calcMtx(f32 offsetY, f32 offsetZ, mMtx_c *mtx) {
+    mMtx_c buf;
     if (mtx == NULL) {
         mtx = &buf;
     }
@@ -500,8 +500,8 @@ void daSTR_c::calcMtx(f32 offsetY, f32 offsetZ, nw4r::math::MTX34 *mtx) {
     mVec3_c curved;
     mAng tilt = dWorld::curvePositionSimple(&curved, &pos);
     PSMTXTrans(*mtx, curved.x, curved.y, curved.z);
-    ((mMtx_c *)mtx)->XrotM(tilt);
-    ((mMtx_c *)mtx)->YrotM(mAngle.y);
+    mtx->XrotM(tilt);
+    mtx->YrotM(mAngle.y);
 }
 
 // .text:0x1740
@@ -571,7 +571,7 @@ void daSTR_c::drawMdl() {
             } else {
                 mShadowMdl.setLocalMtx(&mtx);
             }
-            nw4r::math::MTX34 *ownMtx = getShadowMtx();
+            mMtx_c *ownMtx = getShadowMtx();
             if (ownMtx != NULL) {
                 mShadowMdl.setLocalMtx(ownMtx);
             }
@@ -636,7 +636,7 @@ static char l_minuteNode[] = "km_j";
 static char l_curveNode[] = "joint1";
 
 // .text:0x1B78
-void daSTR_c::drawShadow(nw4r::math::MTX34 *mtx) {
+void daSTR_c::drawShadow(mMtx_c *mtx) {
     shadowBin_s *bin = (shadowBin_s *)mResFile.GetExternal(l_shadowBin);
     if (bin != NULL) {
         u32 num = bin->mNum;

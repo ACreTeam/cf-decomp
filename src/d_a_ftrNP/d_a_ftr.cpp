@@ -2175,26 +2175,26 @@ void daFTR_c::nodeCallBack_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anm
     if (mFtrFunc == dItem::FTR_FUNC_WARDROBE || mFtrFunc == dItem::FTR_FUNC_ARMOIRE || mFtrFunc == dItem::FTR_FUNC_GYROID) {
         nw4r::g3d::ResNode node = resMdl.GetResNode(nodeId);
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mVec3_c trans(node.ref().translate);
         mtx.m[0][3] = trans.x;
         mtx.m[1][3] = trans.y;
         mtx.m[2][3] = trans.z;
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
     if (nodeId == mHourNode) {
         int mins = hour % 12;
         mins *= 60;
         mins += min;
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.ZrotM(mAng(-(s16)((mins << 16) / 720)));
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     } else if (nodeId == mMinNode) {
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.ZrotM(mAng(-(s16)((min << 16) / 60)));
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 }
 

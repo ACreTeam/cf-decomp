@@ -215,16 +215,16 @@ void m3d::scnLeaf_c::setScale(const nw4r::math::VEC3 &scale) {
     mpScn->SetScale(scale);
 }
 
-void m3d::scnLeaf_c::setLocalMtx(const nw4r::math::MTX34 *mtx) {
-    mpScn->SetMtx(nw4r::g3d::ScnObj::MTX_LOCAL, mtx);
+void m3d::scnLeaf_c::setLocalMtx(const mMtx_c *mtx) {
+    mpScn->SetMtx(nw4r::g3d::ScnObj::MTX_LOCAL, *mtx);
 }
 
-void m3d::scnLeaf_c::getLocalMtx(nw4r::math::MTX34 *mtx) const {
-    mpScn->GetMtx(nw4r::g3d::ScnObj::MTX_LOCAL, mtx);
+void m3d::scnLeaf_c::getLocalMtx(mMtx_c *mtx) const {
+    mpScn->GetMtx(nw4r::g3d::ScnObj::MTX_LOCAL, *mtx);
 }
 
-void m3d::scnLeaf_c::getViewMtx(nw4r::math::MTX34 *mtx) const {
-    mpScn->GetMtx(nw4r::g3d::ScnObj::MTX_VIEW, mtx);
+void m3d::scnLeaf_c::getViewMtx(mMtx_c *mtx) const {
+    mpScn->GetMtx(nw4r::g3d::ScnObj::MTX_VIEW, *mtx);
 }
 
 void m3d::scnLeaf_c::calc(bool keepEnabledAfter) {
@@ -329,9 +329,9 @@ void m3d::bmdl_c::setDrawMode(nw4r::g3d::ResMdlDrawMode mode) {
     nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn)->SetDrawMode(mode);
 }
 
-bool m3d::bmdl_c::getNodeWorldMtx(ulong idx, nw4r::math::MTX34 *mtx) const {
+bool m3d::bmdl_c::getNodeWorldMtx(ulong idx, mMtx_c *mtx) const {
     nw4r::g3d::ScnMdlSimple *scnMdl = nw4r::g3d::G3dObj::DynamicCast<nw4r::g3d::ScnMdlSimple>(mpScn);
-    return scnMdl->GetScnMtxPos(mtx, nw4r::g3d::ScnObj::MTX_WORLD, idx);
+    return scnMdl->GetScnMtxPos(*mtx, nw4r::g3d::ScnObj::MTX_WORLD, idx);
 }
 
 bool m3d::bmdl_c::getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) const {
@@ -346,7 +346,7 @@ bool m3d::bmdl_c::getNodeWorldMtxMultVecZero(ulong idx, nw4r::math::VEC3 &vec) c
 }
 
 bool m3d::bmdl_c::getNodeWorldMtxMultVec(ulong idx, const nw4r::math::VEC3 &in, nw4r::math::VEC3 &out) const {
-    nw4r::math::MTX34 mtx;
+    mMtx_c mtx;
     if (!getNodeWorldMtx(idx, &mtx)) {
         return false;
     }

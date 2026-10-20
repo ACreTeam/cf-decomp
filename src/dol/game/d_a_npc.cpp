@@ -664,24 +664,24 @@ void dAcNpc_c::mdlCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anm
         (mpNpc->mNpcItem.isSame(0x8011) || mpNpc->mNpcItem.isSame(0x8012)) &&
         dScene::isCurrentSceneAttr(5)) {
         if (nodeId == 1) {
-            anmRes->GetRotTrans(&mtx);
+            anmRes->GetRotTrans(mtx);
             trans.x = data.translate.x;
             trans.y = data.translate.y;
             trans.z = data.translate.z;
             mtx._13 += trans.y - 8.0f;
-            anmRes->SetRotTrans(&mtx);
+            anmRes->SetRotTrans(mtx);
         } else if (nodeId != 0x14 && nodeId != 0x15 && nodeId >= 2) {
-            anmRes->GetRotTrans(&mtx);
+            anmRes->GetRotTrans(mtx);
             trans.x = data.translate.x;
             trans.y = data.translate.y;
             trans.z = data.translate.z;
             mtx._03 = trans.x;
             mtx._13 = trans.y;
             mtx._23 = trans.z;
-            anmRes->SetRotTrans(&mtx);
+            anmRes->SetRotTrans(mtx);
         }
     } else if (nodeId == 1) {
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         trans.x = data.translate.x;
         trans.y = data.translate.y;
         trans.z = data.translate.z;
@@ -689,33 +689,33 @@ void dAcNpc_c::mdlCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anm
         if (mpNpc != NULL && dHmnAnm_c::isCurve(mAnmId)) {
             dHmnAnm_c::curveMtx(&mtx, &mtx, mpNpc->mPos.y);
         }
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     } else if (nodeId >= 2) {
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         trans.x = data.translate.x;
         trans.y = data.translate.y;
         trans.z = data.translate.z;
         if (mpNpc != NULL && mpNpc->mEar.isEarNode(nodeId)) {
             mVec3_c rot((const nw4r::math::VEC3 &)data.rot);
-            nw4r::math::MTX34RotXYZDeg(&mtx, rot.x, rot.y, rot.z);
+            nw4r::math::MTX34RotXYZDeg(mtx, rot.x, rot.y, rot.z);
         }
         mtx._03 = trans.x;
         mtx._13 = trans.y;
         mtx._23 = trans.z;
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 
     if (mpNpc != NULL && mpNpc->mLookAt.isHeadNode(nodeId) && mpNpc->mLookAt.mType < 7) {
         u16 rotY = mpNpc->mLookAt.mPitch.mCur.mAngle;
         u16 rotX = mpNpc->mLookAt.mYaw.mCur.mAngle;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         if ((s16)rotX != 0) {
             mtx.XrotM(mAng(rotX));
         }
         if ((s16)rotY != 0) {
             mtx.YrotM(mAng(rotY));
         }
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 }
 
@@ -726,31 +726,31 @@ void dAcNpc_c::mdlCallback_c::timingB(ulong nodeId, nw4r::g3d::WorldMtxManip *ma
         return;
     }
     if (mpNpc->mLookAt.isHeadNode(nodeId)) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mLookAt.mHeadMtx = mtx;
         mpNpc->mLookAt.calcHeadPos();
     } else if (mpNpc->mEar.isEarNode(nodeId) && mpNpc->getEarType() != 0x3C) {
         mpNpc->mEar.calc(manip, nodeId);
     } else if (nodeId == 1) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx01 = mtx;
     } else if (nodeId == 0x12) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx12 = mtx;
     } else if (nodeId == 0xB) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx0B = mtx;
     } else if (nodeId == 0xE) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx0E = mtx;
     } else if (nodeId == 0x13) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx13 = mtx;
     } else if (nodeId == 4) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx04 = mtx;
     } else if (nodeId == 7) {
-        manip->GetMatrix(&mtx);
+        manip->GetMatrix(mtx);
         mpNpc->mNodeMtx07 = mtx;
     }
 }
@@ -7945,7 +7945,7 @@ void dAcNpc_c::earCtrl_c::ear_c::limitAxis(mVec3_c *v, const f32 *limit, f32 ax,
 
 void dAcNpc_c::earCtrl_c::ear_c::calc(nw4r::g3d::WorldMtxManip *manip) {
     mMtx_c mtx;
-    manip->GetMatrix(&mtx);
+    manip->GetMatrix(mtx);
     const param_s *param = &mParam;
     mVec3_c trans(mtx.m[0][3], mtx.m[1][3], mtx.m[2][3]);
     mVec3_c tip(mtx.m[0][0], mtx.m[1][0], mtx.m[2][0]);
@@ -7970,12 +7970,13 @@ void dAcNpc_c::earCtrl_c::ear_c::calc(nw4r::g3d::WorldMtxManip *manip) {
     fn_804456B0(&q, &tip, &newRel);
     q.normalise();
     mMtx_c rot;
-    fn_80444FE4(&rot, &q);
+    fn_80444FE4(rot, &q);
     PSMTXConcat(rot, mtx, mtx);
     mtx.m[0][3] = savedTrans.x;
     mtx.m[1][3] = savedTrans.y;
     mtx.m[2][3] = savedTrans.z;
-    manip->SetMatrix(&mtx);
+    const nw4r::math::MTX34 *matrix = mtx;
+    manip->SetMatrix(matrix);
 }
 
 dAcNpc_c::earCtrl_c::earCtrl_c() {}

@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 #include <types.h>
 #include <nw4r/ut.h>
 #include <nw4r/math.h>
@@ -50,7 +51,7 @@ namespace mFace {
         bool create(RFLDataSource source, u16 index, RFLResolution resolution, u32 expressionFlag,
                     mAllocator_c *allocator, RFLMiddleDB *middleDB); // 0x802B3C74
         void remove(); // 0x802B3D38, frees mpBuffer through mpAllocator
-        void setMtx(const nw4r::math::MTX34 *mtx); // 0x802B3E20, RFLSetMtx
+        void setMtx(const mMtx_c *mtx); // 0x802B3E20, RFLSetMtx
         bool change(RFLDataSource source, u16 index, RFLMiddleDB *middleDB); // 802B3D9C
         void setExpression(RFLExpression expression); // 802B3E30
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <game/mLib/m_mtx.hpp>
 
 // The bus stop and the bus (REL d_a_str_commonNP, profiles STR_BUS_STOP and
 // STR_BUS, RTTI daStrBusStop_c / daStrBus_c). Both are structures (daSTR_c).
@@ -199,7 +200,7 @@ class daStrBus_c : public daSTR_c {
     virtual void executeDoorState();
     virtual BOOL isDraw();
     virtual void drawMdl();
-    virtual nw4r::math::MTX34 *getShadowMtx();
+    virtual mMtx_c *getShadowMtx();
     virtual nw4r::math::VEC3 *getShadowScale();
 
     static nw4r::g3d::ResFile getResFile() {

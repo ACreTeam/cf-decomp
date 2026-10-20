@@ -1,3 +1,4 @@
+#include <game/mLib/m_mtx.hpp>
 // d_line_draw: the debug 3D line drawer dLineDrawProc_c. .text 800CD670..800CDD2C, .data 804EB320..804EB3A0,
 // .sdata 8074AAA0..8074AAA8. See include/game/game/d_line_draw.hpp.
 #include <game/game/d_line_draw.hpp>
@@ -59,7 +60,7 @@ void dLineDrawProc_c::draw(BOOL opa) {
             }
         }
         if (doDraw) {
-            nw4r::math::MTX34 viewMtx;
+            mMtx_c viewMtx;
             getViewMtx(&viewMtx);
             GXLoadPosMtxImm(viewMtx, GX_PNMTX0);
             GXSetCurrentMtx(GX_PNMTX0);
@@ -80,8 +81,8 @@ void dLineDrawProc_c::draw(BOOL opa) {
             GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_A0);
             GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
             GXSetCullMode(GX_CULL_NONE);
-            nw4r::math::MTX34 posMtx;
-            nw4r::math::MTX34 nrmMtx;
+            mMtx_c posMtx;
+            mMtx_c nrmMtx;
             getViewMtx(&posMtx);
             getViewMtx(&nrmMtx);
             PSMTXInvXpose(nrmMtx, nrmMtx);

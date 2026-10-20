@@ -79,7 +79,7 @@ void daStrChkp_c::beforeCreateMdl() {
     file.Bind(nw4r::g3d::ResFile(mFlagLoader.getData()));
     file.Bind(file);
     f32 offsetY = dStrm_c::isUseHostIO() ? dStrm_c::getOffsetY() : 0.0f;
-    nw4r::math::MTX34 mtx;
+    mMtx_c mtx;
     calcMtx(offsetY + getModelOffsetY(), 0.0f, &mtx);
     static const u32 cGateTypeNum = GATE_TYPE_NUM;
     u32 gate = dSaveData_c::getRaw()->mBuilding.getGateType();

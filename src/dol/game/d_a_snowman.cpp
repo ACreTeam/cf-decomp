@@ -1371,7 +1371,7 @@ void daSnowMan_c::calcMtx() {
     } else {
         mMtx_c mtx;
         mMtx_c rotMtx;
-        fn_80444FE4(&rotMtx, &mRotation);
+        fn_80444FE4(rotMtx, &mRotation);
         if (isState(STATE_SINK) || isState(STATE_ROLL)) {
             mVec3_c center(mPos.x, mPos.y + mSlopeY, mPos.z);
             center.y += getRadius();

@@ -1391,7 +1391,7 @@ void dFishMusMdl_c::calcNode(nw4r::g3d::WorldMtxManip *manip, ulong nodeId) {
             rot->z *= -1.0f;
         }
         mMtx_c rotMtx;
-        fn_80444FE4(&rotMtx, rot);
+        fn_80444FE4(rotMtx, rot);
         PSMTXMultVecSR(rotMtx, mRootDir, mRootDir);
         PSMTXConcat(rotMtx, *mtx, *mtx);
         mtx->_03 = pos.x;

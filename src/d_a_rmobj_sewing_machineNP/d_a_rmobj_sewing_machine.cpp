@@ -44,7 +44,7 @@ int daRmobjSewingMachine_c::create() {
         int node = m3d::getNodeID(file.GetResMdl("obj_tailor_cloth"), "needle");
         if (node != -1) {
             mClothMdl.mMdl.calc(false);
-            nw4r::math::MTX34 mtx;
+            mMtx_c mtx;
             mClothMdl.mMdl.getNodeWorldMtx(node, &mtx);
             mNeedlePos.set(mtx._03, mtx._13, mtx._23);
         }

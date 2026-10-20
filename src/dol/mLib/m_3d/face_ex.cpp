@@ -7,7 +7,7 @@
 
 void m3d::bface_c::drawOpa() {
     if (mModel.isReady()) {
-        nw4r::math::MTX34 mtx;
+        mMtx_c mtx;
         getViewMtx(&mtx);
         mModel.setMtx(&mtx);
         drawOpaCore();
@@ -16,7 +16,7 @@ void m3d::bface_c::drawOpa() {
 
 void m3d::bface_c::drawXlu() {
     if (mModel.isReady()) {
-        nw4r::math::MTX34 mtx;
+        mMtx_c mtx;
         getViewMtx(&mtx);
         mModel.setMtx(&mtx);
         drawXluCore();

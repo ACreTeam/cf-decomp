@@ -176,7 +176,7 @@ BOOL dOrgObj_c::executeCloth() {
 }
 
 // .text:0x670
-void dOrgObj_c::calcCloth(const nw4r::math::MTX34 *mtx) {
+void dOrgObj_c::calcCloth(const mMtx_c *mtx) {
     mCloth.mMdl.setLocalMtx(mtx);
     mCloth.mMdl.calc(false);
 }
@@ -247,7 +247,7 @@ BOOL dOrgObj_c::executeUmb() {
 }
 
 // .text:0x9B8
-void dOrgObj_c::calcUmb(const nw4r::math::MTX34 *mtx) {
+void dOrgObj_c::calcUmb(const mMtx_c *mtx) {
     mUmb.mMdl.setLocalMtx(mtx);
     mUmb.mMdl.calc(false);
 }
@@ -323,13 +323,13 @@ BOOL dOrgObj_c::executeCap() {
 }
 
 // .text:0xCB4
-void dOrgObj_c::calcCap(const nw4r::math::MTX34 *mtx) {
+void dOrgObj_c::calcCap(const mMtx_c *mtx) {
     mCap.mStandMdl.setLocalMtx(mtx);
     mCap.mStandMdl.calc(false);
     nw4r::g3d::ResFile res(dFTR::alwaysBank_c::get()->getFile(3));
     int id = m3d::getNodeID(res.GetResMdl(0), "set");
     if (id != -1) {
-        nw4r::math::MTX34 setMtx;
+        mMtx_c setMtx;
         mCap.mStandMdl.getNodeWorldMtx(id, &setMtx);
         mCap.mMdl.setLocalMtx(&setMtx);
         mCap.mMdl.calc(false);
@@ -383,7 +383,7 @@ BOOL dOrgObj_c::drawCat() {
 }
 
 // .text:0xF30
-void dOrgObj_c::calcCat(const nw4r::math::MTX34 *mtx) {
+void dOrgObj_c::calcCat(const mMtx_c *mtx) {
     if (mCat.mMdl.getScn() != NULL) {
         mCat.mMdl.setLocalMtx(mtx);
         mCat.mMdl.calc(false);
@@ -399,7 +399,7 @@ BOOL dOrgObj_c::removeCat() {
 }
 
 // .text:0xFB4
-void dOrgObj_c::calc(const nw4r::math::MTX34 *mtx) {
+void dOrgObj_c::calc(const mMtx_c *mtx) {
     if (mtx != NULL) {
         calcCloth(mtx);
         calcUmb(mtx);
@@ -411,9 +411,9 @@ void dOrgObj_c::calc(const nw4r::math::MTX34 *mtx) {
         m.trans(hio.mPos.x, hio.mPos.y, hio.mPos.z);
         m.XrotM(mAng(hio.mRotX));
         m.YrotM(mAng(hio.mRotY));
-        nw4r::math::MTX34 scale;
-        PSMTXScale(scale, hio.mScale, hio.mScale, hio.mScale);
-        PSMTXConcat(m, scale, m);
+        mMtx_c scale;
+        PSMTXScale(scale.m, hio.mScale, hio.mScale, hio.mScale);
+        PSMTXConcat(m, scale.m, m);
         calcCloth(&m);
         calcUmb(&m);
         calcCap(&m);

@@ -139,10 +139,10 @@ int dHmnToolMng_c::getLoadBuffer(data_c *data) {
 void dHmnToolBank_c::myMdlCallback_c::timingA(ulong nodeId, nw4r::g3d::ChrAnmResult *anmRes, nw4r::g3d::ResMdl resMdl) {
     if (nodeId == mNodeId) {
         mMtx_c mtx;
-        anmRes->GetRotTrans(&mtx);
+        anmRes->GetRotTrans(mtx);
         mtx.YrotM(l_windmillTilt);
         mtx.XrotM(mRot);
-        anmRes->SetRotTrans(&mtx);
+        anmRes->SetRotTrans(mtx);
     }
 }
 

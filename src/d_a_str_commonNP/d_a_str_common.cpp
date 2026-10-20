@@ -1010,7 +1010,7 @@ void daStrBus_c::drawMdl() {
 }
 
 // .text:0x28F4
-nw4r::math::MTX34 *daStrBus_c::getShadowMtx() {
+mMtx_c *daStrBus_c::getShadowMtx() {
     static mMtx_c mtx;
     const mVec3_c *pos = getMainPos(TRUE);
     if (!pos->isZero()) {
@@ -1048,15 +1048,15 @@ void daStrBus_c::nodeCallBack_c::timingA(ulong nodeId,
         if (nodeId == mWiperR0 || nodeId == mWiperL0) {
             mAng angle = 4095.0f * cos;
             mMtx_c mtx;
-            anmRes->GetRotTrans(&mtx);
+            anmRes->GetRotTrans(mtx);
             mtx.YrotM(angle);
-            anmRes->SetRotTrans(&mtx);
+            anmRes->SetRotTrans(mtx);
         } else if (nodeId == mWiperR1 || nodeId == mWiperL1) {
             mAng angle = 2730.0f * cos;
             mMtx_c mtx;
-            anmRes->GetRotTrans(&mtx);
+            anmRes->GetRotTrans(mtx);
             mtx.YrotM(angle);
-            anmRes->SetRotTrans(&mtx);
+            anmRes->SetRotTrans(mtx);
         }
     }
 }
