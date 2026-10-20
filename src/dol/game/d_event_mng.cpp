@@ -109,8 +109,7 @@ void dEventMng_c::executeWait() {
         if (now.hour == 0 && now.min == 0 && now.sec <= 5) {
             mKind = KIND_COUNTDOWN;
             if (dDemo::isType(dDemo::TYPE_MENU)) {
-                fn_8019A7AC(); // d_menu_mng: sets dMenuMng_c flag 0x10 (meaning
-                               // unknown)
+                dMenuMng_c::requestClose();
             }
         }
     }

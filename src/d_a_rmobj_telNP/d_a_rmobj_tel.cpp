@@ -264,9 +264,9 @@ void daRmobjTel_c::executeMessageMenuClose() {
     if (dMenuMng_c::isMenuEnd()) {
         if (lbl_8074EA7D == 1) {
             requestMessage(MSG_FLAG_DESIGN_DONE, dARmobjTel::l_msgLabel);
-            if ((int)fn_8019AFE4() != -1) {
+            if ((int)dMenuMng_c::getPickedDesign() != -1) {
                 dPlayerMgr::refreshEquippedUmbrellaDesign();
-                if (dPlayerMgr::isDesignEquipped((u8)fn_8019AFE4())) {
+                if (dPlayerMgr::isDesignEquipped((u8)dMenuMng_c::getPickedDesign())) {
                     mEquip.setFromPlayer();
                     mChangeClothes = TRUE;
                 }

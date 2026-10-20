@@ -119,6 +119,7 @@ protected:
 
 class dMenuMove_c {
 public:
+    static int getHoldFrames();
     void calcFollow();
     void startFollow();
     mVec2_c *getPos();
@@ -136,6 +137,3 @@ public:
     /* 0x1C */ int mMoveCnt;
 };
 
-extern "C" {
-int fn_800CEC1C();
-}

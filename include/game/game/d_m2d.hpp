@@ -265,6 +265,14 @@ class moveCalc_c {
     /* 0x14 */ int mCount;
 };
 
+// The argument of isInPane: the point to test and the scale of the panes;
+// the pane that contains it is stored in mpHit.
+struct hitArg_c {
+    mVec2_c mPos;
+    f32 mScale;
+    nw4r::lyt::Pane *mpHit;
+};
+
 // Free helpers.
 f32 getDefaultScale(); // inferred stripped helper; see notes/d_m2d.txt
 int getNameNumber(const char *name, int digits); // 800077CC
@@ -278,7 +286,7 @@ void setNameNumber(char *name, void *arg);                      // 8000837C
 void setAnmNumber(Anm_c *anm, int number);                      // 800083F8
 nw4r::lyt::Material *getMaterial(nw4r::lyt::Pane *pane);        // 80008468
 nw4r::lyt::TexMap *getTexMaps(nw4r::lyt::Pane *pane);           // 80008478
-void fn_8000849C(nw4r::lyt::Pane *pane);                        // 8000849C
+nw4r::lyt::TexSRT *getTexSRTs(nw4r::lyt::Pane *pane);           // 8000849C
 void getTevColors(nw4r::lyt::Pane *pane, u8 *white, u8 *black); // 800084C0
 void setTevColors(nw4r::lyt::Pane *pane, const u8 *white,
                   const u8 *black);                             // 8000855C

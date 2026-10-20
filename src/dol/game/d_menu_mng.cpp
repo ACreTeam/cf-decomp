@@ -41,7 +41,7 @@ static u16 s_selMask;
 static u8 s_selSlot;
 static u8 s_EA83;
 static u32 s_EA84;
-static u32 s_EA88;
+static u32 s_picked;
 static u32 s_EA8C;
 static int s_friendIdx;
 static int s_postType;
@@ -260,16 +260,16 @@ void fn_8019A7A4() {
     dMenuMng_c::onFlag(dMenuMng_c::FLAG_NO_BGM);
 }
 
-void fn_8019A7AC() {
-    dMenuMng_c::onFlag(0x10);
+void dMenuMng_c::requestClose() {
+    onFlag(FLAG_CLOSE_REQUEST);
 }
 
-void fn_8019A7B4() {
-    dMenuMng_c::offFlag(0x10);
+void dMenuMng_c::clearCloseRequest() {
+    offFlag(FLAG_CLOSE_REQUEST);
 }
 
-bool fn_8019A7BC() {
-    return dMenuMng_c::isFlag(0x10);
+bool dMenuMng_c::isCloseRequested() {
+    return isFlag(FLAG_CLOSE_REQUEST);
 }
 
 void dMenuMng_c::onFlag(u32 flag) {
@@ -429,17 +429,17 @@ u16 fn_8019AD30() {
     return s_C104;
 }
 
-u16 fn_8019AD38(u16 arg) {
+u16 dMenuMng_c::setMenuItem(u16 arg) {
     u16 old = s_C104;
     s_C104 = arg;
     return old;
 }
 
-u8 fn_8019AD48() {
+u8 dMenuMng_c::getDesignIndex() {
     return s_EA83;
 }
 
-void fn_8019AD50(u8 arg) {
+void dMenuMng_c::setDesignIndex(u8 arg) {
     s_EA83 = arg;
 }
 
@@ -521,11 +521,11 @@ BOOL dMenuMng_c::openLetter(const dMail_c *mail) {
 }
 
 void fn_8019AFBC(u32 arg) {
-    s_EA88 = arg;
+    s_picked = arg;
 }
 
 u32 fn_8019AFC4() {
-    return s_EA88;
+    return s_picked;
 }
 
 u32 dMenuMng_c::getNumberMin() {
@@ -540,36 +540,36 @@ void dMenuMng_c::setNumber(u32 arg) {
     s_EA84 = arg;
 }
 
-u32 fn_8019AFE4() {
-    return s_EA88;
+u32 dMenuMng_c::getPickedDesign() {
+    return s_picked;
 }
 
-void fn_8019AFEC(u32 arg) {
-    s_EA88 = arg;
+void dMenuMng_c::setPickedDesign(u32 arg) {
+    s_picked = arg;
 }
 
-bool fn_8019AFF4() {
-    return dMenuMng_c::isFlag(0x20);
+bool dMenuMng_c::isPickedShirt() {
+    return isFlag(FLAG_PICKED_SHIRT);
 }
 
-bool fn_8019AFFC() {
-    return dMenuMng_c::isFlag(0x40);
+bool dMenuMng_c::isPickedHat() {
+    return isFlag(FLAG_PICKED_HAT);
 }
 
-void fn_8019B004() {
-    dMenuMng_c::onFlag(0x20);
+void dMenuMng_c::setPickedShirt() {
+    onFlag(FLAG_PICKED_SHIRT);
 }
 
-void fn_8019B00C() {
-    dMenuMng_c::onFlag(0x40);
+void dMenuMng_c::setPickedHat() {
+    onFlag(FLAG_PICKED_HAT);
 }
 
-void fn_8019B014() {
-    dMenuMng_c::offFlag(0x20);
+void dMenuMng_c::clearPickedShirt() {
+    offFlag(FLAG_PICKED_SHIRT);
 }
 
-void fn_8019B01C() {
-    dMenuMng_c::offFlag(0x40);
+void dMenuMng_c::clearPickedHat() {
+    offFlag(FLAG_PICKED_HAT);
 }
 
 void dMenuMng_c::setDesign(const dDesign_c *design) {
@@ -589,11 +589,11 @@ void fn_8019B248(u16 arg) {
 }
 
 u32 fn_8019B250() {
-    return s_EA88;
+    return s_picked;
 }
 
 void fn_8019B258(u32 arg) {
-    s_EA88 = arg;
+    s_picked = arg;
 }
 
 u16 fn_8019B260() {
@@ -605,7 +605,7 @@ void fn_8019B268(u16 arg) {
 }
 
 u32 fn_8019B270() {
-    return s_EA88;
+    return s_picked;
 }
 
 u32 fn_8019B278() {
@@ -613,16 +613,16 @@ u32 fn_8019B278() {
 }
 
 void fn_8019B280(u32 a, u32 b) {
-    s_EA88 = a;
+    s_picked = a;
     s_EA8C = b;
 }
 
 u32 fn_8019B28C() {
-    return s_EA88;
+    return s_picked;
 }
 
 void fn_8019B294(u32 arg) {
-    s_EA88 = arg;
+    s_picked = arg;
 }
 
 BOOL fn_8019B29C() {

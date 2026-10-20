@@ -144,7 +144,7 @@ static BOOL execMenu(Req_c *req) {
 // 8018DCEC
 static BOOL endMenu(Req_c *req) {
     BOOL ret = dPlayerMgr::endDemoWait();
-    fn_8019A7B4();
+    dMenuMng_c::clearCloseRequest();
     dMenuMng_c::endMenuBgm();
     return ret;
 }

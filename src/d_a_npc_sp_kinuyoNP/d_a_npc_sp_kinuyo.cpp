@@ -1169,7 +1169,7 @@ void dAcNpcSpKinuyo_c::talk_c::onStoreMenuEnd() {
         return;
     }
     getController()->setNextMsgCode(MSG_STORED);
-    if (fn_8019AFF4() || fn_8019AFFC()) {
+    if (dMenuMng_c::isPickedShirt() || dMenuMng_c::isPickedHat()) {
         mOnMessageStart = &talk_c::refreshEquip;
         mNextOnRequestEnd = &talk_c::doNothing;
     }
@@ -1211,7 +1211,7 @@ void dAcNpcSpKinuyo_c::talk_c::onProDesignMenuEnd() {
     }
     mProSlot = fn_80029A84();
     getController()->setNextMsgCode(MSG_PRO_NAMED);
-    if (fn_8019AFF4() || fn_8019AFFC()) {
+    if (dMenuMng_c::isPickedShirt() || dMenuMng_c::isPickedHat()) {
         mOnMessageStart = &talk_c::refreshEquip;
         mNextOnRequestEnd = &talk_c::doNothing;
     }

@@ -371,7 +371,7 @@ void refreshEquippedUmbrellaDesign() {
     if (lbl_8074EA7D != 1) {
         return;
     }
-    int slot = fn_8019AFE4() & 7;
+    int slot = dMenuMng_c::getPickedDesign() & 7;
     dItem::Item held = current->mEquipment.mHeld;
     if (!isDesignSlot(slot, &held)) {
         return;

@@ -16,6 +16,9 @@ public:
     // The special tab (its icon is only shown while a menu is open; selecting it closes the menu).
     enum { TAB_CLOSE = 7 };
 
+    // The tab of the chat menu (REL d_menu_chat).
+    enum { TAB_CHAT = 4 };
+
     // mTabBtnAnm kinds (l_tabBtnAnms).
     enum TabBtnAnm_e {
         TAB_BTN_IN,  // "tab_00_dpdIn": the pointer is on the tab

@@ -317,6 +317,6 @@ void dMenuMove_c::setPos(const mVec2_c &pos) {
     mPos = pos;
 }
 
-int fn_800CEC1C() {
+int dMenuMove_c::getHoldFrames() {
     return 15;
 }

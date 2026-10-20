@@ -8698,7 +8698,7 @@ u32 dAcNpc_c::recept_c::fn_80029A50() {
 
 u32 dAcNpc_c::recept_c::fn_80029A84() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019AFE4();
+        return dMenuMng_c::getPickedDesign();
     }
     return 0;
 }

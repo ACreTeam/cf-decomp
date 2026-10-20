@@ -15,7 +15,7 @@ static const char *l_selection = "myDsgnFc";
 static const char *l_previousSelection = "myDsgnFcBefore";
 
 // .text:0x5C
-bool Desi_c::load() {
+BOOL Desi_c::load() {
     return mRes.load("Layout/desi_win.arc");
 }
 // .text:0x68
@@ -38,8 +38,8 @@ void Desi_c::create(BOOL pickup) {
 BOOL Desi_c::remove() {
     if (mFlags & FLAG_CAPTURE) {
         mFlags &= ~FLAG_CAPTURE;
-        mMiiCapture.remove();
-        mPickupMiiCapture.remove();
+        mCapture[CAPTURE_MII].remove();
+        mCapture[CAPTURE_PICKUP].remove();
     }
     return mRes.remove();
 }
@@ -141,14 +141,9 @@ void Desi_c::setDesign(int slot, dDesign_c *design) {
                                                                  design);
 }
 
-struct HitArg_c {
-    mVec2_c mPos;
-    f32 mScale;
-    nw4r::lyt::Pane *mpHit;
-};
 // .text:0x5B0
 int Desi_c::hitDesign(const mVec2_c &pos, BOOL setOffset, f32 scale) {
-    HitArg_c hit;
+    m2d::hitArg_c hit;
     hit.mpHit = NULL;
     hit.mScale = scale;
     hit.mPos = pos;
@@ -169,7 +164,7 @@ int Desi_c::hitDesign(const mVec2_c &pos, BOOL setOffset, f32 scale) {
 }
 // .text:0x690
 int Desi_c::hitFace(const mVec2_c &pos, BOOL setOffset, f32 scale) {
-    HitArg_c hit;
+    m2d::hitArg_c hit;
     hit.mpHit = NULL;
     hit.mScale = scale;
     hit.mPos = pos;
@@ -236,8 +231,8 @@ bool Desi_c::isProDesign(int slot) {
 }
 // .text:0x9FC
 bool Desi_c::setupMii() {
-    mMiiCapture.clear();
-    mPickupMiiCapture.clear();
+    mCapture[CAPTURE_MII].clear();
+    mCapture[CAPTURE_PICKUP].clear();
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     dMiiCreateID_c *id = &player->mMiiId;
     BOOL found = FALSE;
@@ -254,12 +249,12 @@ bool Desi_c::setupMii() {
     }
     if (found) {
         nw4r::lyt::TexMap *tex = m2d::getTexMaps(mLyt.findPane(l_miiFace));
-        mMiiCapture.set(index, 120, 120, tex->GetImage());
-        mMiiCapture.entry();
+        mCapture[CAPTURE_MII].set(index, 120, 120, tex->GetImage());
+        mCapture[CAPTURE_MII].entry();
         if (mFlags & FLAG_PICKUP) {
             tex = m2d::getTexMaps(mPickupMiiLyt.findPane(l_miiFace));
-            mPickupMiiCapture.set(index, 120, 120, tex->GetImage());
-            mPickupMiiCapture.entry();
+            mCapture[CAPTURE_PICKUP].set(index, 120, 120, tex->GetImage());
+            mCapture[CAPTURE_PICKUP].entry();
         }
         mFlags |= FLAG_CAPTURE;
     }

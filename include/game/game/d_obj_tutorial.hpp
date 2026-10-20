@@ -23,6 +23,12 @@ public:
         MENU_MSG_2 = 1002, // menu string 5
     };
 
+    // Message ids of setMsg / request in "sys_2D/SYS_2D_UIballoon".
+    enum UIBALLOON_MSG_e {
+        MSG_EMOTION_BASE = 0x32,    // + the emotion id: "Anger" (0x33), "Shock", "Laughter" ...
+        MSG_GENRE_GREETINGS = 0x65, // "Greetings"; the next ones are "Questions", "Commands", "Places", "Comments"
+    };
+
     virtual int create();   // 801B6ADC
     virtual int doDelete(); // 801B6B5C
     virtual int execute();  // 801B6B8C

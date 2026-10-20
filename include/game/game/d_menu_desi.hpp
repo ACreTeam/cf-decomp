@@ -15,7 +15,10 @@ class Desi_c {
         FLAG_PICKUP_MII = 8,
         FLAG_LEAVE_ANM = 16
     };
-    bool load();                                                  // .text:0x5C
+
+    // mCapture: the Mii's face in the main and in the picked-up layout.
+    enum CAPTURE_e { CAPTURE_MII, CAPTURE_PICKUP, CAPTURE_NUM };
+    BOOL load();                                                  // .text:0x5C
     void create(BOOL pickup);                                     // .text:0x68
     BOOL remove();                                                // .text:0x140
     void calc();                                                  // .text:0x194
@@ -60,8 +63,7 @@ class Desi_c {
     /* 0x2DC */ u32 mFlags;
     /* 0x2E0 */ int mSelection;
     /* 0x2E4 */ int mPreviousSelection;
-    /* 0x2E8 */ m2d::captureNode_c mMiiCapture;
-    /* 0x304 */ m2d::captureNode_c mPickupMiiCapture;
+    /* 0x2E8 */ m2d::captureNode_c mCapture[CAPTURE_NUM];
     /* 0x320 */ m2d::Anm_c mLeaveAnm;
     /* 0x344 */ m2d::Anm_c mScrollAnm;
     /* 0x368 */ m2d::Anm_c mMiiPushAnm;

@@ -346,7 +346,7 @@ void dObjTelop_c::Req_c::request(int msg) {
             msg = TELOP_NET_STOP_TALK;
         }
         if (dDemo::isType(dDemo::TYPE_MENU)) {
-            fn_8019A7AC();
+            dMenuMng_c::requestClose();
         }
     }
     if (mMsg == msg && mTimer > 0) {

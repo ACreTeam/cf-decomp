@@ -106,12 +106,6 @@ int getNameNumber(const char *name, int digits) {
     return num;
 }
 
-struct hitArg_c {
-    mVec2_c mPos;
-    f32 mScale;
-    nw4r::lyt::Pane *mpHit;
-};
-
 // 80007878
 int isInPane(nw4r::lyt::Pane *pane, void *arg) {
     hitArg_c *hit = (hitArg_c *)arg;
@@ -401,8 +395,8 @@ nw4r::lyt::TexMap *getTexMaps(nw4r::lyt::Pane *pane) {
 }
 
 // 8000849C
-void fn_8000849C(nw4r::lyt::Pane *pane) {
-    getMaterial(pane)->GetTexSRTAry();
+nw4r::lyt::TexSRT *getTexSRTs(nw4r::lyt::Pane *pane) {
+    return getMaterial(pane)->GetTexSRTAry();
 }
 
 // 800084C0

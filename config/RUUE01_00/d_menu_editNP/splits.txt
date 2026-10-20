@@ -18,4 +18,4 @@ d_menu_editNP/d_menu_edit.cpp:
 	.text       start:0x000000CC end:0x00006E24
 	.rodata     start:0x00000000 end:0x000003F4
 	.data       start:0x00000000 end:0x00000C90
-	.bss        start:0x00000008 end:0x00001390
+	.bss        start:0x00000020 end:0x00001390

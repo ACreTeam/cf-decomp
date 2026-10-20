@@ -22,6 +22,9 @@ public:
 
     enum FLAG_e {
         FLAG_NO_BGM = 0x8,
+        FLAG_CLOSE_REQUEST = 0x10, // a net message or the countdown wants the menu closed
+        FLAG_PICKED_SHIRT = 0x20, // the design picked is the one worn as the shirt
+        FLAG_PICKED_HAT = 0x40,   // the design picked is the one worn as the hat
     };
 
     enum { POCKET_NUM = 15 };
@@ -47,6 +50,11 @@ public:
     static void offFlag(u32 flag);
     static bool isFlag(u32 flag);
     static void setResult(u8 result);
+    // The item argument of the item menus (s_C104); returns the previous one.
+    static u16 setMenuItem(u16 item); // 8019AD38
+    static void requestClose(); // 8019A7AC
+    static void clearCloseRequest(); // 8019A7B4
+    static bool isCloseRequested(); // 8019A7BC
 
     static BOOL openItemSel(u16 mask, u16 msgParam, u8 menu);
     static BOOL openItemSel2(u16 mask, u16 msgParam);
@@ -71,6 +79,11 @@ public:
 
     // openMenu / openItemSel menus (only the ones named so far).
     enum {
+        MENU_DESIGN = 0x0D,        // the design menu from its tab (REL d_menu_desi00)
+        MENU_DESIGN_SELECT = 0x0E, // the design menu for the design in getDesignIndex
+        MENU_EDIT_DESIGN = 0x0F,   // the design editor (REL d_menu_editNP)
+        MENU_EDIT_PRO = 0x10,      // ... for a pro design (four textures)
+        MENU_EDIT_FACE = 0x11,     // ... for the face design (the cat model)
         MENU_ITEM_SELECT = 0x32,
         MENU_TURNIP_COUNT = 0x45, // how many turnips (REL d_menu_kabu)
         MENU_TURNIP_PRICE = 0x46, // the turnip price
@@ -82,6 +95,12 @@ public:
         MENU_BANK_PAY = 0x4C,
         MENU_MUSIC = 0x5D,
         MENU_STORAGE = 0x5E,
+        MENU_DESIGN_TAKE = 0x65, // the slot for a design taken from the tailor (REL d_menu_desi01)
+        MENU_TOWN_FLAG_DESIGN = 0x66, // the town flag's design (REL d_menu_desi03)
+        MENU_DESIGN_GIFT = 0x67, // the slot for a design given by a villager (REL d_menu_desi01)
+        MENU_DESIGN_DISPLAY = 0x68, // which design to display at the tailor (REL d_menu_desi01)
+        MENU_DESIGN_SWAP = 0x69, // which design to swap with the tailor's (REL d_menu_desi01)
+        MENU_DESIGN_PRO = 0x6A, // the slot for a pro design (REL d_menu_desi01)
         MENU_RECYCLE_BOX = 0x60, // the town hall's recycle box (daRmobjRB_c)
         MENU_MAILBOX = 0x61, // the mailbox's letters (daStrPost_c)
         MENU_FLAG_DESIGN = 0x6B, // the house flag's design, asked for on the phone (daRmobjTel_c)
@@ -101,8 +120,21 @@ public:
     static void setMail(const dMail_c *mail);
     static BOOL openLetter(const dMail_c *mail);
 
+    // The design slot the design menu (REL d_menu_desi00) hands to the menu it opens.
+    static u8 getDesignIndex();           // 8019AD48
+    static void setDesignIndex(u8 index); // 8019AD50
     static void setDesign(const dDesign_c *design);
     static dDesign_c *getDesign();
+    // The design number (after the order) the design menus (REL d_menu_desi01..03) picked.
+    static u32 getPickedDesign();                 // 8019AFE4
+    static void setPickedDesign(u32 design);      // 8019AFEC
+    // Whether the picked design is worn as the shirt / hat (the tailor refreshes the outfit).
+    static bool isPickedShirt();                  // 8019AFF4
+    static bool isPickedHat();                    // 8019AFFC
+    static void setPickedShirt();                 // 8019B004
+    static void setPickedHat();                   // 8019B00C
+    static void clearPickedShirt();               // 8019B014
+    static void clearPickedHat();                 // 8019B01C
 
     static void clearSelMask();
     static bool isSelMask(u16 bit);
@@ -146,17 +178,11 @@ extern mVec3_c g_menuPos;
 
 extern "C" {
 void fn_8019A7A4();
-void fn_8019A7AC();
-void fn_8019A7B4();
-bool fn_8019A7BC();
 BOOL fn_8019AC04(u16 arg);
 BOOL fn_8019AC44(u16 arg);
 BOOL fn_8019AC84(u16 arg);
 BOOL fn_8019ACC4(u16 arg, const mVec3_c *pos);
 u16 fn_8019AD30();
-u16 fn_8019AD38(u16 arg);
-u8 fn_8019AD48();
-void fn_8019AD50(u8 arg);
 BOOL fn_8019ADD4();
 BOOL fn_8019AE00();
 BOOL fn_8019AE2C();
@@ -164,14 +190,6 @@ BOOL fn_8019AE58();
 BOOL fn_8019AEE4();
 void fn_8019AFBC(u32 arg);
 u32 fn_8019AFC4();
-u32 fn_8019AFE4();
-void fn_8019AFEC(u32 arg);
-bool fn_8019AFF4();
-bool fn_8019AFFC();
-void fn_8019B004();
-void fn_8019B00C();
-void fn_8019B014();
-void fn_8019B01C();
 u16 fn_8019B240();
 void fn_8019B248(u16 arg);
 u32 fn_8019B250();

@@ -412,9 +412,9 @@ void dAcNpcSpGkB_c::talk_c::onLostAndFoundMenuEnd() {
 // .text 0x1BE4
 void dAcNpcSpGkB_c::talk_c::onFlagMenuEnd() {
     if (lbl_8074EA7D == 1) {
-        if ((int)fn_8019AFE4() != -1) {
+        if ((int)dMenuMng_c::getPickedDesign() != -1) {
             dPlayerMgr::refreshEquippedUmbrellaDesign();
-            if (dPlayerMgr::isDesignEquipped((u8)fn_8019AFE4())) {
+            if (dPlayerMgr::isDesignEquipped((u8)dMenuMng_c::getPickedDesign())) {
                 mEquip.setFromPlayer();
                 requestEquip(&mEquip, 5, dPlayerMgr::EQUIP_CHANGE_NORMAL);
             }

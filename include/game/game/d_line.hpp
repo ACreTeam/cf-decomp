@@ -8,6 +8,8 @@
 // A node sorted by priority (lowest first); class name from d_menu_starNP RTTI.
 class dLineNdPr_c : public cLineNd_c {
 public:
+    dLineNdPr_c() : mPriority(0xFF) {}
+
     /* 0x08 */ u8 mPriority;
 };
 

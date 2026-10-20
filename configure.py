@@ -2767,7 +2767,7 @@ config.libs = [
             Object(NonMatching, "d_menu_catalogNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(NonMatching, "d_menu_catalogNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_catalogNP/d_menu_catalog.cpp"),
+            Object(Matching, "d_menu_catalogNP/d_menu_catalog.cpp"),
         ],
     ),
     Rel(
@@ -2776,7 +2776,7 @@ config.libs = [
             Object(NonMatching, "d_menu_chatNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(NonMatching, "d_menu_chatNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_chatNP/d_menu_chat.cpp"),
+            Object(Matching, "d_menu_chatNP/d_menu_chat.cpp"),
         ],
     ),
     Rel(
@@ -2785,16 +2785,16 @@ config.libs = [
             Object(NonMatching, "d_menu_desi00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(NonMatching, "d_menu_desi00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_desi00NP/d_menu_desi00.cpp"),
+            Object(Matching, "d_menu_desi00NP/d_menu_desi00.cpp"),
         ],
     ),
     Rel(
         "d_menu_desi01NP",
         [
-            Object(NonMatching, "d_menu_desi01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_desi01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_desi01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_desi01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_desi01NP/d_menu_desi01.cpp"),
+            Object(Matching, "d_menu_desi01NP/d_menu_desi01.cpp"),
         ],
     ),
     Rel(
@@ -2803,16 +2803,16 @@ config.libs = [
             Object(NonMatching, "d_menu_desi02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(NonMatching, "d_menu_desi02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_desi02NP/d_menu_desi02.cpp"),
+            Object(Matching, "d_menu_desi02NP/d_menu_desi02.cpp"),
         ],
     ),
     Rel(
         "d_menu_desi03NP",
         [
-            Object(NonMatching, "d_menu_desi03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_desi03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_desi03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_desi03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_desi03NP/d_menu_desi03.cpp"),
+            Object(Matching, "d_menu_desi03NP/d_menu_desi03.cpp"),
         ],
     ),
     Rel(
