@@ -3223,10 +3223,10 @@ config.libs = [
     Rel(
         "d_a_layoutNP",
         [
-            Object(NonMatching, "d_a_layoutNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_layoutNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_layoutNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_layoutNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_layoutNP/d_a_layout.cpp"),
+            Object(Matching, "d_a_layoutNP/d_a_layout.cpp"),
         ],
     ),
     Rel(
@@ -3241,28 +3241,28 @@ config.libs = [
     Rel(
         "d_a_sampleNP",
         [
-            Object(NonMatching, "d_a_sampleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_sampleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_sampleNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_sampleNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_sampleNP/d_a_sample.cpp"),
+            Object(Matching, "d_a_sampleNP/d_a_sample.cpp"),
         ],
     ),
     Rel(
         "d_a_sample2NP",
         [
-            Object(NonMatching, "d_a_sample2NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_sample2NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_sample2NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_sample2NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_sample2NP/d_a_sample2.cpp"),
+            Object(Matching, "d_a_sample2NP/d_a_sample2.cpp"),
         ],
     ),
     Rel(
         "d_a_sample3NP",
         [
-            Object(NonMatching, "d_a_sample3NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_sample3NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_sample3NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_sample3NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_sample3NP/d_a_sample3.cpp"),
+            Object(Matching, "d_a_sample3NP/d_a_sample3.cpp"),
         ],
     ),
 ]

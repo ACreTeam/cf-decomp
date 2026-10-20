@@ -1142,6 +1142,7 @@ modules:
   name: d_a_layoutNP
   symbols: config/RUUE01_00/d_a_layoutNP/symbols.txt
   splits: config/RUUE01_00/d_a_layoutNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_mdlNP.rel
   hash: 013814bfd1c652e854b7c7fa3e2b0df33bda28e5
   name: d_a_mdlNP
@@ -1153,13 +1154,16 @@ modules:
   name: d_a_sampleNP
   symbols: config/RUUE01_00/d_a_sampleNP/symbols.txt
   splits: config/RUUE01_00/d_a_sampleNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_sample2NP.rel
   hash: 7402651b1b944a71edfa29a7105b962bd6a88ab5
   name: d_a_sample2NP
   symbols: config/RUUE01_00/d_a_sample2NP/symbols.txt
   splits: config/RUUE01_00/d_a_sample2NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_sample3NP.rel
   hash: 8bb5f4b55ba3f01e0af0185d42c19345bfac713e
   name: d_a_sample3NP
   symbols: config/RUUE01_00/d_a_sample3NP/symbols.txt
   splits: config/RUUE01_00/d_a_sample3NP/splits.txt
+  force_active: [__global_destructor_chain]
