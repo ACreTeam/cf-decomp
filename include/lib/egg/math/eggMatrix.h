@@ -8,7 +8,7 @@
 
 namespace EGG {
 
-struct Matrix34f {
+struct Matrix34f : public nw4r::math::MTX34 {
     Matrix34f() {}
     Matrix34f(f32 xx, f32 xy, f32 xz, f32 xw, f32 yx, f32 yy, f32 yz, f32 yw, f32 zx, f32 zy, f32 zz, f32 zw);
 
@@ -19,10 +19,10 @@ struct Matrix34f {
         return m[i][j];
     }
     f32 operator()(int i) const {
-        return arr[i];
+        return a[i];
     }
     f32 &operator()(int i) {
-        return arr[i];
+        return a[i];
     }
 
     Matrix34f &operator=(const Matrix34f &other) {
@@ -57,11 +57,11 @@ struct Matrix34f {
     void dump();
 
     operator nw4r::math::MTX34 *() {
-        return (nw4r::math::MTX34 *)this;
+        return this;
     }
 
     operator const nw4r::math::MTX34 *() const {
-        return (nw4r::math::MTX34 *)this;
+        return this;
     }
 
 public:
@@ -96,23 +96,9 @@ public:
 
     void makeZero() {
         for (int i = 0; i < 12; i++) {
-            arr[i] = 0.0f;
+            a[i] = 0.0f;
         }
     }
-
-public:
-    union {
-        f32 m[3][4];
-        f32 arr[12];
-        // Storage aliases used by mMtx_c and the NW4R matrix APIs.
-        f32 a[12];
-        Mtx mtx;
-        struct {
-            f32 _00, _01, _02, _03;
-            f32 _10, _11, _12, _13;
-            f32 _20, _21, _22, _23;
-        };
-    };
 
 public:
     static Matrix34f ident;

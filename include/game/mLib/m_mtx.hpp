@@ -18,15 +18,6 @@ public:
     /// @brief Constructs a matrix with the given components.
     mMtx_c(float _00, float _01, float _02, float _03, float _10, float _11, float _12, float _13, float _20, float _21, float _22, float _23);
 
-    // EGG and NW4R share the same 12-float storage layout.
-    // Game APIs use mMtx_c pointers; object conversions bridge library APIs.
-    typedef f32 (*MtxRef)[4];
-    typedef const f32 (*MtxRefConst)[4];
-    operator MtxRef() { return m; }
-    operator MtxRefConst() const { return m; }
-    operator nw4r::math::MTX34 &() { return *(nw4r::math::MTX34 *)this; }
-    operator const nw4r::math::MTX34 &() const { return *(const nw4r::math::MTX34 *)this; }
-
     /// @brief Mtx cast operator.
     operator Mtx*() { return &mtx; }
 
