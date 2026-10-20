@@ -2066,7 +2066,6 @@ void dMenuEdit_c::drawOval(int x0, int y0, int x1, int y1, int color) {
     int cx;
     int cy;
 
-    int center[2];
     if (x0 > x1) {
         u8 tmp = x0;
         x0 = x1;
@@ -2083,8 +2082,14 @@ void dMenuEdit_c::drawOval(int x0, int y0, int x1, int y1, int color) {
     int ry = dy >> 1;
     cx = x0 + rx;
     cy = y0 + ry;
-    center[0] = (dx & 1) + cx;
-    center[1] = (dy & 1) + cy;
+    // @HACK: The y-first aggregate initialization matters - idk man
+    struct Center {
+        int y;
+        int x;
+    };
+    Center center = {cy, cx};
+    center.x = (dx & 1) + cx;
+    center.y = (dy & 1) + cy;
     s16 i;
     int a;
     int b;
@@ -2096,11 +2101,11 @@ void dMenuEdit_c::drawOval(int x0, int y0, int x1, int y1, int color) {
     for (i = 0; i < l_steps; i += step) {
         a = (rx * l_ovalTable[i + l_steps] + l_round) >> 8;
         b = (ry * l_ovalTable[i] + l_round) >> 8;
-        px = a + center[0];
-        mTex.set(px, b + center[1], color, FALSE);
+        px = a + center.x;
+        mTex.set(px, b + center.y, color, FALSE);
         mTex.set(px, cy - b, color, FALSE);
         u8 qx = cx - a;
-        mTex.set(qx, b + center[1], color, FALSE);
+        mTex.set(qx, b + center.y, color, FALSE);
         mTex.set(qx, cy - b, color, FALSE);
     }
 }
@@ -2363,8 +2368,9 @@ void dMenuEdit_c::pickUpPart() {
 
 // .text:0x5F90
 nw4r::lyt::Pane *dMenuEdit_c::getPartPane(int btn) {
+    static char partPaneFormat[13] = "myDsgn_%02d";
     char name[40];
-    sprintf(name, "myDsgn_%02d", btn - BTN_PART_FIRST);
+    sprintf(name, partPaneFormat, btn - BTN_PART_FIRST);
     return mPartsLyt.findPane(name);
 }
 
