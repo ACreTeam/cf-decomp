@@ -299,7 +299,7 @@ BOOL dMenuMng_c::openItemSel(u16 mask, u16 msgParam, u8 menu) {
 }
 
 BOOL dMenuMng_c::openItemSel2(u16 mask, u16 msgParam) {
-    BOOL ok = open(0x2A, FALSE);
+    BOOL ok = open(MENU_ITEM_SELL, FALSE);
     if (ok) {
         s_itemMsgParam = msgParam;
         s_pocketMask = mask;

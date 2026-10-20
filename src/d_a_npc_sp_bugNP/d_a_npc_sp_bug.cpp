@@ -6,6 +6,7 @@
 #include <game/game/d_event.hpp>
 #include <game/game/d_insect_info.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_money.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
@@ -783,7 +784,7 @@ void dAcNpcSpBug_c::talk_c::openBugSelect() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(0xFFFF);
     }
-    reqSelectItem(dANpcSpBug::isNotInsect, 0xE7, 0x33, 1);
+    reqSelectItem(dANpcSpBug::isNotInsect, 0xE7, dMenuMng_c::MENU_ITEM_GIVE_INSECT, 1);
 }
 
 // .text 0x2058

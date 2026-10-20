@@ -3,6 +3,7 @@
 #include <game/game/d_npc_talk_quest_q12.hpp>
 #include <game/game/d_animal.hpp>
 #include <game/game/d_date.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc.hpp>
@@ -125,7 +126,7 @@ void dAcNpcNml_c::talk_c::selLostKeyGive() {
         u16 mask = 0;
         countPocketsKind(&mask, 0x35, player, TRUE);
         mask = ~mask;
-        reqSelectItem(mask, 0x22, 0x78, TRUE);
+        reqSelectItem(mask, 0x22, dMenuMng_c::MENU_ITEM_QUEST, TRUE);
         mResultProc = &talk_c::resLostKeyGive;
     }
 }

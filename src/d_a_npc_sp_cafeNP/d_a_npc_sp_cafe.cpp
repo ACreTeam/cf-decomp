@@ -1104,7 +1104,7 @@ void dAcNpcSpCafe_c::talk_c::selectGyroid() {
     u16 mask = 0;
     player->countPocketsFlag(isGyroid, &mask);
     mask = ~mask;
-    reqSelectItem(mask, 0x22, 0x77, 0);
+    reqSelectItem(mask, 0x22, dMenuMng_c::MENU_ITEM_GYROID, 0);
 }
 
 // .text 0x2D80

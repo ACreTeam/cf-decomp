@@ -7,6 +7,7 @@
 #include <game/game/d_hmn_anm.hpp>
 #include <game/game/d_home.hpp>
 #include <game/game/d_item.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_museum.hpp>
 #include <game/game/d_net.hpp>
@@ -997,7 +998,7 @@ void dAcNpcSpFuta_c::talk_c::openDonationMenu() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(MSG_NONE);
     }
-    reqSelectItem(dANpcSpFuta::isNotDonatable, ITEM_SEL_MSG_DONATE, MENU_DONATE, TRUE);
+    reqSelectItem(dANpcSpFuta::isNotDonatable, ITEM_SEL_MSG_DONATE, dMenuMng_c::MENU_ITEM_DONATE, TRUE);
 }
 
 // 0x237C
@@ -1025,7 +1026,7 @@ void dAcNpcSpFuta_c::talk_c::openFossilMenu() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(MSG_NONE);
     }
-    reqSelectItem(dANpcSpFuta::isNotUnidentifiedFossil, ITEM_SEL_MSG_GIVE, MENU_FOSSIL_CHECK, TRUE);
+    reqSelectItem(dANpcSpFuta::isNotUnidentifiedFossil, ITEM_SEL_MSG_GIVE, dMenuMng_c::MENU_ITEM_IDENTIFY, TRUE);
 }
 
 // 0x2434

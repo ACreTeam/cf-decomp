@@ -9,6 +9,7 @@
 #include <game/game/d_field_assessment.hpp>
 #include <game/game/d_fish_info.hpp>
 #include <game/game/d_item_def.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_npc_mng.hpp>
 #include <game/game/d_pattern_copy.hpp>
@@ -440,7 +441,7 @@ void dAcNpcSpSeiichi_c::talk_c::openFoodSelect() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(dMsg::MSG_CODE_INVALID);
     }
-    reqSelectItem((u16)0, 0xE7, 0x2D, 1);
+    reqSelectItem((u16)0, 0xE7, dMenuMng_c::MENU_ITEM_GIVE_FOOD, 1);
     mOnRequestEnd = &talk_c::onFoodSelected;
 }
 

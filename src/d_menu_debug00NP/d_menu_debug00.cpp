@@ -216,7 +216,7 @@ bool dMenuDebug00_c::openNextMenu() {
         menu = 6;
         break;
     case 10:
-        dAcUitag::openMenuA(9);
+        dAcUitag::openMenuA(dAcUitag::MENU_A_ITEM_1);
         return false;
     default:
         return false;

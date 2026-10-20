@@ -9,6 +9,7 @@
 #include <game/game/d_hmn_anm.hpp>
 #include <game/game/d_item_def.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc.hpp>
@@ -561,7 +562,7 @@ void dAcNpcSpPumpking_c::talk_c::reqSelectCandy() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(0xFFFF);
     }
-    reqSelectItem((u16)0, 0xE7, 0x2E, TRUE);
+    reqSelectItem((u16)0, 0xE7, dMenuMng_c::MENU_ITEM_GIVE_CANDY, TRUE);
 }
 
 // 0x1640

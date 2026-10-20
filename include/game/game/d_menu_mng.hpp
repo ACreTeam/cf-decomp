@@ -122,6 +122,8 @@ public:
 
     // openMenu / openItemSel menus (only the ones named so far).
     enum {
+        MENU_ITEM = 0x00,        // the pockets from their tab (REL d_menu_item00NP)
+        MENU_ITEM_LETTER = 0x01, // ... starting on the letter window
         MENU_MAP00 = 0x06,   // the town map from its tab (REL d_menu_map00NP)
         MENU_KEYTEST = 0x0C, // the keyboard test menu (REL d_menu_keytestNP)
         MENU_DESIGN = 0x0D,        // the design menu from its tab (REL d_menu_desi00)
@@ -153,7 +155,18 @@ public:
         MENU_SWAP_DUG = 0x26,     // ... a dug-up item
         MENU_SWAP_INSECT = 0x27,  // ... a caught insect
         MENU_SWAP_FISH = 0x28,    // ... a caught fish
+        MENU_ITEM_GIVE = 0x29,    // the pocket picker (REL d_menu_item02NP): the default of reqSelectItem
+        MENU_ITEM_SELL = 0x2A,    // ... several pockets (openItemSel2)
+        MENU_ITEM_SONG = 0x2B,    // ... a K.K. song to learn
+        MENU_ITEM_AUCTION = 0x2C, // "Auction which item?"
+        MENU_ITEM_GIVE_FOOD = 0x2D,  // "Give which?": food for Wendell (d_a_npc_sp_seiichi)
+        MENU_ITEM_GIVE_CANDY = 0x2E,  // "Give which?": the candy for Jack (d_a_npc_sp_pumpking)
+        MENU_ITEM_DONATE = 0x2F,  // "Donate what?"
+        MENU_ITEM_IDENTIFY = 0x30, // "Identify which?"
+        MENU_ITEM_GIVE_FISH = 0x31,  // "Give which?": a fish for Chip (d_a_npc_sp_uomasa)
         MENU_ITEM_SELECT = 0x32,
+        MENU_ITEM_GIVE_INSECT = 0x33,  // "Give which?": an insect for Nat (d_a_npc_sp_bug)
+        MENU_ITEM_GIVE_SHIP_PART = 0x34,  // "Give what?": a spaceship part for Gulliver (d_a_npc_sp_jonny)
         MENU_PREVIEW_MAP = 0x35, // the town map Rover shows the new player on the bus (REL d_menu_map01NP)
         MENU_BRIDGE_MAP = 0x36, // the town map to pick the new bridge's block, opened by Pelly (REL d_menu_map02NP)
         MENU_HOUSE_MAP = 0x37, // the players' houses on the town map, opened by Pelly (REL d_menu_map03NP)
@@ -187,7 +200,8 @@ public:
         MENU_FRIEND_SELECT = 0x51,       // the Wii friend picker (REL d_menu_friend01NP); updates the roster first
         MENU_FRIEND_SELECT_KNOWN = 0x52, // ... for a roster that is already known
         MENU_MUSIC = 0x5D, // the K.K. music list (REL d_menu_musicNP)
-        MENU_STORAGE = 0x5E,
+        MENU_STORAGE = 0x5E, // the item storage chest (REL d_menu_item04NP)
+        MENU_LOST_AND_FOUND = 0x5F, // the police box (lost and found), taken from the gatekeeper (REL d_menu_item05NP)
         MENU_DESIGN_TAKE = 0x65, // the slot for a design taken from the tailor (REL d_menu_desi01)
         MENU_TOWN_FLAG_DESIGN = 0x66, // the town flag's design (REL d_menu_desi03)
         MENU_DESIGN_GIFT = 0x67, // the slot for a design given by a villager (REL d_menu_desi01)
@@ -200,6 +214,8 @@ public:
         MENU_BBS = 0x6D,     // the bulletin board (daStrBbs_c)
         MENU_POINT_PRESENT = 0x75, // the presents of Nook's point machine (daRmobjPoint_c)
         MENU_HANIWA = 0x76, // the gyroids to take out of the storage (REL d_menu_haniwaNP), opened by the cafe
+        MENU_ITEM_GYROID = 0x77, // "Give which gyroid?" (REL d_menu_item02NP)
+        MENU_ITEM_QUEST = 0x78,  // "What do you want to give?" for a quest
     };
 
     static BOOL openMenu(u8 menu);

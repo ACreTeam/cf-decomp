@@ -63,6 +63,7 @@ public:
     void attachController(Comp_c *controller); // 801A2304
     void detachController(); // 801A230C
 
+    void setVoiceType(int type) { mVoiceType = type; } // d_menu_item00
     Comp_c *getController() const { return mpController; }
     u16 getMessageCode() { return mMessageCode; }
     const char *getMessageLabel() const { return mMessageLabel; }

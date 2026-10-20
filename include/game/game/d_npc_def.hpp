@@ -22,6 +22,7 @@
 #define SP_NPC_ARTIST 0x8016 // Wendell, the artist (d_a_npc_sp_seiichi; d_a_npc_sp_gatekeeper_b)
 #define SP_NPC_MISSING_CHILD 0x8019 // Katie, the lost kitten (d_a_npc_sp_missing_child, d_a_npc_sp_gatekeeper_a)
 #define SP_NPC_MISSING_MOTHER 0x801A // Katie's mother (d_a_npc_sp_missing_mother, d_a_npc_sp_missing_child)
+#define SP_NPC_GHOST 0x801B // Wisp (d_a_npc_sp_yuutaro, d_a_npc_sp_yuutaro_loft; d_menu_item00 rubbing the lamp)
 #define SP_NPC_CARPETPEDDLER 0x801D // Saharah (d_a_npc_sp_roran; d_a_npc_sp_gatekeeper_b)
 #define SP_NPC_SISYO 0x8020 // Dr. Shrunk at the theater (d_a_npc_sp_sisyo)
 #define SP_NPC_KYOSYO 0x8021 // Master Frillard at the theater (d_a_npc_sp_sisyo on his programs)

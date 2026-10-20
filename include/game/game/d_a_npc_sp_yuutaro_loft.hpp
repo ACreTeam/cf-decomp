@@ -52,6 +52,12 @@ class dAcNpcSpYuutaroLoft_c : public dAcNpcSp_c {
         enum Msg_e {
             MSG_NET_ALONE = 0x1A,    // "I'm kind of shy ... Are you sure you
                                      // aren't expecting guests?"
+            MSG_ATTIC_MY_HOUSE = 0x1B, // "... do you think maybe we can...go
+                                       // upstairs to the attic?"
+            MSG_ATTIC_OTHER_HOUSE = 0x1C, // "Not this house. ... the attic in
+                                          // your house?"
+            MSG_ATTIC_ELSEWHERE = 0x1D,   // "I don't really like scary places
+                                          // like this."
             MSG_NET_GUESTS = 0x1E,   // "I'm no good with crowds ... Is someone
                                      // coming?"
             MSG_FIRST_APPEAR = 0x47, // "Tah-Dahh!!" (the first time)

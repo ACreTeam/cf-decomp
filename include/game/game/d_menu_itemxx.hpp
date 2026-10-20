@@ -86,9 +86,9 @@ class dMenuItemXX_c : public dMenuBase_c {
     void setMark(int slot, bool on);                         // .text:0x54C
     void markSlot(int slot);                                 // .text:0x638
     void unmarkSlot(int slot);                               // .text:0x640
-    int hitPocket(const mVec2_c *pos, float scale);          // .text:0x648
-    int hitButton(const mVec2_c *pos, float scale);          // .text:0x6E8
-    int hitLetter(const mVec2_c *pos, float scale);          // .text:0x80C
+    int hitPocket(mVec2_c pos, float scale);          // .text:0x648
+    int hitButton(mVec2_c pos, float scale);          // .text:0x6E8
+    int hitLetter(mVec2_c pos, float scale);          // .text:0x80C
     int hitTab(const mVec2_c *pos);                          // .text:0x8B0
     bool isPocketEmpty(int slot);                            // .text:0x914
     BOOL isLetterEmpty(int slot);                            // .text:0x988
@@ -133,7 +133,7 @@ class dMenuItemXX_c : public dMenuBase_c {
     void clearHeld();                                        // .text:0x2BC4
     bool calcGift(int slot);                                 // .text:0x2BDC
     bool canDropPocket(int slot);                            // .text:0x2BE4
-    bool canDrop(dItem::Item item, int flag);                // .text:0x2C3C
+    bool canDrop(const dItem::Item &item, int flag);                // .text:0x2C3C
     bool isEdible(const dItem::Item *item);                  // .text:0x2D58
     BOOL isMedicine(const dItem::Item *item);                // .text:0x2DB0
     BOOL findWater(mVec3_c *pos);                            // .text:0x2DE0
@@ -152,6 +152,7 @@ class dMenuItemXX_c : public dMenuBase_c {
     /* 0x501C */ dItem::Item mHeldItem;
     /* 0x5020 */ int mHeldFlag;   // the held item's pocket flag
     /* 0x5024 */ int mSelectSlot; // the slot the answer menu was opened for
+    /* 0x5028 */ u8 _5028[4]; // not used by this REL; the derived menus start at 0x502C
 };
 
 namespace dMenuItemXX {

@@ -177,7 +177,6 @@ class dAcNpcSpUomasa_c : public dAcNpcSp_c {
             WORD_RUNNER_UP_SIZE = 3,
         };
         // The fish select menu (openFishSelect).
-        enum { MENU_SELECT_FISH = 0x31 };
         enum { ITEM_SEL_MSG_GIVE = 0xE7 };
         // The answers of MSG_OFFER_ROD, MSG_ASK_CATCH and MSG_ASK_KEEP.
         enum { ANSWER_BUY = 0, ANSWER_DECLINE = 1 };

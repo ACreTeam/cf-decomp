@@ -172,18 +172,26 @@ public:
 
 namespace dAcUitag {
 
-// The indices of openMenuA (the menu table l_menusA); only the ones named so far.
+// The indices of openMenuA (the menu table l_menusA); index 5 (menu 0x04) is not named yet.
 enum MenuA_e {
+    MENU_A_DESIGN = 0,        // menu 0x0D: the design menu
     MENU_A_DESIGN_SELECT = 1, // menu 0x0E: the design menu for the design in getDesignIndex
     MENU_A_EDIT_DESIGN = 2,   // menu 0x0F: the design editor
+    MENU_A_DESIGN_NAME = 3,   // menu 0x1C: the name input of a design
+    MENU_A_INSC = 4,          // menu 0x03: the insect and fish encyclopedia
+    MENU_A_ADDRESS = 6,        // menu 0x53: the addressee picker for the mail of dMenuMng_c
+    MENU_A_ADDRESS_LETTER = 7, // menu 0x54: the addressee picker for the letter getPickedLetter
     MENU_A_ITEM = 8,    // menu 0x00: the item menu
     MENU_A_ITEM_1 = 9,  // menu 0x01: the item menu, second kind
     MENU_A_WRITE = 10,  // menu 0x41: the letter writing menu
+    MENU_A_REWRITE = 11, // menu 0x42: edit the letter getPickedLetter
+    MENU_A_READ = 12,   // menu 0x0A: read a letter (REL d_menu_paperNP)
 };
 
 // The indices of openMenuB (the menu table l_menusB); only the ones named so far.
 enum MenuB_e {
     MENU_B_ITEM_SELECT = 1, // menu 0x2B: the pocket picker (after dMenuMng_c::setPocketMask)
+    MENU_B_MUSIC = 2,       // menu 0x5D: the K.K. music list
     MENU_B_EDIT_PRO = 7, // menu 0x10: the pro design editor
 };
 

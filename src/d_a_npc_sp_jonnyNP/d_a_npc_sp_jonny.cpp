@@ -7,6 +7,7 @@
 #include <game/game/d_item.hpp>
 #include <game/game/d_item_def.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc.hpp>
@@ -478,7 +479,7 @@ void dAcNpcSpJonny_c::talk_c::openPartSelect() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(0xFFFF);
     }
-    reqSelectItem(isNotSpaceshipPart, 0xE7, 0x34, 1);
+    reqSelectItem(isNotSpaceshipPart, 0xE7, dMenuMng_c::MENU_ITEM_GIVE_SHIP_PART, 1);
     mOnRequestEnd = &talk_c::onPartSelected;
 }
 

@@ -699,7 +699,7 @@ void dAcNpcSpHaniwa_c::talk_c::selectItem() {
     if (mpController->mNextMsgCode == 0) {
         mpController->setNextMsgCode(dMsg::MSG_CODE_INVALID);
     }
-    reqSelectItem(dANpcSpHaniwa::isNotDisplayable, 0xED, 0x2C, TRUE);
+    reqSelectItem(dANpcSpHaniwa::isNotDisplayable, 0xED, dMenuMng_c::MENU_ITEM_AUCTION, TRUE);
     mOnRequestEnd = &talk_c::endSelectItem;
     mOnMessageEnd = NULL;
 }

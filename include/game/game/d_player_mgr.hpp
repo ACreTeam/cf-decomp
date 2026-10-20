@@ -616,7 +616,7 @@ BOOL getScriptedActionPosition(mVec3_c *out); // 801011C4
 BOOL startShoeShine(s16 frames, f32 speed); // 8010125C
 BOOL finishShoeShine(); // 801012FC
 BOOL turnToTalkActor(); // 80101350: STATE_TURN_TO_TALKER (d_a_npc_out)
-BOOL beginDemo(); // 801013B4
+BOOL beginDemo(f32 x, f32 z); // 801013B4: x and z are unused
 u32 *getTimer(); // 801013F4
 void resetTimer(); // 80101408
 void reset(); // 80101424

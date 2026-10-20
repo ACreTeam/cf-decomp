@@ -190,12 +190,12 @@ void dMenuItemXX_c::unmarkSlot(int slot) {
 }
 
 // .text:0x648
-int dMenuItemXX_c::hitPocket(const mVec2_c *pos, float scale) {
+int dMenuItemXX_c::hitPocket(mVec2_c pos, float scale) {
     if (!dObjCursor_c::isVisible()) {
         return SLOT_NONE;
     }
     bool setOffset = !isFlag(FLAG_HOLD_ITEM);
-    mVec2_c p = *pos;
+    mVec2_c p = pos;
     int pocket = mItemWin.hitPocket(&p, setOffset, scale);
     if (pocket != -1) {
         return pocket;
@@ -204,19 +204,19 @@ int dMenuItemXX_c::hitPocket(const mVec2_c *pos, float scale) {
 }
 
 // .text:0x6E8
-int dMenuItemXX_c::hitButton(const mVec2_c *pos, float scale) {
+int dMenuItemXX_c::hitButton(mVec2_c pos, float scale) {
     if (!dObjCursor_c::isVisible()) {
         return SLOT_NONE;
     }
     HitInfo arg;
     arg.hit = nullptr;
     arg.scale = scale;
-    arg.pos = *pos;
+    arg.pos = pos;
     mItemWin.getLayout()->patrolPane(m2d::isInPane, m2d::isRectButton, &arg);
     if (arg.hit) {
         return m2d::getNameNumber(arg.hit->GetName(), 2) + SLOT_MONEY;
     }
-    mVec2_c p = *pos;
+    mVec2_c p = pos;
     if (mLtrWin.hitButton(&p, scale) != -1) {
         return SLOT_LETTER_BUTTON;
     }
@@ -229,12 +229,12 @@ int dMenuItemXX_c::hitButton(const mVec2_c *pos, float scale) {
 }
 
 // .text:0x80C
-int dMenuItemXX_c::hitLetter(const mVec2_c *pos, float scale) {
+int dMenuItemXX_c::hitLetter(mVec2_c pos, float scale) {
     if (!dObjCursor_c::isVisible()) {
         return SLOT_NONE;
     }
     bool setOffset = !isFlag(FLAG_HOLD_LETTER);
-    mVec2_c p = *pos;
+    mVec2_c p = pos;
     int letter = mLtrWin.hitLetter(&p, setOffset, scale);
     return letter == -1 ? SLOT_NONE : letter + SLOT_LETTER;
 }
@@ -785,7 +785,7 @@ bool dMenuItemXX_c::canDropPocket(int slot) {
 
 // .text:0x2C3C
 // Whether the item can be dropped on the ground here.
-bool dMenuItemXX_c::canDrop(dItem::Item item, int flag) {
+bool dMenuItemXX_c::canDrop(const dItem::Item &item, int flag) {
     if (item.getId() == dItem::ITEM_ID_NONE) {
         return false;
     }

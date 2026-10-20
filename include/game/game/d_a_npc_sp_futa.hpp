@@ -135,8 +135,7 @@ class dAcNpcSpFuta_c : public dAcNpcSp_c {
         enum { ANSWER_YES, ANSWER_NO };
         // dMuseum_c::getProgress percentages (setProgressMsg).
         enum { PROGRESS_LOW_MAX = 30, PROGRESS_MID_MAX = 70, PROGRESS_FULL = 100 };
-        // reqSelectItem: the menu, and its button label (a SYS_2D_menu message).
-        enum { MENU_DONATE = 0x2F, MENU_FOSSIL_CHECK = 0x30 };
+        // reqSelectItem: the button label (a SYS_2D_menu message).
         enum { ITEM_SEL_MSG_DONATE = 0x38, ITEM_SEL_MSG_GIVE = 0xE7 };
         // requestItemActEx: the effect index (0 / 1 are the eat-fish effects).
         enum { HAND_EFFECT_NONE = 2 };

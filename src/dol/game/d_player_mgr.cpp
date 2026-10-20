@@ -2869,8 +2869,8 @@ BOOL turnToTalkActor() {
     return changeState(STATE_TURN_TO_TALKER, PLAYER_INDEX_CURRENT);
 }
 
-// 801013B4
-BOOL beginDemo() {
+// 801013B4: the position (the menu passes where the item was caught) is unused.
+BOOL beginDemo(f32 x, f32 z) {
     if (getActor(PLAYER_INDEX_CURRENT) == NULL) {
         return FALSE;
     }

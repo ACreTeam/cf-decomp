@@ -161,9 +161,9 @@ int dMenuEdit_c::stateClose() {
         break;
     case dMenuMng_c::MENU_EDIT_DESIGN:
         if (isFlag(FLAG_SAVED)) {
-            dAcUitag::openMenuA(3);
+            dAcUitag::openMenuA(dAcUitag::MENU_A_DESIGN_NAME);
         } else {
-            dAcUitag::openMenuA(0);
+            dAcUitag::openMenuA(dAcUitag::MENU_A_DESIGN);
             dAcUitag::showTab();
         }
         break;

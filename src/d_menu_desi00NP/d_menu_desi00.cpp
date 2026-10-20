@@ -1262,7 +1262,7 @@ void dMenuDesi00_c::askOverwrite() {
 
 // .text:0x3870
 void dMenuDesi00_c::selectDesign() {
-    dAcUitag::openMenuA(2);
+    dAcUitag::openMenuA(dAcUitag::MENU_A_EDIT_DESIGN);
     dAcUitag::hideTab();
     int index = mDesign - SLOT_DESIGN;
     dMenuMng_c::setDesignIndex(index);

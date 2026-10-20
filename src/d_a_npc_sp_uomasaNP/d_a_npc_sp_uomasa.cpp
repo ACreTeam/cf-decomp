@@ -6,6 +6,7 @@
 #include <game/game/d_event.hpp>
 #include <game/game/d_fish_info.hpp>
 #include <game/game/d_item_sel.hpp>
+#include <game/game/d_menu_mng.hpp>
 #include <game/game/d_money.hpp>
 #include <game/game/d_msg_comp.hpp>
 #include <game/game/d_msg_rcpt.hpp>
@@ -933,7 +934,7 @@ void dAcNpcSpUomasa_c::talk_c::openFishSelect() {
     if (mpController->mNextMsgCode == dMsg::MSG_CODE_NONE) {
         mpController->setNextMsgCode(dMsg::MSG_CODE_INVALID);
     }
-    reqSelectItem(dANpcSpUomasa::isNotFish, ITEM_SEL_MSG_GIVE, MENU_SELECT_FISH,
+    reqSelectItem(dANpcSpUomasa::isNotFish, ITEM_SEL_MSG_GIVE, dMenuMng_c::MENU_ITEM_GIVE_FISH,
                   TRUE);
 }
 

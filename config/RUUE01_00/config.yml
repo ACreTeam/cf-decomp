@@ -991,21 +991,25 @@ modules:
   name: d_menu_item00NP
   symbols: config/RUUE01_00/d_menu_item00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_item00NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_item01NP.rel
   hash: 3194dcd9339807b405c9450e9223f2cc7c8d1844
   name: d_menu_item01NP
   symbols: config/RUUE01_00/d_menu_item01NP/symbols.txt
   splits: config/RUUE01_00/d_menu_item01NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_item02NP.rel
   hash: 8ff1865427c89cbb959667fb5ec1102ad77a8a2a
   name: d_menu_item02NP
   symbols: config/RUUE01_00/d_menu_item02NP/symbols.txt
   splits: config/RUUE01_00/d_menu_item02NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_item03NP.rel
   hash: fc906de2cca5c02795511ebd19d11fab1940df86
   name: d_menu_item03NP
   symbols: config/RUUE01_00/d_menu_item03NP/symbols.txt
   splits: config/RUUE01_00/d_menu_item03NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_item04NP.rel
   hash: 386f27d7ad4d01fb7b84a3eccbe3fd2c8ecc7b8d
   name: d_menu_item04NP
@@ -1021,6 +1025,7 @@ modules:
   name: d_menu_item06NP
   symbols: config/RUUE01_00/d_menu_item06NP/symbols.txt
   splits: config/RUUE01_00/d_menu_item06NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_inscNP.rel
   hash: a8e98b8113ea3df9ea6d78351dbc3eceeac21f8a
   name: d_menu_inscNP
