@@ -2,9 +2,6 @@
 #include <game/game/d_net_friend.hpp>
 #include <string.h>
 
-extern "C" BOOL fn_80320EA4();
-extern "C" BOOL fn_8033BC1C(const DWCFriendData *data);
-
 namespace dNetFriend {
 
 // 800E6804
@@ -96,7 +93,7 @@ void Data_c::updateSession(int state, Error_c *error, DWCUserData *user,
     mInfo.mUpdatingFriends = updating;
     mInfo.mMicActive = micActive && !micFailed;
     mInfo.mMicUnavailable = micFailed;
-    mInfo.mMatchReady = fn_80320EA4() != 0;
+    mInfo.mMatchReady = DWC_GetSuspendMatch() != 0;
     if (user) {
         memcpy(&mUserData, user, sizeof(mUserData));
     }
@@ -123,7 +120,7 @@ void Data_c::updateSession(int state, Error_c *error, DWCUserData *user,
             } else {
                 mInfo.mFriends[i].mProfileId = 0;
             }
-            if (fn_8033BC1C(friendData)) {
+            if (DWC_IsBuddyFriendData(friendData)) {
                 mInfo.mFriends[i].mFlags |= STATUS_BUDDY;
             } else {
                 mInfo.mFriends[i].mFlags &= ~STATUS_BUDDY;

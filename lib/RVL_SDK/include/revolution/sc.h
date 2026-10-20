@@ -66,6 +66,7 @@ BOOL SCGetProductGameRegionString(char* buf, u32 sz);
 s8 SCGetProductGameRegion();
 
 BOOL SCGetProductSNString(char* buf, u32 sz);
+BOOL SCGetProductSN(u32* sn);
 
 /* System Configuration (SYSCONF) */
 

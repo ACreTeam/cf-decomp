@@ -3532,15 +3532,14 @@ lib/dwc/common/dwc_report.c:
 	.sbss       start:0x8074F160 end:0x8074F168
 
 lib/dwc/match/dwc_common.c:
-	.text       start:0x8031A15C end:0x8031A724
+	.text       start:0x8031A15C end:0x8031A508
 	.data       start:0x805370B0 end:0x805370C0
 	.bss        start:0x806AA4A0 end:0x806AA4B8
-	.sdata      start:0x8074CEC0 end:0x8074CEC8
 
 lib/dwc/match/dwc_friend.c:
-	.text       start:0x8031A724 end:0x8031C430
+	.text       start:0x8031A508 end:0x8031C430
 	.data       start:0x805370C0 end:0x80537660
-	.sdata      start:0x8074CEC8 end:0x8074CED0
+	.sdata      start:0x8074CEC0 end:0x8074CED0
 	.sbss       start:0x8074F168 end:0x8074F180
 
 lib/dwc/match/dwc_login.c:
@@ -3562,22 +3561,29 @@ lib/dwc/match/dwc_match.c:
 	.sdata      start:0x8074CEF8 end:0x8074CFE8
 	.sbss       start:0x8074F190 end:0x8074F1B0
 
+lib/dwc/match/dwc_reliable.c:
+	.text       start:0x8033914C end:0x80339434
+	.data       start:0x8053B490 end:0x8053B4C8
+	.sbss       start:0x8074F1B0 end:0x8074F1B8
+
 lib/dwc/match/dwc_transport.c:
-	.text       start:0x8033914C end:0x8033AD24
-	.data       start:0x8053B490 end:0x8053BA58
+	.text       start:0x80339434 end:0x8033AD24
+	.data       start:0x8053B4C8 end:0x8053BA58
 	.sdata      start:0x8074CFE8 end:0x8074CFF8
-	.sbss       start:0x8074F1B0 end:0x8074F1C0
+	.sbss       start:0x8074F1B8 end:0x8074F1C0
 
 lib/dwc/common/dwc_nonport.c:
-	.text       start:0x8033AD24 end:0x8033B6B0
-	.data       start:0x8053BA58 end:0x8053BB1C
-	.sbss       start:0x8074F1C0 end:0x8074F1C4
-
-lib/dwc/util/dwc_util.c:
-	.text       start:0x8033B6B0 end:0x8033BBDC
-	.data       start:0x8053BB1C end:0x8053BB68 align:4
+	.text       start:0x8033AD24 end:0x8033B7D4
+	.data       start:0x8053BA58 end:0x8053BB68
 	.sdata      start:0x8074CFF8 end:0x8074D000
-	.sbss       start:0x8074F1C4 end:0x8074F1D8 align:4
+	.sbss       start:0x8074F1C0 end:0x8074F1D0
+
+lib/dwc/common/dwci_np_math.c:
+	.text       start:0x8033B7D4 end:0x8033BB8C
+
+lib/dwc/cfriend/dwc_cfriend.c:
+	.text       start:0x8033BB8C end:0x8033BBDC
+	.sbss       start:0x8074F1D0 end:0x8074F1D8
 
 lib/dwc/account/dwc_account.c:
 	.text       start:0x8033BBDC end:0x8033D0AC

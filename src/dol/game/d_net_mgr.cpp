@@ -443,7 +443,7 @@ BOOL dNetMgr_c::getFriendFlag(int idx) {
 }
 
 BOOL dNetMgr_c::isUserDataValid(const DWCUserData *userData) {
-    if (DWC_CheckUserData(userData) && fn_8033C600(userData)) {
+    if (DWC_CheckUserData(userData) && DWC_IsCompatibleUserData(userData)) {
         return TRUE;
     }
     return FALSE;

@@ -364,7 +364,7 @@ void Session_c::execute() {
     }
     if (mKeepaliveEnabled && ++mKeepaliveTimer >= KEEPALIVE_FRAMES) {
         mKeepaliveTimer = 0;
-        if (fn_8031ED80()) {
+        if (DWC_IsServerMyself()) {
             for (int aid = 0; aid < MEMBER_COUNT; aid++) {
                 if (DWC_IsValidAID(aid)) {
                     if (mKeepaliveCount[aid] >= KEEPALIVE_LIMIT) {
@@ -505,7 +505,7 @@ void Session_c::clearBusy() {
 BOOL Session_c::setMatchClosed(BOOL closed) {
     if ((u32)closed != mMatchClosed && !mChangingMatchClosed &&
         (mState >= STATE_CONNECTED ||
-         (mState == STATE_MATCHING && fn_8031ED80()))) {
+         (mState == STATE_MATCHING && DWC_IsServerMyself()))) {
         if (DWC_RequestSuspendMatchAsync(closed, onMatchClosed, 0)) {
             mMatchClosed = closed;
             mChangingMatchClosed = 1;

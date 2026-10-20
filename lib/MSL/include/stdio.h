@@ -35,6 +35,8 @@ int vsnprintf(char* s, size_t n, const char* format, va_list arg);
 #define _IOLBF 1
 #define _IOFBF 2
 
+#define FILENAME_MAX 256
+
 #ifdef __cplusplus
 }
 #endif

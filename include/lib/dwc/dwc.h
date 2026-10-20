@@ -96,8 +96,8 @@ int DWC_CloseConnectionHard(u8 aid);
 int DWC_GetNumConnectionHost(void);
 BOOL DWC_IsValidAID(u8 aid);
 u8 DWC_GetServerAID(void);
-// Checks the current server role; the original SDK name is not established.
-BOOL fn_8031ED80(void);
+// TRUE if this console is the matchmaking server
+BOOL DWC_IsServerMyself(void);
 
 // match/dwc_match.c
 BOOL DWC_CancelMatching(void);
@@ -105,6 +105,7 @@ int DWC_AddMatchKeyString(int keyId, const char *keyName, const char *value);
 int DWC_GetLastMatchingType(void);
 BOOL DWC_RequestSuspendMatchAsync(BOOL suspend, DWCStopSCCallback callback,
                                   void *param);
+BOOL DWC_GetSuspendMatch(void);
 
 // match/dwc_common.c and dwc_transport.c
 u8 DWC_GetFriendStatusDataSC(DWCFriendData *friendData, u8 *maxEntry,
@@ -137,6 +138,8 @@ int DWC_GetState(void);
 void DWC_SetRecvBuffer(u8 aid, void *buf, u32 size); // receive buffer for aid
 
 // account/dwc_account.c
+// TRUE if the data holds a profile ID with the buddy (mutual friend) flag set
+BOOL DWC_IsBuddyFriendData(const DWCFriendData *friendData);
 // kind: 2 friend key, 3 registered, ...
 int DWC_GetFriendDataType(const DWCFriendData *friendData);
 void DWC_ClearBuddyFlagFriendData(
@@ -148,7 +151,7 @@ BOOL DWC_IsValidFriendData(const DWCFriendData *friendData);
 void DWC_CreateUserData(DWCUserData *userData);
 BOOL DWC_CheckUserData(const DWCUserData *userData);
 // Checks the saved game code against the code supplied to DWC_Init.
-BOOL fn_8033C600(const DWCUserData *userData);
+BOOL DWC_IsCompatibleUserData(const DWCUserData *userData);
 void DWC_ClearDirtyFlag(DWCUserData *userData);
 // friend key of the data
 u64 DWC_GetFriendKey(const DWCFriendData *friendData);

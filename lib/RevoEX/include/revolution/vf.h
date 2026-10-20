@@ -9,6 +9,7 @@ extern "C" {
 
 void VFInit();
 void VFInitEx(void* heap_start_address, u32 size);
+void VFFinalize();
 
 VFErr VFIsAvailable();
 
