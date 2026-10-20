@@ -3016,37 +3016,37 @@ config.libs = [
     Rel(
         "d_menu_map00NP",
         [
-            Object(NonMatching, "d_menu_map00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_map00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_map00NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_map00NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_map00NP/d_menu_map00.cpp"),
+            Object(Matching, "d_menu_map00NP/d_menu_map00.cpp"),
         ],
     ),
     Rel(
         "d_menu_map01NP",
         [
-            Object(NonMatching, "d_menu_map01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_map01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_map01NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_map01NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_map01NP/d_menu_map01.cpp"),
+            Object(Matching, "d_menu_map01NP/d_menu_map01.cpp"),
         ],
     ),
     Rel(
         "d_menu_map02NP",
         [
-            Object(NonMatching, "d_menu_map02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_map02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_map02NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_map02NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_map02NP/d_menu_map02.cpp"),
+            Object(Matching, "d_menu_map02NP/d_menu_map02.cpp"),
         ],
     ),
     Rel(
         "d_menu_map03NP",
         [
-            Object(NonMatching, "d_menu_map03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_map03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_map03NP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_map03NP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_map03NP/d_menu_map03.cpp"),
+            Object(Matching, "d_menu_map03NP/d_menu_map03.cpp"),
         ],
     ),
     Rel(

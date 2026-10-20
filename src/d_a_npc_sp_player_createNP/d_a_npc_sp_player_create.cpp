@@ -416,7 +416,7 @@ void dAcNpcSpPlayerCreate_c::talk_c::onMessageEnd(int kind) {
         reqMenu0B(0);
         mRequestEndMethod = &talk_c::checkName;
         break;
-    case END_REQ_GIVE_MAP:
+    case END_REQ_SHOW_MAP:
         if (isCurrentMethod(&talk_c::executeCreateSave)) {
             mpController->mLock = 1;
         }

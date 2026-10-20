@@ -133,7 +133,7 @@ void dMenuFriend04_c::subStateMain() {
     dMenuFriend_c::clearTabFocus();
     setSelect(mCursor, FALSE);
     dMenuFriend_c::hideTutorial();
-    int tab = dAcUitag::getTabInput(6, FALSE);
+    int tab = dAcUitag::getTabInput(dAcUitag_c::TAB_FRIEND, FALSE);
     if (tab != CURSOR_NONE && selectUitagTab(tab, TRUE)) {
         return;
     }

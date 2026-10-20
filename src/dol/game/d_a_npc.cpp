@@ -8703,16 +8703,16 @@ u32 dAcNpc_c::recept_c::fn_80029A84() {
     return 0;
 }
 
-u32 dAcNpc_c::recept_c::getMenuPosX() {
+u32 dAcNpc_c::recept_c::getMenuBlockX() {
     if (isMenuInvalid() == FALSE) {
-        return dMenuMng_c::getPickedPosX();
+        return dMenuMng_c::getPickedBlockX();
     }
     return 0;
 }
 
-u32 dAcNpc_c::recept_c::getMenuPosZ() {
+u32 dAcNpc_c::recept_c::getMenuBlockZ() {
     if (isMenuInvalid() == FALSE) {
-        return dMenuMng_c::getPickedPosZ();
+        return dMenuMng_c::getPickedBlockZ();
     }
     return 0;
 }
@@ -9403,7 +9403,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = TRUE;
                 break;
             case 0x05:
-                ok = dMenuMng_c::openMap01();
+                ok = dMenuMng_c::openPreviewMap();
                 break;
             case 0x06:
                 ok = dMenuMng_c::openMenu(0x3D);
@@ -9482,7 +9482,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x71);
                 break;
             case 0x1F:
-                ok = dMenuMng_c::openMenu(0x36);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_BRIDGE_MAP);
                 break;
             case 0x20:
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DONATION);
@@ -9528,7 +9528,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_INPUT_SONG);
                 break;
             case 0x2E:
-                ok = dMenuMng_c::openMenu(0x37);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_HOUSE_MAP);
                 break;
             case 0x2F:
                 ok = dMenuMng_c::openInput(dMenuMng_c::MENU_INPUT_CATCHPHRASE, mReq.mpInputBuf, 10);

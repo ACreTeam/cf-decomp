@@ -1044,21 +1044,25 @@ modules:
   name: d_menu_map00NP
   symbols: config/RUUE01_00/d_menu_map00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_map00NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_map01NP.rel
   hash: 6998d59fc9c2eed929e581b5715c74c1d7e704ed
   name: d_menu_map01NP
   symbols: config/RUUE01_00/d_menu_map01NP/symbols.txt
   splits: config/RUUE01_00/d_menu_map01NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_map02NP.rel
   hash: fb2ea4ee30472170ad0bf78311e0e9d816d3b5a3
   name: d_menu_map02NP
   symbols: config/RUUE01_00/d_menu_map02NP/symbols.txt
   splits: config/RUUE01_00/d_menu_map02NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_map03NP.rel
   hash: d9a6e724cf37e32e09a2b527567e8bdb2a90bf24
   name: d_menu_map03NP
   symbols: config/RUUE01_00/d_menu_map03NP/symbols.txt
   splits: config/RUUE01_00/d_menu_map03NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_melodyNP.rel
   hash: 6cadad201205d47a772306137d44bfca93a2dc94
   name: d_menu_melodyNP

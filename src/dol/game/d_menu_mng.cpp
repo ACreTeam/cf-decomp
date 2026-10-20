@@ -488,8 +488,8 @@ BOOL dMenuMng_c::openInput(u8 menu, const u16 *str, int len) {
     return TRUE;
 }
 
-BOOL dMenuMng_c::openMap01() {
-    return dMenuMng_c::open(dMenuMng_c::MENU_MAP01, FALSE);
+BOOL dMenuMng_c::openPreviewMap() {
+    return dMenuMng_c::open(dMenuMng_c::MENU_PREVIEW_MAP, FALSE);
 }
 
 BOOL dMenuMng_c::openAuctionBid(u32 minimum) {
@@ -604,15 +604,15 @@ void dMenuMng_c::setLostTakenItem(u16 arg) {
     s_C104 = arg;
 }
 
-u32 dMenuMng_c::getPickedPosX() {
+u32 dMenuMng_c::getPickedBlockX() {
     return s_picked;
 }
 
-u32 dMenuMng_c::getPickedPosZ() {
+u32 dMenuMng_c::getPickedBlockZ() {
     return s_EA8C;
 }
 
-void dMenuMng_c::setPickedPos(u32 a, u32 b) {
+void dMenuMng_c::setPickedBlock(u32 a, u32 b) {
     s_picked = a;
     s_EA8C = b;
 }

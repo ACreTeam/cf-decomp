@@ -28,6 +28,8 @@ public:
     };
 
     enum { POCKET_NUM = 15 };
+    // What setResult reports to the menu's opener (e.g. Pelly's bridge map).
+    enum RESULT_e { RESULT_CANCEL, RESULT_OK };
 
     virtual int create();
     virtual int doDelete();
@@ -72,16 +74,16 @@ public:
     static BOOL openTownNameInput();   // 8019AE00
     static BOOL openSayInput();        // 8019AE2C: Resetti's "Say it!"
     static BOOL openMessageInput();    // 8019AE58
-    static BOOL openMap01();           // 8019AEE4
+    static BOOL openPreviewMap(); // 8019AEE4: the town map Rover shows the new player on the bus (REL d_menu_map01NP)
     // What the player took in the lost and found menu (REL d_menu_item05NP): how many, and the item if one.
     static u32 getLostTakenNum();             // 8019B250
     static void setLostTakenNum(u32 num);     // 8019B258
     static u16 getLostTakenItem();            // 8019B260
     static void setLostTakenItem(u16 item);   // 8019B268
-    // The spot picked on the map (REL d_menu_map02NP), e.g. the bridge Pelly takes votes for.
-    static u32 getPickedPosX();               // 8019B270
-    static u32 getPickedPosZ();               // 8019B278
-    static void setPickedPos(u32 x, u32 z);   // 8019B280
+    // The block picked on the bridge map (REL d_menu_map02NP): Pelly takes it as the vote for a new bridge.
+    static u32 getPickedBlockX();             // 8019B270
+    static u32 getPickedBlockZ();             // 8019B278
+    static void setPickedBlock(u32 x, u32 z); // 8019B280
     // The post office hand-in menus (REL d_menu_mslctNP), with a cleared selection mask.
     static BOOL openPostTown();      // 8019B29C
     static BOOL openPostOtherTown(); // 8019B2C4
@@ -120,6 +122,7 @@ public:
 
     // openMenu / openItemSel menus (only the ones named so far).
     enum {
+        MENU_MAP00 = 0x06,   // the town map from its tab (REL d_menu_map00NP)
         MENU_KEYTEST = 0x0C, // the keyboard test menu (REL d_menu_keytestNP)
         MENU_DESIGN = 0x0D,        // the design menu from its tab (REL d_menu_desi00)
         MENU_DESIGN_SELECT = 0x0E, // the design menu for the design in getDesignIndex
@@ -151,7 +154,9 @@ public:
         MENU_SWAP_INSECT = 0x27,  // ... a caught insect
         MENU_SWAP_FISH = 0x28,    // ... a caught fish
         MENU_ITEM_SELECT = 0x32,
-        MENU_MAP01 = 0x35,   // REL d_menu_map01NP
+        MENU_PREVIEW_MAP = 0x35, // the town map Rover shows the new player on the bus (REL d_menu_map01NP)
+        MENU_BRIDGE_MAP = 0x36, // the town map to pick the new bridge's block, opened by Pelly (REL d_menu_map02NP)
+        MENU_HOUSE_MAP = 0x37, // the players' houses on the town map, opened by Pelly (REL d_menu_map03NP)
         MENU_PHOTO01 = 0x39, // REL d_menu_photo01NP
         MENU_MUSEUM = 0x3C, // the museum's donation list (REL d_menu_museumNP)
         MENU_FRIEND_TOWN = 0x55, // "Go to which town?": the online friends' towns (REL d_menu_friend03NP)

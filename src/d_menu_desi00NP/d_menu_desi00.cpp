@@ -112,7 +112,7 @@ void dMenuDesi00_c::subMain() {
         setHighlight(mCursor, FALSE);
         mCursor = SLOT_NONE;
     }
-    int tab = dAcUitag::getTabInput(1, 0);
+    int tab = dAcUitag::getTabInput(dAcUitag_c::TAB_DESIGN, FALSE);
     if (tab != -1 && selectTab(tab, TRUE)) {
         return;
     }

@@ -1805,8 +1805,8 @@ void dAcNpcSpPerikoBase_c::talk_c::endBridgeMap() {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     if (lbl_8074EA7D == 1) {
         player->setFlag0(PRIVATE_FLAG0_PUBLIC_WORKS_VOTED);
-        voteZ = getMenuPosZ();
-        player->mBridgeVoteX = getMenuPosX();
+        voteZ = getMenuBlockZ();
+        player->mBridgeVoteX = getMenuBlockX();
         player->mBridgeVoteY = voteZ;
         setNextMessage(MSG_BRIDGE_VOTED, LABEL_OWN);
     } else {

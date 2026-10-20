@@ -82,7 +82,7 @@ class dAcNpcSpPlayerCreate_c : public dAcNpcSp_c,
             END_REQ_TIME_MENU = 0x0B, // reqMenu06
             END_REQ_TOWN_MENU = 0x10, // reqMenu0C
             END_REQ_NAME_MENU = 0x11, // reqMenu0B
-            END_REQ_GIVE_MAP = 0x12,  // reqMenu05
+            END_REQ_SHOW_MAP = 0x12,  // reqMenu05: the town map preview (MENU_PREVIEW_MAP)
         };
 
         talk_c(dAcNpcSpPlayerCreate_c *npc); // 0x1324

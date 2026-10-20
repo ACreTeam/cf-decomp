@@ -11,19 +11,20 @@
 
 class dAcUitag_c : public fBase_c {
 public:
-    enum { TAB_NUM = 8, ACTION_NUM = 4 };
+    // The menu bar tabs (tab_00); l_tabMenus holds the menu each one opens.
+    enum Tab_e {
+        TAB_ITEM,   // the pockets (REL d_menu_item00NP)
+        TAB_DESIGN, // the design menu (REL d_menu_desi00)
+        TAB_INSC,   // the insect and fish encyclopedia (REL d_menu_inscNP)
+        TAB_MAP,    // the town map (REL d_menu_map00NP)
+        TAB_CHAT,   // the chat menu (REL d_menu_chat)
+        TAB_PHOTO,  // the photo menu (REL d_menu_photoNP)
+        TAB_FRIEND, // the friend menu (REL d_menu_friendNP and its sub menus)
+        TAB_CLOSE,  // only shown while a menu is open; selecting it closes the menu
+        TAB_NUM,
+    };
 
-    // The special tab (its icon is only shown while a menu is open; selecting it closes the menu).
-    enum { TAB_CLOSE = 7 };
-
-    // The tab of the insect and fish encyclopedia (REL d_menu_inscNP).
-    enum { TAB_INSC = 2 };
-
-    // The tab of the chat menu (REL d_menu_chat).
-    enum { TAB_CHAT = 4 };
-
-    // The tab of the friend menu (REL d_menu_friendNP and its sub menus).
-    enum { TAB_FRIEND = 6 };
+    enum { ACTION_NUM = 4 };
 
     // mTabBtnAnm kinds (l_tabBtnAnms).
     enum TabBtnAnm_e {
