@@ -866,6 +866,7 @@ modules:
 - object: files/rels/d_organ_balloonNP.rel
   hash: 574a896a6d7ac34bb22edac1c7af8092899ef18a
   name: d_organ_balloonNP
+  force_active: [__global_destructor_chain]
   symbols: config/RUUE01_00/d_organ_balloonNP/symbols.txt
   splits: config/RUUE01_00/d_organ_balloonNP/splits.txt
 - object: files/rels/d_menu_bankNP.rel

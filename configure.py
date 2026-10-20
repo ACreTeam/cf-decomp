@@ -2737,19 +2737,19 @@ config.libs = [
     Rel(
         "d_countdown_flagNP",
         [
-            Object(NonMatching, "d_countdown_flagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_countdown_flagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_countdown_flagNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_countdown_flagNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_countdown_flagNP/d_countdown_flag.cpp"),
+            Object(Matching, "d_countdown_flagNP/d_countdown_flag.cpp"),
         ],
     ),
     Rel(
         "d_organ_balloonNP",
         [
-            Object(NonMatching, "d_organ_balloonNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_organ_balloonNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_organ_balloonNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_organ_balloonNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_organ_balloonNP/d_organ_balloon.cpp"),
+            Object(Matching, "d_organ_balloonNP/d_organ_balloon.cpp"),
         ],
     ),
     Rel(
