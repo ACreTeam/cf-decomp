@@ -180,7 +180,7 @@ enum dNetPacket_e {
     NET_PACKET_POST_SYNC = 0x2D,
     // dPostOffice::sendMail (dMail_c) -> dPostOffice::onMailPacket
     NET_PACKET_MAIL = 0x2E,
-    // d_notice dNotice::sendAddNotice: a dNotice_c (0x19A bytes) added to the notice
+    // d_notice dNotice::sendAddNotice: a dNoticeData_c (0x19A bytes) added to the notice
     // board
     NET_PACKET_NOTICE_ADD = 0x2F,
     // d_notice dNotice::sendRemoveNotice: a notice index removed from the board

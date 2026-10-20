@@ -232,7 +232,7 @@ int dTime_c::getNthWeekday(int year, int month, int wday, int nth) {
 }
 
 // 8016D8F0
-u8 dTime_c::getDaysInMonth(int year, int month) {
+int dTime_c::getDaysInMonth(int year, int month) {
     if (isLeapYear(year)) {
         return sDaysInMonthLeap[month];
     }

@@ -927,7 +927,7 @@ BOOL dAcUitag::isPhotoBlocked() {
         !dDemo::isType(dDemo::TYPE_KEYBOARD) && !dDemo::isType(dDemo::TYPE_9)) {
         return TRUE;
     }
-    if (dMenuMng_c::isFlag(2)) {
+    if (dMenuMng_c::isFlag(dMenuMng_c::FLAG_PHOTO)) {
         return TRUE;
     }
     return dScene::isCurrentSceneAttr(dScene::SCENE_ATTR_DEMO) != FALSE;

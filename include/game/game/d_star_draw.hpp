@@ -67,6 +67,7 @@ public:
     virtual void drawXlu(); // 80164D14
 
     void setAngle(mAng angle) { mAngle = angle; }
+    static const line_c *getLine(int line) { return &sLines[line]; }
 
     static BOOL isStarFree(int star, const dStarDraw_c *draw);                         // 80163AA0
     static BOOL isStarSelectable(int star, const dStarDraw_c *draw);                   // 80163C14

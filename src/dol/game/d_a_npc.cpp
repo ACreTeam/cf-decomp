@@ -9406,7 +9406,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openPreviewMap();
                 break;
             case 0x06:
-                ok = dMenuMng_c::openMenu(0x3D);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_SET_CLOCK);
                 break;
             case 0x07:
                 mReqStep = 3;
@@ -9416,7 +9416,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x3A);
                 break;
             case 0x09:
-                ok = dMenuMng_c::openMenu(0x3C);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_MUSEUM);
                 break;
             case 0x0A:
                 ok = dMenuMng_c::openMenu(0x50);
@@ -9437,28 +9437,28 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openWriteSelf();
                 break;
             case 0x10:
-                ok = dMenuMng_c::openPhoto01();
+                ok = dMenuMng_c::openPostPhoto();
                 break;
             case 0x11:
                 ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_TURNIP_COUNT);
                 break;
             case 0x12:
-                ok = dMenuMng_c::openMenu(0x65);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DESIGN_TAKE);
                 break;
             case 0x13:
-                ok = dMenuMng_c::openMenu(0x68);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DESIGN_DISPLAY);
                 break;
             case 0x14:
-                ok = dMenuMng_c::openMenu(0x69);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DESIGN_SWAP);
                 break;
             case 0x15:
-                ok = dMenuMng_c::openMenu(0x6A);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DESIGN_PRO);
                 break;
             case 0x16:
-                ok = dMenuMng_c::openMenu(0x66);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_TOWN_FLAG_DESIGN);
                 break;
             case 0x17:
-                ok = dMenuMng_c::openMenu(0x67);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DESIGN_GIFT);
                 break;
             case 0x18:
                 ok = dMenuMng_c::openMenu(0x6C);
@@ -9470,13 +9470,13 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openSayInput();
                 break;
             case 0x1B:
-                ok = dMenuMng_c::openMenu(0x5F);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_LOST_AND_FOUND);
                 break;
             case 0x1C:
-                ok = dMenuMng_c::openMenu(0x3E);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_BIRTHDAY);
                 break;
             case 0x1D:
-                ok = dMenuMng_c::openMenu(0x63);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_POST_LETTERS);
                 break;
             case 0x1E:
                 ok = dMenuMng_c::openMenu(0x71);
@@ -9503,17 +9503,17 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openPostFuture();
                 break;
             case 0x26:
-                ok = dMenuMng_c::openMenu(0x3F);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_FUTURE_MAIL_DATE);
                 break;
             case 0x27:
-                ok = dMenuMng_c::openMenu(0x40);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_APPOINTMENT_TIME);
                 break;
             case 0x28:
-                ok = dMenuMng_c::openMenu(0x72);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_STAR_SIGN_NEW);
                 break;
             case 0x29:
                 dMenuMng_c::setPickedStarSign(mReq.mMenuArgD0);
-                ok = dMenuMng_c::openMenu(0x73);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_STAR_SIGN_EDIT);
                 break;
             case 0x2A:
                 ok = dMenuMng_c::openMenu(0x74);
@@ -9540,7 +9540,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openAuctionBid(mReq.mMenuArgE0);
                 break;
             case 0x32:
-                ok = dMenuMng_c::openMenu(0x11);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_EDIT_FACE);
                 break;
             case 0x33:
                 ok = dMenuMng_c::openInput(dMenuMng_c::MENU_INPUT_NICKNAME, mReq.mpInputBuf, 8);

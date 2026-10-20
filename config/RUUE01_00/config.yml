@@ -840,6 +840,7 @@ modules:
   name: d_s_selectNP
   symbols: config/RUUE01_00/d_s_selectNP/symbols.txt
   splits: config/RUUE01_00/d_s_selectNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_s_stageNP.rel
   hash: a07d9eba811fbb2f315cb70423b3223f1e9cf09d
   name: d_s_stageNP
@@ -1102,41 +1103,49 @@ modules:
   name: d_menu_noticeNP
   symbols: config/RUUE01_00/d_menu_noticeNP/symbols.txt
   splits: config/RUUE01_00/d_menu_noticeNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_notice00NP.rel
   hash: 5456d75a84ade70ae2b7cd886f244f56d7b5350b
   name: d_menu_notice00NP
   symbols: config/RUUE01_00/d_menu_notice00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_notice00NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_notice01NP.rel
   hash: e154b7037e14aeead42060e4fb47ad9793d3c285
   name: d_menu_notice01NP
   symbols: config/RUUE01_00/d_menu_notice01NP/symbols.txt
   splits: config/RUUE01_00/d_menu_notice01NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_number00NP.rel
   hash: 78eb5e89f2b34f3a0af1708f30e6ffb4c16a94d6
   name: d_menu_number00NP
   symbols: config/RUUE01_00/d_menu_number00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_number00NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_paperNP.rel
   hash: 1ba04152167d30d1c6297ed959466c0f2e7b362a
   name: d_menu_paperNP
   symbols: config/RUUE01_00/d_menu_paperNP/symbols.txt
   splits: config/RUUE01_00/d_menu_paperNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_photoNP.rel
   hash: 284c6c4281732379caca17341479f1847354044d
   name: d_menu_photoNP
   symbols: config/RUUE01_00/d_menu_photoNP/symbols.txt
   splits: config/RUUE01_00/d_menu_photoNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_photo01NP.rel
   hash: e3f371733f8eac914564ee06ab5cd9c5a5402f5d
   name: d_menu_photo01NP
   symbols: config/RUUE01_00/d_menu_photo01NP/symbols.txt
   splits: config/RUUE01_00/d_menu_photo01NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_pointNP.rel
   hash: e64d844266b88b0e0b6f343c1def92a2ff079661
   name: d_menu_pointNP
   symbols: config/RUUE01_00/d_menu_pointNP/symbols.txt
   splits: config/RUUE01_00/d_menu_pointNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_post00NP.rel
   hash: 0dbdc8c6f9e2062cb4d7b25fb00458a7ecc4d203
   name: d_menu_post00NP
@@ -1152,16 +1161,19 @@ modules:
   name: d_menu_star00NP
   symbols: config/RUUE01_00/d_menu_star00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_star00NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_star01NP.rel
   hash: 3c7dab96b6ff0728d4980e89d5b76d7597c0e1f3
   name: d_menu_star01NP
   symbols: config/RUUE01_00/d_menu_star01NP/symbols.txt
   splits: config/RUUE01_00/d_menu_star01NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_time00NP.rel
   hash: 5af78db34aa2e3bedea13c4b3ed660c002456d98
   name: d_menu_time00NP
   symbols: config/RUUE01_00/d_menu_time00NP/symbols.txt
   splits: config/RUUE01_00/d_menu_time00NP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_writeNP.rel
   hash: da0814db32f54ff1ec523e63d03a1faea94efe3e
   name: d_menu_writeNP

@@ -19,6 +19,18 @@ public:
         WIN_ANM_OUT_BLACK,
     };
 
+    // setColor (the dialog window animation).
+    enum COLOR_e {
+        COLOR_ORANGE,
+        COLOR_RED,
+    };
+
+    // The text position (fitLines).
+    enum POS_e {
+        POS_UPPER,
+        POS_CENTER,
+    };
+
     enum FLAG_e {
         FLAG_DRAW = 0x1,
         FLAG_CALC = 0x2,

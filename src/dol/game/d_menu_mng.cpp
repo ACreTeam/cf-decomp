@@ -721,8 +721,8 @@ BOOL dMenuMng_c::openWriteSelf() {
     return dMenuMng_c::open(dMenuMng_c::MENU_WRITE_SELF, FALSE);
 }
 
-BOOL dMenuMng_c::openPhoto01() {
-    return dMenuMng_c::open(dMenuMng_c::MENU_PHOTO01, FALSE);
+BOOL dMenuMng_c::openPostPhoto() {
+    return dMenuMng_c::open(dMenuMng_c::MENU_POST_PHOTO, FALSE);
 }
 
 void dMenuMng_c::setFriendIdx(int idx) {

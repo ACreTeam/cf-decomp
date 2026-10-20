@@ -28,7 +28,7 @@ void postNotice(u16 msgId, const char *group, const dTime_c *date, const void *s
 
     sWord.clear();
     dLetter::loadBbsText(&sWord, msgId, group);
-    dNotice_c note;
+    dNoticeData_c note;
 
     dTime_c time = *dTime_c::getCurrent();
     if (date != NULL) {
@@ -50,7 +50,7 @@ void postNotice(u16 msgId, const char *group, const dTime_c *date, const void *s
 }
 
 // 800EBCF4
-void addNotice(const dNotice_c *note) {
+void addNotice(const dNoticeData_c *note) {
     dSaveData_c::getTown()->mNoticeBoard.add(note);
     sNoteCount++;
 }
@@ -61,7 +61,7 @@ void removeNotice(u8 idx) {
 }
 
 // 800EBD78
-dNotice_c *getNotice(int idx) {
+dNoticeData_c *getNotice(int idx) {
     return dSaveData_c::getRaw()->mNoticeBoard.getNotice(idx);
 }
 
@@ -296,8 +296,8 @@ void sortNewNotices() {
 
 // 800ECCB4
 void receiveAddNotice(int unused, const void *data) {
-    dNotice_c note;
-    cLib::memCpy(&note, data, sizeof(dNotice_c));
+    dNoticeData_c note;
+    cLib::memCpy(&note, data, sizeof(dNoticeData_c));
     addNotice(&note);
 }
 

@@ -7,7 +7,7 @@
 #include <types.h>
 #include <game/game/d_date.hpp>
 
-class dNotice_c;
+class dNoticeData_c;
 
 // ---------------------------------------------------------------------------
 // Bulletin board posting (800EBB24..800ECD90).
@@ -16,9 +16,9 @@ namespace dNotice {
 
 // Posts a BBS notice: message `msgId` from group `group` dated `date` (NULL = now).
 void postNotice(u16 msgId, const char *group, const dTime_c *date, const void *sender); // 800EBB24
-void addNotice(const dNotice_c *note); // 800EBCF4: add a note to the town board
+void addNotice(const dNoticeData_c *note); // 800EBCF4: add a note to the town board
 void removeNotice(u8 idx); // 800EBD3C
-dNotice_c *getNotice(int idx); // 800EBD78
+dNoticeData_c *getNotice(int idx); // 800EBD78
 int getNoticeCount(); // 800EBDB4: note count
 BOOL hasUnreadNotice(); // 800EBDE0
 void setNoticeRead(int idx); // 800EBEA4

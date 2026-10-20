@@ -92,7 +92,7 @@ class Window_c {
     void setHeldMail(const dMail_c *mail);                     // .text:0x934
     dMail_c *getHeldMail();                                    // .text:0x974
     void clearHeldMail();                                      // .text:0x97C
-    void fn_5_9BC();                        // .text:0x9BC: empty, no callers
+    m2d::ResAccIf_c *getRes();              // .text:0x9BC
     bool isMoveEnd();                       // .text:0x9C0
     bool calcMove();                        // .text:0x9C8
     void startMove(const mVec2_c &pos);     // .text:0x9D0

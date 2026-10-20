@@ -192,6 +192,10 @@ enum MenuA_e {
 enum MenuB_e {
     MENU_B_ITEM_SELECT = 1, // menu 0x2B: the pocket picker (after dMenuMng_c::setPocketMask)
     MENU_B_MUSIC = 2,       // menu 0x5D: the K.K. music list
+    MENU_B_READ_8 = 3,       // menu 0x08: read a letter (REL d_menu_paperNP)
+    MENU_B_READ_9 = 4,       // menu 0x09: read a letter
+    MENU_B_AFTER_READ_8 = 5, // menu 0x62: opened when menu 0x08 closes
+    MENU_B_AFTER_READ_9 = 6, // menu 0x64: opened when menu 0x09 closes
     MENU_B_EDIT_PRO = 7, // menu 0x10: the pro design editor
 };
 

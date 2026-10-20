@@ -6,14 +6,20 @@
 
 namespace dScreenshot {
 
-// The meanings of result values 4, 6, 7 and 8 are not yet identified.
+// The meanings of result values 4, 6, 7, 8 and 10 come from the messages the
+// photo menu (d_menu_photoNP) shows for them.
 enum Result_e {
     RESULT_BUSY = 0,
     RESULT_OK = 1,
     RESULT_ERROR = 2,
     RESULT_BAD_CARD = 3,     // mounted, but the drive flags lack 0x10
+    RESULT_DEVICE_ERROR = 4, // errno 5
     RESULT_NO_CARD = 5,
+    RESULT_DEVICE_ERROR_2 = 6, // errno 8 or 88
+    RESULT_WRITE_PROTECTED = 7, // errno 201
+    RESULT_NO_SPACE = 8,        // errno 28
     RESULT_FULL = 9,         // also: no higher directory number is available
+    RESULT_TOO_MANY_FILES = 10,
     RESULT_REMOVED = 11,
     RESULT_NO_PHOTO = 12,
 };

@@ -388,6 +388,7 @@ BOOL setNumber4(Word_c *word, int value); // 80156554
 BOOL setNumber2(Word_c *word, int value); // 80156564
 BOOL setMinute(Word_c *word, int value); // 80156574
 BOOL setDecimal(Word_c *word, int decimals, f64 value); // 80156928
+BOOL setWeekdayName(Word_c *word, int day, BOOL abbrev); // 80156B98
 BOOL setMonthName(Word_c *word, int month); // 80156BC0
 BOOL setDayName(Word_c *word, int day); // 80156BD4
 bool toUpper(wchar_t *c);

@@ -2017,7 +2017,7 @@ BOOL isNetBlockPayloadValid(int id, const u8 *data, u32 size) {
         minimum = sizeof(dMail_c);
         break;
     case NET_PACKET_NOTICE_ADD:
-        minimum = sizeof(dNotice_c);
+        minimum = sizeof(dNoticeData_c);
         break;
     case NET_PACKET_FISHING_RECORD:
         minimum = sizeof(((dSaveTown_c *)0)->mFishing);

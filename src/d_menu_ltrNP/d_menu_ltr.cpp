@@ -267,7 +267,8 @@ void Window_c::clearHeldMail() {
 }
 
 // .text:0x9BC
-void Window_c::fn_5_9BC() {
+m2d::ResAccIf_c *Window_c::getRes() {
+    return &mRes;
 }
 
 // .text:0x9C0

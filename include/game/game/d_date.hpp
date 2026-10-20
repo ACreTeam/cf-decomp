@@ -165,7 +165,7 @@ public:
 
     static int getWeekday(int year, int month, int day);            // 8016D7EC
     static int getNthWeekday(int year, int month, int wday, int nth); // 8016D83C: day of month or -1
-    static u8 getDaysInMonth(int year, int month);                  // 8016D8F0
+    static int getDaysInMonth(int year, int month);                 // 8016D8F0
     static int diffDays(const dTime_c* a, const dTime_c* b, BOOL adjust);         // 8016D940: a - b in days
     static s64 diffTicks(const dTime_c* p_a, const dTime_c* p_b, BOOL adjust);        // 8016DAE4: a - b in ticks
 

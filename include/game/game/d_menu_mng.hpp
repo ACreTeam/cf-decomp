@@ -21,6 +21,7 @@ public:
     };
 
     enum FLAG_e {
+        FLAG_PHOTO = 0x2, // a photo menu is open (REL d_menu_photoNP, d_menu_photo01NP)
         FLAG_NO_BGM = 0x8,
         FLAG_CLOSE_REQUEST = 0x10, // a net message or the countdown wants the menu closed
         FLAG_PICKED_SHIRT = 0x20, // the design picked is the one worn as the shirt
@@ -90,7 +91,7 @@ public:
     static BOOL openPostFuture();    // 8019B2EC
     static BOOL openFriendSelect();  // 8019B4EC
     static BOOL openWriteSelf();     // 8019B4F8
-    static BOOL openPhoto01();       // 8019B504
+    static BOOL openPostPhoto();   // 8019B504
     // The constellation slot the constellation menus work on (shares s_picked
     // with the picked design).
     static u32 getPickedStarSign();       // 8019B28C
@@ -125,6 +126,10 @@ public:
         MENU_ITEM = 0x00,        // the pockets from their tab (REL d_menu_item00NP)
         MENU_ITEM_LETTER = 0x01, // ... starting on the letter window
         MENU_MAP00 = 0x06,   // the town map from its tab (REL d_menu_map00NP)
+        MENU_READ_LETTER_NPC = 0x07, // a letter read from an NPC (openLetter; REL d_menu_paperNP)
+        MENU_READ_LETTER_8 = 0x08,   // ... opened by dAcUitag::MENU_B_READ_8; closes into MENU_B_AFTER_READ_8
+        MENU_READ_LETTER_9 = 0x09,   // ... opened by dAcUitag::MENU_B_READ_9; closes into MENU_B_AFTER_READ_9
+        MENU_READ_LETTER = 0x0A,     // a letter read from the item menu (dAcUitag::MENU_A_READ)
         MENU_KEYTEST = 0x0C, // the keyboard test menu (REL d_menu_keytestNP)
         MENU_DESIGN = 0x0D,        // the design menu from its tab (REL d_menu_desi00)
         MENU_DESIGN_SELECT = 0x0E, // the design menu for the design in getDesignIndex
@@ -170,8 +175,14 @@ public:
         MENU_PREVIEW_MAP = 0x35, // the town map Rover shows the new player on the bus (REL d_menu_map01NP)
         MENU_BRIDGE_MAP = 0x36, // the town map to pick the new bridge's block, opened by Pelly (REL d_menu_map02NP)
         MENU_HOUSE_MAP = 0x37, // the players' houses on the town map, opened by Pelly (REL d_menu_map03NP)
-        MENU_PHOTO01 = 0x39, // REL d_menu_photo01NP
+        MENU_PHOTO = 0x38, // the photo menu from its tab (REL d_menu_photoNP)
+        MENU_POST_PHOTO = 0x39, // the photo to attach to a Wii Message Board letter, opened by Pelly (REL d_menu_photo01NP)
+        MENU_NUMBER00 = 0x3B, // the bare number pad on the item window (REL d_menu_number00NP)
         MENU_MUSEUM = 0x3C, // the museum's donation list (REL d_menu_museumNP)
+        MENU_SET_CLOCK = 0x3D, // set the game clock: the date, then the time (REL d_menu_time00NP)
+        MENU_BIRTHDAY = 0x3E, // "When is your birthday?": month and day, stored in the player
+        MENU_FUTURE_MAIL_DATE = 0x3F, // the date (tomorrow or later) of a letter to the future, opened by Pelly
+        MENU_APPOINTMENT_TIME = 0x40, // a time of day within the next 12 hours, result getTime
         MENU_FRIEND_TOWN = 0x55, // "Go to which town?": the online friends' towns (REL d_menu_friend03NP)
         MENU_FRIEND_TOWN_B = 0x56, // ... same menu
         MENU_FRIEND04 = 0x57, // friend roster (REL d_menu_friend04), the first tab of dMenuFriend_c
@@ -210,8 +221,16 @@ public:
         MENU_DESIGN_PRO = 0x6A, // the slot for a pro design (REL d_menu_desi01)
         MENU_RECYCLE_BOX = 0x60, // the town hall's recycle box (daRmobjRB_c)
         MENU_MAILBOX = 0x61, // the mailbox's letters (daStrPost_c)
+        MENU_MAILBOX_AFTER_READ = 0x62, // ... again after reading a letter, without moving the letters to the pockets (REL d_menu_post00NP)
+        MENU_POST_LETTERS = 0x63, // the post office's stored letters, opened by Pelly (REL d_menu_post01NP)
+        MENU_POST_LETTERS_AFTER_READ = 0x64, // ... again on the same page after reading a letter
         MENU_FLAG_DESIGN = 0x6B, // the house flag's design, asked for on the phone (daRmobjTel_c)
-        MENU_BBS = 0x6D,     // the bulletin board (daStrBbs_c)
+        MENU_BBS = 0x6D,     // the bulletin board (daStrBbs_c, REL d_menu_noticeNP)
+        MENU_BBS_NEWEST = 0x6E, // ... the notices, opened on the newest one (REL d_menu_notice00NP)
+        MENU_BBS_LIST = 0x6F,   // ... the same reader with the list of dots only: no paper until a notice is picked
+        MENU_BBS_WRITE = 0x70,  // ... write a notice on the keyboard (REL d_menu_notice01NP)
+        MENU_STAR_SIGN_NEW = 0x72,  // draw a new constellation in the first free slot (REL d_menu_star00NP)
+        MENU_STAR_SIGN_EDIT = 0x73, // edit the constellation of getPickedStarSign
         MENU_POINT_PRESENT = 0x75, // the presents of Nook's point machine (daRmobjPoint_c)
         MENU_HANIWA = 0x76, // the gyroids to take out of the storage (REL d_menu_haniwaNP), opened by the cafe
         MENU_ITEM_GYROID = 0x77, // "Give which gyroid?" (REL d_menu_item02NP)
