@@ -72,6 +72,11 @@ public:
     // openMenu / openItemSel menus (only the ones named so far).
     enum {
         MENU_ITEM_SELECT = 0x32,
+        MENU_TURNIP_COUNT = 0x45, // how many turnips (REL d_menu_kabu)
+        MENU_TURNIP_PRICE = 0x46, // the turnip price
+        MENU_DONATION = 0x47,     // the public works donation
+        MENU_AUCTION_MIN = 0x48,  // the auction's minimum price
+        MENU_AUCTION_BID = 0x49,  // the auction bid (at least getNumberMin)
         MENU_BANK_DEPOSIT = 0x4A,
         MENU_BANK_WITHDRAW = 0x4B,
         MENU_BANK_PAY = 0x4C,
@@ -85,6 +90,13 @@ public:
     };
 
     static BOOL openMenu(u8 menu);
+    // Opens the auction bid prompt; minimum is its lowest bid (getNumberMin).
+    static BOOL openAuctionBid(u32 minimum);
+    // The number the amount prompts (REL d_menu_kabu) work with: the bid's
+    // minimum going in, the confirmed amount coming out.
+    static void setNumber(u32 number);
+    static u32 getNumber();
+    static u32 getNumberMin();
     static dMail_c *getMail();
     static void setMail(const dMail_c *mail);
     static BOOL openLetter(const dMail_c *mail);
@@ -150,12 +162,8 @@ BOOL fn_8019AE00();
 BOOL fn_8019AE2C();
 BOOL fn_8019AE58();
 BOOL fn_8019AEE4();
-BOOL fn_8019AEF0(u32 arg);
 void fn_8019AFBC(u32 arg);
 u32 fn_8019AFC4();
-u32 fn_8019AFCC();
-u32 fn_8019AFD4();
-void fn_8019AFDC(u32 arg);
 u32 fn_8019AFE4();
 void fn_8019AFEC(u32 arg);
 bool fn_8019AFF4();

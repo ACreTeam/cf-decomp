@@ -2755,10 +2755,10 @@ config.libs = [
     Rel(
         "d_menu_bankNP",
         [
-            Object(NonMatching, "d_menu_bankNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_bankNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_bankNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_bankNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_bankNP/d_menu_bank.cpp"),
+            Object(Matching, "d_menu_bankNP/d_menu_bank.cpp"),
         ],
     ),
     Rel(
@@ -2998,10 +2998,10 @@ config.libs = [
     Rel(
         "d_menu_kabuNP",
         [
-            Object(NonMatching, "d_menu_kabuNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_menu_kabuNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_menu_kabuNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_menu_kabuNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_menu_kabuNP/d_menu_kabu.cpp"),
+            Object(Matching, "d_menu_kabuNP/d_menu_kabu.cpp"),
         ],
     ),
     Rel(
@@ -3232,10 +3232,10 @@ config.libs = [
     Rel(
         "d_a_mdlNP",
         [
-            Object(NonMatching, "d_a_mdlNP/rel_init.cpp", source="runtime/rel_init.cpp"),
-            Object(NonMatching, "d_a_mdlNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
+            Object(Matching, "d_a_mdlNP/rel_init.cpp", source="runtime/rel_init.cpp"),
+            Object(Matching, "d_a_mdlNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(NonMatching, "d_a_mdlNP/d_a_mdl.cpp"),
+            Object(Matching, "d_a_mdlNP/d_a_mdl.cpp"),
         ],
     ),
     Rel(

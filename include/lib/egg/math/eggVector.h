@@ -48,6 +48,10 @@ namespace EGG {
         /// @brief Dot product.
         f32 dot(const Vector3f &v) const { return x * v.x + y * v.y + z * v.z; }
 
+        f32 &operator()(int i) {
+            return ((f32 *)this)[i];
+        }
+
         Vector3f operator+(const Vector3f &v) const { return Vector3f(x + v.x, y + v.y, z + v.z); }
         Vector3f operator*(f32 f) const { return Vector3f(x * f, y * f, z * f); }
         Vector3f cross(const Vector3f &v) const {

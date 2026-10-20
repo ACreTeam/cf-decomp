@@ -8690,7 +8690,7 @@ u16 dAcNpc_c::recept_c::getMenuItem() {
 
 u32 dAcNpc_c::recept_c::fn_80029A50() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019AFD4();
+        return dMenuMng_c::getNumber();
     }
     return 0;
 }
@@ -8718,7 +8718,7 @@ u32 dAcNpc_c::recept_c::fn_80029AEC() {
 
 u32 dAcNpc_c::recept_c::fn_80029B20() {
     if (isMenuInvalid() == FALSE) {
-        return fn_8019AFCC();
+        return dMenuMng_c::getNumberMin();
     }
     return 0;
 }
@@ -9439,7 +9439,7 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = fn_8019B504();
                 break;
             case 0x11:
-                ok = dMenuMng_c::openMenu(0x45);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_TURNIP_COUNT);
                 break;
             case 0x12:
                 ok = dMenuMng_c::openMenu(0x65);
@@ -9484,10 +9484,10 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openMenu(0x36);
                 break;
             case 0x20:
-                ok = dMenuMng_c::openMenu(0x47);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_DONATION);
                 break;
             case 0x21:
-                ok = dMenuMng_c::openMenu(0x46);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_TURNIP_PRICE);
                 break;
             case 0x22:
                 ok = fn_8019AE58();
@@ -9533,10 +9533,10 @@ int dAcNpc_c::recept_c::stepMenuOpen() {
                 ok = dMenuMng_c::openInput(0x22, mReq.mpInputBuf, 10);
                 break;
             case 0x30:
-                ok = dMenuMng_c::openMenu(0x48);
+                ok = dMenuMng_c::openMenu(dMenuMng_c::MENU_AUCTION_MIN);
                 break;
             case 0x31:
-                ok = fn_8019AEF0(mReq.mMenuArgE0);
+                ok = dMenuMng_c::openAuctionBid(mReq.mMenuArgE0);
                 break;
             case 0x32:
                 ok = dMenuMng_c::openMenu(0x11);

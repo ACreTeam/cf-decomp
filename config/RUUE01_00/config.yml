@@ -874,6 +874,7 @@ modules:
   name: d_menu_bankNP
   symbols: config/RUUE01_00/d_menu_bankNP/symbols.txt
   splits: config/RUUE01_00/d_menu_bankNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_catalogNP.rel
   hash: 10e4d4b7c697d42ad9f92a63312d9598131ec08c
   name: d_menu_catalogNP
@@ -1015,6 +1016,7 @@ modules:
   name: d_menu_kabuNP
   symbols: config/RUUE01_00/d_menu_kabuNP/symbols.txt
   splits: config/RUUE01_00/d_menu_kabuNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_menu_keytestNP.rel
   hash: 84233195504f87953655498c3bf0075f9a73e561
   name: d_menu_keytestNP
@@ -1145,6 +1147,7 @@ modules:
   name: d_a_mdlNP
   symbols: config/RUUE01_00/d_a_mdlNP/symbols.txt
   splits: config/RUUE01_00/d_a_mdlNP/splits.txt
+  force_active: [__global_destructor_chain]
 - object: files/rels/d_a_sampleNP.rel
   hash: bc2c05ddaefc17eabca64160fc91a59f79cdaa14
   name: d_a_sampleNP

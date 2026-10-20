@@ -492,9 +492,9 @@ BOOL fn_8019AEE4() {
     return dMenuMng_c::open(0x35, FALSE);
 }
 
-BOOL fn_8019AEF0(u32 arg) {
-    if (dMenuMng_c::open(0x49, FALSE)) {
-        fn_8019AFDC(arg);
+BOOL dMenuMng_c::openAuctionBid(u32 minimum) {
+    if (open(MENU_AUCTION_BID, FALSE)) {
+        setNumber(minimum);
         return TRUE;
     }
     return FALSE;
@@ -528,15 +528,15 @@ u32 fn_8019AFC4() {
     return s_EA88;
 }
 
-u32 fn_8019AFCC() {
+u32 dMenuMng_c::getNumberMin() {
     return s_EA84;
 }
 
-u32 fn_8019AFD4() {
+u32 dMenuMng_c::getNumber() {
     return s_EA84;
 }
 
-void fn_8019AFDC(u32 arg) {
+void dMenuMng_c::setNumber(u32 arg) {
     s_EA84 = arg;
 }
 
