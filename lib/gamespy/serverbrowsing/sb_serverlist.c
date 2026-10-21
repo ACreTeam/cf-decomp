@@ -613,61 +613,6 @@ SBError SBServerListConnectAndQuery(SBServerList* slist, const char* fieldList,
   return sbe_noerror;
 }
 
-SBError SBServerListGetLANList(SBServerList* slist, unsigned short startport,
-                               unsigned short endport, int queryversion) {
-  struct sockaddr_in saddr;
-  unsigned short i;
-  unsigned char qr2_echo_request[] = {QR2_MAGIC_1, QR2_MAGIC_2, 0x02, 0x00,
-                                      0x00,        0x00,        0x00, 0x00};
-  int qr2requestlen = sizeof(qr2_echo_request) / sizeof(qr2_echo_request[0]);
-  if (slist->state != sl_disconnected)
-    SBServerListDisconnect(slist);
-
-  slist->slsocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (slist->slsocket == INVALID_SOCKET)
-    return sbe_socketerror;
-
-// enable broadcasting where needed
-#if !defined(INSOCK) && !defined(_NITRO) && !defined(_REVOLUTION)
-  {
-    int optval = 1;
-    if (setsockopt(slist->slsocket, SOL_SOCKET, SO_BROADCAST, (char*)&optval,
-                   sizeof(optval)) != 0)
-      return sbe_socketerror;
-  }
-#endif
-
-  saddr.sin_family = AF_INET;
-  saddr.sin_addr.s_addr = gsiGetBroadcastIP(); // broadcast
-
-  // Added for multihomed machines.  Allows the user to specify which adapter to
-  // use
-  if (slist->mLanAdapterOverride != NULL) {
-    struct sockaddr_in aClassCAddr;
-    aClassCAddr.sin_family = AF_INET;
-    aClassCAddr.sin_addr.s_addr = inet_addr(slist->mLanAdapterOverride);
-    aClassCAddr.sin_port = 0; // bind to any port
-    if (0 != bind(slist->slsocket, (struct sockaddr*)&aClassCAddr,
-                  sizeof(aClassCAddr)))
-      return sbe_socketerror;
-  }
-
-  if (endport - startport > 500) // the max we will search
-    endport = (unsigned short)(startport + 500);
-  for (i = startport; i <= endport; i += 1) {
-    saddr.sin_port = htons(i);
-    if (queryversion == QVERSION_QR2) // send a QR2 echo request
-      sendto(slist->slsocket, (char*)qr2_echo_request, qr2requestlen, 0,
-             (struct sockaddr*)&saddr, sizeof(saddr));
-    else // send a GOA echo request
-      sendto(slist->slsocket, "\\echo\\test", 10, 0, (struct sockaddr*)&saddr,
-             sizeof(saddr));
-  }
-  slist->state = sl_lanbrowse;
-  slist->lanstarttime = current_time();
-  return sbe_noerror;
-}
-
 static void FreePopularValues(SBServerList* slist) {
   int i;
   for (i = 0; i < slist->numpopularvalues; i++)

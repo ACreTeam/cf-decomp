@@ -305,7 +305,6 @@ void gpiSetErrorString(GPConnection* connection, const char* errorString) {
 
 void gpiEncodeString(const char* unencodedString, char* encodedString) {
   size_t i;
-  const int useAlternateEncoding = 1;
 
   // Encrypt the password (xor with random values)
   char passwordxor[GP_PASSWORD_LEN];
@@ -320,7 +319,7 @@ void gpiEncodeString(const char* unencodedString, char* encodedString) {
   passwordxor[i] = '\0';
 
   // Base 64 it (printable chars only)
-  B64Encode(passwordxor, encodedString, (int)passwordlen, useAlternateEncoding);
+  B64Encode(passwordxor, encodedString, (int)passwordlen, 1);
 }
 
 // Re-enable previously disabled compiler warnings

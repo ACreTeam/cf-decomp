@@ -122,7 +122,7 @@ VARS
 ********/
 struct qr2_implementation_s static_qr2_rec = {INVALID_SOCKET};
 static qr2_t current_rec = &static_qr2_rec;
-char qr2_hostname[64 + 8];
+char qr2_hostname[64];
 
 static int num_local_ips = 0;
 static struct in_addr local_ip_list[MAX_LOCAL_IP];
@@ -433,27 +433,10 @@ void qr2_think(qr2_t qrec) {
   // NNThink();
 }
 
-// Linker will remove this function through dead-stripping.
-// We use this to force some strings to be defined.
-void qr2_define_some_strings();
-void qr2_define_some_strings() {
-  char* x;
-  void (*foo)(void);
-  x = "Received %d bytes on query socket\r\n"; // 0x8027d0a4
-  foo = (void (*)(void))x;
-  foo();
-  x = "CanReceiveOnSocket() returned true, but recvfrom return 0!\r\n"; // 0x8027d0c8
-  foo = (void (*)(void))x;
-  foo();
-  x = "CanReceiveOnSocket() returned true, but recvfrom failed!\r\n"; // 0x8027d108
-  foo = (void (*)(void))x;
-  foo();
-}
 
-char qr2_check_queries_indata[INBUF_LEN];
-#ifdef NON_MATCHING
 /* qr2_check_queries: Processes any waiting queries */
 void qr2_check_queries(qr2_t qrec) {
+  static char indata[INBUF_LEN] POST_ALIGN(16);
   struct sockaddr_in saddr;
   int error;
 
@@ -465,77 +448,26 @@ void qr2_check_queries(qr2_t qrec) {
   while (CanReceiveOnSocket(qrec->hbsock)) {
     // else we have data
     error =
-        (int)recvfrom(qrec->hbsock, qr2_check_queries_indata, (INBUF_LEN - 1),
+        (int)recvfrom(qrec->hbsock, indata, (INBUF_LEN - 1),
                       0, (struct sockaddr*)&saddr, &saddrlen);
     if (gsiSocketIsNotError(error)) {
-      qr2_check_queries_indata[error] = '\0';
-      qr2_parse_queryA(qrec, qr2_check_queries_indata, error,
+      indata[error] = '\0';
+      gsDebugFormat(GSIDebugCat_QR2, GSIDebugType_Network,
+                    GSIDebugLevel_RawDump,
+                    "Received %d bytes on query socket\r\n", error);
+      qr2_parse_queryA(qrec, indata, error,
                        (struct sockaddr*)&saddr);
+    } else if (error == 0) {
+      gsDebugFormat(
+          GSIDebugCat_QR2, GSIDebugType_Network, GSIDebugLevel_WarmError,
+          "CanReceiveOnSocket() returned true, but recvfrom return 0!\r\n");
+    } else {
+      gsDebugFormat(
+          GSIDebugCat_QR2, GSIDebugType_Network, GSIDebugLevel_WarmError,
+          "CanReceiveOnSocket() returned true, but recvfrom failed!\r\n");
     }
   }
 }
-#else
-// clang-format off
-asm void qr2_check_queries(qr2_t qrec) {
-  nofralloc;
-  stwu    r1, -48(r1)
-  mflr    r0
-  stw     r0, 52(r1)
-  li      r0, 0x8
-  stw     r31, 44(r1)
-  stw     r30, 40(r1)
-  stw     r29, 36(r1)
-  stw     r28, 32(r1)
-  mr      r28, r3
-  stw     r0, 8(r1)
-  lwz     r0, 196(r3)
-  cmpwi   r0, 0x0
-  bne     loc2
-loc1:
-  b       loc7
-loc2:
-  // Not relocatable :(
-  lis     r29, 0x802f
-  li      r30, 0x0
-  addi    r31, r29, 0x3520
-  b       loc6
-loc3:
-  lwz     r3, 0(r28)
-  addi    r4, r29, 0x3520
-  addi    r7, r1, 0x10
-  addi    r8, r1, 0x8
-  li      r5, 0xff
-  li      r6, 0x0
-  bl      recvfrom
-  cmpwi   r3, -0x1
-  mr      r5, r3
-  beq     loc5
-loc4:
-  stbx    r30, r31, r3
-  mr      r3, r28
-  mr      r4, r31
-  addi    r6, r1, 0x10
-  bl      qr2_parse_queryA
-  b       loc6
-loc5:
-  cmpwi   r3, 0x0
-loc6:
-  lwz     r3, 0(r28)
-  bl      CanReceiveOnSocket
-  cmpwi   r3, 0x0
-  bne     loc3
-loc7:
-  lwz     r0, 52(r1)
-  lwz     r31, 44(r1)
-  lwz     r30, 40(r1)
-  lwz     r29, 36(r1)
-  lwz     r28, 32(r1)
-  mtlr    r0
-  addi    r1, r1, 0x30
-  blr
-}
-// clang-format on
-#endif
 
 /* check_send_heartbeat: Perform any scheduled outgoing
 heartbeats */

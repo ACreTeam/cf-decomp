@@ -171,6 +171,7 @@ NegotiateError NNStartNatDetection(NatDetectionResultsFunc resultscallback);
 
 // Used for over-riding the default negotiation hostnames. Should not be used
 // normally.
+extern char* Matchup3Hostname;
 extern char* Matchup2Hostname;
 extern char* Matchup1Hostname;
 

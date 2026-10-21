@@ -209,23 +209,6 @@ SBError ServerBrowserLimitUpdateA(ServerBrowser sb, SBBool async,
                                    LIMIT_RESULT_COUNT, maxServers);
 }
 
-SBError ServerBrowserLANUpdate(ServerBrowser sb, SBBool async,
-                               unsigned short startSearchPort,
-                               unsigned short endSearchPort) {
-  SBError err = sbe_noerror;
-  ServerBrowserHalt(sb);
-  SBServerListGetLANList(&sb->list, startSearchPort, endSearchPort,
-                         sb->engine.queryversion);
-  if (!async) {
-    while ((sb->list.state == sl_lanbrowse) ||
-           ((sb->engine.querylist.count > 0) && (err == sbe_noerror))) {
-      msleep(10);
-      err = ServerBrowserThink(sb);
-    }
-  }
-  return err;
-}
-
 static SBError WaitForTriggerUpdate(ServerBrowser sb, SBBool viaMaster) {
   SBError err = sbe_noerror;
   // wait until info is received for the triggerIP
@@ -374,38 +357,6 @@ void ServerBrowserClear(ServerBrowser sb) {
   SBServerListClear(&sb->list);
 }
 
-const char* ServerBrowserErrorDescA(ServerBrowser sb, SBError error) {
-  switch (error) {
-  case sbe_noerror:
-    return "None";
-    // break;
-  case sbe_socketerror:
-    return "Socket creation error";
-    // break;
-  case sbe_dnserror:
-    return "DNS lookup error";
-    // break;
-  case sbe_connecterror:
-    return "Connection failed";
-    // break;
-  case sbe_dataerror:
-    return "Data stream error";
-    // break;
-  case sbe_allocerror:
-    return "Memory allocation error";
-    // break;
-  case sbe_paramerror:
-    return "Function parameter error";
-    // break;
-  case sbe_duplicateupdateerror:
-    return "Duplicate update request error";
-    // break;
-  }
-
-  GSI_UNUSED(sb);
-  return "";
-}
-
 const char* ServerBrowserListQueryErrorA(ServerBrowser sb) {
   return SBLastListErrorA(&sb->list);
 }
@@ -469,41 +420,4 @@ void ServerBrowserDisconnect(ServerBrowser sb) {
 // Allows the user to specify a broadcast address for LAN hosting
 void ServerBrowserLANSetLocalAddr(ServerBrowser sb, const char* theAddr) {
   sb->list.mLanAdapterOverride = theAddr;
-}
-
-/* SBServerGetConnectionInfo
-----------------
-Check if Nat Negotiation is requires, based off whether it is a lan game, public
-ip present and several other facts. Returns an IP string to use for NatNeg, or
-direct connect if possible Work for subsequent connection to this server, One of
-three results will occur i) Lan game, connect using ipstring 2) Internet game,
-connect using ipstring 3) nat traversal required, perform nat negotiation using
-Nat SDK and this ipstring before connecting.
-
-return sb_true if further processing is required... i.e. NAT.   sb_false if not.
-fills an IP string
-*/
-SBBool SBServerGetConnectionInfo(ServerBrowser gSB, SBServer server,
-                                 gsi_u16 PortToConnectTo, char* ipstring) {
-  SBBool natneg = SBFalse;
-  if (SBServerHasPrivateAddress(server) == SBTrue &&
-      (SBServerGetPublicInetAddress(server) ==
-       ServerBrowserGetMyPublicIPAddr(gSB))) {
-
-    // directly connect to private IP (LAN)
-    sprintf(ipstring, "%s:%d", SBServerGetPrivateAddress(server),
-            PortToConnectTo);
-
-  } else if ((SBServerDirectConnect(server) == SBTrue) &&
-             (SBServerHasPrivateAddress(server) == SBFalse)) {
-    // can directly connect to public IP, no negotiation required
-    sprintf(ipstring, "%s:%d", SBServerGetPrivateAddress(server),
-            PortToConnectTo);
-  } else {
-    // Nat Negotiation required
-    natneg = SBTrue;
-    sprintf(ipstring, "%s:%d", SBServerGetPublicAddress(server),
-            SBServerGetPublicQueryPort(server));
-  }
-  return natneg;
 }

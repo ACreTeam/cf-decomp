@@ -17,6 +17,7 @@ Please see the GameSpy Presence SDK documentation for more information
 
 // FUNCTIONS
 ///////////
+#if 0 // not present in CF (dead-stripped)
 static GPResult
 gpiSendRegisterUniqueNick(GPConnection* connection,
                           const char uniquenick[GP_UNIQUENICK_LEN],
@@ -45,7 +46,9 @@ gpiSendRegisterUniqueNick(GPConnection* connection,
 
   return GP_NO_ERROR;
 }
+#endif
 
+#if 0 // not present in CF (dead-stripped)
 GPResult gpiRegisterUniqueNick(GPConnection* connection,
                                const char uniquenick[GP_UNIQUENICK_LEN],
                                const char cdkey[GP_CDKEY_LEN], GPEnum blocking,
@@ -73,6 +76,7 @@ GPResult gpiRegisterUniqueNick(GPConnection* connection,
 
   return GP_NO_ERROR;
 }
+#endif
 
 GPResult gpiProcessRegisterUniqueNick(GPConnection* connection,
                                       GPIOperation* operation,
@@ -115,6 +119,7 @@ GPResult gpiProcessRegisterUniqueNick(GPConnection* connection,
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 // Registration of cdKey now offered separately from uniquenick
+#if 0 // not present in CF (dead-stripped)
 static GPResult gpiSendRegisterCdKey(GPConnection* connection,
                                      const char cdkey[GP_CDKEY_LEN],
                                      int operationid) {
@@ -154,7 +159,9 @@ static GPResult gpiSendRegisterCdKey(GPConnection* connection,
 
   return GP_NO_ERROR;
 }
+#endif
 
+#if 0 // not present in CF (dead-stripped)
 GPResult gpiRegisterCdKey(GPConnection* connection,
                           const char cdkey[GP_CDKEY_LEN], GPEnum blocking,
                           GPCallback callback, void* param) {
@@ -180,6 +187,7 @@ GPResult gpiRegisterCdKey(GPConnection* connection,
 
   return GP_NO_ERROR;
 }
+#endif
 
 GPResult gpiProcessRegisterCdKey(GPConnection* connection,
                                  GPIOperation* operation, const char* input) {

@@ -51,10 +51,7 @@ void* gsimemalign(size_t boundary, size_t size); // TODO
 //--------------------------------------------------------------------------
 // Customer supplied memory manager customization interface
 // call this to replace the Gamespy specific memory functions with your own.
-typedef void* (*gsMallocCB)(size_t size);
-typedef void (*gsFreeCB)(void* ptr);
-typedef void* (*gsReallocCB)(void* ptr, size_t size);
-typedef void* (*gsMemalignCB)(size_t boundary, size_t size);
+#include "gsMemoryTypes.h"
 // call this to override above gsi.... calls with your own.
 void gsiMemoryCallbacksSet(gsMallocCB p_malloc, gsFreeCB p_free,
                            gsReallocCB p_realloc, gsMemalignCB p_memalign);

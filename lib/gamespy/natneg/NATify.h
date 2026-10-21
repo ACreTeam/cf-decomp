@@ -65,3 +65,4 @@ int DiscoverMapping(SOCKET sock, unsigned int ip, unsigned short port,
 int NatifyThink(SOCKET sock, NAT* nat);
 gsi_bool DetermineNatType(NAT* nat);
 void OutputMapping(const AddressMapping* theMap);
+char* AddressToString(unsigned int ip, unsigned short port, char string[22]);

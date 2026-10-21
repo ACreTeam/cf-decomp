@@ -460,7 +460,7 @@ static GPResult gpiSendLogin(GPConnection* connection, GPIConnectData* data) {
 static GPResult gpiSendNewuser(GPConnection* connection, GPIConnectData* data) {
   GPIConnection* iconnection = (GPIConnection*)*connection;
   size_t i;
-  const int useAlternateEncoding = 1;
+  int useAlternateEncoding = 1;
 
   // Encrypt the password (xor with random values)
   char passwordenc[GP_PASSWORDENC_LEN];

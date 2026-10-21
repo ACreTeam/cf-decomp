@@ -119,7 +119,7 @@ GPResult gpiAppendShortToBuffer(GPConnection* connection,
 GPResult gpiAppendUShortToBuffer(GPConnection* connection,
                                  GPIBuffer* outputBuffer, unsigned short num) {
   char shortVal[8];
-  sprintf(shortVal, "%u", num);
+  sprintf(shortVal, "%d", num);
   return gpiAppendStringToBuffer(connection, outputBuffer, shortVal);
 }
 
@@ -133,7 +133,7 @@ GPResult gpiAppendIntToBuffer(GPConnection* connection, GPIBuffer* outputBuffer,
 GPResult gpiAppendUIntToBuffer(GPConnection* connection,
                                GPIBuffer* outputBuffer, unsigned int num) {
   char intValue[16];
-  sprintf(intValue, "%u", num);
+  sprintf(intValue, "%d", num);
   return gpiAppendStringToBuffer(connection, outputBuffer, intValue);
 }
 
@@ -343,7 +343,7 @@ GPResult gpiSendOrBufferInt(GPConnection* connection, GPIPeer_st peer,
 GPResult gpiSendOrBufferUInt(GPConnection* connection, GPIPeer_st peer,
                              unsigned int num) {
   char intValue[16];
-  sprintf(intValue, "%u", num);
+  sprintf(intValue, "%d", num);
   return gpiSendOrBufferString(connection, peer, intValue);
 }
 

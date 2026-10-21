@@ -135,7 +135,7 @@ const char* SBServerGetStringValueA(SBServer server, const char* keyname,
     return NULL;
   kv.key = keyname;
   ptr = (SBKeyValuePair*)TableLookup(server->keyvals, &kv);
-  if (ptr == NULL)
+  if (ptr == NULL || strlen(ptr->value) == 0)
     return def;
   return ptr->value;
 }
@@ -183,49 +183,6 @@ SBBool SBServerGetBoolValueA(SBServer server, const char* key,
 
   // presume that all other non-zero values are "true"
   return SBTrue;
-}
-
-const char* SBServerGetPlayerStringValueA(SBServer server, int playernum,
-                                          const char* key,
-                                          const char* sdefault) {
-  char keyname[128];
-  sprintf(keyname, "%s_%d", key, playernum);
-  return SBServerGetStringValueA(server, keyname, sdefault);
-}
-
-int SBServerGetPlayerIntValueA(SBServer server, int playernum, const char* key,
-                               int idefault) {
-  char keyname[128];
-  sprintf(keyname, "%s_%d", key, playernum);
-  return SBServerGetIntValueA(server, keyname, idefault);
-}
-
-double SBServerGetPlayerFloatValueA(SBServer server, int playernum,
-                                    const char* key, double fdefault) {
-  char keyname[128];
-  sprintf(keyname, "%s_%d", key, playernum);
-  return SBServerGetFloatValueA(server, keyname, fdefault);
-}
-
-const char* SBServerGetTeamStringValueA(SBServer server, int teamnum,
-                                        const char* key, const char* sdefault) {
-  char keyname[128];
-  sprintf(keyname, "%s_t%d", key, teamnum);
-  return SBServerGetStringValueA(server, keyname, sdefault);
-}
-
-int SBServerGetTeamIntValueA(SBServer server, int teamnum, const char* key,
-                             int idefault) {
-  char keyname[128];
-  sprintf(keyname, "%s_t%d", key, teamnum);
-  return SBServerGetIntValueA(server, keyname, idefault);
-}
-
-double SBServerGetTeamFloatValueA(SBServer server, int teamnum, const char* key,
-                                  double fdefault) {
-  char keyname[128];
-  sprintf(keyname, "%s_t%d", key, teamnum);
-  return SBServerGetFloatValueA(server, keyname, fdefault);
 }
 
 SBBool SBServerHasBasicKeys(SBServer server) {
