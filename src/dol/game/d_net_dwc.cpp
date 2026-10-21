@@ -8,6 +8,7 @@
 #include <game/mLib/m_perf.hpp>
 #include <revolution/OS/OSTime.h>
 #include <revolution/PMIC/pmic.h>
+#include <revolution/SO.h>
 #include <revolution/VI.h>
 #include <stddef.h>
 #include <string.h>
@@ -16,16 +17,8 @@
 // Signatures are inferred from the calls; unused callback arguments remain
 // unnamed.
 extern "C" {
-BOOL fn_8036D274(u8, const void *, u32);
-struct SocketAllocators {
-    void *(*alloc)(int, u32);
-    void (*free)(int, void *);
-};
-int fn_8043BE3C(SocketAllocators *);
-int fn_8043C100();
-int fn_80412994();
-int fn_8043C534();
-int fn_8043C004();
+BOOL VCT_HandleData(u8, const void *, u32);
+int NETGetStartupErrorCode();
 }
 
 namespace dNetDwc {
@@ -282,19 +275,19 @@ BOOL Session_c::resumeScheduler() {
 }
 // 800E80B0
 BOOL Session_c::startSockets() {
-    SocketAllocators allocators;
+    SOLibraryConfig allocators;
     memset(&allocators, 0, sizeof(allocators));
     allocators.alloc = allocSocket;
     allocators.free = freeSocket;
-    int result = fn_8043BE3C(&allocators);
+    int result = SOInit(&allocators);
     if (result != 0 && result != -7) {
         setError(ERROR_SOCKET_INIT, ERROR_RESTART_REQUIRED, 0, result);
         return FALSE;
     }
     setState(STATE_SOCKET_STARTED);
-    result = fn_8043C100();
+    result = SOStartup();
     if (result != 0 && result != -7) {
-        setError(ERROR_SOCKET_START, ERROR_RESTART_REQUIRED, fn_80412994(),
+        setError(ERROR_SOCKET_START, ERROR_RESTART_REQUIRED, NETGetStartupErrorCode(),
                  result);
         return FALSE;
     }
@@ -304,7 +297,7 @@ BOOL Session_c::startSockets() {
 // 800E8198
 BOOL Session_c::stopSockets() {
     if (mState > STATE_SOCKET_STARTED) {
-        int result = fn_8043C534();
+        int result = SOCleanup();
         if (result == 0 || result == -7) {
             setState(STATE_SOCKET_STARTED);
         } else {
@@ -313,7 +306,7 @@ BOOL Session_c::stopSockets() {
         }
     }
     if (mState > STATE_SOCKET_INITIALIZED) {
-        int result = fn_8043C004();
+        int result = SOFinish();
         if (result == 0 || result == -7) {
             setState(STATE_SOCKET_INITIALIZED);
         } else {
@@ -660,8 +653,8 @@ void Session_c::onLogin(int error, int, void *) {
         DWC_SetUserSendCallback(onSend, 0);
         DWC_SetUserRecvCallback(onReceive, 0);
         DWC_SetUserPingCallback(onPing, 0);
-        DWC_SetRecvTimeoutTime(MATCH_TIMEOUT_MS);
-        DWC_SetFriendStatusCallback(onFriendStatus, 0);
+        DWC_SetConnectionKeepAliveTime(MATCH_TIMEOUT_MS);
+        DWC_SetBuddyFriendCallback(onBuddyFriendOnline, 0);
         session->setState(STATE_ONLINE);
         dNetMgr_c::onStatus();
         DWC_ClearDirtyFlag(session->mUserData);
@@ -679,7 +672,7 @@ void Session_c::onBuddyFriend(int index, void *) {
     dNetMgr_c::setFriendRemoved(index);
 }
 // 800E8EE8
-void Session_c::onFriendStatus(int, u8, const char *, void *) {
+void Session_c::onBuddyFriendOnline(int, void *) {
 }
 // 800E8EEC
 void Session_c::onFriendDeleted(int deletedIndex, int sourceIndex, void *) {
@@ -755,7 +748,7 @@ void Session_c::onSend(u32, u8 aid, void *) {
 // 800E9164
 void Session_c::onReceive(u8 aid, const void *data, u32 size, void *) {
     sInstance->mKeepaliveCount[aid] = 0;
-    if (!fn_8036D274(aid, data, size)) {
+    if (!VCT_HandleData(aid, data, size)) {
         dNetMgr_c::onRecv(aid, data, size);
     }
 }

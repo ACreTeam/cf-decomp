@@ -3,12 +3,14 @@
 #include <dwc/dwc_datastorage.h>
 #include <dwc/dwc_error.h>
 #include <dwc/dwc_main.h>
+#include <dwc/dwc_match.h>
 #include <dwc/dwc_nonport.h>
 #include <dwc/dwc_report.h>
 #include <gamespy/GP/gp.h>
 #include <gamespy/gstats/gpersist.h>
 #include <gpi.h>
 #include <revolution/os/OSTime.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -43,9 +45,11 @@ typedef struct DWCFriendControl
 
 static DWCFriendControl* stpFriendCnt = NULL;
 static int stPersState = DWC_PERS_STATE_INIT;
-// Later DWC only (MWCC places them in .sbss in reverse): set around PersistThink; a close requested inside its callbacks waits
-static BOOL stCloseStatsRequested;
-static BOOL stInPersistThink;
+// Later DWC only: set around PersistThink; a close requested inside its callbacks waits
+static BOOL s_bInPersistThink = FALSE;
+static BOOL s_bNeedCloseStatsConnection = FALSE;
+// set while CloseStatsConnection() runs, so an error raised inside it does not close again
+static BOOL s_bInCloseStatsConnection = FALSE;
 
 static GPResult DWCi_GPProcess(void);
 static void DWCi_CloseFriendProcess(void);
@@ -102,6 +106,7 @@ u8 DWC_GetFriendStatusSC(const DWCFriendData* friendData, u8* maxEntry,
     char valueStr[4];
     int len;
     GPBuddyStatus status;
+    u8 friendStatus;
 
     if (DWCi_GetFriendBuddyStatus(friendData, &status))
     {
@@ -152,7 +157,13 @@ u8 DWC_GetFriendStatusSC(const DWCFriendData* friendData, u8* maxEntry,
             strcpy(statusString, status.locationString);
         }
 
-        return status.status;
+        // a locked status ("LCK" key) reads as playing
+        friendStatus = status.status;
+        if (DWCi_IsLockedBuddyStatus(&status))
+        {
+            friendStatus = DWC_STATUS_PLAYING;
+        }
+        return friendStatus;
     }
     else
     {
@@ -414,7 +425,17 @@ BOOL DWC_LoginToStorageServerAsync(DWCStorageLoginCallback callback,
 
 void DWC_LogoutFromStorageServer(void)
 {
-    CloseStatsConnection();
+    // inside PersistThink's callbacks the close waits until it returns
+    if (s_bInPersistThink == TRUE)
+    {
+        s_bNeedCloseStatsConnection = TRUE;
+    }
+    else if (!s_bInCloseStatsConnection)
+    {
+        s_bInCloseStatsConnection = TRUE;
+        CloseStatsConnection();
+        s_bInCloseStatsConnection = FALSE;
+    }
 
     stPersState = DWC_PERS_STATE_INIT;
 
@@ -561,21 +582,21 @@ void DWCi_FriendProcess(void)
 
     if (DWCi_GetPersCallbackLevel() || IsStatsConnected())
     {
-        stInPersistThink = TRUE;
-        stCloseStatsRequested = FALSE;
+        s_bInPersistThink = TRUE;
+        s_bNeedCloseStatsConnection = FALSE;
 
         if (!PersistThink())
         {
-            stInPersistThink = FALSE;
+            s_bInPersistThink = FALSE;
             DWC_Printf(DWC_REPORTFLAG_WARNING,
                 "Connection to the stats server was lost\n");
         }
 
-        stInPersistThink = FALSE;
+        s_bInPersistThink = FALSE;
 
-        if (stCloseStatsRequested == TRUE)
+        if (s_bNeedCloseStatsConnection == TRUE)
         {
-            stCloseStatsRequested = FALSE;
+            s_bNeedCloseStatsConnection = FALSE;
             CloseStatsConnection();
         }
     }
@@ -585,6 +606,11 @@ void DWCi_FriendProcess(void)
         gpResult = DWCi_GPProcess();
 
         if (gpResult != GP_NO_ERROR)
+        {
+            return;
+        }
+
+        if (stpFriendCnt->state == DWC_FRIEND_STATE_INIT)
         {
             return;
         }
@@ -1343,6 +1369,7 @@ static void DWCi_GPGetInfoCallback_RecvBuddyRequest(GPConnection* connection,
 {
 #pragma unused(param)
     char userName[21];
+    char gamecode_str[5];
     GPResult gpResult;
     int i;
     BOOL confirm = FALSE;
@@ -1383,9 +1410,17 @@ static void DWCi_GPGetInfoCallback_RecvBuddyRequest(GPConnection* connection,
             || DWC_GetFriendDataType(&stpFriendCnt->friendList[i])
                 == DWC_FRIENDDATA_FRIEND_KEY)
         {
+            u32 gamecode = DWCi_GetUserData()->gamecode;
+
+            // the requester's user name (lastname) carries its gamecode after the 9-character id
+            snprintf(gamecode_str, sizeof(gamecode_str), "%c%c%c%c",
+                (u8)(gamecode >> 24), (u8)(gamecode >> 16), (u8)(gamecode >> 8),
+                (u8)gamecode);
+
             if (DWC_GetGsProfileId(DWCi_GetUserData(),
                     &stpFriendCnt->friendList[i])
-                == arg->profile)
+                    == arg->profile
+                && memcmp(gamecode_str, &arg->lastname[9], 4) == 0)
             {
                 gpResult = gpAuthBuddyRequest(connection, arg->profile);
                 confirm = TRUE;
@@ -1419,7 +1454,7 @@ static void DWCi_GPGetInfoCallback_RecvAuthMessage(GPConnection* connection,
     int index;
     int i;
     BOOL listChanged = FALSE;
-    BOOL alreadyBuddy = TRUE;
+    BOOL alreadyBuddy = FALSE;
 
     if (arg->result != GP_NO_ERROR)
     {
@@ -1457,25 +1492,28 @@ static void DWCi_GPGetInfoCallback_RecvAuthMessage(GPConnection* connection,
             || DWC_GetFriendDataType(&stpFriendCnt->friendList[i])
                 == DWC_FRIENDDATA_FRIEND_KEY)
         {
-            if (DWC_IsBuddyFriendData(&stpFriendCnt->friendList[i])
-                == TRUE)
-            {
-                DWC_Printf(DWC_REPORTFLAG_UPDATE_SV,
-                    "This profile is already my buddy.\n");
-                alreadyBuddy = FALSE;
-            }
-            else if (DWC_GetGsProfileId(DWCi_GetUserData(),
-                         &stpFriendCnt->friendList[i])
+            if (DWC_GetGsProfileId(DWCi_GetUserData(),
+                    &stpFriendCnt->friendList[i])
                 == arg->profile)
             {
-                DWC_SetGsProfileId(
-                    &stpFriendCnt->friendList[i], arg->profile);
-                DWCi_SetBuddyFriendData(&stpFriendCnt->friendList[i]);
-                listChanged = TRUE;
+                if (DWC_IsBuddyFriendData(&stpFriendCnt->friendList[i])
+                    == TRUE)
+                {
+                    DWC_Printf(DWC_REPORTFLAG_UPDATE_SV,
+                        "This profile is already my friend[%d].\n", i);
+                    alreadyBuddy = TRUE;
+                }
+                else
+                {
+                    DWC_SetGsProfileId(
+                        &stpFriendCnt->friendList[i], arg->profile);
+                    DWCi_SetBuddyFriendData(&stpFriendCnt->friendList[i]);
+                    listChanged = TRUE;
 
-                DWC_Printf(DWC_REPORTFLAG_UPDATE_SV,
-                    "Established buddy with %u, friend[%d]gs.\n",
-                    arg->profile, i);
+                    DWC_Printf(DWC_REPORTFLAG_UPDATE_SV,
+                        "Established buddy with %u, friend[%d]gs.\n",
+                        arg->profile, i);
+                }
             }
         }
     }
@@ -1485,14 +1523,14 @@ static void DWCi_GPGetInfoCallback_RecvAuthMessage(GPConnection* connection,
         index = DWCi_RefreshFriendListAll(stpFriendCnt->friendList,
             stpFriendCnt->friendListLen, arg->profile);
 
-        if (alreadyBuddy)
+        if (!alreadyBuddy)
         {
             DWCi_CallBuddyFriendCallback(index);
         }
 
         stpFriendCnt->friendListChanged = 1;
     }
-    else
+    else if (!alreadyBuddy)
     {
         DWC_Printf(DWC_REPORTFLAG_UPDATE_SV,
             "Not Established buddy with %u.\n", arg->profile);
@@ -1508,22 +1546,7 @@ static void DWCi_StopPersLogin(DWCError error, int errorCode)
 
     DWCi_SetError(error, errorCode);
 
-    // DWC_LogoutFromStorageServer's body, closing only after PersistThink when called from its callbacks
-    if (stInPersistThink == TRUE)
-    {
-        stCloseStatsRequested = TRUE;
-    }
-    else
-    {
-        CloseStatsConnection();
-    }
-
-    stPersState = DWC_PERS_STATE_INIT;
-
-    if (stpFriendCnt != NULL)
-    {
-        stpFriendCnt->persCallbackLevel = 0;
-    }
+    DWC_LogoutFromStorageServer();
 
     if (stpFriendCnt->persLoginCallback != NULL)
     {
@@ -1700,4 +1723,14 @@ static void DWCi_SubPersCallbackLevel(void)
 static u32 DWCi_GetPersCallbackLevel(void)
 {
     return stpFriendCnt->persCallbackLevel;
+}
+
+void DWCi_BeginCloseStatsConnection(void)
+{
+    s_bInCloseStatsConnection = TRUE;
+}
+
+void DWCi_EndCloseStatsConnection(void)
+{
+    s_bInCloseStatsConnection = FALSE;
 }

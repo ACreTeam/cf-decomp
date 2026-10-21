@@ -110,7 +110,7 @@ BOOL DWC_GetSuspendMatch(void);
 // match/dwc_common.c and dwc_transport.c
 u8 DWC_GetFriendStatusDataSC(DWCFriendData *friendData, u8 *maxEntry,
                              u8 *numEntry, void *statusData, int *size);
-BOOL DWC_SetFriendStatusCallback(DWCFriendStatusCallback callback, void *param);
+BOOL DWC_SetBuddyFriendCallback(DWCBuddyFriendCallback callback, void *param);
 BOOL DWC_IsSendableReliable(u8 aid);
 BOOL DWC_SendReliable(u8 aid, const void *data, u32 size);
 BOOL DWC_Ping(u8 aid);
@@ -120,7 +120,7 @@ BOOL DWC_SetUserRecvTimeoutCallback(DWCUserRecvTimeoutCallback callback,
                                     void *param);
 BOOL DWC_SetUserPingCallback(DWCUserPingCallback callback, void *param);
 BOOL DWC_SetSendSplitMax(u16 sendSplitMax);
-BOOL DWC_SetRecvTimeoutTime(int milliseconds);
+BOOL DWC_SetConnectionKeepAliveTime(u32 time);
 
 // match/dwc_friend.c
 // sets the status data the friends see

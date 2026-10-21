@@ -3556,8 +3556,9 @@ lib/dwc/match/dwc_main.c:
 
 lib/dwc/match/dwc_match.c:
 	.text       start:0x8032091C end:0x8033914C
+	.rodata     start:0x8048D810 end:0x8048D828
 	.data       start:0x805387F8 end:0x8053B490
-	.bss        start:0x806AA658 end:0x806AADA0
+	.bss        start:0x806AA658 end:0x806AAD90
 	.sdata      start:0x8074CEF8 end:0x8074CFE8
 	.sbss       start:0x8074F190 end:0x8074F1B0
 
@@ -3593,7 +3594,7 @@ lib/dwc/account/dwc_account.c:
 lib/dwc/auth/dwc_auth_interface.c:
 	.text       start:0x8033D0AC end:0x8033F348
 	.data       start:0x8053BC78 end:0x8053C4D0
-	.bss        start:0x806AADA0 end:0x806AB258
+	.bss        start:0x806AADA0 end:0x806AB258 align:32
 	.sdata      start:0x8074D008 end:0x8074D130
 	.sbss       start:0x8074F1D8 end:0x8074F1E8
 
@@ -3795,13 +3796,13 @@ lib/gamespy/serverbrowsing/sb_serverlist.c:
 	.sbss       start:0x8074F2A8 end:0x8074F2B0 align:4
 	.sdata2     start:0x80752D80 end:0x80752D90
 
-lib/dwc/vct/adpcm.c:
+lib/RVL_SDK/vct/adpcm.c:
 	.text       start:0x80364968 end:0x80365E48
 	.rodata     start:0x8048D840 end:0x8048D908
 	.data       start:0x8053F128 end:0x8053F180
 	.sdata2     start:0x80752D90 end:0x80752DA0
 
-lib/dwc/vct/audio.c:
+lib/RVL_SDK/vct/audio.c:
 	.text       start:0x80365E48 end:0x80368EC4
 	.rodata     start:0x8048D908 end:0x8048D930
 	.data       start:0x8053F180 end:0x80540998
@@ -3810,17 +3811,17 @@ lib/dwc/vct/audio.c:
 	.sbss       start:0x8074F2B0 end:0x8074F318
 	.sdata2     start:0x80752DA0 end:0x80752DA8
 
-lib/dwc/vct/hmac.c:
+lib/RVL_SDK/vct/hmac.c:
 	.text       start:0x80368EC4 end:0x80368FEC
 	.data       start:0x80540998 end:0x805409B0
 	.sdata      start:0x8074D740 end:0x8074D748
 
-lib/dwc/vct/node.c:
+lib/RVL_SDK/vct/node.c:
 	.text       start:0x80368FEC end:0x80369340
 	.bss        start:0x806B3580 end:0x806B3590
 	.sbss       start:0x8074F318 end:0x8074F320
 
-lib/dwc/vct/filter.c:
+lib/RVL_SDK/vct/filter.c:
 	.text       start:0x80369340 end:0x8036A180
 	.data       start:0x805409B0 end:0x80540AC8
 	.bss        start:0x806B3590 end:0x806B51C0
@@ -3828,12 +3829,12 @@ lib/dwc/vct/filter.c:
 	.sbss       start:0x8074F320 end:0x8074F340
 	.sdata2     start:0x80752DA8 end:0x80752DB0
 
-lib/dwc/vct/packet.c:
+lib/RVL_SDK/vct/packet.c:
 	.text       start:0x8036A180 end:0x8036A554
 	.data       start:0x80540AC8 end:0x80540AD8
 	.bss        start:0x806B51C0 end:0x806B51E8
 
-lib/dwc/vct/session.c:
+lib/RVL_SDK/vct/session.c:
 	.text       start:0x8036A554 end:0x8036BDC4
 	.rodata     start:0x8048D930 end:0x8048DA40
 	.data       start:0x80540AD8 end:0x805410E0
@@ -3842,17 +3843,17 @@ lib/dwc/vct/session.c:
 	.sbss       start:0x8074F340 end:0x8074F358
 	.sdata2     start:0x80752DB0 end:0x80752DC0
 
-lib/dwc/vct/stream.c:
+lib/RVL_SDK/vct/stream.c:
 	.text       start:0x8036BDC4 end:0x8036C7F0
 	.data       start:0x805410E0 end:0x805412C8
 	.sbss       start:0x8074F358 end:0x8074F368
 
-lib/dwc/vct/buffer.c:
+lib/RVL_SDK/vct/buffer.c:
 	.text       start:0x8036C7F0 end:0x8036CB50
 	.data       start:0x805412C8 end:0x80541388
 	.sbss       start:0x8074F368 end:0x8074F378
 
-lib/dwc/vct/vad.c:
+lib/RVL_SDK/vct/vad.c:
 	.text       start:0x8036CB50 end:0x8036CF14
 	.data       start:0x80541388 end:0x805413F8
 	.bss        start:0x806B5230 end:0x806B5240
@@ -3860,13 +3861,13 @@ lib/dwc/vct/vad.c:
 	.sbss       start:0x8074F378 end:0x8074F388
 	.sdata2     start:0x80752DC0 end:0x80752DC8
 
-lib/dwc/vct/vct.c:
+lib/RVL_SDK/vct/vct.c:
 	.text       start:0x8036CF14 end:0x8036D458
 	.data       start:0x805413F8 end:0x805414DC
 	.bss        start:0x806B5240 end:0x806B5258
 	.sbss       start:0x8074F388 end:0x8074F3A0
 
-lib/dwc/vct/debug.c:
+lib/RVL_SDK/vct/debug.c:
 	.text       start:0x8036D458 end:0x8036D514
 	.data       start:0x805414DC end:0x80541520 align:4
 	.sdata      start:0x8074D790 end:0x8074D798
@@ -5100,14 +5101,14 @@ lib/RevoEX/vf/develop/nand_drv.c:
 	.rodata     start:0x8049BFA0 end:0x8049BFC0 align:4
 	.bss        start:0x80746018 end:0x807461B8 align:4
 
-lib/RevoEX/so/SOBasic.c:
+lib/RevoEX/so/SOCommon.c:
 	.text       start:0x8043BE38 end:0x8043CE9C
 	.data       start:0x80561050 end:0x80561230
 	.bss        start:0x807461B8 end:0x807461D0
 	.sdata      start:0x8074DF08 end:0x8074DF10
 	.sbss       start:0x8074FB98 end:0x8074FBA8 align:4
 
-lib/RevoEX/so/SOCommon.c:
+lib/RevoEX/so/SOBasic.c:
 	.text       start:0x8043CE9C end:0x8043E5E4
 	.data       start:0x80561230 end:0x80561288
 	.bss        start:0x807461D0 end:0x807461E0

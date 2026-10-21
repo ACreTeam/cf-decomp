@@ -93,6 +93,7 @@ extern "C"
     BOOL DWC_CheckHasProfile(const DWCAccUserData* userdata);
     BOOL DWC_CheckValidConsole(const DWCAccUserData* userdata);
     BOOL DWC_CheckDirtyFlag(const DWCAccUserData* userdata);
+    BOOL DWC_IsCompatibleUserData(const DWCAccUserData* userdata);
     void DWC_ClearDirtyFlag(DWCAccUserData* userdata);
 
     u64 DWC_GetFriendKey(const DWCAccFriendData* frienddata);
@@ -115,8 +116,18 @@ extern "C"
     void DWCi_Acc_CreateTempLoginId(DWCAccLoginId* loginid);
     u64 DWC_Acc_NumericKeyToFriendKey(const char* numerickey);
     void DWC_Acc_FriendKeyToNumericKey(u64 friendkey, char* numerickey);
-    BOOL DWC_Acc_CheckFriendKey(u64 friendkey, u32 gamecode);
-    u64 DWC_Acc_CreateFriendKey(int gs_profile_id, u32 gamecode);
+    // how the 7-bit check value in the high word of a friend key is made
+    typedef enum
+    {
+        DWCi_FRIENDKEY_GENERATOR_CRC,
+        DWCi_FRIENDKEY_GENERATOR_MD5,
+        DWCi_FRIENDKEY_GENERATOR_NUM
+    } DWCiFriendKeyGenerator;
+
+    BOOL DWC_Acc_CheckFriendKey(
+        u64 friendkey, u32 gamecode, DWCiFriendKeyGenerator method);
+    u64 DWC_Acc_CreateFriendKey(
+        int gs_profile_id, u32 gamecode, DWCiFriendKeyGenerator method);
     int DWC_Acc_FriendKeyToGsProfileId(u64 friendkey, u32 gamecode);
     u64 DWCi_Acc_GetUserId(const DWCAccLoginId* data);
     u32 DWCi_Acc_GetPlayerId(const DWCAccLoginId* data);

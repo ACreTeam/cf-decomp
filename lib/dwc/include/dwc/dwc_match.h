@@ -12,10 +12,10 @@ extern "C"
 {
 #endif
 
-#define DWC_MATCHING_VERSION 3U
+#define DWC_MATCHING_VERSION 90U
 #define DWC_MAX_CONNECTIONS  32
 #define DWC_MAX_MATCH_IDX_LIST 64
-#define DWC_SB_COMMAND_STRING "SBCM"
+#define DWC_SB_COMMAND_STRING "\xBB\x49\xCC\x4D"
 
 #define DWC_QR2_ALIVE_DURING_MATCHING
 #define DWC_MATCH_ACCEPT_NO_FRIEND
@@ -138,14 +138,17 @@ extern "C"
     {
         DWC_MATCH_STATE_INIT = 0,
         DWC_MATCH_STATE_CL_WAITING,
-        DWC_MATCH_STATE_CL_SEARCH_OWN,
         DWC_MATCH_STATE_CL_SEARCH_HOST,
         DWC_MATCH_STATE_CL_WAIT_RESV,
-        DWC_MATCH_STATE_CL_SEARCH_NN_HOST,
+        DWC_MATCH_STATE_CL_SEARCH_EVAL_HOST,
         DWC_MATCH_STATE_CL_NN,
         DWC_MATCH_STATE_CL_GT2,
         DWC_MATCH_STATE_CL_CANCEL_SYN,
         DWC_MATCH_STATE_CL_SYN,
+        DWC_MATCH_STATE_CL_SVDOWN_1,
+        DWC_MATCH_STATE_CL_SVDOWN_2,
+        DWC_MATCH_STATE_CL_SVDOWN_3,
+        DWC_MATCH_STATE_CL_SEARCH_GROUPID_HOST,
         DWC_MATCH_STATE_SV_WAITING,
         DWC_MATCH_STATE_SV_OWN_NN,
         DWC_MATCH_STATE_SV_OWN_GT2,
@@ -155,19 +158,21 @@ extern "C"
         DWC_MATCH_STATE_SV_SYN,
         DWC_MATCH_STATE_SV_SYN_WAIT,
         DWC_MATCH_STATE_WAIT_CLOSE,
-        DWC_MATCH_STATE_SV_POLL_TIMEOUT,
+        DWC_MATCH_STATE_SEARCH_OWN,
+        DWC_MATCH_STATE_SV_SYN_CLOSE_WAIT,
         DWC_MATCH_STATE_NUM
     } DWCMatchState;
 
-    enum
-    {
+    // defined after DWCi_StopMeshMaking in dwc_match.c (CF emits its strings last)
+    extern const char* match_st_string[DWC_MATCH_STATE_NUM];
+
+    typedef enum DWCMatchType {
         DWC_MATCH_TYPE_ANYBODY = 0,
         DWC_MATCH_TYPE_FRIEND,
         DWC_MATCH_TYPE_SC_SV,
         DWC_MATCH_TYPE_SC_CL,
         DWC_MATCH_TYPE_NUM
-    };
-
+    } DWCMatchType;
 
     enum
     {
@@ -186,7 +191,7 @@ extern "C"
     } DWCMatchOptSCConnectBlock;
 
 
-    BOOL DWC_RegisterMatchingStatus(void);
+    BOOL DWC_RegisterMatchStatus(void);
     u8 DWC_AddMatchKeyString(u8 keyID, const char* keyString,
         const char* valueSrc);
     const char* DWC_GetMatchStringValue(
@@ -203,9 +208,10 @@ extern "C"
         int friendIdxListLen, u8 numEntry, BOOL distantFriend,
         DWCMatchedSCCallback matchedCallback, void* matchedParam,
         DWCEvalPlayerCallback evalCallback, void* evalParam);
-    void DWCi_ConnectToGameServerAsync(int serverPid,
+    void DWCi_ConnectToGameServerAsync(int mode, int serverPid,
         DWCMatchedSCCallback matchedCallback, void* matchedParam,
-        DWCNewClientCallback newClientCallback, void* newClientParam);
+        DWCNewClientCallback newClientCallback, void* newClientParam,
+        DWCEvalPlayerCallback evalCallback, const u32* evalData, void* evalParam);
     void DWCi_ProcessMatchSCClosing(int clientPid);
     BOOL DWCi_ProcessMatchClosing(
         DWCError error, int errorCode, int profileID);
@@ -219,9 +225,46 @@ extern "C"
     int DWCi_GetNumValidConnection(void);
     int DWCi_GetAllAIDList(u8** aidList);
     void DWCi_SetNumValidConnection(void);
-    GPResult DWCi_GPSetServerStatus(void);
+    GPResult DWCi_GPSetServerStatus(int status);
     BOOL DWCi_IsShutdownMatch(void);
     void DWCi_ProcessMatchSynPacket(u8 aid, u16 type, u8* data);
+
+    // DWC 2.1.3 DWARF names; layout also verified against CF accesses.
+    typedef struct DWCstNodeInfo
+    {
+        int profileID;                  // 0x00
+        u32 publicInetAddress;          // 0x04
+        u32 privateInetAddress;         // 0x08
+        u16 publicQueryPort;            // 0x0C
+        u16 privateQueryPort;           // 0x0E
+        u32 gt2IP;                      // 0x10
+        u16 gt2Port;                    // 0x14
+        u8 aid;                         // 0x16
+        u8 hasPrivateAddress;           // 0x17
+        int nnTryCount;                 // 0x18
+        s64 nextMeshMakeTryTick;        // 0x20
+        u8 connUserData[4];             // 0x28
+    } DWCNodeInfo; // size 0x30, alignment 8
+
+    BOOL DWC_IsServerMyself(void);
+    BOOL DWCi_IsServerChanging(void);
+    BOOL DWCi_IsBackupMine(void);
+    int DWCi_SendServerPolling(int force);
+    u8 DWCi_GetServerOrSubServerAID(void);
+    DWCNodeInfo* DWCi_NodeInfoList_GetNodeInfoForIndex(int index);
+    void DWCi_HandleGT2UnreliableMatchCommandMessage(char* data, int len);
+    int DWCi_NodeInfoList_GetCount(void);
+    DWCNodeInfo* DWCi_NodeInfoList_GetNodeInfoForAID(u8 aid);
+    DWCNodeInfo* DWCi_NodeInfoList_GetServerNodeInfo(void);
+    BOOL DWCi_NodeInfoList_RemoveAID(u8 aid);
+    BOOL DWCi_StopMeshMaking(void);
+    BOOL DWCi_IsFullMesh(void);
+    void DWCi_SetMatchStatus(DWCMatchState state);
+    BOOL DWCi_IsServerChangeEnabled(void);
+    void DWCi_NodeInfoList_Clear(void);
+    DWCNodeInfo* DWCi_NodeInfoList_GetNodeInfoForProfileID(int profileID);
+    void DWCi_CloseMatch(void);
+    int DWCi_IsLockedBuddyStatus(GPBuddyStatus* status);
 
 #ifdef __cplusplus
 }

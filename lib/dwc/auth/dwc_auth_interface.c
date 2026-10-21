@@ -11,6 +11,7 @@
 #include <revolution/os/OSThread.h>
 #include <revolution/os/OSTime.h>
 #include <revolution/sc.h>
+#include <revolution/so.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -73,7 +74,7 @@ static char* s_profserver_hosts[3] = {
 
 static struct
 {
-    s32 errorcode;
+    volatile s32 errorcode; // set from the NHTTP callback
     char token[301];
     char challenge[9];
     char cookie[65];
@@ -93,49 +94,53 @@ static struct
     char svltoken[301];
 } s_svl_result;
 
+// the console's own user id, saved in NAND (32-byte aligned NAND buffer)
+static struct
+{
+    u64 userid;
+    u8 padding[24];
+} s_auth_console_save_data ATTRIBUTE_ALIGN(32);
+
 // the profanity check's reply (HandleResponse's "prwords=")
 static struct
 {
-    char prwords[52];
-    BOOL nhttp_error;
+    char prwords[51];
+    BOOL connerr;
 } s_prof_result;
 
-static char strbuf[255];
-
-static s32 s_auth_state;
+// changed from the NAND and NHTTP callbacks
+static volatile s32 s_auth_state;
 
 static struct
 {
-    struct
-    {
-        u64 userid;
-        u8 padding[24];
-    } save_data;
     u8 nwc24_work[0x4000];
     NCDIfConfig ifconfig;
     u16 ingamesn[26];
     char gsbrcd[12];
     char svc[5];
-    const void* words;   // profanity check request
-    u32 words_len;
-    s32 prof_userid;     // 1: the profanity request also sends userid
-    char wregion[2];
+    const u16* prof_words;   // profanity check request
+    int prof_words_bytes;
+    s32 prof_userid_valid;   // 1: the profanity request also sends userid
+    char prof_region[2];
     char read_buf[4096];
     char header_buf[2048];
     s32 retry_num;
     BOOL is_nand_end;
     s32 nand_result;
+    BOOL is_aborting;
     s32 request_id;
     s32 auth_kind;
     NANDCommandBlock nand_command_block;
     NANDFileInfo fileinfo;
     DWCAllocFunc auth_alloc;
     DWCFreeFunc auth_free;
-    u8 _5724[4];
     OSTime start_time;
+    u64 game_save_userid;
 }* s_auth_work;
 
 static DWC_AuthServer s_authserver;
+// TRUE: authenticate with the user id the game passed in instead of the console's saved one
+static BOOL s_useGameSaveUserId;
 
 static void* nhttp_alloc(u32 size, int align);
 static void nhttp_free(void* buffer);
@@ -152,14 +157,17 @@ static void DWCi_Auth_HandleNandResult(
     s32 ok_state, s32 retry_state, s32 noexists_state, s32 eaccess_state);
 static char* DWCi_Auth_GetHost(void);
 
-void DWCi_Auth_InitInterface(DWC_AuthServer authServer)
+BOOL DWCi_Auth_InitInterface(DWC_AuthServer authServer)
 {
     memset(&s_auth_result, 0, sizeof(s_auth_result));
     memset(&s_svl_result, 0, sizeof(s_svl_result));
+    memset(&s_auth_console_save_data, 0, sizeof(s_auth_console_save_data));
     s_auth_work = NULL;
     s_auth_state = DWCi_AUTH_STATE_NOT_STARTED;
     s_authserver = authServer;
     s_auth_result.ingamesn_check_result = DWC_INGAMESN_NOT_CHECKED;
+    s_useGameSaveUserId = FALSE;
+    return TRUE;
 }
 
 DWC_AuthServer DWCi_Auth_GetServer(void)
@@ -193,14 +201,14 @@ int DWCi_Auth_StartAuthentication(const u16* ingamesn, const char* gsbrcd,
     if (result != NCD_RESULT_SUCCESS)
     {
         DWC_Printf(DWC_REPORTFLAG_AUTH, " NCDGetCurrentIfConfig failed.[%d]\n", result);
-        return FALSE;
+        goto error;
     }
 
     result = NHTTPStartup(nhttp_alloc, nhttp_free, 0x11);
     if (result < 0)
     {
         DWC_Printf(DWC_REPORTFLAG_AUTH, " failed to start NHTTP\n");
-        return FALSE;
+        goto error;
     }
 
     wcsncpy(s_auth_work->ingamesn, ingamesn, 26);
@@ -208,15 +216,87 @@ int DWCi_Auth_StartAuthentication(const u16* ingamesn, const char* gsbrcd,
     s_auth_work->auth_kind = DWCi_AUTH_KIND_LOGIN;
     memset(&s_auth_result, 0, sizeof(s_auth_result));
     s_auth_result.ingamesn_check_result = DWC_INGAMESN_NOT_CHECKED;
-    s_auth_result.userid = userid;
+    // only used when s_useGameSaveUserId is set; the console's saved id is read from NAND first
+    s_auth_work->game_save_userid = userid;
+    s_auth_state = DWCi_AUTH_STATE_FILE_OPEN_FOR_READ;
 
-    s_auth_state = userid == 0 ? DWCi_AUTH_STATE_FILE_OPEN_FOR_READ : DWCi_AUTH_STATE_GET_TOKEN;
+    return TRUE;
 
+error:
+    s_auth_work->auth_free(DWC_ALLOCTYPE_AUTH, s_auth_work, 0);
+    return FALSE;
+}
+
+// service locator request (svc = service code); stripped in CF
+BOOL DWCi_Auth_Svl_StartAuthentication(
+    const char* svc, DWCAllocFunc allocator, DWCFreeFunc deallocator)
+{
+    DWCi_Auth_StartAuthentication((const u16*)"", "", 0, allocator, deallocator);
+    memset(&s_svl_result, 0, sizeof(s_svl_result));
+    strncpy(s_auth_work->svc, svc, 5);
+    s_auth_work->auth_kind = DWCi_AUTH_KIND_SVCLOC;
+    return TRUE;
+}
+
+// profanity check of words (region: one character); stripped in CF
+BOOL DWCi_Auth_Prof_StartAuthentication(const u16* words, int words_bytes,
+    char region, DWCAllocFunc allocator, DWCFreeFunc deallocator)
+{
+    memset(&s_prof_result, 0, sizeof(s_prof_result));
+    s_prof_result.connerr = FALSE;
+    DWCi_Auth_StartAuthentication((const u16*)"", "", 0, allocator, deallocator);
+    s_auth_work->prof_words = words;
+    s_auth_work->prof_words_bytes = words_bytes;
+    s_auth_work->prof_region[0] = region;
+    s_auth_work->prof_region[1] = '\0';
+    s_auth_work->auth_kind = DWCi_AUTH_KIND_PROFCHECK;
+    if (s_auth_console_save_data.userid == 0)
+    {
+        s_auth_work->prof_userid_valid = 0;
+    }
+    else
+    {
+        s_auth_work->prof_userid_valid = 1;
+    }
     return TRUE;
 }
 
 void DWCi_Auth_AbortAuthentication(void)
 {
+    BOOL isNandState;
+    BOOL cleanuped;
+    OSTime starttime;
+
+    s_auth_work->is_aborting = TRUE;
+
+    // let a NAND operation in progress run to its end first
+    isNandState = TRUE;
+    while (isNandState)
+    {
+        switch (s_auth_state)
+        {
+        case DWCi_AUTH_STATE_FILE_OPEN_FOR_READ_WAIT:
+        case DWCi_AUTH_STATE_FILE_READ:
+        case DWCi_AUTH_STATE_FILE_READ_WAIT:
+        case DWCi_AUTH_STATE_FILE_CLOSE_FOR_DELETE:
+        case DWCi_AUTH_STATE_FILE_CLOSE_FOR_DELETE_WAIT:
+        case DWCi_AUTH_STATE_FILE_DELETE:
+        case DWCi_AUTH_STATE_FILE_DELETE_WAIT:
+        case DWCi_AUTH_STATE_FILE_CREATE:
+        case DWCi_AUTH_STATE_FILE_OPEN_FOR_WRITE:
+        case DWCi_AUTH_STATE_FILE_WRITE:
+        case DWCi_AUTH_STATE_FILE_WRITE_WAIT:
+        case DWCi_AUTH_STATE_FILE_CLOSE:
+        case DWCi_AUTH_STATE_FILE_CLOSE_WAIT:
+            DWCi_Auth_ProcessAuthentication();
+            OSSleepTicks(OSMillisecondsToTicks(1));
+            break;
+        default:
+            isNandState = FALSE;
+            break;
+        }
+    }
+
     if (s_auth_state == DWCi_AUTH_STATE_GET_TOKEN_WAIT)
     {
         NHTTPCancelRequestAsync(s_auth_work->request_id);
@@ -240,6 +320,8 @@ void DWCi_Auth_AbortAuthentication(void)
     if (s_auth_state != DWCi_AUTH_STATE_NOT_STARTED && s_auth_state != DWCi_AUTH_STATE_CLEANUP_NHTTP_WAIT
         && s_auth_state != DWCi_AUTH_STATE_FINISHED && s_auth_state != DWCi_AUTH_STATE_IDLE)
     {
+        cleanuped = FALSE;
+        starttime = OSGetTime();
         s_auth_state = DWCi_AUTH_STATE_CLEANUP_NHTTP_WAIT;
         NHTTPCleanupAsync(DWCi_Auth_EndProcess);
         for (;;)
@@ -249,6 +331,14 @@ void DWCi_Auth_AbortAuthentication(void)
                 break;
             }
             OSSleepTicks(OSMillisecondsToTicks(1));
+
+            // NHTTP cleanup stuck for over 6 seconds: shut the sockets down to release it
+            if (!cleanuped
+                && OSTicksToMilliseconds(OSGetTime() - starttime) > 6000)
+            {
+                cleanuped = TRUE;
+                SOCleanup();
+            }
         }
     }
 
@@ -264,6 +354,11 @@ void DWCi_Auth_ProcessAuthentication(void)
             if (s_auth_work->auth_kind == DWCi_AUTH_KIND_PROFCHECK)
             {
                 s_auth_state = DWCi_AUTH_STATE_GET_TOKEN; // no saved userid needed
+                break;
+            }
+            if (s_auth_console_save_data.userid != 0)
+            {
+                s_auth_state = DWCi_AUTH_STATE_GET_TOKEN; // already read
                 break;
             }
             NANDPrivateOpenAsync(s_filename, &s_auth_work->fileinfo,
@@ -282,8 +377,8 @@ void DWCi_Auth_ProcessAuthentication(void)
             break;
 
         case DWCi_AUTH_STATE_FILE_READ:
-            NANDReadAsync(&s_auth_work->fileinfo, &s_auth_work->save_data,
-                sizeof(s_auth_work->save_data), nand_callback,
+            NANDReadAsync(&s_auth_work->fileinfo, &s_auth_console_save_data,
+                sizeof(s_auth_console_save_data), nand_callback,
                 &s_auth_work->nand_command_block);
             s_auth_state = DWCi_AUTH_STATE_FILE_READ_WAIT;
             break;
@@ -294,17 +389,16 @@ void DWCi_Auth_ProcessAuthentication(void)
                 break;
             }
 
-            if (s_auth_work->nand_result == sizeof(s_auth_work->save_data))
+            if (s_auth_work->nand_result == sizeof(s_auth_console_save_data))
             {
-                s_auth_result.userid = s_auth_work->save_data.userid;
                 DWC_Printf(DWC_REPORTFLAG_AUTH, " read userid = %llu\n",
-                    s_auth_result.userid);
+                    s_auth_console_save_data.userid);
                 s_auth_work->nand_result = NAND_RESULT_OK;
             }
             else if (s_auth_work->nand_result >= 0)
             {
                 DWC_Printf(DWC_REPORTFLAG_AUTH,
-                    " illigal size userid read = %d\n", s_auth_work->nand_result);
+                    " illegal size userid read = %d\n", s_auth_work->nand_result);
                 s_auth_work->nand_result = NAND_RESULT_ACCESS;
             }
             DWCi_Auth_HandleNandResult(DWCi_AUTH_STATE_FILE_CLOSE,
@@ -418,9 +512,8 @@ void DWCi_Auth_ProcessAuthentication(void)
             break;
 
         case DWCi_AUTH_STATE_FILE_WRITE:
-            s_auth_work->save_data.userid = s_auth_result.userid;
-            NANDWriteAsync(&s_auth_work->fileinfo, &s_auth_work->save_data,
-                sizeof(s_auth_work->save_data), nand_callback,
+            NANDWriteAsync(&s_auth_work->fileinfo, &s_auth_console_save_data,
+                sizeof(s_auth_console_save_data), nand_callback,
                 &s_auth_work->nand_command_block);
             s_auth_state = DWCi_AUTH_STATE_FILE_WRITE_WAIT;
             break;
@@ -430,14 +523,14 @@ void DWCi_Auth_ProcessAuthentication(void)
             {
                 break;
             }
-            if (s_auth_work->nand_result == sizeof(s_auth_work->save_data))
+            if (s_auth_work->nand_result == sizeof(s_auth_console_save_data))
             {
                 s_auth_work->nand_result = NAND_RESULT_OK;
             }
             else
             {
                 DWC_Printf(DWC_REPORTFLAG_AUTH,
-                    " illigal size userid write = %d\n", s_auth_work->nand_result);
+                    " illegal size userid write = %d\n", s_auth_work->nand_result);
                 s_auth_work->nand_result = NAND_RESULT_ACCESS;
             }
             DWCi_Auth_HandleNandResult(DWCi_AUTH_STATE_FILE_CLOSE,
@@ -462,8 +555,16 @@ void DWCi_Auth_ProcessAuthentication(void)
             break;
 
         case DWCi_AUTH_STATE_GET_TOKEN:
-            DWCi_Auth_SendRequest(s_auth_work->auth_kind, s_auth_work->ingamesn,
-                s_auth_work->gsbrcd, s_auth_result.userid);
+            if (s_useGameSaveUserId)
+            {
+                DWCi_Auth_SendRequest(s_auth_work->auth_kind, s_auth_work->ingamesn,
+                    s_auth_work->gsbrcd, s_auth_work->game_save_userid);
+            }
+            else
+            {
+                DWCi_Auth_SendRequest(s_auth_work->auth_kind, s_auth_work->ingamesn,
+                    s_auth_work->gsbrcd, s_auth_console_save_data.userid);
+            }
             s_auth_work->start_time = OSGetTime();
             s_auth_state = DWCi_AUTH_STATE_GET_TOKEN_WAIT;
             break;
@@ -566,7 +667,7 @@ void DWCi_Auth_GetGameSpyToken(char* authToken, char* partnerChallenge)
 
 u64 DWCi_Auth_GetConsoleUserId(void)
 {
-    return s_auth_result.userid;
+    return s_auth_console_save_data.userid;
 }
 
 DWCIngamesnCheckResult DWCi_Auth_GetIngamesnCheckResult(void)
@@ -583,6 +684,12 @@ BOOL DWCi_Auth_GetServerTimeOffsetInSeconds(OSTime* offsetSeconds)
 
     *offsetSeconds = s_auth_result.server_timediff / OS_TIMER_CLOCK;
     return TRUE;
+}
+
+// stripped in CF: authenticate with the user id passed to DWCi_Auth_StartAuthentication
+void DWCi_Auth_UseGameSaveUserId(BOOL use)
+{
+    s_useGameSaveUserId = use;
 }
 
 static void* nhttp_alloc(u32 size, int align)
@@ -650,12 +757,12 @@ static void DWCi_Auth_SendRequest(s32 action_kind, const u16* ingamesn,
 
     if (NHTTPSetRootCADefault(request) != 0)
     {
-        OSPanic("dwc_auth_interface.c", 905,
+        OSPanic("dwc_auth_interface.c", 1042,
             "\tDWC Auth: failed to set RootCA\n");
     }
     if (NHTTPSetClientCertDefault(request) != 0)
     {
-        OSPanic("dwc_auth_interface.c", 909,
+        OSPanic("dwc_auth_interface.c", 1046,
             "\tDWC Auth: failed to set ClientCert\n");
     }
 
@@ -706,7 +813,7 @@ static void DWCi_Auth_SendRequest(s32 action_kind, const u16* ingamesn,
             break;
 
         case DWCi_AUTH_KIND_PROFCHECK:
-            if (s_auth_work->prof_userid == 1)
+            if (s_auth_work->prof_userid_valid == 1)
             {
                 sprintf(strbuf, "%013llu", userid);
                 NHTTPAddPostDataAscii(request, "userid",
@@ -714,15 +821,15 @@ static void DWCi_Auth_SendRequest(s32 action_kind, const u16* ingamesn,
                 DWC_Printf(DWC_REPORTFLAG_AUTH, " userid = 0x%016llx\n", userid);
             }
             NHTTPAddPostDataAscii(request, "wregion",
-                base64nize(s_auth_work->wregion, &b64_ptr));
-            DWC_Printf(DWC_REPORTFLAG_AUTH, " wregion = %s\n", s_auth_work->wregion);
+                base64nize(s_auth_work->prof_region, &b64_ptr));
+            DWC_Printf(DWC_REPORTFLAG_AUTH, " wregion = %s\n", s_auth_work->prof_region);
             NHTTPAddPostDataAscii(request, "wtype", "");
             DWC_Printf(DWC_REPORTFLAG_AUTH, " wtype = \n");
             NHTTPAddPostDataAscii(request, "wenc",
                 base64nize("UTF-16BE", &b64_ptr));
             DWC_Printf(DWC_REPORTFLAG_AUTH, " wenc = UTF-16BE\n");
             NHTTPAddPostDataAscii(request, "words",
-                base64nize_with_len((void*)s_auth_work->words, &b64_ptr, s_auth_work->words_len));
+                base64nize_with_len((void*)s_auth_work->prof_words, &b64_ptr, s_auth_work->prof_words_bytes));
             break;
     }
 
@@ -846,7 +953,7 @@ static void DWCi_Auth_HandleResponse(
         }
         DWC_Printf(DWC_REPORTFLAG_AUTH, " nhttp error(%d)\n", error);
         s_auth_result.errorcode = -20100;
-        s_prof_result.nhttp_error = TRUE;
+        s_prof_result.connerr = TRUE;
         return;
     }
 
@@ -960,6 +1067,8 @@ static void DWCi_Auth_HandleResponse(
                     base64decode[rc] = '\0';
                     sscanf(base64decode, "%llu", &s_auth_result.userid);
                     DWC_Printf(DWC_REPORTFLAG_AUTH, " (%d) userid=%llu\n", rc, s_auth_result.userid);
+                    // the new account's id, saved to NAND by the FILE_WRITE state
+                    s_auth_console_save_data.userid = s_auth_result.userid;
                 }
                 else if (strncmp(token, "svchost=", strlen("svchost=")) == 0)
                 {
@@ -992,7 +1101,14 @@ static void DWCi_Auth_HandleResponse(
                         base64decode,
                         sizeof(base64decode));
                     base64decode[rc] = '\0';
-                    s_svl_result.status = base64decode[0] == 'Y';
+                    if (base64decode[0] == 'Y')
+                    {
+                        s_svl_result.status = TRUE;
+                    }
+                    else
+                    {
+                        s_svl_result.status = FALSE;
+                    }
                     DWC_Printf(DWC_REPORTFLAG_AUTH, " (%d) statusdata=%s\n", rc, base64decode);
                 }
                 else if (strncmp(token, "prwords=", strlen("prwords=")) == 0)
@@ -1126,6 +1242,7 @@ static void DWCi_Auth_HandleNandResult(s32 ok_state, s32 retry_state,
 
 static char* DWCi_Auth_GetHost(void)
 {
+    static char strbuf[255];
     char* found_ptr;
 
     if (s_auth_work->auth_kind != DWCi_AUTH_KIND_PROFCHECK)

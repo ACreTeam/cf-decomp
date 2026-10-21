@@ -1,5 +1,6 @@
 #include <nitro/math/crc.h>
 #include <nitro/math/dgt.h>
+#include <revolution/net/NETDigest.h>
 
 #include <string.h>
 
@@ -859,4 +860,9 @@ u32 MATH_CalcCRC32(const MATHCRC32Table* table, const void* data,
     MATHCRC32Context context = (MATHCRC32Context)(~0);
     MATHi_CRC32UpdateRev(table, &context, data, dataLength);
     return ~context;
+}
+
+void MATH_CalcMD5(void* digest, const void* data, u32 dataLength)
+{
+    NETCalcMD5(digest, data, dataLength);
 }

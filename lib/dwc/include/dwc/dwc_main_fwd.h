@@ -15,15 +15,27 @@ extern "C"
 
     int DWC_SetConnectionClosedCallback(DWCConnectionClosedCallback callback,
         void* param);
-    int DWC_ConnectToAnybodyAsync(unsigned char numEntry, const char* addFilter,
-        DWCMatchedCallback matchedCallback, void* matchedParam,
-        DWCEvalPlayerCallback evalCallback, void* evalParam);
-    int DWC_SetupGameServer(unsigned char maxEntry,
+    int DWC_ConnectToAnybodyAsync(int mode, unsigned char numEntry,
+        const char* addFilter, DWCMatchedSCCallback matchedCallback,
+        void* matchedParam, DWCNewClientCallback newClientCallback,
+        void* newClientParam, unsigned long param8, unsigned long param9,
+        DWCEvalPlayerCallback evalCallback, const unsigned long* evalData,
+        void* evalParam);
+    int DWC_SetupGameServer(int mode, unsigned char maxEntry,
         DWCMatchedSCCallback matchedCallback, void* matchedParam,
-        DWCNewClientCallback newClientCallback, void* newClientParam);
-    int DWC_ConnectToGameServerAsync(int serverIndex,
+        DWCNewClientCallback newClientCallback, void* newClientParam,
+        DWCEvalPlayerCallback evalCallback, const unsigned long* evalData,
+        void* evalParam);
+    int DWC_ConnectToGameServerAsync(int mode, int serverIndex,
         DWCMatchedSCCallback matchedCallback, void* matchedParam,
-        DWCNewClientCallback newClientCallback, void* newClientParam);
+        DWCNewClientCallback newClientCallback, void* newClientParam,
+        DWCEvalPlayerCallback evalCallback, const unsigned long* evalData,
+        void* evalParam);
+    int DWC_ConnectToGameServerByGroupID(int mode, unsigned long groupID,
+        DWCMatchedSCCallback matchedCallback, void* matchedParam,
+        DWCNewClientCallback newClientCallback, void* newClientParam,
+        DWCEvalPlayerCallback evalCallback, const unsigned long* evalData,
+        void* evalParam);
 
     typedef void* DWCFriendsMatchControl;
 
@@ -42,7 +54,6 @@ extern "C"
     unsigned char DWC_GetMyAID(void);
     int DWC_GetAIDList(unsigned char** aidList);
     int DWC_GetLastSocketError(void);
-    int DWC_CloseConnectionsAsync(void);
 
 #ifdef __cplusplus
 }

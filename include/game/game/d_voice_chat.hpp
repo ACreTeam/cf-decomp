@@ -7,7 +7,7 @@
 // from the callers (d_net_dwc, d_net_mgr, both still asm). See notes/d_voice_chat.txt.
 //
 // It wires three libraries together:
-//   - the DWC voice chat library (VCT, include/lib/dwc/vct.h): sessions with the other players
+//   - the SDK voice chat library (VCT, include/lib/revolution/vct.h): sessions with the other players
 //     (up to 16 aids, one bit each in the client mask), audio encode / decode;
 //   - the Wii Speak library (PMIC, include/lib/revolution/PMIC.h): the microphone, driven by a
 //     small state machine (updateMic), with echo cancellation fed from the AI output;
@@ -26,7 +26,7 @@ namespace dVoiceChat {
     BOOL isStarted();                 // 80171B08
     u16 getClientMask();              // 80171B10: one bit per connected aid
     u32 getFrameTime();               // 80171B18: the alarm period in ms
-    void setParam(u8 value);          // 80171B2C: forwarded to fn_80368A60 (VCT)
+    void setParam(u8 value);          // 80171B2C: forwarded to VCT_EnableVAD (VCT)
     BOOL isMicConnected();            // 80171B50
     BOOL isMicActive();               // 80171B58: mic connected while started
     BOOL isMicShutDown();             // 80171B74: mic closed, or stopped after a failure

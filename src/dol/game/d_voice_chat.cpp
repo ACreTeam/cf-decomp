@@ -4,7 +4,7 @@
 // notes/d_voice_chat.txt.
 #include <game/game/d_voice_chat.hpp>
 #include <game/snd/snd_manager.hpp>
-#include <lib/dwc/vct.h>
+#include <revolution/vct.h>
 #include <revolution/AI.h>
 #include <revolution/AX.h>
 #include <revolution/MIX.h>
@@ -53,7 +53,7 @@ enum SpeakerState_e {
     SPEAKER_FREED,      // 7
 };
 
-// Alarm period in ms by l_frameIdx, and the value for fn_8036CB50 (VCT).
+// Alarm period in ms by l_frameIdx, and the value for VCT_SetVADReleaseTime (VCT).
 static const u8 l_frameTimes[10] = {0x44, 0x60, 0x68, 0x70, 0x78, 0x80, 0x88, 0x90, 0xA8, 0xC0};
 static const u8 l_vadParams[10] = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
 
@@ -194,8 +194,8 @@ static u8 getMemberCount() {
 static void eventCallback(u8 aid, int event, VCTSession *session, void *data) {
     switch (event) {
     case 9:
-        fn_803662F0(session);
-        fn_8036A554(session);
+        VCT_StopStreaming(session);
+        VCT_DeleteSession(session);
         l_clientMask &= ~(1 << aid);
         if (l_clientMask == 0) {
             l_idle = TRUE;
@@ -204,12 +204,12 @@ static void eventCallback(u8 aid, int event, VCTSession *session, void *data) {
         l_dropCount = 0;
         break;
     case 7:
-        fn_80366120(session);
+        VCT_StartStreaming(session);
         l_dropCount = 0;
         break;
     case 12:
-        fn_803662F0(session);
-        fn_8036A554(session);
+        VCT_StopStreaming(session);
+        VCT_DeleteSession(session);
         l_clientMask &= ~(1 << aid);
         if (l_clientMask == 0) {
             l_idle = TRUE;
@@ -239,7 +239,7 @@ static void setGain(int gain) {
 // clips and recovering one step per 16 clean samples.
 static void applyGain() {
     s16 *buf = l_spkBuf;
-    u32 samples = fn_8036D50C() / 2;
+    u32 samples = VCT_GetAudioDataSize() / 2;
     for (u32 i = 0; i < samples; i++) {
         f32 value = buf[i];
         value *= l_gainTable[l_targetGain - l_curGain];
@@ -268,9 +268,9 @@ static void applyGain() {
 }
 
 static void frameAlarm(OSAlarm *alarm, OSContext *context) {
-    u32 size = fn_8036D50C();
+    u32 size = VCT_GetAudioDataSize();
     u32 samples = size / 2;
-    if (fn_80366A08(l_spkBuf, size, NULL)) {
+    if (VCT_ReceiveAudio(l_spkBuf, size, NULL)) {
         applyGain();
     } else {
         memset(l_spkBuf, 0, sizeof(l_spkBuf));
@@ -305,7 +305,7 @@ static void frameAlarm(OSAlarm *alarm, OSContext *context) {
     l_prevEchoCancel = l_echoCancel;
 
     if (read >= samples) {
-        fn_803663C4(l_micBuf, size);
+        VCT_SendAudio(l_micBuf, size);
     } else {
         l_dropCount++;
     }
@@ -340,17 +340,17 @@ BOOL init(u8 aid) {
         l_config._0E = getFrameTime();
         l_config._0D = l_vctParamD;
         l_config._0F = 0;
-        if (!fn_8036CF1C(&l_config)) {
+        if (!VCT_Init(&l_config)) {
             return FALSE;
         }
-        fn_80368A60(l_vctParamA60);
-        fn_8036CB50(l_vadParams[l_frameIdx]);
-        fn_80368AC8(l_vctParamAC8);
-        fn_80368A40(TRUE);
-        fn_80368DE0(40);
-        fn_80368DE8(16);
-        fn_80368AD0(2);
-        fn_8036D458(0);
+        VCT_EnableVAD(l_vctParamA60);
+        VCT_SetVADReleaseTime(l_vadParams[l_frameIdx]);
+        VCT_SetDropRecoverMode(l_vctParamAC8);
+        VCT_EnableQualityAlert(TRUE);
+        VCTi_SetQualityAlertFrameNum(40);
+        VCT_SetQualityAlertThreshold(16);
+        VCTi_SetContinuousDropLimit(2);
+        VCT_SetReportLevel(0);
         OSInitMessageQueue(&l_msgQueue, &l_msg, 1);
         l_clientMask = 0;
         l_memberMode = 2;
@@ -365,7 +365,7 @@ BOOL init(u8 aid) {
 void cleanup() {
     if (l_initialized) {
         stop();
-        fn_8036D1DC();
+        VCT_Cleanup();
         l_clientMask = 0;
         l_initialized = FALSE;
     }
@@ -407,7 +407,7 @@ s32 update() {
 
 void calc() {
     if (l_started) {
-        fn_8036D218();
+        VCT_Main();
     }
 }
 
@@ -415,7 +415,7 @@ void connect(u8 aid) {
     if (l_started) {
         int bit = 1 << aid;
         if (!(l_clientMask & bit)) {
-            if (fn_8036A854(aid) == 0) {
+            if (VCT_AddConferenceClient(aid) == 0) {
                 l_clientMask |= bit;
                 l_idle = FALSE;
                 setMemberCount(getMemberCount());
@@ -426,7 +426,7 @@ void connect(u8 aid) {
 
 void disconnect(u8 aid) {
     if (l_started && (l_clientMask & (1 << aid))) {
-        fn_8036AA20(aid);
+        VCT_RemoveConferenceClient(aid);
     }
 }
 
@@ -446,7 +446,7 @@ void setParam(u8 value) {
     if (value != l_vctParamA60) {
         l_vctParamA60 = value;
         if (l_initialized) {
-            fn_80368A60(value);
+            VCT_EnableVAD(value);
         }
     }
 }
@@ -561,7 +561,7 @@ static inline u32 getPlayPos(const AXVPB *vpb) {
 }
 
 static void updateSpeaker() {
-    u32 size = fn_8036D50C() * 8;
+    u32 size = VCT_GetAudioDataSize() * 8;
     switch (l_voice.mState) {
     case SPEAKER_CLEAR:
         memset(l_aiBuf, 0, size);

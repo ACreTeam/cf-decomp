@@ -7,151 +7,285 @@
 
 #include <string.h>
 
-u64 dwci_np_consoleid;
-u32 dwci_np_try_get_consoleid;
+static u64 dwci_np_consoleid;
+static int dwci_np_try_get_consoleid;
+static int s_initialized;
 
-// Copy with the largest unit both pointers allow: words, halfwords, else memcpy
-void DWCi_Np_CPUCopyFast(void* dst, const void* src, u32 size)
+void DWCi_Np_SetInitFlag(int initialzied)
 {
-    u32* dstw;
-    const u32* srcw;
-    u16* dsth;
-    const u16* srch;
-    u8* dstb;
-    const u8* srcb;
+    s_initialized = initialzied;
+}
+
+void DWCi_Np_CPUCopyFast(void* dst, const void* src, u32 n)
+{
     int count;
-    int blocks;
+    u8* pSrc;
+    u8* pDst;
+    u16* pwSrc;
+    u16* pwDst;
+    u32* pdwSrc;
+    u32* pdwDst;
+    u64* pqwSrc;
+    u64* pqwDst;
 
-    if (size & 0x80000000)
-    {
-        // no return here; the copy below runs as well
-        memcpy(dst, src, size);
-    }
+    pDst = (u8*)dst;
+    pSrc = (u8*)src;
 
-    if (((u32)dst & 3) != 0 || ((u32)src & 3) != 0)
+    if (n > 32)
     {
-        if (((u32)dst & 1) != 0 || ((u32)src & 1) != 0)
+        count = ((u32)dst & 0xF) ^ ((u32)src & 0xF);
+        if ((count & 1) != 0)
         {
-            memcpy(dst, src, size);
+            goto copy_mem;
         }
-        else
+        if ((count & 2) != 0)
         {
-            dsth = (u16*)dst;
-            srch = (const u16*)src;
-            count = size >> 1;
+            count = 2 - ((u32)dst & 1);
             if (count != 0)
             {
-                for (blocks = count >> 4; blocks > 0; blocks--)
-                {
-                    dsth[0] = srch[0];
-                    dsth[1] = srch[1];
-                    dsth[2] = srch[2];
-                    dsth[3] = srch[3];
-                    dsth[4] = srch[4];
-                    dsth[5] = srch[5];
-                    dsth[6] = srch[6];
-                    dsth[7] = srch[7];
-                    dsth[8] = srch[8];
-                    dsth[9] = srch[9];
-                    dsth[10] = srch[10];
-                    dsth[11] = srch[11];
-                    dsth[12] = srch[12];
-                    dsth[13] = srch[13];
-                    dsth[14] = srch[14];
-                    dsth[15] = srch[15];
-                    dsth += 16;
-                    srch += 16;
-                }
-                switch (count & 15)
-                {
-                case 15:
-                    *dsth++ = *srch++;
-                case 14:
-                    *dsth++ = *srch++;
-                case 13:
-                    *dsth++ = *srch++;
-                case 12:
-                    *dsth++ = *srch++;
-                case 11:
-                    *dsth++ = *srch++;
-                case 10:
-                    *dsth++ = *srch++;
-                case 9:
-                    *dsth++ = *srch++;
-                case 8:
-                    *dsth++ = *srch++;
-                case 7:
-                    *dsth++ = *srch++;
-                case 6:
-                    *dsth++ = *srch++;
-                case 5:
-                    *dsth++ = *srch++;
-                case 4:
-                    *dsth++ = *srch++;
-                case 3:
-                    *dsth++ = *srch++;
-                case 2:
-                    *dsth++ = *srch++;
-                case 1:
-                    *dsth++ = *srch++;
-                }
+                *pDst++ = *pSrc++;
+                src = pSrc;
+                dst = pDst;
+                n--;
             }
-            switch (size & 1)
-            {
-            case 1:
-                *(u8*)dsth = *(const u8*)srch;
-            }
+            goto copy_half;
         }
+        if ((count & 4) != 0)
+        {
+            count = 4 - ((u32)dst & 3);
+            switch (count)
+            {
+            case 4:
+                break;
+            case 3:
+                *pDst++ = *pSrc++;
+            case 2:
+                *pDst++ = *pSrc++;
+            case 1:
+                *pDst++ = *pSrc++;
+            }
+            src = pSrc;
+            dst = pDst;
+            n -= count;
+            goto copy_word;
+        }
+        count = 8 - ((u32)dst & 7);
+        switch (count)
+        {
+        case 8:
+            break;
+        case 7:
+            *pDst++ = *pSrc++;
+        case 6:
+            *pDst++ = *pSrc++;
+        case 5:
+            *pDst++ = *pSrc++;
+        case 4:
+            *pDst++ = *pSrc++;
+        case 3:
+            *pDst++ = *pSrc++;
+        case 2:
+            *pDst++ = *pSrc++;
+        case 1:
+            *pDst++ = *pSrc++;
+        }
+        src = pSrc;
+        dst = pDst;
+        n -= count;
+        goto copy_qword;
     }
     else
     {
-        dstw = (u32*)dst;
-        srcw = (const u32*)src;
-        count = size >> 2;
-        if (count != 0)
+        if (((u32)dst & 7) == 0 && ((u32)src & 7) == 0)
         {
-            for (blocks = count >> 3; blocks > 0; blocks--)
-            {
-                dstw[0] = srcw[0];
-                dstw[1] = srcw[1];
-                dstw[2] = srcw[2];
-                dstw[3] = srcw[3];
-                dstw[4] = srcw[4];
-                dstw[5] = srcw[5];
-                dstw[6] = srcw[6];
-                dstw[7] = srcw[7];
-                dstw += 8;
-                srcw += 8;
-            }
-            switch (count & 7)
-            {
-            case 7:
-                *dstw++ = *srcw++;
-            case 6:
-                *dstw++ = *srcw++;
-            case 5:
-                *dstw++ = *srcw++;
-            case 4:
-                *dstw++ = *srcw++;
-            case 3:
-                *dstw++ = *srcw++;
-            case 2:
-                *dstw++ = *srcw++;
-            case 1:
-                *dstw++ = *srcw++;
-            }
+            goto copy_qword;
         }
-        dstb = (u8*)dstw;
-        srcb = (const u8*)srcw;
-        switch (size & 3)
+        if (((u32)dst & 3) == 0 && ((u32)src & 3) == 0)
         {
+            goto copy_word;
+        }
+        if (((u32)dst & 1) == 0 && ((u32)src & 1) == 0)
+        {
+            goto copy_half;
+        }
+    }
+
+copy_mem:
+    memcpy(dst, src, n);
+    return;
+
+copy_half:
+    pwSrc = (u16*)src;
+    pwDst = (u16*)dst;
+    count = n >> 1;
+    if (count != 0)
+    {
+        count >>= 4;
+        for (; count > 0; count--)
+        {
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+            *pwDst++ = *pwSrc++;
+        }
+        switch ((n >> 1) & 15)
+        {
+        case 15:
+            *pwDst++ = *pwSrc++;
+        case 14:
+            *pwDst++ = *pwSrc++;
+        case 13:
+            *pwDst++ = *pwSrc++;
+        case 12:
+            *pwDst++ = *pwSrc++;
+        case 11:
+            *pwDst++ = *pwSrc++;
+        case 10:
+            *pwDst++ = *pwSrc++;
+        case 9:
+            *pwDst++ = *pwSrc++;
+        case 8:
+            *pwDst++ = *pwSrc++;
+        case 7:
+            *pwDst++ = *pwSrc++;
+        case 6:
+            *pwDst++ = *pwSrc++;
+        case 5:
+            *pwDst++ = *pwSrc++;
+        case 4:
+            *pwDst++ = *pwSrc++;
         case 3:
-            *dstb++ = *srcb++;
+            *pwDst++ = *pwSrc++;
         case 2:
-            *dstb++ = *srcb++;
+            *pwDst++ = *pwSrc++;
         case 1:
-            *dstb = *srcb;
+            *pwDst++ = *pwSrc++;
         }
+    }
+    pSrc = (u8*)pwSrc;
+    pDst = (u8*)pwDst;
+    switch (n & 1)
+    {
+    case 1:
+        *pDst++ = *pSrc++;
+    }
+    return;
+
+copy_word:
+    pdwSrc = (u32*)src;
+    pdwDst = (u32*)dst;
+    count = n >> 2;
+    if (count != 0)
+    {
+        count >>= 3;
+        for (; count > 0; count--)
+        {
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+            *pdwDst++ = *pdwSrc++;
+        }
+        switch ((n >> 2) & 7)
+        {
+        case 7:
+            *pdwDst++ = *pdwSrc++;
+        case 6:
+            *pdwDst++ = *pdwSrc++;
+        case 5:
+            *pdwDst++ = *pdwSrc++;
+        case 4:
+            *pdwDst++ = *pdwSrc++;
+        case 3:
+            *pdwDst++ = *pdwSrc++;
+        case 2:
+            *pdwDst++ = *pdwSrc++;
+        case 1:
+            *pdwDst++ = *pdwSrc++;
+        }
+    }
+    pSrc = (u8*)pdwSrc;
+    pDst = (u8*)pdwDst;
+    switch (n & 3)
+    {
+    case 3:
+        *pDst++ = *pSrc++;
+    case 2:
+        *pDst++ = *pSrc++;
+    case 1:
+        *pDst++ = *pSrc++;
+    }
+    return;
+
+copy_qword:
+    pqwSrc = (u64*)src;
+    pqwDst = (u64*)dst;
+    count = n >> 3;
+    if (count != 0)
+    {
+        count >>= 3;
+        for (; count > 0; count--)
+        {
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+            *pqwDst++ = *pqwSrc++;
+        }
+        switch ((n >> 3) & 7)
+        {
+        case 7:
+            *pqwDst++ = *pqwSrc++;
+        case 6:
+            *pqwDst++ = *pqwSrc++;
+        case 5:
+            *pqwDst++ = *pqwSrc++;
+        case 4:
+            *pqwDst++ = *pqwSrc++;
+        case 3:
+            *pqwDst++ = *pqwSrc++;
+        case 2:
+            *pqwDst++ = *pqwSrc++;
+        case 1:
+            *pqwDst++ = *pqwSrc++;
+        }
+    }
+    pSrc = (u8*)pqwSrc;
+    pDst = (u8*)pqwDst;
+    switch (n & 7)
+    {
+    case 7:
+        *pDst++ = *pSrc++;
+    case 6:
+        *pDst++ = *pSrc++;
+    case 5:
+        *pDst++ = *pSrc++;
+    case 4:
+        *pDst++ = *pSrc++;
+    case 3:
+        *pDst++ = *pSrc++;
+    case 2:
+        *pDst++ = *pSrc++;
+    case 1:
+        *pDst++ = *pSrc++;
     }
 }
 
@@ -193,4 +327,14 @@ u64 DWCi_Np_GetConsoleId(void)
     }
 
     return dwci_np_consoleid;
+}
+
+char* DWCi_Np_GetConsoleName(void)
+{
+    return "Wii";
+}
+
+char* DWCi_Np_GetAppGameName(void)
+{
+    return (char*)OSGetAppGamename();
 }

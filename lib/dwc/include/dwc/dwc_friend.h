@@ -84,6 +84,8 @@ extern "C"
         void* statusParam, DWCDeleteFriendListCallback deleteCallback,
         void* deleteParam);
     int DWCi_GetFriendListIndex(int profileID);
+    void DWCi_BeginCloseStatsConnection(void);
+    void DWCi_EndCloseStatsConnection(void);
 
 #ifdef __cplusplus
 }

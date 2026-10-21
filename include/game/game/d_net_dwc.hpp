@@ -115,7 +115,7 @@ class Session_c {
     static void onLogin(int, int, void *);                          // 800E8E1C
     static void onFriendsUpdated(int, BOOL, void *);                // 800E8ED4
     static void onBuddyFriend(int, void *);                  // 800E8EE4
-    static void onFriendStatus(int, u8, const char *, void *);      // 800E8EE8
+    static void onBuddyFriendOnline(int, void *);                   // 800E8EE8
     static void onFriendDeleted(int, int, void *);                    // 800E8EEC
     static int canMatch(int, void *);                               // 800E8EF0
     static void onMatchClosed(int, void *);                         // 800E8F1C

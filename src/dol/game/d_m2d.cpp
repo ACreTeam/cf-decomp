@@ -28,7 +28,7 @@
 
 // Dependencies whose owners are not recovered yet.
 extern "C" {
-void fn_802C2538(void *buffer, int source, RFLMiddleDB *middleDB, u16 id, int,
+void RFLMakeIcon(void *buffer, int source, RFLMiddleDB *middleDB, u16 id, int,
                  void *params); // RFLMakeIcon
 }
 
@@ -1299,9 +1299,9 @@ void captureNode_c::execute() {
         params.mWidth = mWidth;
         params.mHeight = mHeight;
         if (mID == 0xFFFE) {
-            fn_802C2538(mpBuffer, 7, dMiiIcon::getTravelDB(), 0, 0, &params);
+            RFLMakeIcon(mpBuffer, 7, dMiiIcon::getTravelDB(), 0, 0, &params);
         } else {
-            fn_802C2538(mpBuffer, 0, NULL, mID, 0, &params);
+            RFLMakeIcon(mpBuffer, 0, NULL, mID, 0, &params);
         }
         DCFlushRange(mpBuffer, mWidth * mHeight * 2);
     }

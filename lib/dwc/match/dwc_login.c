@@ -186,10 +186,20 @@ static void DWCi_GPConnectCallback(
     GPConnection* pconnection, GPConnectResponseArg* arg)
 {
     GPResult gpResult;
+    char firstname[GP_FIRSTNAME_LEN];
 
     DWC_Printf(DWC_REPORTFLAG_LOGIN,
         "Finished connecting to GP server, result = %d\n", arg->result);
     stpLoginCnt->connectFlag = FALSE;
+
+    snprintf(firstname, GP_FIRSTNAME_LEN, "%s:%016llu@%s",
+        DWCi_Np_GetConsoleName(), DWCi_Np_GetConsoleId(),
+        DWCi_Np_GetAppGameName());
+    gpResult = gpSetInfos(pconnection, GP_FIRSTNAME, firstname);
+    if (DWCi_HandleGPError(gpResult))
+    {
+        return;
+    }
 
     if (arg->result == GP_NO_ERROR)
     {
@@ -201,7 +211,7 @@ static void DWCi_GPConnectCallback(
                     "  gs profile id is valid.\n");
                 stpLoginCnt->state = DWC_LOGIN_STATE_CONNECTED;
 
-                gpResult = DWCi_SetGPStatus(DWC_STATUS_ONLINE, "", NULL);
+                gpResult = DWCi_GPSetServerStatus(DWC_STATUS_ONLINE);
                 if (DWCi_HandleGPError(gpResult))
                 {
                     return;
@@ -226,6 +236,10 @@ static void DWCi_GPConnectCallback(
             {
                 DWC_Printf(DWC_REPORTFLAG_LOGIN,
                     "  gs profile id is invalid.\n");
+                DWC_Printf(DWC_REPORTFLAG_LOGIN,
+                    "  You can't use copied userdata.\n");
+                DWC_Printf(DWC_REPORTFLAG_LOGIN,
+                    "  Please find DWC_AllowMovedUserData().\n");
                 DWCi_StopLogin(DWC_ERROR_NETWORK, DWC_ECODE_SEQ_LOGIN);
             }
         }

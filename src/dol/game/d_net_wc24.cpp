@@ -6,6 +6,9 @@
 #include <game/game/d_wifi.hpp>
 #include <revolution/NAND.h>
 #include <revolution/NWC24/NWC24Config.h>
+#include <revolution/NWC24/NWC24Manage.h>
+#include <revolution/NWC24/NWC24MsgCommit.h>
+#include <revolution/NWC24/NWC24MsgObj.h>
 #include <revolution/NWC24/NWC24Schedule.h>
 #include <revolution/VF.h>
 #include <stddef.h>
@@ -13,11 +16,6 @@
 
 // Interfaces to SDK units whose public headers have not yet been reconstructed.
 extern "C" {
-int fn_80434A0C();
-int fn_80434A20(void *, u32);
-void fn_80434AE8();
-NWC24Err fn_8040460C(void *);
-NWC24Err fn_804047F8();
 NWC24Err fn_80404954(u32);
 int fn_80404B40();
 NWC24Err NWC24IsFriendInfoThere(u32);
@@ -26,28 +24,25 @@ NWC24Err NWC24CheckFriendInfo(const void *);
 NWC24Err fn_8040DCA4(u32 *);
 NWC24Err fn_8040F0F0(u64);
 NWC24Err fn_8040538C(NWC24MsgObj *, const void *, u32);
-NWC24Err fn_804054C4(NWC24MsgObj *, const void *, u32, NWC24Charset,
-                     NWC24Encoding);
-NWC24Err fn_804055FC(NWC24MsgObj *, const void *, u32, NWC24MIMEType);
+NWC24Err NWC24SetMsgAttached(NWC24MsgObj *, const void *, u32, NWC24MIMEType);
 NWC24Err fn_80405864(NWC24MsgObj *, const wchar_t *, u32);
 NWC24Err fn_804058E8(NWC24MsgObj *, BOOL);
 NWC24Err fn_80405940(NWC24MsgObj *, int);
-NWC24Err fn_80405970(NWC24MsgObj *, u16);
+NWC24Err NWC24SetMsgLedPatternRaw(NWC24MsgObj *, u16);
 NWC24Err fn_80405A3C(const NWC24MsgObj *, NWC24MsgType *);
-NWC24Err fn_80405AB4(const NWC24MsgObj *, u32 *);
-NWC24Err fn_80405AD0(const NWC24MsgObj *, u32, u32 *);
-NWC24Err fn_80405B04(const NWC24MsgObj *, u32, NWC24MIMEType *);
-NWC24Err fn_80405B80(const NWC24MsgObj *, u32 *);
+NWC24Err NWC24GetMsgNumAttached(const NWC24MsgObj *, u32 *);
+NWC24Err NWC24GetMsgAttachedSize(const NWC24MsgObj *, u32, u32 *);
+NWC24Err NWC24GetMsgAttachedType(const NWC24MsgObj *, u32, NWC24MIMEType *);
+NWC24Err NWC24GetMsgId(const NWC24MsgObj *, u32 *);
 NWC24Err fn_80405B90(const NWC24MsgObj *, u32 *);
-NWC24Err fn_80405BA0(const NWC24MsgObj *, u64 *);
-NWC24Err fn_80408D7C(NWC24MsgObj *);
-NWC24Err fn_8040AFB4(NWC24MsgObj *, u32, void *, u32);
+NWC24Err NWC24GetMsgFromId(const NWC24MsgObj *, u64 *);
+NWC24Err NWC24ReadMsgAttached(NWC24MsgObj *, u32, void *, u32);
 NWC24Err fn_8040B410(NWC24MsgObj *, const wchar_t *, u32, const wchar_t *, u32,
                      BOOL, u32, void *, u32);
 NWC24Err fn_8040C250();
-NWC24Err fn_8040C2C8(u32);
-NWC24Err fn_8040C338(NWC24MsgObj *, u32, BOOL *, BOOL *);
-NWC24Err fn_80406054(u32, u32);
+NWC24Err NWC24SetSearchCondMsgBox(u32);
+NWC24Err NWC24SearchMsgs(NWC24MsgObj *, u32, BOOL *, BOOL *);
+NWC24Err NWC24DeleteMsg(u32, u32);
 NWC24Err fn_8040E2A4(const void *);
 NWC24Err fn_8040E324(const void *);
 NWC24Err fn_8040E388(void *, u32);
@@ -74,10 +69,10 @@ u32 fn_8041399C();
 void fn_80413D44(void *, u32, const void *, u32);
 void fn_80413F80(void *, const void *, u32);
 void fn_80413F90(void *, void *);
-BOOL fn_80414948(void *, const void *, u32, const void *);
+BOOL NETAESCreate(void *, const void *, u32, const void *);
 void fn_80414950(void *);
-BOOL fn_80414954(void *, void *, const void *, u32);
-BOOL fn_80414A0C(void *, void *, const void *, u32);
+BOOL NETAESEncrypt(void *, void *, const void *, u32);
+BOOL NETAESDecrypt(void *, void *, const void *, u32);
 }
 
 namespace dNetWc24 {
@@ -280,9 +275,9 @@ BOOL dNetWc24_c::open() {
     if (mOpened) {
         return TRUE;
     }
-    if (!fn_80434A0C()) {
+    if (!VFIsAvailable()) {
         mVfWork = dHeap::netWc24Heap_p->alloc(LIBRARY_WORK_SIZE, 32);
-        fn_80434A20(mVfWork, LIBRARY_WORK_SIZE);
+        VFInitEx(mVfWork, LIBRARY_WORK_SIZE);
     }
     if (mLibraryWork == NULL) {
         mLibraryWork = dHeap::netWc24Heap_p->alloc(LIBRARY_WORK_SIZE, 32);
@@ -292,13 +287,13 @@ BOOL dNetWc24_c::open() {
             (u8 *)dHeap::netWc24Heap_p->alloc(MESSAGE_WORK_SIZE, 32);
         mCryptBuffer = mMessageBuffer + MESSAGE_CAPACITY;
     }
-    if (setError(fn_8040460C(mLibraryWork), ERROR_OPEN)) {
+    if (setError(NWC24OpenLib((NWC24Work*)mLibraryWork), ERROR_OPEN)) {
         dHeap::netWc24Heap_p->free(mMessageBuffer);
         mMessageBuffer = NULL;
         dHeap::netWc24Heap_p->free(mLibraryWork);
         mLibraryWork = NULL;
         if (mVfWork != NULL) {
-            fn_80434AE8();
+            VFFinalize();
             dHeap::netWc24Heap_p->free(mVfWork);
             mVfWork = NULL;
         }
@@ -313,13 +308,13 @@ BOOL dNetWc24_c::open() {
 // 800E9708
 void dNetWc24_c::close() {
     if (mOpened) {
-        fn_804047F8();
+        NWC24CloseLib();
         dHeap::netWc24Heap_p->free(mMessageBuffer);
         mMessageBuffer = NULL;
         dHeap::netWc24Heap_p->free(mLibraryWork);
         mLibraryWork = NULL;
         if (mVfWork != NULL) {
-            fn_80434AE8();
+            VFFinalize();
             dHeap::netWc24Heap_p->free(mVfWork);
             mVfWork = NULL;
         }
@@ -404,11 +399,11 @@ BOOL dNetWc24_c::commitMessage(NWC24MsgObj *msg, u32 size, int profileId) {
     if (profileId != 0 && fn_80405940(msg, profileId) != NWC24_OK) {
         return FALSE;
     }
-    if (fn_804055FC(msg, mMessageBuffer, size,
+    if (NWC24SetMsgAttached(msg, mMessageBuffer, size,
                     NWC24_APPLICATION_OCTET_STREAM) != NWC24_OK) {
         return FALSE;
     }
-    return !setError(fn_80408D7C(msg), ERROR_SEND);
+    return !setError(NWC24CommitMsg(msg), ERROR_SEND);
 }
 // 800E9B70
 BOOL dNetWc24_c::sendMessage(u64 *keys, int num, const dNetWc24Data_c *data,
@@ -479,7 +474,7 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
         if (NWC24SetMsgToId(&msg, key) != NWC24_OK) {
             return FALSE;
         }
-        if (fn_804054C4(&msg, req->mData[1], req->mSize[1], NWC24_UTF_16BE,
+        if (NWC24SetMsgText(&msg, (const char*)req->mData[1], req->mSize[1], NWC24_UTF_16BE,
                         (u32)req->mFriend != (u32)FRIEND_SELF
                             ? NWC24_ENC_BASE64
                             : NWC24_ENC_8BIT) != NWC24_OK) {
@@ -499,15 +494,15 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
             return FALSE;
         }
         if ((u32)req->mFriend != (u32)FRIEND_SELF) {
-            fn_80405970(&msg, BOARD_LETTER_TAG);
+            NWC24SetMsgLedPatternRaw(&msg, BOARD_LETTER_TAG);
         }
         if (req->mSize[2] != 0 && req->mData[2] != NULL &&
-            fn_804055FC(&msg, req->mData[2], req->mSize[2],
+            NWC24SetMsgAttached(&msg, req->mData[2], req->mSize[2],
                         NWC24_X_WII_MSGBOARD) != NWC24_OK) {
             return FALSE;
         }
         if (req->mSize[3] != 0 && req->mData[3] != NULL &&
-            fn_804055FC(&msg, req->mData[3], req->mSize[3], NWC24_IMAGE_JPEG) !=
+            NWC24SetMsgAttached(&msg, req->mData[3], req->mSize[3], NWC24_IMAGE_JPEG) !=
                 NWC24_OK) {
             return FALSE;
         }
@@ -525,12 +520,12 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
             return FALSE;
         }
         if (req->mSize[3] != 0 && req->mData[3] != NULL &&
-            fn_804055FC(&msg, req->mData[3], req->mSize[3], NWC24_IMAGE_JPEG) !=
+            NWC24SetMsgAttached(&msg, req->mData[3], req->mSize[3], NWC24_IMAGE_JPEG) !=
                 NWC24_OK) {
             return FALSE;
         }
     }
-    if (setError(fn_80408D7C(&msg), ERROR_SEND)) {
+    if (setError(NWC24CommitMsg(&msg), ERROR_SEND)) {
         return FALSE;
     }
     return TRUE;
@@ -550,12 +545,12 @@ void dNetWc24_c::receiveMessages(ReceiveCallback callback) {
     if (fn_8040C250() != NWC24_OK) {
         return;
     }
-    if (fn_8040C2C8(1) != NWC24_OK) {
+    if (NWC24SetSearchCondMsgBox(1) != NWC24_OK) {
         return;
     }
     int remaining = MAX_RECEIVE_MESSAGES;
     do {
-        if (fn_8040C338(&msg, 1, &found, &more) != NWC24_OK) {
+        if (NWC24SearchMsgs(&msg, 1, &found, &more) != NWC24_OK) {
             break;
         }
         if (found && fn_80405B90(&msg, &app) == NWC24_OK &&
@@ -563,14 +558,14 @@ void dNetWc24_c::receiveMessages(ReceiveCallback callback) {
             fn_80405A3C(&msg, &type) == NWC24_OK &&
             type != NWC24_MSGTYPE_RVL_MENU && type != NWC24_MSGTYPE_PUBLIC) {
             BOOL remove = TRUE;
-            if (fn_80405AB4(&msg, &attachmentCount) == NWC24_OK) {
-                fn_80405BA0(&msg, &sender);
+            if (NWC24GetMsgNumAttached(&msg, &attachmentCount) == NWC24_OK) {
+                NWC24GetMsgFromId(&msg, &sender);
                 if (attachmentCount != 0) {
                     for (u32 i = 0; i < attachmentCount; i++) {
-                        if (fn_80405B04(&msg, i, &mime) == NWC24_OK &&
+                        if (NWC24GetMsgAttachedType(&msg, i, &mime) == NWC24_OK &&
                             mime == NWC24_APPLICATION_OCTET_STREAM &&
-                            fn_80405AD0(&msg, i, &size) == NWC24_OK &&
-                            fn_8040AFB4(&msg, i, mCryptBuffer,
+                            NWC24GetMsgAttachedSize(&msg, i, &size) == NWC24_OK &&
+                            NWC24ReadMsgAttached(&msg, i, mCryptBuffer,
                                         MESSAGE_CAPACITY) == NWC24_OK &&
                             decodeMessage(&sender, mCryptBuffer, size)) {
                             Message_c *message = (Message_c *)mMessageBuffer;
@@ -583,8 +578,8 @@ void dNetWc24_c::receiveMessages(ReceiveCallback callback) {
                 remaining--;
             }
             if (remove) {
-                fn_80405B80(&msg, &id);
-                fn_80406054(1, id);
+                NWC24GetMsgId(&msg, &id);
+                NWC24DeleteMsg(1, id);
             }
         }
     } while (more && remaining > 0);
@@ -653,8 +648,8 @@ u32 dNetWc24_c::makeMessage(const void *data, u32 size, const void *data2,
     cryptKey[14] = 0x71;
     cryptKey[15] = 0x71;
     u8 cryptWork[CIPHER_WORK_SIZE];
-    fn_80414948(cryptWork, cryptKey, sizeof(cryptKey), iv);
-    fn_80414954(cryptWork, mMessageBuffer, mCryptBuffer, encryptedSize);
+    NETAESCreate(cryptWork, cryptKey, sizeof(cryptKey), iv);
+    NETAESEncrypt(cryptWork, mMessageBuffer, mCryptBuffer, encryptedSize);
     fn_80414950(cryptWork);
     memcpy(mMessageBuffer + encryptedSize, iv, sizeof(iv));
     memcpy(mMessageBuffer + encryptedSize + sizeof(iv), &cryptNonce, 4);
@@ -676,11 +671,11 @@ BOOL dNetWc24_c::decodeMessage(const u64 *key, const void *data, u32 size) {
     cryptKey[13] = 0x71;
     cryptKey[14] = 0x71;
     cryptKey[15] = 0x71;
-    if (fn_80414948(cryptWork, cryptKey, sizeof(cryptKey),
+    if (NETAESCreate(cryptWork, cryptKey, sizeof(cryptKey),
                     bytes + encryptedSize) == FALSE) {
         return FALSE;
     }
-    if (fn_80414A0C(cryptWork, mMessageBuffer, data, encryptedSize) == FALSE) {
+    if (NETAESDecrypt(cryptWork, mMessageBuffer, data, encryptedSize) == FALSE) {
         return FALSE;
     }
     fn_80414950(cryptWork);

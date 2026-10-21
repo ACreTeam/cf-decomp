@@ -13,9 +13,9 @@
 extern "C" {
 RFLErrcode fn_802B96B0(); // RFLGetAsyncStatus
 RFLErrcode fn_802C4BE8(RFLStoreData *data, RFLDataSource source, u16 index);
-u32 fn_802C4F78(u16 num); // RFLGetMiddleDBBufferSize
+u32 RFLGetMiddleDBBufferSize(u16 num); // RFLGetMiddleDBBufferSize
 void fn_802C4F80(RFLMiddleDB *db, int type, void *buf, u16 num); // RFLInitMiddleDB
-RFLErrcode fn_802C51E0(RFLMiddleDB *db, const RFLStoreData *data); // RFLAddMiddleDBStoreData
+RFLErrcode RFLAddMiddleDBStoreData(RFLMiddleDB *db, const RFLStoreData *data); // RFLAddMiddleDBStoreData
 u32 fn_802C6010(u16 num);
 void fn_802C601C(void *buf, u16 num);
 RFLErrcode fn_802C60B4(void *dst, int, int, u16 index, u16 num);
@@ -145,7 +145,7 @@ BOOL travel_c::set(const void *data) {
     fn_802C4F80(&mDB, MII_ICON_DB_TYPE_USER, mDBBuf, 1);
     if (data != NULL) {
         cLib::memCpy(&mData, data, sizeof(mData));
-        if (fn_802C51E0(&mDB, &mData) != RFLErrcode_Success) {
+        if (RFLAddMiddleDBStoreData(&mDB, &mData) != RFLErrcode_Success) {
             mError |= 1;
         } else {
             mState = STATE_READY;
@@ -173,7 +173,7 @@ void mng_c::create(EGG::Heap *heap) {
     size = dataSize + dataSize * (MII_ICON_MEMBER_MAX - 1);
     converterSize = ROUND_UP(fn_802C61EC(MII_ICON_MEMBER_MAX, 1), 4);
     size += converterSize;
-    dbSize = ROUND_UP(fn_802C4F78(1), 4);
+    dbSize = ROUND_UP(RFLGetMiddleDBBufferSize(1), 4);
     size += dbSize * MII_ICON_MEMBER_MAX;
     mWork = (u8 *)heap->alloc(size, 4);
     mNet.mMyData = mWork;

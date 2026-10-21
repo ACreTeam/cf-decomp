@@ -4,6 +4,7 @@
 #include <dwc/dwc_nonport.h>
 #include <dwc/dwc_report.h>
 #include <nitro/math/crc.h>
+#include <nitro/math/dgt.h>
 #include <nitro/math/rand.h>
 #include <revolution/os/OSTime.h>
 #include <stdio.h>
@@ -170,62 +171,68 @@ void DWC_ClearBuddyFlagFriendData(DWCAccFriendData* frienddata)
 }
 
 u64 DWC_Acc_CreateFriendKey(int gs_profile_id,
-    u32 gamecode)
+    u32 gamecode, DWCiFriendKeyGenerator method)
 {
-    MATHCRC8Table table;
     u32 code[2];
-    int crc;
+    int hash;
     u32 reversed[2];
+    MATHCRC8Table table;
+    u8 digest[16];
 
     code[0] = (u32)gs_profile_id;
     code[1] = gamecode;
-    MATH_CRC8InitTable(&table);
     DWCi_Np_ToLE(code, reversed, sizeof(code));
-    crc = MATH_CalcCRC8(&table, reversed, sizeof(reversed)) & 0x7f; // Only 7 bits valid.
 
-    return (((u64)crc << 32) | (u32)gs_profile_id);
+    switch (method)
+    {
+    case DWCi_FRIENDKEY_GENERATOR_CRC:
+        MATH_CRC8InitTable(&table);
+        hash = MATH_CalcCRC8(&table, reversed, sizeof(reversed)) & 0x7f; // Only 7 bits valid.
+        break;
+    case DWCi_FRIENDKEY_GENERATOR_MD5:
+        MATH_CalcMD5(digest, reversed, sizeof(reversed));
+        hash = digest[0] >> 1; // Only 7 bits valid.
+        break;
+    }
+
+    return (((u64)hash << 32) | (u32)gs_profile_id);
 }
 
 BOOL DWC_CheckFriendKey(const DWCAccUserData* userdata, u64 friendkey)
 {
-    return DWC_Acc_CheckFriendKey(friendkey, userdata->gamecode);
+    return DWC_Acc_CheckFriendKey(
+        friendkey, userdata->gamecode, DWCi_FRIENDKEY_GENERATOR_MD5);
 }
 
 BOOL DWC_Acc_CheckFriendKey(u64 friendkey,
-    u32 gamecode)
+    u32 gamecode, DWCiFriendKeyGenerator method)
 {
-    MATHCRC8Table table;
-    u32 code[2];
-    int crc;
-    u32 reversed[2];
+    int pid = (int)friendkey;
 
-    // negative GS profile IDs are invalid
-    if (friendkey & 0x80000000)
-        return FALSE;
-
-    code[0] = (u32)friendkey;
-    code[1] = gamecode;
-    MATH_CRC8InitTable(&table);
-    DWCi_Np_ToLE(code, reversed, sizeof(code));
-    crc = MATH_CalcCRC8(&table, reversed, sizeof(reversed)) & 0x7f; // Only 7 bits valid.
-
-    if (crc != (friendkey >> 32))
+    if (pid <= 0)
     {
         return FALSE;
     }
 
-    return TRUE;
+    return DWC_Acc_CreateFriendKey(pid, gamecode, method) == friendkey;
 }
 
 int DWC_Acc_FriendKeyToGsProfileId(u64 friendkey,
     u32 gamecode)
 {
-    if (!DWC_Acc_CheckFriendKey(friendkey, gamecode))
+    int i;
+
+    // accept keys from either generator
+    for (i = 0; i < DWCi_FRIENDKEY_GENERATOR_NUM; i++)
     {
-        return 0;
+        if (DWC_Acc_CheckFriendKey(
+                friendkey, gamecode, (DWCiFriendKeyGenerator)i))
+        {
+            return (int)(friendkey & 0xffffffff);
+        }
     }
 
-    return (int)(friendkey & 0xffffffff);
+    return 0;
 }
 
 void DWC_Acc_FriendKeyToNumericKey(u64 friendkey,
@@ -419,6 +426,12 @@ BOOL DWCi_Acc_IsDirty(const DWCAccUserData* userdata)
     return DWCi_CHECK_FLAG(userdata->flag, DWC_ACC_USERDATA_DIRTY) ? TRUE : FALSE;
 }
 
+// user data created for another title (gamecode) cannot be used here
+BOOL DWC_IsCompatibleUserData(const DWCAccUserData* userdata)
+{
+    return userdata->gamecode == DWCi_GetGamecode();
+}
+
 void DWC_ClearDirtyFlag(DWCAccUserData* userdata)
 {
     DWCi_Acc_ClearDirty(userdata);
@@ -490,12 +503,7 @@ int DWC_GetGsProfileId(const DWCAccUserData* userdata,
     {
         u64 friend_key = DWCi_Acc_GetFriendKey(&frienddata->friend_key);
 
-        if (DWC_Acc_CheckFriendKey(friend_key, userdata->gamecode))
-        {
-            return DWC_Acc_FriendKeyToGsProfileId(friend_key, userdata->gamecode);
-        }
-
-        return 0;
+        return DWC_Acc_FriendKeyToGsProfileId(friend_key, userdata->gamecode);
     }
     // NOT REACH HERE
     break;
@@ -522,7 +530,8 @@ u64 DWC_CreateFriendKey(const DWCAccUserData* userdata)
 
     if (userdata->gs_profile_id != 0)
     {
-        ret = DWC_Acc_CreateFriendKey(userdata->gs_profile_id, userdata->gamecode);
+        ret = DWC_Acc_CreateFriendKey(userdata->gs_profile_id,
+            userdata->gamecode, DWCi_FRIENDKEY_GENERATOR_MD5);
     }
 
     return ret;

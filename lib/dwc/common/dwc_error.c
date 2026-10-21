@@ -2,66 +2,75 @@
 
 //! @brief The last error code encountered.
 //!
-int stDwcErrorCode;
+static int stDwcErrorCode;
 
-//! @brief The last error type encountered.
+//! @brief The last error encountered.
 //!
-int stDwcLastError;
+static DWCError stDwcLastError;
 
-int DWC_GetLastError(int* errorCode) {
+DWCError DWC_GetLastError(int* errorCode) {
   if (errorCode)
     *errorCode = stDwcErrorCode;
-
   return stDwcLastError;
 }
 
-s32 DWC_GetLastErrorEx(s32* errorCode, DWCErrorType* errorType) {
+DWCError DWC_GetLastErrorEx(int* errorCode, DWCErrorType* errorType) {
   if (errorCode)
     *errorCode = stDwcErrorCode;
   if (errorType) {
     switch (stDwcLastError) {
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 8:
-      *errorType = 6;
+    case DWC_ERROR_AUTH_ANY:
+    case DWC_ERROR_AUTH_OUT_OF_SERVICE:
+    case DWC_ERROR_AUTH_STOP_SERVICE:
+    case DWC_ERROR_AC_ANY:
+    case DWC_ERROR_DISCONNECTED:
+      *errorType = DWC_ETYPE_DISCONNECT;
       break;
-    case 6:
-      *errorType = 3;
+    case DWC_ERROR_NETWORK:
+      *errorType = DWC_ETYPE_SHUTDOWN_FM;
       break;
-    case 7:
-      *errorType = 4;
+    case DWC_ERROR_NETWORK_LIGHT:
+      *errorType = DWC_ETYPE_SHOW_ERROR;
       break;
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-      *errorType = 1;
+    case DWC_ERROR_GHTTP_ANY:
+      *errorType = DWC_ETYPE_SHUTDOWN_GHTTP;
       break;
-    case 1:
+    case DWC_ERROR_FRIENDS_SHORTAGE:
+    case DWC_ERROR_NOT_FRIEND_SERVER:
+    case DWC_ERROR_SERVER_FULL:
+    case DWC_ERROR_SC_CONNECT_BLOCK:
+      *errorType = DWC_ETYPE_LIGHT;
+      break;
+    case DWC_ERROR_DS_MEMORY_ANY:
     case DWC_ERROR_FATAL:
-      *errorType = 7;
+      *errorType = DWC_ETYPE_FATAL;
       break;
-
-    case 14:
-      *errorType = 5;
+    case DWC_ERROR_ND_ANY:
+      *errorType = DWC_ETYPE_SHUTDOWN_ND;
       break;
-    // cases 18-20 as mkw lib/dwc/common/dwc_error.c (without mkw's later case 21 and its case 6 test)
-    case 15:
-    case 17:
-    case 19:
-      *errorType = 6;
+    case DWC_ERROR_ND_HTTP:
+    case DWC_ERROR_SVL_HTTP:
+    case DWC_ERROR_PROF_HTTP:
+      *errorType = DWC_ETYPE_DISCONNECT;
       break;
-    case 16:
-    case 20:
-      *errorType = 2;
+    case DWC_ERROR_SVL_ANY:
+    case DWC_ERROR_DB_ANY:
+      *errorType = DWC_ETYPE_SHOW_ERROR;
       break;
-    case 18:
-      *errorType = 1;
+    case DWC_ERROR_PROF_PARSEERR:
+      *errorType = DWC_ETYPE_LIGHT;
+      break;
+    case DWC_ERROR_TAC_ANY:
+      *errorType = DWC_ETYPE_SHOW_ERROR;
+      break;
+    case DWC_ERROR_TAC_HTTP:
+      *errorType = DWC_ETYPE_DISCONNECT;
+      break;
+    case DWC_ERROR_TAC_NWC24:
+      *errorType = DWC_ETYPE_SHUTDOWN_TAC;
       break;
     default:
-      *errorType = 0;
+      *errorType = DWC_ETYPE_NO_ERROR;
       break;
     }
   }
@@ -77,13 +86,9 @@ void DWC_ClearError() {
 
 int DWCi_IsError() { return stDwcLastError != DWC_ERROR_NONE; }
 
-void DWCi_SetError(int lastError, int errorCode) {
+void DWCi_SetError(DWCError error, int errorCode) {
   if (stDwcLastError != DWC_ERROR_FATAL) {
-    stDwcLastError = lastError;
+    stDwcLastError = error;
     stDwcErrorCode = errorCode;
   }
-#ifdef DEBUG
-  if (stDwcLastError == DWC_ERROR_FATAL)
-    DWC_Printf(-1, "FATALERROR_SET\n");
-#endif
 }

@@ -37,7 +37,7 @@ extern "C"
         DWCDeleteFriendListCallback deleteCallback, void* deleteParam);
     BOOL DWC_ConnectToFriendsAsync(const u8 friendIdxList[],
         int friendIdxListLen, u8 numEntry, BOOL distantFriend,
-        DWCMatchedCallback matchedCallback, void* matchedParam,
+        DWCMatchedSCCallback matchedCallback, void* matchedParam,
         DWCEvalPlayerCallback evalCallback, void* evalParam);
 
     DWCState DWC_GetState(void);
@@ -48,10 +48,7 @@ extern "C"
     GT2Result DWCi_GT2Startup(void);
     GT2Connection DWCi_GetGT2Connection(u8 aid);
     u8 DWCi_GetConnectionAID(GT2Connection connection);
-    u8 DWCi_GetConnectionIndex(GT2Connection connection);
-    void* DWCi_GetConnectionUserData(GT2Connection connection);
     int DWCi_GT2GetConnectionListIdx(void);
-    void DWCi_ClearGT2ConnectionList(void);
     GT2Connection* DWCi_GetGT2ConnectionByIdx(int index);
     GT2Connection* DWCi_GetGT2ConnectionByProfileID(
         int profileID, int numHost);
