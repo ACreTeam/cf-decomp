@@ -56,6 +56,9 @@ DSPTaskInfo* DSPAddTask(DSPTaskInfo* task);
 DSPTaskInfo* DSPCancelTask(DSPTaskInfo* task);
 DSPTaskInfo* DSPAssertTask(DSPTaskInfo* task);
 
+
+void DSPAssertInt(void);
+
 #ifdef __cplusplus
 }
 #endif

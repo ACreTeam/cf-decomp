@@ -1,7 +1,7 @@
 #include <game/game/d_ds_dl.hpp>
 #include <game/sLib/s_crc.hpp>
 #include <string.h>
-extern "C" void *fn_80412B98(void *, const void *, u32);
+extern "C" void *NETMemCpy(void *, const void *, u32);
 namespace dDsDl {
 static const char s_noRom[] = "B2mRWeDsApNoRom";
 static const char s_invalid[] = "B2mRWeDAInvalid";
@@ -211,7 +211,7 @@ void Manage_c::onReceive(u32, const void *data, u32 size) {
         if (g_manager.mTransferred + size > g_manager.mTransferSize) {
             size = g_manager.mTransferSize - g_manager.mTransferred;
         }
-        fn_80412B98(g_manager.mBuffer + g_manager.mTransferred, data, size);
+        NETMemCpy(g_manager.mBuffer + g_manager.mTransferred, data, size);
         g_manager.mTransferred += size;
         if (g_manager.mTransferred >= g_manager.mTransferSize) {
             g_manager.mTransferState = TRANSFER_RECEIVE_CRC;

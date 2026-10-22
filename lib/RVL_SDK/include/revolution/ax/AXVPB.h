@@ -77,6 +77,15 @@ void AXGetLpfCoefs(u16 freq, u16* a, u16* b);
 void AXSetVoiceRmtOn(AXVPB* vpb, u16 on);
 void AXSetVoiceRmtMix(AXVPB* vpb, AXPBRMTMIX* mix);
 
+
+void AXSetMaxDspCycles(u32 num);
+s32 AXGetMaxVoices(void);
+void AXSetVoiceItdTarget(AXVPB* p, u16 lShift, u16 rShift);
+void AXSetVoiceLoop(AXVPB* p, u16 loop);
+void AXSetVoiceLoopAddr(AXVPB* p, u32 addr);
+void AXSetVoiceEndAddr(AXVPB* p, u32 addr);
+void AXSetVoiceCurrentAddr(AXVPB* p, u32 addr);
+
 #ifdef __cplusplus
 }
 #endif

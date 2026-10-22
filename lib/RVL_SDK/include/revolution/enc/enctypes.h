@@ -43,9 +43,6 @@ typedef enum ENCEncoding {
     ENC_ENCODING_SHIFT_JIS,
     ENC_ENCODING_WINDOWS_1252,
 
-    ENC_ENCODING_EUC_KR,
-    ENC_ENCODING_GB2312,
-
     // Cannot convert from "internal encoding"
     ENC_ENCODING_UTF_7,
     ENC_ENCODING_UTF_16,
@@ -58,24 +55,8 @@ typedef enum ENCEncoding {
     ENC_ENCODING_IBM850,
     ENC_ENCODING_IBM852,
 
-    ENC_MAX_ENCODING
-
-        /* Likely ERRATUM: ENC_MAX_ENCODING (or whatever the original was called)
-         * was very likely set to 24 instead of 26, judging from the bounds checks
-         * in the encconvert.c functions (x <= 0 || x >= 24). This is most apparent
-         * in ENCGetNextCharacterWidth, where there is one case in the switch block
-         * that cannot be reached because of the bounds check: ENC_ENCODING_IBM850
-         * (25). Judging from the placement of the next two cases,
-         * ENC_ENCODING_EUC_KR (14) and ENC_ENCODING_GB2312 (15), these two
-         * encodings may have been added after the rest, and ENC_MAX_ENCODING was
-         * not updated accordingly. They were most likely put in the middle of the
-         * enum because that is the end of the list of encodings that you are able
-         * to convert to from the internal encoding.
-         *
-         * Also, the bounds check is supposed to be > 24, not >= 24.
-         */
-        ,
-    ENC_BAD_MAX_ENCODING = 24,
+    ENC_MAX_ENCODING,
+    ENC_BAD_MAX_ENCODING = ENC_MAX_ENCODING,
 } ENCEncoding;
 
 typedef enum ENCBreakType {

@@ -12,8 +12,8 @@
 // Narrow interfaces to the unscaffolded socket and HTTP SDK libraries.
 extern "C" {
 void *__NHTTPCreateConnection(const char *, int, void *, u32, void *, void *);
-int fn_8041B7BC(void *, int);
-int fn_8041B824(void *, int);
+int NHTTPSetBuiltinRootCA(void *, int);
+int NHTTPSetBuiltinClientCert(void *, int);
 int NHTTPDeleteConnection(void *);
 int NHTTPStartConnection(void *);
 int NHTTPGetConnectionError(void *);
@@ -147,7 +147,7 @@ BOOL dNetWus_c::createRequest(const char *url) {
     if (mRequest == NULL) {
         return FALSE;
     }
-    if (fn_8041B7BC(mRequest, 0) == 0 && fn_8041B824(mRequest, 0) == 0 &&
+    if (NHTTPSetBuiltinRootCA(mRequest, 0) == 0 && NHTTPSetBuiltinClientCert(mRequest, 0) == 0 &&
         NHTTPSetVerifyOption(mRequest, 0) == 0) {
         return TRUE;
     }

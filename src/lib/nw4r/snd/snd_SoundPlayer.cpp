@@ -360,7 +360,7 @@ bool SoundPlayer::CheckPlayableSoundCount(
 void SoundPlayer::detail_AppendPlayerHeap(detail::PlayerHeap* pHeap) {
     ut::detail::AutoLock<OSMutex> lock(mMutex);
 
-    pHeap->SetSoundPlayer(this);
+    pHeap->AttachSoundPlayer(this);
     mHeapList.PushBack(pHeap);
 
     mUsePlayerHeap = true;
@@ -377,7 +377,7 @@ SoundPlayer::detail_AllocPlayerHeap(detail::BasicSound* pSound) {
     detail::PlayerHeap& rHeap = mHeapList.GetFront();
     mHeapList.PopFront();
 
-    rHeap.SetSound(pSound);
+    rHeap.AttachSound(pSound);
     pSound->SetPlayerHeap(&rHeap);
     rHeap.Clear();
 
@@ -394,7 +394,7 @@ void SoundPlayer::detail_FreePlayerHeap(detail::BasicSound* pSound) {
     }
 
     if (pHeap != NULL) {
-        pHeap->SetSound(NULL);
+        pHeap->DetachSound(pSound);
     }
 
     pSound->SetPlayerHeap(NULL);

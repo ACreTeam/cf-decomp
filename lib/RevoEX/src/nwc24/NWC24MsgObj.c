@@ -1,117 +1,166 @@
 #include <private/nwc24.h>
 #include <revolution/nwc24.h>
 
+#define MSG_YEAR_MIN 2000
+#define MSG_YEAR_MAX 2035
+
 #define ALT_NAME_MAX 35
 #define SMTP_LINE_MAX 1000
 
-typedef enum {
-    MSG_OBJ_FOR_RECIPIENT = (1 << 0),
-    MSG_OBJ_FOR_PUBLIC = (1 << 1),
-    MSG_OBJ_FOR_APP = (1 << 2),
-    MSG_OBJ_FOR_MENU = (1 << 3),
-    MSG_OBJ_INITIALIZED = (1 << 8),
-    MSG_OBJ_DELIVERING = (1 << 9)
-} NWC24MsgObjFlags;
-
-NWC24Err NWC24InitMsgObj(NWC24MsgObj* msg, NWC24MsgType type) {
+NWC24Err NWC24InitMsgObj(NWC24MsgObj* pMsg, NWC24MsgType type) {
     u32 i;
-    NWC24MsgObjPrivate* msgObj = (NWC24MsgObjPrivate*)msg;
+    NWC24iMsgObj* pMsgImpl;
 
-    Mail_memset(msgObj, 0, sizeof(NWC24MsgObj));
+    pMsgImpl = (NWC24iMsgObj*)pMsg;
+    Mail_memset(pMsgImpl, 0, sizeof(NWC24iMsgObj));
 
-    msgObj->msgId = 0;
-    msgObj->type = MSG_OBJ_INITIALIZED;
-    msgObj->appId = NWC24GetAppId();
-    msgObj->ledPattern = 0;
-    msgObj->tag = 0;
-    msgObj->groupId = NWC24GetGroupId();
+    pMsgImpl->id = 0;
+    pMsgImpl->flags = NWC24_MSGOBJ_INITIALIZED;
+    pMsgImpl->appId = NWC24GetAppId();
+    pMsgImpl->command = 0;
+    pMsgImpl->tag = 0;
+    pMsgImpl->groupId = NWC24GetGroupId();
 
     switch (type) {
-        case NWC24_MSGTYPE_RVL_MENU_SHARED:
-            msgObj->type |= MSG_OBJ_FOR_RECIPIENT | MSG_OBJ_FOR_APP | MSG_OBJ_FOR_MENU;
-            break;
-        case NWC24_MSGTYPE_RVL:
-            msgObj->type |= MSG_OBJ_FOR_RECIPIENT | MSG_OBJ_FOR_APP;
-            break;
-        case NWC24_MSGTYPE_RVL_MENU:
-            msgObj->type |= MSG_OBJ_FOR_RECIPIENT | MSG_OBJ_FOR_MENU;
-            break;
-        case NWC24_MSGTYPE_RVL_HIDDEN:
-            msgObj->type |= MSG_OBJ_FOR_RECIPIENT;
-            break;
-        case NWC24_MSGTYPE_PUBLIC:
-            msgObj->type |= MSG_OBJ_FOR_PUBLIC;
-            break;
-        default:
-            return NWC24_ERR_INVALID_VALUE;
+    case NWC24_MSGTYPE_RVL_MENU_SHARED: {
+        pMsgImpl->flags |= NWC24_MSGOBJ_FOR_RECIPIENT | NWC24_MSGOBJ_FOR_APP | NWC24_MSGOBJ_FOR_MENU;
+        break;
     }
 
-    msgObj->unk_0x28 = 0;
-    msgObj->type |= 0x200000;
-    msgObj->unk_0x2C = 0;
+    case NWC24_MSGTYPE_WII_APP: {
+        pMsgImpl->flags |= NWC24_MSGOBJ_FOR_RECIPIENT | NWC24_MSGOBJ_FOR_APP;
+        break;
+    }
 
-    NWC24GetMyUserId(&msgObj->fromId);
-    msgObj->numTo = 0;
+    case NWC24_MSGTYPE_RVL_MENU: {
+        pMsgImpl->flags |= NWC24_MSGOBJ_FOR_RECIPIENT | NWC24_MSGOBJ_FOR_MENU;
+        break;
+    }
 
-    for (i = 0; i < NWC24_MSG_RECIPIENT_MAX; i++) {
+    case NWC24_MSGTYPE_RVL_APP_HIDDEN: {
+        pMsgImpl->flags |= NWC24_MSGOBJ_FOR_RECIPIENT;
+        break;
+    }
+
+    case NWC24_MSGTYPE_PUBLIC: {
+        pMsgImpl->flags |= NWC24_MSGOBJ_FOR_PUBLIC;
+        break;
+    }
+
+    default: {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    }
+
+    pMsgImpl->createTime = 0;
+    pMsgImpl->flags |= 1 << 21;
+    pMsgImpl->unk2C = 0;
+    NWC24GetMyUserId(&pMsgImpl->from.id);
+    pMsgImpl->numTo = 0;
+
+    for (i = 0; i < NWC24i_MSG_RECIPIENT_MAX; i++) {
         if (type == NWC24_MSGTYPE_PUBLIC) {
-            NWC24Data_Init(&msgObj->toAddrs[i]);
+            NWC24Data_Init(&pMsgImpl->to[i].data);
         } else {
-            msgObj->toIds[i] = 0;
+            pMsgImpl->to[i].id = 0;
         }
     }
 
-    NWC24Data_Init(&msgObj->subject);
-    NWC24Data_Init(&msgObj->text);
-    msgObj->charset = NWC24_US_ASCII;
-    msgObj->encoding = NWC24_ENC_7BIT;
-    msgObj->numAttached = 0;
+    NWC24Data_Init(&pMsgImpl->subject);
+    NWC24Data_Init(&pMsgImpl->text);
+    pMsgImpl->charset = NWC24_US_ASCII;
+    pMsgImpl->encoding = NWC24_ENC_7BIT;
+    pMsgImpl->numAttached = 0;
 
-    for (i = 0; i < NWC24_MSG_ATTACHMENT_MAX; i++) {
-        NWC24Data_Init(&msgObj->attached[i]);
-        msgObj->attachedSize[i] = 0;
-        msgObj->attachedType[i] = NWC24_TEXT_PLAIN;
+    for (i = 0; i < NWC24i_MSG_ATTACHMENT_MAX; i++) {
+        NWC24Data_Init(&pMsgImpl->attached[i]);
+        pMsgImpl->attachedSize[i] = 0;
+        pMsgImpl->attachedType[i] = NWC24_TEXT_PLAIN;
     }
 
-    NWC24Data_Init(&msgObj->unk_0x30);
-    NWC24Data_Init(&msgObj->unk_0x38);
-    NWC24Data_Init(&msgObj->unk_0x50);
-    NWC24Data_Init(&msgObj->unk_0x58);
-    NWC24Data_Init(&msgObj->unk_0xD0);
-    NWC24Data_Init(&msgObj->faceData);
-    NWC24Data_Init(&msgObj->altName);
-
-    msgObj->msgBoardFlags.raw = 0;
-    msgObj->dwcId = 0;
-    msgObj->iconNew = (1 << 31);
+    NWC24Data_Init(&pMsgImpl->fromField);
+    NWC24Data_Init(&pMsgImpl->toField);
+    NWC24Data_Init(&pMsgImpl->contentType);
+    NWC24Data_Init(&pMsgImpl->txEncoding);
+    NWC24Data_Init(&pMsgImpl->user);
+    NWC24Data_Init(&pMsgImpl->face);
+    NWC24Data_Init(&pMsgImpl->alt);
+    pMsgImpl->msgBoard = 0;
+    pMsgImpl->dwcId.size = 0;
+    pMsgImpl->iconNew = 0x80000000;
 
     return NWC24_OK;
 }
 
-NWC24Err NWC24SetMsgToId(NWC24MsgObj* msg, NWC24UserId id) {
-    NWC24MsgObjPrivate* msgObj = (NWC24MsgObjPrivate*)msg;
-    if (!(msgObj->type & MSG_OBJ_INITIALIZED) || (msgObj->type & MSG_OBJ_DELIVERING)) {
+NWC24Err NWC24SetMsgToId(NWC24MsgObj* pMsg, NWC24UserId userId) {
+    NWC24iMsgObj* pMsgImpl = (NWC24iMsgObj*)pMsg;
+
+    if (!(pMsgImpl->flags & NWC24_MSGOBJ_INITIALIZED) || (pMsgImpl->flags & NWC24_MSGOBJ_DELIVERING)) {
         return NWC24_ERR_PROTECTED;
     }
 
-    if (!(msgObj->type & MSG_OBJ_FOR_RECIPIENT)) {
+    if (!(pMsgImpl->flags & NWC24_MSGOBJ_FOR_RECIPIENT)) {
         return NWC24_ERR_NOT_SUPPORTED;
     }
 
-    if (msgObj->numTo >= NWC24_MSG_RECIPIENT_MAX) {
+    if (pMsgImpl->numTo >= NWC24i_MSG_RECIPIENT_MAX) {
         return NWC24_ERR_FULL;
     }
 
-    msgObj->toIds[msgObj->numTo] = id;
-    msgObj->numTo++;
+    pMsgImpl->to[pMsgImpl->numTo].id = userId;
+    pMsgImpl->numTo++;
 
     return NWC24_OK;
 }
 
-NWC24Err NWC24SetMsgText(NWC24MsgObj* msg, const char* text, u32 len, NWC24Charset charset, NWC24Encoding encoding) {
-    NWC24MsgObjPrivate* msgObj = (NWC24MsgObjPrivate*)msg;
+NWC24Err NWC24SetMsgToStr(NWC24MsgObj* pMsg, const char* pAddr, u32 len) {
+    NWC24iMsgObj* obj = (NWC24iMsgObj*)pMsg;
 
-    if (!(msgObj->type & MSG_OBJ_INITIALIZED) || (msgObj->type & MSG_OBJ_DELIVERING)) {
+    if (!(obj->flags & NWC24_MSGOBJ_INITIALIZED) || (obj->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+    if (pAddr == NULL || pAddr[0] == '\0') {
+        return NWC24_ERR_NULL;
+    }
+    if (!(obj->flags & NWC24_MSGOBJ_FOR_PUBLIC)) {
+        return NWC24_ERR_NOT_SUPPORTED;
+    }
+    if (obj->numTo >= NWC24i_MSG_RECIPIENT_MAX) {
+        return NWC24_ERR_FULL;
+    }
+    if (len >= 0x100) {
+        return NWC24_ERR_OVERFLOW;
+    }
+    if (pAddr[len] != '\0') {
+        return NWC24_ERR_STRING_END;
+    }
+
+    NWC24Data_SetDataP(&obj->to[obj->numTo].data, pAddr, len);
+    obj->numTo++;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgSubject(NWC24MsgObj* pMsg, const char* pSubject, u32 len) {
+    NWC24iMsgObj* obj = (NWC24iMsgObj*)pMsg;
+
+    if (!(obj->flags & NWC24_MSGOBJ_INITIALIZED) || (obj->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+    if (pSubject == NULL || pSubject[0] == '\0') {
+        return NWC24_ERR_NULL;
+    }
+    if (len >= 0x3F4) {
+        return NWC24_ERR_OVERFLOW;
+    }
+
+    NWC24Data_SetDataP(&obj->subject, pSubject, len);
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgText(NWC24MsgObj* pMsg, const char* pText, u32 len, NWC24Charset charset, NWC24Encoding encoding) {
+    NWC24iMsgObj* pMsgImpl = (NWC24iMsgObj*)pMsg;
+
+    if (!(pMsgImpl->flags & NWC24_MSGOBJ_INITIALIZED) || (pMsgImpl->flags & NWC24_MSGOBJ_DELIVERING)) {
         return NWC24_ERR_PROTECTED;
     }
 
@@ -123,33 +172,275 @@ NWC24Err NWC24SetMsgText(NWC24MsgObj* msg, const char* text, u32 len, NWC24Chars
         return NWC24_ERR_INVALID_VALUE;
     }
 
-    if (text == NULL) {
-        NWC24Data_Init(&msgObj->text);
+    if (pText == NULL) {
+        NWC24Data_Init(&pMsgImpl->text);
         return NWC24_OK;
     }
 
-    if (encoding == NWC24_ENC_8BIT && (msgObj->type & MSG_OBJ_FOR_PUBLIC)) {
-        return NWC24_ERR_NOT_SUPPORTED;
+    if (encoding == NWC24_ENC_8BIT) {
+        if (pMsgImpl->flags & NWC24_MSGOBJ_FOR_PUBLIC) {
+            return NWC24_ERR_NOT_SUPPORTED;
+        }
     }
 
-    // Lines are limited to at most 1000 characters
     if (encoding == NWC24_ENC_7BIT) {
-        u32 lineLength = 0;
-        const char* it;
-        for (it = text; it < text + len; it++) {
-            if (it[0] == '\r' && it[1] == '\n') {
+        u32 lineLength;
+        const char* pIt;
+        const char* pEnd;
+
+        lineLength = 0;
+        pEnd = pText + len;
+
+        for (pIt = pText; pIt < pEnd; pIt++) {
+            if (pIt[0] == '\r' && pIt[1] == '\n') {
                 lineLength = 0;
-                it++;
+                pIt++;
             }
-            // Include "\r\n" in line length
+
             else if (++lineLength > SMTP_LINE_MAX - 2) {
                 return NWC24_ERR_FORMAT;
             }
         }
     }
 
-    NWC24Data_SetDataP(&msgObj->text, text, len);
-    msgObj->charset = charset;
-    msgObj->encoding = encoding;
+    NWC24Data_SetDataP(&pMsgImpl->text, pText, len);
+    pMsgImpl->charset = charset;
+    pMsgImpl->encoding = encoding;
+
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgAttached(NWC24MsgObj* pMsg, const void* data, u32 size, NWC24MIMEType type) {
+    NWC24iMsgObj* obj = (NWC24iMsgObj*)pMsg;
+    u32 total = 0;
+    u32 maxSize;
+    u32 i;
+    if (!(obj->flags & NWC24_MSGOBJ_INITIALIZED) || (obj->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+    if (data == NULL || size == 0) {
+        return NWC24_ERR_NULL;
+    }
+    if (obj->numAttached >= NWC24i_MSG_ATTACHMENT_MAX) {
+        return NWC24_ERR_FULL;
+    }
+    if (NWC24GetMIMETypeStr(type) == NULL) {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    if (obj->flags & NWC24_MSGOBJ_FOR_PUBLIC) {
+        if (type != 0x10000 && type != 0x10001 && type != 0x20000 && type != 0x30000) {
+            return NWC24_ERR_NOT_SUPPORTED;
+        }
+    }
+    switch (type) {
+    case 0x20001:
+        maxSize = 0x14000;
+        break;
+    case 0x30001:
+        maxSize = 0x1E000;
+        break;
+    case 0x30002:
+        maxSize = 0x80;
+        break;
+    default:
+        maxSize = 0x245B0;
+        break;
+    }
+    if (size > maxSize) {
+        return NWC24_ERR_OVERFLOW;
+    }
+    for (i = 0; i < obj->numAttached; ++i) {
+        total += obj->attachedSize[i];
+    }
+    total += size;
+    if (total >= 0x245B0) {
+        return NWC24_ERR_OVERFLOW;
+    }
+    NWC24Data_SetDataP(&obj->attached[obj->numAttached], data, size);
+    obj->attachedSize[obj->numAttached] = size;
+    obj->attachedType[obj->numAttached] = type;
+    obj->numAttached++;
+    obj->flags |= NWC24_MSGOBJ_MULTIPART;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgAltName(NWC24MsgObj* pMsg, const u16* pName, u32 len) {
+    NWC24iMsgObj* pMsgImpl = (NWC24iMsgObj*)pMsg;
+
+    if (!(pMsgImpl->flags & NWC24_MSGOBJ_INITIALIZED) || (pMsgImpl->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+
+    if (pMsgImpl->alt.size > 0) {
+        return NWC24_ERR_FULL;
+    }
+
+    if (len > ALT_NAME_MAX) {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+
+    if (pName == NULL || len <= 0) {
+        return NWC24_ERR_NULL;
+    }
+
+    NWC24Data_SetDataP(&pMsgImpl->alt, pName, len * sizeof(u16));
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgMBNoReply(NWC24MsgObj* pMsg, BOOL enable) {
+    NWC24iMsgObj* pMsgImpl = (NWC24iMsgObj*)pMsg;
+
+    if (!(pMsgImpl->flags & NWC24_MSGOBJ_INITIALIZED) || (pMsgImpl->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+
+    if (!(pMsgImpl->flags & NWC24_MSGOBJ_FOR_MENU)) {
+        return NWC24_ERR_NOT_SUPPORTED;
+    }
+
+    if (enable) {
+        NWC24i_MSGOBJ_SET_MB_NOREPLY(pMsgImpl, TRUE);
+    } else {
+        NWC24i_MSGOBJ_SET_MB_NOREPLY(pMsgImpl, FALSE);
+    }
+
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgDwcSize(NWC24MsgObj* pMsg, u32 size) {
+    NWC24iMsgObj* obj = (NWC24iMsgObj*)pMsg;
+
+    if (!(obj->flags & NWC24_MSGOBJ_INITIALIZED) || (obj->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+
+    obj->dwcId.size = size;
+    obj->flags |= NWC24_MSGOBJ_DWC;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgLedPatternRaw(NWC24MsgObj* pMsg, u32 pattern) {
+    NWC24iMsgObj* obj = (NWC24iMsgObj*)pMsg;
+    if (!(obj->flags & NWC24_MSGOBJ_INITIALIZED) || (obj->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+    if (pattern == 0) {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    if (!(obj->flags & NWC24_MSGOBJ_FOR_RECIPIENT) || !(obj->flags & NWC24_MSGOBJ_FOR_MENU)) {
+        return NWC24_ERR_NOT_SUPPORTED;
+    }
+    if (obj->command != 0 && !(obj->command & 0x40000)) {
+        return NWC24_ERR_NOT_SUPPORTED;
+    }
+    if (!NWC24IsMsgLibOpenedByTool() && NWC24GetAppId() != 0x48414541) {
+        if (pattern >= 0x4000) {
+            return NWC24_ERR_INVALID_VALUE;
+        }
+    }
+    obj->command = pattern | 0x40000;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgType(const NWC24MsgObj* pMsg, NWC24MsgType* pType) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    if (obj->flags & NWC24_MSGOBJ_FOR_RECIPIENT) {
+        if (obj->flags & NWC24_MSGOBJ_FOR_APP) {
+            if (obj->flags & NWC24_MSGOBJ_FOR_MENU) {
+                *pType = NWC24_MSGTYPE_RVL_MENU_SHARED;
+            } else {
+                *pType = NWC24_MSGTYPE_WII_APP;
+            }
+        } else if (obj->flags & NWC24_MSGOBJ_FOR_MENU) {
+            *pType = NWC24_MSGTYPE_RVL_MENU;
+        } else {
+            *pType = NWC24_MSGTYPE_RVL_APP_HIDDEN;
+        }
+    } else if (obj->flags & NWC24_MSGOBJ_FOR_PUBLIC) {
+        *pType = NWC24_MSGTYPE_PUBLIC;
+    } else {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgNumAttached(const NWC24MsgObj* pMsg, u32* pNum) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    *pNum = obj->numAttached;
+    if (obj->numAttached > NWC24i_MSG_ATTACHMENT_MAX) {
+        return NWC24_ERR_BROKEN;
+    }
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgAttachedSize(const NWC24MsgObj* pMsg, u32 index, u32* pSize) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    if (index >= NWC24i_MSG_ATTACHMENT_MAX || index >= obj->numAttached) {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    *pSize = obj->attachedSize[index];
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgAttachedType(const NWC24MsgObj* pMsg, u32 index, NWC24MIMEType* pType) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    if (index >= NWC24i_MSG_ATTACHMENT_MAX || index >= obj->numAttached) {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    *pType = obj->attachedType[index];
+    if ((obj->flags & NWC24_MSGOBJ_FOR_PUBLIC) && !(obj->flags & NWC24_MSGOBJ_FLAG_12)) {
+        if (*pType != 0x10000 && *pType != 0x10001 && *pType != 0x20000 && *pType != 0x30000) {
+            *pType = 0;
+        }
+    }
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgId(const NWC24MsgObj* pMsg, u32* pId) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    *pId = obj->id;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgAppId(const NWC24MsgObj* pMsg, u32* pAppId) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    *pAppId = obj->appId;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24GetMsgFromId(const NWC24MsgObj* pMsg, NWC24UserId* pId) {
+    const NWC24iMsgObj* obj = (const NWC24iMsgObj*)pMsg;
+
+    if (!(obj->flags & NWC24_MSGOBJ_FOR_RECIPIENT)) {
+        return NWC24_ERR_NOT_SUPPORTED;
+    }
+    *pId = obj->from.id;
+    return NWC24_OK;
+}
+
+NWC24Err NWC24SetMsgDesignatedTime(NWC24MsgObj* pMsg, s32 delay) {
+    NWC24iMsgObj* obj = (NWC24iMsgObj*)pMsg;
+    s32 minutes = 0;
+    s32 designated;
+    NWC24Err result;
+    if (delay <= 0 || delay > 14400) {
+        return NWC24_ERR_INVALID_VALUE;
+    }
+    result = NWC24iGetUniversalTimeMinute(&minutes);
+    if (result < 0) {
+        return result;
+    }
+    designated = minutes + delay;
+    if (!(obj->flags & NWC24_MSGOBJ_INITIALIZED) || (obj->flags & NWC24_MSGOBJ_DELIVERING)) {
+        return NWC24_ERR_PROTECTED;
+    }
+    obj->unk2C = designated;
+    obj->flags |= 1 << 24;
     return NWC24_OK;
 }

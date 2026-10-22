@@ -25,6 +25,7 @@ double atan2(double y, double x);
 double fmod(double x, double y);
 double pow(double x, double y);
 double sqrt(double x);
+double log10(double x);
 
 #ifdef __cplusplus
 }

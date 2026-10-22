@@ -82,7 +82,7 @@ void dInsFldStump_c::calcMtx() {
     rotX.XrotS(mAngle.x);
     rotY.YrotS(mAngle.y);
     rotZ.ZrotS(mAngle.z);
-    fn_80444FE4(sway, &mRot);
+    ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(sway))->makeQ(mRot);
     dActor_c::makeMtx(&mtx, &mPos, 0);
     PSMTXConcat(mtx, rotY, mtx);
     PSMTXConcat(mtx, rotX, mtx);

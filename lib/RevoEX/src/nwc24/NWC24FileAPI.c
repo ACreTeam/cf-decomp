@@ -22,8 +22,8 @@ static NWC24Err ConvertVfError(s32 vferr, NWC24Err wc24err);
 
 #define INVALIDATE_ALIGN (1 << (DEFAULT_ALIGN - 1))  // ?
 
-#define NWC24_IO_WRITE_BUFFER_SIZE ((int)(sizeof(nwc24Work->writeBuffer)))
-#define NWC24_IO_READ_BUFFER_SIZE ((int)(sizeof(nwc24Work->readBuffer)))
+#define NWC24_IO_WRITE_BUFFER_SIZE ((int)(sizeof(NWC24WorkP->writeBuffer)))
+#define NWC24_IO_READ_BUFFER_SIZE ((int)(sizeof(NWC24WorkP->readBuffer)))
 
 #define NAND_RETRY_COUNT 3
 
@@ -191,7 +191,7 @@ NWC24Err NWC24iFCloseNand(NWC24File* file) {
     return err;
 }
 
-NWC24Err NWC24iFCloseVF(NWC24File* file) {
+static NWC24Err NWC24iFCloseVF(NWC24File* file) {
     s32 result;
 
     result = VFCloseFile(file->vf);
@@ -351,7 +351,7 @@ NWC24Err NWC24FGetLength(NWC24File* file, u32* lengthOut) {
     return NWC24_OK;
 }
 
-NWC24Err NWC24FDelete(const char* path) {
+static NWC24Err NWC24FDelete(const char* path) {
     s32 result;
 
     result = NANDPrivateDelete(path);
@@ -383,7 +383,7 @@ NWC24Err NWC24FDeleteVF(const char* path) {
     return NWC24_OK;
 }
 
-NWC24Err NWC24CreateDir(const char* path) {
+static NWC24Err NWC24CreateDir(const char* path) {
     s32 result;
 
     result = NANDPrivateCreateDir(path, NAND_PERM_ALL_RW, 0);
@@ -499,7 +499,7 @@ static NWC24Err BufferedWrite(const void* src, s32 size, NWC24File* file) {
 
     left = size;
     pos = file->align;
-    buf = nwc24Work->writeBuffer;
+    buf = NWC24WorkP->writeBuffer;
     bsrc = (u8*)src;
     err = NWC24_OK;
 
@@ -563,7 +563,7 @@ static NWC24Err BufferedWriteFlush(NWC24File* file) {
     u32 i;
 
     pos = file->align;
-    buf = nwc24Work->writeBuffer;
+    buf = NWC24WorkP->writeBuffer;
     err = NWC24_OK;
 
     if (pos == 0) {
@@ -617,7 +617,7 @@ static NWC24Err BufferedRead(void* dest, s32 size, NWC24File* file) {
 
     bdst = (u8*)dest;
     total = size;
-    buf = nwc24Work->readBuffer;
+    buf = NWC24WorkP->readBuffer;
     err = NWC24_OK;
 
     if (RdBufferMutex != 0) {

@@ -95,6 +95,7 @@ public:
     void GetViewport(f32* pX, f32* pY, f32* pWidth, f32* pHeight, f32* pNear,
                      f32* pFar) const;
 
+    void GetPosition(math::VEC3* pPos) const;
     void GetCameraMtx(math::MTX34* pMtx) const;
     void GetProjectionMtx(math::MTX44* pMtx) const;
     void GetProjectionTexMtx(math::MTX34* pMtx) const;

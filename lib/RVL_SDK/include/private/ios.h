@@ -11,9 +11,11 @@ extern "C" {
 
 IOSError IOS_OpenAsync(const char* pPath, u32 flags, IOSIpcCb callback, void* callback_arg);
 IOSError IOS_Open(const char* path, u32 flags);
+IOSError IOS_OpenTimeout(const char* path, u32 flags);
 
 IOSError IOS_CloseAsync(IOSFd fd, IOSIpcCb callback, void* callbackArg);
 IOSError IOS_Close(IOSFd fd);
+IOSError IOS_CloseTimeout(IOSFd fd);
 
 IOSError IOS_ReadAsync(IOSFd fd, void* buf, u32 len, IOSIpcCb callback, void* callbackArg);
 IOSError IOS_Read(IOSFd fd, void* buf, u32 len);

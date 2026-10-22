@@ -207,6 +207,7 @@ extern WUDCB _wcb;
 extern WUDDevInfo _work;
 
 extern SCBtDeviceInfoArray _scArray;
+extern u8 _scFlush;
 
 extern BD_ADDR_PTR _dev_handle_to_bda[WUD_MAX_DEV_ENTRY];
 extern u16 _dev_handle_queue_size[WUD_MAX_DEV_ENTRY];

@@ -1,0 +1,537 @@
+// EGG::DrawGX. .text 80445F80..804475A0
+#include <lib/egg/gfxe/eggDrawGX.h>
+#include <lib/egg/gfxe/eggGXUtility.h>
+#include <lib/egg/gfxe/eggStateGX.h>
+#include <nw4r/g3d.h>
+#include <nw4r/math.h>
+#include <revolution/GX.h>
+#include <revolution/MTX.h>
+#include <revolution/OS.h>
+
+namespace EGG {
+
+const GXColor DrawGX::WHITE = {0xFF, 0xFF, 0xFF, 0xFF};
+const GXColor DrawGX::RED = {0xFF, 0x00, 0x00, 0xFF};
+const GXColor DrawGX::GREEN = {0x00, 0xFF, 0x00, 0xFF};
+const GXColor DrawGX::BLUE = {0x00, 0x00, 0xFF, 0xFF};
+
+nw4r::math::MTX34 DrawGX::s_cameraMtx;
+DrawGX::DLData DrawGX::s_DL[DL_MAX];
+
+u32 DrawGX::s_flag;
+
+} // namespace EGG
+
+namespace {
+
+static GXTexObj CLEAR_Z_TEX_OBJ;
+static GXLightID LIGHTMASK_DEFAULT = GX_LIGHT0;
+static GXTexMapID TEXMAP_DEFAULT;
+
+static void DrawQuadNormal(u8 x1, u8 x2, u8 x3, u8 x4, u8 y) {
+    GXPosition2u8(x1, y);
+    GXPosition2u8(x2, y);
+    GXPosition2u8(x3, y);
+    GXPosition2u8(x4, y);
+}
+
+static void DrawQuadLineStripNormal(u8 x1, u8 x2, u8 x3, u8 x4, u8 y) {
+    GXBegin(GX_LINESTRIP, GX_VTXFMT0, 5);
+    GXPosition2u8(x1, y);
+    GXPosition2u8(x2, y);
+    GXPosition2u8(x3, y);
+    GXPosition2u8(x4, y);
+    GXPosition2u8(x1, y);
+}
+
+static void DrawCircleYPolygonFan(const nw4r::math::MTX34 &mtx, f32 f, u16 numSegments) {
+    f32 stepSize = (2.0f * M_PI / numSegments);
+    nw4r::math::VEC3 v1(0.0f, 1.0f, 0.0f);
+    nw4r::math::VEC3 v2(0.0f, f, 0.0f);
+
+    int seg = numSegments + 1;
+
+    PSMTXMultVec(mtx, v1, v1);
+    PSMTXMultVec(mtx, v2, v2);
+
+    GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, seg + 1);
+
+    GXPosition3f32(v2.x, v2.y, v2.z);
+    GXPosition3f32(v1.x, v1.y, v1.z);
+
+    for (int i = 0; i < seg; i++) {
+        f32 signedStepSize = -stepSize;
+        nw4r::math::VEC3 v3(0.5f * nw4r::math::SinRad(signedStepSize * i), 0.0f,
+                            0.5f * nw4r::math::CosRad(signedStepSize * i));
+        PSMTXMultVec(mtx, v3, v3);
+        GXPosition3f32(v3.x, v3.y, v3.z);
+
+        nw4r::math::VEC3 v4(0.5f * nw4r::math::SinRad(signedStepSize * (i - 1)), 0.0f,
+                            0.5f * nw4r::math::CosRad(signedStepSize * (i - 1)));
+        nw4r::math::VEC3 v5(0.5f * nw4r::math::SinRad(signedStepSize * (i + 1)), 0.0f,
+                            0.5f * nw4r::math::CosRad(signedStepSize * (i + 1)));
+
+        PSMTXMultVec(mtx, v4, v4);
+        PSMTXMultVec(mtx, v5, v5);
+
+        nw4r::math::VEC3Sub(&v4, &v4, &v2);
+        nw4r::math::VEC3Sub(&v5, &v5, &v2);
+
+        nw4r::math::VEC3 v6;
+        PSVECCrossProduct(v5, v4, v6);
+        PSVECNormalize(v6, v6);
+
+        GXPosition3f32(v6.x, v6.y, v6.z);
+    }
+}
+
+} // namespace
+
+namespace EGG {
+
+static DrawGX sDrawGX;
+
+void DrawGX::Initialize(Heap *pHeap_) {
+    2.0f; // pools 2.0f here, before the later float constants
+
+    static u8 s_clear_z_TX[64] = {
+        0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
+        0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    };
+    Heap *pHeap = pHeap_ == NULL ? Heap::getCurrentHeap() : pHeap_;
+
+    GXInitTexObj(&CLEAR_Z_TEX_OBJ, s_clear_z_TX, 4, 4, GX_TF_Z24X8, GX_REPEAT, GX_REPEAT, GX_FALSE);
+    GXInitTexObjLOD(&CLEAR_Z_TEX_OBJ, GX_NEAR, GX_NEAR, 0.0f, 0.0f, 0.0f, GX_FALSE, GX_FALSE, GX_ANISO_1);
+    PSMTXIdentity(s_cameraMtx);
+    CreateDisplayList(pHeap);
+}
+
+GXLightID DrawGX::GetLightMaskDefault() {
+    return LIGHTMASK_DEFAULT;
+}
+
+static const DrawGX::VtxType sVtxTypes[2][2] = {
+    {DrawGX::VTX_TYPE_10, DrawGX::VTX_TYPE_12},
+    {DrawGX::VTX_TYPE_11, DrawGX::VTX_TYPE_13},
+};
+
+void DrawGX::BeginDrawScreen(bool b1, bool b2, bool b3) {
+    SetMat_ColorChannel(COLORCHAN_1);
+    SetMat_TexGen(b2 ? TEXGEN_1 : TEXGEN_0);
+    SetMat_Ind();
+    GXSetNumTevStages(1);
+    GXSetTevSwapModeTable(GX_TEV_SWAP0, GX_CH_RED, GX_CH_GREEN, GX_CH_BLUE, GX_CH_ALPHA);
+    SetMat_Tev(GX_TEVSTAGE0, b2 ? TEV_1 : TEV_0);
+    if (b3) {
+        GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
+    }
+    SetMat_PE(ZMODE_0, BLEND_0);
+    SetVtxState(sVtxTypes[b1 ? 1 : 0][b2 ? 0 : 1]);
+}
+
+void DrawGX::SetMat_ColorChannel(enum ColorChannel chan) {
+    switch (chan) {
+    case COLORCHAN_0:
+        GXSetNumChans(1);
+        GXSetCullMode(GX_CULL_BACK);
+        GXSetChanCtrl(GX_COLOR0A0, true, GX_SRC_REG, GX_SRC_REG, GetLightMaskDefault(), GX_DF_CLAMP, GX_AF_SPOT);
+        GXSetChanCtrl(GX_COLOR1A1, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+        break;
+    case COLORCHAN_1:
+        GXSetNumChans(1);
+        GXSetCullMode(GX_CULL_BACK);
+        GXSetChanCtrl(GX_COLOR0A0, false, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_CLAMP, GX_AF_SPOT);
+        GXSetChanCtrl(GX_COLOR1A1, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+        break;
+    }
+}
+
+void DrawGX::SetMat_TexGen(enum TexGen texGen) {
+    switch (texGen) {
+    case TEXGEN_0:
+        GXSetNumTexGens(0);
+        GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3c, 0, 0x7d);
+        break;
+    case TEXGEN_1:
+        GXSetNumTexGens(1);
+        GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3c, 0, 0x7d);
+        break;
+    }
+}
+
+void DrawGX::SetMat_Ind() {
+    GXSetNumIndStages(0);
+}
+
+void DrawGX::SetMat_Tev(GXTevStageID stageId, enum TevSetting setting) {
+    switch (setting) {
+    case TEV_0:
+        GXSetTevDirect(stageId);
+        GXSetTevOrder(stageId, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+        GXSetTevSwapMode(stageId, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorIn(stageId, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
+        GXSetTevColorOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
+        GXSetTevAlphaIn(stageId, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
+        GXSetTevAlphaOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, true, GX_TEVPREV);
+        break;
+    case TEV_1:
+        GXSetTevDirect(stageId);
+        GXSetTevOrder(stageId, GX_TEXCOORD0, TEXMAP_DEFAULT, GX_COLOR0A0);
+        GXSetTevSwapMode(stageId, GX_TEV_SWAP0, GX_TEV_SWAP0);
+        GXSetTevColorIn(stageId, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
+        GXSetTevColorOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
+        GXSetTevAlphaIn(stageId, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
+        GXSetTevAlphaOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, true, GX_TEVPREV);
+        break;
+    }
+}
+
+void DrawGX::SetMat_PE(enum ZMode zMode, enum Blend blendMode) {
+    GXSetZCompLoc(true);
+    GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
+    SetZMode(zMode);
+    SetBlendMode(blendMode);
+}
+
+void DrawGX::LoadTexture(nw4r::g3d::ResTex tex, GXTexMapID texMapId) {
+    GXTexObj obj;
+    GXUtility::getTexObj(&obj, tex, GX_CLAMP, GX_CLAMP, GX_LINEAR, GX_LINEAR);
+    GXLoadTexObj(&obj, texMapId);
+}
+
+void DrawGX::SetVtxState(EGG::DrawGX::VtxType type) {
+    GXClearVtxDesc();
+    switch (type) {
+    case VTX_TYPE_0: {
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_S16, 0xe);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_S16, 0xe);
+        static const ALIGN(32) s16 sVtxDataType0[][3] = {
+            {0xE000, 0x2000, 0xE000}, {0xE000, 0x2000, 0x2000}, {0x2000, 0x2000, 0x2000}, {0x2000, 0x2000, 0xE000},
+            {0xE000, 0xE000, 0xE000}, {0xE000, 0xE000, 0x2000}, {0x2000, 0xE000, 0x2000}, {0x2000, 0xE000, 0xE000},
+        };
+        static const ALIGN(32) s16 sNrmDataType0[][3] = {
+            {0xC000, 0x0000, 0x0000}, {0x4000, 0x0000, 0x0000}, {0x0000, 0xC000, 0x0000},
+            {0x0000, 0x4000, 0x0000}, {0x0000, 0x0000, 0xC000}, {0x0000, 0x0000, 0x4000},
+        };
+        GXSetArray(GX_VA_POS, sVtxDataType0, 6);
+        GXSetArray(GX_VA_NRM, sNrmDataType0, 6);
+        GXSetVtxDesc(GX_VA_POS, GX_INDEX8);
+        GXSetVtxDesc(GX_VA_NRM, GX_INDEX8);
+        break;
+    }
+    case VTX_TYPE_2:
+    case VTX_TYPE_3:
+    case VTX_TYPE_4:
+    case VTX_TYPE_5: {
+        GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+        GXSetVtxDesc(GX_VA_NRM, GX_DIRECT);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_F32, 0);
+        break;
+    }
+    case VTX_TYPE_6: {
+        GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+        GXSetVtxDesc(GX_VA_NRM, GX_DIRECT);
+        GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_F32, 0);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
+        break;
+    }
+    case VTX_TYPE_1: {
+        GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+        break;
+    }
+    case VTX_TYPE_7:
+    case VTX_TYPE_8: {
+        static const ALIGN(32) s16 QUAD_VTX[][2] = {
+            {0xE000, 0x2000},
+            {0x2000, 0x2000},
+            {0x2000, 0xE000},
+            {0xE000, 0xE000},
+        };
+        static const ALIGN(32) s16 QUAD_NRM[][3] = {{0x0000, 0x0000, 0x4000}};
+        static const ALIGN(32) u8 QUAD_UV[][2] = {
+            {0x00, 0x00},
+            {0x01, 0x00},
+            {0x01, 0x01},
+            {0x00, 0x01},
+        };
+        GXSetVtxDesc(GX_VA_POS, GX_INDEX8);
+        GXSetVtxDesc(GX_VA_NRM, GX_INDEX8);
+        if (type == VTX_TYPE_7) {
+            GXSetVtxDesc(GX_VA_TEX0, GX_INDEX8);
+        }
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XY, GX_S16, 0xe);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_S16, 0xe);
+        if (type == VTX_TYPE_7) {
+            GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_U8, 0);
+        }
+        GXSetArray(GX_VA_POS, QUAD_VTX, 4);
+        GXSetArray(GX_VA_NRM, QUAD_NRM, 6);
+        if (type == VTX_TYPE_7) {
+            GXSetArray(GX_VA_TEX0, QUAD_UV, 2);
+        }
+        break;
+    }
+    case VTX_TYPE_9: {
+        static const ALIGN(32) s16 QUAD_VTX[][3] = {
+            {0xE000, 0x0000, 0xE000},
+            {0x2000, 0x0000, 0xE000},
+            {0x2000, 0x0000, 0x2000},
+            {0xE000, 0x0000, 0x2000},
+        };
+        static const ALIGN(32) s16 QUAD_NRM[][3] = {{0x0000, 0x4000, 0x0000}};
+        GXSetVtxDesc(GX_VA_POS, GX_INDEX8);
+        GXSetVtxDesc(GX_VA_NRM, GX_INDEX8);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_S16, 0xe);
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_S16, 0xe);
+        GXSetArray(GX_VA_POS, QUAD_VTX, 6);
+        GXSetArray(GX_VA_NRM, QUAD_NRM, 6);
+        break;
+    }
+    case VTX_TYPE_10:
+    case VTX_TYPE_11:
+    case VTX_TYPE_12:
+    case VTX_TYPE_13: {
+        static const ALIGN(32) u8 SCREEN_VTX[][2] = {
+            {0x00, 0x01},
+            {0x01, 0x01},
+            {0x01, 0x00},
+            {0x00, 0x00},
+        };
+        static const ALIGN(32) u8 SCREEN_VTX_LU[][2] = {
+            {0x00, 0x00},
+            {0x01, 0x00},
+            {0x01, 0x01},
+            {0x00, 0x01},
+        };
+        bool bVar1 = type == VTX_TYPE_11 || type == VTX_TYPE_13;
+        bool bVar2 = type == VTX_TYPE_10 || type == VTX_TYPE_11;
+        GXSetVtxDesc(GX_VA_POS, GX_INDEX8);
+        if (bVar2) {
+            GXSetVtxDesc(GX_VA_TEX0, GX_INDEX8);
+        }
+        GXSetArray(GX_VA_POS, bVar1 ? SCREEN_VTX_LU : SCREEN_VTX, 2);
+        if (bVar2) {
+            GXSetArray(GX_VA_TEX0, SCREEN_VTX_LU, 2);
+        }
+        GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XY, GX_U8, 0);
+        if (bVar2) {
+            GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_U8, 0);
+        }
+        break;
+    }
+    }
+}
+
+void DrawGX::CreateDisplayList(Heap *pHeap) {
+    static const u8 POS_NUM[] = {0x10, 0x20};
+
+    u8 ALIGN(32) tmpDisplayList[16 * 1024];
+
+    OSInitFastCast();
+
+    for (int i = 0; i < DL_MAX; i++) {
+        DCInvalidateRange(tmpDisplayList, sizeof(tmpDisplayList));
+        GXBeginDisplayList(tmpDisplayList, sizeof(tmpDisplayList));
+        switch (static_cast<DL>(i)) {
+        case DL_0:
+            GXSetChanMatColor(GX_COLOR0A0, RED);
+            GXBegin(GX_LINES, GX_VTXFMT0, 2);
+            GXPosition3f32(0.0f, 0.0f, 0.0f);
+            GXPosition3f32(1.0f, 0.0f, 0.0f);
+            GXSetChanMatColor(GX_COLOR0A0, GREEN);
+            GXBegin(GX_LINES, GX_VTXFMT0, 2);
+            GXPosition3f32(0.0f, 0.0f, 0.0f);
+            GXPosition3f32(0.0f, 1.0f, 0.0f);
+            GXSetChanMatColor(GX_COLOR0A0, BLUE);
+            GXBegin(GX_LINES, GX_VTXFMT0, 2);
+            GXPosition3f32(0.0f, 0.0f, 0.0f);
+            GXPosition3f32(0.0f, 0.0f, 1.0f);
+            break;
+        case DL_1:
+            GXBegin(GX_QUADS, GX_VTXFMT0, 6 * 4);
+            DrawQuadNormal(1, 5, 4, 0, 0);
+            DrawQuadNormal(3, 7, 6, 2, 1);
+            DrawQuadNormal(5, 6, 7, 4, 2);
+            DrawQuadNormal(3, 2, 1, 0, 3);
+            DrawQuadNormal(0, 4, 7, 3, 4);
+            DrawQuadNormal(2, 6, 5, 1, 5);
+            break;
+        case DL_2:
+            DrawQuadLineStripNormal(1, 5, 4, 0, 0);
+            DrawQuadLineStripNormal(3, 7, 6, 2, 1);
+            DrawQuadLineStripNormal(5, 6, 7, 4, 2);
+            DrawQuadLineStripNormal(3, 2, 1, 0, 3);
+            break;
+        case DL_3:
+            GXDrawSphere(4, 8);
+            break;
+        case DL_4:
+            GXDrawSphere(8, 16);
+            break;
+        case DL_5:
+        case DL_6: {
+            u16 numSegments = POS_NUM[i - DL_5] + 1;
+            f32 radPerSegment = 2.0f * M_PI / (numSegments - 1);
+            GXBegin(GX_LINESTRIP, GX_VTXFMT0, numSegments);
+            for (int i = 0; i < numSegments; i++) {
+                GXPosition3f32(0.5f * nw4r::math::CosRad(radPerSegment * i),
+                               0.5f * nw4r::math::SinRad(radPerSegment * i), 0.0f);
+            }
+            break;
+        }
+        case DL_9:
+        case DL_10: {
+            u16 numSegments = POS_NUM[i - DL_9] + 1;
+            f32 radPerSegment = 2.0f * M_PI / (numSegments - 1);
+            GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, numSegments * 2);
+            for (int i = 0; i < numSegments; i++) {
+                f32 x = 0.5f * nw4r::math::SinRad(radPerSegment * i);
+                f32 z = 0.5f * nw4r::math::CosRad(radPerSegment * i);
+                GXPosition3f32(x, -0.5f, z);
+                GXPosition3f32(2.0f * x, 0.0f, 2.0f * z);
+                GXPosition3f32(x, 0.5f, z);
+                GXPosition3f32(2.0f * x, 0.0f, 2.0f * z);
+            }
+            nw4r::math::MTX34 mtx;
+            PSMTXTrans(mtx, 0.0f, 0.5f, 0.0f);
+            DrawCircleYPolygonFan(mtx, 0.0f, POS_NUM[i - DL_9]);
+
+            PSMTXIdentity(mtx);
+            PSMTXRotRad(mtx, 'z', M_PI);
+            PSMTXTransApply(mtx, mtx, 0.0f, -0.5f, 0.0f);
+            DrawCircleYPolygonFan(mtx, 0.0f, POS_NUM[i - DL_9]);
+            break;
+        }
+        case DL_11:
+        case DL_12: {
+            nw4r::math::MTX34 mtx;
+            PSMTXIdentity(mtx);
+            DrawCircleYPolygonFan(mtx, 1.0f, POS_NUM[i - DL_11]);
+            PSMTXRotRad(mtx, 'z', M_PI);
+            DrawCircleYPolygonFan(mtx, 0.0f, POS_NUM[i - DL_11]);
+            break;
+        }
+        case DL_7:
+        case DL_8: {
+            nw4r::math::MTX34 mtx;
+            PSMTXIdentity(mtx);
+            PSMTXRotRad(mtx, 'x', M_PI / 2.0f);
+            DrawCircleYPolygonFan(mtx, 0.0f, POS_NUM[i - DL_7]);
+            break;
+        }
+
+        case DL_13:
+        case DL_14: {
+            GXBegin(GX_QUADS, GX_VTXFMT0, 4);
+            GXPosition2u8(0, 0);
+            if (i == DL_13) {
+                GXPosition1x8(0);
+            }
+            GXPosition2u8(1, 0);
+            if (i == DL_13) {
+                GXPosition1x8(1);
+            }
+            GXPosition2u8(2, 0);
+            if (i == DL_13) {
+                GXPosition1x8(2);
+            }
+            GXPosition2u8(3, 0);
+            if (i == DL_13) {
+                GXPosition1x8(3);
+            }
+            break;
+        }
+        case DL_15:
+            GXBegin(GX_LINESTRIP, GX_VTXFMT0, 5);
+            GXPosition3f32(-0.5f, 0.5f, 0.0f);
+            GXPosition3f32(0.5f, 0.5f, 0.0f);
+            GXPosition3f32(0.5f, -0.5f, 0.0f);
+            GXPosition3f32(-0.5f, -0.5f, 0.0f);
+            GXPosition3f32(-0.5f, 0.5f, 0.0f);
+            break;
+        case DL_16:
+        case DL_17:
+            GXBegin(GX_QUADS, GX_VTXFMT0, 4);
+            GXPosition1x8(0);
+            if (i == DL_16) {
+                GXPosition1x8(0);
+            }
+            GXPosition1x8(1);
+            if (i == DL_16) {
+                GXPosition1x8(1);
+            }
+            GXPosition1x8(2);
+            if (i == DL_16) {
+                GXPosition1x8(2);
+            }
+            GXPosition1x8(3);
+            if (i == DL_16) {
+                GXPosition1x8(3);
+            }
+            break;
+        default:
+            break;
+        }
+
+        u32 size = GXEndDisplayList();
+        s_DL[i].mLen = size;
+        u8 *data = new (pHeap, 0x20) u8[size];
+        s_DL[i].mpList = data;
+        for (int j = 0; j < size; j++) {
+            data[j] = tmpDisplayList[j];
+        }
+        DCFlushRange(data, size);
+    }
+    s_flag |= 1;
+}
+
+void DrawGX::DrawDL(enum DL dl, const nw4r::math::MTX34 &mtx) {
+    GXLoadPosMtxImm(mtx, 0);
+    GXLoadNrmMtxImm(mtx, 0);
+    GXCallDisplayList(s_DL[dl].mpList, s_DL[dl].mLen);
+}
+
+void DrawGX::DrawDL(enum DL dl, const nw4r::math::MTX34 &mtx, GXColor clr) {
+    GXLoadPosMtxImm(mtx, 0);
+    GXLoadNrmMtxImm(mtx, 0);
+    GXSetChanMatColor(GX_COLOR0A0, clr);
+    GXCallDisplayList(s_DL[dl].mpList, s_DL[dl].mLen);
+}
+
+void DrawGX::SetZMode(enum ZMode mode) {
+    static const DrawGX::ZModeConfig Z_ARG[ZMODE_MAX] = {
+        {false, GX_ALWAYS, false},
+        {true, GX_LEQUAL, true},
+        {true, GX_LEQUAL, false},
+        {true, GX_ALWAYS, true},
+    };
+    GXSetZMode(Z_ARG[mode].mTest, Z_ARG[mode].mCompare, Z_ARG[mode].mUpdate);
+}
+
+void DrawGX::SetBlendMode(enum Blend mode) {
+    static const DrawGX::BlendModeConfig BLEND[BLEND_MAX] = {
+        {GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_INVSRCALPHA, GX_BL_SRCALPHA, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_ONE, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_SRCCLR, GX_BL_ONE, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_INVSRCCLR, GX_BL_ONE, GX_LO_CLEAR},
+        {GX_BM_SUBTRACT, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_ZERO, GX_BL_SRCCLR, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_ZERO, GX_BL_INVSRCCLR, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_DSTALPHA, GX_BL_INVDSTALPHA, GX_LO_CLEAR},
+        {GX_BM_BLEND, GX_BL_INVDSTALPHA, GX_BL_DSTALPHA, GX_LO_CLEAR},
+        {GX_BM_NONE, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR},
+    };
+    GXSetBlendMode(BLEND[mode].mBlendMode, BLEND[mode].mBlendFactorSrc, BLEND[mode].mBlendFactorDst,
+                   BLEND[mode].mLogicOp);
+}
+
+} // namespace EGG

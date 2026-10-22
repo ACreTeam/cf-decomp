@@ -5,6 +5,7 @@
 
 #include <private/wud/WUDInternal.h>
 #include <private/wud/WUDTypes.h>
+#include <private/bte/btm_api.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,6 +75,18 @@ BD_ADDR_PTR _WUDGetDevAddr(UINT8 handle);
 u16 _WUDGetQueuedSize(s8 handle);
 u16 _WUDGetNotAckedSize(s8 handle);
 u8 _WUDGetLinkNumber();
+
+
+void WUDSecurityCallback(tBTA_DM_SEC_EVT event, tBTA_DM_SEC* pData);
+void WUDSearchCallback(tBTA_DM_SEARCH_EVT event, tBTA_DM_SEARCH* pData);
+void WUDVendorSpecificCallback(UINT8 len, UINT8* pData);
+void WUDDeviceStatusCallback(tBTM_DEV_STATUS status);
+void WUDStoredLinkKeyCallback(void* p1);
+void WUDPowerManagerCallback(BD_ADDR addr, tBTM_PM_STATUS status, UINT16 value, UINT8 hciStatus);
+void WUDiResetAuthFailCount(void);
+
+void* App_MEMalloc(u32 size);
+BOOL App_MEMfree(void* ptr);
 
 #ifdef __cplusplus
 }

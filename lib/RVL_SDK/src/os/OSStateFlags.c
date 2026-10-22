@@ -21,6 +21,7 @@ static u32 checkSum(OSStateFlags* flags) {
     return sum;
 }
 
+#if 0 // not linked in City Folk
 BOOL __OSCreateStateFlags() {
     NANDStatus status;
     s32 ret;
@@ -33,6 +34,7 @@ BOOL __OSCreateStateFlags() {
     }
     return FALSE;
 }
+#endif
 
 BOOL __OSWriteStateFlags(OSStateFlags* flags) {
     NANDFileInfo fileInfo;

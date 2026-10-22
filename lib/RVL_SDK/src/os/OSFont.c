@@ -212,7 +212,7 @@ static u32 GetFontSize(const u8* buffer) {
     return 0;
 }
 
-u16 OSGetFontEncode() {
+static u16 OSGetFontEncode() {
     if (FontEncode != 0xFFFF) {
         return FontEncode;
     }

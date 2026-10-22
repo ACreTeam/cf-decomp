@@ -15,6 +15,7 @@ s32 NANDSecretGetUsage(const char* path, u32* usedBlocks, u32* usedINodes) {
     }
 }
 
+#if 0 // not linked in City Folk
 s32 NANDSecretGetFileSystemStatus(NANDFileSystemStatus* status) {
     ISFSStats isfsStatus;
     ISFSError result = ISFS_ERROR_UNKNOWN;
@@ -36,7 +37,9 @@ s32 NANDSecretGetFileSystemStatus(NANDFileSystemStatus* status) {
 
     return nandConvertErrorCode(result);
 }
+#endif
 
+#if 0 // not linked in City Folk
 s32 NANDSecretGetSystemAvailableArea(const NANDFileSystemStatus* status, u32 usedSystemBlocks, u32 usedSystemINodes, u32* freeSystemBlocks,
                                      u32* freeSystemINode) {
     if (usedSystemBlocks <= NAND_MAX_USER_BLOCKS && usedSystemINodes <= NAND_MAX_USER_INODES) {
@@ -51,3 +54,4 @@ s32 NANDSecretGetSystemAvailableArea(const NANDFileSystemStatus* status, u32 use
     }
     return NAND_RESULT_INVALID;
 }
+#endif

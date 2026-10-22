@@ -13,6 +13,8 @@ extern "C" {
 NWC24Err NWC24CheckUserId(NWC24UserId id);
 NWC24Err NWC24iCheckUserIdCRC(NWC24UserId id);
 
+u64 getUnScrambleId(u64 v);
+
 #ifdef __cplusplus
 }
 #endif

@@ -17,6 +17,7 @@ typedef struct WENCInfo {
 
 s32 WENCGetEncodeData(WENCInfo* info, u32 flag, const s16* pbyPcmData, s32 nSampleNum, u8* pbyAdpcmData);
 
+
 #ifdef __cplusplus
 }
 #endif

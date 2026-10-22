@@ -1,27 +1,31 @@
+#include <decomp.h>
 #include <private/ax.h>
 #include <revolution/ax.h>
 
 #include <revolution/os.h>
-#include <revolution/verdefs.h>
 
-SDKDefineVersion(AX, "Apr 20 2010", "11:18:56");
+const char* __AXVersion = "<< RVL_SDK - AX \trelease build: Aug  8 2007 01:58:18 (0x4199_60831) >>";
 
 static BOOL __init = FALSE;
 
-void AXInit() {
+void AXInit(void) {
     AXInitEx(0);
 }
 
-void AXInitEx(u32 outputBufferMode) {
+BOOL AXIsInit(void) {
+    return __init;
+}
+
+static void AXInitEx(u32 mode) {
     if (!__init) {
-        OSRegisterVersion(GetVersion(AX));
+        OSRegisterVersion(__AXVersion);
 
         __AXAllocInit();
         __AXVPBInit();
         __AXSPBInit();
         __AXAuxInit();
         __AXClInit();
-        __AXOutInit(outputBufferMode);
+        __AXOutInit(mode);
 
         __init = TRUE;
     }

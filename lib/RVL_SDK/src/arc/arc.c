@@ -200,9 +200,11 @@ s32 ARCConvertPathToEntrynum(ARCHandle* handle, const char* path) {
 
 #pragma push
 #pragma force_active on
+#if 0 // not linked in City Folk
 BOOL ARCEntrynumIsDir(ARCHandle* handle, s32 entryNum) {
     return IS_ENTRY_DIR((FSTEntry*)handle->FSTStart, entryNum);
 }
+#endif
 #pragma pop
 
 static u32 entryToPath(ARCHandle* handle, u32 entry, char* path, u32 maxlen) {

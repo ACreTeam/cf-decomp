@@ -119,6 +119,7 @@ static int ENCiGetJisStateFromSjis(ENCJISState* mbState, const u8* src);
 static int ENCiGetJisStateFromUnicode(ENCJISState* mbState, const u16* src);
 static void ENCiConvertSjisKanji3(u8* dst, u8 src1, u8 src2);
 
+#if 0 // not linked in City Folk
 __declspec(weak) const u16 enc_tbl_jp_mbtowc[] = {
     L'\u3000', L'\u3001', L'\u3002', L'\uFF0C',
     L'\uFF0E', L'\u30FB', L'\uFF1A', L'\uFF1B',
@@ -2471,6 +2472,7 @@ __declspec(weak) const u16 enc_tbl_jp_mbtowc[] = {
     L'\0',     L'\0',     L'\0',     L'\0',
     L'\0',     L'\0',     L'\0',         L'\0'
 };
+#endif
 
 __declspec(weak) const u8 enc_tbl_jp_wctomb[] = {
     0x22, 0x81, 0xCD, 0x25, 0x84, 0x9F, 0x30, 0x81,
@@ -5314,13 +5316,16 @@ static const u8 kana_array[] = {
 
 __declspec(weak) BOOL enc_tbl_jp_loaded = TRUE;
 
+#if 0 // not linked in City Folk
 DEFINE_PUBLIC_ENC_TRAMPOLINE_TO_UTF16(Sjis)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_FROM_UTF16(Sjis)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_MB_STATE_TO_UTF16(Jis)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_MB_STATE_FROM_UTF16(Jis)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_MB_STATE(Jis, u8, Sjis, u8)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_MB_STATE(Sjis, u8, Jis, u8)
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringSjisToUnicode(u16* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -5409,6 +5414,7 @@ ENCResult ENCiConvertStringSjisToUnicode(u16* dst, s32* dstSize, const u8* src, 
 
     return ret;
 }
+#endif
 
 ENCResult ENCiConvertStringUnicodeToSjis(u8* dst, s32* dstSize, const u16* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
@@ -5418,7 +5424,7 @@ ENCResult ENCiConvertStringUnicodeToSjis(u8* dst, s32* dstSize, const u16* src, 
     CHECK_PARAMETERS(&ret, dst, dstSize, &dstLimit, &dstValid, src, srcSize, &srcLimit, &srcLimited);
 
     if (!enc_tbl_jp_loaded) {
-        return ENC_ERR_NO_MAP_RULE;
+        return ENC_ERR_NOT_LOADED;
     }
 
     UTF16_CHECK_BOM(&src, srcSize, srcLimit, srcLimited, &srcCnt, dstSize);
@@ -5443,6 +5449,7 @@ ENCResult ENCiConvertStringUnicodeToSjis(u8* dst, s32* dstSize, const u16* src, 
 }
 
 // NOTE: The JIS/Shift_JIS pair is swapped with the JIS/UTF-16 pair.
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringJisToSjis(u8* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType, ENCMBState* mbState) {
     ENCJISState curMbState = ENC_JIS_STATE_US_ASCII;
 
@@ -5566,7 +5573,9 @@ ENCResult ENCiConvertStringJisToSjis(u8* dst, s32* dstSize, const u8* src, s32* 
 
     return ret;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringSjisToJis(u8* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType, ENCMBState* mbState) {
     ENCJISState curMbState = ENC_JIS_STATE_US_ASCII;
     ENCJISState prevMbState = ENC_JIS_STATE_US_ASCII;
@@ -5681,7 +5690,9 @@ ENCResult ENCiConvertStringSjisToJis(u8* dst, s32* dstSize, const u8* src, s32* 
 
     return ret;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringJisToUnicode(u16* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType, ENCMBState* mbState) {
     ENCJISState curMbState = ENC_JIS_STATE_US_ASCII;
 
@@ -5827,6 +5838,7 @@ ENCResult ENCiConvertStringJisToUnicode(u16* dst, s32* dstSize, const u8* src, s
 
     return ret;
 }
+#endif
 
 ENCResult ENCiConvertStringUnicodeToJis(u8* dst, s32* dstSize, const u16* src, s32* srcSize, ENCBreakType breakType, ENCMBState* mbState) {
     ENCJISState curMbState = ENC_JIS_STATE_US_ASCII;
@@ -5839,7 +5851,7 @@ ENCResult ENCiConvertStringUnicodeToJis(u8* dst, s32* dstSize, const u16* src, s
     CHECK_PARAMETERS(&ret, dst, dstSize, &dstLimit, &dstValid, src, srcSize, &srcLimit, &srcLimited);
 
     if (!enc_tbl_jp_loaded) {
-        return ENC_ERR_NO_MAP_RULE;
+        return ENC_ERR_NOT_LOADED;
     }
 
     JIS_GET_MB_STATE(&curMbState, mbState);

@@ -1,6 +1,5 @@
-#include <private/vf/PrFILE2/fatfs/pf_fatfs.h>
-#include <private/vf/PrFILE2/fatfs/pf_volume.h>
+#include <revolution/vf/vf_all.h>
 
-pf_s32 VFiPFFATFS_initializeFATFS(pf_u32 config, void* param) {
+s32 VFiPFFATFS_initializeFATFS(u32 config, void* param) {
     return VFiPFVOL_InitModule(config, param);
 }

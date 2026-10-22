@@ -55,6 +55,7 @@ typedef enum NWC24Err {
     NWC24_ERR_OLD_SYSTEM = -49,
     NWC24_ERR_SCRIPT_VERSION = -50,
     NWC24_ERR_GIVE_UP = -51,
+    NWC24_ERR_OTHER_REGION = -52,
 } NWC24Err;
 
 #include <revolution/nwc24/NWC24ErrorCodes.h>

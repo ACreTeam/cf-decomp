@@ -67,6 +67,8 @@ void MEMFreeToExpHeap(MEMHeapHandle heap, void* block);
 
 u32 MEMGetTotalFreeSizeForExpHeap(MEMHeapHandle heap);
 u32 MEMGetAllocatableSizeForExpHeapEx(MEMHeapHandle heap, int align);
+u16 MEMSetAllocModeForExpHeap(MEMHeapHandle heap, u16 mode);
+u32 MEMGetSizeForMBlockExpHeap(const void* block);
 
 void MEMVisitAllocatedForExpHeap(MEMHeapHandle heap, void (*visitor)(void*, MEMHeapHandle, u32), u32 param);
 

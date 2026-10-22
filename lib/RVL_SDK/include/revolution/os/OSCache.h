@@ -20,6 +20,7 @@ void DCFlushRange(void* addr, u32 len);
 void DCFlushRangeNoSync(void* addr, u32 len);
 
 void DCStoreRange(void* addr, u32 len);
+void DCStoreRangeNoSync(void* addr, u32 len);
 
 void DCZeroRange(void* addr, u32 len);
 
@@ -27,7 +28,17 @@ void ICEnable();
 void ICFlashInvalidate();
 void ICInvalidateRange(void* addr, u32 len);
 
+void LCEnable();
 void LCDisable();
+
+void LCLoadBlocks(void* dest, void* src, u32 numBlocks);
+void LCStoreBlocks(void* dest, void* src, u32 numBlocks);
+u32 LCStoreData(void* dest, void* src, u32 numBytes);
+
+u32 LCQueueLength();
+void LCQueueWait(u32 length);
+
+void DMAErrorHandler(OSError error, OSContext* context, ...);
 
 #ifdef __cplusplus
 }

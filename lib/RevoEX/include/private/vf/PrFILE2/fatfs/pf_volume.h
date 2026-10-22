@@ -58,7 +58,6 @@ typedef struct PF_FILE {
     pf_u32 open_mode;         // 0x04
     PF_SFD* p_sfd;            // 0x08
     PF_FAT_HINT hint;         // 0x0C
-    PF_FAT_HINT last_access;  // 0x14
     pf_s32 last_error;        // 0x1C
     PF_CURSOR cursor;         // 0x20
     pf_u16 lock_count;        // 0x30

@@ -14,7 +14,9 @@ class ActivityList;
 class DrawInfo;
 class DrawOrderBase;
 class DrawStrategyBuilder;
+class Effect;
 class EmitFormBuilder;
+struct EmitterResource;
 class MemoryManagerBase;
 
 class EffectSystem {
@@ -48,6 +50,8 @@ public:
     bool Closing(Effect* pEffect);
 
     Effect* CreateEffect(const char* pName, u32 groupID, u16 calcRemain);
+    // CF: the emitter resource is looked up by the caller (EGG::EffectCreator::create)
+    Effect* CreateEffect(EmitterResource* pResource, u32 groupID, u16 calcRemain);
     u32 RetireEffect(Effect* pEffect);
 
     u32 RetireEffectAll(u32 groupID);
@@ -55,6 +59,8 @@ public:
     u32 RetireParticleAll(u32 groupID);
 
     void Calc(u32 groupID, bool onlyBillboard);
+    // CF: sets the camera of the processing pass (position, view matrix, near and far plane)
+    void SetCamera(const math::VEC3* pPos, const math::MTX34* pMtx, f32 near, f32 far);
     void Draw(const DrawInfo& rInfo, u32 groupID);
 
     MemoryManagerBase* GetMemoryManager() const {

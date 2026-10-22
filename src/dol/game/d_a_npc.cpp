@@ -7967,10 +7967,10 @@ void dAcNpc_c::earCtrl_c::ear_c::calc(nw4r::g3d::WorldMtxManip *manip) {
     mVel = newRel - rel;
     mPos = trans + newRel;
     EGG::Quatf q;
-    fn_804456B0(&q, &tip, &newRel);
+    q.makeVectorRotation(tip, newRel);
     q.normalise();
     mMtx_c rot;
-    fn_80444FE4(rot, &q);
+    ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(rot))->makeQ(q);
     PSMTXConcat(rot, mtx, mtx);
     mtx.m[0][3] = savedTrans.x;
     mtx.m[1][3] = savedTrans.y;

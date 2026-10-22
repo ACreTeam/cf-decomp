@@ -4182,7 +4182,7 @@ void dAcPlayer_c::updateWaterEffect() {
     }
     if (mAnm.isStop()) {
         if (mActorFlags2 & dPlayerMgr::ACTOR_FLAG2_EFFECT) {
-            mEffect.retire();
+            mEffect.fade();
             mActorFlags2 &= ~dPlayerMgr::ACTOR_FLAG2_EFFECT;
         }
     } else if (mAnm.checkFrame(10.0f)) {

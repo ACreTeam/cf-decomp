@@ -1,3 +1,4 @@
+#include <math.h>
 #include <private/os.h>
 #include <revolution/os.h>
 
@@ -98,6 +99,29 @@ void GXSetFog(GXFogType type, f32 startz, f32 endz, f32 nearz, f32 farz, GXColor
     GX_WRITE_RAS_REG(fogclr);
 
     __GXData->bpSentNot = GX_FALSE;
+}
+
+void GXInitFogAdjTable(GXFogAdjTable* table, u16 width, const Mtx44 proj) {
+    f32 f31, f30, f29, f28, f27;
+    u32 i;
+
+    if (proj[3][3] == 0.0) {
+        f30 = proj[2][3] / (proj[2][2] - 1.0f);
+        f28 = f30 / proj[0][0];
+    } else {
+        f28 = 1.0f / proj[0][0];
+        f30 = 1.73205f * f28;
+    }
+
+    f29 = 2.0f / width;
+
+    for (i = 0; i < 10; i++) {
+        f31 = (i + 1) * 32;
+        f31 *= f29;
+        f31 *= f28;
+        f27 = sqrtf(1.0f + (f31 * f31) / (f30 * f30));
+        table->r[i] = (u32)(f27 * 256) & 0xFFF;
+    }
 }
 
 void GXSetFogRangeAdj(GXBool enable, u16 center, const GXFogAdjTable* table) {

@@ -11,7 +11,7 @@
 
 #include <revolution/verdefs.h>
 
-SDKDefineVersion(SC, "Apr 20 2010", "11:21:17");
+SDKDefineVersion(SC, "Aug  8 2007", "02:09:03");
 
 #define SC_CONF_BEGIN_MAGIC "SCv0"
 #define SC_CONF_END_MAGIC "SCed"
@@ -84,8 +84,6 @@ SCNameAndID NameAndIDTbl[SC_ITEM_ID_MAX] = {
     "BT.BAR",     SC_ITEM_ID_BT_SENSOR_BAR_POSITION,
     "DVD.CNF",    SC_ITEM_ID_DVD_CONFIG,
     "WWW.RST",    SC_ITEM_ID_WWW_RESTRICTION,
-    "MPLS.MOVIE", SC_ITEM_ID_MOTION_PLUS_MOVIE,
-    "IPL.TID",    SC_ITEM_ID_TEMP_TITLE_ID,
 };
 
 static SCControl Control;
@@ -428,7 +426,7 @@ static SCStatus ParseConfBuf(u8* conf, u32 size) {
 
     // Item lookup table
 
-    confLutEnd = confEnd - (SC_ITEM_ID_MAX) * sizeof(u16);
+    confLutEnd = confEnd - (SC_ITEM_ID_MAX - 1) * sizeof(u16);
 
     if (confBegin + itemOffset > confLutEnd) {
         goto _error;
@@ -900,9 +898,11 @@ BOOL SCFindU32Item(u32* dst, SCItemID id) {
     return SCFindIntegerItem(dst, id, SC_ITEM_LONG);
 }
 
+#if 0 // not linked in City Folk
 BOOL SCFindU64Item(u64* dst, SCItemID id) {
     return SCFindIntegerItem(dst, id, SC_ITEM_LONGLONG);
 }
+#endif
 
 BOOL SCFindBoolItem(BOOL* dst, SCItemID id) {
     u8 dstVal;
@@ -919,22 +919,30 @@ BOOL SCReplaceU8Item(u8 dst, SCItemID id) {
     return SCReplaceIntegerItem(&dst, id, SC_ITEM_BYTE);
 }
 
+#if 0 // not linked in City Folk
 BOOL SCReplaceS8Item(s8 dst, SCItemID id) {
     return SCReplaceIntegerItem(&dst, id, SC_ITEM_BYTE);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCReplaceU32Item(u32 dst, SCItemID id) {
     return SCReplaceIntegerItem(&dst, id, SC_ITEM_LONG);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCReplaceU64Item(u64 dst, SCItemID id) {
     return SCReplaceIntegerItem(&dst, id, SC_ITEM_LONGLONG);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCReplaceBoolItem(BOOL dst, SCItemID id) {
     bool dstVal = dst ? TRUE : FALSE;
     return SCReplaceIntegerItem(&dstVal, id, SC_ITEM_BOOL);
 }
+#endif
 
 static void __SCFlushSyncCallback(SCStatus status) {
     OSWakeupThread(&Control.threadQueue);
@@ -959,10 +967,12 @@ static u32 __SCFlushSync() {
     return result;
 }
 
+#if 0 // not linked in City Folk
 u32 SCFlush() {
     SCFlushAsync(__SCFlushSyncCallback);
     return __SCFlushSync();
 }
+#endif
 
 void SCFlushAsync(SCFlushCallback callback) {
     SCControl* ctrl;
@@ -1156,6 +1166,7 @@ static void ErrorFromFlush() {
     FinishFromFlush();
 }
 
+#if 0 // not linked in City Folk
 void __SCClearConfBuf() {
     u8* config = __SCGetConfBuf();
     BOOL enabled = OSDisableInterrupts();
@@ -1166,23 +1177,24 @@ void __SCClearConfBuf() {
 
     OSRestoreInterrupts(enabled);
 }
+#endif
 
-BOOL __SCIsDirty() {
+static BOOL __SCIsDirty() {
     return DirtyFlag ? TRUE : FALSE;
 }
 
-void __SCSetDirtyFlag() {
+static void __SCSetDirtyFlag() {
     DirtyFlag = TRUE;
 }
 
-void __SCClearDirtyFlag() {
+static void __SCClearDirtyFlag() {
     DirtyFlag = FALSE;
 }
 
-u8* __SCGetConfBuf() {
+static u8* __SCGetConfBuf() {
     return ConfBuf;
 }
 
-u32 __SCGetConfBufSize() {
+static u32 __SCGetConfBufSize() {
     return SC_CONF_MAX_SIZE;
 }

@@ -54,6 +54,12 @@ typedef enum _VIMacrovision {
     VI_ACP_TYPE_3,
 } VIMacrovision;
 
+typedef u8 VIBool;
+#define VI_FALSE    ((VIBool)0)
+#define VI_TRUE     ((VIBool)1)
+#define VI_DISABLE  ((VIBool)0)
+#define VI_ENABLE   ((VIBool)1)
+
 #ifdef __cplusplus
 }
 #endif

@@ -10,6 +10,7 @@ namespace dBalloonString {
 static const GXColor lMaterial = {160, 160, 192, 255};
 
 void multiplyQuaternion(EGG::Quatf *out, const EGG::Quatf *a, const EGG::Quatf *b);
+
 }
 
 // 80066018
@@ -34,7 +35,7 @@ void dBalloonString_c::setInitialDirection(const mVec3_c &dir) {
     mVec3_c cross(axis.y * direction.z - axis.z * direction.y,
                  axis.z * direction.x - axis.x * direction.z,
                  axis.x * direction.y - axis.y * direction.x);
-    fn_80444FE4(mDrawMtx, &mRotation);
+    ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(mDrawMtx))->makeQ(mRotation);
     PSMTXScale(scale, mScale.x, mScale.y, mScale.z);
     PSMTXConcat(mDrawMtx, scale, mDrawMtx);
 }
@@ -45,7 +46,7 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
     mVec3_c direction(dir);
     mVec3_c up(0.0f, 1.0f, 0.0f);
     EGG::Quatf fromTangent, fromUp, product, copy;
-    fn_804456B0(&fromTangent, &direction, &mTangents[6]);
+    fromTangent.makeVectorRotation(direction, mTangents[6]);
     if (!mQuat::makeRotate(fromUp, up, direction)) {
         fromUp.set(0.0f, 1.0f, 0.0f, 0.0f);
     }
@@ -67,7 +68,7 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
         mRotation.y *= -1.0f;
         mRotation.z *= -1.0f;
     }
-    fn_80444FE4(mDrawMtx, &mRotation);
+    ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(mDrawMtx))->makeQ(mRotation);
     PSMTXScale(scale, mScale.x, mScale.y, mScale.z);
     PSMTXConcat(mDrawMtx, scale, mDrawMtx);
 }
@@ -484,7 +485,5 @@ void setQuaternion(EGG::Quatf *out, const Vec *xyz, float w) {
     *(VectorBits *)out = *(const VectorBits *)xyz;
     out->w = w;
 }
-
-
 
 } // namespace dBalloonString

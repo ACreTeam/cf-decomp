@@ -1344,11 +1344,11 @@ void daSnowMan_c::setSplashEffect(const mVec3_c *pos) {
     } else {
         rate = t;
     }
-    drops.vf38(0.6f + (1.0f - 0.6f) * rate);
-    drops.vf3C(2.0f + 1.2f * rate);
+    drops.setPowerRadiationDir(0.6f + (1.0f - 0.6f) * rate);
+    drops.setPowerSpecDir(2.0f + 1.2f * rate);
     f32 size = 1.0f + 0.6f * rate;
     nw4r::math::VEC2 scale2(size, size);
-    drops.vf5C(&scale2);
+    drops.setDefaultParticleSize(&scale2);
     drops.EGG::Effect::update();
 }
 
@@ -1371,7 +1371,7 @@ void daSnowMan_c::calcMtx() {
     } else {
         mMtx_c mtx;
         mMtx_c rotMtx;
-        fn_80444FE4(rotMtx, &mRotation);
+        ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(rotMtx))->makeQ(mRotation);
         if (isState(STATE_SINK) || isState(STATE_ROLL)) {
             mVec3_c center(mPos.x, mPos.y + mSlopeY, mPos.z);
             center.y += getRadius();

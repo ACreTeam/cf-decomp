@@ -40,7 +40,8 @@ void SoundSystem::InitSoundSystem(s32 soundThreadPriority,
 
 u32 SoundSystem::GetRequiredMemSize(const SoundSystemParam& rParam) {
     return rParam.soundThreadStackSize + rParam.dvdThreadStackSize +
-           detail::AxVoiceManager::GetInstance().GetRequiredMemSize() +
+           detail::AxVoiceManager::GetInstance().GetRequiredMemSize(
+               AXGetMaxVoices()) +
            detail::VoiceManager::GetInstance().GetRequiredMemSize() +
            detail::ChannelManager::GetInstance().GetRequiredMemSize();
 }
@@ -95,11 +96,13 @@ void SoundSystem::InitSoundSystem(const SoundSystemParam& rParam, void* pWork,
     pPtr += rParam.soundThreadStackSize;
 
     void* pAxVoiceWork = pPtr;
-    pPtr += detail::AxVoiceManager::GetInstance().GetRequiredMemSize();
+    pPtr += detail::AxVoiceManager::GetInstance().GetRequiredMemSize(
+        AXGetMaxVoices());
 
     detail::AxVoiceManager::GetInstance().Setup(
         pAxVoiceWork,
-        detail::AxVoiceManager::GetInstance().GetRequiredMemSize());
+        detail::AxVoiceManager::GetInstance().GetRequiredMemSize(
+            AXGetMaxVoices()));
 
     void* pVoiceWork = pPtr;
     pPtr += detail::VoiceManager::GetInstance().GetRequiredMemSize();

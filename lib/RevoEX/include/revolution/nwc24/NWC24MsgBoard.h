@@ -39,6 +39,7 @@ typedef enum NWC24MsgType {
 typedef enum NWC24MBoxType {
     NWC24_MBOX_TYPE_SEND = 0,
     NWC24_MBOX_TYPE_RECV,
+    NWC24_MBOX_TYPE_MAX,
 } NWC24MBoxType;
 
 typedef enum NWC24EncodingRegion {
@@ -71,7 +72,7 @@ typedef struct NWC24MsgObj {
 NWC24Err NWC24InitMsgObj(NWC24MsgObj* msg, NWC24MsgType type);
 
 NWC24Err NWC24SetMsgToId(NWC24MsgObj* msg, NWC24UserId id);
-NWC24Err NWC24SetMsgToAddr(NWC24MsgObj* msg, const char* addr, u32 length);
+NWC24Err NWC24SetMsgToStr(NWC24MsgObj* msg, const char* addr, u32 length);
 NWC24Err NWC24SetMsgSubject(NWC24MsgObj* msg, const char* subject, u32 length);
 NWC24Err NWC24SetMsgText(NWC24MsgObj* msg, const char* text, u32 textLen, NWC24Charset charset, NWC24Encoding encoding);
 NWC24Err NWC24SetMsgAttached(NWC24MsgObj* msg, const void* attachData, u32 attachSize, NWC24MIMEType type);
@@ -80,8 +81,13 @@ NWC24Err NWC24SetMsgMBNoReply(NWC24MsgObj* msg, BOOL mbNoReplyFlag);
 NWC24Err NWC24SetMsgMBRegDate(NWC24MsgObj* msg, u16 year, u8 month, u8 day);
 NWC24Err NWC24SetMsgAppId(NWC24MsgObj* msg, u32 appId);
 NWC24Err NWC24SetMsgLedPattern(NWC24MsgObj* msg, int ledPattern);
+NWC24Err NWC24SetMsgLedPatternRaw(NWC24MsgObj* msg, u32 ledPattern);
+NWC24Err NWC24SetMsgAltName(NWC24MsgObj* msg, const u16* altName, u32 altNameLen);
+NWC24Err NWC24SetMsgDwcSize(NWC24MsgObj* msg, u32 dwcSize);
+NWC24Err NWC24SetMsgDesignatedTime(NWC24MsgObj* msg, s32 delay);
 
 NWC24Err NWC24GetMsgType(const NWC24MsgObj* msg, NWC24MsgType* type);
+NWC24Err NWC24GetMsgId(const NWC24MsgObj* msg, u32* msgId);
 NWC24Err NWC24GetMsgSubjectSize(const NWC24MsgObj* msg, u32* subjectSize);
 NWC24Err NWC24GetMsgTextSize(const NWC24MsgObj* msg, u32* textSize);
 NWC24Err NWC24GetMsgNumAttached(const NWC24MsgObj* msg, u32* numAttach);
@@ -119,6 +125,10 @@ NWC24Err NWC24SetMsgSubjectAndTextPublic(NWC24MsgObj* msg, const u16* subject, u
 NWC24Err NWC24CommitMsg(NWC24MsgObj* msg);
 
 /* NWC24 Message Box */
+
+NWC24Err NWC24InitSearchConds();
+NWC24Err NWC24SetSearchCondMsgBox(NWC24MBoxType msgBoxType);
+NWC24Err NWC24SearchMsgs(NWC24MsgObj* msgs, u32 max, u32* numRead, u32* numRemaining);
 
 NWC24Err NWC24GetNumMsgs(NWC24MBoxType msgBoxType, u32* numMsgs);
 

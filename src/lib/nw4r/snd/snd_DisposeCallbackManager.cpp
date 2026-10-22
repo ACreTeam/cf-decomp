@@ -28,6 +28,8 @@ void DisposeCallbackManager::Dispose(void* pData, u32 size, void* pArg) {
     const void* pStart = pData;
     const void* pEnd = static_cast<u8*>(pData) + size;
 
+    SoundThread::AutoLock lock;
+
     DisposeCallbackList::Iterator it =
         GetInstance().mCallbackList.GetBeginIter();
 
@@ -43,6 +45,8 @@ void DisposeCallbackManager::DisposeWave(void* pData, u32 size, void* pArg) {
 
     const void* pStart = pData;
     const void* pEnd = static_cast<u8*>(pData) + size;
+
+    SoundThread::AutoLock lock;
 
     DisposeCallbackList::Iterator it =
         GetInstance().mCallbackList.GetBeginIter();

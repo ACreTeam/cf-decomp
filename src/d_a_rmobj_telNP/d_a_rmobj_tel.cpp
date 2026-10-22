@@ -487,7 +487,7 @@ void daRmobjTel_c::setTutorialOff() {
 
 // .text 0x1F7C
 void daRmobjTel_c::enableNet() {
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         requestMessage(NET_ERROR_MSG_RESTRICTED, sNetErrorMessageLabel);
     } else if (dWifi::getWc24State() != dWifi::WC24_STATE_ON) {

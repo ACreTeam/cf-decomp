@@ -1,5 +1,5 @@
-#ifndef PRIVATE_NWC24_MSG_BOARD_H
-#define PRIVATE_NWC24_MSG_BOARD_H
+#ifndef PRIVATE_NWC24_MSG_OBJ_H
+#define PRIVATE_NWC24_MSG_OBJ_H
 
 #include <revolution/types.h>
 
@@ -13,60 +13,84 @@
 extern "C" {
 #endif
 
-#define NWC24_MSG_RECIPIENT_MAX 8
-#define NWC24_MSG_ATTACHMENT_MAX 2
+#define NWC24i_MSG_RECIPIENT_MAX 8
+#define NWC24i_MSG_ATTACHMENT_MAX 2
 
-typedef struct NWC24MsgObjPrivate {
-    u32 msgId;   // 0x00
-    u32 type;    // 0x04
-    u32 length;  // 0x08
-    u32 appId;   // 0x0C
-    u8 unk_0x10[0x4];
-    u32 tag;             // 0x14
-    u32 ledPattern;      // 0x18
-    NWC24UserId fromId;  // 0x20
-    u32 unk_0x28;
-    u32 unk_0x2C;
-    NWC24Data unk_0x30;
-    NWC24Data unk_0x38;
-    NWC24Data subject;  // 0x40
-    NWC24Data text;     // 0x48
-    NWC24Data unk_0x50;
-    NWC24Data unk_0x58;
-    NWC24Charset charset;                                  // 0x60
-    NWC24Encoding encoding;                                // 0x64
-    NWC24Data attached[NWC24_MSG_ATTACHMENT_MAX];          // 0x68
-    u32 attachedSize[NWC24_MSG_ATTACHMENT_MAX];            // 0x78
-    NWC24MIMEType attachedType[NWC24_MSG_ATTACHMENT_MAX];  // 0x80
+#define NWC24i_WII_ID_LEN 16
+
+#define NWC24i_APP_ID_LEN 15
+
+#define NWC24i_MSG_ID_LEN 30
+
+#define NWC24i_MSGOBJ_GET_MB_NOREPLY(pObj) ((pObj)->msgBoard & 0x80000000)
+#define NWC24i_MSGOBJ_SET_MB_NOREPLY(pObj, x) ((x) ? ((pObj)->msgBoard |= 0x80000000) : ((pObj)->msgBoard &= ~0x80000000))
+
+#define NWC24i_MSGOBJ_GET_MB_DELAY(pObj) ((pObj)->msgBoard & 0x00FF0000)
+#define NWC24i_MSGOBJ_SET_MB_DELAY(pObj, x) ((pObj)->msgBoard = ((pObj)->msgBoard & ~0x00FF0000) | ((x) & 0x00FF0000))
+
+#define NWC24i_MSGOBJ_GET_MB_REGDATE(pObj) ((pObj)->msgBoard & 0x0000FFFF)
+#define NWC24i_MSGOBJ_SET_MB_REGDATE(pObj, x) ((pObj)->msgBoard = ((pObj)->msgBoard & ~0x0000FFFF) | ((x) & 0x0000FFFF))
+
+typedef enum NWC24iMsgObjFlags {
+    NWC24_MSGOBJ_FOR_RECIPIENT = 1 << 0,
+    NWC24_MSGOBJ_FOR_PUBLIC = 1 << 1,
+    NWC24_MSGOBJ_FOR_APP = 1 << 2,
+    NWC24_MSGOBJ_FOR_MENU = 1 << 3,
+    NWC24_MSGOBJ_TO_SEND = 1 << 4,
+    NWC24_MSGOBJ_TO_RECV = 1 << 5,
+    NWC24_MSGOBJ_INITIALIZED = 1 << 8,
+    NWC24_MSGOBJ_DELIVERING = 1 << 9,
+    NWC24_MSGOBJ_FLAG_12 = 1 << 12,  // unnamed in the public SDK
+    NWC24_MSGOBJ_DWC = 1 << 13,
+    NWC24_MSGOBJ_MULTIPART = 1 << 16,
+    NWC24_MSGOBJ_FLAG_20 = 1 << 20,
+} NWC24iMsgObjFlags;
+
+typedef union NWC24iAddr {
+    NWC24UserId id;
+    NWC24Data data;
+} NWC24iAddr;
+
+typedef struct NWC24iMsgObj {
+    u32 id;       // 0x00
+    u32 flags;    // 0x04
+    u32 length;   // 0x08
+    u32 appId;    // 0x0C
+    s32 unk10;    // 0x10
+    u32 tag;      // 0x14
+    u32 command;  // 0x18
+    u32 unk1C;    // 0x1C
+    NWC24iAddr from;
+    s32 createTime;
+    u32 unk2C;
+    NWC24Data fromField;
+    NWC24Data toField;
+    NWC24Data subject;
+    NWC24Data text;
+    NWC24Data contentType;
+    NWC24Data txEncoding;
+    NWC24Charset charset;
+    NWC24Encoding encoding;
+    NWC24Data attached[NWC24i_MSG_ATTACHMENT_MAX];
+    u32 attachedSize[NWC24i_MSG_ATTACHMENT_MAX];
+    NWC24MIMEType attachedType[NWC24i_MSG_ATTACHMENT_MAX];
     union {
-        NWC24UserId toIds[NWC24_MSG_RECIPIENT_MAX];
-        NWC24Data toAddrs[NWC24_MSG_RECIPIENT_MAX];
-    };  // 0x88
-    u8 numTo;        // 0xC8
-    u8 numAttached;  // 0xC9
-    u16 groupId;     // 0xCA
-    union {
-        struct {
-            u32 noreply : 1;
-            u32 unknown : 7;
-            u32 delay : 8;
-            u32 regdate : 16;
-        };
-        u32 raw;
-    } msgBoardFlags;  // 0xCC
-    NWC24Data unk_0xD0;
-    NWC24Data faceData;  // 0xD8
-    NWC24Data altName;   // 0xE0
-    u32 textSize;        // 0xE4
-    u32 dwcId;           // 0xEC
-    u32 iconNew;         // 0xF0
-    u32 unk_0xF4;
-    u32 unk_0xF8;
-    u32 unk_0xFC;
-} NWC24MsgObjPrivate;
+        NWC24iAddr to[NWC24i_MSG_RECIPIENT_MAX];
+    };
+    u8 numTo;
+    u8 numAttached;
+    u16 groupId;
+    u32 msgBoard;
+    NWC24Data user;
+    NWC24Data face;
+    NWC24Data alt;
+    NWC24Data dwcId;
+    u32 iconNew;
+    char reserved[0x100 - 0xF4];
+} NWC24iMsgObj;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // PRIVATE_NWC24_MSG_BOARD_H
+#endif  // PRIVATE_NWC24_MSG_OBJ_H

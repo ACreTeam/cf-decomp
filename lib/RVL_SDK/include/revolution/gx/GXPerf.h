@@ -11,6 +11,9 @@ extern "C" {
 void GXSetGPMetric(GXPerf0 perf0, GXPerf1 perf1);
 void GXClearGPMetric();
 
+
+void GXReadXfRasMetric(u32*, u32*, u32*, u32*);
+
 #ifdef __cplusplus
 }
 #endif

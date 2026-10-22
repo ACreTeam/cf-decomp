@@ -2,6 +2,7 @@
 #define REVOLUTION_GX_FIFO_H
 
 #include <revolution/gx/GXStruct.h>
+#include <revolution/os/OSThread.h>
 #include <revolution/types.h>
 
 
@@ -27,6 +28,17 @@ GXFifoObj* GXGetGPFifo();
 
 u32 GXGetFifoCount(const GXFifoObj* fifo);
 GXBool GXGetFifoWrap(const GXFifoObj* fifo);
+
+
+
+void GXGetFifoPtrs(const GXFifoObj*, void**, void**);
+
+void GXEnableBreakPt(void* pBreakPoint);
+void GXDisableBreakPt(void);
+
+
+
+OSThread* GXGetCurrentGXThread(void);
 
 #ifdef __cplusplus
 }

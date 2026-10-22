@@ -11,7 +11,9 @@
 
 #include <revolution/verdefs.h>
 
+#if 0 // not linked in City Folk (PADInit is stripped)
 SDKDefineVersion(PAD, "Apr 20 2010", "11:20:52");
+#endif
 
 #define PAD_ALL                                                                                                                                      \
     (PAD_BUTTON_LEFT | PAD_BUTTON_RIGHT | PAD_BUTTON_DOWN | PAD_BUTTON_UP | PAD_TRIGGER_Z | PAD_TRIGGER_R | PAD_TRIGGER_L | PAD_BUTTON_A |           \
@@ -295,6 +297,7 @@ int PADReset(u32 mask) NO_INLINE {
     return 1;
 }
 
+#if 0 // not linked in City Folk
 BOOL PADRecalibrate(u32 mask) NO_INLINE {
     BOOL enabled;
     u32 disableBits;
@@ -320,7 +323,9 @@ BOOL PADRecalibrate(u32 mask) NO_INLINE {
     OSRestoreInterrupts(enabled);
     return 1;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL PADInit() {
     s32 chan;
     if (Initialized) {
@@ -350,7 +355,9 @@ BOOL PADInit() {
 
     return PADReset(PAD_CHAN0_BIT | PAD_CHAN1_BIT | PAD_CHAN2_BIT | PAD_CHAN3_BIT);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void PADSetSpec(u32 spec) {
     __PADSpec = 0;
 
@@ -373,6 +380,7 @@ void PADSetSpec(u32 spec) {
     }
     Spec = spec;
 }
+#endif
 
 u32 PADRead(PADStatus* status) {
     BOOL enabled;
@@ -382,7 +390,10 @@ u32 PADRead(PADStatus* status) {
     u32 sr;
     int chanShift;
     u32 motor;
+    static PADStatus pre_status[PAD_MAX_CONTROLLER];
+    int threshold;
 
+    threshold = 3;
     enabled = OSDisableInterrupts();
     motor = 0;
 
@@ -435,6 +446,24 @@ u32 PADRead(PADStatus* status) {
                 } else {
                     MakeStatus(chan, status, data);
 
+                    if (((Type[chan] & (0xFFFF0000)) == SI_GC_CONTROLLER) && ((status->button & 0x80) ^ 0x80)) {
+                        threshold = 10;
+                    } else {
+                        threshold = 3;
+                    }
+
+                    if (__abs(__abs(status->stickX) - __abs(pre_status[chan].stickX)) >= threshold ||
+                        __abs(__abs(status->stickY) - __abs(pre_status[chan].stickY)) >= threshold ||
+                        __abs(__abs(status->substickX) - __abs(pre_status[chan].substickX)) >= threshold ||
+                        __abs(__abs(status->substickY) - __abs(pre_status[chan].substickY)) >= threshold ||
+                        __abs(__abs(status->triggerLeft) - __abs(pre_status[chan].triggerLeft)) >= threshold ||
+                        __abs(__abs(status->triggerRight) - __abs(pre_status[chan].triggerRight)) >= threshold ||
+                        pre_status[chan].button != status->button) {
+                        __VIResetSIIdle();
+                    }
+
+                    memcpy(&pre_status[chan], status, sizeof(PADStatus));
+
                     // Check and clear PAD_ORIGIN bit
                     if (status->button & 0x2000) {
                         status->err = PAD_ERR_TRANSFER;
@@ -459,6 +488,7 @@ u32 PADRead(PADStatus* status) {
     return motor;
 }
 
+#if 0 // not linked in City Folk
 static void SPEC0_MakeStatus(s32 chan, PADStatus* status, u32 data[2]) {
     status->button = 0;
     status->button |= ((data[0] >> 16) & 0x0008) ? PAD_BUTTON_A : 0;
@@ -492,7 +522,9 @@ static void SPEC0_MakeStatus(s32 chan, PADStatus* status, u32 data[2]) {
     status->substickX -= 128;
     status->substickY -= 128;
 }
+#endif
 
+#if 0 // not linked in City Folk
 static void SPEC1_MakeStatus(s32 chan, PADStatus* status, u32 data[2]) {
     status->button = 0;
     status->button |= ((data[0] >> 16) & 0x0080) ? PAD_BUTTON_A : 0;
@@ -526,6 +558,7 @@ static void SPEC1_MakeStatus(s32 chan, PADStatus* status, u32 data[2]) {
     status->substickX -= 128;
     status->substickY -= 128;
 }
+#endif
 
 static s8 ClampS8(s8 var, s8 org) {
     if (0 < org) {
@@ -549,10 +582,9 @@ static u8 ClampU8(u8 var, u8 org) {
     return var -= org;
 }
 
-#define SQ(x) ((x) * (x))
 static void SPEC2_MakeStatus(s32 chan, PADStatus* status, u32 data[2]) {
-    PADStatus* origin;
     static PADStatus pre_status[PAD_MAX_CONTROLLER];
+    PADStatus* origin;
 
     status->button = (u16)((data[0] >> 16) & PAD_ALL);
     status->stickX = (s8)(data[0] >> 8);
@@ -644,24 +676,18 @@ static void SPEC2_MakeStatus(s32 chan, PADStatus* status, u32 data[2]) {
 
     status->triggerLeft = ClampU8(status->triggerLeft, origin->triggerLeft);
     status->triggerRight = ClampU8(status->triggerRight, origin->triggerRight);
-
-    if (__abs(SQ(status->stickX) - SQ(pre_status[chan].stickX)) >= 9 || __abs(SQ(status->stickY) - SQ(pre_status[chan].stickY)) >= 9 ||
-        __abs(SQ(status->substickX) - SQ(pre_status[chan].substickX)) >= 9 || __abs(SQ(status->substickY) - SQ(pre_status[chan].substickY)) >= 9 ||
-        __abs(SQ(status->triggerLeft) - SQ(pre_status[chan].triggerLeft)) >= 9 ||
-        __abs(SQ(status->triggerRight) - SQ(pre_status[chan].triggerRight)) >= 9 || status->button != pre_status[chan].button) {
-        __VIResetSIIdle();
-    }
-
-    memcpy(&pre_status[chan], status, sizeof(PADStatus));
 }
 
+#if 0 // not linked in City Folk
 BOOL PADSync() {
     return ResettingBits == 0 && (s32)ResettingChan == 32 && !SIBusy();
 }
+#endif
 
 static void (*SamplingCallback)();
 PADSamplingCallback PADSetSamplingCallback(PADSamplingCallback callback);
 
+#if 0 // not linked in City Folk
 static BOOL OnShutdown(BOOL final, u32 code) {
     BOOL sync;
     static BOOL recalibrated = FALSE;
@@ -682,7 +708,9 @@ static BOOL OnShutdown(BOOL final, u32 code) {
 
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 static void SamplingHandler(__OSInterrupt interrupt, OSContext* context) {
     OSContext exceptionContext;
 
@@ -694,7 +722,9 @@ static void SamplingHandler(__OSInterrupt interrupt, OSContext* context) {
         OSSetCurrentContext(context);
     }
 }
+#endif
 
+#if 0 // not linked in City Folk
 PADSamplingCallback PADSetSamplingCallback(PADSamplingCallback callback) {
     PADSamplingCallback prev;
 
@@ -708,6 +738,7 @@ PADSamplingCallback PADSetSamplingCallback(PADSamplingCallback callback) {
 
     return prev;
 }
+#endif
 
 BOOL __PADDisableRecalibration(BOOL disable) {
     BOOL enabled;

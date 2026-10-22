@@ -10,7 +10,7 @@
 
 #include <revolution/verdefs.h>
 
-SDKDefineVersion(GX, "Apr 20 2010", "11:20:31");
+SDKDefineVersion(GX, "Dec 11 2007", "01:34:15");
 
 static GXFifoObj FifoObj;
 

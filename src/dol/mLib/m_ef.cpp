@@ -116,7 +116,7 @@ void setCallbackHeap(EGG::Heap *heap) {
 
 // 802B7C04
 void setResource(void *breff, void *breft) {
-    l_resource->set(breff, breft);
+    l_resource->setResource(breff, breft);
 }
 
 // 802B7C24
@@ -172,9 +172,9 @@ void draw(nw4r::ef::DrawInfo *info, int creator, int group) {
 
 // 802B7E70
 BOOL effect_c::createEffect(const char *name, int creator) {
-    retire();
+    fade();
     strcpy(mName, name);
-    _24 = creator;
+    mGroupID = creator;
     return create();
 }
 
@@ -344,7 +344,7 @@ void levelEffect_c::update() {
 // 802B88C4
 void levelEffect_c::cleanup() {
     if (mActive) {
-        retire();
+        fade();
         l_levelEffects.remove(this);
         mActive = false;
     }
@@ -357,17 +357,17 @@ void levelEffect_c::setParticleCallback(void (*callback)(nw4r::ef::Particle *, u
 }
 
 // 802B898C
-void levelEffect_c::retire() {
+void levelEffect_c::fade() {
     _88 = NULL;
     _8C = 0;
-    EGG::Effect::retire();
+    EGG::Effect::fade();
 }
 
 // 802B899C
-void levelEffect_c::retireAll() {
+void levelEffect_c::kill() {
     _88 = NULL;
     _8C = 0;
-    EGG::Effect::retireAll();
+    EGG::Effect::kill();
 }
 
 // 802B89AC
@@ -388,7 +388,7 @@ bool levelEffect_c::follow(const mMtx_c *mtx) {
 
 // 802B8A44
 BOOL oneEmitter_c::create(const char *name, const mVec3_c *pos, const mAng3_c *angle, const mVec3_c *scale) {
-    _24 = (u32)name;
+    mGroupID = (u32)name;
     mMtx_c mtx;
     makeMtx(pos, angle, scale, &mtx);
     EGG::ExOneEmitter emitter(this);
@@ -402,7 +402,7 @@ BOOL oneEmitter_c::create(const char *name, const mVec3_c *pos, const mAng3_c *a
 
 // 802B8AF4
 BOOL oneEmitter_c::create(const char *name, const mMtx_c *mtx) {
-    _24 = (u32)name;
+    mGroupID = (u32)name;
     mVec3_c pos;
     mtx->multVecZero(pos);
     EGG::ExOneEmitter emitter(this);

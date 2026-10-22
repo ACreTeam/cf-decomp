@@ -9,90 +9,57 @@
 
 #include <stdio.h>
 
-// TODO: what is this...
-enum {
-    NAND_STATE_NONE = 0,
-    NAND_STATE_GET_ATTR,
-    NAND_STATE_OPEN_FILE,
-    NAND_STATE_CREATE_TEMP_DIR,
-    NAND_STATE_CREATE_TEMP,
-    NAND_STATE_OPEN_TEMP_FILE,
-    NAND_STATE_READ_FILE,
-    NAND_STATE_READ_FILE_2,
-    NAND_STATE_WRITE_FILE,
-    NAND_STATE_9,
-    NAND_STATE_10,
-    NAND_STATE_11,
-    NAND_STATE_12,
-    NAND_STATE_13,
-    NAND_STATE_14,
-};
+static void  nandOpenCallback(ISFSError, void *);
+static void nandReadCloseCallback(ISFSError, void *);
+static void nandCloseCallback(ISFSError, void *);
+static void nandSafeCloseCallback(ISFSError, void *);
+static void nandSafeOpenCallback(const ISFSError, void *);
+void nandReadOpenCallback(ISFSError, void *);
+s32 nandSafeCloseAsync(NANDFileInfo *, NANDCallback, NANDCommandBlock *, BOOL);
+s32 nandSafeOpenAsync(const char *, NANDFileInfo *, const u8, void *, const u32, NANDCallback, NANDCommandBlock *, BOOL, BOOL);
+s32 nandSafeOpen(const char* path, NANDFileInfo* info, const u8 accType, void* buf, const u32 length, BOOL privilege_flag, BOOL simple_flag);
+s32 nandSafeClose(NANDFileInfo* info, BOOL simple_flag);
+static ISFSError nandCopy(s32 fd, s32 origFd, void* buf, const u32 length);
+static u32 nandGetUniqueNumber(void);
 
-static void nandOpenCallback(ISFSError result, void* arg);
-static void nandSafeOpenCallback(ISFSError result, void* arg);
-static void nandReadOpenCallback(ISFSError result, void* arg);
-
-static void nandCloseCallback(ISFSError result, void* arg);
-static void nandSafeCloseCallback(ISFSError result, void* arg);
-static void nandReadCloseCallback(ISFSError result, void* arg);
-
-static s32 nandSafeClose(NANDFileInfo* info, BOOL isSimple);
-static s32 nandSafeCloseAsync(NANDFileInfo* info, NANDCallback callback, NANDCommandBlock* block, BOOL isSimple);
-
-static s32 nandSafeOpen(const char* path, NANDFileInfo* info, u8 accType, void* buffer, u32 length, BOOL hasPrivateAccess, BOOL isSimple);
-static s32 nandSafeOpenAsync(const char* path, NANDFileInfo*, u8 accType, void* buffer, u32 length, NANDCallback callback, NANDCommandBlock* block,
-                             BOOL hasPrivateAccess, BOOL isSimple);
-
-static u32 nandGetUniqueNumber() {
-    static u32 s_counter = 0;
-    BOOL enabled = OSDisableInterrupts();
-
-    u32 ret = s_counter++;
-
-    OSRestoreInterrupts(enabled);
-    return ret;
-}
-
-static IOSFd nandOpen(const char* path, u8 accType, NANDCommandBlock* block, BOOL isAsync, BOOL hasPrivateAccess) {
+IOSFd nandOpen(const char* path, const u8 accType, NANDCommandBlock* block, const BOOL async_flag, const BOOL privilege_flag) {
     IOSFd fd = ISFS_ERROR_UNKNOWN;
-    char absPath[NAND_MAX_PATH] = "";
+    char absPath[64] = "";
     u32 access = 0;
+
 
     nandGenerateAbsPath(absPath, path);
 
-    if (!hasPrivateAccess && nandIsPrivatePath(absPath)) {
+    if (!privilege_flag && nandIsPrivatePath(absPath)) {
         return ISFS_ERROR_ACCESS;
     } else {
         switch (accType) {
-            case NAND_ACCESS_RW: {
-                access = NAND_ACCESS_RW;
-                break;
-            }
-            case NAND_ACCESS_READ: {
-                access = NAND_ACCESS_READ;
-                break;
-            }
-            case NAND_ACCESS_WRITE: {
-                access = NAND_ACCESS_WRITE;
-                break;
-            }
-            default: {
-                break;
-            }
+        case 3:
+            access = 3;
+            break;
+        case 1:
+            access = 1;
+            break;
+        case 2:
+            access = 2;
+            break;
+        default:
+            break;
         }
 
-        if (isAsync) {
-            fd = ISFS_OpenAsync(absPath, access, nandOpenCallback, block);
+        if (async_flag) {
+            fd = ISFS_OpenAsync((const char*)absPath, access, nandOpenCallback, block);
         } else {
-            fd = ISFS_Open(absPath, access);
+            fd = ISFS_Open((const char*)absPath, access);
         }
 
         return fd;
     }
 }
 
-s32 NANDOpen(const char* path, NANDFileInfo* info, u8 accType) {
+s32 NANDOpen(const char* path, NANDFileInfo* info, const u8 accType) {
     IOSFd fd = ISFS_ERROR_UNKNOWN;
+
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
@@ -109,8 +76,9 @@ s32 NANDOpen(const char* path, NANDFileInfo* info, u8 accType) {
     }
 }
 
-s32 NANDPrivateOpen(const char* path, NANDFileInfo* info, u8 accType) {
+s32 NANDPrivateOpen(const char* path, NANDFileInfo* info, const u8 accType) {
     IOSFd fd = ISFS_ERROR_UNKNOWN;
+
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
@@ -127,45 +95,50 @@ s32 NANDPrivateOpen(const char* path, NANDFileInfo* info, u8 accType) {
     }
 }
 
-s32 NANDOpenAsync(const char* path, NANDFileInfo* info, u8 accType, NANDCallback callback, NANDCommandBlock* block) {
+s32 NANDOpenAsync(const char* path, NANDFileInfo* info, const u8 accType, NANDCallback cb, NANDCommandBlock* block) {
     IOSFd fd = ISFS_ERROR_UNKNOWN;
+
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
-    block->callback = callback;
+
+    block->callback = cb;
     block->fileInfo = info;
     fd = nandOpen(path, accType, block, TRUE, FALSE);
     return nandConvertErrorCode(fd);
 }
 
-s32 NANDPrivateOpenAsync(const char* path, NANDFileInfo* info, u8 accType, NANDCallback callback, NANDCommandBlock* block) {
+s32 NANDPrivateOpenAsync(const char* path, NANDFileInfo* info, const u8 accType, NANDCallback cb, NANDCommandBlock* block) {
     IOSFd fd = ISFS_ERROR_UNKNOWN;
+
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
-    block->callback = callback;
+
+    block->callback = cb;
     block->fileInfo = info;
     fd = nandOpen(path, accType, block, TRUE, TRUE);
     return nandConvertErrorCode(fd);
 }
 
-static void nandOpenCallback(ISFSError result, void* arg) {
-    NANDCommandBlock* block = (NANDCommandBlock*)arg;
+void nandOpenCallback(ISFSError result, void* ctxt) {
+    NANDCommandBlock* b = (NANDCommandBlock*)ctxt;
 
-    if (result >= ISFS_ERROR_OK) {
-        ((NANDFileInfo*)block->fileInfo)->fileDescriptor = result;
-        ((NANDFileInfo*)block->fileInfo)->stage = 2;
-        ((NANDFileInfo*)block->fileInfo)->mark = 1;
-        block->callback(NAND_RESULT_OK, block);
+    if (result >= 0) {
+        ((NANDFileInfo*)(b->fileInfo))->fileDescriptor = result;
+        ((NANDFileInfo*)(b->fileInfo))->stage = 2;
+        ((NANDFileInfo*)(b->fileInfo))->mark = 1;
+        ((NANDCallback)(b->callback))(NAND_RESULT_OK, b);
     } else {
-        block->callback(nandConvertErrorCode(result), block);
+        ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
     }
 }
 
 s32 NANDClose(NANDFileInfo* info) {
     ISFSError err = ISFS_ERROR_UNKNOWN;
+
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
@@ -184,79 +157,53 @@ s32 NANDClose(NANDFileInfo* info) {
     return nandConvertErrorCode(err);
 }
 
-s32 NANDCloseAsync(NANDFileInfo* info, NANDCallback callback, NANDCommandBlock* block) {
+s32 NANDCloseAsync(NANDFileInfo* info, NANDCallback cb, NANDCommandBlock* block) {
     ISFSError err = ISFS_ERROR_UNKNOWN;
+
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
+
     if (info->mark != 1) {
         return NAND_RESULT_INVALID;
     }
-    block->callback = callback;
+
+    block->callback = cb;
     block->fileInfo = info;
     err = ISFS_CloseAsync(info->fileDescriptor, nandCloseCallback, block);
     return nandConvertErrorCode(err);
 }
 
-static ISFSError nandCopy(IOSFd dest, IOSFd src, void* buffer, u32 length) {
-    while (TRUE) {
-        ISFSError size, ret;
-        size = ISFS_Read(src, buffer, length);
-        if (size == 0) {
-            return 0;
-        } else if (size < ISFS_ERROR_OK) {
-            return size;
-        }
-
-        ret = ISFS_Write(dest, buffer, size);
-        if (ret < ISFS_ERROR_OK) {
-            return ret;
-        }
-    }
+s32 NANDSimpleSafeOpen(const char* path, NANDFileInfo* info, const u8 accType, void* buf, const u32 length) {
+    return nandSafeOpen(path, info, accType, buf, length, FALSE, TRUE);
 }
 
-// Force this unused function to link
-#pragma push
-#pragma force_active on
-s32 NANDSafeOpen(const char* path, NANDFileInfo* info, u8 accType, void* buffer, u32 length) {
-    return nandSafeOpen(path, info, accType, buffer, length, FALSE, FALSE);
-}
-#pragma pop
-
-s32 NANDPrivateSafeOpen(const char* path, NANDFileInfo* info, u8 accType, void* buffer, u32 length) {
-    return nandSafeOpen(path, info, accType, buffer, length, TRUE, FALSE);
-}
-
-static s32 nandSafeOpen(const char* path, NANDFileInfo* info, u8 accType, void* buffer, u32 length, BOOL hasPrivateAccess, BOOL isSimple) {
-    u32 ownerId;
-    u16 groupId;
-    u32 attr;
-
-    u32 ownerAcc, groupAcc, othersAcc;
-
+s32 nandSafeOpen(const char* path, NANDFileInfo* info, const u8 accType, void* buf, const u32 length, BOOL privilege_flag, BOOL simple_flag) {
+    
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
-    if (isSimple && (length % NAND_BLOCK_SIZE) != 0) {
+
+    if (simple_flag && ((length & 0x3FFF) != 0)) {
         return NAND_RESULT_INVALID;
     }
-
+    
     info->accType = accType;
     info->stage = 0;
-
     nandGenerateAbsPath(info->origPath, path);
-    if (!hasPrivateAccess && nandIsPrivatePath(info->origPath)) {
+
+    if (!privilege_flag && nandIsPrivatePath(info->origPath)) {
         return NAND_RESULT_ACCESS;
     }
 
-    if (accType == NAND_ACCESS_READ) {
-        IOSFd fd = ISFS_Open(info->origPath, ISFS_ACCESS_READ);
+    if (accType == 1) {
+        IOSFd fd = ISFS_Open((char*)(info->origPath), 1);
         if (fd >= ISFS_ERROR_OK) {
             info->fileDescriptor = fd;
             info->stage = 2;
 
-            if (!isSimple) {
+            if (!simple_flag) {
                 info->mark = 3;
             } else {
                 info->mark = 5;
@@ -266,141 +213,155 @@ static s32 nandSafeOpen(const char* path, NANDFileInfo* info, u8 accType, void* 
         } else {
             return nandConvertErrorCode(fd);
         }
-    } else if (accType == NAND_ACCESS_WRITE || accType == NAND_ACCESS_RW) {
-        char filename[FS_MAX_DIR_PATH + 1] = "";
-        char tmpDir[FS_MAX_PATH];
-
+    } else if (accType == 2 || accType == 3) {
+        char dirName[64];
+        char relName[13] = {0};
         ISFSError ret = ISFS_ERROR_UNKNOWN;
+        u32 ownerId;
+        u16 groupId;
+        u32 attr;
+        u32 ownerAcc;
+        u32 groupAcc;
+        u32 othersAcc;
+        u32 sp48 = -1;
 
-        u32 uniqueNum = -1;
-
-        ret = ISFS_CreateDir("/tmp/sys", 0, ISFS_ACCESS_RW, ISFS_ACCESS_RW, ISFS_ACCESS_RW);
+        ret = ISFS_CreateDir((char*)"/tmp/sys", 0, 3, 3, 3);
         if (ret != ISFS_ERROR_OK && ret != ISFS_ERROR_EXISTS) {
             return nandConvertErrorCode(ret);
-        }
-        info->stage = 1;
-
-        ret = ISFS_GetAttr(info->origPath, &ownerId, &groupId, &attr, &ownerAcc, &groupAcc, &othersAcc);
-        if (ret != ISFS_ERROR_OK) {
-            return nandConvertErrorCode(ret);
-        }
-
-        info->origFd = ISFS_Open(info->origPath, ISFS_ACCESS_READ);
-        if (info->origFd < 0) {
-            return nandConvertErrorCode(info->origFd);
-        }
-        info->stage = 2;
-
-        if (!isSimple) {
-            uniqueNum = nandGetUniqueNumber();
-
-            sprintf(tmpDir, "%s/%08x", "/tmp/sys", uniqueNum);
-            ret = ISFS_CreateDir(tmpDir, 0, ISFS_ACCESS_RW, 0, 0);
+        } else {
+            info->stage = 1;
+            ret = ISFS_GetAttr((const char*)info->origPath, &ownerId, &groupId, &attr, &ownerAcc, &groupAcc, &othersAcc);
             if (ret != ISFS_ERROR_OK) {
                 return nandConvertErrorCode(ret);
             }
-            info->stage = 3;
-        }
 
-        nandGetRelativeName(filename, info->origPath);
-        if (!isSimple) {
-            sprintf(info->tmpPath, "%s/%08x/%s", "/tmp/sys", uniqueNum, filename);
-        } else {
-            sprintf(info->tmpPath, "%s/%s", "/tmp/sys", filename);
-        }
-
-        ret = ISFS_CreateFile(info->tmpPath, attr, ownerAcc, groupAcc, othersAcc);
-        if (ret != ISFS_ERROR_OK) {
-            return nandConvertErrorCode(ret);
-        }
-        info->stage = 4;
-
-        if (accType == NAND_ACCESS_WRITE) {
-            info->fileDescriptor = ISFS_Open(info->tmpPath, ISFS_ACCESS_WRITE);
-        } else if (accType == NAND_ACCESS_RW) {
-            info->fileDescriptor = ISFS_Open(info->tmpPath, ISFS_ACCESS_RW);
-        }
-
-        if (info->fileDescriptor < 0) {
-            return nandConvertErrorCode(info->fileDescriptor);
-        }
-        info->stage = 5;
-
-        ret = nandCopy(info->fileDescriptor, info->origFd, buffer, length);
-        if (ret != ISFS_ERROR_OK) {
-            return nandConvertErrorCode(ret);
-        }
-
-        ret = ISFS_Seek(info->fileDescriptor, 0, IPC_SEEK_BEG);
-        if (ret == 0) {
-            ret = ISFS_ERROR_OK;
-        } else {
-            return nandConvertErrorCode(ret);
-        }
-
-        if (ret == ISFS_ERROR_OK) {
-            if (isSimple) {
-                info->mark = 5;
-            } else {
-                info->mark = 3;
+            info->origFd = ISFS_Open((char*)info->origPath, 1);
+            if (info->origFd < 0) {
+                return nandConvertErrorCode(info->origFd);
             }
+
+            info->stage = 2;
+
+            if (!simple_flag) {
+                sp48 = nandGetUniqueNumber();
+                sprintf(dirName, "%s/%08x", "/tmp/sys", sp48);
+                ret = ISFS_CreateDir((const char*)dirName, 0, 3, 0, 0);
+                if (ret != 0) {
+                    return nandConvertErrorCode(ret);
+                }
+
+                info->stage = 3;
+            }
+
+            nandGetRelativeName(relName, info->origPath);
+
+            if (!simple_flag) {
+                sprintf(info->tmpPath, "%s/%08x/%s", "/tmp/sys", sp48, relName);
+            } else {
+                sprintf(info->tmpPath, "%s/%s", "/tmp/sys", relName);
+            }
+
+            ret = ISFS_CreateFile((const char*)info->tmpPath, attr, ownerAcc, groupAcc, othersAcc);
+            if (ret != 0) {
+                return nandConvertErrorCode(ret);
+            }
+
+            info->stage = 4;
+
+            if (accType == 2) {
+                info->fileDescriptor = ISFS_Open((const char*)info->tmpPath, 2);
+            } else if (accType == 3) {
+                info->fileDescriptor = ISFS_Open((const char*)info->tmpPath, 3);
+            }
+
+            if (info->fileDescriptor < 0) {
+                return nandConvertErrorCode(info->fileDescriptor);
+            }
+
+            info->stage = 5;
+
+            ret = nandCopy(info->fileDescriptor, info->origFd, buf, length);
+            if (ret != 0) {
+                return nandConvertErrorCode(ret);
+            }
+
+            ret = ISFS_Seek(info->fileDescriptor, 0, 0);
+            if (ret == 0) {
+                ret = 0;
+            } else {
+                return nandConvertErrorCode(ret);
+            }
+
+            if (ret == 0) {
+                if (simple_flag) {
+                    info->mark = 5;
+                } else {
+                    info->mark = 3;
+                }
+            }
+
+            return nandConvertErrorCode(ret);
         }
-        return nandConvertErrorCode(ret);
     } else {
         return NAND_RESULT_INVALID;
     }
 }
 
-s32 NANDSafeClose(NANDFileInfo* info) {
-    return nandSafeClose(info, FALSE);
+s32 NANDSimpleSafeClose(NANDFileInfo* info) {
+    return nandSafeClose(info, TRUE);
 }
 
-s32 nandSafeClose(NANDFileInfo* info, BOOL isSimple) {
+s32 nandSafeClose(NANDFileInfo* info, BOOL simple_flag) {
     ISFSError err = ISFS_ERROR_UNKNOWN;
-    char tmpdir[FS_MAX_PATH] = "";
-
+    char tmpdir[64] = "";
+    
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
-
-    if ((info->mark != 3 || isSimple) && (info->mark != 5 || !isSimple)) {
+    
+    if (!((info->mark == 3 && !simple_flag) || (info->mark == 5 && simple_flag))) {
         return NAND_RESULT_INVALID;
     }
 
-    if (info->accType == NAND_ACCESS_READ) {
+    if (info->accType == 1) {
         err = ISFS_Close(info->fileDescriptor);
-        if (err == ISFS_ERROR_OK) {
+        if (err == 0) {
             info->stage = 7;
-            if (!isSimple) {
+
+            if (!simple_flag) {
                 info->mark = 4;
             } else {
                 info->mark = 6;
             }
         }
+
         return nandConvertErrorCode(err);
-    } else if (info->accType == NAND_ACCESS_WRITE || info->accType == NAND_ACCESS_RW) {
+    } else if (info->accType == 2 || info->accType == 3) {
         err = ISFS_Close(info->fileDescriptor);
-        if (err != ISFS_ERROR_OK) {
+        if (err != 0) {
             return nandConvertErrorCode(err);
         }
+
         info->stage = 6;
 
         err = ISFS_Close(info->origFd);
-        if (err != ISFS_ERROR_OK) {
+        if (err != 0) {
             return nandConvertErrorCode(err);
         }
+
         info->stage = 7;
 
-        err = ISFS_Rename(info->tmpPath, (info->origPath));
-        if (err != ISFS_ERROR_OK) {
+        err = ISFS_Rename((const char*)info->tmpPath, (const char*)info->origPath);
+        if (err != 0) {
             return nandConvertErrorCode(err);
         }
+
         info->stage = 8;
 
-        if (!isSimple) {
+        if (!simple_flag) {
             nandGetParentDirectory(tmpdir, info->tmpPath);
-            err = ISFS_Delete(tmpdir);
-            if (err == ISFS_ERROR_OK) {
+            err = ISFS_Delete((const char*)tmpdir);
+            if (err == 0) {
                 info->stage = 9;
                 info->mark = 4;
             }
@@ -411,54 +372,53 @@ s32 nandSafeClose(NANDFileInfo* info, BOOL isSimple) {
         return nandConvertErrorCode(err);
     } else {
         OSReport("Illegal NANDFileInfo.\n");
-        return NAND_RESULT_FATAL_ERROR;
     }
+
+    return NAND_RESULT_INVALID;
 }
 
-s32 NANDPrivateSafeOpenAsync(const char* path, NANDFileInfo* info, u8 accType, void* buffer, u32 length, NANDCallback callback,
-                             NANDCommandBlock* block) {
-    return nandSafeOpenAsync(path, info, accType, buffer, length, callback, block, TRUE, FALSE);
+s32 NANDPrivateSafeOpenAsync(const char* path, NANDFileInfo* info, const u8 accType, void* buf, const u32 length, NANDCallback cb, NANDCommandBlock* block) {
+    return nandSafeOpenAsync(path, info, accType, buf, length, cb, block, TRUE, FALSE);
 }
 
-s32 nandSafeOpenAsync(const char* path, NANDFileInfo* info, u8 accType, void* buffer, u32 length, NANDCallback callback, NANDCommandBlock* block,
-                      BOOL hasPrivateAccess, BOOL isSimple) {
+s32 nandSafeOpenAsync(const char* path, NANDFileInfo* info, const u8 accType, void* buf, const u32 length, NANDCallback cb, NANDCommandBlock* block, BOOL privilege_flag, BOOL simple_flag) {
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
 
-    if (isSimple && (length & 0x3FFF) != 0) {
+    if (simple_flag && ((length & 0x3FFF) != 0)) {
         return NAND_RESULT_INVALID;
     }
-
+    
     info->accType = accType;
     info->stage = 0;
-    block->simpleFlag = isSimple;
+    block->simpleFlag = simple_flag;
     nandGenerateAbsPath(info->origPath, path);
 
-    if (!hasPrivateAccess && nandIsPrivatePath(info->origPath)) {
+    if (!privilege_flag && nandIsPrivatePath(info->origPath)) {
         return NAND_RESULT_ACCESS;
     }
 
-    if (accType == ISFS_ACCESS_READ) {
+    if (accType == 1) {
         IOSFd fd = -1;
         block->fileInfo = info;
-        block->callback = callback;
-        fd = ISFS_OpenAsync(info->origPath, ISFS_ACCESS_READ, nandReadOpenCallback, block);
+        block->callback = cb;
+        fd = ISFS_OpenAsync((char*)(info->origPath), 1, nandReadOpenCallback, block);
 
         if (fd == ISFS_ERROR_OK) {
             return NAND_RESULT_OK;
         } else {
             return nandConvertErrorCode(fd);
         }
-    } else if (accType == ISFS_ACCESS_WRITE || accType == ISFS_ACCESS_RW) {
+    } else if (accType == 2 || accType == 3) {
         ISFSError ret = ISFS_ERROR_UNKNOWN;
         block->fileInfo = info;
-        block->callback = callback;
-        block->state = NAND_STATE_NONE;
-        block->copyBuf = buffer;
+        block->callback = cb;
+        block->state = 0;
+        block->copyBuf = buf;
         block->bufLength = length;
-        ret = ISFS_CreateDirAsync("/tmp/sys", 0, ISFS_ACCESS_RW, ISFS_ACCESS_RW, ISFS_ACCESS_RW, nandSafeOpenCallback, block);
-
+        ret = ISFS_CreateDirAsync((char*)"/tmp/sys", 0, 3, 3, 3, nandSafeOpenCallback, block);
+    
         if (ret == ISFS_ERROR_OK) {
             return NAND_RESULT_OK;
         } else {
@@ -469,142 +429,140 @@ s32 nandSafeOpenAsync(const char* path, NANDFileInfo* info, u8 accType, void* bu
     }
 }
 
-void nandSafeOpenCallback(ISFSError result, void* arg) {
-    NANDCommandBlock* block = (NANDCommandBlock*)arg;
+void nandSafeOpenCallback(const ISFSError result, void* ctxt) {
+    NANDCommandBlock* b = (NANDCommandBlock*)ctxt;
 
-    if (result >= ISFS_ERROR_OK || (result == ISFS_ERROR_EXISTS && block->state == NAND_STATE_NONE)) {
-        NANDFileInfo* info = block->fileInfo;
+    if (result >= 0 || (result == ISFS_ERROR_EXISTS && b->state == 0)) {
+        NANDFileInfo* info = b->fileInfo;
         ISFSError ret = ISFS_ERROR_UNKNOWN;
 
-        if (block->state == NAND_STATE_NONE) {
+        if (b->state == 0) {
             info->stage = 1;
         }
 
-        if (block->state == NAND_STATE_OPEN_FILE) {
+        if (b->state == 2) {
             info->origFd = result;
             info->stage = 2;
         }
 
-        if (block->state == NAND_STATE_OPEN_FILE && block->simpleFlag) {
-            block->state += (NAND_STATE_CREATE_TEMP - NAND_STATE_OPEN_FILE);
+        if (b->state == 2 && b->simpleFlag) {
+            b->state += 2;
         } else {
-            ++block->state;
+            ++b->state;
         }
 
-        if (block->state == NAND_STATE_GET_ATTR) {
-            ret = ISFS_GetAttrAsync(info->origPath, &block->ownerId, &block->groupId, &block->attr, &block->ownerAcc, &block->groupAcc,
-                                    &block->othersAcc, nandSafeOpenCallback, arg);
-        } else if (block->state == NAND_STATE_OPEN_FILE) {
-            ret = ISFS_OpenAsync(info->origPath, ISFS_ACCESS_READ, nandSafeOpenCallback, arg);
-        } else if (block->state == NAND_STATE_CREATE_TEMP_DIR) {
-            char tmpDir[NAND_MAX_PATH];
-            block->uniqueNo = nandGetUniqueNumber();
-            sprintf(tmpDir, "%s/%08x", "/tmp/sys", block->uniqueNo);
-            ret = ISFS_CreateDirAsync(tmpDir, 0, ISFS_ACCESS_RW, ISFS_ACCESS_NONE, ISFS_ACCESS_NONE, nandSafeOpenCallback, arg);
-        } else if (block->state == NAND_STATE_CREATE_TEMP) {
+        if (b->state == 1) {
+            ret = ISFS_GetAttrAsync((char*)(info->origPath), &b->ownerId, &b->groupId, &b->attr, &b->ownerAcc, &b->groupAcc, &b->othersAcc, nandSafeOpenCallback, ctxt);
+        } else if (b->state == 2) {
+            ret = ISFS_OpenAsync((char*)(info->origPath), 1, nandSafeOpenCallback, ctxt);
+        } else if (b->state == 3) {
+            char tmpDir[64];
+            b->uniqueNo = nandGetUniqueNumber();
+            sprintf(tmpDir, "%s/%08x", "/tmp/sys", b->uniqueNo);
+            ret = ISFS_CreateDirAsync((char*)tmpDir, 0, 3, 0, 0, nandSafeOpenCallback, ctxt);
+        } else if (b->state == 4) {
             char filename[13];
             nandGetRelativeName(filename, info->origPath);
 
-            if (!block->simpleFlag) {
-                info->stage = NAND_STATE_CREATE_TEMP_DIR;
-                sprintf(info->tmpPath, "%s/%08x/%s", "/tmp/sys", block->uniqueNo, filename);
-            } else {
+            if (!b->simpleFlag) {
+                info->stage = 3;
+                sprintf(info->tmpPath, "%s/%08x/%s", "/tmp/sys", b->uniqueNo, filename);
+            }
+            else {
                 sprintf(info->tmpPath, "%s/%s", "/tmp/sys", filename);
             }
 
-            ret = ISFS_CreateFileAsync(info->tmpPath, block->attr, block->ownerAcc, block->groupAcc, block->othersAcc, nandSafeOpenCallback, arg);
-        } else if (block->state == NAND_STATE_OPEN_TEMP_FILE) {
-            info->stage = NAND_STATE_CREATE_TEMP;
+            ret = ISFS_CreateFileAsync((char*)info->tmpPath, b->attr, b->ownerAcc, b->groupAcc, b->othersAcc, nandSafeOpenCallback, ctxt);
+        } else if (b->state == 5) {
+            info->stage = 4;
 
-            if (info->accType == ISFS_ACCESS_WRITE) {
-                ret = ISFS_OpenAsync(info->tmpPath, ISFS_ACCESS_WRITE, nandSafeOpenCallback, arg);
-            } else if (info->accType == ISFS_ACCESS_RW) {
-                ret = ISFS_OpenAsync(info->tmpPath, ISFS_ACCESS_RW, nandSafeOpenCallback, arg);
+            if (info->accType == 2) {
+                ret = ISFS_OpenAsync((char*)info->tmpPath, 2, nandSafeOpenCallback, ctxt);
+            } else if (info->accType == 3) {
+                ret = ISFS_OpenAsync((char*)info->tmpPath, 3, nandSafeOpenCallback, ctxt);
             } else {
                 ret = ISFS_ERROR_UNKNOWN;
             }
-        } else if (block->state == NAND_STATE_READ_FILE) {
+        } else if (b->state == 6) {
             info->fileDescriptor = result;
             info->stage = 5;
-            block->state = NAND_STATE_READ_FILE_2;
-            ret = ISFS_ReadAsync(info->origFd, block->copyBuf, block->bufLength, nandSafeOpenCallback, arg);
-        } else if (block->state == NAND_STATE_READ_FILE_2) {
-            ret = ISFS_ReadAsync(info->origFd, block->copyBuf, block->bufLength, nandSafeOpenCallback, arg);
-        } else if (block->state == NAND_STATE_WRITE_FILE) {
+            b->state = 7;
+            ret = ISFS_ReadAsync(info->origFd, b->copyBuf, b->bufLength, nandSafeOpenCallback, ctxt);
+        } else if (b->state == 7) {
+            ret = ISFS_ReadAsync(info->origFd, b->copyBuf, b->bufLength, nandSafeOpenCallback, ctxt);
+        } else if (b->state == 8) {
             if (result > 0) {
-                block->state = NAND_STATE_READ_FILE;
-                ret = ISFS_WriteAsync(info->fileDescriptor, block->copyBuf, (u32)result, nandSafeOpenCallback, arg);
-            } else if (result == ISFS_ERROR_OK) {
-                ret = ISFS_SeekAsync(info->fileDescriptor, 0, 0, nandSafeOpenCallback, arg);
+                b->state = 6;
+                ret = ISFS_WriteAsync(info->fileDescriptor, b->copyBuf, (u32)result, nandSafeOpenCallback, ctxt);
+            } else if (result == 0) {
+                ret = ISFS_SeekAsync(info->fileDescriptor, 0, 0, nandSafeOpenCallback, ctxt);
             }
-        } else if (block->state == NAND_STATE_9) {
-            if (result == ISFS_ERROR_OK) {
-                if (!block->simpleFlag) {
+        }  else if (b->state == 9) {
+            if (result == 0) {
+                if (!b->simpleFlag) {
                     info->mark = 3;
                 } else {
                     info->mark = 5;
                 }
 
-                block->callback(nandConvertErrorCode(ISFS_ERROR_OK), block);
+                ((NANDCallback)(b->callback))(nandConvertErrorCode(ISFS_ERROR_OK), b);
             } else {
-                block->callback(nandConvertErrorCode(result), block);
+                ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
             }
-
             return;
         }
 
         if (ret != ISFS_ERROR_OK) {
-            block->callback(nandConvertErrorCode(ret), block);
+            ((NANDCallback)(b->callback))(nandConvertErrorCode(ret), b);
         }
     } else {
-        block->callback(nandConvertErrorCode(result), block);
+        ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
     }
 }
 
-void nandReadOpenCallback(ISFSError result, void* arg) {
-    NANDCommandBlock* block = (NANDCommandBlock*)arg;
+void nandReadOpenCallback(ISFSError result, void* ctxt) {
+    NANDCommandBlock* b = (NANDCommandBlock*)ctxt;
 
     if (result >= 0) {
-        ((NANDFileInfo*)block->fileInfo)->fileDescriptor = result;
-        ((NANDFileInfo*)block->fileInfo)->stage = 2;
+        ((NANDFileInfo*)(b->fileInfo))->fileDescriptor = result;
+        ((NANDFileInfo*)(b->fileInfo))->stage = 2;
 
-        if (!block->simpleFlag) {
-            ((NANDFileInfo*)block->fileInfo)->mark = 3;
+        if (!(b->simpleFlag)) {
+            ((NANDFileInfo*)(b->fileInfo))->mark = 3;
         } else {
-            ((NANDFileInfo*)block->fileInfo)->mark = 5;
+            ((NANDFileInfo*)(b->fileInfo))->mark = 5;
         }
 
-        block->callback(NAND_RESULT_OK, block);
+        ((NANDCallback)(b->callback))(NAND_RESULT_OK, b);
     } else {
-        block->callback(nandConvertErrorCode(result), block);
+        ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
     }
 }
 
-s32 NANDSafeCloseAsync(NANDFileInfo* info, NANDCallback callback, NANDCommandBlock* block) {
-    return nandSafeCloseAsync(info, callback, block, FALSE);
+s32 NANDSafeCloseAsync(NANDFileInfo* info, NANDCallback cb, NANDCommandBlock* block) {
+    return nandSafeCloseAsync(info, cb, block, FALSE);
 }
 
-s32 nandSafeCloseAsync(NANDFileInfo* info, NANDCallback callback, NANDCommandBlock* block, BOOL isSimple) {
+s32 nandSafeCloseAsync(NANDFileInfo* info, NANDCallback cb, NANDCommandBlock* block, BOOL simple_flag) {
     ISFSError err = ISFS_ERROR_UNKNOWN;
 
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
 
-    if ((info->mark != 3 || isSimple) && (info->mark != 5 || !isSimple)) {
+    if (!((info->mark == 3 && !simple_flag) || (info->mark == 5 && simple_flag))) {
         return NAND_RESULT_INVALID;
     }
 
-    block->simpleFlag = isSimple;
-
-    if (info->accType == ISFS_ACCESS_READ) {
+    block->simpleFlag = simple_flag;
+    if (info->accType == 1) {
         block->fileInfo = info;
-        block->callback = callback;
+        block->callback = cb;
         err = ISFS_CloseAsync(info->fileDescriptor, nandReadCloseCallback, block);
-    } else if (info->accType == ISFS_ACCESS_WRITE || info->accType == ISFS_ACCESS_RW) {
+    } else if (info->accType == 2 || info->accType == 3) {
         block->fileInfo = info;
-        block->callback = callback;
-        block->state = NAND_STATE_10;
+        block->callback = cb;
+        block->state = 10;
         err = ISFS_CloseAsync(info->fileDescriptor, nandSafeCloseCallback, block);
     } else {
         err = ISFS_ERROR_INVALID;
@@ -613,72 +571,175 @@ s32 nandSafeCloseAsync(NANDFileInfo* info, NANDCallback callback, NANDCommandBlo
     return nandConvertErrorCode(err);
 }
 
-void nandSafeCloseCallback(ISFSError result, void* arg) {
-    NANDCommandBlock* block = (NANDCommandBlock*)arg;
+void nandSafeCloseCallback(ISFSError result, void* ctxt) {
+    NANDCommandBlock* b = (NANDCommandBlock*)ctxt;
 
-    if (result == ISFS_ERROR_OK) {
-        NANDFileInfo* info = block->fileInfo;
+    if (result == 0) {
+        NANDFileInfo* info = b->fileInfo;
         ISFSError ret = ISFS_ERROR_UNKNOWN;
 
-        if (block->state == NAND_STATE_12) {
-            info->stage = NAND_STATE_WRITE_FILE;
+        if (b->state == 12) {
+            info->stage = 8;
         }
 
-        if ((block->state == NAND_STATE_12) && block->simpleFlag) {
-            block->state += (NAND_STATE_14 - NAND_STATE_12);
+        if (b->state == 12 && b->simpleFlag) {
+            b->state += 2;
         } else {
-            ++block->state;
+            ++b->state;
         }
 
-        if (block->state == NAND_STATE_11) {
-            info->stage = NAND_STATE_READ_FILE;
-            ret = ISFS_CloseAsync(info->origFd, nandSafeCloseCallback, arg);
-        } else if (block->state == NAND_STATE_12) {
-            info->stage = NAND_STATE_READ_FILE_2;
-            ret = ISFS_RenameAsync(info->tmpPath, info->origPath, nandSafeCloseCallback, arg);
-        } else if (block->state == NAND_STATE_13) {
-            char tmpdir[NAND_MAX_PATH] = "";
+        if (b->state == 11) {
+            info->stage = 6;
+            ret = ISFS_CloseAsync(info->origFd, nandSafeCloseCallback, ctxt);
+        } else if (b->state == 12) {
+            info->stage = 7;
+            ret = ISFS_RenameAsync((char*)(info->tmpPath), (char*)(info->origPath), nandSafeCloseCallback, ctxt);
+        } else if (b->state == 13) {
+            char tmpdir[64] = "";
             nandGetParentDirectory(tmpdir, info->tmpPath);
-            ret = ISFS_DeleteAsync(tmpdir, nandSafeCloseCallback, arg);
-        } else if (block->state == NAND_STATE_14) {
-            if (!block->simpleFlag) {
+            ret = ISFS_DeleteAsync((char*)tmpdir, nandSafeCloseCallback, ctxt);
+        } else if (b->state == 14) {
+            if (!(b->simpleFlag)) {
                 info->stage = 9;
             }
 
             info->mark = 4;
-            block->callback(nandConvertErrorCode(result), block);
+            ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
             return;
         }
 
-        if (ret != ISFS_ERROR_OK) {
-            block->callback(nandConvertErrorCode(ret), block);
+        if (ret != 0) {
+            ((NANDCallback)(b->callback))(nandConvertErrorCode(ret), b);
         }
     } else {
-        block->callback(nandConvertErrorCode(result), block);
+        ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
     }
 }
 
-static void nandReadCloseCallback(ISFSError result, void* arg) {
-    NANDCommandBlock* block = (NANDCommandBlock*)arg;
+static void nandReadCloseCallback(ISFSError result, void* ctxt) {
+    NANDCommandBlock* b = (NANDCommandBlock*)ctxt;
 
-    if (result == ISFS_ERROR_OK) {
-        ((NANDFileInfo*)block->fileInfo)->stage = 7;
-        ((NANDFileInfo*)block->fileInfo)->mark = 4;
+    if (result == 0) {
+        ((NANDFileInfo*)(b->fileInfo))->stage = 7;
+        ((NANDFileInfo*)(b->fileInfo))->mark = 4;
     }
-
-    block->callback(nandConvertErrorCode(result), block);
+    
+    ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
 }
 
-static void nandCloseCallback(ISFSError result, void* arg) {
-    NANDCommandBlock* block = (NANDCommandBlock*)arg;
+static void nandCloseCallback(ISFSError result, void* ctxt) {
+    NANDCommandBlock* b = (NANDCommandBlock*)ctxt;
 
-    if (result == ISFS_ERROR_OK) {
-        ((NANDFileInfo*)block->fileInfo)->stage = 7;
-        ((NANDFileInfo*)block->fileInfo)->mark = 2;
+    if (result == 0) {
+        ((NANDFileInfo*)(b->fileInfo))->stage = 7;
+        ((NANDFileInfo*)(b->fileInfo))->mark = 2;
     }
-
-    block->callback(nandConvertErrorCode(result), block);
+    
+    ((NANDCallback)(b->callback))(nandConvertErrorCode(result), b);
 }
 
-// Force to align
-char canYouAlignMe[] = "pretty pls?" ALIGN32;
+static ISFSError nandCopy(s32 fd, s32 origFd, void* buf, const u32 length) {
+    while (1) {
+        ISFSError ret;
+        ISFSError ret2;
+
+        ret = ISFS_Read(origFd, buf, length);
+        if (ret == 0) {
+            return 0;
+        }
+        
+        if (ret < 0) {
+            return ret;
+        }
+
+        ret2 = ISFS_Write(fd, buf, ret);
+        if (ret2 < 0) {
+            return ret2;
+        }
+
+        if (ret2 != ret) {}
+    }
+}
+
+static u32 nandGetUniqueNumber(void) {
+    static u32 s_counter = 0;
+    u32 ret;
+    BOOL enabled = OSDisableInterrupts();
+    ret = s_counter++;
+    OSRestoreInterrupts(enabled);
+    return ret;
+}
+
+s32 NANDSimpleSafeCancel(NANDFileInfo* info) {
+    ISFSError err;
+
+    if (!nandIsInitialized()) {
+        return NAND_RESULT_FATAL_ERROR;
+    }
+
+    if (info->accType == 1) {
+        if (info->stage == 0) {
+            return NAND_RESULT_OK;
+        }
+        if (info->stage == 2) {
+            return nandConvertErrorCode(ISFS_Close(info->fileDescriptor));
+        }
+        return NAND_RESULT_INVALID;
+    } else if (info->accType == 2 || info->accType == 3) {
+        if (info->stage == 8) {
+            return NAND_RESULT_INVALID;
+        }
+
+        if (info->stage == 7) {
+            err = ISFS_Delete((const char*)info->tmpPath);
+            if (err == 0) {
+                info->stage = 0;
+            } else {
+                return nandConvertErrorCode(err);
+            }
+        }
+
+        if (info->stage == 6) {
+            err = ISFS_Delete((const char*)info->tmpPath);
+            if (err == 0) {
+                info->stage = 2;
+            } else {
+                return nandConvertErrorCode(err);
+            }
+        }
+
+        if (info->stage == 5) {
+            err = ISFS_Close(info->fileDescriptor);
+            if (err == 0) {
+                info->stage = 4;
+            } else {
+                return nandConvertErrorCode(err);
+            }
+        }
+
+        if (info->stage == 4) {
+            err = ISFS_Delete((const char*)info->tmpPath);
+            if (err == 0) {
+                info->stage = 2;
+            } else {
+                return nandConvertErrorCode(err);
+            }
+        }
+
+        if (info->stage == 2) {
+            err = ISFS_Close(info->origFd);
+            if (err == 0) {
+                info->stage = 0;
+            } else {
+                return nandConvertErrorCode(err);
+            }
+        }
+
+        if (info->stage <= 1) {
+            return NAND_RESULT_OK;
+        }
+        return NAND_RESULT_UNKNOWN;
+    } else {
+        return NAND_RESULT_INVALID;
+    }
+}

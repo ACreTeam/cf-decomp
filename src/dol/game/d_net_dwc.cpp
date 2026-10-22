@@ -220,7 +220,7 @@ void Session_c::setState(int state) {
 // 800E7E90
 BOOL Session_c::openMic(void *work) {
     if (work) {
-        sMicResult = fn_80225BC0(work);
+        sMicResult = PMICInitEx(work);
         if (!sMicResult) {
             return TRUE;
         }
@@ -240,7 +240,7 @@ BOOL Session_c::closeMic() {
     } while (--retries > 0);
     retries = MIC_SHUTDOWN_RETRIES;
     do {
-        if (fn_80225EBC() != PMIC_ERR_BUSY) {
+        if (PMICQuit() != PMIC_ERR_BUSY) {
             break;
         }
         OSSleepTicks((u64)(OS_TIME_SPEED / 1000) * MIC_RETRY_DELAY_MS);

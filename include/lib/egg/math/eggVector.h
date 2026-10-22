@@ -8,6 +8,10 @@ namespace EGG {
     /// @brief A two-dimensional floating point vector.
     class Vector2f : public nw4r::math::VEC2 {
     public:
+        static const Vector2f zero;
+        static const Vector2f ex;
+        static const Vector2f ey;
+
         /// @brief Constructs an empty vector.
         Vector2f() {}
 
@@ -37,6 +41,11 @@ namespace EGG {
     /// @brief A three-dimensional floating point vector.
     class Vector3f : public nw4r::math::VEC3 {
     public:
+        static const Vector3f zero;
+        static const Vector3f ex;
+        static const Vector3f ey;
+        static const Vector3f ez;
+
         /// @brief Constructs an empty vector.
         Vector3f() {}
 
@@ -53,13 +62,24 @@ namespace EGG {
         }
 
         Vector3f operator+(const Vector3f &v) const { return Vector3f(x + v.x, y + v.y, z + v.z); }
+        Vector3f operator-() const { return Vector3f(-x, -y, -z); }
+        Vector3f operator-(const Vector3f &v) const { return Vector3f(x - v.x, y - v.y, z - v.z); }
         Vector3f operator*(f32 f) const { return Vector3f(x * f, y * f, z * f); }
+        friend Vector3f operator*(f32 f, const Vector3f &v) { return Vector3f(v.x * f, v.y * f, v.z * f); }
         Vector3f cross(const Vector3f &v) const {
             f32 cx = y * v.z - z * v.y;
             f32 cy = z * v.x - x * v.z;
             f32 cz = x * v.y - y * v.x;
             return Vector3f(cx, cy, cz);
         }
+
+        float normalise();
+
+        /// @brief Gets the squared length of the vector.
+        float squaredLength() const { return x * x + y * y + z * z; }
+
+        /// @brief Gets the length of the vector.
+        float length() const { return EGG::Mathf::sqrt(squaredLength()); }
 
         void setCross(const Vector3f &a, const Vector3f &b); // 800681FC, shared by quaternion helpers.
 

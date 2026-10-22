@@ -1,26 +1,26 @@
 #include <private/nwc24.h>
 #include <revolution/nwc24.h>
 
-#include <private/ios.h>
-#include <private/ipc.h>
-
 static BOOL NWC24iIsRequestPending = FALSE;
 
-static s32 CallbackAsyncIpc(s32 ret, void* ctxt);
+static s32 CallbackAsyncIpc(s32 result, void* pArg);
 
-NWC24Err NWC24iOpenResourceManager(const char* funcName, const char* path, s32* pFd, u32 flags) {
+NWC24Err NWC24iOpenResourceManager(const char* pUser, const char* pName, s32* pFd, u32 mode) {
+    s32 result;
+
     if (pFd == NULL) {
         return NWC24_ERR_INVALID_VALUE;
     }
 
-    *pFd = IOS_Open(path, flags);
+    result = IOS_Open(pName, mode);
+    *pFd = result;
 
-    if (*pFd < 0) {
-        if (*pFd == IPC_RESULT_NOEXISTS) {
+    if (result < 0) {
+        if (result == IPC_RESULT_NOEXISTS) {
             return NWC24_ERR_INPROGRESS;
         }
 
-        if (*pFd == IPL_RESULT_FULLQUEUE) {
+        if (result == IPL_RESULT_FULLQUEUE) {
             return NWC24_ERR_BUSY;
         }
 
@@ -30,28 +30,16 @@ NWC24Err NWC24iOpenResourceManager(const char* funcName, const char* path, s32* 
     return NWC24_OK;
 }
 
-NWC24Err NWC24iCloseResourceManager(const char* funcName, s32 fd) {
-    s32 err = IOS_Close(fd);
-    if (err < IPC_RESULT_OK) {
-        return NWC24_ERR_INTERNAL_IPC;
-    }
-
-    return NWC24_OK;
+NWC24Err NWC24iCloseResourceManager(const char* pUser, s32 fd) {
+    return IOS_Close(fd) < 0 ? NWC24_ERR_INTERNAL_IPC : NWC24_OK;
 }
 
-NWC24Err NWC24iIoctlResourceManager(const char* funcName, s32 fd, s32 cmd, void* input, u32 input_bytes, void* output, u32 output_bytes) {
-    s32 err = IOS_Ioctl(fd, cmd, input, input_bytes, output, output_bytes);
-    if (err < IPC_RESULT_OK) {
-        return NWC24_ERR_INTERNAL_IPC;
-    }
-
-    return NWC24_OK;
+NWC24Err NWC24iIoctlResourceManager(const char* pUser, s32 fd, s32 type, void* pIn, s32 inSize, void* pOut, s32 outSize) {
+    return IOS_Ioctl(fd, type, pIn, inSize, pOut, outSize) < 0 ? NWC24_ERR_INTERNAL_IPC : NWC24_OK;
 }
 
-NWC24Err NWC24iIoctlResourceManagerAsync(const char* funcName, s32 fd, s32 cmd, void* input, u32 input_bytes, void* output, u32 output_bytes,
-                                         s32* ret) {
-    s32 err = IOS_IoctlAsync(fd, cmd, input, input_bytes, output, output_bytes, CallbackAsyncIpc, ret);
-    if (err < IPC_RESULT_OK) {
+NWC24Err NWC24iIoctlResourceManagerAsync(const char* pUser, s32 fd, s32 type, void* pIn, s32 inSize, void* pOut, s32 outSize, void* pCallbackArg) {
+    if (IOS_IoctlAsync(fd, type, pIn, inSize, pOut, outSize, CallbackAsyncIpc, pCallbackArg) < 0) {
         return NWC24_ERR_INTERNAL_IPC;
     }
 
@@ -59,13 +47,13 @@ NWC24Err NWC24iIoctlResourceManagerAsync(const char* funcName, s32 fd, s32 cmd, 
     return NWC24_OK;
 }
 
-BOOL NWC24iIsAsyncRequestPending() {
+BOOL NWC24iIsAsyncRequestPending(void) {
     return NWC24iIsRequestPending;
 }
 
-static s32 CallbackAsyncIpc(s32 ret, void* ctxt) {
-    if (ctxt != NULL) {
-        *(s32*)ctxt = ret;
+static s32 CallbackAsyncIpc(s32 result, void* pArg) {
+    if (pArg != NULL) {
+        *(s32*)pArg = result;
     }
 
     NWC24iIsRequestPending = FALSE;

@@ -51,6 +51,7 @@ void MEMIntrruptHandler(__OSInterrupt interrupt, OSContext* context) {
     __OSUnhandledException(OS_EXCEPTION_MEMORY_PROTECTION, context, cause, addr);
 }
 
+#if 0 // not linked in City Folk
 void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
     BOOL enabled;
     u32 start, end;
@@ -83,6 +84,7 @@ void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
 
     OSRestoreInterrupts(enabled);
 }
+#endif
 
 // clang-format off
 

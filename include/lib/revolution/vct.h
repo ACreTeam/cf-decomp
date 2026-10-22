@@ -6,7 +6,13 @@ extern "C" {
 #endif
 
 typedef struct VCTSession {
-    u8 _00[0x18];
+    /* 0x00 */ u32 mode;
+    /* 0x04 */ u8 aid;
+    /* 0x05 */ u8 talking;
+    /* 0x08 */ u32 aidBitmap;
+    /* 0x0C */ u32 state;
+    /* 0x10 */ void* userData;
+    /* 0x14 */ struct VCTSession* next;
 } VCTSession; // size 0x18 (d_voice_chat keeps three)
 
 // Called by the library on session events
@@ -17,9 +23,9 @@ typedef struct VCTConfig {
     /* 0x04 */ u32 numSession;
     /* 0x08 */ u32 mode;
     /* 0x0C */ u8 aid;                    // own aid
-    /* 0x0D */ u8 _0D;
-    /* 0x0E */ u8 _0E;
-    /* 0x0F */ u8 _0F;
+    /* 0x0D */ u8 codec;                  // ADPCM codec (VCTCodec)
+    /* 0x0E */ u8 frameLength;            // audio frame length in ms (0 = default 68, 68..192)
+    /* 0x0F */ u8 flags;                  // 1 = VAD, 2 = echo cancel (ignored on Wii), 4 = high pass filter
     /* 0x10 */ void* audioBuffer;         // work memory
     /* 0x14 */ u32 audioBufferSize;
     /* 0x18 */ VCTEventCallback callback;
@@ -54,7 +60,7 @@ void VCT_Main(void);                             // main
 // debug.c
 void VCT_SetReportLevel(u32 level);
 u32 VCT_GetAudioDataSize(void);                              // audio frame size in bytes (16-bit samples)
-void fn_8036D510(s32 value);                        // empty
+void VCTi_NotifyMicStartResult(s32 result);        // empty
 
 #ifdef __cplusplus
 }

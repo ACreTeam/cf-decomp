@@ -28,7 +28,7 @@ public:
     virtual bool ReadAsync(void* pDst, ulong size, StreamCallback pCallback,
                            void* pCallbackArg); // at 0x18
 
-    virtual void Write(const void* pSrc, ulong size); // at 0x1C
+    virtual s32 Write(const void* pSrc, ulong size); // at 0x1C
     virtual bool WriteAsync(const void* pSrc, ulong size,
                             StreamCallback pCallback,
                             void* pCallbackArg); // at 0x20

@@ -67,7 +67,7 @@ void* __AXGetCommandListAddress() {
     return list;
 }
 
-void __AXWriteToCommandList(u16 cmd) {
+static void __AXWriteToCommandList(u16 cmd) {
     *__AXClWrite = cmd;
     __AXClWrite++;
 }

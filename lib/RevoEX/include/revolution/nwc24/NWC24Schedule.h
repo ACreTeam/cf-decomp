@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 s32 NWC24SuspendScheduler();
+s32 NWC24TrySuspendScheduler();
 s32 NWC24ResumeScheduler();
 
 NWC24Err NWC24AdjustUniversalTime();

@@ -1,7 +1,7 @@
 #include <dwc/dwc_common.h>
 
 #include <nitro/math/rand.h>
-#include <revolution/net_fwd.h>
+#include <revolution/net.h>
 #include <revolution/os/OSTime.h>
 #include <stdio.h>
 #include <string.h>

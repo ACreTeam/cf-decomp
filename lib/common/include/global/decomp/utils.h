@@ -45,6 +45,13 @@
         fake_function(0, args);                                                                                                                      \
     }
 
+
+/*
+ * Strings of functions the linker stripped from the retail build still sit in the TU's string pool.
+ * A global char array lands in .data at its position in the source, 4-byte aligned like the pooled literal.
+ */
+#define DECOMP_FORCE_STRING(module, str) char CONCAT(CONCAT(FORCESTRING, module), __LINE__)[] = str;
+
 #define DECOMP_FORCE_LITERAL(module, ...)                                                                                                            \
     void CONCAT(FORCELITERAL##module, __LINE__)();                                                                                                   \
     void CONCAT(FORCELITERAL##module, __LINE__)() {                                                                                                  \

@@ -2,17 +2,9 @@
 #include <game/game/d_pad.hpp>
 #include <game/game/d_kbd.hpp>
 #include <game/mLib/m_pad.hpp>
+#include <revolution/KPAD.h>
 #include <revolution/WPAD.h>
 
-
-extern "C" {
-void fn_803BFEE0();
-BOOL fn_803B12B4();
-void fn_803B124C(BOOL);
-f32 fn_80443CD0(EGG::CoreController *);
-f32 fn_80443CEC(EGG::CoreController *);
-extern void (*lbl_8074FC54)(const s32 *);
-}
 
 namespace dPad {
 static mVec2_c sRawPointer; // Normalized DPD coordinates.
@@ -28,37 +20,37 @@ static mVec2_c sPointerPosition; // Screen coordinates, centered on (0, 0).
 
 // 800FA08C: inferred name; disconnect newly connected remotes other than the
 // current one.
-void disconnectOtherRemotes(const s32 *status) {
+void disconnectOtherRemotes(const EGG::CoreControllerConnectArg &arg) {
     int current = mPad::getCurrentCoreID();
-    if (status[1] == 0 && current != status[0]) {
-        WPADControlMotor(status[0], WPAD_MOTOR_STOP);
-        WPADDisconnect(status[0]);
+    if (arg.result == 0 && current != arg.chan) {
+        WPADControlMotor(arg.chan, WPAD_MOTOR_STOP);
+        WPADDisconnect(arg.chan);
     }
 }
 
 // 800FA0E0
 void init() {
-    lbl_8074FC54 = disconnectOtherRemotes;
+    EGG::CoreControllerMgr::setConnectCallback(disconnectOtherRemotes);
 }
 
 // 800FA0F0
 void updateConnection() {
     BOOL connected = mPad::getCore()->isConnected();
-    BOOL enabled = fn_803B12B4();
+    BOOL enabled = WPADGetAcceptConnection();
     if (connected) {
         if (enabled) {
-            fn_803B124C(FALSE);
+            WPADSetAcceptConnection(FALSE);
         }
     } else {
         if (!enabled) {
-            fn_803B124C(TRUE);
+            WPADSetAcceptConnection(TRUE);
         }
     }
 }
 
 // 800FA150
 void begin() {
-    fn_803BFEE0();
+    KPADEnableStickCrossClamp();
     mPad::beginPad();
     if ((int)mPad::getCore()->mCoreStatus[0].dev_type != WPAD_DEV_FREESTYLE &&
         mPad::getCurrentCoreID() < 4) {
@@ -79,8 +71,8 @@ void begin() {
         sStickX = 0.0f;
         sStickY = 0.0f;
     } else {
-        sStickX = fn_80443CD0(mPad::getCore());
-        sStickY = fn_80443CEC(mPad::getCore());
+        sStickX = mPad::getCore()->getFreeStickX();
+        sStickY = mPad::getCore()->getFreeStickY();
     }
     if ((sStickX > 0.9f || sStickX < -0.9f) && sStickY < 0.1f &&
         sStickY > -0.1f) {

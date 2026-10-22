@@ -28,6 +28,7 @@ typedef u32 ESTitleId32;
 typedef u32 ESTitleType;
 typedef u32 ESTitleCode;
 typedef u64 ESTitleId;
+typedef ESTitleId ESSysVersion;
 
 typedef u64 ESTicketId;
 

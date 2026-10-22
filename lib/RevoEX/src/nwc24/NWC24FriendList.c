@@ -105,7 +105,7 @@ NWC24Err NWC24ReadFriendInfo(NWC24FriendInfo* info, u32 index) {
     return NWC24_OK;
 }
 
-NWC24Err NWC24WriteFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
+static NWC24Err NWC24WriteFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
     NWC24Err result;
     NWC24Err resultFile;
 
@@ -132,8 +132,8 @@ NWC24Err NWC24WriteFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
         return result;
     }
 
-    tmpFriendAttr = (NWC24FriendAttr*)&nwc24Work->mainWork[0];
-    tmpFriendAddr = (NWC24FriendAddr*)&nwc24Work->mainWork[sizeof(NWC24FriendAttr)];
+    tmpFriendAttr = (NWC24FriendAttr*)&NWC24WorkP->mainWork[0];
+    tmpFriendAddr = (NWC24FriendAddr*)&NWC24WorkP->mainWork[sizeof(NWC24FriendAttr)];
 
     *tmpFriendAttr = friendInfo->attr;
     tmpFriendAttr->status = NWC24_FRIENDSTATUS_PENDING;
@@ -219,7 +219,7 @@ NWC24Err NWC24WriteFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
     return result;
 }
 
-NWC24Err NWC24DeleteFriendInfo(u32 index) {
+static NWC24Err NWC24DeleteFriendInfo(u32 index) {
     NWC24Err result;
     NWC24Err resultWrite;
 
@@ -246,7 +246,7 @@ NWC24Err NWC24DeleteFriendInfo(u32 index) {
         return NWC24_ERR_NULL;
     }
 
-    tmpFriendInfo = (NWC24FriendInfo*)nwc24Work->mainWork;
+    tmpFriendInfo = (NWC24FriendInfo*)NWC24WorkP->mainWork;
     Mail_memset(tmpFriendInfo, 0, sizeof(NWC24FriendInfo));
 
     result = NWC24FOpen(&file, FLFilePath, NWC24_OPEN_RW);
@@ -276,7 +276,7 @@ NWC24Err NWC24DeleteFriendInfo(u32 index) {
     return result;
 }
 
-NWC24Err NWC24UpdateFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
+static NWC24Err NWC24UpdateFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
     NWC24Err result;
     NWC24Err resultFile;
 
@@ -310,7 +310,7 @@ NWC24Err NWC24UpdateFriendInfo(const NWC24FriendInfo* friendInfo, u32 index) {
         return NWC24_ERR_INVALID_VALUE;
     }
 
-    tmpFriendInfo = (NWC24FriendInfo*)nwc24Work->mainWork;
+    tmpFriendInfo = (NWC24FriendInfo*)NWC24WorkP->mainWork;
     Mail_memset(tmpFriendInfo, 0, sizeof(NWC24FriendInfo));
 
     result = NWC24FOpen(&file, FLFilePath, NWC24_OPEN_RW);
@@ -358,7 +358,7 @@ out:
     return result;
 }
 
-NWC24Err NWC24SwapFriendInfos(u32 index1, u32 index2) {
+static NWC24Err NWC24SwapFriendInfos(u32 index1, u32 index2) {
     NWC24Err result;
     NWC24Err resultFile;
 
@@ -394,8 +394,8 @@ NWC24Err NWC24SwapFriendInfos(u32 index1, u32 index2) {
         return NWC24_ERR_INVALID_VALUE;
     }
 
-    friendInfo1 = (NWC24FriendInfo*)&nwc24Work->mainWork[0 * sizeof(NWC24FriendInfo)];
-    friendInfo2 = (NWC24FriendInfo*)&nwc24Work->mainWork[1 * sizeof(NWC24FriendInfo)];
+    friendInfo1 = (NWC24FriendInfo*)&NWC24WorkP->mainWork[0 * sizeof(NWC24FriendInfo)];
+    friendInfo2 = (NWC24FriendInfo*)&NWC24WorkP->mainWork[1 * sizeof(NWC24FriendInfo)];
 
     result = NWC24FOpen(&file, FLFilePath, NWC24_OPEN_RW);
     if (result != NWC24_OK) {
@@ -446,7 +446,7 @@ NWC24Err NWC24SwapFriendInfos(u32 index1, u32 index2) {
     return result;
 }
 
-NWC24Err NWC24SearchFriendInfoById(NWC24UserId id, u32* index) {
+static NWC24Err NWC24SearchFriendInfoById(NWC24UserId id, u32* index) {
     NWC24Err result;
 
     NWC24FLHeader* header;
@@ -472,7 +472,7 @@ NWC24Err NWC24SearchFriendInfoById(NWC24UserId id, u32* index) {
     return NWC24_ERR_NOT_FOUND;
 }
 
-NWC24Err NWC24SearchFriendInfoByAddr(const NWC24FriendAddr* addr, u32* index) {
+static NWC24Err NWC24SearchFriendInfoByAddr(const NWC24FriendAddr* addr, u32* index) {
     NWC24Err result;
 
     NWC24FLHeader* header;
@@ -497,7 +497,7 @@ NWC24Err NWC24SearchFriendInfoByAddr(const NWC24FriendAddr* addr, u32* index) {
         return result;
     }
 
-    tmpFriendInfo = (NWC24FriendInfo*)&nwc24Work->mainWork;
+    tmpFriendInfo = (NWC24FriendInfo*)&NWC24WorkP->mainWork;
 
     for (i = 0; i < header->infoCount; i++) {
         if (friendValue == header->friendIds[i]) {
@@ -536,7 +536,7 @@ NWC24Err NWC24GetNumFriendInfos(u32* numFriendInfo) {
     return NWC24_OK;
 }
 
-NWC24Err NWC24GetNumRegFriendInfos(u32* numRegFriendInfo) {
+static NWC24Err NWC24GetNumRegFriendInfos(u32* numRegFriendInfo) {
     NWC24Err result;
 
     NWC24FLHeader* header;
@@ -577,12 +577,12 @@ BOOL NWC24IsFriendInfoThere(u32 index) {
 }
 
 NWC24Err NWC24iOpenFriendList() {
-    NWC24FLHeader* header = (NWC24FLHeader*)nwc24Work->flHead;
+    NWC24FLHeader* header = (NWC24FLHeader*)NWC24WorkP->flHead;
     Mail_memset(header, 0, sizeof(NWC24FLHeader));
     return GetCachedFLHeader(&header);
 }
 
-NWC24Err NWC24iInitFriendList(BOOL force) {
+static NWC24Err NWC24iInitFriendList(BOOL force) {
     NWC24Err result;
     NWC24FLHeader* header;
 
@@ -603,7 +603,7 @@ NWC24Err NWC24iInitFriendList(BOOL force) {
     return result;
 }
 
-NWC24Err NWC24iCreateFriendList() {
+static NWC24Err NWC24iCreateFriendList() {
     NWC24Err result;
     NWC24Err resultWrite;
 
@@ -613,8 +613,8 @@ NWC24Err NWC24iCreateFriendList() {
     NWC24File file;
     u32 i;
 
-    header = (NWC24FLHeader*)nwc24Work->flHead;
-    tmpFriendInfo = (NWC24FriendInfo*)nwc24Work->mainWork;
+    header = (NWC24FLHeader*)NWC24WorkP->flHead;
+    tmpFriendInfo = (NWC24FriendInfo*)NWC24WorkP->mainWork;
 
     Mail_memset(header, 0, sizeof(NWC24FLHeader));
     Mail_memset(tmpFriendInfo, 0, sizeof(NWC24FriendInfo));
@@ -714,7 +714,7 @@ static NWC24Err GetCachedFLHeader(NWC24FLHeader** header) {
 
     NWC24File file;
 
-    *header = (NWC24FLHeader*)nwc24Work->flHead;
+    *header = (NWC24FLHeader*)NWC24WorkP->flHead;
 
     if ((*header)->magic != FRIEND_LIST_MAGIC) {
         result = NWC24FOpen(&file, FLFilePath, NWC24_OPEN_NAND_R);

@@ -359,6 +359,7 @@ BOOL SCSetEULA(BOOL eulaFlag);
 #define SC_WC_FLAGS_ENABLED 1
 
 u32 SCGetWCFlags();
+BOOL SCCheckPCMessageRestriction(void);
 BOOL SCSetWCFlags(u32 wcFlags);
 
 BOOL SCGetFreeChannelAppCount(u32* count);
@@ -369,6 +370,13 @@ BOOL SCSetInstalledChannelAppCount(u32 count);
 
 u64 SCGetTmpTitleID();
 BOOL SCSetTmpTitleID(u64 titleId);
+
+
+typedef void (*SCReloadConfFileCallback)(s32 result);
+
+s32 SCReloadConfFileAsync(u8*, u32, SCReloadConfFileCallback);
+
+BOOL __SCF1(const char*, char*, u32);
 
 #ifdef __cplusplus
 }

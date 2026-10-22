@@ -121,9 +121,9 @@ BOOL dOneEmitterEffect_c::create(const char *name, const mMtx_c *mtx) {
 }
 
 // 8008771C
-void dLevelEffect_c::retire() {
-    if (_90) mEf::levelEffect_c::retireAll();
-    else mEf::levelEffect_c::retire();
+void dLevelEffect_c::fade() {
+    if (_90) mEf::levelEffect_c::kill();
+    else mEf::levelEffect_c::fade();
 }
 
 // 80087730

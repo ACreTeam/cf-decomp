@@ -24,9 +24,11 @@ u8 SCGetAspectRatio() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetAspectRatio(u8 aspectRatio) {
     return SCReplaceU8Item(aspectRatio, SC_ITEM_ID_IPL_ASPECT_RATIO);
 }
+#endif
 
 s8 SCGetDisplayOffsetH() {
     s8 item;
@@ -45,9 +47,11 @@ s8 SCGetDisplayOffsetH() {
     return item & ~1;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetDisplayOffsetH(s8 displayOffsetH) {
     return SCReplaceS8Item(displayOffsetH, SC_ITEM_ID_IPL_DISPLAY_OFFSET_H);
 }
+#endif
 
 u8 SCGetEuRgb60Mode() {
     u8 item;
@@ -64,17 +68,21 @@ u8 SCGetEuRgb60Mode() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetEuRgb60Mode(u8 eurgb60Mode) {
     return SCReplaceU8Item(eurgb60Mode, SC_ITEM_ID_IPL_EURGB60_MODE);
 }
+#endif
 
 BOOL SCGetIdleMode(SCIdleModeInfo* info) {
     return SCFindByteArrayItem(info, sizeof(*info), SC_ITEM_ID_IPL_IDLE_MODE);
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetIdleMode(SCIdleModeInfo* info) {
     return SCReplaceByteArrayItem(info, sizeof(*info), SC_ITEM_ID_IPL_IDLE_MODE);
 }
+#endif
 
 u8 SCGetLanguage() {
     u8 item;
@@ -95,17 +103,21 @@ u8 SCGetLanguage() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetLanguage(u8 language) {
     return SCReplaceU8Item(language, SC_ITEM_ID_IPL_LANGUAGE);
 }
+#endif
 
 BOOL SCGetParentalControl(SCParentalControlsInfo* pcInfo) {
     return SCFindByteArrayItem(pcInfo, sizeof(*pcInfo), SC_ITEM_ID_IPL_PARENTAL_CONTROL);
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetParentalControl(SCParentalControlsInfo* pcInfo) {
     return SCReplaceByteArrayItem(pcInfo, sizeof(*pcInfo), SC_ITEM_ID_IPL_PARENTAL_CONTROL);
 }
+#endif
 
 u8 SCGetProgressiveMode() {
     u8 item;
@@ -122,9 +134,11 @@ u8 SCGetProgressiveMode() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetProgressiveMode(u8 progressiveMode) {
     return SCReplaceU8Item(progressiveMode, SC_ITEM_ID_IPL_PROGRESSIVE_MODE);
 }
+#endif
 
 u8 SCGetScreenSaverMode() {
     u8 item;
@@ -141,9 +155,11 @@ u8 SCGetScreenSaverMode() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetScreenSaverMode(u8 screenSaverMode) {
     return SCReplaceU8Item(screenSaverMode, SC_ITEM_ID_IPL_SCREEN_SAVER_MODE);
 }
+#endif
 
 u8 SCGetSoundMode() {
     u8 item;
@@ -160,9 +176,11 @@ u8 SCGetSoundMode() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetSoundMode(u8 soundMode) {
     return SCReplaceU8Item(soundMode, SC_ITEM_ID_IPL_SOUND_MODE);
 }
+#endif
 
 u32 SCGetCounterBias() {
     u32 item;
@@ -175,9 +193,11 @@ u32 SCGetCounterBias() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetCounterBias(u32 counterBias) {
     return SCReplaceU32Item(counterBias, SC_ITEM_ID_IPL_COUNTER_BIAS);
 }
+#endif
 
 BOOL SCGetBtDeviceInfoArray(SCBtDeviceInfoArray* devInfo) {
     return SCFindByteArrayItem(devInfo, sizeof(*devInfo), SC_ITEM_ID_BT_DEVICE_INFO);
@@ -212,10 +232,13 @@ u32 SCGetBtDpdSensibility() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetBtDpdSensibility(u32 dpdSensibility) {
     return SCReplaceU32Item(dpdSensibility, SC_ITEM_ID_BT_DPD_SENSIBILITY);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCGetWwwRestriction() {
     BOOL item;
 
@@ -226,10 +249,13 @@ BOOL SCGetWwwRestriction() {
 
     return item;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetWwwRestriction(BOOL wwwRestrictFlag) {
     return SCReplaceBoolItem(wwwRestrictFlag, SC_ITEM_ID_WWW_RESTRICTION);
 }
+#endif
 
 u8 SCGetWpadMotorMode() {
     u8 item;
@@ -265,9 +291,11 @@ u8 SCGetWpadSensorBarPosition() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetWpadSensorBarPosition(u8 sensorBarPosition) {
     return SCReplaceU8Item(sensorBarPosition, SC_ITEM_ID_BT_SENSOR_BAR_POSITION);
 }
+#endif
 
 u8 SCGetWpadSpeakerVolume() {
     u8 item;
@@ -288,21 +316,28 @@ BOOL SCSetWpadSpeakerVolume(u8 speakerVolume) {
     return SCReplaceU8Item(speakerVolume, SC_ITEM_ID_BT_SPEAKER_VOLUME);
 }
 
+#if 0 // not linked in City Folk
 BOOL SCGetOwnerNickName(SCOwnerNickname* ownerNickname) {
     return SCFindByteArrayItem(ownerNickname, sizeof(*ownerNickname), SC_ITEM_ID_IPL_OWNER_NICKNAME);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetOwnerNickName(SCOwnerNickname* ownerNickname) {
     return SCReplaceByteArrayItem(ownerNickname, sizeof(*ownerNickname), SC_ITEM_ID_IPL_OWNER_NICKNAME);
 }
+#endif
 
+#if 0 // not linked in City Folk
 u32 SCGetSimpleAddressID() {
     if (SCGetSimpleAddressData(&TempSimpleAddress)) {
         return TempSimpleAddress.id;
     }
     return 0xFFFFFFFF;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCGetSimpleAddressData(SCSimpleAddress* address) {
     BOOL enabled;
     u32 id;
@@ -324,10 +359,13 @@ BOOL SCGetSimpleAddressData(SCSimpleAddress* address) {
         return FALSE;
     }
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetSimpleAddressData(SCSimpleAddress* address) {
     return SCReplaceByteArrayItem(address, sizeof(*address), SC_ITEM_ID_IPL_SIMPLE_ADDRESS);
 }
+#endif
 
 u32 SCGetNetContentRestrictions() {
     u32 item;
@@ -340,10 +378,13 @@ u32 SCGetNetContentRestrictions() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetNetContentRestrictions(u32 netRestrictions) {
     return SCReplaceU32Item(netRestrictions, SC_ITEM_ID_NET_CONTENT_RESTRICTIONS);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCGetConfigDoneFlag() {
     BOOL item;
 
@@ -354,11 +395,15 @@ BOOL SCGetConfigDoneFlag() {
 
     return item;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetConfigDoneFlag(BOOL configDoneFlag) {
     return SCReplaceBoolItem(configDoneFlag, SC_ITEM_ID_IPL_CONFIG_DONE);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCGetConfigDoneFlag2() {
     BOOL item;
 
@@ -369,11 +414,15 @@ BOOL SCGetConfigDoneFlag2() {
 
     return item;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetConfigDoneFlag2(BOOL configDone2Flag) {
     return SCReplaceBoolItem(configDone2Flag, SC_ITEM_ID_IPL_CONFIG_DONE2);
 }
+#endif
 
+#if 0 // not linked in City Folk
 u8 SCGetUpdateType() {
     u8 item;
 
@@ -388,10 +437,13 @@ u8 SCGetUpdateType() {
 
     return item;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetUpdateType(u8 updateType) {
     return SCReplaceU8Item(updateType, SC_ITEM_ID_IPL_UPDATE_TYPE);
 }
+#endif
 
 BOOL SCGetEULA() {
     BOOL item;
@@ -404,9 +456,11 @@ BOOL SCGetEULA() {
     return item;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCSetEULA(BOOL eulaFlag) {
     return SCReplaceBoolItem(eulaFlag, SC_ITEM_ID_IPL_EULA);
 }
+#endif
 
 u32 SCGetWCFlags() {
     u32 item;
@@ -418,33 +472,54 @@ u32 SCGetWCFlags() {
 
     return item;
 }
+BOOL SCCheckPCMessageRestriction(void) {
+    u32 item;
 
+    if (!SCFindU32Item(&item, SC_ITEM_ID_NET_CONTENT_RESTRICTIONS)) {
+        item = 0;
+    }
+
+    return (item >> 1) & 1;
+}
+
+
+#if 0 // not linked in City Folk
 BOOL SCSetWCFlags(u32 wcFlags) {
     return SCReplaceU32Item(wcFlags, SC_ITEM_ID_NET_WC_FLAGS);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCGetFreeChannelAppCount(u32* count) {
     *count = 0;
     return SCFindU32Item(count, SC_ITEM_ID_IPL_FREE_CHANNEL_APP_COUNT);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetFreeChannelAppCount(u32 count) {
     return SCReplaceU32Item(count, SC_ITEM_ID_IPL_FREE_CHANNEL_APP_COUNT);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCGetInstalledChannelAppCount(u32* count) {
     *count = 0;
     return SCFindU32Item(count, SC_ITEM_ID_IPL_INSTALLED_CHANNEL_APP_COUNT);
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetInstalledChannelAppCount(u32 count) {
     return SCReplaceU32Item(count, SC_ITEM_ID_IPL_INSTALLED_CHANNEL_APP_COUNT);
 }
+#endif
 
 #define TITLE_TYPE(x) ((u32)(x >> 32))
 
 #define IS_VALID_TEMP_TYPE(tId) ((tId) == 0x00010001 || (tId) == 0x00010003 || (tId) == 0x00010004 || (tId) == 0x00010006 || (tId) == 0x00010007)
 
+#if 0 // not linked in City Folk
 u64 SCGetTmpTitleID() {
     u64 item;
     u32 titleType;
@@ -461,7 +536,9 @@ u64 SCGetTmpTitleID() {
 
     return 0;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL SCSetTmpTitleID(u64 titleId) {
     u32 titleType = TITLE_TYPE(titleId);
     if (IS_VALID_TEMP_TYPE(titleType) || titleId == 0) {
@@ -469,3 +546,4 @@ BOOL SCSetTmpTitleID(u64 titleId) {
     }
     return FALSE;
 }
+#endif

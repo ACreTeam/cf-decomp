@@ -58,6 +58,19 @@ typedef struct PADStatus {
     s8 err;  // 0x0A
 } PADStatus;
 
+typedef struct PADClampRegion {
+    u8 minTrigger;
+    u8 maxTrigger;
+    s8 minStick;
+    s8 maxStick;
+    s8 xyStick;
+    s8 minSubstick;
+    s8 maxSubstick;
+    s8 xySubstick;
+    s8 radStick;
+    s8 radSubstick;
+} PADClampRegion;
+
 typedef void (*PADSamplingCallback)();
 
 int PADReset(u32 mask) NO_INLINE;
@@ -72,6 +85,10 @@ void PADSetSpec(u32 spec);
 int PADGetType(s32 chan, u32* type);
 
 BOOL PADSync();
+
+// Padclamp
+void PADClamp(PADStatus* status);
+void PADClampCircle(PADStatus* status);
 
 #ifdef __cplusplus
 }

@@ -13,9 +13,8 @@
 #include <game/mLib/m_pad.hpp>
 #include <game/snd/snd_id.hpp>
 #include <lib/revolution/SC/scapi.h>
+#include <lib/revolution/VI/vi.h>
 #include <lib/revolution/WPAD/WPAD.h>
-
-extern "C" BOOL fn_8038E36C();
 
 CUSTOM_BASE_PROFILE(OBJ_TELOP, dObjTelop_c, fProf::OBJ_TELOP,
                     fProf::DRAW_ORDER::OBJ_TELOP);
@@ -90,7 +89,7 @@ int dObjTelop_c::execute() {
     } else {
         mExtensionCnt = 0;
     }
-    if ((!fn_8038E36C() || dPad::isRemoteUnavailable()) &&
+    if ((!VIGetDimmingCount() || dPad::isRemoteUnavailable()) &&
         !dReset::Manage_c::GetInstance()->isShutdown()) {
         if (mNoRemoteCnt < 20) {
             mNoRemoteCnt++;

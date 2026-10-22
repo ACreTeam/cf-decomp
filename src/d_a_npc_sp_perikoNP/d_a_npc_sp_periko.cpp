@@ -1411,7 +1411,7 @@ void dAcNpcSpPerikoBase_c::talk_c::answerNoMessage() {
 
 // .text 0x4E64
 void dAcNpcSpPerikoBase_c::talk_c::answerFriendBoard() {
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         setNextMessage(NET_ERROR_MSG_RESTRICTED, LABEL_NET_ERROR);
         mNetErrorFrom = NET_ERROR_FROM_WII_BOARD;
@@ -1491,7 +1491,7 @@ void dAcNpcSpPerikoBase_c::talk_c::startTownMail() {
 
 // .text 0x5158
 void dAcNpcSpPerikoBase_c::talk_c::startOtherTownMail() {
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         setNextMessage(NET_ERROR_MSG_RESTRICTED, LABEL_NET_ERROR);
         mNetErrorFrom = NET_ERROR_FROM_MAIL;

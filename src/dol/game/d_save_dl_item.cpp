@@ -1,5 +1,6 @@
 // The downloaded items of the save (dSaveDLItem_c, dSaveDLItemList_c). .text 80115380..80115CDC,
 // .ctors 8046571C..80465720, .bss 805ED570..805EF570, .sdata2 80750B60..80750B68.
+#include <lib/egg/core/eggDecomp.h>
 #include <game/game/d_save_dl_item.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/sLib/s_crc.hpp>
@@ -12,9 +13,6 @@ dItem::Item makeItemFromBaseId(u16 baseId); // d_item.cpp
 
 // Not split yet (C linkage keeps the target names).
 extern "C" {
-int fn_8043F258(const void *archive);            // 8043F258: archive state (2: ready)
-u32 fn_8043F2DC(const void *archive);            // 8043F2DC: decompressed size
-void fn_8043F020(const void *archive, void *dst); // 8043F020: decompress
 u32 fn_800C5278(const void *data, u32 size);     // 800C5278: CRC32 with the item seed
 }
 
@@ -52,7 +50,7 @@ const dItem::BITM *dSaveDLItem_c::getBITM() const {
 // 80115464
 void *dSaveDLItem_c::getArchive() {
     void *archive = mData + sizeof(dItem::BITM);
-    if (fn_8043F258(archive) == 2) {
+    if (EGG::Decomp::checkCompressed((const u8 *)archive) == 2) {
         return archive;
     }
     return NULL;
@@ -62,7 +60,7 @@ void *dSaveDLItem_c::getArchive() {
 u32 dSaveDLItem_c::getArchiveSize() {
     void *archive = getArchive();
     if (archive != NULL) {
-        return fn_8043F2DC(archive);
+        return EGG::Decomp::getExpandSize((const u8 *)archive);
     }
     return 0;
 }
@@ -74,7 +72,7 @@ void *dSaveDLItem_c::loadArchive(EGG::Heap *heap) {
     if (archive != NULL && size != 0) {
         void *data = heap->alloc(size, 0x20);
         if (data != NULL) {
-            fn_8043F020(archive, data);
+            EGG::Decomp::decodeASH((const u8 *)archive, (u8 *)data);
             DCFlushRange(data, size);
             return data;
         }

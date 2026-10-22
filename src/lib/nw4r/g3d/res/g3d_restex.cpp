@@ -14,6 +14,17 @@ void ResPltt::DCStore(bool sync) {
     }
 }
 
+void ResTex::DCStore(bool sync) {
+    void* pBase = &ref();
+    u32 size = ref().header.size;
+
+    if (sync) {
+        DC::StoreRange(pBase, size);
+    } else {
+        DC::StoreRangeNoSync(pBase, size);
+    }
+}
+
 bool ResTex::GetTexObjParam(void** ppTexData, u16* pWidth, u16* pHeight,
                             GXTexFmt* pFormat, f32* pMinLod, f32* pMaxLod,
                             GXBool* pMipMap) const {

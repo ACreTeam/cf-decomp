@@ -23,6 +23,14 @@ void GXGetProjectionv(f32* ptr);
 void GXGetViewportv(f32* vp);
 void GXGetScissor(u32* left, u32* top, u32* wd, u32* ht);
 
+
+
+u32 GXGetTexObjTlut(const GXTexObj *);
+
+void GXGetTexObjAll(const GXTexObj *, void **, u16 *, u16 *, GXTexFmt *, GXTexWrapMode *, GXTexWrapMode *, GXBool *);
+
+void GXGetTexObjLODAll(const GXTexObj *, GXTexFilter *, GXTexFilter *, f32 *, f32 *, f32 *, GXBool *, GXBool *, GXAnisotropy *);
+
 #ifdef __cplusplus
 }
 #endif

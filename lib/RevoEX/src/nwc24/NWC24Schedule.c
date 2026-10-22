@@ -19,7 +19,7 @@ static OSMutex nwc24ScdCounterMutex;
 static s32 nwc24ScdCommonBuffer[8] ALIGN32;
 static s32 nwc24ScdCommonResult[8] ALIGN32;
 
-static NWC24ScdStat nwc24ScdStatBuf ALIGN32;
+NWC24ScdStat nwc24ScdStatBuf ALIGN32;
 
 static NWC24Err ExecSuspendScheduler() NO_INLINE;
 static NWC24Err ExecTrySuspendScheduler(u32 flags);
@@ -50,6 +50,23 @@ s32 NWC24SuspendScheduler() {
         }
     }
     UnlockCounters();
+
+    return count;
+}
+
+s32 NWC24TrySuspendScheduler() {
+    s32 count;
+
+    if (!TryLockCounters()) {
+        count = NWC24_ERR_MUTEX;
+    } else {
+        count = ExecTrySuspendScheduler(0);
+        if (count >= 0) {
+            nwc24ScdSuspendCnt++;
+            count -= nwc24ScdOpenCnt;
+        }
+        UnlockCounters();
+    }
 
     return count;
 }
@@ -151,11 +168,11 @@ NWC24Err NWC24iSetScriptMode(int mode) {
     return result;
 }
 
-NWC24Err NWC24AdjustUniversalTime() {
+static NWC24Err NWC24AdjustUniversalTime() {
     return NWC24ExecDownloadTask(0x80000000, 0, 0);
 }
 
-NWC24Err NWC24ExecDownloadTask(u32 flags, u16 taskId, u32 subTaskMask) {
+static NWC24Err NWC24ExecDownloadTask(u32 flags, u16 taskId, u32 subTaskMask) {
     static const char* pTempName = "dlcnt.bin";
 
     NWC24Err result = NWC24_OK;
@@ -240,7 +257,7 @@ NWC24Err NWC24iRequestGenerateUserId(NWC24UserId* pId, u32* arg1) {
     return result;
 }
 
-NWC24Err NWC24iRequestRegisterUserId() {
+static NWC24Err NWC24iRequestRegisterUserId() {
     IOSFd fd;
     NWC24Err result;
     NWC24Err resultClose;
@@ -288,7 +305,7 @@ NWC24Err NWC24iUnlockSocket() {
     return ExecNoParamCommand(0, 9, NULL);
 }
 
-NWC24Err NWC24iSaveMailNow() {
+static NWC24Err NWC24iSaveMailNow() {
     NWC24Err result = CHECK_CALLING_STATUS(FALSE);
     if (result < 0) {
         return result;
@@ -296,7 +313,7 @@ NWC24Err NWC24iSaveMailNow() {
     return ExecNoParamCommand(0, 13, NULL);
 }
 
-NWC24Err NWC24iDownloadNowEx(BOOL* saveMail, u32 flags, u16 taskId, u32 subTaskMask) {
+static NWC24Err NWC24iDownloadNowEx(BOOL* saveMail, u32 flags, u16 taskId, u32 subTaskMask) {
     IOSFd fd;
     NWC24Err result;
     NWC24Err resultClose;

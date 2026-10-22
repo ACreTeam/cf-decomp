@@ -51,6 +51,8 @@ typedef struct MEMiExpHeapHead {
     }; // at 0x12
 } MEMiExpHeapHead;
 
+typedef void (*MEMExpHeapVisitor)(void* memBlock, MEMiHeapHead* heap, u32 param);
+
 MEMiHeapHead* MEMCreateExpHeapEx(void* start, u32 size, u16 opt);
 MEMiHeapHead* MEMDestroyExpHeap(MEMiHeapHead* heap);
 void* MEMAllocFromExpHeapEx(MEMiHeapHead* heap, u32 size, s32 align);
@@ -58,6 +60,10 @@ u32 MEMResizeForMBlockExpHeap(MEMiHeapHead* heap, void* memBlock, u32 size);
 void MEMFreeToExpHeap(MEMiHeapHead* heap, void* memBlock);
 u32 MEMGetAllocatableSizeForExpHeapEx(MEMiHeapHead* heap, s32 align);
 u32 MEMAdjustExpHeap(MEMiHeapHead* heap);
+u32 MEMGetTotalFreeSizeForExpHeap(MEMiHeapHead* heap);
+u16 MEMSetAllocModeForExpHeap(MEMiHeapHead* heap, u16 mode);
+void MEMVisitAllocatedForExpHeap(MEMiHeapHead* heap, MEMExpHeapVisitor visitor, u32 param);
+u32 MEMGetSizeForMBlockExpHeap(const void* memBlock);
 
 static MEMiHeapHead* MEMCreateExpHeap(void* start, u32 size) {
     return MEMCreateExpHeapEx(start, size, 0);

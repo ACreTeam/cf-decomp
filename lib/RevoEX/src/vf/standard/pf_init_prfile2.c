@@ -1,15 +1,14 @@
-#include <private/vf/PrFILE2/standard/pf_init_prfile2.h>
+#include <revolution/vf/pf_init_prfile2.h>
+#include <revolution/vf/vf_struct.h>
+#include <revolution/vf/pf_api_util.h>
+#include <revolution/vf/pf_fatfs.h>
+#include <revolution/vf/pf_system.h>
 
-#include <private/vf/PrFILE2/fatfs/pf_fatfs.h>
-#include <private/vf/PrFILE2/standard/pf_api_util.h>
-#include <private/vf/PrFILE2/system/pf_system.h>
-
-
-pf_int32 VFipf2_init_prfile2(pf_s32 config, void* param) {
-    pf_s32 err = VFiPFFATFS_initializeFATFS(config, param);
+int VFipf2_init_prfile2(s32 config, void* param) {
+    s32 err;
+    err = VFiPFFATFS_initializeFATFS(config, param);
     if (err == 0) {
         VFiPFSYS_initializeSYS();
     }
-    err = VFiPFAPI_convertReturnValue(err);
-    return err;
+    return VFiPFAPI_convertReturnValue(err);
 }

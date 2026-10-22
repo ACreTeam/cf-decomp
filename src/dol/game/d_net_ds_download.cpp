@@ -16,7 +16,7 @@ int fn_803FA9E4();
 void fn_803FB9E4(const u8 *, int);
 void fn_803FE694(void (*)(), void *);
 int fn_803FC7A4();
-void *fn_80412B98(void *, const void *, u32);
+void *NETMemCpy(void *, const void *, u32);
 BOOL fn_803FBB50(const void *, u32, u16, int, int *, void (*)(), void *);
 int fn_804011B4(void *);
 int fn_804014B4();
@@ -172,7 +172,7 @@ void Connection_c::stop() {
 }
 // 800E40C4
 BOOL Connection_c::send(const void *data, u32 size, SendFunc done) {
-    fn_80412B98(sSendBuffer, data, size);
+    NETMemCpy(sSendBuffer, data, size);
     mSend = done;
     return fn_803FBB50(sSendBuffer, size, mConnected, 14, &mSendResult, onSend, NULL);
 }

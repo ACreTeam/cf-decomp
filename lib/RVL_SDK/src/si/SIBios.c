@@ -9,7 +9,7 @@
 
 #include <revolution/verdefs.h>
 
-SDKDefineVersion(SI, "Apr 20 2010", "11:20:53");
+SDKDefineVersion(SI, "Aug  8 2007", "02:07:10");
 
 static SIControl Si = {SI_CHAN_BAD, 0, 0, NULL, NULL};
 
@@ -38,9 +38,11 @@ static vu32 InputBufferVcount[SI_CHAN_MAX];
 
 u32 __PADFixBits;
 
+#if 0 // not linked in City Folk
 BOOL SIBusy() {
     return (Si.chan != SI_CHAN_BAD) ? TRUE : FALSE;
 }
+#endif
 
 BOOL SIIsChanBusy(s32 chan) {
     return Packet[chan].chan != SI_CHAN_BAD || Si.chan == chan;
@@ -214,6 +216,7 @@ static BOOL SIEnablePollingInterrupt(BOOL enable) {
     return rc;
 }
 
+#if 0 // not linked in City Folk
 BOOL SIUnregisterPollingHandler(__OSInterruptHandler handler) {
     BOOL enabled;
     int i;
@@ -241,6 +244,7 @@ BOOL SIUnregisterPollingHandler(__OSInterruptHandler handler) {
     OSRestoreInterrupts(enabled);
     return FALSE;
 }
+#endif
 
 void SIInit() {
     static int Initialized = FALSE;
@@ -348,7 +352,7 @@ void SISetCommand(s32 chan, u32 command) {
     __SIRegs[chan * (SI_1_OUT_BUFFER >> 2)] = command;
 }
 
-void SITransferCommands() {
+static void SITransferCommands() {
     SI_WRITE_REG(SI_STATUS, (1 << SI_CONTROL_STATUS_TCINT));
 }
 

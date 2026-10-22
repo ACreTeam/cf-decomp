@@ -19,32 +19,38 @@ asm void PPCMtmsr(register u32 newMSR) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCOrMsr(register u32 value) {
 #ifdef __MWERKS__
     nofralloc
     mfmsr   r4
     or      value, r4, value
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm u32 PPCAndMsr(register u32 value) {
 #ifdef __MWERKS__
     nofralloc
     mfmsr   r4
     and     value, r4, value
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm u32 PPCAndCMsr(register u32 value) {
 #ifdef __MWERKS__
     nofralloc
     mfmsr   r4
     andc    value, r4, value
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm u32 PPCMfhid0() {
 #ifdef __MWERKS__
@@ -62,13 +68,15 @@ asm void PPCMthid0(register u32 newHID0) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfhid1() {
 #ifdef __MWERKS__
     nofralloc
     mfspr   r3, HID1
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm u32 PPCMfl2cr() {
 #ifdef __MWERKS__
@@ -94,13 +102,15 @@ asm void PPCMtdec(register u32 newDec) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfdec() {
 #ifdef __MWERKS__
     nofralloc
     mfdec r3
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCSync() {
 #ifdef __MWERKS__
@@ -110,6 +120,7 @@ asm void PPCSync() {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm void PPCEieio() {
 #ifdef __MWERKS__
     nofralloc
@@ -126,8 +137,9 @@ asm void PPCEieio() {
     mtmsr r5
     isync
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 // The one and only...
 asm void PPCHalt() {
@@ -142,13 +154,15 @@ loop:
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfmmcr0() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, MMCR0
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCMtmmcr0(register u32 newMmcr0) {
 #ifdef __MWERKS__
@@ -158,13 +172,15 @@ asm void PPCMtmmcr0(register u32 newMmcr0) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfmmcr1() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, MMCR1
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCMtmmcr1(register u32 newMmcr1) {
 #ifdef __MWERKS__
@@ -174,13 +190,15 @@ asm void PPCMtmmcr1(register u32 newMmcr1) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfpmc1() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, PMC1
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCMtpmc1(register u32 newPmc1) {
 #ifdef __MWERKS__
@@ -190,13 +208,15 @@ asm void PPCMtpmc1(register u32 newPmc1) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfpmc2() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, PMC2
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCMtpmc2(register u32 newPmc2) {
 #ifdef __MWERKS__
@@ -206,13 +226,15 @@ asm void PPCMtpmc2(register u32 newPmc2) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfpmc3() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, PMC3
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCMtpmc3(register u32 newPmc3) {
 #ifdef __MWERKS__
@@ -222,13 +244,15 @@ asm void PPCMtpmc3(register u32 newPmc3) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfpmc4() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, PMC4
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCMtpmc4(register u32 newPmc4) {
 #ifdef __MWERKS__
@@ -249,21 +273,25 @@ u32 PPCMffpscr() {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfsia() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, SIA
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm void PPCMtsia(register u32 newSia) {
 #ifdef __MWERKS__
     nofralloc
     mtspr SIA, newSia
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 void PPCMtfpscr(register u32 newFPSCR) {
 #ifdef __MWERKS__
@@ -312,61 +340,75 @@ asm void PPCMtwpar(register u32 newwpar) {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfdmaU() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, DMA_U
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfdmaL() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, DMA_L
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm void PPCMtdmaU(register u32 newdmau) {
 #ifdef __MWERKS__
     nofralloc
     mtspr DMA_U, newdmau
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm void PPCMtdmaL(register u32 newdmal) {
 #ifdef __MWERKS__
     nofralloc
     mtspr DMA_L, newdmal
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 asm u32 PPCMfpvr() {
 #ifdef __MWERKS__
     nofralloc
     mfspr r3, PVR
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
+#if 0 // not linked in City Folk
 void PPCEnableSpeculation() {
     PPCMthid0(PPCMfhid0() & ~HID0_SPD);
 }
+#endif
 
 void PPCDisableSpeculation() {
     PPCMthid0(PPCMfhid0() | HID0_SPD);
 }
 
+#if 0 // not linked in City Folk
 asm void PPCSetFpIEEEMode() {
 #ifdef __MWERKS__
     nofralloc
     mtfsb0 FPSCR_NI_BIT
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void PPCSetFpNonIEEEMode() {
 #ifdef __MWERKS__

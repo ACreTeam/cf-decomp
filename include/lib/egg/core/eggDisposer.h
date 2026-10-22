@@ -24,6 +24,8 @@ public:
     virtual ~Disposer();
 
 private:
+    friend class Heap;
+
     Heap *mHeap;          ///< Heap in which the disposer is allocated, or NULL otherwise.
     nw4r::ut::Link mLink; ///< Link for the heap's linked list. Managed by the containing heap.
 };

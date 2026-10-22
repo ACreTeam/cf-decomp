@@ -16,6 +16,11 @@
 
 #include <stdio.h>
 
+// The original build compiled this file with NULL defined as plain 0 (function pointer tests compare against an integer constant).
+#undef NULL
+#define NULL 0
+
+
 static s32 nanddrv_init(PDM_DISK* p_disk);
 static s32 nanddrv_mount(PDM_DISK* p_disk);
 static s32 nanddrv_format(PDM_DISK* p_disk, const u8* param);
@@ -53,8 +58,8 @@ static struct {
     VFi_NANDDelete delete;        // 0x0C
 } l_nandFunc[PF_DRIVE_COUNT];
 
-int VF_nand_retry_max;
 int VF_nand_sleep_msec;
+int VF_nand_retry_max;
 
 #ifdef DEBUG
 #define VFi_NANDPrint(...) printf(__VA_ARGS__)

@@ -1,40 +1,34 @@
-#include <private/os.h>
-#include <revolution/os.h>
-
-#include <private/vi.h>
-#include <revolution/vi.h>
-
-#include <private/nand.h>
-#include <revolution/nand.h>
-
-#include <revolution/ai.h>
-
-#include <revolution/esp.h>
-
+#include "revolution/ai.h"
+#include "revolution/os.h"
+#include "revolution/esp.h"
+#include "revolution/nand.h"
+#include "private/nand.h"
+#include "private/os.h"
+#include "private/vi.h"
 #include <string.h>
-
-typedef struct __OSExpireAIFadeStruct {
-    s16 aiBuffer[2][288];  // 0x00
-    s32 aiIndex;           // 0x480
-    s16* aiSrcIndex;       // 0x484
-
-    u32 frames;  // 0x488
-
-    s16 auxL;  // 0x48C
-    s16 auxR;  // 0x48E
-
-    AIDCallback gameAIDCallback;  // 0x490
-} __OSExpireAIFadeStruct;
 
 OSAlarm __OSExpireAlarm;
 OSTime __OSExpireTime;
 OSThread* __OSExpireThread;
 BOOL __OSExpireSetExpiredFlag;
 
+void* __OSPlayTimeRebootThread(void*);
+
+typedef struct {
+	s16 new_ai_buffer[2][48*2*3];
+	s32 idx_ai_buffer;
+	s16* src_buffer;
+	u32 frames;
+	s16 aLeft;
+	s16 aRight;
+	AIDCallback gameAIDCallback;
+} __OSExpireAIFadeStruct;
+
 __OSExpireAIFadeStruct* __OSExpireAIFade = NULL;
 
-void __OSPlayTimeRebootCallback(OSAlarm* alarm, OSContext* context);
-void* __OSPlayTimeRebootThread(void* args);
+BOOL OSPlayTimeIsLimited() {
+    return __OSExpireTime != 0;
+}
 
 void __OSPlayTimeRebootCallback(OSAlarm* alarm, OSContext* context) {
     void* arenaHi;
@@ -47,7 +41,7 @@ void __OSPlayTimeRebootCallback(OSAlarm* alarm, OSContext* context) {
     }
 
     memSize = OSRoundUp32B(sizeof(OSThread)) + 0x1000;
-    arenaHi = *(void**)OSPhysicalToCached(OS_ADDR_AVAILABLE_MEM2_END);
+    arenaHi = *(void**)OSPhysicalToCached(0x3128);
     arenaHi = (void*)((u32)arenaHi - memSize);
 
     thread = (OSThread*)arenaHi;
@@ -61,152 +55,144 @@ void __OSPlayTimeRebootCallback(OSAlarm* alarm, OSContext* context) {
     OSResumeThread(thread);
 }
 
-void __OSPlayTimeFadeLastAIDCallback() {
+void __OSPlayTimeFadeLastAIDCallback(void) {
     if (__OSExpireAIFade->gameAIDCallback) {
         __OSExpireAIFade->gameAIDCallback();
     }
 
-    // First frame: Get AI buffer
-    if (__OSExpireAIFade->frames == 0) {
-        __OSExpireAIFade->aiSrcIndex = (s16*)OSPhysicalToCached(AIGetDMAStartAddr());
-    }
+	if (__OSExpireAIFade->frames == 0) {
+	    __OSExpireAIFade->src_buffer = (s16*)OSPhysicalToCached(AIGetDMAStartAddr());
+	}
 
-    // Second Frame: Setup fade with AI buffer
-    if (__OSExpireAIFade->frames == 1) {
-        DCInvalidateRange(__OSExpireAIFade->aiSrcIndex, 4);
-        __OSExpireAIFade->auxL = (s16)(*__OSExpireAIFade->aiSrcIndex++);
-        __OSExpireAIFade->auxR = (s16)(*__OSExpireAIFade->aiSrcIndex);
-    }
+	if (__OSExpireAIFade->frames == 1) {
+        DCInvalidateRange(__OSExpireAIFade->src_buffer, 4);
+    	__OSExpireAIFade->aLeft = (s16)(*__OSExpireAIFade->src_buffer++);
+        __OSExpireAIFade->aRight = (s16)(*__OSExpireAIFade->src_buffer);
+	}
 
-    // The rest of the frames: Fading out the audio.
-    if (__OSExpireAIFade->frames >= 1) {
-        s16* buffer = __OSExpireAIFade->aiBuffer[__OSExpireAIFade->aiIndex];
+	if (__OSExpireAIFade->frames >= 1) {
+		s16* buffer = __OSExpireAIFade->new_ai_buffer[__OSExpireAIFade->idx_ai_buffer];
         s16* dest = buffer;
         u32 bytes = AIGetDMALength();
+        u32 i = bytes;
         f32 delta = 0.995f;
 
-        int i = bytes;
         while (i) {
-            *dest++ = __OSExpireAIFade->auxL;
-            *dest++ = __OSExpireAIFade->auxR;
+            *dest++ = __OSExpireAIFade->aLeft;
+            *dest++ = __OSExpireAIFade->aRight;
 
-            __OSExpireAIFade->auxL *= delta;
-            __OSExpireAIFade->auxR *= delta;
+            __OSExpireAIFade->aLeft *= delta;
+            __OSExpireAIFade->aRight *= delta;
 
             i -= 4;
         }
 
         DCFlushRange(buffer, bytes);
         AIInitDMA((u32)buffer, bytes);
-        __OSExpireAIFade->aiIndex++;
-        __OSExpireAIFade->aiIndex &= 1;
-    }
+        __OSExpireAIFade->idx_ai_buffer++;
+        __OSExpireAIFade->idx_ai_buffer &= 1;
+	}
 
-    __OSExpireAIFade->frames++;
+	__OSExpireAIFade->frames++;
 }
 
-BOOL __OSWriteExpiredFlag() {
-    s32 ret = NAND_RESULT_OK;
+BOOL __OSWriteExpiredFlag(void) {
+    s32 rv = 0;
     NANDFileInfo nInfo;
     BOOL openNInfo = FALSE;
-    u8 titleId[32] ALIGN32;
+    u8 titleId[32] __attribute__ ((aligned(32)));
 
-    ret = NANDPrivateCreate("/shared2/expired", NAND_PERM_ALL_RW, 0);
+    rv = NANDPrivateCreate("/shared2/expired", 63, 0);
 
-    if (ret != NAND_RESULT_OK && ret != NAND_RESULT_EXISTS) {
-        goto close;
+    if (rv != NAND_RESULT_OK && rv != NAND_RESULT_EXISTS) {
+        goto out;
     }
 
-    ret = NANDPrivateOpen("/shared2/expired", &nInfo, 2);
+    rv = NANDPrivateOpen("/shared2/expired", &nInfo, 2);
 
-    if (ret != NAND_RESULT_OK) {
-        goto close;
+    if (rv != NAND_RESULT_OK) {
+        goto out;
     }
 
     openNInfo = TRUE;
 
-    ret = ESP_InitLib();
-    if (ret != ES_ERR_OK) {
-        goto close;
+    rv = ESP_InitLib();
+    if (rv != 0) {
+        goto out;
     }
 
-    memset(titleId, 0, sizeof(titleId));
-    ret = ESP_GetTitleId((ESTitleId*)titleId);
+    memset(titleId, 0, 32);
+    rv = ESP_GetTitleId((ESTitleId*)titleId);
 
-    if (ret != ES_ERR_OK) {
-        goto close;
+    if (rv != 0) {
+        goto out;
     }
 
-    ret = NANDWrite(&nInfo, titleId, sizeof(titleId));
-    if (ret < NAND_RESULT_OK) {
-        goto close;
-    } else if (ret != (int)sizeof(titleId)) {
-        ret = NAND_RESULT_INVALID;
-        goto close;
-    } else {
-        ret = NAND_RESULT_OK;
+    rv = NANDWrite(&nInfo, titleId, 32);
+    if (rv < 0) {
+        goto out;
+    }
+    else if (rv != 32) {
+        rv = NAND_RESULT_INVALID;
+        goto out;
+    }
+    else {
+        rv = 0;
     }
 
-close:
+out:
     if (openNInfo) {
         NANDClose(&nInfo);
     }
 
-    return ret == NAND_RESULT_OK ? TRUE : FALSE;
+    return rv == 0 ? TRUE : FALSE;
 }
 
-BOOL __OSWriteExpiredFlagIfSet() {
+static BOOL __OSWriteExpiredFlagIfSet(void) {
     if (__OSExpireSetExpiredFlag) {
         return __OSWriteExpiredFlag();
     }
+
     return FALSE;
 }
 
 void* __OSPlayTimeRebootThread(void* args) {
     BOOL enabled;
-    u32 frames = 1;
-    u32 fadeShift = 1;
-    __OSExpireAIFadeStruct aiFade ALIGN32;
+    u32 frames, fadeShift = 1;
+    __OSExpireAIFadeStruct aiFade __attribute__ ((aligned(32)));
 
-    // Setup sound fade out
     __OSExpireAIFade = &aiFade;
     memset(__OSExpireAIFade, 0, sizeof(__OSExpireAIFadeStruct));
     __OSExpireAIFade->gameAIDCallback = AIRegisterDMACallback(__OSPlayTimeFadeLastAIDCallback);
 
-    // Force fade out video
-    for (frames = 0; frames < 20; frames++) {
-        fadeShift = (frames / 5) + 1;
-        if (fadeShift > 7) {
-            fadeShift = 7;
+	for (frames = 0; frames < 20; frames++) {
+		fadeShift = (frames / 5) + 1;
+		if (fadeShift > 7) {
+			fadeShift = 7;
         }
 
-        VIWaitForRetrace();
-        __OSSetVIForceDimming(TRUE, fadeShift, fadeShift);
-    }
+		VIWaitForRetrace(); 
+		__OSSetVIForceDimming(TRUE, fadeShift, fadeShift);
+	}
 
-    // Done fading out!
+	AIRegisterDMACallback(NULL);
 
-    AIRegisterDMACallback(NULL);
+	VISetBlack(TRUE);
+	VIFlush();
 
-    VISetBlack(TRUE);
-    VIFlush();
+	enabled = OSDisableInterrupts();
 
-    enabled = OSDisableInterrupts();
-
-    // Write expired flag
     __OSWriteExpiredFlagIfSet();
     OSRestoreInterrupts(enabled);
-
-    // Aaaand back to the System Menu you go!
     OSReturnToMenu();
     return NULL;
 }
 
 void __OSPlayTimeAlarmExpired(OSAlarm* alarm, OSContext* context) {
-    void* arenaHi;
-    u32 memSize;
-    OSThread* thread;
-    void* stack;
+	void *arenaHi;
+	u32 memSize;
+	OSThread *thread;
+	void *stack;
 
     if (__OSExpireThread != NULL) {
         for (thread = __OSActiveThreadQueue.head; thread; thread = thread->linkActive.next) {
@@ -216,23 +202,24 @@ void __OSPlayTimeAlarmExpired(OSAlarm* alarm, OSContext* context) {
         }
 
         OSCreateAlarm(&__OSExpireAlarm);
-        OSSetAlarm(&__OSExpireAlarm, OSSecondsToTicks((OSTime)240), __OSPlayTimeRebootCallback);
-
+        OSSetAlarm(&__OSExpireAlarm,  OSSecondsToTicks((OSTime)0xF0), __OSPlayTimeRebootCallback);
+    
         while (__OSExpireThread->suspend > 0) {
             OSResumeThread(__OSExpireThread);
         }
-    } else {
+    }
+    else {
         for (thread = __OSActiveThreadQueue.head; thread; thread = thread->linkActive.next) {
             OSSuspendThread(thread);
         }
 
         memSize = OSRoundUp32B(sizeof(OSThread)) + 0x1000;
-        arenaHi = *(void**)OSPhysicalToCached(OS_ADDR_AVAILABLE_MEM2_END);
+        arenaHi = *(void**)OSPhysicalToCached(0x3128);
         arenaHi = (void*)((u32)arenaHi - memSize);
 
-        thread = (OSThread*)arenaHi;
+        thread  = (OSThread*)arenaHi;
         arenaHi = (void*)((u32)arenaHi + OSRoundUp32B(sizeof(OSThread)));
-        stack = arenaHi;
+        stack   = arenaHi;
 
         if (!OSCreateThread(thread, __OSPlayTimeRebootThread, NULL, (void*)((u32)stack + 0x1000), 0x1000, 0, 0)) {
             __OSHotResetForError();
@@ -242,111 +229,117 @@ void __OSPlayTimeAlarmExpired(OSAlarm* alarm, OSContext* context) {
     }
 }
 
-s32 __OSPlayTimeGetConsumption(ESTicketView* ticket, ESLpEntry* lpEntry, u32* entries) {
-    s32 ret = ESP_GetConsumption(ticket->ticketId, NULL, entries);
-
-    if (ret > ES_ERR_OK) {
-        goto getout;
-    }
-
-    if (ret != ES_ERR_OK) {
-        ret = ret;
-        return ret;
-    }
-
-    if (*entries != 0) {
-        ret = ESP_GetConsumption(ticket->ticketId, lpEntry, entries);
-
-        if (ret != ES_ERR_OK) {
-            ret = ret;
-            return ret;
-        }
-    }
-
-getout:
-    return ret;
-}
-
-s32 __OSGetPlayTime(ESTicketView* ticket, OSPlayTimeType* type, u32* playTime) {
-    s32 ret;
-    u32 i, numEntries = 0, seenOther = 0;
-
-    ESTicketView ticketAligned ALIGN32;
-    ESLpEntry lpEntry[ES_LIMIT_MAX] ALIGN32;
-
-    if ((u32)ticket & 31) {
-        memcpy(&ticketAligned, ticket, sizeof(ESTicketView));
-        ticket = &ticketAligned;
-    }
-
-    ret = __OSPlayTimeGetConsumption(ticket, lpEntry, &numEntries);
-    if (ret != ES_ERR_OK) {
-        goto getout;
-    }
-
-    for (i = 0; i < ES_LIMIT_MAX; i++) {
-        if (ticket->limits.data[i].code == OS_PLAYTIME_TIME_LIMIT) {
-            *type = OS_PLAYTIME_TIME_LIMIT;
-
-            if (numEntries == 0) {
-                *playTime = ticket->limits.data[i].limit;
-                goto getout;
-            }
-            if (lpEntry[i].limit >= ticket->limits.data[i].limit) {
-                *playTime = 0;
-                goto getout;
-            }
-            *playTime = ticket->limits.data[i].limit - lpEntry[i].limit;
-            goto getout;
-        } else if (ticket->limits.data[i].code != OS_PLAYTIME_PERMANENT) {
-            seenOther = i + 1;
-        }
-    }
-
-    if (!seenOther) {
-        *type = OS_PLAYTIME_PERMANENT;
-        *playTime = 0xFFFFFFFF;
-    } else {
-        seenOther--;
-
-        if (ticket->limits.data[seenOther].code == OS_PLAYTIME_LAUNCH_LIMIT) {
-            *type = OS_PLAYTIME_LAUNCH_LIMIT;
-            *playTime = ticket->limits.data[seenOther].limit;
-
-            if (numEntries > 0) {
-                *playTime -= lpEntry[seenOther].limit;
-            }
-        } else {
-            *type = OS_PLAYTIME_UNKNOWN;
-        }
-    }
-
-getout:
-    return ret;
-}
-
-s32 __OSGetPlayTimeCurrent(OSPlayTimeType* type, u32* playTime) {
-    s32 ret;
-    ESTicketView ticket ALIGN32;
-
-    ret = ESP_DiGetTicketView(NULL, &ticket);
-
-    if (ret == ES_ERR_INVALID) {
+static s32 __OSPlayTimeGetConsumption(ESTicketView *tk, ESLpEntry *lpEntry, u32 *nEntries) {
+	s32 rv = ESP_GetConsumption(tk->ticketId, NULL, nEntries);
+    
+    /* a few of these blocks have useless code, that's because of debug stripped asserts and reports */
+    if (rv > 0) {
         goto out;
     }
-    if (ret != ES_ERR_OK) {
-        ret = ret;
-        goto out;
-    }
+	else if (rv != 0) {
+        rv = rv;
+		goto out;
+	}
 
-    ret = __OSGetPlayTime(&ticket, type, playTime);
+	if (*nEntries != 0) {
+       	rv = ESP_GetConsumption(tk->ticketId, lpEntry, nEntries);
+    	
+        if (rv != 0) {
+            rv = rv;
+    		goto out;
+    	}
+	}
 
 out:
-    return ret;
+	return rv;
+}
+
+s32 __OSGetPlayTime(ESTicketView *ticket, OSPlayTimeType *type, u32 *playTime) {
+	s32 rv;
+	u32 i;
+	ESLpEntry lpEntry[8] __attribute__ ((aligned(32)));
+	u32 numCc = 0, seenOther = 0;
+	ESTicketView ticketAligned __attribute__ ((aligned(32)));
+
+	if ((u32)(ticket) & 31) {
+		memcpy(&ticketAligned, ticket, sizeof(ESTicketView));
+		ticket = &ticketAligned;
+	}
+
+	rv = __OSPlayTimeGetConsumption(ticket, lpEntry, &numCc);
+	if (rv != 0) {
+		goto out;
+    }
+
+	for (i = 0; i < 8; i++) {
+		if (ticket->limits.data[i].code == 1) {
+			*type = OS_PLAYTIME_TIME_LIMIT;
+			
+            if (numCc == 0) {
+				*playTime = ticket->limits.data[i].limit;
+			}
+			else {
+				if (lpEntry[i].limit >= ticket->limits.data[i].limit) {
+					*playTime = 0;
+                }
+				else {
+					*playTime = ticket->limits.data[i].limit - lpEntry[i].limit;
+                }
+			}
+			goto out;
+		}
+		else if (ticket->limits.data[i].code != 0) {
+			seenOther = i + 1;
+		}
+	}
+
+	if (!seenOther) {
+		*type = OS_PLAYTIME_PERMANENT;
+		*playTime = 0xFFFFFFFF;
+	}
+	else {
+		seenOther--;
+
+		if (ticket->limits.data[seenOther].code == 4) {
+			*type = OS_PLAYTIME_LAUNCH_LIMIT;
+			*playTime = ticket->limits.data[seenOther].limit;
+    
+			if (numCc > 0) {
+				*playTime -= lpEntry[seenOther].limit;
+            }
+		}
+		else {
+			*type = OS_PLAYTIME_UNKNOWN;
+		}
+	}
+
+out:
+	return rv;
+}
+
+static s32 __OSGetPlayTimeCurrent(OSPlayTimeType* type, u32* playTime) {
+    s32 rv;
+    ESTicketView ticket __attribute__ ((aligned(32)));
+
+    rv = ESP_DiGetTicketView(NULL, &ticket);
+
+    if (rv == -1017) {
+        goto out;
+    }
+
+    if (rv != 0) {
+        rv = rv;
+        goto out;
+    }
+
+    rv = __OSGetPlayTime(&ticket, type, playTime);
+
+out:
+    return rv;
 }
 
 void __OSInitPlayTime() {
-    s32 ret;
+    s32 rv;
     u32 limit;
     OSPlayTimeType type;
 
@@ -354,26 +347,30 @@ void __OSInitPlayTime() {
     __OSExpireThread = NULL;
     __OSExpireSetExpiredFlag = TRUE;
 
-    ret = ESP_InitLib();
+    rv = ESP_InitLib();
 
-    if (ret != ES_ERR_OK) {
-        ret = ret;
+    if (rv != 0) {
+        rv = rv;
         goto out;
     }
 
-    ret = __OSGetPlayTimeCurrent(&type, &limit);
+    rv = __OSGetPlayTimeCurrent(&type, &limit);
 
-    if (ret != ES_ERR_OK) {
-        if (ret != ES_ERR_INVALID) {
-            ret = ret;
+    if (rv != 0) {
+        if (rv != -1017) {
+            rv = rv;
         }
+
         goto out;
     }
 
     if (type == OS_PLAYTIME_PERMANENT) {
         goto out;
-    } else if (type == OS_PLAYTIME_TIME_LIMIT) {
-        OSAssertMsg(limit != 0, "Expired", 775);
+    }
+    else if (type == OS_PLAYTIME_TIME_LIMIT) {
+        if (limit == 0) {
+            OSPanic(__FILE__, 0x307, "Expired");
+        }
 
         OSCreateAlarm(&__OSExpireAlarm);
         OSSetAlarm(&__OSExpireAlarm, OSSecondsToTicks((OSTime)limit + 1), __OSPlayTimeAlarmExpired);

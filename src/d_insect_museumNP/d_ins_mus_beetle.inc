@@ -70,7 +70,7 @@ void dInsMusBeetle_c::calcMtx() {
     mtx.m[0][3] = mPos.x;
     mtx.m[1][3] = mPos.y;
     mtx.m[2][3] = mPos.z;
-    fn_80444FE4(rotMtx, &mWiggleRot);
+    ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(rotMtx))->makeQ(mWiggleRot);
     PSMTXConcat(mtx, rotMtx, mtx);
     mMdl.setLocalMtx(&mtx);
 }

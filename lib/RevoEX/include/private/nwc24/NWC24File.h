@@ -87,6 +87,7 @@ NWC24Err NWC24FWrite(const void* src, s32 size, NWC24File* file);
 NWC24Err NWC24FGetLength(NWC24File* file, u32* pLength);
 NWC24Err NWC24FDelete(const char* path);
 NWC24Err NWC24FDeleteVF(const char* path);
+NWC24Err NWC24CreateVF(const char* path, u32 fileSize);
 NWC24Err NWC24MountVF(const char* drive, const char* fileName);
 NWC24Err NWC24UnmountVF(const char* drive);
 NWC24Err NWC24CheckSizeVF(const char* drive, u32* pSize);

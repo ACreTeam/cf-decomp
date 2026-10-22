@@ -368,7 +368,7 @@ int linkASync(ProfileName profName) {
 void *initCallback(void *arg) {
     DynamicModuleControl::initialize(mHeap::g_dylinkHeap);
     DynamicModuleControl::sModulesDir = "/rels";
-    if (DynamicModuleControl::sDvdFile->openFilename("/RVFOREST1NP.str")) {
+    if (DynamicModuleControl::sDvdFile->open("/RVFOREST1NP.str")) {
         size_t size = DynamicModuleControl::sDvdFile->getFileSize();
         if (size != 0) {
             size_t bufSize = ROUND_UP(size, 32);

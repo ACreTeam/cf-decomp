@@ -759,7 +759,7 @@ void dAcNpcSpCatherine_c::talk_c::onMessageStart(int arg) {
     }
     case MSG_CONFIRM_MII: {
         dPlayerMgr::MiiData_c info;
-        RFLGetCharInfo((RFLCharInfo *)&info, RFLDataSource_Official, NULL,
+        RFLGetAdditionalInfo((RFLCharInfo *)&info, RFLDataSource_Official, NULL,
                        getMiiIndex());
         dString::Word_c word;
         word.set(info.mName, 0);

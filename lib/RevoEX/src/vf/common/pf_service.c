@@ -1,21 +1,16 @@
-#include <private/vf/PrFILE2/pf_types.h>
+#include <revolution/vf/pf_service.h>
 
-pf_u16 VFiPF_GET_LE_U16(const pf_u8* buf) {
-    return (pf_u16)((pf_u16)buf[1] << 8 | (pf_u16)buf[0]);
+u16 VFiPF_GET_LE_U16(const u8* buf) {
+    return buf[0] | buf[1] << 8;
 }
 
-void VFiPF_LE16_TO_U16_STR(pf_u8* sSrc, pf_u32 num) {
-    pf_u32 cnt;
-    pf_s8 tmp_src;
+void VFiPF_LE16_TO_U16_STR(u8* sSrc, u32 num) {
+    u32 cnt;
+    s8 tmp_src;
 
-    for (cnt = 0; cnt < num; cnt += sizeof(pf_u16)) {
+    for (cnt = 0; cnt < num; cnt += sizeof(u16)) {
         tmp_src = sSrc[cnt];
-#ifdef DEBUG
-        *((pf_u8*)sSrc + cnt) = *((pf_u8*)sSrc + cnt + 1);
-        *((pf_u8*)sSrc + cnt + 1) = tmp_src;
-#else
         sSrc[cnt] = sSrc[cnt + 1];
         sSrc[cnt + 1] = tmp_src;
-#endif
     }
 }

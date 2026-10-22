@@ -55,6 +55,7 @@ BOOL OSReceiveMessage(OSMessageQueue* queue, OSMessage* msg, s32 flags) {
     return TRUE;
 }
 
+#if 0 // not linked in City Folk
 BOOL OSJamMessage(OSMessageQueue* queue, OSMessage msg, s32 flags) {
     BOOL enabled = OSDisableInterrupts();
 
@@ -74,3 +75,4 @@ BOOL OSJamMessage(OSMessageQueue* queue, OSMessage msg, s32 flags) {
 
     return TRUE;
 }
+#endif

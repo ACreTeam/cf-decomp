@@ -7132,7 +7132,7 @@ bool flea_c::isEnabled(dAcNpcOut_c *npc) {
 
 // .text 100B4
 BOOL flea_c::retire() {
-    mEffect.retireAll();
+    mEffect.kill();
     return TRUE;
 }
 

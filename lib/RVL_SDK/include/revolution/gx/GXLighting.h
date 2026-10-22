@@ -21,6 +21,19 @@ void GXSetNumChans(u8 nChans);
 
 void GXSetChanCtrl(GXChannelID chan, GXBool enable, GXColorSrc amb_src, GXColorSrc mat_src, u32 light_mask, GXDiffuseFn diff_fn, GXAttnFn attn_fn);
 
+
+
+void GXInitLightAttn(GXLightObj*, f32, f32, f32, f32, f32, f32);
+
+void GXInitLightDistAttn(GXLightObj*, f32, f32, GXDistAttnFn);
+
+void GXInitLightDir(GXLightObj*, f32, f32, f32);
+
+void GXInitLightSpot(GXLightObj*, f32, GXSpotFn);
+
+void GXInitSpecularDir(GXLightObj*, f32, f32, f32);
+void GXInitSpecularDirHA(GXLightObj*, f32, f32, f32, f32, f32, f32);
+
 #ifdef __cplusplus
 }
 #endif

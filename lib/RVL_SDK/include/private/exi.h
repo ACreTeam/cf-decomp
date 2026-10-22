@@ -88,7 +88,7 @@ BOOL EXIUnlock(s32 chan);
 
 u32 EXIGetState(s32 chan);
 
-BOOL EXIGetID(s32 chan, u32 dev, u32* id);
+s32 EXIGetID(s32 chan, u32 dev, u32* id);
 BOOL EXIGetIDEx(s32 chan, u32 dev, u32* id);
 
 BOOL EXIWriteReg(s32 chan, u32 dev, u32 exiCmd, void* reg, s32 size);

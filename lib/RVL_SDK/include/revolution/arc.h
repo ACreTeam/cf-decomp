@@ -70,6 +70,9 @@ BOOL ARCOpenDir(ARCHandle* info, const char* path, ARCDir* dir);
 BOOL ARCReadDir(ARCDir* dir, ARCDirEntry* entry);
 BOOL ARCCloseDir(ARCDir* dir);
 
+
+BOOL ARCGetCurrentDir(ARCHandle*, char*, u32);
+
 #ifdef __cplusplus
 }
 #endif

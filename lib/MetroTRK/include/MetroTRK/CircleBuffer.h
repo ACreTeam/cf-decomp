@@ -1,0 +1,31 @@
+#ifndef METROTRK_CIRCLEBUFFER_H
+#define METROTRK_CIRCLEBUFFER_H
+
+#include <revolution/types.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+    typedef struct CircleBuffer
+    {
+        u8* read_ptr;
+        u8* write_ptr;
+        u8* start_ptr;
+        u32 size;
+        s32 mBytesToRead;
+        u32 mBytesToWrite;
+        unsigned int mCriticalSection;
+    } CircleBuffer;
+
+    int CircleBufferReadBytes(CircleBuffer*, u8*, u32);
+    int CircleBufferWriteBytes(CircleBuffer*, u8*, u32);
+    void CircleBufferInitialize(CircleBuffer*, u8*, s32);
+    u32 CBGetBytesAvailableForRead(CircleBuffer*);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // METROTRK_CIRCLEBUFFER_H

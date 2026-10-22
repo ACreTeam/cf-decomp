@@ -19,11 +19,11 @@ namespace dVoiceChat {
 enum MicState_e {
     MIC_OPEN,          // 0
     MIC_WAIT_OPEN,     // 1
-    MIC_SET_2,         // 2: fn_80229A2C
+    MIC_SET_2,         // 2: PMICGetLevelAsync
     MIC_WAIT_2,        // 3
-    MIC_SET_4,         // 4: fn_80229B04
+    MIC_SET_4,         // 4: PMICSetGain
     MIC_WAIT_4,        // 5
-    MIC_SET_6,         // 6: fn_8022A038
+    MIC_SET_6,         // 6: PMICSetEchoModeAsync
     MIC_WAIT_6,        // 7
     MIC_START,         // 8
     MIC_WAIT_START,    // 9
@@ -278,7 +278,7 @@ static void frameAlarm(OSAlarm *alarm, OSContext *context) {
 
     s32 read;
     if (l_micConnected) {
-        read = fn_80228EB0(l_micBuf, samples);
+        read = PMICRead(l_micBuf, samples);
         if (read <= 0) {
             memset(l_micBuf, 0, size);
         }
@@ -290,13 +290,13 @@ static void frameAlarm(OSAlarm *alarm, OSContext *context) {
     if (l_echoCancel) {
         BOOL ok;
         if (l_prevEchoCancel) {
-            ok = fn_80229BE4(l_micBuf, l_spkBuf, samples, 0);
+            ok = PMICCancelEcho(l_micBuf, l_spkBuf, samples, 0);
         } else {
-            ok = fn_80229BE4(l_micBuf, l_spkBuf, samples, 1);
+            ok = PMICCancelEcho(l_micBuf, l_spkBuf, samples, 1);
         }
         if (ok && !l_echoOk) {
-            fn_8022A114(1);
-            fn_8022A114(0);
+            PMICSetEchoEnable(1);
+            PMICSetEchoEnable(0);
         }
         l_echoOk = ok;
     } else {
@@ -337,9 +337,9 @@ BOOL init(u8 aid) {
         l_config.audioBufferSize = sizeof(l_vctWork);
         l_config.callback = eventCallback;
         l_config.userData = NULL;
-        l_config._0E = getFrameTime();
-        l_config._0D = l_vctParamD;
-        l_config._0F = 0;
+        l_config.frameLength = getFrameTime();
+        l_config.codec = l_vctParamD;
+        l_config.flags = 0;
         if (!VCT_Init(&l_config)) {
             return FALSE;
         }
@@ -628,12 +628,12 @@ static void dmaCallback() {
     } else {
         memset(l_dmaBuf[l_dmaIdx], 0, sizeof(l_dmaBuf[0]));
     }
-    s32 n = fn_802290D4(l_dmaBuf[l_dmaIdx], 0xC0, 0, l_refBuf, l_refReset);
+    s32 n = PMICConvertOutput(l_dmaBuf[l_dmaIdx], 0xC0, 0, l_refBuf, l_refReset);
     if (n > 0) {
         if (l_muted) {
             memset(l_refBuf, 0, n * 2);
         }
-        fn_80228F98(l_refBuf, n);
+        PMICWrite(l_refBuf, n);
         l_refReset = FALSE;
     }
     DCFlushRange(l_dmaBuf[l_dmaIdx], sizeof(l_dmaBuf[0]));
@@ -735,7 +735,7 @@ static void upsample(s16 *in, int count, s16 *out) {
 }
 
 static s32 updateMic() {
-    s32 status = fn_80225FA8();
+    s32 status = PMICProbe();
     if (status == PMIC_ERR_NO_DEVICE) {
         l_micState = MIC_CLOSED;
         l_micConnected = FALSE;
@@ -773,7 +773,7 @@ static s32 updateMic() {
     switch (l_micState) {
     case MIC_OPEN:
         l_pmicResult = 1;
-        result = fn_8022607C(pmicCallback, NULL);
+        result = PMICOpenAsync(pmicCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_OPEN;
         } else if (result != PMIC_ERR_BUSY && result != PMIC_ERR_RETRY) {
@@ -794,7 +794,7 @@ static s32 updateMic() {
         break;
     case MIC_SET_2:
         l_pmicResult = 1;
-        result = fn_80229A2C(0, pmicCallback, NULL);
+        result = PMICGetLevelAsync(0, pmicCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_2;
         } else if (result != PMIC_ERR_BUSY) {
@@ -815,7 +815,7 @@ static s32 updateMic() {
         break;
     case MIC_SET_4:
         l_pmicResult = 1;
-        result = fn_80229B04(l_pmicParam4, pmicCallback, NULL);
+        result = PMICSetGain(l_pmicParam4, pmicCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_4;
         } else if (result != PMIC_ERR_BUSY) {
@@ -836,7 +836,7 @@ static s32 updateMic() {
         break;
     case MIC_SET_6:
         l_pmicResult = 1;
-        result = fn_8022A038(l_pmicParam6, pmicCallback, NULL);
+        result = PMICSetEchoModeAsync(l_pmicParam6, pmicCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_6;
         } else if (result != PMIC_ERR_BUSY) {
@@ -857,7 +857,7 @@ static s32 updateMic() {
         break;
     case MIC_START:
         l_pmicResult = 1;
-        result = fn_80226234(pmicStartCallback, NULL);
+        result = PMICStartAsync(pmicStartCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_START;
         } else if (result != PMIC_ERR_BUSY) {
@@ -878,7 +878,7 @@ static s32 updateMic() {
         break;
     case MIC_STOP:
         l_pmicResult = 1;
-        result = fn_80226348(pmicCallback, NULL);
+        result = PMICStopAsync(pmicCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_STOP;
         } else if (result != PMIC_ERR_BUSY) {
@@ -899,7 +899,7 @@ static s32 updateMic() {
         break;
     case MIC_CLOSE:
         l_pmicResult = 1;
-        result = fn_802261A4(pmicCallback, NULL);
+        result = PMICCloseAsync(pmicCallback, NULL);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_CLOSE;
         } else if (result != PMIC_ERR_BUSY && result != PMIC_ERR_RETRY) {
@@ -929,36 +929,36 @@ static void pmicCallback(s32 result) {
 
 static void pmicStartCallback(s32 result) {
     l_pmicResult = result;
-    fn_8036D510(result);
+    VCTi_NotifyMicStartResult(result);
 }
 
 // The PMIC preset for the number of members (3 uses the 6-member preset and reports 6).
 static u8 selectPreset(u8 count) {
     switch (count) {
     case 2:
-        fn_80229EF0(lbl_80521120);
+        PMICSetEchoParams(lbl_80521120);
         break;
     case 3:
-        fn_80229EF0(lbl_80521160);
+        PMICSetEchoParams(lbl_80521160);
         count = 6;
         break;
     case 4:
-        fn_80229EF0(lbl_805211E0);
+        PMICSetEchoParams(lbl_805211E0);
         break;
     case 5:
-        fn_80229EF0(lbl_80521140);
+        PMICSetEchoParams(lbl_80521140);
         break;
     case 6:
-        fn_80229EF0(lbl_80521160);
+        PMICSetEchoParams(lbl_80521160);
         break;
     case 7:
-        fn_80229EF0(lbl_80521180);
+        PMICSetEchoParams(lbl_80521180);
         break;
     case 8:
-        fn_80229EF0(lbl_805211A0);
+        PMICSetEchoParams(lbl_805211A0);
         break;
     case 9:
-        fn_80229EF0(lbl_805211C0);
+        PMICSetEchoParams(lbl_805211C0);
         break;
     default:
         return 0;

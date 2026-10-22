@@ -149,7 +149,7 @@ BOOL dNetMgr_c::start() {
     if (sInstance->mInfo.mError.mState != 0) {
         return FALSE;
     }
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         return FALSE;
     }
     if (!isUserDataValid(mUserDataSrc)) {

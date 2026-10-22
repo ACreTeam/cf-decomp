@@ -28,6 +28,9 @@ void AXSetAuxAReturnVolume(u16 volume);
 void AXSetAuxBReturnVolume(u16 volume);
 void AXSetAuxCReturnVolume(u16 volume);
 
+
+u16 AXGetMasterVolume(void);
+
 #ifdef __cplusplus
 }
 #endif

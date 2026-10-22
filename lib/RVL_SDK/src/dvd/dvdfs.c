@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/dvd.h>
 #include <revolution/dvd.h>
 
@@ -10,7 +11,6 @@
 // Few functions are unused. Make sure that they link.
 #pragma force_active on
 
-extern u32 __DVDLayoutFormat;
 
 typedef struct FSTEntry {
     u32 isDirAndStringOff;  // 0x00
@@ -185,9 +185,11 @@ s32 DVDConvertPathToEntrynum(const char* path) {
     }
 }
 
+#if 0 // not linked in City Folk
 BOOL DVDEntrynumIsDir(s32 entry) {
     return IS_ENTRY_DIR(FstStart, entry);
 }
+#endif
 
 BOOL DVDFastOpen(s32 entry, DVDFileInfo* fileInfo) {
     if (entry < 0 || entry >= MaxEntryNum || IS_ENTRY_DIR(FstStart, entry)) {
@@ -354,6 +356,7 @@ static void cbForReadSync(s32 result, DVDCommandBlock* block) {
     OSWakeupThread(&__DVDThreadQueue);
 }
 
+#if 0 // not linked in City Folk
 BOOL DVDOpenDir(const char* dirName, DVDDir* dir) {
     s32 entry;
     char currentDir[128];
@@ -376,7 +379,9 @@ BOOL DVDOpenDir(const char* dirName, DVDDir* dir) {
 
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL DVDReadDir(DVDDir* dir, DVDDirEntry* dirent) {
     u32 loc = dir->location;
 
@@ -391,11 +396,16 @@ BOOL DVDReadDir(DVDDir* dir, DVDDirEntry* dirent) {
 
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL DVDCloseDir(DVDDir* dir) {
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void* DVDGetFSTLocation() {
     return BootInfo->FSTLocation;
 }
+#endif

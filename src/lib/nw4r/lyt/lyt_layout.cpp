@@ -248,7 +248,7 @@ void Layout::BindAnimation(AnimTransform* pAnimTrans) {
         return;
     }
 
-    mpRootPane->BindAnimation(pAnimTrans, true);
+    mpRootPane->BindAnimation(pAnimTrans, true, false);
 }
 
 void Layout::UnbindAnimation(AnimTransform* pAnimTrans) {

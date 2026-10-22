@@ -112,7 +112,7 @@ void GXAbortFrame() {
     }
 }
 
-void GXSetDrawDone() {
+static void GXSetDrawDone() {
     u32 reg;
     BOOL enabled;
 
@@ -124,7 +124,7 @@ void GXSetDrawDone() {
     OSRestoreInterrupts(enabled);
 }
 
-void GXWaitDrawDone() {
+static void GXWaitDrawDone() {
     BOOL enabled;
 
     enabled = OSDisableInterrupts();

@@ -166,7 +166,7 @@ retry_load:
     char buf[0x40];
     snprintf(buf, ARRAY_SIZE(buf), "%s/%sNP.rel", sModulesDir, mModuleName);
     if (mpModule == nullptr) {
-        if (sDvdFile != nullptr && sDvdFile->openFilename(buf)) {
+        if (sDvdFile != nullptr && sDvdFile->open(buf)) {
             size_t size = sDvdFile->getFileSize();
             if (size != 0) {
                 size = ROUND_UP(size, 32);

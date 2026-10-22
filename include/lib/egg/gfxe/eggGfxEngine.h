@@ -14,10 +14,12 @@ namespace GfxEngine {
         u16 m_02;
         GXColor mColor;
         GXPixelFmt mPixelFmt;
-        u8 mPad1[0x8];
+        u16 m_0C;
+        u16 m_0E;
+        u32 mBufferSize;
         u16 m_14;
         u16 m_16;
-        u8 mPad2[0x4];
+        u8 m_18;
         // MWCC places the vptr where the first virtual member is declared.
         virtual ~Configuration() {}
     };

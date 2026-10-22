@@ -28,10 +28,16 @@ void OSRegisterShutdownFunction(OSShutdownFunctionInfo* info);
 void OSUnregisterShutdownFunction(OSShutdownFunctionInfo* info);
 
 u32 OSGetResetCode();
+#define OSIsRestart() ((OSGetResetCode() & 0x80000000) ? TRUE : FALSE)
 
 void OSRebootSystem();
 void OSReturnToMenu();
 void OSShutdownSystem();
+
+void OSRestart(u32 resetCode);
+void OSReturnToDataManager();
+void OSReturnToSetting(u8 setting);
+void OSResetSystem(int, u32, int);
 
 #ifdef __cplusplus
 }

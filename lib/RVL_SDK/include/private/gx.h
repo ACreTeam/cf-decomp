@@ -268,6 +268,8 @@ void __GetImageTileCount(GXTexFmt fmt, u16 wd, u16 ht, u32* rowTiles, u32* colTi
 #define GX_WRITE_U32(ui) GXWGFifo.u32 = (u32)(ui)
 #define GX_WRITE_F32(f) GXWGFifo.f32 = (f32)(f)
 
+#define GX_PHY_ADDR(addr) ((u32)(addr) & 0x3FFFFFFF)
+
 #define GX_WRITE_XF_REG(addr, value)                                                                                                                 \
     {                                                                                                                                                \
         GX_WRITE_U8(0x10);                                                                                                                           \

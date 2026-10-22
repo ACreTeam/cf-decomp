@@ -8,7 +8,7 @@
 
 static BOOL encRegistered = FALSE;
 
-SDKDefineVersion(ENC, "Apr 20 2010", "11:21:34");
+SDKDefineVersion(ENC, "Aug  8 2007", "02:10:13");
 
 void ENCiRegisterVersion() {
     if (!encRegistered) {

@@ -78,6 +78,11 @@ void KPADDisableDPD(s32 chan);
 
 void KPADSetControlDpdCallback(s32 chan, KPADCallback* cb);
 
+
+void KPADSetAccParam(s32 chan, f32 playRadius, f32 sensitivity);
+void KPADSetHoriParam(s32, f32, f32);
+void KPADSetDistParam(s32, f32, f32);
+
 #ifdef __cplusplus
 }
 #endif  // __cplusplus

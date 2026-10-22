@@ -1,0 +1,22 @@
+#ifndef _MSL_CMATH_
+#define _MSL_CMATH_
+
+#include <math.h>
+
+namespace std
+{
+using ::ceil;
+using ::floor;
+
+inline float ceil(float num)
+{
+    return (float)::ceil((double)num);
+}
+
+inline float floor(float num)
+{
+    return (float)::floor((double)num);
+}
+}
+
+#endif // _MSL_CMATH_

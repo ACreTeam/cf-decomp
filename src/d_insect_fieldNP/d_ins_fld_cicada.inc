@@ -104,7 +104,7 @@ int dInsFldCicada_c::draw() {
 void dInsFldCicada_c::calcMtx() {
     mMtx_c mtx;
     mMtx_c rot;
-    fn_80444FE4(rot, &mRot);
+    ((EGG::Matrix34f *)(nw4r::math::MTX34 *)(rot))->makeQ(mRot);
     dActor_c::makeMtx(&mtx, &mPos, 0);
     mtx.concat(rot);
     mMdl.setLocalMtx(&mtx);

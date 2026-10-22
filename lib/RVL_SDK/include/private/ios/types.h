@@ -13,7 +13,7 @@ typedef s32 IOSError;
 typedef s32 IOSFd;
 typedef s32 IOSHeapId;
 
-#define IOS_REQUEST_MAX 48
+#define IOS_REQUEST_MAX 16
 
 typedef IOSError (*IOSIpcCb)(IOSError, void*);
 

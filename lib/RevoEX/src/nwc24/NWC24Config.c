@@ -63,7 +63,7 @@ NWC24Err NWC24GetMyUserId(NWC24UserId* pId) {
     return result;
 }
 
-NWC24Err NWC24GenerateNewUserId(NWC24UserId* pId) {
+static NWC24Err NWC24GenerateNewUserId(NWC24UserId* pId) {
     NWC24Err open;
     NWC24Err resultClose;
 
@@ -78,7 +78,7 @@ NWC24Err NWC24GenerateNewUserId(NWC24UserId* pId) {
     return open >= 0 ? resultClose : open;
 }
 
-NWC24Err NWC24RegisterUserId() {
+static NWC24Err NWC24RegisterUserId() {
     NWC24Err result;
     NWC24Err result2;
 
@@ -97,7 +97,7 @@ NWC24Err NWC24RegisterUserId() {
 }
 
 // Stripped out function with remaining static declaration
-NWC24Err NWC24DumpConfig() {
+static NWC24Err NWC24DumpConfig() {
     static char* strIdCreationStage[] = {
         "NWC24_IDCS_INITIAL",
         "NWC24_IDCS_GENERATED",
@@ -106,11 +106,11 @@ NWC24Err NWC24DumpConfig() {
     return NWC24_OK;
 }
 
-NWC24Err NWC24iConfigInit(BOOL force) {
+static NWC24Err NWC24iConfigInit(BOOL force) {
     NWC24Err result;
     u32 idCreationCount = 0;
 
-    if (nwc24Work == NULL) {
+    if (NWC24WorkP == NULL) {
         return NWC24_ERR_LIB_NOT_OPENED;
     }
 
@@ -118,7 +118,7 @@ NWC24Err NWC24iConfigInit(BOOL force) {
         NWC24FDelete("/shared2/wc24/misc.bin");
     }
 
-    config = (NWC24ConfigData*)nwc24Work->configData;
+    config = (NWC24ConfigData*)NWC24WorkP->configData;
 
     // Read config file
     result = NWC24iConfigReload();
@@ -151,7 +151,7 @@ NWC24Err NWC24iConfigInit(BOOL force) {
 NWC24Err NWC24iConfigOpen() {
     NWC24Err result;
 
-    config = (NWC24ConfigData*)nwc24Work->configData;
+    config = (NWC24ConfigData*)NWC24WorkP->configData;
     ConfigModified = FALSE;
 
     // Open config file
@@ -169,7 +169,7 @@ NWC24Err NWC24iConfigReload() {
     NWC24Err resultClose;
     NWC24File file;
 
-    if (nwc24Work == NULL) {
+    if (NWC24WorkP == NULL) {
         return NWC24_ERR_LIB_NOT_OPENED;
     }
 
@@ -218,7 +218,7 @@ NWC24Err NWC24iConfigFlush() {
     NWC24Err resultClose;
     NWC24File file;
 
-    if (nwc24Work == NULL) {
+    if (NWC24WorkP == NULL) {
         return NWC24_ERR_LIB_NOT_OPENED;
     }
 
@@ -262,7 +262,7 @@ const char* NWC24GetAccountDomain() {
     return config->accountDomain;
 }
 
-void NWC24SetAccountDomain(const char* accountDomain) {
+static void NWC24SetAccountDomain(const char* accountDomain) {
     NWC24iStrLCpy(config->accountDomain, accountDomain, sizeof(config->accountDomain));
     ConfigModified = TRUE;
 }
@@ -306,7 +306,7 @@ u16 NWC24GetGroupId() {
             break;
         }
         case OS_APP_TYPE_CHANNEL:
-            dir = nwc24Work->pathWork;
+            dir = NWC24WorkP->pathWork;
             if (NANDGetHomeDir(dir) == NAND_RESULT_OK) {
                 if (NANDGetStatus(dir, &stat) == NAND_RESULT_OK) {
                     groupId = stat.groupId;
@@ -318,76 +318,76 @@ u16 NWC24GetGroupId() {
     return groupId;
 }
 
-const char* NWC24GetPassword() {
+static const char* NWC24GetPassword() {
     return config->password;
 }
 
-void NWC24SetPassword(const char* password) {
+static void NWC24SetPassword(const char* password) {
     NWC24iStrLCpy(config->password, password, sizeof(config->password));
     ConfigModified = TRUE;
 }
 
-const char* NWC24GetMailCheckId() {
+static const char* NWC24GetMailCheckId() {
     return config->mailCheckId;
 }
 
-void NWC24SetMailCheckId(const char* mailCheckId) {
+static void NWC24SetMailCheckId(const char* mailCheckId) {
     NWC24iStrLCpy(config->mailCheckId, mailCheckId, sizeof(config->mailCheckId));
     ConfigModified = TRUE;
     config->idCreationStage = NWC24_IDCS_REGISTERED;
 }
 
-const char* NWC24GetAccMgtServerURL() {
+static const char* NWC24GetAccMgtServerURL() {
     return config->accMgtServerURL;
 }
 
-void NWC24SetAccMgtServerURL(const char* accMgtServerURL) {
+static void NWC24SetAccMgtServerURL(const char* accMgtServerURL) {
     NWC24iStrLCpy(config->accMgtServerURL, accMgtServerURL, sizeof(config->accMgtServerURL));
     ConfigModified = TRUE;
 }
 
-const char* NWC24GetMailChkServerURL() {
+static const char* NWC24GetMailChkServerURL() {
     return config->mailChkServerURL;
 }
 
-void NWC24SetMailChkServerURL(const char* mailChkServerURL) {
+static void NWC24SetMailChkServerURL(const char* mailChkServerURL) {
     NWC24iStrLCpy(config->mailChkServerURL, mailChkServerURL, sizeof(config->mailChkServerURL));
     ConfigModified = TRUE;
 }
 
-const char* NWC24GetMailRcvServerURL() {
+static const char* NWC24GetMailRcvServerURL() {
     return config->mailRcvServerURL;
 }
 
-void NWC24SetMailRcvServerURL(const char* mailRcvServerURL) {
+static void NWC24SetMailRcvServerURL(const char* mailRcvServerURL) {
     NWC24iStrLCpy(config->mailRcvServerURL, mailRcvServerURL, sizeof(config->mailRcvServerURL));
     ConfigModified = TRUE;
 }
 
-const char* NWC24GetMailDelServerURL() {
+static const char* NWC24GetMailDelServerURL() {
     return config->mailDelServerURL;
 }
 
-void NWC24SetMailDelServerURL(const char* mailDelServerURL) {
+static void NWC24SetMailDelServerURL(const char* mailDelServerURL) {
     NWC24iStrLCpy(config->mailDelServerURL, mailDelServerURL, sizeof(config->mailDelServerURL));
     ConfigModified = TRUE;
 }
 
-const char* NWC24GetMailTrsServerURL() {
+static const char* NWC24GetMailTrsServerURL() {
     return config->mailTrsServerURL;
 }
 
-void NWC24SetMailTrsServerURL(const char* mailTrsServerURL) {
+static void NWC24SetMailTrsServerURL(const char* mailTrsServerURL) {
     NWC24iStrLCpy(config->mailTrsServerURL, mailTrsServerURL, sizeof(config->mailTrsServerURL));
     ConfigModified = TRUE;
 }
 
-void NWC24SetIdCreationCount(u32 idCreationCount) {
+static void NWC24SetIdCreationCount(u32 idCreationCount) {
     config->idCreationCount = idCreationCount & (NWC24_CONFIG_MAX_ID_COUNT - 1);
     ConfigModified = TRUE;
 }
 
-u32 NWC24GetIdCreationCount() {
+static u32 NWC24GetIdCreationCount() {
     return config->idCreationCount;
 }
 

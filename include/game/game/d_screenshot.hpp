@@ -32,31 +32,6 @@ enum {
     SD_ERROR_ALREADY_EXISTS = 17,
 };
 
-// The SD card library's drive work buffers.
-struct work_c {
-    /* 0x00 */ u8 *mBuf0;
-    /* 0x04 */ u8 *mBuf1;
-    /* 0x08 */ u16 mNum0;
-    /* 0x0A */ u16 mNum1;
-    /* 0x0C */ u32 m0C;
-    /* 0x10 */ u32 m10;
-}; // size 0x14
-
-struct drive_c {
-    /* 0x0 */ u32 m0;
-    /* 0x4 */ work_c *mWork;
-    /* 0x8 */ char mLetter;
-    /* 0x9 */ u8 mFlags;
-    /* 0xA */ u8 _A[0x10 - 0xA];
-}; // size 0x10
-
-// A find (opendir) handle.
-struct find_c {
-    /* 0x000 */ u8 _000[0x22D];
-    /* 0x22D */ char mName[13]; // 8.3
-    /* 0x23A */ u8 _23A[0x448 - 0x23A];
-}; // size 0x448
-
 void init(); // 8008EDF8
 BOOL close(); // 8008F220: TRUE once the thread is gone; unlocks and unmounts
 int getResult(); // 8008F278: RESULT_BUSY while the thread runs

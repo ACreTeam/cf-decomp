@@ -221,7 +221,7 @@ extern "C" {
 
 #define UTF16_CHECK_BOM(stream_, srcSize_, limit_, limited_, cnt_, dstSize_)                                                                         \
     do {                                                                                                                                             \
-        if ((limit_) > 0 || !(limited_)) {                                                                                                           \
+        if ((limit_) > 0 && (limited_)) {                                                                                                           \
             if (**(stream_) == UTF16_BE_BOM) {                                                                                                       \
                 ++*(cnt_);                                                                                                                           \
                 ++*(stream_);                                                                                                                        \

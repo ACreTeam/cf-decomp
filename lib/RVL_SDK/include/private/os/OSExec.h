@@ -27,13 +27,17 @@ typedef struct OSExecParams {
 
 #define EXEC_SYSTEM_MENU_ID 0x0000000100000002
 
+extern u32 __OSNextPartitionType;
+
 void __OSGetExecParams(OSExecParams* params);
+void __OSBootDol(u32 doloffset, u32 restartCode, char* const argv[]);
 BOOL __OSCheckCompanyCode(ESTitleId titleId, BOOL diskApp);
 BOOL __OSCheckTmdCountryCode(ESTmdView* tmd);
 
 int __OSGetValidTicketIndex(ESTicketView* ticketViewList, u32 numTickets);
 
 void __OSLaunchMenu();
+void __OSRelaunchTitle(u32 resetCode);
 void __OSLaunchTitle(ESTitleId titleId);
 
 void __OSLaunchTitlevForSystem(ESTitleId titleId, u32 launchCode, const char** argv);

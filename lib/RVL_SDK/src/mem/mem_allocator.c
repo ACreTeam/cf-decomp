@@ -54,6 +54,7 @@ void MEMInitAllocatorForFrmHeap(MEMAllocator* allocator, MEMHeapHandle heap, s32
     allocator->heapParam2 = 0;
 }
 
+#if 0 // not linked in City Folk
 void MEMInitAllocatorForUnitHeap(MEMAllocator* allocator, MEMHeapHandle heap) {
     static const MEMAllocatorFunc sAllocatorFunc = {AllocatorAllocForUnitHeap_, AllocatorFreeForUnitHeap_};
     allocator->func = &sAllocatorFunc;
@@ -61,3 +62,4 @@ void MEMInitAllocatorForUnitHeap(MEMAllocator* allocator, MEMHeapHandle heap) {
     allocator->heapParam1 = 0;
     allocator->heapParam2 = 0;
 }
+#endif

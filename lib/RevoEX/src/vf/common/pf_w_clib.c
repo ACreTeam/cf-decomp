@@ -1,35 +1,34 @@
-#include <private/vf/PrFILE2/pf_types.h>
+#include <revolution/vf/vf_all.h>
 
-pf_u32 VFipf_w_strlen(const pf_u16* s) {
-    const pf_u16* t = s;
+u32 VFipf_w_strlen(const u16* s) {
+    const u16* t;
 
-    while (*t != 0) {
+    t = s;
+    while (*t != L'\0') {
         t++;
     }
 
-    return ((pf_s8*)t - (pf_s8*)s) >> 1;
+    return ((s32)t - (s32)s) >> 1;
 }
 
-pf_u16* VFipf_w_strcpy(pf_u16* dst, const pf_u16* src) {
-    pf_u16* d;
+u16* VFipf_w_strcpy(u16* dst, const u16* src) {
+    u16* d;
 
-    for (d = dst; (*d = *src) != 0; src++, d++) {
+    for (d = dst; (*d = *src) != L'\0'; src++, d++) {
     }
 
     return dst;
 }
 
-pf_s32 VFipf_w_strncmp(const pf_u16* s1, const pf_u16* s2, pf_u32 length) {
-    const pf_u16* p1 = (pf_u16*)s1;
-    const pf_u16* p2 = (pf_u16*)s2;
-
-    while (length-- != 0) {
-        if (*p1 == 0 || *p2 == 0 || *p1 != *p2) {
-            return *p1 - *p2;
+s32 VFipf_w_strncmp(const u16* s1, const u16* s2, u32 length) {
+    while (length != 0) {
+        if (*s1 == L'\0' || *s2 == L'\0' || *s1 != *s2) {
+            return (int)(*s1 - *s2);
         }
-        p1++;
-        p2++;
-    }
 
+        s1++;
+        s2++;
+        length--;
+    }
     return 0;
 }

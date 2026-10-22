@@ -90,6 +90,7 @@ static u32 ENCiConvertUtf16To32(const u16* src, int length);
 static void ENCiConvertUtf32To16(u16* dst, int length, u32 src);
 static u8 ENCiGetBase64Value(u8 c);
 
+#if 0 // not linked in City Folk
 static u8 base64_array[128] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
                                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3E, 0xFF, 0xFF, 0xFF, 0x3F, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C,
@@ -97,7 +98,9 @@ static u8 base64_array[128] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0
                                0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0xFF, 0xFF, 0xFF, 0xFF,
                                0xFF, 0xFF, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A,
                                0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+#endif
 
+#if 0 // not linked in City Folk
 DEFINE_PUBLIC_ENC_TRAMPOLINE_FROM_UTF16(Ascii)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_TO_UTF16(Ascii)
 DEFINE_PUBLIC_ENC_TRAMPOLINE(Utf32, u32, Utf16, u16)
@@ -109,11 +112,15 @@ DEFINE_PUBLIC_ENC_TRAMPOLINE(Utf8, u8, Utf16, u16)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_MB_STATE(Utf16, u16, Utf16, u16)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_GIVEN_MB_STATE_VIA(Utf16LE, u16, Utf16, Utf16BE, u16, Utf16, ENC_UTF16_STATE_LITTLE_ENDIAN)
 DEFINE_PUBLIC_ENC_TRAMPOLINE_WITH_GIVEN_MB_STATE(Utf7, u8, Utf16, u16, ENC_UTF7_STATE_INITIAL)
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCSetUnicodeBOM(u16* dst, s32 dstSize) {
     return ENCSetUnicodeBOM16(dst, dstSize);
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCSetUnicodeBOM32(u32* dst, s32 dstSize) {
     ENCiRegisterVersion();
 
@@ -125,7 +132,9 @@ ENCResult ENCSetUnicodeBOM32(u32* dst, s32 dstSize) {
 
     return ENC_OK;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCSetUnicodeBOM16(u16* dst, s32 dstSize) {
     ENCiRegisterVersion();
 
@@ -137,7 +146,9 @@ ENCResult ENCSetUnicodeBOM16(u16* dst, s32 dstSize) {
 
     return ENC_OK;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCSetUnicodeBOM8(u8* dst, s32 dstSize) {
     ENCiRegisterVersion();
 
@@ -153,6 +164,7 @@ ENCResult ENCSetUnicodeBOM8(u8* dst, s32 dstSize) {
 
     return ENC_OK;
 }
+#endif
 
 ENCResult ENCiConvertStringUnicodeToAscii(u8* dst, s32* dstSize, const u16* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
@@ -182,6 +194,7 @@ ENCResult ENCiConvertStringUnicodeToAscii(u8* dst, s32* dstSize, const u16* src,
     return ret;
 }
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringAsciiToUnicode(u16* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -205,7 +218,9 @@ ENCResult ENCiConvertStringAsciiToUnicode(u16* dst, s32* dstSize, const u8* src,
 
     return ret;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringUtf32ToUtf16(u16* dst, s32* dstSize, const u32* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -252,6 +267,7 @@ ENCResult ENCiConvertStringUtf32ToUtf16(u16* dst, s32* dstSize, const u32* src, 
 
     return ret;
 }
+#endif
 
 ENCResult ENCiConvertStringUtf16ToUtf32(u32* dst, s32* dstSize, const u16* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
@@ -293,6 +309,7 @@ ENCResult ENCiConvertStringUtf16ToUtf32(u32* dst, s32* dstSize, const u16* src, 
     return ret;
 }
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringUtf32ToUtf8(u8* dst, s32* dstSize, const u32* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -347,7 +364,9 @@ ENCResult ENCiConvertStringUtf32ToUtf8(u8* dst, s32* dstSize, const u32* src, s3
 
     return ret;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringUtf8ToUtf32(u32* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -403,6 +422,7 @@ ENCResult ENCiConvertStringUtf8ToUtf32(u32* dst, s32* dstSize, const u8* src, s3
 
     return ret;
 }
+#endif
 
 ENCResult ENCiConvertStringUtf16ToUtf8(u8* dst, s32* dstSize, const u16* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
@@ -465,6 +485,7 @@ ENCResult ENCiConvertStringUtf16ToUtf8(u8* dst, s32* dstSize, const u16* src, s3
     return ret;
 }
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringUtf8ToUtf16(u16* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -531,7 +552,9 @@ ENCResult ENCiConvertStringUtf8ToUtf16(u16* dst, s32* dstSize, const u8* src, s3
 
     return ret;
 }
+#endif
 
+#if 0 // not linked in City Folk
 ENCResult ENCiConvertStringUtf7ToUtf16(u16* dst, s32* dstSize, const u8* src, s32* srcSize, ENCBreakType breakType, ENCMBState* mbState) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
 
@@ -636,6 +659,7 @@ ENCResult ENCiConvertStringUtf7ToUtf16(u16* dst, s32* dstSize, const u8* src, s3
 
     return ret;
 }
+#endif
 
 ENCResult ENCiConvertStringUtf16ToUtf16(u16* dst, s32* dstSize, const u16* src, s32* srcSize, ENCBreakType breakType, ENCMBState* mbState) {
     CREATE_STATE_VARIABLES(dstCnt, dstLimit, dstValid, srcCnt, srcLimit, srcLimited)
@@ -647,7 +671,7 @@ ENCResult ENCiConvertStringUtf16ToUtf16(u16* dst, s32* dstSize, const u16* src, 
     CHECK_PARAMETERS(&ret, dst, dstSize, &dstLimit, &dstValid, src, srcSize, &srcLimit, &srcLimited);
 
     // UTF16_CHECK_BOM but also manipulates state
-    if (srcLimit > 0 || !srcLimited) {
+    if (srcLimit > 0 && srcLimited) {
         if (*src == UTF16_BE_BOM) {
             if (mbState != NULL) {
                 *mbState = ENC_UTF16_STATE_BIG_ENDIAN;
@@ -709,6 +733,7 @@ ENCResult ENCiConvertStringUtf16ToUtf16(u16* dst, s32* dstSize, const u16* src, 
     return ret;
 }
 
+#if 0 // not linked in City Folk
 static u32 ENCiConvertUtf8To32(const u8* src, int length) {
     int i;
 
@@ -747,6 +772,7 @@ static u32 ENCiConvertUtf8To32(const u8* src, int length) {
 
     return c32;
 }
+#endif
 
 static void ENCiConvertUtf32To8(u8* dst, int length, u32 src) {
     int i;
@@ -806,6 +832,7 @@ static void ENCiConvertUtf32To16(u16* dst, int length, u32 src) {
     }
 }
 
+#if 0 // not linked in City Folk
 static u8 ENCiGetBase64Value(u8 c) {
     if (c > 0x7F) {
         return 0xFF;
@@ -813,3 +840,4 @@ static u8 ENCiGetBase64Value(u8 c) {
 
     return base64_array[c];
 }
+#endif

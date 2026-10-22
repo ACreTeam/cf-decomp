@@ -17,11 +17,10 @@ NWC24MIMEType MIMETypeConv[] = {NWC24_APPLICATION_OCTET_STREAM, NWC24_X_WII_MINI
 
 const char* MIMETypeSuffix[] = {"dat", "wii", "wii", "jpg", "wii", "???", "???", "???", "htm", "txt"};
 
-const char* CharsetStr[] = {"euc-jp",      "euc-kr",     "gb2312",     "iso-2022-jp", "iso-8859-1", "iso-8859-10",
-                            "iso-8859-15", "iso-8859-2", "iso-8859-3", "iso-8859-5",  "iso-8859-7", "iso-8859-9",
-                            "shift_jis",   "us-ascii",   "utf-16be",   "utf-32be",    "utf-8",      "windows-1252"};
+const char* CharsetStr[] = {"euc-jp",      "iso-2022-jp", "iso-8859-1", "iso-8859-10", "iso-8859-15", "iso-8859-2", "iso-8859-3", "iso-8859-5",
+                            "iso-8859-7",  "iso-8859-9",  "shift_jis",  "us-ascii",    "utf-16be",    "utf-32be",   "utf-8",      "windows-1252"};
 
-NWC24Charset CharsetConv[] = {NWC24_EUC_JP,      NWC24_EUC_US,     NWC24_GB_2312,    NWC24_ISO_2022_JP, NWC24_ISO_8859_1, NWC24_ISO_8859_10,
+NWC24Charset CharsetConv[] = {NWC24_EUC_JP,      NWC24_ISO_2022_JP, NWC24_ISO_8859_1, NWC24_ISO_8859_10,
                               NWC24_ISO_8859_15, NWC24_ISO_8859_2, NWC24_ISO_8859_3, NWC24_ISO_8859_5,  NWC24_ISO_8859_7, NWC24_ISO_8859_9,
                               NWC24_SHIFT_JIS,   NWC24_US_ASCII,   NWC24_UTF_16BE,   NWC24_UTF_32BE,    NWC24_UTF_8,      NWC24_WINDOWS_1252};
 
@@ -90,7 +89,7 @@ const char* NWC24GetEncodingStr(NWC24Encoding encoding) {
     return NULL;
 }
 
-NWC24Err NWC24ParseEncodingStr(NWC24Encoding* encoding, const char* str) {
+static NWC24Err NWC24ParseEncodingStr(NWC24Encoding* encoding, const char* str) {
     int charSetIndex = StrCmpMultiNCS(str, EncodingStr, ARRAY_LENGTH(EncodingStr));
     if (charSetIndex < 0) {
         *encoding = 0;
@@ -101,7 +100,7 @@ NWC24Err NWC24ParseEncodingStr(NWC24Encoding* encoding, const char* str) {
     return NWC24_OK;
 }
 
-NWC24Err NWC24iExtractAddrSpec(NWC24FileStream* fileStream, u32 fullAddrLen, u32 startIdx, char* newAddr, u32 newAddrLen) {
+static NWC24Err NWC24iExtractAddrSpec(NWC24FileStream* fileStream, u32 fullAddrLen, u32 startIdx, char* newAddr, u32 newAddrLen) {
     NWC24Err err = NWC24_ERR_NOT_FOUND;
     u32 sizeLeft;
 
@@ -171,7 +170,7 @@ NWC24Err NWC24iExtractAddrSpec(NWC24FileStream* fileStream, u32 fullAddrLen, u32
     return err;
 }
 
-NWC24Err NWC24iSearchHeaderF(NWC24FileStream* fileStream, const char* fieldName, u32 headerSize, u32* foundOffset, u32* foundLength) {
+static NWC24Err NWC24iSearchHeaderF(NWC24FileStream* fileStream, const char* fieldName, u32 headerSize, u32* foundOffset, u32* foundLength) {
     int fieldLen;
 
     int i;
@@ -263,7 +262,7 @@ int StrCmpMultiNCS(const char* string1, const char** string2Array, int count) {
     return result;
 }
 
-int GetFieldLengthF(NWC24FileStream* fileStream) {
+static int GetFieldLengthF(NWC24FileStream* fileStream) {
     int count = 0;
     u32 state = 0;
     u32 letters = 0;

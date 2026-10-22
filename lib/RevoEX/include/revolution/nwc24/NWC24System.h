@@ -13,6 +13,8 @@ NWC24Err NWC24EnableLedNotification(BOOL enableLed);
 
 NWC24Err NWC24DoDailyTasks(void* work);
 
+BOOL NWC24Shutdown(BOOL final, u32 event);
+
 #ifdef __cplusplus
 }
 #endif

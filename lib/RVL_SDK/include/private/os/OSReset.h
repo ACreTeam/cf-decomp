@@ -30,6 +30,9 @@ BOOL __OSCallShutdownFunctions(BOOL final, u32 event);
 
 void __OSShutdownDevices(u32 id);
 
+void __OSReturnToMenu(u8 menuMode);
+
+extern volatile BOOL __OSIsReturnToIdle;
 void __OSReturnToMenuForError();
 void __OSHotResetForError();
 

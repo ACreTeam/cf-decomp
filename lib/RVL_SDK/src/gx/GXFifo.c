@@ -6,108 +6,103 @@
 
 #include <string.h>
 
+
+static __GXFifoObj CPUFifo;
+static __GXFifoObj GPFifo;
+static GXBool CPUFifoReady = FALSE;
+static GXBool GPFifoReady = FALSE;
 static GXBool CPGPLinked;
-
 static OSThread* __GXCurrentThread;
-static BOOL GXOverflowSuspendInProgress;
-
+static volatile BOOL GXOverflowSuspendInProgress;
 static GXBreakPtCallback BreakPointCB;
+volatile void* __GXCurrentBP;
+static volatile u32 __GXOverflowCount;
 
-__GXFifoObj CPUFifo;
-__GXFifoObj GPFifo;
+static void __GXWriteFifoIntEnable(GXBool , GXBool);
+static void __GXWriteFifoIntReset(GXBool, GXBool);
 
-void* __GXCurrentBP;
-u32 __GXOverflowCount;
+#define CP_READ_2U16(dest, regH, regL, type)                                                                                                             {                                                                                                                                                        u32 temp;                                                                                                                                            temp = (u32)GX_GET_CP_REG(regH) << 16;                                                                                                               temp |= (u32)GX_GET_CP_REG(regL);                                                                                                                    dest = (type)OSPhysicalToCached(temp);                                                                                                           }
 
-static GXBool GPFifoReady;
-static GXBool CPUFifoReady;
+#define CP_READ_2U16_INT(dest, regH, regL, type)                                                                                                         {                                                                                                                                                        u32 temp;                                                                                                                                            temp = (u32)GX_GET_CP_REG(regH) << 16;                                                                                                               temp |= (u32)GX_GET_CP_REG(regL);                                                                                                                    dest = (type)temp;                                                                                                                               }
 
-static void __GXWriteFifoIntReset(u8 hiWatermarkClr, u8 loWatermarkClr) {
-    GX_SET_REG_FIELD(__GXData->cpClr, 1, 0, hiWatermarkClr);
-    GX_SET_REG_FIELD(__GXData->cpClr, 1, 1, loWatermarkClr);
-    GX_SET_CP_REG(2, __GXData->cpClr);
-}
-
-static void __GXWriteFifoIntEnable(u8 hiWatermarkEn, u8 loWatermarkEn) {
-    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 2, hiWatermarkEn);
-    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 3, loWatermarkEn);
-    GX_SET_CP_REG(1, __GXData->cpEnable);
-}
-
-static void __GXFifoLink(u8 en) {
-    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 4, (en != 0) ? 1 : 0);
-    GX_SET_CP_REG(1, __GXData->cpEnable);
-}
-
-static void __GXFifoReadEnable() {
-    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 0, 1);
-    GX_SET_CP_REG(1, __GXData->cpEnable);
-}
-
-static void __GXFifoReadDisable() {
-    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 0, 0);
-    GX_SET_CP_REG(1, __GXData->cpEnable);
-}
-
-static void GXOverflowHandler(__OSInterrupt interrupt, OSContext* context) {
+static void GXOverflowHandler(__OSInterrupt interrupt, OSContext *context) {
     __GXOverflowCount++;
-    __GXWriteFifoIntEnable(0, 1);
-    __GXWriteFifoIntReset(1, 0);
+    __GXWriteFifoIntEnable(GX_FALSE, GX_TRUE);
+    __GXWriteFifoIntReset(GX_TRUE, GX_FALSE);
     GXOverflowSuspendInProgress = TRUE;
-
     OSSuspendThread(__GXCurrentThread);
 }
 
-static void GXUnderflowHandler(s16 interrupt, OSContext* context) {
+static void GXUnderflowHandler(__OSInterrupt interrupt, OSContext *context) {
     OSResumeThread(__GXCurrentThread);
     GXOverflowSuspendInProgress = FALSE;
-    __GXWriteFifoIntReset(1, 1);
-    __GXWriteFifoIntEnable(1, 0);
+    __GXWriteFifoIntReset(GX_TRUE, GX_TRUE);
+    __GXWriteFifoIntEnable(GX_TRUE, GX_FALSE);
 }
 
-static void GXBreakPointHandler(__OSInterrupt interrupt, OSContext* context) {
-    OSContext exceptionContext;
+static void __GXFifoReadEnable(void) {
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 0, 1); 
+    GX_SET_CP_REG(1, (u16)__GXData->cpEnable);
+}
 
+static void __GXFifoReadDisable(void) {
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 0, 0); 
+    GX_SET_CP_REG(1, (u16)__GXData->cpEnable);
+}
+
+static void __GXFifoLink(GXBool en) {
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 4, (en ? 0x1 : 0)); 
+    GX_SET_CP_REG(1, (u16)__GXData->cpEnable);
+}
+
+static void GXBreakPointHandler(__OSInterrupt interrupt, OSContext *context) {
+    OSContext exceptionContext;
     GX_SET_REG_FIELD(__GXData->cpEnable, 1, 5, 0);
     GX_SET_CP_REG(1, __GXData->cpEnable);
-    if (BreakPointCB != NULL) {
+
+    if (BreakPointCB) {
         OSClearContext(&exceptionContext);
         OSSetCurrentContext(&exceptionContext);
-        BreakPointCB();
+        (*BreakPointCB)();
         OSClearContext(&exceptionContext);
         OSSetCurrentContext(context);
     }
 }
 
-void GXCPInterruptHandler(__OSInterrupt interrupt, OSContext* context) {
+void GXCPInterruptHandler(__OSInterrupt interrupt, OSContext *context) {
     __GXData->cpStatus = GX_GET_CP_REG(0);
     if (GX_GET_REG_FIELD(__GXData->cpEnable, 1, 3) && GX_GET_REG_FIELD(__GXData->cpStatus, 1, 1)) {
         GXUnderflowHandler(interrupt, context);
     }
+
     if (GX_GET_REG_FIELD(__GXData->cpEnable, 1, 2) && GX_GET_REG_FIELD(__GXData->cpStatus, 1, 0)) {
         GXOverflowHandler(interrupt, context);
     }
+
     if (GX_GET_REG_FIELD(__GXData->cpEnable, 1, 5) && GX_GET_REG_FIELD(__GXData->cpStatus, 1, 4)) {
         GXBreakPointHandler(interrupt, context);
     }
 }
 
-void GXInitFifoBase(GXFifoObj* fifo, void* base, u32 size) {
+static void GXInitFifoLimits(GXFifoObj *fifo, u32 hi, u32 lo) {
     __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
+    realFifo->hiWatermark = hi;
+    realFifo->loWatermark = lo;
+}
 
+void GXInitFifoBase(GXFifoObj *fifo, void *base, u32 size) {
+    __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
     realFifo->base = base;
     realFifo->top = (void*)((u32)base + size - 4);
     realFifo->size = size;
     realFifo->count = 0;
-
-    GXInitFifoLimits(fifo, size - (16 * 1024), OSRoundDown32B(size / 2));
+    GXInitFifoLimits(fifo, size - (16 * 1024), OSRoundDown32B(size/2));
     GXInitFifoPtrs(fifo, base, base);
 }
 
-void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr) {
+static void GXInitFifoPtrs(GXFifoObj* fifo, void *readPtr, void* writePtr) {
     __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
-    BOOL enabled = OSDisableInterrupts();
-
+    BOOL en = OSDisableInterrupts();
     realFifo->rdPtr = readPtr;
     realFifo->wrPtr = writePtr;
     realFifo->count = (u8*)writePtr - (u8*)readPtr;
@@ -115,17 +110,10 @@ void GXInitFifoPtrs(GXFifoObj* fifo, void* readPtr, void* writePtr) {
         realFifo->count += realFifo->size;
     }
 
-    OSRestoreInterrupts(enabled);
+    OSRestoreInterrupts(en);
 }
 
-void GXInitFifoLimits(GXFifoObj* fifo, u32 hiWatermark, u32 loWatermark) {
-    __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
-
-    realFifo->hiWatermark = hiWatermark;
-    realFifo->loWatermark = loWatermark;
-}
-
-GXBool CPGPLinkCheck() {
+GXBool CPGPLinkCheck(void) {
     u32 check = 0;
     s32 range1, range2, overlap;
 
@@ -134,25 +122,25 @@ GXBool CPGPLinkCheck() {
     }
 
     if (CPUFifo.base == GPFifo.base) {
-        check++;
+        ++check;
     }
 
     if (CPUFifo.top == GPFifo.top) {
-        check++;
+        ++check;
     }
 
     if (check == 2) {
         if (CPUFifo.hiWatermark == GPFifo.hiWatermark) {
-            check++;
+            ++check;
         }
 
         if (CPUFifo.loWatermark == GPFifo.loWatermark) {
-            check++;
+            ++check;
         }
 
         return GX_TRUE;
     }
-
+    
     range1 = (s32)((u8*)CPUFifo.top - (u8*)GPFifo.base);
     range2 = (s32)((u8*)GPFifo.top - (u8*)CPUFifo.base);
     overlap = ((range1 > 0) && (range2 > 0) || (range1 < 0 && (range2 < 0)));
@@ -167,14 +155,14 @@ GXBool CPGPLinkCheck() {
 
 void GXSetCPUFifo(GXFifoObj* fifo) {
     const __GXFifoObj* realFifo = (const __GXFifoObj*)fifo;
-    BOOL enabled = OSDisableInterrupts();
+    BOOL en = OSDisableInterrupts();
     u32 reg;
 
     if (fifo == NULL) {
         CPUFifoReady = GX_FALSE;
         CPGPLinked = GX_FALSE;
         CPUFifo.bind_cpu = CPUFifo.bind_gp = GX_FALSE;
-        OSRestoreInterrupts(enabled);
+        OSRestoreInterrupts(en);
         return;
     }
 
@@ -187,18 +175,19 @@ void GXSetCPUFifo(GXFifoObj* fifo) {
         CPUFifo.bind_gp = GX_TRUE;
 
         reg = 0;
+        
+        GX_SET_PI_REG(3, GX_PHY_ADDR(CPUFifo.base));
+        GX_SET_PI_REG(4, GX_PHY_ADDR(CPUFifo.top));
 
-        GX_SET_PI_REG(3, (u32)CPUFifo.base & 0x3FFFFFFF);
-        GX_SET_PI_REG(4, (u32)CPUFifo.top & 0x3FFFFFFF);
-
-        GX_SET_REG_FIELD(reg, 24, 5, (u32)CPUFifo.wrPtr >> 5);
+        GX_SET_REG_FIELD(reg, 24, 5, (GX_PHY_ADDR(CPUFifo.wrPtr) >> 5));
         GX_SET_REG_FIELD(reg, 1, 29, 0);
         GX_SET_PI_REG(5, reg);
 
         __GXWriteFifoIntReset(GX_TRUE, GX_TRUE);
         __GXWriteFifoIntEnable(GX_TRUE, GX_FALSE);
         __GXFifoLink(GX_TRUE);
-    } else {
+    }
+    else {
         CPUFifo.bind_gp = GX_FALSE;
 
         if (CPGPLinked) {
@@ -206,70 +195,70 @@ void GXSetCPUFifo(GXFifoObj* fifo) {
             CPGPLinked = GX_FALSE;
         }
 
-        __GXWriteFifoIntEnable(GX_FALSE, GX_FALSE);
+        __GXWriteFifoIntEnable (GX_FALSE, GX_FALSE);
 
         reg = 0;
 
-        GX_SET_PI_REG(3, (u32)CPUFifo.base & 0x3FFFFFFF);
-        GX_SET_PI_REG(4, (u32)CPUFifo.top & 0x3FFFFFFF);
-        GX_SET_REG_FIELD(reg, 24, 5, (u32)CPUFifo.wrPtr >> 5);
+        GX_SET_PI_REG(3, GX_PHY_ADDR(CPUFifo.base));
+        GX_SET_PI_REG(4, GX_PHY_ADDR(CPUFifo.top));  
+        GX_SET_REG_FIELD(reg, 24, 5, (GX_PHY_ADDR(CPUFifo.wrPtr) >> 5));
         GX_SET_REG_FIELD(reg, 1, 29, 0);
         GX_SET_PI_REG(5, reg);
     }
 
     PPCSync();
-
-    OSRestoreInterrupts(enabled);
+    OSRestoreInterrupts(en);
 }
 
 void GXSetGPFifo(GXFifoObj* fifo) {
-    __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
-    BOOL enabled = OSDisableInterrupts();
+    const __GXFifoObj* realFifo = (const __GXFifoObj*)fifo;
+    BOOL en;
     u32 stbtmp;
 
+    en = OSDisableInterrupts();
     __GXFifoReadDisable();
-    __GXWriteFifoIntEnable(0, 0);
+    __GXWriteFifoIntEnable (GX_FALSE, GX_FALSE);
 
     if (fifo == NULL) {
         GPFifoReady = GX_FALSE;
         CPGPLinked = GX_FALSE;
         __GXFifoLink(GX_FALSE);
         GPFifo.bind_gp = GPFifo.bind_cpu = GX_FALSE;
-        OSRestoreInterrupts(enabled);
+        OSRestoreInterrupts(en);
         return;
     }
 
     GPFifo = *realFifo;
     GPFifoReady = GX_TRUE;
     GPFifo.bind_gp = GX_TRUE;
-
-    GX_SET_CP_REG(16, (u32)GPFifo.base & 0xFFFF);
-    GX_SET_CP_REG(18, (u32)GPFifo.top & 0xFFFF);
-    GX_SET_CP_REG(24, GPFifo.count & 0xFFFF);
-    GX_SET_CP_REG(26, (u32)GPFifo.wrPtr & 0xFFFF);
-    GX_SET_CP_REG(28, (u32)GPFifo.rdPtr & 0xFFFF);
-    GX_SET_CP_REG(20, (u32)GPFifo.hiWatermark & 0xFFFF);
-    GX_SET_CP_REG(22, (u32)GPFifo.loWatermark & 0xFFFF);
-    GX_SET_CP_REG(17, ((u32)GPFifo.base & 0x3FFFFFFF) >> 16);
-    GX_SET_CP_REG(19, ((u32)GPFifo.top & 0x3FFFFFFF) >> 16);
-    GX_SET_CP_REG(25, GPFifo.count >> 16);
-    GX_SET_CP_REG(27, ((u32)GPFifo.wrPtr & 0x3FFFFFFF) >> 16);
-    GX_SET_CP_REG(29, ((u32)GPFifo.rdPtr & 0x3FFFFFFF) >> 16);
-    GX_SET_CP_REG(21, (u32)GPFifo.hiWatermark >> 16);
-    GX_SET_CP_REG(23, (u32)GPFifo.loWatermark >> 16);
+    GX_SET_CP_REG(0x10, GX_PHY_ADDR(GPFifo.base));
+    GX_SET_CP_REG(0x12, GX_PHY_ADDR(GPFifo.top));
+    GX_SET_CP_REG(0x18, GPFifo.count);
+    GX_SET_CP_REG(0x1a, GX_PHY_ADDR(GPFifo.wrPtr));
+    GX_SET_CP_REG(0x1c, GX_PHY_ADDR(GPFifo.rdPtr));
+    GX_SET_CP_REG(0x14, GPFifo.hiWatermark);
+    GX_SET_CP_REG(0x16, GPFifo.loWatermark);
+    GX_SET_CP_REG(0x11, GX_PHY_ADDR(GPFifo.base) >> 16);
+    GX_SET_CP_REG(0x13, GX_PHY_ADDR(GPFifo.top) >> 16);
+    GX_SET_CP_REG(0x19, GPFifo.count >> 16);
+    GX_SET_CP_REG(0x1b, GX_PHY_ADDR(GPFifo.wrPtr) >> 16);
+    GX_SET_CP_REG(0x1d, GX_PHY_ADDR(GPFifo.rdPtr) >> 16);
+    GX_SET_CP_REG(0x15, GPFifo.hiWatermark >> 16);
+    GX_SET_CP_REG(0x17, GPFifo.loWatermark >> 16);
 
     PPCSync();
 
     if (CPGPLinkCheck()) {
         CPGPLinked = GX_TRUE;
         GPFifo.bind_cpu = GX_TRUE;
-        __GXWriteFifoIntEnable(1, 0);
-        __GXFifoLink(1);
-    } else {
+        __GXWriteFifoIntEnable(GX_TRUE, GX_FALSE);
+        __GXFifoLink(GX_TRUE);
+    }
+    else {
         CPGPLinked = GX_FALSE;
         GPFifo.bind_cpu = GX_FALSE;
-        __GXWriteFifoIntEnable(0, 0);
-        __GXFifoLink(0);
+        __GXWriteFifoIntEnable(GX_FALSE, GX_FALSE);
+        __GXFifoLink(GX_FALSE);
     }
 
     stbtmp = __GXData->cpEnable;
@@ -277,41 +266,23 @@ void GXSetGPFifo(GXFifoObj* fifo) {
     GX_SET_REG_FIELD(stbtmp, 1, 5, 0);
     GX_SET_CP_REG(1, stbtmp);
     GX_SET_CP_REG(1, __GXData->cpEnable);
-
-    __GXWriteFifoIntReset(1, 1);
+    __GXWriteFifoIntReset(GX_TRUE, GX_TRUE);
     __GXFifoReadEnable();
-    OSRestoreInterrupts(enabled);
+    OSRestoreInterrupts(en);
 }
 
-#define SOME_MACRO1(fifo)                                                                                                                            \
-    {                                                                                                                                                \
-        u32 temp = GX_GET_CP_REG(29) << 16;                                                                                                          \
-        temp |= GX_GET_CP_REG(28);                                                                                                                   \
-        fifo.rdPtr = OSPhysicalToCached(temp);                                                                                                       \
-    }
-
-#define SOME_MACRO2(fifo)                                                                                                                            \
-    {                                                                                                                                                \
-        u32 temp = GX_GET_CP_REG(25) << 16;                                                                                                          \
-        temp |= GX_GET_CP_REG(24);                                                                                                                   \
-        fifo.count = temp;                                                                                                                           \
-    }
-
-static void __GXSaveFifoCPStat() {
-    u32 cpStatus;
-    u8 readIdle;
-
-    SOME_MACRO1(GPFifo);
-    SOME_MACRO2(GPFifo);
+static void __GXSaveFifoCPStat(void) {
+    CP_READ_2U16(GPFifo.rdPtr, 29, 28, void*);
+    CP_READ_2U16_INT(GPFifo.count, 25, 24, s32);
 }
 
-static void __GXSaveFifoPIStat() {
+static void __GXSaveFifoPIStat(void) {
     u32 reg = GX_GET_PI_REG(5);
     CPUFifo.wrPtr = OSPhysicalToCached(reg & 0x1FFFFFE0);
-    CPUFifo.wrap = (reg & 0x20000000) ? GX_TRUE : GX_FALSE;
+    CPUFifo.wrap = (GXBool)((reg & 0x20000000) ? GX_TRUE : GX_FALSE);
 }
 
-static void __GXSaveFifo() {
+void __GXSaveFifo(void) {
     BOOL en = OSDisableInterrupts();
 
     if (CPUFifoReady) {
@@ -327,8 +298,9 @@ static void __GXSaveFifo() {
         CPUFifo.count = GPFifo.count;
         GPFifo.wrPtr = CPUFifo.wrPtr;
         GPFifo.wrap = CPUFifo.wrap;
-    } else if (CPUFifoReady) {
-        CPUFifo.count = (s32)CPUFifo.wrPtr - (s32)CPUFifo.rdPtr;
+    }
+    else if (CPUFifoReady) {
+        CPUFifo.count  = (s32)CPUFifo.wrPtr - (s32)CPUFifo.rdPtr;
         if (CPUFifo.count < 0) {
             CPUFifo.count += CPUFifo.size;
         }
@@ -337,36 +309,37 @@ static void __GXSaveFifo() {
     OSRestoreInterrupts(en);
 }
 
-GXBool __GXIsGPFifoReady() {
+GXBool __GXIsGPFifoReady(void) {
     return GPFifoReady;
 }
 
 void GXGetGPStatus(GXBool* overhi, GXBool* underlow, GXBool* readIdle, GXBool* cmdIdle, GXBool* brkpt) {
     __GXData->cpStatus = GX_GET_CP_REG(0);
-    *overhi = GX_GET_REG_FIELD(__GXData->cpStatus, 1, 0);
-    *underlow = (int)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 1);
-    *readIdle = (int)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 2);
-    *cmdIdle = (int)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 3);
-    *brkpt = (int)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 4);
+    *overhi = (u8)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 0);
+    *underlow = (u8)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 1);
+    *readIdle = (u8)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 2);
+    *cmdIdle = (u8)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 3);
+    *brkpt = (u8)GX_GET_REG_FIELD(__GXData->cpStatus, 1, 4);
 }
 
-GXBool GXGetCPUFifo(GXFifoObj* fifo) {
+GXBool GXGetCPUFifo(GXFifoObj *fifo) {
     __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
     if (!CPUFifoReady) {
         return GX_FALSE;
     }
 
-    GXFlush();
     __GXSaveFifo();
-
     *realFifo = CPUFifo;
-
     return GX_TRUE;
 }
 
-GXFifoObj* GXGetGPFifo() {
-    return (GXFifoObj*)&GPFifo;
+#if 0 // not linked in City Folk
+void GXGetFifoPtrs(const GXFifoObj* fifo, void** readPtr, void** writePtr) {
+    __GXFifoObj* realFifo = (__GXFifoObj*) fifo;
+    *readPtr  = realFifo->rdPtr;
+    *writePtr = realFifo->wrPtr;
 }
+#endif
 
 u32 GXGetFifoCount(const GXFifoObj* fifo) {
     __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
@@ -374,37 +347,63 @@ u32 GXGetFifoCount(const GXFifoObj* fifo) {
 }
 
 GXBool GXGetFifoWrap(const GXFifoObj* fifo) {
-    __GXFifoObj* realFifo = (__GXFifoObj*)fifo;
+    __GXFifoObj* realFifo = (__GXFifoObj*) fifo;
     return realFifo->wrap;
 }
 
 GXBreakPtCallback GXSetBreakPtCallback(GXBreakPtCallback cb) {
     GXBreakPtCallback oldcb = BreakPointCB;
     BOOL enabled = OSDisableInterrupts();
-
     BreakPointCB = cb;
     OSRestoreInterrupts(enabled);
     return oldcb;
 }
 
+#if 0 // not linked in City Folk
+void GXEnableBreakPt(void* break_pt) {
+    BOOL enabled = OSDisableInterrupts();
+    __GXFifoReadDisable();
+    GX_SET_CP_REG(0x1e, GX_PHY_ADDR(break_pt));
+    GX_SET_CP_REG(0x1f, GX_PHY_ADDR(break_pt) >> 16);
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 1, 0);
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 5, 0);
+    GX_SET_CP_REG(1, __GXData->cpEnable);
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 1, 1);
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 5, 1);
+    GX_SET_CP_REG(1, __GXData->cpEnable);
+    __GXCurrentBP = break_pt;
+    __GXFifoReadEnable();
+    OSRestoreInterrupts(enabled);
+}
+#endif
+
+#if 0 // not linked in City Folk
+void GXDisableBreakPt(void) {
+    BOOL enabled = OSDisableInterrupts();
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 1, 0);
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 5, 0);
+    GX_SET_CP_REG(1, __GXData->cpEnable);
+    __GXCurrentBP = 0;
+    OSRestoreInterrupts(enabled);
+}
+#endif
+
 void __GXFifoInit() {
     __OSSetInterruptHandler(__OS_INTERRUPT_PI_CP, GXCPInterruptHandler);
     __OSUnmaskInterrupts(OS_INTERRUPTMASK_PI_CP);
     __GXCurrentThread = OSGetCurrentThread();
-
     GXOverflowSuspendInProgress = FALSE;
-
     memset(&CPUFifo, 0, sizeof(__GXFifoObj));
     memset(&GPFifo, 0, sizeof(__GXFifoObj));
-
     CPUFifoReady = GX_FALSE;
-    GPFifoReady = GX_FALSE;
+    GPFifoReady  = GX_FALSE;
 }
 
-void __GXCleanGPFifo() {
+void __GXCleanGPFifo (void)
+{
     BOOL enabled;
 
-    if (!GPFifoReady) {
+    if ( !GPFifoReady) {
         return;
     }
 
@@ -413,12 +412,12 @@ void __GXCleanGPFifo() {
     __GXWriteFifoIntEnable(GX_FALSE, GX_FALSE);
     GPFifo.rdPtr = GPFifo.wrPtr;
     GPFifo.count = 0;
-    GX_SET_CP_REG(24, GPFifo.count);
-    GX_SET_CP_REG(26, (u32)GPFifo.wrPtr & 0x3FFFFFFF);
-    GX_SET_CP_REG(28, (u32)GPFifo.rdPtr & 0x3FFFFFFF);
-    GX_SET_CP_REG(25, GPFifo.count >> 16);
-    GX_SET_CP_REG(27, ((u32)GPFifo.wrPtr & 0x3FFFFFFF) >> 16);
-    GX_SET_CP_REG(29, ((u32)GPFifo.rdPtr & 0x3FFFFFFF) >> 16);
+    GX_SET_CP_REG(0x18, GPFifo.count);
+    GX_SET_CP_REG(0x1a, GX_PHY_ADDR(GPFifo.wrPtr));
+    GX_SET_CP_REG(0x1c, GX_PHY_ADDR(GPFifo.rdPtr));
+    GX_SET_CP_REG(0x19, GPFifo.count>>16);
+    GX_SET_CP_REG(0x1b, GX_PHY_ADDR(GPFifo.wrPtr)>>16);
+    GX_SET_CP_REG(0x1d, GX_PHY_ADDR(GPFifo.rdPtr)>>16);
 
     PPCSync();
 
@@ -427,7 +426,7 @@ void __GXCleanGPFifo() {
         CPUFifo.rdPtr = GPFifo.rdPtr;
         CPUFifo.wrPtr = GPFifo.wrPtr;
         CPUFifo.count = GPFifo.count;
-        GX_SET_REG_FIELD(reg, 24, 5, (u32)CPUFifo.wrPtr >> 5);
+        GX_SET_REG_FIELD(reg, 24, 5, (GX_PHY_ADDR(CPUFifo.wrPtr) >> 5));
         GX_SET_REG_FIELD(reg, 1, 29, 0);
         GX_SET_PI_REG(5, reg);
         __GXWriteFifoIntEnable(GX_TRUE, GX_FALSE);
@@ -441,4 +440,31 @@ void __GXCleanGPFifo() {
     __GXWriteFifoIntReset(GX_TRUE, GX_TRUE);
     __GXFifoReadEnable();
     OSRestoreInterrupts(enabled);
+}
+
+static void __GXWriteFifoIntEnable(GXBool hi, GXBool lo) {
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 2, hi);
+    GX_SET_REG_FIELD(__GXData->cpEnable, 1, 3, lo);
+    GX_SET_CP_REG(1, (u16)__GXData->cpEnable);
+}
+
+static void __GXWriteFifoIntReset(GXBool hi, GXBool lo) {
+    GX_SET_REG_FIELD(__GXData->cpClr, 1, 0, hi);
+    GX_SET_REG_FIELD(__GXData->cpClr, 1, 1, lo);
+    GX_SET_CP_REG(2, (u16)__GXData->cpClr);
+}
+
+OSThread* GXSetCurrentGXThread(void) {
+    BOOL enabled;
+    OSThread* prev;
+
+    enabled = OSDisableInterrupts();
+    prev = __GXCurrentThread;
+    __GXCurrentThread = OSGetCurrentThread();
+    OSRestoreInterrupts(enabled);
+    return prev;
+}
+
+OSThread* GXGetCurrentGXThread(void) {
+    return __GXCurrentThread;
 }

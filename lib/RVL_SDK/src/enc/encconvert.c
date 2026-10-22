@@ -5,178 +5,265 @@
 
 static ENCEncoding ENCiGetEncodingTypeFromHashTable(const struct encoding_hash_table_entry* table, int tableLength, const u8* encodingName);
 
-static ENCResult ENCiConvertToInternalEncoding(ENCContext* context, u16* dst, s32* dstSize, const void* src, s32* srcSize);
 static ENCResult ENCiConvertFromInternalEncoding(ENCContext* context, void* dst, s32* dstSize, const u16* src, s32* srcSize);
 
-struct encoding const encoding_array[] = {
-    {(0), FALSE, ""},                     // none
-    {sizeof(char), TRUE, "US-ASCII"},     // ASCII
-    {sizeof(u8), FALSE, "UTF-8"},         // UTF-8
-    {sizeof(u16), FALSE, "UTF-16BE"},     // UTF-16
-    {sizeof(u32), FALSE, "UTF-32BE"},     // UTF-32
-    {sizeof(u8), FALSE, "ISO-8859-1"},    // extASCII
-    {sizeof(u8), FALSE, "ISO-8859-2"},    // extASCII
-    {sizeof(u8), FALSE, "ISO-8859-3"},    // extASCII
-    {sizeof(u8), FALSE, "ISO-8859-7"},    // extASCII
-    {sizeof(u8), FALSE, "ISO-8859-10"},   // extASCII
-    {sizeof(u8), FALSE, "ISO-8859-15"},   // extASCII
-    {sizeof(char), TRUE, "ISO-2022-JP"},  // stateful
-    {sizeof(u8), FALSE, "Shift_JIS"},     // multi-byte
-    {sizeof(u8), FALSE, "windows-1252"},  // extASCII
-    {sizeof(u8), FALSE, "EUC-KR"},        // multi-byte
-    {sizeof(u8), FALSE, "GB2312"},        // multi-byte
-    {sizeof(char), TRUE, "UTF-7"},        // stateful
-    {sizeof(u16), FALSE, "UTF-16"},       // UTF-16
-    {sizeof(u16), FALSE, "UTF-16LE"},     // UTF-16
-    {sizeof(u8), FALSE, "windows-1250"},  // extASCII
-    {sizeof(u8), FALSE, "windows-1253"},  // extASCII
-    {sizeof(u8), FALSE, "macintosh"},     // extASCII
-    {sizeof(u8), FALSE, "x-mac-greek"},   // extASCII
-    {sizeof(u8), FALSE, "x-mac-ce"},      // extASCII
-    {sizeof(u8), FALSE, "IBM850"},        // extASCII
-    {sizeof(u8), FALSE, "IBM852"},        // extASCII
+const struct encoding encoding_array[] = {
+    {(0), FALSE, ""},
+    {sizeof(char), TRUE, "US-ASCII"},
+    {sizeof(u8), FALSE, "UTF-8"},
+    {sizeof(u16), FALSE, "UTF-16BE"},
+    {sizeof(u32), FALSE, "UTF-32BE"},
+    {sizeof(u8), FALSE, "ISO-8859-1"},
+    {sizeof(u8), FALSE, "ISO-8859-2"},
+    {sizeof(u8), FALSE, "ISO-8859-3"},
+    {sizeof(u8), FALSE, "ISO-8859-7"},
+    {sizeof(u8), FALSE, "ISO-8859-10"},
+    {sizeof(u8), FALSE, "ISO-8859-15"},
+    {sizeof(char), TRUE, "ISO-2022-JP"},
+    {sizeof(u8), FALSE, "Shift_JIS"},
+    {sizeof(u8), FALSE, "windows-1252"},
+    {sizeof(char), TRUE, "UTF-7"},
+    {sizeof(u16), FALSE, "UTF-16"},
+    {sizeof(u16), FALSE, "UTF-16LE"},
+    {sizeof(u8), FALSE, "windows-1250"},
+    {sizeof(u8), FALSE, "windows-1253"},
+    {sizeof(u8), FALSE, "macintosh"},
+    {sizeof(u8), FALSE, "x-mac-greek"},
+    {sizeof(u8), FALSE, "x-mac-ce"},
+    {sizeof(u8), FALSE, "IBM850"},
+    {sizeof(u8), FALSE, "IBM852"},
 };
 
 const struct encoding_hash_table_entry encoding_table[] = {
-    // Hash table entries
-    // Hex indices redirect to another entry, decimal entries do not
-    {"iso885910", ENC_ENCODING_ISO_8859_10, 0},
-    {"iso88591windows30latin1", ENC_ENCODING_WINDOWS_1252, 1},
-    {"utf16le", ENC_ENCODING_UTF_16LE, 0x41},  // -> "iso88591windows31latin1"
-    {"utf7", ENC_ENCODING_UTF_7, 3},
-    {"utf8", ENC_ENCODING_UTF_8, 4},
-    {"ascii", ENC_ENCODING_US_ASCII, 0x00},           // -> "iso885910"
-    {"iso885915", ENC_ENCODING_ISO_8859_15, 0x74},    // -> "euccn"
-    {"iso10646ucs2be", ENC_ENCODING_UTF_16BE, 0x3c},  // -> "mskanji "
-    {"iso646irv1991", ENC_ENCODING_US_ASCII, 8},
-    {"iso10646ucs4be", ENC_ENCODING_UTF_32BE, 0x65},  // -> "ksc5601"
-    {"greek", ENC_ENCODING_ISO_8859_7, 0x06},         // -> "iso885915"
-    {"ansix341968", ENC_ENCODING_US_ASCII, 0x0c},     // -> "ansix341986"
-    {"ansix341986", ENC_ENCODING_US_ASCII, 12},
-    {"isolatin1", ENC_ENCODING_ISO_8859_1, 13},
-    {"iso10646ucsbasic", ENC_ENCODING_UTF_16BE, 0x28},  // -> "isolatin2"
-    {"isolatin3", ENC_ENCODING_ISO_8859_3, 15},
-    {"iso646us", ENC_ENCODING_US_ASCII, 16},
-    {"iso10646ucs2le", ENC_ENCODING_UTF_16LE, 17},
-    {"isolatin6", ENC_ENCODING_ISO_8859_10, 18},
-    {"cp1200", ENC_ENCODING_UTF_16, 19},
-    {"isoir6", ENC_ENCODING_US_ASCII, 20},
-    {"unicode11utf8", ENC_ENCODING_UTF_8, 0x19},     // -> "unicode20utf8"
-    {"iso2022jp1", ENC_ENCODING_ISO_2022_JP, 0x60},  // -> "euckr"
-    {"iso2022jp2", ENC_ENCODING_ISO_2022_JP, 23},
-    {"cp1250", ENC_ENCODING_WINDOWS_1250, 24},
-    {"unicode20utf8", ENC_ENCODING_UTF_8, 25},
-    {"cp1252", ENC_ENCODING_WINDOWS_1252, 26},
-    {"cp1253", ENC_ENCODING_WINDOWS_1253, 27},
-    {"l1", ENC_ENCODING_ISO_8859_1, 0x7e},  // -> "850"
-    {"l2", ENC_ENCODING_ISO_8859_2, 29},
-    {"l3", ENC_ENCODING_ISO_8859_3, 0x80},  // -> "852"
-    {"unicode20", ENC_ENCODING_UTF_16BE, 31},
-    {"unicode20utf16", ENC_ENCODING_UTF_16BE, 0x6b},  // -> "gb231280"
-    {"l6", ENC_ENCODING_ISO_8859_10, 0x75},           // -> "iso88592windowslatin2"
-    {"unicodeascii", ENC_ENCODING_UTF_16BE, 0x34},    // -> "isolatingreek"
-    {"iso10646", ENC_ENCODING_UTF_16BE, 35},
-    {"iso10646unicodelatin1", ENC_ENCODING_UTF_16BE, 36},
-    {"ucs4be", ENC_ENCODING_UTF_32BE, 0x2b},  // -> "greek8"
-    {"unicodelatin1", ENC_ENCODING_UTF_16BE, 38},
-    {"ibm819", ENC_ENCODING_ISO_8859_1, 39},
-    {"isolatin2", ENC_ENCODING_ISO_8859_2, 0x6a},  // -> "gb2312"
-    {"isoir101", ENC_ENCODING_ISO_8859_2, 0x35},   // -> "iso885971987"
-    {"windows949", ENC_ENCODING_EUC_KR, 0x6f},     // -> "iso58gb231280"
-    {"greek8", ENC_ENCODING_ISO_8859_7, 43},
-    {"ecma118", ENC_ENCODING_ISO_8859_7, 0x49},       // -> "windows30latin1"
-    {"iso885911987", ENC_ENCODING_ISO_8859_1, 0x50},  // -> "windows31latin1"
-    {"iso885921987", ENC_ENCODING_ISO_8859_2, 0x7a},  // -> "windows31latin2"
-    {"mac", ENC_ENCODING_MACINTOSH, 47},
-    {"iso885931988", ENC_ENCODING_ISO_8859_3, 48},
-    {"utf32", ENC_ENCODING_UTF_32BE, 49},
-    {"isoir100", ENC_ENCODING_ISO_8859_1, 50},
-    {"utf16", ENC_ENCODING_UTF_16, 0x29},  // -> "isoir101"
-    {"isolating"
-     "reek",
-     ENC_ENCODING_ISO_8859_7, 52},  // Well then maybe it shouldn't be so isolating
-    {"iso885971987", ENC_ENCODING_ISO_8859_7, 53},
-    {"sjis", ENC_ENCODING_SHIFT_JIS, 0x37},  // -> "suneugreek"
-    {"suneugreek", ENC_ENCODING_ISO_8859_7, 55},
-    {"mscp932", ENC_ENCODING_SHIFT_JIS, 56},
-    {"macgreek", ENC_ENCODING_X_MAC_GREEK, 57},
-    {"isoir126", ENC_ENCODING_ISO_8859_7, 58},
-    {"isoir109", ENC_ENCODING_ISO_8859_3, 59},
-    {"mskanji" /* + */ " ", ENC_ENCODING_SHIFT_JIS, 60},  // NOTE the trailing space here (ERRATUM?)
-    {"windows31j", ENC_ENCODING_SHIFT_JIS, 61},
-    {"isoir157", ENC_ENCODING_ISO_8859_15, 0x68},  // -> "uhc"
-    {"macintosh", ENC_ENCODING_MACINTOSH, 0x64},   // -> "isoir149"
-    {"ucs2be", ENC_ENCODING_UTF_16BE, 64},
-    {"iso88591windows31latin1", ENC_ENCODING_WINDOWS_1252, 65},
-    {"iso10646ucs2", ENC_ENCODING_UTF_16BE, 0x25},  // -> "ucs4be"
-    {"unicode11", ENC_ENCODING_UTF_16BE, 0x1f},     // -> "unicode20"
-    {"iso10646ucs4", ENC_ENCODING_UTF_32BE, 68},
-    {"latin1", ENC_ENCODING_ISO_8859_1, 69},
-    {"latin2", ENC_ENCODING_ISO_8859_2, 0x51},   // -> "unicode11utf7"
-    {"latin3", ENC_ENCODING_ISO_8859_3, 0x15},   // -> "unicode11utf8"
-    {"macroman", ENC_ENCODING_MACINTOSH, 0x23},  // -> "iso10646"
-    {"windows30latin1", ENC_ENCODING_WINDOWS_1252, 73},
-    {"latin6", ENC_ENCODING_ISO_8859_10, 0x5d},  // -> "ucs2le"
-    {"cp65000", ENC_ENCODING_UTF_7, 75},
-    {"windows1250", ENC_ENCODING_WINDOWS_1250, 76},
-    {"latin9", ENC_ENCODING_ISO_8859_15, 0x38},        // -> "mscp932"
-    {"windows1252", ENC_ENCODING_WINDOWS_1252, 0x10},  // -> "iso646us"
-    {"windows1253", ENC_ENCODING_WINDOWS_1253, 79},
-    {"windows31latin1", ENC_ENCODING_WINDOWS_1252, 80},
-    {"unicode11utf7", ENC_ENCODING_UTF_7, 0x5b},  // -> "unicode20utf7"
-    {"ibm850", ENC_ENCODING_IBM850, 0x3d},        // -> "windows31j"
-    {"elot928", ENC_ENCODING_ISO_8859_7, 83},
-    {"ibm852", ENC_ENCODING_IBM852, 84},
-    {"ibm367", ENC_ENCODING_US_ASCII, 85},
-    {"iso88591", ENC_ENCODING_ISO_8859_1, 86},
-    {"iso88592", ENC_ENCODING_ISO_8859_2, 0x27},  // -> "ibm819"
-    {"iso88593", ENC_ENCODING_ISO_8859_3, 0x14},  // -> "isoir6"
-    {"iso8859101992", ENC_ENCODING_ISO_8859_15, 89},
-    {"chinese", ENC_ENCODING_GB2312, 90},
-    {"unicode20utf7", ENC_ENCODING_UTF_7, 91},
-    {"iso88597", ENC_ENCODING_ISO_8859_7, 0x0b},  // -> "ansix341968"
-    {"ucs2le", ENC_ENCODING_UTF_16LE, 93},
-    {"shiftjis", ENC_ENCODING_SHIFT_JIS, 94},
-    {"pcp852", ENC_ENCODING_IBM852, 95},
-    {"euckr", ENC_ENCODING_EUC_KR, 96},
-    {"ksc56011987", ENC_ENCODING_EUC_KR, 97},
-    {"iso10646j1", ENC_ENCODING_UTF_16BE, 98},
-    {"ksc56011989", ENC_ENCODING_EUC_KR, 99},
-    {"isoir149", ENC_ENCODING_EUC_KR, 100},
-    {"ksc5601", ENC_ENCODING_EUC_KR, 101},
-    {"iso2022jp", ENC_ENCODING_ISO_2022_JP, 102},
-    {"us", ENC_ENCODING_US_ASCII, 0x22},  // -> "unicodeascii"
-    {"uhc", ENC_ENCODING_EUC_KR, 104},
-    {"cp949", ENC_ENCODING_EUC_KR, 105},
-    {"gb2312", ENC_ENCODING_GB2312, 0x6d},  // -> "isoir58"
-    {"gb231280", ENC_ENCODING_GB2312, 107},
-    {"usascii", ENC_ENCODING_US_ASCII, 108},
-    {"isoir58", ENC_ENCODING_GB2312, 109},
-    {"cp850", ENC_ENCODING_IBM850, 0x24},  // -> "iso10646unicodelatin1"
-    {"iso58gb231280", ENC_ENCODING_GB2312, 111},
-    {"cp852", ENC_ENCODING_IBM852, 112},
-    {"cp367", ENC_ENCODING_US_ASCII, 113},
-    {"utf8n", ENC_ENCODING_UTF_8, 114},
-    {"cp819", ENC_ENCODING_ISO_8859_1, 115},
-    {"euccn", ENC_ENCODING_GB2312, 116},
-    {"iso88592windowslatin2", ENC_ENCODING_WINDOWS_1250, 117},
-    {"macce", ENC_ENCODING_X_MAC_CE, 0x20},    // -> "unicode20utf16"
-    {"utf32be", ENC_ENCODING_UTF_32BE, 0x69},  // -> "cp949"
-    {"ibm1200", ENC_ENCODING_UTF_16, 120},
-    {"utf16be", ENC_ENCODING_UTF_16BE, 121},
-    {"windows31latin2", ENC_ENCODING_WINDOWS_1250, 122},
-    {"ucs2", ENC_ENCODING_UTF_16BE, 0x7f},  // -> "pc850multilingual"
-    {"korean", ENC_ENCODING_EUC_KR, 124},
-    {"ucs4", ENC_ENCODING_UTF_32BE, 125},
-    {"850", ENC_ENCODING_IBM850, 126},
-    {"pc850multilingual", ENC_ENCODING_IBM850, 127},
-    {"852", ENC_ENCODING_IBM852, 128},
+    {"windows1252", ENC_ENCODING_WINDOWS_1252, 0},
+    {"windows1253", ENC_ENCODING_WINDOWS_1253, 1},
+    {"macroman", ENC_ENCODING_MACINTOSH, 34},
+    {"macgreek", ENC_ENCODING_X_MAC_GREEK, 3},
+    {"us", ENC_ENCODING_US_ASCII, 31},
+    {"isolatin2", ENC_ENCODING_ISO_8859_2, 5},
+    {"isolatin3", ENC_ENCODING_ISO_8859_3, 41},
+    {"ansix341986", ENC_ENCODING_US_ASCII, 7},
+    {"isoir6", ENC_ENCODING_US_ASCII, 8},
+    {"isolatin6", ENC_ENCODING_ISO_8859_10, 9},
+    {"unicode20utf8", ENC_ENCODING_UTF_8, 24},
+    {"isoir100", ENC_ENCODING_ISO_8859_1, 11},
+    {"isoir101", ENC_ENCODING_ISO_8859_2, 12},
+    {"ibm850", ENC_ENCODING_IBM850, 37},
+    {"iso88591windows31latin1", ENC_ENCODING_WINDOWS_1252, 14},
+    {"ibm852", ENC_ENCODING_IBM852, 15},
+    {"ibm367", ENC_ENCODING_US_ASCII, 16},
+    {"unicode20", ENC_ENCODING_UTF_16BE, 29},
+    {"ibm819", ENC_ENCODING_ISO_8859_1, 18},
+    {"isoir126", ENC_ENCODING_ISO_8859_7, 19},
+    {"isoir109", ENC_ENCODING_ISO_8859_3, 20},
+    {"unicodeascii", ENC_ENCODING_UTF_16BE, 21},
+    {"iso10646ucsbasic", ENC_ENCODING_UTF_16BE, 22},
+    {"isoir157", ENC_ENCODING_ISO_8859_15, 23},
+    {"iso10646unicodelatin1", ENC_ENCODING_UTF_16BE, 24},
+    {"isolatingreek", ENC_ENCODING_ISO_8859_7, 25},
+    {"pcp852", ENC_ENCODING_IBM852, 26},
+    {"iso10646ucs4", ENC_ENCODING_UTF_32BE, 27},
+    {"iso10646ucs2be", ENC_ENCODING_UTF_16BE, 28},
+    {"l1", ENC_ENCODING_ISO_8859_1, 44},
+    {"iso10646ucs4be", ENC_ENCODING_UTF_32BE, 30},
+    {"isolatin1", ENC_ENCODING_ISO_8859_1, 31},
+    {"greek8", ENC_ENCODING_ISO_8859_7, 32},
+    {"elot928", ENC_ENCODING_ISO_8859_7, 33},
+    {"l6", ENC_ENCODING_ISO_8859_10, 34},
+    {"iso8859101992", ENC_ENCODING_ISO_8859_15, 35},
+    {"mscp932", ENC_ENCODING_SHIFT_JIS, 36},
+    {"iso88591windows30latin1", ENC_ENCODING_WINDOWS_1252, 37},
+    {"iso10646ucs2le", ENC_ENCODING_UTF_16LE, 38},
+    {"iso646us", ENC_ENCODING_US_ASCII, 39},
+    {"unicode20utf7", ENC_ENCODING_UTF_7, 40},
+    {"cp65000", ENC_ENCODING_UTF_7, 41},
+    {"ucs2le", ENC_ENCODING_UTF_16LE, 42},
+    {"windows31latin2", ENC_ENCODING_WINDOWS_1250, 43},
+    {"850", ENC_ENCODING_IBM850, 44},
+    {"utf8n", ENC_ENCODING_UTF_8, 45},
+    {"852", ENC_ENCODING_IBM852, 46},
+    {"", ENC_ENCODING_NONE, 47},
+    {"", ENC_ENCODING_NONE, 48},
+    {"macce", ENC_ENCODING_X_MAC_CE, 49},
+    {"", ENC_ENCODING_NONE, 50},
+    {"ibm1200", ENC_ENCODING_UTF_16, 51},
+    {"", ENC_ENCODING_NONE, 52},
+    {"", ENC_ENCODING_NONE, 53},
+    {"macintosh", ENC_ENCODING_MACINTOSH, 54},
+    {"", ENC_ENCODING_NONE, 55},
+    {"", ENC_ENCODING_NONE, 56},
+    {"iso10646ucs2", ENC_ENCODING_UTF_16BE, 57},
+    {"", ENC_ENCODING_NONE, 58},
+    {"iso10646j1", ENC_ENCODING_UTF_16BE, 27},
+    {"", ENC_ENCODING_NONE, 60},
+    {"", ENC_ENCODING_NONE, 61},
+    {"", ENC_ENCODING_NONE, 62},
+    {"iso2022jp", ENC_ENCODING_ISO_2022_JP, 63},
+    {"", ENC_ENCODING_NONE, 64},
+    {"ascii", ENC_ENCODING_US_ASCII, 22},
+    {"", ENC_ENCODING_NONE, 66},
+    {"windows1250", ENC_ENCODING_WINDOWS_1250, 67},
+    {"", ENC_ENCODING_NONE, 68},
+    {"usascii", ENC_ENCODING_US_ASCII, 0},
+    {"greek", ENC_ENCODING_ISO_8859_7, 1},
+    {"", ENC_ENCODING_NONE, 71},
+    {"", ENC_ENCODING_NONE, 72},
+    {"windows31j", ENC_ENCODING_SHIFT_JIS, 73},
+    {"", ENC_ENCODING_NONE, 74},
+    {"pc850multilingual", ENC_ENCODING_IBM850, 75},
+    {"", ENC_ENCODING_NONE, 76},
+    {"mac", ENC_ENCODING_MACINTOSH, 77},
+    {"", ENC_ENCODING_NONE, 78},
+    {"", ENC_ENCODING_NONE, 79},
+    {"", ENC_ENCODING_NONE, 80},
+    {"", ENC_ENCODING_NONE, 81},
+    {"", ENC_ENCODING_NONE, 82},
+    {"", ENC_ENCODING_NONE, 83},
+    {"", ENC_ENCODING_NONE, 84},
+    {"", ENC_ENCODING_NONE, 85},
+    {"", ENC_ENCODING_NONE, 86},
+    {"", ENC_ENCODING_NONE, 87},
+    {"", ENC_ENCODING_NONE, 88},
+    {"", ENC_ENCODING_NONE, 89},
+    {"", ENC_ENCODING_NONE, 90},
+    {"unicode11utf7", ENC_ENCODING_UTF_7, 40},
+    {"unicode11utf8", ENC_ENCODING_UTF_8, 10},
+    {"", ENC_ENCODING_NONE, 93},
+    {"", ENC_ENCODING_NONE, 94},
+    {"windows30latin1", ENC_ENCODING_WINDOWS_1252, 95},
+    {"windows31latin1", ENC_ENCODING_WINDOWS_1252, 96},
+    {"mskanji ", ENC_ENCODING_SHIFT_JIS, 43},
+    {"", ENC_ENCODING_NONE, 98},
+    {"", ENC_ENCODING_NONE, 99},
+    {"", ENC_ENCODING_NONE, 100},
+    {"", ENC_ENCODING_NONE, 101},
+    {"", ENC_ENCODING_NONE, 102},
+    {"", ENC_ENCODING_NONE, 103},
+    {"ecma118", ENC_ENCODING_ISO_8859_7, 104},
+    {"", ENC_ENCODING_NONE, 105},
+    {"", ENC_ENCODING_NONE, 106},
+    {"", ENC_ENCODING_NONE, 107},
+    {"", ENC_ENCODING_NONE, 108},
+    {"", ENC_ENCODING_NONE, 109},
+    {"", ENC_ENCODING_NONE, 110},
+    {"", ENC_ENCODING_NONE, 111},
+    {"iso2022jp1", ENC_ENCODING_ISO_2022_JP, 112},
+    {"iso2022jp2", ENC_ENCODING_ISO_2022_JP, 113},
+    {"", ENC_ENCODING_NONE, 114},
+    {"", ENC_ENCODING_NONE, 115},
+    {"", ENC_ENCODING_NONE, 116},
+    {"", ENC_ENCODING_NONE, 117},
+    {"", ENC_ENCODING_NONE, 118},
+    {"", ENC_ENCODING_NONE, 119},
+    {"", ENC_ENCODING_NONE, 120},
+    {"", ENC_ENCODING_NONE, 121},
+    {"", ENC_ENCODING_NONE, 122},
+    {"", ENC_ENCODING_NONE, 123},
+    {"ucs2be", ENC_ENCODING_UTF_16BE, 21},
+    {"", ENC_ENCODING_NONE, 125},
+    {"ucs4be", ENC_ENCODING_UTF_32BE, 32},
+    {"", ENC_ENCODING_NONE, 127},
+    {"iso646irv1991", ENC_ENCODING_US_ASCII, 128},
+    {"latin1", ENC_ENCODING_ISO_8859_1, 129},
+    {"latin2", ENC_ENCODING_ISO_8859_2, 130},
+    {"latin3", ENC_ENCODING_ISO_8859_3, 131},
+    {"iso10646", ENC_ENCODING_UTF_16BE, 132},
+    {"", ENC_ENCODING_NONE, 133},
+    {"latin6", ENC_ENCODING_ISO_8859_10, 42},
+    {"iso885911987", ENC_ENCODING_ISO_8859_1, 135},
+    {"iso885921987", ENC_ENCODING_ISO_8859_2, 136},
+    {"latin9", ENC_ENCODING_ISO_8859_15, 36},
+    {"iso885931988", ENC_ENCODING_ISO_8859_3, 138},
+    {"unicode20utf16", ENC_ENCODING_UTF_16BE, 139},
+    {"cp850", ENC_ENCODING_IBM850, 140},
+    {"iso885971987", ENC_ENCODING_ISO_8859_7, 141},
+    {"cp852", ENC_ENCODING_IBM852, 142},
+    {"cp367", ENC_ENCODING_US_ASCII, 33},
+    {"iso88592windowslatin2", ENC_ENCODING_WINDOWS_1250, 144},
+    {"cp819", ENC_ENCODING_ISO_8859_1, 145},
+    {"iso88591", ENC_ENCODING_ISO_8859_1, 146},
+    {"iso88592", ENC_ENCODING_ISO_8859_2, 3},
+    {"iso88593", ENC_ENCODING_ISO_8859_3, 8},
+    {"", ENC_ENCODING_NONE, 149},
+    {"", ENC_ENCODING_NONE, 150},
+    {"", ENC_ENCODING_NONE, 151},
+    {"iso88597", ENC_ENCODING_ISO_8859_7, 152},
+    {"ucs2", ENC_ENCODING_UTF_16BE, 153},
+    {"", ENC_ENCODING_NONE, 154},
+    {"ucs4", ENC_ENCODING_UTF_32BE, 155},
+    {"", ENC_ENCODING_NONE, 156},
+    {"unicode11", ENC_ENCODING_UTF_16BE, 17},
+    {"l2", ENC_ENCODING_ISO_8859_2, 158},
+    {"l3", ENC_ENCODING_ISO_8859_3, 46},
+    {"", ENC_ENCODING_NONE, 160},
+    {"", ENC_ENCODING_NONE, 161},
+    {"utf7", ENC_ENCODING_UTF_7, 2},
+    {"utf8", ENC_ENCODING_UTF_8, 163},
+    {"", ENC_ENCODING_NONE, 164},
+    {"", ENC_ENCODING_NONE, 165},
+    {"", ENC_ENCODING_NONE, 166},
+    {"", ENC_ENCODING_NONE, 167},
+    {"", ENC_ENCODING_NONE, 168},
+    {"", ENC_ENCODING_NONE, 169},
+    {"", ENC_ENCODING_NONE, 170},
+    {"", ENC_ENCODING_NONE, 171},
+    {"", ENC_ENCODING_NONE, 172},
+    {"", ENC_ENCODING_NONE, 173},
+    {"suneugreek", ENC_ENCODING_ISO_8859_7, 174},
+    {"", ENC_ENCODING_NONE, 175},
+    {"", ENC_ENCODING_NONE, 176},
+    {"", ENC_ENCODING_NONE, 177},
+    {"cp1200", ENC_ENCODING_UTF_16, 178},
+    {"utf32be", ENC_ENCODING_UTF_32BE, 35},
+    {"", ENC_ENCODING_NONE, 180},
+    {"utf16be", ENC_ENCODING_UTF_16BE, 181},
+    {"ansix341968", ENC_ENCODING_US_ASCII, 7},
+    {"cp1250", ENC_ENCODING_WINDOWS_1250, 183},
+    {"shiftjis", ENC_ENCODING_SHIFT_JIS, 184},
+    {"cp1252", ENC_ENCODING_WINDOWS_1252, 185},
+    {"cp1253", ENC_ENCODING_WINDOWS_1253, 186},
+    {"", ENC_ENCODING_NONE, 187},
+    {"unicodelatin1", ENC_ENCODING_UTF_16BE, 188},
+    {"", ENC_ENCODING_NONE, 189},
+    {"", ENC_ENCODING_NONE, 190},
+    {"utf16le", ENC_ENCODING_UTF_16LE, 191},
+    {"", ENC_ENCODING_NONE, 192},
+    {"", ENC_ENCODING_NONE, 193},
+    {"iso885910", ENC_ENCODING_ISO_8859_10, 194},
+    {"", ENC_ENCODING_NONE, 195},
+    {"", ENC_ENCODING_NONE, 196},
+    {"", ENC_ENCODING_NONE, 197},
+    {"", ENC_ENCODING_NONE, 198},
+    {"iso885915", ENC_ENCODING_ISO_8859_15, 199},
+    {"", ENC_ENCODING_NONE, 200},
+    {"", ENC_ENCODING_NONE, 201},
+    {"", ENC_ENCODING_NONE, 202},
+    {"", ENC_ENCODING_NONE, 203},
+    {"", ENC_ENCODING_NONE, 204},
+    {"", ENC_ENCODING_NONE, 205},
+    {"", ENC_ENCODING_NONE, 206},
+    {"", ENC_ENCODING_NONE, 207},
+    {"utf32", ENC_ENCODING_UTF_32BE, 208},
+    {"", ENC_ENCODING_NONE, 209},
+    {"utf16", ENC_ENCODING_UTF_16, 210},
+    {"", ENC_ENCODING_NONE, 211},
+    {"", ENC_ENCODING_NONE, 212},
+    {"sjis", ENC_ENCODING_SHIFT_JIS, 213},
+    {"", ENC_ENCODING_NONE, 214},
+    {"", ENC_ENCODING_NONE, 215},
+    {"", ENC_ENCODING_NONE, 216},
+    {"", ENC_ENCODING_NONE, 217},
+    {"", ENC_ENCODING_NONE, 218},
+    {"", ENC_ENCODING_NONE, 219},
+    {"", ENC_ENCODING_NONE, 220},
+    {"", ENC_ENCODING_NONE, 221},
+    {"", ENC_ENCODING_NONE, 222},
+    {"", ENC_ENCODING_NONE, 223},
+    {"", ENC_ENCODING_NONE, 224},
+    {"", ENC_ENCODING_NONE, 225},
+    {"", ENC_ENCODING_NONE, 226},
+    {"", ENC_ENCODING_NONE, 227},
 };
-
-__declspec(weak) BOOL enc_tbl_jp_loaded = TRUE;
-__declspec(weak) BOOL enc_tbl_kr_loaded = TRUE;
-__declspec(weak) BOOL enc_tbl_uhc_loaded = TRUE;
-__declspec(weak) BOOL enc_tbl_cn_loaded = TRUE;
 
 ENCResult ENCInitContext(ENCContext* context) {
     ENCiRegisterVersion();
@@ -194,16 +281,6 @@ ENCResult ENCInitContext(ENCContext* context) {
     return ENC_OK;
 }
 
-ENCResult ENCDuplicateContext(ENCContext* dst, ENCContext const* src) {
-    if (dst == NULL || src == NULL) {
-        return ENC_ERR_INVALID_PARAM;
-    }
-
-    *dst = *src;
-
-    return ENC_OK;
-}
-
 ENCResult ENCSetExternalEncoding(ENCContext* context, const char* name) {
     if (context == NULL || name == NULL) {
         return ENC_ERR_INVALID_PARAM;
@@ -216,15 +293,7 @@ ENCResult ENCSetExternalEncoding(ENCContext* context, const char* name) {
     }
 
     if (!enc_tbl_jp_loaded && (context->encoding == ENC_ENCODING_SHIFT_JIS || context->encoding == ENC_ENCODING_ISO_2022_JP)) {
-        return ENC_ERR_UNSUPPORTED;
-    }
-
-    if (!enc_tbl_kr_loaded && !enc_tbl_uhc_loaded && context->encoding == ENC_ENCODING_EUC_KR) {
-        return ENC_ERR_UNSUPPORTED;
-    }
-
-    if (!enc_tbl_cn_loaded && context->encoding == ENC_ENCODING_GB2312) {
-        return ENC_ERR_UNSUPPORTED;
+        return ENC_ERR_NOT_LOADED;
     }
 
     if (context->encoding == ENC_ENCODING_UTF_16BE || context->encoding == ENC_ENCODING_UTF_16) {
@@ -233,27 +302,11 @@ ENCResult ENCSetExternalEncoding(ENCContext* context, const char* name) {
         context->state = ENC_UTF16_STATE_LITTLE_ENDIAN;
     } else if (context->encoding == ENC_ENCODING_ISO_2022_JP) {
         context->state = ENC_JIS_STATE_US_ASCII;
-    } else if (context->encoding == ENC_ENCODING_UTF_7) {
-        context->state = ENC_UTF7_STATE_INITIAL;
     } else {
         context->state = ENC_STATE_INITIAL;
     }
 
     return ENC_OK;
-}
-
-ENCResult ENCGetExternalEncoding(ENCContext* context, char* name) {
-    if (context == NULL || name == NULL) {
-        return ENC_ERR_INVALID_PARAM;
-    }
-
-    if (context->encoding <= ENC_ENCODING_NONE || context->encoding >= ENC_BAD_MAX_ENCODING) {
-        strncpy(name, encoding_array[ENC_ENCODING_NONE].name, ENCODING_NAME_LENGTH);
-        return ENC_ERR_UNKNOWN_ENCODING;
-    } else {
-        strncpy(name, encoding_array[context->encoding].name, ENCODING_NAME_LENGTH);
-        return ENC_OK;
-    }
 }
 
 ENCResult ENCSetBreakType(ENCContext* context, ENCBreakType breakType) {
@@ -275,117 +328,6 @@ ENCResult ENCSetAlternativeCharacter(ENCContext* context, u16 nomap, u16 invalid
     context->invalid = invalid;
 
     return ENC_OK;
-}
-
-ENCResult ENCGetExternalCharacterWidth(ENCContext* context, u32* width) {
-    if (context == NULL || width == NULL) {
-        return ENC_ERR_INVALID_PARAM;
-    }
-
-    if (context->encoding <= ENC_ENCODING_NONE || context->encoding >= ENC_BAD_MAX_ENCODING) {
-        return ENC_ERR_UNKNOWN_ENCODING;
-    }
-
-    *width = encoding_array[context->encoding].width;
-
-    return ENC_OK;
-}
-
-ENCResult ENCConvertToInternalEncoding(ENCContext* context, u16* dst, s32* dstSize, const void* src, s32* srcSize) {
-    ENCResult ret;
-
-    u32 width;
-
-    s32 tmpDstSize;
-    s32 tmpSrcSize;
-    s32 dstCnt;
-    s32 srcCnt;
-
-    if (context == NULL || context->brtype < ENC_BR_KEEP || context->brtype > ENC_BR_LF) {
-        return ENC_ERR_INVALID_PARAM;
-    }
-
-    if (context->encoding <= ENC_ENCODING_NONE || context->encoding >= ENC_BAD_MAX_ENCODING) {
-        return ENC_ERR_UNKNOWN_ENCODING;
-    }
-
-    if (dstSize == NULL || srcSize == NULL) {
-        return ENC_ERR_INVALID_PARAM;
-    }
-
-    width = encoding_array[context->encoding].width;
-
-    if (dst != NULL && *dstSize > 0) {
-        *dstSize /= sizeof(*dst);
-    }
-
-    if (*srcSize > 0) {
-        *srcSize /= width;
-    }
-
-    tmpDstSize = *dstSize;
-    tmpSrcSize = *srcSize;
-    dstCnt = 0;
-    srcCnt = 0;
-
-    ret = ENCiConvertToInternalEncoding(context, dst, &tmpDstSize, src, &tmpSrcSize);
-
-    while (ret != ENC_OK) {
-        u16 replacement = L'\0';
-
-        if ((ret != ENC_ERR_NO_MAP_RULE || !context->nomap) && (ret != ENC_ERR_INVALID_FORMAT || !context->invalid)) {
-            break;
-        }
-
-        dstCnt += tmpDstSize;
-        srcCnt += tmpSrcSize;
-
-        tmpDstSize = *dstSize - dstCnt;
-        tmpSrcSize = *srcSize > 0 ? *srcSize - srcCnt : *srcSize;
-
-        {
-            u32 nextWidth;
-            ENCGetNextCharacterWidth(context, (const u8*)src + srcCnt, &nextWidth);
-
-            srcCnt += nextWidth / width;
-
-            tmpSrcSize = tmpSrcSize > 0 ? tmpSrcSize - nextWidth / width : tmpSrcSize;
-        }
-
-        if (ret == ENC_ERR_INVALID_FORMAT && context->invalid != L'\uffff') {
-            replacement = context->invalid;
-        } else if (ret == ENC_ERR_NO_MAP_RULE && context->nomap != L'\uffff') {
-            replacement = context->nomap;
-        }
-
-        if (replacement) {
-            if (dst) {
-                dst[dstCnt] = replacement;
-                tmpDstSize--;
-            }
-
-            dstCnt++;
-        }
-
-        if (dst) {
-            ret = ENCiConvertToInternalEncoding(context, dst + dstCnt, &tmpDstSize, (const u8*)src + srcCnt, &tmpSrcSize);
-        } else {
-            ret = ENCiConvertToInternalEncoding(context, NULL, &tmpDstSize, (const u8*)src + srcCnt, &tmpSrcSize);
-        }
-    }
-
-    *dstSize = dstCnt + tmpDstSize;
-    *srcSize = srcCnt + tmpSrcSize;
-
-    if (*dstSize > 0) {
-        *dstSize *= sizeof(*dst);
-    }
-
-    if (srcSize != NULL && *srcSize > 0) {
-        *srcSize *= width;
-    }
-
-    return ret;
 }
 
 ENCResult ENCConvertFromInternalEncoding(ENCContext* context, void* dst, s32* dstSize, const u16* src, s32* srcSize) {
@@ -518,15 +460,7 @@ ENCResult ENCCheckEncoding(int* lastIndex, const char* names[], int num, const u
         }
 
         if (!enc_tbl_jp_loaded && (encoding == ENC_ENCODING_SHIFT_JIS || encoding == ENC_ENCODING_ISO_2022_JP)) {
-            return ENC_ERR_UNSUPPORTED;
-        }
-
-        if (!enc_tbl_kr_loaded && !enc_tbl_uhc_loaded && encoding == ENC_ENCODING_EUC_KR) {
-            return ENC_ERR_UNSUPPORTED;
-        }
-
-        if (!enc_tbl_cn_loaded && encoding == ENC_ENCODING_GB2312) {
-            return ENC_ERR_UNSUPPORTED;
+            return ENC_ERR_NOT_LOADED;
         }
 
         encodings[i] = encoding;
@@ -627,230 +561,6 @@ static ENCEncoding ENCiGetEncodingTypeFromHashTable(const struct encoding_hash_t
     }
 }
 
-ENCResult ENCGetNextCharacterWidth(ENCContext* context, const void* src, u32* width) {
-    if (context == NULL || src == NULL || width == NULL) {
-        return ENC_ERR_INVALID_PARAM;
-    }
-
-    if (context->encoding <= ENC_ENCODING_NONE || context->encoding >= ENC_BAD_MAX_ENCODING) {
-        return ENC_ERR_UNKNOWN_ENCODING;
-    }
-
-    switch (context->encoding) {
-        case ENC_ENCODING_NONE: {
-            return ENC_ERR_UNKNOWN_ENCODING;
-        }
-        case ENC_ENCODING_US_ASCII:
-            *width = sizeof(char);
-            break;
-
-        case ENC_ENCODING_UTF_8: {
-            *width = sizeof(u8);
-            break;
-        }
-        case ENC_ENCODING_UTF_16BE: {
-            u16 c16;
-            memcpy(&c16, src, sizeof(c16));  // ?
-
-            // why are we grabbing it? stripped debug print or something?
-
-            *width = sizeof(u16);
-            break;
-        }
-        case ENC_ENCODING_UTF_32BE: {
-            *width = sizeof(u32);
-            break;
-        }
-        case ENC_ENCODING_ISO_8859_1:
-        case ENC_ENCODING_ISO_8859_2:
-        case ENC_ENCODING_ISO_8859_3:
-        case ENC_ENCODING_ISO_8859_7:
-        case ENC_ENCODING_ISO_8859_10:
-        case ENC_ENCODING_ISO_8859_15: {
-            *width = sizeof(u8);
-            break;
-        }
-        case ENC_ENCODING_ISO_2022_JP: {
-            if (*(const u8*)src == '\x1b') {
-                // Unknown length because this is an escape sequence
-                *width = 0;
-                break;
-            }
-
-            switch (context->state) {
-                case ENC_JIS_STATE_INVALID:
-                case ENC_JIS_STATE_US_ASCII:
-                case ENC_JIS_STATE_JIS_C6220_1969_RO:
-                case ENC_JIS_STATE_JIS_C6220_1969_JP: {
-                    *width = sizeof(char);
-                    break;
-                }
-                case ENC_JIS_STATE_JIS_X_0208_1978:
-                case ENC_JIS_STATE_JIS_X_0208_1983:
-                case ENC_JIS_STATE_JIS_X_0212_1990:
-                case ENC_JIS_STATE_7: {  // ?
-                    *width = sizeof(u16);
-                    break;
-                }
-                default: {
-                    *width = 1;
-                    break;
-                }
-            }
-
-            break;
-        }
-        case ENC_ENCODING_SHIFT_JIS: {
-            if (*(const u8*)src >= 0x81 && *(const u8*)src <= 0xFC) {
-                *width = sizeof(u16);
-            } else {
-                *width = sizeof(u8);
-            }
-
-            break;
-        }
-        case ENC_ENCODING_WINDOWS_1252: {
-            *width = sizeof(u8);
-            break;
-        }
-        case ENC_ENCODING_UTF_7: {
-            *width = sizeof(char);
-            break;
-        }
-        case ENC_ENCODING_UTF_16:
-        case ENC_ENCODING_UTF_16LE: {
-            u16 c16;
-
-            if (context->state == ENC_UTF16_STATE_BIG_ENDIAN) {
-                memcpy(&c16, src, sizeof(c16));
-            } else {  // ENC_UTF16_STATE_LITTLE_ENDIAN
-                c16 = ((const u8*)src)[1] << 8 | ((const u8*)src)[0];
-            }
-
-            // why is it only the utf16 encodings? why not the other ones?
-
-            *width = sizeof(u16);
-
-            break;
-        }
-        case ENC_ENCODING_WINDOWS_1250:
-        case ENC_ENCODING_WINDOWS_1253:
-        case ENC_ENCODING_MACINTOSH:
-        case ENC_ENCODING_X_MAC_GREEK:
-        case ENC_ENCODING_X_MAC_CE:
-        case ENC_ENCODING_IBM850:
-        case ENC_ENCODING_IBM852: {
-            *width = sizeof(u8);
-            break;
-        }
-        case ENC_ENCODING_EUC_KR:
-        case ENC_ENCODING_GB2312: {
-            if (*(const u8*)src >= 0x81 && *(const u8*)src <= 0xFE) {
-                *width = sizeof(u16);
-            } else {
-                *width = sizeof(u8);
-            }
-            break;
-        }
-        default: {
-            return ENC_ERR_UNSUPPORTED;
-        }
-    }
-
-    /* Possibly a side effect of declaring src as const void*  instead of u8
-     * const *
-     */
-    (void)src;
-
-    return ENC_OK;
-}
-
-static ENCResult ENCiConvertToInternalEncoding(ENCContext* context, u16* dst, s32* dstSize, const void* src, s32* srcSize) {
-    switch (context->encoding) {
-        case ENC_ENCODING_NONE: {
-            return ENC_ERR_UNKNOWN_ENCODING;
-        }
-        case ENC_ENCODING_US_ASCII: {
-            return ENCiConvertStringAsciiToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_UTF_8: {
-            return ENCiConvertStringUtf8ToUtf16(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_UTF_16BE: {
-            return ENCiConvertStringUtf16ToUtf16(dst, dstSize, src, srcSize, context->brtype, &context->state);
-        }
-        case ENC_ENCODING_UTF_32BE: {
-            return ENCiConvertStringUtf32ToUtf16(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_8859_1: {
-            return ENCiConvertStringLatin1ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_8859_2: {
-            return ENCiConvertStringLatin2ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_8859_3: {
-            return ENCiConvertStringLatin3ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_8859_7: {
-            return ENCiConvertStringGreekToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_8859_10: {
-            return ENCiConvertStringLatin6ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_8859_15: {
-            return ENCiConvertStringLatin9ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_ISO_2022_JP: {
-            return ENCiConvertStringJisToUnicode(dst, dstSize, src, srcSize, context->brtype, &context->state);
-        }
-        case ENC_ENCODING_SHIFT_JIS: {
-            return ENCiConvertStringSjisToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_WINDOWS_1252: {
-            return ENCiConvertStringLatin1ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_EUC_KR: {
-            return ENCiConvertStringUhcToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_GB2312: {
-            return ENCiConvertStringGb2312ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_UTF_7: {
-            return ENCiConvertStringUtf7ToUtf16(dst, dstSize, src, srcSize, context->brtype, &context->state);
-        }
-        case ENC_ENCODING_UTF_16: {
-            return ENCiConvertStringUtf16ToUtf16(dst, dstSize, src, srcSize, context->brtype, &context->state);
-        }
-        case ENC_ENCODING_UTF_16LE: {
-            return ENCiConvertStringUtf16ToUtf16(dst, dstSize, src, srcSize, context->brtype, &context->state);
-        }
-        case ENC_ENCODING_WINDOWS_1250: {
-            return ENCiConvertStringWin1250ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_WINDOWS_1253: {
-            return ENCiConvertStringWin1253ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_MACINTOSH: {
-            return ENCiConvertStringMacromanToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_X_MAC_GREEK: {
-            return ENCiConvertStringMacgreekToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_X_MAC_CE: {
-            return ENCiConvertStringMacceToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_IBM850: {
-            return ENCiConvertStringIbm850ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_IBM852: {
-            return ENCiConvertStringIbm852ToUnicode(dst, dstSize, src, srcSize, context->brtype);
-        }
-        default: {
-            return ENC_ERR_UNSUPPORTED;
-        }
-    }
-}
-
 static ENCResult ENCiConvertFromInternalEncoding(ENCContext* context, void* dst, s32* dstSize, const u16* src, s32* srcSize) {
     switch (context->encoding) {
         case ENC_ENCODING_NONE:
@@ -863,7 +573,7 @@ static ENCResult ENCiConvertFromInternalEncoding(ENCContext* context, void* dst,
             return ENCiConvertStringUtf16ToUtf8(dst, dstSize, src, srcSize, context->brtype);
         }
         case ENC_ENCODING_UTF_16BE: {
-            return ENCiConvertStringUtf16ToUtf16(dst, dstSize, src, srcSize, context->brtype, &context->state);
+            return ENCiConvertStringUtf16ToUtf16(dst, dstSize, src, srcSize, context->brtype, (ENCMBState*)context->state);
         }
         case ENC_ENCODING_UTF_32BE: {
             return ENCiConvertStringUtf16ToUtf32(dst, dstSize, src, srcSize, context->brtype);
@@ -894,12 +604,6 @@ static ENCResult ENCiConvertFromInternalEncoding(ENCContext* context, void* dst,
         }
         case ENC_ENCODING_WINDOWS_1252: {
             return ENCiConvertStringUnicodeToWin1252(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_EUC_KR: {
-            return ENCiConvertStringUnicodeToUhc(dst, dstSize, src, srcSize, context->brtype);
-        }
-        case ENC_ENCODING_GB2312: {
-            return ENCiConvertStringUnicodeToGb2312(dst, dstSize, src, srcSize, context->brtype);
         }
         default: {
             return ENC_ERR_UNSUPPORTED;

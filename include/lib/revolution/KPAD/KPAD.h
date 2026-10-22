@@ -52,6 +52,9 @@ typedef struct KPADStatus {
     KPADEXStatus ex_status; // at 0x60
 } KPADStatus;
 
+void KPADSetFSStickClamp(s8 min, s8 max); // 803BCE8C
+void KPADEnableStickCrossClamp(void); // 803BFEE0
+
 void KPADSetBtnRepeat(s32 chan, f32, f32);
 
 void KPADSetPosParam(s32 chan, f32 playRadius, f32 sensitivity);

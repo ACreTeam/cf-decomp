@@ -140,7 +140,7 @@ VFErr VFSysFileSearchNext(PF_DTA* dta_p);
 VFErr VFSysGetFileSizeByFd(u32* size, PF_FILE* file);
 VFErr VFSysGetOffsetByFd(u32* o_offset, PF_FILE* file_p);
 
-s32 VFSysGetDriveFreeSize(s32 handle_idx, u32* o_empty_cluster, u32* o_sector_per_cluster, u32* o_byte_per_sector);
+s32 VFSysGetDriveFreeSize(s32 handle_idx);
 
 VFErr VFSysGetLastError();
 

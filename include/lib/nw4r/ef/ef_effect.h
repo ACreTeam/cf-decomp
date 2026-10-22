@@ -98,6 +98,7 @@ public:
     u32 RetireParticleAll();
 
     u16 GetNumEmitter() const;
+    Emitter* GetRootEmitter(); // CF: out-of-line, returns the head of the active emitter list
     Emitter* GetEmitter(u16 idx);
 
     u32 ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,

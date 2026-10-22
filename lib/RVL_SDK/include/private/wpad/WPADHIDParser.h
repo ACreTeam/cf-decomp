@@ -107,6 +107,9 @@ extern "C" {
 
 #define RPT1A_DPD_CSB 0
 
+// Internal pseudo command: delay the command queue (not a real report)
+#define RPTID_WAIT 0xFF
+
 /**
  *
  * Incoming reports (from POV of the host)
@@ -206,6 +209,22 @@ extern "C" {
 #define RPT3F_DPD3_OFFSET 13
 
 s32 WPADiHIDParser(u8 port, u8* p_rpt);
+
+void __a1_20_status_report(u8 chan, u8* data);
+void __a1_21_user_data(u8 chan, u8* data);
+void __a1_22_ack(u8 chan, u8* data);
+void __a1_30_data_type(u8 chan, u8* data);
+void __a1_31_data_type(u8 chan, u8* data);
+void __a1_32_data_type(u8 chan, u8* data);
+void __a1_33_data_type(u8 chan, u8* data);
+void __a1_34_data_type(u8 chan, u8* data);
+void __a1_35_data_type(u8 chan, u8* data);
+void __a1_36_data_type(u8 chan, u8* data);
+void __a1_37_data_type(u8 chan, u8* data);
+void __a1_3d_data_type(u8 chan, u8* data);
+void __a1_3e_data_type(u8 chan, u8* data);
+void __a1_3f_data_type(u8 chan, u8* data);
+void __a1_unused_report(u8 chan, u8* data);
 
 #ifdef __cplusplus
 }

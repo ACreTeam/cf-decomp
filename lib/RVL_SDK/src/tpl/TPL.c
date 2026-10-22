@@ -34,6 +34,7 @@ TPLDescriptor* TPLGet(TPLPalette* pal, u32 id) {
     return &pal->descriptorArray[id % pal->numDescriptors];
 }
 
+#if 0 // not linked in City Folk
 void TPLGetGXTexObjFromPalette(TPLPalette* pal, GXTexObj* texObj, u32 id) {
     TPLDescriptor* descriptor = TPLGet(pal, id);
     GXBool hasMipMap = descriptor->textureHeader->minLOD == descriptor->textureHeader->maxLOD ? GX_FALSE : GX_TRUE;
@@ -44,3 +45,4 @@ void TPLGetGXTexObjFromPalette(TPLPalette* pal, GXTexObj* texObj, u32 id) {
                     descriptor->textureHeader->maxLOD, descriptor->textureHeader->LODBias, GX_FALSE, descriptor->textureHeader->edgeLODEnable,
                     GX_ANISO_1);
 }
+#endif

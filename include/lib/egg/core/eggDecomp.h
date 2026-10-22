@@ -1,10 +1,36 @@
 #pragma once
-// eggDecomp.o (not decompiled): only what other TUs use. Names are unknown.
 
 #include <types.h>
 
-namespace EGG { class Heap; }
+namespace EGG {
+class Heap;
 
-extern "C" {
-void fn_8043EFD4(EGG::Heap *heap); // 8043EFD4: allocates the 0x9008-byte work buffer once (NULL = current heap); d_sys
-}
+// ASH (Huffman + LZ) decompressor.
+class Decomp {
+public:
+    enum CompressionType {
+        TYPE_UNKNOWN = 0,
+        TYPE_SZS = 1,
+        TYPE_ASH = 2,
+        TYPE_ASR = 3,
+    };
+
+    static void initWorkBuffer(Heap *heap);              // 8043EFD4
+    static s32 decodeASH(const u8 *src, u8 *dst);        // 8043F020
+    static CompressionType checkCompressed(const u8 *src); // 8043F258
+    static s32 getExpandSize(const u8 *src);             // 8043F2DC
+
+private:
+    static u32 getBits(const u8 *src, int count, int stream);      // 8043F38C
+    static int getBit(const u8 *src, int stream);                  // 8043F494
+    static int readTree9(const u8 *src, u16 *left, u16 *right, u16 *tmp);   // 8043F520
+    static int readTree11(const u8 *src, u16 *left, u16 *right, u16 *tmp);  // 8043F5F4
+
+    static void *sWorkBuffer;
+    static int sBitCount[2];
+    static int sTreeBase[2];
+    static int sReadPos[2];
+    static u32 sBitBuf[2];
+};
+
+} // namespace EGG

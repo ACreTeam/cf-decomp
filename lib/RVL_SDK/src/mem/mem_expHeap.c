@@ -453,6 +453,21 @@ u32 MEMGetAllocatableSizeForExpHeapEx(MEMHeapHandle heap, int align) {
     return maxSize;
 }
 
+u16 MEMSetAllocModeForExpHeap(MEMHeapHandle heap, u16 mode) {
+    MEMiExpHeapHead* ext;
+    u16 prev;
+    BOOL enabled;
+
+    enabled = OSDisableInterrupts();
+
+    ext = GetExpHeapHeadPtrFromHandle_(heap);
+    prev = GetAllocMode_(ext);
+    SetAllocMode_(ext, mode);
+
+    OSRestoreInterrupts(enabled);
+    return prev;
+}
+
 void MEMVisitAllocatedForExpHeap(MEMHeapHandle heap, void (*visitor)(void*, MEMHeapHandle, u32), u32 param) {
     MEMiExpHeapMBlockHead* block;
 
@@ -465,6 +480,10 @@ void MEMVisitAllocatedForExpHeap(MEMHeapHandle heap, void (*visitor)(void*, MEMH
     }
 
     UnlockHeap(heap);
+}
+
+u32 MEMGetSizeForMBlockExpHeap(const void* block) {
+    return GetMBlockHeadPtr_((void*)block)->blockSize;
 }
 
 u32 MEMAdjustExpHeap(MEMHeapHandle heap) {

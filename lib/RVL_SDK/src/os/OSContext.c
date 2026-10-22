@@ -181,13 +181,15 @@ _return:
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm void OSLoadFPUContext(register OSContext* fpucontext) {
 #ifdef __MWERKS__
     nofralloc
     addi    r4, fpucontext, 0
     b       __OSLoadFPUContext
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm void OSSaveFPUContext(register OSContext* fpucontext) {
 #ifdef __MWERKS__
@@ -358,6 +360,7 @@ asm u32 OSGetStackPointer() {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm u32 OSSwitchStack(register u32 newsp) {
 #ifdef __MWERKS__
     nofralloc
@@ -365,8 +368,9 @@ asm u32 OSSwitchStack(register u32 newsp) {
     mr  r1, newsp
     mr  r3, r5
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 asm int OSSwitchFiber(register u32 pc, register u32 newsp) {
 #ifdef __MWERKS__
@@ -580,6 +584,7 @@ void __OSContextInit() {
     DBPrintf("FPU-unavailable handler installed\n");
 }
 
+#if 0 // not linked in City Folk
 asm void OSFillFPUContext(register OSContext* context) {
 #ifdef __MWERKS__
     nofralloc
@@ -665,7 +670,8 @@ asm void OSFillFPUContext(register OSContext* context) {
     psq_st  fp31, OSContext.psf[31](context), 0, 0
 _return:
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 // clang-format on

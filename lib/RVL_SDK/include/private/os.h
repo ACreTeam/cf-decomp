@@ -16,6 +16,7 @@
 #include <private/os/OSNandbootInfo.h>
 #include <private/os/OSPlayRecord.h>
 #include <private/os/OSPlayTime.h>
+#include <private/os/OSReboot.h>
 #include <private/os/OSReset.h>
 #include <private/os/OSRtc.h>
 #include <private/os/OSSram.h>
@@ -52,10 +53,12 @@ OSModuleQueue __OSModuleInfoList ADDRESS(OS_BASE_CACHED | OS_ADDR_LINK_MODULE_LI
 const void* __OSStringTable ADDRESS(OS_BASE_CACHED | OS_ADDR_LINK_STRING_TABLE);
 
 OSExecParams* __OSExecParamsAddr ADDRESS(OS_BASE_CACHED | OS_ADDR_LAUNCH_EXEC_PARAMS);
+s32 __OSCurrentTGCOffset ADDRESS(OS_BASE_CACHED | OS_ADDR_LAUNCH_TGC_OFFSET);
 
 OSTime __OSSystemTime ADDRESS(OS_BASE_CACHED | OS_ADDR_SYSTEM_TIME);
 
 vu8 __OSLockedAppType ADDRESS(OS_BASE_CACHED | OS_ADDR_LOCKED_APP_TYPE);
+vu8 __OSDeviceCheckCode ADDRESS(OS_BASE_CACHED | OS_ADDR_DEVICE_CHECK_CODE);
 vu32 __OSLaunchPartitionType ADDRESS(OS_BASE_CACHED | OS_ADDR_BOOT_PART_TYPE);
 
 u16 __OSWirelessPadFixMode ADDRESS(OS_BASE_CACHED | OS_ADDR_PAD_WIRELESS_FIX_MODE);
@@ -86,6 +89,8 @@ void __OSInitMemoryProtection();
 void __OSInitAlarm();
 void __OSCacheInit();
 void __OSContextInit();
+void __OSFPRInit();
+void __OSPSInit();
 void __OSInterruptInit();
 void __OSInitIPCBuffer();
 void __OSModuleInit();

@@ -1972,17 +1972,17 @@ void dFgObjAnm_c::effect_c::start(int treeAnm, int kind, int season,
     mScale.z = scale;
     if (mCount >= 0 &&
         mEffect.create(sTreeEffectNames[mName], pos, NULL, &mScale, 0)) {
-        mEffect.vf3C(sTreeEffectRate[effKind]);
-        mEffect.vf2C(sTreeEffectParamA[mIdx]);
-        mEffect.vf38(sTreeEffectParamB[mIdx]);
+        mEffect.setPowerSpecDir(sTreeEffectRate[effKind]);
+        mEffect.setEmitRatio(sTreeEffectParamA[mIdx]);
+        mEffect.setPowerRadiationDir(sTreeEffectParamB[mIdx]);
     }
     if (mSnowName != 3 && !follow) {
         mSnowCount = sTreeSnowCount[mIdx] - 1;
         if (mSnowCount >= 0 &&
             mSnowEffect.create(sTreeSnowEffectNames[mSnowName], pos, NULL,
                                &mScale, 0)) {
-            mSnowEffect.vf3C(sTreeSnowRate[effKind]);
-            mSnowEffect.vf2C(sTreeSnowParam[mIdx]);
+            mSnowEffect.setPowerSpecDir(sTreeSnowRate[effKind]);
+            mSnowEffect.setEmitRatio(sTreeSnowParam[mIdx]);
         }
     } else {
         mSnowCount = -1;
@@ -1994,16 +1994,16 @@ void dFgObjAnm_c::effect_c::update(const mVec3_c *pos, int effKind) {
     if (mCount > 0) {
         mEffect.create(sTreeEffectNames[mName], pos, NULL, &mScale, 0);
         mCount--;
-        mEffect.vf3C(sTreeEffectRate[effKind]);
-        mEffect.vf2C(sTreeEffectParamA[mIdx]);
-        mEffect.vf38(sTreeEffectParamB[mIdx]);
+        mEffect.setPowerSpecDir(sTreeEffectRate[effKind]);
+        mEffect.setEmitRatio(sTreeEffectParamA[mIdx]);
+        mEffect.setPowerRadiationDir(sTreeEffectParamB[mIdx]);
     }
     if (mSnowCount > 0) {
         mSnowEffect.create(sTreeSnowEffectNames[mSnowName], pos, NULL, &mScale,
                            0);
         mSnowCount--;
-        mSnowEffect.vf3C(sTreeSnowRate[effKind]);
-        mSnowEffect.vf2C(sTreeSnowParam[mIdx]);
+        mSnowEffect.setPowerSpecDir(sTreeSnowRate[effKind]);
+        mSnowEffect.setEmitRatio(sTreeSnowParam[mIdx]);
     }
 }
 
@@ -4349,11 +4349,11 @@ void playGrassEffect(int x, int z, u16 id, const mAng3_c *ang, BOOL wind) {
         u16 fg = item.getId();
         if (isWeedFg(fg)) {
             if (effect.createEffect("af_fg_weed", &pos, ang, NULL) && wind) {
-                effect.vf44(&dir);
+                effect.setSpecDir(&dir);
             }
         } else if (isCloverFg(fg)) {
             if (effect.createEffect("af_fg_crover", &pos, ang, NULL) && wind) {
-                effect.vf44(&dir);
+                effect.setSpecDir(&dir);
             }
         } else {
             fgMngProc_playFlowerFallEffect(&item, x, z, 2, ang, wind);

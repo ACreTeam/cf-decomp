@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/os.h>
 #include <revolution/os.h>
 
@@ -6,11 +7,13 @@
 #include <string.h>
 
 static OSPlayRecord PlayRecord ALIGN32;
+static OSAlarm PlayRecordAlarm;
 static NANDFileInfo FileInfo;
 static NANDCommandBlock Block;
-static OSAlarm PlayRecordAlarm;
 
+#if 0 // not linked in City Folk
 DECOMP_FORCE_ACTIVE(OSPlayRecord_c, PlayRecord);
+#endif
 
 static BOOL PlayRecordGet = FALSE;
 static s32 PlayRecordState = OS_RECORD_STATE_STOPPED;

@@ -81,7 +81,7 @@ static vBOOL RunQueueHint;
 static vs32 Reschedule;
 
 /* Idle and default stuff */
-static OSThread IdleThread;
+OSThread IdleThread;  // unused, but kept by the retail link
 static OSThread DefaultThread;
 static OSContext IdleContext;
 
@@ -184,11 +184,11 @@ void OSInitThreadQueue(OSThreadQueue* queue) {
     queue->head = queue->tail = NULL;
 }
 
-void OSInitMutexQueue(OSMutexQueue* queue) {
+static void OSInitMutexQueue(OSMutexQueue* queue) {
     queue->head = queue->tail = NULL;
 }
 
-void OSSetCurrentThread(OSThread* thread) {
+static void OSSetCurrentThread(OSThread* thread) {
     SwitchThreadCallback(OSGetCurrentThread(), thread);
     __OSCurrentThread = thread;
 }
@@ -197,7 +197,7 @@ OSThread* OSGetCurrentThread() {
     return __OSCurrentThread;
 }
 
-void __OSSwitchThread(OSThread* thread) {
+static void __OSSwitchThread(OSThread* thread) {
     OSSetCurrentThread(thread);
     OSSetCurrentContext(&thread->context);
     OSLoadContext(&thread->context);
@@ -211,7 +211,7 @@ BOOL OSIsThreadTerminated(OSThread* thread) {
     return thread->state == OS_THREAD_STATE_DEAD || thread->state == OS_THREAD_STATE_UNINITIALIZED ? TRUE : FALSE;
 }
 
-BOOL __OSIsThreadActive(OSThread* thread) {
+static BOOL __OSIsThreadActive(OSThread* thread) {
     OSThread* active;
     if (thread->state == OS_THREAD_STATE_UNINITIALIZED) {
         return FALSE;
@@ -699,6 +699,7 @@ OSPriority OSGetThreadPriority(OSThread* thread) {
     return thread->base;
 }
 
+#if 0 // not linked in City Folk
 BOOL CheckThreadQueue(OSThreadQueue* queue) {
     OSThread* thread;
     if (queue->head != NULL && queue->head->link.prev != NULL) {
@@ -717,6 +718,7 @@ BOOL CheckThreadQueue(OSThreadQueue* queue) {
     }
     return TRUE;
 }
+#endif
 
 static BOOL IsMember(OSThreadQueue* queue, OSThread* thread) {
     OSThread* threadFind;
@@ -736,6 +738,7 @@ static BOOL IsMember(OSThreadQueue* queue, OSThread* thread) {
         }                                                                                                                                            \
     }
 
+#if 0 // not linked in City Folk
 s32 OSCheckActiveThreads() {
     OSThread* thread;
     OSPriority prio;
@@ -815,14 +818,18 @@ s32 OSCheckActiveThreads() {
     OSRestoreInterrupts(enabled);
     return threadId;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void OSSetThreadSpecific(s32 index, void* ptr) {
     OSThread* thread = __OSCurrentThread;
     if (thread && 0 <= index && index < OS_THREAD_SPECIFIC_MAX) {
         thread->specific[index] = ptr;
     }
 }
+#endif
 
+#if 0 // not linked in City Folk
 void* OSGetThreadSpecific(s32 index) {
     OSThread* thread = __OSCurrentThread;
     if (thread && 0 <= index && index < OS_THREAD_SPECIFIC_MAX) {
@@ -830,6 +837,7 @@ void* OSGetThreadSpecific(s32 index) {
     }
     return NULL;
 }
+#endif
 
 static void SleepAlarmHandler(OSAlarm* alarm, OSContext* context) {
     OSResumeThread((OSThread*)OSGetAlarmUserData(alarm));
@@ -860,4 +868,6 @@ void OSSleepTicks(OSTime tick) {
     OSRestoreInterrupts(enabled);
 }
 
+#if 0 // not linked in City Folk
 DECOMP_FORCE_ACTIVE(OSThread_c, IdleThread);  // IdleThread is unused but linked anyway.
+#endif

@@ -1,24 +1,19 @@
+#include <private/gx.h>
+#include <revolution/gx.h>
 
 #include <private/os.h>
 #include <revolution/os.h>
 
-#include <private/gx.h>
-#include <revolution/gx.h>
-
-#include <private/hollywood.h>
-
-#include <revolution/base/PPCArch.h>
-
 #include <string.h>
 
 static GXFifoObj DisplayListFifo;
-static GXData __savedGXdata;
 static GXFifoObj OldCPUFifo;
+static GXData __savedGXdata;
 
-void GXBeginDisplayList(void* list, u32 size) {
-    __GXFifoObj* impl = (__GXFifoObj*)&DisplayListFifo;
-
-    if (__GXData->dirtyState != 0) {
+void GXBeginDisplayList(void *list, u32 size)
+{
+    __GXFifoObj* dlFifo = (__GXFifoObj*)&DisplayListFifo;
+    if (__GXData->dirtyState) {
         __GXSetDirtyState();
     }
 
@@ -26,58 +21,62 @@ void GXBeginDisplayList(void* list, u32 size) {
         memcpy(&__savedGXdata, __GXData, sizeof(GXData));
     }
 
-    impl->base = list;
-    impl->top = (u8*)list + size - 4;
-    impl->size = size;
-    impl->count = 0;
-    impl->rdPtr = list;
-    impl->wrPtr = list;
+    dlFifo->base = (u8*)list;
+    dlFifo->top = (u8*)list + size - 4;
+    dlFifo->size = size;
+    dlFifo->count = 0;
+    dlFifo->rdPtr = list;
+    dlFifo->wrPtr = list;
 
-    __GXData->inDispList = TRUE;
+    __GXData->inDispList   = GX_TRUE;
 
+    GXFlush();
     GXGetCPUFifo(&OldCPUFifo);
     GXSetCPUFifo(&DisplayListFifo);
     GXResetWriteGatherPipe();
 }
 
-u32 GXEndDisplayList() {
-    u8 wrap;
+u32 GXEndDisplayList(void) {
+    GXBool ov;
     BOOL enabled;
-    u32 cpEnable;
+    u32 cpenable;
 
+    GXFlush();
     GXGetCPUFifo(&DisplayListFifo);
-    wrap = GXGetFifoWrap(&DisplayListFifo);
+    ov = GXGetFifoWrap(&DisplayListFifo);
+
     GXSetCPUFifo(&OldCPUFifo);
 
-    if (__GXData->dlSaveContext) {
+    if (__GXData->dlSaveContext)
+    {
         enabled = OSDisableInterrupts();
-
-        cpEnable = __GXData->cpEnable;
+        cpenable = __GXData->cpEnable;
         memcpy(__GXData, &__savedGXdata, sizeof(GXData));
-        __GXData->cpEnable = cpEnable;
-
+        __GXData->cpEnable = cpenable;
         OSRestoreInterrupts(enabled);
     }
 
-    __GXData->inDispList = FALSE;
-
-    if (!wrap) {
+    __GXData->inDispList = GX_FALSE;
+    
+    if (!ov) {
         return GXGetFifoCount(&DisplayListFifo);
     }
-
-    return 0;
+    else
+    {
+        return 0;
+    }
 }
 
 void GXCallDisplayList(void* list, u32 nbytes) {
-    if (__GXData->dirtyState != 0) {
+    if (__GXData->dirtyState)  {
         __GXSetDirtyState();
     }
 
-    if (*(u32*)&__GXData->vNumNot == 0) {
+    if (!(*(u32*)(&__GXData->vNumNot))) {
         __GXSendFlushPrim();
     }
 
     GX_WRITE_U8(GX_CMD_CALL_DL);
-    GX_WRITE_U32(list);
-    GX_WRITE_U32(nbytes);
+    GX_WRITE_U32((u32)list);
+    GX_WRITE_U32((u32)nbytes);
 }

@@ -17,6 +17,7 @@ extern "C" {
 enum {
     DVD_STATE_FATAL = -1,
     DVD_STATE_IDLE,
+    DVD_STATE_END = DVD_STATE_IDLE,
     DVD_STATE_BUSY,
     DVD_STATE_WAITING,
     DVD_STATE_COVER_CLOSED,
@@ -194,6 +195,12 @@ void* DVDGetFSTLocation();
 /* Fatal stuff*/
 
 BOOL DVDSetAutoFatalMessaging(BOOL enable);
+
+BOOL DVDGetCurrentDir(char*, u32 maxlen);
+
+BOOL DVDSetAutoInvalidation(BOOL);
+
+BOOL DVDCheckDiskAsync(DVDCommandBlock*, DVDCommandCallback);
 
 #ifdef __cplusplus
 }

@@ -105,7 +105,7 @@ void BlackWait_c::draw() {
         GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_A0, GX_CA_A1, GX_CA_TEXA, GX_CA_ZERO);
         GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
         EGG::DrawGX::SetMat_PE(EGG::DrawGX::ZMODE_0, EGG::DrawGX::BLEND_0);
-        EGG::DrawGX::SetBlendMode(EGG::DrawGX::BLEND_10);
+        EGG::DrawGX::SetVtxState(EGG::DrawGX::VTX_TYPE_10);
         EGG::DrawGX::LoadTexture(mTex[mFrame], GX_TEXMAP0);
 
         f32 top = pos.y + size.y;

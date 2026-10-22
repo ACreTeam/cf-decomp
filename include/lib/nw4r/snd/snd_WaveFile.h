@@ -20,6 +20,14 @@ namespace WaveFile {
 
 enum Format { FORMAT_PCM8, FORMAT_PCM16, FORMAT_ADPCM };
 
+struct FileHeader {
+    ut::BinaryFileHeader fileHeader; // at 0x0
+    u32 infoChunkOffset;             // at 0x10
+    u32 infoChunkSize;               // at 0x14
+    u32 dataChunkOffset;             // at 0x18
+    u32 dataChunkSize;               // at 0x1C
+};
+
 struct WaveInfo {
     u8 format;                  // at 0x0
     u8 loopFlag;                // at 0x1

@@ -368,8 +368,8 @@ void dInsFldHornet_c::executeSting() {
         if (ang >= 0x78E4 ||
             ang <= -0x78E4 || // ~170 degrees: behind the player
             mFrame >= STING_END_TIME) {
-            mGroupEffect.retireAll();
-            mTailEffect.retireAll();
+            mGroupEffect.kill();
+            mTailEffect.kill();
             dEffect::create("af_bug_bee_finish", &mPos, &mAngle, NULL);
             requestDelete();
         }

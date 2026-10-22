@@ -4,6 +4,7 @@
 #include <revolution/nwc24.h>
 
 #include <private/nwc24/NWC24Std.h>
+#include <private/nwc24/NWC24System.h>
 #include <private/nwc24/NWC24Utils.h>
 
 #include <private/nwc24/NWC24Ipc.h>
@@ -21,12 +22,12 @@
 #include <private/nwc24/NWC24Download.h>
 
 #include <private/nwc24/NWC24Config.h>
+#include <private/nwc24/NWC24DateParser.h>
 #include <private/nwc24/NWC24UserId.h>
 
 #include <private/nwc24/NWC24FriendList.h>
 #include <private/nwc24/NWC24MBox.h>
 #include <private/nwc24/NWC24MsgObj.h>
-
-NWC24Err NWC24iPrepareShutdown();
+#include <private/nwc24/NWC24MsgCommit.h>
 
 #endif  // REVOLUTION_NWC24_H

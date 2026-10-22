@@ -77,6 +77,14 @@ public:
     bool IsFogRangeAdjEnable() const {
         return IsValid() && ref().adjEnable == TRUE;
     }
+
+    void SetFogRangeAdjEnable(bool enable) {
+        if (!IsValid()) {
+            return;
+        }
+
+        ref().adjEnable = enable;
+    }
 };
 
 } // namespace g3d

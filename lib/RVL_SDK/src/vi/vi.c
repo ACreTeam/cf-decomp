@@ -1,6 +1,7 @@
+#include <decomp.h>
 #include <revolution/verdefs.h>
 
-SDKDefineVersion(VI, "Apr 20 2010", "11:20:54");
+SDKDefineVersion(VI, "Aug  8 2007", "02:07:17");
 
 #include <private/vi.h>
 #include <revolution/vi.h>
@@ -583,7 +584,7 @@ VIRetraceCallback VISetPostRetraceCallback(VIRetraceCallback cb) {
     return oldcb;
 }
 
-VITiming* __VISetExtraTiming(VITiming* t) {
+static VITiming* __VISetExtraTiming(VITiming* t) {
     VITiming* old = timingExtra;
 
     timingExtra = t;
@@ -1296,14 +1297,19 @@ void VISetNextFrameBuffer(void* fb) {
     OSRestoreInterrupts(enabled);
 }
 
+#if 0 // not linked in City Folk
 void* VIGetNextFrameBuffer() {
     return *(void**)(&NextBufAddr);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void* VIGetCurrentFrameBuffer() {
     return *(void**)(&CurrBufAddr);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void VISetNextRightFrameBuffer(void* fb) {
     BOOL enabled;
 
@@ -1311,13 +1317,14 @@ void VISetNextRightFrameBuffer(void* fb) {
     if (!IS_ALIGNED(fb, 32)) {
         OSHaltLine(2954, "VISetNextFrameBuffer(): Frame buffer address(0x%08x) is not 32byte aligned\n", fb);
     }
-#endif
     enabled = OSDisableInterrupts();
     HorVer.rbufAddr = (u32)fb;
     FBSet = TRUE;
     setFbbRegs(&HorVer, &HorVer.tfbb, &HorVer.bfbb, &HorVer.rtfbb, &HorVer.rbfbb);
     OSRestoreInterrupts(enabled);
+#endif
 }
+#endif
 
 void VISetBlack(BOOL black) {
     BOOL enabled;
@@ -1330,6 +1337,7 @@ void VISetBlack(BOOL black) {
     OSRestoreInterrupts(enabled);
 }
 
+#if 0 // not linked in City Folk
 void VISet3D(BOOL threeD) {
     BOOL enabled;
     u32 reg;
@@ -1343,6 +1351,7 @@ void VISet3D(BOOL threeD) {
     setScalingRegs(HorVer.PanSizeX, HorVer.DispSizeX, HorVer.threeD);
     OSRestoreInterrupts(enabled);
 }
+#endif
 
 u32 VIGetRetraceCount() {
     return retraceCount;
@@ -1373,18 +1382,20 @@ static u32 getCurrentFieldEvenOdd() {
     return (getCurrentHalfLine() < CurrTiming->nhlines) ? 1 : 0;
 }
 
+#if 0 // not linked in City Folk
 u32 VIGetNextField() {
     s32 nextField;
     BOOL enabled;
 #if !DEBUG
     u8 unused[4];
-#endif
 
     enabled = OSDisableInterrupts();
     nextField = getCurrentFieldEvenOdd() ^ 1;
     OSRestoreInterrupts(enabled);
     return nextField ^ (HorVer.AdjustedDispPosY & 1);
+#endif
 }
+#endif
 
 u32 VIGetCurrentLine() {
     u32 halfLine;
@@ -1435,7 +1446,7 @@ u32 VIGetTvFormat() {
     return format;
 }
 
-u32 VIGetScanMode() {
+static u32 VIGetScanMode() {
     u32 scanMode;
     BOOL enabled = OSDisableInterrupts();
 
@@ -1460,6 +1471,7 @@ u32 VIGetDTVStatus() {
     return dtvStatus & 1;
 }
 
+#if 0 // not linked in City Folk
 void __VISetAdjustingValues(s16 x, s16 y) {
     BOOL enabled;
     VITiming* tm;
@@ -1478,7 +1490,9 @@ void __VISetAdjustingValues(s16 x, s16 y) {
                     HorVer.black);
     OSRestoreInterrupts(enabled);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void __VIGetAdjustingValues(s16* x, s16* y) {
     BOOL enabled;
 
@@ -1487,8 +1501,9 @@ void __VIGetAdjustingValues(s16* x, s16* y) {
     *y = displayOffsetV;
     OSRestoreInterrupts(enabled);
 }
+#endif
 
-void __VIEnableRawPositionInterrupt(s16 x, s16 y, void (*callback)(s16, s16)) {
+static void __VIEnableRawPositionInterrupt(s16 x, s16 y, void (*callback)(s16, s16)) {
     BOOL enabled;
     u32 halfLine;
     u32 halfLineOff;
@@ -1520,6 +1535,7 @@ void __VIEnableRawPositionInterrupt(s16 x, s16 y, void (*callback)(s16, s16)) {
     OSRestoreInterrupts(enabled);
 }
 
+#if 0 // not linked in City Folk
 void (*__VIDisableRawPositionInterrupt())(s16, s16) {
     BOOL enabled;
     void (*old)(s16, s16);
@@ -1533,6 +1549,7 @@ void (*__VIDisableRawPositionInterrupt())(s16, s16) {
     OSRestoreInterrupts(enabled);
     return old;
 }
+#endif
 
 void __VIDisplayPositionToXY(u32 hct, u32 vct, s16* x, s16* y) {
     u32 halfLine = ((vct - 1) << 1) + ((hct - 1) / CurrTiming->hlw);
@@ -1594,13 +1611,13 @@ void __VIDisplayPositionToXY(u32 hct, u32 vct, s16* x, s16* y) {
     *x = (s16)(hct - 1);
 }
 
-void __VIGetCurrentPosition(s16* x, s16* y) {
+static void __VIGetCurrentPosition(s16* x, s16* y) {
     u32 hcount, vcount;
     GetCurrentDisplayPosition(&hcount, &vcount);
     __VIDisplayPositionToXY(hcount, vcount, x, y);
 }
 
-void __VISetLatchMode(u32 mode) {
+static void __VISetLatchMode(u32 mode) {
     u32 reg;
 
     reg = __VIRegs[VI_DISPLAY_CONFIG];
@@ -1609,7 +1626,7 @@ void __VISetLatchMode(u32 mode) {
     __VIRegs[VI_DISPLAY_CONFIG] = reg;
 }
 
-BOOL __VIGetLatch0Position(s16* px, s16* py) {
+static BOOL __VIGetLatch0Position(s16* px, s16* py) {
     u32 hcount;
     u32 vcount;
 
@@ -1626,7 +1643,7 @@ BOOL __VIGetLatch0Position(s16* px, s16* py) {
     return FALSE;
 }
 
-BOOL __VIGetLatch1Position(s16* px, s16* py) {
+static BOOL __VIGetLatch1Position(s16* px, s16* py) {
     u32 hcount;
     u32 vcount;
 
@@ -1643,38 +1660,50 @@ BOOL __VIGetLatch1Position(s16* px, s16* py) {
     return FALSE;
 }
 
-BOOL __VIGetLatchPosition(u32 port, s16* px, s16* py) {
+static BOOL __VIGetLatchPosition(u32 port, s16* px, s16* py) {
     return port == 0 ? __VIGetLatch0Position(px, py) : __VIGetLatch1Position(px, py);
 }
 
+#if 0 // not linked in City Folk
 s32 VIGetVSyncTimingTest() {
     vsync_timing_test_flag = FALSE;
     return vsync_timing_err_cnt;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void VISetVSyncTimingTest() {
     vsync_timing_err_cnt = 0;
     vsync_timing_test_flag = TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void __VIDisableDimming() {
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VISetAutoDimming() {
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 u32 __VISetDimmingCountLimit(u32 limit) {
     u32 old = THD_TIME_TO_DIMMING;
     THD_TIME_TO_DIMMING = limit;
     return old;
 }
+#endif
 
+#if 0 // not linked in City Folk
 u32 __VISetDVDStopMotorCountLimit(u32 limit) {
     u32 old = THD_TIME_TO_DVD_STOP;
     THD_TIME_TO_DVD_STOP = limit;
     return old;
 }
+#endif
 
 s32 VIGetDimmingCount() {
     s32 count;
@@ -1687,6 +1716,7 @@ s32 VIGetDimmingCount() {
     return count;
 }
 
+#if 0 // not linked in City Folk
 s32 VIGetDVDStopMotorCount() {
     s32 count;
 
@@ -1697,8 +1727,9 @@ s32 VIGetDVDStopMotorCount() {
     }
     return count;
 }
+#endif
 
-BOOL VIEnableDimming(BOOL flag) {
+static BOOL VIEnableDimming(BOOL flag) {
     u8 screenSaverMode;
     BOOL old;
 
@@ -1763,7 +1794,7 @@ BOOL VIResetDimmingCount() {
 #endif
 }
 
-BOOL VIEnableDVDStopMotor(BOOL flag) {
+static BOOL VIEnableDVDStopMotor(BOOL flag) {
     BOOL old = __VIDVDStopFlag_Enable;
     __VIDVDStopFlag_Enable = flag;
     return old;
@@ -1779,52 +1810,70 @@ BOOL __VIResetSIIdle() {
     return TRUE;
 }
 
-BOOL __VIResetDev0Idle() {
+static BOOL __VIResetDev0Idle() {
     __VIDimmingFlag_DEV_IDLE[0] = FALSE;
     return TRUE;
 }
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev1Idle() {
     __VIDimmingFlag_DEV_IDLE[1] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev2Idle() {
     __VIDimmingFlag_DEV_IDLE[2] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev3Idle() {
     __VIDimmingFlag_DEV_IDLE[3] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev4Idle() {
     __VIDimmingFlag_DEV_IDLE[4] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev5Idle() {
     __VIDimmingFlag_DEV_IDLE[5] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev6Idle() {
     __VIDimmingFlag_DEV_IDLE[6] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev7Idle() {
     __VIDimmingFlag_DEV_IDLE[7] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev8Idle() {
     __VIDimmingFlag_DEV_IDLE[8] = FALSE;
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __VIResetDev9Idle() {
     __VIDimmingFlag_DEV_IDLE[9] = FALSE;
     return TRUE;
 }
+#endif

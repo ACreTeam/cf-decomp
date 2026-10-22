@@ -183,19 +183,23 @@ static ISFSError nandReadDir(const char* path, char* nameList, u32* num, NANDCom
     }
 }
 
+#if 0 // not linked in City Folk
 s32 NANDReadDir(const char* path, char* nameList, u32* num) {
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
     return nandConvertErrorCode(nandReadDir(path, nameList, num, NULL, FALSE, FALSE));
 }
+#endif
 
+#if 0 // not linked in City Folk
 s32 NANDPrivateReadDir(const char* path, char* nameList, u32* num) {
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
     return nandConvertErrorCode(nandReadDir(path, nameList, num, NULL, FALSE, TRUE));
 }
+#endif
 
 static ISFSError nandCreateDir(const char* path, u8 perm, u8 attr, NANDCommandBlock* block, BOOL isAsync, BOOL hasPrivateAccess) {
     char absPath[NAND_MAX_PATH] = "";
@@ -265,12 +269,14 @@ static ISFSError nandMove(const char* path, const char* destDir, NANDCommandBloc
     }
 }
 
+#if 0 // not linked in City Folk
 s32 NANDPrivateMove(const char* path, const char* destDir) {
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
     return nandConvertErrorCode(nandMove(path, destDir, NULL, FALSE, TRUE));
 }
+#endif
 
 static ISFSError nandGetFileStatus(IOSFd fd, u32* length, u32* pos) {
     ISFSFileStats isfsStats ALIGN32;
@@ -463,12 +469,14 @@ static ISFSError nandSetStatus(const char* path, const NANDStatus* status, NANDC
     }
 }
 
+#if 0 // not linked in City Folk
 s32 NANDSetStatus(const char* path, NANDStatus* status) {
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
     }
     return nandConvertErrorCode(nandSetStatus(path, status, NULL, FALSE, FALSE));
 }
+#endif
 
 s32 NANDPrivateSetStatus(const char* path, NANDStatus* status) {
     if (!nandIsInitialized()) {
@@ -476,6 +484,7 @@ s32 NANDPrivateSetStatus(const char* path, NANDStatus* status) {
     }
     return nandConvertErrorCode(nandSetStatus(path, status, NULL, FALSE, TRUE));
 }
+
 
 void NANDSetUserData(NANDCommandBlock* block, void* data) {
     block->userData = data;

@@ -58,6 +58,7 @@ static void PrepareLine(char* line, int count, const char* msg) {
     line[LINE_MAX_EACH - 1] = '\n';
 }
 
+#if 0 // not linked in City Folk
 BOOL NANDLoggingPrepareFile(u8* workBuf) {
     ISFSError ret;
     IOSFd fd;
@@ -121,6 +122,7 @@ BOOL NANDLoggingPrepareFile(u8* workBuf) {
     // Done!!!
     return TRUE;
 }
+#endif
 
 BOOL reserveFileDescriptor() {
     BOOL enabled = FALSE;

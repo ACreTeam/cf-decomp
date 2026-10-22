@@ -9,22 +9,6 @@
 #include <lib/egg/core/eggHeap.h>
 #include <lib/revolution/OS/OSThread.h>
 
-// RVLFaceLib functions not named yet.
-extern "C" {
-RFLErrcode fn_802B96B0(); // RFLGetAsyncStatus
-RFLErrcode fn_802C4BE8(RFLStoreData *data, RFLDataSource source, u16 index);
-u32 RFLGetMiddleDBBufferSize(u16 num); // RFLGetMiddleDBBufferSize
-void fn_802C4F80(RFLMiddleDB *db, int type, void *buf, u16 num); // RFLInitMiddleDB
-RFLErrcode RFLAddMiddleDBStoreData(RFLMiddleDB *db, const RFLStoreData *data); // RFLAddMiddleDBStoreData
-u32 fn_802C6010(u16 num);
-void fn_802C601C(void *buf, u16 num);
-RFLErrcode fn_802C60B4(void *dst, int, int, u16 index, u16 num);
-u32 fn_802C61EC(u16 memberNum, u16 num);
-void fn_802C6200(u32 *converter, void *buf, u16 myNo, u16 memberNum, u16 num);
-RFLErrcode fn_802C63E8(u32 *converter, const void *data, u16 member);
-void fn_802C64E4(u32 *converter, u16 member);
-RFLErrcode fn_802C6574(RFLMiddleDB *db, u32 *converter, u16 member);
-}
 
 #define MII_ICON_DB_TYPE_USER 4
 #define MII_ICON_DB_TYPE_NET 5
@@ -36,18 +20,18 @@ static u8 l_stack[0x2000] ALIGN(32);
 static mng_c l_mng;
 
 void net_c::init(int myNo) {
-    fn_802C6200(mConverter, mConverterBuf, myNo, MII_ICON_MEMBER_MAX, 1);
+    RFLiInitReceiveConverter(mConverter, mConverterBuf, myNo, MII_ICON_MEMBER_MAX, 1);
     for (u32 i = 0; i < MII_ICON_MEMBER_MAX; i++) {
         if (i < myNo) {
-            fn_802C4F80(&mDB[i], MII_ICON_DB_TYPE_NET, mDBBuf[i], 1);
+            RFLInitMiddleDB(&mDB[i], MII_ICON_DB_TYPE_NET, mDBBuf[i], 1);
         } else if (i > myNo) {
             u32 slot = i - 1;
-            fn_802C4F80(&mDB[slot], MII_ICON_DB_TYPE_NET, mDBBuf[slot], 1);
+            RFLInitMiddleDB(&mDB[slot], MII_ICON_DB_TYPE_NET, mDBBuf[slot], 1);
         }
     }
     u16 index = 0;
     if (RFLSearchOfficialData(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index)) {
-        if (fn_802C60B4(mMyData, 0, 0, index, 1) != RFLErrcode_Success) {
+        if (RFLiSetExchangeData(mMyData, 0, 0, index, 1) != RFLErrcode_Success) {
             mError[myNo] |= 1;
         } else {
             mHasMyData = true;
@@ -65,7 +49,7 @@ void net_c::clear() {
 void net_c::reset(int member) {
     mState[member] = STATE_NONE;
     if (mConverting[member]) {
-        fn_802C64E4(mConverter, member);
+        RFLiClearReceivedMember(mConverter, member);
         mConverting[member] = false;
     }
     mError[member] = 0;
@@ -126,7 +110,7 @@ void *travel_c::get() {
     if (!dPlayerMgr::Mgr_c::getCurrentPlayer()->isFlag0(PRIVATE_FLAG0_TRAVELLING)) {
         u16 index = 0;
         if (RFLSearchOfficialData(&dPlayerMgr::Mgr_c::getCurrentPlayer()->mMiiId, &index)) {
-            if (fn_802C4BE8(&mData, RFLDataSource_Official, index) != RFLErrcode_Success) {
+            if (RFLGetStoreData(&mData, RFLDataSource_Official, index) != RFLErrcode_Success) {
                 mError |= 1;
             } else {
                 return &mData;
@@ -142,7 +126,7 @@ void *travel_c::get() {
 }
 
 BOOL travel_c::set(const void *data) {
-    fn_802C4F80(&mDB, MII_ICON_DB_TYPE_USER, mDBBuf, 1);
+    RFLInitMiddleDB(&mDB, MII_ICON_DB_TYPE_USER, mDBBuf, 1);
     if (data != NULL) {
         cLib::memCpy(&mData, data, sizeof(mData));
         if (RFLAddMiddleDBStoreData(&mDB, &mData) != RFLErrcode_Success) {
@@ -169,9 +153,9 @@ static void *threadMain(void *);
 void mng_c::create(EGG::Heap *heap) {
     u32 dataSize, converterSize, dbSize;
     u32 size;
-    dataSize = ROUND_UP(fn_802C6010(1), 4);
+    dataSize = ROUND_UP(RFLiGetExchangeBufferSize(1), 4);
     size = dataSize + dataSize * (MII_ICON_MEMBER_MAX - 1);
-    converterSize = ROUND_UP(fn_802C61EC(MII_ICON_MEMBER_MAX, 1), 4);
+    converterSize = ROUND_UP(RFLiGetReceiveBufferSize(MII_ICON_MEMBER_MAX, 1), 4);
     size += converterSize;
     dbSize = ROUND_UP(RFLGetMiddleDBBufferSize(1), 4);
     size += dbSize * MII_ICON_MEMBER_MAX;
@@ -185,8 +169,8 @@ void mng_c::create(EGG::Heap *heap) {
         mNet.mDBBuf[i] = mWork + dataSize + dataSize * (MII_ICON_MEMBER_MAX - 1) + converterSize + dbSize * i;
     }
     mTravel.mDBBuf = mWork + dataSize + dataSize * (MII_ICON_MEMBER_MAX - 1) + converterSize + dbSize * (MII_ICON_MEMBER_MAX - 1);
-    fn_802C601C(mWork, 1);
-    fn_802C6200(mNet.mConverter, mNet.mConverterBuf, 0, MII_ICON_MEMBER_MAX, 1);
+    RFLiInitExchangeBuffer(mWork, 1);
+    RFLiInitReceiveConverter(mNet.mConverter, mNet.mConverterBuf, 0, MII_ICON_MEMBER_MAX, 1);
     OSCreateThread(&l_thread, threadMain, NULL, l_stack + sizeof(l_stack), sizeof(l_stack), 17, OS_THREAD_DETACHED);
     mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(7));
     mCreated = true;
@@ -221,12 +205,12 @@ static void *threadMain(void *) {
             if (l_mng.mNet.mState[i] == STATE_RECEIVED) {
                 void *data = l_mng.mNet.getData(i);
                 l_mng.mNet.mConverting[i] = true;
-                RFLErrcode err = fn_802C63E8(l_mng.mNet.mConverter, data, i);
+                RFLErrcode err = RFLiReceiveData(l_mng.mNet.mConverter, data, i);
                 while (err == RFLErrcode_Busy) {
-                    err = fn_802B96B0();
+                    err = RFLGetAsyncStatus();
                 }
                 if (err == RFLErrcode_Success) {
-                    if (fn_802C6574(l_mng.mNet.getDB(i), l_mng.mNet.mConverter, i) == RFLErrcode_Success) {
+                    if (RFLiAddReceivedToMiddleDB(l_mng.mNet.getDB(i), l_mng.mNet.mConverter, i) == RFLErrcode_Success) {
                         l_mng.mNet.mState[i] = STATE_READY;
                     } else {
                         l_mng.mNet.mError[i] |= 1;

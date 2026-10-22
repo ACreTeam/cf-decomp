@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/vi.h>
 #include <revolution/vi.h>
 
@@ -22,6 +23,7 @@ static void VICheckI2C() {
     __i2c_ident_flag = TRUE;
 }
 
+#if 0 // not linked in City Folk
 s32 VIGetI2CType() {
     if (!__i2c_ident_first) {
         VICheckI2C();
@@ -33,9 +35,10 @@ s32 VIGetI2CType() {
     } else {
         OSReport("OK! The 3in1 communication type is normal mode.\n");
     }
-#endif
     return __i2c_ident_flag;
+#endif
 }
+#endif
 
 static BOOL __VISetSCL(BOOL flag) {
     u32 reg;
@@ -227,6 +230,7 @@ BOOL __VISendI2CData(u8 slaveAddr, u8* pData, int nBytes) {
     return TRUE;
 }
 
+#if 0 // not linked in City Folk
 BOOL __VIReceiveI2CData(u8 slaveAddr, u8* pData, int nBytes) {
     int i;
     u8 data;
@@ -288,3 +292,4 @@ BOOL __VIReceiveI2CData(u8 slaveAddr, u8* pData, int nBytes) {
     OSRestoreInterrupts(enabled);
     return TRUE;
 }
+#endif

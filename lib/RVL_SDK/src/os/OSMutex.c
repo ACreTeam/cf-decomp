@@ -170,7 +170,7 @@ static BOOL IsMember(OSMutexQueue* queue, OSMutex* mutex) {
     return FALSE;
 }
 
-BOOL __OSCheckMutex(OSMutex* mutex) {
+static BOOL __OSCheckMutex(OSMutex* mutex) {
     OSThread* thread;
     OSThreadQueue* queue;
     s32 priority;
@@ -211,7 +211,7 @@ BOOL __OSCheckMutex(OSMutex* mutex) {
     return TRUE;
 }
 
-int __OSCheckDeadLock(OSThread* thread) {
+static int __OSCheckDeadLock(OSThread* thread) {
     OSMutex* mutex = thread->mutex;
 
     while (mutex && mutex->thread) {
@@ -223,7 +223,7 @@ int __OSCheckDeadLock(OSThread* thread) {
     return FALSE;
 }
 
-BOOL __OSCheckMutexes(OSThread* thread) {
+static BOOL __OSCheckMutexes(OSThread* thread) {
     OSMutex* mutex = thread->queueMutex.head;
 
     while (mutex) {

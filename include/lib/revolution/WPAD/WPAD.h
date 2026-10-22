@@ -282,7 +282,10 @@ u32 WPADGetWorkMemorySize(void);
 
 WPADLibStatus WPADGetStatus(void);
 void WPADGetAddress(s32 chan, BD_ADDR_PTR pAddr);
+u8 WPADGetRadioSensitivity(s32 chan);
 u8 WPADGetSensorBarPosition(void);
+BOOL WPADSetAcceptConnection(BOOL accept);
+BOOL WPADGetAcceptConnection(void);
 
 void WPADGetAccGravityUnit(s32 chan, u32 type, WPADAccGravityUnit* pAcc);
 

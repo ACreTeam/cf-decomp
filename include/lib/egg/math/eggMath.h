@@ -8,6 +8,9 @@ namespace EGG {
     class Math {
     public:
         static T sqrt(T v);
+        static T sin(T v);
+        static T cos(T v);
+        static T acos(T v);
         static T atan2(T y, T x);
         static T log10(T v);
 

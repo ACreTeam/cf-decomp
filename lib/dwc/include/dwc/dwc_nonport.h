@@ -1,6 +1,6 @@
 #pragma once
 
-#include <revolution/net_fwd.h>
+#include <revolution/net.h>
 #include <revolution/os/OSTime.h>
 #include <revolution/types.h>
 

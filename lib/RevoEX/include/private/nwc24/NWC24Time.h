@@ -10,11 +10,15 @@
 extern "C" {
 #endif
 
-NWC24Err NWC24iGetUniversalTime(OSTime* pTime);
+NWC24Err NWC24iGetUniversalTimeMinute(s32* minutes);
+NWC24Err NWC24iGetUniversalTime(OSTime* pTime) NO_INLINE;
 NWC24Err NWC24iGetTimeDifference(OSTime* pDiff);
 
 NWC24Err NWC24iSetRtcCounter(u32 rtcCounter, u32 flags);
 NWC24Err NWC24iSynchronizeRtcCounter(BOOL forceSave);
+
+char* NWC24iStrTimeR(OSTime seconds, char* buffer, int length);
+char* NWC24iStrTime(OSTime seconds);
 
 #ifdef __cplusplus
 }

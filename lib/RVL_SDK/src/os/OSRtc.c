@@ -33,6 +33,7 @@ static BOOL GetRTC(u32* rtc) {
     return !err;
 }
 
+#if 0 // not linked in City Folk
 BOOL __OSGetRTC(u32* rtc) {
     int err;
     u32 t0;
@@ -53,7 +54,9 @@ BOOL __OSGetRTC(u32* rtc) {
     }
     return FALSE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL __OSSetRTC(u32 rtc) {
     int err;
     u32 cmd;
@@ -75,6 +78,7 @@ BOOL __OSSetRTC(u32 rtc) {
     EXIUnlock(EXI_CHAN_0);
     return !err;
 }
+#endif
 
 static BOOL ReadSram(void* buffer) {
     BOOL err;
@@ -158,11 +162,13 @@ static void* LockSram(u32 offset) {
     return Scb.sram + offset;
 }
 
+#if 0 // not linked in City Folk
 OSSram* __OSLockSram() {
     return LockSram(0);
 }
+#endif
 
-OSSramEx* __OSLockSramEx() {
+static OSSramEx* __OSLockSramEx() {
     return LockSram(sizeof(OSSram));
 }
 
@@ -209,11 +215,13 @@ BOOL UnlockSram(BOOL commit, u32 offset) {
     return Scb.sync;
 }
 
+#if 0 // not linked in City Folk
 BOOL __OSUnlockSram(BOOL commit) {
     return UnlockSram(commit, 0);
 }
+#endif
 
-BOOL __OSUnlockSramEx(BOOL commit) {
+static BOOL __OSUnlockSramEx(BOOL commit) {
     return UnlockSram(commit, sizeof(OSSram));
 }
 
@@ -221,6 +229,7 @@ BOOL __OSSyncSram() {
     return Scb.sync;
 }
 
+#if 0 // not linked in City Folk
 int __OSCheckSram() {
     u16 *p, checkSum, checkSumInv;
     OSSram* sram;
@@ -236,6 +245,7 @@ int __OSCheckSram() {
 
     return (sram->checkSum == checkSum && sram->checkSumInv == checkSumInv);
 }
+#endif
 
 BOOL __OSReadROM(void* buffer, s32 length, s32 offset) {
     BOOL err;
@@ -263,7 +273,7 @@ BOOL __OSReadROM(void* buffer, s32 length, s32 offset) {
     return !err;
 }
 
-u16 OSGetGbsMode() {
+static u16 OSGetGbsMode() {
     OSSramEx* sram;
     u16 mode;
     sram = __OSLockSramEx();
@@ -272,7 +282,7 @@ u16 OSGetGbsMode() {
     return mode;
 }
 
-void OSSetGbsMode(u16 mode) {
+static void OSSetGbsMode(u16 mode) {
     OSSramEx* sram;
 
     if ((mode & 0x7C00) == (u32)0x5000 || (mode & 0xC0) == (u32)0xC0) {
@@ -290,6 +300,7 @@ void OSSetGbsMode(u16 mode) {
     __OSUnlockSramEx(TRUE);
 }
 
+#if 0 // not linked in City Folk
 u32 OSGetSoundMode() {
     OSSram* sram = __OSLockSram();
     u32 mode = (sram->flags & 4) ? 1 : 0;
@@ -297,7 +308,9 @@ u32 OSGetSoundMode() {
     __OSUnlockSram(FALSE);
     return mode;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void OSSetSoundMode(u32 mode) {
     OSSram* sram;
 
@@ -312,7 +325,9 @@ void OSSetSoundMode(u32 mode) {
     sram->flags |= mode;
     __OSUnlockSram(TRUE);
 }
+#endif
 
+#if 0 // not linked in City Folk
 u32 OSGetProgressiveMode() {
     OSSram* sram;
     u32 mode;
@@ -322,7 +337,9 @@ u32 OSGetProgressiveMode() {
     __OSUnlockSram(FALSE);
     return mode;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void OSSetProgressiveMode(u32 mode) {
     OSSram* sram;
 
@@ -338,7 +355,9 @@ void OSSetProgressiveMode(u32 mode) {
     sram->flags |= mode;
     __OSUnlockSram(TRUE);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void OSSetVideoMode(u32 mode) {
     OSSram* sram;
 
@@ -356,7 +375,9 @@ void OSSetVideoMode(u32 mode) {
     sram->flags |= mode;
     __OSUnlockSram(TRUE);
 }
+#endif
 
+#if 0 // not linked in City Folk
 u8 OSGetLanguage() {
     OSSram* sram = __OSLockSram();
     u8 language = sram->language;
@@ -364,7 +385,9 @@ u8 OSGetLanguage() {
     __OSUnlockSram(FALSE);
     return language;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void OSSetLanguage(u8 language) {
     OSSram* sram = __OSLockSram();
 
@@ -375,7 +398,9 @@ void OSSetLanguage(u8 language) {
     sram->language = language;
     __OSUnlockSram(TRUE);
 }
+#endif
 
+#if 0 // not linked in City Folk
 u32 OSGetEuRgb60Mode() {
     OSSram* sram;
     u32 mode;
@@ -385,7 +410,9 @@ u32 OSGetEuRgb60Mode() {
     __OSUnlockSram(FALSE);
     return mode;
 }
+#endif
 
+#if 0 // not linked in City Folk
 void OSSetEuRgb60Mode(u32 mode) {
     OSSram* sram;
 
@@ -401,6 +428,7 @@ void OSSetEuRgb60Mode(u32 mode) {
         __OSUnlockSram(TRUE);
     }
 }
+#endif
 
 u16 OSGetWirelessID(s32 chan) {
     OSSramEx* sram;

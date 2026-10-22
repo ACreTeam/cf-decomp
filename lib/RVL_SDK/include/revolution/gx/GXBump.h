@@ -19,6 +19,10 @@ void GXSetNumIndStages(u8 nIndStages);
 
 void GXSetTevDirect(GXTevStageID tev_stage);
 
+
+
+extern void GXSetTevIndWarp(GXTevStageID, GXIndTexStageID, GXBool, GXBool, GXIndTexMtxID);
+
 #ifdef __cplusplus
 }
 #endif

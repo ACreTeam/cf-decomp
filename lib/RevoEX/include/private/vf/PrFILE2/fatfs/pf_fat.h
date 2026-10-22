@@ -36,10 +36,12 @@ typedef struct PF_CLUSTER_LINK {
 typedef struct PF_FAT_HINT {
     pf_u32 chain_index;  // 0x00
     pf_u32 cluster;      // 0x04
+    pf_u32 file_version;  // 0x08
 } PF_FAT_HINT;
 
 typedef struct PF_FFD {
-    pf_u32 start_cluster;                    // 0x00
+    pf_u32 file_version;                     // 0x00
+    pf_u32 start_cluster;                    // 0x04
     pf_u32* p_start_cluster;                 // 0x04
     PF_LAST_CLUSTER last_cluster;            // 0x08
     PF_FAT_LAST_ACCESS last_access_cluster;  // 0x10

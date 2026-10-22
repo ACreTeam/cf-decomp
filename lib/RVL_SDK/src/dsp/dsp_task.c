@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/dsp.h>
 #include <revolution/dsp.h>
 
@@ -298,6 +299,7 @@ void __DSP_insert_task(DSPTaskInfo* task) {
     }
 }
 
+#if 0 // not linked in City Folk
 void __DSP_add_task(DSPTaskInfo* task) {
     if (__DSP_last_task == NULL) {
         __DSP_curr_task = task;
@@ -315,6 +317,8 @@ void __DSP_add_task(DSPTaskInfo* task) {
 
     __DSP_debug_printf("__DSP_add_task() : Added task    : 0x%08X\n", (u32)task);
 }
+#endif
+DECOMP_FORCE_STRING(dsp_task_c, "__DSP_add_task() : Added task    : 0x%08X\n");
 
 void __DSP_remove_task(DSPTaskInfo* task) {
     task->flags = 0;

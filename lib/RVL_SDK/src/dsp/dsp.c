@@ -10,7 +10,7 @@
 
 static BOOL __DSP_init_flag;
 
-SDKDefineVersion(DSP, "Apr 20 2010", "11:19:06");
+SDKDefineVersion(DSP, "Aug  8 2007", "01:59:06");
 
 u32 DSPCheckMailToDSP() {
     return DSP_HAS_REG_F(DSP_MAILBOX, (1 << DSP_MAILBOX_SET)) != 0;
@@ -29,7 +29,7 @@ void DSPSendMailToDSP(u32 mail) {
     DSP_WRITE_REG(DSP_MAILBOX_L, (mail) & 0xFFFF);
 }
 
-void DSPAssertInt() {
+static void DSPAssertInt() {
     BOOL old;
     u16 tmp;
 
@@ -47,7 +47,7 @@ void DSPInit() {
     BOOL old;
     u16 tmp;
 
-    __DSP_debug_printf("DSPInit(): Build Date: %s %s\n", "Apr 20 2010", "11:19:06");
+    __DSP_debug_printf("DSPInit(): Build Date: %s %s\n", "Aug  8 2007", "01:59:06");
 
     if (__DSP_init_flag == TRUE) {
         return;

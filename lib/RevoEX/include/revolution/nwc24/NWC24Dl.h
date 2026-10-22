@@ -12,6 +12,14 @@ extern "C" {
 #define NWC24_DL_TASK_MAX 120
 #define NWC24_DL_SUBTASK_MAX 32
 
+#define NWC24_DL_FLAG_HTTPS_ONLY (1 << 2)
+#define NWC24_DL_FLAG_GROUP_WRITABLE (1 << 6)
+#define NWC24_DL_FLAG_NO_LIMIT (1 << 30)
+
+#define NWC24_DL_INTERVAL_MIN 360
+#define NWC24_DL_INTERVAL_MAX 10080
+#define NWC24_DL_COUNT_MAX 100
+
 typedef u16 NWC24DlId;
 
 typedef enum NWC24DLError {
@@ -78,12 +86,12 @@ typedef struct NWC24DlTask {
 } NWC24DlTask;
 
 typedef struct NWC24DlIterateWork {
-    int unk_0x00;
-    int unk_0x04;
-    int unk_0x08;
-    int unk_0x0C;
-    int unk_0x10;
-    int unk_0x14;
+    u32 mode;    // 0x00
+    s32 cur;     // 0x04
+    s32 prev;    // 0x08
+    s32 lastId;  // 0x0C
+    BOOL first;  // 0x10
+    BOOL valid;  // 0x14
 } NWC24DlIterateWork;
 
 NWC24Err NWC24InitDlTask(NWC24DlTask* dlTask, NWC24DLType dlType);
@@ -94,7 +102,13 @@ NWC24Err NWC24SetDlInterval(NWC24DlTask* dlTask, u16 dlInterval);
 NWC24Err NWC24SetDlUrl(NWC24DlTask* dlTask, const char* dlUrl);
 NWC24Err NWC24SetDlFlags(NWC24DlTask* dlTask, u32 dlFlags);
 
+NWC24Err NWC24SetDlFilename(NWC24DlTask* dlTask, const char* dlFileName);
+NWC24Err NWC24GetDlFilename(const NWC24DlTask* dlTask, char* dlFileName, u32 size);
+NWC24Err NWC24SetDlCount(NWC24DlTask* dlTask, s16 dlCount);
+NWC24Err NWC24SetDlUserParam(NWC24DlTask* dlTask, u32 dlParam);
+
 NWC24Err NWC24GetDlAppId(const NWC24DlTask* dlTask, u32* dlAppId);
+NWC24Err NWC24GetDlError(const NWC24DlTask* dlTask, u32* lastError, s32* errorCount);
 
 NWC24Err NWC24DumpDlTask(NWC24DlTask* dlTask);
 
@@ -104,9 +118,20 @@ NWC24Err NWC24IterateDlTaskEx(NWC24DlIterateWork* dlIterateWork, NWC24DlId* dlIt
 NWC24Err NWC24UpdateDlTask(NWC24DlTask* dlTask);
 
 NWC24Err NWC24DeleteDlTask(NWC24DlTask* dlTask);
+NWC24Err NWC24DeleteDlTaskForced(NWC24DlTask* dlTask);
 NWC24Err NWC24AddDlTask(NWC24DlTask* dlTask);
 
 NWC24Err NWC24GetDlTask(NWC24DlTask* dlTask, NWC24DlId dlId);
+NWC24Err NWC24GetDlTaskMine(NWC24DlTask* dlTask, u32 dlParam);
+
+NWC24Err NWC24CheckDlTask(const NWC24DlTask* dlTask, BOOL wantWrite);
+
+NWC24Err NWC24GetDlVfPathByTask(const NWC24DlTask* dlTask, char* path, u32 size);
+NWC24Err NWC24GetDlVfPath(char* path, u32 size);
+NWC24Err NWC24CreateDlVf(const NWC24DlTask* dlTask, u32 size);
+
+NWC24Err NWC24SetDlKeys(const void* key, const void* iv);
+NWC24Err NWC24ClearDlKeys();
 
 NWC24Err NWC24PurgeOldestDlTask();
 NWC24Err NWC24ManageDlTaskListForMenu();

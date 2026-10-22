@@ -1,97 +1,107 @@
-#include <private/vf/PrFILE2/standard/pf_api_util.h>
-#include <revolution/vf/types.h>
+#include <revolution/vf/vf_all.h>
 
-pf_s32 VFipf_error_to_api_error[] = {VF_ERR_SUCCESS, VF_ERR_EINVAL,  VF_ERR_EINVAL,  VF_ERR_ENOENT, VF_ERR_EBUSY,   VF_ERR_ENOTEMPTY, VF_ERR_ENOSPC,
-                                     VF_ERR_ENOEXEC, VF_ERR_EEXIST,  VF_ERR_ENOEXEC, VF_ERR_EINVAL, VF_ERR_EACCES,  VF_ERR_ENOSYS,    VF_ERR_ENOEXEC,
-                                     VF_ERR_ENOEXEC, VF_ERR_ENOEXEC, VF_ERR_EACCES,  VF_ERR_EIO,    VF_ERR_ENOEXEC, VF_ERR_EACCES,    VF_ERR_ENOENT,
-                                     VF_ERR_ENFILE,  VF_ERR_EMFILE,  VF_ERR_EISDIR,  VF_ERR_EACCES, VF_ERR_EPERM,   VF_ERR_ENOEXEC,   VF_ERR_ENOEXEC,
-                                     VF_ERR_ENOEXEC, VF_ERR_ENOEXEC, VF_ERR_ENOMEM,  VF_ERR_EINVAL, VF_ERR_EINVAL,  VF_ERR_ENOEXEC,   VF_ERR_ENOENT,
-                                     VF_ERR_ENOEXEC, VF_ERR_ENOEXEC, VF_ERR_EFBIG,   VF_ERR_EBADF,  VF_ERR_ENOLCK};
+s32 VFipf_error_to_api_error[40] = {
+    0x00000000, 0x00000016, 0x00000016, 0x00000002,
+    0x00000010, 0x0000005A, 0x0000001C, 0x00000008,
+    0x00000011, 0x00000008, 0x00000016, 0x0000000D,
+    0x00000058, 0x00000008, 0x00000008, 0x00000008,
+    0x0000000D, 0x00000005, 0x00000008, 0x0000000D,
+    0x00000002, 0x00000017, 0x00000018, 0x00000015,
+    0x0000000D, 0x00000001, 0x00000008, 0x00000008,
+    0x00000008, 0x00000008, 0x0000000C, 0x00000016,
+    0x00000016, 0x00000008, 0x00000002, 0x00000008,
+    0x00000008, 0x0000001B, 0x00000009, 0x0000002E
+};
 
-pf_s32 VFiPFAPI_ParseOpenModeString(const char* mode_str) {
-    pf_s32 open_mode = 0;
-    pf_u32 i = 0;
+s32 VFiPFAPI_ParseOpenModeString(const s8* mode_str) {
+    s32 open_mode;
+    u32 i;
 
-    if (mode_str == PF_NULL) {
-        open_mode = 10;
-        return open_mode;
+    if (mode_str == 0) {
+        return 10;
     }
 
-    switch (mode_str[i++]) {
-        case 'r': {
+    i = 1;
+
+    switch (mode_str[0]) {
+        case 'r':
             open_mode = 2;
             break;
-        }
-        case 'w': {
+        case 'w':
             open_mode = 1;
             break;
-        }
-        case 'a': {
+        case 'a':
             open_mode = 4;
             break;
-        }
-        default: {
+        default:
             return 0;
-        }
     }
 
-    if (mode_str[i] == 'b') {
-        i++;
+    if (mode_str[1] == 'b') {
+        i = 2;
     }
+
     switch (mode_str[i++]) {
-        case 0: {
+        case 0:
             return open_mode;
-        }
+
         case '+': {
             open_mode |= 8;
             break;
         }
+
         case 't':
-        default: {
+        default:
             return 0;
+    }
+
+    switch (mode_str[i++]) {
+        case 0: {
+            return open_mode;
         }
     }
-    if (mode_str[i++] == 0) {
-        return open_mode;
-    }
+
     return 0;
 }
 
-pf_s32 VFiPFAPI_convertError(pf_s32 err) {
-    if (!(err == 0 || err == -1)) {
-        if (err > 0 && err < 0xA0) {
-            return VFipf_error_to_api_error[err];
-        }
-        if (err == 0x1000) {
-            err = VF_ERR_EIO;
-        }
+s32 VFiPFAPI_convertError(s32 err) {
+    if (err == 0) {
+        return 0;
+    }
+    if (err == -1) {
+        return -1;
+    }
+    if (err > 0 && err < 160) {
+        return VFipf_error_to_api_error[err];
+    }
+    if (err == 4096) {
+        return 5;
     }
     return err;
 }
 
-pf_s32 VFiPFAPI_convertReturnValue(pf_s32 err) {
+s32 VFiPFAPI_convertReturnValue(s32 err) {
     if (err == 0) {
         return 0;
     }
     return -1;
 }
 
-void* VFiPFAPI_convertReturnValue2NULL(pf_s32 err, void* p_stream) {
-    void* ret;
+void* VFiPFAPI_convertReturnValue2NULL(s32 err, void* p_stream) {
     if (err) {
-        ret = PF_NULL;
+        return NULL;
     } else {
-        ret = p_stream;
+        return p_stream;
     }
-    return ret;
 }
-
-pf_s32 VFiPFAPI_convertReturnValue4unmount(pf_s32 err) {
+s32 VFiPFAPI_convertReturnValue4unmount(s32 err) {
     if (err == 0) {
         return 0;
     }
+
     if (err == 1) {
         return 1;
     }
+
     return -1;
 }

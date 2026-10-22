@@ -22,6 +22,12 @@
 
 namespace dInsectUtil {
 
+static inline void setQuatIdentity(EGG::Quatf *q) {
+    mVec3_c zero(0.0f, 0.0f, 0.0f);
+    dBalloonString::setQuaternion(q, zero, 1.0f);
+}
+
+
 static inline void toUnit(int *x, int *z, f32 fx, f32 fz) {
     *x = UNIT_OF(fx);
     *z = UNIT_OF(fz);
@@ -29,11 +35,6 @@ static inline void toUnit(int *x, int *z, f32 fx, f32 fz) {
 
 static inline int toUnitPos(f32 v) {
     return UNIT_OF(v);
-}
-
-static inline void setQuatIdentity(EGG::Quatf *q) {
-    mVec3_c zero(0.0f, 0.0f, 0.0f);
-    dBalloonString::setQuaternion(q, zero, 1.0f);
 }
 
 bool canPass(const mVec3_c *start, const mVec3_c *end) {
@@ -556,8 +557,8 @@ void axis_c::rotateX(mAng angle) {
     EGG::Quatf q;
     setQuatIdentity(&q);
     q.setAxisRotation(mSide, rad);
-    mUp = fn_8044540C(&q, &mUp);
-    mFront = fn_8044540C(&q, &mFront);
+    mUp = q.rotateVector(mUp);
+    mFront = q.rotateVector(mFront);
     setUp(mUp);
 }
 
@@ -566,8 +567,8 @@ void axis_c::rotateY(mAng angle) {
     EGG::Quatf q;
     setQuatIdentity(&q);
     q.setAxisRotation(mUp, rad);
-    mFront = fn_8044540C(&q, &mFront);
-    mSide = fn_8044540C(&q, &mSide);
+    mFront = q.rotateVector(mFront);
+    mSide = q.rotateVector(mSide);
     setFront(mFront);
 }
 
@@ -576,8 +577,8 @@ void axis_c::rotateZ(mAng angle) {
     EGG::Quatf q;
     setQuatIdentity(&q);
     q.setAxisRotation(mFront, rad);
-    mUp = fn_8044540C(&q, &mUp);
-    mSide = fn_8044540C(&q, &mSide);
+    mUp = q.rotateVector(mUp);
+    mSide = q.rotateVector(mSide);
     setUp(mUp);
 }
 

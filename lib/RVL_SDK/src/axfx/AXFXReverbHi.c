@@ -2,10 +2,12 @@
 
 static void __ParamConvert(AXFX_REVERBHI* reverb);
 
+#if 0 // not linked in City Folk
 u32 AXFXReverbHiGetMemSize(AXFX_REVERBHI* reverb) {
     reverb->reverbInner.preDelayTimeMax = reverb->preDelay;
     return AXFXReverbHiExpGetMemSize(&reverb->reverbInner);
 }
+#endif
 
 BOOL AXFXReverbHiInit(AXFX_REVERBHI* reverb) {
     __ParamConvert(reverb);
@@ -17,10 +19,12 @@ BOOL AXFXReverbHiShutdown(AXFX_REVERBHI* reverb) {
     return TRUE;
 }
 
+#if 0 // not linked in City Folk
 BOOL AXFXReverbHiSettings(AXFX_REVERBHI* reverb) {
     __ParamConvert(reverb);
     return AXFXReverbHiExpSettings(&reverb->reverbInner);
 }
+#endif
 
 void AXFXReverbHiCallback(AXFX_BUS* bus, AXFX_REVERBHI* reverb) {
     AXFXReverbHiExpCallback(bus, &reverb->reverbInner);

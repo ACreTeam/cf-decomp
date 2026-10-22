@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
-SDKDefineVersion(NAND, "Apr 20 2010", "11:21:16");
+SDKDefineVersion(NAND, "Dec 11 2007", "01:35:48");
 
 enum {
     STATE_NOT_INITIALIZED = 0,
@@ -488,6 +488,7 @@ s32 NANDGetType(const char* path, u8* type) {
     return nandConvertErrorCode(nandGetType(path, type, NULL, FALSE, FALSE));
 }
 
+#if 0 // not linked in City Folk
 s32 NANDPrivateGetType(const char* path, u8* type) {
     if (!nandIsInitialized()) {
         return NAND_RESULT_FATAL_ERROR;
@@ -495,6 +496,7 @@ s32 NANDPrivateGetType(const char* path, u8* type) {
 
     return nandConvertErrorCode(nandGetType(path, type, NULL, FALSE, TRUE));
 }
+#endif
 
 s32 NANDPrivateGetTypeAsync(const char* path, u8* type, NANDCallback callback, NANDCommandBlock* block) {
     if (!nandIsInitialized()) {

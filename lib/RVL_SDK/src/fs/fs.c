@@ -133,11 +133,14 @@ out:
     return ret;
 }
 
+#if 0 // not linked in City Folk
 ISFSError ISFS_OpenLibEx() {
     __fsInitialized = FALSE;
     return ISFS_OpenLib();
 }
+#endif
 
+#if 0 // not linked in City Folk
 ISFSError ISFS_CloseLib() {
     ISFSError ret = ISFS_ERROR_OK;
 
@@ -154,6 +157,7 @@ ISFSError ISFS_CloseLib() {
 out:
     return ret;
 }
+#endif
 
 static IOSError _FSGetStatsCb(IOSError result, void* isfsCallbackArg) {
     FS_Callback* _context = (FS_Callback*)isfsCallbackArg;
@@ -264,6 +268,7 @@ IOSError _isfsFuncCb(IOSError result, void* isfsCallbackArg) {
     return ret;
 }
 
+#if 0 // not linked in City Folk
 ISFSError ISFS_GetStats(ISFSStats* stats) {
     ISFSError ret = ISFS_ERROR_OK;
     FS_Callback* isfsCallbackArg = NULL;
@@ -295,6 +300,7 @@ out:
 
     return ret;
 }
+#endif
 
 ISFSError ISFS_CreateDir(const char* dirName, u32 dirAttr, u32 ownerAcc, u32 groupAcc, u32 othersAcc) {
     ISFSError ret = ISFS_ERROR_OK;

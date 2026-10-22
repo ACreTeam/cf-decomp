@@ -45,10 +45,20 @@ typedef struct NWC24FriendInfo {
     NWC24FriendAddr addr;  // 0x40
 } NWC24FriendInfo;
 
-// ???
 typedef struct NWC24SecretFriendInfo {
-    u8 unk_0x00[0x20];
+    NWC24UserId id;  // 0x00
+    s32 key;         // 0x08
+    u32 appId;       // 0x0C
+    u32 time;        // 0x10
+    u32 unk_0x14;
+    u32 reserved[2];  // 0x18
 } NWC24SecretFriendInfo;
+
+NWC24Err NWC24AddSecretFriendInfo(const NWC24SecretFriendInfo* info);
+NWC24Err NWC24DeleteSecretFriendInfo(const NWC24SecretFriendInfo* info);
+NWC24Err NWC24ReadSecretFriendInfo(NWC24SecretFriendInfo* info, u32 index);
+NWC24Err NWC24GetNumSecretFriendInfos(u32* num);
+NWC24Err NWC24SearchSecretFriendInfo(const NWC24SecretFriendInfo* info, u32* index);
 
 NWC24Err NWC24ReadFriendInfo(NWC24FriendInfo* info, u32 index);
 NWC24Err NWC24WriteFriendInfo(const NWC24FriendInfo* friendInfo, u32 index);

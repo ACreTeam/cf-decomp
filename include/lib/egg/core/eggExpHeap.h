@@ -3,21 +3,28 @@
 
 namespace EGG {
 
-// [TODO: extend this]
 class ExpHeap : public Heap {
 public:
-    void setGroupID(u16 groupID);
-    void setAllocMode(u16 mode);
-    void freeAll(); // 804402E8
+    ExpHeap(MEMiHeapHead *heapHead);
+    virtual ~ExpHeap();
 
-    static EGG::ExpHeap *create(void *buffer, size_t size, u16 flags);
-    static EGG::ExpHeap *create(size_t, EGG::Heap *, u16);
+    virtual EHeapKind getHeapKind() const;
+    virtual void initAllocator(Allocator *allocator, long align);
+    virtual void *alloc(size_t size, long align);
+    virtual void free(void *block);
+    virtual void destroy();
+    virtual int resizeForMBlock(void *block, size_t size);
+    virtual u32 getTotalFreeSize();
+    virtual size_t getAllocatableSize(long align);
+    virtual size_t adjust();
+
+    static ExpHeap *create(void *buffer, size_t size, u16 flags);
+    static ExpHeap *create(size_t size, Heap *parent, u16 flags);
+
+    void setAllocMode(u16 mode);
+    BOOL checkHeap(u32 flags);
     static size_t getSizeForMBlock(const void *block);
+    void freeAll();
 };
 
 } // namespace EGG
-
-
-extern "C" {
-BOOL fn_804402BC(EGG::Heap *heap, int arg); // 804402BC (eggExpHeap.o): returns TRUE; d_sys calls it per frame for both root heaps
-}

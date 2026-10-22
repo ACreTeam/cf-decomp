@@ -70,7 +70,7 @@ struct WUDDevInfo {
     u8 status;         // 0x59
 
     s8 UNK_0x5A;                   // 0x5A
-    u8 UNK_0x5B;                   // 0x5B
+    u8 sync_type;                    // 0x5B
     u8 UNK_0x5C;                   // 0x5C
     tBTA_HH_ATTR_MASK hhAttrMask;  // 0x5E
 };

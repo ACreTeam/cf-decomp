@@ -1,9 +1,9 @@
 #ifndef PRIVATE_NWC24_IPC_H
 #define PRIVATE_NWC24_IPC_H
 
+#include <private/ios.h>
 #include <private/ipc/types.h>
 #include <revolution/types.h>
-
 
 #include <revolution/nwc24/NWC24Err.h>
 
@@ -16,11 +16,11 @@ NWC24Err NWC24iOpenResourceManager(const char* funcName, const char* path, s32* 
 NWC24Err NWC24iCloseResourceManager(const char* funcName, s32 fd);
 #define NWC24CloseResourceManager(fd) NWC24iCloseResourceManager(__FUNCTION__, fd)
 
-NWC24Err NWC24iIoctlResourceManager(const char* funcName, s32 fd, s32 cmd, void* input, u32 input_bytes, void* output, u32 output_bytes);
+NWC24Err NWC24iIoctlResourceManager(const char* funcName, s32 fd, s32 cmd, void* input, s32 input_bytes, void* output, s32 output_bytes);
 #define NWC24IoctlResourceManager(fd, cmd, input, input_bytes, output, output_bytes)                                                                 \
     NWC24iIoctlResourceManager(__FUNCTION__, fd, cmd, input, input_bytes, output, output_bytes)
-NWC24Err NWC24iIoctlResourceManagerAsync(const char* funcName, s32 fd, s32 cmd, void* input, u32 input_bytes, void* output, u32 output_bytes,
-                                         s32* ret);
+NWC24Err NWC24iIoctlResourceManagerAsync(const char* funcName, s32 fd, s32 cmd, void* input, s32 input_bytes, void* output, s32 output_bytes,
+                                         void* ret);
 #define NWC24IoctlResourceManagerAsync(fd, cmd, input, input_bytes, output, output_bytes, ret)                                                       \
     NWC24iIoctlResourceManagerAsync(__FUNCTION__, fd, cmd, input, input_bytes, output, output_bytes, ret)
 

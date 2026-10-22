@@ -8,6 +8,7 @@
 
 #include <private/ax/AXCL.h>
 #include <private/ax/AXComp.h>
+#include <private/ax/DSPCode.h>
 
 #include <private/ax/AXSPB.h>
 #include <private/ax/AXVPB.h>

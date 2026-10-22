@@ -28,7 +28,7 @@ void __AXServiceCallbackStack() {
     }
 }
 
-void __AXInitVoiceStacks() {
+void __AXAllocInit() {
     u32 i;
 
     __AXCallbackStack = NULL;
@@ -37,9 +37,11 @@ void __AXInitVoiceStacks() {
     }
 }
 
+#if 0 // not linked in City Folk
 void __AXAllocInit() {
-    __AXInitVoiceStacks();
+    __AXAllocInit();
 }
+#endif
 
 void __AXPushFreeStack(AXVPB* vpb) {
     vpb->next = __AXStackHead[AX_PRIORITY_FREE];
@@ -47,7 +49,7 @@ void __AXPushFreeStack(AXVPB* vpb) {
     vpb->priority = AX_PRIORITY_FREE;
 }
 
-AXVPB* __AXPopFreeStack() {
+static AXVPB* __AXPopFreeStack() {
     AXVPB* vpb;
 
     vpb = (void*)(u32)&__AXStackHead[AX_PRIORITY_FREE]->next;
@@ -62,7 +64,7 @@ void __AXPushCallbackStack(AXVPB* vpb) {
     __AXCallbackStack = vpb;
 }
 
-AXVPB* __AXPopCallbackStack() {
+static AXVPB* __AXPopCallbackStack() {
     AXVPB* vpb;
 
     vpb = (void*)(u32)&__AXCallbackStack[AX_PRIORITY_FREE];
@@ -103,7 +105,7 @@ void __AXRemoveFromStack(AXVPB* vpb) {
     tail->prev = head;
 }
 
-void __AXPushStackHead(AXVPB* vpb, u32 priority) {
+static void __AXPushStackHead(AXVPB* vpb, u32 priority) {
     vpb->next = __AXStackHead[priority];
     vpb->prev = 0;
 
@@ -118,7 +120,7 @@ void __AXPushStackHead(AXVPB* vpb, u32 priority) {
     vpb->priority = priority;
 }
 
-AXVPB* __AXPopStackFromBottom(u32 priority) {
+static AXVPB* __AXPopStackFromBottom(u32 priority) {
     AXVPB* vpb;
 
     vpb = NULL;

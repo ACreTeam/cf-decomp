@@ -42,7 +42,7 @@
 #include <game/mLib/m_video.hpp>
 #include <lib/egg/core/eggDecomp.h>
 #include <lib/egg/core/eggExpHeap.h>
-#include <lib/egg/gfx/eggDrawGX.h>
+#include <lib/egg/gfxe/eggDrawGX.h>
 
 namespace dSys {
 enum {
@@ -167,7 +167,7 @@ void init() {
     reportHeapStep(0x2e1);
     dHeap::createMenuDylHeap(mem1);
     reportHeapStep(0x2e4);
-    fn_8043EFD4(mem2);
+    EGG::Decomp::initWorkBuffer(mem2);
     reportHeapStep(0x2e7);
     dHeap::createHmnAnmHeap(mem2);
     reportHeapStep(0x2eb);
@@ -330,7 +330,7 @@ template <> void EGG::TSystem<>::Configuration::initialize() {
     }
 
     mpDisplay = new EGG::AsyncDisplay(1);
-    mpDisplay->mPad1[0] &= ~2;
+    mpDisplay->resetBit(1);
 
     mpDisplay->setClearColor(nw4r::ut::Color::BLACK);
     mpDisplay->clearEFB();
@@ -342,7 +342,7 @@ template <> void EGG::TSystem<>::Configuration::initialize() {
     Screen::Initialize(a, b, nullptr);
     Screen::SetTVModeDefault();
 
-    fn_80446348(NULL);
+    EGG::DrawGX::Initialize(NULL);
 
     Thread::initialize();
     mThread = new Thread(OSGetCurrentThread(), 4);
@@ -350,7 +350,7 @@ template <> void EGG::TSystem<>::Configuration::initialize() {
     DvdFile::initialize();
 
     CoreControllerMgr::createInstance();
-    fn_803BCE8C(30, 71);
+    KPADSetFSStickClamp(30, 71); // Default controller pointer parameters.
     dScreenshot::init();
     mRootHeapMem1->becomeCurrentHeap();
 }
@@ -401,8 +401,8 @@ void runFrame() {
     EGG::Heap *mem2 = sRootHeapMem2;
     BOOL caution = dCaution::g_caution.check();
     BOOL wifiError = g_wifiErr.check();
-    fn_804402BC(mem1, 1);
-    fn_804402BC(mem2, 1);
+    static_cast<EGG::ExpHeap *>(mem1)->checkHeap(1);
+    static_cast<EGG::ExpHeap *>(mem2)->checkHeap(1);
     dHomeButton_c::getInstance()->execute();
     dReset::Manage_c::GetInstance()->Calculate();
     dResetSave::execute();
@@ -476,8 +476,8 @@ void runFrame() {
     executeSound();
     dPad::end();
     endFrame();
-    fn_804402BC(mem1, 1);
-    fn_804402BC(mem2, 1);
+    static_cast<EGG::ExpHeap *>(mem1)->checkHeap(1);
+    static_cast<EGG::ExpHeap *>(mem2)->checkHeap(1);
     cCounter_c::m_gameFrame++;
 }
 

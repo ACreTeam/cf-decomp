@@ -1,41 +1,39 @@
-#include <revolution/base/PPCArch.h>
+#include <decomp.h>
+#include <string.h>
+#include "private/db.h"
+#include "private/dvd.h"
+#include "private/hollywood.h"
+#include "private/ipc.h"
+#include "private/os.h"
+#include "revolution/base/PPCArch.h"
+#include "revolution/dvd.h"
+#include "revolution/os.h"
+#include "revolution/os/OSBootInfo.h"
+#include "revolution/sc.h"
 
-#include <private/os.h>
-#include <revolution/os.h>
-#include <revolution/os/OSBootInfo.h>
-
-
-#include <private/hollywood.h>
-
-#include <private/dvd.h>
-#include <revolution/dvd.h>
-
-
-#include <revolution/sc.h>
-
-#include <private/exi.h>
-
-#include <private/si.h>
-
-#include <private/db.h>
-
-#include <private/ipc.h>
-
-#include <revolution/verdefs.h>
-
-#include <TRK_Hollywood_Revolution.h>
 #include <__ppc_eabi_linker.h>
 
-#include <string.h>
 
-SDKDefineVersion(OS, "Apr 20 2010", "11:20:43");
 
-/* Linker generated */
-extern u8 __ArenaHi[];
-extern u8 __ArenaLo[];
 
-OSExecParams __OSRebootParams;
 
+void __OSEVStart(void);
+void __OSEVEnd(void);
+void __OSEVSetNumber(void);
+void __DBVECTOR(void);
+void __OSDBINTSTART(void);
+void __OSDBINTEND(void);
+void __OSDBJUMPSTART(void);
+void __OSDBJUMPDEST(void);
+void __OSDBJUMPEND(void);
+
+
+
+static DVDDriveInfo DriveInfo;
+static DVDCommandBlock DriveBlock;
+BOOL __OSInIPL = FALSE;
+BOOL __OSInNandBoot = FALSE;
+__declspec(weak) BOOL __OSIsGcam = FALSE;
 OSTime __OSStartTime;
 
 static OSBootInfo* volatile BootInfo;
@@ -43,147 +41,111 @@ static OSBootInfo* volatile BootInfo;
 static u32* BI2DebugFlag;
 static u32 BI2DebugFlagHolder;
 
-static char GameNameBuffer[4 + 1];
-
+extern u8   __ArenaHi[];
+extern u8   __ArenaLo[];
+extern u32  __DVDLongFileNameFlag;
+extern u32  __PADSpec;
+static BOOL AreWeInitialized = FALSE;
+OSExecParams __OSRebootParams;
+static char GameNameBuffer[5];
 static f64 ZeroF;
 static f32 ZeroPS[2];
+static __OSExceptionHandler* OSExceptionTable;
 
-static DVDDriveInfo DriveInfo;
-static DVDCommandBlock DriveBlock;
 
-__OSExceptionHandler* OSExceptionTable;
+static void OSExceptionInit(void);
+void OSDefaultExceptionHandler( __OSException exception, OSContext* context );
 
-extern u32 __PADSpec;
+static const char* __OSVersion = "<< RVL_SDK - OS 	release build: Jan 30 2008 01:38:43 (0x4199_60831) >>";
 
-extern u32 __DVDLongFileNameFlag;
-
-static BOOL AreWeInitialized;
-
-BOOL __OSIsGcam;
-BOOL __OSInNandBoot, __OSInIPL;
-
-void __OSEVStart();
-void __OSEVEnd();
-#define __OSEVSize ((u32)__OSEVEnd - (u32)__OSEVStart)
-void __OSEVSetNumber();
-
-void __DBVECTOR();
-
-void __OSDBINTSTART();
-void __OSDBINTEND();
-#define __OSDBINTSIZE ((u32)__OSDBINTEND - (u32)__OSDBINTSTART)
-
-void __OSDBJUMPSTART();
-void __OSDBJUMPEND();
-#define __OSDBJUMPSIZE ((u32)__OSDBJUMPEND - (u32)__OSDBJUMPSTART)
-
-void OSDefaultExceptionHandler(u8 type, register OSContext* context);
-
-#define OSArenaSize() ((u32)OSGetArenaHi() - (u32)OSGetArenaLo())
-#define OSMEM2ArenaSize() ((u32)OSGetMEM2ArenaHi() - (u32)OSGetMEM2ArenaLo())
-
-asm void __OSFPRInit() {
-    // clang-format off
-#ifdef __MWERKS__
+asm void __OSFPRInit(void) {
     nofralloc
+    mfmsr r3
+    ori r3, r3, 0x2000
+    mtmsr r3
 
-    mfmsr   r3
-    ori     r3, r3, MSR_FP
-    mtmsr   r3
-
-    mfspr   r3, HID2
+    mfspr r3, 0x398
     rlwinm. r3, r3, 3, 31, 31
-    beq     skipPairedSingleInit
+    beq skipPairedSingleInit
 
-    lis     r3, ZeroPS@ha
-    addi    r3, r3, ZeroPS@l
-
-    psq_l   fp0, 0(r3), 0, 0
-
-    ps_mr   fp1, fp0
-    ps_mr   fp2, fp0
-    ps_mr   fp3, fp0
-    ps_mr   fp4, fp0
-    ps_mr   fp5, fp0
-    ps_mr   fp6, fp0
-    ps_mr   fp7, fp0
-    ps_mr   fp8, fp0
-    ps_mr   fp9, fp0
-    ps_mr   fp10, fp0
-    ps_mr   fp11, fp0
-    ps_mr   fp12, fp0
-    ps_mr   fp13, fp0
-    ps_mr   fp14, fp0
-    ps_mr   fp15, fp0
-    ps_mr   fp16, fp0
-    ps_mr   fp17, fp0
-    ps_mr   fp18, fp0
-    ps_mr   fp19, fp0
-    ps_mr   fp20, fp0
-    ps_mr   fp21, fp0
-    ps_mr   fp22, fp0
-    ps_mr   fp23, fp0
-    ps_mr   fp24, fp0
-    ps_mr   fp25, fp0
-    ps_mr   fp26, fp0
-    ps_mr   fp27, fp0
-    ps_mr   fp28, fp0
-    ps_mr   fp29, fp0
-    ps_mr   fp30, fp0
-    ps_mr   fp31, fp0
+    lis r3, ZeroPS@ha
+    addi r3, r3, ZeroPS@l
+    psq_l fp0, 0(r3), 0, 0
+    ps_mr fp1, fp0
+    ps_mr fp2, fp0
+    ps_mr fp3, fp0
+    ps_mr fp4, fp0
+    ps_mr fp5, fp0
+    ps_mr fp6, fp0
+    ps_mr fp7, fp0
+    ps_mr fp8, fp0
+    ps_mr fp9, fp0
+    ps_mr fp10, fp0
+    ps_mr fp11, fp0
+    ps_mr fp12, fp0
+    ps_mr fp13, fp0
+    ps_mr fp14, fp0
+    ps_mr fp15, fp0
+    ps_mr fp16, fp0
+    ps_mr fp17, fp0
+    ps_mr fp18, fp0
+    ps_mr fp19, fp0
+    ps_mr fp20, fp0
+    ps_mr fp21, fp0
+    ps_mr fp22, fp0
+    ps_mr fp23, fp0
+    ps_mr fp24, fp0
+    ps_mr fp25, fp0
+    ps_mr fp26, fp0
+    ps_mr fp27, fp0
+    ps_mr fp28, fp0
+    ps_mr fp29, fp0
+    ps_mr fp30, fp0
+    ps_mr fp31, fp0
 
 skipPairedSingleInit:
-    lfd     fp0, ZeroF
-    fmr     fp1, fp0
-    fmr     fp2, fp0
-    fmr     fp3, fp0
-    fmr     fp4, fp0
-    fmr     fp5, fp0
-    fmr     fp6, fp0
-    fmr     fp7, fp0
-    fmr     fp8, fp0
-    fmr     fp9, fp0
-    fmr     fp10, fp0
-    fmr     fp11, fp0
-    fmr     fp12, fp0
-    fmr     fp13, fp0
-    fmr     fp14, fp0
-    fmr     fp15, fp0
-    fmr     fp16, fp0
-    fmr     fp17, fp0
-    fmr     fp18, fp0
-    fmr     fp19, fp0
-    fmr     fp20, fp0
-    fmr     fp21, fp0
-    fmr     fp22, fp0
-    fmr     fp23, fp0
-    fmr     fp24, fp0
-    fmr     fp25, fp0
-    fmr     fp26, fp0
-    fmr     fp27, fp0
-    fmr     fp28, fp0
-    fmr     fp29, fp0
-    fmr     fp30, fp0
-    fmr     fp31, fp0
+    lfd fp0, ZeroF
+    fmr fp1, fp0
+    fmr fp2, fp0
+    fmr fp3, fp0
+    fmr fp4, fp0
+    fmr fp5, fp0
+    fmr fp6, fp0
+    fmr fp7, fp0
+    fmr fp8, fp0
+    fmr fp9, fp0
+    fmr fp10, fp0
+    fmr fp11, fp0
+    fmr fp12, fp0
+    fmr fp13, fp0
+    fmr fp14, fp0
+    fmr fp15, fp0
+    fmr fp16, fp0
+    fmr fp17, fp0
+    fmr fp18, fp0
+    fmr fp19, fp0
+    fmr fp20, fp0
+    fmr fp21, fp0
+    fmr fp22, fp0
+    fmr fp23, fp0
+    fmr fp24, fp0
+    fmr fp25, fp0
+    fmr fp26, fp0
+    fmr fp27, fp0
+    fmr fp28, fp0
+    fmr fp29, fp0
+    fmr fp30, fp0
+    fmr fp31, fp0
 
-    mtfsf   0xFF, fp0
-
+    mtfsf 0xFF, fp0
     blr
-#endif // __MWERKS__
-    // clang-format on
-}
-
-u32 __OSGetHollywoodRev() {
-    return *(u32*)OSPhysicalToCached(OS_ADDR_HOLLYWOOD_REVISION);
 }
 
 void __OSGetIOSRev(OSIOSRev* rev) {
     u32 iosVer, iosBuild;
-    // Read form RAM
-    iosVer = *(u32*)OSPhysicalToUncached(OS_ADDR_IOS_REVISION);
-    iosBuild = *(u32*)OSPhysicalToUncached(OS_ADDR_IOS_BUILD_DATE);
+    iosVer = *(u32*)OSPhysicalToUncached(0x3140);
+    iosBuild = *(u32*)OSPhysicalToUncached(0x3144);
 
-    // Sort
     rev->reserved = ((iosVer >> 24) & 0xFF);
     rev->major = ((iosVer >> 16) & 0xFF);
     rev->minor = ((iosVer >> 8) & 0xFF);
@@ -192,151 +154,151 @@ void __OSGetIOSRev(OSIOSRev* rev) {
     rev->month = (((iosBuild >> 20) & 0xF) * 10 + ((iosBuild >> 16) & 0xF));
     rev->date = (((iosBuild >> 12) & 0xF) * 10 + ((iosBuild >> 8) & 0xF));
     rev->year = (((iosBuild >> 4) & 0xF) * 10 + (iosBuild & 0xF) + 2000);
+    return;
 }
 
-u32 OSGetConsoleType() {
+static u32 __OSGetHollywoodRev(void) {
+    return (*(u32*)OSPhysicalToCached((0x3138)));
+} 
+
+u32 OSGetConsoleType(void) {
     u32 hwRev;
     u32 gddrSize;
-
-    OSBootInfo* bootInfo = (OSBootInfo*)BootInfo;
-    if (bootInfo == NULL || bootInfo->consoleType == 0) {
-        return OS_CONSOLE_UNK;
+    OSBootInfo *info = BootInfo;
+    if (info == NULL || info->consoleType == 0) {
+        return 0x10000002;
     }
 
     hwRev = __OSGetHollywoodRev();
 
-    if (__OSDeviceCode & DVD_DEVICE_CODE) {
-        switch (__OSDeviceCode & ~DVD_DEVICE_CODE) {
-            // Retail and prototype boards
-            case 0x0002:
-            case 0x0003:
-            case 0x0203: {
+    if (__OSDeviceCode & 0x8000) {
+        switch (__OSDeviceCode & ~0x8000) {
+            case 2:
+            case 3:
+            case 0x203:
                 switch (hwRev) {
-                    case HOLLYWOOD_ES_1_0: {
-                        return OS_CONSOLE_RVL_PP_0;
-                    }
-                    case HOLLYWOOD_ES_1_1: {
-                        return OS_CONSOLE_RVL_PP_1;
-                    }
-                    case HOLLYWOOD_ES_1_2: {
-                        return OS_CONSOLE_RVL_PP_2_1;
-                    }
-                    case HOLLYWOOD_ES_2_0: {
-                        return OS_CONSOLE_RVL_PP_2_2;
-                    }
-                    case HOLLYWOOD_ES_2_1: {
-                        return OS_CONSOLE_RETAIL;
-                    }
+                    case 0:
+                        return 0x10;
+                    case 1:
+                        return 0x11;
+                    case 2:
+                        return 0x12;
+                    case 0x10:
+                        return 0x20;
+                    case 0x11:
+                        return 0x21;
                 }
 
-                if (hwRev > HOLLYWOOD_ES_2_1) {
-                    return OS_CONSOLE_RETAIL;
+                if (hwRev > 0x11) {
+                    return 0x21;
                 }
-            }
-            // Development boards
-            case 0x0202:
-            case 0x0201: {
+
+            case 0x202:
+            case 0x201:
                 switch (hwRev) {
-                    case HOLLYWOOD_ES_1_0: {
-                        return OS_CONSOLE_NDEV_1_0;
-                    }
-                    case HOLLYWOOD_ES_1_1: {
-                        return OS_CONSOLE_NDEV_1_1;
-                    }
-                    case HOLLYWOOD_ES_1_2: {
-                        return OS_CONSOLE_NDEV_1_2;
-                    }
-                    case HOLLYWOOD_ES_2_0: {
-                        return OS_CONSOLE_NDEV_2_0;
-                    }
-                    case HOLLYWOOD_ES_2_1: {
-                        return OS_CONSOLE_NDEV_2_1;
-                    }
+                    case 0:
+                        return 0x10000010;
+                    case 1:
+                        return 0x10000011;
+                    case 2:
+                        return 0x10000012;
+                    case 0x10:
+                        return 0x10000020;
+                    case 0x11:
+                        return 0x10000021;
                 }
-                if (hwRev > HOLLYWOOD_ES_2_1) {
-                    return OS_CONSOLE_NDEV_2_1;
+
+                if (hwRev > 0x11) {
+                    return 0x10000021;
                 }
-            }
-            // Revolution Arcade
-            case 0x0300: {
-                return OS_CONSOLE_RETAIL_RVA;
-            }
-            default: {
+
+            case 0x300:
+                return 0x100;
+
+            default:
                 break;
-            }
         }
     }
 
     gddrSize = OSGetPhysicalMem2Size();
-    // 0x4000000 = 64 MB
+
     switch (hwRev) {
-        case HOLLYWOOD_ES_1_0: {
+        case 0:
             if (gddrSize == 0x4000000) {
-                return OS_CONSOLE_RVL_PP_0;
-            } else {
-                return OS_CONSOLE_NDEV_1_0;
+                return 0x10;
             }
-        }
-        case HOLLYWOOD_ES_1_1:
-            if (gddrSize == 0x4000000) {
-                return OS_CONSOLE_RVL_PP_1;
-            } else {
-                return OS_CONSOLE_NDEV_1_1;
+            else {
+                return 0x10000010;
             }
 
-        case HOLLYWOOD_ES_1_2:
+        case 0x1:
             if (gddrSize == 0x4000000) {
-                return OS_CONSOLE_RVL_PP_2_1;
-            } else {
-                return OS_CONSOLE_NDEV_1_2;
+                return 0x11;
+            }
+            else {
+                return 0x10000011;
             }
 
-        case HOLLYWOOD_ES_2_0:
+        case 0x2:
             if (gddrSize == 0x4000000) {
-                return OS_CONSOLE_RVL_PP_2_2;
-            } else {
-                return OS_CONSOLE_NDEV_2_0;
+                return 0x12;
+            }
+            else {
+                return 0x10000012;
             }
 
-        case HOLLYWOOD_ES_2_1:
+        case 0x10:
             if (gddrSize == 0x4000000) {
-                return OS_CONSOLE_RETAIL;
-            } else {
-                return OS_CONSOLE_NDEV_2_1;
+                return 0x20;
+            }
+            else {
+                return 0x10000020;
+            }
+
+        case 0x11:
+            if (gddrSize == 0x4000000) {
+                return 0x21;
+            }
+            else {
+                return 0x10000021;
             }
     }
 
-    if (hwRev > HOLLYWOOD_ES_2_1) {
+    if (hwRev > 0x11) {
         if (gddrSize == 0x4000000) {
-            return OS_CONSOLE_RETAIL;
-        } else {
-            return OS_CONSOLE_NDEV_2_1;
+            return 0x21;
+        }
+        else {
+            return 0x10000021;
         }
     }
 
     return BootInfo->consoleType;
 }
 
-static void MemClear(void* base, u32 size) {
-    void* lastBase = (size > 0x40000) ? (void*)((u32)base + (size - 0x40000)) : base;
+static void MemClear(void *base, u32 size) {
+    void* lastBase = (size > 0x40000) ? (void*)((u32)base + size - 0x40000) : base;
     DCZeroRange(base, size);
     DCFlushRange(lastBase, 0x40000);
 }
 
-static void ClearArena() NO_INLINE {
-    if (!((OSGetResetCode() >> 31) & 1)) {
-        MemClear(OSGetArenaLo(), OSArenaSize());
-    } else {
-        if (__OSRebootParams.regionStart == NULL || !OSIsMEM1Region(__OSRebootParams.regionStart)) {
-            MemClear(OSGetArenaLo(), OSArenaSize());
-        } else {
-            if (OSGetArenaLo() < __OSRebootParams.regionStart) {
-                if (OSGetArenaHi() <= __OSRebootParams.regionStart) {
-                    MemClear(OSGetArenaLo(), OSArenaSize());
-                } else {
+static void ClearArena(void) NO_INLINE {
+    if (!OSIsRestart()) {
+        MemClear(OSGetArenaLo(), (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
+    }
+    else {
+        if (__OSRebootParams.regionStart == NULL || !OSIsMEM1Region((void*)__OSRebootParams.regionStart)) {
+            MemClear(OSGetArenaLo(), (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
+        }
+        else {
+            if ((u32)OSGetArenaLo() < (u32)__OSRebootParams.regionStart) {
+                if ((u32)OSGetArenaHi() <= (u32)__OSRebootParams.regionStart) {
+                    MemClear(OSGetArenaLo(), (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
+                }
+                else {
                     MemClear(OSGetArenaLo(), (u32)__OSRebootParams.regionStart - (u32)OSGetArenaLo());
-
-                    if (OSGetArenaHi() > __OSRebootParams.regionEnd) {
+                
+                    if ((u32)OSGetArenaHi() > (u32)__OSRebootParams.regionEnd) {
                         MemClear(__OSRebootParams.regionEnd, (u32)OSGetArenaHi() - (u32)__OSRebootParams.regionEnd);
                     }
                 }
@@ -345,20 +307,23 @@ static void ClearArena() NO_INLINE {
     }
 }
 
-static void ClearMEM2Arena() NO_INLINE {
-    if (!((OSGetResetCode() >> 31) & 1)) {
-        MemClear(OSGetMEM2ArenaLo(), OSMEM2ArenaSize());
-    } else {
-        if (__OSRebootParams.regionStart == NULL || !OSIsMEM2Region(__OSRebootParams.regionStart)) {
-            MemClear(OSGetMEM2ArenaLo(), OSMEM2ArenaSize());
-        } else {
-            if (OSGetMEM2ArenaLo() < __OSRebootParams.regionStart) {
-                if (OSGetMEM2ArenaHi() <= __OSRebootParams.regionStart) {
-                    MemClear(OSGetMEM2ArenaLo(), OSMEM2ArenaSize());
-                } else {
+static void ClearMEM2Arena(void) NO_INLINE {
+    if (!OSIsRestart()) {
+        MemClear(OSGetMEM2ArenaLo(), (u32)OSGetMEM2ArenaHi() - (u32)OSGetMEM2ArenaLo());
+    }
+    else {
+        if (__OSRebootParams.regionStart == NULL || !OSIsMEM2Region((void*)__OSRebootParams.regionStart)) {
+            MemClear(OSGetMEM2ArenaLo(), (u32)OSGetMEM2ArenaHi() - (u32)OSGetMEM2ArenaLo());
+        }
+        else {
+            if ((u32)OSGetMEM2ArenaLo() < (u32)__OSRebootParams.regionStart) {
+                if ((u32)OSGetMEM2ArenaHi() <= (u32)__OSRebootParams.regionStart) {
+                    MemClear(OSGetMEM2ArenaLo(), (u32)OSGetMEM2ArenaHi() - (u32)OSGetMEM2ArenaLo());
+                }
+                else {
                     MemClear(OSGetMEM2ArenaLo(), (u32)__OSRebootParams.regionStart - (u32)OSGetMEM2ArenaLo());
 
-                    if (OSGetMEM2ArenaHi() > __OSRebootParams.regionEnd) {
+                    if ((u32) OSGetMEM2ArenaHi() > (u32)__OSRebootParams.regionEnd) {
                         MemClear(__OSRebootParams.regionEnd, (u32)OSGetMEM2ArenaHi() - (u32)__OSRebootParams.regionEnd);
                     }
                 }
@@ -367,420 +332,409 @@ static void ClearMEM2Arena() NO_INLINE {
     }
 }
 
-void InquiryCallback(s32 res, DVDCommandBlock* block) {
+void InquiryCallback(s32 res, DVDCommandBlock *block) {
     switch (block->state) {
-        case DVD_STATE_IDLE: {
-            __OSDeviceCode = DriveInfo.deviceCode | DVD_DEVICE_CODE;
+        case 0:
+            __OSDeviceCode = (u16)(0x8000 | DriveInfo.deviceCode);
             break;
-        }
-        default: {
-            __OSDeviceCode = (1 << 0);
+        default:
+            __OSDeviceCode = 1;
             break;
-        }
     }
 }
 
-static void ReportOSInfo() {
-    u32 consoleType;
-    u32 sysMemSize;
-    OSIOSRev ios;
-
-    // Print header
-    OSReport("\nRevolution OS\n");
-    OSReport("Kernel built : %s %s\n", "Apr 20 2010", "11:20:43");
-
-    // Print console type.
-    OSReport("Console Type : ");
-
-    consoleType = OSGetConsoleType();
-
-    switch (consoleType & OS_CONSOLE_MASK) {
-        case OS_CONSOLE_MASK_RVL: {
-            switch (consoleType) {
-                case OS_CONSOLE_RVL_PP_1: {
-                    OSReport("Pre-production board 1\n");
-                    break;
-                }
-                case OS_CONSOLE_RVL_PP_2_1: {
-                    OSReport("Pre-production board 2-1\n");
-                    break;
-                }
-                case OS_CONSOLE_RVL_PP_2_2: {
-                    OSReport("Pre-production board 2-2\n");
-                    break;
-                }
-                case OS_CONSOLE_RETAIL_RVA: {
-                    OSReport("RVA 1\n");
-                    break;
-                }
-                default: {
-                    OSReport("Retail %d\n", consoleType);
-                    break;
-                }
-            }
+static void CheckTargets(void) {
+    switch (*(u8*)OSPhysicalToCached(0x315C)) {
+        case 0x80:
             break;
-        }
-        case OS_CONSOLE_MASK_DEV: {
-            switch (consoleType) {
-                case OS_CONSOLE_NDEV_2_1: {
-                    OSReport("NDEV 2.1\n");
-                    break;
-                }
-                case OS_CONSOLE_NDEV_2_0: {
-                    OSReport("NDEV 2.0\n");
-                    break;
-                }
-                case OS_CONSOLE_NDEV_1_2: {
-                    OSReport("NDEV 1.2\n");
-                    break;
-                }
-                case OS_CONSOLE_NDEV_1_1: {
-                    OSReport("NDEV 1.1\n");
-                    break;
-                }
-                case OS_CONSOLE_NDEV_1_0: {
-                    OSReport("NDEV 1.0\n");
-                    break;
-                }
-                case OS_CONSOLE_RVL_EMU: {
-                    OSReport("Revolution Emulator\n");
-                    break;
-                }
-                default: {
-                    OSReport("Emulation platform (%08x)\n", consoleType);
-                    break;
-                }
-            }
-            break;
-        }
-        case OS_CONSOLE_TDEV_EMU: {
-            OSReport("TDEV-based emulation HW%d\n", (consoleType & ~OS_CONSOLE_MASK /*???*/) - 3);
-            break;
-        }
-        default: {
-            OSReport("%08x\n", consoleType);
-            break;
-        }
-    }
-
-    // Print IOS revision
-    __OSGetIOSRev(&ios);
-    OSReport("Firmware     : %d.%d.%d ", ios.major, ios.minor, ios.micro);
-    OSReport("(%d/%d/%d)\n", ios.month, ios.date, ios.year);
-
-    // Print total available memory
-    sysMemSize = (OSGetConsoleSimulatedMem1Size() + OSGetConsoleSimulatedMem2Size());
-    OSReport("Memory %d MB\n", sysMemSize / (1024 * 1024));
-
-    // Print available memory of the arenas
-    OSReport("MEM1 Arena : 0x%x - 0x%x\n", OSGetMEM1ArenaLo(), OSGetMEM1ArenaHi());
-    OSReport("MEM2 Arena : 0x%x - 0x%x\n", OSGetMEM2ArenaLo(), OSGetMEM2ArenaHi());
-}
-
-static void CheckTargets() {
-    switch (*(u8*)OSPhysicalToCached(OS_ADDR_BOOT_PROGRAM_TARGET)) {
-        case OS_APP_TYPE_DVD: {
-            break;
-        }
-        case OS_APP_TYPE_CHANNEL: {
+        case 0x81:
             OSReport("OS ERROR: boot program is not for RVL target. Please use correct boot program.\n");
-            OSHalt("Failed to run app", 1138);
+            OSPanic(__FILE__, 0x47E, "Failed to run app");
             break;
-        }
-        default: {
+        default:
             break;
-        }
     }
 
-    switch (*(u8*)OSPhysicalToCached(OS_ADDR_APP_LOADER_TARGET)) {
-        case OS_APP_TYPE_DVD: {
+    switch (*(u8*)OSPhysicalToCached(0x315D)) {
+        case 0x80:
             break;
-        }
-        case OS_APP_TYPE_CHANNEL: {
+        case 0x81:
             OSReport("OS ERROR: apploader[D].img is not for RVL target. Please use correct apploader[D].img.\n");
-            OSHalt("Failed to run app", 1156);
+            OSPanic(__FILE__, 0x490, "Failed to run app");
             break;
-        }
-        default: {
+        default:
             break;
-        }
     }
 }
 
-static void DisableWriteGatherPipe() {
+static void DisableWriteGatherPipe(void) {
     u32 hid2 = PPCMfhid2();
-    CLEAR_FLAG(hid2, HID2_WPE);
+    hid2 &= 0xBFFFFFFF;
     PPCMthid2(hid2);
 }
 
-void OSInit() {
+static void ReportOSInfo(void) {
+    u32 consoleType;
+    u32 sysMemSize;
+    OSIOSRev ios;
+    void* MEM1Hi;
+    void* MEM1Lo;
+    void* MEM2Hi;
+    void* MEM2Lo;
+
+    OSReport("\nRevolution OS\n");
+    OSReport("Kernel built : %s %s\n", "Jan 30 2008", "01:38:43");
+    OSReport("Console Type : " );
+
+    consoleType = OSGetConsoleType();
+
+    switch (consoleType & 0xF0000000) {
+        case 0:
+            switch (consoleType) {
+                case 0x11:
+                    OSReport("Pre-production board 1\n");
+                    break;
+                case 0x12:
+                    OSReport("Pre-production board 2-1\n");
+                    break;
+                case 0x20:
+                    OSReport("Pre-production board 2-2\n");
+                    break;
+                case 0x100:
+                    OSReport("RVA 1\n");
+                    break;
+                default:
+                    OSReport("Retail %d\n", consoleType);
+                    break;
+            }
+
+            break;
+
+        case 0x10000000:
+            switch (consoleType) {
+                case 0x10000021:
+                    OSReport("NDEV 2.1\n");
+                    break;
+                case 0x10000020:
+                    OSReport("NDEV 2.0\n");
+                    break;
+                case 0x10000012:
+                    OSReport("NDEV 1.2\n");
+                    break;
+                case 0x10000011:
+                    OSReport("NDEV 1.1\n");
+                    break;
+                case 0x10000010:
+                    OSReport("NDEV 1.0\n");
+                    break;
+                case 0x10000008:
+                    OSReport("Revolution Emulator\n");
+                    break;
+                default:
+                    OSReport("Emulation platform (%08x)\n", consoleType);
+                    break;
+            }
+
+            break;
+
+        case 0x20000000:
+            OSReport("TDEV-based emulation HW%d\n", (consoleType & ~0xF0000000) - 3);
+            break;
+        default:
+            OSReport("%08x\n", consoleType);
+            break;
+    }
+
+
+    __OSGetIOSRev(&ios);
+    OSReport("Firmware     : %d.%d.%d ", ios.major, ios.minor, ios.micro);
+    OSReport("(%d/%d/%d)\n", ios.month, ios.date, ios.year);
+    sysMemSize = (OSGetConsoleSimulatedMem1Size() + OSGetConsoleSimulatedMem2Size());
+    OSReport("Memory %d MB\n", sysMemSize/(1024*1024));
+
+    MEM1Hi = OSGetMEM1ArenaHi();
+    MEM1Lo = OSGetMEM1ArenaLo();
+    OSReport("MEM1 Arena : 0x%x - 0x%x\n", MEM1Lo, MEM1Hi);
+    MEM2Hi = OSGetMEM2ArenaHi();
+    MEM2Lo = OSGetMEM2ArenaLo();
+    OSReport("MEM2 Arena : 0x%x - 0x%x\n", MEM2Lo, MEM2Hi);
+}
+
+void OSInit(void) {
     void* bi2StartAddr;
     void* arenaAddr;
 
-    volatile OSExecParams* params = (volatile OSExecParams*)&__OSRebootParams;
+    if (AreWeInitialized != FALSE) {
+        return;
+    }
 
-    if (AreWeInitialized == FALSE) {
-        BOOL enabled;
-        AreWeInitialized = TRUE;
+    AreWeInitialized = TRUE;
+    __OSStartTime = __OSGetSystemTime();
+    OSDisableInterrupts();
+    __OSGetExecParams(&__OSRebootParams);
 
-        // Setup starting time
-        __OSStartTime = __OSGetSystemTime();
+    PPCMtmmcr0(0);
+    PPCMtmmcr1(0);
+    PPCMtpmc1(0);
+    PPCMtpmc2(0);
+    PPCMtpmc3(0);
+    PPCMtpmc4(0);
+    PPCMthid4(0x83900000);
+    PPCDisableSpeculation();
+    PPCSetFpNonIEEEMode();
 
-        enabled = OSDisableInterrupts();
+    BootInfo = (OSBootInfo*)OSPhysicalToCached(0);
+    BI2DebugFlag = 0;
+    __DVDLongFileNameFlag = 0;
 
-        // Get restart parameters
-        __OSGetExecParams(&__OSRebootParams);
+    bi2StartAddr = *(void**)OSPhysicalToCached(0xF4);
 
-        /// Setup PPC stuff
-        // MTMMCRs
-        PPCMtmmcr0(MMCR0_PMC1_HOLD | MMCR0_PMC2_HOLD);
-        PPCMtmmcr1(MMCR1_PMC3_HOLD | MMCR1_PMC4_HOLD);
+    if (bi2StartAddr != 0) {
+        BI2DebugFlag = (u32*)((u32)bi2StartAddr + 0xC);
+        __PADSpec = *(u32*)((u32)bi2StartAddr + 0x24);
 
-        // MTPMC
-        PPCMtpmc1(0);
-        PPCMtpmc2(0);
-        PPCMtpmc3(0);
-        PPCMtpmc4(0);
+        *(u8*)OSPhysicalToCached(0x30E8) = (u8)*BI2DebugFlag;
+        *(u8*)OSPhysicalToCached(0x30E9) = (u8)__PADSpec;
+    }
+    else {
+        if (((OSBootInfo*)OSPhysicalToCached(0))->arenaHi != NULL) {
+            BI2DebugFlagHolder = (u32)*(u8*)OSPhysicalToCached(0x30E8);
+            BI2DebugFlag = &BI2DebugFlagHolder;
+            __PADSpec = (u32)*(u8*)OSPhysicalToCached(0x30E9);
+        }
+    }
 
-        // HID 4
-        PPCMthid4(HID4_H4A | HID4_SBE | HID4_PS1_CTL | (1 << 23) /*hmmm*/ | HID4_L2_CCFI);
+    __DVDLongFileNameFlag = 1;
 
-        // Other PPC stuff
-        PPCDisableSpeculation();
-        PPCSetFpNonIEEEMode();
+    arenaAddr = (void*)*(u32*)OSPhysicalToCached(0x310C);
 
-        // Setup boot information
-        BootInfo = (OSBootInfo*)OSPhysicalToCached(OS_ADDR_BOOT_INFO);
-        BI2DebugFlag = NULL;
-        __DVDLongFileNameFlag = FALSE;
+    if (arenaAddr == NULL) {
+        if (OSIsMEM1Region((void*)__ArenaLo)) {
+            void* tmp = BootInfo->arenaLo;
+            arenaAddr = tmp == NULL ? (void*)__ArenaLo : tmp;
+        
+            if (!BootInfo->arenaLo&& (BI2DebugFlag && (*(BI2DebugFlag) < 2))) {
+                arenaAddr = (void*)OSRoundUp32B(_stack_addr);
+            }
+        }
+        else {
+            arenaAddr = (void*)0x80004000;
+        }
+    }
 
-        bi2StartAddr = *(void**)OSPhysicalToCached(OS_ADDR_BOOT_INFO_2);
+    OSSetMEM1ArenaLo(arenaAddr);
 
-        // Get debug information from Boot Information
-        if (bi2StartAddr != NULL) {
-            BI2DebugFlag = (u32*)((u32)bi2StartAddr + BI2_OFFSET_DEBUGFLAG);
-            __PADSpec = *(u32*)((u32)bi2StartAddr + BI2_OFFSET_PADSPEC);
+    arenaAddr = (void*)*(u32*)OSPhysicalToCached(0x3110);
 
-            *(u8*)OSPhysicalToCached(OS_ADDR_BI2_DEBUG_FLAG) = *BI2DebugFlag;
-            *(u8*)OSPhysicalToCached(OS_ADDR_BI2_PAD_SPEC) = __PADSpec;
-        } else {
-            if (((OSBootInfo*)OSPhysicalToCached(OS_ADDR_BOOT_INFO))->arenaHi != NULL) {
-                BI2DebugFlagHolder = *(u8*)OSPhysicalToCached(OS_ADDR_BI2_DEBUG_FLAG);
-                BI2DebugFlag = &BI2DebugFlagHolder;
-                __PADSpec = *(u8*)OSPhysicalToCached(OS_ADDR_BI2_PAD_SPEC);
+    if (arenaAddr == NULL) {
+        void* tmp = BootInfo->arenaHi;
+        arenaAddr = tmp == NULL ? (void*)__ArenaHi : tmp;
+    }
+
+    OSSetMEM1ArenaHi(arenaAddr);
+
+    arenaAddr = (void*)*(u32*)OSPhysicalToCached(0x3124);
+
+    if (arenaAddr != 0) {
+        if (OSIsMEM2Region((void*)__ArenaLo)) {
+            arenaAddr = (void*)__ArenaLo;
+
+            if ((BI2DebugFlag && (*(BI2DebugFlag) < 2))) {
+                arenaAddr = (void*)OSRoundUp32B(_stack_addr);
+            }
+        }
+        else {
+            if ((u32)arenaAddr >= 0x90000000 && (u32)arenaAddr < 0x90000800) {
+                arenaAddr = (void*)0x90000800;
             }
         }
 
-        __DVDLongFileNameFlag = TRUE;
+        OSSetMEM2ArenaLo(arenaAddr);
+    }
 
-        arenaAddr = RAMReadPtr(OSPhysicalToCached(OS_ADDR_AVAILABLE_MEM1_START));
 
-        if (arenaAddr == NULL) {
-            if (OSIsMEM1Region(__ArenaLo)) {
-                void* tmp = BootInfo->arenaLo;
-                arenaAddr = tmp == NULL ? __ArenaLo : tmp;
+    arenaAddr = (void*)*(u32*)OSPhysicalToCached(0x3128);
 
-                if (BootInfo->arenaLo == NULL && BI2DebugFlag && *BI2DebugFlag < 2) {
-                    arenaAddr = (void*)OSRoundUp32B(_stack_addr);
-                }
-            } else {
-                arenaAddr = (void*)0x80004000;
+    if (arenaAddr != 0) {
+        OSSetMEM2ArenaHi(arenaAddr);
+    }
+
+    __OSInitIPCBuffer();
+    OSExceptionInit();
+    __OSInitSystemCall();
+    __OSInitAlarm();
+    __OSModuleInit();
+    __OSInterruptInit();
+    __OSContextInit();
+    __OSCacheInit();
+    EXIInit();
+    SIInit();
+    __OSInitSram();
+    __OSThreadInit();
+    __OSInitAudioSystem();
+    DisableWriteGatherPipe();
+
+    if (!__OSInIPL) {
+        __OSInitMemoryProtection();
+    }
+
+    ReportOSInfo();
+    OSRegisterVersion(__OSVersion);
+
+    if (BI2DebugFlag && (*(BI2DebugFlag) >= 2)) {
+        EnableMetroTRKInterrupts();
+    }
+
+    if (!__OSInNandBoot && !__OSInReboot) {
+        ClearArena();
+        ClearMEM2Arena();
+    }
+
+    OSEnableInterrupts();
+    IPCCltInit();
+
+    if (!__OSInNandBoot && !__OSInReboot) {
+        __OSInitSTM();
+
+        SCInit();
+
+        /* do nothing until SC is not busy */
+        while (SCCheckStatus() == 1) {
+
+        }
+
+        __OSInitNet();
+    }
+
+    if (!__OSInIPL) {
+        CheckTargets();
+        DVDInit();
+
+        if (__OSIsGcam) {
+            __OSDeviceCode = (u16)(0x8000 | 0x1000);
+        }
+        else if (!__OSDeviceCode) {
+            DCInvalidateRange(&DriveInfo, sizeof(DriveInfo));
+            DVDInquiryAsync(&DriveBlock, &DriveInfo, InquiryCallback);
+        }
+
+        if (OSGetAppType() == 0x80 && !__OSInReboot) {
+            if (!__DVDCheckDevice()) {
+                OSReturnToMenu();
             }
         }
+    }
 
-        OSSetMEM1ArenaLo(arenaAddr);
+    if (!__OSInIPL && !__OSInNandBoot) {
+        __OSInitPlayTime();
+    }
 
-        arenaAddr = RAMReadPtr(OSPhysicalToCached(OS_ADDR_AVAILABLE_MEM1_END));
-
-        if (arenaAddr == NULL) {
-            void* tmp = BootInfo->arenaHi;
-            arenaAddr = tmp == NULL ? __ArenaHi : tmp;
-        }
-
-        OSSetMEM1ArenaHi(arenaAddr);
-
-        arenaAddr = RAMReadPtr(OSPhysicalToCached(OS_ADDR_AVAILABLE_MEM2_START));
-
-        if (arenaAddr != NULL) {
-            if (OSIsMEM2Region(__ArenaLo)) {
-                arenaAddr = __ArenaLo;
-
-                if (BI2DebugFlag && *BI2DebugFlag < 2) {
-                    arenaAddr = (void*)OSRoundUp32B(_stack_addr);
-                }
-            } else {
-                if ((u32)arenaAddr >= 0x90000000 && (u32)arenaAddr < 0x90000800) {
-                    arenaAddr = (void*)0x90000800;
-                }
-            }
-
-            OSSetMEM2ArenaLo(arenaAddr);
-        }
-
-        arenaAddr = RAMReadPtr(OSPhysicalToCached(OS_ADDR_AVAILABLE_MEM2_END));
-
-        if (arenaAddr != NULL) {
-            OSSetMEM2ArenaHi(arenaAddr);
-        }
-
-        __OSInitIPCBuffer();
-        OSExceptionInit();
-        __OSInitSystemCall();
-        __OSInitAlarm();
-        __OSModuleInit();
-        __OSInterruptInit();
-        __OSContextInit();
-        __OSCacheInit();
-        EXIInit();
-        SIInit();
-        __OSInitSram();
-        __OSThreadInit();
-        __OSInitAudioSystem();
-        DisableWriteGatherPipe();
-
-        if (!__OSInIPL) {
-            __OSInitMemoryProtection();
-        }
-
-        ReportOSInfo();
-        OSRegisterVersion(GetVersion(OS));
-
-        if (BI2DebugFlag && *BI2DebugFlag >= 2) {
-            EnableMetroTRKInterrupts();
-        }
-
-        if (!__OSInNandBoot && !__OSInReboot) {
-            ClearArena();
-            ClearMEM2Arena();
-        }
-
-        OSEnableInterrupts();
-        IPCCltInit();
-
-        if (!__OSInNandBoot && !__OSInReboot) {
-            __OSInitSTM();
-
-            SCInit();
-
-            while (SCCheckStatus() == 1) {
-            }
-
-            __OSInitNet();
-        }
-
-        if (!__OSInIPL) {
-            CheckTargets();
-            DVDInit();
-
-            if (__OSIsGcam) {
-                __OSDeviceCode = (u16)(DVD_DEVICE_CODE | (1 << 12));
-            } else if (!__OSDeviceCode) {
-                DCInvalidateRange(&DriveInfo, sizeof(DriveInfo));
-                DVDInquiryAsync(&DriveBlock, &DriveInfo, InquiryCallback);
-            }
-        }
-
-        if (!__OSInIPL && !__OSInNandBoot) {
-            __OSInitPlayTime();
-        }
-
-        if (!__OSInIPL && !__OSInNandBoot && !__OSInReboot) {
-            __OSStartPlayRecord();
-        }
+    if (!__OSInIPL && !__OSInNandBoot && !__OSInReboot) {
+        __OSStartPlayRecord();
     }
 }
 
-static u32 __OSExceptionLocations[] = {0x100, 0x200, 0x300, 0x400, 0x500, 0x600, 0x700, 0x800, 0x900, 0xC00, 0xD00, 0xF00, 0x1300, 0x1400, 0x1700};
+static void OSExceptionInit(void) {
+    static u32  __OSExceptionLocations[] = {
+    0x100,
+    0x200,
+    0x300,
+    0x400,
+    0x500,
+    0x600,
+    0x700,
+    0x800,
+    0x900,
+    0xC00,
+    0xD00,
+    0xF00,
+    0x1300,
+    0x1400,
+    0x1700
+};
 
-void OSExceptionInit() {
-    __OSException excep;
+    __OSException exception;
+    void* destAddr;
+    u32* opCodeAddr;
+    u32 oldOpCode;
+    u8* handlerStart;
+    u32 handlerSize;
 
-    u32* opCodeAddr = (u32*)__OSEVSetNumber;
-    u32 oldOpCode = *opCodeAddr;
-
-    u8* handlerStart = (u8*)__OSEVStart;
-    u32 handlerSize = __OSEVSize;
-
-    void* destAddr = (void*)OSPhysicalToCached(OS_ADDR_DB_INTEGRATOR_HOOK);
+    opCodeAddr = (u32*)__OSEVSetNumber;
+    oldOpCode = *opCodeAddr;
+    handlerStart = (u8*)__OSEVStart;
+    handlerSize = (u32)((u8*)__OSEVEnd - (u8*)__OSEVStart);
+    destAddr = (void*)OSPhysicalToCached(0x60);
 
     if (*(u32*)destAddr == 0) {
         DBPrintf("Installing OSDBIntegrator\n");
-        memcpy(destAddr, (void*)__OSDBINTSTART, __OSDBINTSIZE);
-        DCFlushRangeNoSync(destAddr, __OSDBINTSIZE);
+        memcpy(destAddr, (void*)__OSDBINTSTART, (u32)__OSDBINTEND - (u32)__OSDBINTSTART);
+        DCFlushRangeNoSync(destAddr, (u32)__OSDBINTEND - (u32)__OSDBINTSTART);
         __sync();
-        ICInvalidateRange(destAddr, __OSDBINTSIZE);
+        ICInvalidateRange(destAddr, (u32)__OSDBINTEND - (u32)__OSDBINTSTART);
     }
 
-    for (excep = 0; excep < OS_ERROR_MAX; excep++) {
-        if (BI2DebugFlag && *BI2DebugFlag >= 2 && __DBIsExceptionMarked(excep)) {
-            DBPrintf(">>> OSINIT: exception %d commandeered by TRK\n", excep);
+    for (exception = 0; exception < 15; exception++) {
+        if (BI2DebugFlag && (*BI2DebugFlag >= 2) && __DBIsExceptionMarked(exception)) {
+            DBPrintf(">>> OSINIT: exception %d commandeered by TRK\n", exception);
             continue;
         }
 
-        *opCodeAddr = oldOpCode | excep;
+        *opCodeAddr = oldOpCode | exception;
 
-        if (__DBIsExceptionMarked(excep)) {
-            DBPrintf(">>> OSINIT: exception %d vectored to debugger\n", excep);
-            memcpy((void*)__DBVECTOR, (void*)__OSDBJUMPSTART, __OSDBJUMPSIZE);
-        } else {
+        if (__DBIsExceptionMarked(exception)) {
+            DBPrintf(">>> OSINIT: exception %d vectored to debugger\n", exception);
+            memcpy((void*)__DBVECTOR, (void*)__OSDBINTEND, (u32)__OSDBJUMPEND - (u32)__OSDBINTEND);
+        }
+        else {
             u32* ops = (u32*)__DBVECTOR;
             int cb;
 
-            // Clear jump with NOP opcodes
-            for (cb = 0; cb < __OSDBJUMPSIZE; cb += 4) {
+            for (cb = 0; cb < (u32)__OSDBJUMPEND - (u32)__OSDBINTEND; cb += 4) {
+                // set op to NOP
                 *ops++ = 0x60000000;
             }
         }
 
-        destAddr = (void*)OSPhysicalToCached(__OSExceptionLocations[excep]);
+        destAddr = (void*)OSPhysicalToCached(__OSExceptionLocations[exception]);
         memcpy(destAddr, handlerStart, handlerSize);
         DCFlushRangeNoSync(destAddr, handlerSize);
         __sync();
         ICInvalidateRange(destAddr, handlerSize);
     }
 
-    OSExceptionTable = OSPhysicalToCached(OS_ADDR_EXCEPTION_TABLE);
+    OSExceptionTable = OSPhysicalToCached(0x3000);
 
-    for (excep = 0; excep < OS_ERROR_MAX; excep++) {
-        __OSSetExceptionHandler(excep, OSDefaultExceptionHandler);
+    for (exception = 0; exception < 15; exception++) {
+        __OSSetExceptionHandler(exception, OSDefaultExceptionHandler);
     }
 
     *opCodeAddr = oldOpCode;
     DBPrintf("Exceptions initialized...\n");
 }
 
-static asm void __OSDBIntegrator() {
-    // clang-format off
-#ifdef __MWERKS__
+static asm void __OSDBIntegrator(void) {
     nofralloc
 
 entry __OSDBINTSTART
-    li      r5, OS_ADDR_DB_INTERFACE
-
-    mflr    r3
-    stw     r3, DB_EXCEPTIONOFFSET_HOOKLR(r5)
-    lwz     r3, DB_EXCEPTIONOFFSET_HOOK(r5)
-
-    oris    r3, r3, OS_CACHED_REGION_PREFIX
-    mtlr    r3
-    li      r3, MSR_IR | MSR_DR
-    mtmsr   r3
-
+    li r5, 0x40
+    mflr r3
+    stw r3, 0xC(r5)
+    lwz r3, 0x8(r5)
+    oris r3, r3, 0x8000
+    mtlr r3
+    li r3, 0x30
+    mtmsr r3
     blr
+
 entry __OSDBINTEND
-#endif // __MWERKS__
-    // clang-format ob
 }
 
-static asm void __OSDBJump() {
-    // clang-format off
- #ifdef __MWERKS__
+static asm void __OSDBJump(void) {
     nofralloc
 entry __OSDBJUMPSTART
-    bla OS_ADDR_DB_INTEGRATOR_HOOK
+    bla __OSDBJUMPDEST
 entry __OSDBJUMPEND
-#endif // __MWERKS__
-    // clang-format on
 }
 
 __OSExceptionHandler __OSSetExceptionHandler(__OSException ex, __OSExceptionHandler handler) {
@@ -794,141 +748,137 @@ __OSExceptionHandler __OSGetExceptionHandler(__OSException ex) {
     return OSExceptionTable[ex];
 }
 
-static asm void OSExceptionVector() {
-    // clang-format off
-#ifdef __MWERKS__
+static asm void OSExceptionVector(void) {
     nofralloc
 entry __OSEVStart
     mtsprg 0, r4
-    lwz     r4, OS_ADDR_CURRENT_CONTEXT_REAL
-    stw     r3, OSContext.gpr[3](r4)
+    lwz r4, 0xC0
+    stw r3, 12(r4)
     mfsprg  r3, 0
-    stw     r3, OSContext.gpr[4](r4)
-    stw     r5, OSContext.gpr[5](r4)
-    lhz     r3, OSContext.state(r4)
-    ori     r3, r3, 2
-    sth     r3, OSContext.state(r4)
-    mfcr    r3
-    stw     r3, OSContext.cr(r4)
-    mflr    r3
-    stw     r3, OSContext.lr(r4)
-    mfctr   r3
-    stw     r3, OSContext.ctr(r4)
-    mfxer   r3
-    stw     r3, OSContext.xer(r4)
-    mfsrr0  r3
-    stw     r3, OSContext.srr0(r4)
-    mfsrr1  r3
-    stw     r3, OSContext.srr1(r4)
-    mr r5,  r3
+    stw r3, 16(r4)
+    stw r5, 20(r4)
+    lhz r3, 418(r4)
+    ori r3, r3, 2
+    sth r3, 418(r4)
+
+    mfcr r3
+    stw r3, 128(r4)
+    mflr r3
+    stw r3, 132(r4)
+    mfctr r3
+entry __OSDBJUMPDEST
+ 
+    stw r3, 136(r4)
+    mfxer r3
+    stw r3, 140(r4)
+    mfsrr0 r3
+    stw r3, 408(r4)
+    mfsrr1 r3
+    stw r3, 412(r4)
+    mr r5, r3
 
 entry __DBVECTOR
     nop
 
-    mfmsr   r3
-    ori     r3, r3, (MSR_IR | MSR_DR)
-    mtsrr1  r3
+    mfmsr r3
+    ori r3, r3, 0x30
+    mtsrr1 r3
 
 entry __OSEVSetNumber
-    addi    r3, 0, 0
+    addi r3, 0, 0
 
-    lwz     r4, OS_ADDR_CURRENT_CONTEXT
+    lwz r4, 0xD4
     rlwinm. r5, r5, 0, 30, 30
-    bne     recover
-    addis   r5, 0, OSDefaultExceptionHandler@ha
-    addi    r5, r5, OSDefaultExceptionHandler@l
-    mtsrr0  r5
+    bne recover
+    addis r5, 0, OSDefaultExceptionHandler@ha
+    addi r5, r5, OSDefaultExceptionHandler@l
+    mtsrr0 r5
     rfi
 
 recover:
-    rlwinm  r5, r3, 2, 22, 29
-    lwz     r5, 0x3000(r5)
-    mtsrr0  r5
+    rlwinm r5, r3, 2, 22, 29
+    lwz r5, 0x3000(r5)
+    mtsrr0 r5
 
     rfi
 
 entry __OSEVEnd
     nop
-#endif // __MWERKS__
-    // clang-format on
 }
 
-asm void OSDefaultExceptionHandler(u8 type, register OSContext* context) {
-    // clang-format off
-#ifdef __MWERKS__
+asm void OSDefaultExceptionHandler(register __OSException exception, register OSContext* context) {
     nofralloc
+    
+    stw r0, 0(context)
+    stw r1, 4(context)
+    stw r2, 8(context)
+    stmw r6, 0x18(context)
 
-    stw     r0, context->gpr[0]
-    stw     r1, context->gpr[1]
-    stw     r2, context->gpr[2]
-    stmw    r6, context->gpr[6]
+    mfspr r0, 0x391
+    stw r0, 0x1A8(context)
 
-    mfspr   r0, GQR1
-    stw     r0, context->gqr[1]
-    mfspr   r0, GQR2
-    stw     r0, context->gqr[2]
-    mfspr   r0, GQR3
-    stw     r0, context->gqr[3]
-    mfspr   r0, GQR4
-    stw     r0, context->gqr[4]
-    mfspr   r0, GQR5
-    stw     r0, context->gqr[5]
-    mfspr   r0, GQR6
-    stw     r0, context->gqr[6]
-    mfspr   r0, GQR7
-    stw     r0, context->gqr[7]
+    mfspr r0, 0x392
+    stw r0, 0x1AC(context)
+
+    mfspr r0, 0x393
+    stw r0, 0x1B0(context)
+
+    mfspr r0, 0x394
+    stw r0, 0x1B4(context)
+
+    mfspr r0, 0x395
+    stw r0, 0x1B8(context)
+
+    mfspr r0, 0x396
+    stw r0, 0x1BC(context)
+
+    mfspr r0, 0x397
+    stw r0, 0x1C0(context)
 
     mfdsisr r5
-    mfdar   r6
-
-    stwu    r1, -8(r1)
-    b       __OSUnhandledException
-#endif // __MWERKS__
-    // clang-format on
+    mfdar r6
+    stwu r1, -8(r1)
+    b __OSUnhandledException
 }
 
-void __OSPSInit() {
-    PPCMthid2(PPCMfhid2() | HID2_LSQE | HID2_PSE);
+void __OSPSInit(void) {
+    PPCMthid2(PPCMfhid2() | 0xA0000000);
     ICFlashInvalidate();
     __sync();
 
-    // clang-format off
-#ifdef __MWERKS__
     asm {
         li r3, 0
-        mtspr GQR0, r3
-        mtspr GQR1, r3
-        mtspr GQR2, r3
-        mtspr GQR3, r3
-        mtspr GQR4, r3
-        mtspr GQR5, r3
-        mtspr GQR6, r3
-        mtspr GQR7, r3
+        mtspr 0x390, r3
+        mtspr 0x391, r3
+        mtspr 0x392, r3
+        mtspr 0x393, r3
+        mtspr 0x394, r3
+        mtspr 0x395, r3
+        mtspr 0x396, r3
+        mtspr 0x397, r3
     }
-#endif // __MWERKS__
-    // clang-format on
 }
 
-u32 __OSGetDIConfig() {
-    return DI_READ_REG(DI_CONFIG) & 0b11111111;
+u32 __OSGetDIConfig(void) {
+    return __DIRegs[9] & 0xFF;
 }
 
-void OSRegisterVersion(const char* id) {
+void OSRegisterVersion(const char *id) {
     OSReport("%s\n", id);
 }
 
 static const char* AppGameNameForSysMenu = "HAEA";
 
-const char* OSGetAppGamename() {
-    const char* appNameSrc = (char*)OSPhysicalToCached(OS_ADDR_BOOT_PART_TYPE);
+const char* OSGetAppGamename(void) {
+    const char* appNameSrc = (char*)OSPhysicalToCached(0x3194);
 
     if (__OSInIPL) {
         appNameSrc = AppGameNameForSysMenu;
-    } else if ((*appNameSrc < '0') || ('9' < *appNameSrc && *appNameSrc < 'A') || ('Z' < *appNameSrc)) {
-        appNameSrc = (char*)OSPhysicalToCached(OS_ADDR_CURRENT_APP_NAME);
+    }
+    else if ((*appNameSrc < '0') || ('9' < *appNameSrc && *appNameSrc < 'A') || ('Z' < *appNameSrc)) {
+        appNameSrc = (char*)OSPhysicalToCached(0x3180);
     }
 
-    // Copy app name to buffer (along with a null)
     GameNameBuffer[0] = *appNameSrc++;
     GameNameBuffer[1] = *appNameSrc++;
     GameNameBuffer[2] = *appNameSrc++;
@@ -937,9 +887,10 @@ const char* OSGetAppGamename() {
     return GameNameBuffer;
 }
 
-u8 OSGetAppType() {
+u8 OSGetAppType(void) {
     if (__OSInIPL) {
-        return OS_APP_TYPE_IPL;
+        return 0x40;
     }
-    return *((u8*)OSPhysicalToCached(OS_ADDR_CURRENT_APP_TYPE));
+
+    return *((u8*)OSPhysicalToCached(0x3184));
 }

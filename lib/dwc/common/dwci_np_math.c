@@ -862,7 +862,7 @@ u32 MATH_CalcCRC32(const MATHCRC32Table* table, const void* data,
     return ~context;
 }
 
-void MATH_CalcMD5(void* digest, const void* data, u32 dataLength)
+void MATH_CalcMD5(void* digest, void* data, u32 dataLength)
 {
     NETCalcMD5(digest, data, dataLength);
 }

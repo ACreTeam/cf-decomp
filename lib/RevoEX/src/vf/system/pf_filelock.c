@@ -1,12 +1,10 @@
-#include <private/vf/PrFILE2/fatfs/pf_file.h>
-#include <private/vf/PrFILE2/system/pf_filelock.h>
+#include <revolution/vf/pf_filelock.h>
+#include <revolution/vf/pf_system.h>
 
-#include <private/vf/PrFILE2/system/pf_system.h>
-
-void VFiPF_InitLockFile() {
+void VFiPF_InitLockFile(void) {
     VFipf_sys_set.flock_count = 0;
 }
 
-long VFiPF_UnLockFile(PF_FILE* p_file) {
+s32 VFiPF_UnLockFile(struct PF_FILE* p_file) {
     return -1;
 }

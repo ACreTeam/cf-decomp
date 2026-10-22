@@ -6,32 +6,13 @@
 #include <game/mLib/m_allocator.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <lib/revolution/OS/OSThread.h>
+#include <lib/revolution/FA/fa.h>
 #include <cstdio>
 #include <string.h>
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
 
 using namespace dScreenshot;
-
-extern "C" {
-
-// The SD card library (wrappers return 0 / -1 unless noted).
-void fn_8021C86C(u32 size);                                      // init
-void fn_8021C990(int arg, void (*insert)(), void (*remove)());    // card callbacks
-int fn_8021C4DC(int arg0, int arg1, int arg2, drive_c *drive);     // mount: 0, -2 no card
-int fn_8021C6FC(char letter);                                    // unmount
-int fn_8021C960(char letter);                                    // lock
-int fn_8021CB14(char letter, int arg);                           // unlock: -1, 0, 1
-int fn_8021C7A4();                                               // errno
-int fn_8021C934(const char *path);                               // mkdir
-int fn_8021CABC(const char *path);                               // remove
-int fn_8021CAE8(const char *path);                               // rmdir
-int fn_8021C810(const char *path, int attr, find_c *find);        // find first
-int fn_8021C83C(find_c *find);                                   // find next
-void *fn_8021C6D0(const char *path, int mode);                    // open (NULL on error)
-int fn_8021C868(const void *data, u32 size, u32 num, void *file); // write: count
-int fn_8021C7E4(void *file);                                     // close
-}
 
 // Explicit capacities preserve the original format storage and zero-filled tails.
 static char l_dirSearchFormat[] = "%s\\%d?????";
@@ -40,10 +21,10 @@ static char l_jpegSearchFormat[20] = "%s\\????????.JPG";
 static char l_fileFormat[] = "%s\\%s%04d.JPG";
 static char l_photoSearchFormat[20] = "%s\\RUU_????.JPG";
 
-static work_c l_work;
+static FACacheSetting l_work;
 static u8 l_buf0[0x140] ALIGN(32);
 static u8 l_buf1[0x1000] ALIGN(32);
-static drive_c l_drive;
+static FADrvTbl l_drive;
 static OSThread l_thread;
 static char l_rootPath[10];
 static char l_dirPath[21];
@@ -68,15 +49,15 @@ static void removeCallback() {
 
 // 8008EDF8
 void dScreenshot::init() {
-    fn_8021C86C(0x20000);
-    fn_8021C990(0, insertCallback, removeCallback);
-    l_work.mBuf0 = l_buf0;
-    l_work.mBuf1 = l_buf1;
-    l_work.mNum0 = 4;
-    l_work.mNum1 = 4;
-    l_work.m0C = 1;
-    l_work.m10 = 1;
-    l_drive.mWork = &l_work;
+    FAInit(0x20000);
+    FARegistCB(0, insertCallback, removeCallback);
+    l_work.pages = (FACachePage *)l_buf0;
+    l_work.buffers = (FACacheBuf *)l_buf1;
+    l_work.numFatPages = 4;
+    l_work.numDataPages = 4;
+    l_work.numFatBufSize = 1;
+    l_work.numDataBufSize = 1;
+    l_drive.pCache = &l_work;
     l_mounted = FALSE;
     l_locked = FALSE;
     l_running = FALSE;
@@ -112,10 +93,10 @@ static int getErrorResult(int err) {
 
 // 8008EF2C
 static int mount() {
-    switch (fn_8021C4DC(0, 0, 0, &l_drive)) {
+    switch (FAAttach(0, 0, 0, &l_drive)) {
     case 0:
         l_mounted = TRUE;
-        if (!(l_drive.mFlags & 0x10)) {
+        if (!(l_drive.stat & 0x10)) {
             return RESULT_BAD_CARD;
         }
         l_inserted = TRUE;
@@ -130,7 +111,7 @@ static int mount() {
 
 // 8008EFC0
 static int unmount() {
-    switch (fn_8021C6FC(l_drive.mLetter)) {
+    switch (FADetach(l_drive.drive)) {
     case 0:
         l_mounted = FALSE;
         return RESULT_OK;
@@ -141,19 +122,19 @@ static int unmount() {
 
 // 8008F010
 static int lock() {
-    switch (fn_8021C960(l_drive.mLetter)) {
+    switch (FAMount(l_drive.drive)) {
     case 0:
         l_locked = TRUE;
         return RESULT_OK;
     default:
-        l_errno = fn_8021C7A4();
+        l_errno = FAErrnum();
         return getErrorResult(l_errno);
     }
 }
 
 // 8008F068
 static int unlock(int arg) {
-    switch (fn_8021CB14(l_drive.mLetter, arg)) {
+    switch (FAUnmount(l_drive.drive, arg)) {
     case 1:
         l_locked = FALSE;
         return RESULT_OK;
@@ -266,9 +247,9 @@ static const char *l_dcimName = "\\DCIM";
 // 8008F398
 static void *makeRootProc(void *arg) {
     memset(l_rootPath, 0, sizeof(l_rootPath));
-    sprintf(l_rootPath, "%c:%s", l_drive.mLetter, l_dcimName);
-    if (fn_8021C934(l_rootPath) != 0) {
-        l_errno = fn_8021C7A4();
+    sprintf(l_rootPath, "%c:%s", l_drive.drive, l_dcimName);
+    if (FAMkdir(l_rootPath) != 0) {
+        l_errno = FAErrnum();
         if (l_errno != SD_ERROR_ALREADY_EXISTS) {
             l_result = getErrorResult(l_errno);
             return NULL;
@@ -287,13 +268,13 @@ static const char *l_dirSuffix = "NIN01";
 
 // 8008F440: Creates the folder after the last one.
 static BOOL makeDir() {
-    find_c find;
+    FADta find;
     int no = LAST_DIR_NUMBER;
     int ret = -1;
     while (ret != 0) {
         // Directory numbers are shared with other cameras, regardless of suffix.
         sprintf(l_dirPath, l_dirSearchFormat, l_rootPath, no);
-        ret = fn_8021C810(l_dirPath, 0x10, &find);
+        ret = FAFsfirst(l_dirPath, 0x10, &find);
         if (ret == 0) {
             if (no >= LAST_DIR_NUMBER) {
                 l_result = RESULT_FULL;
@@ -302,7 +283,7 @@ static BOOL makeDir() {
             no++;
             break;
         }
-        l_errno = fn_8021C7A4();
+        l_errno = FAErrnum();
         if (l_errno != SD_ERROR_NOT_FOUND) {
             l_result = getErrorResult(l_errno);
             return FALSE;
@@ -314,8 +295,8 @@ static BOOL makeDir() {
         }
     }
     sprintf(l_dirPath, l_dirFormat, l_rootPath, no, l_dirSuffix);
-    if (fn_8021C934(l_dirPath) != 0) {
-        l_errno = fn_8021C7A4();
+    if (FAMkdir(l_dirPath) != 0) {
+        l_errno = FAErrnum();
         l_result = getErrorResult(l_errno);
         return FALSE;
     }
@@ -324,16 +305,16 @@ static BOOL makeDir() {
 
 // 8008F568: 1: l_dirPath is the last folder, 0: none, -1: error.
 static int findDir() {
-    find_c find;
+    FADta find;
     int no = LAST_DIR_NUMBER;
     int ret = -1;
     while (ret != 0) {
         sprintf(l_dirPath, l_dirFormat, l_rootPath, no, l_dirSuffix);
-        ret = fn_8021C810(l_dirPath, 0x10, &find);
+        ret = FAFsfirst(l_dirPath, 0x10, &find);
         if (ret == 0) {
             return 1;
         }
-        l_errno = fn_8021C7A4();
+        l_errno = FAErrnum();
         if (l_errno != SD_ERROR_NOT_FOUND) {
             l_result = getErrorResult(l_errno);
             return -1;
@@ -352,24 +333,24 @@ static const char *l_filePrefix = "RUU_";
 
 // 8008F624: 1: l_filePath is the next file in l_dirPath, 0: the folder is full, -1: error.
 static int makeFileName() {
-    find_c find;
+    FADta find;
     int next = 1;
     memset(l_filePath, 0, sizeof(l_filePath));
     // Reserve numbers used by any JPEG prefix, including other cameras.
     sprintf(l_filePath, l_jpegSearchFormat, l_dirPath);
-    int ret = fn_8021C810(l_filePath, 0x7F, &find);
+    int ret = FAFsfirst(l_filePath, 0x7F, &find);
     while (ret == 0) {
-        if (IS_DIGIT(find.mName[4]) && IS_DIGIT(find.mName[5]) &&
-            IS_DIGIT(find.mName[6]) && IS_DIGIT(find.mName[7])) {
-            int no = (find.mName[4] - '0') * 1000 + (find.mName[5] - '0') * 100 + (find.mName[6] - '0') * 10 +
-                     (find.mName[7] - '0');
+        if (IS_DIGIT(find.fileName[4]) && IS_DIGIT(find.fileName[5]) &&
+            IS_DIGIT(find.fileName[6]) && IS_DIGIT(find.fileName[7])) {
+            int no = (find.fileName[4] - '0') * 1000 + (find.fileName[5] - '0') * 100 + (find.fileName[6] - '0') * 10 +
+                     (find.fileName[7] - '0');
             if (no >= next) {
                 next = no + 1;
             }
         }
-        ret = fn_8021C83C(&find);
+        ret = FAFsnext(&find);
     }
-    l_errno = fn_8021C7A4();
+    l_errno = FAErrnum();
     if (l_errno != SD_ERROR_NOT_FOUND) {
         l_result = getErrorResult(l_errno);
         return -1;
@@ -415,22 +396,22 @@ void dScreenshot::startMakePath() {
 
 // 8008F854
 static void *writeProc(void *arg) {
-    void *file = fn_8021C6D0(l_filePath, 0);
+    void *file = FACreate(l_filePath, 0);
     if (file == NULL) {
-        l_errno = fn_8021C7A4();
+        l_errno = FAErrnum();
         l_result = getErrorResult(l_errno);
         return NULL;
     }
     u8 *data = dPhoto::getJpeg();
-    if (fn_8021C868(data, dPhoto::getJpegSize(), 1, file) == 0) {
-        l_errno = fn_8021C7A4();
+    if (FAFwrite(data, dPhoto::getJpegSize(), 1, file) == 0) {
+        l_errno = FAErrnum();
         l_result = getErrorResult(l_errno);
-        fn_8021C7E4(file);
-        fn_8021CABC(l_filePath);
+        FAFclose(file);
+        FARemove(l_filePath);
         return NULL;
     }
-    if (fn_8021C7E4(file) != 0) {
-        l_errno = fn_8021C7A4();
+    if (FAFclose(file) != 0) {
+        l_errno = FAErrnum();
         l_result = RESULT_REMOVED;
         return NULL;
     }
@@ -445,30 +426,30 @@ void dScreenshot::startWrite() {
 
 // 8008F950
 static void *checkProc(void *arg) {
-    find_c find;
+    FADta find;
     memset(l_rootPath, 0, sizeof(l_rootPath));
-    sprintf(l_rootPath, "%c:%s", l_drive.mLetter, l_dcimName);
-    if (fn_8021C810(l_rootPath, 0x10, &find) != 0) {
-        l_errno = fn_8021C7A4();
+    sprintf(l_rootPath, "%c:%s", l_drive.drive, l_dcimName);
+    if (FAFsfirst(l_rootPath, 0x10, &find) != 0) {
+        l_errno = FAErrnum();
         l_result = l_errno == SD_ERROR_NOT_FOUND ? RESULT_NO_PHOTO : getErrorResult(l_errno);
         return NULL;
     }
     for (int no = FIRST_DIR_NUMBER; no <= LAST_DIR_NUMBER; no++) {
         sprintf(l_dirPath, l_dirFormat, l_rootPath, no, l_dirSuffix);
-        if (fn_8021C810(l_dirPath, 0x10, &find) == 0) {
+        if (FAFsfirst(l_dirPath, 0x10, &find) == 0) {
             memset(l_filePath, 0, sizeof(l_filePath));
             sprintf(l_filePath, l_photoSearchFormat, l_dirPath);
-            int ret = fn_8021C810(l_filePath, 0x7F, &find);
+            int ret = FAFsfirst(l_filePath, 0x7F, &find);
             while (ret == 0) {
-                if (IS_DIGIT(find.mName[4]) && IS_DIGIT(find.mName[5]) &&
-                    IS_DIGIT(find.mName[6]) && IS_DIGIT(find.mName[7])) {
+                if (IS_DIGIT(find.fileName[4]) && IS_DIGIT(find.fileName[5]) &&
+                    IS_DIGIT(find.fileName[6]) && IS_DIGIT(find.fileName[7])) {
                     l_result = RESULT_OK;
                     return NULL;
                 }
-                ret = fn_8021C83C(&find);
+                ret = FAFsnext(&find);
             }
         } else {
-            l_errno = fn_8021C7A4();
+            l_errno = FAErrnum();
             if (l_errno != SD_ERROR_NOT_FOUND) {
                 l_result = getErrorResult(l_errno);
                 return NULL;
@@ -489,50 +470,50 @@ void dScreenshot::startCheck() {
 
 // 8008FB48
 static void *deleteProc(void *arg) {
-    find_c find;
+    FADta find;
     for (int no = FIRST_DIR_NUMBER; no <= LAST_DIR_NUMBER; no++) {
         sprintf(l_dirPath, l_dirFormat, l_rootPath, no, l_dirSuffix);
-        if (fn_8021C810(l_dirPath, 0x10, &find) == 0) {
+        if (FAFsfirst(l_dirPath, 0x10, &find) == 0) {
             memset(l_filePath, 0, sizeof(l_filePath));
             sprintf(l_filePath, l_photoSearchFormat, l_dirPath);
-            int ret = fn_8021C810(l_filePath, 0x7F, &find);
+            int ret = FAFsfirst(l_filePath, 0x7F, &find);
             while (ret == 0) {
-                if (IS_DIGIT(find.mName[4]) && IS_DIGIT(find.mName[5]) &&
-                    IS_DIGIT(find.mName[6]) && IS_DIGIT(find.mName[7])) {
-                    sprintf(l_filePath, "%s\\%s", l_dirPath, find.mName);
-                    if (fn_8021CABC(l_filePath) != 0) {
-                        l_errno = fn_8021C7A4();
+                if (IS_DIGIT(find.fileName[4]) && IS_DIGIT(find.fileName[5]) &&
+                    IS_DIGIT(find.fileName[6]) && IS_DIGIT(find.fileName[7])) {
+                    sprintf(l_filePath, "%s\\%s", l_dirPath, find.fileName);
+                    if (FARemove(l_filePath) != 0) {
+                        l_errno = FAErrnum();
                         l_result = getErrorResult(l_errno);
                         return NULL;
                     }
                 }
-                ret = fn_8021C83C(&find);
+                ret = FAFsnext(&find);
             }
             // Remove the folder once only . and .. are left.
             sprintf(l_filePath, "%s\\?*", l_dirPath);
-            ret = fn_8021C810(l_filePath, 0x7F, &find);
+            ret = FAFsfirst(l_filePath, 0x7F, &find);
             if (ret == 0) {
-                if (IS_DOT_DIR(find.mName)) {
-                    ret = fn_8021C83C(&find);
+                if (IS_DOT_DIR(find.fileName)) {
+                    ret = FAFsnext(&find);
                 }
-                if (IS_DOT_DIR(find.mName)) {
-                    ret = fn_8021C83C(&find);
+                if (IS_DOT_DIR(find.fileName)) {
+                    ret = FAFsnext(&find);
                 }
             }
             if (ret != 0) {
-                l_errno = fn_8021C7A4();
+                l_errno = FAErrnum();
                 if (l_errno != SD_ERROR_NOT_FOUND) {
                     l_result = getErrorResult(l_errno);
                     return NULL;
                 }
-                if (fn_8021CAE8(l_dirPath) != 0) {
-                    l_errno = fn_8021C7A4();
+                if (FARmdir(l_dirPath) != 0) {
+                    l_errno = FAErrnum();
                     l_result = getErrorResult(l_errno);
                     return NULL;
                 }
             }
         } else {
-            l_errno = fn_8021C7A4();
+            l_errno = FAErrnum();
             if (l_errno != SD_ERROR_NOT_FOUND) {
                 l_result = getErrorResult(l_errno);
                 return NULL;

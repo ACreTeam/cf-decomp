@@ -2,6 +2,7 @@
 #define REVOLUTION_GX_PIXEL_H
 
 #include <revolution/gx/GXStruct.h>
+#include <revolution/mtx.h>
 #include <revolution/types.h>
 
 #ifdef __cplusplus
@@ -27,6 +28,9 @@ void GXSetDstAlpha(GXBool enable, u8 alpha);
 
 void GXSetFieldMask(GXBool odd_mask, GXBool even_mask);
 void GXSetFieldMode(GXBool field_mode, GXBool half_aspect_ratio);
+
+
+void GXInitFogAdjTable(GXFogAdjTable* table, u16 width, const Mtx44 proj);
 
 #ifdef __cplusplus
 }

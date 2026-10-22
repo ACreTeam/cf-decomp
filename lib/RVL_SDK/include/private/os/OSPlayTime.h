@@ -20,6 +20,7 @@ typedef enum OSPlayTimeType {
 
 typedef void (*OSPlayTimeCallbackFunc)();
 
+BOOL OSPlayTimeIsLimited();
 BOOL __OSWriteExpiredFlag();
 BOOL __OSWriteExpiredFlagIfSet();
 

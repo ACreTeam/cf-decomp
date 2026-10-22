@@ -97,7 +97,6 @@ static void setParticleColor(particleColor_c *particle, u32) {
 }
 
 extern "C" {
-void fn_8024C6BC(const nw4r::g3d::Camera *, nw4r::math::VEC3 *);
 u32 fn_80279660(nw4r::ef::EffectSystem *, int);
 void fn_80279824(nw4r::ef::EffectSystem *, void (*)(dEffect::particleColor_c *, u32), u32, int, int);
 }
@@ -114,7 +113,7 @@ void dEffect::calc() {
     mVec3_c pos;
     mMtx_c view;
     f32 x, y, width, height, nearZ, farZ;
-    fn_8024C6BC(&camera, &pos);
+    camera.GetPosition(&pos);
     camera.GetCameraMtx(view);
     camera.GetViewport(&x, &y, &width, &height, &nearZ, &farZ);
     mEf::setCamera(&pos, &view, nearZ, farZ, 0);
@@ -242,13 +241,13 @@ struct resourceBank_c {
     bool isValid() const { return mEffectProject && mTextureProject; }
 };
 }
-extern "C" nw4r::ut::List lbl_80746E70;
+extern "C" nw4r::ut::List sList__Q23EGG14EffectResource;
 
 // 800887FC
 void dEffect::setTexturePalette(const char *name, u16 *palette) {
     nw4r::ef::Resource *resource = nw4r::ef::Resource::GetInstance();
     resourceBank_c *bank = NULL;
-    while ((bank = static_cast<resourceBank_c *>(nw4r::ut::List_GetNext(&lbl_80746E70, bank))) != NULL) {
+    while ((bank = static_cast<resourceBank_c *>(nw4r::ut::List_GetNext(&sList__Q23EGG14EffectResource, bank))) != NULL) {
         if (bank->isValid()) {
             nw4r::ef::ResTexture texture = resource->FindTexture(name, bank->mTextureProject);
             if (texture.IsValid()) texture.ptr()->tlut = reinterpret_cast<u8 *>(palette);

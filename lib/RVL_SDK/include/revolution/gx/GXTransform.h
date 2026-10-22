@@ -27,7 +27,7 @@ void GXLoadTexMtxImm(const f32 mtx[][4], u32 id, GXTexMtxType type);
 void GXSetViewportJitter(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz, u32 field);
 void GXSetViewport(f32 left, f32 top, f32 wd, f32 ht, f32 nearz, f32 farz);
 
-void GXSetScissorBoxOffset(s32 x_off, s32 y_off);
+void GXSetScissorBoxOffset(u32 x_off, u32 y_off);
 
 void GXSetClipMode(GXClipMode mode);
 
@@ -36,6 +36,21 @@ void GXSetZScaleOffset(f32 scale, f32 offset);
 inline void GXSetViewportv(const f32* view) {
     GXSetViewport(view[0], view[1], view[2], view[3], view[4], view[5]);
 }
+
+
+
+void GXProject(f32 x, f32 y, f32 z, const f32 pMtx[3][4], const f32* pProjection, const f32* pViewport, f32* pScreenX, f32* pScreenY, f32* pScreenZ);
+void GXLoadPosMtxIndx(u16 mtx_indx, u32 id);
+void GXLoadNrmMtxImm3x3(const f32 mtx[3][3], u32 id);
+void GXLoadNrmMtxIndx3x3(u16 mtx_indx, u32 id);
+void GXLoadTexMtxIndx(u16 mtx_indx, u32 id, GXTexMtxType type);
+
+
+
+typedef enum {
+    GX_FIELD_EVEN,
+    GX_FIELD_ODD,
+} GXInterlaceField;
 
 #ifdef __cplusplus
 }

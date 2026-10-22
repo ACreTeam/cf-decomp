@@ -16,17 +16,18 @@ struct Quatf : public Vector3f {
     }
 
     void set(f32 fw, f32 fx, f32 fy, f32 fz);                // 804450F0
+    void setRPY(const Vector3f &rpy);                        // 80445104: radians
     void setRPY(f32 roll, f32 pitch, f32 yaw);               // 8044524C: radians
     void setAxisRotation(const Vector3f &axis, f32 rot);     // 8044527C: radians
+    f32 norm();                                              // 80445314
     void normalise();                                        // 80445344
+    Quatf conjugate() const;                                 // 804453B8
+    Vector3f rotateVector(const Vector3f &v);                // 8044540C
+    void makeVectorRotation(Vector3f &from, Vector3f &to);   // 804456B0
     void slerpTo(const Quatf &q2, f32 t, Quatf &out) const;  // 804454EC
 
     f32 w;
 };
-} // namespace EGG
 
-extern "C" {
-void fn_804456B0(EGG::Quatf *q, const EGG::Vector3f *from, const EGG::Vector3f *to); // 804456B0: rotation from -> to
-void fn_80444FE4(nw4r::math::MTX34 *mtx, const EGG::Quatf *q);                 // 80444FE4 (eggMatrix): rotation matrix of q
-EGG::Vector3f fn_8044540C(const EGG::Quatf *q, const EGG::Vector3f *v);         // 8044540C: v rotated by q
-}
+Quatf operator*(const Quatf &q, const Vector3f &v); // 804457A4
+} // namespace EGG

@@ -1167,7 +1167,7 @@ void dAcNpcSpPlayerSelect_c::talk_c::setTutorialOff() {
 }
 // .text 0x3DE8
 void dAcNpcSpPlayerSelect_c::talk_c::enableNet() {
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         requestMessage(NET_ERROR_MSG_RESTRICTED, sNetErrorMessageLabel);
     } else if (dWifi::getWc24State() != dWifi::WC24_STATE_ON) {

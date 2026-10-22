@@ -70,6 +70,12 @@ void Camera::Init(u16 efbWidth, u16 efbHeight, u16 xfbWidth, u16 xfbHeight,
     r.scissorOffsetY = 0;
 }
 
+void Camera::GetPosition(math::VEC3* pPos) const {
+    if (pPos != NULL && IsValid()) {
+        *pPos = ref().cameraPos;
+    }
+}
+
 void Camera::SetPosition(f32 x, f32 y, f32 z) {
     if (!IsValid()) {
         return;

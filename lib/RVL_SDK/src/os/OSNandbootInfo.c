@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/os.h>
 #include <revolution/os.h>
 
@@ -71,6 +72,7 @@ BOOL __OSWriteNandbootInfo(OSNandbootInfo* info) {
     return TRUE;
 }
 
+#if 0 // not linked in City Folk
 BOOL __OSReadNandbootInfo(OSNandbootInfo* info) {
     NANDFileInfo fileInfo;
     s32 result;
@@ -95,3 +97,4 @@ BOOL __OSReadNandbootInfo(OSNandbootInfo* info) {
 
     return TRUE;
 }
+#endif

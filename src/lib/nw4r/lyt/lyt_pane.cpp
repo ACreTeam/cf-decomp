@@ -320,8 +320,9 @@ void Pane::AnimateSelf(u32 option) {
     }
 }
 
-void Pane::BindAnimation(AnimTransform* pAnimTrans, bool recursive) {
-    pAnimTrans->Bind(this, recursive);
+void Pane::BindAnimation(AnimTransform* pAnimTrans, bool recursive,
+                         bool bDisable) {
+    pAnimTrans->Bind(this, recursive, bDisable);
 }
 
 void Pane::UnbindAnimation(AnimTransform* pAnimTrans, bool recursive) {

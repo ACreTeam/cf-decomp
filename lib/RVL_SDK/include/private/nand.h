@@ -99,6 +99,8 @@ void nandGetParentDirectory(char* parentDir, const char* absPath);
 
 const char* nandGetHomeDir();
 
+s32 nandCalcUsage(u32* usedBlocks, u32* usedINodes, const char** list);
+
 #ifdef __cplusplus
 }
 #endif

@@ -34,15 +34,26 @@ NWC24Err NWC24iReadFriendInfoRaw(NWC24FriendInfo* info, u32 index);
 typedef struct NWC24SecretFLHeader {
     u32 magic;      // 0x00
     u32 version;    // 0x04
-    u32 infoCount;  // 0x08
-    u32 unk_0x0C;
-    u8 unk_0x10[0x7F0];
+    u32 infoCount;        // 0x08
+    u32 registeredCount;  // 0x0C
+    u32 unk_0x10[4];
+    s32 keys[336];   // 0x20
+    u16 times[336];  // 0x560
 } NWC24SecretFLHeader;
 
 NWC24Err NWC24iInitSecretFriendList(BOOL force);
 
 NWC24Err NWC24iCreateSecretFriendList();
 NWC24Err NWC24iOpenSecretFriendList();
+
+NWC24Err NWC24iAddSecretFriendInfo(const NWC24SecretFriendInfo* info, u32* index);
+NWC24Err NWC24iFindEmptySecretFriendSlot(u32* index);
+NWC24Err NWC24iFindOldestSecretFriendSlot(u32* index);
+NWC24Err NWC24iSearchSecretFriendKey(s32 key, u32* index, u32 start);
+NWC24Err NWC24iWriteSecretFriendInfo(const NWC24SecretFriendInfo* info, u32 index, BOOL replace);
+NWC24Err NWC24iUpdateSecretFriendInfo(const NWC24SecretFriendInfo* info, u32 index);
+NWC24Err NWC24iDeleteSecretFriendInfo(u32 index);
+NWC24Err NWC24iReadSecretFriendInfoRaw(NWC24SecretFriendInfo* info, u32 index);
 
 #ifdef __cplusplus
 }

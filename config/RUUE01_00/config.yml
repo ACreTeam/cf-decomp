@@ -24,8 +24,11 @@ fill_gaps: true
 export_all: true
 globalize_symbols: true
 clean_extab: false
-force_active: [lbl_8074E834, fn_80081848__11dSceneCheckFv, _8074E524__14dNetDsDownload] # Unreferenced storage/stubs retained in the original; the download word preserves its .sbss layout.
+force_active: [kp_unused_bss, lbl_8074E834, fn_80081848__11dSceneCheckFv, _8074E524__14dNetDsDownload] # Unreferenced storage/stubs retained in the original; the download word preserves its .sbss layout.
 block_relocations:
+# 80493DC8: a word in encjapanese's table (lbl_8048EA80), 80006F00, which looks like an address inside an RVLFaceLib
+# extabindex entry (RFL_MakeTex). Not a pointer.
+- source: 0x80493DC8
 # 804F8348: d_sc_data_rm_theater_show's scene3 kind 0x0B record starts with the colour 806840FF, which looks like an
 # address inside d_snd's l_soundSystemWorkMem bss. Not a pointer.
 - source: 0x804F8348
@@ -122,6 +125,8 @@ block_relocations:
 # 80515130: a word inside lbl_80509320 (binary data) that reads 805B3926, inside d_net_mgr's g_netMgr.
 # Not a pointer.
 - source: 0x80515130
+# 80518320: a word inside lbl_80509320 (binary data) reading 805595BC, inside WUD.c .data. Not a pointer.
+- source: 0x80518320
 # 8047F890: a frame sound in SoundObjFurniture's sFrameSounds (u16 8064, u16 1BE1) that looks like a
 # pointer into .bss. Not a pointer.
 - source: 0x8047F890

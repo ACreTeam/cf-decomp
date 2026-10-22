@@ -154,12 +154,6 @@ static const f32 sMushRatePerfect[FG_MUSHROOM_KIND_NUM] = {10.0f, 25.0f, 30.0f,
 static const f32 sShellWeights[] = {2.0f, 3.0f,  5.0f,  10.0f, 10.0f,
                                     5.0f, 10.0f, 25.0f, 30.0f, 0.0f};
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-
-f32 fn_8044B83C(EGG::Effect *effect);
-}
-
 typedef BOOL (*dFgMngAroundFunc)(dFdBase_c *fd, const int *pos, int x, int z,
                                  int *size);
 struct dFgMngGroundCheck_c;
@@ -5164,19 +5158,19 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode,
         name = sFallTable[kind][id - sFlowerFirstFg[kind]];
     }
     if (petals.createEffect(name, &pos, ang, NULL)) {
-        petals.vf2C(scale * fn_8044B83C(&petals));
+        petals.setEmitRatio(scale * petals.getBaseEmitRatio());
         if (ang != NULL) {
-            petals.vf48(&dir);
+            petals.setSpecDirAdd(&dir);
             if (!inRange(item, dItem::FG_JACOBS_LADDER,
                          dItem::FG_JACOBS_LADDER) &&
                 item->mId != dItem::FG_DANDELION_PUFF) {
-                petals.vf6C(&sSpread, 0);
+                petals.setEmitterSize(&sSpread, 0);
             }
             if (wind) {
                 if (item->mId == dItem::FG_DANDELION_PUFF) {
-                    petals.vf3C(0.8f);
+                    petals.setPowerSpecDir(0.8f);
                 } else {
-                    petals.vf3C(2.0f);
+                    petals.setPowerSpecDir(2.0f);
                 }
             }
         }
@@ -5193,15 +5187,15 @@ void fgMngProc_playFlowerFallEffect(dItem::Item *item, int x, int z, int mode,
         ok = leaves.createEffect(name, &pos, ang, NULL);
     }
     if (ok) {
-        leaves.vf2C(scale * fn_8044B83C(&leaves));
+        leaves.setEmitRatio(scale * leaves.getBaseEmitRatio());
         if (ang != NULL) {
             if (!inRange(item, dItem::FG_JACOBS_LADDER,
                          dItem::FG_JACOBS_LADDER)) {
-                leaves.vf6C(&sSpread, 0);
+                leaves.setEmitterSize(&sSpread, 0);
             }
-            leaves.vf48(&dir);
+            leaves.setSpecDirAdd(&dir);
             if (wind) {
-                leaves.vf3C(2.0f);
+                leaves.setPowerSpecDir(2.0f);
             }
         }
     }

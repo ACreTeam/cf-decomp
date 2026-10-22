@@ -13,6 +13,7 @@ OSErrorHandler __OSErrorTable[OS_EXCEPTION_MAX];
 
 u32 __OSFpscrEnableBits = FPSCR_ENABLE;
 
+#if 0 // not linked in City Folk
 void OSReport(const char* msg, ...) {
     va_list marker;
     va_start(marker, msg);
@@ -23,6 +24,7 @@ void OSReport(const char* msg, ...) {
 void OSVReport(const char* msg, va_list list) {
     vprintf(msg, list);
 }
+#endif
 
 void OSPanic(const char* file, int line, const char* msg, ...) {
     va_list marker;
@@ -32,7 +34,7 @@ void OSPanic(const char* file, int line, const char* msg, ...) {
     BOOL enabled = OSDisableInterrupts();
 
     va_start(marker, msg);
-    OSVReport(msg, marker);
+    vprintf(msg, marker);
     va_end(marker);
     OSReport(" in \"%s\" on line %d.\n", file, line);
 

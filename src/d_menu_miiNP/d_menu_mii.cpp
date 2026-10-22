@@ -546,7 +546,7 @@ void dMenuMii_c::setPage(int page) {
 
 // .text:0x17A8
 void dMenuMii_c::initMiiList() {
-    mMiiNum = RFLGetOfficialDataNum();
+    mMiiNum = RFLGetAvailableOfficialDataNum();
     mPageNum = (mMiiNum + PAGE_SIZE - 1) / PAGE_SIZE;
     setPage(0);
     mSelected = -1;
@@ -559,7 +559,7 @@ void dMenuMii_c::initMiiList() {
     for (; i < MII_MAX; i++) {
         if (RFLIsAvailableOfficialData(i)) {
             dPlayerMgr::MiiData_c info;
-            if (RFLGetCharInfo((RFLCharInfo *)&info, RFLDataSource_Official,
+            if (RFLGetAdditionalInfo((RFLCharInfo *)&info, RFLDataSource_Official,
                                nullptr, i) == RFLErrcode_Success) {
                 if ((info.mPersonalInfo >> 17) & 1) {
                     if (current == i) {
@@ -678,7 +678,7 @@ BOOL dMenuMii_c::applyMii() {
         return FALSE;
     }
     dPlayerMgr::MiiData_c info;
-    if (RFLGetCharInfo((RFLCharInfo *)&info, RFLDataSource_Official, nullptr,
+    if (RFLGetAdditionalInfo((RFLCharInfo *)&info, RFLDataSource_Official, nullptr,
                        id) != RFLErrcode_Success) {
         return FALSE;
     }

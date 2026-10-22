@@ -1,201 +1,194 @@
-#include <private/vf/PrFILE2/pf_types.h>
+#include <revolution/vf/vf_all.h>
 
-#include <private/vf/PrFILE2/common/pf_clib.h>
-#include <private/vf/PrFILE2/common/pf_w_clib.h>
-#include <private/vf/PrFILE2/fatfs/pf_volume.h>
+#define PF_STR_CODEMODE_NONE 0
+#define PF_STR_CODEMODE_OEM 1
+#define PF_STR_CODEMODE_UNICODE 2
+#define PF_STR_CODEMODE_LOCAL 3
 
-#include <private/vf/PrFILE2/common/pf_str.h>
 
-void VFiPFSTR_SetCodeMode(PF_STR* p_str, pf_u32 code_mode) {
+void VFiPFSTR_SetCodeMode(struct PF_STR* p_str, u32 code_mode) {
     p_str->code_mode = code_mode;
 }
 
-pf_u32 VFiPFSTR_GetCodeMode(PF_STR* p_str) {
+u32 VFiPFSTR_GetCodeMode(struct PF_STR* p_str) {
     return p_str->code_mode;
 }
 
-pf_s8* VFiPFSTR_GetStrPos(PF_STR* p_str, pf_u32 target) {
-    pf_s8* p_pos;
-    if (target == 1) {
-        p_pos = (pf_s8*)p_str->p_head;
+void VFiPFSTR_SetLocalStr(struct PF_STR* p_str, s8* p_local) {
+    if (p_str->code_mode == PF_STR_CODEMODE_OEM || (p_local == NULL)) {
+        p_str->p_local = p_str->p_head;
     } else {
-        p_pos = (pf_s8*)p_str->p_tail;
+        p_str->p_local = p_local;
     }
+}
+
+s8* VFiPFSTR_GetStrPos(struct PF_STR* p_str, u32 target) {
+    s8* p_pos;
+    if (target == 1) {
+        p_pos = (s8*)p_str->p_head;
+    } else if (target == 2) {
+        p_pos = (s8*)p_str->p_tail;
+    } else {
+        p_pos = (s8*)p_str->p_local;
+    }
+
     return p_pos;
 }
 
-void VFiPFSTR_MoveStrPos(PF_STR* p_str, pf_s16 num_char) {
-    pf_s16 cnt;
-    pf_s16 offset = 0;
-    pf_s32 width;
-    pf_s8* p;
+void VFiPFSTR_MoveStrPos(struct PF_STR* p_str, s16 num_char) {
+    s16 cnt;
+    s16 offset;
+    s32 width;
+    s8* p;
+    u16* wp;
 
-    (void)p;
+    offset = 0;
 
-    if (VFiPFSTR_GetCodeMode(p_str) == 1) {
-        p = (pf_s8*)p_str->p_head;
-        while (num_char != 0) {
-            if (VFipf_vol_set.codeset.is_oem_mb_char((pf_s8)*p, PF_TRUE)) {
+    if (VFiPFSTR_GetCodeMode(p_str) == PF_STR_CODEMODE_OEM) {
+        p = (s8*)p_str->p_head;
+
+        for (; num_char != 0; offset++, num_char--) {
+            if (VFipf_vol_set.codeset.is_oem_mb_char(*p, PF_STR_CODEMODE_OEM)) {
                 offset++;
             }
-            offset++;
-            num_char--;
         }
     } else {
-        p = (pf_s8*)p_str->p_head;
+        wp = (u16*)p_str->p_head;
 
         for (cnt = 0; cnt < num_char; cnt++) {
-            width = VFipf_vol_set.codeset.unicode_char_width((pf_u16*)p);
-            p += width;
-            offset += (pf_s16)width;
+            width = VFipf_vol_set.codeset.unicode_char_width((u16*)wp);
+            wp += width;
+            offset += (s16)width;
         }
     }
 
-    p_str->p_head = &p_str->p_head[offset];
+    p_str->p_head += offset;
 }
 
-pf_s32 VFiPFSTR_InitStr(PF_STR* p_str, const pf_s8* s, pf_u32 code_mode) {
-    if (p_str == PF_NULL || s == PF_NULL) {
-        return PF_ERR_10;
+s32 VFiPFSTR_InitStr(struct PF_STR* p_str, const s8* s, u32 code_mode) {
+    if (p_str == NULL || s == NULL) {
+        return 10;
     }
 
-    if (code_mode == 1) {
+    if (code_mode == PF_STR_CODEMODE_OEM) {
         p_str->p_head = s;
-        p_str->p_tail = &s[VFipf_strlen(s)];
-    } else if (code_mode == 2) {
+        p_str->p_tail = s + VFipf_strlen(s);
+    } else if (code_mode == PF_STR_CODEMODE_UNICODE) {
         p_str->p_head = s;
-        p_str->p_tail = s + (VFipf_w_strlen((pf_u16*)s) * sizeof(pf_u16));
+        p_str->p_tail = s + (2 * VFipf_w_strlen((const u16*)s));
     } else {
-        return PF_ERR_10;
+        return 10;
     }
 
-    VFiPFSTR_SetCodeMode(p_str, code_mode);
+    p_str->code_mode = code_mode;
     return 0;
 }
 
-pf_u16 VFiPFSTR_StrLen(PF_STR* p_str) {
-    return (pf_u16)(p_str->p_tail - p_str->p_head);
+u16 VFiPFSTR_StrLen(struct PF_STR* p_str) {
+    return (u16)((u8*)p_str->p_tail - (u8*)p_str->p_head);
 }
 
-pf_u16 VFiPFSTR_StrNumChar(PF_STR* p_str, pf_u32 target) {
-    pf_s8* p;
-    pf_u16 cnt;
-    pf_s32 width;
+u16 VFiPFSTR_StrNumChar(struct PF_STR* p_str, u32 target) {
+    s8* p;
+    u16 cnt;
+    s32 width;
 
-    if (target == 1) {
-        p = (pf_s8*)p_str->p_head;
+    if (target == PF_STR_CODEMODE_OEM) {
+        p = (s8*)p_str->p_head;
     } else {
-        p = (pf_s8*)p_str->p_tail;
+        p = (s8*)p_str->p_tail;
     }
 
-    if (p_str->code_mode == 1) {
-        for (cnt = 0; (pf_s8)*p != 0; cnt++) {
-            if (VFipf_vol_set.codeset.is_oem_mb_char((pf_s8)*p, PF_TRUE)) {
+    if (p_str->code_mode == PF_STR_CODEMODE_OEM) {
+        cnt = 0;
+        for (; *p != '\0'; p++, cnt++) {
+            if (VFipf_vol_set.codeset.is_oem_mb_char(*p, PF_STR_CODEMODE_OEM)) {
                 p++;
             }
-            p++;
         }
     } else {
-        for (cnt = 0; (pf_s8)p[0] != 0 || (pf_s8)p[1] != 0; cnt++) {
-            width = VFipf_vol_set.codeset.unicode_char_width((pf_u16*)p);
-            p += width;
+        cnt = 0;
+        for (; p[0] != '\0' || p[1] != '\0'; p += width, cnt++) {
+            width = VFipf_vol_set.codeset.unicode_char_width((u16*)p);
         }
     }
 
     return cnt;
 }
 
-pf_s32 VFiPFSTR_StrCmp(const PF_STR* p_str, const pf_s8* s) {
-    pf_u16 wc;
-    const pf_u16* wp;
-    const pf_s8* p1;
-    const pf_s8* p2;
-    pf_s32 ret;
+s32 VFiPFSTR_StrCmp(const struct PF_STR* p_str, const s8* s) {
+    u16 wc;
+    const u16* wp;
+    const s8* p1;  // Present in DWARF but unused here.
+    const s8* p2;  // Present in DWARF but unused here.
+    s32 ret;       // Present in DWARF but unused here.
 
-    if (p_str->code_mode == 1) {
-        p1 = p_str->p_head;
-        p2 = s;
-        ret = VFipf_strcmp(p1, p2);
-    } else {
-        wp = (pf_u16*)p_str->p_head;
-
-        do {
-            VFipf_vol_set.codeset.oem2unicode((pf_s8*)s, &wc);
-            s++;
-
-            if (*wp++ != wc) {
-                break;
-            }
-        } while (*(wp - 1) != 0 && wc != 0);
-
-        wp--;
-        ret = *wp - wc;
+    if (p_str->code_mode == PF_STR_CODEMODE_OEM) {
+        return VFipf_strcmp(p_str->p_head, s);
     }
 
-    return ret;
+    wp = (const u16*)p_str->p_head;
+    do {
+        VFipf_vol_set.codeset.oem2unicode((s8*)s, &wc);
+        s++;
+    } while (*wp++ == wc && wp[-1] != L'\0' && wc != L'\0');
+
+    return wp[-1] - wc;
 }
 
-pf_s32 VFiPFSTR_StrNCmp(PF_STR* p_str, const pf_s8* s, pf_u32 target, pf_s16 offset, pf_u16 num) {
-    pf_u16 wc;
-    const pf_u16* wp;
-    const pf_s8* p1;
-    const pf_s8* p2;
-    pf_s32 ret;
+s32 VFiPFSTR_StrNCmp(struct PF_STR* p_str, const s8* s, u32 target, s16 offset, u16 num) {
+    u16 wc;
+    const u16* wp;
+    const s8* p1;
+    const s8* p2;  // Present in DWARF but unused here.
+    s32 ret;       // Present in DWARF but unused here.
 
-    if (p_str->code_mode == 1) {
-        if (target == 1) {
-            p1 = &p_str->p_head[offset];
+    if (p_str->code_mode == PF_STR_CODEMODE_OEM || target == PF_STR_CODEMODE_LOCAL) {
+        if (target == PF_STR_CODEMODE_OEM) {
+            p1 = (const s8*)p_str->p_head + offset;
+        } else if (target == PF_STR_CODEMODE_UNICODE) {
+            p1 = (const s8*)p_str->p_tail + offset;
         } else {
-            p1 = &p_str->p_tail[offset];
-        }
-        p2 = s;
-        ret = VFipf_strncmp(p1, p2, num);
-    } else {
-        if (target == 1) {
-            wp = (pf_u16*)p_str->p_head + offset;
-        } else {
-            wp = (pf_u16*)p_str->p_tail + offset;
+            p1 = (const s8*)p_str->p_local + offset;
         }
 
-        do {
-            VFipf_vol_set.codeset.oem2unicode((pf_s8*)s, &wc);
-            s++;
-            num--;
-
-            if (*wp++ != wc || num == 0) {
-                break;
-            }
-        } while (*(wp - 1) != 0 && wc != 0);
-
-        wp--;
-        ret = *wp - wc;
+        return VFipf_strncmp(p1, s, num);
     }
 
-    return ret;
+    if (target == PF_STR_CODEMODE_OEM) {
+        wp = (const u16*)((u8*)p_str->p_head + offset * sizeof(u16));
+    } else {
+        wp = (const u16*)((u8*)p_str->p_tail + offset * sizeof(u16));
+    }
+
+    do {
+        VFipf_vol_set.codeset.oem2unicode((s8*)s, &wc);
+        s++;
+        num--;
+    } while (*wp++ == wc && num > 0 && wp[-1] != L'\0' && wc != L'\0');
+
+    return wp[-1] - wc;
 }
 
-void VFiPFSTR_ToUpperNStr(PF_STR* p_str, pf_u16 num, pf_s8* dest) {
-    pf_u16 wc;
-    const pf_u16* wp;
-    const pf_s8* p;
+void VFiPFSTR_ToUpperNStr(struct PF_STR* p_str, u16 num, s8* dest) {
+    u16 wc;
+    const u16* wp;
+    const s8* p;
 
-    if (p_str->code_mode == 1) {
-        p = (pf_s8*)p_str->p_head;
-
-        for (; num != 0 && *p != 0; p++, num--) {
+    if (p_str->code_mode == PF_STR_CODEMODE_OEM) {
+        for (p = p_str->p_head; num > 0 && *p != '\0'; p++, num--) {
             *dest++ = VFipf_toupper(*p);
         }
     } else {
-        wp = (pf_u16*)p_str->p_head;
-
-        for (; num != 0 && *wp != 0; wp++, num--) {
-            wc = (*wp >= 'a' && *wp <= 'z') ? *wp + ('A' - 'a') : *wp;
-            *(dest) = (pf_u8)wc;
-            *(dest + 1) = (pf_u8)(wc >> 8);
-            dest += sizeof(pf_u16);
+        for (wp = (const u16*)p_str->p_head; num > 0 && *wp != L'\0'; num--, wp++) {
+            wc = (*wp >= L'a' && *wp <= L'z') ? *wp - (L'a' - L'A') : *wp;
+            dest[0] = (wc >> 0) & 0xFF;
+            dest[1] = (wc >> 8) & 0xFF;
+            dest += sizeof(u16);
         }
-        *dest++ = 0;
+
+        *dest = '\0';
     }
 
-    *dest = 0;
+    *dest = '\0';
 }

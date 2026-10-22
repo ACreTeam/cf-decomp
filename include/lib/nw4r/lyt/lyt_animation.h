@@ -109,7 +109,8 @@ public:
         u16 animNum
     ) = 0;                                              // at 0x10
 
-    virtual void Bind(Pane* pPane, bool recursive) = 0; // at 0x14
+    virtual void Bind(Pane* pPane, bool recursive,
+                      bool bDisable) = 0; // at 0x14
     virtual void Bind(Material* pMaterial) = 0;         // at 0x18
 
     virtual void Animate(ulong idx, Pane* pPane) = 0;         // at 0x1C
@@ -192,7 +193,8 @@ public:
                              ResourceAccessor* pAccessor); // at 0xC
     virtual void SetResource(const res::AnimationBlock *pRes, ResourceAccessor *pResAccessor, u16 animNum); // at 0x10
 
-    virtual void Bind(Pane* pPane, bool recursive); // at 0x14
+    virtual void Bind(Pane* pPane, bool recursive,
+                      bool bDisable); // at 0x14
     virtual void Bind(Material* pMaterial);         // at 0x18
 
     virtual void Animate(ulong idx, Pane* pPane);         // at 0x1C

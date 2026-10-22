@@ -56,8 +56,8 @@ public:
     levelEffect_c() : mPrev(NULL), mNext(NULL), mActive(false), _85(false), _88(0), _8C(0) {}
     ~levelEffect_c() { cleanup(); }
 
-    virtual void retire(); // 802B898C
-    virtual void retireAll(); // 802B899C
+    virtual void fade(); // 802B898C
+    virtual void kill(); // 802B899C
     virtual void update(); // 802B885C
     virtual BOOL createEffect(const char *, int); // 802B85AC
     virtual bool createEffect(const char *, ulong, const mVec3_c *, const mAng3_c *, const mVec3_c *); // 802B86AC

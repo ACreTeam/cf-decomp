@@ -17,16 +17,36 @@
 #include <lib/nw4r/db.h>
 #include <revolution/GX.h>
 #include <revolution/SC.h>
+#include <revolution/KPAD.h>
 #include <revolution/WPAD.h>
-
-extern "C" void fn_803BCE8C(s8, s8); // Default controller pointer parameters.
 
 namespace EGG {
 
-class PerformanceView { u8 _0000[4]; };
+class PerformanceView {
+public:
+    virtual void measureBeginFrame() = 0;         // 0x08
+    virtual void measureEndFrame() = 0;           // 0x0C
+    virtual void measureBeginRender() = 0;        // 0x10
+    virtual void measureEndRender() = 0;          // 0x14
+    virtual void callbackDrawSync(u16 token) = 0; // 0x18
+    virtual void VF_0x1C() {}                     // 0x1C
+    virtual void draw() = 0;                      // 0x20
+    virtual void setVisible(bool visible) = 0;    // 0x24
+    virtual bool isVisible() = 0;                 // 0x28
+};
 class ProcessMeter : public Thread, public PerformanceView {};
-class SceneManager;
-class SimpleAudioMgr;
+
+class SceneManager {
+public:
+    virtual void calc(); // 0x08
+    virtual void draw(); // 0x0C
+};
+
+class SimpleAudioMgr {
+public:
+    virtual void initialize(); // 0x08
+    virtual void calc();       // 0x0C
+};
 
 class ConfigurationData {
 public:
@@ -45,14 +65,19 @@ public:
     virtual void initMemory();
     virtual void run();
 
-    u8 mPad[0x14];
-    Heap *mRootHeapMem1;
-    Heap *mRootHeapMem2;
-    Heap *mRootHeapDebug;
-    Heap *mSystemHeap;
-    Thread *mThread;
-    u8 mPad2[0x8];
-    u32 mSysHeapSize;
+    void *mMem1Start;     // 0x04
+    void *mMem1End;       // 0x08
+    void *mMem2Start;     // 0x0C
+    void *mMem2End;       // 0x10
+    u32 mMemorySize;      // 0x14
+    Heap *mRootHeapMem1;  // 0x18
+    Heap *mRootHeapMem2;  // 0x1C
+    Heap *mRootHeapDebug; // 0x20
+    Heap *mSystemHeap;    // 0x24
+    Thread *mThread;      // 0x28
+    void *mCodeStart;     // 0x2C
+    void *mCodeEnd;       // 0x30
+    u32 mSysHeapSize;     // 0x34
     u32 mGraphicsFifoSize;
     GXRenderModeObj *mRenderMode;
 };

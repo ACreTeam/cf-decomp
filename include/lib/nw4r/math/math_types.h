@@ -315,7 +315,11 @@ VEC3* VEC3TransformNormal(VEC3* pOut, const MTX34* pMtx, const VEC3* pVec);
 #ifndef __INTELLISENSE__
 inline VEC3* VEC3Add(register VEC3* pOut, register const VEC3* pA,
                      register const VEC3* pB) {
+#ifdef NW4R_LIB_BUILD
     register f32 work0, work1, work2;
+#else
+    register f32 work2, work1, work0; // the game's header: EGG::Effect::setSpecDirAdd (work0 not first)
+#endif
 
     // clang-format off
     asm {

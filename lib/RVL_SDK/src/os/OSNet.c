@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/os.h>
 #include <revolution/os.h>
 
@@ -34,15 +35,18 @@ void __OSInitNet() {
     }
 }
 
+#if 0 // not linked in City Folk
 s32 __OSSyncTimeWithNetRM() {
     return NWC24iSynchronizeRtcCounter(FALSE);
 }
+#endif
 
-DECOMP_FORCE_ACTIVE(OSNet_c, "NWC24iPrepareShutdown");
-DECOMP_FORCE_ACTIVE(OSNet_c, "/dev/net/kd/request");
-DECOMP_FORCE_ACTIVE(OSNet_c, "NWC24SuspendScheduler");
-DECOMP_FORCE_ACTIVE(OSNet_c, "NWC24ResumeScheduler");
-DECOMP_FORCE_ACTIVE(OSNet_c, "NWC24iRequestShutdown");
-DECOMP_FORCE_ACTIVE(OSNet_c, "NWC24Shutdown_: Give up!\n");  // Give up!
-DECOMP_FORCE_ACTIVE(OSNet_c, "NWC24iSetRtcCounter_");
-DECOMP_FORCE_ACTIVE(OSNet_c, "/dev/net/kd/time");
+DECOMP_FORCE_STRING(OSNet_c, "NWC24iPrepareShutdown");
+DECOMP_FORCE_STRING(OSNet_c, "/dev/net/kd/request");
+DECOMP_FORCE_STRING(OSNet_c, "NWC24SuspendScheduler");
+DECOMP_FORCE_STRING(OSNet_c, "NWC24ResumeScheduler");
+DECOMP_FORCE_STRING(OSNet_c, "NWC24iRequestShutdown");
+DECOMP_FORCE_STRING(OSNet_c, "NWC24Shutdown_: Give up!\n");
+DECOMP_FORCE_STRING(OSNet_c, "NWC24iSetRtcCounter_");
+DECOMP_FORCE_STRING(OSNet_c, "/dev/net/kd/time");
+

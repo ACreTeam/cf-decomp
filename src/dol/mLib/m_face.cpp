@@ -70,7 +70,7 @@ BOOL isValidData(RFLDataSource source, u16 index, RFLMiddleDB *middleDB) {
             return FALSE;
         }
     } else if (source == RFLDataSource_MiddleDB) {
-        if (RFLGetCharInfo(&info, source, middleDB, index) != RFLErrcode_Success) {
+        if (RFLGetAdditionalInfo(&info, source, middleDB, index) != RFLErrcode_Success) {
             return FALSE;
         }
     } else {

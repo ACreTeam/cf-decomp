@@ -45,6 +45,7 @@ asm OSTick OSGetTick() {
 #endif // __MWERKS__
 }
 
+#if 0 // not linked in City Folk
 asm static void __SetTime(OSTime time) {
 #ifdef __MWERKS__
     nofralloc
@@ -55,11 +56,13 @@ asm static void __SetTime(OSTime time) {
     mttbl   r4
 
     blr
-#endif // __MWERKS__
 }
+#endif
+#endif
 
 // clang-format on
 
+#if 0 // not linked in City Folk
 void __OSSetTime(OSTime time) {
     OSTime* systemTime = &__OSSystemTime;
     BOOL enabled = OSDisableInterrupts();
@@ -69,6 +72,7 @@ void __OSSetTime(OSTime time) {
     EXIProbeReset();
     OSRestoreInterrupts(enabled);
 }
+#endif
 
 OSTime __OSGetSystemTime() {
     OSTime* systemTime = &__OSSystemTime;

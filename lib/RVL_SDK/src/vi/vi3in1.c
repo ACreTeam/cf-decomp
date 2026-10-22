@@ -1,3 +1,4 @@
+#include <decomp.h>
 #include <private/vi.h>
 #include <revolution/vi.h>
 
@@ -247,7 +248,7 @@ static void __VISetOverSampling(u8 flag) {
     WaitMicroTime(2);
 }
 
-void __VISetVolume(u8 leftVolume, u8 rightVolume) {
+static void __VISetVolume(u8 leftVolume, u8 rightVolume) {
     u8 data[3];
 
     data[0] = 0x71;
@@ -288,7 +289,7 @@ void __VISetYUVSEL(u8 yuvsel) {
     WaitMicroTime(2);
 }
 
-void __VISetTiming(s32 timing) {
+static void __VISetTiming(s32 timing) {
     u8 data[2];
 
     data[0] = 0;
@@ -297,6 +298,7 @@ void __VISetTiming(s32 timing) {
     WaitMicroTime(2);
 }
 
+#if 0 // not linked in City Folk
 void __VISet3in1Output(u8 output) {
     u8 data[2];
 
@@ -305,6 +307,7 @@ void __VISet3in1Output(u8 output) {
     __VISendI2CData(0xE0, data, sizeof(data));
     WaitMicroTime(2);
 }
+#endif
 
 void __VISetFilter4EURGB60(u8 filter) {
     u8 data[2];
@@ -315,7 +318,7 @@ void __VISetFilter4EURGB60(u8 filter) {
     WaitMicroTime(2);
 }
 
-void __VISetVBICtrl(u8 arg0, u8 arg1, u8 arg2) {
+static void __VISetVBICtrl(u8 arg0, u8 arg1, u8 arg2) {
     u8 data[2];
 
     data[0] = 2;
@@ -324,6 +327,7 @@ void __VISetVBICtrl(u8 arg0, u8 arg1, u8 arg2) {
     WaitMicroTime(2);
 }
 
+#if 0 // not linked in City Folk
 u32 __VIGetVenderID() {
     u8 data2[2];
     u8 data;
@@ -367,6 +371,7 @@ u32 __VIGetVenderID() {
     }
     return 0x10;
 }
+#endif
 
 void __VISetCGMS() {
     u8 data[3];
@@ -378,13 +383,14 @@ void __VISetCGMS() {
     WaitMicroTime(2);
 }
 
-void __VISetCGMSClear() {
+static void __VISetCGMSClear() {
     __wd0 = 0;
     __wd1 = 0;
     __wd2 = 0;
     __VISetCGMS();
 }
 
+#if 0 // not linked in City Folk
 void VISetCGMS(u8 wd0, u8 wd1, u8 wd2) {
     if (__wd0 != wd0 || __wd1 != wd1 || __wd2 != wd2) {
         __wd0 = wd0;
@@ -393,13 +399,16 @@ void VISetCGMS(u8 wd0, u8 wd1, u8 wd2) {
         Vdac_Flag_Changed |= 1;
     }
 }
+#endif
 
+#if 0 // not linked in City Folk
 BOOL VIGetCGMS(u8* wd0, u8* wd1, u8* wd2) {
     *wd0 = __wd0;
     *wd1 = __wd1;
     *wd2 = __wd2;
     return TRUE;
 }
+#endif
 
 void __VISetWSS() {
     u8 data[3];
@@ -411,7 +420,7 @@ void __VISetWSS() {
     WaitMicroTime(2);
 }
 
-void VISetWSS(u8 gp1, u8 gp2, u8 gp3, u8 gp4) {
+static void VISetWSS(u8 gp1, u8 gp2, u8 gp3, u8 gp4) {
     if (__gp1 != gp1 || __gp2 != gp2 || __gp3 != gp3 || __gp4 != gp4) {
         __gp1 = gp1;
         __gp2 = gp2;
@@ -421,6 +430,7 @@ void VISetWSS(u8 gp1, u8 gp2, u8 gp3, u8 gp4) {
     }
 }
 
+#if 0 // not linked in City Folk
 BOOL VIGetWSS(u8* gp1, u8* gp2, u8* gp3, u8* gp4) {
     *gp1 = __gp1;
     *gp2 = __gp2;
@@ -428,6 +438,7 @@ BOOL VIGetWSS(u8* gp1, u8* gp2, u8* gp3, u8* gp4) {
     *gp4 = __gp4;
     return TRUE;
 }
+#endif
 
 void __VISetClosedCaption() {
     u8 data[5];
@@ -441,7 +452,7 @@ void __VISetClosedCaption() {
     WaitMicroTime(2);
 }
 
-void VISetClosedCaption(u8 cc1, u8 cc2, u8 cc3, u8 cc4) {
+static void VISetClosedCaption(u8 cc1, u8 cc2, u8 cc3, u8 cc4) {
     if (__cc1 != cc1 || __cc2 != cc2 || __cc3 != cc3 || __cc4 != cc4) {
         __cc1 = cc1;
         __cc2 = cc2;
@@ -451,7 +462,7 @@ void VISetClosedCaption(u8 cc1, u8 cc2, u8 cc3, u8 cc4) {
     }
 }
 
-void __VISetMacrovisionImm(__VIMacrovisionImm macrovisionImm) {
+static void __VISetMacrovisionImm(__VIMacrovisionImm macrovisionImm) {
     u8 data[26 + 1];
     u8 i;
 
@@ -536,6 +547,7 @@ void __VISetMacrovision() {
     }
 }
 
+#if 0 // not linked in City Folk
 void VISetMacrovision(VIMacrovision macrovision) {
     u32 tvFormat;
 
@@ -584,6 +596,7 @@ void VISetMacrovision(VIMacrovision macrovision) {
         Vdac_Flag_Changed |= 8;
     }
 }
+#endif
 
 void __VISetGammaImm(__VIGammaImm* gammaImm) {
     u8 data[34];
@@ -613,22 +626,26 @@ void __VISetGammaImm(__VIGammaImm* gammaImm) {
     WaitMicroTime(2);
 }
 
+#if 0 // not linked in City Folk
 void __VISetGamma1_0() {
     __VISetGammaImm(&gammaSet[VI_GM_1_0]);
 }
+#endif
 
 void __VISetGamma() {
     __VISetGammaImm(&gammaSet[__gamma]);
 }
 
+#if 0 // not linked in City Folk
 void VISetGamma(VIGamma gamma) {
     if (__gamma != gamma) {
         __gamma = gamma;
         Vdac_Flag_Changed |= 0x10;
     }
 }
+#endif
 
-void __VISetTrapFilterImm(u8 flag) {
+static void __VISetTrapFilterImm(u8 flag) {
     u8 data[2];
 
     data[0] = 3;
@@ -654,12 +671,14 @@ void __VISetTrapFilter() {
     WaitMicroTime(2);
 }
 
+#if 0 // not linked in City Folk
 void VISetTrapFilter(u8 flag) {
     if (__filter != flag) {
         __filter = flag;
         Vdac_Flag_Changed |= 0x20;
     }
 }
+#endif
 
 void __VISetRGBOverDrive() {
     u8 data[2];
@@ -677,7 +696,7 @@ void __VISetRGBOverDrive() {
     }
 }
 
-void VISetRGBOverDrive(int level) {
+static void VISetRGBOverDrive(int level) {
     if (__level != level) {
         __level = level;
         Vdac_Flag_Changed |= 0x40;
@@ -688,6 +707,7 @@ void VISetRGBModeImm() {
     Vdac_Flag_Changed |= 0x80;
 }
 
+#if 0 // not linked in City Folk
 void __VISetDTVMode() {
     u32 dtvStatus;
 
@@ -724,11 +744,15 @@ void __VISetDTVMode() {
     VIWaitForRetrace();
     __VISet3in1Output(1);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void VISetDTVMode() {
     __VISetDTVMode();
 }
+#endif
 
+#if 0 // not linked in City Folk
 void VISetRVAMode() {
     u8 data[2];
 
@@ -754,11 +778,13 @@ void VISetRVAMode() {
     VIWaitForRetrace();
     __VISet3in1Output(1);
 }
+#endif
 
 void __VISetRGBModeImm() {
     __VISetVideoMode(VI_VIDEO_MODE_RVA, 0);
 }
 
+#if 0 // not linked in City Folk
 void __VISetLegacyMode() {
     u32 dtvStatus;
 
@@ -781,7 +807,9 @@ void __VISetLegacyMode() {
     VIWaitForRetrace();
     __VISet3in1Output(1);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void __VISetDVDMode() {
     u32 dtvStatus;
 
@@ -804,7 +832,9 @@ void __VISetDVDMode() {
     VIWaitForRetrace();
     __VISet3in1Output(1);
 }
+#endif
 
+#if 0 // not linked in City Folk
 void __VISetRevolutionMode() {
     u32 dtvStatus;
 
@@ -827,6 +857,7 @@ void __VISetRevolutionMode() {
     VIWaitForRetrace();
     __VISet3in1Output(1);
 }
+#endif
 
 void __VISetRevolutionModeSimple() {
     u32 dtvStatus;
@@ -850,6 +881,7 @@ void __VISetRevolutionModeSimple() {
     __VISetGammaImm(&gammaSet[VI_GM_1_0]);
 }
 
+#if 0 // not linked in City Folk
 void __VISetRevolutionModeNoRetrace() {
     u32 dtvStatus;
 
@@ -869,7 +901,9 @@ void __VISetRevolutionModeNoRetrace() {
     VISetGamma(VI_GM_1_0);
     VIFlush();
 }
+#endif
 
+#if 0 // not linked in City Folk
 void __VIInit3in1(VITVMode tvMode) {
     u32 videoMode;
     u32 tvFormat;
@@ -897,3 +931,4 @@ void __VIInit3in1(VITVMode tvMode) {
     __VISetVideoMode(videoMode, 0);
     __VISetRevolutionMode();
 }
+#endif

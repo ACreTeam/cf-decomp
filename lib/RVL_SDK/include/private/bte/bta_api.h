@@ -190,9 +190,9 @@ typedef struct
 	tBTA_DM_INQ_MODE	mode;			// 0x00
 	UINT8				duration;		// 0x01
 	UINT8				max_resps;		// 0x02
-	tBTA_DM_INQ_FILT	filter_type;	// 0x03
+	BOOLEAN				report_dup;		// 0x03
 	tBTA_DM_INQ_COND	filter_cond;	// 0x04
-} tBTA_DM_INQ; // size 0x10
+} tBTA_DM_INQ; // size 0x0a
 
 typedef struct
 {
@@ -212,7 +212,11 @@ typedef struct
 	BD_NAME		bd_name;		// 0x006
 	BOOLEAN		key_present;	// 0x0fe
 	LINK_KEY	key;			// 0x0ff
-	BOOLEAN		success;		// 0x10f
+	union
+	{
+		UINT8	key_type;		// 0x10f
+		BOOLEAN	success;		// 0x10f
+	};
 } tBTA_DM_AUTH_CMPL; // size 0x110
 
 typedef struct

@@ -134,6 +134,10 @@ public:
     void CreateEmitterTmp(EmitterResource* pResource,
                           EmitterInheritSetting* pSetting, Particle* pParticle,
                           u16 calcRemain);
+    // CF: the emission matrix can be translated by an explicit position (used by EGG::ExOneEmitter)
+    void CreateEmitterTmp(EmitterResource* pResource,
+                          EmitterInheritSetting* pSetting, Particle* pParticle,
+                          u16 calcRemain, const math::VEC3* pPos);
 
     ParticleManager* FindParticleManager(EmitterResource* pResource,
                                          bool inheritS, bool inheritR,

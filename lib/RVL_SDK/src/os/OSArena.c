@@ -56,6 +56,7 @@ void* OSAllocFromMEM1ArenaLo(u32 size, u32 align) {
     return begin;
 }
 
+#if 0 // not linked in City Folk
 void* OSAllocFromMEM2ArenaLo(u32 size, u32 align) {
     u8* begin = PTR_ROUNDUP(OSGetMEM2ArenaLo(), align);
     u8* end = begin + size;
@@ -65,3 +66,4 @@ void* OSAllocFromMEM2ArenaLo(u32 size, u32 align) {
 
     return begin;
 }
+#endif

@@ -1301,7 +1301,7 @@ BOOL changeMiiMask(u16 mii) {
         return FALSE;
     }
     MiiData_c data;
-    if (RFLGetCharInfo((RFLCharInfo *)&data, RFLDataSource_Official, nullptr, mii) != RFLErrcode_Success) {
+    if (RFLGetAdditionalInfo((RFLCharInfo *)&data, RFLDataSource_Official, nullptr, mii) != RFLErrcode_Success) {
         return FALSE;
     }
     dPrivateData_c *current = Mgr_c::getCurrentPlayer();

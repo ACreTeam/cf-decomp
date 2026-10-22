@@ -5,8 +5,6 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_pad.hpp>
 
-extern "C" void fn_804434D0(EGG::Vector2f *, EGG::CoreController *);
-
 // Game input, pointer coordinates and synthesized stick/button state.
 // Names inferred from behavior.
 namespace dPad {
@@ -67,8 +65,7 @@ BOOL isRightHeld(); // 800FA9A4
 
 // 800FAA6C: emitted after the static initializer with -sym on.
 inline mVec2_c readPointer() {
-    EGG::Vector2f pos;
-    fn_804434D0(&pos, mPad::getCore());
+    EGG::Vector2f pos = mPad::getCore()->getDpdRawPos();
     return mVec2_c(pos);
 }
 

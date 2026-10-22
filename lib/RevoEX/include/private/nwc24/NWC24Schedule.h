@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#define NWC24i_SCHEDULER_DEVICE "/dev/net/kd/request"
+
 typedef enum NWC24ScdTaskStage {
     NWC24_SCD_TASK_WAITING = 0,
     NWC24_SCD_TASK_ACCOUNT = 1,
@@ -20,6 +22,8 @@ typedef enum NWC24ScdTaskStage {
     NWC24_SCD_TASK_DOWNLOAD = 7,
     NWC24_SCD_TASK_PROCESS = 8,
 } NWC24ScdTaskStage;
+
+#define NWC24_SCD_ERROR_LOG_MAX 32
 
 typedef struct NWC24ScdStat {
     NWC24Err result;  // 0x00
@@ -55,7 +59,7 @@ typedef struct NWC24ScdStat {
 
     u32 reserved[9];  // 0x5C
 
-    s32 errorLog[32];  // 0x80
+    s32 errorLog[NWC24_SCD_ERROR_LOG_MAX];  // 0x80
 } NWC24ScdStat;
 
 NWC24Err NWC24iGetSchedulerStat(NWC24ScdStat* scdStat, u32 scdStatSize);

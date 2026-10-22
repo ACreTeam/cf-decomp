@@ -221,6 +221,7 @@ CXSecureResult CXSecureUncompressLZ(const void* src, u32 length, void* dst) {
     return CX_SECURE_ERR_OK;
 }
 
+#if 0 // not linked in City Folk
 BOOL CXiVerifyHuffmanTable_(const void* param_1, u8 param_2) {
     const u8* a = param_1;
     const u8* b = a + 1;
@@ -271,7 +272,9 @@ BOOL CXiVerifyHuffmanTable_(const void* param_1, u8 param_2) {
 
     return TRUE;
 }
+#endif
 
+#if 0 // not linked in City Folk
 CXSecureResult CXSecureUncompressHuffman(const void* src, u32 length, void* dst) {
     const u8* pSrc = src;
     const u8* pDst = dst;
@@ -385,3 +388,4 @@ CXSecureResult CXSecureUncompressHuffman(const void* src, u32 length, void* dst)
 
     return CX_SECURE_ERR_OK;
 }
+#endif

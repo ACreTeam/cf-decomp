@@ -23,7 +23,7 @@ ESError ESP_ListTitleContentsOnCard(ESTitleId titleId, ESContentId* contentIds, 
 
 ESError ESP_GetTicketViews(ESTitleId titleId, ESTicketView* ticketViewList, u32* numTicketViews);
 
-ESError ESP_DiGetTicketView(void* ticket, ESTicketView* ticketView);
+ESError ESP_DiGetTicketView(const void* ticket, ESTicketView* ticketView);
 
 ESError ESP_DiGetTmd(ESTitleMeta* tmd, u32* tmdSize);
 ESError ESP_GetTmdView(ESTitleId titleId, ESTmdView* tmdView, u32* tmdSize);
@@ -32,6 +32,7 @@ ESError ESP_GetDataDir(ESTitleId titleId, char* dataDir);
 ESError ESP_GetTitleId(ESTitleId* titleId);
 
 ESError ESP_GetConsumption(ESTicketId ticketId, ESLpEntry* limitEntries, u32* numEntries);
+
 
 #ifdef __cplusplus
 }

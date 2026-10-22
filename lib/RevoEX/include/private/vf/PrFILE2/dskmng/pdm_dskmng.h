@@ -30,7 +30,6 @@ struct PDM_PARTITION {
     PDM_DISK_INFO disk_info;                                 // 0x18
     PDM_INIT_DISK* p_init_disk_tbl;                          // 0x2C
     PDM_PARTITION* p_cur_part;                               // 0x30
-    pf_s32 (*p_erase_func)(pf_u32 block, pf_u32 num_block);  //  0x34
 } /*PDM_DISK*/;
 
 typedef struct PDM_DISK_HANDLE {

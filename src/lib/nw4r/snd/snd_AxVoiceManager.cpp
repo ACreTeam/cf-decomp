@@ -13,8 +13,8 @@ AxVoiceManager& AxVoiceManager::GetInstance() {
 
 AxVoiceManager::AxVoiceManager() : mInitialized(false) {}
 
-u32 AxVoiceManager::GetRequiredMemSize() {
-    return (AXGetMaxVoices() + VOICE_MARGIN) * sizeof(AxVoice);
+u32 AxVoiceManager::GetRequiredMemSize(int voiceMax) {
+    return (voiceMax + VOICE_MARGIN) * sizeof(AxVoice);
 }
 
 void AxVoiceManager::Setup(void* pBuffer, u32 size) {

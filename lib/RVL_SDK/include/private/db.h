@@ -17,6 +17,7 @@ typedef struct DBInterface {
 
 extern DBInterface* __DBInterface;
 
+void DBInit(void);
 void __DBExceptionDestination();
 BOOL __DBIsExceptionMarked(__OSException exception);
 

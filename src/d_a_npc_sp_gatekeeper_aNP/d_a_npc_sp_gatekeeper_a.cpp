@@ -1966,7 +1966,7 @@ void dAcNpcSpGkA_c::talk_c::answerGoOutInstead() {
 // .text:0x7E68 fn_66_7E68 (0xB0): dAcNpcSpGkA_c::talk_c::answer7E68() -
 // provisional
 void dAcNpcSpGkA_c::talk_c::answerGoOutWiFi() {
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         setNextMessage(NET_ERROR_MSG_RESTRICTED, sNetErrorMessageLabel);
     } else if (dWifi::getFriendNum() == 0) {
@@ -1996,7 +1996,7 @@ void dAcNpcSpGkA_c::talk_c::answerGoOut() {
 // .text:0x7F9C fn_66_7F9C (0x8C): dAcNpcSpGkA_c::talk_c::answer7F9C() -
 // provisional
 void dAcNpcSpGkA_c::talk_c::answerInviteGuests() {
-    if (fn_803AD87C()) {
+    if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         setNextMessage(NET_ERROR_MSG_RESTRICTED, sNetErrorMessageLabel);
     } else if (dWifi::getFriendNum() == 0) {
@@ -2011,7 +2011,7 @@ void dAcNpcSpGkA_c::talk_c::answerInviteGuests() {
 void dAcNpcSpGkA_c::talk_c::answerFriendCode() {
     if (dWifi::getMyFriendKey() != 0) {
         setNextMessage(MSG_FRIEND_CODE, dANpcSpGatekeeperA::l_msgLabel);
-    } else if (fn_803AD87C()) {
+    } else if (SCCheckPCMessageRestriction()) {
         switchToSystemSpeaker();
         setNextMessage(NET_ERROR_MSG_RESTRICTED, sNetErrorMessageLabel);
     } else {

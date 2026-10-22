@@ -112,8 +112,8 @@ public:
     virtual Material* FindMaterialByName(const char* pName,
                                          bool recursive); // at 0x40
 
-    virtual void BindAnimation(AnimTransform* pAnimTrans,
-                               bool recursive); // at 0x44
+    virtual void BindAnimation(AnimTransform* pAnimTrans, bool recursive,
+                               bool bDisable); // at 0x44
     virtual void UnbindAnimation(AnimTransform* pAnimTrans,
                                  bool recursive); // at 0x48
 

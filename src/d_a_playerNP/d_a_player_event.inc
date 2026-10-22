@@ -49,7 +49,7 @@ void dAcPlayer_c::executeWater() {
 // .text 0x1E598
 void dAcPlayer_c::endWater(int nextState) {
     if (mActorFlags2 & dPlayerMgr::ACTOR_FLAG2_EFFECT) {
-        mEffect.retire();
+        mEffect.fade();
         mActorFlags2 &= ~dPlayerMgr::ACTOR_FLAG2_EFFECT;
     }
     if (mPlayerNo == dNet::getMyNo()) {
@@ -1467,7 +1467,7 @@ void dAcPlayer_c::initBlowBubble() {
 // .text 0x21634
 void dAcPlayer_c::endBlowBubble(int nextState) {
     if (mActorFlags2 & dPlayerMgr::ACTOR_FLAG2_EFFECT) {
-        mEffect.retire();
+        mEffect.fade();
         mActorFlags2 &= ~dPlayerMgr::ACTOR_FLAG2_EFFECT;
     }
     if (mPlayerNo == dNet::getMyNo()) {
@@ -5581,7 +5581,7 @@ BOOL dAcPlayer_c::putOnMiiMask() {
         return FALSE;
     }
     dPlayerMgr::MiiData_c info;
-    if (RFLGetCharInfo((RFLCharInfo *)&info, source, db, mMiiMask) == RFLErrcode_Success) {
+    if (RFLGetAdditionalInfo((RFLCharInfo *)&info, source, db, mMiiMask) == RFLErrcode_Success) {
         GXColor color = info.mFavoriteColor;
         setBodyKColor(color);
         freeHeadHeap();
@@ -5613,14 +5613,14 @@ void dAcPlayer_c::checkMiiFace() {
             if (dMiiIcon::getTravelDB() != NULL) {
                 mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_FACE;
             }
-        } else if (RFLGetOfficialDataNum() != 0) {
+        } else if (RFLGetAvailableOfficialDataNum() != 0) {
             mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_MASK_OK | dPlayerMgr::ACTOR_FLAG_MII_FACE;
         }
     } else if (dNet::isSessionActive()) {
         if (!fn_8010D9F4() && dMiiIcon::getMemberDB(mPlayerNo) != NULL) {
             mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_FACE;
         }
-    } else if (RFLGetOfficialDataNum() != 0) {
+    } else if (RFLGetAvailableOfficialDataNum() != 0) {
         mActorFlags |= dPlayerMgr::ACTOR_FLAG_MII_FACE;
     }
 }

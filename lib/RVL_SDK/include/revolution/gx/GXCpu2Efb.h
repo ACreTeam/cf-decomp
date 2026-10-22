@@ -22,6 +22,10 @@ void GXPokeDither(GXBool dither);
 
 void GXPokeZMode(GXBool compare_enable, GXCompare func, GXBool update_enable);
 
+
+void GXPeekARGB(u16 x, u16 y, u32* color);
+void GXPeekZ(u16 x, u16 y, u32* z);
+
 #ifdef __cplusplus
 }
 #endif

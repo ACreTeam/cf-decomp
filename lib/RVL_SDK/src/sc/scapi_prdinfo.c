@@ -3,6 +3,7 @@
 
 #include <revolution/os.h>
 
+#include <stdio.h>
 #include <string.h>
 
 #define XOR_PRDINFO_KEY 0x73B5DBFA
@@ -16,8 +17,9 @@ static SCAreaAndID ProductAreaAndStringTbl[] = {{SC_PRODUCT_AREA_JPN, "JPN"}, {S
                                                 {SC_PRODUCT_AREA_AUS, "AUS"}, {SC_PRODUCT_AREA_BRA, "BRA"}, {SC_PRODUCT_AREA_TWN, "TWN"},
                                                 {SC_PRODUCT_AREA_TWN, "ROC"}, {SC_PRODUCT_AREA_KOR, "KOR"}, {SC_PRODUCT_AREA_HKG, "HKG"},
                                                 {SC_PRODUCT_AREA_ASI, "ASI"}, {SC_PRODUCT_AREA_LTN, "LTN"}, {SC_PRODUCT_AREA_SAF, "SAF"},
-                                                {SC_PRODUCT_AREA_CHN, "CHN"}, {SC_PRODUCT_AREA_UNKNOWN, ""}};
+                                                {SC_PRODUCT_AREA_UNKNOWN, ""}};
 
+#if 0 // not linked in City Folk
 typedef struct SCVideoModeAndID {
     s8 videoMode;  // 0x00
     char name[5];  // 0x01
@@ -29,6 +31,7 @@ static SCVideoModeAndID ProductVideoModeAndStringTbl[] = {
     {SC_PRODUCT_VIDEO_MPAL, "MPAL"},
     {SC_PRODUCT_VIDEO_UNKNOWN, ""},
 };
+#endif
 
 typedef struct SCGameRegionAndID {
     s8 gameRegion;  // 0x00
@@ -37,7 +40,7 @@ typedef struct SCGameRegionAndID {
 
 static SCGameRegionAndID ProductGameRegionAndStringTbl[] = {
     {SC_PRODUCT_GAME_REGION_JP, "JP"}, {SC_PRODUCT_GAME_REGION_US, "US"}, {SC_PRODUCT_GAME_REGION_EU, "EU"},
-    {SC_PRODUCT_GAME_REGION_KR, "KR"}, {SC_PRODUCT_GAME_REGION_CN, "CN"}, {SC_PRODUCT_GAME_REGION_UNKNOWN, ""},
+    {SC_PRODUCT_GAME_REGION_UNKNOWN, ""},
 };
 
 BOOL __SCF1(const char* type, char* buf, u32 sz) {
@@ -90,7 +93,7 @@ BOOL __SCF1(const char* type, char* buf, u32 sz) {
     return FALSE;
 }
 
-BOOL SCGetProductAreaString(char* buf, u32 sz) {
+static BOOL SCGetProductAreaString(char* buf, u32 sz) {
     return __SCF1("AREA", buf, sz);
 }
 
@@ -115,14 +118,23 @@ char* SCGetProductCode() {
     return __SCF1("CODE", buf, sizeof(buf)) ? buf : NULL;
 }
 
-BOOL SCGetProductSNString(char* buf, u32 sz) {
-    return __SCF1("SERNO", buf, sz);
+BOOL SCGetProductSN(u32* sn) {
+    char buf[11];
+
+    if (__SCF1("SERNO", buf, sizeof(buf)) && sscanf(buf, "%u", sn) == 1) {
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
+#if 0 // not linked in City Folk
 BOOL SCGetProductVideoModeString(char* buf, u32 sz) {
     return __SCF1("VIDEO", buf, sz);
 }
+#endif
 
+#if 0 // not linked in City Folk
 s8 SCGetProductVideoMode() {
     s8 area;
     char name[5];
@@ -138,8 +150,9 @@ s8 SCGetProductVideoMode() {
 
     return SC_PRODUCT_AREA_UNKNOWN;
 }
+#endif
 
-BOOL SCGetProductGameRegionString(char* buf, u32 sz) {
+static BOOL SCGetProductGameRegionString(char* buf, u32 sz) {
     return __SCF1("GAME", buf, sz);
 }
 

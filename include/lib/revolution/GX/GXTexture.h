@@ -68,7 +68,7 @@ u32 GXGetTexBufferSize(u16 width, u16 height, u32 format, GXBool mipmap,
 
 // TODO
 UNKTYPE GXSetTexCoordScaleManually(UNKWORD, UNKWORD, UNKWORD, UNKWORD);
-UNKTYPE GXSetTexCoordCylWrap(UNKWORD, UNKWORD, UNKWORD);
+UNKTYPE GXSetTexCoordBias(UNKWORD, UNKWORD, UNKWORD);
 
 #ifdef __cplusplus
 }

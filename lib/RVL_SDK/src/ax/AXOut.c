@@ -7,12 +7,6 @@
 
 #include <private/dsp.h>
 
-extern u16 axDspSlave[];
-extern u16 axDspInitVector;
-;
-extern u16 axDspResumeVector;
-extern u16 axDspSlaveLength;
-;
 
 // Output uses a ring buffer
 #define OUT_RING_MAX 3
@@ -194,7 +188,7 @@ static void __AXDSPRequestCallback(DSPTaskInfo* task) {
 }
 
 void __AXOutInitDSP() {
-    __AXDSPTask.iram_mmem_addr = axDspSlave;
+    __AXDSPTask.iram_mmem_addr = (u16*)axDspSlave;
     __AXDSPTask.iram_length = axDspSlaveLength;
     __AXDSPTask.iram_addr = 0;
 

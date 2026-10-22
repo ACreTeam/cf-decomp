@@ -23,6 +23,19 @@ s32 OSWaitSemaphore(OSSemaphore* sem) {
     return count;
 }
 
+s32 OSTryWaitSemaphore(OSSemaphore* sem) {
+    BOOL enabled = OSDisableInterrupts();
+    s32 count;
+
+    if ((count = sem->count) > 0) {
+        sem->count--;
+    }
+
+    OSRestoreInterrupts(enabled);
+
+    return count;
+}
+
 s32 OSSignalSemaphore(OSSemaphore* sem) {
     BOOL enabled = OSDisableInterrupts();
     s32 count;

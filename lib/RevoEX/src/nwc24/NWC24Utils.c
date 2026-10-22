@@ -2,12 +2,12 @@
 #include <revolution/nwc24.h>
 
 void NWC24Data_Init(NWC24Data* data) {
-    data->ptr = NULL;
+    data->pData = NULL;
     data->size = 0;
 }
 
 void NWC24Data_SetDataP(NWC24Data* data, const void* ptr, u32 size) {
-    data->ptr = ptr;
+    data->pData = ptr;
     data->size = size;
 }
 

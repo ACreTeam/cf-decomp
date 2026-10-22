@@ -402,7 +402,7 @@ extern s16 sLookYawMax;   // 8074E602: 45 degrees
 extern u8 sSnowEffectWearThreshold; // 8074E5F8?: snow wear above it counts as snow (surface effects)
 
 
-// Output of RFLGetCharInfo; the create ID goes to dPrivateData_c::mMiiId.
+// Output of RFLGetAdditionalInfo; the create ID goes to dPrivateData_c::mMiiId.
 struct MiiData_c {
     /* 0x00 */ wchar_t mName[10]; // d_a_npc_sp_catherine: the Mii's name
     /* 0x14 */ u8 _14[0x18];

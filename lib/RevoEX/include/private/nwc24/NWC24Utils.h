@@ -22,6 +22,8 @@ typedef struct NWC24Date {
     u8 unk_0x07;
 } NWC24Date;
 
+#define NWC24i_KSTRLEN(x) ((int)(sizeof(x)))
+
 void NWC24Date_Init(NWC24Date* date);
 
 void NWC24iConvIdToStr(NWC24UserId addr, char* out);
