@@ -5,7 +5,7 @@
 //
 // The patterns are /PRC/<J|E|P|K>.bin by region, loaded at boot into dHeap::ngwordHeap_p (load), or
 // the downloaded copy in the save (dSaveExtra_c::mDistNgWords) when there is one for this region. The
-// matcher (fn_801F7FC4 / fn_801F83D0, unsplit) runs on its own thread with its stack in
+// matcher (RegEad::prcSetup / prcCheck, include/lib/RegEad/RegEadPrc.hpp) runs on its own thread with its stack in
 // dHeap::prcHeap_p and its work area in dHeap::prcWorkHeap_p:
 //   startSetup()  builds the matcher from the patterns (boot, after load)
 //   startCheck()  checks up to 50 UTF-16 strings; results[i] = 1 for each one that matches, *hits = count

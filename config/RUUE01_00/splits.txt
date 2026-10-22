@@ -2146,18 +2146,50 @@ dol/sound/SoundAmbient.cpp:
 
 lib/RegEad/RegEad.cpp:
 	.text       start:0x801E39B0 end:0x801E4EF4
+	.data       start:0x80503DA0 end:0x805056A0
+	.sdata      start:0x8074C748 end:0x8074C7C8
 
 lib/RegEad/RegDfa.cpp:
-	.text       start:0x801E4EF4 end:0x801E92FC
+	.text       start:0x801E4EF4 end:0x801E8C14
+	.data       start:0x805056A0 end:0x80505718
+	.sdata      start:0x8074C7C8 end:0x8074C7D8
+
+lib/RegEad/RegDfaState.cpp:
+	.text       start:0x801E8C14 end:0x801E90B8
+
+lib/RegEad/RegEadHeap.cpp:
+	.text       start:0x801E90B8 end:0x801E90DC
+	.sbss       start:0x8074EC70 end:0x8074EC78
+
+lib/RegEad/RegLabel.cpp:
+	.text       start:0x801E90DC end:0x801E92FC
 
 lib/RegEad/RegNfa.cpp:
-	.text       start:0x801E92FC end:0x801ECD90
+	.text       start:0x801E92FC end:0x801EC588
+	.data       start:0x80505718 end:0x80505A60
+	.sdata      start:0x8074C7D8 end:0x8074C7E0
+	.sbss       start:0x8074EC78 end:0x8074EC80
+
+lib/RegEad/RegNfaState.cpp:
+	.text       start:0x801EC588 end:0x801EC998
+	.data       start:0x80505A60 end:0x80505A80
+	.sdata      start:0x8074C7E0 end:0x8074C7E8
+
+lib/RegEad/RegNfaStateCopier.cpp:
+	.text       start:0x801EC998 end:0x801ECD90
+	.data       start:0x80505A80 end:0x80505AA8
+	.sdata      start:0x8074C7E8 end:0x8074C7F0
 
 lib/RegEad/RegNfaExec.cpp:
 	.text       start:0x801ECD90 end:0x801F7FC4
+	.data       start:0x80505AA8 end:0x80506A30
+	.sdata      start:0x8074C7F0 end:0x8074C928
 
 lib/RegEad/RegEadPrc.cpp:
 	.text       start:0x801F7FC4 end:0x801F8970
+	.data       start:0x80506A30 end:0x80506BB0
+	.sdata      start:0x8074C928 end:0x8074C930
+	.sbss       start:0x8074EC80 end:0x8074EC90
 
 lib/RVL_SDK/kbd/kbd.c:
 	.text       start:0x801F8970 end:0x801FA2AC

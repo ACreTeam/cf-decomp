@@ -9,15 +9,10 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
+#include <lib/RegEad/RegEadPrc.hpp>
 
 // dHeap (unsplit): ngwordHeap_p, prcWorkHeap_p, prcHeap_p (their heap name strings).
 
-// Not split yet (C linkage keeps the target names).
-extern "C" {
-int fn_801F7FC4(void *work, size_t workSize, const void *data, s32 dataSize); // build the matcher
-int fn_801F83D0(const u16 **words, int num, u8 *results, int *hits);         // run it
-void fn_801F8958();
-}
 
 static OSThread l_thread;
 static dPrcMng_c::param_c l_param;
@@ -55,12 +50,12 @@ void *dPrcMng_c::setupProc(void *arg) {
         data = l_prcMng.mData;
         dataSize = l_prcMng.mSize;
     }
-    l_result = fn_801F7FC4(work, size, data, dataSize);
-    if (l_result == -8) {
+    l_result = RegEad::prcSetup(work, size, data, dataSize);
+    if (l_result == RegEad::PRC_ERR_BAD_DATA) {
         dSaveData_c::getExtra()->mDistNgWords.clear();
-        l_result = fn_801F7FC4(work, size, l_prcMng.mData, l_prcMng.mSize);
+        l_result = RegEad::prcSetup(work, size, l_prcMng.mData, l_prcMng.mSize);
     }
-    fn_801F8958();
+    RegEad::prcIsFatalError(l_result);
     return NULL;
 }
 
@@ -72,8 +67,8 @@ BOOL dPrcMng_c::startSetup() {
 // 801048E8
 void *dPrcMng_c::checkProc(void *arg) {
     param_c *param = (param_c *)arg;
-    fn_801F83D0(param->mWords, param->mNum, param->mResults, param->mHits);
-    fn_801F8958();
+    int result = RegEad::prcCheck(param->mWords, param->mNum, param->mResults, param->mHits);
+    RegEad::prcIsFatalError(result);
     return NULL;
 }
 
