@@ -4569,7 +4569,8 @@ lib/RVL_SDK/os/OSInterrupt.c:
 	.sbss       start:0x8074F5A8 end:0x8074F5C0
 
 lib/RVL_SDK/os/OSLink.c:
-	.text       start:0x80381960 end:0x80381978
+	.text       start:0x80380F6C end:0x80381978
+	.data       start:0x80546180 end:0x805461D0
 
 lib/RVL_SDK/os/OSMessage.c:
 	.text       start:0x80381978 end:0x80381B7C
