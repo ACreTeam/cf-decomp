@@ -1,13 +1,16 @@
 #ifndef RVL_SDK_NDEV_EXI2_AD_DEBUGGER_DRIVER_H
 #define RVL_SDK_NDEV_EXI2_AD_DEBUGGER_DRIVER_H
+#include <revolution/types.h>
+
 #include <revolution/NdevExi2AD/exi2.h>
-#include <revolution/OS.h>
-#include <types.h>
+
+#include <revolution/os.h>
+#include <private/os.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void DBInitComm(u8** flagOut, OSInterruptHandler handler);
+void DBInitComm(u8** flagOut, __OSInterruptHandler handler);
 void DBInitInterrupts(void);
 u32 DBQueryData(void);
 BOOL DBRead(void* dst, u32 size);

@@ -541,7 +541,7 @@ void dAcNpcSpFortune_c::talk_c::onMessageEnd(int kind) {
         int birthSign = dTime_c::getStarSign(player->mBirthday.mMonth,
                                              player->mBirthday.mDay);
         dTime_c now = *dTime_c::getCurrent();
-        if (birthSign == dTime_c::getStarSign((u8)now.month, (u8)now.mday)) {
+        if (birthSign == dTime_c::getStarSign((u8)now.mon, (u8)now.mday)) {
             mpController->setNextMsgCode(MSG_FORTUNE_BIRTH_SIGN);
         } else {
             int fortune;

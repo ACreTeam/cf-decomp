@@ -1,6 +1,6 @@
 #include <nw4r/ef.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <cmath>
 
@@ -758,9 +758,9 @@ bool DrawStrategyImpl::_SetupTexture(Particle* pParticle,
                 GXLoadTlut(&tlutObj, static_cast<GXTlut>(mTexmapMap[i]));
 
                 GXInitTexObjCI(&texObj, pTexData->texture, pTexData->width,
-                               pTexData->height, static_cast<GXTexFmt>(format),
-                               wrapS, wrapT, pTexData->mipmap > 1,
-                               mTexmapMap[i]);
+                               pTexData->height,
+                               static_cast<GXCITexFmt>(format), wrapS, wrapT,
+                               pTexData->mipmap > 1, mTexmapMap[i]);
                 break;
             }
 
@@ -869,8 +869,7 @@ bool DrawStrategyImpl::_SetupTexture(Particle* pParticle,
             math::MTX34Mult(&mtx, &work, &mtx);
 
             if (!((rSetting.mFlags >> (i + 7 /* FLAG_TEX1_PROJ */)) & 1)) {
-                GXLoadTexMtxImm(mtx, GX_TEXMTX0 + mTexmapMap[i] * 3,
-                                GX_MTX_2x4);
+                GXLoadTexMtxImm(mtx, GX_TEXMTX0 + mTexmapMap[i] * 3, GX_MTX2x4);
 
                 GXSetTexCoordGen(static_cast<GXTexCoordID>(mTexmapMap[i]),
                                  GX_TG_MTX2x4, GX_TG_TEX0,
@@ -879,7 +878,7 @@ bool DrawStrategyImpl::_SetupTexture(Particle* pParticle,
                 math::MTX34Mult(&mtx, rInfo.GetProjMtx(), &mtx);
 
                 GXLoadTexMtxImm(mtx, GX_PTTEXMTX0 + mTexmapMap[i] * 3,
-                                GX_MTX_3x4);
+                                GX_MTX3x4);
 
                 GXSetTexCoordGen2(static_cast<GXTexCoordID>(mTexmapMap[i]),
                                   GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, FALSE,

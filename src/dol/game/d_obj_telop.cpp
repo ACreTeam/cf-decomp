@@ -12,9 +12,9 @@
 #include <game/game/d_string.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <game/snd/snd_id.hpp>
-#include <lib/revolution/SC/scapi.h>
-#include <lib/revolution/VI/vi.h>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/sc.h>
+#include <revolution/vi.h>
+#include <revolution/wpad.h>
 
 CUSTOM_BASE_PROFILE(OBJ_TELOP, dObjTelop_c, fProf::OBJ_TELOP,
                     fProf::DRAW_ORDER::OBJ_TELOP);
@@ -162,7 +162,7 @@ void dObjTelop_c::setMsg() {
     nw4r::lyt::TextBox *textBox = mLyt.findTextBox("T_msg_00");
     mTextWidth =
         m2d::calcTextWidth(textBox, word.getText(), word.getCapacity());
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         mTextWidth *= 0.730769f;
     }
 }

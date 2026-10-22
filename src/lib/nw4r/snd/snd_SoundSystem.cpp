@@ -1,8 +1,8 @@
 #include <nw4r/snd.h>
 
-#include <revolution/AX.h>
-#include <revolution/OS.h>
-#include <revolution/SC.h>
+#include <revolution/ax.h>
+#include <revolution/os.h>
+#include <revolution/sc.h>
 
 namespace {
 
@@ -64,17 +64,17 @@ void SoundSystem::InitSoundSystem(const SoundSystemParam& rParam, void* pWork,
     }
 
     switch (SCGetSoundMode()) {
-    case SC_SND_MONO: {
+    case SC_SOUND_MODE_MONO: {
         detail::AxManager::GetInstance().SetOutputMode(OUTPUT_MODE_MONO);
         break;
     }
 
-    case SC_SND_STEREO: {
+    case SC_SOUND_MODE_STEREO: {
         detail::AxManager::GetInstance().SetOutputMode(OUTPUT_MODE_STEREO);
         break;
     }
 
-    case SC_SND_SURROUND: {
+    case SC_SOUND_MODE_SURROUND: {
         detail::AxManager::GetInstance().SetOutputMode(OUTPUT_MODE_DPL2);
         break;
     }
@@ -151,7 +151,7 @@ void SoundSystem::WaitForResetReady() {
     u32 start = OSGetTick();
 
     while (!detail::AxManager::GetInstance().IsResetReady()) {
-        if (OS_TICKS_TO_SEC(OSGetTick() - start) > 0) {
+        if (OSTicksToSeconds(OSGetTick() - start) > 0) {
             break;
         }
     }

@@ -5,7 +5,7 @@
 #include <nw4r/math.h>
 #include <nw4r/ut.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace lyt {

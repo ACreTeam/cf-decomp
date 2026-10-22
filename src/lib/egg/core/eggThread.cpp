@@ -28,7 +28,7 @@ Thread::Thread(u32 stackSize, int messageCount, int priority, Heap *heap) {
 }
 
 Thread::Thread(OSThread *osThread, int messageCount) : mContainingHeap(NULL), mOSThread(osThread) {
-    mStackSize = (u8 *)osThread->stackBegin - (u8 *)osThread->stackEnd;
+    mStackSize = (u8 *)osThread->stackBase - (u8 *)osThread->stackEnd;
     mStackMemory = osThread->stackEnd;
 
     mAllocatableHeap = NULL;

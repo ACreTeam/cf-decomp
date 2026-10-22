@@ -1,8 +1,8 @@
 #pragma once
 
 #include <lib/egg/core/eggBitFlag.h>
-#include <revolution/GX.h>
-#include <revolution/VI.h>
+#include <revolution/gx.h>
+#include <revolution/vi.h>
 
 namespace EGG {
 

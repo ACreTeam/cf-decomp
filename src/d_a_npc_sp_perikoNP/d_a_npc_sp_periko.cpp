@@ -24,7 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
-#include <lib/revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 // Pelly and Phyllis at the town hall. Functions are in target .text order.
 
@@ -1692,7 +1692,7 @@ void dAcNpcSpPerikoBase_c::talk_c::endMailSaveMenu() {
 void dAcNpcSpPerikoBase_c::talk_c::setFutureDateWords() {
     dTime_c time = dPostOffice::getFutureLetterTime();
     setNumber4(time.year, 1);
-    setMonthName(time.month, 3);
+    setMonthName(time.mon, 3);
     setDayName((u8)time.mday, 4);
 }
 
@@ -1748,7 +1748,7 @@ void dAcNpcSpPerikoBase_c::talk_c::endFutureMailMenu() {
             setNextMessage(MSG_FUTURE_LIMIT, LABEL_OWN);
             dTime_c time = dPostOffice::getFutureLetterTime();
             setNumber4(time.year, 1);
-            setMonthName(time.month, 3);
+            setMonthName(time.mon, 3);
             setDayName((u8)time.mday, 4);
         } else {
             setNextMessage(MSG_FUTURE_WHEN, LABEL_OWN);

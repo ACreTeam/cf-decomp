@@ -29,7 +29,7 @@
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_2d.hpp>
 #include <game/mLib/m_3d/global.hpp>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 // drawCallback: the 2D layouts with a priority below this one are drawn
 // between the two 3D passes (the world, then the camera 1 overlay), the rest

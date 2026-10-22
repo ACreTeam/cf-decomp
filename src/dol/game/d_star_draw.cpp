@@ -7,8 +7,8 @@
 #include <game/mLib/m_color.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <nw4r/g3d.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
 #include <cmath>
 #include <string.h>
 #include <lib/nw4r/g3d/g3d_state.h>
@@ -829,7 +829,7 @@ void dStarDraw_c::getSignDate(const dStarSign_c *sign, dTime_c *date) {
         deg += 360.0f;
     }
     date->mday = 1;
-    date->month = 0;
+    date->mon = 0;
     date->add(deg * days / 360.0f, 0, 0, 0);
 }
 

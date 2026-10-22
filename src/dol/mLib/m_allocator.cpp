@@ -20,11 +20,9 @@ mAllocatorDummyHeap_c::mAllocatorDummyHeap_c() : EGG::Heap(m_heapHead) {
 
 // 802AE540
 void mAllocatorDummyHeap_c::initAllocator(EGG::Allocator *allocator, long alignment) {
-    static const MEMAllocatorFuncs sAllocatorFunc = {
-        AllocatorAllocForDummyHeap,
-        AllocatorFreeForDummyHeap
-    };
-    allocator->funcs = &sAllocatorFunc;
+    static const MEMAllocatorFunc sAllocatorFunc = {AllocatorAllocForDummyHeap,
+                                                    AllocatorFreeForDummyHeap};
+    allocator->func = &sAllocatorFunc;
     allocator->heap = mHeapHandle;
     allocator->heapParam1 = alignment;
     allocator->heapParam2 = 0;

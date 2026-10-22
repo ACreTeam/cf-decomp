@@ -9,7 +9,7 @@
 #include <game/sLib/s_lib.hpp>
 #include <game/mLib/m_color.hpp>
 #include <nw4r/g3d.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <game/game/d_event.hpp>
 #include <nw4r/g3d/g3d_draw1mat1shp.h>

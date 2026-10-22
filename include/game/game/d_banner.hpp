@@ -7,7 +7,7 @@
 
 #include <types.h>
 #include <game/game/d_dvd.hpp>
-#include <lib/revolution/NAND.h>
+#include <lib/revolution/nand.h>
 
 class dBanner_c : public dDvd::arcBank_c {
 public:

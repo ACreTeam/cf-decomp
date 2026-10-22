@@ -6,7 +6,7 @@
 #include <game/game/d_light.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <nw4r/g3d.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 // 800CD670
 dLineDrawProc_c::dLineDrawProc_c() {
@@ -98,7 +98,7 @@ void dLineDrawProc_c::draw(BOOL opa) {
             } else {
                 GXSetZMode(GX_TRUE, GX_LEQUAL, GX_FALSE);
             }
-            GXSetLineWidth(10, 0);
+            GXSetLineWidth(10, GX_TO_ZERO);
             GXBegin(GX_LINESTRIP, GX_VTXFMT0, 2);
             GXPosition3f32(line->mStart.x, line->mStart.y, line->mStart.z);
             GXPosition3f32(line->mEnd.x, line->mEnd.y, line->mEnd.z);

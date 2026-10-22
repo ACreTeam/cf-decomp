@@ -166,14 +166,14 @@ void FxReverbHiDpl2::UpdateBuffer(int channels, void** ppBuffer, u32 size,
     }
 
     if (mOutputMode == 1) {
-        AXFX_BUFFERUPDATE_DPL2 update;
-        update.left = static_cast<s32*>(ppBuffer[AX_DPL2_L]);
-        update.right = static_cast<s32*>(ppBuffer[AX_DPL2_R]);
-        update.left_surround = static_cast<s32*>(ppBuffer[AX_DPL2_LS]);
-        update.right_surround = static_cast<s32*>(ppBuffer[AX_DPL2_RS]);
+        AXFX_BUS_DPL2 update;
+        update.L = static_cast<s32 *>(ppBuffer[AX_DPL2_L]);
+        update.R = static_cast<s32 *>(ppBuffer[AX_DPL2_R]);
+        update.Ls = static_cast<s32 *>(ppBuffer[AX_DPL2_LS]);
+        update.Rs = static_cast<s32 *>(ppBuffer[AX_DPL2_RS]);
         AXFXReverbHiExpCallbackDpl2(&update, &mAxfxParamDpl);
     } else {
-        AXFX_BUFFERUPDATE update;
+        AXFX_BUS update;
         update.left = static_cast<s32*>(ppBuffer[0]);
         update.right = static_cast<s32*>(ppBuffer[1]);
         update.surround = static_cast<s32*>(ppBuffer[2]);

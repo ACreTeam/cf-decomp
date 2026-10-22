@@ -16,7 +16,7 @@
 #include <game/game/d_weather.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <lib/egg/math/eggMath.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_net.hpp>
 #include <game/game/d_npc_list.hpp>
@@ -1772,7 +1772,8 @@ void Time_c::update() {
 
 BOOL Time_c::isDateTime(int month, u32 day, int hour, u32 min) const {
     BOOL result = FALSE;
-    if (month == mNow.month && day == mNow.mday && hour == mNow.hour && min == mNow.min) {
+    if (month == mNow.mon && day == mNow.mday && hour == mNow.hour &&
+        min == mNow.min) {
         result = TRUE;
     }
     return result;
@@ -1780,7 +1781,7 @@ BOOL Time_c::isDateTime(int month, u32 day, int hour, u32 min) const {
 
 BOOL Time_c::isDate(int month, u32 day) const {
     BOOL result = FALSE;
-    if (month == mNow.month && day == mNow.mday) {
+    if (month == mNow.mon && day == mNow.mday) {
         result = TRUE;
     }
     return result;

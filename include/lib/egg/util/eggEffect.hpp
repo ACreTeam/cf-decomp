@@ -1,7 +1,7 @@
 #pragma once
 #include <nw4r/ef/ef_handle.h>
 #include <nw4r/math.h>
-#include <revolution/GX/GXTypes.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace ef {

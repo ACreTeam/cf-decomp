@@ -1,6 +1,8 @@
 #include <game/mLib/m_wipe_fader.hpp>
-#include <revolution/SC.h>
-#include <revolution/VI.h>
+#include <revolution/sc.h>
+#include <game/mLib/m_video.hpp>
+#include <revolution/vi.h>
+#include <private/gx.h>
 
 mWipeFader_c::mWipeFader_c(mColor col, mFaderBase_c::EStatus status) :
     mFaderBase_c(col, status),
@@ -134,7 +136,7 @@ void mWipeFader_c::draw() {
 
         Mtx texMtx;
         PSMTXCopy(mTexMtx, texMtx);
-        GXLoadTexMtxImm(texMtx, 30, GX_MTX_2x4);
+        GXLoadTexMtxImm(texMtx, 30, GX_MTX2x4);
         GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 30, 0, 125);
 
         GXSetNumTexGens(1);

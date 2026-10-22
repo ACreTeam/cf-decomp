@@ -12,7 +12,7 @@
 #include <types.h>
 #include <game/game/d_item.hpp>
 #include <game/game/d_dsn.hpp>
-#include <revolution/GX/GXTypes.h>
+#include <revolution/gx.h>
 #include <game/mLib/m_color.hpp>
 
 enum {

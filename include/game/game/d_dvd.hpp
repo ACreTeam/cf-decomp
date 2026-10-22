@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <lib/revolution/ARC/arc.h>
+#include <revolution/arc.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <game/mLib/m_dvd.hpp>
 

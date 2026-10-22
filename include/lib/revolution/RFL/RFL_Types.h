@@ -1,7 +1,7 @@
 #ifndef RVL_SDK_RFL_TYPES_H
 #define RVL_SDK_RFL_TYPES_H
 #include <types.h>
-#include <revolution/GX/GXTypes.h>
+#include <revolution/gx.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

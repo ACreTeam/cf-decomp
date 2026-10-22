@@ -2,7 +2,7 @@
 #include <lib/egg/core/eggController.h>
 #include <lib/egg/core/eggExpHeap.h>
 #include <lib/egg/core/eggSystem.h>
-#include <revolution/VI.h>
+#include <revolution/vi.h>
 #include <string.h>
 
 namespace EGG {

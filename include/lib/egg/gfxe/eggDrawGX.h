@@ -4,7 +4,7 @@
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/g3d.h>
 #include <nw4r/math.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace EGG {
 

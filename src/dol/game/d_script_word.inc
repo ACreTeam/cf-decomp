@@ -673,7 +673,7 @@ int Word_c::procYear(int pos) {
 int Word_c::procMonth(int pos) {
     dTime_c time = *dTime_c::getCurrent();
     dString::Word_c word;
-    setMonthName(&word, time.month);
+    setMonthName(&word, time.mon);
     _18 = 1;
     return setTagWord(pos, &word);
 }

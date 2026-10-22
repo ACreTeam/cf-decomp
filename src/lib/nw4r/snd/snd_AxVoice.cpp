@@ -164,7 +164,7 @@ void AxVoice::VoiceCallback(void* pArg) {
 
 u32 AxVoice::GetDspAddressBySample(const void* pBase, u32 samples, Format fmt) {
     if (pBase != NULL) {
-        pBase = OSCachedToPhysical(pBase);
+        pBase = reinterpret_cast<void *>(OSCachedToPhysical(pBase));
     }
 
     u32 addr = 0;
@@ -196,7 +196,7 @@ u32 AxVoice::GetDspAddressBySample(const void* pBase, u32 samples, Format fmt) {
 
 u32 AxVoice::GetSampleByDspAddress(const void* pBase, u32 addr, Format fmt) {
     if (pBase != NULL) {
-        pBase = OSCachedToPhysical(pBase);
+        pBase = reinterpret_cast<void *>(OSCachedToPhysical(pBase));
     }
 
     u32 samples = 0;

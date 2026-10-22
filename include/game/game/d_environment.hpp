@@ -11,7 +11,7 @@
 #include <game/mLib/m_color.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/math.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 // Only declared here (d_str.hpp): the users of the lights, e.g. d_a_rmobj_theater, don't include the town
 // structures (d_str.hpp's dDvd::brresBank_c subclasses change their weak function order).

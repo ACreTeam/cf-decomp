@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/egg/core/eggDisplay.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace EGG {
 

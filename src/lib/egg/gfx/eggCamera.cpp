@@ -1,7 +1,7 @@
 // EGG::BaseCamera / EGG::LookAtCamera. .text 804459FC..80445D18
 #include <lib/egg/gfxe/eggCamera.h>
 #include <nw4r/g3d.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace EGG {
 

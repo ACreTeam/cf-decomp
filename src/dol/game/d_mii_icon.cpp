@@ -7,8 +7,7 @@
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
 #include <lib/egg/core/eggHeap.h>
-#include <lib/revolution/OS/OSThread.h>
-
+#include <lib/revolution/os/OSThread.h>
 
 #define MII_ICON_DB_TYPE_USER 4
 #define MII_ICON_DB_TYPE_NET 5
@@ -171,7 +170,8 @@ void mng_c::create(EGG::Heap *heap) {
     mTravel.mDBBuf = mWork + dataSize + dataSize * (MII_ICON_MEMBER_MAX - 1) + converterSize + dbSize * (MII_ICON_MEMBER_MAX - 1);
     RFLiInitExchangeBuffer(mWork, 1);
     RFLiInitReceiveConverter(mNet.mConverter, mNet.mConverterBuf, 0, MII_ICON_MEMBER_MAX, 1);
-    OSCreateThread(&l_thread, threadMain, NULL, l_stack + sizeof(l_stack), sizeof(l_stack), 17, OS_THREAD_DETACHED);
+    OSCreateThread(&l_thread, threadMain, NULL, l_stack + sizeof(l_stack),
+                   sizeof(l_stack), 17, OS_THREAD_ATTR_DETACH);
     mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(7));
     mCreated = true;
 }

@@ -9,7 +9,7 @@
 #include <game/game/d_sky.hpp>
 #include <game/cLib/c_math.hpp>
 #include <game/sLib/s_lib.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_net_mgr.hpp>
 #include <game/game/d_environment.hpp>

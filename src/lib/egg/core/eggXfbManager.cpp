@@ -1,8 +1,8 @@
 #include <lib/egg/core/eggXfbManager.h>
 
-#include <revolution/GX.h>
-#include <revolution/OS.h>
-#include <revolution/VI.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
+#include <revolution/vi.h>
 
 namespace EGG {
 

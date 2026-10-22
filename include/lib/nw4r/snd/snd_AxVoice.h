@@ -6,7 +6,7 @@
 
 #include <nw4r/ut.h>
 
-#include <revolution/AX.h>
+#include <revolution/ax.h>
 
 #include <climits>
 

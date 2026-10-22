@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 #include <lib/egg/core/eggHeap.h>
 
 class mDvd_command_c {

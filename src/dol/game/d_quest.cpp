@@ -241,9 +241,9 @@ dTime_c dQuestBase_c::getTimeLimit() const {
 dTime_c dQuestBase_c::calcNextHour(const dTime_c &time) {
     dTime_c result;
     if (time.min >= 50) {
-        result.set(time.year, time.month, time.mday, time.hour + 2, 0, 0);
+        result.set(time.year, time.mon, time.mday, time.hour + 2, 0, 0);
     } else {
-        result.set(time.year, time.month, time.mday, time.hour + 1, 0, 0);
+        result.set(time.year, time.mon, time.mday, time.hour + 1, 0, 0);
     }
     result.normalize();
     return result;
@@ -253,11 +253,11 @@ dTime_c dQuestBase_c::calcNextHour(const dTime_c &time) {
 dTime_c dQuestBase_c::calcNextPeriod(const dTime_c &time) {
     dTime_c result;
     if (time.hour < 10) {
-        result.set(time.year, time.month, time.mday, 12, 0, 0);
+        result.set(time.year, time.mon, time.mday, 12, 0, 0);
     } else if (time.hour < 16) {
-        result.set(time.year, time.month, time.mday, 18, 0, 0);
+        result.set(time.year, time.mon, time.mday, 18, 0, 0);
     } else {
-        result.set(time.year, time.month, time.mday + 1, 0, 0, 0);
+        result.set(time.year, time.mon, time.mday + 1, 0, 0, 0);
     }
     result.normalize();
     return result;
@@ -266,7 +266,7 @@ dTime_c dQuestBase_c::calcNextPeriod(const dTime_c &time) {
 // 8013FBC0: midnight
 dTime_c dQuestBase_c::calcMidnight(const dTime_c &time) {
     dTime_c result;
-    result.set(time.year, time.month, time.mday + 1, 0, 0, 0);
+    result.set(time.year, time.mon, time.mday + 1, 0, 0, 0);
     result.normalize();
     return result;
 }
@@ -287,7 +287,8 @@ dTime_c dQuestBase_c::calc3Days(const dTime_c &time) {
 // 8013FD84: twelve hours on
 dTime_c dQuestBase_c::calc12Hours(const dTime_c &time) {
     dTime_c result = time;
-    result.set(result.year, result.month, result.mday, result.hour + 12, result.min, 0);
+    result.set(result.year, result.mon, result.mday, result.hour + 12,
+               result.min, 0);
     result.normalize();
     return result;
 }
@@ -295,7 +296,8 @@ dTime_c dQuestBase_c::calc12Hours(const dTime_c &time) {
 // 8013FE80: a week on
 dTime_c dQuestBase_c::calc1Week(const dTime_c &time) {
     dTime_c result = time;
-    result.set(result.year, result.month, result.mday + 7, result.hour, result.min, 0);
+    result.set(result.year, result.mon, result.mday + 7, result.hour,
+               result.min, 0);
     result.normalize();
     return result;
 }
@@ -1153,12 +1155,12 @@ BOOL dLostQuest_c::fn_801424BC(dTime_c *now) {
     }
 
     dTime_c a;
-    a.set(now->year, now->month, now->mday, now->hour - 6, 0, 0);
+    a.set(now->year, now->mon, now->mday, now->hour - 6, 0, 0);
     a.hour = 6;
     a.normalize();
 
     dTime_c b;
-    b.set(time.year, time.month, time.mday, time.hour - 6, 0, 0);
+    b.set(time.year, time.mon, time.mday, time.hour - 6, 0, 0);
     b.hour = 6;
     b.normalize();
 
@@ -1324,7 +1326,7 @@ void dQuestPlayerItem_c::clear() {
 dTime_c dQuestPlayerItem_c::getMeetTime() {
     dTime_c limit = mBase.getTimeLimit();
     dTime_c result;
-    result.set(limit.year, limit.month, limit.mday, mHour, mMinute, 0);
+    result.set(limit.year, limit.mon, limit.mday, mHour, mMinute, 0);
     result.normalize();
     if (dTime_c::isSameOrAfter(limit, result)) {
         result.add(1, 0, 0, 0);
@@ -1456,7 +1458,8 @@ dTime_c dQuestPlayerAnimal_c::getEndTime(BOOL half) {
     dTime_c limit = mBase.getTimeLimit();
     dTime_c result;
     int mins = half ? mMinutes : mMinutes * 2;
-    result.set(limit.year, limit.month, limit.mday, limit.hour, limit.min + mins, limit.sec);
+    result.set(limit.year, limit.mon, limit.mday, limit.hour, limit.min + mins,
+               limit.sec);
     result.normalize();
     return result;
 }

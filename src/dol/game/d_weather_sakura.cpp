@@ -9,7 +9,7 @@
 #include <game/sLib/s_lib.hpp>
 #include <game/mLib/m_color.hpp>
 #include <nw4r/g3d.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <game/game/d_date.hpp>
 #include <nw4r/g3d/g3d_draw1mat1shp.h>
@@ -57,7 +57,8 @@ int getCount() {
     dTime_c time = *dTime_c::getCurrent();
     time.add(0, -6, 0, 0);
     if (!dScene::isSceneAttr(dScene::getCurrentScene(), 0x4020) &&
-        !dScene::isCityScene(dScene::getCurrentScene()) && dScene::isSeason2() && time.month == 3) {
+        !dScene::isCityScene(dScene::getCurrentScene()) &&
+        dScene::isSeason2() && time.mon == 3) {
         if (time.mday >= 6 && time.mday <= 7) {
             return getLightCount();
         }
@@ -70,8 +71,9 @@ int getCount() {
 
 BOOL isSeason() {
     dTime_c time = *dTime_c::getCurrent();
-    if (!dScene::isCityScene(dScene::getCurrentScene()) && dScene::isSeason2() && time.month == 3 &&
-        time.mday >= 6 && time.mday <= 8) {
+    if (!dScene::isCityScene(dScene::getCurrentScene()) &&
+        dScene::isSeason2() && time.mon == 3 && time.mday >= 6 &&
+        time.mday <= 8) {
         return TRUE;
     }
     return FALSE;

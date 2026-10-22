@@ -4,13 +4,14 @@
 #include <game/game/d_shutdown_fader.hpp>
 #include <lib/egg/gfxe/eggScreen.h>
 #include <lib/nw4r/g3d/g3d_state.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
-#include <revolution/SC.h>
+#include <revolution/gx.h>
+#include <private/gx.h>
+#include <revolution/mtx.h>
+#include <revolution/sc.h>
 
 // 8015FDF0
 dShutdownFader_c::dShutdownFader_c(mColor col, mFaderBase_c::EStatus status) : mFaderBase_c(col, status) {
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         mWidthScale = 1.368421f;
     } else {
         mWidthScale = 1.0f;

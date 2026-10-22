@@ -8,7 +8,7 @@
 #include <game/mLib/m_mtx.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/math/eggMath.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <cstring>
 
 namespace dBGCF {

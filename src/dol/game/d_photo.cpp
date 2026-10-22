@@ -6,9 +6,9 @@
 #include <game/mLib/m_3d/m_3d_capture.hpp>
 #include <game/mLib/m_perf.hpp>
 #include <game/mLib/m_tex.hpp>
-#include <lib/revolution/OS/OSThread.h>
+#include <lib/revolution/os/OSThread.h>
 #include <lib/MWM/tmc_jpeg.h>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 #define PHOTO_WIDTH 640
 #define PHOTO_WIDTH_WIDE 896
@@ -111,7 +111,7 @@ static void *photoThread(void *) {
             int width;
             int height;
             u32 maxSize;
-            if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+            if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
                 if (l_small) {
                     width = PHOTO_WIDTH_WIDE;
                     height = PHOTO_HEIGHT;
@@ -232,7 +232,8 @@ void dPhoto::create(EGG::Heap *heap) {
     l_image = (u16 *)heap->alloc(PHOTO_WIDTH_WIDE * PHOTO_HEIGHT * sizeof(u16), 32);
     const u32 jpegSizeKB[3] = {100, 70, 100}; // This line pushed it to 99.65, but only [2] is used, and feels a bit off to me. I think it's a good candidate to keep in mind while going for 100%.
     l_jpeg = (u8 *)heap->alloc(jpegSizeKB[2] * 1024, 32);
-    OSCreateThread(&l_thread, photoThread, NULL, l_stack + sizeof(l_stack), sizeof(l_stack), 29, OS_THREAD_DETACHED);
+    OSCreateThread(&l_thread, photoThread, NULL, l_stack + sizeof(l_stack),
+                   sizeof(l_stack), 29, OS_THREAD_ATTR_DETACH);
     mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(14));
 }
 

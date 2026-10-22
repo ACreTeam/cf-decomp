@@ -702,7 +702,7 @@ void GXGetVtxAttrFmtv(GXVtxFmt fmt, GXVtxAttrFmtList* list) {
     list->attr = GX_VA_NULL;
 }
 
-void GXSetArray(GXAttr attr, void* base_ptr, u8 stride) {
+void GXSetArray(GXAttr attr, const void* base_ptr, u8 stride) {
     u32 idx;
 
     if (attr == GX_VA_NBT) {

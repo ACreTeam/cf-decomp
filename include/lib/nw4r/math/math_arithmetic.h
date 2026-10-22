@@ -4,7 +4,7 @@
 
 #include <nw4r/math/math_constant.h>
 
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 #include <cmath>
 

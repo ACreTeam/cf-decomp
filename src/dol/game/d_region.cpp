@@ -1,7 +1,7 @@
 // Console region and language helpers. .text 801068AC..8010693C.
 // Names are inferred.
 #include <game/game/d_region.hpp>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 // 801068AC: the console region (this build is North America)
 int getRegion() {
@@ -11,11 +11,11 @@ int getRegion() {
 // 801068B4
 int getLanguage() {
     switch (SCGetLanguage()) {
-    case SC_LANG_EN:
+    case SC_LANG_ENGLISH:
         return LANGUAGE_US;
-    case SC_LANG_SP:
+    case SC_LANG_SPANISH:
         return LANGUAGE_MX;
-    case SC_LANG_FR:
+    case SC_LANG_FRENCH:
         return LANGUAGE_QC;
     default:
         return LANGUAGE_US;

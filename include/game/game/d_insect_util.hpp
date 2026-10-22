@@ -6,7 +6,7 @@
 #include <game/game/d_fg_item.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 class dDemoActor_c;
 

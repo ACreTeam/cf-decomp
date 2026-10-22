@@ -7,8 +7,8 @@
 #include <lib/egg/core/eggHeap.h>
 #include <lib/egg/gfxe/eggDrawGX.h>
 #include <lib/egg/gfxe/eggScreen.h>
-#include <revolution/GX.h>
-#include <revolution/OS.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
 
 namespace dBlackWait {
 
@@ -135,7 +135,8 @@ void BlackWait_c::stepWait() {
     if (isBlack()) {
         if (mStartTick == 0) {
             mStartTick = OSGetTick();
-        } else if (OS_TICKS_TO_MSEC(OSGetTick() - mStartTick) > BLACK_WAIT_DELAY_MS) {
+        } else if (OSTicksToMilliseconds(OSGetTick() - mStartTick) >
+                   BLACK_WAIT_DELAY_MS) {
             mState = STATE_ANIM;
             mFrame = 0;
             mTimer = 0;

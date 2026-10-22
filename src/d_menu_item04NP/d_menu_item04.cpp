@@ -9,7 +9,7 @@
 #include <game/game/d_save_box.hpp>
 #include <game/game/d_string.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 namespace dMenuItem04 {
 BASE_PROFILE(MENU_ITEM04, dMenuItem04_c)
@@ -451,7 +451,7 @@ void dMenuItem04_c::refreshBox() {
 const mVec2_c &dMenuItem04_c::getSlotPos(int slot, float dx, float dy) {
     static mVec2_c pos(0.0f, 0.0f);
     mVec3_c p;
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         dx *= 0.730769f;
     }
     if (isPocket(slot)) {

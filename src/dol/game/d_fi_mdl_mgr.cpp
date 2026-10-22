@@ -14,7 +14,7 @@
 #include <game/mLib/m_heap.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <cstdio>
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 
 CUSTOM_BASE_PROFILE(FI_MDL_MGR, dFIMdlMgr_c, fProf::FI_MDL_MGR,
                     fProf::DRAW_ORDER::FI_MDL_MGR);

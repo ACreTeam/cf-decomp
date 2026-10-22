@@ -8,7 +8,7 @@
 #include <nw4r/ef/ef_types.h>
 #include <nw4r/math.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <limits>
 

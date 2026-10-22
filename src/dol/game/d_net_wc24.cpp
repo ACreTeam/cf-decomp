@@ -4,7 +4,7 @@
 #include <game/game/d_net_wc24.hpp>
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_wifi.hpp>
-#include <revolution/NAND.h>
+#include <revolution/nand.h>
 #include <revolution/NWC24/NWC24Config.h>
 #include <revolution/NWC24/NWC24Manage.h>
 #include <revolution/NWC24/NWC24MsgCommit.h>

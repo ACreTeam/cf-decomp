@@ -13,7 +13,8 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
+#include <revolution/sc.h>
 #include <stdio.h>
 #include <game/cLib/c_math.hpp>
 #include <string.h>
@@ -308,12 +309,12 @@ void dMenuEdit_c::subStateMain() {
                 return;
             }
         }
-        if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_FS_Z)) {
+        if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_Z)) {
             if (mZoom > ZOOM_1X) {
                 setZoom(mZoom - 1);
                 playSeDecide();
             }
-        } else if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_FS_C)) {
+        } else if (mPad::g_currentCore->downTrigger(WPAD_BUTTON_C)) {
             if (mZoom < ZOOM_4X) {
                 setZoom(mZoom + 1);
                 playSeDecide();

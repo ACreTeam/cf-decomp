@@ -9,7 +9,7 @@
 #include <game/framework/f_profile.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/sLib/s_lib.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <math.h>
 #include <game/game/d_environment.hpp>
 #include <game/game/d_heap.hpp>
@@ -347,8 +347,8 @@ void dSky_c::calc() {
     dTime_c now = *dTime_c::getCurrent();
     dTime_c moonset = now;
     moonset.add(0, -12, 0, 0);
-    moonset.set(moonset.year, moonset.month, moonset.mday, 23, 30, 0);
-    f32 secs = OS_TICKS_TO_SEC(dTime_c::diffTicks(&now, &moonset, FALSE));
+    moonset.set(moonset.year, moonset.mon, moonset.mday, 23, 30, 0);
+    f32 secs = OSTicksToSeconds(dTime_c::diffTicks(&now, &moonset, FALSE));
     f32 angle = 20.0f * (secs / 16200.0f);
     mVec3_c moonPos(0.0f, -330.0f, 0.0f);
     moonPos += mPos;

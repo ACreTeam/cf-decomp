@@ -3,13 +3,13 @@
 #include <lib/egg/core/eggSystem.h>
 #include <lib/egg/core/eggVideo.h>
 #include <lib/egg/core/eggXfbManager.h>
-#include <revolution/GX.h>
-#include <revolution/OS.h>
-#include <revolution/VI.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
+#include <revolution/vi.h>
 
 namespace EGG {
 
-u32 Display::sTickThreshold = OS_USEC_TO_TICKS(300);
+u32 Display::sTickThreshold = OSMicrosecondsToTicks(300);
 
 static void PostRetraceCallback(u32 retraceCount) {
     BaseSystem::mConfigData->getDisplay()->postVRetrace();
@@ -87,7 +87,8 @@ void Display::calcFrequency() {
     s32 now = OSGetTick();
     mFrameCostTick = now - mPrevFrameTick;
 
-    mFrequency = 1000000.0f / static_cast<u32>(OS_TICKS_TO_USEC(mFrameCostTick));
+    mFrequency =
+        1000000.0f / static_cast<u32>(OSTicksToMicroseconds(mFrameCostTick));
 
     mPrevFrameTick = now;
 }

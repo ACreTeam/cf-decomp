@@ -736,7 +736,7 @@ int dAcNpcSpEvSonchoCd_c::talkCountdown_c::getMsgCode() {
     }
     dTime_c now = *dTime_c::getCurrent();
     if (mpOwner->isEventOver() ||
-        (mpOwner->isEventOngoing() && now.month != MONTH_DECEMBER)) {
+        (mpOwner->isEventOngoing() && now.mon != MONTH_DECEMBER)) {
         if (!dNpcInfo::soncho_c::get()->testTalkedAfter()) {
             return MSG_HAPPY_NEW_YEAR;
         }

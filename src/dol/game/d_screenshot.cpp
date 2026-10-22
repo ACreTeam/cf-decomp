@@ -5,7 +5,7 @@
 #include <game/game/d_photo.hpp>
 #include <game/mLib/m_allocator.hpp>
 #include <lib/egg/core/eggHeap.h>
-#include <lib/revolution/OS/OSThread.h>
+#include <lib/revolution/os/OSThread.h>
 #include <lib/revolution/FA/fa.h>
 #include <cstdio>
 #include <string.h>
@@ -149,7 +149,8 @@ static int unlock(int arg) {
 // 8008F0D8
 static void startThread(OSThreadFunc func, void *arg) {
     l_stack = m2d::ResAccLoader_c::getAllocator()->mpHeap->alloc(0x2800, 32);
-    OSCreateThread(&l_thread, func, arg, (u8 *)l_stack + 0x2800, 0x2800, 24, OS_THREAD_DETACHED);
+    OSCreateThread(&l_thread, func, arg, (u8 *)l_stack + 0x2800, 0x2800, 24,
+                   OS_THREAD_ATTR_DETACH);
     mPerf::setThreadColor(&l_thread, dPerf::getThreadColor(11));
     OSResumeThread(&l_thread);
     l_running = TRUE;

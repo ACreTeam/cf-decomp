@@ -12,7 +12,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_snd_util.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 #include <game/snd/snd_id.hpp>
 
 #define MONEY_ANM_NUM 2

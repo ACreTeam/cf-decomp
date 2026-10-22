@@ -28,7 +28,7 @@
 #include <game/snd/snd_id.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/cLib/c_math.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <string.h>
 #include <game/game/d_a_player.hpp>
 

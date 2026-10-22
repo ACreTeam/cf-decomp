@@ -140,7 +140,9 @@ namespace mHeap {
 
     // NSMBW-only declaration retained for unported imported sources.
     /**
-     * @brief Creates a generic expandable heap, with @ref MEM_EXP_HEAP_ALLOC_FAST "fast allocation mode" and @ref OPT_THREAD_SAFE "thread-safe de/allocation".
+     * @brief Creates a generic expandable heap, with @ref
+     * MEM_EXPHEAP_ALLOC_MODE_FIRST "fast allocation mode" and @ref
+     * OPT_THREAD_SAFE "thread-safe de/allocation".
      * @param size The heap size.
      * @param parent The parent heap.
      * @param name The heap name, or @p nullptr .

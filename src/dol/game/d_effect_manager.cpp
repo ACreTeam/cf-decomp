@@ -10,7 +10,7 @@
 #include <nw4r/ef/ef_resource.h>
 #include <nw4r/ef/ef_drawinfo.h>
 #include <nw4r/g3d/g3d_state.h>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 namespace dEffect {
 dOneEmitterEffect_c l_playerLeft;

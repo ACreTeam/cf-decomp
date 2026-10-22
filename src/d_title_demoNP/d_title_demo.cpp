@@ -19,8 +19,8 @@
 #include <game/mLib/m_fader.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <game/sLib/s_lib.hpp>
-#include <revolution/NAND/NANDCheck.h>
-#include <revolution/WPAD/WPAD.h>
+#include <revolution/nand.h>
+#include <revolution/wpad.h>
 
 namespace dTitleDemo {
 
@@ -385,16 +385,16 @@ void dTitleDemo_c::executeNandCheck() {
     case dNand::RESULT_OK:
         if (answer == 0) {
             changeMode(&dTitleDemo_c::executeMiiErrorCheck);
-        } else if (answer & NAND_CHECK_TOO_MANY_APP_BLOCKS) {
+        } else if (answer & NAND_CHECK_HOME_INSSPACE) {
             requestMessage(8);
             changeMode(&dTitleDemo_c::executeMessage);
-        } else if (answer & NAND_CHECK_TOO_MANY_APP_FILES) {
+        } else if (answer & NAND_CHECK_HOME_INSINODE) {
             requestMessage(9);
             changeMode(&dTitleDemo_c::executeMessage);
-        } else if (answer & NAND_CHECK_TOO_MANY_USER_BLOCKS) {
+        } else if (answer & NAND_CHECK_SYS_INSSPACE) {
             requestMessage(5);
             changeMode(&dTitleDemo_c::executeMessage);
-        } else if (answer & NAND_CHECK_TOO_MANY_USER_FILES) {
+        } else if (answer & NAND_CHECK_SYS_INSINODE) {
             requestMessage(6);
             changeMode(&dTitleDemo_c::executeMessage);
         }
@@ -410,8 +410,8 @@ void dTitleDemo_c::executeNandCheck() {
 bool dTitleDemo_c::isSkipTriggered() {
     return dTitleDemo::isTrigger(WPAD_BUTTON_B) ||
            dTitleDemo::isTrigger(WPAD_BUTTON_A) ||
-           dTitleDemo::isTrigger(WPAD_BUTTON_FS_C) ||
-           dTitleDemo::isTrigger(WPAD_BUTTON_FS_Z);
+           dTitleDemo::isTrigger(WPAD_BUTTON_C) ||
+           dTitleDemo::isTrigger(WPAD_BUTTON_Z);
 }
 
 // .text:0x275C

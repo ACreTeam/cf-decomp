@@ -3,7 +3,7 @@
 // textinput::string: the edited strings (see tiTextInputBase.h).
 
 #include <lib/textinput/tiTextInputBase.h>
-#include <revolution/KPR.h>
+#include <revolution/kpr.h>
 
 namespace textinput {
 namespace string {

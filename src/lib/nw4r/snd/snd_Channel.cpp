@@ -1,6 +1,6 @@
 #include <nw4r/snd.h>
 
-#include <revolution/AX.h>
+#include <revolution/ax.h>
 
 namespace nw4r {
 namespace snd {

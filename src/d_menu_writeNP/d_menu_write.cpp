@@ -1060,7 +1060,7 @@ void dMenuWrite_c::initSelfMail() {
     dScript::formatNumber(&word, time.year, 4, dScript::NUM_FORMAT_PLAIN, 0);
     dString::setWord(2, &word);
     word.clear();
-    dScript::setMonthName(&word, time.month);
+    dScript::setMonthName(&word, time.mon);
     dString::setWord(3, &word);
     word.clear();
     dScript::setDayName(&word, time.mday);

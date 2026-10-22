@@ -32,7 +32,7 @@ dTime_c getModelRoomDate() {
         now.add(-1, 0, 0, 0);
     }
     dTime_c date = now;
-    int wday = dTime_c::getWeekday(now.year, now.month, now.mday);
+    int wday = dTime_c::getWeekday(now.year, now.mon, now.mday);
     date.add(-wday, 0, 0, 0);
     while (date.mday >= 8) {
         date.add(-7, 0, 0, 0);
@@ -43,7 +43,7 @@ dTime_c getModelRoomDate() {
 // 80111C40
 int getModelRoomTheme() {
     dTime_c date = getModelRoomDate();
-    return (date.month + getModelRoomRnd(date, 6)) % 6;
+    return (date.mon + getModelRoomRnd(date, 6)) % 6;
 }
 
 // 80111CEC

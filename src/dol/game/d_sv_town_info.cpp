@@ -6,7 +6,7 @@
 #include <game/game/d_field_info.hpp>
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_player_mgr.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 // 8014D0BC
 dSaveTownInfo_c::dSaveTownInfo_c() {

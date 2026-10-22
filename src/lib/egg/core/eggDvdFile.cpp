@@ -37,7 +37,7 @@ bool DvdFile::open(s32 entryNum) {
         mIsOpen = DVDFastOpen(entryNum, &mFileInfo);
         if (mIsOpen) {
             nw4r::ut::List_Append(&sDvdList, this);
-            DVDGetCommandBlockStatus(&mFileInfo.block);
+            DVDGetCommandBlockStatus(&mFileInfo.cb);
         }
     }
     return mIsOpen;
@@ -86,7 +86,7 @@ s32 DvdFile::sync() {
     OSLockMutex(&mMutex);
 
     OSMessage message;
-    OSReceiveMessage(&mMsgQueue, &message, OS_MSG_BLOCKING);
+    OSReceiveMessage(&mMsgQueue, &message, OS_MESSAGE_BLOCK);
 
     mThread = NULL;
 

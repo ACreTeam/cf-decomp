@@ -390,7 +390,7 @@ void dAcNpcSpHaniwa_c::talk_c::onMessageEnd(int kind) {
             } else {
                 mpController->setNextMsgCode(MSG_PREPARING_BIDDING);
             }
-            setMonthName(now.month, 3);
+            setMonthName(now.mon, 3);
             setDayName((u8)now.mday, 4);
             break;
         }

@@ -1,6 +1,8 @@
 #include <game/mLib/m_color_fader.hpp>
-#include <revolution/VI.h>
-#include <revolution/SC.h>
+#include <revolution/vi.h>
+#include <private/gx.h>
+#include <revolution/sc.h>
+#include <game/mLib/m_video.hpp>
 
 void mColorFader_c::setStatus(EStatus status) {
     if (status == OPAQUE) {

@@ -1,7 +1,7 @@
 #include <lib/egg/core/eggDvdRipper.h>
 
-#include <revolution/OS.h>
-#include <revolution/VI.h>
+#include <revolution/os.h>
+#include <revolution/vi.h>
 
 namespace EGG {
 

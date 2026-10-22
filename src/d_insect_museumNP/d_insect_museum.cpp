@@ -49,7 +49,7 @@
 #include <lib/egg/math/eggMath.h>
 #include <lib/egg/math/eggQuat.h>
 #include <nw4r/ut.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <float.h>
 #include <cmath>
 #include <cstdio>

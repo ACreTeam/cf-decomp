@@ -8,8 +8,8 @@
 #include <game/game/d_thunder.hpp>
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_perf.hpp>
-#include <lib/revolution/OS/OSThread.h>
-#include <revolution/MTX/mtxvec.h>
+#include <lib/revolution/os/OSThread.h>
+#include <revolution/mtx.h>
 #include <game/game/d_date.hpp>             // [B]
 #include <game/game/d_save_data.hpp>        // [B]
 #include <game/game/d_save_melody.hpp>      // [B]
@@ -337,7 +337,9 @@ bool isSummerMorningStart() {
 // 80010274: set from the date: 16 Mar..15 Sep (months are 0-based), 6:00..9:59
 void checkSummerMorningStart() {
     dTime_c *now = dTime_c::getCurrent();
-    if (((now->month >= 3 && now->month <= 7) || (now->month == 2 && now->mday >= 16) || (now->month == 8 && now->mday < 16)) &&
+    if (((now->mon >= 3 && now->mon <= 7) ||
+         (now->mon == 2 && now->mday >= 16) ||
+         (now->mon == 8 && now->mday < 16)) &&
         now->hour >= 6 && now->hour <= 9) {
         l_summerMorningStart = true;
     } else {

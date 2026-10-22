@@ -6,7 +6,7 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <string.h>
 
 // Narrow interfaces to the unscaffolded DS download SDK.
@@ -340,7 +340,9 @@ void free(void *ptr) { if (ptr != NULL) dHeap::netSoHeap_p->free(ptr); }
 // 800E475C
 void startWorker(void *(*entry)(void *)) {
     sWorkerStack = dHeap::netWc24Heap_p->alloc(WORKER_STACK_SIZE, 32);
-    OSCreateThread(&sWorker, entry, NULL, (u8 *)sWorkerStack + WORKER_STACK_SIZE, WORKER_STACK_SIZE, WORKER_PRIORITY, OS_THREAD_DETACHED);
+    OSCreateThread(&sWorker, entry, NULL,
+                   (u8 *)sWorkerStack + WORKER_STACK_SIZE, WORKER_STACK_SIZE,
+                   WORKER_PRIORITY, OS_THREAD_ATTR_DETACH);
     mPerf::setThreadColor(&sWorker, dPerf::getThreadColor(9));
     OSResumeThread(&sWorker);
 }

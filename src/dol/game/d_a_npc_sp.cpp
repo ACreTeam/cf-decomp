@@ -17,7 +17,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_shop_layout.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <cstdio>
 
 // Tuning values of the special npcs' wandering (literals in the code).

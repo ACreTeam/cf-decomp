@@ -4,7 +4,10 @@
 
 #include <nw4r/math.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
+#include <revolution/gx/GXHardwareBP.h>
+#include <revolution/gx/GXHardwareCP.h>
+#include <revolution/gx/GXHardwareXF.h>
 
 namespace nw4r {
 namespace g3d {

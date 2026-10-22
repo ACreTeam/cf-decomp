@@ -9,7 +9,7 @@
 #include <game/game/d_animal.hpp>
 #include <game/game/d_time_stamp.hpp>
 #include <game/cLib/c_math.hpp>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 // 8046E340: which Saturday of each month the fishing tourney is on (-1: none).
 static const int sFishingTourneySaturday[MONTH_NUM] = {3, 2, 3, 2, 3, -1, -1, -1, -1, 2, 3, 2};
@@ -411,7 +411,7 @@ BOOL isAnimalBirthday(const dTime_c *t, const u8 *animal, const u8 *b) {
     if (a == NULL) {
         return FALSE;
     }
-    if (t->month == (u8)a->getBirthMonth() && t->mday == (u8)a->getBirthDay()) {
+    if (t->mon == (u8)a->getBirthMonth() && t->mday == (u8)a->getBirthDay()) {
         return TRUE;
     }
     return FALSE;
@@ -419,11 +419,11 @@ BOOL isAnimalBirthday(const dTime_c *t, const u8 *animal, const u8 *b) {
 
 // 80088CC8
 int getFishingTourneyDay(const dTime_c *t) {
-    int nth = sFishingTourneySaturday[t->month];
+    int nth = sFishingTourneySaturday[t->mon];
     if (nth == -1) {
         return 0;
     }
-    return dTime_c::getNthWeekday(t->year, t->month, 6, nth);
+    return dTime_c::getNthWeekday(t->year, t->mon, 6, nth);
 }
 
 // 80088CFC
@@ -434,8 +434,8 @@ BOOL isFishingTourney(const dTime_c *t, const u8 *a, const u8 *b) {
 
 // 80088D38
 int getBugOffDay(const dTime_c *t) {
-    if (t->month >= MONTH_JUNE && t->month <= MONTH_SEPTEMBER) {
-        return dTime_c::getNthWeekday(t->year, t->month, 6, 3);
+    if (t->mon >= MONTH_JUNE && t->mon <= MONTH_SEPTEMBER) {
+        return dTime_c::getNthWeekday(t->year, t->mon, 6, 3);
     }
     return 0;
 }
@@ -448,7 +448,7 @@ BOOL isBugOff(const dTime_c *t, const u8 *a, const u8 *b) {
 
 // 80088DA0
 BOOL isFireworks(const dTime_c *t, const u8 *a, const u8 *b) {
-    if (t->month != MONTH_AUGUST) {
+    if (t->mon != MONTH_AUGUST) {
         return FALSE;
     }
     return t->wday == 0;
@@ -456,15 +456,15 @@ BOOL isFireworks(const dTime_c *t, const u8 *a, const u8 *b) {
 
 // 80088DC4
 int getFleaMarketDay(const dTime_c *t) {
-    if (t->month == MONTH_AUGUST || t->month == MONTH_DECEMBER) {
+    if (t->mon == MONTH_AUGUST || t->mon == MONTH_DECEMBER) {
         return 0;
     }
-    return dTime_c::getNthWeekday(t->year, t->month, 0, 4);
+    return dTime_c::getNthWeekday(t->year, t->mon, 0, 4);
 }
 
 // 80088DF4
 BOOL isFleaMarket(const dTime_c *t, const u8 *a, const u8 *b) {
-    if (t->month == MONTH_AUGUST || t->month == MONTH_DECEMBER) {
+    if (t->mon == MONTH_AUGUST || t->mon == MONTH_DECEMBER) {
         return FALSE;
     }
     int day = getFleaMarketDay(t);
@@ -474,7 +474,7 @@ BOOL isFleaMarket(const dTime_c *t, const u8 *a, const u8 *b) {
 // 80088E4C
 BOOL isFixedDate(const dTime_c *t, const u8 *month, const u8 *day) {
     BOOL ret = FALSE;
-    if (t->month == *month - 1 && t->mday == *day) {
+    if (t->mon == *month - 1 && t->mday == *day) {
         ret = TRUE;
     }
     return ret;
@@ -482,10 +482,10 @@ BOOL isFixedDate(const dTime_c *t, const u8 *month, const u8 *day) {
 
 // 80088E80
 int getHarvestFestivalDay(const dTime_c *t) {
-    if (t->month != MONTH_NOVEMBER) {
+    if (t->mon != MONTH_NOVEMBER) {
         return 0;
     }
-    return dTime_c::getNthWeekday(t->year, t->month, 4, 4);
+    return dTime_c::getNthWeekday(t->year, t->mon, 4, 4);
 }
 
 // 80088EA8
@@ -513,7 +513,7 @@ BOOL isFestivale(const dTime_c *t, const u8 *a, const u8 *b) {
         ret = FALSE;
     } else {
         ret = FALSE;
-        if (t->month == date.month && t->mday == date.mday) {
+        if (t->mon == date.mon && t->mday == date.mday) {
             ret = TRUE;
         }
     }
@@ -539,7 +539,7 @@ BOOL isBunnyDay(const dTime_c *t, const u8 *a, const u8 *b) {
         ret = FALSE;
     } else {
         ret = FALSE;
-        if (t->month == date.month && t->mday == date.mday) {
+        if (t->mon == date.mon && t->mday == date.mday) {
             ret = TRUE;
         }
     }
@@ -565,20 +565,19 @@ BOOL isJpAutumnMoon(const dTime_c *t, const u8 *a, const u8 *b) {
         ret = FALSE;
     } else {
         ret = FALSE;
-        if (t->month == date.month && t->mday == date.mday) {
+        if (t->mon == date.mon && t->mday == date.mday) {
             ret = TRUE;
         }
     }
     return ret;
 }
 
-
 // 800891B4
 int getLaborDayDay(const dTime_c *t) {
-    if (t->month != MONTH_SEPTEMBER) {
+    if (t->mon != MONTH_SEPTEMBER) {
         return 0;
     }
-    return dTime_c::getNthWeekday(t->year, t->month, 1, 1);
+    return dTime_c::getNthWeekday(t->year, t->mon, 1, 1);
 }
 
 // 800891DC
@@ -589,10 +588,10 @@ BOOL isLaborDay(const dTime_c *t, const u8 *a, const u8 *b) {
 
 // 80089218
 int getExplorersDayDay(const dTime_c *t) {
-    if (t->month != MONTH_OCTOBER) {
+    if (t->mon != MONTH_OCTOBER) {
         return 0;
     }
-    return dTime_c::getNthWeekday(t->year, t->month, 1, 2);
+    return dTime_c::getNthWeekday(t->year, t->mon, 1, 2);
 }
 
 // 80089240
@@ -620,13 +619,12 @@ BOOL isAutumnMoon(const dTime_c *t, const u8 *a, const u8 *b) {
         ret = FALSE;
     } else {
         ret = FALSE;
-        if (t->month == date.month && t->mday == date.mday) {
+        if (t->mon == date.mon && t->mday == date.mday) {
             ret = TRUE;
         }
     }
     return ret;
 }
-
 
 // 8008936C
 BOOL getLunarNewYearDate(dTime_c *out, const int &year, int days) {
@@ -647,7 +645,7 @@ BOOL isLunarNewYear(const dTime_c *t, const u8 *a, const u8 *b) {
         ret = FALSE;
     } else {
         ret = FALSE;
-        if (t->month == date.month && t->mday == date.mday) {
+        if (t->mon == date.mon && t->mday == date.mday) {
             ret = TRUE;
         }
     }
@@ -662,7 +660,7 @@ BOOL isDaeboreum(const dTime_c *t, const u8 *a, const u8 *b) {
         ret = FALSE;
     } else {
         ret = FALSE;
-        if (t->month == date.month && t->mday == date.mday) {
+        if (t->mon == date.mon && t->mday == date.mday) {
             ret = TRUE;
         }
     }
@@ -691,18 +689,17 @@ BOOL getFrMothersDayDate(dTime_c *out, const int &year) {
     return TRUE;
 }
 
-
 // 800895E0
 BOOL isMothersDay(const dTime_c *t, const u8 *a, const u8 *b) {
     dTime_c date;
     switch (dSaveData_c::getTownLanguage()) {
     case LANGUAGE_ES:
-        date.month = MONTH_MAY;
+        date.mon = MONTH_MAY;
         date.mday = dTime_c::getNthWeekday(t->year, MONTH_MAY, 0, 1);
         break;
     case LANGUAGE_EN:
         if (SCGetLanguage() == 6) {
-            date.month = MONTH_MAY;
+            date.mon = MONTH_MAY;
             date.mday = dTime_c::getNthWeekday(t->year, MONTH_MAY, 0, 2);
         } else if (!getMotheringSundayDate(&date, getYear(t))) {
             return FALSE;
@@ -714,16 +711,16 @@ BOOL isMothersDay(const dTime_c *t, const u8 *a, const u8 *b) {
         }
         break;
     case LANGUAGE_KR:
-        date.month = MONTH_MAY;
+        date.mon = MONTH_MAY;
         date.mday = 8;
         break;
     default:
-        date.month = MONTH_MAY;
+        date.mon = MONTH_MAY;
         date.mday = dTime_c::getNthWeekday(t->year, MONTH_MAY, 0, 2);
         break;
     }
     BOOL ret = FALSE;
-    if (t->month == date.month && t->mday == date.mday) {
+    if (t->mon == date.mon && t->mday == date.mday) {
         ret = TRUE;
     }
     return ret;
@@ -740,14 +737,13 @@ BOOL getAscensionDayDate(dTime_c *out, const int &year) {
     return TRUE;
 }
 
-
 // 800897B0
 BOOL isFathersDay(const dTime_c *t, const u8 *a, const u8 *b) {
     dTime_c date;
     switch (dSaveData_c::getTownLanguage()) {
     case LANGUAGE_ES:
     case LANGUAGE_IT:
-        date.month = MONTH_MARCH;
+        date.mon = MONTH_MARCH;
         date.mday = 19;
         break;
     case LANGUAGE_DE:
@@ -758,12 +754,12 @@ BOOL isFathersDay(const dTime_c *t, const u8 *a, const u8 *b) {
     case LANGUAGE_KR:
         return FALSE;
     default:
-        date.month = MONTH_JUNE;
+        date.mon = MONTH_JUNE;
         date.mday = dTime_c::getNthWeekday(t->year, MONTH_JUNE, 0, 3);
         break;
     }
     BOOL ret = FALSE;
-    if (t->month == date.month && t->mday == date.mday) {
+    if (t->mon == date.mon && t->mday == date.mday) {
         ret = TRUE;
     }
     return ret;
@@ -820,7 +816,7 @@ int getFireworksState(const dTime_c &time) {
         return 3;
     }
     if (isEventWithin(EVENT_FIREWORKS, time, 2, 6)) {
-        if (time.month != MONTH_AUGUST) {
+        if (time.mon != MONTH_AUGUST) {
             return 1;
         }
         if (dTime_c::getNthWeekday(time.year, MONTH_AUGUST, 0, 1) > time.mday) {
@@ -859,7 +855,7 @@ int getTownEventOn(const dTime_c *time) {
 
 // 80089CBC
 void getTodayTime(dTime_c *out, int hour, int min) {
-    out->set(sDay.year, sDay.month, sDay.mday, hour, min, 0);
+    out->set(sDay.year, sDay.mon, sDay.mday, hour, min, 0);
     out->normalize();
     if (hour < 6) {
         out->add(1, 0, 0, 0);
@@ -890,7 +886,7 @@ void buildSchedule(const dTime_c &now, BOOL reset) {
             num++;
         }
     }
-    sDay.set(t.year, t.month, t.mday, 0, 0, 0);
+    sDay.set(t.year, t.mon, t.mday, 0, 0, 0);
     sDay.normalize();
     if (reset) {
         sDailyId = 0xFFFF;

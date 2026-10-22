@@ -24,7 +24,7 @@
 #include <game/mLib/m_pad.hpp>
 #include <lib/MSL/arith.h>
 #include <lib/egg/math/eggMath.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <cmath>
 #include <game/game/d_a_player.hpp>
 

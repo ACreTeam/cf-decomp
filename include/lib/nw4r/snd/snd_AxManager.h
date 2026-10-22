@@ -8,8 +8,8 @@
 
 #include <nw4r/ut.h>
 
-#include <revolution/AI.h>
-#include <revolution/AX.h>
+#include <revolution/ai.h>
+#include <revolution/ax.h>
 
 namespace nw4r {
 namespace snd {
@@ -93,7 +93,7 @@ private:
     MoveValue<f32, int> mMasterVolume;               // at 0x1C
     MoveValue<f32, int> mMainOutVolume;              // at 0x2C
     MoveValue<f32, int> mVolumeForReset;             // at 0x3C
-    AIDMACallback mOldAidCallback;                   // at 0x4C
+    AIDCallback mOldAidCallback;                     // at 0x4C
     volatile s32 mResetReadyCounter;                 // at 0x50
     MoveValue<f32, int> mAuxFadeVolume[AUX_BUS_NUM]; // at 0x54
     MoveValue<f32, int> mAuxUserVolume[AUX_BUS_NUM]; // at 0x84

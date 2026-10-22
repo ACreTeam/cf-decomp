@@ -5,8 +5,9 @@
 #include <lib/egg/gfxe/eggScreen.h>
 #include <lib/nw4r/g3d/res/g3d_resfile.h>
 #include <nw4r/math.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
+#include <revolution/gx.h>
+#include <private/gx.h>
+#include <revolution/mtx.h>
 #include <string.h>
 
 #define SHUTTER_TEX_SIZE 0x80
@@ -70,7 +71,7 @@ void dShutterFader_c::draw() {
 
     Mtx texMtx;
     PSMTXCopy(mTexMtx, texMtx);
-    GXLoadTexMtxImm(texMtx, GX_TEXMTX0, GX_MTX_2x4);
+    GXLoadTexMtxImm(texMtx, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetNumTexGens(1);
     GXSetNumIndStages(0);

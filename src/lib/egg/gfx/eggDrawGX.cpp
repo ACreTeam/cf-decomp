@@ -4,9 +4,9 @@
 #include <lib/egg/gfxe/eggStateGX.h>
 #include <nw4r/g3d.h>
 #include <nw4r/math.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
-#include <revolution/OS.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
+#include <revolution/os.h>
 
 namespace EGG {
 

@@ -21,7 +21,7 @@ u16 mHeap::GetOptFlag(AllocOptBit_t opt) {
     }
 
     if (opt & OPT_THREAD_SAFE) {
-        ret |= MEM_HEAP_OPT_CAN_LOCK;
+        ret |= MEM_HEAP_OPT_THREAD_SAFE;
     }
 
     return ret;
@@ -64,7 +64,10 @@ EGG::ExpHeap *mHeap::createExpHeap(size_t size, EGG::Heap *parent, const char *n
 }
 
 size_t mHeap::expHeapCost(size_t size, ulong align) {
-    return size + nw4r::ut::RoundUp<size_t>(sizeof(EGG::ExpHeap) + MEM_EXP_HEAP_HEAD_SIZE, align);
+    return size + nw4r::ut::RoundUp<size_t>(
+                      sizeof(EGG::ExpHeap) +
+                          (sizeof(MEMiHeapHead) + sizeof(MEMiExpHeapHead)),
+                      align);
 }
 
 EGG::FrmHeap *mHeap::createFrmHeap(size_t size, EGG::Heap *parent, const char *name, ulong align, AllocOptBit_t opt) {
@@ -120,7 +123,10 @@ size_t mHeap::adjustFrmHeap(EGG::FrmHeap *heap) {
 }
 
 size_t mHeap::frmHeapCost(size_t size, ulong align) {
-    return size + nw4r::ut::RoundUp<size_t>(sizeof(EGG::FrmHeap) + MEM_FRM_HEAP_HEAD_SIZE, align);
+    return size + nw4r::ut::RoundUp<size_t>(
+                      sizeof(EGG::FrmHeap) +
+                          (sizeof(MEMiHeapHead) + sizeof(MEMiFrmHeapHead)),
+                      align);
 }
 
 void mHeap::saveCurrentHeap() {
@@ -144,29 +150,31 @@ EGG::FrmHeap *mHeap::createFrmHeapToCurrent(size_t size, EGG::Heap *parent, cons
 }
 
 EGG::Heap *mHeap::createGameHeap(size_t size, EGG::Heap *parent) {
-    g_gameHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
-    g_gameHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_gameHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_THREAD_SAFE);
+    g_gameHeap->setAllocMode(MEM_EXPHEAP_ALLOC_MODE_FIRST);
     g_gameHeap->setName(GAME_HEAP_NAME);
     return g_gameHeap;
 }
 
 EGG::Heap *mHeap::createArchiveHeap(size_t size, EGG::Heap *parent) {
-    g_archiveHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
-    g_archiveHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_archiveHeap =
+        EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_THREAD_SAFE);
+    g_archiveHeap->setAllocMode(MEM_EXPHEAP_ALLOC_MODE_FIRST);
     g_archiveHeap->setName(ARCHIVE_HEAP_NAME);
     return g_archiveHeap;
 }
 
 EGG::Heap *mHeap::createCommandHeap(size_t size, EGG::Heap *parent) {
-    g_commandHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
-    g_commandHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_commandHeap =
+        EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_THREAD_SAFE);
+    g_commandHeap->setAllocMode(MEM_EXPHEAP_ALLOC_MODE_FIRST);
     g_commandHeap->setName(COMMAND_HEAP_NAME);
     return g_commandHeap;
 }
 
 EGG::Heap *mHeap::createDylinkHeap(size_t size, EGG::Heap *parent) {
-    g_dylinkHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_CAN_LOCK);
-    g_dylinkHeap->setAllocMode(MEM_EXP_HEAP_ALLOC_FAST);
+    g_dylinkHeap = EGG::ExpHeap::create(size, parent, MEM_HEAP_OPT_THREAD_SAFE);
+    g_dylinkHeap->setAllocMode(MEM_EXPHEAP_ALLOC_MODE_FIRST);
     g_dylinkHeap->setName(DYLINK_HEAP_NAME);
     return g_dylinkHeap;
 }

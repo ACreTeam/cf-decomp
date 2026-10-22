@@ -640,10 +640,10 @@ BOOL dMenuTime00_c::isFutureDate() {
     int month = mInput[COLUMN_MONTH] - 1;
     int day = mInput[COLUMN_DAY];
     if (year == now.year) {
-        if (month == now.month) {
+        if (month == now.mon) {
             return day > now.mday;
         }
-        return month > now.month;
+        return month > now.mon;
     }
     return year > now.year;
 }
@@ -709,14 +709,14 @@ void dMenuTime00_c::onOkPushed() {
 BOOL dMenuTime00_c::isAppointmentValid() {
     dTime_c now = *dTime_c::getCurrent();
     mInput[COLUMN_YEAR] = now.year - YEAR_BASE;
-    mInput[COLUMN_MONTH] = now.month + 1;
+    mInput[COLUMN_MONTH] = now.mon + 1;
     mInput[COLUMN_DAY] = now.mday;
     dTime_c time;
     getInputTime(&time);
     if (!dTime_c::isSameOrAfter(time, now)) {
         time.add(1, 0, 0, 0);
         mInput[COLUMN_YEAR] = time.year - YEAR_BASE;
-        mInput[COLUMN_MONTH] = time.month + 1;
+        mInput[COLUMN_MONTH] = time.mon + 1;
         mInput[COLUMN_DAY] = time.mday;
     }
     now.add(0, APPOINTMENT_HOURS, 0, 0);
@@ -940,7 +940,7 @@ void dMenuTime00_c::initInputs() {
     switch (menu) {
     case dMenuMng_c::MENU_SET_CLOCK:
         mInput[COLUMN_YEAR] = now.year - YEAR_BASE;
-        mInput[COLUMN_MONTH] = now.month + 1;
+        mInput[COLUMN_MONTH] = now.mon + 1;
         mInput[COLUMN_DAY] = now.mday;
         initClockInput();
         setMode(MODE_DATE);
@@ -949,7 +949,7 @@ void dMenuTime00_c::initInputs() {
         break;
     case dMenuMng_c::MENU_APPOINTMENT_TIME:
         mInput[COLUMN_YEAR] = now.year - YEAR_BASE;
-        mInput[COLUMN_MONTH] = now.month + 1;
+        mInput[COLUMN_MONTH] = now.mon + 1;
         mInput[COLUMN_DAY] = now.mday;
         initClockInput();
         setModeByRegion();
@@ -959,7 +959,7 @@ void dMenuTime00_c::initInputs() {
     case dMenuMng_c::MENU_FUTURE_MAIL_DATE:
         now.add(1, 0, 0, 0);
         mInput[COLUMN_YEAR] = now.year - YEAR_BASE;
-        mInput[COLUMN_MONTH] = now.month + 1;
+        mInput[COLUMN_MONTH] = now.mon + 1;
         mInput[COLUMN_DAY] = now.mday;
         mInput[COLUMN_HOUR] = FUTURE_MAIL_HOUR;
         mInput[COLUMN_MINUTE] = 0;

@@ -106,7 +106,7 @@ void *Heap::alloc(size_t size, int align, Heap *heap) {
         void *allocated = currentHeap->alloc(size, align);
 
         if (allocated == NULL) {
-            int arena_end = (int)currentHeap->mHeapHandle->end;
+            int arena_end = (int)currentHeap->mHeapHandle->heapEnd;
             int max_avail = currentHeap->getAllocatableSize(4);
             int heap_size = arena_end - (u32)currentHeap;
             OSReport("heap (%p):(%.1fMBytes free %d)->alloc(size(%d:%.1fMBytes),%d "

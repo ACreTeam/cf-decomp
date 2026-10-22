@@ -3,7 +3,7 @@
 #include <game/game/d_hmn_head_mng.hpp>
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <cstdio>
 #include <cstring>
 #include <game/game/d_heap.hpp>

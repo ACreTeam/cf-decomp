@@ -12,7 +12,7 @@ dTime_c dYMD_c::get() const {
 
 // 8014CC98
 void dYMD_c::set(const dTime_c *time) {
-    set(time->year, time->month, time->mday);
+    set(time->year, time->mon, time->mday);
 }
 
 // 8014CCB4
@@ -28,7 +28,7 @@ void dYMD_c::setToday(BOOL dayStart) {
     if (dayStart) {
         t.add(0, -TIME_DAY_START_HOUR, 0, 0);
     }
-    set(t.year, t.month, t.mday);
+    set(t.year, t.mon, t.mday);
 }
 
 // 8014CD88
@@ -40,10 +40,10 @@ BOOL dYMD_c::isToday(BOOL dayStart) const {
         dTimeStamp_c stamp(*dTime_c::getCurrent());
         stamp.toDayStart();
         dTime_c t = stamp.get();
-        return isDate(t.year, t.month, t.mday);
+        return isDate(t.year, t.mon, t.mday);
     } else {
         dTime_c t = *dTime_c::getCurrent();
-        return isDate(t.year, t.month, t.mday);
+        return isDate(t.year, t.mon, t.mday);
     }
 }
 
@@ -70,7 +70,7 @@ int dYMD_c::compare(const dYMD_c *other) const {
 
 // 8014CF9C
 int dYMD_c::compare(const dTime_c *time) const {
-    return compare(time->year, time->month, time->mday);
+    return compare(time->year, time->mon, time->mday);
 }
 
 // 8014CFB8

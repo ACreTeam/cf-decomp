@@ -397,7 +397,7 @@ void daStrBroker_c::onTalkStart(int kind, dMsg::Comp_c *comp) {
         }
         dSaveTown_c *town = dSaveData_c::getTown();
         dTime_c next = town->mShops.mShopGallery.getNextWednesday();
-        comp->formatNumber(0, next.month + 1, 2, dScript::NUM_FORMAT_PLAIN);
+        comp->formatNumber(0, next.mon + 1, 2, dScript::NUM_FORMAT_PLAIN);
         comp->formatNumber(1, next.mday, 2, dScript::NUM_FORMAT_PLAIN);
         break;
     }

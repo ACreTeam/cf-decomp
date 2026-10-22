@@ -4,10 +4,10 @@
 #include <lib/egg/core/eggVideo.h>
 #include <lib/egg/core/eggXfbManager.h>
 #include <lib/egg/math/eggMatrix.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
-#include <revolution/OS.h>
-#include <revolution/VI.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
+#include <revolution/os.h>
+#include <revolution/vi.h>
 
 namespace {
 
@@ -72,7 +72,7 @@ void AsyncDisplay::beginFrame() {
 
         while ((BaseSystem::mConfigData->getXfbMgr()->m_0c - mPendingFrames) <= 1 ||
                (BaseSystem::mConfigData->getXfbMgr()->m_04 == 0 && !clear)) {
-            OSReceiveMessage(&mMsgQueue, mMsgBuf, OS_MSG_BLOCKING);
+            OSReceiveMessage(&mMsgQueue, mMsgBuf, OS_MESSAGE_BLOCK);
             while (OSReceiveMessage(&mMsgQueue, mMsgBuf, 0)) {
             }
         }

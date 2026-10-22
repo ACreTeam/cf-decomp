@@ -2,7 +2,7 @@
 #define NW4R_SND_ADPCM_H
 #include <nw4r/types_nw4r.h>
 
-#include <revolution/AX.h>
+#include <revolution/ax.h>
 
 namespace nw4r {
 namespace snd {

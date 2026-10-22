@@ -20,7 +20,7 @@
 #include <new>
 #include <nw4r/g3d/g3d_draw1mat1shp.h>
 #include <nw4r/g3d/g3d_state.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -264,7 +264,7 @@ void setupTexture(const mMtx_c &view, nw4r::g3d::ResTex tex,
     GXTexObj texture;
     GXTlutObj palette;
     GXInitTexObjCI(&texture, data, width == -1 ? texWidth : width,
-                   height == -1 ? texHeight : height, (GXTexFmt)format,
+                   height == -1 ? texHeight : height, (GXCITexFmt)format,
                    GX_CLAMP, GX_CLAMP, mipmap, GX_TLUT0);
     GXInitTlutObj(&palette, pltt.GetPlttData(), pltt.GetFmt(),
                   pltt.GetNumEntries());

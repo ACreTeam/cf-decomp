@@ -1,7 +1,7 @@
 #include <nw4r/ef.h>
 #include <nw4r/math.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <algorithm>
 #include <limits>
@@ -68,7 +68,7 @@ void DrawLineStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
 
         if (prevLineWidth != lineWidth) {
             prevLineWidth = lineWidth;
-            GXSetLineWidth(lineWidth, 5);
+            GXSetLineWidth(lineWidth, GX_TO_ONE);
 
             SetupGP(pParticle, rSetting, rInfo, first, true);
         } else {

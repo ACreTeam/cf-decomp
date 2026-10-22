@@ -3,7 +3,7 @@
 // .sdata2 80750E78..80750E98.
 #include <game/game/d_side_wipe_fader.hpp>
 #include <game/game/d_wipe_fader.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <lib/nw4r/g3d/g3d_state.h>
 
 static dShutterFader_c *sShutterFader; // 8074E828

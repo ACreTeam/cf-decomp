@@ -2,7 +2,7 @@
 #include <lib/egg/core/eggSystem.h>
 #include <lib/egg/gfxe/eggStateGX.h>
 #include <nw4r/g3d.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace {
 
@@ -154,7 +154,7 @@ void StateGX::resetTexGen() {
     GXSetNumTexGens(1);
 
     for (u32 i = 0; i < 10; i++) {
-        GXLoadTexMtxImm(identityMtx, GX_TEXMTX0 + i * 3, GX_MTX_3x4);
+        GXLoadTexMtxImm(identityMtx, GX_TEXMTX0 + i * 3, GX_MTX3x4);
     }
 
     for (u32 i = 0; i < GX_MAX_TEXCOORD; i++) {

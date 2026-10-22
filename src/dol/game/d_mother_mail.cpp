@@ -162,8 +162,8 @@ void update(dTime_c *last, int days) {
             mail->mLastDate.set(&now);
             continue;
         }
-        if (hasSeasonLetter(mail, now.month)) {
-            letter = selectSeasonLetter(mail, now.month);
+        if (hasSeasonLetter(mail, now.mon)) {
+            letter = selectSeasonLetter(mail, now.mon);
             u16 kind = letter;
             l_mail.setupSystem(&kind, "MAIL_ETC_MotherSeason", &l_seasonSender, &player->mPID, &paper);
             setPresent(&l_mail, TYPE_SEASON, letter);

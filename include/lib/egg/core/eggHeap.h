@@ -2,8 +2,8 @@
 
 #include <lib/egg/core/eggBitFlag.h>
 #include <lib/egg/core/eggDisposer.h>
-#include <revolution/MEM.h>
-#include <revolution/OS.h>
+#include <revolution/mem.h>
+#include <revolution/os.h>
 
 namespace EGG {
 
@@ -73,7 +73,7 @@ public:
         return this;
     }
     void *getEndAddress() {
-        return mHeapHandle->end;
+        return mHeapHandle->heapEnd;
     }
 
     void disableAllocation() {

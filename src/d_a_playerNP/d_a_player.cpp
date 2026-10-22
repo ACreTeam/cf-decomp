@@ -73,7 +73,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_heap.hpp>
 #include <game/game/d_hmn_cloth_mng.hpp>
-#include <lib/revolution/OS/OSCache.h>
+#include <lib/revolution/os/OSCache.h>
 #include <game/game/d_bg.hpp>
 #include <game/game/d_light.hpp>
 #include <game/game/d_mii_icon.hpp>
@@ -84,7 +84,7 @@
 #include <nw4r/g3d/g3d_state.h>
 #include <nw4r/ut/ut_Color.h>
 #include <nw4r/g3d/res/g3d_restev.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 #include <revolution/RFL.h>
 
 namespace dAPlayer {

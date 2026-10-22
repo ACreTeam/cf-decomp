@@ -43,7 +43,7 @@ BASE_PROFILE(A_STR_CDBBS, daStrCount_c)
 // .text:0x1A8
 void getRemainTime(u32 *hour, u32 *min, u32 *sec) {
     dTime_c now = *dTime_c::getCurrent();
-    if (now.month != MONTH_DECEMBER || now.mday != COUNTDOWN_MDAY) {
+    if (now.mon != MONTH_DECEMBER || now.mday != COUNTDOWN_MDAY) {
         *sec = 0;
         *min = 0;
         *hour = 0;
@@ -125,7 +125,7 @@ BOOL number_c::remove() {
 void number_c::update() {
     dTime_c now = *dTime_c::getCurrent();
     // (Not in February: the reason is unknown.)
-    if (now.month == MONTH_FEBRUARY) {
+    if (now.mon == MONTH_FEBRUARY) {
         return;
     }
     switch (mIdx) {
@@ -237,7 +237,7 @@ void daStrCount_c::afterCreateMdl() {
 void daStrCount_c::drawMdl() {
     daSTR_c::drawMdl();
     dTime_c now = *dTime_c::getCurrent();
-    if (now.month == MONTH_DECEMBER && now.mday == COUNTDOWN_MDAY &&
+    if (now.mon == MONTH_DECEMBER && now.mday == COUNTDOWN_MDAY &&
         !mHideCount) {
         for (u32 i = 0; i < DIGIT_NUM; i++) {
             mNumbers[i].draw(&mPos);
@@ -260,7 +260,7 @@ int daStrCount_c::execute() {
         }
     }
     dTime_c now = *dTime_c::getCurrent();
-    if (now.month == MONTH_JANUARY && now.mday <= NEW_YEAR_LAST_MDAY &&
+    if (now.mon == MONTH_JANUARY && now.mday <= NEW_YEAR_LAST_MDAY &&
         !mHideCount) {
         if (!mIsNewYear) {
             mBoardAnm.setAnm(mMdl, mResFile.GetResAnmTexSrt("obj_cdbbs_ny"), 0,

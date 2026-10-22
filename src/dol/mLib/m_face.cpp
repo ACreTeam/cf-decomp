@@ -1,6 +1,6 @@
 #include <game/mLib/m_face.hpp>
 #include <game/mLib/m_allocator.hpp>
-#include <revolution/ARC.h>
+#include <revolution/arc.h>
 
 namespace mFace {
 

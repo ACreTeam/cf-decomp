@@ -2,9 +2,9 @@
 #define NW4R_SND_REMOTE_SPEAKER_H
 #include <nw4r/types_nw4r.h>
 
-#include <revolution/OS.h>
-#include <revolution/WENC.h>
-#include <revolution/WPAD.h>
+#include <revolution/os.h>
+#include <revolution/wenc.h>
+#include <revolution/wpad.h>
 
 namespace nw4r {
 namespace snd {

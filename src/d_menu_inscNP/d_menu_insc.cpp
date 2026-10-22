@@ -14,7 +14,7 @@
 #include <game/game/d_string.hpp>
 #include <game/mLib/m_pad.hpp>
 #include <game/snd/snd_id.hpp>
-#include <lib/revolution/SC/scapi.h>
+#include <revolution/sc.h>
 #include <stdio.h>
 
 namespace dMenuInsc {

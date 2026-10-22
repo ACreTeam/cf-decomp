@@ -51,8 +51,8 @@
 #include <game/mLib/m_heap.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/OS/OSThread.h>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSThread.h>
+#include <revolution/os/OSTime.h>
 #include <nw4r/math.h>
 #include <string.h>
 #include <game/game/d_hr.hpp>
@@ -2777,7 +2777,7 @@ void dFgMngProc_c::procEvents(dFdBase_c *fd, const dTime_c *time) {
     if (dEvent::getTodayVisitor() == VISITOR_WISP) {
         dTime_c *now = dTime_c::getCurrent();
         dMD_c *date = &dSaveData_c::getTown()->mTownInfo.mLampDate;
-        u8 month = now->month;
+        u8 month = now->mon;
         u8 day = now->mday;
         BOOL same = FALSE;
         if (date->month == month && date->day == day) {
@@ -3119,7 +3119,7 @@ void dFgMngProc_c::buryGyroids(dFdBase_c *fd, int blockW, int blockH,
 // 800985E4
 BOOL dFgMngProc_c::isMushroomSeason(const dTime_c *time) {
     BOOL ok = FALSE;
-    u16 date = (time->month << 8) | (u8)time->mday;
+    u16 date = (time->mon << 8) | (u8)time->mday;
     if (date >= MONTHDAY(MONTH_NOVEMBER, 1) &&
         date <= MONTHDAY(MONTH_NOVEMBER, 30)) {
         ok = TRUE;
@@ -4110,7 +4110,7 @@ void dFgMngProc_c::updateFg56() {
     fgMngProc_collectFg56Units();
     dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
-    month = today.get().month;
+    month = today.get().mon;
     day = today.get().mday;
     if ((month == MONTH_DECEMBER && day >= 15) ||
         (month == MONTH_JANUARY && day <= 3)) {
@@ -4452,8 +4452,8 @@ void fgMngProc_procDayChange(BOOL arg) {
     dSaveData_c::getTown()->mShops.mStalkMarket.checkDate();
     save->mTownInfo.mLastDay.set(OSCalendarTimeToTicks(&today));
     sFgMngProcFlags = 0;
-    int lastWeekday = dTime_c::getWeekday(last.year, last.month, last.mday);
-    int weekday = dTime_c::getWeekday(today.year, today.month, today.mday);
+    int lastWeekday = dTime_c::getWeekday(last.year, last.mon, last.mday);
+    int weekday = dTime_c::getWeekday(today.year, today.mon, today.mday);
     if (days < 0 || days >= TIME_DAYS_PER_WEEK || weekday - lastWeekday < 0) {
         dSaveData_c::getTown()->mShops.decideStalkPrices();
     }

@@ -5,8 +5,7 @@
 #include <nw4r/snd/snd_InstancePool.h>
 #include <nw4r/ut.h>
 
-#include <revolution/OS.h>
-
+#include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {

@@ -13,7 +13,7 @@
 #include <game/mLib/m_pad.hpp>
 #include <game/snd/snd_id.hpp>
 #include <stdio.h>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 namespace dMenuDesi02 {
 // .text:0x5C

@@ -2,7 +2,7 @@
 #define NW4R_UT_LOCKED_CACHE_H
 #include <nw4r/types_nw4r.h>
 
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace nw4r {
 namespace ut {
@@ -19,7 +19,7 @@ void StoreBlocks(void* pDst, void* pSrc, ulong blocks);
 void StoreData(void* pDst, void* pSrc, ulong size);
 
 inline void* GetBase() {
-    return reinterpret_cast<void*>(OS_CACHE_BASE);
+    return reinterpret_cast<void *>(LC_BASE);
 }
 
 inline void QueueWait(ulong len) {

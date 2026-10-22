@@ -4,8 +4,8 @@
 
 #include <nw4r/snd/snd_RemoteSpeaker.h>
 
-#include <revolution/OS.h>
-#include <revolution/WPAD.h>
+#include <revolution/os.h>
+#include <revolution/wpad.h>
 
 namespace nw4r {
 namespace snd {

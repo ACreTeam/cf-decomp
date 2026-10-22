@@ -1,7 +1,7 @@
 #pragma once
 
-#include <revolution/GX.h>
-#include <revolution/OS.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
 
 namespace EGG {
 

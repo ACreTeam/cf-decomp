@@ -6,7 +6,7 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_color.hpp>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 // RTTI names are original; other names are inferred from behavior.
 namespace dShadow {

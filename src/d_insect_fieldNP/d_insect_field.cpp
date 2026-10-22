@@ -24,7 +24,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/game/d_heap.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <string.h>
 #include <stdio.h>
 #include <game/game/d_shadow.hpp>

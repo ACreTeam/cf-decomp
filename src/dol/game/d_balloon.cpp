@@ -5,8 +5,8 @@
 #include <game/game/d_balloon.hpp>
 #undef D_BALLOON_SOURCE
 #include <lib/egg/math/eggMatrix.h>
-#include <lib/revolution/MTX/mtxvec.h>
-#include <lib/revolution/SC/scapi.h>
+#include <revolution/mtx.h>
+#include <revolution/sc.h>
 
 static const char *lBalloonPane = "bln_00";
 static const char *lShadowPane = "blnSdw_00";
@@ -71,7 +71,7 @@ int dBalloon_c::draw() {
 
 // 800657B4
 void dBalloon_c::setPos(mVec2_c pos) {
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         pos.x += 56.99998f;
     } else {
         pos.x += 78.0f;

@@ -6,7 +6,7 @@
 // from the network manager and DWC worker behavior.
 
 #include <lib/dwc/dwc.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <types.h>
 
 namespace dNetFriend {

@@ -115,7 +115,7 @@ static u32 __GXGetNumXfbLines(u32 efbHt, u32 iScale) {
     return realHt;
 }
 
-u16 GXGetNumXfbLines(u16 efbHeight, f32 yScale) {
+u32 GXGetNumXfbLines(u16 efbHeight, f32 yScale) {
     u32 iScale;
     iScale = (u32)(256.0f / yScale) & 0x1ff;
     return ((u16)__GXGetNumXfbLines((u32)efbHeight, iScale));

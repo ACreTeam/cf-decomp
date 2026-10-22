@@ -566,7 +566,7 @@ void dAcNpcSpCafe_c::talk_c::start(dActor_c *target) {
         dPlayerMgr::Mgr_c::getCurrentPlayer()->getCafeVisits() >= 4) {
         regular = TRUE;
     }
-    if (regular && now.month == MONTH_FEBRUARY) {
+    if (regular && now.mon == MONTH_FEBRUARY) {
         february = TRUE;
     }
     if (february && now.mday == 14) {

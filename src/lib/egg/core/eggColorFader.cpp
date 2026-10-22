@@ -1,6 +1,7 @@
 #include <lib/egg/core/eggColorFader.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
+#include <private/gx.h>
 
 namespace EGG {
 

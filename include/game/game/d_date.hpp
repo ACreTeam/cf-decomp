@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSTime.h>
 
 class dTime_c;
 
@@ -99,7 +99,7 @@ enum dTime_Weekday_e {
     WEEKDAY_NUM
 };
 
-#define MONTHDAY(m, d) (((m) << 8) | (d)) // month 0-based, as dTime_c::month
+#define MONTHDAY(m, d) (((m) << 8) | (d)) // month 0-based, as dTime_c::mon
 
 #define TIME_DAY_START_HOUR 6 // the game day starts at 6:00 (the day change)
 #define TIME_NIGHT_START_HOUR 18 // night is TIME_NIGHT_START_HOUR..TIME_DAY_START_HOUR
@@ -183,5 +183,5 @@ public:
 }; // size 0x28
 
 inline BOOL dYMD_c::isDate(const dTime_c *time) const {
-    return isDate(time->year, time->month, time->mday);
+    return isDate(time->year, time->mon, time->mday);
 }

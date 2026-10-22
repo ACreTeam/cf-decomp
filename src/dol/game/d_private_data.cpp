@@ -15,8 +15,8 @@
 #include <game/sLib/s_lib.hpp>
 #include <cstring>
 #include <cstdio>
-#include <revolution/OS/OSCache.h>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSCache.h>
+#include <revolution/os/OSTime.h>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_notice.hpp>
 #include <game/game/d_post_office.hpp>
@@ -517,7 +517,7 @@ void dPrivateData_c::updateBank(int days) {
             dTime_c now = *dTime_c::getCurrent();
             dTime_c start = *dTime_c::getCurrent();
             start.add(-mDaysAway, 0, 0, 0);
-            months = now.month - start.month;
+            months = now.mon - start.mon;
             months += (now.year - start.year) * 12;
             if (months > 0) {
                 pending += (savings / 200) * months;
@@ -1436,9 +1436,10 @@ BOOL dPrivateHRAInfo_c::isNewModelRoomMonth(dYMD_c *out) {
         mModelRoomDate.set(2000, 0, 1);
     }
     dTime_c cal = getModelRoomDate();
-    if (cal.year != mModelRoomDate.year || cal.month != mModelRoomDate.month || cal.mday != mModelRoomDate.day) {
+    if (cal.year != mModelRoomDate.year || cal.mon != mModelRoomDate.month ||
+        cal.mday != mModelRoomDate.day) {
         if (out != NULL) {
-            out->set(cal.year, cal.month, cal.mday);
+            out->set(cal.year, cal.mon, cal.mday);
         }
         return TRUE;
     }
@@ -2383,12 +2384,13 @@ void dPrivateData_c::incCafeCount(int i) {
 
 // 8013C2D0
 BOOL dPrivateData_c::isBirthday(const dTime_c& cal) const {
-    if (mBirthday.isSame(1, 29) && !dTime_c::isLeapYear(cal.year) && cal.month == 1 && cal.mday == 28) {
+    if (mBirthday.isSame(1, 29) && !dTime_c::isLeapYear(cal.year) &&
+        cal.mon == 1 && cal.mday == 28) {
         return TRUE;
     }
-    
+
     const dBirthday_c &birthday = mBirthday;
-    if (birthday.isSame(cal.month, cal.mday)) {
+    if (birthday.isSame(cal.mon, cal.mday)) {
         return TRUE;
     }
 

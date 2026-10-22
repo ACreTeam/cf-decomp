@@ -239,7 +239,7 @@ const dShopLayout_t *dShopLayout_get(u8 scene) {
         dTimeStamp_c today(*dTime_c::getCurrent());
         today.toDayStart();
         dSaveTown_c *town = dSaveData_c::getTown();
-        switch (town->mShops.mShopGrace.getLayoutType(today.get().month)) {
+        switch (town->mShops.mShopGrace.getLayoutType(today.get().mon)) {
         case 0:
             return &sGraceLayout0;
         case 1:

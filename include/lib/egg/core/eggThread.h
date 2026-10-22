@@ -1,7 +1,7 @@
 #pragma once
 
 #include <nw4r/ut.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace EGG {
 
@@ -28,7 +28,7 @@ public:
     BOOL sendMessage(OSMessage message) { return OSSendMessage(&mMesgQueue, message, 0); }
     OSMessage waitMessageBlock() {
         OSMessage message;
-        OSReceiveMessage(&mMesgQueue, &message, OS_MSG_BLOCKING);
+        OSReceiveMessage(&mMesgQueue, &message, OS_MESSAGE_BLOCK);
         return message;
     }
 

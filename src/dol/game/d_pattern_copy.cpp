@@ -7,7 +7,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_save_town.hpp>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
 #include <string.h>
 
 namespace dPatternCopy {

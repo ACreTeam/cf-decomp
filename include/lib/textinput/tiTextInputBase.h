@@ -6,7 +6,7 @@
 // IPL headers where the City Folk slot does the same thing; vt_0xNN are slots of unknown purpose.
 
 #include <types.h>
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 #include <nw4r/ut.h>
 
 namespace textinput {

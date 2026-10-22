@@ -1455,7 +1455,7 @@ void dAcNpcSpTanukiBase_c::talk_c::onMessageStart(int arg) {
         if (shop->mUpgrading) {
             const dTime_c &date = shop->mStageDate.get();
             day = date.mday;
-            month = date.month;
+            month = date.mon;
             upgrading = TRUE;
         } else {
             upgrading = FALSE;

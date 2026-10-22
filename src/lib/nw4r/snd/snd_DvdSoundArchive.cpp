@@ -1,7 +1,7 @@
 #include <nw4r/snd.h>
 #include <nw4r/ut.h>
 
-#include <revolution/DVD.h>
+#include <revolution/dvd.h>
 
 #include <cstring>
 

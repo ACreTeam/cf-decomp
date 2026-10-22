@@ -32,7 +32,7 @@
 #include <game/game/d_world.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <lib/egg/math/eggMath.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <cmath>
 #include <game/game/d_a_player.hpp>
 

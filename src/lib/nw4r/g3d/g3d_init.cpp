@@ -1,9 +1,9 @@
 #include <nw4r/g3d.h>
 #include <nw4r/ut.h>
 
-#include <revolution/GX.h>
-#include <revolution/OS.h>
-#include <revolution/VI.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
+#include <revolution/vi.h>
 
 namespace {
 
@@ -27,22 +27,22 @@ void G3dInit(bool enableLockedCache) {
 
     GXRenderModeObj* pMode;
     switch (VIGetTvFormat()) {
-    case VI_TVFORMAT_NTSC: {
+    case VI_NTSC: {
         pMode = &GXNtsc480IntDf;
         break;
     }
 
-    case VI_TVFORMAT_PAL: {
+    case VI_PAL: {
         pMode = &GXPal528IntDf;
         break;
     }
 
-    case VI_TVFORMAT_EURGB60: {
+    case VI_EURGB60: {
         pMode = &GXEurgb60Hz480IntDf;
         break;
     }
 
-    case VI_TVFORMAT_MPAL: {
+    case VI_MPAL: {
         pMode = &GXMpal480IntDf;
         break;
     }

@@ -22,7 +22,7 @@
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_3d/global.hpp>
 #include <game/sLib/s_lib.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 #define CLAMP_COLOR(v) ((v) < 0.0f ? 0.0f : ((v) > 255.0f ? 255.0f : (v)))
 #define MIN_255(v) ((v) > 255 ? 255 : (v))

@@ -5,7 +5,7 @@
 #include <nw4r/snd/snd_AxfxImpl.h>
 #include <nw4r/snd/snd_FxBase.h>
 
-#include <revolution/AXFX.h> // IWYU pragma: export
+#include <revolution/axfx.h> // IWYU pragma: export
 
 namespace nw4r {
 namespace snd {

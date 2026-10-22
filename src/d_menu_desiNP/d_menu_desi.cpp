@@ -3,7 +3,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_mii_icon.hpp>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 #include <stdio.h>
 
 namespace dMenuDesi {

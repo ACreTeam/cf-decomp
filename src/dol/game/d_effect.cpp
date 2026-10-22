@@ -14,7 +14,7 @@
 #include <nw4r/ef/ef_resource.h>
 #include <nw4r/ef/ef_drawinfo.h>
 #include <nw4r/g3d/g3d_state.h>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 // 80087064
 bool dEffect_c::createEffect(const char *name, ulong group, const mVec3_c *pos, const mAng3_c *angle, const mVec3_c *scale) {

@@ -1,7 +1,7 @@
 #include <nw4r/ef.h>
 #include <nw4r/ut.h>
 
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace {
 

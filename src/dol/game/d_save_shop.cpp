@@ -234,7 +234,7 @@ void dSaveShop_c::updateStage(int days) {
                         dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 9);
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
                         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 0x6D);
-                        dLetter::setMonthName(2, mStageDate.get().month);
+                        dLetter::setMonthName(2, mStageDate.get().mon);
                         dLetter::setDayName(3, mStageDate.get().mday);
                         dTime_c date = mStageDate.get();
                         date.add(-1, 0, 0, 0);
@@ -316,7 +316,7 @@ void dSaveShop_c::updateStage(int days) {
             dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 9);
             dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
             u16 msg = mStage + 7;
-            dLetter::setMonthName(2, mStageDate.get().month);
+            dLetter::setMonthName(2, mStageDate.get().mon);
             dLetter::setDayName(3, mStageDate.get().mday);
             dTime_c date = mStageDate.get();
             date.add(-1, 0, 0, 0);
@@ -348,7 +348,7 @@ void dSaveShop_c::updateMail(int days) {
     dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
 
-    if (today.get().month == MONTH_OCTOBER) {
+    if (today.get().mon == MONTH_OCTOBER) {
         if (mOctoberDate.isNone() || mOctoberDate.get().year != today.get().year) {
             for (int i = 0; i < PLAYER_NUM; i++) {
                 dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
@@ -360,7 +360,8 @@ void dSaveShop_c::updateMail(int days) {
             mOctoberDate.toDayStart();
         }
     }
-    if (today.get().month == MONTH_DECEMBER && today.get().mday >= 15 && today.get().mday <= 24) {
+    if (today.get().mon == MONTH_DECEMBER && today.get().mday >= 15 &&
+        today.get().mday <= 24) {
         if (mDecemberDate.isNone() || mDecemberDate.get().year != today.get().year) {
             for (int i = 0; i < PLAYER_NUM; i++) {
                 dPrivateData_c *player = dPlayerMgr::Mgr_c::getPlayer(i);
@@ -442,7 +443,7 @@ void dSaveShop_c::updateMail(int days) {
         }
 
         if (days != 0 && player->isFlag0(0x56) && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
-            if (today.get().month != MONTH_OCTOBER) {
+            if (today.get().mon != MONTH_OCTOBER) {
                 player->clearFlag0(0x56);
             } else {
                 static u16 kind = 1;
@@ -457,7 +458,8 @@ void dSaveShop_c::updateMail(int days) {
             }
         }
         if (days != 0 && player->isFlag0(0x84) && !player->isFlag0(PRIVATE_FLAG0_PART_TIME_JOB)) {
-            if (today.get().month != MONTH_DECEMBER || today.get().mday < 15 || today.get().mday > 24) {
+            if (today.get().mon != MONTH_DECEMBER || today.get().mday < 15 ||
+                today.get().mday > 24) {
                 player->clearFlag0(0x84);
             } else {
                 static u16 kind = 2;
@@ -601,7 +603,7 @@ void dSaveShop_c::update() {
     }
 
     int seasonal = 0;
-    if (today.get().month == MONTH_DECEMBER) {
+    if (today.get().mon == MONTH_DECEMBER) {
         if (today.get().mday >= 1 && today.get().mday <= 23) {
             if (getRegion() == 1) {
                 if (cM::rndInt(2) == 0) {
@@ -621,7 +623,8 @@ void dSaveShop_c::update() {
                 seasonal = 0x2B;
             }
         }
-    } else if (getRegion() == 0 && today.get().month == MONTH_MARCH && today.get().mday >= 1 && today.get().mday <= 3) {
+    } else if (getRegion() == 0 && today.get().mon == MONTH_MARCH &&
+               today.get().mday >= 1 && today.get().mday <= 3) {
         seasonal = 0x53;
     }
     if (seasonal != 0) {
@@ -773,7 +776,7 @@ void dSaveShop_c::addSales(int price, int flag) {
         dPrivateData_c::setFlag0All(dSaveData_c::getTown()->mPlayers, 9);
         dPrivateData_c::clearFlag0All(dSaveData_c::getTown()->mPlayers, 10);
         u16 msg = mStage + 7;
-        dLetter::setMonthName(2, mStageDate.get().month);
+        dLetter::setMonthName(2, mStageDate.get().mon);
         dLetter::setDayName(3, mStageDate.get().mday);
         dNotice::postNotice(msg, "BBS_tanukichi", dTime_c::getCurrent(), NULL);
     }
@@ -832,7 +835,7 @@ void dSaveShop_c::stockTools() {
     today.toDayStart();
 
     for (u32 i = 0; i < getToolNum(); i++) {
-        if (i == 0 && today.get().month == MONTH_OCTOBER) {
+        if (i == 0 && today.get().mon == MONTH_OCTOBER) {
             dItem::Item item;
             int range[2];
             range[0] = 0x30;

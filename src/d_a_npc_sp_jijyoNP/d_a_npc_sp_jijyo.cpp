@@ -517,7 +517,7 @@ void dAcNpcSpJijyo_c::talk_c::start(dActor_c *target) {
             case GRACE_SALE_STAGE_2: {
                 dTimeStamp_c stamp(*dTime_c::getCurrent());
                 stamp.toDayStart();
-                switch (stamp.get().month) {
+                switch (stamp.get().mon) {
                 case MONTH_JANUARY:
                     mMsgNo = MSG_SALE_WINTER;
                     break;
@@ -689,7 +689,7 @@ void dAcNpcSpJijyo_c::talk_c::onMessageStart(int arg) {
             formatNumber(DISCOUNT_PERCENT, 1, 2, dScript::NUM_FORMAT_REGION);
             break;
         case MSG_SOLD_OUT: {
-            int month = dTime_c::getCurrent()->month + 1;
+            int month = dTime_c::getCurrent()->mon + 1;
             if (month >= MONTH_NUM) {
                 month = MONTH_JANUARY;
             }

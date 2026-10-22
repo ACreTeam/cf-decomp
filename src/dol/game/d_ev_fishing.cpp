@@ -95,7 +95,7 @@ void dEvFishing_c::sendResultLetters() {
             dLetter::formatNumber(3, toDisplaySize(getSize(0)), 4, dScript::NUM_FORMAT_REGION);
             dSaveTown_c *town = dSaveData_c::getTown();
             dLetter::setItemName(0, town->mFishing.getItem(0));
-            dLetter::setMonthName(1, date.month);
+            dLetter::setMonthName(1, date.mon);
             dLetter::setDayName(2, date.mday);
             dLetter::setLandName(3, getLandID());
             if (getTownPlayer(i)->mPID.isValid() && getTownPlayer(i)->isFlag0(PRIVATE_FLAG0_FISHING_ENTERED)) {
@@ -135,7 +135,7 @@ void dEvFishing_c::sendResultLetters() {
             dLetter::formatNumber(3, toDisplaySize(getSize(0)), 4, dScript::NUM_FORMAT_REGION);
             dSaveTown_c *town = dSaveData_c::getTown();
             dLetter::setItemName(0, town->mFishing.getItem(0));
-            dLetter::setMonthName(1, date.month);
+            dLetter::setMonthName(1, date.mon);
             dLetter::setDayName(2, date.mday);
             dLetter::setLandName(3, getLandID());
             setupMail(&sMail, cM::rndInt(3) + 7, 11, &mPlayer[0], 0x14C);
@@ -168,7 +168,7 @@ void dEvFishing_c::postResultNotice() {
     dTime_c date = stamp.get();
     stamp.addDays(1);
     dTime_c postDate = stamp.get();
-    dLetter::formatNumber(0, date.month + 1, 2, dScript::NUM_FORMAT_PLAIN);
+    dLetter::formatNumber(0, date.mon + 1, 2, dScript::NUM_FORMAT_PLAIN);
     dLetter::formatNumber(1, date.mday, 2, dScript::NUM_FORMAT_PLAIN);
     dLetter::formatNumber(2, toDisplaySize(getSize(0)), 4, dScript::NUM_FORMAT_PLAIN);
     dLetter::setLandName(2, &dSaveData_c::getRaw()->mFishing.getPlayer(0)->land);
@@ -248,7 +248,7 @@ void dEvFishing_c::setup() {
         }
         mCursor.set(mStart.getTicks());
         // January, March, May and November have a tourney fish; June..September have no tourney.
-        switch (mStart.get().month) {
+        switch (mStart.get().mon) {
         case 0:
         case 2:
         case 4:

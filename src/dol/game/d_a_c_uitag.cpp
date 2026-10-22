@@ -25,7 +25,7 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 #include <cstdio>
 
 #define NO_TAB -1
@@ -638,7 +638,7 @@ int dAcUitag::getTabInput(int tab, BOOL noClose) {
         return 5;
     }
     if ((mPad::g_currentCore->downTrigger(WPAD_BUTTON_B) ||
-         mPad::g_currentCore->downTrigger(WPAD_BUTTON_FS_Z)) &&
+         mPad::g_currentCore->downTrigger(WPAD_BUTTON_Z)) &&
         !noClose) {
         return dAcUitag_c::TAB_CLOSE;
     }

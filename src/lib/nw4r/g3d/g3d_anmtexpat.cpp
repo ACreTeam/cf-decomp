@@ -1,7 +1,7 @@
 #include <nw4r/g3d.h>
 #include <nw4r/ut.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace g3d {
@@ -512,7 +512,7 @@ void ApplyTexPatAnmResult(ResTexObj texObj, ResTlutObj tlutObj,
                                  &maxLod, &mipmap);
 
             GXInitTexObjCI(pGXObj, pTexData, width, height,
-                           static_cast<GXTexFmt>(cifmt), wrapS, wrapT, mipmap,
+                           static_cast<GXCITexFmt>(cifmt), wrapS, wrapT, mipmap,
                            static_cast<GXTlut>(i));
         } else {
             tex.GetTexObjParam(&pTexData, &width, &height, &fmt, &minLod,

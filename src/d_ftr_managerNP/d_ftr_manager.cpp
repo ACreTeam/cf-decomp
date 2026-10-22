@@ -42,9 +42,9 @@
 #include <game/sLib/s_lib.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
-#include <revolution/MEM.h>
-#include <revolution/MTX.h>
-#include <revolution/OS.h>
+#include <revolution/mem.h>
+#include <revolution/mtx.h>
+#include <revolution/os.h>
 #include <stdio.h>
 #include <string.h>
 #include <game/game/d_a_player.hpp>

@@ -43,7 +43,7 @@ int dCd_c::execute() {
     }
 
     dTime_c now = *dTime_c::getCurrent();
-    if (now.month == MONTH_DECEMBER && now.mday == 31) {
+    if (now.mon == MONTH_DECEMBER && now.mday == 31) {
         u32 left = SECONDS_PER_DAY - (now.sec + now.min * SECONDS_PER_MINUTE +
                                       now.hour * SECONDS_PER_HOUR);
         u32 hours = left / SECONDS_PER_HOUR;
@@ -74,7 +74,7 @@ int dCd_c::execute() {
             mMuted = FALSE;
         }
         mPrevDigit = mDigit;
-    } else if (now.month == MONTH_JANUARY && now.mday == 1 && now.hour == 0 &&
+    } else if (now.mon == MONTH_JANUARY && now.mday == 1 && now.hour == 0 &&
                now.min == 0 && now.sec == 0) {
         if (!mNewYearDone) {
             playSe(SE_countdown_hi);

@@ -2,7 +2,7 @@
 #define RVL_SDK_NWC24_INTERNAL_DOWNLOAD_H
 #include <types.h>
 
-#include <revolution/NAND.h>
+#include <revolution/nand.h>
 #include <revolution/NWC24/NWC24Types.h>
 #ifdef __cplusplus
 extern "C" {

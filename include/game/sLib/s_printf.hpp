@@ -15,5 +15,5 @@ namespace sPrintf {
      * @param args The arguments for the format string.
      * @return The number of characters printed.
      */
-    int vprintf(const char *format, va_list *args);
+    int vprintf(const char *format, va_list args);
 };

@@ -5,7 +5,7 @@
 #include <game/game/d_heap.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 
 namespace dAMdl {
 // .text:0x5C

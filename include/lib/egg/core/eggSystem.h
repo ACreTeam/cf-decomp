@@ -15,10 +15,10 @@
 #include <lib/egg/gfxe/eggScreen.h>
 #include <lib/egg/gfxe/eggStateGX.h>
 #include <lib/nw4r/db.h>
-#include <revolution/GX.h>
-#include <revolution/SC.h>
-#include <revolution/KPAD.h>
-#include <revolution/WPAD.h>
+#include <revolution/gx.h>
+#include <revolution/sc.h>
+#include <revolution/kpad.h>
+#include <revolution/wpad.h>
 
 namespace EGG {
 

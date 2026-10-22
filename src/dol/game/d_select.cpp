@@ -11,7 +11,7 @@
 #include <game/game/d_region.hpp>
 #include <game/game/d_snd_util.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <lib/revolution/SC/scapi.h>
+#include <revolution/sc.h>
 #include <string.h>
 
 namespace dSelect {

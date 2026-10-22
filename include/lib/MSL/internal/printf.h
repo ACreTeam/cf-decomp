@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 int printf(const char*, ...);
-int vprintf(const char*, va_list *);
+int vprintf(const char*, va_list);
 int sprintf(char*, const char*, ...);
 int snprintf(char*, size_t, const char*, ...);
 int vsprintf(char*, const char*, va_list);

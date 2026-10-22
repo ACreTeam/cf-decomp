@@ -16,10 +16,10 @@
 #include <game/mLib/m_pad.hpp>
 #include <game/mLib/m_perf.hpp>
 #include <game/snd/snd_id.hpp>
-#include <lib/revolution/OS.h>
-#include <revolution/GX.h>
-#include <revolution/SC.h>
-#include <revolution/WPAD.h>
+#include <lib/revolution/os.h>
+#include <revolution/gx.h>
+#include <revolution/sc.h>
+#include <revolution/wpad.h>
 #include <string.h>
 
 namespace dKbd {
@@ -512,7 +512,7 @@ void Mng_c::initManager() {
         mpManager->setLanguage(textinput::USA);
         break;
     }
-    mpManager->setAspectRatio(SCGetAspectRatio() != SC_ASPECT_WIDE);
+    mpManager->setAspectRatio(SCGetAspectRatio() != SC_ASPECT_RATIO_16x9);
     textinput::extend::memo::Setting setting = sSetting;
     mpManager->setSetting(setting);
     mpManager->vt_0xE4();

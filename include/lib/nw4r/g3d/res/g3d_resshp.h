@@ -7,7 +7,7 @@
 #include <nw4r/g3d/res/g3d_resmdl.h>
 #include <nw4r/g3d/res/g3d_resvtx.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace g3d {

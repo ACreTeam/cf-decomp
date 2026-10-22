@@ -20,7 +20,7 @@ int dAcNpcNml_c::talk_c::msgPlayerBirthday(msgInfo_s *info) {
     u16 code = 1;
     if (leapDay) {
         dTime_c *now = dTime_c::getCurrent();
-        if (now->month == 1 && now->mday == 29) {
+        if (now->mon == 1 && now->mday == 29) {
             code = 0xE;
         } else {
             code = 0xB;

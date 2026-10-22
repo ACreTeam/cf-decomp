@@ -5,7 +5,7 @@
 #include <nw4r/snd/snd_AxfxImpl.h>
 #include <nw4r/snd/snd_FxBase.h>
 
-#include <revolution/AXFX.h>
+#include <revolution/axfx.h>
 
 namespace nw4r {
 namespace snd {

@@ -38,12 +38,12 @@ void dSvActivity_c::clear() {
 
 // 8014F998
 void dSvActivity_c::updateMonth(const dTime_c *now) {
-    if (mYear == now->year && mMonth == now->month) {
+    if (mYear == now->year && mMonth == now->mon) {
         return;
     }
     dSaveData_c::getTown()->mTownList.clear();
     mYear = now->year;
-    mMonth = now->month;
+    mMonth = now->mon;
 
     int condition = 0;
     int r = cM::rndInt(100);

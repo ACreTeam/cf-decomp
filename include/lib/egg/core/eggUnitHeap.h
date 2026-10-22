@@ -1,5 +1,5 @@
 #pragma once
-#include <revolution/MEM/mem_unitHeap.h>
+#include <revolution/mem/unitHeap.h>
 #include <lib/egg/core/eggHeap.h>
 
 namespace EGG {

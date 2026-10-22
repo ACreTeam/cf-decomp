@@ -10,7 +10,7 @@
 // UTF-16 text (BOM 0xFEFF), one pattern per line (CR, LF or CRLF).
 
 #include <lib/RegEad/RegDfa.hpp>
-#include <lib/revolution/CX/CXUncompression.h>
+#include <revolution/cx.h>
 
 namespace RegEad {
 

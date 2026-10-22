@@ -1,9 +1,9 @@
 // EGG::Screen. .text 804485FC..80449314
 #include <lib/egg/gfxe/eggScreen.h>
 #include <lib/egg/gfxe/eggStateGX.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
-#include <revolution/SC.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
+#include <revolution/sc.h>
 
 namespace EGG {
 
@@ -247,7 +247,8 @@ void Screen::SetTVMode(TVMode tvMode) {
 }
 
 void Screen::SetTVModeDefault() {
-    SetTVMode(SCGetAspectRatio() == SC_ASPECT_STD ? TV_MODE_4_3 : TV_MODE_16_9);
+    SetTVMode(SCGetAspectRatio() == SC_ASPECT_RATIO_4x3 ? TV_MODE_4_3
+                                                        : TV_MODE_16_9);
 }
 
 } // namespace EGG

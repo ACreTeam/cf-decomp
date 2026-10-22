@@ -4,8 +4,8 @@
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
 #include <game/cLib/c_math.hpp>
-#include <lib/revolution/OS/OSCache.h>
-#include <lib/revolution/OS/OSError.h>
+#include <lib/revolution/os/OSCache.h>
+#include <lib/revolution/os/OSError.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <cstdio>
 #include <game/game/d_player_mgr.hpp>

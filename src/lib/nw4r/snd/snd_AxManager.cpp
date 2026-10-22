@@ -1,8 +1,8 @@
 #include <nw4r/snd.h>
 
-#include <revolution/AXFX.h>
-#include <revolution/DVD.h>
-#include <revolution/OS.h>
+#include <revolution/axfx.h>
+#include <revolution/dvd.h>
+#include <revolution/os.h>
 
 #include <cstring>
 

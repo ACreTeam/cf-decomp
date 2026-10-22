@@ -15,17 +15,18 @@ void dRandom_c::init(int a, int b, int c, int d, int e) {
 // 80107DF4
 void dRandom_c::initFromDateAndLandId(const dTime_c &time, int salt) {
     dSaveData_c *save = dSaveData_c::getRaw();
-    init(time.year * 365, (time.month + 1) * 31, time.mday, save->mLandID.mId, salt);
+    init(time.year * 365, (time.mon + 1) * 31, time.mday, save->mLandID.mId,
+         salt);
 }
 
 // 80107E68
 void dRandom_c::initFromDateWithSalt2(const dTime_c &time, int salt, int salt2) {
-    init(time.year * 365, (time.month + 1) * 31, time.mday, salt2, salt);
+    init(time.year * 365, (time.mon + 1) * 31, time.mday, salt2, salt);
 }
 
 // 80107E94
 void dRandom_c::initFromDateWithSalt(const dTime_c &time, int salt) {
-    init(time.year * 365, (time.month + 1) * 31, time.mday, 0x90C1, salt);
+    init(time.year * 365, (time.mon + 1) * 31, time.mday, 0x90C1, salt);
 }
 
 // 80107EC4

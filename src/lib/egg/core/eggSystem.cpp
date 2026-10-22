@@ -2,7 +2,8 @@
 
 #include <lib/egg/core/eggController.h>
 #include <lib/egg/core/eggExpHeap.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
+#include <revolution/os/OSBootInfo.h>
 
 namespace EGG {
 
@@ -34,7 +35,7 @@ void ConfigurationData::initMemory() {
     mMem2Start = mem2Lo;
     mMem2End = mem2Arena;
 
-    mMemorySize = bootInfo->physMemSize;
+    mMemorySize = bootInfo->memorySize;
 
     OSSetMEM1ArenaLo(mem1Arena);
     OSSetMEM1ArenaHi(mem1Arena);

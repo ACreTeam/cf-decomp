@@ -37,7 +37,7 @@
 #include <game/game/d_weather.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <nw4r/g3d.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <cstdio>
 
 CUSTOM_BASE_PROFILE(NPC_MNG, dNpcMng_c, fProf::NPC_MNG,

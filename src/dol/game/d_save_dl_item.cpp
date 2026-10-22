@@ -6,7 +6,7 @@
 #include <game/sLib/s_crc.hpp>
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
 #include <string.h>
 
 dItem::Item makeItemFromBaseId(u16 baseId); // d_item.cpp

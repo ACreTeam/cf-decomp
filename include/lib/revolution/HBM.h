@@ -2,10 +2,10 @@
 #define RVL_SDK_PUBLIC_HBM_H
 #include <types.h>
 
-#include <revolution/KPAD.h>
-#include <revolution/MEM.h>
-#include <revolution/MTX.h>
-#include <revolution/WPAD.h>
+#include <revolution/kpad.h>
+#include <revolution/mem.h>
+#include <revolution/mtx.h>
+#include <revolution/wpad.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

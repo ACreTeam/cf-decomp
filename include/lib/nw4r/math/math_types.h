@@ -5,7 +5,7 @@
 #include <nw4r/math/math_arithmetic.h>
 #include <nw4r/math/math_triangular.h>
 
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 namespace nw4r {
 namespace math {
@@ -549,7 +549,8 @@ inline MTX34* MTX34Mult(MTX34* pOut, const MTX34* pA, const MTX34* pB) {
 
 inline MTX34* MTX34MultArray(MTX34* pOut, const MTX34* p1, const MTX34* pSrc,
                              ulong len) {
-    PSMTXConcatArray(*p1, *pSrc, *pOut, len);
+    PSMTXConcatArray(*p1, reinterpret_cast<const Mtx *>(pSrc),
+                     reinterpret_cast<Mtx *>(pOut), len);
     return pOut;
 }
 

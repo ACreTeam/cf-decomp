@@ -1790,7 +1790,7 @@ namespace dFishInfo {
 // 80090E2C
 int getTerm(const dTime_c &time) {
     int term;
-    switch (time.month) {
+    switch (time.mon) {
     case MONTH_JANUARY:
         term = FISH_TERM_JAN;
         break;
@@ -1924,7 +1924,7 @@ int getTourneyFish(const dTime_c &time) {
         {FISH_HORSE_MACKEREL, FISH_CARP, FISH_BLACK_BASS},
     };
     int idx = 0;
-    switch (time.month) {
+    switch (time.mon) {
     case MONTH_JANUARY:
         idx = 0;
         break;

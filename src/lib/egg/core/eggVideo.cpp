@@ -1,7 +1,7 @@
 #include <lib/egg/core/eggVideo.h>
 
-#include <revolution/OS.h>
-#include <revolution/SC.h>
+#include <revolution/os.h>
+#include <revolution/sc.h>
 
 namespace EGG {
 namespace {
@@ -115,21 +115,21 @@ u32 Video::getTickPerVRetrace(ulong tvFormat) {
     f32 retraceRate;
 
     switch (tvFormat) {
-    case VI_TVFORMAT_NTSC:
-    case VI_TVFORMAT_EURGB60:
+    case VI_NTSC:
+    case VI_EURGB60:
     default: {
         retraceRate = 59.94f;
         break;
     }
 
-    case VI_TVFORMAT_PAL:
-    case VI_TVFORMAT_MPAL: {
+    case VI_PAL:
+    case VI_MPAL: {
         retraceRate = 50.0f;
         break;
     }
     }
 
-    return static_cast<u32>(OS_SEC_TO_TICKS(1)) / retraceRate;
+    return static_cast<u32>(OSSecondsToTicks(1)) / retraceRate;
 }
 
 u32 Video::getTickPerVRetrace() {
@@ -137,20 +137,20 @@ u32 Video::getTickPerVRetrace() {
 }
 
 const GXRenderModeObj *Video::getStandardRenderModeObj(const RenderModeObjSet *rmSet) {
-    bool progressive = SCGetProgressiveMode() == SC_PROGRESSIVE;
-    bool pal60 = SCGetEuRgb60Mode() == SC_EURGB_60_HZ;
-    bool stdAspect = SCGetAspectRatio() == SC_ASPECT_STD;
+    bool progressive = SCGetProgressiveMode() == SC_PROGRESSIVE_MODE_ON;
+    bool pal60 = SCGetEuRgb60Mode() == SC_EURGB60_MODE_ON;
+    bool stdAspect = SCGetAspectRatio() == SC_ASPECT_RATIO_4x3;
     bool componentCable = VIGetDTVStatus() == VI_VISEL_COMPONENT;
 
     bool ntsc = false;
     switch (VIGetTvFormat()) {
-    case VI_TVFORMAT_NTSC: {
+    case VI_NTSC: {
         ntsc = true;
         break;
     }
 
-    case VI_TVFORMAT_PAL:
-    case VI_TVFORMAT_EURGB60: {
+    case VI_PAL:
+    case VI_EURGB60: {
         ntsc = false;
         break;
     }

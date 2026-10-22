@@ -35,7 +35,7 @@
 #include <game/mLib/m_fader.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <cstring>
-#include <lib/revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 // Copper the gatekeeper (scaffold). Functions are in target .text order; a
 // "// .text:" comment marks every function of 0x5C..0xD0C8 (written or not).

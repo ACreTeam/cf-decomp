@@ -1,7 +1,7 @@
 // Per-player storage boxes in dSaveExtra_c: letter items, letters and designs.
 // .text 80112BB8..80113158.
 #include <game/game/d_save_box.hpp>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
 
 // 80112BB8
 void dSaveItemBox_c::clear() {

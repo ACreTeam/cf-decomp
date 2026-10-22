@@ -8,7 +8,7 @@
 #include <game/game/d_fg_item.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
 #include <cstring>
 
 namespace dFootmark {

@@ -24,7 +24,7 @@
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 
 // Where the street organ stands in the city on visit days (unit coordinates).
 #define CITY_ORGAN_UNIT_X 19

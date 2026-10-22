@@ -2,7 +2,7 @@
 #define NW4R_UT_COLOR_H
 #include <nw4r/types_nw4r.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace ut {

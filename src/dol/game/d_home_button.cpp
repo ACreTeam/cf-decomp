@@ -12,9 +12,9 @@
 #include <lib/egg/core/eggHeap.h>
 #include <lib/egg/gfxe/eggDrawGX.h>
 #include <lib/egg/gfxe/eggScreen.h>
-#include <revolution/DVD.h>
-#include <revolution/OS.h>
-#include <revolution/SC.h>
+#include <revolution/dvd.h>
+#include <revolution/os.h>
+#include <revolution/sc.h>
 #include <string.h>
 
 #define HBM_MEM_SIZE 0x80000
@@ -218,23 +218,23 @@ void dHomeButton_c::setLayoutName() {
     const char *ita = "HomeButton2/homeBtn_ITA.arc";
     const char *ned = "HomeButton2/homeBtn_NED.arc";
     mDataInfo.region = lang;
-    if (lang == SC_LANG_JP) {
+    if (lang == SC_LANG_JAPANESE) {
         mLayoutName = jpn;
-    } else if (lang == SC_LANG_EN) {
+    } else if (lang == SC_LANG_ENGLISH) {
         mLayoutName = eng;
-    } else if (lang == SC_LANG_DE) {
+    } else if (lang == SC_LANG_GERMAN) {
         mLayoutName = ger;
-    } else if (lang == SC_LANG_FR) {
+    } else if (lang == SC_LANG_FRENCH) {
         mLayoutName = fra;
-    } else if (lang == SC_LANG_SP) {
+    } else if (lang == SC_LANG_SPANISH) {
         mLayoutName = spa;
-    } else if (lang == SC_LANG_IT) {
+    } else if (lang == SC_LANG_ITALIAN) {
         mLayoutName = ita;
-    } else if (lang == SC_LANG_NL) {
+    } else if (lang == SC_LANG_DUTCH) {
         mLayoutName = ned;
     } else {
         mLayoutName = jpn;
-        mDataInfo.region = SC_LANG_JP;
+        mDataInfo.region = SC_LANG_JAPANESE;
     }
 }
 
@@ -347,7 +347,7 @@ void dHomeButton_c::startIcon() {
 // 8017E3B8
 void dHomeButton_c::calcIcon() {
     if (mIconTick != 0) {
-        f32 time = OS_TICKS_TO_MSEC(OSGetTick() - mIconTick);
+        f32 time = OSTicksToMilliseconds(OSGetTick() - mIconTick);
         BOOL end = FALSE;
         if (time < 0.0f) {
             end = TRUE;

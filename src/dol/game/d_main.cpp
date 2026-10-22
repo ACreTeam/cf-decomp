@@ -3,7 +3,7 @@
 #include <game/game/d_main.hpp>
 #include <game/framework/f_manager.hpp>
 #include <game/game/d_sys.hpp>
-#include <lib/revolution/OS/OSThread.h>
+#include <lib/revolution/os/OSThread.h>
 
 namespace dMain {
 

@@ -19,11 +19,11 @@
 #include <nw4r/lyt.h>
 #include <nw4r/math.h>
 #include <nw4r/ut.h>
-#include <revolution/MTX/mtx.h>
-#include <revolution/MTX/mtxvec.h>
-#include <revolution/OS.h>
+#include <revolution/mtx.h>
+#include <revolution/mtx.h>
+#include <revolution/os.h>
 #include <revolution/RFL.h>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 #include <string.h>
 
 // Dependencies whose owners are not recovered yet.
@@ -425,7 +425,8 @@ void SimpleEx_c::copyPos(SimpleEx_c *other, const char *srcName,
     if (src != nullptr && dst != nullptr) {
         mVec3_c pos;
         getScreenPos(&pos, src);
-        if (SCGetAspectRatio() == SC_ASPECT_WIDE && !dst->IsLocationAdjust()) {
+        if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9 &&
+            !dst->IsLocationAdjust()) {
             pos.x *= 1.368421f;
         }
         dst->SetTranslate(pos);
@@ -832,7 +833,7 @@ int Word_c::getPosAtScreenX(f32 x) {
         getScreenRightBottom(&rb, mpTextBox);
         pos = rb;
         f32 width = calcWidth(nullptr, 0);
-        if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+        if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
             width *= 0.730769f;
         }
         dx = x - (pos.x - width);
@@ -846,7 +847,7 @@ int Word_c::getPosAtScreenX(f32 x) {
         break;
     }
     }
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         dx *= 1.368421f;
     }
     return getPosAt(dx);
@@ -860,7 +861,7 @@ f32 Word_c::getScreenXLeft(int pos) {
         return lt.x;
     }
     f32 width = calcWidth(nullptr, getSizeAt(getBuffer(), pos));
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         width *= 0.730769f;
     }
     return lt.x + width;
@@ -878,7 +879,7 @@ f32 Word_c::getScreenXRight(int pos) {
         width = calcWidth(nullptr, size);
     }
     f32 total = calcWidth(nullptr, 0);
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         width *= 0.730769f;
         total *= 0.730769f;
     }

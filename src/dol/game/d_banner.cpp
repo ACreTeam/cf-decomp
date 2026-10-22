@@ -2,7 +2,7 @@
 // .bss 805655A0..805746E0, .sdata 80749B70..80749B90, .sdata2 80750330..80750338. See include/game/game/d_banner.hpp.
 #include <game/game/d_banner.hpp>
 #include <game/game/d_string.hpp>
-#include <lib/revolution/TPL.h>
+#include <lib/revolution/tpl.h>
 #include <string.h>
 
 #define BANNER_HEAP_SIZE 0xF220
@@ -27,7 +27,9 @@ void dBanner_c::build() {
     dString::Word_c subtitle;
     dString::loadString(&title, 1, "sys_STRING/STR_Banner");
     dString::loadString(&subtitle, 2, "sys_STRING/STR_Banner");
-    NANDInitBanner(getBannerP(), sFlags, title.getText(), subtitle.getText());
+    NANDInitBanner(getBannerP(), sFlags,
+                   reinterpret_cast<const u16 *>(title.getText()),
+                   reinterpret_cast<const u16 *>(subtitle.getText()));
 
     u32 bannerSize = 0;
     TPLPalette *tpl = (TPLPalette *)getFile("banner.tpl", &bannerSize);

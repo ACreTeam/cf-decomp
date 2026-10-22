@@ -19,7 +19,7 @@
 #include <game/game/d_world.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <lib/egg/math/eggMath.h>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 #include <game/game/d_a_player.hpp>
 
 namespace dObjChat {
@@ -960,7 +960,7 @@ void Balloon_c::clampPos() {
     }
     f32 left = -294.0f;
     if (namePos.y > 32.0f && dClock::isShown()) {
-        if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+        if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
             left = -163.0f;
         } else {
             left = -143.0f;

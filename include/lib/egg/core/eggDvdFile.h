@@ -2,8 +2,8 @@
 
 #include <lib/egg/core/eggFile.h>
 #include <nw4r/ut.h>
-#include <revolution/DVD.h>
-#include <revolution/OS.h>
+#include <revolution/dvd.h>
+#include <revolution/os.h>
 
 namespace EGG {
 
@@ -18,7 +18,9 @@ public:
     virtual void close();
     virtual s32 readData(void *buffer, s32 length, s32 offset);
     virtual s32 writeData(const void *buffer, s32 length, s32 offset);
-    virtual u32 getFileSize() const { return mFileInfo.size; }
+    virtual u32 getFileSize() const {
+        return mFileInfo.length;
+    }
     virtual bool open(s32 entryNum);
     virtual bool open(const char *path, void *);
 

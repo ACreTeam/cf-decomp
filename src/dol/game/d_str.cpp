@@ -1814,7 +1814,10 @@ int getCurBuildingKind(u8 *other) {
 
 // 8016A9D8
 BOOL flatChk_c::check(int attr) {
-    return (attr == BG_ATTR_STR_COL || attr == BG_ATTR_STR_ENT_TO_RU || attr == BG_ATTR_STR_ENT_TO_LU) ? TRUE : FALSE;
+    return (attr == BG_ATTR_STR_COL || attr == BG_ATTR_STR_ENT_TO_RU ||
+            attr == BG_ATTR_STR_ENT_TO_LU)
+               ? FLATTEN
+               : NO_FLATTEN;
 }
 
 // 8016AA0C

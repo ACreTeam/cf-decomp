@@ -657,12 +657,13 @@ int dAcNpcNml_c::talk_c::msgReXmas(msgInfo_s *info) {
     u8 looks = valid ? animal->mID.getLooks(1) : 6;
     int code = 0;
     BOOL ok = FALSE;
-    if (dEvent::isOngoing(EVENT_TOY_DAY) || (now->month == 11 && now->mday == 25)) {
+    if (dEvent::isOngoing(EVENT_TOY_DAY) ||
+        (now->mon == 11 && now->mday == 25)) {
         ok = TRUE;
     }
     gift = FALSE;
     bool christmas = false;
-    if (now->month == 11 && now->mday == 25) {
+    if (now->mon == 11 && now->mday == 25) {
         christmas = true;
     }
     if (christmas && dNpc::isPastAnimalWakeTime(looks, now)) {

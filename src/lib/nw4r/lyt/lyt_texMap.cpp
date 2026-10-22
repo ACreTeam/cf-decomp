@@ -1,7 +1,7 @@
 #include <nw4r/lyt.h>
 
-#include <revolution/GX.h>
-#include <revolution/TPL.h>
+#include <revolution/gx.h>
+#include <revolution/tpl.h>
 
 namespace nw4r {
 namespace lyt {
@@ -11,8 +11,8 @@ void TexMap::Get(GXTexObj* pTexObj) const {
         u32 tlut = GXGetTexObjTlut(pTexObj);
 
         GXInitTexObjCI(pTexObj, GetImage(), GetWidth(), GetHeight(),
-                       GetTexelFormat(), GetWrapModeS(), GetWrapModeT(),
-                       IsMipMap(), tlut);
+                       static_cast<GXCITexFmt>(GetTexelFormat()),
+                       GetWrapModeS(), GetWrapModeT(), IsMipMap(), tlut);
     } else {
         GXInitTexObj(pTexObj, GetImage(), GetWidth(), GetHeight(),
                      GetTexelFormat(), GetWrapModeS(), GetWrapModeT(),

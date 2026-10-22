@@ -2,7 +2,7 @@
 #include <types.h>
 
 /// @brief The signature of the function used to print formatted output.
-typedef int (*vprintfFunc)(const char *format, va_list *args);
+typedef int (*vprintfFunc)(const char *format, va_list args);
 
 /**
  * @brief A collection of motion and interpolation utilities.

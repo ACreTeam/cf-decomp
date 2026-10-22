@@ -1,6 +1,6 @@
 #pragma once
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace m3d {
     class capture_c {

@@ -1,5 +1,5 @@
 #include <types.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 static void InitDefaultHeap(){
     void* arenaLo;

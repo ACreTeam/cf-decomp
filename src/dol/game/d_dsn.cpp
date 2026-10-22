@@ -6,7 +6,7 @@
 #include <game/game/d_item.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_script.hpp>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
 #include <lib/egg/core/eggHeap.h>
 #include <nw4r/g3d/res/g3d_resfile.h>
 #include <cstring>

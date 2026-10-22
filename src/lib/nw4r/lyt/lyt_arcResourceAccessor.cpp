@@ -1,6 +1,6 @@
 #include <nw4r/lyt.h>
 
-#include <revolution/ARC.h>
+#include <revolution/arc.h>
 
 #include <cstring>
 

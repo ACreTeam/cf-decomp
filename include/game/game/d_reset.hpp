@@ -19,7 +19,7 @@
 // Class and method names are NSMBW's where the function matches (no RTTI here); others are inferred.
 
 #include <types.h>
-#include <revolution/DVD.h>
+#include <revolution/dvd.h>
 #include <lib/egg/gfx/eggColor.h>
 
 namespace EGG {

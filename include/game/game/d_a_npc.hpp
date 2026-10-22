@@ -29,7 +29,7 @@
 #include <game/mLib/m_vec.hpp>
 #include <game/mLib/m_angle.hpp>
 #include <game/mLib/m_mtx.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 #include <game/game/d_npc_def.hpp>
 // Tom Nook's ear parameter presets per store stage (d_a_npc_sp_tanukichi).

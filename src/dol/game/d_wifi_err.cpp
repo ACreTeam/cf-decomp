@@ -12,7 +12,7 @@
 #include <game/game/d_screenshot.hpp>
 #include <game/game/d_snd_util.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 
 dWifiErr_c g_wifiErr; // 80621670
 
@@ -105,7 +105,8 @@ void dWifiErr_c::execute() {
         mAnm.play();
         mLyt.calc();
         if (!mCloseRequest && !mClosing && !mFatal &&
-            (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A) || mPad::g_currentCore->downTrigger(WPAD_BUTTON_FS_C) ||
+            (mPad::g_currentCore->downTrigger(WPAD_BUTTON_A) ||
+             mPad::g_currentCore->downTrigger(WPAD_BUTTON_C) ||
              mResetRequest == 1) &&
             !mForce) {
             mCloseRequest = TRUE;

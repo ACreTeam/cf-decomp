@@ -6,7 +6,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_wifi.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <string.h>
 
 // The send index of a player's first registered friend, before the roster offset (WC24_FRIEND_NUM).

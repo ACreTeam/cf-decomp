@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 
 namespace EGG {
 class Allocator : public MEMAllocator {

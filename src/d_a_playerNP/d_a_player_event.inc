@@ -4432,7 +4432,8 @@ void dAcPlayer_c::updateSunTimer() {
     if (now.hour < 10 || now.hour >= 17) {
         return;
     }
-    if (!(now.month == 7 || (now.month == 6 && now.mday >= 16) || (now.month == 8 && now.mday <= 15))) {
+    if (!(now.mon == 7 || (now.mon == 6 && now.mday >= 16) ||
+          (now.mon == 8 && now.mday <= 15))) {
         return;
     }
     u32 *timer = dPlayerMgr::getTimer();
@@ -5721,7 +5722,8 @@ void dAcPlayer_c::myFace_c::setupDrawOpa() {
     nw4r::g3d::ResPltt pltt = file.GetResPltt("mii_head_env");
     tex.GetTexObjCIParam(&image, &width, &height, &format, &minLod, &maxLod, &mipmap);
     GXTexObj texObj;
-    GXInitTexObjCI(&texObj, image, width, height, (GXTexFmt)format, GX_MIRROR, GX_CLAMP, mipmap, GX_TLUT0);
+    GXInitTexObjCI(&texObj, image, width, height, (GXCITexFmt)format, GX_MIRROR,
+                   GX_CLAMP, mipmap, GX_TLUT0);
     GXTlutObj tlutObj;
     GXInitTlutObj(&tlutObj, pltt.GetPlttData(), pltt.GetFmt(), pltt.GetNumEntries());
     GXLoadTlut(&tlutObj, GX_TLUT0);
@@ -5750,7 +5752,7 @@ void dAcPlayer_c::myFace_c::setupDrawOpa() {
         PSMTXConcat(envMtx, envScale, envMtx);
         PSMTXConcat(envMtx, mtx, mtx);
     }
-    GXLoadTexMtxImm(mtx, GX_TEXMTX1, GX_MTX_3x4);
+    GXLoadTexMtxImm(mtx, GX_TEXMTX1, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
     GXSetTevSwapModeTable(GX_TEV_SWAP2, mSwapTable[0], mSwapTable[1], mSwapTable[2], mSwapTable[3]);
     const GXTevStageID stages[2] = {GX_TEVSTAGE1, GX_TEVSTAGE2};

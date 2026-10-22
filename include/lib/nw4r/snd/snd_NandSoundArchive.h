@@ -7,7 +7,7 @@
 
 #include <nw4r/ut.h>
 
-#include <revolution/NAND.h>
+#include <revolution/nand.h>
 
 namespace nw4r {
 namespace snd {

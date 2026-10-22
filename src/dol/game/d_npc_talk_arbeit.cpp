@@ -395,7 +395,7 @@ int dAcNpcNml_c::talk_c::msgArbeitBirthdayYes(msgInfo_s *info) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     const dBirthday_c *birthday = player != NULL ? &player->mBirthday : NULL;
     if (birthday != NULL) {
-        if (now->month == birthday->mMonth && now->mday == birthday->mDay) {
+        if (now->mon == birthday->mMonth && now->mday == birthday->mDay) {
             code = 0x1A;
         } else {
             dAnimal_c *animal = getAnimal();

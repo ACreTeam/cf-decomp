@@ -7,7 +7,7 @@
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 namespace dMenuStar00 {
 // .text:0x5C

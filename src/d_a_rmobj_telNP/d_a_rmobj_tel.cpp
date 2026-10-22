@@ -21,7 +21,7 @@
 #include <game/sLib/s_lib.hpp>
 #include <game/snd/snd_id.hpp>
 #include <lib/egg/math/eggMath.h>
-#include <lib/revolution/SC/scapi.h>
+#include <revolution/sc.h>
 #include <cstring>
 
 // The house telephone. Functions are in target .text order.

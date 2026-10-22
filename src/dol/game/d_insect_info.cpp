@@ -1117,7 +1117,7 @@ dInsectSpawnList_c *getSpawnList(int month, int slot) {
 // 800BD46C
 dInsectSpawnList_c *getSpawnList(int slot) {
     dTime_c now = *dTime_c::getCurrent();
-    return getSpawnList(now.month, slot);
+    return getSpawnList(now.mon, slot);
 }
 
 // 800BD4FC
@@ -1197,7 +1197,7 @@ int getRandomByRarity(const dTime_c &time, int rarity, int maxRarity, BOOL allDa
     int res;
     while (true) {
         for (int t = timeStart; t <= timeEnd; t++) {
-            dInsectSpawnList_c spawnList = sSpawnTable[time.month][t];
+            dInsectSpawnList_c spawnList = sSpawnTable[time.mon][t];
             int prev = 0;
             for (int i = 0; i < spawnList.mNum; i++) {
                 int rate = spawnList.mList[i].mRate - prev;
@@ -1241,7 +1241,7 @@ u8 getRandomOfTerm() {
     dSearchCand_c<INSECT_NUM> cand;
     cand.clear();
     for (int t = 0; t < INSECT_TIME_NUM; t++) {
-        dInsectSpawnList_c *spawnList = getSpawnList(time.month, t);
+        dInsectSpawnList_c *spawnList = getSpawnList(time.mon, t);
         int num = spawnList->mNum;
         dInsectSpawn_c *list = spawnList->mList;
         for (int i = 0; i < num; i++) {

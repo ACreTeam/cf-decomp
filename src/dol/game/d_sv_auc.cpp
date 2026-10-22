@@ -93,7 +93,7 @@ int dSvAuc_c::getDayType(dTime_c time) {
     if (time.hour < 6) {
         time.add(-1, 0, 0, 0);
     }
-    int wday = dTime_c::getWeekday(time.year, time.month, time.mday);
+    int wday = dTime_c::getWeekday(time.year, time.mon, time.mday);
     int type;
     if ((dTheater::getWeek(time) & 1) == 0) {
         if (wday == 0) {
@@ -132,7 +132,7 @@ void dSvAuc_c::getNextOpenDate(int *year, int *month, int *day) {
                 time.add(-1, 0, 0, 0);
             }
             *year = time.year;
-            *month = time.month;
+            *month = time.mon;
             *day = time.mday;
             return;
         }
@@ -149,7 +149,7 @@ void dSvAuc_c::getNextCloseDate(int *year, int *month, int *day) {
                 time.add(-1, 0, 0, 0);
             }
             *year = time.year;
-            *month = time.month;
+            *month = time.mon;
             *day = time.mday;
             return;
         }

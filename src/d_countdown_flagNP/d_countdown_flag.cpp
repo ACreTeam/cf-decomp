@@ -16,8 +16,8 @@
 #include <game/game/d_world.hpp>
 #include <game/mLib/m_mtx.hpp>
 #include <lib/egg/gfx/eggDrawHelper.h>
-#include <revolution/GX.h>
-#include <revolution/OS.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
 
 // The distance between two neighbouring points of the cloth.
 #define CDFLAG_POINT_DIST 8.0f
@@ -104,7 +104,7 @@ void dCountDownFlag_c::drawProc_c::setupGX() {
                   pltt.GetNumEntries());
     GXLoadTlut(&tlut, GX_TLUT0);
     GXTexObj texObj;
-    GXInitTexObjCI(&texObj, data, width, height, (GXTexFmt)format, GX_CLAMP,
+    GXInitTexObjCI(&texObj, data, width, height, (GXCITexFmt)format, GX_CLAMP,
                    GX_CLAMP, mipmap, GX_TLUT0);
     GXInitTexObjLOD(&texObj, GX_LINEAR, GX_LINEAR, minLod, maxLod, 0.0f, FALSE,
                     FALSE, GX_ANISO_1);

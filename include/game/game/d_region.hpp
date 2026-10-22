@@ -49,7 +49,7 @@ enum CONSOLE_REGION_e {
 int getRegion(); // 801068AC
 
 /// @brief Returns the LANGUAGE_e for the console's SCGetLanguage() setting.
-/// On RUUE01: SC_LANG_SP -> LANGUAGE_MX, SC_LANG_FR -> LANGUAGE_QC,
+/// On RUUE01: SC_LANG_SPANISH -> LANGUAGE_MX, SC_LANG_FRENCH -> LANGUAGE_QC,
 /// anything else -> LANGUAGE_US.
 int getLanguage(); // 801068B4
 

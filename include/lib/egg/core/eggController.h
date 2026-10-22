@@ -6,9 +6,11 @@
 #include <lib/egg/math/eggMatrix.h>
 #include <lib/egg/math/eggVector.h>
 #include <lib/egg/prim/eggBuffer.h>
-#include <revolution/PAD.h>
-#include <revolution/KPAD.h>
-#include <revolution/WPAD.h>
+#include <revolution/pad.h>
+#include <revolution/kpad.h>
+#include <revolution/wpad.h>
+
+#define KPAD_MAX_SAMPLES 16 // KPADRead buffer length
 
 namespace EGG {
 

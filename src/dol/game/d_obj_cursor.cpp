@@ -9,7 +9,7 @@
 #include <game/mLib/m_pad.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/snd/snd_id.hpp>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 
 CUSTOM_BASE_PROFILE(OBJ_CURSOR, dObjCursor_c, fProf::OBJ_CURSOR,
                     fProf::DRAW_ORDER::OBJ_CURSOR);

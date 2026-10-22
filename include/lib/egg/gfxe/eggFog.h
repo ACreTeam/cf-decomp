@@ -3,7 +3,7 @@
 #include <lib/egg/prim/eggBinary.h>
 #include <nw4r/g3d.h>
 #include <nw4r/ut.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace EGG {
 

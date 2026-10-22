@@ -380,10 +380,10 @@ void dSvProc_c::initializePlayer() {
     player->setFlag0(PRIVATE_FLAG0_HOUSE_TOUR);
     player->setFlag0(PRIVATE_FLAG0_PART_TIME_JOB);
     player->setFlag0(PRIVATE_FLAG0_PLAYING_UNSAVED);
-    if (now.month == MONTH_OCTOBER) {
+    if (now.mon == MONTH_OCTOBER) {
         player->setFlag0(0x56);
     }
-    if (now.month == MONTH_DECEMBER && now.mday >= 15 && now.mday <= 24) {
+    if (now.mon == MONTH_DECEMBER && now.mday >= 15 && now.mday <= 24) {
         player->setFlag0(0x84);
     }
     dSaveData_c::getTown()->mDaily.request();

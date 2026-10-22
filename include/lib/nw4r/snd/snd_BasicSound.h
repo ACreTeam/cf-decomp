@@ -7,7 +7,7 @@
 
 #include <nw4r/ut.h>
 
-#include <revolution/WPAD.h>
+#include <revolution/wpad.h>
 
 namespace nw4r {
 namespace snd {

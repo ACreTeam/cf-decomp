@@ -2,18 +2,24 @@
 
 #include <types.h>
 
-// Wii Speak voice chat (namespace dVoiceChat). Source: src/dol/game/d_voice_chat.cpp
-// (.text 801711EC..801732D4). There is no RTTI: every name here is inferred from behaviour and
-// from the callers (d_net_dwc, d_net_mgr, both still asm). See notes/d_voice_chat.txt.
+// Wii Speak voice chat (namespace dVoiceChat). Source:
+// src/dol/game/d_voice_chat.cpp
+// (.text 801711EC..801732D4). There is no RTTI: every name here is inferred
+// from behaviour and from the callers (d_net_dwc, d_net_mgr, both still asm).
+// See notes/d_voice_chat.txt.
 //
 // It wires three libraries together:
-//   - the SDK voice chat library (VCT, include/lib/revolution/vct.h): sessions with the other players
+//   - the SDK voice chat library (VCT, include/lib/revolution/vct.h): sessions
+//   with the other players
 //     (up to 16 aids, one bit each in the client mask), audio encode / decode;
-//   - the Wii Speak library (PMIC, include/lib/revolution/PMIC.h): the microphone, driven by a
-//     small state machine (updateMic), with echo cancellation fed from the AI output;
-//   - AX: the received audio is upsampled 4x (8 kHz -> 32 kHz) into a looping AX voice.
-// A periodic alarm (frameAlarm) moves one audio frame each period: receive -> gain -> speaker
-// buffer, microphone -> echo cancel -> send.
+//   - the Wii Speak library (PMIC, include/lib/revolution/pmic.h): the
+//   microphone, driven by a
+//     small state machine (updateMic), with echo cancellation fed from the AI
+//     output;
+//   - AX: the received audio is upsampled 4x (8 kHz -> 32 kHz) into a looping
+//   AX voice.
+// A periodic alarm (frameAlarm) moves one audio frame each period: receive ->
+// gain -> speaker buffer, microphone -> echo cancel -> send.
 namespace dVoiceChat {
     BOOL init(u8 aid);                // 801717E8: VCT init with this aid (once)
     void cleanup();                   // 80171920

@@ -1,6 +1,6 @@
 // EGG::Graphics. .text 80445D18..80445F80. See include/lib/egg/gfx/eggDrawHelper.h.
 #include <lib/egg/gfx/eggDrawHelper.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace EGG {
 

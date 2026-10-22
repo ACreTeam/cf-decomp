@@ -129,11 +129,11 @@ static const DateNotice_c sDateNotices[12] = {
 void postDateNotices(const dTime_c &day) {
     const DateNotice_c *notice = sDateNotices;
     for (int i = 0; i < 12; i++, notice++) {
-        if (day.month + 1 == notice->mMonth && day.mday == notice->mDay) {
+        if (day.mon + 1 == notice->mMonth && day.mday == notice->mDay) {
             postNotice(notice->mMsgId, "BBS_event", &day, NULL);
         }
     }
-    if (day.month + 1 == 2 && day.mday == 29) {
+    if (day.mon + 1 == 2 && day.mday == 29) {
         postNotice(0x21, "BBS_event", &day, NULL);
     }
 }
@@ -151,7 +151,8 @@ void postBirthdayNotices(const dTime_c &day) {
 
     for (i = 0; i < 10; i++) {
         dAnimal_c *animal = dSaveData_c::getTown()->mAnimals.mTown.getAnimal(i);
-        if (animal != NULL && animal->mID.isValid() && day.month == (u8)animal->getBirthMonth() &&
+        if (animal != NULL && animal->mID.isValid() &&
+            day.mon == (u8)animal->getBirthMonth() &&
             day.mday == (u8)animal->getBirthDay()) {
             dLetter::setAnmPersonalName(0, &animal->mID);
             postNotice(cM::rndInt(3) + 0x19, "BBS_event", &day, NULL);
@@ -209,7 +210,7 @@ void postEventNotices(const dTime_c &day) {
                 msgId = 0;
             }
             if (msgId != 0) {
-                dLetter::setMonthName(2, sDays[sEventNotices[i].mDay]->month);
+                dLetter::setMonthName(2, sDays[sEventNotices[i].mDay]->mon);
                 dLetter::setDayName(3, sDays[sEventNotices[i].mDay]->mday);
                 postNotice(msgId, "BBS_event", &day, NULL);
             }
@@ -219,7 +220,7 @@ void postEventNotices(const dTime_c &day) {
 
 // 800EC4B0
 void postOctoberNotice(const dTime_c &day) {
-    if (day.month == 9 && day.wday == 1 && day.mday >= 18 && day.mday <= 24) {
+    if (day.mon == 9 && day.wday == 1 && day.mday >= 18 && day.mday <= 24) {
         postNotice(0x13, "BBS_event", &day, NULL);
     }
 }
@@ -235,7 +236,7 @@ void postShopNotice(const dTime_c &day) {
                                    "sys_STRING/STR_Unit");
             u16 msgId = cM::rndInt(2) + 1;
             date = time->get();
-            dLetter::setMonthName(2, date.month);
+            dLetter::setMonthName(2, date.mon);
             dLetter::setDayName(3, date.mday);
             postNotice(msgId, "BBS_tanukichi", &day, NULL);
         }

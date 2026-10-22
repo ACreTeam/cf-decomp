@@ -2720,14 +2720,14 @@ lib/RVL_SDK/sd/sd_os.c:
 	.bss        start:0x8065F020 end:0x8065F170
 	.sbss       start:0x8074EDA0 end:0x8074EDA8
 
-lib/RVL_SDK/pmic/pmic.c:
+lib/RVL_SDK/pmic/pmic_core.c:
 	.text       start:0x80225BC0 end:0x80228EB0
 	.data       start:0x80509320 end:0x805210A0
 	.bss        start:0x8065F170 end:0x8065F610
 	.sdata      start:0x8074C9D0 end:0x8074C9D8
 	.sbss       start:0x8074EDA8 end:0x8074EE30
 
-lib/RVL_SDK/pmic/pmic_stream.c:
+lib/RVL_SDK/pmic/pmic_data.c:
 	.text       start:0x80228EB0 end:0x80229A2C
 	.data       start:0x805210A0 end:0x80521120
 	.bss        start:0x8065F610 end:0x8065F660

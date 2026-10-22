@@ -24,7 +24,7 @@
 #include <game/game/d_prc_mng.hpp>
 #include <game/game/d_str.hpp>
 #include <game/game/d_weather.hpp>
-#include <lib/revolution/OS/OSTime.h>
+#include <lib/revolution/os/OSTime.h>
 
 // Dependencies whose owners are not recovered yet.
 

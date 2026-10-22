@@ -3,7 +3,7 @@
 #include <game/mLib/m_perf.hpp>
 #include <lib/egg/core/eggThread.h>
 #include <lib/egg/core/eggDvdRipper.h>
-#include <lib/revolution/DVD/dvdfs.h>
+#include <revolution/dvd.h>
 
 namespace mDvd {
 
@@ -111,7 +111,7 @@ BOOL CommandList_c::send() {
 
 // 802AD5A0
 BOOL CommandList_c::receive() {
-    return OSReceiveMessage(&mQueue, nullptr, OS_MSG_BLOCKING);
+    return OSReceiveMessage(&mQueue, nullptr, OS_MESSAGE_BLOCK);
 }
 
 // 802AD5AC

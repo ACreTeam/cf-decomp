@@ -2,9 +2,8 @@
 #include <game/game/d_pad.hpp>
 #include <game/game/d_kbd.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <revolution/KPAD.h>
-#include <revolution/WPAD.h>
-
+#include <revolution/kpad.h>
+#include <revolution/wpad.h>
 
 namespace dPad {
 static mVec2_c sRawPointer; // Normalized DPD coordinates.
@@ -100,10 +99,10 @@ void begin() {
         sHeld |= BUTTON_DOWN;
     }
     if (sInputMode != INPUT_REMOTE) {
-        if (mPad::getCore()->down(WPAD_BUTTON_FS_C)) {
+        if (mPad::getCore()->down(WPAD_BUTTON_C)) {
             sHeld |= BUTTON_CONFIRM;
         }
-        if (mPad::getCore()->down(WPAD_BUTTON_FS_Z)) {
+        if (mPad::getCore()->down(WPAD_BUTTON_Z)) {
             sHeld |= BUTTON_CANCEL;
         }
         if (sHeld) {
@@ -141,7 +140,7 @@ BOOL updateButtons(BOOL suppressA) {
     if (mPad::getCore()->down(WPAD_BUTTON_B)) {
         sHeld |= (BUTTON_B | BUTTON_CANCEL);
     }
-    if (mPad::getCore()->down(WPAD_BUTTON_FS_C)) {
+    if (mPad::getCore()->down(WPAD_BUTTON_C)) {
         sHeld |= BUTTON_C;
     }
     int held = sHeld;

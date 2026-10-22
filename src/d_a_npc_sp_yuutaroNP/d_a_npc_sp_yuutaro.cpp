@@ -451,7 +451,7 @@ void dAcNpcSpYuutaro_c::talk_c::start(dActor_c *target) {
                     dMD_c *date = &dSaveData_c::getTown()->mTownInfo.mLampDate;
                     dTime_c *now = dTime_c::getCurrent();
                     u8 day = now->mday;
-                    u8 month = now->month;
+                    u8 month = now->mon;
                     date->month = month;
                     date->day = day;
                     break;

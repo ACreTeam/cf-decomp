@@ -6818,10 +6818,10 @@ BOOL dAnimalBlock_c::shouldDecideOutdoor(BOOL flag) {
     dSaveTown_c *town = dSaveData_c::getTown();
     dTime_c time = town->mSaveTime.get();
     dTime_c start;
-    start.set(time.year, time.month, time.mday, time.hour - 1, 0, 0);
+    start.set(time.year, time.mon, time.mday, time.hour - 1, 0, 0);
     start.normalize();
     dTime_c end;
-    end.set(time.year, time.month, time.mday, time.hour + 1, 0, 0);
+    end.set(time.year, time.mon, time.mday, time.hour + 1, 0, 0);
     end.normalize();
 
     dTime_c *now = dTime_c::getCurrent();
@@ -7667,7 +7667,8 @@ void dAnimalBlock_c::updateQuestCandidates() {
     dTime_c *now = dTime_c::getCurrent();
     dTime_c *last = dNpc::getEntryTime();
     dTime_c next;
-    next.set(last->year, last->month, last->mday, last->hour + 1, last->min, last->sec);
+    next.set(last->year, last->mon, last->mday, last->hour + 1, last->min,
+             last->sec);
     next.normalize();
 
     if (!dTime_c::isSameOrAfter(*now, next)) {
@@ -7876,11 +7877,11 @@ BOOL dAnimalBlock_c::tryStartSick(int days, dTime_c *now) {
     sick = &mSick;
     sickness = sick->mSickness;
     dTime_c time;
-    time.set(now->year, now->month, now->mday + days, 0, 0, 0);
+    time.set(now->year, now->mon, now->mday + days, 0, 0, 0);
     time.normalize();
 
     if (sickness < 0) {
-        sick->addSickness(1, (u8)time.month);
+        sick->addSickness(1, (u8)time.mon);
         return FALSE;
     }
 
@@ -7934,7 +7935,7 @@ BOOL dAnimalBlock_c::tryStartSick(int days, dTime_c *now) {
         }
     }
 
-    sick->addSickness(1, (u8)time.month);
+    sick->addSickness(1, (u8)time.mon);
     return FALSE;
 }
 
@@ -8784,7 +8785,8 @@ BOOL dAnimalBlock_c::updateAppointmentDaily(BOOL arg) {
         return TRUE;
     }
 
-    if (findEventOnDay(now, 0) && now->year == meet.year && now->month == meet.month && now->mday == meet.mday) {
+    if (findEventOnDay(now, 0) && now->year == meet.year &&
+        now->mon == meet.mon && now->mday == meet.mday) {
         quest->clear();
         return TRUE;
     }

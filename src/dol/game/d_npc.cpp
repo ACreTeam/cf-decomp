@@ -14,7 +14,7 @@
 #include <lib/egg/math/eggMath.h>
 #include <lib/egg/core/eggHeap.h>
 #include <game/game/d_dvd.hpp>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSTime.h>
 #include <cstring>
 #include <game/game/d_ftr.hpp>
 #include <game/game/d_letter.hpp>
@@ -230,9 +230,9 @@ void timer_c::set(int mode, u16 frameCount) {
     int msecs = 1000.0f * seconds;
     int usecs = 1000.0f * (1000.0f * seconds - msecs);
     s64 ticks = OSCalendarTimeToTicks(&now);
-    ticks += OS_SEC_TO_TICKS(frames / 60);
-    ticks += OS_MSEC_TO_TICKS(msecs);
-    ticks += OS_USEC_TO_TICKS(usecs);
+    ticks += OSSecondsToTicks(frames / 60);
+    ticks += OSMillisecondsToTicks(msecs);
+    ticks += OSMicrosecondsToTicks(usecs);
     mEndTick = ticks;
 }
 
@@ -269,7 +269,7 @@ void timer_c::update() {
             mFrames = 0;
             mMode = 0;
         } else {
-            mFrames = (mEndTick - ticks) * 60 / OS_TIME_SPEED;
+            mFrames = (mEndTick - ticks) * 60 / OS_TIMER_CLOCK;
         }
     }
 }
@@ -3176,10 +3176,11 @@ BOOL isAnimalSleepTime(u8 idx, const dTime_c *now) {
 
     const hours_s *hours = &sSleepHours[idx];
     dTime_c start;
-    start.set(now->year, now->month, now->mday, hours->mStartHour, hours->mStartMin, 0);
+    start.set(now->year, now->mon, now->mday, hours->mStartHour,
+              hours->mStartMin, 0);
     start.normalize();
     dTime_c end;
-    end.set(now->year, now->month, now->mday, hours->mEndHour, hours->mEndMin, 0);
+    end.set(now->year, now->mon, now->mday, hours->mEndHour, hours->mEndMin, 0);
     end.normalize();
 
     BOOL result = FALSE;
@@ -3221,10 +3222,11 @@ BOOL isAnimalDaytime(u8 idx, const dTime_c *now) {
 
     const hours_s *hours = &sDaytimeHours[idx];
     dTime_c start;
-    start.set(now->year, now->month, now->mday, hours->mStartHour, hours->mStartMin, 0);
+    start.set(now->year, now->mon, now->mday, hours->mStartHour,
+              hours->mStartMin, 0);
     start.normalize();
     dTime_c end;
-    end.set(now->year, now->month, now->mday, hours->mEndHour, hours->mEndMin, 0);
+    end.set(now->year, now->mon, now->mday, hours->mEndHour, hours->mEndMin, 0);
     end.normalize();
 
     BOOL result = FALSE;

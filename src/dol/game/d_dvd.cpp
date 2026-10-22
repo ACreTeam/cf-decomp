@@ -1,7 +1,7 @@
 // Archive / resource loaders (dDvd::loader_c, bank_c, arcBank_c). .text 80085E8C..80086558,
 // .data 804DE838..804DE860 (the bank_c and loader_c vtables). See include/game/game/d_dvd.hpp.
 #include <game/game/d_dvd.hpp>
-#include <lib/revolution/OS.h>
+#include <lib/revolution/os.h>
 #include <cstring>
 
 namespace dDvd {

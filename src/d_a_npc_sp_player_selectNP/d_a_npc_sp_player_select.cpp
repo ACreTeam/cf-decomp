@@ -27,6 +27,7 @@
 #include <game/game/d_wifi.hpp>
 #include <game/mLib/m_fader.hpp>
 #include <cstring>
+#include <revolution/sc.h>
 
 namespace dANpcSpPlayerSelect {
 // .text 0xCC

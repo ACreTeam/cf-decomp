@@ -7,7 +7,7 @@
 #include <game/game/d_post_office.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 namespace dMenuItem05 {
 // .text:0xCC
@@ -362,7 +362,7 @@ void dMenuItem05_c::setIcons() {
 // .text:0x1028
 const mVec2_c &dMenuItem05_c::getSlotPos(int slot, f32 ofsX, f32 ofsY) {
     static mVec2_c pos(0.0f, 0.0f);
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         ofsX *= 0.730769f;
     }
     mVec3_c base;

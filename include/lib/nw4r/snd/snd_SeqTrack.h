@@ -5,7 +5,7 @@
 #include <nw4r/snd/snd_Channel.h>
 #include <nw4r/snd/snd_Lfo.h>
 
-#include <revolution/WPAD.h>
+#include <revolution/wpad.h>
 
 namespace nw4r {
 namespace snd {

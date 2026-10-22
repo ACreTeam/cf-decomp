@@ -2,8 +2,8 @@
 #define NW4R_SND_AXFX_IMPL_H
 #include <nw4r/types_nw4r.h>
 
-#include <revolution/AXFX.h>
-#include <revolution/MEM.h>
+#include <revolution/axfx.h>
+#include <revolution/mem.h>
 
 namespace nw4r {
 namespace snd {

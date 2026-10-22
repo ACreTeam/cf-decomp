@@ -4,7 +4,7 @@
 
 #include <nw4r/ut/ut_CharStrmReader.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace ut {

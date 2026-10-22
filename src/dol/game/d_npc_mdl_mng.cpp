@@ -3,7 +3,7 @@
 // See include/game/game/d_npc_mdl_mng.hpp. The data class and all member names are inferred.
 #include <game/game/d_npc_mdl_mng.hpp>
 #include <nw4r/g3d/res/g3d_resfile.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <cstdio>
 #include <cstring>
 #include <game/game/d_heap.hpp>

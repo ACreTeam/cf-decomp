@@ -11,7 +11,7 @@
 #include <game/mLib/m_color.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/ut.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 class dLineDrawProc_c : public m3d::proc_c {
 public:

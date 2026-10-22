@@ -1518,8 +1518,8 @@ void ResTexPlttInfo::BindTex_(const ResTex tex, ResTexObj texObj) {
                              &maxLod, &mipmap);
 
         GXInitTexObjCI(pGXObj, pTexData, width, height,
-                       static_cast<GXTexFmt>(fmtCi), r.wrap_s, r.wrap_t, mipmap,
-                       r.tlutID);
+                       static_cast<GXCITexFmt>(fmtCi), r.wrap_s, r.wrap_t,
+                       mipmap, r.tlutID);
     } else {
         GXTexFmt fmt;
         tex.GetTexObjParam(&pTexData, &width, &height, &fmt, &minLod, &maxLod,

@@ -1,7 +1,7 @@
 #include <nw4r/snd.h>
 
-#include <revolution/AX.h>
-#include <revolution/OS.h>
+#include <revolution/ax.h>
+#include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
@@ -30,7 +30,7 @@ void RemoteSpeakerManager::Setup() {
     OSCreateAlarm(&mRemoteSpeakerAlarm);
 
     OSSetPeriodicAlarm(&mRemoteSpeakerAlarm, OSGetTime(),
-                       OS_NSEC_TO_TICKS(SPEAKER_ALARM_PERIOD_NSEC),
+                       OSNanosecondsToTicks(SPEAKER_ALARM_PERIOD_NSEC),
                        RemoteSpeakerAlarmProc);
 
     mInitialized = true;

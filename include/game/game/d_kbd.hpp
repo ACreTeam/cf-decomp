@@ -7,7 +7,7 @@
 // notes/TUs/d_kbd.txt.
 
 #include <types.h>
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 #include <game/game/d_dvd.hpp>
 #include <game/game/d_m2d.hpp>
 #include <game/mLib/m_allocator.hpp>

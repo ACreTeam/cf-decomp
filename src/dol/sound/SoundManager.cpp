@@ -2,9 +2,9 @@
 #include <game/snd/snd_manager.hpp>
 #include <game/snd/snd_system.hpp>
 #include <game/game/d_scene.hpp>
-#include <revolution/AI.h>
-#include <revolution/AX.h>
-#include <revolution/MIX.h>
+#include <revolution/ai.h>
+#include <revolution/ax.h>
+#include <revolution/mix.h>
 
 static const u32 sVolumePlayers[5] = {21, 22, 23, 25, 24};
 static const u16 sStageGroups[dScene::SCENE_NUM] = {

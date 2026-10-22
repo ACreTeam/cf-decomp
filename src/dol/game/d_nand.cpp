@@ -14,7 +14,7 @@
 #include <game/game/d_sv_mgr.hpp>
 #include <game/game/d_thunder.hpp>
 #include <game/mLib/m_perf.hpp>
-#include <lib/revolution/OS.h>
+#include <lib/revolution/os.h>
 #include <string.h>
 
 #define NAND_STACK_SIZE 0xA000
@@ -302,7 +302,8 @@ BOOL isIdle() {
 
 // 800D2A50
 int create(const char *path) {
-    s32 result = NANDCreate(path, NAND_PERM_RUSR | NAND_PERM_WUSR, 0);
+    s32 result =
+        NANDCreate(path, NAND_PERM_USER_READ | NAND_PERM_USER_WRITE, 0);
     log("NANDCreate", result);
     if (result == NAND_RESULT_OK || result == NAND_RESULT_EXISTS) {
         return RESULT_OK;

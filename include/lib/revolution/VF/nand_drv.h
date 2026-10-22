@@ -1,6 +1,6 @@
 #ifndef RVL_SDK_VF_NAND_DRV_H
 #define RVL_SDK_VF_NAND_DRV_H
-#include <revolution/NAND.h>
+#include <revolution/nand.h>
 #include <types.h>
 #ifdef __cplusplus
 extern "C" {

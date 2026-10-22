@@ -1,5 +1,5 @@
 #include <game/cLib/c_dylink.hpp>
-#include <lib/revolution/OS/OSContext.h>
+#include <lib/revolution/os/OSContext.h>
 #include <runtime/rel.h>
 #include <cstdio>
 

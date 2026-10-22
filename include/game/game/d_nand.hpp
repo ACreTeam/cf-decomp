@@ -5,7 +5,8 @@
 // result into a RESULT_e. No RTTI: the names are inferred (namespace dNand: see notes/game_tu_conventions.md).
 
 #include <types.h>
-#include <lib/revolution/NAND.h>
+#include <lib/revolution/nand.h>
+#include <revolution/os.h>
 
 namespace dScene { class dSceneChange_c; }
 

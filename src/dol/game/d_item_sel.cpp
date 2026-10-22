@@ -237,7 +237,7 @@ BOOL select(dItem::Item *out, u32 num, const Range_c *ranges, u32 rangeNum,
     unqRnd_c defaultRnd;
     unqRnd_c *rnd = filter->mpRnd != NULL ? filter->mpRnd : &defaultRnd;
     dTime_c time = *dTime_c::getCurrent();
-    int season = getClothSeason((u8)time.month, (u8)time.mday);
+    int season = getClothSeason((u8)time.mon, (u8)time.mday);
     for (u32 i = 0; i < num; ++i) {
         out[i] = dItem::ITEM_ID_NONE;
     }

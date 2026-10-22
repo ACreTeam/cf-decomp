@@ -23,7 +23,7 @@
 #include <game/mLib/m_pad.hpp>
 #include <lib/nw4r/lyt/lyt_pane.h>
 #include <lib/nw4r/lyt/lyt_textBox.h>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 #include <game/snd/snd_id.hpp>
 
 CUSTOM_BASE_PROFILE(CLOCK, dClock_c, fProf::CLOCK, fProf::DRAW_ORDER::CLOCK);
@@ -191,13 +191,13 @@ void dClock_c::updateClock() {
         case dItem::LANG_IT:
         case dItem::LANG_DE:
             // day.month: the "T_day" pane comes second
-            mClockLyt.setNumber("T_day", now.month + 1, 12,
+            mClockLyt.setNumber("T_day", now.mon + 1, 12,
                                 dScript::NUM_FORMAT_REGION);
             mClockLyt.setNumber("T_month", now.mday, 12,
                                 dScript::NUM_FORMAT_REGION);
             break;
         default:
-            mClockLyt.setNumber("T_month", now.month + 1, 12,
+            mClockLyt.setNumber("T_month", now.mon + 1, 12,
                                 dScript::NUM_FORMAT_REGION);
             mClockLyt.setNumber("T_day", now.mday, 12,
                                 dScript::NUM_FORMAT_REGION);

@@ -52,7 +52,7 @@ u16 dSaveShopGrace_c::getItem(int slot, BOOL showSold) {
 int dSaveShopGrace_c::getSaleStage() {
     dTimeStamp_c today(*dTime_c::getCurrent());
     today.toDayStart();
-    switch (today.get().month) {
+    switch (today.get().mon) {
     case MONTH_JANUARY:
     case MONTH_APRIL:
     case MONTH_JULY:
@@ -97,11 +97,13 @@ void dSaveShopGrace_c::update() {
                 mDate.set(today.getTicks());
                 return;
             }
-            if (getLayoutType(today.get().month) == getLayoutType(mDate.get().month)) {
+            if (getLayoutType(today.get().mon) ==
+                getLayoutType(mDate.get().mon)) {
                 mDate.set(today.getTicks());
                 return;
             }
-        } else if (getLayoutType(today.get().month) == getLayoutType(mDate.get().month)) {
+        } else if (getLayoutType(today.get().mon) ==
+                   getLayoutType(mDate.get().mon)) {
             sellOff();
             mDate.set(today.getTicks());
             return;
@@ -115,21 +117,26 @@ void dSaveShopGrace_c::update() {
     }
 
     for (int i = 0; i < 10; i++) {
-        mStock[i].mItem = dItem::Item(dItem::seeker_c::get()->getNthInSeries(
-                                          sOrder[getLayoutType(today.get().month)][i] - 1,
-                                          sSeries[getLayoutType(today.get().month)], 3))
-                              .withVariant(sVariant[getLayoutType(today.get().month)][i])
-                              .mId;
+        mStock[i].mItem =
+            dItem::Item(dItem::seeker_c::get()->getNthInSeries(
+                            sOrder[getLayoutType(today.get().mon)][i] - 1,
+                            sSeries[getLayoutType(today.get().mon)], 3))
+                .withVariant(sVariant[getLayoutType(today.get().mon)][i])
+                .mId;
     }
 
     for (int i = 0; i < 1; i++) {
         mStock[10 + i * 2].mItem =
-            dItem::seeker_c::get()->getNthInSeries(i, sSeries[getLayoutType(today.get().month)], 1).mId;
+            dItem::seeker_c::get()
+                ->getNthInSeries(i, sSeries[getLayoutType(today.get().mon)], 1)
+                .mId;
         mStock[11 + i * 2].mItem =
-            dItem::seeker_c::get()->getNthInSeries(i, sSeries[getLayoutType(today.get().month)], 2).mId;
+            dItem::seeker_c::get()
+                ->getNthInSeries(i, sSeries[getLayoutType(today.get().mon)], 2)
+                .mId;
     }
 
-    dItem::fromCandCB_c fromA(sFromA[getLayoutType(today.get().month)]);
+    dItem::fromCandCB_c fromA(sFromA[getLayoutType(today.get().mon)]);
     dItem::seeker_c::get()->search(dItem::KIND_CLOTH, 6, &fromA);
     for (int i = 0; i < 6; i++) {
         mStock[12 + i].mItem = dItem::seeker_c::get()->getNth(i).mId;
@@ -141,7 +148,7 @@ void dSaveShopGrace_c::update() {
     dItem::seeker_c::get()->search(dItem::KIND_UMBRELLA, 6, &fromA);
     mStock[20].mItem = dItem::seeker_c::get()->getNth(0).mId;
 
-    dItem::fromCandCB_c fromB(sFromB[getLayoutType(today.get().month)]);
+    dItem::fromCandCB_c fromB(sFromB[getLayoutType(today.get().mon)]);
     dItem::seeker_c::get()->search(dItem::KIND_CLOTH, 6, &fromB);
     mStock[21].mItem = dItem::seeker_c::get()->getNth(0).withVariant(1).mId;
     dItem::seeker_c::get()->search(dItem::KIND_CAP, 6, &fromB);

@@ -2,7 +2,7 @@
 #include <game/game/d_star.hpp>
 #include <game/game/d_effect.hpp>
 #include <game/game/d_sky.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <game/game/d_snd_util.hpp>
 #include <game/snd/snd_id.hpp>
 

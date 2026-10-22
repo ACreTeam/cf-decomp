@@ -5,7 +5,7 @@
 #include <game/game/d_demo.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_world.hpp>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 #include <cstdio>
 #include <game/game/d_a_player.hpp>
 
@@ -181,7 +181,7 @@ void dObjBal_c::setPos(int bln) {
     m2d::getScreenRightBottom(&rightBottom, body);
     f32 right = rightBottom.x;
     f32 limit = 292.0f;
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         right *= 1.368421f;
         limit *= 1.368421f;
     }

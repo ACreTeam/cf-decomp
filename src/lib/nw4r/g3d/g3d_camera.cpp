@@ -1,8 +1,8 @@
 #include <nw4r/g3d.h>
 #include <nw4r/math.h>
 
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
 
 namespace nw4r {
 namespace g3d {

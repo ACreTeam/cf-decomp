@@ -108,19 +108,20 @@ void dAcNpcNml_c::talk_c::resVisitTime() {
         dTime_c entered = getMenuResult();
         msg = &talk_c::msgVisitReserved;
         dTime_c meet;
-        meet.set(now->year, now->month, now->mday, entered.hour, entered.min, 0);
+        meet.set(now->year, now->mon, now->mday, entered.hour, entered.min, 0);
         meet.normalize();
         if (dTime_c::isSameOrAfter(*now, meet)) {
             meet.add(1, 0, 0, 0);
         }
         dTime_c limit;
-        limit.set(now->year, now->month, now->mday, now->hour + 12, now->min, 0);
+        limit.set(now->year, now->mon, now->mday, now->hour + 12, now->min, 0);
         limit.normalize();
         BOOL tooLate = animal == NULL || !dTime_c::isSameOrAfter(limit, meet);
         if (tooLate) {
             msg = &talk_c::msgVisitTooLate;
         } else {
-            limit.set(now->year, now->month, now->mday, now->hour, now->min + 30, 0);
+            limit.set(now->year, now->mon, now->mday, now->hour, now->min + 30,
+                      0);
             limit.normalize();
             if (!dTime_c::isSameOrAfter(meet, limit)) {
                 msg = &talk_c::msgVisitTooSoon;

@@ -1,7 +1,7 @@
 #ifndef GAME_D_NET_DWC_HPP
 #define GAME_D_NET_DWC_HPP
 #include <game/game/d_net_friend.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 namespace EGG {
 class Heap;
 }

@@ -3,8 +3,7 @@
 #include <game/game/d_date.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_post_office.hpp>
-#include <revolution/OS/OSTime.h>
-
+#include <revolution/os/OSTime.h>
 
 // 8047B150
 static const u8 sDaysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -153,10 +152,10 @@ BOOL dTime_c::isSameOrAfter(dTime_c a, dTime_c b) {
 // 8016D65C
 BOOL dTime_c::isSameOrBeforeDay(dTime_c a, dTime_c b) {
     if (a.year == b.year) {
-        if (a.month == b.month) {
+        if (a.mon == b.mon) {
             return a.mday >= b.mday;
         } else {
-            return a.month > b.month;
+            return a.mon > b.mon;
         }
     } else {
         return a.year > b.year;
@@ -166,7 +165,7 @@ BOOL dTime_c::isSameOrBeforeDay(dTime_c a, dTime_c b) {
 // 8016D6C8
 BOOL dTime_c::isSameDay(dTime_c a, dTime_c b) {
     BOOL same = FALSE;
-    if (a.year == b.year && a.month == b.month && a.mday == b.mday) {
+    if (a.year == b.year && a.mon == b.mon && a.mday == b.mday) {
         same = TRUE;
     }
     return same;
@@ -181,7 +180,7 @@ void dTime_c::init() {
 // 8016D754
 void dTime_c::set(int year, int month, int day, int hour, int min, int sec) {
     this->year = year;
-    this->month = month;
+    this->mon = month;
     this->mday = day;
     this->hour = hour;
     this->min = min;
@@ -225,7 +224,7 @@ int dTime_c::getNthWeekday(int year, int month, int wday, int nth) {
     }
     time.add(diff + (nth - 1) * 7, 0, 0, 0);
 
-    if (time.month != month) {
+    if (time.mon != month) {
         return -1;
     }
     return time.mday;
@@ -331,7 +330,7 @@ static const u16 sTermDates[] = {
 
 // 8016DC34
 int dTime_c::getTerm() {
-    u16 key = MONTHDAY(month, mday);
+    u16 key = MONTHDAY(mon, mday);
     int ret = 0;
     for (int i = 0; i < ARRAY_SIZE(sTermDates); i++) {
         if (key <= sTermDates[i]) {
@@ -345,13 +344,15 @@ int dTime_c::getTerm() {
 
 // 8016DC84
 int dTime_c::getSeason() {
-    if ((month == MONTH_FEBRUARY && mday >= 25) || (month == MONTH_MARCH || month == MONTH_APRIL || month == MONTH_MAY)) {
+    if ((mon == MONTH_FEBRUARY && mday >= 25) ||
+        (mon == MONTH_MARCH || mon == MONTH_APRIL || mon == MONTH_MAY)) {
         return SEASON_SPRING;
     }
-    if (month == MONTH_JUNE || month == MONTH_JULY || month == MONTH_AUGUST) {
+    if (mon == MONTH_JUNE || mon == MONTH_JULY || mon == MONTH_AUGUST) {
         return SEASON_SUMMER;
     }
-    if (month == MONTH_SEPTEMBER || month == MONTH_OCTOBER || (month == MONTH_NOVEMBER && mday <= 25)) {
+    if (mon == MONTH_SEPTEMBER || mon == MONTH_OCTOBER ||
+        (mon == MONTH_NOVEMBER && mday <= 25)) {
         return SEASON_FALL;
     }
     return SEASON_WINTER;
@@ -365,7 +366,7 @@ int dTime_c::getCurrentSeason() {
 // 8016DD1C
 void dTime_c::setTermDate(const int *term, dTime_c *time) {
     u16 date = sTermDates[*term];
-    time->month = date >> 8;
+    time->mon = date >> 8;
     time->mday = date & 0xFF;
     time->normalize();
 }

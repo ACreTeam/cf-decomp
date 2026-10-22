@@ -1,7 +1,7 @@
 #include <nw4r/snd.h>
 #include <nw4r/ut.h>
 
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
@@ -43,7 +43,7 @@ void SoundThread::Shutdown() {
     }
 
     OSJamMessage(&GetInstance().mMsgQueue,
-                 reinterpret_cast<OSMessage>(MSG_SHUTDOWN), OS_MSG_BLOCKING);
+                 reinterpret_cast<OSMessage>(MSG_SHUTDOWN), OS_MESSAGE_BLOCK);
 
     OSJoinThread(&mThread, NULL);
     mCreateFlag = false;
@@ -89,7 +89,7 @@ void SoundThread::SoundThreadProc() {
     OSMessage msg;
 
     while (true) {
-        OSReceiveMessage(&mMsgQueue, &msg, OS_MSG_BLOCKING);
+        OSReceiveMessage(&mMsgQueue, &msg, OS_MESSAGE_BLOCK);
 
         if (reinterpret_cast<u32>(msg) == MSG_AX_CALLBACK) {
             ut::detail::AutoLock<OSMutex> lock(mMutex);

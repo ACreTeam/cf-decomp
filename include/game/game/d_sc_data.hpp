@@ -11,7 +11,7 @@
 
 #include <types.h>
 #include <game/game/d_scene.hpp>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 // Scene descriptors consumed by d_scene.cpp. Each is stored in the scene's
 // .sdata.

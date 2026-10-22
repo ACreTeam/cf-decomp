@@ -14,7 +14,7 @@
 #include <game/game/d_voice_chat.hpp>
 #include <game/game/d_wifi.hpp>
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 dNetMgr_c *dNetMgr_c::sInstance;
 

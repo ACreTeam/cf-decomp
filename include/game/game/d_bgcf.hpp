@@ -281,7 +281,10 @@ public:
 // Callback of flattenUnits (RTTI dBGCF::flatChk_c; its vtable is in the users' TUs).
 class flatChk_c {
 public:
-    virtual BOOL check(int attr) = 0;
+  // check(): leave the unit as it is, or flatten it
+  enum Result_e { NO_FLATTEN, FLATTEN };
+
+  virtual BOOL check(int attr) = 0;
 };
 
 class grid_c;

@@ -11,7 +11,7 @@
 #include <game/game/d_script.hpp>
 #include <game/game/d_string.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <revolution/SC/scapi.h>
+#include <revolution/sc.h>
 
 namespace dMenuPost00 {
 // .text:0xCC
@@ -507,7 +507,7 @@ void dMenuPost00_c::initMails() {
 const mVec2_c &dMenuPost00_c::getSlotPos(int slot, float dx, float dy) {
     static mVec2_c pos(0.0f, 0.0f);
     mVec3_c root;
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         dx *= 0.730769f;
     }
     if (isBox(slot)) {

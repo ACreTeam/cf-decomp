@@ -10,8 +10,8 @@
 #include <game/game/d_reset_save.hpp>
 #include <game/game/d_snd_util.hpp>
 #include <game/game/d_wifi_err.hpp>
-#include <lib/revolution/DVD/dvd.h>
-#include <lib/revolution/OS.h>
+#include <revolution/dvd.h>
+#include <lib/revolution/os.h>
 #include <string.h>
 
 #define CAUTION_FONT_SIZE 0x81F4

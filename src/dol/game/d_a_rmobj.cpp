@@ -5,7 +5,7 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_player_mgr.hpp>
 #include <game/mLib/m_heap.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <game/game/d_a_player.hpp>
 
 // The model heap's name ("... : general OBJ heap" in SJIS). Used by create (d_a_rmobj_model.cpp).

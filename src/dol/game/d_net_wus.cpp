@@ -2,9 +2,9 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_net_wus.hpp>
 #include <revolution/NHTTP.h>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 #include <revolution/SO.h>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSTime.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -176,7 +176,7 @@ BOOL dNetWus_c::sendRequest() {
         BOOL timeout = FALSE;
         u32 start = OSGetTick();
         while (NHTTPGetConnectionError(mRequest) == HTTP_REQUEST_PENDING) {
-            ticksPerMsec = OS_TIME_SPEED / 1000;
+            ticksPerMsec = OS_TIMER_CLOCK / 1000;
             if ((OSGetTick() - start) / ticksPerMsec >= REQUEST_TIMEOUT_MSEC) {
                 timeout = TRUE;
                 break;

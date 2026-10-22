@@ -1,6 +1,6 @@
 #include <nw4r/snd.h>
 
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 
 namespace nw4r {
 namespace snd {

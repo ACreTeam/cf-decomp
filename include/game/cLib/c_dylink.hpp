@@ -3,7 +3,7 @@
 #include <game/mLib/m_dvd.hpp>
 #include <lib/egg/core/eggExpHeap.h>
 #include <lib/egg/core/eggDvdFile.h>
-#include <lib/revolution/OS/OSLink.h>
+#include <lib/revolution/os/OSLink.h>
 
 class DynamicModuleControlBase {
 protected:

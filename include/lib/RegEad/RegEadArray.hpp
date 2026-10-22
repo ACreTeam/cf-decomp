@@ -12,7 +12,7 @@
 // library uses.
 
 #include <types.h>
-#include <revolution/MEM.h>
+#include <revolution/mem.h>
 #include <string.h>
 
 // Placement new, inlined (the library has its own; no call to __nw__FUlPv).

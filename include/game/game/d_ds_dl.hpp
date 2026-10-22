@@ -1,6 +1,6 @@
 #pragma once
 #include <game/game/d_net_ds_download.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 // DS download play; names inferred from protocol behavior and callers.
 namespace dDsDl {
 enum Mode_e { MODE_RECEIVE, MODE_SEND, MODE_LISTEN };

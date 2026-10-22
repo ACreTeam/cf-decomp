@@ -10,7 +10,7 @@
 #include <game/mLib/m_mtx.hpp>
 #include <lib/egg/gfx/eggDrawHelper.h>
 #include <nw4r/g3d/g3d_state.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <lib/MSL/math.h>
 #include <stddef.h>
 
@@ -59,7 +59,7 @@ static void setupProjection(const mVec3_c *pos, const mMtx_c *view, const Projec
     GXSetDither(GX_TRUE);
     GXSetTevColor(GX_TEVREG0, projection->mColor);
     GXSetNumTexGens(1);
-    GXLoadTexMtxImm(texMtx.mtx, GX_TEXMTX0, GX_MTX_3x4);
+    GXLoadTexMtxImm(texMtx.mtx, GX_TEXMTX0, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetNumTevStages(1);
     GXSetNumIndStages(0);

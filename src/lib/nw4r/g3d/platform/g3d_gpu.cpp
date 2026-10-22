@@ -214,7 +214,7 @@ void GDLoadTexMtxImm3x3(const math::MTX33& rMtx, u32 id) {
     mtx._22 = pMtx->_22;
     mtx._23 = 0.0f;
 
-    GXLoadTexMtxImm(mtx, id, GX_MTX_3x4);
+    GXLoadTexMtxImm(mtx, id, GX_MTX3x4);
 }
 
 } // namespace fifo

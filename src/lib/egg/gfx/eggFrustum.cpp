@@ -4,7 +4,7 @@
 #include <lib/egg/gfxe/eggStateGX.h>
 #include <nw4r/g3d.h>
 #include <nw4r/math.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 // Float pool order: CF's .sdata2 for this unit starts with 1.0f, which only a dead-stripped function used.
 // (SS's EGG has the same trick.) This function is not in CF's DOL; the linker strips it.

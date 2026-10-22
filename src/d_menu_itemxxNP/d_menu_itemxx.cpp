@@ -9,7 +9,7 @@
 #include <game/game/d_player_mgr.hpp>
 #include <game/game/d_private_data.hpp>
 #include <game/game/d_scene.hpp>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 // The argument of m2d::isInPane.
 struct HitInfo {
@@ -600,7 +600,7 @@ mVec2_c dMenuItemXX_c::getPocketPos(int slot, float dx, float dy) {
 // .text:0x1B1C
 mVec2_c dMenuItemXX_c::getSlotPos(int slot, float dx, float dy) {
     mVec2_c pos(0.0f, 0.0f);
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         dx *= 0.730769f;
     }
     if (isPocket(slot)) {

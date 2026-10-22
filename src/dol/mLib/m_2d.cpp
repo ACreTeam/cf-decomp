@@ -5,9 +5,9 @@
 #include <lib/egg/gfxe/eggScreen.h>
 #include <nw4r/lyt.h>
 #include <nw4r/ut.h>
-#include <revolution/GX.h>
-#include <revolution/MTX/mtx.h>
-#include <revolution/SC/scapi.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
+#include <revolution/sc.h>
 #include <constants/sjis_constants.h>
 #include <string.h>
 
@@ -275,7 +275,7 @@ void Base_c::entry() {
 }
 
 Simple_c::Simple_c() : mpResAcc(nullptr), mPos(0.0f, 0.0f, 0.0f), mFlags(0) {
-    if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
+    if (SCGetAspectRatio() == SC_ASPECT_RATIO_16x9) {
         mDrawInfo.SetLocationAdjustScale(nw4r::math::VEC2(19.0f / 26.0f, 1.0f));
         mDrawInfo.SetLocationAdjust(true);
     }

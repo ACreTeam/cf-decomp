@@ -4,7 +4,7 @@
 
 #include <nw4r/ut/ut_FileStream.h>
 
-#include <revolution/DVD.h>
+#include <revolution/dvd.h>
 
 namespace nw4r {
 namespace ut {

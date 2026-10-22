@@ -28,10 +28,10 @@
 #include <game/game/d_sys.hpp>
 #include <game/game/d_wifi.hpp>
 #include <game/game/d_wifi_err.hpp>
-#include <revolution/DVD.h>
-#include <revolution/GX.h>
-#include <revolution/OS.h>
-#include <revolution/VI.h>
+#include <revolution/dvd.h>
+#include <revolution/gx.h>
+#include <revolution/os.h>
+#include <revolution/vi.h>
 
 namespace dReset {
 

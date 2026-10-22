@@ -1,6 +1,6 @@
 #include <lib/egg/math/eggMatrix.h>
-#include <revolution/GX.h>
-#include <revolution/MTX.h>
+#include <revolution/gx.h>
+#include <revolution/mtx.h>
 
 namespace EGG {
 

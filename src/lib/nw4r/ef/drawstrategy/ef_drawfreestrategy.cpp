@@ -1,7 +1,7 @@
 #include <nw4r/ef.h>
 #include <nw4r/math.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace nw4r {
 namespace ef {

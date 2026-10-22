@@ -880,7 +880,7 @@ bool Material::SetupGX(bool modulate, u8 alpha) {
 
             math::MTX34 mtx;
             CalcTextureMtx(&mtx, pTexSrt[i]);
-            GXLoadTexMtxImm(mtx, GetTexMtx(i), GX_MTX_2x4);
+            GXLoadTexMtxImm(mtx, GetTexMtx(i), GX_MTX2x4);
         }
     }
 

@@ -7,7 +7,7 @@
 #include <game/snd/snd_obj.hpp>
 #include <game/snd/snd_id.hpp>
 #include <game/game/d_date.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 // The steps that sound in a melody of type 3 (SoundMelodyPart::getNote).
 static const u8 sNoteSteps[13] = {0, 2, 3, 4, 5, 6, 7, 9, 11, 15, 19, 25, 33};
@@ -370,7 +370,7 @@ void SoundMelody::play(u32 soundId, const u8 *notes) {
         notes = mNotes;
         int stage = SoundManager::getInstance()->_778;
         if (stage >= 0x2D && stage <= 0x37) {
-            notes = sMonthNotes[dTime_c::getCurrent()->month];
+            notes = sMonthNotes[dTime_c::getCurrent()->mon];
         }
     }
     if (!((soundId >= 1 && soundId <= SE_MELODY_SP_SKK_rnd5) || soundId == SE_MELODY_CHIME_TOWN)) {
@@ -398,7 +398,7 @@ void SoundMelody::playChime() {
     const u8 *notes = mNotes;
     int stage = SoundManager::getInstance()->_778;
     if (stage >= 0x2D && stage <= 0x37) {
-        notes = sMonthNotes[dTime_c::getCurrent()->month];
+        notes = sMonthNotes[dTime_c::getCurrent()->mon];
         soundId = SE_MELODY_CHIME_TOWN;
     }
     mPart0.start(soundId, notes);
@@ -450,7 +450,7 @@ void SoundMelody::playAt(const nw4r::math::VEC3 *pos, u32 kind) {
     const u8 *notes = mNotes;
     int stage = SoundManager::getInstance()->_778;
     if (stage >= 0x2D && stage <= 0x37) {
-        notes = sMonthNotes[dTime_c::getCurrent()->month];
+        notes = sMonthNotes[dTime_c::getCurrent()->mon];
     }
     mPart1.start(soundId, notes);
 }
@@ -513,7 +513,7 @@ void SoundObjInst::setup(int inst) {
     sNotes = SoundSystem::getInstance()->mMelody.getNotes();
     int stage = SoundManager::getInstance()->_778;
     if (stage >= 0x2D && stage <= 0x37) {
-        sNotes = SoundMelody::getMonthNotes(dTime_c::getCurrent()->month);
+        sNotes = SoundMelody::getMonthNotes(dTime_c::getCurrent()->mon);
     }
     mSoundId = sInstSounds[inst];
     mPlaying = false;

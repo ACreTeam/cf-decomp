@@ -8,7 +8,7 @@
 #include <game/game/d_fish_field.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/cLib/c_lib.hpp>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSTime.h>
 #include <game/game/d_net.hpp>
 
 dSky_c *g_sky; // 8074E830: the sky actor
@@ -31,23 +31,25 @@ BOOL calcWeatherHoursA(f32 *hours) {
         switch (weather) {
         case 1:
             found = TRUE;
-            end.set(end.year, end.month, end.mday, 23, 0, 0);
+            end.set(end.year, end.mon, end.mday, 23, 0, 0);
             break;
         case 2:
             found = TRUE;
-            end.set(end.year, end.month, end.mday, 22, 15, 0);
+            end.set(end.year, end.mon, end.mday, 22, 15, 0);
             break;
         case 3:
             found = TRUE;
-            end.set(end.year, end.month, end.mday, 21, 30, 0);
+            end.set(end.year, end.mon, end.mday, 21, 30, 0);
             break;
         case 4:
             found = TRUE;
-            end.set(end.year, end.month, end.mday, 20, 45, 0);
+            end.set(end.year, end.mon, end.mday, 20, 45, 0);
             break;
         }
         if (found) {
-            *hours = (int)OS_TICKS_TO_SEC(dTime_c::diffTicks(&now, &end, FALSE)) / 3600.0f;
+            *hours =
+                (int)OSTicksToSeconds(dTime_c::diffTicks(&now, &end, FALSE)) /
+                3600.0f;
             return TRUE;
         }
     }
@@ -65,27 +67,29 @@ BOOL calcWeatherHoursB(f32 *hours) {
         switch (weather) {
         case 0x13:
             found = TRUE;
-            start.set(start.year, start.month, start.mday, 15, 0, 0);
+            start.set(start.year, start.mon, start.mday, 15, 0, 0);
             break;
         case 0x14:
             found = TRUE;
-            start.set(start.year, start.month, start.mday, 14, 0, 0);
+            start.set(start.year, start.mon, start.mday, 14, 0, 0);
             break;
         case 0x15:
             found = TRUE;
-            start.set(start.year, start.month, start.mday, 13, 0, 0);
+            start.set(start.year, start.mon, start.mday, 13, 0, 0);
             break;
         case 0x16:
             found = TRUE;
-            start.set(start.year, start.month, start.mday, 14, 0, 0);
+            start.set(start.year, start.mon, start.mday, 14, 0, 0);
             break;
         case 0x17:
             found = TRUE;
-            start.set(start.year, start.month, start.mday, 13, 0, 0);
+            start.set(start.year, start.mon, start.mday, 13, 0, 0);
             break;
         }
         if (found) {
-            *hours = (int)OS_TICKS_TO_SEC(dTime_c::diffTicks(&now, &start, FALSE)) / 3600.0f;
+            *hours =
+                (int)OSTicksToSeconds(dTime_c::diffTicks(&now, &start, FALSE)) /
+                3600.0f;
             return TRUE;
         }
     }

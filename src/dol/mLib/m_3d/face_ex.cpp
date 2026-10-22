@@ -1,6 +1,6 @@
 #include <game/mLib/m_3d/face_ex.hpp>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 #include <revolution/RFL.h>
 
 // m3d::bface_c / m3d::faceEx_c (City Folk only, no Skyward Sword counterpart).

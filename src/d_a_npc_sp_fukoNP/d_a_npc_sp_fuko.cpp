@@ -579,7 +579,7 @@ void dAcNpcSpFuko_c::talk_c::onMessageStart(int arg) {
         dTime_c date = *dTime_c::getCurrent();
         dStarDraw_c::getSignDate(
             dSaveData_c::getRaw()->getStarSigns()->get(fn_80029CDC()), &date);
-        setMonthName(date.month, 4);
+        setMonthName(date.mon, 4);
         setDayName((u8)date.mday, 5);
         break;
     }
@@ -599,7 +599,7 @@ void dAcNpcSpFuko_c::talk_c::onMessageStart(int arg) {
         dTime_c date = *dTime_c::getCurrent();
         dStarDraw_c::getSignDate(
             dSaveData_c::getRaw()->getStarSigns()->get(mSelSign), &date);
-        setMonthName(date.month, 4);
+        setMonthName(date.mon, 4);
         setDayName((u8)date.mday, 5);
         break;
     }

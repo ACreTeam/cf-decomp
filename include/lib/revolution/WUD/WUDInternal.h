@@ -6,8 +6,8 @@
 #include <revolution/WUD/WUD.h>
 
 #include <revolution/BTE.h>
-#include <revolution/OS.h>
-#include <revolution/SC.h>
+#include <revolution/os.h>
+#include <revolution/sc.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <types.h>
-#include <revolution/GX.h>
-#include <lib/revolution/OS/OSThread.h>
+#include <revolution/gx.h>
+#include <lib/revolution/os/OSThread.h>
 
 namespace EGG {
 class Heap;

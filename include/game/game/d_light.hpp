@@ -8,7 +8,7 @@
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/g3d/g3d_light.h>
 #include <nw4r/ut.h>
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 namespace dLight {
 

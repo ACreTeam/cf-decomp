@@ -436,7 +436,7 @@ BOOL getEventPattern(const dTime_c *time, u8 *pattern) {
     for (u32 i = 0; i < 14; ++i) {
         dQuestEvent_e event = sEventPatterns[i].event;
         if (dEvent::isEventOnDate(event, (const int &)time->year,
-                                  (const int &)time->month,
+                                  (const int &)time->mon,
                                   (const int &)time->mday)) {
             *pattern = sEventPatterns[i].pattern;
             return TRUE;
@@ -459,7 +459,7 @@ int calcPattern(const dTime_c *time, int city) {
             return pattern;
         }
     }
-    u8 table = getSeasonTable((u8)date.month, (u8)date.mday);
+    u8 table = getSeasonTable((u8)date.mon, (u8)date.mday);
     f32 total = 0.0f;
     const u8 *weights = sWeightTables[table];
     dRandom_c random(0x9D);

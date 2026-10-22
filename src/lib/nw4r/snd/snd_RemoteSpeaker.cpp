@@ -1,9 +1,9 @@
 #include <nw4r/snd.h>
 #include <nw4r/ut.h>
 
-#include <revolution/OS.h>
-#include <revolution/WENC.h>
-#include <revolution/WPAD.h>
+#include <revolution/os.h>
+#include <revolution/wenc.h>
+#include <revolution/wpad.h>
 
 #include <cstring>
 
@@ -191,9 +191,10 @@ void RemoteSpeaker::UpdateStreamData(const s16* pRmtSamples) {
         ut::AutoInterruptLock lock;
 
         if (!mContinueFlag) {
-            OSSetAlarm(&mContinueAlarm,
-                       OS_SEC_TO_TICKS(CONTINUOUS_PLAY_INTERVAL_MINUTES * 60LL),
-                       ContinueAlarmHandler);
+            OSSetAlarm(
+                &mContinueAlarm,
+                OSSecondsToTicks(CONTINUOUS_PLAY_INTERVAL_MINUTES * 60LL),
+                ContinueAlarmHandler);
 
             mContinueBeginTime = OSGetTime();
             mContinueFlag = true;
@@ -208,7 +209,8 @@ void RemoteSpeaker::UpdateStreamData(const s16* pRmtSamples) {
 
         mIntervalFlag = true;
         OSCancelAlarm(&mIntervalAlarm);
-        OSSetAlarm(&mIntervalAlarm, OS_SEC_TO_TICKS(1LL), IntervalAlarmHandler);
+        OSSetAlarm(&mIntervalAlarm, OSSecondsToTicks(1LL),
+                   IntervalAlarmHandler);
     }
 
     mPlayFlag = playFlag;

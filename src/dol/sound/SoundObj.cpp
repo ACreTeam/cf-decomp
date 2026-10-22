@@ -7,7 +7,7 @@
 #include <game/snd/snd_system.hpp>
 #include <game/game/d_weather.hpp>
 #include <lib/nw4r/math/math_arithmetic.h>
-#include <revolution/MTX/mtxvec.h>
+#include <revolution/mtx.h>
 
 SoundObjBase *SoundObjBase::sFirst;
 f32 SoundObjBase::sFxSend;

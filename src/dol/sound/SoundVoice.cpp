@@ -5,7 +5,7 @@
 #include <game/snd/snd_manager.hpp>
 #include <game/snd/snd_id.hpp>
 #include <game/game/d_region.hpp>
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 // A syllable as an offset from the voice's first one, and as the kana character that plays it.
 #define S(name) (DOUBUTSUGO_Boy_##name - DOUBUTSUGO_Boy_0a_l)

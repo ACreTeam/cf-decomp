@@ -1,6 +1,6 @@
 #include <game/cLib/c_lib.hpp>
 #include <lib/egg/math/eggMath.h>
-#include <lib/revolution/MTX/vec.h>
+#include <revolution/mtx.h>
 #include <string.h>
 
 inline float calcDistance(const mVec3_c &a, const mVec3_c &b) {

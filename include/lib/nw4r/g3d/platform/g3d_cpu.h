@@ -2,7 +2,7 @@
 #define NW4R_G3D_PLATFORM_CPU_H
 #include <nw4r/types_nw4r.h>
 
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace nw4r {
 namespace g3d {
@@ -95,10 +95,10 @@ inline s16 F32ToS10_5(register f32 f) {
  *
  ******************************************************************************/
 inline void SetGQR6_S10_5() {
-    OSSetGQR6(OS_GQR_TYPE_S16, 5);
+    OSSetGQR6(OS_GQR_S16, 5);
 }
 inline void SetGQR7_S7_8() {
-    OSSetGQR7(OS_GQR_TYPE_S16, 8);
+    OSSetGQR7(OS_GQR_S16, 8);
 }
 
 /******************************************************************************

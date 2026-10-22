@@ -5,7 +5,7 @@
 #include <game/game/d_snd_util.hpp>
 #include <game/sLib/s_lib.hpp>
 #include <game/snd/snd_id.hpp>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 
 // .text:0x5C
 BOOL dMenuStar_c::load() {
@@ -42,7 +42,7 @@ void dMenuStar_c::draw() {
         mWinLyt.calc();
         mVec3_c pos = m2d::getTotalPos(mWinLyt.findPane("N_star_win_all"));
         f32 halfWidth = 200.0f;
-        if (SCGetAspectRatio() != SC_ASPECT_WIDE) {
+        if (SCGetAspectRatio() != SC_ASPECT_RATIO_16x9) {
             halfWidth *= 1.368421f;
         }
         mWinZClear.set(250.0 + pos.y, -250.0f + pos.y, -halfWidth + pos.x,

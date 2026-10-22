@@ -61,7 +61,12 @@ typedef volatile f64 vf64;
 typedef int UNKWORD;
 typedef void UNKTYPE;
 
-enum { FALSE, TRUE };
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 typedef int BOOL;
 
 // Macros

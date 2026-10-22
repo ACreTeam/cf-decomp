@@ -740,10 +740,10 @@ void dAcPlayer_c::executePitfallStruggle() {
         if (mPad::getCore()->downTrigger(WPAD_BUTTON_B)) {
             power += 24.0f;
         }
-        if (mPad::getCore()->downTrigger(WPAD_BUTTON_FS_C)) {
+        if (mPad::getCore()->downTrigger(WPAD_BUTTON_C)) {
             power += 24.0f;
         }
-        if (mPad::getCore()->downTrigger(WPAD_BUTTON_FS_Z)) {
+        if (mPad::getCore()->downTrigger(WPAD_BUTTON_Z)) {
             power += 24.0f;
         }
         if (dPad::isShakeHeld()) {

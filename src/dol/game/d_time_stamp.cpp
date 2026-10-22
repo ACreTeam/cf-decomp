@@ -142,7 +142,7 @@ int dTimeStamp_c::diffDaysFromNow(BOOL dayStart, BOOL adjust) const {
 
 // 8014CB74
 int dTimeStamp_c::compare(const dTime_c &cal) const {
-    s64 other = OSCalendarTimeToTicks(&cal);
+    s64 other = OSCalendarTimeToTicks(const_cast<dTime_c *>(&cal));
     s64 ticks = getRaw();
     if (ticks > other) {
         return -1;

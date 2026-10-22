@@ -11,7 +11,7 @@
 #include <game/mLib/m_mtx.hpp>
 #include <game/mLib/m_vec.hpp>
 #include <nw4r/math.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 class dAcNpc_c;
 

@@ -1,7 +1,7 @@
 #ifndef RVL_SDK_RFL_MODEL_H
 #define RVL_SDK_RFL_MODEL_H
 #include <types.h>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 #include <revolution/RFL/RFL_Types.h>
 #ifdef __cplusplus
 extern "C" {

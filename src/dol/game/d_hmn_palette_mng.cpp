@@ -1,6 +1,6 @@
 #include <game/game/d_hmn_palette_mng.hpp>
 #include <lib/egg/core/eggHeap.h>
-#include <revolution/OS/OSCache.h>
+#include <revolution/os/OSCache.h>
 #include <cstdio>
 #include <cstring>
 #include <game/game/d_heap.hpp>

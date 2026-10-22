@@ -4,7 +4,7 @@
 #include <game/game/d_region.hpp>
 #include <game/game/d_save_data.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
-#include <lib/revolution/OS/OSThread.h>
+#include <lib/revolution/os/OSThread.h>
 #include <string.h>
 #include <game/game/d_heap.hpp>
 #include <game/game/d_thunder.hpp>

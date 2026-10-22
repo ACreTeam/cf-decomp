@@ -1,7 +1,7 @@
 #pragma once
 
 #include <nw4r/types_nw4r.h>
-#include <lib/revolution/OS/OSLink.h>
+#include <lib/revolution/os/OSLink.h>
 
 namespace nw4r {
 namespace db {

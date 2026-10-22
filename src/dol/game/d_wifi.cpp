@@ -23,11 +23,11 @@
 #include <game/game/d_hr.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <game/cLib/c_math.hpp>
-#include <lib/revolution/CX/CXUncompression.h>
+#include <revolution/cx.h>
 #include <game/mLib/m_perf.hpp>
 #include <lib/egg/core/eggArchive.h>
 #include <lib/egg/core/eggExpHeap.h>
-#include <revolution/OS/OSThread.h>
+#include <revolution/os/OSThread.h>
 #include <cstring>
 #include <cstdio>
 
@@ -199,8 +199,9 @@ BOOL dWifi::createThread(ThreadFunc func, const dPostRequest_c *req) {
         memcpy(&lbl_806215C0, req, sizeof(lbl_806215C0));
     }
     sThreadStack = dHeap::netWc24Heap_p->alloc(THREAD_STACK_SIZE, 0x20);
-    OSCreateThread(&sThread, func, &lbl_806215C0, (u8 *)sThreadStack + THREAD_STACK_SIZE, THREAD_STACK_SIZE, 20,
-                   OS_THREAD_DETACHED);
+    OSCreateThread(&sThread, func, &lbl_806215C0,
+                   (u8 *)sThreadStack + THREAD_STACK_SIZE, THREAD_STACK_SIZE,
+                   20, OS_THREAD_ATTR_DETACH);
     mPerf::setThreadColor(&sThread, dPerf::getThreadColor(9));
     OSResumeThread(&sThread);
     return TRUE;

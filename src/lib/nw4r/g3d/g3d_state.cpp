@@ -1750,11 +1750,11 @@ void LoadResTexSrt(const ResTexSrt srt) {
                     sPostTexMtx.SetIdentity(i);
                     math::MTX34Identity(&identMtx);
 
-                    GXLoadTexMtxImm(identMtx, i * 3 + GX_PTTEXMTX0, GX_MTX_3x4);
+                    GXLoadTexMtxImm(identMtx, i * 3 + GX_PTTEXMTX0, GX_MTX3x4);
                 }
             } else {
                 sPostTexMtx.ResetIdentity(i);
-                GXLoadTexMtxImm(mtx, i * 3 + GX_PTTEXMTX0, GX_MTX_3x4);
+                GXLoadTexMtxImm(mtx, i * 3 + GX_PTTEXMTX0, GX_MTX3x4);
             }
 
         } else {

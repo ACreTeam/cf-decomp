@@ -6,7 +6,7 @@
 
 #include <nw4r/ut.h>
 
-#include <revolution/ARC.h>
+#include <revolution/arc.h>
 
 namespace nw4r {
 namespace lyt {

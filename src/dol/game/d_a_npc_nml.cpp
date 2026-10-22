@@ -50,7 +50,7 @@
 #include <game/game/d_npc_talk_quest_delivery.hpp>
 #include <game/game/d_npc_talk_rollan.hpp>
 #include <game/game/d_mail.hpp>                   // static dMail_c (.bss)
-#include <revolution/CX/CXUncompression.h>        // resMng_c
+#include <revolution/cx/CXUncompression.h>        // resMng_c
 #include <cstdio>                                 // sprintf
 #include <game/game/d_event.hpp>
 #include <game/game/d_msg.hpp>
@@ -1910,10 +1910,13 @@ void dAcNpcNml_c::talk_c::selectMessage(const EGG::MsgRes::MessageHeader *bmg) {
         }
         BOOL ok = FALSE;
         if ((attr->mTimeOfDay == 0 || attr->mTimeOfDay - 1 == timeOfDay) &&
-            (attr->mGender == 0 || (pid != NULL && attr->mGender - 1 == pid->player.mGender)) &&
+            (attr->mGender == 0 ||
+             (pid != NULL && attr->mGender - 1 == pid->player.mGender)) &&
             (attr->mSeason == 0 || attr->mSeason - 1 == season) &&
-            (attr->mFriendship == 0 || (memory != NULL && attr->mFriendship - 1 == memory->getFriendshipLevel())) &&
-            (attr->mMonth == 0 || attr->mMonth - 1 == now->month) &&
+            (attr->mFriendship == 0 ||
+             (memory != NULL &&
+              attr->mFriendship - 1 == memory->getFriendshipLevel())) &&
+            (attr->mMonth == 0 || attr->mMonth - 1 == now->mon) &&
             (attr->mDay == 0 || attr->mDay == now->mday)) {
             ok = TRUE;
         }

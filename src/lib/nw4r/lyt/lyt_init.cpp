@@ -1,6 +1,6 @@
 #include <nw4r/lyt.h>
 
-#include <revolution/OS.h>
+#include <revolution/os.h>
 
 namespace {
 

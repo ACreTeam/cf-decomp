@@ -6,10 +6,10 @@
 #include <game/game/d_thunder.hpp>
 #include <game/game/d_voice_chat.hpp>
 #include <game/mLib/m_perf.hpp>
-#include <revolution/OS/OSTime.h>
-#include <revolution/PMIC/pmic.h>
+#include <revolution/os/OSTime.h>
+#include <revolution/pmic.h>
 #include <revolution/SO.h>
-#include <revolution/VI.h>
+#include <revolution/vi.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -138,7 +138,7 @@ void Session_c::start(DWCUserData *data, DWCFriendData *friends, u8 num,
         publishStatus();
         OSCreateThread(&mThread, threadMain, 0,
                        sThreadStack + THREAD_STACK_SIZE, THREAD_STACK_SIZE,
-                       THREAD_PRIORITY, OS_THREAD_DETACHED);
+                       THREAD_PRIORITY, OS_THREAD_ATTR_DETACH);
         mPerf::setThreadColor(&mThread, dPerf::getThreadColor(4));
         OSResumeThread(&mThread);
     }
@@ -220,7 +220,7 @@ void Session_c::setState(int state) {
 // 800E7E90
 BOOL Session_c::openMic(void *work) {
     if (work) {
-        sMicResult = PMICInitEx(work);
+        sMicResult = PMICInit(work);
         if (!sMicResult) {
             return TRUE;
         }
@@ -236,14 +236,14 @@ BOOL Session_c::closeMic() {
         if (dVoiceChat::isMicShutDown()) {
             break;
         }
-        OSSleepTicks((u64)(OS_TIME_SPEED / 1000) * MIC_RETRY_DELAY_MS);
+        OSSleepTicks((u64)(OS_TIMER_CLOCK / 1000) * MIC_RETRY_DELAY_MS);
     } while (--retries > 0);
     retries = MIC_SHUTDOWN_RETRIES;
     do {
         if (PMICQuit() != PMIC_ERR_BUSY) {
             break;
         }
-        OSSleepTicks((u64)(OS_TIME_SPEED / 1000) * MIC_RETRY_DELAY_MS);
+        OSSleepTicks((u64)(OS_TIMER_CLOCK / 1000) * MIC_RETRY_DELAY_MS);
     } while (--retries > 0);
     sMicResult = 0;
     return TRUE;
@@ -257,7 +257,7 @@ BOOL Session_c::suspendScheduler() {
         if (result != NWC24_ERR_BUSY) {
             break;
         }
-        OSSleepTicks((s64)(OS_TIME_SPEED / 1000) * SCHEDULER_RETRY_DELAY_MS);
+        OSSleepTicks((s64)(OS_TIMER_CLOCK / 1000) * SCHEDULER_RETRY_DELAY_MS);
     } while (--retries > 0);
     if (result >= 0) {
         return TRUE;
@@ -319,7 +319,7 @@ BOOL Session_c::stopSockets() {
 // 800E8264
 void Session_c::execute() {
     if (mState == STATE_MATCHING && DWC_GetLastMatchingType() == 3 &&
-        (u64)(OSGetTime() - mMatchStart) / OS_MSEC_TO_TICKS(1) >
+        (u64)(OSGetTime() - mMatchStart) / OSMillisecondsToTicks(1) >
             MATCH_TIMEOUT_MS) {
         cancelMatch();
         setError(ERROR_MATCH_TIMEOUT, ERROR_RECOVERABLE, 0, 0);

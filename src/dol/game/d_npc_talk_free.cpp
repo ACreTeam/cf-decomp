@@ -47,7 +47,7 @@ const char *l_freeILabels[2] = {"FreeI_Tunekichi", "FreeI_Tunekichi"};
 // 80039B38
 BOOL dAcNpcNml_c::talk_c::isLeapDay() {
     dTime_c *now = dTime_c::getCurrent();
-    if (now->month == 1 && now->mday == 29) {
+    if (now->mon == 1 && now->mday == 29) {
         return TRUE;
     }
     return FALSE;
@@ -156,7 +156,7 @@ const u8 *dAcNpcNml_c::talk_c::getFreeWeights() {
     static const u8 l_visitor[10] = {25, 0, 0, 20, 0, 0, 0, 20, 35, 0};
     static const u8 l_visitorSpecial[10] = {20, 20, 0, 15, 0, 0, 0, 15, 30, 0};
     static const u8 l_visitorEvent[10] = {10, 0, 50, 10, 0, 0, 0, 5, 25, 0};
-    BOOL special = (u32)getSpecialDay() < 7 ? TRUE : FALSE;
+    bool special = (u32)getSpecialDay() < 7;
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getCurrentPlayer();
     BOOL visitor = isVisitor(player);
     dAnimalBlock_c *block = &dSaveData_c::getRaw()->mAnimals.mTown;

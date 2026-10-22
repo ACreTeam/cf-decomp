@@ -3,7 +3,7 @@
 #include <types.h>
 
 #include <revolution/BTE.h>
-#include <revolution/SC.h>
+#include <revolution/sc.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

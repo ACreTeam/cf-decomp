@@ -2,7 +2,7 @@
 // .sdata 8074B5E8..8074B5F0, .sdata2 80751380..807513A8.
 #include <game/game/d_wipe_fader.hpp>
 #include <game/mLib/m_tex.hpp>
-#include <revolution/MTX.h>
+#include <revolution/mtx.h>
 
 #define WIPE_TEX_SIZE 128
 #define WIPE_RADIUS 63

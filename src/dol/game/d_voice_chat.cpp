@@ -5,11 +5,11 @@
 #include <game/game/d_voice_chat.hpp>
 #include <game/snd/snd_manager.hpp>
 #include <revolution/vct.h>
-#include <revolution/AI.h>
-#include <revolution/AX.h>
-#include <revolution/MIX.h>
-#include <revolution/OS.h>
-#include <revolution/PMIC.h>
+#include <revolution/ai.h>
+#include <revolution/ax.h>
+#include <revolution/mix.h>
+#include <revolution/os.h>
+#include <revolution/pmic.h>
 #include <cstring>
 
 namespace dVoiceChat {
@@ -17,23 +17,23 @@ namespace dVoiceChat {
 // The microphone state machine (updateMic). Even states issue a PMIC request, odd ones wait
 // for its completion (l_pmicResult).
 enum MicState_e {
-    MIC_OPEN,          // 0
-    MIC_WAIT_OPEN,     // 1
-    MIC_SET_2,         // 2: PMICGetLevelAsync
-    MIC_WAIT_2,        // 3
-    MIC_SET_4,         // 4: PMICSetGain
-    MIC_WAIT_4,        // 5
-    MIC_SET_6,         // 6: PMICSetEchoModeAsync
-    MIC_WAIT_6,        // 7
-    MIC_START,         // 8
-    MIC_WAIT_START,    // 9
-    MIC_STOP,          // 10
-    MIC_WAIT_STOP,     // 11
-    MIC_STOPPED,       // 12: open, not running
-    MIC_CLOSE,         // 13
-    MIC_WAIT_CLOSE,    // 14
-    MIC_CLOSED,        // 15
-    MIC_ACTIVE,        // 16: running; also where a failed request ends up
+    MIC_OPEN,       // 0
+    MIC_WAIT_OPEN,  // 1
+    MIC_SET_2,      // 2: PMICSetModeAsync
+    MIC_WAIT_2,     // 3
+    MIC_SET_4,      // 4: PMICSetParamAsync
+    MIC_WAIT_4,     // 5
+    MIC_SET_6,      // 6: PMICSetGain
+    MIC_WAIT_6,     // 7
+    MIC_START,      // 8
+    MIC_WAIT_START, // 9
+    MIC_STOP,       // 10
+    MIC_WAIT_STOP,  // 11
+    MIC_STOPPED,    // 12: open, not running
+    MIC_CLOSE,      // 13
+    MIC_WAIT_CLOSE, // 14
+    MIC_CLOSED,     // 15
+    MIC_ACTIVE,     // 16: running; also where a failed request ends up
 };
 
 // The speaker voice (initSpeaker / updateSpeaker).
@@ -167,7 +167,7 @@ static u8 l_echoCancel;
 static u8 l_prevEchoCancel;
 static s16 *l_spkSrc;
 static SpeakerVoice l_voice;
-static AIDMACallback l_oldDmaCallback;
+static AIDCallback l_oldDmaCallback;
 static void *l_lastDmaBuf;
 static u8 l_dmaIdx;
 static u32 l_lastPos;
@@ -176,8 +176,8 @@ static volatile s32 l_pmicResult;
 static void initSpeaker(s16 *src);
 static void shutdownSpeaker();
 static s32 updateMic();
-static void pmicCallback(s32 result);
-static void pmicStartCallback(s32 result);
+static void pmicCallback(s32 result, s32 arg);
+static void pmicStartCallback(s32 result, s32 arg);
 static u8 selectPreset(u8 count);
 
 // Members in the chat: ourselves plus one per bit of the client mask.
@@ -317,7 +317,8 @@ static void startAudio() {
     l_prevEchoCancel = FALSE;
     l_echoOk = TRUE;
     OSCreateAlarm(&l_alarm);
-    OSSetPeriodicAlarm(&l_alarm, OSGetTime(), OS_MSEC_TO_TICKS(getFrameTime()), frameAlarm);
+    OSSetPeriodicAlarm(&l_alarm, OSGetTime(),
+                       OSMillisecondsToTicks(getFrameTime()), frameAlarm);
     l_stopped = FALSE;
 }
 
@@ -399,7 +400,7 @@ void stop() {
 
 s32 update() {
     s32 result = updateMic();
-    if (result == -100) {
+    if (result == PMIC_ERR_FATAL) {
         l_micConnected = FALSE;
     }
     return result;
@@ -621,14 +622,15 @@ static void dmaCallback() {
         l_oldDmaCallback();
     }
     l_lastDmaBuf = OSPhysicalToCached(AIGetDMAStartAddr());
-    AIInitDMA(l_dmaBuf[l_dmaIdx], sizeof(l_dmaBuf[0]));
+    AIInitDMA((u32)l_dmaBuf[l_dmaIdx], sizeof(l_dmaBuf[0]));
     if (last) {
         DCInvalidateRange(last, sizeof(l_dmaBuf[0]));
         memcpy(l_dmaBuf[l_dmaIdx], last, sizeof(l_dmaBuf[0]));
     } else {
         memset(l_dmaBuf[l_dmaIdx], 0, sizeof(l_dmaBuf[0]));
     }
-    s32 n = PMICConvertOutput(l_dmaBuf[l_dmaIdx], 0xC0, 0, l_refBuf, l_refReset);
+    s32 n = PMICConvertOutput(reinterpret_cast<s16 *>(l_dmaBuf[l_dmaIdx]), 0xC0,
+                              0, l_refBuf, l_refReset);
     if (n > 0) {
         if (l_muted) {
             memset(l_refBuf, 0, n * 2);
@@ -773,7 +775,7 @@ static s32 updateMic() {
     switch (l_micState) {
     case MIC_OPEN:
         l_pmicResult = 1;
-        result = PMICOpenAsync(pmicCallback, NULL);
+        result = PMICOpenAsync(pmicCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_OPEN;
         } else if (result != PMIC_ERR_BUSY && result != PMIC_ERR_RETRY) {
@@ -784,7 +786,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_SET_2;
         } else if (l_pmicResult == PMIC_ERR_RETRY) {
             l_micState = MIC_OPEN;
@@ -794,7 +796,7 @@ static s32 updateMic() {
         break;
     case MIC_SET_2:
         l_pmicResult = 1;
-        result = PMICGetLevelAsync(0, pmicCallback, NULL);
+        result = PMICSetModeAsync(0, pmicCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_2;
         } else if (result != PMIC_ERR_BUSY) {
@@ -805,7 +807,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_SET_6;
         } else if (l_pmicResult == PMIC_ERR_RETRY) {
             l_micState = MIC_SET_2;
@@ -815,7 +817,7 @@ static s32 updateMic() {
         break;
     case MIC_SET_4:
         l_pmicResult = 1;
-        result = PMICSetGain(l_pmicParam4, pmicCallback, NULL);
+        result = PMICSetParamAsync(l_pmicParam4, pmicCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_4;
         } else if (result != PMIC_ERR_BUSY) {
@@ -826,7 +828,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_SET_6;
         } else if (l_pmicResult == PMIC_ERR_RETRY) {
             l_micState = MIC_SET_4;
@@ -836,7 +838,7 @@ static s32 updateMic() {
         break;
     case MIC_SET_6:
         l_pmicResult = 1;
-        result = PMICSetEchoModeAsync(l_pmicParam6, pmicCallback, NULL);
+        result = PMICSetGain(l_pmicParam6, pmicCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_6;
         } else if (result != PMIC_ERR_BUSY) {
@@ -847,7 +849,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_START;
         } else if (l_pmicResult == PMIC_ERR_RETRY) {
             l_micState = MIC_SET_6;
@@ -857,7 +859,7 @@ static s32 updateMic() {
         break;
     case MIC_START:
         l_pmicResult = 1;
-        result = PMICStartAsync(pmicStartCallback, NULL);
+        result = PMICStartAsync(pmicStartCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_START;
         } else if (result != PMIC_ERR_BUSY) {
@@ -868,7 +870,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_ACTIVE;
         } else if (l_pmicResult == PMIC_ERR_RETRY) {
             l_micState = MIC_START;
@@ -878,7 +880,7 @@ static s32 updateMic() {
         break;
     case MIC_STOP:
         l_pmicResult = 1;
-        result = PMICStopAsync(pmicCallback, NULL);
+        result = PMICStopAsync(pmicCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_STOP;
         } else if (result != PMIC_ERR_BUSY) {
@@ -889,7 +891,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_STOPPED;
         } else if (l_pmicResult == PMIC_ERR_RETRY) {
             l_micState = MIC_STOP;
@@ -899,7 +901,7 @@ static s32 updateMic() {
         break;
     case MIC_CLOSE:
         l_pmicResult = 1;
-        result = PMICCloseAsync(pmicCallback, NULL);
+        result = PMICCloseAsync(pmicCallback, 0);
         if (result == PMIC_ERR_NONE) {
             l_micState = MIC_WAIT_CLOSE;
         } else if (result != PMIC_ERR_BUSY && result != PMIC_ERR_RETRY) {
@@ -910,7 +912,7 @@ static s32 updateMic() {
         if (l_pmicResult > 0) {
             break;
         }
-        if (l_pmicResult == 0) {
+        if (l_pmicResult == PMIC_ERR_NONE) {
             l_micState = MIC_CLOSED;
         } else {
             l_micState = l_pmicResult == PMIC_ERR_RETRY ? MIC_CLOSE : MIC_ACTIVE;
@@ -923,11 +925,11 @@ static s32 updateMic() {
     }
 }
 
-static void pmicCallback(s32 result) {
+static void pmicCallback(s32 result, s32 arg) {
     l_pmicResult = result;
 }
 
-static void pmicStartCallback(s32 result) {
+static void pmicStartCallback(s32 result, s32 arg) {
     l_pmicResult = result;
     VCTi_NotifyMicStartResult(result);
 }
@@ -936,29 +938,29 @@ static void pmicStartCallback(s32 result) {
 static u8 selectPreset(u8 count) {
     switch (count) {
     case 2:
-        PMICSetEchoParams(lbl_80521120);
+        PMICSetEchoParams(PMICEchoPreset0);
         break;
     case 3:
-        PMICSetEchoParams(lbl_80521160);
+        PMICSetEchoParams(PMICEchoPreset2);
         count = 6;
         break;
     case 4:
-        PMICSetEchoParams(lbl_805211E0);
+        PMICSetEchoParams(PMICEchoPreset6);
         break;
     case 5:
-        PMICSetEchoParams(lbl_80521140);
+        PMICSetEchoParams(PMICEchoPreset1);
         break;
     case 6:
-        PMICSetEchoParams(lbl_80521160);
+        PMICSetEchoParams(PMICEchoPreset2);
         break;
     case 7:
-        PMICSetEchoParams(lbl_80521180);
+        PMICSetEchoParams(PMICEchoPreset3);
         break;
     case 8:
-        PMICSetEchoParams(lbl_805211A0);
+        PMICSetEchoParams(PMICEchoPreset4);
         break;
     case 9:
-        PMICSetEchoParams(lbl_805211C0);
+        PMICSetEchoParams(PMICEchoPreset5);
         break;
     default:
         return 0;

@@ -3,7 +3,7 @@
 #include <game/game/d_menu_mng.hpp>
 #include <game/game/d_string.hpp>
 #include <game/mLib/m_pad.hpp>
-#include <lib/revolution/WPAD/WPAD.h>
+#include <revolution/wpad.h>
 #include <cstdio>
 
 static const char *l_textBoxName = "T_cmnBtnA_";

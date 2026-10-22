@@ -1,6 +1,6 @@
 #include <nw4r/g3d.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <cstring>
 
@@ -87,57 +87,57 @@ bool ResShp::GXGetVtxAttrFmtv(GXVtxAttrFmtList* pList) const {
 
     // clang-format off
     // Position/normal
-    pList[GX_VA_POS - GX_VA_POS].compType = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_POS_TYPE_SHIFT & GX_CP_VAT_GROUP0_POS_TYPE_LMASK);
-    pList[GX_VA_POS - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_POS_CNT_SHIFT & GX_CP_VAT_GROUP0_POS_CNT_LMASK);
-    pList[GX_VA_POS - GX_VA_POS].shift    = vat0 >> GX_CP_VAT_GROUP0_POS_SHIFT_SHIFT & GX_CP_VAT_GROUP0_POS_SHIFT_LMASK;
+    pList[GX_VA_POS - GX_VA_POS].type = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_POS_TYPE_SHIFT & GX_CP_VAT_GROUP0_POS_TYPE_LMASK);
+    pList[GX_VA_POS - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_POS_CNT_SHIFT & GX_CP_VAT_GROUP0_POS_CNT_LMASK);
+    pList[GX_VA_POS - GX_VA_POS].frac    = vat0 >> GX_CP_VAT_GROUP0_POS_SHIFT_SHIFT & GX_CP_VAT_GROUP0_POS_SHIFT_LMASK;
     
-    pList[GX_VA_NRM - GX_VA_POS].compType = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_NRM_TYPE_SHIFT & GX_CP_VAT_GROUP0_NRM_TYPE_LMASK);
+    pList[GX_VA_NRM - GX_VA_POS].type = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_NRM_TYPE_SHIFT & GX_CP_VAT_GROUP0_NRM_TYPE_LMASK);
     
-    pList[GX_VA_NRM - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_NORMALINDEX3_SHIFT & GX_CP_VAT_GROUP0_NORMALINDEX3_LMASK
+    pList[GX_VA_NRM - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_NORMALINDEX3_SHIFT & GX_CP_VAT_GROUP0_NORMALINDEX3_LMASK
                                                                     ? i - GX_VA_NRM
                                                                     : vat0 >> GX_CP_VAT_GROUP0_NRM_CNT_SHIFT & GX_CP_VAT_GROUP0_NRM_CNT_LMASK);
                                                                     
-    pList[GX_VA_NRM - GX_VA_POS].shift    = pList[GX_VA_NRM - GX_VA_POS].compType == GX_S8 ? 6 : 14;
+    pList[GX_VA_NRM - GX_VA_POS].frac    = pList[GX_VA_NRM - GX_VA_POS].type == GX_S8 ? 6 : 14;
 
     // Color attributes
-    pList[GX_VA_CLR0 - GX_VA_POS].compType = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_COLORDIFF_TYPE_SHIFT & GX_CP_VAT_GROUP0_COLORDIFF_TYPE_LMASK);
-    pList[GX_VA_CLR0 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_COLORDIFF_CNT_SHIFT & GX_CP_VAT_GROUP0_COLORDIFF_CNT_LMASK);
+    pList[GX_VA_CLR0 - GX_VA_POS].type = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_COLORDIFF_TYPE_SHIFT & GX_CP_VAT_GROUP0_COLORDIFF_TYPE_LMASK);
+    pList[GX_VA_CLR0 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_COLORDIFF_CNT_SHIFT & GX_CP_VAT_GROUP0_COLORDIFF_CNT_LMASK);
 
-    pList[GX_VA_CLR1 - GX_VA_POS].compType = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_COLORSPEC_TYPE_SHIFT & GX_CP_VAT_GROUP0_COLORSPEC_TYPE_LMASK);
-    pList[GX_VA_CLR1 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_COLORSPEC_CNT_SHIFT & GX_CP_VAT_GROUP0_COLORSPEC_CNT_LMASK);
+    pList[GX_VA_CLR1 - GX_VA_POS].type = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_COLORSPEC_TYPE_SHIFT & GX_CP_VAT_GROUP0_COLORSPEC_TYPE_LMASK);
+    pList[GX_VA_CLR1 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_COLORSPEC_CNT_SHIFT & GX_CP_VAT_GROUP0_COLORSPEC_CNT_LMASK);
 
     // Texcoord attributes
-    pList[GX_VA_TEX0 - GX_VA_POS].compType = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_TXC0_TYPE_SHIFT & GX_CP_VAT_GROUP0_TXC0_TYPE_LMASK);
-    pList[GX_VA_TEX0 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_TXC0_CNT_SHIFT & GX_CP_VAT_GROUP0_TXC0_CNT_LMASK);
-    pList[GX_VA_TEX0 - GX_VA_POS].shift    = vat0 >> GX_CP_VAT_GROUP0_TXC0_SHIFT_SHIFT & GX_CP_VAT_GROUP0_TXC0_SHIFT_LMASK;
+    pList[GX_VA_TEX0 - GX_VA_POS].type = static_cast<GXCompType>(vat0 >> GX_CP_VAT_GROUP0_TXC0_TYPE_SHIFT & GX_CP_VAT_GROUP0_TXC0_TYPE_LMASK);
+    pList[GX_VA_TEX0 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat0 >> GX_CP_VAT_GROUP0_TXC0_CNT_SHIFT & GX_CP_VAT_GROUP0_TXC0_CNT_LMASK);
+    pList[GX_VA_TEX0 - GX_VA_POS].frac    = vat0 >> GX_CP_VAT_GROUP0_TXC0_SHIFT_SHIFT & GX_CP_VAT_GROUP0_TXC0_SHIFT_LMASK;
 
-    pList[GX_VA_TEX1 - GX_VA_POS].compType = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC1_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC1_TYPE_LMASK);
-    pList[GX_VA_TEX1 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC1_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC1_CNT_LMASK);
-    pList[GX_VA_TEX1 - GX_VA_POS].shift    = vat1 >> GX_CP_VAT_GROUP1_TXC1_SHIFT_SHIFT & GX_CP_VAT_GROUP1_TXC1_SHIFT_LMASK;
+    pList[GX_VA_TEX1 - GX_VA_POS].type = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC1_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC1_TYPE_LMASK);
+    pList[GX_VA_TEX1 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC1_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC1_CNT_LMASK);
+    pList[GX_VA_TEX1 - GX_VA_POS].frac    = vat1 >> GX_CP_VAT_GROUP1_TXC1_SHIFT_SHIFT & GX_CP_VAT_GROUP1_TXC1_SHIFT_LMASK;
     
-    pList[GX_VA_TEX2 - GX_VA_POS].compType = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC2_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC2_TYPE_LMASK);
-    pList[GX_VA_TEX2 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC2_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC2_CNT_LMASK);
-    pList[GX_VA_TEX2 - GX_VA_POS].shift    = vat1 >> GX_CP_VAT_GROUP1_TXC2_SHIFT_SHIFT & GX_CP_VAT_GROUP1_TXC2_SHIFT_LMASK;
+    pList[GX_VA_TEX2 - GX_VA_POS].type = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC2_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC2_TYPE_LMASK);
+    pList[GX_VA_TEX2 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC2_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC2_CNT_LMASK);
+    pList[GX_VA_TEX2 - GX_VA_POS].frac    = vat1 >> GX_CP_VAT_GROUP1_TXC2_SHIFT_SHIFT & GX_CP_VAT_GROUP1_TXC2_SHIFT_LMASK;
     
-    pList[GX_VA_TEX3 - GX_VA_POS].compType = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC3_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC3_TYPE_LMASK);
-    pList[GX_VA_TEX3 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC3_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC3_CNT_LMASK);
-    pList[GX_VA_TEX3 - GX_VA_POS].shift    = vat1 >> GX_CP_VAT_GROUP1_TXC3_SHIFT_SHIFT & GX_CP_VAT_GROUP1_TXC3_SHIFT_LMASK;
+    pList[GX_VA_TEX3 - GX_VA_POS].type = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC3_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC3_TYPE_LMASK);
+    pList[GX_VA_TEX3 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC3_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC3_CNT_LMASK);
+    pList[GX_VA_TEX3 - GX_VA_POS].frac    = vat1 >> GX_CP_VAT_GROUP1_TXC3_SHIFT_SHIFT & GX_CP_VAT_GROUP1_TXC3_SHIFT_LMASK;
     
-    pList[GX_VA_TEX4 - GX_VA_POS].compType = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC4_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC4_TYPE_LMASK);
-    pList[GX_VA_TEX4 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC4_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC4_CNT_LMASK);
-    pList[GX_VA_TEX4 - GX_VA_POS].shift    = vat2 >> GX_CP_VAT_GROUP2_TXC4_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC4_SHIFT_LMASK;
+    pList[GX_VA_TEX4 - GX_VA_POS].type = static_cast<GXCompType>(vat1 >> GX_CP_VAT_GROUP1_TXC4_TYPE_SHIFT & GX_CP_VAT_GROUP1_TXC4_TYPE_LMASK);
+    pList[GX_VA_TEX4 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat1 >> GX_CP_VAT_GROUP1_TXC4_CNT_SHIFT & GX_CP_VAT_GROUP1_TXC4_CNT_LMASK);
+    pList[GX_VA_TEX4 - GX_VA_POS].frac    = vat2 >> GX_CP_VAT_GROUP2_TXC4_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC4_SHIFT_LMASK;
     
-    pList[GX_VA_TEX5 - GX_VA_POS].compType = static_cast<GXCompType>(vat2 >> GX_CP_VAT_GROUP2_TXC5_TYPE_SHIFT & GX_CP_VAT_GROUP2_TXC5_TYPE_LMASK);
-    pList[GX_VA_TEX5 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat2 >> GX_CP_VAT_GROUP2_TXC5_CNT_SHIFT & GX_CP_VAT_GROUP2_TXC5_CNT_LMASK);
-    pList[GX_VA_TEX5 - GX_VA_POS].shift    = vat2 >> GX_CP_VAT_GROUP2_TXC5_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC5_SHIFT_LMASK;
+    pList[GX_VA_TEX5 - GX_VA_POS].type = static_cast<GXCompType>(vat2 >> GX_CP_VAT_GROUP2_TXC5_TYPE_SHIFT & GX_CP_VAT_GROUP2_TXC5_TYPE_LMASK);
+    pList[GX_VA_TEX5 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat2 >> GX_CP_VAT_GROUP2_TXC5_CNT_SHIFT & GX_CP_VAT_GROUP2_TXC5_CNT_LMASK);
+    pList[GX_VA_TEX5 - GX_VA_POS].frac    = vat2 >> GX_CP_VAT_GROUP2_TXC5_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC5_SHIFT_LMASK;
     
-    pList[GX_VA_TEX6 - GX_VA_POS].compType = static_cast<GXCompType>(vat2 >> GX_CP_VAT_GROUP2_TXC6_TYPE_SHIFT & GX_CP_VAT_GROUP2_TXC6_TYPE_LMASK);
-    pList[GX_VA_TEX6 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat2 >> GX_CP_VAT_GROUP2_TXC6_CNT_SHIFT & GX_CP_VAT_GROUP2_TXC6_CNT_LMASK);
-    pList[GX_VA_TEX6 - GX_VA_POS].shift    = vat2 >> GX_CP_VAT_GROUP2_TXC6_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC6_SHIFT_LMASK;
+    pList[GX_VA_TEX6 - GX_VA_POS].type = static_cast<GXCompType>(vat2 >> GX_CP_VAT_GROUP2_TXC6_TYPE_SHIFT & GX_CP_VAT_GROUP2_TXC6_TYPE_LMASK);
+    pList[GX_VA_TEX6 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat2 >> GX_CP_VAT_GROUP2_TXC6_CNT_SHIFT & GX_CP_VAT_GROUP2_TXC6_CNT_LMASK);
+    pList[GX_VA_TEX6 - GX_VA_POS].frac    = vat2 >> GX_CP_VAT_GROUP2_TXC6_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC6_SHIFT_LMASK;
     
-    pList[GX_VA_TEX7 - GX_VA_POS].compType = static_cast<GXCompType>(vat2 >> GX_CP_VAT_GROUP2_TXC7_TYPE_SHIFT & GX_CP_VAT_GROUP2_TXC7_TYPE_LMASK);
-    pList[GX_VA_TEX7 - GX_VA_POS].compCnt  = static_cast<GXCompCnt>(vat2 >> GX_CP_VAT_GROUP2_TXC7_CNT_SHIFT & GX_CP_VAT_GROUP2_TXC7_CNT_LMASK);
-    pList[GX_VA_TEX7 - GX_VA_POS].shift    = vat2 >> GX_CP_VAT_GROUP2_TXC7_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC7_SHIFT_LMASK;
+    pList[GX_VA_TEX7 - GX_VA_POS].type = static_cast<GXCompType>(vat2 >> GX_CP_VAT_GROUP2_TXC7_TYPE_SHIFT & GX_CP_VAT_GROUP2_TXC7_TYPE_LMASK);
+    pList[GX_VA_TEX7 - GX_VA_POS].cnt  = static_cast<GXCompCnt>(vat2 >> GX_CP_VAT_GROUP2_TXC7_CNT_SHIFT & GX_CP_VAT_GROUP2_TXC7_CNT_LMASK);
+    pList[GX_VA_TEX7 - GX_VA_POS].frac    = vat2 >> GX_CP_VAT_GROUP2_TXC7_SHIFT_SHIFT & GX_CP_VAT_GROUP2_TXC7_SHIFT_LMASK;
     // clang-format on
 
     return true;
@@ -148,7 +148,7 @@ void ResShp::GXSetArray(GXAttr attr, const void* pBase, u8 stride) {
     u32 cpAttr = attr != GX_VA_NBT ? attr - GX_VA_POS : 1;
 
     detail::ResWriteCPCmd(&pCmd[GX_CP_CMD_SZ * 0], cpAttr + GX_CP_REG_ARRAYBASE,
-                          reinterpret_cast<u32>(OSCachedToPhysical(pBase)));
+                          OSCachedToPhysical(pBase));
 
     detail::ResWriteCPCmd(&pCmd[GX_CP_CMD_SZ * 1],
                           cpAttr + GX_CP_REG_ARRAYSTRIDE, stride);

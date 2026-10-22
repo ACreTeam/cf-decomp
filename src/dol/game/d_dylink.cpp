@@ -8,7 +8,7 @@
 #include <game/mLib/m_dvd.hpp>
 #include <game/mLib/m_heap.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
-#include <lib/revolution/OS/OSLink.h>
+#include <lib/revolution/os/OSLink.h>
 #include <string.h>
 
 namespace dDyl {

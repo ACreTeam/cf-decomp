@@ -1,7 +1,7 @@
 #include <nw4r/ef.h>
 #include <nw4r/math.h>
 
-#include <revolution/GX.h>
+#include <revolution/gx.h>
 
 #include <algorithm>
 #include <limits>
@@ -50,7 +50,7 @@ void DrawPointStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
 
         if (prevPointSize != pointSize) {
             prevPointSize = pointSize;
-            GXSetPointSize(pointSize, 5);
+            GXSetPointSize(pointSize, GX_TO_ONE);
 
             SetupGP(pParticle, rSetting, rInfo, first, true);
         } else {
