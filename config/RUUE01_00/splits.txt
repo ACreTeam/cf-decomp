@@ -3874,15 +3874,34 @@ lib/RVL_SDK/vct/debug.c:
 	.sdata      start:0x8074D790 end:0x8074D798
 
 lib/MWM/jpeg/tmc_jpeg.c:
-	.text       start:0x8036D514 end:0x80373A40
-	.rodata     start:0x8048DA40 end:0x8048E380
+	.text       start:0x8036D514 end:0x8036D7E8
+	.rodata     start:0x8048DA40 end:0x8048DA98
 	.sdata      start:0x8074D798 end:0x8074D7A0
+
+lib/MWM/jpeg/tmc_jpeg_dest.c:
+	.text       start:0x8036D7E8 end:0x8036DE18
+	.rodata     start:0x8048DA98 end:0x8048DAA8
+
+lib/MWM/jpeg/tmc_jpeg_encoder.c:
+	.text       start:0x8036DE18 end:0x8036EB98
+	.rodata     start:0x8048DAA8 end:0x8048DAD0
+
+lib/MWM/jpeg/tmc_jpeg_compress.c:
+	.text       start:0x8036EB98 end:0x803709C8
+	.rodata     start:0x8048DAD0 end:0x8048DC80
+
+lib/MWM/jpeg/tmc_jpeg_quant.c:
+	.text       start:0x803709C8 end:0x80370D40
+	.rodata     start:0x8048DC80 end:0x8048E380
+
+lib/MWM/jpeg/tmc_jpeg_count.c:
+	.text       start:0x80370D40 end:0x80373A40
 	.sdata2     start:0x80752DC8 end:0x80752DD8
 
 lib/RVL_SDK/ai/ai.c:
 	.text       start:0x80373A40 end:0x80373FA4
 	.data       start:0x80541520 end:0x80541568 align:4
-	.sdata      start:0x8074D7A0 end:0x8074D7A8 align:4
+	.sdata      start:0x8074D7A0 end:0x8074D7A8
 	.sbss       start:0x8074F3A0 end:0x8074F3E0 align:4
 
 lib/RVL_SDK/arc/arc.c:

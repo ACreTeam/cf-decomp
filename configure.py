@@ -451,6 +451,16 @@ cflags_ext_ipl_sdk = [
     '-fp_contract',
     'off',
 ]
+# MWM middleware (TMC JPEG): the SDK flags, then the game include dirs for its public header.
+cflags_mwm = [
+    *cflags_ext_ipl_sdk,
+    '-inline noauto',
+    '-use_lmw_stmw on',
+    '-str reuse,readonly',
+    '-i include',
+    '-i include/lib',
+    "-sym on",
+]
 cflags_ext_mkw_gamespy = [
     '-nodefaults',
     '-align',
@@ -1345,6 +1355,21 @@ config.libs = [
             Object(NonMatching, "lib/RVL_SDK/wud/WUD.c", source="RVL_SDK/src/wud/WUD.c"),
             Object(NonMatching, "lib/RVL_SDK/wud/WUDHidHost.c", source="RVL_SDK/src/wud/WUDHidHost.c"),
             Object(Matching, "lib/RVL_SDK/wud/debug_msg.c", source="RVL_SDK/src/wud/debug_msg.c"),
+        ],
+    },
+    {
+        "lib": "MWM",
+        "mw_version": "GC/3.0a5.2",
+        "cflags": cflags_mwm,
+        "progress_category": "sdk",
+        "src_dir": "lib",
+        "objects": [
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg.c", source="MWM/src/jpeg/tmc_jpeg.c"),
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg_dest.c", source="MWM/src/jpeg/tmc_jpeg_dest.c"),
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg_encoder.c", source="MWM/src/jpeg/tmc_jpeg_encoder.c"),
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg_compress.c", source="MWM/src/jpeg/tmc_jpeg_compress.c"),
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg_quant.c", source="MWM/src/jpeg/tmc_jpeg_quant.c"),
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg_count.c", source="MWM/src/jpeg/tmc_jpeg_count.c"),
         ],
     },
     {

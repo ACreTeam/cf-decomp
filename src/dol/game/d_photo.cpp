@@ -7,25 +7,18 @@
 #include <game/mLib/m_perf.hpp>
 #include <game/mLib/m_tex.hpp>
 #include <lib/revolution/OS/OSThread.h>
+#include <lib/MWM/tmc_jpeg.h>
 #include <revolution/SC.h>
 
-// The TMC JPEG encoder (lib/MWM/jpeg/tmc_jpeg.c). Both return 0 on success.
-extern "C" {
-int fn_8036D514(void *work, const void *image, int width, int height, int format, u32 maxSize, u32 *size,
-                u32 *quality); // the quality that fits maxSize
-int fn_8036D698(void *work, const void *image, int width, int height, int format, u32 quality, void *dst,
-                u32 dstSize, u32 *size); // encode
-}
-
 #define PHOTO_WIDTH 640
-#define PHOTO_WIDTH_MAX 896
+#define PHOTO_WIDTH_WIDE 896
 #define PHOTO_HEIGHT 480
 
 static m3d::capture_c l_capture;
 static OSThread l_thread;
 static u8 l_stack[0x2000] ALIGN(32);
 // The source position of each destination column / row, in quarter texels.
-static int l_srcX[PHOTO_WIDTH_MAX + 1];
+static int l_srcX[PHOTO_WIDTH_WIDE + 1];
 static int l_srcY[PHOTO_HEIGHT + 1];
 
 static int l_mode;
@@ -120,11 +113,11 @@ static void *photoThread(void *) {
             u32 maxSize;
             if (SCGetAspectRatio() == SC_ASPECT_WIDE) {
                 if (l_small) {
-                    width = PHOTO_WIDTH_MAX;
+                    width = PHOTO_WIDTH_WIDE;
                     height = PHOTO_HEIGHT;
                     maxSize = 70 * 1024;
                 } else {
-                    width = PHOTO_WIDTH_MAX;
+                    width = PHOTO_WIDTH_WIDE;
                     height = PHOTO_HEIGHT;
                     maxSize = 100 * 1024;
                 }
@@ -201,9 +194,11 @@ static void *photoThread(void *) {
             if (l_encodeWork != NULL) {
                 u32 size = 0;
                 u32 quality = 0;
-                if (fn_8036D514(l_encodeWork, l_image, width, height, 4, maxSize, &size, &quality) == 0 &&
+                if (TMCJPEG_EncodeFitSize(l_encodeWork, l_image, width, height, GX_TF_RGB565, maxSize, &size,
+                                          &quality) == 0 &&
                     quality >= 1 && quality <= 500 &&
-                    fn_8036D698(l_encodeWork, l_image, width, height, 4, quality, l_jpeg, maxSize, &size) == 0 &&
+                    TMCJPEG_Encode(l_encodeWork, l_image, width, height, GX_TF_RGB565, quality, l_jpeg, maxSize,
+                                   &size) == 0 &&
                     size <= maxSize)
                 {
                     l_jpegSize = size;
@@ -234,7 +229,7 @@ void dPhoto::create(EGG::Heap *heap) {
         return;
     }
     l_encodeWork = heap->alloc(0x1C00, 32);
-    l_image = (u16 *)heap->alloc(PHOTO_WIDTH_MAX * PHOTO_HEIGHT * sizeof(u16), 32);
+    l_image = (u16 *)heap->alloc(PHOTO_WIDTH_WIDE * PHOTO_HEIGHT * sizeof(u16), 32);
     const u32 jpegSizeKB[3] = {100, 70, 100}; // This line pushed it to 99.65, but only [2] is used, and feels a bit off to me. I think it's a good candidate to keep in mind while going for 100%.
     l_jpeg = (u8 *)heap->alloc(jpegSizeKB[2] * 1024, 32);
     OSCreateThread(&l_thread, photoThread, NULL, l_stack + sizeof(l_stack), sizeof(l_stack), 29, OS_THREAD_DETACHED);
