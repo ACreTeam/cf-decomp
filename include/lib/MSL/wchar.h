@@ -1,6 +1,7 @@
 #ifndef MSL_WCHAR_H
 #define MSL_WCHAR_H
 #include <internal/mbstring.h>
+#include <internal/wmem.h>
 #include <internal/wprintf.h>
 #include <internal/wstring.h>
 #include <limits.h>

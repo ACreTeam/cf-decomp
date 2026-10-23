@@ -100,6 +100,8 @@ public:
     virtual void *createSignWindow();            // 0xBC
     virtual void setLayoutScale();               // 0xC0
 
+    void startPredictTurnOn(bool on);
+    bool isPredictTurning() const;
     input::KBDListener *getKBDListenerRoot(); // 80308CF8: the root of HKBManager's listeners
 
 protected:

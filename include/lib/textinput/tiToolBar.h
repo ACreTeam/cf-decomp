@@ -32,6 +32,13 @@ public:
     virtual void create(MEMAllocator *allocator);
     virtual void init();
     virtual void draw() { nw4rmanager::Layout::draw(); }     // 0x98
+    virtual void vt_0x9C();
+    virtual void vt_0xA0();
+    virtual void setQwertyWithSE(bool qwerty);                // 0xA4
+    virtual bool isHWKBMode() { return mbHWKBMode; }          // 0xA8
+
+    /* 0xBC */ u8 _BC[0xC0 - 0xBC];
+    /* 0xC0 */ bool mbHWKBMode;
 };
 
 } // namespace toolbar

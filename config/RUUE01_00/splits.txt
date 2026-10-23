@@ -3894,9 +3894,9 @@ lib/keyboard/tiCandidateBox.cpp:
 	.text       start:0x802FA418 end:0x802FF618
 	.ctors      start:0x80465900 end:0x80465904
 	.rodata     start:0x8048C338 end:0x8048C6B0 align:4
-	.data       start:0x8052C948 end:0x8052D748 align:4
+	.data       start:0x8052C948 end:0x8052D748
 	.sdata      start:0x8074CD70 end:0x8074CD90 align:4
-	.sdata2     start:0x80752C10 end:0x80752C50 align:4
+	.sdata2     start:0x80752C10 end:0x80752C50
 
 lib/keyboard/tiToolBar.cpp:
 	.text       start:0x802FF618 end:0x80300A80
@@ -3932,7 +3932,7 @@ lib/keyboard/tiTextDrawer.cpp:
 lib/keyboard/tiNw4rManager.cpp:
 	.text       start:0x80305C28 end:0x803071BC
 	.data       start:0x8052ED58 end:0x8052EE28 align:4
-	.sdata2     start:0x80752C80 end:0x80752C98 align:4
+	.sdata2     start:0x80752C80 end:0x80752C98
 
 lib/keyboard/tiManager.cpp:
 	.text       start:0x803071BC end:0x80308FCC

@@ -109,9 +109,9 @@ class Listener_c : public textinput::input::KBDListener {
         DIGIT_RESULT_NONE = -1, // getDigit() without a digit
     };
 
-    virtual void vt_0x0C();                                // 800C82E8
-    virtual void vt_0x10();                                // 800C82EC
-    virtual void onKey(textinput::input::KeyEvent *event); // 800C82F0
+    virtual void OnAttach(KBDDevEvent *event);   // 800C82E8
+    virtual void OnDetach(KBDDevEvent *event);   // 800C82EC
+    virtual void OnKeyEvent(KBDKeyEvent *event); // 800C82F0
 
     BOOL isKeyHeld(); // 800C84C8
     void

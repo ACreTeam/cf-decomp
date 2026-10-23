@@ -73,9 +73,9 @@ enum SE {
 
 class Base {
 public:
-    virtual ~Base();                              // 0x08
-    virtual void create(MEMAllocator *allocator); // 0x0C
-    virtual void init();                          // 0x10
+    virtual ~Base() {}                               // 0x08
+    virtual void create(MEMAllocator *allocator) {}  // 0x0C
+    virtual void init() {}                           // 0x10
 };
 
 class CommandSender;
@@ -88,9 +88,20 @@ public:
         INPUT_COMMAND_KEY = 5,
     };
 
+    struct Scroll {
+        /* 0x0 */ bool absY;
+        /* 0x4 */ f32 x;
+        /* 0x8 */ f32 y;
+    }; // size 0xC
+
+    CommandReceiver() { clearSender(); }
+
+    virtual ~CommandReceiver() {}                                   // 0x08
     virtual void clearSender();                                     // 0x14
     virtual void onCommand(INPUT_COMMAND command, void *data);      // 0x18
-    virtual void addSender(CommandSender *sender);                  // 0x1C
+    virtual void addSender(CommandSender *sender) {                 // 0x1C
+        nw4r::ut::List_Append(&mSenderList, sender);
+    }
 
 private:
     /* 0x04 */ nw4r::ut::List mSenderList;

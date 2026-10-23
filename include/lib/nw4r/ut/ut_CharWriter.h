@@ -42,6 +42,10 @@ public:
         SetColorMapping(DEFAULT_COLOR_MAPPING_MIN, DEFAULT_COLOR_MAPPING_MAX);
     }
 
+    Color GetTextColor() const {
+        return mTextColor.start;
+    }
+
     void SetTextColor(Color start) {
         mTextColor.start = start;
         UpdateVertexColor();

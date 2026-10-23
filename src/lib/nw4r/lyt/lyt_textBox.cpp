@@ -147,8 +147,16 @@ ut::Color TextBox::GetVtxColor(u32 idx) const {
     return GetTextColor(idx / TEXTCOLOR_MAX);
 }
 
+ut::Color TextBox::GetTextColor(ulong idx) const {
+    return mTextColors[idx];
+}
+
 void TextBox::SetVtxColor(u32 idx, ut::Color color) {
     SetTextColor(idx / TEXTCOLOR_MAX, color);
+}
+
+void TextBox::SetTextColor(ulong idx, ut::Color color) {
+    mTextColors[idx] = color;
 }
 
 u8 TextBox::GetVtxColorElement(u32 idx) const {

@@ -208,27 +208,27 @@ void Event_c::onSE(textinput::sound::SE seId) {
     }
 }
 
-void Listener_c::vt_0x0C() {
+void Listener_c::OnAttach(KBDDevEvent *event) {
 }
 
-void Listener_c::vt_0x10() {
+void Listener_c::OnDetach(KBDDevEvent *event) {
 }
 
-void Listener_c::onKey(textinput::input::KeyEvent *event) {
+void Listener_c::OnKeyEvent(KBDKeyEvent *event) {
     mRequest = REQUEST_NONE;
     mSpecialKey = 0;
-    if (!(event->mMode & 1)) {
-        switch (event->mCode) {
+    if (!(event->mode & KBD_KM_DOWN)) {
+        switch (event->unicode) {
         case KEY_REPEAT:
             mHoldTimer = KEY_HOLD_FRAMES;
             break;
         }
     }
-    if (!(event->mMode & 1)) {
+    if (!(event->mode & KBD_KM_DOWN)) {
         return;
     }
     mHoldTimer = KEY_HOLD_FRAMES;
-    int code = event->mCode;
+    int code = event->unicode;
     switch (code) {
     case KEY_CLEAR:
         mRequest = REQUEST_CLEAR;
@@ -376,7 +376,7 @@ static BOOL confirmKana(textinput::inputform::LayoutByNW4R *form) {
     if (form->mpString->isKanaFix()) {
         return FALSE;
     }
-    form->mpString->clearKana();
+    form->mpString->confirmKana();
     return TRUE;
 }
 
@@ -449,7 +449,7 @@ void Mng_c::setup(int mode) {
     mpManager->vt_0xE4();
     mpManager->getCellPhoneKeyboard()->vt_0x10C(false);
     mpManager->getPCKeyboard()->vt_0x124(false);
-    mpManager->getCandidateBox()->vt_0xF8(false);
+    mpManager->getCandidateBox()->setActive(false);
 }
 
 BOOL Mng_c::loadRes() {

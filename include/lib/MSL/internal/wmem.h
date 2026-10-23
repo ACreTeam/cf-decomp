@@ -7,6 +7,7 @@ extern "C" {
 
 void* wmemcpy(void*, const void*, size_t);
 void* wmemchr(const void*, int, size_t);
+wchar_t* wmemset(wchar_t*, wchar_t, size_t);
 
 #ifdef __cplusplus
 }

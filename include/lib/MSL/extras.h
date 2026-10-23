@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 int stricmp(const char*, const char*);
+int __msl_wcsnicmp(const wchar_t*, const wchar_t*, size_t);
 
 #ifdef __cplusplus
 }

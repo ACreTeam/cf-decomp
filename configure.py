@@ -291,7 +291,6 @@ cflags_runtime = [
     "-inline auto",
 ]
 
-
 # Metrowerks runtime / MSL C / MetroTRK / startup code (lib/Runtime, lib/MSL, lib/MetroTRK, lib/PowerPC_EABI_Support).
 # Flags of the Xenoblade decomp (sources in lib/PowerPC_EABI_Support)
 cflags_xeno_base = [
@@ -418,7 +417,6 @@ cflags_rel = [
 
 config.linker_version = "GC/3.0a5.2"
 
-
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
@@ -428,7 +426,6 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "progress_category": "sdk",
         "objects": objects,
     }
-
 
 # Helper function for REL script objects
 def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
@@ -440,22 +437,13 @@ def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
-
 Matching = True                   # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
 Equivalent = config.non_matching  # Object should be linked when configured with --non-matching
 
-
 # Object is only matching for specific versions
 def MatchingFor(*versions):
     return config.version in versions
-
-
-
-
-
-
-
 
 # --- imported from wii-ipl / mkw (begin) ---
 # Sources under lib/ are copied verbatim from wii-ipl and mkw (both CC0)
@@ -811,6 +799,34 @@ cflags_ext_ipl_keyboard = [
     '-O4,p',
 ]
 # --- imported from wii-ipl / mkw (end) ---
+
+cflags_keyboard = [
+    "-nodefaults",
+    "-proc gekko",
+    "-align powerpc",
+    "-enum int",
+    "-fp hardware",
+    "-Cpp_exceptions off",
+    "-O4,p",
+    "-inline auto",
+    '-pragma "cats off"',
+    '-pragma "warn_notinlined off"',
+    "-maxerrors 1",
+    "-nosyspath",
+    "-RTTI off",
+    "-fp_contract off",
+    "-str reuse",
+    "-ipa file",
+    "-enc SJIS",
+    "-i include",
+    "-i include/lib",
+    "-i lib/common/include/global",
+    "-i include/lib/MSL",
+    "-i include/lib/MSL/internal",
+    "-DREVOLUTION",
+    "-DNDEBUG=1",
+    "-DNW4R_LIB_BUILD",
+]
 
 config.warn_missing_config = True
 config.warn_missing_source = False
@@ -1271,19 +1287,19 @@ config.libs = [
     {
         "lib": "keyboard",
         "mw_version": "GC/3.0a5.2",
-        "cflags": cflags_ext_ipl_keyboard,
+        "cflags": cflags_keyboard,
         "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "lib/keyboard/tiPcKeyboard.cpp"),
             Object(NonMatching, "lib/keyboard/tiCellPhone.cpp"),
-            Object(NonMatching, "lib/keyboard/tiInputForm.cpp"),
+            Object(Matching, "lib/keyboard/tiInputForm.cpp"),
             Object(NonMatching, "lib/keyboard/tiSignWindow.cpp"),
-            Object(NonMatching, "lib/keyboard/tiString.cpp"),
-            Object(NonMatching, "lib/keyboard/tiTextDrawer.cpp"),
+            Object(Matching, "lib/keyboard/tiString.cpp"),
+            Object(Matching, "lib/keyboard/tiTextDrawer.cpp"),
             Object(NonMatching, "lib/keyboard/tiManager.cpp"),
             Object(NonMatching, "lib/keyboard/MyTiManager.cpp"),
             Object(NonMatching, "lib/keyboard/MyTiInputForm.cpp"),
-            Object(NonMatching, "lib/keyboard/tiHKBManager.cpp"),
+            Object(Matching, "lib/keyboard/tiHKBManager.cpp"),
         ],
     },
     # --- imported libs (begin) ---
@@ -4067,7 +4083,6 @@ config.libs = [
     ),
 ]
 
-
 # Optional callback to adjust link order. This can be used to add, remove, or reorder objects.
 # This is called once per module, with the module ID and the current link order.
 #
@@ -4081,10 +4096,8 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
         return objects + ["dummy.c"]
     return objects
 
-
 # Uncomment to enable the link order callback.
 # config.link_order_callback = link_order_callback
-
 
 # Optional extra categories for progress tracking
 # Adjust as desired for your project

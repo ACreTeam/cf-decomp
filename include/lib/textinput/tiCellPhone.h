@@ -1,6 +1,7 @@
 #pragma once
 
-// textinput::keyboard::cellphonetype: the cell phone keypad (see tiTextInputBase.h).
+// textinput::keyboard::cellphonetype: the cell phone keypad (see
+// tiTextInputBase.h).
 
 #include <lib/textinput/tiNw4rManager.h>
 #include <lib/textinput/tiKeyboard.h>
@@ -31,10 +32,12 @@ struct KeyCommand {
 };
 
 class Base : public KeyboardBase {
-public:
+  public:
     virtual void vt_0x38();
-    virtual void draw();                       // 0x3C
-    virtual int vt_0x40() { return mCandidate._04; } // 0x40
+    virtual void draw(); // 0x3C
+    virtual int vt_0x40() {
+        return mCandidate._04;
+    } // 0x40
     virtual void vt_0x44();
     virtual void vt_0x48();
     virtual void vt_0x4C();
@@ -44,7 +47,7 @@ public:
     virtual void vt_0x5C();
     virtual void vt_0x60();
     virtual void vt_0x64();
-    virtual void refreshState();               // 0x68
+    virtual void refreshState(); // 0x68
     virtual void vt_0x6C();
     virtual void vt_0x70();
     virtual void vt_0x74();
@@ -58,7 +61,7 @@ public:
 }; // size 0x34
 
 class LayoutByNW4R : public Base, public nw4rmanager::Layout {
-public:
+  public:
     virtual ~LayoutByNW4R();
     virtual void draw();
     virtual void vt_0xFC();
@@ -66,6 +69,11 @@ public:
     virtual void vt_0x104();
     virtual void vt_0x108(int);
     virtual void vt_0x10C(bool);
+
+    bool isLineFeedEnabled() const {
+        return mbEnableLineFeed;
+    }
+    /* 0xDC */ bool mbEnableLineFeed;
 };
 
 } // namespace cellphonetype

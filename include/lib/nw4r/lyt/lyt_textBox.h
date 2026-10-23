@@ -97,12 +97,8 @@ public:
     const ut::Font* GetFont() const;
     void SetFont(const ut::Font* pFont);
 
-    ut::Color GetTextColor(ulong idx) const {
-        return mTextColors[idx];
-    }
-    void SetTextColor(ulong idx, ut::Color color) {
-        mTextColors[idx] = color;
-    }
+    ut::Color GetTextColor(ulong idx) const;
+    void SetTextColor(ulong idx, ut::Color color);
 
     const Size& GetFontSize() const {
         return mFontSize;
