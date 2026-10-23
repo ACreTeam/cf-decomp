@@ -216,7 +216,7 @@ class Mng_c : public m2d::Base_c {
     void setCursorPos(int pos);       // 800C9E0C
     void saveCursorPos();             // 800C9E84
     void resetCursor();               // 800C9EB4
-    void setKeyboardMode(int mode);   // 800C9F20
+    void setKeyboardMode(bool lineFeed);   // 800C9F20
     void hideToolBar();               // 800C9FFC
     void setupLayout();               // 800CA04C
     const wchar_t *getInputText();    // 800CA1BC: the text being composed

@@ -1291,7 +1291,7 @@ config.libs = [
         "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "lib/keyboard/tiPcKeyboard.cpp"),
-            Object(NonMatching, "lib/keyboard/tiCellPhone.cpp"),
+            Object(Matching, "lib/keyboard/tiCellPhone.cpp"),
             Object(Matching, "lib/keyboard/tiInputForm.cpp"),
             Object(Matching, "lib/keyboard/tiSignWindow.cpp"),
             Object(Matching, "lib/keyboard/tiString.cpp"),

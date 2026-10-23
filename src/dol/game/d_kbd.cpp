@@ -380,22 +380,22 @@ static BOOL confirmKana(textinput::inputform::LayoutByNW4R *form) {
     return TRUE;
 }
 
-static textinput::keyboard::cellphonetype::Candidate *
+static textinput::keyboard::cellphonetype::State *
 getCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
-    return &keypad->mCandidate;
+    return &keypad->mState;
 }
 
 // Inputs the keypad character being picked.
 static BOOL
 confirmCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
-    if (keypad->mCandidate.mpKey != NULL) {
-        wchar_t c = keypad->mCandidate.mpKey->mChars[keypad->mCandidate.mIndex];
+    if (keypad->mState.mpKey != NULL) {
+        wchar_t c = keypad->mState.mpKey->wc[keypad->mState.mIndex];
         textinput::keyboard::cellphonetype::KeyCommand command = {
-            c, 0x100, keypad->mCandidate.mpKey};
+            c, 0x100, keypad->mState.mpKey};
         keypad->sendCommand(textinput::CommandReceiver::INPUT_COMMAND_KEY,
                             &command);
-        keypad->mCandidate.mIndex = 0;
-        keypad->mCandidate.mpKey = NULL;
+        keypad->mState.mIndex = 0;
+        keypad->mState.mpKey = NULL;
         return TRUE;
     }
     return FALSE;
@@ -447,7 +447,7 @@ void Mng_c::setup(int mode) {
     textinput::extend::memo::Setting setting = sSetting;
     mpManager->setSetting(setting);
     mpManager->vt_0xE4();
-    mpManager->getCellPhoneKeyboard()->vt_0x10C(false);
+    mpManager->getCellPhoneKeyboard()->setPredictLanguageButton(false);
     mpManager->getPCKeyboard()->vt_0x124(false);
     mpManager->getCandidateBox()->setActive(false);
 }
@@ -749,7 +749,7 @@ BOOL Mng_c::isTextChanged() {
         return TRUE;
     }
     if (mFlags & FLAG_CELL_PHONE) {
-        textinput::keyboard::cellphonetype::Candidate *candidate =
+        textinput::keyboard::cellphonetype::State *candidate =
             getCandidate(mpManager->getCellPhoneKeyboard());
         if (mFlags & FLAG_CANDIDATE) {
             if (candidate->mpKey == NULL) {
@@ -855,7 +855,7 @@ void Mng_c::setPos(mVec3_c pos) {
         textinput::keyboard::cellphonetype::LayoutByNW4R *keypad =
             mpManager->getCellPhoneKeyboard();
         keypad->getLayout()->GetRootPane()->SetTranslate(pos);
-        keypad->refreshState();
+        keypad->onClose();
     } else {
         textinput::keyboard::pctype::LayoutByNW4R *keyboard =
             mpManager->getPCKeyboard();
@@ -919,12 +919,12 @@ void Mng_c::resetCursor() {
     }
 }
 
-void Mng_c::setKeyboardMode(int mode) {
+void Mng_c::setKeyboardMode(bool lineFeed) {
     if (mFlags & FLAG_CELL_PHONE) {
-        mpManager->getCellPhoneKeyboard()->vt_0x108(mode);
-        mpManager->getCellPhoneKeyboard()->refreshState();
+        mpManager->getCellPhoneKeyboard()->setLineFeedButton(lineFeed);
+        mpManager->getCellPhoneKeyboard()->onClose();
     } else {
-        mpManager->getPCKeyboard()->vt_0x120(mode);
+        mpManager->getPCKeyboard()->vt_0x120(lineFeed);
         mpManager->getPCKeyboard()->refreshState();
     }
 }
@@ -961,11 +961,11 @@ void Mng_c::setupLayout() {
 
 const wchar_t *Mng_c::getInputText() {
     if (mFlags & FLAG_CELL_PHONE) {
-        textinput::keyboard::cellphonetype::Candidate *candidate =
+        textinput::keyboard::cellphonetype::State *candidate =
             getCandidate(mpManager->getCellPhoneKeyboard());
         wchar_t c;
         if (candidate->mpKey != NULL) {
-            c = candidate->mpKey->mChars[candidate->mIndex];
+            c = candidate->mpKey->wc[candidate->mIndex];
         } else {
             c = 0;
         }
@@ -1074,7 +1074,7 @@ BOOL Mng_c::isUpdated() {
 // Unused, stripped from the DOL: its call keeps the keypad's inline slot 0x40
 // (800CB09C) in d_kbd.
 int Mng_c::getKeypadState() {
-    return mpManager->getCellPhoneKeyboard()->vt_0x40();
+    return mpManager->getCellPhoneKeyboard()->getInputMode();
 }
 
 void Mng_c::updateInput() {

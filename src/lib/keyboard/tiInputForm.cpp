@@ -2383,7 +2383,7 @@ void Base::notifyChangeMode() {
             mpManager->getPCKeyboard()->getTranslateMode() !=
                 keyboard::pctype::Base::TM_Direct) {
             if (!mpManager->getToolBar()->isQwerty()) {
-                mpManager->getCellPhoneKeyboard()->vt_0x40();
+                mpManager->getCellPhoneKeyboard()->getInputMode();
             }
         }
         if ((u16)mpUnfixString->getInputStringLength() == 0) {

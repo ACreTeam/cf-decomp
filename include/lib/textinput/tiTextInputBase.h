@@ -86,6 +86,11 @@ public:
         INPUT_COMMAND_KEY = 5,
     };
 
+    struct ChangePredictMode {
+        /* 0x0 */ int mode;
+        /* 0x4 */ u8 on;
+    }; // size 0x8
+
     struct Scroll {
         /* 0x0 */ bool absY;
         /* 0x4 */ f32 x;
