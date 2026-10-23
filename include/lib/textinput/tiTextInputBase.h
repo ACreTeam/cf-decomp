@@ -20,8 +20,6 @@ enum Language {
     IT,
     SP,
     NL,
-    CN,
-    KR,
     LanguageEnd,
 };
 

@@ -76,8 +76,8 @@ public:
     virtual const keyboard::cellphonetype::LayoutByNW4R *getCellPhoneKeyboard() const {             // 0x78
         return mpCellPhoneKeyboard;
     }
-    virtual keyboard::signtype::LayoutByNW4R *getSignKeyboard() { return mpSignWindow; }            // 0x7C
-    virtual const keyboard::signtype::LayoutByNW4R *getSignKeyboard() const { return mpSignWindow; } // 0x80
+    virtual keyboard::signwindow::LayoutByNW4R *getSignKeyboard() { return mpSignWindow; }            // 0x7C
+    virtual const keyboard::signwindow::LayoutByNW4R *getSignKeyboard() const { return mpSignWindow; } // 0x80
     virtual candidatebox::LayoutByNW4R *getCandidateBox() { return mpCandidateBox; }                // 0x84
     virtual const candidatebox::LayoutByNW4R *getCandidateBox() const { return mpCandidateBox; }    // 0x88
     virtual toolbar::LayoutByNW4R *getToolBar() { return mpToolBar; }                               // 0x8C
@@ -114,7 +114,7 @@ protected:
     /* 0x1C */ candidatebox::LayoutByNW4R *mpCandidateBox;
     /* 0x20 */ toolbar::LayoutByNW4R *mpToolBar;
     /* 0x24 */ predictlang::LayoutByNW4R *mpPredictLanguageDialog;
-    /* 0x28 */ keyboard::signtype::LayoutByNW4R *mpSignWindow;
+    /* 0x28 */ keyboard::signwindow::LayoutByNW4R *mpSignWindow;
     /* 0x2C */ EventObserver *mpEventObserver;
     /* 0x30 */ Destination meDestination;
     /* 0x34 */ Language meLanguage;

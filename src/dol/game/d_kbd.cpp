@@ -402,7 +402,7 @@ confirmCandidate(textinput::keyboard::cellphonetype::LayoutByNW4R *keypad) {
 }
 
 static void
-closeSignWindow(textinput::keyboard::signtype::LayoutByNW4R *window) {
+closeSignWindow(textinput::keyboard::signwindow::LayoutByNW4R *window) {
     if (window->isActive()) {
         window->close();
     }

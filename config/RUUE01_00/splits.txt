@@ -3950,7 +3950,7 @@ lib/keyboard/tiUtil.cpp:
 lib/keyboard/tiCpData.cpp:
 	.text       start:0x80309C04 end:0x8030A04C
 	.ctors      start:0x80465918 end:0x8046591C
-	.rodata     start:0x8048CDF8 end:0x8048D270 align:4
+	.rodata     start:0x8048CDF8 end:0x8048D270
 	.data       start:0x8052FAB0 end:0x80532BB0 align:4
 	.sdata      start:0x8074CDB8 end:0x8074CDC0 align:4
 

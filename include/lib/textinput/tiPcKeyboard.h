@@ -33,6 +33,7 @@ class Base : public KeyboardBase {
         TM_Katakana,
     };
 
+    virtual void onActive();
     virtual void inputCharCode(); // 0x38
     virtual void vt_0x3C();
     virtual void vt_0x40();
@@ -72,6 +73,7 @@ class LayoutByNW4R : public Base,
                      public nw4rmanager::AnmObserver {
   public:
     virtual ~LayoutByNW4R();
+    virtual void onActive();
     virtual void draw(); // 0x110
     virtual void vt_0x114();
     virtual void vt_0x118();

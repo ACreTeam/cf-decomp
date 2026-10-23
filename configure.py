@@ -1293,7 +1293,7 @@ config.libs = [
             Object(NonMatching, "lib/keyboard/tiPcKeyboard.cpp"),
             Object(NonMatching, "lib/keyboard/tiCellPhone.cpp"),
             Object(Matching, "lib/keyboard/tiInputForm.cpp"),
-            Object(NonMatching, "lib/keyboard/tiSignWindow.cpp"),
+            Object(Matching, "lib/keyboard/tiSignWindow.cpp"),
             Object(Matching, "lib/keyboard/tiString.cpp"),
             Object(Matching, "lib/keyboard/tiTextDrawer.cpp"),
             Object(NonMatching, "lib/keyboard/tiManager.cpp"),
