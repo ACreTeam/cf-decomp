@@ -860,7 +860,7 @@ void Mng_c::setPos(mVec3_c pos) {
         textinput::keyboard::pctype::LayoutByNW4R *keyboard =
             mpManager->getPCKeyboard();
         keyboard->getLayout()->GetRootPane()->SetTranslate(pos);
-        keyboard->refreshState();
+        keyboard->onClose();
     }
     mpManager->getSignKeyboard()->getLayout()->GetRootPane()->SetTranslate(pos);
 }
@@ -925,7 +925,7 @@ void Mng_c::setKeyboardMode(bool lineFeed) {
         mpManager->getCellPhoneKeyboard()->onClose();
     } else {
         mpManager->getPCKeyboard()->vt_0x120(lineFeed);
-        mpManager->getPCKeyboard()->refreshState();
+        mpManager->getPCKeyboard()->onClose();
     }
 }
 

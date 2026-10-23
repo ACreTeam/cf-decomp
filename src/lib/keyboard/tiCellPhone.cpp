@@ -746,7 +746,7 @@ void LayoutByNW4R::changeSpaceKeyTop(const PaneNameToCharCode *keys) {
             if (!mState.mbPredictOn) {
                 textBox->SetString(csSpaceZero, 0);
             } else {
-                textBox->SetString(csSpace, 0);
+                textBox->SetString(csSpace[0], 0);
             }
         }
     }
@@ -800,7 +800,8 @@ void LayoutByNW4R::changePredictLanguage() {
     throwReleaseForAll();
     CommandReceiver::ChangePredictMode predictMode = {0, 0};
     sendCommand(0x1F, &predictMode);
-    mpPredictLanguageDialog->open(predictMode.mode, this);
+    mpPredictLanguageDialog->open(
+        static_cast<inputform::Base::PredictMode>(predictMode.mode), this);
 }
 
 void LayoutByNW4R::updatePredictLanguage(

@@ -112,6 +112,9 @@ private:
 
 class CommandSender : public Base {
 public:
+  CommandSender() : mpCommandReceiver(NULL) {
+  }
+
     virtual void setCommandReceiver(CommandReceiver *receiver); // 0x14
     virtual void sendCommand(u32 command, void *data) {         // 0x18
         if (mpCommandReceiver != NULL) {

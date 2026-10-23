@@ -91,8 +91,9 @@ struct AnimationShareInfo {
  ******************************************************************************/
 class AnimationLink {
 public:
-    AnimationLink() : mbDisable(false) {
+    AnimationLink() {
         Reset();
+        mbDisable = false;
     }
 
     void Reset() {

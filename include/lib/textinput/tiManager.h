@@ -103,6 +103,7 @@ public:
     void startPredictTurnOn(bool on);
     bool isPredictTurning() const;
     input::KBDListener *getKBDListenerRoot(); // 80308CF8: the root of HKBManager's listeners
+    EventObserver *getEventObserver() { return mpEventObserver; }
 
 protected:
     /* 0x04 */ MEMAllocator *mpAllocator;

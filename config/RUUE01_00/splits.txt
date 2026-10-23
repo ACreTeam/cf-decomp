@@ -4016,16 +4016,16 @@ lib/keyboard/tiHwKeyboard.cpp:
 
 lib/keyboard/tiLayout.cpp:
 	.text       start:0x80317FB0 end:0x8031878C
-	.data       start:0x80536D18 end:0x80536D80 align:4
+	.data       start:0x80536D18 end:0x80536D80
 
 lib/keyboard/tiLayoutGather.cpp:
 	.text       start:0x8031878C end:0x8031881C
 
 lib/RevoEX/ssl/ssl_api.c:
 	.text       start:0x8031881C end:0x80319574
-	.data       start:0x80536D80 end:0x80536DD8 align:4
-	.bss        start:0x806A7480 end:0x806AA4A0 align:4
-	.sdata      start:0x8074CEA8 end:0x8074CEB0 align:4
+	.data       start:0x80536D80 end:0x80536DD8
+	.bss        start:0x806A7480 end:0x806AA4A0
+	.sdata      start:0x8074CEA8 end:0x8074CEB0
 	.sbss       start:0x8074F140 end:0x8074F148 align:4
 
 lib/dwc/common/dwc_base64.c:

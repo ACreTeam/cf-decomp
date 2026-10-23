@@ -45,6 +45,7 @@ public:
 
     class KeySet {
     public:
+        KeySet() : mpManager(NULL), muType(0), msIndex(-1), muChannel(0), mwcVCode(0) {}
         KeySet(const HKBManager *manager, KeySetType type)
             : mpManager(manager), muType(type), msIndex(-1), muChannel(0), mwcVCode(0) {}
 

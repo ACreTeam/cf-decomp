@@ -14,12 +14,18 @@ namespace pctype {
 // The modifier / input mode state of the keyboard.
 class KeyState {
   public:
+    void setABCFlag(u32 flag);
     void setInputMode(u32 mode); // 802E6F88: no-op if unchanged
 
-    /* 0x00 */ u32 _00 : 25;
-    /* 0x00 */ u32 mCapsOn : 1;
-    /* 0x00 */ u32 _1A : 2;
-    /* 0x00 */ u32 mShift : 4; // bit 0: shift, bit 1: caps
+    union {
+        struct {
+            /* 0x00 */ u32 _00 : 25;
+            /* 0x00 */ u32 mCapsOn : 1;
+            /* 0x00 */ u32 _1A : 2;
+            /* 0x00 */ u32 mShift : 4; // bit 0: shift, bit 1: caps
+        };
+        /* 0x00 */ u32 muFlag;
+    };
     /* 0x04 */ int mInputType;
     /* 0x08 */ u32 mInputMode : 28;
     /* 0x08 */ u32 _08 : 4;
@@ -53,7 +59,7 @@ class Base : public KeyboardBase {
     virtual void vt_0x68();
     virtual void vt_0x6C();
     virtual void vt_0x70();
-    virtual void refreshState(); // 0x74
+    virtual void onClose(); // 0x74
     virtual void vt_0x78();
     virtual void vt_0x7C();
     virtual void vt_0x80();
@@ -90,6 +96,10 @@ class LayoutByNW4R : public Base,
     virtual void vt_0x144();
 
     /* 0xF0 */ u8 _F0[0xFC - 0xF0];
+    void onPressedCaps();
+    void onPressedShift(bool shift);
+    void onReleasedShift();
+
     bool isLineFeedEnabled() const {
         return mbEnableLineFeed;
     }

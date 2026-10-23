@@ -292,6 +292,9 @@ class Base : public CommandReceiver,
     void onPressLeftHWKB();
     void onPressRightHWKB();
     void moveCandidateToIdx(s32 index);
+    void setCursorSelectFlg(bool flag) {
+        mbCursorSelected = flag;
+    }
     void toggleAtokMode_(u8);
     void notifyChangeMode();
     void changeInputState(const InputState &state, InputState &prev);

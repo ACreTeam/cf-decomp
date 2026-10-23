@@ -6,8 +6,9 @@
 namespace textinput {
 namespace util {
 
+extern const wchar_t *s_alphabet_map[];
+
 wchar_t toWLower(wchar_t ch);
-wchar_t toWUpper(wchar_t ch);
 wchar_t HankakuToZenkaku(wchar_t ch);
 
 wchar_t KBD_ConvertDakuten(wchar_t ch);

@@ -164,8 +164,7 @@ public:
         return mTranslate;
     }
     void SetTranslate(const math::VEC2& rTransXY) {
-        mTranslate.x = rTransXY.x;
-        mTranslate.y = rTransXY.y;
+        SetTranslate(math::VEC3(rTransXY.x, rTransXY.y, 0.0f));
     }
     void SetTranslate(const math::VEC3& rTrans) {
         mTranslate = rTrans;

@@ -33,6 +33,14 @@ public:
         SetAnisotropy(GX_ANISO_1);
     }
 
+    TexMap(const GXTexObj &texObj) {
+        Set(texObj);
+        SetPalette(NULL);
+        SetPaletteFormat(GX_TL_IA8);
+        SetPaletteEntryNum(0);
+    }
+
+    void Set(const GXTexObj &texObj);
     void Get(GXTexObj* pTexObj) const;
     void Get(GXTlutObj* pTlutObj) const;
 
@@ -178,7 +186,7 @@ private:
         ulong wrapS : 2;
         ulong wrapT : 2;
         ulong minFilter : 3;
-        ulong magFilter : 3;
+        ulong magFilter : 1;
         ulong biasClampEnable : 1;
         ulong edgeLODEnable : 1;
         ulong anisotropy : 2;

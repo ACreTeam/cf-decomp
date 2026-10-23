@@ -49,7 +49,7 @@ extern const KeySet csKeySetabcJP;
 extern const KeySet csKeySetNumber;
 
 extern const wchar_t *csSpaceZero;
-extern const wchar_t *csSpace;
+extern const wchar_t *csSpace[2];
 
 } // namespace cellphonetype
 } // namespace keyboard

@@ -70,6 +70,15 @@ public:
         POINTS_MAX = 8,
     };
 
+    enum {
+        EVENT_NONE,
+        EVENT_POINT,
+        EVENT_LEFT,
+        EVENT_MOVE,
+        EVENT_TRIG,
+        EVENT_RELEASE,
+    };
+
     GUIComponent(u32 id)
         : mbInitialize(false), mDraggingButton(0xFFFF), mID(id), mbTriggerTarget(false), mpManager(NULL),
           mpListener(NULL) {
@@ -116,7 +125,11 @@ public:
     virtual void setFlightDuration(int point, u16 duration) { mFlightDuration[point] = duration; }   // 0x60
     virtual bool contain(f32 x, f32 y) = 0;                                                         // 0x64
 
-    void onEvent(u32 event, void *data);
+    void onEvent(u32 event, void *data) {
+        if (mpListener) {
+            mpListener->onEvent(*this, event, data);
+        }
+    }
     void setParentManager(GUIManager *manager) { mpManager = manager; }
     GUIManager *getParentManager() { return mpManager; }
     void setListener(EventHandler *listener) { mpListener = listener; }
@@ -153,6 +166,7 @@ public:
     nw4r::lyt::Pane *getPane() { return mpPane; }
     nw4r::lyt::TextBox *getTextPane() { return static_cast<nw4r::lyt::TextBox *>(mpPane); }
     nw4r::lyt::Picture *getPictPane() { return static_cast<nw4r::lyt::Picture *>(mpPane); }
+    nw4r::lyt::Bounding *getBoundPane() { return static_cast<nw4r::lyt::Bounding *>(mpPane); }
 
 private:
     /* 0x9C */ nw4r::lyt::Pane *mpPane;
@@ -160,22 +174,50 @@ private:
 
 class GUIManager : public GUIInterface {
 public:
-    virtual ~GUIManager();                                                             // 0x08
+    GUIManager(EventHandler *eventHandler, MEMAllocator *allocator)
+        : mpEventHandler(eventHandler), mpAllocator(allocator) {
+        nw4r::ut::List_Init(&mComponents, offsetof(IDToComponent, mLink));
+    }
+
+    virtual ~GUIManager() DECOMP_DONT_INLINE;                                          // 0x08
     virtual void init();                                                               // 0x10
     virtual void calc();                                                               // 0x14
     virtual void draw();                                                               // 0x1C
     virtual void addComponent(GUIComponent *component);                                // 0x20
     virtual GUIComponent *getComponent(u32 id);                                        // 0x24
     virtual GUIComponent *getComponent(u32 id) const;                                  // 0x28
-    virtual bool update(int point, const KPADStatus *kpad, f32 x, f32 y, void *data); // 0x2C
+    virtual bool update(int point, const KPADStatus *kpad, f32 x, f32 y, void *data) { // 0x2C
+        return false;
+    }
     virtual bool update(int point, f32 x, f32 y, u32 trig, u32 hold, u32 release, void *data); // 0x30
-    virtual void onEvent(GUIComponent &component, u32 event, int point, void *data);   // 0x34
+    virtual void onEvent(GUIComponent &component, u32 event, int point, void *data) {  // 0x34
+        if (mpEventHandler) {
+            mpEventHandler->setLatestEventCtrlNo(point);
+            mpEventHandler->onEvent(component, event, data);
+        }
+        component.onEvent(event, data);
+    }
     virtual void setAllComponentTriggerTarget(bool enable);                            // 0x38
-    virtual void setEventHandler(EventHandler *eventHandler);                          // 0x3C
-    virtual EventHandler *changeEventHandler(EventHandler *eventHandler);              // 0x40
+    virtual void setEventHandler(EventHandler *eventHandler) {                         // 0x3C
+        mpEventHandler = eventHandler;
+    }
+    virtual EventHandler *changeEventHandler(EventHandler *eventHandler) {             // 0x40
+        EventHandler *prev = mpEventHandler;
+        mpEventHandler = eventHandler;
+        return prev;
+    }
     virtual void setDraggingButton(u32 button);                                        // 0x44
 
 protected:
+    class IDToComponent {
+    public:
+        IDToComponent(u32 id, GUIComponent *component) : mID(id), mpComponent(component) {}
+
+        /* 0x00 */ u32 mID;
+        /* 0x04 */ GUIComponent *mpComponent;
+        /* 0x08 */ nw4r::ut::Link mLink;
+    }; // size 0x10
+
     /* 0x04 */ EventHandler *mpEventHandler;
     /* 0x08 */ MEMAllocator *mpAllocator;
     /* 0x0C */ nw4r::ut::List mComponents;
@@ -183,15 +225,44 @@ protected:
 
 class PaneManager : public GUIManager {
 public:
+    PaneManager(EventHandler *eventHandler, MEMAllocator *allocator, const nw4r::lyt::DrawInfo *drawInfo)
+        : GUIManager(eventHandler, allocator), mpDrawInfo(drawInfo) {
+        mIDCounter = 0;
+        nw4r::ut::List_Init(&mPaneComponents, offsetof(PaneToComponent, mLink));
+    }
+
     virtual ~PaneManager();                                                  // 0x08
     virtual void createLayoutScene(const nw4r::lyt::Layout &layout);         // 0x48
     virtual PaneComponent *getPaneComponentByPane(nw4r::lyt::Pane *pane);    // 0x4C
-    virtual const nw4r::lyt::DrawInfo *getDrawInfo();                        // 0x50
-    virtual void setDrawInfo(const nw4r::lyt::DrawInfo *drawInfo);           // 0x54
+    virtual const nw4r::lyt::DrawInfo *getDrawInfo() { return mpDrawInfo; } // 0x50
+    virtual void setDrawInfo(const nw4r::lyt::DrawInfo *drawInfo) {          // 0x54
+        mpDrawInfo = drawInfo;
+    }
     virtual void setAllBoundingBoxComponentTriggerTarget(bool enable);       // 0x58
 
+    void walkInChildren(nw4r::lyt::PaneList &paneList);
+    void addPane_(nw4r::lyt::Pane *pane);
     PaneComponent *searchPaneComponent(const char *name);
-};
+
+protected:
+    class PaneToComponent {
+    public:
+        PaneToComponent(nw4r::lyt::Pane *pane, PaneComponent *component) : mpPane(pane), mpComponent(component) {}
+
+        nw4r::lyt::Pane *getPane() { return mpPane; }
+
+        /* 0x00 */ nw4r::lyt::Pane *mpPane;
+        /* 0x04 */ PaneComponent *mpComponent;
+        /* 0x08 */ nw4r::ut::Link mLink;
+    }; // size 0x10
+
+    /* 0x18 */ const nw4r::lyt::DrawInfo *mpDrawInfo;
+    /* 0x1C */ u16 mNumPoint;
+    /* 0x20 */ u32 mIDCounter;
+    /* 0x24 */ nw4r::ut::List mPaneComponents;
+}; // size 0x30
+
+void drawLine_(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u8 width, GXColor &color);
 
 } // namespace gui
 } // namespace textinput
