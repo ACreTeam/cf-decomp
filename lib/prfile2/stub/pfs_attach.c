@@ -4,12 +4,12 @@
 s32 pfstub_attach(struct PF_DRV_TBL** drv_tbl, void* p_param) {
     struct PF_STUB_MSG msg;
 
-    msg.func = 27;
+    msg.func = PFSTUB_ATTACH;
     msg.ptr0 = drv_tbl;
-    msg.status = 0;
+    msg.callback = NULL;
     msg.ptr1 = p_param;
-    if (pfstub_com_massage(&msg) == -1) {
-        return -1;
+    if (pfstub_com_massage(&msg) == PF_RET_ERR) {
+        return PF_RET_ERR;
     }
     return msg.result;
 }

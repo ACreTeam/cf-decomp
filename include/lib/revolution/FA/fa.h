@@ -21,7 +21,7 @@ FAError FAUnmount(s8 drive, u32 force);
 
 FAError FAErrnum();
 
-FAFILE* FACreate(const char* fileName, int unk);
+FAFILE* FACreate(const char* fileName, int mode);
 size_t FAFwrite(const void* buffer, size_t size, size_t count, FAFILE* stream);
 FAError FAFclose(FAFILE* stream);
 

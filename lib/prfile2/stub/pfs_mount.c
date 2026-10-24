@@ -4,11 +4,11 @@
 s32 pfstub_mount(s8 drive) {
     struct PF_STUB_MSG msg;
 
-    msg.func = 14;
+    msg.func = PFSTUB_MOUNT;
     msg.drive = drive;
-    msg.status = 0;
-    if (pfstub_com_massage(&msg) == -1) {
-        return -1;
+    msg.callback = NULL;
+    if (pfstub_com_massage(&msg) == PF_RET_ERR) {
+        return PF_RET_ERR;
     }
     return msg.result;
 }

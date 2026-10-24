@@ -1,10 +1,10 @@
-#include <prfile2/pf_api.h>
+#include <prfile2/pf_standard.h>
 
 s32 pf2_rmdir(const s8* path) {
     s32 err;
     struct PF_STR path_str;
 
-    err = PFSTR_InitStr(&path_str, path, 1);
+    err = PFSTR_InitStr(&path_str, path, PF_STR_CODEMODE_OEM);
     if (err == 0) {
         err = PFDIR_rmdir(&path_str);
     } else {

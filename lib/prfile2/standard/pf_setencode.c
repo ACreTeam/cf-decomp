@@ -1,9 +1,9 @@
-#include <prfile2/pf_api.h>
+#include <prfile2/pf_standard.h>
 
-s32 pf2_setencode(u32 code) {
+s32 pf2_setencode(s32 encode) {
     s32 err;
 
-    err = PFVOL_setencode(code);
+    err = PFVOL_setencode(encode);
     err = PFAPI_convertReturnValue(err);
     return err;
 }

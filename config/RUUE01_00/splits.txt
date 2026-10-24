@@ -2235,6 +2235,7 @@ lib/prfile2/dskmng/pdm_bpb.c:
 
 lib/prfile2/dskmng/pdm_disk.c:
 	.text       start:0x801FC4F8 end:0x801FCCD0
+	.bss        start:0x80626D40 end:0x80627708
 
 lib/prfile2/dskmng/pdm_partition.c:
 	.text       start:0x801FCCD0 end:0x801FDB54
@@ -2247,15 +2248,21 @@ lib/prfile2/fatfs/pf_cluster.c:
 
 lib/prfile2/fatfs/pf_dir.c:
 	.text       start:0x80200A00 end:0x80205344
+	.sdata      start:0x8074C940 end:0x8074C960
+	.sdata2     start:0x80751D50 end:0x80751D58
 
 lib/prfile2/fatfs/pf_entry.c:
 	.text       start:0x80205344 end:0x80206CC8
+	.data       start:0x80507E00 end:0x80507E10
+	.sdata2     start:0x80751D58 end:0x80751D60
 
 lib/prfile2/fatfs/pf_entry_iterator.c:
 	.text       start:0x80206CC8 end:0x80208B90
+	.sdata      start:0x8074C960 end:0x8074C978
 
 lib/prfile2/fatfs/pf_fat.c:
 	.text       start:0x80208B90 end:0x8020BCAC
+	.rodata     start:0x8047FDA8 end:0x8047FDE8
 
 lib/prfile2/fatfs/pf_fat12.c:
 	.text       start:0x8020BCAC end:0x8020C520
@@ -2274,21 +2281,29 @@ lib/prfile2/fatfs/pf_file.c:
 
 lib/prfile2/fatfs/pf_path.c:
 	.text       start:0x802113F4 end:0x80214248
+	.sdata      start:0x8074C978 end:0x8074C9A8
+	.sdata2     start:0x80751D60 end:0x80751D68
 
 lib/prfile2/fatfs/pf_sector.c:
 	.text       start:0x80214248 end:0x80214970
 
 lib/prfile2/fatfs/pf_volume.c:
 	.text       start:0x80214970 end:0x80218FB8
+	.data       start:0x80507E10 end:0x80507E20
+	.bss        start:0x80627708 end:0x8065AF08
+	.sdata      start:0x8074C9A8 end:0x8074C9B0
+	.sdata2     start:0x80751D68 end:0x80751D70
 
 lib/prfile2/fatfs/pf_volume_apiadd.c:
 	.text       start:0x80218FB8 end:0x80219030
 
 lib/prfile2/local/pf_cp932.c:
 	.text       start:0x80219030 end:0x80219540
+	.rodata     start:0x8047FDE8 end:0x80484060
 
 lib/prfile2/standard/pf_api_util.c:
 	.text       start:0x80219540 end:0x802196F0
+	.data       start:0x80507E20 end:0x80507EC0
 
 lib/prfile2/standard/pf_attach.c:
 	.text       start:0x802196F0 end:0x802197A0
@@ -2571,9 +2586,11 @@ lib/prfile2/system/pf_stub.c:
 
 lib/prfile2/system/pf_system.c:
 	.text       start:0x8021B890 end:0x8021B920
+	.bss        start:0x8065AF08 end:0x8065D2A8
 
 lib/prfile2/system/pf_stub_standard.c:
 	.text       start:0x8021B920 end:0x8021BEA4
+	.data       start:0x80507EC0 end:0x80508008
 
 lib/prfile2/stub/pfs_attach.c:
 	.text       start:0x8021BEA4 end:0x8021BEF4
@@ -2619,9 +2636,13 @@ lib/prfile2/stub/pfs_unmount.c:
 
 lib/prfile2/system/pf_stub_unicode.c:
 	.text       start:0x8021C29C end:0x8021C4DC
+	.data       start:0x80508008 end:0x80508068
 
 lib/prfile2/api/FAAttach.c:
 	.text       start:0x8021C4DC end:0x8021C6D0
+	.data       start:0x80508068 end:0x80508080
+	.bss        start:0x8065D2A8 end:0x8065D378
+	.sdata      start:0x8074C9B0 end:0x8074C9B8
 
 lib/prfile2/api/FACreate.c:
 	.text       start:0x8021C6D0 end:0x8021C6FC
@@ -2646,6 +2667,7 @@ lib/prfile2/api/FAFwrite.c:
 
 lib/prfile2/api/FAInit.c:
 	.text       start:0x8021C86C end:0x8021C934
+	.sbss       start:0x8074ECD8 end:0x8074ECE8
 
 lib/prfile2/api/FAMkdir.c:
 	.text       start:0x8021C934 end:0x8021C960
@@ -2655,6 +2677,7 @@ lib/prfile2/api/FAMount.c:
 
 lib/prfile2/api/FARegistCB.c:
 	.text       start:0x8021C990 end:0x8021CABC
+	.bss        start:0x8065D378 end:0x8065D390
 
 lib/prfile2/api/FARemove.c:
 	.text       start:0x8021CABC end:0x8021CAE8
@@ -2667,27 +2690,41 @@ lib/prfile2/api/FAUnmount.c:
 
 lib/prfile2/kernel/pfk_api.c:
 	.text       start:0x8021CB64 end:0x8021CF7C
+	.data       start:0x80508080 end:0x80508350
 
 lib/prfile2/driver/nand_drv.c:
 	.text       start:0x8021CF7C end:0x8021EAA4
+	.rodata     start:0x80484060 end:0x80484080
+	.bss        start:0x8065D390 end:0x8065E978
+	.sdata      start:0x8074C9B8 end:0x8074C9C0
+	.sbss       start:0x8074ECE8 end:0x8074ECF4
 
 lib/prfile2/driver/sd_drv.c:
 	.text       start:0x8021EAA4 end:0x80220878
+	.rodata     start:0x80484080 end:0x804841C0
+	.data       start:0x80508350 end:0x80508C20
+	.bss        start:0x8065E980 end:0x8065EBE0
+	.sbss       start:0x8074ED00 end:0x8074ED24
 
 lib/prfile2/driver/pfd_cmn.c:
 	.text       start:0x80220878 end:0x80220990
 
 lib/prfile2/driver/msc_drv.c:
 	.text       start:0x80220990 end:0x802209A4
+	.sbss       start:0x8074ED28 end:0x8074ED30
 
 lib/prfile2/msc/puh_msc.c:
 	.text       start:0x802209A4 end:0x80220C18
+	.sbss       start:0x8074ED30 end:0x8074ED40
 
 lib/prfile2/msc/puh_msc_cmd.c:
 	.text       start:0x80220C18 end:0x80220FF4
 
 lib/prfile2/msc/puh_msc_blk.c:
 	.text       start:0x80220FF4 end:0x8022180C
+	.data       start:0x80508C20 end:0x80508C40
+	.bss        start:0x8065EBE0 end:0x8065ED60
+	.sbss       start:0x8074ED40 end:0x8074ED48
 
 lib/RVL_SDK/ipc/ipcMain.c:
 	.text       start:0x8022180C end:0x802218D8
