@@ -1,4 +1,4 @@
-#include <prfile2/pf_api.h>
+#include <prfile2/pf_standard.h>
 
 s32 pf2_rewinddir(struct PF_DIR* p_dir) {
     s32 err;

@@ -1,12 +1,14 @@
 #include <prfile2/fa.h>
+#include <prfile2/pf_types.h>
 
 s32 FAUnmount(s8 drive, u32 force) {
     s32 err = pfstub_unmount(drive, force);
-    if (err == -1) {
-        return -1;
+
+    if (err == PF_RET_ERR) {
+        return FA_RET_ERR;
     }
-    if (err == 1) {
-        return 1;
+    if (err == PF_RET_UNMOUNT_FORCED) {
+        return FA_RET_UNMOUNT_FORCED;
     }
-    return err != 0 ? -1 : 0;
+    return err != 0 ? FA_RET_ERR : 0;
 }

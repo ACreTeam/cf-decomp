@@ -1,4 +1,4 @@
-#include <prfile2/pf_api.h>
+#include <prfile2/pf_standard.h>
 
 s32 pf2_ferror(struct PF_FILE* p_file) {
     s32 err;

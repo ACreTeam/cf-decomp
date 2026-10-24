@@ -4,11 +4,11 @@
 s32 pfstub_fclose(struct PF_FILE* p_file) {
     struct PF_STUB_MSG msg;
 
-    msg.func = 2;
+    msg.func = PFSTUB_FCLOSE;
     msg.ptr0 = p_file;
-    msg.status = 0;
-    if (pfstub_com_massage(&msg) == -1) {
-        return -1;
+    msg.callback = NULL;
+    if (pfstub_com_massage(&msg) == PF_RET_ERR) {
+        return PF_RET_ERR;
     }
     return msg.result;
 }

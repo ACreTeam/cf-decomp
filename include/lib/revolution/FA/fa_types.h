@@ -174,8 +174,8 @@ struct FADisk {
 
     FADiskTbl diskTbl;  // 0x04
 
-    u16 attachPartCnt;  // 0x0C
-    u16 mountPartCnt;   // 0x0E
+    s16 attachPartCnt;  // 0x0C
+    s16 mountPartCnt;   // 0x0E
 
     int diskSemId;  // 0x10
     int drvSemId;   // 0x14

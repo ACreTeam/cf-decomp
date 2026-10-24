@@ -31,7 +31,7 @@ typedef struct _SDDev {
     u32 SDState;       // 0x24
 } SDDev;
 
-typedef s32 (*SDDevIntrCallback)(u32, void*);
+typedef s32 (*SDDevIntrCallback)(s32, void*);
 
 ISD_Error ISD_InitCard();
 
@@ -44,6 +44,8 @@ ISD_Error ISD_GetHCRegister(SDDev* dev, u32 param_2, u32* param_3, u32 param_4) 
 
 ISD_Error ISD_ReadBlock(SDDev* dev, u32 offset, u8* cmdResp, u32 cmdRespSize);
 ISD_Error ISD_WriteBlock(SDDev* dev, u32 offset, u8* cmdResp, u32 cmdRespSize);
+ISD_Error ISD_ReadMultiBlock(SDDev* dev, u32 offset, u8* buf, u32 size);
+ISD_Error ISD_WriteMultiBlock(SDDev* dev, u32 offset, u8* buf, u32 size);
 
 ISD_Error ISD_ReadCardRegister(SDDev* dev, u32 cmd, u32* cmdResp, u32 cmdRespSize);
 ISD_Error ISD_RegisterDeviceIntrHandler(SDDev* dev, SDDevIntrCallback intCB, void* arg);
@@ -52,5 +54,13 @@ ISD_Error ISD_ResetDevice(SDDev* dev);
 ISD_Error ISD_UnregisterDeviceIntrHandler(SDDev* dev);
 
 ISD_Error ISD_GetDeviceStatus(SDDev* dev, u32* status);
+
+void* SDOS_AllocMem(void* heap, u32 size, u32 align);
+s32 SDOS_FreeMem(void* heap, void* p);
+BOOL SDOS_IsDmaBuffer(const void* p);
+s32 SDOS_SendMessage(s32 mbx_id, void* p_msg, s32 timeout);
+s32 SDOS_CreateSemaphore(s32 count, s32 attr);
+s32 SDOS_DeleteSemaphore(s32 sem_id);
+s32 SDOS_WaitSemaphore(s32 sem_id);
 
 #endif  // REVOLUTION_SDI_H

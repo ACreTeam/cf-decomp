@@ -4,11 +4,11 @@
 s32 pfstub_fsnext(struct PF_DTA* p_dta) {
     struct PF_STUB_MSG msg;
 
-    msg.func = 29;
+    msg.func = PFSTUB_FSNEXT;
     msg.ptr0 = p_dta;
-    msg.status = 0;
-    if (pfstub_com_massage(&msg) == -1) {
-        return -1;
+    msg.callback = NULL;
+    if (pfstub_com_massage(&msg) == PF_RET_ERR) {
+        return PF_RET_ERR;
     }
     return msg.result;
 }

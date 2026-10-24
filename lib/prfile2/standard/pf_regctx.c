@@ -1,9 +1,9 @@
-#include <prfile2/pf_api.h>
+#include <prfile2/pf_standard.h>
 
-s32 pf2_regctx(s32 context_id) {
+s32 pf2_regctx(void) {
     s32 err;
 
-    err = PFVOL_regctx(context_id);
+    err = PFVOL_regctx();
     err = PFAPI_convertReturnValue(err);
     return err;
 }

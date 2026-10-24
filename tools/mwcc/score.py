@@ -192,6 +192,7 @@ def main():
     ap.add_argument('--map-file', action='append', default=[],
                     help='file of "targetName=ourName" lines (functions or data; # comments), repeatable')
     ap.add_argument('--keep', action='store_true', help='keep the work folder under build/mwcc_tools (deleted by default)')
+    ap.add_argument('--work', help='reuse this work folder instead of creating a temporary one')
     a = ap.parse_args()
     fre = re.compile(a.func)
     for mf in a.map_file:
@@ -200,7 +201,7 @@ def main():
             if '=' in line:
                 a.map.append(line)
     res = score_unit(a.src, a.input, a.overlay, a.map, func_regex=a.func,
-                     diff_funcs=_AllNames() if a.diff else None, keep=a.keep)
+                     diff_funcs=_AllNames() if a.diff else None, keep=a.keep, work=a.work)
     if a.keep and res.get('work'):
         print('work folder kept: %s' % res['work'])
     if not res['ok']:

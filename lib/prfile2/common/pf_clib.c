@@ -1,4 +1,4 @@
-#include <revolution/types.h>
+#include <prfile2/pf_clib.h>
 
 s32 pf_toupper(s32 c) {
     if (c >= 'a' && c <= 'z') {
@@ -8,21 +8,21 @@ s32 pf_toupper(s32 c) {
     }
 }
 
-void* pf_memcpy(void* dst, void* src, u32 length) {
+void* pf_memcpy(void* dst, const void* src, u32 length) {
     s8* d;
     const s8* s;
-
     u32* ld = (u32*)dst;
-    const u32* ls = (u32*)src;
+    const u32* ls = (const u32*)src;
 
     if (((u32)ld & 3) == 0 && ((u32)ls & 3) == 0) {
-        for (; length > 3; length -= 4) {
+        while (length > 3) {
             *ld++ = *ls++;
+            length -= 4;
         }
     }
 
     d = (s8*)ld;
-    s = (s8*)ls;
+    s = (const s8*)ls;
 
     while (length-- != 0) {
         *d++ = *s++;
@@ -109,8 +109,8 @@ s8* pf_strcpy(s8* dst, const s8* src) {
 }
 
 s32 pf_strcmp(const s8* s1, const s8* s2) {
-    const u8* p1 = (u8*)s1;
-    const u8* p2 = (u8*)s2;
+    const u8* p1 = (const u8*)s1;
+    const u8* p2 = (const u8*)s2;
 
     while (*p1 != 0 && *p2 != 0 && *p1 == *p2) {
         p1++;
@@ -121,8 +121,8 @@ s32 pf_strcmp(const s8* s1, const s8* s2) {
 }
 
 s32 pf_strncmp(const s8* s1, const s8* s2, u32 length) {
-    const u8* p1 = (u8*)s1;
-    const u8* p2 = (u8*)s2;
+    const u8* p1 = (const u8*)s1;
+    const u8* p2 = (const u8*)s2;
 
     while (length-- != 0) {
         if (!(*p1 != 0 && *p2 != 0 && *p1 == *p2)) {
@@ -168,7 +168,6 @@ s32 pf_w_strncmp(const u16* s1, const u16* s2, u32 length) {
         if (*s1 == 0 || *s2 == 0 || *s1 != *s2) {
             return *s1 - *s2;
         }
-
         s1++;
         s2++;
         length--;
