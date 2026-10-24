@@ -153,25 +153,6 @@ protected:
 class PaneComponent;
 class PaneManager;
 
-class PaneComponent : public GUIComponent {
-public:
-    PaneComponent(u32 id) : GUIComponent(id) { mpPane = NULL; }
-
-    virtual ~PaneComponent() {}                                    // 0x08
-    virtual void draw();                                           // 0x1C
-    virtual bool isVisible();                                      // 0x58
-    virtual bool contain(f32 x, f32 y);                            // 0x64
-    virtual void setPane(nw4r::lyt::Pane *pane) { mpPane = pane; } // 0x68
-
-    nw4r::lyt::Pane *getPane() { return mpPane; }
-    nw4r::lyt::TextBox *getTextPane() { return static_cast<nw4r::lyt::TextBox *>(mpPane); }
-    nw4r::lyt::Picture *getPictPane() { return static_cast<nw4r::lyt::Picture *>(mpPane); }
-    nw4r::lyt::Bounding *getBoundPane() { return static_cast<nw4r::lyt::Bounding *>(mpPane); }
-
-private:
-    /* 0x9C */ nw4r::lyt::Pane *mpPane;
-}; // size 0xA0
-
 class GUIManager : public GUIInterface {
 public:
     GUIManager(EventHandler *eventHandler, MEMAllocator *allocator)
@@ -261,6 +242,25 @@ protected:
     /* 0x20 */ u32 mIDCounter;
     /* 0x24 */ nw4r::ut::List mPaneComponents;
 }; // size 0x30
+
+class PaneComponent : public GUIComponent {
+public:
+    PaneComponent(u32 id) : GUIComponent(id) { mpPane = NULL; }
+
+    virtual ~PaneComponent() {}                                    // 0x08
+    virtual void draw();                                           // 0x1C
+    virtual bool isVisible();                                      // 0x58
+    virtual bool contain(f32 x, f32 y);                            // 0x64
+    virtual void setPane(nw4r::lyt::Pane *pane) { mpPane = pane; } // 0x68
+
+    nw4r::lyt::Pane *getPane() { return mpPane; }
+    nw4r::lyt::TextBox *getTextPane() { return static_cast<nw4r::lyt::TextBox *>(mpPane); }
+    nw4r::lyt::Picture *getPictPane() { return static_cast<nw4r::lyt::Picture *>(mpPane); }
+    nw4r::lyt::Bounding *getBoundPane() { return static_cast<nw4r::lyt::Bounding *>(mpPane); }
+
+private:
+    /* 0x9C */ nw4r::lyt::Pane *mpPane;
+}; // size 0xA0
 
 void drawLine_(f32 x0, f32 y0, f32 x1, f32 y1, f32 z, u8 width, GXColor &color);
 

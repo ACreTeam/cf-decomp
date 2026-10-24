@@ -351,12 +351,12 @@ int Listener_c::getEmotion() {
 static void
 resetInputMode(textinput::keyboard::pctype::LayoutByNW4R *keyboard) {
     keyboard->mKeyState.setInputMode(0);
-    keyboard->vt_0x144();
+    keyboard->updateDakuten();
 }
 
 static void
 refreshKeyboard(textinput::keyboard::pctype::LayoutByNW4R *keyboard) {
-    keyboard->vt_0x13C();
+    keyboard->cancelStateFocusIn();
 }
 
 static void setStringCursor(textinput::inputform::LayoutByNW4R *form, u32 pos) {
@@ -426,10 +426,10 @@ BOOL Mng_c::init(int mode) {
     mFlags |= FLAG_INIT;
     if (mode != INIT_MODE_PAD || !dSaveOption::getKeySe()) {
         mFlags &= ~FLAG_CELL_PHONE;
-        sSetting.mKeyboardType = 0x11;
+        sSetting.uRevisionAndType = 0x11;
     } else {
         mFlags |= FLAG_CELL_PHONE;
-        sSetting.mKeyboardType = 0x10;
+        sSetting.uRevisionAndType = 0x10;
     }
     mCreateStep = CREATE_STEP_START;
     return TRUE;
@@ -438,17 +438,17 @@ BOOL Mng_c::init(int mode) {
 void Mng_c::setup(int mode) {
     switch (mode) {
     case SETUP_MODE_0:
-        mpManager->vt_0x118();
+        mpManager->configNormalWithoutLineFeedWithSign();
         break;
     case SETUP_MODE_1:
-        mpManager->vt_0xE8();
+        mpManager->configDefault();
         break;
     }
     textinput::extend::memo::Setting setting = sSetting;
     mpManager->setSetting(setting);
-    mpManager->vt_0xE4();
+    mpManager->reflectSaveData();
     mpManager->getCellPhoneKeyboard()->setPredictLanguageButton(false);
-    mpManager->getPCKeyboard()->vt_0x124(false);
+    mpManager->getPCKeyboard()->setPredictLanguageButton(false);
     mpManager->getCandidateBox()->setActive(false);
 }
 
@@ -515,8 +515,8 @@ void Mng_c::initManager() {
     mpManager->setAspectRatio(SCGetAspectRatio() != SC_ASPECT_RATIO_16x9);
     textinput::extend::memo::Setting setting = sSetting;
     mpManager->setSetting(setting);
-    mpManager->vt_0xE4();
-    mpManager->vt_0xD0(true);
+    mpManager->reflectSaveData();
+    mpManager->changeState(textinput::extend::memo::Manager::STL_Transition);
     setupLayout();
 }
 
@@ -834,15 +834,16 @@ bool Mng_c::isCursorMoved() {
 }
 
 void Mng_c::setMemoMode1() {
-    mpManager->vt_0xD8(1);
+    mpManager->setState(textinput::extend::memo::Manager::ST_Appearing);
 }
 
 void Mng_c::setMemoMode2() {
-    mpManager->vt_0xD8(2);
+    mpManager->setState(textinput::extend::memo::Manager::ST_Visible);
 }
 
 BOOL Mng_c::isMemoEmpty() {
-    return mpManager->getMemo()->vt_0x0C() == 0;
+    return mpManager->getState()->getStateType() ==
+           textinput::extend::memo::Manager::ST_Hidden;
 }
 
 void Mng_c::setPos(mVec3_c pos) {
@@ -924,7 +925,7 @@ void Mng_c::setKeyboardMode(bool lineFeed) {
         mpManager->getCellPhoneKeyboard()->setLineFeedButton(lineFeed);
         mpManager->getCellPhoneKeyboard()->onClose();
     } else {
-        mpManager->getPCKeyboard()->vt_0x120(lineFeed);
+        mpManager->getPCKeyboard()->setLineFeedButton(lineFeed);
         mpManager->getPCKeyboard()->onClose();
     }
 }
@@ -1116,15 +1117,15 @@ m2d::ResAccLoader_c *Mng_c::getResAcc() {
 }
 
 void Mng_c::saveSetting() {
-    mpManager->vt_0xE0();
+    mpManager->setSaveData_();
     sSetting = mpManager->getSetting();
-    sSetting.m03 = 0;
+    sSetting.uSignPage = 0;
 }
 
 void Mng_c::saveInputMode() {
-    mpManager->vt_0xE0();
+    mpManager->setSaveData_();
     textinput::extend::memo::Setting setting = mpManager->getSetting();
-    sSetting.m05_4 = setting.m05_4;
+    sSetting.uABCInputMode = setting.uABCInputMode;
 }
 
 Cur_c::Cur_c() {
@@ -1178,19 +1179,19 @@ void calcHKB() {
 }
 
 void resetSetting() {
-    sSetting.mKeyboardType = 0x11;
-    sSetting.m01 = 0xFA;
-    sSetting.m02 = 0;
-    sSetting.m04_7 = 1;
-    sSetting.m04_3 = 2;
-    sSetting.m05_4 = 1;
-    sSetting.m03 = 0;
-    sSetting.m05_0 = 0;
-    sSetting.m04_2 = 0;
-    sSetting.m04_1 = 0;
-    sSetting.m04_0 = 0;
-    sSetting.m06 = 0;
-    sSetting.m07 = 0;
+    sSetting.uRevisionAndType = 0x11;
+    sSetting.uDictionary = 0xFA;
+    sSetting.uPredictOnOff = 0;
+    sSetting.uKeitaiUpperCaseJP = 1;
+    sSetting.uKeitaiInputMode = 2;
+    sSetting.uABCInputMode = 1;
+    sSetting.uSignPage = 0;
+    sSetting.uAIUInputMode = 0;
+    sSetting.uQwertyABC = 0;
+    sSetting.uNumLockOff = 0;
+    sSetting.uReserve2 = 0;
+    sSetting.uReserve3 = 0;
+    sSetting.uReserve4 = 0;
     sSavedByte = 0;
     sSavedFlag = 0;
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-// textinput::Manager: the software keyboard (see tiTextInputBase.h).
-
 #include <lib/textinput/tiTextInputBase.h>
 #include <lib/textinput/tiHKBManager.h>
 #include <lib/textinput/tiToolBar.h>
@@ -21,7 +19,6 @@ class HWKeyboard;
 }
 } // namespace keyboard
 
-// The callbacks of the application.
 class EventObserver {
 public:
     virtual void onInput(CommandReceiver::INPUT_COMMAND command, void *data) {}   // 0x08
@@ -89,20 +86,21 @@ public:
         return mpPredictLanguageDialog;
     }
 
-    virtual void *createEditBuffer();            // 0x9C
-    virtual void *createHWKeyboard();            // 0xA0
-    virtual void *createPCTypeKeyboard();        // 0xA4
-    virtual void *createCellPhoneTypeKeyboard(); // 0xA8
-    virtual void *createInputForm();             // 0xAC
-    virtual void *createCandidateBox();          // 0xB0
-    virtual void *createToolBar();               // 0xB4
-    virtual void *createPredictLanguageDialog(); // 0xB8
-    virtual void *createSignWindow();            // 0xBC
-    virtual void setLayoutScale();               // 0xC0
+    virtual keyboard::hwkey::HWKeyboard *createHWKeyboard();        // 0x9C
+    virtual keyboard::pctype::LayoutByNW4R *createPCTypeKeyboard(); // 0xA0
+    virtual keyboard::cellphonetype::LayoutByNW4R *
+    createCellPhoneTypeKeyboard();                                    // 0xA4
+    virtual inputform::LayoutByNW4R *createInputForm();               // 0xA8
+    virtual candidatebox::LayoutByNW4R *createCandidateBox();         // 0xAC
+    virtual toolbar::LayoutByNW4R *createToolBar();                   // 0xB0
+    virtual predictlang::LayoutByNW4R *createPredictLanguageDialog(); // 0xB4
+    virtual keyboard::signwindow::LayoutByNW4R *createSignWindow();   // 0xB8
+    virtual void setLayoutScaleFor16x9();                             // 0xBC
+    virtual void setLayoutScaleFor4x3();                              // 0xC0
 
     void startPredictTurnOn(bool on);
     bool isPredictTurning() const;
-    input::KBDListener *getKBDListenerRoot(); // 80308CF8: the root of HKBManager's listeners
+    input::KBDListener *getKBDListenerRoot();
     EventObserver *getEventObserver() { return mpEventObserver; }
 
 protected:

@@ -275,6 +275,7 @@ cflags_identified_game = [
     "-i include/lib/revolution/BTE/stack/btm",
     "-i include/lib/revolution/BTE/bta/include",
     "-i include/lib/revolution/BTE/bta/sys",
+    "-i lib/RevoEX/include",
 ]
 
 # Metrowerks library flags
@@ -1311,7 +1312,7 @@ config.libs = [
             Object(Matching, "lib/keyboard/tiHwKeyboard.cpp"),
             Object(Matching, "lib/keyboard/tiLayout.cpp"),
             Object(Matching, "lib/keyboard/tiUtil.cpp"),
-            Object(NonMatching, "lib/keyboard/tiGUIManager.cpp"),
+            Object(Matching, "lib/keyboard/tiGUIManager.cpp"),
             Object(Matching, "lib/keyboard/tiNw4rManager.cpp"),
             Object(Matching, "lib/keyboard/tiCandidateBox.cpp"),
             Object(Matching, "lib/keyboard/tiPredictLang.cpp"),
@@ -1431,9 +1432,18 @@ config.libs = [
             Object(Matching, "lib/RevoEX/so/SOBasic.c", source="RevoEX/src/so/SOBasic.c"),
             Object(Matching, "lib/RevoEX/so/SOInformation.c", source="RevoEX/src/so/SOInformation.c"),
             Object(Matching, "lib/RevoEX/so/SOOption.c", source="RevoEX/src/so/SOOption.c"),
-            Object(NonMatching, "lib/RevoEX/mp/mp.c", source="RevoEX/src/mp/mp.c"),
-            Object(NonMatching, "lib/RevoEX/mpdl/wdp_parent.c", source="RevoEX/src/mpdl/wdp_parent.c"),
-            Object(NonMatching, "lib/RevoEX/mpdl/mpdlsystem.c", source="RevoEX/src/mpdl/mpdlsystem.c"),
+            Object(NonMatching, "lib/RevoEX/mp/mpsystem.c", source="RevoEX/src/mp/mpsystem.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpwd.c", source="RevoEX/src/mp/mpwd.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpmisc.c", source="RevoEX/src/mp/mpmisc.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mptxrx.c", source="RevoEX/src/mp/mptxrx.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpconnection.c", source="RevoEX/src/mp/mpconnection.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpparent.c", source="RevoEX/src/mp/mpparent.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpnotification.c", source="RevoEX/src/mp/mpnotification.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpport.c", source="RevoEX/src/mp/mpport.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mpbeacon.c", source="RevoEX/src/mp/mpbeacon.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mp/mplist.c", source="RevoEX/src/mp/mplist.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mpdl/wdp_parent.c", source="RevoEX/src/mpdl/wdp_parent.c", cflags=cflags_ext_revoex_inline_on),
+            Object(NonMatching, "lib/RevoEX/mpdl/mpdlsystem.c", source="RevoEX/src/mpdl/mpdlsystem.c", cflags=[flag for flag in cflags_ext_revoex_inline_on if flag not in ("-ipa", "file")] + ["-ipa", "off"]),
         ],
     },
     {

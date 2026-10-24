@@ -5372,13 +5372,44 @@ lib/RevoEX/wd/wd_init.c:
 	.text       start:0x803FA6AC end:0x803FA7FC
 	.data       start:0x8055F8D8 end:0x8055F8F0 align:4
 
-lib/RevoEX/mp/mp.c:
-	.text       start:0x803FA7FC end:0x803FEEDC
-	.data       start:0x8055F8F0 end:0x8055F958
-	.bss        start:0x8071A4A0 end:0x8071A600 align:4
+lib/RevoEX/mp/mpsystem.c:
+	.text       start:0x803FA7FC end:0x803FB3C0
+	.data       start:0x8055F8F0 end:0x8055F938
+	.bss        start:0x8071A4A0 end:0x8071A4C0 align:4
 	.sdata      start:0x8074DC88 end:0x8074DC98
 	.sbss       start:0x8074FA90 end:0x8074FAA0 align:4
-	.sbss2      start:0x80753A28 end:0x80753A38 align:4
+	.sbss2      start:0x80753A28 end:0x80753A30 align:4
+
+lib/RevoEX/mp/mpwd.c:
+	.text       start:0x803FB3C0 end:0x803FB9E4
+	.bss        start:0x8071A4C0 end:0x8071A560 align:4
+
+lib/RevoEX/mp/mpmisc.c:
+	.text       start:0x803FB9E4 end:0x803FBB50
+
+lib/RevoEX/mp/mptxrx.c:
+	.text       start:0x803FBB50 end:0x803FC7A4
+
+lib/RevoEX/mp/mpconnection.c:
+	.text       start:0x803FC7A4 end:0x803FCE70
+	.sbss2      start:0x80753A30 end:0x80753A38 align:4
+
+lib/RevoEX/mp/mpparent.c:
+	.text       start:0x803FCE70 end:0x803FDD78
+
+lib/RevoEX/mp/mpnotification.c:
+	.text       start:0x803FDD78 end:0x803FDF64
+	.data       start:0x8055F938 end:0x8055F958
+	.bss        start:0x8071A560 end:0x8071A600 align:4
+
+lib/RevoEX/mp/mpport.c:
+	.text       start:0x803FDF64 end:0x803FE684
+
+lib/RevoEX/mp/mpbeacon.c:
+	.text       start:0x803FE684 end:0x803FEDB4
+
+lib/RevoEX/mp/mplist.c:
+	.text       start:0x803FEDB4 end:0x803FEEDC
 
 lib/RevoEX/mpdl/wdp_parent.c:
 	.text       start:0x803FEEDC end:0x80400A84

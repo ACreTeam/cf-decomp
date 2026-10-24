@@ -9,22 +9,9 @@
 #include <revolution/os.h>
 #include <string.h>
 
-// Narrow interfaces to the unscaffolded DS download SDK.
-extern "C" {
-int fn_803FA7FC(void *);
-int fn_803FA9E4();
-void fn_803FB9E4(const u8 *, int);
-void fn_803FE694(void (*)(), void *);
-int fn_803FC7A4();
-void *NETMemCpy(void *, const void *, u32);
-BOOL fn_803FBB50(const void *, u32, u16, int, int *, void (*)(), void *);
-int fn_804011B4(void *);
-int fn_804014B4();
-u32 fn_804017C4();
-u32 fn_80401560();
-u32 fn_8040189C();
-BOOL fn_804016D4(int, void *);
-}
+#include <revolution/mp.h>
+#include <revolution/mpdl.h>
+#include <revolution/net/NETMem.h>
 
 namespace dNetDsDownload {
 enum {
@@ -93,12 +80,12 @@ typedef char CheckApplicationConfig[sizeof(ApplicationConfig) == 0x22C ? 1 : -1]
 
 // 800E3E20
 void *openConnection(void *) {
-    sConnectionResult = fn_803FA7FC(&sConnectionConfig);
+    sConnectionResult = MPStartup(&sConnectionConfig);
     return NULL;
 }
 // 800E3E50
 void *closeConnection(void *) {
-    sConnectionResult = fn_803FA9E4();
+    sConnectionResult = MPCleanup();
     return NULL;
 }
 // 800E3E78
@@ -120,14 +107,14 @@ u32 Connection_c::execute() {
         if (pollWorker()) {
             if (sConnectionResult == RESULT_OK) {
                 mState = STATE_READY;
-                fn_803FB9E4(&mListen, 1);
-                fn_803FE694(onConnect, NULL);
+                MPSetUserGameInfo(&mListen, 1);
+                MPUpdateBeaconAsync(reinterpret_cast<MPCallback>(onConnect), NULL);
             } else { mState = STATE_ERROR; }
         }
         break;
     case STATE_STOP:
         if (pollWorker()) {
-            if (sConnectionResult == RESULT_OK && fn_803FC7A4() != 0) break;
+            if (sConnectionResult == RESULT_OK && MPDisconnectAll() != 0) break;
             sConnectionResult = RESULT_PENDING;
             startWorker(closeConnection);
             mPeerBits = 0;
@@ -174,7 +161,7 @@ void Connection_c::stop() {
 BOOL Connection_c::send(const void *data, u32 size, SendFunc done) {
     NETMemCpy(sSendBuffer, data, size);
     mSend = done;
-    return fn_803FBB50(sSendBuffer, size, mConnected, 14, &mSendResult, onSend, NULL);
+    return MPSendAsync(sSendBuffer, size, mConnected, 14, reinterpret_cast<u32*>(&mSendResult), reinterpret_cast<MPCallback>(onSend), NULL);
 }
 // 800E4140
 void Connection_c::onSend() {
@@ -206,12 +193,12 @@ void Connection_c::onEvent(int event, const void *info) {
 void Connection_c::onConnect() {}
 // 800E4254
 void *openApplication(void *) {
-    sApplicationResult = fn_804011B4(&sApplicationConfig);
+    sApplicationResult = MPDLStartup(&sApplicationConfig);
     return NULL;
 }
 // 800E4284
 void *closeApplication(void *) {
-    sApplicationResult = fn_804014B4();
+    sApplicationResult = MPDLCleanup();
     return NULL;
 }
 // 800E42AC
@@ -251,17 +238,17 @@ u32 Application_c::execute() {
         }
         break;
     case STATE_START_DOWNLOAD:
-        if (fn_804017C4() == DOWNLOAD_STATE_READY) {
-            if (fn_80401560() == DOWNLOAD_STATE_READY) mState = STATE_DOWNLOAD;
+        if (MPDLGetEntryBitmap() == DOWNLOAD_STATE_READY) {
+            if (MPDLStartDownload() == DOWNLOAD_STATE_READY) mState = STATE_DOWNLOAD;
             else mState = STATE_DOWNLOAD_ERROR;
         }
         break;
     case STATE_DOWNLOAD:
-        if (fn_8040189C() == DOWNLOAD_STATE_READY) {
+        if (MPDLGetBootedBitmap() == DOWNLOAD_STATE_READY) {
             u8 info[0x30];
-            if (fn_804016D4(1, info)) setDownloadedAddress(0, info + 0x1E);
+            if (MPDLGetPlayerInfo(1, reinterpret_cast<MPDLPlayerInfo*>(info))) setDownloadedAddress(0, info + 0x1E);
             stop();
-        } else if (fn_804017C4() != DOWNLOAD_STATE_READY) { mState = STATE_DOWNLOAD_ERROR; }
+        } else if (MPDLGetEntryBitmap() != DOWNLOAD_STATE_READY) { mState = STATE_DOWNLOAD_ERROR; }
         break;
     case STATE_STOP:
         if (pollWorker()) {

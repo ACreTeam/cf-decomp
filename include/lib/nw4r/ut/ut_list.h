@@ -55,6 +55,7 @@ inline const void* List_GetLastConst(const List* pList) {
 }
 
 inline u16 List_GetSize(const List* pList) {
+    (void)pList;
     return pList->numObjects;
 }
 
