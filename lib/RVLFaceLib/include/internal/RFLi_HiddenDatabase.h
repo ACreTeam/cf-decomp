@@ -79,17 +79,11 @@ BOOL RFLiUpdateOfficial2DeleteHidden(const RFLCreateID* id);
 RFLErrcode RFLiWriteCtrlToHiddenDB(const RFLiCtrlBuffer* buffer, BOOL isChMode);
 
 #if RFL_BUILD >= 20080604
-// The buffer received from another console (see RFL_StoreData): a bit mask of the valid records, their number, and the
-// records themselves (0x4C bytes each: the character data plus its checksum).
-typedef struct {
-    u8 mRaw[0x4C];
-} RFLiExchangeData;
-
 typedef struct {
     u32 mValidMask;  // 0x00
     u16 mNum;        // 0x04
     u16 padding;     // 0x06
-    RFLiExchangeData mData[1];  // 0x08
+    RFLiStoreData mData[1];  // 0x08
 } RFLiExchangeBuffer;
 
 RFLErrcode RFLiWriteExchangeToHiddenDB(const RFLiExchangeBuffer* buffer);

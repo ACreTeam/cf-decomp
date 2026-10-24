@@ -649,15 +649,11 @@ static BOOL checkExchangeWritable_(const RFLiExchangeBuffer* buffer, u8 index) {
     return FALSE;
 }
 
-RFLErrcode RFLiWriteExchangeToHiddenDB(const RFLiExchangeBuffer* buffer) {
-    u8 count;
+static u8 getExchangeWritableCount_(const RFLiExchangeBuffer* buffer) {
     u8 i;
-    RFLiHiddenDBManager* manager;
+    u8 count = 0;
+    RFLiHiddenDBManager* manager = RFLiGetHDBManager();
 
-    initWritableList_();
-    count = 0;
-
-    manager = RFLiGetHDBManager();
     for (i = 0; i < buffer->mNum; i++) {
         if (checkExchangeWritable_(buffer, i)) {
             RFLiHiddenCharData hdata;
@@ -668,7 +664,13 @@ RFLErrcode RFLiWriteExchangeToHiddenDB(const RFLiExchangeBuffer* buffer) {
         }
     }
 
-    if (count) {
+    return count;
+}
+
+RFLErrcode RFLiWriteExchangeToHiddenDB(const RFLiExchangeBuffer* buffer) {
+    initWritableList_();
+
+    if (getExchangeWritableCount_(buffer)) {
         initAnyBufferToHiddenDB_(writeCtrl2HDBCallback_, writeDataStart_);
     } else {
         initAnyBufferToHiddenDB_(writeCtrl2HDBCallback_, writeHeaderStart_);

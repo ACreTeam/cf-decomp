@@ -197,6 +197,49 @@ RFLCheckError RFLIsSameFace(RFLDataSource lhvs, RFLMiddleDatabase* lhvd, u16 lhv
     }
 }
 
+static void copyChar2Additional_(RFLAdditionalInfo* dst, const RFLiCharInfo* src) {
+    u8 height;
+    u8 build;
+
+    memcpy(dst->name, src->personal.name, RFL_NAME_LENGTH * sizeof(u16));
+    dst->name[RFL_NAME_LENGTH] = 0;
+
+    memcpy(dst->creator, src->personal.creator, RFL_NAME_LENGTH * sizeof(u16));
+    dst->creator[RFL_NAME_LENGTH] = 0;
+
+    dst->gender = src->personal.sex;
+
+    if (RFLiCheckBirthday(src->personal.birth_month, src->personal.birth_day)) {
+        dst->birth_month = src->personal.birth_month;
+        dst->birth_day = src->personal.birth_day;
+    } else {
+        dst->birth_month = 0;
+        dst->birth_day = 0;
+    }
+
+    dst->favoriteColor = src->personal.favoriteColor;
+    dst->favorite = src->personal.favorite;
+
+    height = src->body.height;
+    build = src->body.build;
+
+    // @bug The max is not 127
+    if (height > RFLi_HEIGHT_MAX - 1) {
+        height = RFLi_HEIGHT_MAX - 1;
+    }
+    if (build > RFLi_BUILD_MAX - 1) {
+        build = RFLi_BUILD_MAX - 1;
+    }
+
+    dst->height = height;
+    dst->build = build;
+
+    memcpy(&dst->createID, &src->createID, sizeof(RFLCreateID));
+
+    dst->reserved = 0;
+    dst->skinColor = RFLiGetFacelineColor(src);
+}
+
 RFLErrcode RFLiPickupCharInfo(RFLiCharInfo* info, RFLDataSource source, const RFLMiddleDatabase* middleDB, u16 index) {
     RFLErrcode err;
 
@@ -268,49 +311,6 @@ RFLErrcode RFLiPickupCharInfo(RFLiCharInfo* info, RFLDataSource source, const RF
     return err;
 }
 
-static void copyChar2Additional_(RFLAdditionalInfo* dst, const RFLiCharInfo* src) {
-    u8 height;
-    u8 build;
-
-    memcpy(dst->name, src->personal.name, RFL_NAME_LENGTH * sizeof(u16));
-    dst->name[RFL_NAME_LENGTH] = 0;
-
-    memcpy(dst->creator, src->personal.creator, RFL_NAME_LENGTH * sizeof(u16));
-    dst->name[RFL_NAME_LENGTH] = 0;  // @bug Copy and paste error
-
-    dst->gender = src->personal.sex;
-
-    if (RFLiCheckBirthday(src->personal.birth_month, src->personal.birth_day)) {
-        dst->birth_month = src->personal.birth_month;
-        dst->birth_day = src->personal.birth_day;
-    } else {
-        dst->birth_month = 0;
-        dst->birth_day = 0;
-    }
-
-    dst->favoriteColor = src->personal.favoriteColor;
-    dst->favorite = src->personal.favorite;
-
-    height = src->body.height;
-    build = src->body.build;
-
-    // @bug The max is not 127
-    if (height > RFLi_HEIGHT_MAX - 1) {
-        height = RFLi_HEIGHT_MAX - 1;
-    }
-    if (build > RFLi_BUILD_MAX - 1) {
-        build = RFLi_BUILD_MAX - 1;
-    }
-
-    dst->height = height;
-    dst->build = build;
-
-    memcpy(&dst->createID, &src->createID, sizeof(RFLCreateID));
-
-    dst->reserved = 0;
-    dst->skinColor = RFLiGetFacelineColor(src);
-}
-
 RFLErrcode RFLGetAdditionalInfo(RFLAdditionalInfo* info, RFLDataSource source, RFLMiddleDatabase* db, u16 index) {
     RFLiCharInfo charInfo;
     RFLErrcode err;
@@ -327,13 +327,15 @@ RFLErrcode RFLGetAdditionalInfo(RFLAdditionalInfo* info, RFLDataSource source, R
 
 BOOL RFLiIsValidRawData(RFLiCharData* raw) {
     RFLiCharInfo info;
+    BOOL valid;
 
     if (RFLiCalculateCRC(raw, sizeof(RFLiCharData) + 2) != 0) {
         return FALSE;
     }
 
     RFLiConvertRaw2Info(raw, &info);
-    if (RFLiIsTemporaryID(&info.createID)) {
+    valid = !RFLiIsTemporaryID(&info.createID);
+    if (valid == FALSE) {
         return FALSE;
     }
 
