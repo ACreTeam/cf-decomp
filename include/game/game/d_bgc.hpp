@@ -1,5 +1,6 @@
 #pragma once
 #include <types.h>
+#include <game/cLib/c_math.hpp>
 #include <game/mLib/m_vec.hpp>
 
 // Bg collision geometry primitives (namespace dBGC; class names from the RTTI: dBGC::sphere_c,
@@ -22,7 +23,7 @@ namespace dBGC {
 
 // Near-zero test used by every primitive (|v| < 0.001).
 inline bool isZero(f32 v) {
-    return EGG::Mathf::abs(v) < 0.001f;
+    return cM::absF(v) < 0.001f;
 }
 
 // A vertical circle (XZ plane) at mCenter. RTTI dBGC::circle_c (80749CB8). Its only virtual is the

@@ -15,17 +15,13 @@
 #include <game/sLib/s_lib.hpp>
 #include <lib/egg/math/eggMath.h>
 #include <lib/egg/math/eggQuat.h>
+#include <game/mLib/m_quat.hpp>
 #include <float.h>
 #include <game/game/d_a_player.hpp>
 
 #define UNIT_OF(v) ((int)(v) >> 5)
 
 namespace dInsectUtil {
-
-static inline void setQuatIdentity(EGG::Quatf *q) {
-    mVec3_c zero(0.0f, 0.0f, 0.0f);
-    dBalloonString::setQuaternion(q, zero, 1.0f);
-}
 
 
 static inline void toUnit(int *x, int *z, f32 fx, f32 fz) {
@@ -554,9 +550,7 @@ void axis_c::setFront(const mVec3_c &front) {
 
 void axis_c::rotateX(mAng angle) {
     f32 rad = angle.mAngle * mAng::AngleToRadianCoefficient;
-    EGG::Quatf q;
-    setQuatIdentity(&q);
-    q.setAxisRotation(mSide, rad);
+    mQuat_c q(mSide, rad);
     mUp = q.rotateVector(mUp);
     mFront = q.rotateVector(mFront);
     setUp(mUp);
@@ -564,9 +558,7 @@ void axis_c::rotateX(mAng angle) {
 
 void axis_c::rotateY(mAng angle) {
     f32 rad = angle.mAngle * mAng::AngleToRadianCoefficient;
-    EGG::Quatf q;
-    setQuatIdentity(&q);
-    q.setAxisRotation(mUp, rad);
+    mQuat_c q(mUp, rad);
     mFront = q.rotateVector(mFront);
     mSide = q.rotateVector(mSide);
     setFront(mFront);
@@ -574,9 +566,7 @@ void axis_c::rotateY(mAng angle) {
 
 void axis_c::rotateZ(mAng angle) {
     f32 rad = angle.mAngle * mAng::AngleToRadianCoefficient;
-    EGG::Quatf q;
-    setQuatIdentity(&q);
-    q.setAxisRotation(mFront, rad);
+    mQuat_c q(mFront, rad);
     mUp = q.rotateVector(mUp);
     mSide = q.rotateVector(mSide);
     setUp(mUp);

@@ -14,11 +14,15 @@ namespace EGG {
         static T atan2(T y, T x);
         static T log10(T v);
 
-        static T abs(T v) {
-            return v < 0 ? -v : v;
+        static T zero() { return 0; }
+
+        static T neg(T t) {
+            return -t;
         }
 
-        static T zero() { return 0; }
+        static T abs(T t) {
+            return t > zero() ? t : neg(t);
+        }
     };
 
     typedef Math<float> Mathf;

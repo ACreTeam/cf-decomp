@@ -83,6 +83,9 @@ public:
         mFlags.resetBit(BIT_DISABLE_ALLOC);
     }
 
+    const char *getName() const {
+        return mpName;
+    }
     void setName(const char *name) {
         mpName = name;
     }
@@ -95,6 +98,10 @@ public:
             return (FrmHeap *) heap;
         }
         return nullptr;
+    }
+
+    static void *addOffset(void *base, u32 offset) {
+        return static_cast<u8 *>(base) + offset;
     }
 
     static Heap *getCurrentHeap() {

@@ -11,10 +11,10 @@ namespace dBGC {
 bool circle_c::checkInsideXZ(const mVec3_c &p) const {
     f32 dx = p.x - mCenter.x;
     f32 dz = p.z - mCenter.z;
-    if (EGG::Mathf::abs(dx) > mRadius) {
+    if (cM::absF(dx) > mRadius) {
         return false;
     }
-    if (EGG::Mathf::abs(dz) > mRadius) {
+    if (cM::absF(dz) > mRadius) {
         return false;
     }
     return cM::square(dx) + cM::square(dz) <= cM::square(mRadius);
@@ -92,7 +92,7 @@ BOOL column_c::crossSide(mVec3_c *pos, const mVec3_c &old) const {
         if (disc < 0.0f) {
             return FALSE;
         }
-        f32 s = EGG::Mathf::abs(EGG::Mathf::sqrt(disc));
+        f32 s = cM::absF(EGG::Mathf::sqrt(disc));
         f32 top = center.y + h;
         f32 t0 = 0.5f * (-b - s);
         f32 t1 = 0.5f * (-b + s);
@@ -158,7 +158,7 @@ BOOL column_c::crossSideInf(mVec3_c *pos, const mVec3_c &old) const {
         if (disc < 0.0f) {
             return FALSE;
         }
-        f32 s = EGG::Mathf::abs(EGG::Mathf::sqrt(disc));
+        f32 s = cM::absF(EGG::Mathf::sqrt(disc));
         f32 bottom = mCenter.y;
         f32 top = mCenter.y + getHeight();
         f32 t0 = 0.5f * (-b - s);

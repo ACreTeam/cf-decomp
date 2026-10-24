@@ -8,22 +8,25 @@ AssertHeap::~AssertHeap() {
     dispose();
 }
 
-AssertHeap *AssertHeap::create(void *buffer, size_t size) {
+AssertHeap *AssertHeap::create(void *block, size_t size) {
     AssertHeap *createdHeap = NULL;
 
-    u32 heapEnd = nw4r::ut::RoundDown((u32)buffer + size, 4);
-    u32 heapStart = nw4r::ut::RoundUp((u32)buffer, 4);
+    void *heapBuffer = block;
+    void *heapEnd = ROUND_DOWN_PTR(addOffset(block, size), 4);
 
-    if (heapStart > heapEnd || heapEnd - heapStart < 0x38 + 4) {
+    block = ROUND_UP_PTR(block, 4);
+
+    if (block > heapEnd || nw4r::ut::GetOffsetFromPtr(block, heapEnd) < sizeof(AssertHeap) + 4) {
         return NULL;
     }
 
-    MEMiHeapHead *handle = MEMCreateFrmHeapEx((void *)(heapStart + 0x38), heapEnd - heapStart - 0x38, 0);
+    MEMiHeapHead *handle =
+        MEMCreateFrmHeapEx(addOffset(block, sizeof(AssertHeap)), nw4r::ut::GetOffsetFromPtr(block, heapEnd) - sizeof(AssertHeap), 0);
     if (handle) {
-        Heap *contain = Heap::findContainHeap((void *)heapStart);
+        Heap *contain = Heap::findContainHeap(block);
 
-        createdHeap = new ((void *)heapStart) AssertHeap(handle);
-        createdHeap->mParentBlock = buffer;
+        createdHeap = new (block) AssertHeap(handle);
+        createdHeap->mParentBlock = heapBuffer;
         createdHeap->mParentHeap = contain;
         if (sCreateCallback != NULL) {
             sCreateCallback(createdHeap);

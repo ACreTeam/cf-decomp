@@ -74,7 +74,7 @@ void CoreController::sceneReset() {
     stopRumbleMgr();
 }
 
-Vector2f CoreController::getDpdRawPos() const {
+Vector2f CoreController::getDpdRawPos() {
     return Vector2f(mCoreStatus[0].pos.x, mCoreStatus[0].pos.y);
 }
 
@@ -302,6 +302,9 @@ CoreControllerConnectCallback CoreControllerMgr::sConnectCallback = NULL;
 bool CoreControllerMgr::sUseExternalAllocator = false;
 u32 CoreControllerMgr::sWPADWorkSize = 0x32000;
 
+// Instantiate the callback before the buffer destructors in the -sym on section.
+template void TBuffer<CoreController *>::errRangeOver() const;
+
 CoreController *CoreControllerMgr::getNthController(int index) {
     return mControllers(index);
 }
@@ -416,10 +419,6 @@ void CoreControllerMgr::endFrame() {
 GCControllerMgr *GCControllerMgr::sInstance = NULL;
 GCControllerMgr::T__Disposer *GCControllerMgr::T__Disposer::sStaticDisposer = NULL;
 
-void GCController::calc() {
-    mHold = mStatus->button;
-}
-
 void GCControllerMgr::calc() {
     for (int i = 0; i < 4; i++) {
         mControllers(i)->calc();
@@ -427,6 +426,10 @@ void GCControllerMgr::calc() {
 
     PADRead(mStatus);
     PADClampCircle(mStatus);
+}
+
+void GCController::calc() {
+    mHold = mStatus->button;
 }
 
 void ControllerRumbleUnit::init() {

@@ -10,11 +10,11 @@ int Decomp::sTreeBase[2];
 int Decomp::sReadPos[2];
 u32 Decomp::sBitBuf[2];
 
-static inline u32 readBE32(const u8 *p) {
+static inline u32 readBE32(u8 *p) {
     return (p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
 }
 
-void Decomp::initWorkBuffer(Heap *heap) {
+void Decomp::createWorkArea(Heap *heap) {
     if (sWorkBuffer == NULL) {
         if (heap == NULL) {
             heap = Heap::getCurrentHeap();
@@ -24,61 +24,67 @@ void Decomp::initWorkBuffer(Heap *heap) {
 }
 
 s32 Decomp::decodeASH(const u8 *src, u8 *dst) {
-    u16 *work = (u16 *)sWorkBuffer;
-    u16 *left9 = work;
-    u16 *right9 = (u16 *)((u8 *)left9 + 0x7fe);
-    u16 *left11 = (u16 *)((u8 *)right9 + 0x7fe);
-    u16 *right11 = (u16 *)((u8 *)left11 + 0x1ffe);
-    u16 *tmp = (u16 *)((u8 *)right11 + 0x1ffe);
+    int node9, dstIdx, root9, root11, node11;
 
-    u32 size = (src[5] << 16) | (src[6] << 8) | src[7];
-    u32 offset2 = readBE32(src + 8);
+    u16 *left9, *right9;
+    u16 *left11, *right11;
+    u16 *tmp;
 
-    sReadPos[0] = 12;
-    sReadPos[1] = offset2;
-    sBitCount[0] = 0;
-    sBitCount[1] = 0;
+    u32 expandSize = src[5] << 16 | src[6] << 8 | src[7];
+    u32 backRefOfs = src[8] << 24 | src[9] << 16 | src[10] << 8 | src[11];
+
+    left9 = reinterpret_cast<u16 *>(sWorkBuffer);
+    right9 = left9 + 0x3FF;
+    left11 = right9 + 0x3FF;
+    right11 = left11 + 0xFFF;
+    tmp = right11 + 0xFFF;
+
+    sReadPos[0] = 0xC;
+    sReadPos[1] = backRefOfs;
+
+    sBitCount[0] = sBitCount[1] = 0;
+
     sTreeBase[0] = 0x200;
     sTreeBase[1] = 0x800;
 
-    getBits(src, 32, 0);
-    getBits(src, 32, 1);
+    getBitsCode(src, 32, 0);
+    getBitsCode(src, 32, 1);
 
-    int root9 = readTree9(src, left9, right9, tmp);
-    int root11 = readTree11(src, left11, right11, tmp);
+    root9 = readTree9(src, left9, right9, tmp);
+    root11 = readTree12(src, left11, right11, tmp);
 
-    u32 out = 0;
-    while (out < size) {
-        int node = root9;
-        while (node >= 0x200) {
-            if (getBit(src, 0)) {
-                node = right9[node];
+    dstIdx = 0;
+    while (dstIdx < expandSize) {
+        for (node9 = root9; node9 >= 0x200;) {
+            if (getBit1c(src, 0) != 0) {
+                node9 = right9[node9];
             } else {
-                node = left9[node];
+                node9 = left9[node9];
             }
         }
 
-        if (node < 0x100) {
-            dst[out++] = node;
-        } else {
-            int dnode = root11;
-            while (dnode >= 0x800) {
-                if (getBit(src, 1)) {
-                    dnode = right11[dnode];
-                } else {
-                    dnode = left11[dnode];
-                }
-            }
+        if (node9 < 0x100) {
+            dst[dstIdx++] = static_cast<u8>(node9);
+            continue;
+        }
 
-            int from = out - dnode - 1;
-            int len = node - 0xfd;
-            for (int i = 0; i < len; i++) {
-                dst[out++] = dst[from++];
+        for (node11 = root11; node11 >= 0x800;) {
+            if (getBit1c(src, 1) != 0) {
+                node11 = right11[node11];
+            } else {
+                node11 = left11[node11];
             }
+        }
+
+        int runIdx = dstIdx - node11 - 1;
+        node9 -= 253;
+
+        for (; node9 > 0; node9--, dstIdx++, runIdx++) {
+            dst[dstIdx] = dst[runIdx];
         }
     }
 
-    return out;
+    return dstIdx;
 }
 
 Decomp::CompressionType Decomp::checkCompressed(const u8 *src) {
@@ -107,114 +113,128 @@ s32 Decomp::getExpandSize(const u8 *src) {
     }
 }
 
-u32 Decomp::getBits(const u8 *src, int count, int stream) {
-    int bitCount = sBitCount[stream];
-    int pos = sReadPos[stream];
-    u32 buf = sBitBuf[stream];
-    int total = bitCount + count;
+u32 Decomp::getBitsCode(const u8 *src, int count, int stream) {
+    int byteIdx = sReadPos[stream];
+    int bitIdx = sBitCount[stream];
+    u32 bits = sBitBuf[stream];
 
-    if (total > 32) {
-        u32 next = readBE32(src + pos);
-        sBitCount[stream] = total - 32;
-        sReadPos[stream] = pos + 4;
-        sBitBuf[stream] = next << (total - 32);
-        return (buf >> (32 - count)) | (next >> (64 - count - bitCount));
-    } else if (total == 32) {
-        u32 next = readBE32(src + pos);
-        sReadPos[stream] = pos + 4;
+    int code = 0;
+
+    if (bitIdx + count > 32) {
+        u32 newBits = src[byteIdx + 0] << 24 | src[byteIdx + 1] << 16 | src[byteIdx + 2] << 8 | src[byteIdx + 3];
+
+        int oldPos = 32 - count;
+        int newPos = 64 - count - bitIdx;
+        code = bits >> oldPos | newBits >> newPos;
+
+        bitIdx += count - 32;
+
+        sBitBuf[stream] = newBits << bitIdx;
+        sBitCount[stream] = bitIdx;
+        sReadPos[stream] = byteIdx + sizeof(u32);
+    } else if (bitIdx + count == 32) {
+        code = bits >> (32 - count);
+        sBitBuf[stream] = src[byteIdx + 0] << 24 | src[byteIdx + 1] << 16 | src[byteIdx + 2] << 8 | src[byteIdx + 3];
+        sReadPos[stream] = byteIdx + sizeof(u32);
         sBitCount[stream] = 0;
-        sBitBuf[stream] = next;
-        return buf >> (32 - count);
     } else {
-        sBitBuf[stream] = buf << count;
-        sBitCount[stream] = total;
-        return buf >> (32 - count);
+        code = bits >> (32 - count);
+        sBitBuf[stream] = bits << count;
+        sBitCount[stream] = bitIdx + count;
     }
+
+    return code;
 }
 
-int Decomp::getBit(const u8 *src, int stream) {
-    int bitCount = sBitCount[stream];
-    int pos = sReadPos[stream];
-    u32 buf = sBitBuf[stream];
-    int bit = buf >> 31;
+int Decomp::getBit1c(const u8 *src, int stream) {
+    int byteIdx = sReadPos[stream];
+    int bitIdx = sBitCount[stream];
+    u32 bits = sBitBuf[stream];
 
-    if (bitCount == 31) {
-        sReadPos[stream] = pos + 4;
+    int code = bits >> 31;
+
+    if (bitIdx == 31) {
+        sBitBuf[stream] = src[byteIdx + 0] << 24 | src[byteIdx + 1] << 16 | src[byteIdx + 2] << 8 | src[byteIdx + 3];
+        sReadPos[stream] = byteIdx + sizeof(u32);
         sBitCount[stream] = 0;
-        sBitBuf[stream] = readBE32(src + pos);
     } else {
-        sBitBuf[stream] = buf << 1;
-        sBitCount[stream] = bitCount + 1;
+        sBitBuf[stream] = bits << 1;
+        sBitCount[stream] = bitIdx + 1;
     }
-    return bit;
+
+    return code;
 }
 
 int Decomp::readTree9(const u8 *src, u16 *left, u16 *right, u16 *tmp) {
-    int next = sTreeBase[0];
-    int node = next;
+    u32 index, index2;
+    index2 = sTreeBase[0];
+    index = index2;
+
     int sp = 0;
 
     while (true) {
-        if (getBit(src, 0)) {
-            tmp[sp] = node | 0x8000;
-            next++;
-            tmp[sp + 1] = node | 0x4000;
-            node++;
+        if (getBit1c(src, 0) != 0) {
+            tmp[sp] = 0x8000 | index;
+            tmp[sp + 1] = 0x4000 | index;
+            index++;
+            index2++;
             sp += 2;
             continue;
         }
 
-        int leaf = getBits(src, 9, 0);
-        int i = sp * 2;
+        int code = getBitsCode(src, 9, 0);
+
         while (true) {
-            i -= 2;
-            sp--;
-            u16 entry = tmp[i / 2];
-            if (entry & 0x8000) {
-                right[entry & 0x3fff] = leaf;
-                leaf = entry & 0x3fff;
+            u16 node = tmp[--sp];
+
+            if (node & 0x8000) {
+                right[node & 0x3fff] = code;
+                code = node & 0x3fff;
+
                 if (sp == 0) {
-                    return leaf;
+                    return code;
                 }
             } else {
-                left[entry & 0x3fff] = leaf;
-                node = next;
+                left[node & 0x3fff] = code;
+                index = index2;
                 break;
             }
         }
     }
 }
 
-int Decomp::readTree11(const u8 *src, u16 *left, u16 *right, u16 *tmp) {
-    int next = sTreeBase[1];
-    int node = next;
+int Decomp::readTree12(const u8 *src, u16 *left, u16 *right, u16 *tmp) {
+    u32 index, index2;
+    index2 = sTreeBase[1];
+    index = index2;
+
     int sp = 0;
 
     while (true) {
-        if (getBit(src, 1)) {
-            tmp[sp] = node | 0x8000;
-            next++;
-            tmp[sp + 1] = node | 0x4000;
-            node++;
+        if (getBit1c(src, 1) != 0) {
+            tmp[sp] = 0x8000 | index;
+            tmp[sp + 1] = 0x4000 | index;
+            index++;
+            index2++;
             sp += 2;
             continue;
         }
 
-        int leaf = getBits(src, 11, 1);
-        int i = sp * 2;
+        int code = getBitsCode(src, 11, 1);
+
         while (true) {
-            i -= 2;
-            sp--;
-            u16 entry = tmp[i / 2];
-            if (entry & 0x8000) {
-                right[entry & 0x3fff] = leaf;
-                leaf = entry & 0x3fff;
+            u16 node = tmp[--sp];
+
+            if (node & 0x8000) {
+                right[node & 0x3fff] = code;
+                code = node & 0x3fff;
+
                 if (sp == 0) {
-                    return leaf;
+                    return code;
                 }
             } else {
-                left[entry & 0x3fff] = leaf;
-                node = next;
+                left[node & 0x3fff] = code;
+                index = index2;
                 break;
             }
         }

@@ -28,8 +28,7 @@ public:
         OSThread *mpThread; // 0x00
         GXColor mColor;     // 0x04
         u8 mVisible;        // 0x08
-        u8 _09;
-        u8 _0A[0x2C - 0x0A];
+        char mName[0x20];
         u32 _2C;
     };
 

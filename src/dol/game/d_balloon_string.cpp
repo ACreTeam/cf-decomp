@@ -9,8 +9,6 @@
 namespace dBalloonString {
 static const GXColor lMaterial = {160, 160, 192, 255};
 
-void multiplyQuaternion(EGG::Quatf *out, const EGG::Quatf *a, const EGG::Quatf *b);
-
 }
 
 // 80066018
@@ -45,21 +43,14 @@ void dBalloonString_c::updateRotation(const mVec3_c &dir) {
     Mtx scale;
     mVec3_c direction(dir);
     mVec3_c up(0.0f, 1.0f, 0.0f);
-    EGG::Quatf fromTangent, fromUp, product, copy;
+    EGG::Quatf fromTangent, fromUp;
     fromTangent.makeVectorRotation(direction, mTangents[6]);
     if (!mQuat::makeRotate(fromUp, up, direction)) {
         fromUp.set(0.0f, 1.0f, 0.0f, 0.0f);
     }
-    dBalloonString::multiplyQuaternion(&product, &fromTangent, &fromUp);
-    struct Bits {
-        u32 x, y, z;
-    };
-    *(Bits *)&copy = *(const Bits *)&product;
-    copy.w = product.w;
-    fromTangent.x = copy.x;
-    fromTangent.y = copy.y;
-    fromTangent.z = copy.z;
-    fromTangent.w = copy.w;
+    EGG::Quatf product = fromTangent * fromUp;
+    EGG::Quatf copy = product;
+    fromTangent = copy;
     mRotation.slerpTo(fromTangent, 0.12f, mRotation);
     mRotation.normalise();
     if (mRotation.w < 0.0f) {
@@ -432,58 +423,4 @@ dBalloonString_c *dBalloonString_c::create(EGG::Heap *heap) {
     return balloon;
 }
 
-// 800681FC: vector cross product, also used by m_quat.cpp.
-void EGG::Vector3f::setCross(const Vector3f &a, const Vector3f &b) {
-    x = a.y * b.z - a.z * b.y;
-    y = a.z * b.x - a.x * b.z;
-    z = a.x * b.y - a.y * b.x;
-}
 
-namespace dBalloonString {
-
-// 80068248
-void scaleVector(Vec *out, const Vec *a, float scale) {
-    float z = a->z * scale;
-    float y = a->y * scale;
-    float x = a->x * scale;
-    out->z = z;
-    out->x = x;
-    out->y = y;
-}
-
-// 80068270
-void addVector(Vec *out, const Vec *a, const Vec *b) {
-    out->z = a->z + b->z;
-    out->y = a->y + b->y;
-    out->x = a->x + b->x;
-}
-
-void setQuaternion(EGG::Quatf *out, const Vec *xyz, float w);
-
-// 800682A4: Hamilton product of two quaternions.
-void multiplyQuaternion(EGG::Quatf *out, const EGG::Quatf *a, const EGG::Quatf *b) {
-    Vec cross;
-    Vec scaledB;
-    Vec sum;
-    Vec scaledA;
-    Vec xyz;
-    ((EGG::Vector3f *)&cross)->setCross(*a, *b);
-    scaleVector(&scaledB, (const Vec *)b, a->w);
-    addVector(&sum, &cross, &scaledB);
-    scaleVector(&scaledA, (const Vec *)a, b->w);
-    addVector(&xyz, &sum, &scaledA);
-    float dot = a->x * b->x + a->y * b->y + a->z * b->z;
-    float w = a->w * b->w - dot;
-    setQuaternion(out, &xyz, w);
-}
-
-// 80068374
-void setQuaternion(EGG::Quatf *out, const Vec *xyz, float w) {
-    struct VectorBits {
-        u32 x, y, z;
-    };
-    *(VectorBits *)out = *(const VectorBits *)xyz;
-    out->w = w;
-}
-
-} // namespace dBalloonString

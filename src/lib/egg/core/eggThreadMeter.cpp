@@ -17,7 +17,7 @@ int ThreadMeter::add(OSThread *thread) {
         mpThreads[index].mpThread = thread;
         mpThreads[index].mColor = mDefaultColor;
         mpThreads[index].mVisible = true;
-        mpThreads[index]._09 = false;
+        mpThreads[index].mName[0] = 0;
         mpThreads[index]._2C = mDefaultParam;
         mThreadCount++;
 

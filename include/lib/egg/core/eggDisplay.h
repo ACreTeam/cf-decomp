@@ -6,8 +6,10 @@
 
 namespace EGG {
 
-class Display : public TBitFlag<u8> {
+class Display {
 public:
+    TBitFlag<u8> mFlag; // 0x00
+
     Display(u8 frameRate);
 
     virtual void beginFrame();     // 0x08

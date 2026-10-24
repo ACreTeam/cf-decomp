@@ -933,7 +933,7 @@ bool groundChk_c::isUnderWater(f32 y) {
 // 8006E42C
 void groundChk_c::setSlope(f32 prevY, f32 y, mAng ang) {
     f32 d = y - prevY;
-    EGG::Mathf::abs(d); // Unused result, likely left over from a stripped assertion on the slope.
+    cM::absF(d); // Unused result, likely left over from a stripped assertion on the slope.
     mDir = l_front;
     s16 add = d > 0.0f ? 0 : 0x8000;
     mDir.rotY(mAng(add + ang.mAngle));
@@ -2937,7 +2937,7 @@ void acch_c::check(f32 r, mVec3_c *pos, const mVec3_c *old, mAng ang, int ownerI
     mVec3_c p(*pos);
     mVec3_c o(*old);
     f32 ext = 2.0f * (l_box.x + r);
-    if (ext + EGG::Mathf::abs(p.x - old->x) > 192.0f || ext + EGG::Mathf::abs(p.z - old->z) > 192.0f) {
+    if (ext + cM::absF(p.x - old->x) > 192.0f || ext + cM::absF(p.z - old->z) > 192.0f) {
         o = p;
     }
     mVec3_c rr(r, r, r);

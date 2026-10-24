@@ -15,8 +15,8 @@ const GXColor DrawGX::RED = {0xFF, 0x00, 0x00, 0xFF};
 const GXColor DrawGX::GREEN = {0x00, 0xFF, 0x00, 0xFF};
 const GXColor DrawGX::BLUE = {0x00, 0x00, 0xFF, 0xFF};
 
-nw4r::math::MTX34 DrawGX::s_cameraMtx;
 DrawGX::DLData DrawGX::s_DL[DL_MAX];
+nw4r::math::MTX34 DrawGX::s_cameraMtx;
 
 u32 DrawGX::s_flag;
 
@@ -44,7 +44,8 @@ static void DrawQuadLineStripNormal(u8 x1, u8 x2, u8 x3, u8 x4, u8 y) {
     GXPosition2u8(x1, y);
 }
 
-static void DrawCircleYPolygonFan(const nw4r::math::MTX34 &mtx, f32 f, u16 numSegments) {
+static void DrawCircleYPolygonFan(const nw4r::math::MTX34 &mtx, f32 f,
+                                  u16 numSegments) {
     f32 stepSize = (2.0f * M_PI / numSegments);
     nw4r::math::VEC3 v1(0.0f, 1.0f, 0.0f);
     nw4r::math::VEC3 v2(0.0f, f, 0.0f);
@@ -66,10 +67,12 @@ static void DrawCircleYPolygonFan(const nw4r::math::MTX34 &mtx, f32 f, u16 numSe
         PSMTXMultVec(mtx, v3, v3);
         GXPosition3f32(v3.x, v3.y, v3.z);
 
-        nw4r::math::VEC3 v4(0.5f * nw4r::math::SinRad(signedStepSize * (i - 1)), 0.0f,
-                            0.5f * nw4r::math::CosRad(signedStepSize * (i - 1)));
-        nw4r::math::VEC3 v5(0.5f * nw4r::math::SinRad(signedStepSize * (i + 1)), 0.0f,
-                            0.5f * nw4r::math::CosRad(signedStepSize * (i + 1)));
+        nw4r::math::VEC3 v4(
+            0.5f * nw4r::math::SinRad(signedStepSize * (i - 1)), 0.0f,
+            0.5f * nw4r::math::CosRad(signedStepSize * (i - 1)));
+        nw4r::math::VEC3 v5(
+            0.5f * nw4r::math::SinRad(signedStepSize * (i + 1)), 0.0f,
+            0.5f * nw4r::math::CosRad(signedStepSize * (i + 1)));
 
         PSMTXMultVec(mtx, v4, v4);
         PSMTXMultVec(mtx, v5, v5);
@@ -94,16 +97,20 @@ static DrawGX sDrawGX;
 void DrawGX::Initialize(Heap *pHeap_) {
     2.0f; // pools 2.0f here, before the later float constants
 
-    static u8 s_clear_z_TX[64] = {
-        0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
-        0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    static u8 ALIGN(32) s_clear_z_TX[64] = {
+        0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+        0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
+        0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     };
     Heap *pHeap = pHeap_ == NULL ? Heap::getCurrentHeap() : pHeap_;
 
-    GXInitTexObj(&CLEAR_Z_TEX_OBJ, s_clear_z_TX, 4, 4, GX_TF_Z24X8, GX_REPEAT, GX_REPEAT, GX_FALSE);
-    GXInitTexObjLOD(&CLEAR_Z_TEX_OBJ, GX_NEAR, GX_NEAR, 0.0f, 0.0f, 0.0f, GX_FALSE, GX_FALSE, GX_ANISO_1);
+    GXInitTexObj(&CLEAR_Z_TEX_OBJ, s_clear_z_TX, 4, 4, GX_TF_Z24X8, GX_REPEAT,
+                 GX_REPEAT, GX_FALSE);
+    GXInitTexObjLOD(&CLEAR_Z_TEX_OBJ, GX_NEAR, GX_NEAR, 0.0f, 0.0f, 0.0f,
+                    GX_FALSE, GX_FALSE, GX_ANISO_1);
     PSMTXIdentity(s_cameraMtx);
     CreateDisplayList(pHeap);
 }
@@ -122,10 +129,12 @@ void DrawGX::BeginDrawScreen(bool b1, bool b2, bool b3) {
     SetMat_TexGen(b2 ? TEXGEN_1 : TEXGEN_0);
     SetMat_Ind();
     GXSetNumTevStages(1);
-    GXSetTevSwapModeTable(GX_TEV_SWAP0, GX_CH_RED, GX_CH_GREEN, GX_CH_BLUE, GX_CH_ALPHA);
+    GXSetTevSwapModeTable(GX_TEV_SWAP0, GX_CH_RED, GX_CH_GREEN, GX_CH_BLUE,
+                          GX_CH_ALPHA);
     SetMat_Tev(GX_TEVSTAGE0, b2 ? TEV_1 : TEV_0);
     if (b3) {
-        GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
+        GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO,
+                        GX_CA_RASA);
     }
     SetMat_PE(ZMODE_0, BLEND_0);
     SetVtxState(sVtxTypes[b1 ? 1 : 0][b2 ? 0 : 1]);
@@ -136,14 +145,18 @@ void DrawGX::SetMat_ColorChannel(enum ColorChannel chan) {
     case COLORCHAN_0:
         GXSetNumChans(1);
         GXSetCullMode(GX_CULL_BACK);
-        GXSetChanCtrl(GX_COLOR0A0, true, GX_SRC_REG, GX_SRC_REG, GetLightMaskDefault(), GX_DF_CLAMP, GX_AF_SPOT);
-        GXSetChanCtrl(GX_COLOR1A1, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR0A0, true, GX_SRC_REG, GX_SRC_REG,
+                      GetLightMaskDefault(), GX_DF_CLAMP, GX_AF_SPOT);
+        GXSetChanCtrl(GX_COLOR1A1, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL,
+                      GX_DF_NONE, GX_AF_NONE);
         break;
     case COLORCHAN_1:
         GXSetNumChans(1);
         GXSetCullMode(GX_CULL_BACK);
-        GXSetChanCtrl(GX_COLOR0A0, false, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_CLAMP, GX_AF_SPOT);
-        GXSetChanCtrl(GX_COLOR1A1, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR0A0, false, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL,
+                      GX_DF_CLAMP, GX_AF_SPOT);
+        GXSetChanCtrl(GX_COLOR1A1, false, GX_SRC_VTX, GX_SRC_VTX, GX_LIGHT_NULL,
+                      GX_DF_NONE, GX_AF_NONE);
         break;
     }
 }
@@ -152,11 +165,13 @@ void DrawGX::SetMat_TexGen(enum TexGen texGen) {
     switch (texGen) {
     case TEXGEN_0:
         GXSetNumTexGens(0);
-        GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3c, 0, 0x7d);
+        GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3c, 0,
+                          0x7d);
         break;
     case TEXGEN_1:
         GXSetNumTexGens(1);
-        GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3c, 0, 0x7d);
+        GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3c, 0,
+                          0x7d);
         break;
     }
 }
@@ -171,19 +186,27 @@ void DrawGX::SetMat_Tev(GXTevStageID stageId, enum TevSetting setting) {
         GXSetTevDirect(stageId);
         GXSetTevOrder(stageId, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
         GXSetTevSwapMode(stageId, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorIn(stageId, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_RASC);
-        GXSetTevColorOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
-        GXSetTevAlphaIn(stageId, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_RASA);
-        GXSetTevAlphaOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, true, GX_TEVPREV);
+        GXSetTevColorIn(stageId, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO,
+                        GX_CC_RASC);
+        GXSetTevColorOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1,
+                        GX_TEVPREV);
+        GXSetTevAlphaIn(stageId, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO,
+                        GX_CA_RASA);
+        GXSetTevAlphaOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, true,
+                        GX_TEVPREV);
         break;
     case TEV_1:
         GXSetTevDirect(stageId);
         GXSetTevOrder(stageId, GX_TEXCOORD0, TEXMAP_DEFAULT, GX_COLOR0A0);
         GXSetTevSwapMode(stageId, GX_TEV_SWAP0, GX_TEV_SWAP0);
-        GXSetTevColorIn(stageId, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC, GX_CC_ZERO);
-        GXSetTevColorOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1, GX_TEVPREV);
-        GXSetTevAlphaIn(stageId, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_ZERO);
-        GXSetTevAlphaOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, true, GX_TEVPREV);
+        GXSetTevColorIn(stageId, GX_CC_ZERO, GX_CC_TEXC, GX_CC_RASC,
+                        GX_CC_ZERO);
+        GXSetTevColorOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, 1,
+                        GX_TEVPREV);
+        GXSetTevAlphaIn(stageId, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA,
+                        GX_CA_ZERO);
+        GXSetTevAlphaOp(stageId, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, true,
+                        GX_TEVPREV);
         break;
     }
 }
@@ -208,12 +231,15 @@ void DrawGX::SetVtxState(EGG::DrawGX::VtxType type) {
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_S16, 0xe);
         GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, GX_S16, 0xe);
         static const ALIGN(32) s16 sVtxDataType0[][3] = {
-            {0xE000, 0x2000, 0xE000}, {0xE000, 0x2000, 0x2000}, {0x2000, 0x2000, 0x2000}, {0x2000, 0x2000, 0xE000},
-            {0xE000, 0xE000, 0xE000}, {0xE000, 0xE000, 0x2000}, {0x2000, 0xE000, 0x2000}, {0x2000, 0xE000, 0xE000},
+            {0xE000, 0x2000, 0xE000}, {0xE000, 0x2000, 0x2000},
+            {0x2000, 0x2000, 0x2000}, {0x2000, 0x2000, 0xE000},
+            {0xE000, 0xE000, 0xE000}, {0xE000, 0xE000, 0x2000},
+            {0x2000, 0xE000, 0x2000}, {0x2000, 0xE000, 0xE000},
         };
         static const ALIGN(32) s16 sNrmDataType0[][3] = {
-            {0xC000, 0x0000, 0x0000}, {0x4000, 0x0000, 0x0000}, {0x0000, 0xC000, 0x0000},
-            {0x0000, 0x4000, 0x0000}, {0x0000, 0x0000, 0xC000}, {0x0000, 0x0000, 0x4000},
+            {0xC000, 0x0000, 0x0000}, {0x4000, 0x0000, 0x0000},
+            {0x0000, 0xC000, 0x0000}, {0x0000, 0x4000, 0x0000},
+            {0x0000, 0x0000, 0xC000}, {0x0000, 0x0000, 0x4000},
         };
         GXSetArray(GX_VA_POS, sVtxDataType0, 6);
         GXSetArray(GX_VA_NRM, sNrmDataType0, 6);
@@ -333,6 +359,11 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
 
     u8 ALIGN(32) tmpDisplayList[16 * 1024];
 
+    // Keep the last index in a byte aggregate so MWCC forwards it after the
+    // first code-motion pass, placing its setup after the switch-table address.
+    u8 lastVertexIndex[1];
+    lastVertexIndex[0] = 3;
+
     OSInitFastCast();
 
     for (int i = 0; i < DL_MAX; i++) {
@@ -381,7 +412,8 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             GXBegin(GX_LINESTRIP, GX_VTXFMT0, numSegments);
             for (int i = 0; i < numSegments; i++) {
                 GXPosition3f32(0.5f * nw4r::math::CosRad(radPerSegment * i),
-                               0.5f * nw4r::math::SinRad(radPerSegment * i), 0.0f);
+                               0.5f * nw4r::math::SinRad(radPerSegment * i),
+                               0.0f);
             }
             break;
         }
@@ -441,9 +473,9 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             if (i == DL_13) {
                 GXPosition1x8(2);
             }
-            GXPosition2u8(3, 0);
+            GXPosition2u8(lastVertexIndex[0], 0);
             if (i == DL_13) {
-                GXPosition1x8(3);
+                GXPosition1x8(lastVertexIndex[0]);
             }
             break;
         }
@@ -470,9 +502,9 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             if (i == DL_16) {
                 GXPosition1x8(2);
             }
-            GXPosition1x8(3);
+            GXPosition1x8(lastVertexIndex[0]);
             if (i == DL_16) {
-                GXPosition1x8(3);
+                GXPosition1x8(lastVertexIndex[0]);
             }
             break;
         default:
@@ -530,8 +562,8 @@ void DrawGX::SetBlendMode(enum Blend mode) {
         {GX_BM_BLEND, GX_BL_INVDSTALPHA, GX_BL_DSTALPHA, GX_LO_CLEAR},
         {GX_BM_NONE, GX_BL_ONE, GX_BL_ONE, GX_LO_CLEAR},
     };
-    GXSetBlendMode(BLEND[mode].mBlendMode, BLEND[mode].mBlendFactorSrc, BLEND[mode].mBlendFactorDst,
-                   BLEND[mode].mLogicOp);
+    GXSetBlendMode(BLEND[mode].mBlendMode, BLEND[mode].mBlendFactorSrc,
+                   BLEND[mode].mBlendFactorDst, BLEND[mode].mLogicOp);
 }
 
 } // namespace EGG

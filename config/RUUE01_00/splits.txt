@@ -6296,6 +6296,8 @@ lib/egg/gfx/eggStateGX.cpp:
 
 lib/egg/util/eggMsgRes.cpp:
 	.text       start:0x80449D3C end:0x8044A11C
+	.rodata     start:0x8049C480 end:0x8049C4D8
+	.data       start:0x80561BD0 end:0x80561BE0
 
 lib/egg/effect/eggEffect.cpp:
 	.text       start:0x8044A11C end:0x8044B9F0
@@ -6304,8 +6306,15 @@ lib/egg/effect/eggEffect.cpp:
 	.sbss       start:0x8074FCE8 end:0x8074FCF0
 	.sdata2     start:0x80753408 end:0x80753418 align:4
 
+lib/egg/effect/eggEffectCreator.cpp:
+	.text       start:0x8044B9F0 end:0x8044BD68
+	.data       start:0x80561C78 end:0x80561CA0
+
 lib/egg/effect/eggEffectManager.cpp:
-	.text       start:0x8044B9F0 end:0x8044D0D0
+	.text       start:0x8044BD68 end:0x8044D0D0
+	.data       start:0x80561CA0 end:0x80561E18
+	.sdata      start:0x8074E030 end:0x8074E060 align:4
+	.sbss       start:0x8074FCF0 end:0x8074FCF8
 
 lib/egg/effect/eggEffectResource.cpp:
 	.text       start:0x8044D0D0 end:0x8044D34C
@@ -6314,7 +6323,31 @@ lib/egg/effect/eggEffectResource.cpp:
 	.sdata      start:0x8074E060 end:0x8074E068 align:4
 
 lib/egg/effect/eggExEffect.cpp:
-	.text       start:0x8044D34C end:0x8044DCB4
+	.text       start:0x8044D34C end:0x8044D3F8
+	.data       start:0x80561E50 end:0x80561F10 align:4
+	.sdata      start:0x8074E068 end:0x8074E088 align:4
+
+lib/egg/effect/eggExEmitter.cpp:
+	.text       start:0x8044D3F8 end:0x8044D54C
+	.data       start:0x80561F10 end:0x80561F98 align:4
+	.sdata      start:0x8074E088 end:0x8074E098 align:4
+
+lib/egg/effect/eggExParticle.cpp:
+	.text       start:0x8044D54C end:0x8044D5F8
+	.data       start:0x80561F98 end:0x80562010 align:4
+	.sdata      start:0x8074E098 end:0x8074E0A8 align:4
+
+lib/egg/effect/eggExParticleManager.cpp:
+	.text       start:0x8044D5F8 end:0x8044D9A4
+	.data       start:0x80562010 end:0x805620B0 align:4
+	.sdata      start:0x8074E0A8 end:0x8074E0B8 align:4
+	.sdata2     start:0x80753418 end:0x80753420 align:4
+
+lib/egg/effect/eggExOneEmitter.cpp:
+	.text       start:0x8044D9A4 end:0x8044DCB4
+	.data       start:0x805620B0 end:0x805620F0 align:4
+	.sdata      start:0x8074E0B8 end:0x8074E0C0 align:4
+	.sdata2     start:0x80753420 end:0x80753428 align:4
 
 Runtime.PPCEABI.H/__va_arg.c:
 	.text       start:0x8044DCB4 end:0x8044DD7C

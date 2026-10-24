@@ -167,7 +167,7 @@ void init() {
     reportHeapStep(0x2e1);
     dHeap::createMenuDylHeap(mem1);
     reportHeapStep(0x2e4);
-    EGG::Decomp::initWorkBuffer(mem2);
+    EGG::Decomp::createWorkArea(mem2);
     reportHeapStep(0x2e7);
     dHeap::createHmnAnmHeap(mem2);
     reportHeapStep(0x2eb);
@@ -330,7 +330,7 @@ template <> void EGG::TSystem<>::Configuration::initialize() {
     }
 
     mpDisplay = new EGG::AsyncDisplay(1);
-    mpDisplay->resetBit(1);
+    mpDisplay->mFlag.resetBit(1);
 
     mpDisplay->setClearColor(nw4r::ut::Color::BLACK);
     mpDisplay->clearEFB();

@@ -27,21 +27,19 @@ void LookAtCamera::doUpdateMatrix() {
 
     Vector3f right(mPos);
     Vector3f forward;
-    Vector3f up;
-    f32 t[3];
-    Vector3f tmp;
 
     right.x -= mAt.x;
     right.y -= mAt.y;
     right.z -= mAt.z;
     right.normalise();
 
-    tmp.setCross(mUp, right);
-    forward = tmp;
+    forward = mUp.cross(right);
     forward.normalise();
 
-    up.setCross(right, forward);
+    Vector3f up(right.cross(forward));
     up.normalise();
+
+    f32 t[3];
 
     f32 tx = -forward.dot(mPos);
     f32 ty = -up.dot(mPos);

@@ -31,14 +31,15 @@ Matrix34f::Matrix34f(f32 xx, f32 xy, f32 xz, f32 xw, f32 yx, f32 yy, f32 yz, f32
 }
 
 void Matrix34f::makeQ(const Quatf &q) {
+    f32 w = q.w;
     m[0][0] = 1.0f - (2.0f * q.y * q.y) - (2.0f * q.z * q.z);
-    m[0][1] = (2.0f * q.x * q.y) - (2.0f * q.w * q.z);
-    m[0][2] = (2.0f * q.x * q.z) + (2.0f * q.w * q.y);
-    m[1][0] = (2.0f * q.x * q.y) + (2.0f * q.w * q.z);
+    m[0][1] = (2.0f * q.x * q.y) - (2.0f * w * q.z);
+    m[0][2] = (2.0f * q.x * q.z) + (2.0f * w * q.y);
+    m[1][0] = (2.0f * q.x * q.y) + (2.0f * w * q.z);
     m[1][1] = 1.0f - (2.0f * q.x * q.x) - (2.0f * q.z * q.z);
-    m[1][2] = (2.0f * q.y * q.z) - (2.0f * q.w * q.x);
-    m[2][0] = (2.0f * q.x * q.z) - (2.0f * q.w * q.y);
-    m[2][1] = (2.0f * q.y * q.z) + (2.0f * q.w * q.x);
+    m[1][2] = (2.0f * q.y * q.z) - (2.0f * w * q.x);
+    m[2][0] = (2.0f * q.x * q.z) - (2.0f * w * q.y);
+    m[2][1] = (2.0f * q.y * q.z) + (2.0f * w * q.x);
     m[2][2] = 1.0f - (2.0f * q.x * q.x) - (2.0f * q.y * q.y);
     m[2][3] = 0.0f;
     m[1][3] = 0.0f;

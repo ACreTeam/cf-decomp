@@ -31,9 +31,10 @@ MsgRes::MsgRes(const void *data) {
     mMsgFlowChartBlk = NULL;
     mMsgFlowLabelBlk = NULL;
 
-    extractMsgHeader(data);
+    const u8 *cursor = static_cast<const u8 *>(data);
+    extractMsgHeader(cursor);
 
-    const void *current = static_cast<const u8 *>(data) + sizeof(MessageHeader);
+    const void *current = cursor + sizeof(MessageHeader);
 
     u32 numBlocks = mMsgHeader->mNumBlocks;
 

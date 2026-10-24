@@ -75,7 +75,7 @@ class ExParticleManager : public nw4r::ef::ParticleManager {
                    u16 calcRemain);                         // 8044D708
     virtual ~ExParticleManager();                           // 8044D650
     virtual void setLife(u16 life);                         // 8044D8A4
-    virtual void setScale(const nw4r::math::VEC2 *scale);   // 8044D8B8
+    virtual void setScale(nw4r::math::VEC2 *scale);         // 8044D8B8
     virtual void setRotate(const nw4r::math::VEC3 *rotate); // 8044D8D8
     virtual void setRegisterColor(const _GXColor &color0,
                                   const _GXColor &color1, u8 layer); // 8044D900

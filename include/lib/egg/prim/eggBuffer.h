@@ -18,30 +18,9 @@ template <typename T> class TBuffer {
         }
     }
 
-    virtual void allocate(int size, int align = 0) {
-        mSize = size;
-        if (align != 0) {
-            mBuffer = new T[mSize];
-        } else {
-            mBuffer = new T[mSize];
-        }
-        flush();
-        onAllocate(NULL);
-    }
+    virtual void allocate(int size, int align = 0);
 
-    virtual void allocate(int size, Heap *heap, int align = 0) {
-        mSize = size;
-        if (heap == NULL) {
-            heap = Heap::getCurrentHeap();
-        }
-        if (align != 0) {
-            mBuffer = new (heap, 4) T[mSize];
-        } else {
-            mBuffer = new (heap, 4) T[mSize];
-        }
-        flush();
-        onAllocate(heap);
-    }
+    virtual void allocate(int size, Heap *heap, int align = 0);
 
     virtual void onAllocate(Heap *) {
     }
@@ -75,6 +54,31 @@ template <typename T> class TBuffer {
 };
 
 template <typename T> void TBuffer<T>::errRangeOver() const {
+}
+
+template <typename T> void TBuffer<T>::allocate(int size, int align) {
+    mSize = size;
+    if (align != 0) {
+        mBuffer = new T[mSize];
+    } else {
+        mBuffer = new T[mSize];
+    }
+    flush();
+    onAllocate(NULL);
+}
+
+template <typename T> void TBuffer<T>::allocate(int size, Heap *heap, int align) {
+    mSize = size;
+    if (heap == NULL) {
+        heap = Heap::getCurrentHeap();
+    }
+    if (align != 0) {
+        mBuffer = new (heap, 4) T[mSize];
+    } else {
+        mBuffer = new (heap, 4) T[mSize];
+    }
+    flush();
+    onAllocate(heap);
 }
 
 } // namespace EGG

@@ -9,22 +9,25 @@ FrmHeap::~FrmHeap() {
     MEMDestroyFrmHeap(mHeapHandle);
 }
 
-FrmHeap *FrmHeap::create(void *buffer, size_t size, u16 flags) {
+FrmHeap *FrmHeap::create(void *block, size_t size, u16 flags) {
     FrmHeap *createdHeap = NULL;
 
-    u32 heapEnd = nw4r::ut::RoundDown((u32)buffer + size, 4);
-    u32 heapStart = nw4r::ut::RoundUp((u32)buffer, 4);
+    void *heapBuffer = block;
+    void *heapEnd = ROUND_DOWN_PTR(addOffset(block, size), 4);
 
-    if (heapStart > heapEnd || heapEnd - heapStart < 0x38 + 4) {
+    block = ROUND_UP_PTR(block, 4);
+
+    if (block > heapEnd || nw4r::ut::GetOffsetFromPtr(block, heapEnd) < sizeof(FrmHeap) + 4) {
         return NULL;
     }
 
-    MEMiHeapHead *handle = MEMCreateFrmHeapEx((void *)(heapStart + 0x38), heapEnd - heapStart - 0x38, flags);
+    MEMiHeapHead *handle =
+        MEMCreateFrmHeapEx(addOffset(block, sizeof(FrmHeap)), nw4r::ut::GetOffsetFromPtr(block, heapEnd) - sizeof(FrmHeap), flags);
     if (handle) {
-        Heap *contain = Heap::findContainHeap((void *)heapStart);
+        Heap *contain = Heap::findContainHeap(block);
 
-        createdHeap = new ((void *)heapStart) FrmHeap(handle);
-        createdHeap->mParentBlock = buffer;
+        createdHeap = new (block) FrmHeap(handle);
+        createdHeap->mParentBlock = heapBuffer;
         createdHeap->mParentHeap = contain;
         if (sCreateCallback != NULL) {
             sCreateCallback(createdHeap);

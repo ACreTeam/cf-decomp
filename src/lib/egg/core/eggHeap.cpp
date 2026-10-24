@@ -46,7 +46,6 @@ Heap::~Heap() {
     OSUnlockMutex(&sRootMutex);
 }
 
-#pragma dont_reuse_strings on
 void *Heap::alloc(size_t size, int align, Heap *heap) {
     Heap *currentHeap = sCurrentHeap;
     Thread *currentThread = Thread::findThread(OSGetCurrentThread());
@@ -66,7 +65,7 @@ void *Heap::alloc(size_t size, int align, Heap *heap) {
 
         if (heap != sAllocatableHeap) {
             OSReport("cannot allocate from heap %x(%s) : allocatable heap is %x(%s)\n", heap,
-                     heap->mpName, sAllocatableHeap, sAllocatableHeap->mpName);
+                     heap->getName(), sAllocatableHeap, sAllocatableHeap->getName());
 
             const Heap *primary_heap = currentThread ? currentThread->getAllocatableHeap() : NULL;
 
@@ -103,10 +102,11 @@ void *Heap::alloc(size_t size, int align, Heap *heap) {
     }
 
     if (currentHeap != NULL) {
+        int arena_end;
         void *allocated = currentHeap->alloc(size, align);
 
         if (allocated == NULL) {
-            int arena_end = (int)currentHeap->mHeapHandle->heapEnd;
+            arena_end = (int)currentHeap->mHeapHandle->heapEnd;
             int max_avail = currentHeap->getAllocatableSize(4);
             int heap_size = arena_end - (u32)currentHeap;
             OSReport("heap (%p):(%.1fMBytes free %d)->alloc(size(%d:%.1fMBytes),%d "
@@ -179,22 +179,19 @@ void Heap::dispose() {
 void Heap::dump() {}
 
 void Heap::dumpAll() {
-    Heap *it = NULL;
-    Heap *parent_it;
-    u32 mem1_remaining = 0;
-    u32 mem2_remaining = 0;
+    Heap *heap = NULL;
+    u32 mem[2] = {0, 0};
 
-    while ((it = (Heap *)nw4r::ut::List_GetNext(&sHeapList, it))) {
-        parent_it = NULL;
-
-        if ((u32)it->getStartAddress() < 0x90000000) {
-            mem1_remaining += it->getAllocatableSize(4);
+    while ((heap = (Heap *)nw4r::ut::List_GetNext(&sHeapList, heap)) != NULL) {
+        Heap *childHeap = NULL;
+        if ((u32)heap < 0x90000000) {
+            mem[0] += heap->getAllocatableSize(4);
         } else {
-            mem2_remaining += it->getAllocatableSize(4);
+            mem[1] += heap->getAllocatableSize(4);
         }
 
-        while ((parent_it = (Heap *)nw4r::ut::List_GetNext(&sHeapList, parent_it))) {
-            if (it->mParentHeap == parent_it) {
+        while ((childHeap = (Heap *)nw4r::ut::List_GetNext(&sHeapList, childHeap)) != NULL) {
+            if (heap->mParentHeap == childHeap) {
                 break;
             }
         }

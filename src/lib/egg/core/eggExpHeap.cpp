@@ -6,12 +6,6 @@ inline void *operator new(unsigned long, void *p) {
 
 namespace EGG {
 
-namespace {
-void free_all_visitor(void *block, MEMiHeapHead *heap, u32 param) {
-    MEMFreeToExpHeap(heap, block);
-}
-} // namespace
-
 ExpHeap::ExpHeap(MEMiHeapHead *heapHead) : Heap(heapHead) {}
 
 ExpHeap::~ExpHeap() {
@@ -22,19 +16,22 @@ ExpHeap::~ExpHeap() {
 ExpHeap *ExpHeap::create(void *block, size_t size, u16 flags) {
     ExpHeap *createdHeap = NULL;
 
-    u32 heapEnd = nw4r::ut::RoundDown((u32)block + size, 4);
-    u32 heapStart = nw4r::ut::RoundUp((u32)block, 4);
+    void *heapBuffer = block;
+    void *heapEnd = ROUND_DOWN_PTR(addOffset(block, size), 4);
 
-    if (heapStart > heapEnd || heapEnd - heapStart < 0x38 + 4) {
+    block = ROUND_UP_PTR(block, 4);
+
+    if (block > heapEnd || nw4r::ut::GetOffsetFromPtr(block, heapEnd) < sizeof(ExpHeap) + 4) {
         return NULL;
     }
 
-    MEMiHeapHead *handle = MEMCreateExpHeapEx((void *)(heapStart + 0x38), heapEnd - heapStart - 0x38, flags);
+    MEMiHeapHead *handle =
+        MEMCreateExpHeapEx(addOffset(block, sizeof(ExpHeap)), nw4r::ut::GetOffsetFromPtr(block, heapEnd) - sizeof(ExpHeap), flags);
     if (handle) {
-        Heap *contain = Heap::findContainHeap((void *)heapStart);
+        Heap *contain = Heap::findContainHeap(block);
 
-        createdHeap = new ((void *)heapStart) ExpHeap(handle);
-        createdHeap->mParentBlock = block;
+        createdHeap = new (block) ExpHeap(handle);
+        createdHeap->mParentBlock = heapBuffer;
         createdHeap->mParentHeap = contain;
         if (sCreateCallback != NULL) {
             sCreateCallback(createdHeap);
@@ -126,6 +123,12 @@ size_t ExpHeap::getSizeForMBlock(const void *block) {
 void ExpHeap::initAllocator(Allocator *allocator, long align) {
     MEMInitAllocatorForExpHeap((MEMAllocator *)allocator, mHeapHandle, align);
 }
+
+namespace {
+void free_all_visitor(void *block, MEMiHeapHead *heap, u32 param) {
+    MEMFreeToExpHeap(heap, block);
+}
+} // namespace
 
 void ExpHeap::freeAll() {
     dispose();

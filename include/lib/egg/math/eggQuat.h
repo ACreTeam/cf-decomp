@@ -9,6 +9,7 @@
 namespace EGG {
 struct Quatf : public Vector3f {
     Quatf() {}
+    ~Quatf() {}
     Quatf(f32 fw, Vector3f v) : Vector3f(v), w(fw) {} // v by value (as in ogws): never inlined
 
     friend Quatf operator*(const Quatf &a, const Quatf &b) {

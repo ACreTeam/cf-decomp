@@ -37,6 +37,11 @@ AsyncDisplay::AsyncDisplay(u8 frameRate) : Display(frameRate) {
     OSInitMessageQueue(&mMsgQueue, mMsgBuf, 4);
 }
 
+void AsyncDisplay::startSyncNTSC(u8 frameRate) {
+    mSyncMode = 1;
+    mTimeStep = 1.0f / frameRate;
+}
+
 void AsyncDisplay::calcTimeScale() {
     mTimeScale += mTimeStep;
 
@@ -55,7 +60,7 @@ void AsyncDisplay::beginFrame() {
     BaseSystem::mConfigData->getXfbMgr();
     GXDrawDone();
 
-    if (onBit(1)) {
+    if (mFlag.onBit(1)) {
         OSSleepThread(&mSyncQueue);
     }
 
@@ -70,8 +75,9 @@ void AsyncDisplay::beginFrame() {
             clear = true;
         }
 
-        while ((BaseSystem::mConfigData->getXfbMgr()->m_0c - mPendingFrames) <= 1 ||
-               (BaseSystem::mConfigData->getXfbMgr()->m_04 == 0 && !clear)) {
+        XfbManager *xfb;
+        while (!((xfb = BaseSystem::mConfigData->getXfbMgr(), 1 < xfb->m_0c - mPendingFrames) &&
+                 (BaseSystem::mConfigData->getXfbMgr()->m_04 != 0 || clear))) {
             OSReceiveMessage(&mMsgQueue, mMsgBuf, OS_MESSAGE_BLOCK);
             while (OSReceiveMessage(&mMsgQueue, mMsgBuf, 0)) {
             }

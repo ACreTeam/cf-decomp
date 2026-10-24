@@ -143,8 +143,7 @@ public:
     }
     void lerpPos(f32 t) { mPos = (1.0f - t) * mStartPos + t * mTargetPos; }
     static void rotate(EGG::Quatf *out, const EGG::Quatf *speed) {
-        EGG::Quatf rotation;
-        dBalloonString::multiplyQuaternion(&rotation, speed, out);
+        EGG::Quatf rotation = *speed * *out;
         *out = EGG::Quatf(rotation);
         out->normalise();
     }

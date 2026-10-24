@@ -150,7 +150,7 @@ class CoreController {
     Vector3f getAccel() const {
         return mCoreStatus[0].getAccel();
     }
-    Vector2f getDpdRawPos() const;
+    Vector2f getDpdRawPos();
     f32 getFreeStickX();
     f32 getFreeStickY();
 

@@ -51,7 +51,7 @@ public:
     void GarbageCollection();
 
     T *Alloc() {
-        void *obj = nw4r::ut::List_GetNext(&mFreeList, NULL);
+        void *obj = nw4r::ut::List_GetFirst(&mFreeList);
         if (obj == NULL) {
             return NULL;
         }
@@ -87,7 +87,7 @@ typedef MemoryManagerTmp<EGG::ExParticleManager> TParticleManagerOM;
 typedef MemoryManagerTmp<EGG::ExParticle> TParticleOM;
 
 template <> inline void TEffectOM::GarbageCollection() {
-    void *obj = nw4r::ut::List_GetNext(&mLeasedList, NULL);
+    void *obj = nw4r::ut::List_GetFirst(&mLeasedList);
 
     if (obj != NULL) {
         void *next = nw4r::ut::List_GetNext(&mLeasedList, obj);
@@ -109,7 +109,7 @@ template <> inline void TEffectOM::GarbageCollection() {
 }
 
 template <> inline void TEmitterOM::GarbageCollection() {
-    void *obj = nw4r::ut::List_GetNext(&mLeasedList, NULL);
+    void *obj = nw4r::ut::List_GetFirst(&mLeasedList);
 
     if (obj != NULL) {
         void *next = nw4r::ut::List_GetNext(&mLeasedList, obj);
@@ -131,7 +131,7 @@ template <> inline void TEmitterOM::GarbageCollection() {
 }
 
 template <> inline void TParticleManagerOM::GarbageCollection() {
-    void *obj = nw4r::ut::List_GetNext(&mLeasedList, NULL);
+    void *obj = nw4r::ut::List_GetFirst(&mLeasedList);
 
     if (obj != NULL) {
         void *next = nw4r::ut::List_GetNext(&mLeasedList, obj);
@@ -150,6 +150,9 @@ template <> inline void TParticleManagerOM::GarbageCollection() {
             next = nw4r::ut::List_GetNext(&mLeasedList, next);
         }
     }
+}
+
+template <> inline void TParticleOM::GarbageCollection() {
 }
 
 class MemoryManager : public nw4r::ef::MemoryManagerBase {
@@ -181,12 +184,15 @@ public:
 
     static u32 CalcMemorySize(u16 maxEffect, u16 maxEmitter, u16 maxParticleManager,
                               u16 maxParticle, u32 maxGroupID) {
-        return ROUND_UP(maxEffect * sizeof(EGG::ExEffect) + 32, 32) +
-               ROUND_UP(maxEmitter * sizeof(EGG::ExEmitter) + 32, 32) +
-               ROUND_UP(maxParticleManager * sizeof(EGG::ExParticleManager) + 32, 32) +
-               ROUND_UP(maxParticle * sizeof(EGG::ExParticle) + 32, 32) +
-               ROUND_UP(maxGroupID * sizeof(nw4r::ef::ActivityList) + 32, 32) +
-               9 * ROUND_UP(sizeof(MemInfo), 32) + 4 * ROUND_UP(sizeof(TEffectOM), 32);
+        return ROUND_UP(sizeof(MemInfo), 32) + nw4r::ut::RoundUp<u32>(maxEffect * sizeof(EGG::ExEffect) + 32, 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + nw4r::ut::RoundUp<u32>(maxEmitter * sizeof(EGG::ExEmitter) + 32, 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + nw4r::ut::RoundUp<u32>(maxParticleManager * sizeof(EGG::ExParticleManager) + 32, 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + nw4r::ut::RoundUp<u32>(maxParticle * sizeof(EGG::ExParticle) + 32, 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + nw4r::ut::RoundUp<u32>(maxGroupID * sizeof(nw4r::ef::ActivityList) + 32, 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + ROUND_UP(sizeof(TEffectOM), 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + ROUND_UP(sizeof(TEmitterOM), 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + ROUND_UP(sizeof(TParticleManagerOM), 32) +
+               ROUND_UP(sizeof(MemInfo), 32) + ROUND_UP(sizeof(TParticleOM), 32);
     }
 
     MemoryManager(void *pStartAddr, u32 size, int maxEffect, int maxEmitter, int maxParticleManager,
@@ -222,36 +228,36 @@ public:
         mAllChain = mFreeMem;
         mActiveMem = NULL;
 
-        int numEffects = mNumEffect;
+        int numObjects = mNumEffect;
         EGG::ExEffect *pEffects = NULL;
-        if (numEffects > 0) {
-            pEffects = new (AllocHeap(sizeof(EGG::ExEffect) * numEffects + 32))
-                EGG::ExEffect[numEffects];
+        if (numObjects > 0) {
+            pEffects = new (AllocHeap(sizeof(EGG::ExEffect) * numObjects + 32))
+                EGG::ExEffect[numObjects];
         }
         mEffectOM = new (AllocHeap(sizeof(TEffectOM))) TEffectOM(mNumEffect, pEffects);
 
-        int numEmitters = mNumEmitter;
+        numObjects = mNumEmitter;
         EGG::ExEmitter *pEmitters = NULL;
-        if (numEmitters > 0) {
-            pEmitters = new (AllocHeap(sizeof(EGG::ExEmitter) * numEmitters + 32))
-                EGG::ExEmitter[numEmitters];
+        if (numObjects > 0) {
+            pEmitters = new (AllocHeap(sizeof(EGG::ExEmitter) * numObjects + 32))
+                EGG::ExEmitter[numObjects];
         }
         mEmitterOM = new (AllocHeap(sizeof(TEmitterOM))) TEmitterOM(mNumEmitter, pEmitters);
 
-        int numParticleManagers = mNumParticleManager;
+        numObjects = mNumParticleManager;
         EGG::ExParticleManager *pParticleManagers = NULL;
-        if (numParticleManagers > 0) {
-            pParticleManagers = new (AllocHeap(sizeof(EGG::ExParticleManager) * numParticleManagers + 32))
-                EGG::ExParticleManager[numParticleManagers];
+        if (numObjects > 0) {
+            pParticleManagers = new (AllocHeap(sizeof(EGG::ExParticleManager) * numObjects + 32))
+                EGG::ExParticleManager[numObjects];
         }
         mParticleManagerOM =
             new (AllocHeap(sizeof(TParticleManagerOM))) TParticleManagerOM(mNumParticleManager, pParticleManagers);
 
-        int numParticles = mNumParticle;
+        numObjects = mNumParticle;
         EGG::ExParticle *pParticles = NULL;
-        if (numParticles > 0) {
-            pParticles = new (AllocHeap(sizeof(EGG::ExParticle) * numParticles + 32))
-                EGG::ExParticle[numParticles];
+        if (numObjects > 0) {
+            pParticles = new (AllocHeap(sizeof(EGG::ExParticle) * numObjects + 32))
+                EGG::ExParticle[numObjects];
         }
         mParticleOM = new (AllocHeap(sizeof(TParticleOM))) TParticleOM(mNumParticle, pParticles);
     }
@@ -259,7 +265,7 @@ public:
     virtual ~MemoryManager() {} // at 0x8
 
     virtual void GarbageCollection() {
-        void *obj = nw4r::ut::List_GetNext(&mParticleManagerOM->mLeasedList, NULL);
+        void *obj = nw4r::ut::List_GetFirst(&mParticleManagerOM->mLeasedList);
 
         while (obj != NULL) {
             void *next = nw4r::ut::List_GetNext(&mParticleManagerOM->mLeasedList, obj);

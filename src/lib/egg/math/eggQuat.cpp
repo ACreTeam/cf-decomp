@@ -62,7 +62,7 @@ void Quatf::normalise() {
 Quatf Quatf::conjugate() const {
     Quatf q;
     q.w = w;
-    (Vector3f &)q = -1.0f * (const Vector3f &)*this;
+    (Vector3f &)q = (const Vector3f &)*this * -1.0f;
     return q;
 }
 
@@ -116,8 +116,7 @@ void Quatf::slerpTo(const Quatf &q2, f32 t, Quatf &out) const {
 }
 
 void Quatf::makeVectorRotation(Vector3f &from, Vector3f &to) {
-    Vector3f cross;
-    cross.setCross(from, to);
+    Vector3f cross = from.cross(to);
     f32 t0 = (from.dot(to) + 1) * 2.0f;
 
     if (t0 < 0.0f) {
@@ -134,8 +133,7 @@ void Quatf::makeVectorRotation(Vector3f &from, Vector3f &to) {
 }
 
 Quatf operator*(const Quatf &q, const Vector3f &v) {
-    Vector3f crossed;
-    crossed.setCross(q, v);
+    Vector3f crossed = q.cross(v);
     Vector3f scaled = v * q.w;
     return Quatf(-q.dot(v), crossed + scaled);
 }

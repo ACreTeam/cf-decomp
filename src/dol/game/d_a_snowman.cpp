@@ -867,9 +867,7 @@ void daSnowMan_c::executeSettle() {
                      mVec3_c::Ey.x * move.y - mVec3_c::Ey.y * move.x);
         if (axis.normalizeRS()) {
             mRotSpeed.setAxisRotation(axis, rot);
-            EGG::Quatf rotation;
-            dBalloonString::multiplyQuaternion(&rotation, &mRotSpeed,
-                                               &mRotation);
+            EGG::Quatf rotation = mRotSpeed * mRotation;
             mRotation = EGG::Quatf(rotation);
             mRotation.normalise();
         }

@@ -81,8 +81,9 @@ void Screen::SetProjectionGX() const {
 }
 
 void Screen::CopyToG3D(nw4r::g3d::Camera camera) const {
+    f32 near, far;
+    f32 sx, sy, ox, oy;
     if (!(mFlags & FLAG_PROJ_ABSOLUTE)) {
-        f32 sy, sx, ox, oy;
         GetGlobalScaleOffset(&sx, &sy, &ox, &oy);
 
         SetGlobalScaleOffset(sCanvasScale.x, sCanvasScale.y, sCanvasOffset.x, sCanvasOffset.y);
@@ -104,7 +105,6 @@ void Screen::CopyToG3D(nw4r::g3d::Camera camera) const {
     y = efb.vp.y;
     x = efb.vp.x;
 
-    f32 near, far;
     far = efb.vp.far;
     near = efb.vp.near;
 
@@ -220,19 +220,6 @@ void Screen::GetGlobalPos(f32 *pX, f32 *pY) const {
     }
 }
 
-void Screen::GetPosInEfb(f32 x, f32 y, f32 *pX, f32 *pY) const {
-    GetGlobalPos(pX, pY);
-
-    f32 lx, ly;
-    ConvertToCanvasLU(x, y, &lx, &ly);
-
-    TVMode tvMode = !(mFlags & FLAG_FORCE_STD_ASPECT) ? (!(mFlags & FLAG_USE_EFB_RATIO) ? sTVMode : TV_MODE_EFB) : TV_MODE_4_3;
-    const TVModeInfo &info = sTVModeInfo[tvMode];
-
-    *pX = info.ratios.x * (*pX + lx);
-    *pY = info.ratios.y * (*pY + ly);
-}
-
 void Screen::SetTVMode(TVMode tvMode) {
     sTVMode = tvMode;
 
@@ -249,6 +236,19 @@ void Screen::SetTVMode(TVMode tvMode) {
 void Screen::SetTVModeDefault() {
     SetTVMode(SCGetAspectRatio() == SC_ASPECT_RATIO_4x3 ? TV_MODE_4_3
                                                         : TV_MODE_16_9);
+}
+
+void Screen::GetPosInEfb(f32 x, f32 y, f32 *pX, f32 *pY) const {
+    GetGlobalPos(pX, pY);
+
+    f32 lx, ly;
+    ConvertToCanvasLU(x, y, &lx, &ly);
+
+    TVMode tvMode = !(mFlags & FLAG_FORCE_STD_ASPECT) ? (!(mFlags & FLAG_USE_EFB_RATIO) ? sTVMode : TV_MODE_EFB) : TV_MODE_4_3;
+    const TVModeInfo &info = sTVModeInfo[tvMode];
+
+    *pX = info.ratios.x * (*pX + lx);
+    *pY = info.ratios.y * (*pY + ly);
 }
 
 } // namespace EGG

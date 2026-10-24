@@ -294,7 +294,7 @@ void Effect::setDefaultParticleSize(const nw4r::math::VEC2 *size) {
                     ExParticleManager *manager =
                         static_cast<ExParticleManager *>(emitter->GetParticleManager(j));
                     if (manager != NULL) {
-                        manager->setScale(size);
+                        manager->setScale(const_cast<nw4r::math::VEC2 *>(size));
                     }
                 }
             }

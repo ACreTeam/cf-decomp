@@ -11,22 +11,21 @@ namespace EGG {
 
 u32 Display::sTickThreshold = OSMicrosecondsToTicks(300);
 
-static void PostRetraceCallback(u32 retraceCount) {
+static void PreRetraceCallback(u32 retraceCount) {
     BaseSystem::mConfigData->getDisplay()->postVRetrace();
 }
 
 Display::Display(u8 frameRate)
-    : TBitFlag<u8>(),
-      mFrameRate(frameRate),
+    : mFrameRate(frameRate),
       mScreenStateFlag(0),
       mRetraceCount(0),
       mFrameCount(0),
       mClearColor(0x808080FF),
       mClearZ(0xFFFFFF),
       mPrevFrameTick(0) {
-    setBit(0);
-    setBit(1);
-    VISetPostRetraceCallback(PostRetraceCallback);
+    mFlag.setBit(0);
+    mFlag.setBit(1);
+    VISetPreRetraceCallback(PreRetraceCallback);
 }
 
 u32 Display::getTickPerFrame() {
@@ -36,7 +35,7 @@ u32 Display::getTickPerFrame() {
 void Display::beginFrame() {
     GXDrawDone();
 
-    if (onBit(1) || (BaseSystem::mConfigData->getXfbMgr()->m_0c == 1 &&
+    if (mFlag.onBit(1) || (BaseSystem::mConfigData->getXfbMgr()->m_0c == 1 &&
                      (u32)(OSGetTick() - mRetraceTick) > sTickThreshold)) {
         VIWaitForRetrace();
     }
@@ -71,14 +70,14 @@ void Display::postVRetrace() {
 }
 
 void Display::copyEFBtoXFB() {
-    if (onBit(0)) {
+    if (mFlag.onBit(0)) {
         GXSetCopyClear(mClearColor, mClearZ);
     }
 
     const GXRenderModeObj *rm = BaseSystem::mConfigData->getVideo()->pRenderMode;
     GXSetCopyFilter(rm->aa, rm->sample_pattern, !rm->aa, rm->vfilter);
 
-    bool clearEfb = onBit(0);
+    bool clearEfb = mFlag.onBit(0);
     XfbManager *mgr = BaseSystem::mConfigData->getXfbMgr();
     mgr->copyEFB(clearEfb);
 }

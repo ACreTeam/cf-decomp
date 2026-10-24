@@ -17,6 +17,8 @@ public:
 
     void clearEFB();
 
+    void startSyncNTSC(u8 frameRate);
+
 private:
     void calcTimeScale();
     void clearEFB(u16 fbWidth, u16 fbHeight, u16 x, u16 y, u16 width, u16 height, nw4r::ut::Color color);

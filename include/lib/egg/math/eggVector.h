@@ -18,7 +18,7 @@ namespace EGG {
         ~Vector2f() {}
 
         /// @brief Constructs a vector from two floating point values.
-        Vector2f(f32 fx, f32 fy) { set(fx, fy); }
+        Vector2f(f32 fx, f32 fy) : VEC2(fx, fy) {}
 
         void set(float x, float y) {
             this->x = x;
@@ -80,8 +80,6 @@ namespace EGG {
 
         /// @brief Gets the length of the vector.
         float length() const { return EGG::Mathf::sqrt(squaredLength()); }
-
-        void setCross(const Vector3f &a, const Vector3f &b); // 800681FC, shared by quaternion helpers.
 
         void set(float x, float y, float z) {
             this->x = x;

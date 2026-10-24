@@ -3,8 +3,7 @@
 
 // 802B41E4
 BOOL mQuat::makeRotate(EGG::Quatf &out, const EGG::Vector3f &from, const EGG::Vector3f &to) {
-    EGG::Vector3f cross;
-    cross.setCross(from, to);
+    EGG::Vector3f cross = from.cross(to);
     f32 squared = 2.0f * (1.0f + from.dot(to));
     if (squared < 0.0f) {
         squared = 0.0f;
