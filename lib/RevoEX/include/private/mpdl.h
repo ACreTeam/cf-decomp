@@ -21,6 +21,7 @@ extern u32 mpdlDownloadedBitmap;
 extern s32 mpdlConnectedCount;
 extern BOOL mpdlRunning;
 
+void MI_CpuFill8(void *dst, int value, u32 size);
 void OSi_TPanic(const char *file, int line, const char *format, ...);
 void MPDLiWDPCallback(WDPParentContext *context, s32 event, u32 arg);
 BOOL WDPSegmentCallback(WDPSession *session, void *dst,

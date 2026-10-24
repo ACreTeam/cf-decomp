@@ -5411,14 +5411,17 @@ lib/RevoEX/mp/mpbeacon.c:
 lib/RevoEX/mp/mplist.c:
 	.text       start:0x803FEDB4 end:0x803FEEDC
 
-lib/RevoEX/mpdl/wdp_parent.c:
-	.text       start:0x803FEEDC end:0x80400A84
+lib/RevoEX/wdp/wdp_common.c:
+	.text       start:0x803FEEDC end:0x803FF498
+
+lib/RevoEX/wdp/wdp_parent.c:
+	.text       start:0x803FF498 end:0x80400A80
 	.rodata     start:0x804970B8 end:0x804970C8
 	.data       start:0x8055F958 end:0x8055F9C0
 	.sdata2     start:0x807531C8 end:0x807531D0
 
 lib/RevoEX/mpdl/mpdlsystem.c:
-	.text       start:0x80400A84 end:0x804018A4
+	.text       start:0x80400A80 end:0x804018A4
 	.data       start:0x8055F9C0 end:0x8055FBE0
 	.bss        start:0x8071A600 end:0x8071BE58
 	.sdata      start:0x8074DC98 end:0x8074DCA0

@@ -23,6 +23,10 @@ u32 mpdlDownloadedBitmap;
 s32 mpdlConnectedCount;
 BOOL mpdlRunning;
 
+void MI_CpuFill8(void *dst, int value, u32 size) {
+    memset((void *)(dst), (int)(value), (u32)(size));
+}
+
 void OSi_TPanic(const char *file, int line, const char *format, ...) {
     va_list args;
     va_start(args, format);

@@ -8,10 +8,10 @@ extern const u8 wdpHeaderRegion[8];
 
 u32 WDPi_GetBeaconCheckSum(const u8 *data);
 int WDP_CompareMemory(const void *a, const void *b, u32 size);
-u32 WDP_CopyString(u8 *dst, u32 size, const u16 *src);
+u32 WDP_CopyString(u16 *dst, u32 size, const u16 *src);
 BOOL WDPi_IsValidSegmentRegion(int type, u32 address, u32 size, BOOL extended,
                                BOOL *relocate);
-u32 WDPi_InitSegmentMapper(WDPSegmentMapper *mapper, const u8 *header,
+u32 WDPi_InitSegmentMapper(WDPSegmentMapper *mapper, const WDPSegmentInfo *header,
                            u32 packetSize);
 BOOL WDPi_GetSegmentRegion(const WDPSegmentMapper *mapper, u32 block,
                            WDPSegmentRegion *region);
@@ -33,6 +33,17 @@ void WDP_RegisterSession(WDPParentContext *context, WDPSession *session,
                          const u8 *rom, WDPReadSegment readSegment,
                          void *userData);
 BOOL WDP_AllowChildStatus(WDPParentContext *context, u32 aid, s32 status);
-void MI_CpuFill8(void *dst, int value, u32 size);
+
+static inline u32 MI_GetLE32(void* p) {
+    const u8* value = (u8*)p;
+    return ((value[0]) | (value[1] << 8) | (value[2] << 16) | (value[3]) << 24);
+}
+
+static inline void MI_SetLE16(void* p, u16 v) {
+    u8* dst = (u8*)p;
+
+    dst[0] = (u8)v;
+    dst[1] = (u8)(v >> 8);
+}
 
 #endif

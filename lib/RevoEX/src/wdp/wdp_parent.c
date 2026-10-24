@@ -15,162 +15,6 @@
 const u32 wdpSegmentFlags[4] = {0, 0, 1, 0};
 const u8 wdpHeaderRegion[8] = {0, 0xfe, 0x7f, 2, 0x60, 1, 0, 0};
 
-u32 WDPi_GetBeaconCheckSum(const u8 *data) {
-    u32 sum = 0;
-    int i;
-    for (i = 0; i < 51; ++i) {
-        sum += data[0] | (data[1] << 8);
-        data += 2;
-    }
-    sum = (sum >> 16) + (sum & 0xffff);
-    sum = (sum >> 16) + (sum & 0xffff);
-    return (~sum) & 0xffff;
-}
-
-int WDP_CompareMemory(const void *a, const void *b, u32 size) {
-    const u8 *p = (const u8 *)a;
-    const u8 *q = (const u8 *)b;
-    int result = 0;
-    u32 i;
-    for (i = 0; !result && i < size; ++i) {
-        result = p[i] - q[i];
-    }
-    return result;
-}
-
-u32 WDP_CopyString(u8 *dst, u32 size, const u16 *src) {
-    u32 count = 0;
-    u32 i;
-    size >>= 1;
-    for (i = 0; i < size; ++i) {
-        u16 value = *src++;
-        if (!value) {
-            break;
-        }
-        dst[0] = value;
-        dst[1] = value >> 8;
-        dst += 2;
-        ++count;
-    }
-    for (; count < size; --size) {
-        dst[0] = 0;
-        dst[1] = 0;
-        dst += 2;
-    }
-    return count;
-}
-
-static inline BOOL IsRangeInside(u32 address, u32 size, u32 start, u32 end) {
-    return address >= start && address + size <= end;
-}
-BOOL WDPi_IsValidSegmentRegion(int type, u32 address, u32 size, BOOL extended,
-                               BOOL *relocate) {
-    BOOL valid = FALSE;
-    if (relocate) {
-        *relocate = FALSE;
-    }
-    if (type < 3 && !((address | size) & 0x80000000)) {
-        switch (type) {
-        case 0:
-            valid = address >= 0x027ffe00 && address + size <= 0x027fff60;
-            break;
-        case 1:
-            valid = address >= 0x02000000 && address + size <= 0x022c0000;
-            break;
-        case 2:
-            if (IsRangeInside(address, size, 0x02000000, 0x02300000)) {
-                valid = TRUE;
-            } else if (extended) {
-                if (IsRangeInside(address, size, 0x02300000, 0x023fe800) &&
-                    size <= 0x40000) {
-                    valid = TRUE;
-                    if (relocate) {
-                        *relocate = TRUE;
-                    }
-                } else if (IsRangeInside(address, size, 0x037f8000,
-                                         0x0380f000)) {
-                    valid = TRUE;
-                    if (relocate) {
-                        *relocate = TRUE;
-                    }
-                }
-            }
-            break;
-        }
-    }
-    return valid;
-}
-
-u32 WDPi_InitSegmentMapper(WDPSegmentMapper *mapper, const u8 *header,
-                           u32 packetSize) {
-    u32 blockSize = packetSize - 6;
-    u32 count = 0;
-    int i;
-    for (i = 0; i < 3; ++i) {
-        const u8 *region = header + i * 0x10;
-        u32 address = region[0x10] | (region[0x11] << 8) |
-                      (region[0x12] << 16) | (region[0x13] << 24);
-        u32 size = region[0x14] | (region[0x15] << 8) | (region[0x16] << 16) |
-                   (region[0x17] << 24);
-        if (!WDPi_IsValidSegmentRegion((int)(i), (u32)(address), (u32)(size),
-                                       (BOOL)(TRUE), (BOOL *)(NULL))) {
-            count = 0;
-            break;
-        }
-        mapper->firstBlock[(u32)i] = (u16)count;
-        count += (size + blockSize - 1) / blockSize;
-    }
-    if (count >= 0x3000) {
-        count = 0;
-    }
-    mapper->blockCount = (u16)count;
-    mapper->blockSize = (u16)blockSize;
-    MI_CpuCopy8((const void *)(header), (void *)(mapper->header), (u32)(0xe4));
-    return count;
-}
-
-BOOL WDPi_GetSegmentRegion(const WDPSegmentMapper *mapper, u32 block,
-                           WDPSegmentRegion *region) {
-    BOOL valid = FALSE;
-    if (block < mapper->blockCount) {
-        s32 i;
-        for (i = 3; --i >= 0;) {
-            s32 index = block - mapper->firstBlock[i];
-            if (index >= 0) {
-                const u8 *header;
-                u32 size;
-                u32 offset;
-                region->type = i;
-                offset = index * mapper->blockSize;
-                region->offset = offset;
-                header = mapper->header + i * 0x10;
-                size = (header[0x14] | (header[0x15] << 8) |
-                        (header[0x16] << 16) | (header[0x17] << 24)) -
-                       offset;
-                region->size = size;
-                if (size > mapper->blockSize) {
-                    region->size = mapper->blockSize;
-                }
-                valid = TRUE;
-                break;
-            }
-        }
-    }
-    return valid;
-}
-
-BOOL WDP_MergeBitset(u32 *bits, u32 count, u32 index) {
-    BOOL changed = bits == (void *)0;
-    if (!changed && index < count) {
-        u32 mask = 1 << (index & 31);
-        changed = (bits[index >> 5] & mask) == 0;
-        if (changed) {
-            bits[index >> 5] = bits[index >> 5] | mask;
-        }
-    }
-    return changed;
-}
-
 BOOL WDPi_SwitchActiveSession(WDPParentContext *context) {
     BOOL changed = FALSE;
     if (!context->sessions) {
@@ -252,7 +96,7 @@ void WDP_InitParentContext(WDPParentContext *context, WDPCallback callback,
     context->requestedSessions = 0;
     context->lockDepth = 0;
     context->children[0].player.nameLength =
-        WDP_CopyString((u8 *)(context->children[0].player.name), (u32)(20),
+        WDP_CopyString(context->children[0].player.name, sizeof(context->children[0].player.name),
                        (const u16 *)(name));
     context->children[0].player.favoriteColor = color;
     for (aid = 1; aid < 16; ++aid) {
@@ -402,10 +246,14 @@ void WDP_CallParentConnectedHook(WDPParentContext *context, u32 aid) {
     }
 }
 
+static inline WDPChildInfo* WDP_GetChildInfo(WDPParentContext *context, u32 aid) {
+    return &context->children[aid];
+}
+
 void WDP_CallParentDisconnectedHook(WDPParentContext *context, u32 aid) {
     u32 mask = 1 << aid;
     u32 inverse;
-    WDPChildInfo *child = &context->children[aid];
+    WDPChildInfo *child = WDP_GetChildInfo(context, aid);
     BOOL enabled = OSDisableInterrupts();
     WDPSession *session;
     if (++context->lockDepth == 1) {
@@ -481,8 +329,8 @@ void WDP_CallParentSendHook(WDPParentContext *context, WDPPacket *packet) {
             } while (!(sessionMask & (1 << (session->sessionIndex))));
             context->controlSession = session;
             *data = 3;
-            MI_CpuCopy8(session->mapper.header, data + 1, 0xe4);
-            packet->size += 0xe4;
+            MI_CpuCopy8(&session->mapper.info, data + 1, sizeof(session->mapper.info));
+            packet->size += sizeof(session->mapper.info);
             packet->aidBitmap = session->activeBitmap;
         }
     } else {
@@ -638,17 +486,15 @@ static inline void WriteLE32(u8 *data, u32 value) {
     data[2] = value >> 16;
     data[3] = value >> 24;
 }
-static inline u32 ReadRegionWord(const u8 *data) {
-    return (u32)data[0] | ((u32)data[1] << 8) | ((u32)data[2] << 16) |
-           ((u32)data[3] << 24);
-}
+
 void WDP_RegisterSession(WDPParentContext *context, WDPSession *session,
                          const void *icon, const void *palette, u32 maxChildren,
                          const u16 *title, const u16 *description, u32 ggid,
                          u32 index, const void *auth, const void *userInfo,
                          const u8 *rom, WDPReadSegment readSegment,
                          void *userData) {
-    u8 *header = session->mapper.header;
+    WDPSegmentInfo *info = &session->mapper.info;
+    WDPSegmentData *data;
     BOOL enabled = OSDisableInterrupts();
     const u8 *regions[3];
     int i;
@@ -656,46 +502,45 @@ void WDP_RegisterSession(WDPParentContext *context, WDPSession *session,
     if (++context->lockDepth == 1) {
         context->interrupts = enabled;
     }
-    WriteLE32(header, NETSwapBytes32(*(const u32 *)(rom + 0x24)));
-    WriteLE32(header + 4, NETSwapBytes32(*(const u32 *)(rom + 0x34)));
-    MI_CpuFill8(header + 8, 0, 4);
+    WriteLE32(info->_00, NETSwapBytes32(*(const u32 *)(rom + 0x24)));
+    WriteLE32(info->_04, NETSwapBytes32(*(const u32 *)(rom + 0x34)));
+    MI_CpuFill8(info->_08, 0, 4);
     MI_CpuCopy8(auth, (u8 *)session + 0x524, 0x88);
     MI_CpuCopy8(userInfo, (u8 *)session + 0x5ac, 0x20);
     regions[0] = wdpHeaderRegion;
     regions[1] = rom + 0x28;
     regions[2] = rom + 0x38;
-    for (i = 0; i < 3; ++i) {
+    for (i = 0; i < WDP_SEG_TYPE_NUM; ++i) {
         const u8 *region = regions[i];
-        u8 *entry = header + i * 0x10;
-        u32 address = ReadRegionWord(region);
-        u32 size = ReadRegionWord(region + 4);
-        BOOL relocate = FALSE;
+        u32 address;
+        u32 size;
+        BOOL relocate;
+
+        data = &info->data[i];
+        address = MI_GetLE32((void *)region);
+        size = MI_GetLE32((void *)(region + 4));
+        relocate = FALSE;
         if (!WDPi_IsValidSegmentRegion(i, address, size, TRUE, &relocate)) {
             OSi_TPanic("wdp_parent.c", 0x39a,
                        "invalid segment region : %08X[%08X]\n", address, size);
         }
-        WriteLE32(entry + 0x14, size);
-        WriteLE32(entry + 0x10, address);
-        WriteLE32(entry + 0xc, address);
-        MI_CpuFill8(entry + 0x19, 0, 3);
-        entry[0x18] = wdpSegmentFlags[i] & 1;
+        WriteLE32(info->data[i].size, size);
+        WriteLE32(info->data[i].laddr, address);
+        WriteLE32(info->data[i].raddr, address);
+        MI_CpuFill8(info->data[i]._0D, 0, sizeof(info->data[i]._0D));
+        info->data[i]._0C_7 = wdpSegmentFlags[i];
+        info->data[i]._0C_0 = 0;
         if (relocate) {
-            entry[0xc] = 0;
-            entry[0xd] = 0;
-            entry[0xe] = 0x2c;
-            entry[0xf] = 2;
+            WriteLE32(info->data[i].raddr, 0x022C0000);
         }
     }
-    if (!WDPi_InitSegmentMapper(&session->mapper, header,
+    if (!WDPi_InitSegmentMapper(&session->mapper, info,
                                 context->packetSize)) {
         OSi_TPanic("wdp_parent.c", 0x3ad,
                    "failed to create block-transfer information.\n");
     } else {
         BOOL noImage = FALSE;
-        session->ggid[0] = ggid;
-        session->ggid[1] = ggid >> 8;
-        session->ggid[2] = ggid >> 16;
-        session->ggid[3] = ggid >> 24;
+        WriteLE32(session->ggid, ggid);
         session->sessionIndex = index;
         session->reserved = 0;
         session->sequence = 0;
@@ -712,8 +557,8 @@ void WDP_RegisterSession(WDPParentContext *context, WDPSession *session,
         *(WDPPlayerInfo *)(session->gameInfo + 0x220) =
             context->children[0].player;
         session->gameInfo[0x236] = maxChildren;
-        WDP_CopyString(session->gameInfo + 0x238, 0x60, title);
-        WDP_CopyString(session->gameInfo + 0x298, 0xc0, description);
+        WDP_CopyString((u16*)(session->gameInfo + 0x238), 0x60, title);
+        WDP_CopyString((u16*)(session->gameInfo + 0x298), 0xc0, description);
         MI_CpuFill8(session->players, 0, sizeof(session->players));
         MI_CpuFill8(session->extraInfo, 0, sizeof(session->extraInfo));
         session->changedBitmap = 0;
@@ -773,8 +618,4 @@ BOOL WDP_AllowChildStatus(WDPParentContext *context, u32 aid, s32 status) {
         OSRestoreInterrupts(context->interrupts);
     }
     return result;
-}
-
-void MI_CpuFill8(void *dst, int value, u32 size) {
-    memset((void *)(dst), (int)(value), (u32)(size));
 }

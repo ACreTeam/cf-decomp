@@ -3,17 +3,43 @@
 
 #include <revolution/os.h>
 
+typedef enum WDPSegType {
+    WDP_SEG_TYPE_0,
+    WDP_SEG_TYPE_1,
+    WDP_SEG_TYPE_2,
+
+    WDP_SEG_TYPE_NUM
+}  WDPSegType;
+
 typedef struct WDPSegmentRegion {
-    s32 type;
+    WDPSegType type;
     u32 offset;
     u32 size;
 } WDPSegmentRegion;
+
+// size = 0x10
+typedef struct WDPSegmentData {
+    u8 raddr[4]; // 0x00
+    u8 laddr[4]; // 0x04
+    u8 size[4]; // 0x08
+    u8 _0C_0 : 7; // 0x0C
+    u8 _0C_7 : 1; // 0x0C
+    u8 _0D[3]; // 0x0D
+} WDPSegmentData;
+
+typedef struct WDPSegmentInfo {
+    u8 _00[4];
+    u8 _04[4];
+    u8 _08[4];
+    WDPSegmentData data[WDP_SEG_TYPE_NUM];
+    u8 _3C[0xE4 - 0x3C];
+} WDPSegmentInfo;
 
 typedef struct WDPSegmentMapper {
     u32 blockSize;
     u16 blockCount;
     u16 firstBlock[3];
-    u8 header[0xe4];
+    WDPSegmentInfo info;
 } WDPSegmentMapper;
 
 typedef struct WDPPlayerInfo {
