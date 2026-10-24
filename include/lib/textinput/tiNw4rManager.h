@@ -32,8 +32,7 @@ public:
         /* 0x0C */ u32 trig;
         /* 0x10 */ u32 hold;
         /* 0x14 */ u32 release;
-        /* 0x18 */ u8 _18[0x20 - 0x18];
-    }; // size 0x20
+    }; // size 0x18
 
     TiEventHandler() {}
 
@@ -135,6 +134,10 @@ public:
 
 class AnimPaneGroup {
   public:
+    AnimPaneGroup(nw4r::lyt::Group *group) : mpGroup(group) {
+        nw4r::ut::List_Init(&mAnmPaneList, offsetof(AnmPane, mGroupLink));
+    }
+
     virtual void create() {
     }
     virtual void init() {

@@ -3984,12 +3984,13 @@ lib/keyboard/MyTiManager.cpp:
 lib/keyboard/MyTiInputForm.cpp:
 	.text       start:0x80310344 end:0x80313CB8
 	.rodata     start:0x8048D270 end:0x8048D778 align:4
-	.data       start:0x80536450 end:0x80536B28 align:4
+	.data       start:0x80536450 end:0x80536A98
 	.sdata      start:0x8074CE58 end:0x8074CEA0 align:4
-	.sdata2     start:0x80752CD8 end:0x80752D10 align:4
+	.sdata2     start:0x80752CD8 end:0x80752D10
 
 lib/keyboard/MyTiBg.cpp:
 	.text       start:0x80313CB8 end:0x80313D70
+	.data       start:0x80536A98 end:0x80536B28
 
 lib/keyboard/tiDebug.cpp:
 	.text       start:0x80313D70 end:0x80314384

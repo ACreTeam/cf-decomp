@@ -112,6 +112,11 @@ class Base : public KeyboardBase {
 
     class KeyState {
       public:
+        KeyState(Base *base)
+            : muFlag(0), mInputType(0), mInputMode(0), meLanguage(USA),
+              mpLanguageData(NULL), mpBase(base) {
+        }
+
         void refresh_();
         void refreshText(nw4r::lyt::Pane *pane);
         void setABCFlag(u32 flag);
@@ -200,7 +205,10 @@ class Base : public KeyboardBase {
         /* 0x14 */ Base *mpBase;
     }; // size 0x18
 
-    Base(Manager *manager);
+    Base(Manager *manager)
+        : mKeyState(this), mpAllocator(NULL), mbKanaLock(false),
+          mpManager(manager) {
+    }
     virtual ~Base() {
     }
     virtual void create(MEMAllocator *allocator);
@@ -350,7 +358,11 @@ class LayoutByNW4R : public Base,
   public:
     LayoutByNW4R(Manager *manager,
                  nw4r::lyt::MultiArcResourceAccessor *multiArc,
-                 const char *layoutBinName, EventObserver *eventObserver);
+                 const char *layoutBinName, EventObserver *eventObserver)
+        : Base(manager), Layout(multiArc, layoutBinName, eventObserver),
+          mpEventHandler(NULL), mShiftButton(1, this, this),
+          mCapsButton(0, this, this) {
+    }
     virtual ~LayoutByNW4R();
     virtual void create(MEMAllocator *allocator);
     virtual void init();

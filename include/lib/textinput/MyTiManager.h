@@ -17,23 +17,33 @@ class InputForm;
 namespace memo {
 
 struct Setting {
+    void init() {
+        uRevisionAndType = 0xF0;
+        for (u32 i = 0; i < sizeof(uRawData.val); i++) {
+            uRawData.val[i] = 0;
+        }
+    }
+
     /* 0x00 */ u8 uRevisionAndType;
-    struct {
-        /* 0x01 */ u8 uDictionary;
-        /* 0x02 */ u8 uPredictOnOff;
-        /* 0x03 */ u8 uSignPage;
+    union {
+        struct {
+            /* 0x01 */ u8 uDictionary;
+            /* 0x02 */ u8 uPredictOnOff;
+            /* 0x03 */ u8 uSignPage;
+            /* 0x04 */ u8 uKeitaiUpperCaseJP : 1;
+            /* 0x04 */ u8 uKeitaiInputMode : 4;
+            /* 0x04 */ u8 uQwertyABC : 1;
+            /* 0x04 */ u8 uNumLockOff : 1;
+            /* 0x04 */ u8 uReserve2 : 1;
+            /* 0x05 */ u8 uABCInputMode : 4;
+            /* 0x05 */ u8 uAIUInputMode : 4;
+            /* 0x06 */ u8 uReserve3;
+            /* 0x07 */ u8 uReserve4;
+        };
+        struct {
+            /* 0x01 */ u8 val[7];
+        } uRawData;
     };
-    struct {
-        /* 0x04 */ u8 uKeitaiUpperCaseJP : 1;
-        /* 0x04 */ u8 uKeitaiInputMode : 4;
-        /* 0x04 */ u8 uQwertyABC : 1;
-        /* 0x04 */ u8 uNumLockOff : 1;
-        /* 0x04 */ u8 uReserve2 : 1;
-        /* 0x05 */ u8 uABCInputMode : 4;
-        /* 0x05 */ u8 uAIUInputMode : 4;
-    };
-    /* 0x06 */ u8 uReserve3;
-    /* 0x07 */ u8 uReserve4;
 }; // size 0x8
 
 class State;
@@ -127,19 +137,22 @@ class Manager : public textinput::Manager {
     virtual void configNormalWithoutLineFeedWithSign();           // 0x118
     virtual void configPredictWithoutLineFeed();                  // 0x11C
     virtual InputForm *createMemoInputForm();                     // 0x120
-    virtual letter::InputForm *createLetterInputForm();           // 0x124
+    virtual InputForm *createLetterInputForm();                   // 0x124
     virtual inputform::LayoutByNW4R *createBigTextInputForm();    // 0x128
     virtual bg::LayoutByNW4R *createBG();                         // 0x12C
 
     void reflectSaveDataRev1();
     void reflectSaveDataDefault();
+    bg::LayoutByNW4R *getBG() {
+        return mpBackGround;
+    }
 
   protected:
     /* 0x3C */ State *mpCurrentState;
     /* 0x40 */ ConfigType meConfigType;
     /* 0x44 */ Setting mMemoSetting;
     /* 0x4C */ InputForm *mpMemoInputForm;
-    /* 0x50 */ letter::InputForm *mpLetterInputForm;
+    /* 0x50 */ InputForm *mpLetterInputForm;
     /* 0x54 */ inputform::LayoutByNW4R *mpBigTextInputForm;
     /* 0x58 */ keyboard::pctype::LayoutByNW4R *mpDefaultPCKeyboard;
     /* 0x5C */ keyboard::cellphonetype::LayoutByNW4R
@@ -154,7 +167,11 @@ class Manager : public textinput::Manager {
 
 class State {
   public:
-    virtual ~State();                              // 0x08
+    State() : mpManager(NULL) {
+    }
+
+    virtual ~State() {
+    } // 0x08
     virtual Manager::StateType getStateType() = 0; // 0x0C
     virtual void create() = 0;                     // 0x10
     virtual void init() = 0;                       // 0x14
@@ -166,15 +183,38 @@ class State {
     virtual bool updateInput(input::HKBManager &hkbManager) = 0;        // 0x28
     virtual void start() = 0;                                           // 0x2C
     virtual void end() = 0;                                             // 0x30
-    virtual InputForm *InputForm();                                     // 0x34
-    virtual keyboard::hwkey::HWKeyboard *HWKeyboard();                  // 0x38
-    virtual keyboard::pctype::LayoutByNW4R *PCKeyboard();               // 0x3C
-    virtual keyboard::cellphonetype::LayoutByNW4R *CellPhoneKeyboard(); // 0x40
-    virtual keyboard::signwindow::LayoutByNW4R *SignKeyboard();         // 0x44
-    virtual candidatebox::LayoutByNW4R *CandidateBox();                 // 0x48
-    virtual toolbar::LayoutByNW4R *ToolBar();                           // 0x4C
-    virtual predictlang::LayoutByNW4R *PredictLanguageSelectDialog();   // 0x50
-    virtual bg::LayoutByNW4R *BG();                                     // 0x54
+    virtual extend::memo::InputForm *InputForm() {
+        return static_cast<extend::memo::InputForm *>(
+            mpManager->getInputForm());
+    } // 0x34
+    virtual keyboard::hwkey::HWKeyboard *HWKeyboard() {
+        return mpManager->getHWKeyboard();
+    } // 0x38
+    virtual keyboard::pctype::LayoutByNW4R *PCKeyboard() {
+        return mpManager->getPCKeyboard();
+    } // 0x3C
+    virtual keyboard::cellphonetype::LayoutByNW4R *CellPhoneKeyboard() {
+        return mpManager->getCellPhoneKeyboard();
+    } // 0x40
+    virtual keyboard::signwindow::LayoutByNW4R *SignKeyboard() {
+        return mpManager->getSignKeyboard();
+    } // 0x44
+    virtual candidatebox::LayoutByNW4R *CandidateBox() {
+        return mpManager->getCandidateBox();
+    } // 0x48
+    virtual toolbar::LayoutByNW4R *ToolBar() {
+        return mpManager->getToolBar();
+    } // 0x4C
+    virtual predictlang::LayoutByNW4R *PredictLanguageSelectDialog() {
+        return mpManager->getPredictLanguageSelectDialog();
+    } // 0x50
+    virtual bg::LayoutByNW4R *BG() {
+        return mpManager->getBG();
+    } // 0x54
+
+    void setManager(Manager *manager) {
+        mpManager = manager;
+    }
 
   protected:
     /* 0x04 */ Manager *mpManager;

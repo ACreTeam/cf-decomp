@@ -26,6 +26,8 @@ enum VKeyCode {
 
 class KeyboardBase : public CommandSender {
 public:
+    KeyboardBase() : meLanguage(JP) {}
+
     virtual ~KeyboardBase() {}
     virtual void create(MEMAllocator *allocator);
     virtual void init();

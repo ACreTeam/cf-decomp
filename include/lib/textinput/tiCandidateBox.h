@@ -406,6 +406,9 @@ class LayoutByNW4R : public Base,
     void onPressedShift(bool shift);
     void onReleasedShift();
     void startTurnOn(bool);
+    const UIOnOffButton &getOnOffButton() const {
+        return mOnOffButton;
+    }
 
   private:
     void createAnmPane_(MEMAllocator *allocator);

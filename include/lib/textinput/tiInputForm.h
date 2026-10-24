@@ -455,9 +455,9 @@ class NormalButtonAnmPane : public AnmPane {
     }
 };
 
-class Unused : public LayoutByNW4R {
+class Sample : public LayoutByNW4R {
   public:
-    Unused(Manager *manager, nw4r::lyt::MultiArcResourceAccessor *accessor,
+    Sample(Manager *manager, nw4r::lyt::MultiArcResourceAccessor *accessor,
            const char *layoutName, EventObserver *observer,
            const char *fontName = NULL)
         : LayoutByNW4R(manager, accessor, layoutName, observer, fontName) {

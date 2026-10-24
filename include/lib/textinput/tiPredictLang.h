@@ -21,6 +21,8 @@ class Base : public CommandSender {
     virtual void create(MEMAllocator *allocator) {
         mpAllocator = allocator;
     }
+    virtual void init() {
+    }
     virtual void setPredictMode(inputform::Base::PredictMode mode) {
         mePredictMode = mode;
     }

@@ -62,7 +62,7 @@ class Base : public KeyboardBase {
         IM_AlphabetLower,
     };
 
-    Base(Manager *manager) : mpAllocator(NULL), mpManager(manager) {
+    Base(Manager *manager) : mpManager(manager) {
     }
 
     virtual ~Base() {
@@ -172,8 +172,7 @@ class LayoutByNW4R : public Base, public nw4rmanager::Layout {
                  nw4r::lyt::MultiArcResourceAccessor *multiArc,
                  const char *layoutBinName, EventObserver *eventObserver)
         : Base(manager), Layout(multiArc, layoutBinName, eventObserver),
-          mbEnableLineFeed(true), mpEventHandler(NULL),
-          mpPredictLanguageDialog(NULL), mpSignWindow(NULL) {
+          mpEventHandler(NULL) {
     }
 
     virtual ~LayoutByNW4R();

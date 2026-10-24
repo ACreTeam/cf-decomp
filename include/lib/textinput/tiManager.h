@@ -98,6 +98,7 @@ public:
     virtual void setLayoutScaleFor16x9();                             // 0xBC
     virtual void setLayoutScaleFor4x3();                              // 0xC0
 
+    void initAspect();
     void startPredictTurnOn(bool on);
     bool isPredictTurning() const;
     input::KBDListener *getKBDListenerRoot();

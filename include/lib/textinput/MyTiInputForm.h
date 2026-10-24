@@ -35,12 +35,21 @@ class InputForm : public inputform::LayoutByNW4R {
     InputForm(textinput::Manager *manager,
               nw4r::lyt::MultiArcResourceAccessor *multiArc,
               const char *layoutBinName, EventObserver *eventObserver,
-              const char *fontName);
+              const char *fontName)
+        : inputform::LayoutByNW4R(manager, multiArc, layoutBinName,
+                                  eventObserver, fontName),
+          mpMemoPane(NULL), mpMemoRootPane(NULL), mpTextPane(NULL),
+          mpBoundPane(NULL), mfScroll(0.0f), mfScrollFrom(0.0f),
+          mfScrollTo(0.0f), mnLine(0), mpNigaoeObserver(NULL),
+          mpDefaultNigaoe(NULL), mpSendString(NULL), mbEdited(false),
+          mbGoodBye(false), mbEditScrollUp(false), mbEditScrollDown(false),
+          mbCloseWithSend(false), mpScrollButton(NULL), mbScrollUp(false),
+          mbScrollDown(false), meEditMode(EM_Disp) {
+    }
     virtual ~InputForm();
     virtual void create(MEMAllocator *allocator);
     virtual void init();
     virtual void onCommand(INPUT_COMMAND command, void *data);
-    virtual bool isInScroll();
     virtual void draw();
     virtual void calc();
     virtual void preDraw(u32 pos);
@@ -101,6 +110,9 @@ class InputForm : public inputform::LayoutByNW4R {
     virtual void onCommandOnDispMode(INPUT_COMMAND command, void *arg); // 0x2B8
     virtual void onCommandOnEditMode(INPUT_COMMAND command, void *arg); // 0x2BC
     virtual void doAutoScroll();                                        // 0x2C0
+    virtual bool isInScroll() {
+        return mExScrollAnm.isActive();
+    }
 
     void setEdited(bool edited) {
         mbEdited = edited;
@@ -141,10 +153,10 @@ class InputForm : public inputform::LayoutByNW4R {
     }
 
   private:
-    /* 0x1AE0 */ void *_1AE0;
-    /* 0x1AE4 */ void *_1AE4;
-    /* 0x1AE8 */ void *_1AE8;
-    /* 0x1AEC */ void *_1AEC;
+    /* 0x1AE0 */ nw4r::lyt::Pane *mpMemoPane;
+    /* 0x1AE4 */ nw4r::lyt::Pane *mpMemoRootPane;
+    /* 0x1AE8 */ nw4r::lyt::Pane *mpTextPane;
+    /* 0x1AEC */ nw4r::lyt::Pane *mpBoundPane;
     /* 0x1AF0 */ f32 mfScroll;
     /* 0x1AF4 */ f32 mfScrollFrom;
     /* 0x1AF8 */ f32 mfScrollTo;
@@ -172,6 +184,15 @@ class InputForm : public inputform::LayoutByNW4R {
 }; // size 0x1BD8
 
 } // namespace memo
+
+namespace letter {
+
+class InputForm : public memo::InputForm {
+  private:
+    /* 0x1BD8 */ u8 _1BD8[0x1BE0 - 0x1BD8];
+}; // size 0x1BE0
+
+} // namespace letter
 } // namespace extend
 
 typedef extend::memo::InputForm MemoInputForm;

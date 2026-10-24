@@ -40,4 +40,6 @@
 // Difference between 1.0 and the next representable value
 #define NW4R_MATH_FLT_EPSILON 1.192092895e-7f
 
+#define NW4R_MATH_INF (1.0f / 0.0f)
+
 #endif
