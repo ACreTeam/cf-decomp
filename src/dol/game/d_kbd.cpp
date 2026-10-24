@@ -1058,7 +1058,7 @@ int Mng_c::getShiftState() {
     if (mFlags & FLAG_CELL_PHONE) {
         return 0;
     }
-    u32 shift = mpManager->getPCKeyboard()->mKeyState.mShift;
+    u32 shift = mpManager->getPCKeyboard()->mKeyState.muTranslateMode;
     if (shift & 1) {
         return 1;
     }

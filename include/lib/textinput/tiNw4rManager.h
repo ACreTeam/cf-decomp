@@ -84,6 +84,8 @@ public:
         PE_7,
         PE_8,
         PE_9,
+        PE_10,
+        PE_11,
         PE_Last,
     };
 
@@ -229,8 +231,12 @@ public:
     virtual void setRootPaneScaleFor16x9();                                                             // 0x3C
     virtual void setRootPaneScaleFor4x3();                                                              // 0x40
     virtual void setProjectionMtx();                                                                    // 0x44
-    virtual void setPaneLastDrawReceived(nw4r::lyt::Pane *paneLastDraw);                                // 0x48
-    virtual void initPaneLastDrawReceived();                                                            // 0x4C
+    virtual void setPaneLastDrawReceived(nw4r::lyt::Pane *paneLastDraw) {
+        mAnmPaneFifo.push(paneLastDraw);
+    } // 0x48
+    virtual void initPaneLastDrawReceived() {
+        mAnmPaneFifo.init();
+    } // 0x4C
     virtual void setVisible(const char *paneName, bool flag);                                           // 0x50
     virtual bool isVisible(const char *paneName, bool *result) const;                                   // 0x54
     virtual void setString(const char *paneName, const wchar_t *wcString);                              // 0x58

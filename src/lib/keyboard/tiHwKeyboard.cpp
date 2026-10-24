@@ -195,7 +195,7 @@ bool HWKeyboard::updateInput(input::HKBManager &hkbManager) {
                                 modifier |= 2;
                             }
                             if (!(modifier & 1)) {
-                                pctype::KeyState &state =
+                                pctype::Base::KeyState &state =
                                     mgr()->getPCKeyboard()->mKeyState;
                                 state.setABCFlag(state.muFlag & ~0x8F);
                             }

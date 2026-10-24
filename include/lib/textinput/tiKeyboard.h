@@ -32,8 +32,8 @@ public:
     virtual void onKey(u32 key, void *data);      // 0x20
     virtual int getType();                        // 0x24
     virtual void setLanguage(Language language) { meLanguage = language; } // 0x28
-    virtual Language getLanguage() const;         // 0x2C
-    virtual void update();                        // 0x30
+    virtual Language getLanguage() const { return meLanguage; } // 0x2C
+    virtual void update() {}                      // 0x30
     virtual void onActive() {}                    // 0x34
 
 protected:

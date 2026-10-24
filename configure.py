@@ -1291,7 +1291,7 @@ config.libs = [
         "cflags": cflags_keyboard,
         "progress_category": "sdk",
         "objects": [
-            Object(NonMatching, "lib/keyboard/tiPcKeyboard.cpp"),
+            Object(Matching, "lib/keyboard/tiPcKeyboard.cpp"),
             Object(Matching, "lib/keyboard/tiCellPhone.cpp"),
             Object(Matching, "lib/keyboard/tiInputForm.cpp"),
             Object(Matching, "lib/keyboard/tiSignWindow.cpp"),

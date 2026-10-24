@@ -11,10 +11,12 @@ public:
 
     void changeCapsLock(const u8 &capsLock);
 
+    u8 isCapsLock() const { return mbCapsLock; }
     bool isHoldingShift() const { return isHWPressedShift() || isPressedShiftB(); }
     u8 isHWPressedShift() const { return mbPressedShift; }
     u8 isPressedShiftB() const { return mbPressedShiftB; }
     void setHWPressedShift(const u8 &shift) { mbPressedShift = shift; }
+    void setPressedShiftB(bool shift) { mbPressedShiftB = shift; }
 
     class Singleton {
     public:
