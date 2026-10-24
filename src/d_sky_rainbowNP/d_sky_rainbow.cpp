@@ -64,9 +64,9 @@ int dSkyRainbow_c::draw() {
     if (mAlpha != 0) {
         nw4r::g3d::ResMat mat = nw4r::g3d::ResFile(mRes.getData()).GetResMdl(0).GetResMat(0);
         GXColor color;
-        if (mat.GetResMatTevColor().GXGetTevKColor(GX_KCOLOR1, &color)) {
+        if (mat.GetResMatTevColor().GXGetTevColor(GX_TEVREG0, &color)) {
             color.a = mAlpha;
-            mat.GetResMatTevColor().GXSetTevKColor(GX_KCOLOR1, color);
+            mat.GetResMatTevColor().GXSetTevColor(GX_TEVREG0, color);
             mat.GetResMatTevColor().DCStore(false);
         }
         mMdl.setPriorityDraw(2, 7);

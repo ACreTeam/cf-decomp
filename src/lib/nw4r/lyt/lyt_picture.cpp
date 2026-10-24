@@ -6,73 +6,63 @@ namespace lyt {
 
 NW4R_UT_RTTI_DEF_DERIVED(Picture, Pane);
 
-// TODO(kiwi) Don't know what this actually looks like...
 Picture::Picture(u8 num) : Pane(NULL) {
     num = ut::Min<u8>(num, GX_MAX_TEXCOORD);
     Init(num);
 }
 
-Picture::Picture(const res::Picture* pRes, const ResBlockSet& rBlockSet)
-    : Pane(pRes) {
+Picture::Picture(const res::Picture* pResPic, const ResBlockSet& resBlockSet)
+    : Pane(pResPic) {
+    u8 texCoordNum = ut::Min<u8>(pResPic->texCoordNum, GX_MAX_TEXCOORD);
 
-    u8 num = ut::Min<u8>(pRes->texCoordNum, GX_MAX_TEXCOORD);
-    Init(num);
+    Init(texCoordNum);
 
     for (int i = 0; i < VERTEXCOLOR_MAX; i++) {
-        mVtxColors[i] = pRes->vtxCols[i];
+        mVtxColors[i] = pResPic->vtxCols[i];
     }
 
-    if (num > 0 && !mTexCoordAry.IsEmpty()) {
-        mTexCoordAry.Copy(
-            reinterpret_cast<const u8*>(pRes) + sizeof(res::Picture), num);
+    if (texCoordNum != 0 && !mTexCoordAry.IsEmpty()) {
+        mTexCoordAry.Copy(&pResPic[1], texCoordNum);
     }
 
-    void* pMaterialBuf = Layout::AllocMemory(sizeof(Material));
+    const u32* const matOffsTbl = detail::ConvertOffsToPtr<u32>(
+        resBlockSet.pMaterialList, sizeof(res::MaterialList));
 
-    if (pMaterialBuf != NULL) {
-        const u32* const pMatOffsetTbl = detail::ConvertOffsToPtr<u32>(
-            rBlockSet.pMaterialList, sizeof(res::MaterialList));
+    const res::Material* const pResMaterial =
+        detail::ConvertOffsToPtr<res::Material>(
+            resBlockSet.pMaterialList, matOffsTbl[pResPic->materialIdx]);
 
-        const res::Material* const pResMaterial =
-            detail::ConvertOffsToPtr<res::Material>(
-                rBlockSet.pMaterialList, pMatOffsetTbl[pRes->materialIdx]);
-
-        Material* pMaterial =
-            new (pMaterialBuf) Material(pResMaterial, rBlockSet);
-
-        mpMaterial = pMaterial;
-    }
+    mpMaterial = Layout::NewObj<Material>(pResMaterial, resBlockSet);
 }
 
-void Picture::Init(u8 num) {
-    if (num > 0) {
-        ReserveTexCoord(num);
+void Picture::Init(u8 texNum) {
+    if (texNum != 0) {
+        ReserveTexCoord(texNum);
     }
 }
 
 Picture::~Picture() {
     if (mpMaterial != NULL && !mpMaterial->IsUserAllocated()) {
-        mpMaterial->~Material();
-        Layout::FreeMemory(mpMaterial);
+        Layout::DeleteObj(mpMaterial);
         mpMaterial = NULL;
     }
 
     mTexCoordAry.Free();
 }
 
-void Picture::Append(const TexMap& rTexMap) {
+void Picture::Append(const TexMap& texMap) {
     if (mpMaterial->GetTextureNum() >= mpMaterial->GetTextureCap() ||
         mpMaterial->GetTextureNum() >= mpMaterial->GetTexCoordGenCap()) {
         return;
     }
 
-    u8 idx = mpMaterial->GetTextureNum();
+    u8 texIdx = mpMaterial->GetTextureNum();
 
-    mpMaterial->SetTextureNum(idx + 1);
-    mpMaterial->SetTexture(idx, rTexMap);
+    mpMaterial->SetTextureNum(texIdx + 1);
+    mpMaterial->SetTexture(texIdx, texMap);
 
     mpMaterial->SetTexCoordGenNum(mpMaterial->GetTextureNum());
-    mpMaterial->SetTexCoordGen(idx, TexCoordGen());
+    mpMaterial->SetTexCoordGen(texIdx, TexCoordGen());
 
     SetTexCoordNum(mpMaterial->GetTextureNum());
 
@@ -105,12 +95,12 @@ void Picture::SetVtxColorElement(u32 idx, u8 value) {
     detail::SetVtxColorElement(mVtxColors, idx, value);
 }
 
-void Picture::DrawSelf(const DrawInfo& rInfo) {
+void Picture::DrawSelf(const DrawInfo& drawInfo) {
     if (mpMaterial == NULL) {
         return;
     }
 
-    LoadMtx(rInfo);
+    LoadMtx(drawInfo);
 
     bool useVtxColor = mpMaterial->SetupGX(
         detail::IsModulateVertexColor(mVtxColors, mGlbAlpha), mGlbAlpha);

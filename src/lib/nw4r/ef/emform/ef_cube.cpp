@@ -5,14 +5,12 @@
 namespace nw4r {
 namespace ef {
 
-void EmitterFormCube::EmissionSub(math::VEC3& rPos, math::VEC3& rNormal,
-                                  Emitter* pEmitter, ParticleManager* pManager,
+void EmitterFormCube::EmissionSub(math::VEC3 &rPos, math::VEC3 &rNormal,
+                                  Emitter *pEmitter, ParticleManager *pManager,
                                   u16 life, f32 lifeRnd,
-                                  const math::MTX34* pSpace) {
+                                  const math::MTX34 *pSpace) {
 
-    if (rNormal.x != 0.0f || rNormal.y != 0.0f || rNormal.z != 0.0f) {
-        math::VEC3Normalize(&rNormal, &rNormal);
-    }
+    Normalize(&rNormal, &rNormal);
 
     math::VEC3 fromOrigin = rPos;
 
@@ -22,9 +20,7 @@ void EmitterFormCube::EmissionSub(math::VEC3& rPos, math::VEC3& rNormal,
         fromOrigin.z = 2.0f * pEmitter->mRandom.RandFloat() - 1.0f;
     }
 
-    if (fromOrigin.x != 0.0f || fromOrigin.y != 0.0f || fromOrigin.z != 0.0f) {
-        math::VEC3Normalize(&fromOrigin, &fromOrigin);
-    }
+    Normalize(&fromOrigin, &fromOrigin);
 
     math::VEC3 fromYAxis = rPos;
     fromYAxis.y = 0.0f;
@@ -34,9 +30,7 @@ void EmitterFormCube::EmissionSub(math::VEC3& rPos, math::VEC3& rNormal,
         fromYAxis.z = 2.0f * pEmitter->mRandom.RandFloat() - 1.0f;
     }
 
-    if (fromYAxis.x != 0.0f || fromYAxis.y != 0.0f || fromYAxis.z != 0.0f) {
-        math::VEC3Normalize(&fromYAxis, &fromYAxis);
-    }
+    Normalize(&fromYAxis, &fromYAxis);
 
     math::VEC3 vel;
     CalcVelocity(&vel, pEmitter, rPos, rNormal, fromOrigin, fromYAxis);
@@ -55,9 +49,9 @@ void EmitterFormCube::EmissionSub(math::VEC3& rPos, math::VEC3& rNormal,
     // clang-format on
 }
 
-void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                               int count, u32 flags, f32* pParams, u16 life,
-                               f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormCube::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                               int count, u32 flags, f32 *pParams, u16 life,
+                               f32 lifeRnd, const math::MTX34 *pSpace) {
 
     if (count < 1) {
         return;
@@ -66,8 +60,13 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
     f32 outerX, outerY, outerZ;
 
     outerX = pParams[0];
-    outerY = pParams[1];
-    outerZ = pParams[2];
+    if (flags & EmitterDesc::EMIT_FLAG_XYZ_SAME_SIZE) {
+        outerY = outerX;
+        outerZ = outerX;
+    } else {
+        outerY = pParams[1];
+        outerZ = pParams[2];
+    }
 
     if (outerX < 1e-5f) {
         outerX = 1e-5f;
@@ -187,10 +186,10 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                 normal.z = 0.0f;
             } else {
                 f32 cone = dist * diffuseNrm;
-                f32 ylen = 1.0f / std::tanf(cone);
+                f32 ylen = math::FInv(std::tanf(cone));
 
                 normal.x = pos.x;
-                normal.y = ylen * -std::sqrtf(pos.x * pos.x + pos.z * pos.z);
+                normal.y = ylen * -math::FSqrt(pos.x * pos.x + pos.z * pos.z);
                 normal.z = pos.z;
             }
 
@@ -237,13 +236,13 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                     normal.z = -1.0f;
                 } else {
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x = pos.x;
                     normal.y = pos.y;
 
                     normal.z =
-                        ylen * -std::sqrtf(pos.x * pos.x + pos.y * pos.y);
+                        ylen * -math::FSqrt(pos.x * pos.x + pos.y * pos.y);
                 }
 
                 EmissionSub(pos, normal, pEmitter, pManager, life, lifeRnd,
@@ -286,9 +285,10 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                     normal.z = 0.0f;
                 } else {
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
-                    normal.x = ylen * std::sqrtf(pos.y * pos.y + pos.z * pos.z);
+                    normal.x =
+                        ylen * math::FSqrt(pos.y * pos.y + pos.z * pos.z);
 
                     normal.y = pos.y;
                     normal.z = pos.z;
@@ -334,11 +334,12 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                     normal.z = 1.0f;
                 } else {
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x = pos.x;
                     normal.y = pos.y;
-                    normal.z = ylen * std::sqrtf(pos.x * pos.x + pos.y * pos.y);
+                    normal.z =
+                        ylen * math::FSqrt(pos.x * pos.x + pos.y * pos.y);
                 }
 
                 EmissionSub(pos, normal, pEmitter, pManager, life, lifeRnd,
@@ -381,10 +382,10 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                     normal.z = 0.0f;
                 } else {
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x =
-                        ylen * -std::sqrtf(pos.y * pos.y + pos.z * pos.z);
+                        ylen * -math::FSqrt(pos.y * pos.y + pos.z * pos.z);
                     normal.y = pos.y;
                     normal.z = pos.z;
                 }
@@ -482,10 +483,11 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                     normal.z = 0.0f;
                 } else {
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x = pos.x;
-                    normal.y = ylen * std::sqrtf(pos.x * pos.x + pos.z * pos.z);
+                    normal.y =
+                        ylen * math::FSqrt(pos.x * pos.x + pos.z * pos.z);
                     normal.z = pos.z;
                 }
 
@@ -607,32 +609,32 @@ void EmitterFormCube::Emission(Emitter* pEmitter, ParticleManager* pManager,
                     dist = MAX(std::fabs(pos.y), std::fabs(pos.z));
 
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x *=
-                        ylen * std::sqrtf(pos.y * pos.y + pos.z * pos.z);
+                        ylen * math::FSqrt(pos.y * pos.y + pos.z * pos.z);
                     normal.y = pos.y;
                     normal.z = pos.z;
                 } else if (normal.y != 0.0f) {
                     dist = MAX(std::fabs(pos.x), std::fabs(pos.z));
 
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x = pos.x;
                     normal.y *=
-                        ylen * std::sqrtf(pos.x * pos.x + pos.z * pos.z);
+                        ylen * math::FSqrt(pos.x * pos.x + pos.z * pos.z);
                     normal.z = pos.z;
                 } else {
                     dist = MAX(std::fabs(pos.x), std::fabs(pos.y));
 
                     f32 cone = dist * diffuseNrm;
-                    f32 ylen = 1.0f / std::tanf(cone);
+                    f32 ylen = math::FInv(std::tanf(cone));
 
                     normal.x = pos.x;
                     normal.y = pos.y;
                     normal.z *=
-                        ylen * std::sqrtf(pos.x * pos.x + pos.y * pos.y);
+                        ylen * math::FSqrt(pos.x * pos.x + pos.y * pos.y);
                 }
             }
 

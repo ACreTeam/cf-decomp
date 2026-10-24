@@ -1,5 +1,8 @@
 #include <nw4r/g3d.h>
 
+#include <cmath>
+#include <cstring>
+
 namespace nw4r {
 namespace g3d {
 
@@ -54,6 +57,17 @@ void ResMatTexCoordGen::DCStore(bool sync) {
         DC::StoreRange(&r, sizeof(ResTexCoordGenDL));
     } else {
         DC::StoreRangeNoSync(&r, sizeof(ResTexCoordGenDL));
+    }
+}
+
+void ResMat::DCStore(bool sync) {
+    ResMatData& r = ref();
+    u32 size = r.size;
+
+    if (sync) {
+        DC::StoreRange(&r, size);
+    } else {
+        DC::StoreRangeNoSync(&r, size);
     }
 }
 
@@ -421,12 +435,30 @@ GXBool ResMatMisc::GXGetZCompLoc() const {
     return FALSE;
 }
 
+void ResMatMisc::SetLightSetIdx(int idx) {
+    if (IsValid()) {
+        ResMatMiscData& r = *ptr();
+
+        if (idx < 0 || idx > 127) {
+            r.light_set_idx = -1;
+        } else {
+            r.light_set_idx = idx;
+        }
+    }
+}
+
 int ResMatMisc::GetLightSetIdx() const {
     if (IsValid()) {
         return ptr()->light_set_idx;
     }
 
     return -1;
+}
+
+void ResMatMisc::SetFogIdx(int idx) {
+    if (IsValid()) {
+        ptr()->fog_idx = idx;
+    }
 }
 
 int ResMatMisc::GetFogIdx() const {
@@ -458,9 +490,38 @@ ResMatMisc ResMatMisc::CopyTo(void* pDst) const {
     ResMatMiscData* pData = static_cast<ResMatMiscData*>(pDst);
     const ResMatMiscData& r = ref();
 
-    // @bug Only copies the first field???
-    pData->zCompLoc = r.zCompLoc;
+    *pData = r;
     return ResMatMisc(pData);
+}
+
+f32 ResMatFur::GetLyrRate(u32 idx) const {
+    // Creates 0.0f and 1.0f first to match the original .sdata2 literal order,
+    // which a function stripped from this build used to establish.
+    0.0f;
+    1.0f;
+
+    if (IsValid()) {
+        const ResMatFurData& r = ref();
+        u32 lyrSize = r.lyrSize;
+
+        switch (r.lyrInterval) {
+        case ResMatFurData::UNIFORM: {
+            return static_cast<f32>(idx + 1) / static_cast<f32>(lyrSize);
+        }
+
+        case ResMatFurData::TIP: {
+            return std::pow(static_cast<f32>(idx + 1) /
+                                static_cast<f32>(lyrSize),
+                            0.6f);
+        }
+
+        default: {
+            return 0.0f;
+        }
+        }
+    }
+
+    return 0.0f;
 }
 
 /******************************************************************************
@@ -892,6 +953,76 @@ bool ResMatIndMtxAndScale::GXGetIndTexMtx(GXIndTexMtxID id,
         pMtx->_10 = scale * static_cast<f32>(static_cast<int>((regA >> GX_BP_INDMTXA_M10_SHIFT & GX_BP_INDMTXA_M10_LMASK) << (32 - GX_BP_INDMTXA_M10_SZ)) >> (32 - GX_BP_INDMTXA_M00_SZ)) * (1.0f / 1024.0f);
         pMtx->_11 = scale * static_cast<f32>(static_cast<int>((regB >> GX_BP_INDMTXB_M11_SHIFT & GX_BP_INDMTXB_M11_LMASK) << (32 - GX_BP_INDMTXB_M11_SZ)) >> (32 - GX_BP_INDMTXB_M11_SZ)) * (1.0f / 1024.0f);
         pMtx->_12 = scale * static_cast<f32>(static_cast<int>((regC >> GX_BP_INDMTXC_M12_SHIFT & GX_BP_INDMTXC_M12_LMASK) << (32 - GX_BP_INDMTXC_M12_SZ)) >> (32 - GX_BP_INDMTXC_M12_SZ)) * (1.0f / 1024.0f);
+        pMtx->_13 = 0.0f;
+
+        pMtx->_20 = 0.0f;
+        pMtx->_21 = 0.0f;
+        pMtx->_22 = 1.0f;
+        pMtx->_23 = 0.0f;
+        // clang-format on
+    }
+
+    return true;
+}
+
+bool ResMatIndMtxAndScale::GXGetIndTexMtx(GXIndTexMtxID id, math::MTX34* pMtx,
+                                          s8* pScaleExp) const {
+    const u8* pCmd;
+    const ResIndMtxAndScaleDL& r = ref();
+
+    switch (id) {
+    case GX_ITM_0: {
+        pCmd = r.dl.indTexMtx0;
+        break;
+    }
+
+    case GX_ITM_1: {
+        pCmd = r.dl.indTexMtx1;
+        break;
+    }
+
+    case GX_ITM_2: {
+        pCmd = r.dl.indTexMtx2;
+        break;
+    }
+
+    default: {
+        return false;
+    }
+    }
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 regA;
+    detail::ResReadBPCmd(&pCmd[GX_BP_CMD_SZ * 0], &regA);
+
+    u32 regB;
+    detail::ResReadBPCmd(&pCmd[GX_BP_CMD_SZ * 1], &regB);
+
+    u32 regC;
+    detail::ResReadBPCmd(&pCmd[GX_BP_CMD_SZ * 2], &regC);
+
+    u32 scaleExpReg =
+        (regA >> GX_BP_INDMTXA_EXP_SHIFT & GX_BP_INDMTXA_EXP_LMASK) << 0 |
+        (regB >> GX_BP_INDMTXB_EXP_SHIFT & GX_BP_INDMTXB_EXP_LMASK) << 2 |
+        (regC >> GX_BP_INDMTXC_EXP_SHIFT & GX_BP_INDMTXC_EXP_LMASK) << 4;
+
+    if (pScaleExp != NULL) {
+        *pScaleExp = static_cast<s8>(scaleExpReg - 17);
+    }
+
+    if (pMtx != NULL) {
+        // clang-format off
+        pMtx->_00 = static_cast<f32>(static_cast<int>((regA >> GX_BP_INDMTXA_M00_SHIFT & GX_BP_INDMTXA_M00_LMASK) << (32 - GX_BP_INDMTXA_M00_SZ)) >> (32 - GX_BP_INDMTXA_M00_SZ)) * (1.0f / 1024.0f);
+        pMtx->_01 = static_cast<f32>(static_cast<int>((regB >> GX_BP_INDMTXB_M01_SHIFT & GX_BP_INDMTXB_M01_LMASK) << (32 - GX_BP_INDMTXB_M01_SZ)) >> (32 - GX_BP_INDMTXB_M01_SZ)) * (1.0f / 1024.0f);
+        pMtx->_02 = static_cast<f32>(static_cast<int>((regC >> GX_BP_INDMTXC_M02_SHIFT & GX_BP_INDMTXC_M02_LMASK) << (32 - GX_BP_INDMTXC_M02_SZ)) >> (32 - GX_BP_INDMTXC_M02_SZ)) * (1.0f / 1024.0f);
+        pMtx->_03 = 0.0f;
+
+        pMtx->_10 = static_cast<f32>(static_cast<int>((regA >> GX_BP_INDMTXA_M10_SHIFT & GX_BP_INDMTXA_M10_LMASK) << (32 - GX_BP_INDMTXA_M10_SZ)) >> (32 - GX_BP_INDMTXA_M00_SZ)) * (1.0f / 1024.0f);
+        pMtx->_11 = static_cast<f32>(static_cast<int>((regB >> GX_BP_INDMTXB_M11_SHIFT & GX_BP_INDMTXB_M11_LMASK) << (32 - GX_BP_INDMTXB_M11_SZ)) >> (32 - GX_BP_INDMTXB_M11_SZ)) * (1.0f / 1024.0f);
+        pMtx->_12 = static_cast<f32>(static_cast<int>((regC >> GX_BP_INDMTXC_M12_SHIFT & GX_BP_INDMTXC_M12_LMASK) << (32 - GX_BP_INDMTXC_M12_SZ)) >> (32 - GX_BP_INDMTXC_M12_SZ)) * (1.0f / 1024.0f);
         pMtx->_13 = 0.0f;
 
         pMtx->_20 = 0.0f;
@@ -1484,6 +1615,61 @@ void ResMat::Release() {
     }
 }
 
+bool ResMat::ForceBindTex(const ResTex tex, const char* pName, u32 len) {
+    u32 i;
+    u32 bindCount = 0;
+
+    u32 num = GetNumResTexPlttInfo();
+    for (i = 0; i < num; i++) {
+        if (GetResTexPlttInfo(i).ForceBindTex(tex, GetResTexObj(), pName,
+                                              len)) {
+            bindCount++;
+        }
+    }
+
+    return bindCount == num;
+}
+
+bool ResMat::ForceBindTex(const ResTex tex, const char* pName) {
+    return ForceBindTex(tex, pName, std::strlen(pName));
+}
+
+bool ResMat::ForceBindPltt(const ResPltt pltt, const char* pName, u32 len) {
+    u32 i;
+    bool success = true;
+
+    u32 num = GetNumResTexPlttInfo();
+    for (i = 0; i < num; i++) {
+        success = GetResTexPlttInfo(i).ForceBindPltt(pltt, GetResTlutObj(),
+                                                     pName, len) &&
+                  success;
+    }
+
+    return success;
+}
+
+bool ResMat::ForceBindPltt(const ResPltt pltt, const char* pName) {
+    return ForceBindPltt(pltt, pName, std::strlen(pName));
+}
+
+void ResMat::ReleaseTex(const char* pName, u32 len) {
+    u32 i;
+
+    u32 texPlttInfoNum = GetNumResTexPlttInfo();
+    for (i = 0; i < texPlttInfoNum; i++) {
+        GetResTexPlttInfo(i).ReleaseTex(GetResTexObj(), pName, len);
+    }
+}
+
+void ResMat::ReleasePltt(const char* pName, u32 len) {
+    u32 i;
+
+    u32 texPlttInfoNum = GetNumResTexPlttInfo();
+    for (i = 0; i < texPlttInfoNum; i++) {
+        GetResTexPlttInfo(i).ReleasePltt(GetResTlutObj(), pName, len);
+    }
+}
+
 void ResMat::Init() {
     DC::StoreRangeNoSync(GetResMatDLData(), sizeof(ResMatDLData));
 }
@@ -1492,8 +1678,8 @@ ResTev ResMat::GetResTev() {
     return ofs_to_obj<ResTev>(ref().toResTevData);
 }
 
-ResTev ResMat::GetResTev() const {
-    return ofs_to_obj<ResTev>(ref().toResTevData);
+ResMatFur ResMat::GetResMatFur() {
+    return ofs_to_obj<ResMatFur>(ref().toResMatFurData);
 }
 
 /******************************************************************************
@@ -1590,6 +1776,37 @@ void ResTexPlttInfo::Release(ResTexObj texObj, ResTlutObj tlutObj) {
     texObj.Invalidate(r.mapID);
     // @bug Shouldn't this be the TLUT id?
     tlutObj.Invalidate(static_cast<GXTlut>(r.mapID));
+}
+
+bool ResTexPlttInfo::ForceBindTex(const ResTex tex, ResTexObj texObj,
+                                  const char* pName, u32 len) {
+    if (ref().pTexData == NULL) {
+        ResName n = GetTexResName();
+
+        if (len == n.GetLength() && std::strcmp(n.GetName(), pName) == 0 &&
+            (!IsCIFmt() || tex.IsCIFmt())) {
+            BindTex_(tex, texObj);
+        } else {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool ResTexPlttInfo::ForceBindPltt(const ResPltt pltt, ResTlutObj tlutObj,
+                                   const char* pName, u32 len) {
+    if (ref().pPlttData == NULL && IsCIFmt()) {
+        ResName n = GetPlttResName();
+
+        if (len == n.GetLength() && std::strcmp(n.GetName(), pName) == 0) {
+            BindPltt_(pltt, tlutObj);
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 } // namespace g3d

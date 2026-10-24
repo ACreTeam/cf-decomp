@@ -1,54 +1,52 @@
 #ifndef NW4R_SND_TASK_MANAGER_H
 #define NW4R_SND_TASK_MANAGER_H
-#include <nw4r/types_nw4r.h>
 
 #include <nw4r/snd/snd_Task.h>
-
-#include <nw4r/ut.h>
 
 #include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
 class TaskManager {
-public:
+  public:
     enum TaskPriority {
-        PRIORITY_LOW = 0,
-        PRIORITY_MIDDLE = 1,
-        PRIORITY_HIGH = 2,
-
-        PRIORITY_MAX
+        PRIORITY_LOW,
+        PRIORITY_MIDDLE,
+        PRIORITY_HIGH,
     };
 
-public:
-    static TaskManager& GetInstance();
+  public:
+    static TaskManager &GetInstance();
 
-    void AppendTask(Task* pTask, TaskPriority priority = PRIORITY_MIDDLE);
+    void AppendTask(Task *task, TaskPriority priority = PRIORITY_MIDDLE);
 
-    Task* ExecuteTask();
-    void CancelTask(Task* pTask);
+    Task *ExecuteTask();
+    void CancelTask(Task *task);
     void CancelAllTask();
 
     void WaitTask();
     void CancelWaitTask();
 
-private:
+  private:
     TaskManager();
 
-    Task* PopTask();
-    Task* GetNextTask();
-    Task* GetNextTask(TaskPriority priority, bool remove);
+    Task *GetNextTask();
+    Task *GetNextTask(TaskPriority priority, bool doRemove);
 
-private:
-    TaskList mTaskList[PRIORITY_MAX]; // at 0x0
-    Task* volatile mCurrentTask;      // at 0x24
-    bool mCancelWaitTaskFlag;         // at 0x28
-    OSThreadQueue mAppendThreadQueue; // at 0x2C
-    OSThreadQueue mDoneThreadQueue;   // at 0x34
-};
+    Task *PopTask();
 
+  public:
+    static int const PRIORITY_NUM = 3;
+
+  private:
+    Task::LinkList mTaskList[PRIORITY_NUM]; // size 0x24, offset 0x00
+    Task *volatile mCurrentTask;            // size 0x04, offset 0x24
+    bool mCancelWaitTaskFlag;
+    /* 3 bytes padding */
+    OSThreadQueue mAppendThreadQueue; // size 0x08, offset 0x2c
+    OSThreadQueue mDoneThreadQueue;   // size 0x08, offset 0x34
+}; // size 0x3c
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

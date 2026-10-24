@@ -2,6 +2,8 @@
 #define NW4R_LYT_COMMON_H
 #include <nw4r/types_nw4r.h>
 
+#include <nw4r/lyt/lyt_resources.h>
+
 #include <nw4r/math.h>
 #include <nw4r/ut.h>
 
@@ -149,8 +151,13 @@ inline const char* GetStrTableStr(const void* pTable, int index) {
     return pStringPool + pOffsetTbl[index];
 }
 
-bool TestFileHeader(const res::BinaryFileHeader& rHeader);
-bool TestFileHeader(const res::BinaryFileHeader& rHeader, ulong signature);
+bool TestFileHeader(const res::BinaryFileHeader& fileHeader, ulong testSig);
+
+inline bool TestFileVersion(const res::BinaryFileHeader& fileHeader) {
+    ulong majorVer = (fileHeader.version >> 8) & 0xFF;
+    ulong minorVer = fileHeader.version & 0xFF;
+    return majorVer == 0 && minorVer >= 8 && minorVer <= 10;
+}
 
 bool EqualsResName(const char* pLhs, const char* pRhs);
 bool EqualsMaterialName(const char* pLhs, const char* pRhs);

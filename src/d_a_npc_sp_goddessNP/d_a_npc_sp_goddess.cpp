@@ -124,9 +124,9 @@ int dAcNpcSpGoddess_c::draw() {
         nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
         if (tev.IsValid()) {
             GXColor color;
-            tev.GXGetTevColor(GX_TEVPREV, &color);
+            tev.GXGetTevKColor(GX_KCOLOR0, &color);
             color.a = mTevAlpha;
-            tev.GXSetTevColor(GX_TEVPREV, color);
+            tev.GXSetTevKColor(GX_KCOLOR0, color);
             tev.DCStore(false);
         }
     }
@@ -135,9 +135,9 @@ int dAcNpcSpGoddess_c::draw() {
         nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
         if (tev.IsValid()) {
             GXColor color;
-            tev.GXGetTevColor(GX_TEVPREV, &color);
+            tev.GXGetTevKColor(GX_KCOLOR0, &color);
             color.a = mTevAlpha;
-            tev.GXSetTevColor(GX_TEVPREV, color);
+            tev.GXSetTevKColor(GX_KCOLOR0, color);
             tev.DCStore(false);
         }
     }

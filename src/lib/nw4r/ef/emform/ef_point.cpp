@@ -5,9 +5,9 @@
 namespace nw4r {
 namespace ef {
 
-void EmitterFormPoint::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                                int count, u32 flags, f32* pParams, u16 life,
-                                f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormPoint::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                                int count, u32 flags, f32 *pParams, u16 life,
+                                f32 lifeRnd, const math::MTX34 *pSpace) {
 
 #pragma unused(flags)
 #pragma unused(pParams)
@@ -27,17 +27,16 @@ void EmitterFormPoint::Emission(Emitter* pEmitter, ParticleManager* pManager,
             normal.x = (0.66f - 0.34f * rx) * rx;
         }
 
-        f32 radius = std::sqrtf(1.0f - normal.x * normal.x);
+        f32 radius = math::FSqrt(1.0f - normal.x * normal.x);
         rx = pEmitter->mRandom.RandFloat() * NW4R_MATH_PI * 2;
 
-        normal.y = std::cosf(rx) * radius;
-        normal.z = std::sinf(rx) * radius;
+        PSSinCosRad(&normal.z, &normal.y, rx);
+        normal.y *= radius;
+        normal.z *= radius;
 
         math::VEC3 fromYAxis(normal.x, 0.0f, normal.z);
 
-        if (normal.x != 0.0f || normal.z != 0.0f) {
-            math::VEC3Normalize(&fromYAxis, &fromYAxis);
-        }
+        Normalize(&fromYAxis, &fromYAxis);
 
         math::VEC3 vel;
         CalcVelocity(&vel, pEmitter, pos, normal, normal, fromYAxis);

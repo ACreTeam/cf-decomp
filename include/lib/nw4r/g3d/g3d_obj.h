@@ -113,7 +113,7 @@ public:
     void SetParent(G3dObj* pParent) {
         mpParent = pParent;
     }
-    void DetachFromParent();
+    G3dObj* DetachFromParent();
 
     void Destroy();
 

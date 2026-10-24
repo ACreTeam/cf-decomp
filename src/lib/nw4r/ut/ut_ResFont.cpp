@@ -59,6 +59,10 @@ bool ResFont::SetResource(void* pBuffer) {
     return true;
 }
 
+void* ResFont::RemoveResource() {
+    return RemoveResourceBuffer();
+}
+
 FontInformation* ResFont::Rebuild(BinaryFileHeader* pHeader) {
     BinaryBlockHeader* pBlock = reinterpret_cast<BinaryBlockHeader*>(
         reinterpret_cast<char*>(pHeader) + pHeader->headerSize);

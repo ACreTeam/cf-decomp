@@ -23,6 +23,10 @@ struct MtxCacheMap {
     u8 prevTexArray[32 * sizeof(math::MTX44)];  // at 0x3800
 };
 
+bool CalcViewNrmMtx(math::MTX33* pOut, const math::MTX34* pV);
+bool CalcViewTexMtx(math::MTX34* pOut, const math::MTX34* pV);
+bool CalcInvWorldMtx(math::MTX34* pOut, const math::MTX34* pW);
+
 } // namespace detail
 
 void CalcView(math::MTX34* pViewPosArray, math::MTX33* pViewNrmArray,

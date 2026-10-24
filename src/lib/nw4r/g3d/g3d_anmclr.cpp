@@ -382,6 +382,10 @@ f32 AnmObjMatClrRes::GetFrame() const {
 
 void AnmObjMatClrRes::SetUpdateRate(f32 rate) {
     SetRate(rate);
+
+    if (rate == 0.0f && mpResultCache != NULL) {
+        UpdateCache();
+    }
 }
 
 f32 AnmObjMatClrRes::GetUpdateRate() const {
@@ -389,10 +393,12 @@ f32 AnmObjMatClrRes::GetUpdateRate() const {
 }
 
 void AnmObjMatClrRes::UpdateFrame() {
-    UpdateFrm();
+    if (GetRate() != 0.0f) {
+        UpdateFrm();
 
-    if (mpResultCache != NULL) {
-        UpdateCache();
+        if (mpResultCache != NULL) {
+            UpdateCache();
+        }
     }
 }
 

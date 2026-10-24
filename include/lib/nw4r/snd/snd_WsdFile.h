@@ -1,145 +1,145 @@
 #ifndef NW4R_SND_WSD_FILE_H
 #define NW4R_SND_WSD_FILE_H
+
+#include <types.h>
+
 #include <nw4r/snd/snd_Util.h>
 
-#include <nw4r/ut.h>
+#include <nw4r/ut/ut_binaryFileFormat.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-// Forward declarations
 struct WaveData;
+}
+} // namespace snd
+} // namespace nw4r
+namespace nw4r {
+namespace snd {
+namespace detail {
+struct WaveSoundInfo;
+}
+} // namespace snd
+} // namespace nw4r
+namespace nw4r {
+namespace snd {
+namespace detail {
+struct WaveSoundNoteInfo;
+}
+} // namespace snd
+} // namespace nw4r
 
-/******************************************************************************
- *
- * RWSD binary layout
- *
- ******************************************************************************/
-namespace WsdFile {
+namespace nw4r {
+namespace snd {
+namespace detail {
+struct WsdFile {
+    struct Header {
+        ut::BinaryFileHeader fileHeader; // size 0x10, offset 0x00
+        u32 dataBlockOffset;             // size 0x04, offset 0x10
+        u32 dataBlockSize;               // size 0x04, offset 0x14
+        u32 waveBlockOffset;             // size 0x04, offset 0x18
+        u32 waveBlockSize;               // size 0x04, offset 0x1c
+    }; // size 0x20
 
-struct WsdInfo {
-    f32 pitch;                                 // at 0x0
-    u8 pan;                                    // at 0x4
-    u8 surroundPan;                            // at 0x5
-    u8 fxSendA;                                // at 0x6
-    u8 fxSendB;                                // at 0x7
-    u8 fxSendC;                                // at 0x8
-    u8 mainSend;                               // at 0x9
-    Util::DataRef<UNKTYPE> graphEnvTableRef;   // at 0xC
-    Util::DataRef<UNKTYPE> randomizerTableRef; // at 0x14
-    u32 reserved;                              // at 0x1C
+    struct WsdInfo {
+        f32 pitch;      // size 0x04, offset 0x00
+        u8 pan;         // size 0x01, offset 0x04
+        u8 surroundPan; // size 0x01, offset 0x05
+        u8 fxSendA;     // size 0x01, offset 0x06
+        u8 fxSendB;     // size 0x01, offset 0x07
+        u8 fxSendC;     // size 0x01, offset 0x08
+        u8 mainSend;    // size 0x01, offset 0x09
+        u8 padding[2];
+
+        Util::DataRef<void> graphEnvTablevRef;  // size 0x08, offset 0x0c
+        Util::DataRef<void> randomizerTableRef; // size 0x08, offset 0x14
+        u32 reserved;
+    }; // size 0x20
+
+    struct TrackInfo;
+
+    typedef Util::Table<Util::DataRef<TrackInfo> > TrackInfoTable;
+
+    struct NoteInfo {
+        s32 waveIndex; // size 0x04, offset 0x00
+        u8 attack;     // size 0x01, offset 0x04
+        u8 decay;      // size 0x01, offset 0x05
+        u8 sustain;    // size 0x01, offset 0x06
+        u8 release;    // size 0x01, offset 0x07
+        u8 hold;       // size 0x01, offset 0x08
+        u8 padding[3];
+        u8 originalKey; // size 0x01, offset 0x0c
+        u8 volume;      // size 0x01, offset 0x0d
+        u8 pan;         // size 0x01, offset 0x0e
+        u8 surroundPan; // size 0x01, offset 0x0f
+        f32 pitch;      // size 0x04, offset 0x10
+
+        Util::DataRef<void> lfoTableRef;        // size 0x08, offset 0x14
+        Util::DataRef<void> graphEnvTablevRef;  // size 0x08, offset 0x1c
+        Util::DataRef<void> randomizerTableRef; // size 0x08, offset 0x24
+        u32 reserved;
+    }; // size 0x30
+
+    typedef Util::Table<Util::DataRef<NoteInfo> > NoteInfoTable;
+
+    struct Wsd {
+        Util::DataRef<WsdInfo> refWsdInfo;           // size 0x08, offset 0x00
+        Util::DataRef<TrackInfoTable> refTrackTable; // size 0x08, offset 0x08
+        Util::DataRef<NoteInfoTable> refNoteTable;   // size 0x08, offset 0x10
+    }; // size 0x18
+
+    static u32 const SIGNATURE_DATA_BLOCK = NW4R_FOUR_BYTE('D', 'A', 'T', 'A');
+
+    struct DataBlock {
+        ut::BinaryBlockHeader blockHeader; // size 0x08, offset 0x00
+        u32 wsdCount;                      // size 0x04, offset 0x08
+        Util::DataRef<Wsd> refWsd[];
+    }; // size 0x0c
+
+    static u32 const SIGNATURE_WAVE_BLOCK = NW4R_FOUR_BYTE('W', 'A', 'V', 'E');
+
+    struct WaveBlock {
+        ut::BinaryBlockHeader blockHeader; // size 0x04, offset 0x00
+        u32 waveCount;                     // size 0x04, offset 0x08
+        u32 offsetTable[];
+    }; // size 0x0c
+
+    struct WaveBlockOld {
+        ut::BinaryBlockHeader blockHeader; // size 0x08, offset 0x00
+        u32 offsetTable[];
+    }; // size 0x08
+
+    static u32 const SIGNATURE_FILE = NW4R_FOUR_BYTE('R', 'W', 'S', 'D');
+    static int const FILE_VERSION = NW4R_FILE_VERSION(1, 3);
 };
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-struct TrackInfo {};
-
-struct NoteInfo {
-    s32 waveIndex;                             // at 0x0
-    u8 attack;                                 // at 0x4
-    u8 decay;                                  // at 0x5
-    u8 sustain;                                // at 0x6
-    u8 release;                                // at 0x7
-    u16 hold;                                  // at 0x8
-    u16 PADDING_0xA;                           // at 0xA
-    u8 originalKey;                            // at 0xC
-    u8 volume;                                 // at 0xD
-    u8 pan;                                    // at 0xE
-    u8 surroundPan;                            // at 0xF
-    f32 pitch;                                 // at 0x10
-    Util::DataRef<UNKTYPE> lfoTableRef;        // at 0x14
-    Util::DataRef<UNKTYPE> graphEnvTablevRef;  // at 0x1C
-    Util::DataRef<UNKTYPE> randomizerTableRef; // at 0x24
-    u32 reserved;                              // at 0x2C
-};
-
-typedef Util::Table<Util::DataRef<TrackInfo> > TrackTable;
-
-typedef Util::Table<Util::DataRef<NoteInfo> > NoteTable;
-
-struct Wsd {
-    Util::DataRef<WsdInfo> refWsdInfo;       // at 0x0
-    Util::DataRef<TrackTable> refTrackTable; // at 0x8
-    Util::DataRef<NoteTable> refNoteTable;   // at 0x10
-};
-
-struct Header {
-    ut::BinaryFileHeader fileHeader; // at 0x0
-    u32 dataBlockOffset;             // at 0x10
-    u32 dataBlockSize;               // at 0x14
-    u32 waveBlockOffset;             // at 0x18
-    u32 waveBlockSize;               // at 0x1C
-};
-
-struct DataBlock {
-    ut::BinaryBlockHeader blockHeader; // at 0x0
-    u32 wsdCount;                      // at 0x8
-    Util::DataRef<Wsd> refWsd[];       // at 0xC
-};
-
-struct WaveBlock {
-    ut::BinaryBlockHeader blockHeader; // at 0x0
-    u32 waveCount;                     // at 0x8
-    u32 offsetTable[];                 // at 0xC
-};
-
-// <= NW4R_VERSION(1, 0)
-struct WaveBlockOld {
-    ut::BinaryBlockHeader blockHeader; // at 0x0
-    u32 offsetTable[];                 // at 0x8
-};
-
-}; // namespace WsdFile
-
-/******************************************************************************
- *
- * WsdFileReader
- *
- ******************************************************************************/
-struct WaveSoundInfo {
-    f32 pitch;      // at 0x0
-    u8 pan;         // at 0x4
-    u8 surroundPan; // at 0x5
-    u8 fxSendA;     // at 0x6
-    u8 fxSendB;     // at 0x7
-    u8 fxSendC;     // at 0x8
-    u8 mainSend;    // at 0x9
-};
-
-struct WaveSoundNoteInfo {
-    s32 waveIndex;  // at 0x0
-    u8 attack;      // at 0x4
-    u8 decay;       // at 0x6
-    u8 sustain;     // at 0x7
-    u8 release;     // at 0x8
-    u8 originalKey; // at 0x9
-    u8 pan;         // at 0xA
-    u8 surroundPan; // at 0xB
-    u8 volume;      // at 0xC
-    f32 pitch;      // at 0x10
-};
-
+namespace nw4r {
+namespace snd {
+namespace detail {
 class WsdFileReader {
-public:
-    static const u32 SIGNATURE = FOURCC('R', 'W', 'S', 'D');
-    static const int VERSION = NW4R_VERSION(1, 2);
+  public:
+    WsdFileReader(void const *wsdData);
 
-public:
-    explicit WsdFileReader(const void* pWsdBin);
+    bool ReadWaveInfo(int waveIndex, WaveData *waveData,
+                      void const *waveDataAddress) const;
+    bool ReadWaveSoundInfo(WaveSoundInfo *info, int index) const;
+    bool ReadWaveSoundNoteInfo(WaveSoundNoteInfo *noteInfo, int index,
+                               int noteIndex) const;
 
-    bool IsValidFileHeader(const void* pWsdBin);
+  private:
+    bool IsValidFileHeader(void const *wsdData);
 
-    bool ReadWaveSoundInfo(WaveSoundInfo* pSoundInfo, int id) const;
-    bool ReadWaveSoundNoteInfo(WaveSoundNoteInfo* pSoundNoteInfo, int id,
-                               int note) const;
-    bool ReadWaveParam(int id, WaveData* pWaveData,
-                       const void* pWaveAddr) const;
+  private:
+    static int const SUPPORTED_FILE_VERSION = NW4R_FILE_VERSION(1, 3);
 
-private:
-    const WsdFile::Header* mHeader;       // at 0x0
-    const WsdFile::DataBlock* mDataBlock; // at 0x4
-    const WsdFile::WaveBlock* mWaveBlock; // at 0x8
-};
-
+  private:
+    WsdFile::Header const *mHeader;       // size 0x04, offset 0x00
+    WsdFile::DataBlock const *mDataBlock; // size 0x04, offset 0x04
+    WsdFile::WaveBlock const *mWaveBlock; // size 0x04, offset 0x08
+}; // size 0x0c
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

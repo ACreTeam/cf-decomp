@@ -1153,8 +1153,8 @@ void dHmnToolBank_c::setDigAnm(const mVec3_c *pos, const mAng3_c *angle, int anm
         mDigMode = 1;
         nw4r::g3d::ResFile pack(dBG::getPackBank()->getData());
         if (pack.IsValid()) {
-            mDigMdl0.getResMdl().ReleaseTexByName("tex_grass");
-            mDigMdl0.getResMdl().ReleaseTexByName("tex_soil");
+            mDigMdl0.getResMdl().ReleaseTex("tex_grass");
+            mDigMdl0.getResMdl().ReleaseTex("tex_soil");
             mDigMdl0.getResMdl().Bind(pack);
         }
         nw4r::g3d::ResMdl mdl = mDigMdl0.getResMdl();
@@ -1164,9 +1164,9 @@ void dHmnToolBank_c::setDigAnm(const mVec3_c *pos, const mAng3_c *angle, int anm
         }
         nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
         GXColor color;
-        if (tev.GXGetTevColor(GX_TEVPREV, &color)) {
+        if (tev.GXGetTevKColor(GX_KCOLOR0, &color)) {
             color.a = alpha;
-            tev.GXSetTevColor(GX_TEVPREV, color);
+            tev.GXSetTevKColor(GX_KCOLOR0, color);
             tev.DCStore(false);
         }
         mDigAnm0.setAnm(mDigMdl0, chr, m3d::FORWARD_ONCE);
@@ -1237,8 +1237,8 @@ void dHmnToolBank_c::removeModels() {
         }
         if (mDigMdlCreated) {
             if (mType <= 3) {
-                mDigMdl0.getResMdl().ReleaseTexByName("tex_grass");
-                mDigMdl0.getResMdl().ReleaseTexByName("tex_soil");
+                mDigMdl0.getResMdl().ReleaseTex("tex_grass");
+                mDigMdl0.getResMdl().ReleaseTex("tex_soil");
                 nw4r::g3d::ResFile file(getResFile(TRUE));
                 if (file.IsValid() && file.HasResMdl()) {
                     file.Release();
@@ -1286,9 +1286,9 @@ void dHmnToolBank_c::setBalloonColor(u8 alpha) {
     }
     GXColor color;
     nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
-    tev.GXGetTevColor(GX_TEVPREV, &color);
+    tev.GXGetTevKColor(GX_KCOLOR0, &color);
     color.a = alpha;
-    tev.GXSetTevColor(GX_TEVPREV, color);
+    tev.GXSetTevKColor(GX_KCOLOR0, color);
     tev.DCStore(false);
     if (mMatClr.IsBound()) {
         mMatClr.setFrame(mColor, 0);
@@ -1383,8 +1383,8 @@ void dHmnToolMng_c::bindDesign(data_c *data) {
         return;
     }
     nw4r::g3d::ResMdl mdl = file.GetResMdl(0);
-    mdl.ReleaseTexByName("cloth");
-    mdl.ReleasePlttByName("cloth");
+    mdl.ReleaseTex("cloth");
+    mdl.ReleasePltt("cloth");
     file.Bind(nw4r::g3d::ResFile(design));
 }
 

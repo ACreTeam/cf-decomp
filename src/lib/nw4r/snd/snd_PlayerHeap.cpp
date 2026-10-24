@@ -1,74 +1,103 @@
-#include <nw4r/snd.h>
+#include <nw4r/snd/snd_PlayerHeap.h>
+
+#include <cstddef>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_DisposeCallbackManager.h>
+#include <nw4r/snd/snd_SoundThread.h>
+
+#include <nw4r/ut/ut_algorithm.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
+class BasicSound;
+}
+} // namespace snd
+} // namespace nw4r
 
+namespace nw4r {
+namespace snd {
+namespace detail {
 PlayerHeap::PlayerHeap()
-    : mSound(NULL),
-      mPlayer(NULL),
-      mStartAddress(NULL),
-      mEndAddress(NULL),
-      mAllocAddress(NULL) {}
+    : mSound(nullptr), mPlayer(nullptr), mStartAddress(nullptr),
+      mEndAddress(nullptr), mAllocAddress(nullptr) {
+}
 
 PlayerHeap::~PlayerHeap() {
     Destroy();
 }
 
-bool PlayerHeap::Create(void* pBase, u32 size) {
-    void* pEnd = ut::AddOffsetToPtr(pBase, size);
-    pBase = ut::RoundUp(pBase, 32);
+bool PlayerHeap::Create(void *startAddress, u32 size) {
+    void *endAddress = ut::AddOffsetToPtr(startAddress, size);
+    startAddress = ut::RoundUp(startAddress, 32);
 
-    if (pBase > pEnd) {
+    if (startAddress > endAddress) {
         return false;
     }
 
-    mStartAddress = pBase;
-    mEndAddress = pEnd;
+    mStartAddress = startAddress;
+    mEndAddress = endAddress;
     mAllocAddress = mStartAddress;
 
     return true;
 }
 
-void* PlayerHeap::Alloc(u32 size) {
-    void* pEnd = ut::AddOffsetToPtr(mAllocAddress, size);
+void PlayerHeap::Destroy() {
+    Clear();
+    mAllocAddress = nullptr;
+}
 
-    if (pEnd > mEndAddress) {
-        return NULL;
+void *PlayerHeap::Alloc(u32 size) {
+    NW4RAssertAligned_Line(108, mAllocAddress, 32);
+
+    void *endp = ut::AddOffsetToPtr(mAllocAddress, size);
+    if (endp > mEndAddress) {
+        return nullptr;
     }
 
-    void* pAlloc = mAllocAddress;
-    mAllocAddress = ut::RoundUp(pEnd, 32);
-    return pAlloc;
+    void *allocAddress = mAllocAddress;
+    mAllocAddress = ut::RoundUp(endp, 32);
+    return allocAddress;
 }
 
 void PlayerHeap::Clear() {
-    SoundThread::AutoLock lock;
+    SoundThread::AutoLock lockForDispose;
 
     DisposeCallbackManager::GetInstance().Dispose(
         mStartAddress, ut::GetOffsetFromPtr(mStartAddress, mAllocAddress),
-        NULL);
+        nullptr);
 
     DisposeCallbackManager::GetInstance().DisposeWave(
         mStartAddress, ut::GetOffsetFromPtr(mStartAddress, mAllocAddress),
-        NULL);
+        nullptr);
 
     mAllocAddress = mStartAddress;
 }
 
 u32 PlayerHeap::GetFreeSize() const {
-    return ut::GetOffsetFromPtr(mAllocAddress, mEndAddress);
+    s32 offset = ut::GetOffsetFromPtr(mAllocAddress, mEndAddress);
+    NW4RAssert_Line(157, offset >= 0);
+
+    return offset;
 }
 
-void PlayerHeap::AttachSound(BasicSound* pSound) {
-    mSound = pSound;
+void PlayerHeap::AttachSound(BasicSound *sound) {
+    NW4RAssertPointerNonnull_Line(172, sound);
+    NW4RAssert_Line(173, mSound == NULL);
+
+    mSound = sound;
 }
 
-void PlayerHeap::DetachSound(BasicSound* pSound) {
-#pragma unused(pSound)
-    mSound = NULL;
-}
+void PlayerHeap::DetachSound(BasicSound *sound) {
+    NW4RAssertPointerNonnull_Line(189, sound);
+    NW4RAssert_Line(190, sound == mSound);
 
+    mSound = nullptr;
+}
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

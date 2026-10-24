@@ -106,6 +106,30 @@ ResTexSrt ScnMdl::CopiedMatAccess::GetResTexSrtEx() {
     return ResTexSrt(NULL);
 }
 
+ResMatMisc ScnMdl::CopiedMatAccess::GetResMatMisc() {
+    if (mpScnMdl != NULL) {
+        if (mMatMisc.IsValid()) {
+            return mMatMisc;
+        }
+
+        return mpScnMdl->GetResMdl().GetResMat(mMatID).GetResMatMisc();
+    }
+
+    return ResMatMisc(NULL);
+}
+
+ResMatTevColor ScnMdl::CopiedMatAccess::GetResMatTevColor() {
+    if (mpScnMdl != NULL) {
+        if (mTevColor.IsValid()) {
+            return mTevColor;
+        }
+
+        return mpScnMdl->GetResMdl().GetResMat(mMatID).GetResMatTevColor();
+    }
+
+    return ResMatTevColor(NULL);
+}
+
 ScnMdl::CopiedMatAccess::CopiedMatAccess(ScnMdl* pScnMdl, u32 id)
     : mTexObj(NULL),
       mTlutObj(NULL),
@@ -448,7 +472,12 @@ ScnMdl* ScnMdl::Construct(MEMAllocator* pAllocator, u32* pSize, ResMdl mdl,
 
         // clang-format off
         DrawResMdlReplacement replacement;
-        
+
+        replacement.flag = 0;
+        if (!(bufferOption & BUFFER_KEEP_VTX)) {
+            replacement.flag |= DrawResMdlReplacement::FLAG_IGNORE_VTX;
+        }
+
         replacement.visArray              = visSize               != 0 ? reinterpret_cast<u8*>(pBuffer + visOfs)                                : NULL;
         replacement.texObjDataArray       = resTexObjSize         != 0 ? reinterpret_cast<ResTexObjData*>(pBuffer + resTexObjOfs)               : NULL;
         replacement.tlutObjDataArray      = resTlutObjSize        != 0 ? reinterpret_cast<ResTlutObjData*>(pBuffer + resTlutObjOfs)             : NULL;
@@ -558,6 +587,11 @@ ScnMdl* ScnMdl::Construct(MEMAllocator* pAllocator, u32* pSize, ResMdl mdl,
             }
         }
 
+        u32 replacementFlag = 0;
+        if (bufferOption & BUFFER_KEEP_VTX) {
+            replacementFlag |= REPLACEMENTFLAG_KEEP_VTX;
+        }
+
         // clang-format off
         pScnMdl = new (pBuffer) ScnMdl(
             pAllocator,
@@ -570,7 +604,8 @@ ScnMdl* ScnMdl::Construct(MEMAllocator* pAllocator, u32* pSize, ResMdl mdl,
             numView,
             viewMtxNum,
             &replacement,
-            reinterpret_cast<u32*>(pBuffer + matBufferDirtyFlagOfs));
+            reinterpret_cast<u32*>(pBuffer + matBufferDirtyFlagOfs),
+            replacementFlag);
         // clang-format off
 
         pScnMdl->InitBuffer();
@@ -631,6 +666,26 @@ void ScnMdl::ScnMdl_G3DPROC_CALC_MAT(u32 param, void* pInfo) {
 
         if (IsMatBufferDirty(i, BUFFER_RESTEVCOLOR)) {
             CleanMatBuffer(i, BUFFER_RESTEVCOLOR);
+        }
+
+        if (IsMatBufferDirty(i, BUFFER_RESGENMODE)) {
+            CleanMatBuffer(i, BUFFER_RESGENMODE);
+        }
+
+        if (IsMatBufferDirty(i, BUFFER_RESMATMISC)) {
+            CleanMatBuffer(i, BUFFER_RESMATMISC);
+        }
+
+        if (IsMatBufferDirty(i, BUFFER_RESMATPIX)) {
+            CleanMatBuffer(i, BUFFER_RESMATPIX);
+        }
+
+        if (IsMatBufferDirty(i, BUFFER_RESMATTEXCOORDGEN)) {
+            CleanMatBuffer(i, BUFFER_RESMATTEXCOORDGEN);
+        }
+
+        if (IsMatBufferDirty(i, BUFFER_RESTEV)) {
+            CleanMatBuffer(i, BUFFER_RESTEV);
         }
 
         if (GetAnmObjTexPat() != NULL && GetAnmObjTexPat()->TestExistence(i)) {
@@ -1025,6 +1080,7 @@ bool ScnMdl::SetAnmObj(AnmObj* pObj, AnmObjType type) {
 
                 mpAnmObjShp = pShp;
                 pShp->G3dProc(G3DPROC_ATTACH_PARENT, 0, this);
+                mReplacement.flag &= ~DrawResMdlReplacement::FLAG_IGNORE_VTX;
 
                 return true;
             } else {
@@ -1050,6 +1106,11 @@ bool ScnMdl::RemoveAnmObj(AnmObj* pObj) {
     if (pObj == mpAnmObjShp) {
         mpAnmObjShp->G3dProc(G3DPROC_DETACH_PARENT, 0, this);
         mpAnmObjShp = NULL;
+
+        if (!(mReplacementFlag & REPLACEMENTFLAG_KEEP_VTX)) {
+            mReplacement.flag |= DrawResMdlReplacement::FLAG_IGNORE_VTX;
+            return true;
+        }
 
         if (mReplacement.vtxPosTable != NULL) {
             u32 vtxPosNum = GetResMdl().GetResVtxPosNumEntries();
@@ -1123,14 +1184,16 @@ ScnMdl::ScnMdl(MEMAllocator* pAllocator, ResMdl mdl,
                math::MTX34* pWorldMtxArray, u32* pWorldMtxAttribArray,
                math::MTX34* pViewPosMtxArray, math::MTX33* pViewNrmMtxArray,
                math::MTX34* pViewTexMtxArray, int numView, int numViewMtx,
-               DrawResMdlReplacement* pReplacement, u32* pMatBufferDirtyFlag)
+               DrawResMdlReplacement* pReplacement, u32* pMatBufferDirtyFlag,
+               u32 replacementFlag)
     : ScnMdlSimple(pAllocator, mdl, pWorldMtxArray, pWorldMtxAttribArray,
                    pViewPosMtxArray, pViewNrmMtxArray, pViewTexMtxArray,
                    numView, numViewMtx),
       mpAnmObjShp(NULL),
       mFlagVisBuffer(NULL),
       mpMatBufferDirtyFlag(pMatBufferDirtyFlag),
-      mReplacement(*pReplacement) {}
+      mReplacement(*pReplacement),
+      mReplacementFlag(replacementFlag) {}
 
 ScnMdl::~ScnMdl() {
     if (mpAnmObjShp != NULL) {

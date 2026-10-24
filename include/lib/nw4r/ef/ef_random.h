@@ -30,6 +30,26 @@ private:
     }
 };
 
+inline u32 RANDOM_INIT(u16 objectSeed, u16 keySeed, u16 keyIdx, u32 keyDiv) {
+    union {
+        u32 whole;
+        u8 part[4];
+    } result;
+
+    result.whole = objectSeed * 0x3F81F635UL + keySeed * 0x30A74193UL +
+                   keyIdx * 0x371097E7UL + keyDiv * 0x7B929UL + 0x4BF53UL;
+
+    result.part[2] ^= result.part[3];
+    result.part[1] ^= result.part[2];
+    result.part[0] ^= result.part[1];
+
+    return result.whole;
+}
+
+inline u32 RANDOM_NEXT(u32 prev) {
+    return prev * 0x343FDUL + 0x269EC3UL;
+}
+
 } // namespace ef
 } // namespace nw4r
 

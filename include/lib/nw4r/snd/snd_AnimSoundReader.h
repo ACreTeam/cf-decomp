@@ -1,11 +1,9 @@
-#include "nw4r/snd/snd_Util.h"
-#include "nw4r/ut/ut_binaryFileFormat.h"
+#include <nw4r/snd/snd_Util.h>
+#include <nw4r/ut/ut_binaryFileFormat.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-// Type and name revealed by BBA
 struct AnimEventFrameInfo {
     int field_0x00; // at 0x00
     int field_0x04; // at 0x04
@@ -15,8 +13,8 @@ struct AnimEventFrameInfo {
 };
 
 struct AnimEvent {
-    ulong flags;                                       // at 0x00
-    ulong soundId;                                     // at 0x04
+    u32 flags;                                       // at 0x00
+    u32 soundId;                                     // at 0x04
     detail::Util::DataRef<const char> soundLabelRef; // at 0x08
     u8 volume;                                       // at 0x10
     u8 field_0x11;                                   // at 0x11
@@ -33,7 +31,7 @@ struct AnimEvent {
         return Util::GetDataRefAddress0(soundLabelRef, this);
     }
 
-    bool GetVarNo(ulong *var) const {
+    bool GetVarNo(u32 *var) const {
         if (flags & 2) {
             *var = varNo;
             return true;
@@ -43,28 +41,27 @@ struct AnimEvent {
 
     bool MatchesDirection(int playDirection) const {
         bool ret = 0;
-        ulong config = field_0x11;
-        if ((config == 0 || (playDirection == 0 && config == 1) || (playDirection == 1 && config == 2))) {
+        u32 config = field_0x11;
+        if ((config == 0 || (playDirection == 0 && config == 1) ||
+             (playDirection == 1 && config == 2))) {
             ret = true;
         }
         return ret;
     }
 };
 
-// Name from Inazuma, BBA
 struct AnimEventRef {
     AnimEventFrameInfo mInfo;       // at 0x00
     Util::DataRef<AnimEvent> event; // at 0x0C
 };
 
-// Names unknown
 struct AnimSoundFile {
-    static ulong const SIGNATURE_FILE = NW4R_FOUR_BYTE('R', 'A', 'S', 'D');
+    static u32 const SIGNATURE_FILE = NW4R_FOUR_BYTE('R', 'A', 'S', 'D');
     static int const FILE_VERSION = NW4R_FILE_VERSION(1, 0);
 
     struct Header {
         ut::BinaryFileHeader fileHeader; // size 0x10, offset 0x00
-        ulong blockOffset;                 // at 0x10
+        u32 blockOffset;                 // at 0x10
     };
 
     struct EventTable {
@@ -73,39 +70,37 @@ struct AnimSoundFile {
 
     struct Block {
         ut::BinaryBlockHeader blockHeader;    // at 0x00
-        ulong duration;                         // at 0x08
+        u32 duration;                         // at 0x08
         Util::DataRef<EventTable> eventTable; // at 0x0C
     };
 };
 
-// Name from Inazuma
 class AnimSoundFileReader {
-public:
+  public:
     AnimSoundFileReader();
     bool Setup(const void *buf);
     void Shutdown();
-    ulong GetEventCount() const;
+    u32 GetEventCount() const;
 
     const AnimSoundFile::EventTable *GetEventTable() const;
-    const AnimEventRef *GetEventRef(ulong id) const;
+    const AnimEventRef *GetEventRef(u32 id) const;
     const AnimEvent *GetEvent(const AnimEventRef *ref) const;
 
     bool IsValid() const {
         return mpHeader != NULL;
     }
 
-    ulong GetAnimDuration() const {
+    u32 GetAnimDuration() const {
         if (!IsValid()) {
             return 0;
         }
         return mpBlock->duration;
     }
 
-private:
+  private:
     const AnimSoundFile::Header *mpHeader; // at 0x00
     const AnimSoundFile::Block *mpBlock;   // at 0x04
 };
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

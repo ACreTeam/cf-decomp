@@ -73,14 +73,11 @@ public:
                                GXTevColorChan g, GXTevColorChan b,
                                GXTevColorChan a);
 
-    // 80236A40
     bool GXGetTevSwapMode(GXTevStageID stage, GXTevSwapSel* pRasSel,
                           GXTevSwapSel* pTexSel) const;
-    // 80236AD0
     bool GXGetTevAlphaIn(GXTevStageID stage, GXTevAlphaArg* pA,
                          GXTevAlphaArg* pB, GXTevAlphaArg* pC,
                          GXTevAlphaArg* pD) const;
-    // 80236B80
     bool GXGetTevAlphaOp(GXTevStageID stage, GXTevOp* pOp, GXTevBias* pBias,
                          GXTevScale* pScale, GXBool* pClamp,
                          GXTevRegID* pOutReg) const;
@@ -88,15 +85,12 @@ public:
     bool GXGetTevOrder(GXTevStageID stage, GXTexCoordID* pCoord,
                        GXTexMapID* pMap, GXChannelID* pChannel) const;
 
-    // 80236D28
     bool GXGetTevColorIn(GXTevStageID stage, GXTevColorArg* pA,
                          GXTevColorArg* pB, GXTevColorArg* pC,
                          GXTevColorArg* pD) const;
-    // 80236DD8
     bool GXGetTevColorOp(GXTevStageID stage, GXTevOp* pOp, GXTevBias* pBias,
                          GXTevScale* pScale, GXBool* pClamp,
                          GXTevRegID* pOutReg) const;
-    // 80236EB4
     bool GXGetTevIndirect(GXTevStageID stage, GXIndTexStageID* pIndStage,
                           GXIndTexFormat* pFormat, GXIndTexBiasSel* pBias,
                           GXIndTexMtxID* pMtx, GXIndTexWrap* pWrapS,

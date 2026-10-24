@@ -5,9 +5,9 @@
 namespace nw4r {
 namespace ef {
 
-void EmitterFormDisc::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                               int count, u32 flags, f32* pParams, u16 life,
-                               f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormDisc::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                               int count, u32 flags, f32 *pParams, u16 life,
+                               f32 lifeRnd, const math::MTX34 *pSpace) {
 
     if (count < 1) {
         return;
@@ -58,8 +58,7 @@ void EmitterFormDisc::Emission(Emitter* pEmitter, ParticleManager* pManager,
         f32 inner = pParams[1] / 100.0f;
 
         if (flags & EmitterDesc::EMIT_FLAG_24) {
-            dist = dist + inner * inner * (1.0f - dist);
-            dist = std::sqrtf(dist);
+            dist = math::FSqrt(dist + inner * inner * (1.0f - dist));
         } else {
             dist = dist + inner * (1.0f - dist);
         }
@@ -68,8 +67,8 @@ void EmitterFormDisc::Emission(Emitter* pEmitter, ParticleManager* pManager,
             angle = (pParams[3] - pParams[2]) * pEmitter->mRandom.RandFloat();
         }
 
-        f32 sa = std::sinf(angleOffset + angle);
-        f32 ca = std::cosf(angleOffset + angle);
+        f32 sa, ca;
+        PSSinCosRad(&sa, &ca, angleOffset + angle);
 
         math::VEC3 fromYAxis(sa, 0.0f, -ca);
 
@@ -87,9 +86,9 @@ void EmitterFormDisc::Emission(Emitter* pEmitter, ParticleManager* pManager,
         } else {
             f32 cone = dist * pEmitter->mParameter.mVelDiffusionEmitterNormal;
 
-            normal.x = std::sinf(cone) * sa;
-            normal.y = std::cosf(cone);
-            normal.z = std::sinf(cone) * -ca;
+            _PSSinCosRad(&normal.x, cone);
+            normal.z = -ca * normal.x;
+            normal.x *= sa;
         }
 
         CalcVelocity(&vel, pEmitter, pos, normal, fromOrigin, fromYAxis);

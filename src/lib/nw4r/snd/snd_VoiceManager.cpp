@@ -1,36 +1,47 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_VoiceManager.h>
 
-#include <revolution/ax.h>
+#include <new>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_DisposeCallbackManager.h>
+#include <nw4r/snd/snd_Voice.h>
+
+#include <nw4r/ut/ut_Lock.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-VoiceManager& VoiceManager::GetInstance() {
+VoiceManager &VoiceManager::GetInstance() {
     static VoiceManager instance;
+
     return instance;
 }
 
-VoiceManager::VoiceManager() : mInitialized(false) {}
-
-u32 VoiceManager::GetRequiredMemSize() {
-    return AXGetMaxVoices() * sizeof(Voice);
+VoiceManager::VoiceManager() : mInitialized(false) {
 }
 
-void VoiceManager::Setup(void* pBuffer, u32 size) {
+u32 VoiceManager::GetRequiredMemSize(int voiceCount) {
+    return sizeof(Voice) * voiceCount;
+}
+
+void VoiceManager::Setup(void *mem, u32 memSize) {
     if (mInitialized) {
         return;
     }
 
-    u32 voices = size / sizeof(Voice);
-    u8* pPtr = static_cast<u8*>(pBuffer);
+    u32 voiceCount = memSize / sizeof(Voice);
+    byte_t *ptr = static_cast<byte_t *>(mem);
 
-    for (u32 i = 0; i < voices; i++) {
-        Voice* pVoice = new (pPtr) Voice();
-        mFreeVoiceList.PushBack(pVoice);
-        pPtr += sizeof(Voice);
+    for (int i = 0; i < voiceCount; i++) {
+        mFreeVoiceList.PushBack(new (ptr) Voice);
+
+        ptr += sizeof(Voice);
     }
+
+    NW4RAssert_Line(64, ptr <= reinterpret_cast<u8 *>(mem) + memSize);
 
     mInitialized = true;
 }
@@ -43,9 +54,10 @@ void VoiceManager::Shutdown() {
     StopAllVoices();
 
     while (!mFreeVoiceList.IsEmpty()) {
-        Voice& rVoice = mFreeVoiceList.GetFront();
+        Voice &voice = mFreeVoiceList.GetFront();
         mFreeVoiceList.PopFront();
-        rVoice.~Voice();
+
+        voice.~Voice();
     }
 
     mInitialized = false;
@@ -55,101 +67,121 @@ void VoiceManager::StopAllVoices() {
     ut::AutoInterruptLock lock;
 
     while (!mPrioVoiceList.IsEmpty()) {
-        Voice& rVoice = mPrioVoiceList.GetFront();
+        Voice &voice = mPrioVoiceList.GetFront();
 
-        rVoice.Stop();
+        voice.Stop();
 
-        if (rVoice.mCallback != NULL) {
-            rVoice.mCallback(&rVoice, Voice::CALLBACK_STATUS_CANCEL,
-                             rVoice.mCallbackArg);
+        if (voice.mCallback) {
+            (*voice.mCallback)(&voice, Voice::CALLBACK_STATUS_CANCEL,
+                               voice.mCallbackData);
         }
 
-        rVoice.Free();
+        voice.Free();
     }
 }
 
-Voice* VoiceManager::AllocVoice(int channels, int voices, int priority,
-                                Voice::VoiceCallback pCallback,
-                                void* pCallbackArg) {
-
+Voice *VoiceManager::AllocVoice(int voiceChannelCount, int voiceOutCount,
+                                int priority, Voice::Callback *callback,
+                                void *callbackData) {
     ut::AutoInterruptLock lock;
 
-    if (mFreeVoiceList.IsEmpty() && DropLowestPriorityVoice(priority) == 0) {
-        return NULL;
+    if (mFreeVoiceList.IsEmpty() && !DropLowestPriorityVoice(priority)) {
+        return nullptr;
     }
 
-    Voice& rVoice = mFreeVoiceList.GetFront();
-    if (!rVoice.Acquire(channels, voices, priority, pCallback, pCallbackArg)) {
-        return NULL;
+    Voice &voice = mFreeVoiceList.GetFront();
+    if (!voice.Acquire(voiceChannelCount, voiceOutCount, priority, callback,
+                       callbackData)) {
+        NW4RWarningMessage_Line(128, "Voice Acquisition failed!\n");
+        return nullptr;
     }
 
-    rVoice.mPriority = priority & Voice::PRIORITY_MAX;
-    AppendVoiceList(&rVoice);
-    UpdateEachVoicePriority(mPrioVoiceList.GetIteratorFromPointer(&rVoice),
+    voice.mPriority = priority & Voice::PRIORITY_MAX;
+    AppendVoiceList(&voice);
+    UpdateEachVoicePriority(mPrioVoiceList.GetIteratorFromPointer(&voice),
                             mPrioVoiceList.GetEndIter());
-    DisposeCallbackManager::GetInstance().RegisterDisposeCallback(&rVoice);
+    DisposeCallbackManager::GetInstance().RegisterDisposeCallback(&voice);
 
-    return &rVoice;
+    return &voice;
 }
 
-void VoiceManager::FreeVoice(Voice* pVoice) {
+void VoiceManager::FreeVoice(Voice *voice) {
+    NW4RAssertPointerNonnull_Line(148, voice);
+
     ut::AutoInterruptLock lock;
 
-    DisposeCallbackManager::GetInstance().UnregisterDisposeCallback(pVoice);
-    RemoveVoiceList(pVoice);
+    DisposeCallbackManager::GetInstance().UnregisterDisposeCallback(voice);
+    RemoveVoiceList(voice);
 }
 
 void VoiceManager::UpdateAllVoices() {
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mPrioVoiceList, { it->StopFinished(); })
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mPrioVoiceList, { it->Calc(); })
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mPrioVoiceList) {
+        __decltype__(itr) curItr = itr++;
+
+        curItr->StopFinished();
+    }
+
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mPrioVoiceList) {
+        __decltype__(itr) curItr = itr++;
+
+        curItr->Calc();
+    }
 
     ut::AutoInterruptLock lock;
 
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mPrioVoiceList, { it->Update(); })
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mPrioVoiceList) {
+        __decltype__(itr) curItr = itr++;
+
+        curItr->Update();
+    }
 }
 
 void VoiceManager::NotifyVoiceUpdate() {
     ut::AutoInterruptLock lock;
 
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mPrioVoiceList, { it->ResetDelta(); })
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mPrioVoiceList) {
+        __decltype__(itr) curItr = itr++;
+
+        curItr->ResetDelta();
+    }
 }
 
-void VoiceManager::AppendVoiceList(Voice* pVoice) {
+void VoiceManager::AppendVoiceList(Voice *voice) {
     ut::AutoInterruptLock lock;
 
-    mFreeVoiceList.Erase(pVoice);
+    mFreeVoiceList.Erase(voice);
 
-    VoiceList::RevIterator it = mPrioVoiceList.GetEndReverseIter();
+    Voice::LinkList::RevIterator it = mPrioVoiceList.GetEndReverseIter();
     for (; it != mPrioVoiceList.GetBeginReverseIter(); ++it) {
-        if (it->GetPriority() <= pVoice->GetPriority()) {
+        if (it->GetPriority() <= voice->GetPriority()) {
             break;
         }
     }
 
-    mPrioVoiceList.Insert(it.GetBase(), pVoice);
+    mPrioVoiceList.Insert(it.GetBase(), voice);
 }
 
-void VoiceManager::RemoveVoiceList(Voice* pVoice) {
+void VoiceManager::RemoveVoiceList(Voice *voice) {
     ut::AutoInterruptLock lock;
 
-    mPrioVoiceList.Erase(pVoice);
-    mFreeVoiceList.PushBack(pVoice);
+    mPrioVoiceList.Erase(voice);
+    mFreeVoiceList.PushBack(voice);
 }
 
-void VoiceManager::ChangeVoicePriority(Voice* pVoice) {
+void VoiceManager::ChangeVoicePriority(Voice *voice) {
     ut::AutoInterruptLock lock;
 
-    RemoveVoiceList(pVoice);
-    AppendVoiceList(pVoice);
+    RemoveVoiceList(voice);
+    AppendVoiceList(voice);
 
-    UpdateEachVoicePriority(mPrioVoiceList.GetIteratorFromPointer(pVoice),
+    UpdateEachVoicePriority(mPrioVoiceList.GetIteratorFromPointer(voice),
                             mPrioVoiceList.GetEndIter());
 }
 
-void VoiceManager::UpdateEachVoicePriority(const VoiceList::Iterator& rBegin,
-                                           const VoiceList::Iterator& rEnd) {
-
-    for (VoiceList::Iterator it = rBegin; it != rEnd; ++it) {
+void VoiceManager::UpdateEachVoicePriority(
+    Voice::LinkList::Iterator const &beginItr,
+    Voice::LinkList::Iterator const &endItr) {
+    for (Voice::LinkList::Iterator it = beginItr; it != endItr; ++it) {
         if (it->GetPriority() <= 1) {
             return;
         }
@@ -163,37 +195,39 @@ void VoiceManager::UpdateEachVoicePriority(const VoiceList::Iterator& rBegin,
 void VoiceManager::UpdateAllVoicesSync(u32 syncFlag) {
     ut::AutoInterruptLock lock;
 
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mPrioVoiceList, {
-        if (it->mIsActive) {
-            it->mSyncFlag |= syncFlag;
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mPrioVoiceList) {
+        __decltype__(itr) curItr = itr++;
+
+        if (curItr->mActiveFlag) {
+            curItr->mSyncFlag |= syncFlag;
         }
-    })
+    }
 }
 
 int VoiceManager::DropLowestPriorityVoice(int priority) {
-    int dropped = 0;
+    int dropCount = 0;
 
     if (mFreeVoiceList.IsEmpty()) {
-        Voice& rVoice = mPrioVoiceList.GetFront();
+        Voice &dropVoice = mPrioVoiceList.GetFront();
 
-        if (rVoice.GetPriority() > priority) {
+        if (dropVoice.GetPriority() > priority) {
             return 0;
         }
 
-        dropped = rVoice.GetAxVoiceCount();
+        dropCount = dropVoice.GetPhysicalVoiceCount();
 
-        rVoice.Stop();
-        rVoice.Free();
+        dropVoice.Stop();
+        dropVoice.Free();
 
-        if (rVoice.mCallback != NULL) {
-            rVoice.mCallback(&rVoice, Voice::CALLBACK_STATUS_DROP_VOICE,
-                             rVoice.mCallbackArg);
+        if (dropVoice.mCallback) {
+            (*dropVoice.mCallback)(&dropVoice,
+                                   Voice::CALLBACK_STATUS_DROP_VOICE,
+                                   dropVoice.mCallbackData);
         }
     }
 
-    return dropped;
+    return dropCount;
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

@@ -7,7 +7,6 @@
 namespace nw4r {
 namespace ut {
 
-// Forward declarations
 struct BinaryFileHeader;
 
 class ResFont : public detail::ResFontBase {
@@ -16,7 +15,7 @@ public:
     virtual ~ResFont(); // at 0x8
 
     bool SetResource(void* pBuffer);
-    void* RemoveResource(); // 8022C654: RemoveResourceBuffer()
+    void* RemoveResource();
 
 private:
     static FontInformation* Rebuild(BinaryFileHeader* pHeader);
@@ -30,7 +29,6 @@ private:
     static const ulong SIGNATURE_CHARWIDTH = 'CWDH';
     static const ulong SIGNATURE_CHARMAP = 'CMAP';
 
-    // TODO: Which block is this?
     static const ulong SIGNATURE_GLGR = 'GLGR';
 };
 

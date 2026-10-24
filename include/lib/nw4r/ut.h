@@ -1,6 +1,8 @@
 #ifndef NW4R_PUBLIC_UT_H
 #define NW4R_PUBLIC_UT_H
 
+#include <nw4r/ut/ut_ArchiveFont.h>
+#include <nw4r/ut/ut_ArchiveFontBase.h>
 #include <nw4r/ut/ut_CharStrmReader.h>
 #include <nw4r/ut/ut_CharWriter.h>
 #include <nw4r/ut/ut_Color.h>

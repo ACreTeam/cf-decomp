@@ -5,9 +5,9 @@
 namespace nw4r {
 namespace ef {
 
-void EmitterFormLine::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                               int count, u32 flags, f32* pParams, u16 life,
-                               f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormLine::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                               int count, u32 flags, f32 *pParams, u16 life,
+                               f32 lifeRnd, const math::MTX34 *pSpace) {
 
     if (count < 1) {
         return;
@@ -30,14 +30,10 @@ void EmitterFormLine::Emission(Emitter* pEmitter, ParticleManager* pManager,
 
         fpos *= pParams[0];
 
-        f32 sx = std::sinf(pParams[1]);
-        f32 cx = std::cosf(pParams[1]);
-
-        f32 sy = std::sinf(pParams[2]);
-        f32 cy = std::cosf(pParams[2]);
-
-        f32 sz = std::sinf(pParams[3]);
-        f32 cz = std::cosf(pParams[3]);
+        f32 sx, cx, sy, cy, sz, cz;
+        PSSinCosRad(&sx, &cx, pParams[1]);
+        PSSinCosRad(&sy, &cy, pParams[2]);
+        PSSinCosRad(&sz, &cz, pParams[3]);
 
         math::VEC3 pos;
         pos.x = (cx * cz * sy + sx * sz) * fpos;

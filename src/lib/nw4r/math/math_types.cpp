@@ -274,35 +274,137 @@ MTX34* MTX34RotAxisFIdx(MTX34* pMtx, const VEC3* pAxis, f32 fidx) {
     return pMtx;
 }
 
-MTX34* MTX34RotXYZFIdx(MTX34* pMtx, f32 fx, f32 fy, f32 fz) {
-    f32 sx, cx;
-    SinCosFIdx(&sx, &cx, fx);
-    f32 sy, cy;
-    SinCosFIdx(&sy, &cy, fy);
-    f32 sz, cz;
-    SinCosFIdx(&sz, &cz, fz);
+MTX34* MTX34RotXYZFIdx(register MTX34* pOut, register f32 fIdxX,
+                       register f32 fIdxY, register f32 fIdxZ) {
+    register __vec2x32float__ sincosx, sincosy, sincosz;
+    register __vec2x32float__ sincosxneg, mcosxsinx, scx_sinz, scz_cosy, res;
+    register f32 c_zero;
+    register __vec2x32float__ mf11f21, f22mf12;
 
-    pMtx->_20 = -sy;
-    pMtx->_00 = cz * cy;
-    pMtx->_10 = sz * cy;
-    pMtx->_21 = cy * sx;
-    pMtx->_22 = cy * cx;
+    // The angle setup is its own scope: the DWARF has a second c_zero there (a
+    // __vec2x32float__ beside the outer f32 one).
+    {
+        register u32 idxXY;
+        register u32 idxZ;
+        register const f32* pTblBase = &detail::gSinCosTbl[0].sin_val;
+        register f32* pTbl;
+        register f32* pTblY;
+        register __vec2x32float__ c_idxmax = 65536.0f;
+        register __vec2x32float__ c_idxmaxneg;
+        register __vec2x32float__ c_zero;
+        register __vec2x32float__ abs_fidxXY;
+        register f32 abs_fidxZ;
+        register __vec2x32float__ fidxXY;
+        register __vec2x32float__ r;
+        register __vec2x32float__ scval, scdel;
+        register f32 work;
+        register f32* pTmp;
+        f32 tmp;
 
-    f32 cx_sz = cx * sz;
-    f32 sx_cz = sx * cz;
-    pMtx->_01 = sx_cz * sy - cx_sz;
-    pMtx->_12 = cx_sz * sy - sx_cz;
+        pTmp = &tmp;
 
-    f32 sx_sz = sx * sz;
-    f32 cx_cz = cx * cz;
-    pMtx->_02 = cx_cz * sy + sx_sz;
-    pMtx->_11 = sx_sz * sy + cx_cz;
+        // clang-format off
+        asm {
+            ps_merge00 fidxXY, fIdxX, fIdxY
+            ps_merge00 c_idxmax, c_idxmax, c_idxmax
+            ps_abs abs_fidxXY, fidxXY
+            ps_neg c_idxmaxneg, c_idxmax
+            ps_sub c_zero, c_idxmax, c_idxmax
+            ps_cmpu0 cr0, abs_fidxXY, c_idxmax
+            ble x_done
+        x_loop:
+            ps_sum0 abs_fidxXY, abs_fidxXY, abs_fidxXY, c_idxmaxneg
+            ps_cmpu0 cr0, abs_fidxXY, c_idxmax
+            bgt x_loop
+        x_done:
+            ps_cmpu1 cr0, abs_fidxXY, c_idxmax
+            ble y_done
+            ps_merge10 abs_fidxXY, abs_fidxXY, abs_fidxXY
+        y_loop:
+            ps_sum0 abs_fidxXY, abs_fidxXY, abs_fidxXY, c_idxmaxneg
+            ps_cmpu0 cr0, abs_fidxXY, c_idxmax
+            bgt y_loop
+            ps_merge10 abs_fidxXY, abs_fidxXY, abs_fidxXY
+        y_done:
+            psq_st abs_fidxXY, 0(pTmp), 0, 3
+            psq_l r, 0(pTmp), 0, 3
+            fabs abs_fidxZ, fIdxZ
+            lwz idxXY, 0(pTmp)
+            fcmpu cr0, abs_fidxZ, c_idxmax
+            ble z_done
+        z_loop:
+            fsubs abs_fidxZ, abs_fidxZ, c_idxmax
+            fcmpu cr0, abs_fidxZ, c_idxmax
+            bgt z_loop
+        z_done:
+            psq_st abs_fidxZ, 0(pTmp), 1, 3
+            rlwinm pTbl, idxXY, 20, 20, 27
+            add pTbl, pTblBase, pTbl
+            ps_sub r, abs_fidxXY, r
+            psq_l scval, 0(pTbl), 0, 0
+            rlwinm pTblY, idxXY, 4, 20, 27
+            psq_l scdel, 8(pTbl), 0, 0
+            ps_cmpu0 cr0, fidxXY, c_zero
+            add pTblY, pTblBase, pTblY
+            ps_madds0 sincosx, scdel, r, scval
+            psq_l scval, 0(pTblY), 0, 0
+            psq_l scdel, 8(pTblY), 0, 0
+            lhz idxZ, 0(pTmp)
+            bge x_positive
+            ps_neg work, sincosx
+            ps_merge01 sincosx, work, sincosx
+        x_positive:
+            ps_madds1 sincosy, scdel, r, scval
+            psq_l r, 0(pTmp), 1, 3
+            rlwinm idxZ, idxZ, 4, 20, 27
+            ps_cmpu1 cr0, fidxXY, c_zero
+            add pTbl, pTblBase, idxZ
+            fsubs r, abs_fidxZ, r
+            psq_l scval, 0(pTbl), 0, 0
+            psq_l scdel, 8(pTbl), 0, 0
+            bge y_positive
+            ps_neg work, sincosy
+            ps_merge01 sincosy, work, sincosy
+        y_positive:
+            fcmpu cr0, fIdxZ, c_zero
+            ps_madds0 sincosz, scdel, r, scval
+            bge z_positive
+            ps_neg work, sincosz
+            ps_merge01 sincosz, work, sincosz
+        z_positive:
+        }
+        // clang-format on
+    }
 
-    pMtx->_03 = 0.0f;
-    pMtx->_13 = 0.0f;
-    pMtx->_23 = 0.0f;
+    // clang-format off
+    asm {
+        ps_neg sincosxneg, sincosx
+        ps_muls1 scz_cosy, sincosz, sincosy
+        ps_sub c_zero, sincosx, sincosx
+        ps_merge10 mcosxsinx, sincosxneg, sincosx
+        ps_merge10 res, scz_cosy, scz_cosy
+        ps_muls0 scx_sinz, sincosx, sincosz
+        psq_st c_zero, 44(pOut), 1, 0
+        ps_muls0 mf11f21, mcosxsinx, sincosz
+        psq_st res, 0(pOut), 1, 0
+        ps_muls1 res, sincosx, sincosz
+        ps_muls1 f22mf12, mcosxsinx, sincosz
+        ps_madds0 res, res, sincosy, mf11f21
+        ps_neg f22mf12, f22mf12
+        psq_st res, 4(pOut), 0, 0
+        ps_merge00 res, c_zero, scz_cosy
+        psq_st res, 12(pOut), 0, 0
+        ps_madds0 res, scx_sinz, sincosy, f22mf12
+        psq_st res, 20(pOut), 0, 0
+        ps_neg res, sincosy
+        ps_merge00 res, c_zero, res
+        psq_st res, 28(pOut), 0, 0
+        ps_muls1 res, sincosx, sincosy
+        psq_st res, 36(pOut), 0, 0
+    }
+    // clang-format on
 
-    return pMtx;
+    return pOut;
 }
 
 VEC3* VEC3TransformNormal(VEC3* pOut, const MTX34* pMtx, const VEC3* pVec) {

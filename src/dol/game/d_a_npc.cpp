@@ -3049,8 +3049,8 @@ BOOL dAcNpc_c::model_c::setFaceTex(dAcNpc_c *npc, ulong idx, const char *texName
         return FALSE;
     }
     npc->mFace.releaseTex(npc, idx);
-    mat.ReleaseTexByName(slotName, strlen(slotName));
-    return mat.BindTexByName(tex, slotName) != 0;
+    mat.ReleaseTex(slotName, strlen(slotName));
+    return mat.ForceBindTex(tex, slotName) != 0;
 }
 
 void dAcNpc_c::model_c::setFrame(f32 frame, BOOL play) {

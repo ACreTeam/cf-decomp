@@ -50,7 +50,7 @@ int daRmobjTheater_c::execute() {
     nw4r::g3d::ResMdl mdl = file.GetResMdl(0);
     nw4r::g3d::ResMatTevColor tev =
         mdl.GetResMat("m_light").GetResMatTevColor();
-    tev.GXSetTevKColor(GX_KCOLOR1,
+    tev.GXSetTevColor(GX_TEVREG0,
                        mLightOn
                            ? mColor(0, 0, 0, dARmobjTheater::l_hio.mAlphaOn)
                            : mColor(0, 0, 0, dARmobjTheater::l_hio.mAlphaOff));

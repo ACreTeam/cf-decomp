@@ -11,7 +11,7 @@ static EmitterFormTorus gEmitterFormTorus;
 static EmitterFormCube gEmitterFormCube;
 static EmitterFormPoint gEmitterFormPoint;
 
-EmitterForm* EmitFormBuilder::Create(EmitFormType type) {
+EmitterForm *EmitFormBuilder::Create(EmitFormType type) {
     switch (type) {
     case EMITFORMTYPE_DISC: {
         return &gEmitterFormDisc;

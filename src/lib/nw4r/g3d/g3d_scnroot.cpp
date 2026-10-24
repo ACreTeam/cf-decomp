@@ -461,6 +461,11 @@ void ScnObjGather::DrawXlu(ResMdlDrawMode* pForceMode) {
     }
 }
 
+ScnObjGather::CheckStatus ScnObjGather::CheckScnObj(ScnObj* pObj) {
+#pragma unused(pObj)
+    return CHECKSTATUS_GATHER_SCNOBJ;
+}
+
 ScnObjGather::ScnObjGather(ScnObj** ppBufOpa, ScnObj** ppBufXlu, u32 capacity)
     : mpArrayOpa(ppBufOpa),
       mpArrayXlu(ppBufXlu),

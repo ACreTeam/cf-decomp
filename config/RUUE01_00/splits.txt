@@ -2776,6 +2776,9 @@ lib/nw4r/ut/ut_DvdFileStream.cpp:
 lib/nw4r/ut/ut_DvdLockedFileStream.cpp:
 	.text       start:0x8022B574 end:0x8022B934
 	.ctors      start:0x8046586C end:0x80465870
+	.data       start:0x80521290 end:0x805212F8
+	.bss        start:0x8065F660 end:0x8065F678
+	.sbss       start:0x8074EE70 end:0x8074EE88
 
 lib/nw4r/ut/ut_LockedCache.cpp:
 	.text       start:0x8022B934 end:0x8022BAE0
@@ -2791,15 +2794,20 @@ lib/nw4r/ut/ut_RomFont.cpp:
 
 lib/nw4r/ut/ut_ResFontBase.cpp:
 	.text       start:0x8022BBC8 end:0x8022C47C
+	.data       start:0x80521328 end:0x805213F0
 
 lib/nw4r/ut/ut_ResFont.cpp:
 	.text       start:0x8022C47C end:0x8022C784
+	.data       start:0x805213F0 end:0x80521450
 
 lib/nw4r/ut/ut_ArchiveFontBase.cpp:
 	.text       start:0x8022C784 end:0x8022D62C
+	.data       start:0x80521450 end:0x805214B0
+	.sbss2      start:0x807539F8 end:0x80753A00
 
 lib/nw4r/ut/ut_ArchiveFont.cpp:
 	.text       start:0x8022D62C end:0x8022E9D8
+	.data       start:0x805214B0 end:0x80521540
 
 lib/nw4r/ut/ut_CharWriter.cpp:
 	.text       start:0x8022E9D8 end:0x8023021C
@@ -2810,6 +2818,9 @@ lib/nw4r/ut/ut_CharWriter.cpp:
 lib/nw4r/ut/ut_TextWriterBase.cpp:
 	.text       start:0x8023021C end:0x802320A0
 	.ctors      start:0x80465874 end:0x80465878
+	.bss        start:0x8065F6B8 end:0x8065F6D0
+	.sbss       start:0x8074EE90 end:0x8074EEA0
+	.sdata2     start:0x80751DC0 end:0x80751DD8
 
 lib/nw4r/math/math_arithmetic.cpp:
 	.text       start:0x802320A0 end:0x802320C4
@@ -2817,9 +2828,12 @@ lib/nw4r/math/math_arithmetic.cpp:
 
 lib/nw4r/math/math_triangular.cpp:
 	.text       start:0x802320C4 end:0x802321F0
+	.rodata     start:0x804841C0 end:0x804851D0
+	.sdata2     start:0x80751DE0 end:0x80751DE8
 
 lib/nw4r/math/math_types.cpp:
 	.text       start:0x802321F0 end:0x802325A4
+	.sdata2     start:0x80751DE8 end:0x80751E00
 
 lib/nw4r/math/math_geometry.cpp:
 	.text       start:0x802325A4 end:0x802331EC
@@ -2833,6 +2847,7 @@ lib/nw4r/g3d/res/g3d_resdict.cpp:
 
 lib/nw4r/g3d/res/g3d_resfile.cpp:
 	.text       start:0x802335E4 end:0x80235188
+	.data       start:0x80521540 end:0x805216A0
 
 lib/nw4r/g3d/res/g3d_resmdl.cpp:
 	.text       start:0x80235188 end:0x80236364
@@ -2842,9 +2857,11 @@ lib/nw4r/g3d/res/g3d_resshp.cpp:
 
 lib/nw4r/g3d/res/g3d_restev.cpp:
 	.text       start:0x80236990 end:0x802370B4
+	.rodata     start:0x804851D0 end:0x80485230
 
 lib/nw4r/g3d/res/g3d_resmat.cpp:
 	.text       start:0x802370B4 end:0x802391B0
+	.sdata2     start:0x80751E10 end:0x80751E48
 
 lib/nw4r/g3d/res/g3d_resvtx.cpp:
 	.text       start:0x802391B0 end:0x80239570
@@ -2854,6 +2871,7 @@ lib/nw4r/g3d/res/g3d_restex.cpp:
 
 lib/nw4r/g3d/res/g3d_resnode.cpp:
 	.text       start:0x80239724 end:0x80239A28
+	.sdata2     start:0x80751E48 end:0x80751E58
 
 lib/nw4r/g3d/res/g3d_resanm.cpp:
 	.text       start:0x80239A28 end:0x80239C54
@@ -2889,27 +2907,48 @@ lib/nw4r/g3d/g3d_transform.cpp:
 
 lib/nw4r/g3d/g3d_anmvis.cpp:
 	.text       start:0x8023C7D4 end:0x8023CEF4
+	.rodata     start:0x80485250 end:0x80485278
+	.data       start:0x805216A0 end:0x80521728
+	.sdata      start:0x8074CA00 end:0x8074CA08
+	.sdata2     start:0x80751EC8 end:0x80751ED8
 
 lib/nw4r/g3d/g3d_anmclr.cpp:
 	.text       start:0x8023CEF4 end:0x8023E750
+	.rodata     start:0x80485278 end:0x804852E0
+	.data       start:0x80521728 end:0x80521848
+	.sdata2     start:0x80751ED8 end:0x80751EE8
 
 lib/nw4r/g3d/g3d_anmtexpat.cpp:
 	.text       start:0x8023E750 end:0x8023FC64
+	.rodata     start:0x804852E0 end:0x80485348
+	.data       start:0x80521848 end:0x80521968
+	.sdata2     start:0x80751EE8 end:0x80751EF8
 
 lib/nw4r/g3d/g3d_anmtexsrt.cpp:
 	.text       start:0x8023FC64 end:0x802411B8
+	.rodata     start:0x80485348 end:0x804853B0
+	.data       start:0x80521968 end:0x80521A88
+	.sdata2     start:0x80751EF8 end:0x80751F18
 
 lib/nw4r/g3d/g3d_anmchr.cpp:
 	.text       start:0x802411B8 end:0x80241DAC
+	.rodata     start:0x804853B0 end:0x804853E8
+	.data       start:0x80521A88 end:0x80521B38
+	.sdata2     start:0x80751F18 end:0x80751F28
 
 lib/nw4r/g3d/g3d_anmshp.cpp:
 	.text       start:0x80241DAC end:0x80242708
+	.rodata     start:0x804853E8 end:0x80485410
+	.data       start:0x80521B38 end:0x80521BD8
+	.sdata2     start:0x80751F28 end:0x80751F38
 
 lib/nw4r/g3d/g3d_anmscn.cpp:
 	.text       start:0x80242708 end:0x80242A1C
 
 lib/nw4r/g3d/g3d_obj.cpp:
 	.text       start:0x80242A1C end:0x80242B74
+	.rodata     start:0x80485410 end:0x80485420
+	.data       start:0x80521BD8 end:0x80521BF8
 
 lib/nw4r/g3d/g3d_anmobj.cpp:
 	.text       start:0x80242B74 end:0x80242C2C
@@ -2934,27 +2973,40 @@ lib/nw4r/g3d/platform/g3d_cpu.cpp:
 lib/nw4r/g3d/g3d_state.cpp:
 	.text       start:0x80243638 end:0x80246E8C
 	.ctors      start:0x80465878 end:0x8046587C align:8
+	.rodata     start:0x80485BB0 end:0x80485BE0
+	.data       start:0x80521BF8 end:0x80521C10
+	.bss        start:0x8065FB20 end:0x80665100
+	.sdata      start:0x8074CA10 end:0x8074CA18
+	.sbss       start:0x8074EEB0 end:0x8074EED0
+	.sdata2     start:0x80751F60 end:0x80751F88
 
 lib/nw4r/g3d/g3d_draw1mat1shp.cpp:
 	.text       start:0x80246E8C end:0x80247BC0
+	.rodata     start:0x80485BE0 end:0x80485BF0
+	.sdata2     start:0x80751F88 end:0x80751FA8
 
 lib/nw4r/g3d/g3d_calcview.cpp:
 	.text       start:0x80247BC0 end:0x80249D30
+	.rodata     start:0x80485BF0 end:0x80485C10
+	.sdata2     start:0x80751FA8 end:0x80751FB8
 
 lib/nw4r/g3d/g3d_dcc.cpp:
 	.text       start:0x80249D30 end:0x80249E0C
 
 lib/nw4r/g3d/g3d_workmem.cpp:
 	.text       start:0x80249E0C end:0x80249E4C
+	.bss        start:0x80665100 end:0x8067D100
 
 lib/nw4r/g3d/g3d_calcworld.cpp:
 	.text       start:0x80249E4C end:0x8024A6EC
-	.data       start:0x80521C10 end:0x80521C1C
+	.data       start:0x80521C10 end:0x80521C20
 	.sdata      start:0x8074CA18 end:0x8074CA20
 	.sdata2     start:0x80751FB8 end:0x80751FC0
 
 lib/nw4r/g3d/g3d_draw.cpp:
 	.text       start:0x8024A6EC end:0x8024C548
+	.sdata      start:0x8074CA20 end:0x8074CA28
+	.sdata2     start:0x80751FC0 end:0x80751FD0
 
 lib/nw4r/g3d/g3d_camera.cpp:
 	.text       start:0x8024C548 end:0x8024D170
@@ -2981,15 +3033,29 @@ lib/nw4r/g3d/dcc/g3d_3dsmax.cpp:
 
 lib/nw4r/g3d/g3d_scnobj.cpp:
 	.text       start:0x8024F764 end:0x80250F00
+	.rodata     start:0x80485CB8 end:0x80485CE8
+	.data       start:0x80521C20 end:0x80521CE8
+	.sbss       start:0x8074EED0 end:0x8074EED8
+	.sdata2     start:0x80752050 end:0x80752058
 
 lib/nw4r/g3d/g3d_scnroot.cpp:
 	.text       start:0x80250F00 end:0x80252804
+	.rodata     start:0x80485CE8 end:0x80485CF8
+	.data       start:0x80521CE8 end:0x80521D58
+	.sdata      start:0x8074CA28 end:0x8074CA38
+	.sdata2     start:0x80752058 end:0x80752060
 
 lib/nw4r/g3d/g3d_scnmdlsmpl.cpp:
 	.text       start:0x80252804 end:0x80254804
+	.rodata     start:0x80485CF8 end:0x80485D10
+	.data       start:0x80521D58 end:0x80521DC8
+	.sdata      start:0x8074CA38 end:0x8074CA50
+	.sdata2     start:0x80752060 end:0x80752068
 
 lib/nw4r/g3d/g3d_scnmdl.cpp:
 	.text       start:0x80254804 end:0x80257088
+	.rodata     start:0x80485D10 end:0x80485D20
+	.data       start:0x80521DC8 end:0x80521E10
 
 lib/nw4r/g3d/g3d_calcmaterial.cpp:
 	.text       start:0x80257088 end:0x80257498
@@ -3020,9 +3086,13 @@ lib/nw4r/g3d/g3d_calcvtx.cpp:
 lib/nw4r/snd/snd_AxManager.cpp:
 	.text       start:0x80258C2C end:0x8025A7D0
 	.ctors      start:0x8046587C end:0x80465880
+	.bss        start:0x8067D100 end:0x8067D548
+	.sbss       start:0x8074EED8 end:0x8074EEF0
+	.sdata2     start:0x807520B0 end:0x807520C8
 
 lib/nw4r/snd/snd_AxVoice.cpp:
 	.text       start:0x8025A7D0 end:0x8025D490
+	.sdata2     start:0x807520C8 end:0x807520F0
 
 lib/nw4r/snd/snd_AxVoiceManager.cpp:
 	.text       start:0x8025D490 end:0x8025DC18
@@ -3031,19 +3101,27 @@ lib/nw4r/snd/snd_AxVoiceManager.cpp:
 
 lib/nw4r/snd/snd_AxfxImpl.cpp:
 	.text       start:0x8025DC18 end:0x8025DDE4
+	.sbss       start:0x8074EEF8 end:0x8074EF00
 
 lib/nw4r/snd/snd_Bank.cpp:
 	.text       start:0x8025DDE4 end:0x8025E054
+	.sdata2     start:0x807520F0 end:0x80752110
 
 lib/nw4r/snd/snd_BankFile.cpp:
 	.text       start:0x8025E054 end:0x8025E710
+	.sdata2     start:0x80752110 end:0x80752118
 
 lib/nw4r/snd/snd_BasicPlayer.cpp:
 	.text       start:0x8025E710 end:0x8025EB04
+	.data       start:0x80521E90 end:0x80521EB8
+	.sdata2     start:0x80752118 end:0x80752120
 
 lib/nw4r/snd/snd_BasicSound.cpp:
 	.text       start:0x8025EB04 end:0x80260184
 	.ctors      start:0x80465880 end:0x80465884 align:8
+	.data       start:0x80521EB8 end:0x80521EF0
+	.sbss       start:0x8074EF00 end:0x8074EF08
+	.sdata2     start:0x80752120 end:0x80752130
 
 lib/nw4r/snd/snd_BiquadFilterPreset.cpp:
 	.text       start:0x80260184 end:0x80260450
@@ -3053,6 +3131,9 @@ lib/nw4r/snd/snd_BiquadFilterPreset.cpp:
 
 lib/nw4r/snd/snd_Channel.cpp:
 	.text       start:0x80260450 end:0x80261528
+	.bss        start:0x8067D580 end:0x8067D5B0
+	.sbss       start:0x8074EF08 end:0x8074EF10
+	.sdata2     start:0x80752140 end:0x80752168
 
 lib/nw4r/snd/snd_DisposeCallbackManager.cpp:
 	.text       start:0x80261528 end:0x802618B8
@@ -3061,9 +3142,12 @@ lib/nw4r/snd/snd_DisposeCallbackManager.cpp:
 
 lib/nw4r/snd/snd_DvdSoundArchive.cpp:
 	.text       start:0x802618B8 end:0x80261E00
+	.data       start:0x80521F40 end:0x80521FC8
 
 lib/nw4r/snd/snd_EnvGenerator.cpp:
 	.text       start:0x80261E00 end:0x8026219C
+	.rodata     start:0x80487168 end:0x80487468
+	.sdata2     start:0x80752168 end:0x80752198
 
 lib/nw4r/snd/snd_ExternalSoundPlayer.cpp:
 	.text       start:0x8026219C end:0x80262448
@@ -3089,9 +3173,14 @@ lib/nw4r/snd/snd_MidiSeqPlayer.cpp:
 
 lib/nw4r/snd/snd_MmlParser.cpp:
 	.text       start:0x80263948 end:0x80264AEC
+	.data       start:0x80521FF0 end:0x80522220
+	.sdata      start:0x8074CA58 end:0x8074CA68
+	.sbss       start:0x8074EF18 end:0x8074EF20
+	.sdata2     start:0x807521E8 end:0x80752208
 
 lib/nw4r/snd/snd_MmlSeqTrack.cpp:
 	.text       start:0x80264AEC end:0x80264B94
+	.data       start:0x80522220 end:0x80522230
 
 lib/nw4r/snd/snd_MmlSeqTrackAllocator.cpp:
 	.text       start:0x80264B94 end:0x80264CB8
@@ -3114,19 +3203,28 @@ lib/nw4r/snd/snd_SeqFile.cpp:
 
 lib/nw4r/snd/snd_SeqPlayer.cpp:
 	.text       start:0x80265A14 end:0x8026719C
+	.data       start:0x80522258 end:0x805222E0
+	.bss        start:0x8067D8A0 end:0x8067D8C0
+	.sdata2     start:0x80752208 end:0x80752220
 
 lib/nw4r/snd/snd_SeqSound.cpp:
 	.text       start:0x8026719C end:0x80267A08
 	.ctors      start:0x80465884 end:0x80465888
+	.data       start:0x805222E0 end:0x80522330
+	.sbss       start:0x8074EF28 end:0x8074EF30
 
 lib/nw4r/snd/snd_SeqSoundHandle.cpp:
 	.text       start:0x80267A08 end:0x80267B34
 
 lib/nw4r/snd/snd_SeqTrack.cpp:
-	.text       start:0x80267B34 end:0x80268FE4
+	.text       start:0x80267B34 end:0x80268FDC
+	.rodata     start:0x80487490 end:0x804874B8
+	.data       start:0x80522330 end:0x80522340
+	.sdata2     start:0x80752220 end:0x80752250
 
 lib/nw4r/snd/snd_SoundArchive.cpp:
-	.text       start:0x80268FE4 end:0x802695D8
+	.text       start:0x80268FDC end:0x802695D8
+	.data       start:0x80522340 end:0x80522360
 
 lib/nw4r/snd/snd_SoundArchiveFile.cpp:
 	.text       start:0x802695D8 end:0x8026A560
@@ -3136,6 +3234,8 @@ lib/nw4r/snd/snd_SoundArchiveLoader.cpp:
 
 lib/nw4r/snd/snd_SoundArchivePlayer.cpp:
 	.text       start:0x8026ABB0 end:0x8026D228
+	.data       start:0x80522360 end:0x805223B0
+	.sdata2     start:0x80752250 end:0x80752260
 
 lib/nw4r/snd/snd_SoundHandle.cpp:
 	.text       start:0x8026D228 end:0x8026D310
@@ -3146,6 +3246,9 @@ lib/nw4r/snd/snd_SoundHeap.cpp:
 
 lib/nw4r/snd/snd_SoundPlayer.cpp:
 	.text       start:0x8026D648 end:0x8026E040
+	.bss        start:0x8067D8C0 end:0x8067DED0
+	.sbss       start:0x8074EF30 end:0x8074EF38
+	.sdata2     start:0x80752260 end:0x80752268
 
 lib/nw4r/snd/snd_SoundStartable.cpp:
 	.text       start:0x8026E040 end:0x8026E148
@@ -3153,9 +3256,15 @@ lib/nw4r/snd/snd_SoundStartable.cpp:
 lib/nw4r/snd/snd_SoundSystem.cpp:
 	.text       start:0x8026E148 end:0x8026E40C
 	.ctors      start:0x80465888 end:0x8046588C align:8
+	.data       start:0x805223C0 end:0x80522408
+	.bss        start:0x8067DEE0 end:0x80695020
+	.sdata      start:0x8074CA68 end:0x8074CA70
+	.sbss       start:0x8074EF38 end:0x8074EF40
 
 lib/nw4r/snd/snd_SoundThread.cpp:
 	.text       start:0x8026E40C end:0x8026EAB4
+	.bss        start:0x80695020 end:0x806953E0
+	.sbss       start:0x8074EF40 end:0x8074EF48
 
 lib/nw4r/snd/snd_StrmChannel.cpp:
 	.text       start:0x8026EAB4 end:0x8026EC90
@@ -3165,10 +3274,17 @@ lib/nw4r/snd/snd_StrmFile.cpp:
 
 lib/nw4r/snd/snd_StrmPlayer.cpp:
 	.text       start:0x8026F640 end:0x80272064
+	.data       start:0x80522408 end:0x80522480
+	.bss        start:0x806953E0 end:0x806993F8
+	.sbss       start:0x8074EF48 end:0x8074EF50
+	.sdata2     start:0x80752268 end:0x80752290
 
 lib/nw4r/snd/snd_StrmSound.cpp:
 	.text       start:0x80272064 end:0x802727F4
 	.ctors      start:0x8046588C end:0x80465890
+	.data       start:0x80522480 end:0x805224B8
+	.sbss       start:0x8074EF50 end:0x8074EF58
+	.sdata2     start:0x80752290 end:0x807522A0
 
 lib/nw4r/snd/snd_StrmSoundHandle.cpp:
 	.text       start:0x802727F4 end:0x8027282C
@@ -3186,9 +3302,13 @@ lib/nw4r/snd/snd_TaskThread.cpp:
 
 lib/nw4r/snd/snd_Voice.cpp:
 	.text       start:0x802730B8 end:0x80275BE8
+	.data       start:0x805224B8 end:0x805224F0
+	.sdata2     start:0x807522A0 end:0x807522D8
 
 lib/nw4r/snd/snd_VoiceManager.cpp:
 	.text       start:0x80275BE8 end:0x80276280
+	.bss        start:0x80699440 end:0x80699468
+	.sbss       start:0x8074EF60 end:0x8074EF68
 
 lib/nw4r/snd/snd_Util.cpp:
 	.text       start:0x80276280 end:0x802766E4
@@ -3206,15 +3326,20 @@ lib/nw4r/snd/snd_WaveFile.cpp:
 lib/nw4r/snd/snd_WaveSound.cpp:
 	.text       start:0x80276A70 end:0x80276DD0
 	.ctors      start:0x80465890 end:0x80465894 align:8
+	.data       start:0x80522500 end:0x80522538
+	.sbss       start:0x8074EF68 end:0x8074EF70
 
 lib/nw4r/snd/snd_WaveSoundHandle.cpp:
 	.text       start:0x80276DD0 end:0x80276E08
 
 lib/nw4r/snd/snd_WsdFile.cpp:
 	.text       start:0x80276E08 end:0x802771C4
+	.sdata2     start:0x80752320 end:0x80752328
 
 lib/nw4r/snd/snd_WsdPlayer.cpp:
 	.text       start:0x802771C4 end:0x8027821C
+	.data       start:0x80522538 end:0x80522598
+	.sdata2     start:0x80752328 end:0x80752350
 
 lib/nw4r/snd/snd_adpcm.cpp:
 	.text       start:0x8027821C end:0x802782A8
@@ -3225,39 +3350,61 @@ lib/nw4r/ef/ef_draworder.cpp:
 
 lib/nw4r/ef/ef_effect.cpp:
 	.text       start:0x802783B4 end:0x802790DC
+	.data       start:0x805225B0 end:0x805225D0
+	.sdata2     start:0x80752350 end:0x80752358
 
 lib/nw4r/ef/ef_effectsystem.cpp:
 	.text       start:0x802790DC end:0x802799EC
 	.ctors      start:0x80465894 end:0x80465898
+	.data       start:0x805225D0 end:0x80522618
+	.bss        start:0x80699468 end:0x806A5580
+	.sdata      start:0x8074CA78 end:0x8074CA80
+	.sbss       start:0x8074EF70 end:0x8074EF80
+	.sdata2     start:0x80752358 end:0x80752360
 
 lib/nw4r/ef/ef_emitter.cpp:
 	.text       start:0x802799EC end:0x8027BC00
+	.data       start:0x80522618 end:0x80522640
+	.sdata2     start:0x80752360 end:0x80752390
 
 lib/nw4r/ef/ef_animcurve.cpp:
 	.text       start:0x8027BC00 end:0x80280AF8
+	.data       start:0x80522640 end:0x80522840
+	.sdata2     start:0x80752390 end:0x807523C8
 
-lib/nw4r/ef/ef_collision.cpp:
+lib/nw4r/ef/ef_postfield.cpp:
 	.text       start:0x80280AF8 end:0x802841FC
+	.sdata2     start:0x807523C8 end:0x80752400
 
 lib/nw4r/ef/ef_particle.cpp:
 	.text       start:0x802841FC end:0x8028501C
+	.data       start:0x80522840 end:0x80522858
+	.sdata2     start:0x80752400 end:0x80752450
 
 lib/nw4r/ef/ef_particlemanager.cpp:
 	.text       start:0x8028501C end:0x802873B0
 	.ctors      start:0x80465898 end:0x8046589C align:8
+	.data       start:0x80522858 end:0x805228B8
+	.bss        start:0x806A5580 end:0x806A55B0
+	.sbss       start:0x8074EF80 end:0x8074EF88
+	.sdata2     start:0x80752450 end:0x80752498
 
 lib/nw4r/ef/ef_resource.cpp:
 	.text       start:0x802873B0 end:0x80288014
 	.ctors      start:0x8046589C end:0x804658A0
+	.bss        start:0x806A55B0 end:0x806A55D0
 
 lib/nw4r/ef/ef_util.cpp:
 	.text       start:0x80288014 end:0x80288EEC
+	.sdata      start:0x8074CA80 end:0x8074CA88
+	.sdata2     start:0x80752498 end:0x807524E0
 
 lib/nw4r/ef/ef_handle.cpp:
 	.text       start:0x80288EEC end:0x80288FA4
 
 lib/nw4r/ef/ef_emitterform.cpp:
 	.text       start:0x80288FA4 end:0x80289540
+	.sdata2     start:0x807524E0 end:0x80752510
 
 lib/nw4r/ef/ef_creationqueue.cpp:
 	.text       start:0x80289540 end:0x80289980
@@ -3270,52 +3417,95 @@ lib/nw4r/ef/emform/ef_emform.cpp:
 
 lib/nw4r/ef/emform/ef_point.cpp:
 	.text       start:0x80289A38 end:0x80289D80
+	.data       start:0x805228F0 end:0x80522900
+	.sdata2     start:0x80752510 end:0x80752540
 
 lib/nw4r/ef/emform/ef_line.cpp:
 	.text       start:0x80289D80 end:0x8028A0B8
+	.data       start:0x80522900 end:0x80522910
+	.sdata2     start:0x80752540 end:0x80752568
 
 lib/nw4r/ef/emform/ef_disc.cpp:
 	.text       start:0x8028A0B8 end:0x8028A5E4
+	.data       start:0x80522910 end:0x80522920
+	.sdata2     start:0x80752568 end:0x807525B0
 
 lib/nw4r/ef/emform/ef_sphere.cpp:
 	.text       start:0x8028A5E4 end:0x8028AE38
+	.data       start:0x80522920 end:0x80522930
+	.sdata2     start:0x807525B0 end:0x80752600
 
 lib/nw4r/ef/emform/ef_cylinder.cpp:
 	.text       start:0x8028AE38 end:0x8028B5E0
+	.data       start:0x80522930 end:0x80522940
+	.sdata2     start:0x80752600 end:0x80752648
 
 lib/nw4r/ef/emform/ef_torus.cpp:
 	.text       start:0x8028B5E0 end:0x8028BC14
+	.data       start:0x80522940 end:0x80522950
+	.sdata2     start:0x80752648 end:0x80752690
 
 lib/nw4r/ef/emform/ef_cube.cpp:
 	.text       start:0x8028BC14 end:0x8028D83C
+	.data       start:0x80522950 end:0x80522960
+	.sdata2     start:0x80752690 end:0x807526C8
 
 lib/nw4r/ef/drawstrategy/ef_drawstrategybuilder.cpp:
 	.text       start:0x8028D83C end:0x8028DBE0
+	.data       start:0x80522960 end:0x80522988
+	.bss        start:0x806A55D0 end:0x806A5BF0
+	.sbss       start:0x8074EFA8 end:0x8074EFB0
 
 lib/nw4r/ef/drawstrategy/ef_drawstrategyimpl.cpp:
 	.text       start:0x8028DBE0 end:0x8028FD70
 	.ctors      start:0x804658A4 end:0x804658A8
+	.data       start:0x80522988 end:0x805229A0
+	.bss        start:0x806A5BF0 end:0x806A5C50
+	.sdata2     start:0x807526C8 end:0x807526F8
 
 lib/nw4r/ef/drawstrategy/ef_drawbillboardstrategy.cpp:
 	.text       start:0x8028FD70 end:0x80291E0C
+	.data       start:0x805229A0 end:0x805229C0
+	.sdata      start:0x8074CAA0 end:0x8074CAA8 align:32
+	.sdata2     start:0x807526F8 end:0x80752728
 
 lib/nw4r/ef/drawstrategy/ef_drawdirectionalstrategy.cpp:
 	.text       start:0x80291E0C end:0x80294140
+	.rodata     start:0x80489908 end:0x80489968
+	.data       start:0x805229C0 end:0x80522A00
+	.sdata      start:0x8074CAC0 end:0x8074CAC8 align:32
+	.sdata2     start:0x80752728 end:0x80752750
 
 lib/nw4r/ef/drawstrategy/ef_drawfreestrategy.cpp:
 	.text       start:0x80294140 end:0x80294B20
+	.rodata     start:0x80489968 end:0x804899C8
+	.data       start:0x80522A00 end:0x80522A18
+	.sdata      start:0x8074CAE0 end:0x8074CAE8 align:32
+	.sdata2     start:0x80752750 end:0x80752778
 
 lib/nw4r/ef/drawstrategy/ef_drawlinestrategy.cpp:
 	.text       start:0x80294B20 end:0x80295100
+	.data       start:0x80522A18 end:0x80522A30
+	.sdata      start:0x8074CAE8 end:0x8074CAF0
+	.sdata2     start:0x80752778 end:0x80752788
 
 lib/nw4r/ef/drawstrategy/ef_drawpointstrategy.cpp:
 	.text       start:0x80295100 end:0x80295550
+	.data       start:0x80522A30 end:0x80522A48
+	.sdata      start:0x8074CAF0 end:0x8074CAF8
+	.sdata2     start:0x80752788 end:0x80752798
 
 lib/nw4r/ef/drawstrategy/ef_drawstripestrategy.cpp:
 	.text       start:0x80295550 end:0x80298B04
+	.data       start:0x80522A48 end:0x80522B50
+	.sdata2     start:0x80752798 end:0x807527D0
 
 lib/nw4r/ef/drawstrategy/ef_drawsmoothstripestrategy.cpp:
 	.text       start:0x80298B04 end:0x8029D788
+	.data       start:0x80522B50 end:0x80522C58
+	.bss        start:0x806A5C50 end:0x806A5C80
+	.sbss       start:0x8074EFB0 end:0x8074EFB8
+	.sdata2     start:0x807527D0 end:0x80752808
 
 lib/nw4r/ef/ef_res_emitter_ac.cpp:
 	.text       start:0x8029D788 end:0x8029D7B8
@@ -3331,24 +3521,41 @@ lib/nw4r/lyt/lyt_init.cpp:
 lib/nw4r/lyt/lyt_pane.cpp:
 	.text       start:0x8029D838 end:0x8029E6F8
 	.ctors      start:0x804658A8 end:0x804658AC align:8
+	.data       start:0x80522CA0 end:0x80522D18
+	.sbss       start:0x8074EFB8 end:0x8074EFC0
+	.sdata2     start:0x80752808 end:0x80752828
 
 lib/nw4r/lyt/lyt_group.cpp:
 	.text       start:0x8029E6F8 end:0x8029EA38
+	.data       start:0x80522D18 end:0x80522D28
 
 lib/nw4r/lyt/lyt_layout.cpp:
 	.text       start:0x8029EA38 end:0x8029FA24
+	.data       start:0x80522D28 end:0x80522D68
+	.sbss       start:0x8074EFC0 end:0x8074EFC8
+	.sdata2     start:0x80752828 end:0x80752830
 
 lib/nw4r/lyt/lyt_picture.cpp:
 	.text       start:0x8029FA24 end:0x8029FF80
 	.ctors      start:0x804658AC end:0x804658B0
+	.data       start:0x80522D68 end:0x80522DE0
+	.sbss       start:0x8074EFC8 end:0x8074EFD0
+	.sdata2     start:0x80752830 end:0x80752838
 
 lib/nw4r/lyt/lyt_textBox.cpp:
 	.text       start:0x8029FF80 end:0x802A1914
 	.ctors      start:0x804658B0 end:0x804658B4 align:8
+	.data       start:0x80522DE0 end:0x80522E68
+	.sdata      start:0x8074CB00 end:0x8074CB08
+	.sbss       start:0x8074EFD0 end:0x8074EFD8
+	.sdata2     start:0x80752838 end:0x80752850
 
 lib/nw4r/lyt/lyt_window.cpp:
 	.text       start:0x802A1914 end:0x802A3EC8
 	.ctors      start:0x804658B4 end:0x804658B8
+	.data       start:0x80522E68 end:0x80522F30
+	.sbss       start:0x8074EFD8 end:0x8074EFE0
+	.sdata2     start:0x80752850 end:0x80752868
 
 lib/nw4r/lyt/lyt_bounding.cpp:
 	.text       start:0x802A3EC8 end:0x802A3F74
@@ -3358,9 +3565,13 @@ lib/nw4r/lyt/lyt_bounding.cpp:
 
 lib/nw4r/lyt/lyt_material.cpp:
 	.text       start:0x802A3F74 end:0x802A6D24
+	.data       start:0x80522FA8 end:0x80523018
+	.sdata2     start:0x80752868 end:0x80752888
+	.sbss2      start:0x80753A00 end:0x80753A08
 
 lib/nw4r/lyt/lyt_texMap.cpp:
 	.text       start:0x802A6D24 end:0x802A7050
+	.sdata2     start:0x80752888 end:0x807528A0
 
 lib/nw4r/lyt/lyt_drawInfo.cpp:
 	.text       start:0x802A7050 end:0x802A7104
@@ -3369,6 +3580,8 @@ lib/nw4r/lyt/lyt_drawInfo.cpp:
 
 lib/nw4r/lyt/lyt_animation.cpp:
 	.text       start:0x802A7104 end:0x802A8630
+	.data       start:0x80523028 end:0x80523050
+	.sdata2     start:0x807528A8 end:0x807528C8
 
 lib/nw4r/lyt/lyt_resourceAccessor.cpp:
 	.text       start:0x802A8630 end:0x802A8688
@@ -3376,9 +3589,14 @@ lib/nw4r/lyt/lyt_resourceAccessor.cpp:
 
 lib/nw4r/lyt/lyt_arcResourceAccessor.cpp:
 	.text       start:0x802A8688 end:0x802A8D9C
+	.data       start:0x80523068 end:0x80523090
+	.sdata      start:0x8074CB08 end:0x8074CB10
 
 lib/nw4r/lyt/lyt_common.cpp:
 	.text       start:0x802A8D9C end:0x802A988C
+	.bss        start:0x806A5C80 end:0x806A5CA0
+	.sbss       start:0x8074EFE8 end:0x8074EFF0
+	.sdata2     start:0x807528C8 end:0x807528D0
 
 lib/nw4r/lyt/lyt_util.cpp:
 	.text       start:0x802A988C end:0x802A98FC
@@ -4910,7 +5128,7 @@ lib/RVL_SDK/esp/esp.c:
 	.sdata      start:0x8074D960 end:0x8074D970
 
 lib/RVL_SDK/cx/CXUncompression.c:
-	.text       start:0x803A70CC end:0x803A724C
+	.text       start:0x803A70CC end:0x803A73AC
 
 lib/RVL_SDK/cx/CXSecureUncompression.c:
 	.text       start:0x803A73AC end:0x803A7728

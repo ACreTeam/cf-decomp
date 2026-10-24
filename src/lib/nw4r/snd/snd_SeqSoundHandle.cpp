@@ -4,7 +4,7 @@
 namespace nw4r {
 namespace snd {
 
-SeqSoundHandle::SeqSoundHandle(SoundHandle* pHandle) : mSound(NULL) {
+SeqSoundHandle::SeqSoundHandle(SoundHandle *pHandle) : mSound(NULL) {
     if (pHandle == NULL) {
         return;
     }
@@ -13,15 +13,11 @@ SeqSoundHandle::SeqSoundHandle(SoundHandle* pHandle) : mSound(NULL) {
         return;
     }
 
-    detail::SeqSound* pSound =
-        ut::DynamicCast<detail::SeqSound*>(pHandle->detail_GetAttachedSound());
+    detail::SeqSound *pSound =
+        ut::DynamicCast<detail::SeqSound *>(pHandle->detail_GetAttachedSound());
 
     if (pSound != NULL) {
         mSound = pSound;
-
-        if (mSound->IsAttachedTempGeneralHandle()) {
-            mSound->DetachTempGeneralHandle();
-        }
 
         if (mSound->IsAttachedTempSpecialHandle()) {
             mSound->DetachTempSpecialHandle();

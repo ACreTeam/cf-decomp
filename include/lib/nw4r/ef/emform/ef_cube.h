@@ -8,17 +8,18 @@ namespace nw4r {
 namespace ef {
 
 class EmitterFormCube : public EmitterForm {
-public:
-    EmitterFormCube() {}
+  public:
+    EmitterFormCube() {
+    }
 
-    virtual void Emission(Emitter* pEmitter, ParticleManager* pManager,
-                          int count, u32 flags, f32* pParams, u16 life,
-                          f32 lifeRnd, const math::MTX34* pSpace); // at 0x8
+    virtual void Emission(Emitter *pEmitter, ParticleManager *pManager,
+                          int count, u32 flags, f32 *pParams, u16 life,
+                          f32 lifeRnd, const math::MTX34 *pSpace); // at 0x8
 
-private:
-    void EmissionSub(math::VEC3& rPos, math::VEC3& rNormal, Emitter* pEmitter,
-                     ParticleManager* pManager, u16 life, f32 lifeRnd,
-                     const math::MTX34* pSpace);
+  private:
+    void EmissionSub(math::VEC3 &rPos, math::VEC3 &rNormal, Emitter *pEmitter,
+                     ParticleManager *pManager, u16 life, f32 lifeRnd,
+                     const math::MTX34 *pSpace);
 };
 
 } // namespace ef

@@ -93,11 +93,10 @@ class AnimationLink {
 public:
     AnimationLink() {
         Reset();
-        mbDisable = false;
     }
 
     void Reset() {
-        SetAnimTransform(NULL, 0);
+        Set(NULL, 0, false);
     }
 
     AnimTransform* GetAnimTransform() const {
@@ -115,8 +114,14 @@ public:
     bool IsEnable() const {
         return !mbDisable;
     }
-    void SetEnable(bool enable) {
-        mbDisable = !enable;
+    void SetEnable(bool bEnable) {
+        mbDisable = !bEnable;
+    }
+
+    void Set(AnimTransform* pAnimTrans, u16 idx, bool bDisable) {
+        mAnimTrans = pAnimTrans;
+        mIdx = idx;
+        mbDisable = bDisable;
     }
 
 public:

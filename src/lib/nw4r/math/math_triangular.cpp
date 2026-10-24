@@ -4,20 +4,12 @@ namespace nw4r {
 namespace math {
 namespace {
 
-struct SinCosSample {
-    f32 sin_val;   // at 0x0
-    f32 cos_val;   // at 0x4
-    f32 sin_delta; // at 0x8
-    f32 cos_delta; // at 0xC
-};
-
 struct ArcTanSample {
     f32 atan_val;   // at 0x0
     f32 atan_delta; // at 0x4
 };
 
-extern SinCosSample sSinCosTbl[];
-extern ArcTanSample sArcTanTbl[];
+extern const ArcTanSample sArcTanTbl[];
 
 f32 AtanFIdx_(f32 x) {
     x *= 32.0f;
@@ -35,15 +27,15 @@ f32 AtanFIdx_(f32 x) {
 f32 SinFIdx(f32 fidx) {
     f32 abs_fidx = FAbs(fidx);
 
-    while (abs_fidx >= 65536.0f) {
+    while (abs_fidx > 65536.0f) {
         abs_fidx -= 65536.0f;
     }
 
     u16 whole = F32ToU16(abs_fidx);
     f32 frac = abs_fidx - U16ToF32(whole);
 
-    f32 sin = sSinCosTbl[whole & 255].sin_val +
-              frac * sSinCosTbl[whole & 255].sin_delta;
+    f32 sin = detail::gSinCosTbl[whole & 255].sin_val +
+              frac * detail::gSinCosTbl[whole & 255].sin_delta;
 
     return (fidx < 0.0f) ? -sin : sin;
 }
@@ -51,37 +43,55 @@ f32 SinFIdx(f32 fidx) {
 f32 CosFIdx(f32 fidx) {
     f32 abs_fidx = FAbs(fidx);
 
-    while (abs_fidx >= 65536.0f) {
+    while (abs_fidx > 65536.0f) {
         abs_fidx -= 65536.0f;
     }
 
     u16 whole = F32ToU16(abs_fidx);
     f32 frac = abs_fidx - U16ToF32(whole);
 
-    f32 cos = sSinCosTbl[whole & 255].cos_val +
-              frac * sSinCosTbl[whole & 255].cos_delta;
+    f32 cos = detail::gSinCosTbl[whole & 255].cos_val +
+              frac * detail::gSinCosTbl[whole & 255].cos_delta;
 
     return cos;
 }
 
-void SinCosFIdx(f32* pSin, f32* pCos, f32 fidx) {
-    f32 abs_fidx = FAbs(fidx);
+void SinCosFIdx(register f32* pSin, register f32* pCos, register f32 fidx) {
+    register f32 value = FAbs(fidx);
+    register f32 range = 65536.0f;
+    register const detail::SinCosSample* pSample = detail::gSinCosTbl;
+    register f32 sample, zero;
+    register u32 idx;
 
-    while (abs_fidx >= 65536.0f) {
-        abs_fidx -= 65536.0f;
+    // clang-format off
+    asm {
+        psq_st value, 0(pSin), 1, 3
+        fcmpu cr0, value, range
+        ble done
+    loop:
+        fsubs value, value, range
+        fcmpu cr0, value, range
+        bgt loop
+        psq_st value, 0(pSin), 1, 3
+    done:
+        lhz idx, 0(pSin)
+        fsubs zero, range, range
+        rlwinm idx, idx, 4, 20, 27
+        add pSample, pSample, idx
+        psq_l range, 0(pSin), 1, 3
+        psq_l sample, 0(pSample), 0, 0
+        fcmpu cr0, fidx, zero
+        fsubs range, value, range
+        psq_l value, 8(pSample), 0, 0
+        ps_madds0 value, value, range, sample
+        ps_merge10 range, value, value
+        psq_st range, 0(pCos), 1, 0
+        bge positive
+        ps_neg value, value
+    positive:
+        psq_st value, 0(pSin), 1, 0
     }
-
-    u16 whole = F32ToU16(abs_fidx);
-    f32 frac = abs_fidx - U16ToF32(whole);
-
-    f32 sin = sSinCosTbl[whole & 255].sin_val +
-              frac * sSinCosTbl[whole & 255].sin_delta;
-
-    f32 cos = sSinCosTbl[whole & 255].cos_val +
-              frac * sSinCosTbl[whole & 255].cos_delta;
-
-    *pSin = (fidx < 0.0f) ? -sin : sin;
-    *pCos = cos;
+    // clang-format on
 }
 
 f32 AtanFIdx(f32 x) {
@@ -169,9 +179,9 @@ f32 Atan2FIdx(f32 y, f32 x) {
     }
 }
 
-namespace {
+namespace detail {
 
-SinCosSample sSinCosTbl[] = {
+const SinCosSample gSinCosTbl[] = {
     // clang-format off
     { 0.000000000f,  1.000000000f,  0.024541000f, -0.000301000f},
     { 0.024541000f,  0.999698997f,  0.024526000f, -0.000903000f},
@@ -433,7 +443,7 @@ SinCosSample sSinCosTbl[] = {
     // clang-format on
 };
 
-ArcTanSample sArcTanTbl[] = {
+const ArcTanSample sArcTanTbl[] = {
     // clang-format off
     {0.000000000f,  1.272825360f},
     {1.272825360f,  1.270345807f},

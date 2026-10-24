@@ -1,20 +1,25 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_SoundArchiveLoader.h>
+
+#include <nw4r/snd/snd_SoundArchive.h>
+#include <nw4r/snd/snd_SoundMemoryAllocatable.h>
+#include <nw4r/types_nw4r.h>
+#include <nw4r/ut/ut_FileStream.h>
+#include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-SoundArchiveLoader::SoundArchiveLoader(const SoundArchive& rArchive)
+SoundArchiveLoader::SoundArchiveLoader(const SoundArchive &rArchive)
     : mArc(rArchive), mStream(NULL) {
     OSInitMutex(&mMutex);
 }
 
-SoundArchiveLoader::~SoundArchiveLoader() {}
+SoundArchiveLoader::~SoundArchiveLoader() {
+}
 
-void* SoundArchiveLoader::LoadGroup(u32 id,
-                                    SoundMemoryAllocatable* pAllocatable,
-                                    void** ppWaveBuffer, u32 blockSize) {
+void *SoundArchiveLoader::LoadGroup(u32 id,
+                                    SoundMemoryAllocatable *pAllocatable,
+                                    void **ppWaveBuffer, u32 blockSize) {
     ut::detail::AutoLock<OSMutex> lock(mMutex);
 
     FileStreamHandle groupHandle(
@@ -28,7 +33,7 @@ void* SoundArchiveLoader::LoadGroup(u32 id,
         return NULL;
     }
 
-    void* pGroupBuffer = pAllocatable->Alloc(groupHandle->GetSize());
+    void *pGroupBuffer = pAllocatable->Alloc(groupHandle->GetSize());
     if (pGroupBuffer == NULL) {
         return NULL;
     }
@@ -43,7 +48,7 @@ void* SoundArchiveLoader::LoadGroup(u32 id,
             return NULL;
         }
     } else {
-        u8* pReadPtr = static_cast<u8*>(pGroupBuffer);
+        u8 *pReadPtr = static_cast<u8 *>(pGroupBuffer);
         u32 bytesLeft = groupHandle->GetSize();
 
         while (bytesLeft) {
@@ -83,7 +88,7 @@ void* SoundArchiveLoader::LoadGroup(u32 id,
             return NULL;
         }
 
-        void* pWaveBuffer = pAllocatable->Alloc(waveHandle->GetSize());
+        void *pWaveBuffer = pAllocatable->Alloc(waveHandle->GetSize());
         if (pWaveBuffer == NULL) {
             return NULL;
         }
@@ -99,7 +104,7 @@ void* SoundArchiveLoader::LoadGroup(u32 id,
                 return NULL;
             }
         } else {
-            u8* pReadPtr = static_cast<u8*>(pWaveBuffer);
+            u8 *pReadPtr = static_cast<u8 *>(pWaveBuffer);
             u32 bytesLeft = waveHandle->GetSize();
 
             while (bytesLeft) {
@@ -132,6 +137,53 @@ void* SoundArchiveLoader::LoadGroup(u32 id,
     return pGroupBuffer;
 }
 
+s32 SoundArchiveLoader::ReadFile(u32 id, void *dst, s32 size, s32 offset) {
+    ut::detail::AutoLock<OSMutex> lock(mMutex);
+
+    FileStreamHandle fileHandle(
+        mArc.detail_OpenFileStream(id, mStreamArea, sizeof(mStreamArea)));
+    if (!fileHandle) {
+        return -1;
+    }
+
+    if (!fileHandle->CanSeek() || !fileHandle->CanRead()) {
+        return -1;
+    }
+
+    fileHandle->Seek(offset, ut::FileStream::SEEK_ORIGIN_BEG);
+    mStream = fileHandle.GetFileStream();
+    s32 read = mStream->Read(dst, ut::RoundUp(size, 32));
+    mStream = NULL;
+    if (read < 0) {
+        return -1;
+    }
+
+    return size;
+}
+
+void *SoundArchiveLoader::LoadFile(u32 id,
+                                   SoundMemoryAllocatable *pAllocatable) {
+    SoundArchive::FileInfo info;
+    if (!mArc.detail_ReadFileInfo(id, &info)) {
+        return NULL;
+    }
+
+    u32 size = info.fileSize;
+    if (size == 0) {
+        return NULL;
+    }
+
+    void *buf = pAllocatable->Alloc(size);
+    if (buf == NULL) {
+        return NULL;
+    }
+
+    if (ReadFile(id, buf, size, 0) != size) {
+        return NULL;
+    }
+    DCStoreRange(buf, size);
+    return buf;
+}
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

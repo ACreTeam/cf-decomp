@@ -14,15 +14,174 @@ namespace {
 using namespace nw4r;
 using namespace nw4r::lyt;
 
-inline u8 ClampColor(s16 value) {
-    return value < 0 ? 0 : (value > 255 ? 255 : value);
+void ReverseYAxis(math::MTX34* pMtx) {
+    pMtx->_01 = -pMtx->_01;
+    pMtx->_11 = -pMtx->_11;
+    pMtx->_21 = -pMtx->_21;
 }
 
-ut::Color GetColor(const GXColorS10& rColor16) {
-    GXColor color8 = {ClampColor(rColor16.r), ClampColor(rColor16.g),
-                      ClampColor(rColor16.b), ClampColor(rColor16.a)};
+u8 ClampColor(s16 colVal) {
+    return colVal < 0 ? 0 : (colVal > 255 ? 255 : colVal);
+}
 
-    return ut::Color(color8);
+ut::Color GetColor(const GXColorS10& src) {
+    GXColor dst;
+    dst.r = ClampColor(src.r);
+    dst.g = ClampColor(src.g);
+    dst.b = ClampColor(src.b);
+    dst.a = ClampColor(src.a);
+    return dst;
+}
+
+template <typename T>
+int CalcLineRectImpl(ut::Rect* pRect, ut::TextWriterBase<T>* pTextWriter,
+                     const T* str, int length, f32 maxWidth, bool* pbOver) {
+    ut::PrintContext<T> context = {pTextWriter, str, 0.0f, 0.0f, 0};
+    const ut::Font* font = pTextWriter->GetFont();
+    f32 x = 0.0f;
+    bool bCharSpace = false;
+
+    ut::CharStrmReader reader = font->GetCharStrmReader();
+    const T* prStrPos = static_cast<const T*>(reader.GetCurrentPos());
+
+    pRect->left = 0.0f;
+    pRect->right = 0.0f;
+    pRect->top = ut::Min(0.0f, pTextWriter->GetLineHeight());
+    pRect->bottom = ut::Max(0.0f, pTextWriter->GetLineHeight());
+
+    *pbOver = false;
+
+    reader.Set(str);
+    ut::Rect prMaxRect = *pRect;
+    u16 code = reader.Next();
+
+    while (static_cast<const T*>(reader.GetCurrentPos()) - str <= length) {
+        if (code < ' ') {
+            typename ut::TagProcessorBase<T>::Operation operation;
+            ut::Rect rect(x, 0.0f, 0.0f, 0.0f);
+
+            context.str = static_cast<const T*>(reader.GetCurrentPos());
+            context.flags = !bCharSpace;
+
+            pTextWriter->SetCursorX(x);
+            operation =
+                pTextWriter->GetTagProcessor()->CalcRect(&rect, code, &context);
+            reader.Set(context.str);
+
+            pRect->left = ut::Min(pRect->left, rect.left);
+            pRect->top = ut::Min(pRect->top, rect.top);
+            pRect->right = ut::Max(pRect->right, rect.right);
+            pRect->bottom = ut::Max(pRect->bottom, rect.bottom);
+
+            x = pTextWriter->GetCursorX();
+
+            if (pRect->GetWidth() > maxWidth) {
+                *pbOver = true;
+                break;
+            }
+
+            if (operation == ut::TagProcessorBase<T>::OPERATION_END_DRAW) {
+                return length;
+            } else if (operation == ut::TagProcessorBase<T>::OPERATION_NO_CHAR_SPACE) {
+                bCharSpace = false;
+            } else if (operation == ut::TagProcessorBase<T>::OPERATION_CHAR_SPACE) {
+                bCharSpace = true;
+            } else if (operation == ut::TagProcessorBase<T>::OPERATION_NEXT_LINE) {
+                break;
+            }
+        } else {
+            if (bCharSpace) {
+                x += pTextWriter->GetCharSpace();
+            }
+
+            bCharSpace = true;
+
+            if (pTextWriter->IsWidthFixed()) {
+                x += pTextWriter->GetFixedWidth();
+            } else {
+                x += pTextWriter->GetFont()->GetCharWidth(code) *
+                     pTextWriter->GetScaleH();
+            }
+
+            pRect->left = ut::Min(pRect->left, x);
+            pRect->right = ut::Max(pRect->right, x);
+
+            if (pRect->GetWidth() > maxWidth) {
+                *pbOver = true;
+                break;
+            }
+        }
+
+        prStrPos = static_cast<const T*>(reader.GetCurrentPos());
+        code = reader.Next();
+        prMaxRect = *pRect;
+    }
+
+    if (*pbOver && prStrPos != NULL) {
+        *pRect = prMaxRect;
+        return prStrPos - str;
+    }
+
+    return static_cast<const T*>(reader.GetCurrentPos()) - str;
+}
+
+template <typename T>
+int CalcLineStrNum(f32* pWidth, ut::TextWriterBase<T>* pTextWriter,
+                   const T* str, int length, f32 maxWidth, bool* pbOver) {
+    ut::Rect rect;
+    ut::TextWriterBase<T> myCopy = *pTextWriter;
+
+    myCopy.SetCursor(0.0f, 0.0f);
+    int ret = CalcLineRectImpl(&rect, &myCopy, str, length, maxWidth, pbOver);
+
+    *pWidth = rect.GetWidth();
+    return ret;
+}
+
+template <typename T>
+void CalcStringRectImpl(ut::Rect* pRect, ut::TextWriterBase<T>* pTextWriter,
+                        const T* str, int length, f32 maxWidth) {
+    pRect->left = 0.0f;
+    pRect->right = 0.0f;
+    pRect->top = 0.0f;
+    pRect->bottom = 0.0f;
+
+    pTextWriter->SetCursor(0.0f, 0.0f);
+
+    int remain = length;
+    const T* pos = str;
+
+    do {
+        ut::Rect rect;
+        bool bOver;
+
+        int read =
+            CalcLineRectImpl(&rect, pTextWriter, pos, remain, maxWidth, &bOver);
+
+        pos += read;
+        remain -= read;
+
+        pRect->left = ut::Min(pRect->left, rect.left);
+        pRect->top = ut::Min(pRect->top, rect.top);
+        pRect->right = ut::Max(pRect->right, rect.right);
+        pRect->bottom = ut::Max(pRect->bottom, rect.bottom);
+
+        if (bOver) {
+            CalcLineRectImpl(&rect, pTextWriter, L"\n", 1, maxWidth, &bOver);
+
+            pRect->left = ut::Min(pRect->left, rect.left);
+            pRect->top = ut::Min(pRect->top, rect.top);
+            pRect->right = ut::Max(pRect->right, rect.right);
+            pRect->bottom = ut::Max(pRect->bottom, rect.bottom);
+        }
+    } while (remain > 0);
+}
+
+template <typename T>
+void CalcStringRect(ut::Rect* pRect, ut::TextWriterBase<T>* pTextWriter,
+                    const T* str, int length, f32 maxWidth) {
+    ut::TextWriterBase<T> myCopy = *pTextWriter;
+    CalcStringRectImpl(pRect, &myCopy, str, length, maxWidth);
 }
 
 } // namespace
@@ -37,53 +196,53 @@ NW4R_UT_RTTI_DEF_DERIVED(TextBox, Pane);
  * TextBox
  *
  ******************************************************************************/
-TextBox::TextBox(const res::TextBox* pRes, const ResBlockSet& rBlockSet)
-    : Pane(pRes) {
-
-    u16 len = pRes->textBufBytes / sizeof(wchar_t);
-    if (len > 0) {
-        len--;
+TextBox::TextBox(const res::TextBox* pBlock, const ResBlockSet& resBlockSet)
+    : Pane(pBlock) {
+    u16 allocStrBufLen = pBlock->textBufBytes / sizeof(wchar_t);
+    if (allocStrBufLen > 0) {
+        allocStrBufLen--;
     }
 
-    Init(len);
+    Init(allocStrBufLen);
 
-    if (pRes->textStrBytes >= sizeof(wchar_t) && mTextBuf != NULL) {
-        const wchar_t* const pResStr =
-            detail::ConvertOffsToPtr<wchar_t>(pRes, pRes->textStrOffset);
+    if (pBlock->textStrBytes >= sizeof(wchar_t) && mTextBuf != NULL) {
+        const wchar_t* const pBlockText =
+            detail::ConvertOffsToPtr<wchar_t>(pBlock, pBlock->textStrOffset);
 
-        u16 resLen = pRes->textStrBytes / sizeof(wchar_t) - 1;
-        SetString(pResStr, 0, resLen);
+        u16 resStrLen = pBlock->textStrBytes / sizeof(wchar_t) - 1;
+        SetString(pBlockText, 0, resStrLen);
     }
 
     for (int i = 0; i < TEXTCOLOR_MAX; i++) {
-        mTextColors[i] = pRes->textCols[i];
+        mTextColors[i] = pBlock->textCols[i];
     }
 
-    mFontSize = pRes->fontSize;
-    mTextPosition = pRes->textPosition;
-    mCharSpace = pRes->charSpace;
-    mLineSpace = pRes->lineSpace;
+    mFontSize = pBlock->fontSize;
+    mTextPosition = pBlock->textPosition;
+    mBits.textAlignment = pBlock->textAlignment;
+    mCharSpace = pBlock->charSpace;
+    mLineSpace = pBlock->lineSpace;
 
-    const res::Font* const pResFonts = detail::ConvertOffsToPtr<res::Font>(
-        rBlockSet.pFontList, sizeof(res::FontList));
+    const res::Font* const fonts = detail::ConvertOffsToPtr<res::Font>(
+        resBlockSet.pFontList, sizeof(res::FontList));
 
-    const char* const pFontName = detail::ConvertOffsToPtr<char>(
-        pResFonts, pResFonts[pRes->fontIdx].nameStrOffset);
+    const char* const fontName = detail::ConvertOffsToPtr<char>(
+        fonts, fonts[pBlock->fontIdx].nameStrOffset);
 
-    ut::Font* pFont = rBlockSet.pResAccessor->GetFont(pFontName);
+    ut::Font* pFont = resBlockSet.pResAccessor->GetFont(fontName);
 
     if (pFont != NULL) {
         mpFont = pFont;
     } else {
-        void* pFontBinary = rBlockSet.pResAccessor->GetResource(
-            ArcResourceAccessor::RES_TYPE_FONT, pFontName, NULL);
+        void* fontRes = resBlockSet.pResAccessor->GetResource(
+            ArcResourceAccessor::RES_TYPE_FONT, fontName, NULL);
 
-        if (pFontBinary != NULL) {
-            void* pFontBuf = Layout::AllocMemory(sizeof(ut::ResFont));
+        if (fontRes != NULL) {
+            ut::ResFont* pResFont = Layout::NewObj<ut::ResFont>();
 
-            if (pFontBuf != NULL) {
-                ut::ResFont* pResFont = new (pFontBuf) ut::ResFont();
-                pResFont->SetResource(pFontBinary);
+            if (pResFont != NULL) {
+                bool bSuccess = pResFont->SetResource(fontRes);
+#pragma unused(bSuccess)
 
                 mpFont = pResFont;
                 mBits.bAllocFont = true;
@@ -91,24 +250,17 @@ TextBox::TextBox(const res::TextBox* pRes, const ResBlockSet& rBlockSet)
         }
     }
 
-    void* pMaterialBuf = Layout::AllocMemory(sizeof(Material));
+    const u32* const matOffsTbl = detail::ConvertOffsToPtr<u32>(
+        resBlockSet.pMaterialList, sizeof(res::MaterialList));
 
-    if (pMaterialBuf != NULL) {
-        const u32* const pMatOffsetTbl = detail::ConvertOffsToPtr<u32>(
-            rBlockSet.pMaterialList, sizeof(res::MaterialList));
+    const res::Material* const pResMaterial =
+        detail::ConvertOffsToPtr<res::Material>(
+            resBlockSet.pMaterialList, matOffsTbl[pBlock->materialIdx]);
 
-        const res::Material* const pResMaterial =
-            detail::ConvertOffsToPtr<res::Material>(
-                rBlockSet.pMaterialList, pMatOffsetTbl[pRes->materialIdx]);
-
-        Material* pMaterial =
-            new (pMaterialBuf) Material(pResMaterial, rBlockSet);
-
-        mpMaterial = pMaterial;
-    }
+    mpMaterial = Layout::NewObj<Material>(pResMaterial, resBlockSet);
 }
 
-void TextBox::Init(u16 len) {
+void TextBox::Init(u16 allocStrLen) {
     mTextBuf = NULL;
     mTextBufBytes = 0;
     mTextLen = 0;
@@ -116,18 +268,18 @@ void TextBox::Init(u16 len) {
     mpFont = NULL;
     mFontSize = Size(0.0f, 0.0f);
 
-    SetTextPositionH(HORIZONTALPOSITION_CENTER);
-    SetTextPositionV(VERTICALPOSITION_CENTER);
-
     mLineSpace = 0.0f;
     mCharSpace = 0.0f;
 
     mpTagProcessor = NULL;
 
+    SetTextPositionH(HORIZONTALPOSITION_CENTER);
+    SetTextPositionV(VERTICALPOSITION_CENTER);
+
     std::memset(&mBits, 0, sizeof(mBits));
 
-    if (len > 0) {
-        AllocStringBuffer(len);
+    if (allocStrLen != 0) {
+        AllocStringBuffer(allocStrLen);
     }
 }
 
@@ -135,79 +287,97 @@ TextBox::~TextBox() {
     SetFont(NULL);
 
     if (mpMaterial != NULL && !mpMaterial->IsUserAllocated()) {
-        mpMaterial->~Material();
-        Layout::FreeMemory(mpMaterial);
+        Layout::DeleteObj(mpMaterial);
         mpMaterial = NULL;
     }
 
     FreeStringBuffer();
 }
 
-ut::Color TextBox::GetVtxColor(u32 idx) const {
-    return GetTextColor(idx / TEXTCOLOR_MAX);
+ut::Color TextBox::GetVtxColor(ulong idx) const {
+    return GetTextColor(idx / 2);
 }
 
-ut::Color TextBox::GetTextColor(ulong idx) const {
-    return mTextColors[idx];
+ut::Color TextBox::GetTextColor(ulong type) const {
+    return mTextColors[type];
 }
 
-void TextBox::SetVtxColor(u32 idx, ut::Color color) {
-    SetTextColor(idx / TEXTCOLOR_MAX, color);
+void TextBox::SetVtxColor(ulong idx, ut::Color value) {
+    SetTextColor(idx / 2, value);
 }
 
-void TextBox::SetTextColor(ulong idx, ut::Color color) {
-    mTextColors[idx] = color;
+void TextBox::SetTextColor(ulong type, ut::Color value) {
+    mTextColors[type] = value;
 }
 
-u8 TextBox::GetVtxColorElement(u32 idx) const {
+u8 TextBox::GetVtxColorElement(ulong idx) const {
     return reinterpret_cast<const u8*>(
-        &mTextColors[idx / (4 * TEXTCOLOR_MAX)])[idx % 4];
+        mTextColors)[((idx / 2) & ~3) + (idx & 3)];
 }
 
-void TextBox::SetVtxColorElement(u32 idx, u8 value) {
-    reinterpret_cast<u8*>(&mTextColors[idx / (4 * TEXTCOLOR_MAX)])[idx % 4] =
-        value;
+void TextBox::SetVtxColorElement(ulong idx, u8 value) {
+    reinterpret_cast<u8*>(mTextColors)[((idx / 2) & ~3) + (idx & 3)] = value;
 }
 
-ut::Rect TextBox::GetTextDrawRect(const DrawInfo& rInfo) const {
+ut::Rect TextBox::GetTextDrawRect(const DrawInfo& drawInfo) const {
+#pragma unused(drawInfo)
+
     ut::WideTextWriter writer;
-    ut::Rect rect = GetTextDrawRect(&writer);
-
-    if (rInfo.IsYAxisUp()) {
-        rect.top = -rect.top;
-        rect.bottom = -rect.bottom;
-    }
-
-    return rect;
+    return GetTextDrawRect(&writer);
 }
 
-void TextBox::DrawSelf(const DrawInfo& rInfo) {
+void TextBox::DrawSelf(const DrawInfo& drawInfo) {
     if (mTextBuf == NULL || mpFont == NULL || mpMaterial == NULL) {
         return;
     }
 
-    LoadMtx(rInfo);
+    LoadMtx(drawInfo);
 
     ut::WideTextWriter writer;
-    ut::Rect rect = GetTextDrawRect(&writer);
+    ut::Rect textRect = GetTextDrawRect(&writer);
 
-    ut::Color top =
+    ut::Color topCol =
         detail::MultipleAlpha(mTextColors[TEXTCOLOR_TOP], mGlbAlpha);
-    ut::Color bottom =
+    ut::Color btmCol =
         detail::MultipleAlpha(mTextColors[TEXTCOLOR_BOTTOM], mGlbAlpha);
 
-    writer.SetGradationMode(top != bottom ? ut::CharWriter::GRADMODE_V
-                                          : ut::CharWriter::GRADMODE_NONE);
-    writer.SetTextColor(top, bottom);
+    writer.SetGradationMode(topCol != btmCol ? ut::CharWriter::GRADMODE_V
+                                             : ut::CharWriter::GRADMODE_NONE);
+    writer.SetTextColor(topCol, btmCol);
 
-    ut::Color min = GetColor(mpMaterial->GetTevColor(TEVCOLOR_REG0));
-    ut::Color max = GetColor(mpMaterial->GetTevColor(TEVCOLOR_REG1));
+    ut::Color minCol = GetColor(mpMaterial->GetTevColor(TEVCOLOR_REG0));
+    ut::Color maxCol = GetColor(mpMaterial->GetTevColor(TEVCOLOR_REG1));
+    writer.SetColorMapping(minCol, maxCol);
 
-    writer.SetColorMapping(min, max);
     writer.SetupGX();
+    GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 
-    writer.SetCursor(rect.left, rect.top);
-    writer.Print(mTextBuf, mTextLen);
+    f32 hMag = GetTextAlignMag();
+    const wchar_t* strPos = mTextBuf;
+
+    writer.SetCursor(textRect.left, -textRect.top);
+
+    f32 textWidth = textRect.GetWidth();
+    int remain = mTextLen;
+
+    while (remain > 0) {
+        f32 lineWidth;
+        bool bOver;
+
+        int lineStrNum = CalcLineStrNum(&lineWidth, &writer, strPos, remain,
+                                        mSize.width, &bOver);
+
+        f32 textPosX = textRect.left + hMag * (textWidth - lineWidth);
+        writer.SetCursorX(textPosX);
+        writer.PrintMutable(strPos, lineStrNum);
+
+        if (bOver) {
+            writer.PrintMutable(L"\n", 1);
+        }
+
+        strPos += lineStrNum;
+        remain -= lineStrNum;
+    }
 }
 
 u16 TextBox::GetStringBufferLength() const {
@@ -218,55 +388,59 @@ u16 TextBox::GetStringBufferLength() const {
     return mTextBufBytes / sizeof(wchar_t) - 1;
 }
 
-void TextBox::AllocStringBuffer(u16 len) {
-    if (len == 0) {
+void TextBox::AllocStringBuffer(u16 minLen) {
+    if (minLen == 0) {
         return;
     }
 
-    u16 chars = len + 1;
-    u16 bytes = chars * sizeof(wchar_t);
+    ulong allocLen = minLen;
+    ulong textBufBytes = (minLen + 1) * sizeof(wchar_t);
 
-    if (bytes > mTextBufBytes) {
+    if (textBufBytes > mTextBufBytes) {
         FreeStringBuffer();
-        mTextBuf = static_cast<wchar_t*>(Layout::AllocMemory(bytes));
+
+        mTextBuf = Layout::NewArray<wchar_t>(allocLen + 1);
 
         if (mTextBuf != NULL) {
-            mTextBufBytes = bytes;
+            mTextBufBytes = textBufBytes;
         }
     }
 }
 
 void TextBox::FreeStringBuffer() {
-    if (mTextBuf == NULL) {
-        return;
+    if (mTextBuf != NULL) {
+        Layout::DeletePrimArray(mTextBuf);
+        mTextBuf = NULL;
+        mTextBufBytes = 0;
     }
-
-    Layout::FreeMemory(mTextBuf);
-    mTextBuf = NULL;
-    mTextBufBytes = 0;
 }
 
-u16 TextBox::SetString(const wchar_t* pStr, u16 pos) {
-    return SetString(pStr, pos, std::wcslen(pStr));
+u16 TextBox::SetString(const wchar_t* str, u16 dstIdx) {
+    return SetStringImpl(str, dstIdx, std::wcslen(str));
 }
 
-u16 TextBox::SetString(const wchar_t* pStr, u16 pos, u16 len) {
+u16 TextBox::SetString(const wchar_t* str, u16 dstIdx, u16 strLen) {
+    return SetStringImpl(str, dstIdx, strLen);
+}
+
+u16 TextBox::SetStringImpl(const wchar_t* str, u16 dstIdx, ulong strLen) {
     if (mTextBuf == NULL) {
         return 0;
     }
 
-    const u16 maxlen = GetStringBufferLength();
-    if (pos >= maxlen) {
+    u16 bufLen = GetStringBufferLength();
+
+    if (dstIdx >= bufLen) {
         return 0;
     }
 
-    const u16 chars = ut::Min<u16>(len, maxlen - pos);
-    memcpy(&mTextBuf[pos], pStr, chars * sizeof(wchar_t));
+    ulong cpLen = ut::Min<ulong>(strLen, bufLen - dstIdx);
 
-    mTextLen = pos + chars;
+    std::memcpy(&mTextBuf[dstIdx], str, cpLen * sizeof(wchar_t));
+    mTextLen = dstIdx + cpLen;
     mTextBuf[mTextLen] = L'\0';
 
-    return chars;
+    return cpLen;
 }
 
 const ut::Font* TextBox::GetFont() const {
@@ -275,116 +449,116 @@ const ut::Font* TextBox::GetFont() const {
 
 void TextBox::SetFont(const ut::Font* pFont) {
     if (mBits.bAllocFont) {
-        mpFont->~Font();
-        Layout::FreeMemory(const_cast<ut::Font*>(mpFont));
+        Layout::DeleteObj(const_cast<ut::Font*>(mpFont));
         mBits.bAllocFont = false;
     }
 
     mpFont = pFont;
 
     if (mpFont != NULL) {
-        SetFontSize(Size(static_cast<f32>(mpFont->GetWidth()),
-                         static_cast<f32>(mpFont->GetHeight())));
+        SetFontSize(Size(mpFont->GetWidth(), mpFont->GetHeight()));
     } else {
         SetFontSize(Size(0.0f, 0.0f));
     }
 }
 
+void TextBox::LoadMtx(const DrawInfo& drawInfo) {
+    math::MTX34 mtx;
+
+    if (drawInfo.IsMultipleViewMtxOnDraw()) {
+        PSMTXConcat(drawInfo.GetViewMtx(), mGlbMtx, mtx);
+    } else {
+        PSMTXCopy(mGlbMtx, mtx);
+    }
+
+    ReverseYAxis(&mtx);
+
+    GXLoadPosMtxImm(mtx, GX_PNMTX0);
+    GXSetCurrentMtx(GX_PNMTX0);
+}
+
 ut::Rect TextBox::GetTextDrawRect(ut::WideTextWriter* pWriter) const {
-    ut::Rect rect;
+    ut::Rect textRect;
 
     pWriter->SetCursor(0.0f, 0.0f);
-
     pWriter->SetFont(*mpFont);
     pWriter->SetFontSize(mFontSize.width, mFontSize.height);
-
     pWriter->SetLineSpace(mLineSpace);
     pWriter->SetCharSpace(mCharSpace);
-
-    pWriter->SetWidthLimit(mSize.width);
-    pWriter->SetDrawFlag(MakeDrawFlag());
 
     if (mpTagProcessor != NULL) {
         pWriter->SetTagProcessor(mpTagProcessor);
     }
 
-    pWriter->CalcStringRect(&rect, mTextBuf, mTextLen);
+    CalcStringRect(&textRect, pWriter, mTextBuf, mTextLen, mSize.width);
 
-    math::VEC2 base = GetVtxPos();
-    rect.MoveTo(base.x + (mSize.width - rect.GetWidth()) * GetTextMagH(),
-                base.y + (mSize.height - rect.GetHeight()) * GetTextMagV());
+    Size textSize(textRect.GetWidth(), textRect.GetHeight());
+    math::VEC2 ltPos = GetVtxPos();
 
-    return rect;
+    ltPos.x += (mSize.width - textSize.width) * GetTextMagH();
+    ltPos.y -= (mSize.height - textSize.height) * GetTextMagV();
+
+    textRect.left = ltPos.x;
+    textRect.top = ltPos.y;
+    textRect.right = ltPos.x + textSize.width;
+    textRect.bottom = ltPos.y - textSize.height;
+
+    return textRect;
 }
 
 f32 TextBox::GetTextMagH() const {
-    f32 mag = 0.0f;
-
     switch (GetTextPositionH()) {
     default:
     case HORIZONTALPOSITION_LEFT: {
-        mag = 0.0f;
-        break;
+        return 0.0f;
     }
 
     case HORIZONTALPOSITION_CENTER: {
-        mag = 0.5f;
-        break;
+        return 0.5f;
     }
 
     case HORIZONTALPOSITION_RIGHT: {
-        mag = 1.0f;
-        break;
+        return 1.0f;
     }
     }
-
-    return mag;
 }
 
 f32 TextBox::GetTextMagV() const {
-    f32 mag = 0.0f;
-
     switch (GetTextPositionV()) {
     default:
     case VERTICALPOSITION_TOP: {
-        mag = 0.0f;
-        break;
+        return 0.0f;
     }
 
     case VERTICALPOSITION_CENTER: {
-        mag = 0.5f;
-        break;
+        return 0.5f;
     }
 
     case VERTICALPOSITION_BOTTOM: {
-        mag = 1.0f;
-        break;
+        return 1.0f;
     }
     }
-
-    return mag;
 }
 
-u32 TextBox::MakeDrawFlag() const {
-    u32 flag = 0;
-
-    switch (GetTextPositionH()) {
-    case HORIZONTALPOSITION_CENTER: {
-        flag |= ut::WideTextWriter::DRAWFLAG_ALIGN_TEXT_CENTER;
-        break;
+f32 TextBox::GetTextAlignMag() const {
+    switch (GetTextAlignment()) {
+    default:
+    case 0: {
+        return GetTextMagH();
     }
 
-    case HORIZONTALPOSITION_RIGHT: {
-        flag |= ut::WideTextWriter::DRAWFLAG_ALIGN_TEXT_RIGHT;
-        break;
+    case 1: {
+        return 0.0f;
     }
 
-    default: {
-        break;
-    }
+    case 2: {
+        return 0.5f;
     }
 
-    return flag;
+    case 3: {
+        return 1.0f;
+    }
+    }
 }
 
 } // namespace lyt

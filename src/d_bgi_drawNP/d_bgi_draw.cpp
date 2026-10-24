@@ -490,16 +490,16 @@ void dBgiDraw_c::setTex(nw4r::g3d::ResTex tex, nw4r::g3d::ResPltt pltt,
                         const char *texName, const char *plttName, f32 scaleX,
                         f32 scaleY, f32 transX, f32 transY) {
     nw4r::g3d::ResMat mat = getResMat(matName);
-    mat.ReleaseTexByName(texName, strlen(texName));
-    mat.ReleasePlttByName(plttName, strlen(plttName));
+    mat.ReleaseTex(texName, strlen(texName));
+    mat.ReleasePltt(plttName, strlen(plttName));
     if (mIsPlayerHouse) {
         nw4r::g3d::ResTexPlttInfo info =
             mat.GetResTexPlttInfo(getTexIdx(mat, texName));
         info.ref().wrap_s = (GXTexWrapMode)wrapS;
         info.ref().wrap_t = (GXTexWrapMode)wrapT;
     }
-    mat.BindTexByName(tex, texName);
-    mat.BindPlttByName(pltt, plttName);
+    mat.ForceBindTex(tex, texName);
+    mat.ForceBindPltt(pltt, plttName);
     setTexSrt(mat, texName, scaleX, scaleY, transX, transY);
 }
 
@@ -646,18 +646,18 @@ void dBgiDraw_c::calcRequests() {
                     nw4r::g3d::ResMatTevColor tev =
                         cma.GetResMatTevColor(false);
                     GXColor color;
-                    if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                    if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                         color.a = mWallFlag ? 0 : 0xFF;
-                        tev.GXSetTevKColor(GX_KCOLOR1, color);
+                        tev.GXSetTevColor(GX_TEVREG0, color);
                         tev.DCStore(false);
                     }
                 } else {
                     nw4r::g3d::ResMatTevColor tev =
                         mdl.GetResMat(wallMat).GetResMatTevColor();
                     GXColor color;
-                    if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                    if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                         color.a = mWallFlag ? 0 : 0xFF;
-                        tev.GXSetTevKColor(GX_KCOLOR1, color);
+                        tev.GXSetTevColor(GX_TEVREG0, color);
                         tev.DCStore(false);
                     }
                 }
@@ -671,18 +671,18 @@ void dBgiDraw_c::calcRequests() {
                     nw4r::g3d::ResMatTevColor tev =
                         cma.GetResMatTevColor(false);
                     GXColor color;
-                    if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                    if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                         color.a = mCarpetFlag ? 0 : 0xFF;
-                        tev.GXSetTevKColor(GX_KCOLOR1, color);
+                        tev.GXSetTevColor(GX_TEVREG0, color);
                         tev.DCStore(false);
                     }
                 } else {
                     nw4r::g3d::ResMatTevColor tev =
                         mdl.GetResMat(carpetMat).GetResMatTevColor();
                     GXColor color;
-                    if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                    if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                         color.a = mCarpetFlag ? 0 : 0xFF;
-                        tev.GXSetTevKColor(GX_KCOLOR1, color);
+                        tev.GXSetTevColor(GX_TEVREG0, color);
                         tev.DCStore(false);
                     }
                 }
@@ -1076,18 +1076,18 @@ int dBgiDraw_c::draw() {
             if (cma.IsValid()) {
                 nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor(false);
                 GXColor color;
-                if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                     color.a = dBgiDraw::l_HIO.mRiverAlpha;
-                    tev.GXSetTevKColor(GX_KCOLOR1, color);
+                    tev.GXSetTevColor(GX_TEVREG0, color);
                     tev.DCStore(false);
                 }
             } else {
                 nw4r::g3d::ResMatTevColor tev =
                     mdl.GetResMat(riverMat).GetResMatTevColor();
                 GXColor color;
-                if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                     color.a = dBgiDraw::l_HIO.mRiverAlpha;
-                    tev.GXSetTevKColor(GX_KCOLOR1, color);
+                    tev.GXSetTevColor(GX_TEVREG0, color);
                     tev.DCStore(false);
                 }
             }
@@ -1199,12 +1199,12 @@ void dBgiDraw_c::setSunColor(const mColor &color) {
         nw4r::g3d::ScnMdl::CopiedMatAccess cma(scnMdl, id);
         if (cma.IsValid()) {
             nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor(false);
-            tev.GXSetTevKColor(GX_KCOLOR1, col);
+            tev.GXSetTevColor(GX_TEVREG0, col);
             tev.DCStore(false);
         } else {
             nw4r::g3d::ResMatTevColor tev =
                 mdl.GetResMat(name).GetResMatTevColor();
-            tev.GXSetTevKColor(GX_KCOLOR1, col);
+            tev.GXSetTevColor(GX_TEVREG0, col);
             tev.DCStore(false);
         }
     }
@@ -1242,12 +1242,12 @@ void dBgiDraw_c::calcSun(const mColor &color) {
         nw4r::g3d::ScnMdl::CopiedMatAccess cma(scnMdl, id);
         if (cma.IsValid()) {
             nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor(false);
-            tev.GXSetTevKColor(GX_KCOLOR1, col);
+            tev.GXSetTevColor(GX_TEVREG0, col);
             tev.DCStore(false);
         } else {
             nw4r::g3d::ResMatTevColor tev =
                 mdl.GetResMat(name).GetResMatTevColor();
-            tev.GXSetTevKColor(GX_KCOLOR1, col);
+            tev.GXSetTevColor(GX_TEVREG0, col);
             tev.DCStore(false);
         }
     }
@@ -1412,18 +1412,18 @@ BOOL dBgiDraw_c::block_c::draw(mAllocator_c *allocator) {
             if (cma.IsValid()) {
                 nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor(false);
                 GXColor color;
-                if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                     color.a = dBgiDraw::l_HIO.mRiverAlpha;
-                    tev.GXSetTevKColor(GX_KCOLOR1, color);
+                    tev.GXSetTevColor(GX_TEVREG0, color);
                     tev.DCStore(false);
                 }
             } else {
                 nw4r::g3d::ResMatTevColor tev =
                     mdl.GetResMat(riverMat).GetResMatTevColor();
                 GXColor color;
-                if (tev.GXGetTevKColor(GX_KCOLOR1, &color)) {
+                if (tev.GXGetTevColor(GX_TEVREG0, &color)) {
                     color.a = dBgiDraw::l_HIO.mRiverAlpha;
-                    tev.GXSetTevKColor(GX_KCOLOR1, color);
+                    tev.GXSetTevColor(GX_TEVREG0, color);
                     tev.DCStore(false);
                 }
             }

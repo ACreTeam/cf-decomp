@@ -1,11 +1,19 @@
-#include <nw4r/snd.h>
+#include <nw4r/snd/snd_TaskThread.h>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_TaskManager.h>
+
+#include <revolution/os.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
 TaskThread::TaskThread()
-    : mStackEnd(NULL), mFinishFlag(false), mCreateFlag(false) {}
+    : mStackEnd(nullptr), mFinishFlag(false), mCreateFlag(false) {
+}
 
 TaskThread::~TaskThread() {
     if (mCreateFlag) {
@@ -13,22 +21,27 @@ TaskThread::~TaskThread() {
     }
 }
 
-bool TaskThread::Create(s32 priority, void* pStack, u32 stackSize) {
+bool TaskThread::Create(s32 priority, void *stack, u32 stackSize) {
+    NW4RAssertPointerNonnull_Line(59, stack);
+    NW4RAssertAligned_Line(60, stack, 4);
+
     if (mCreateFlag) {
         Destroy();
     }
 
-    if (!OSCreateThread(&mThread, ThreadFunc, &mThread,
-                        static_cast<u8*>(pStack) + stackSize, stackSize,
-                        priority, 0)) {
+    BOOL result = OSCreateThread(&mThread, &ThreadFunc, this,
+                                 static_cast<byte_t *>(stack) + stackSize,
+                                 stackSize, priority, 0);
+    if (!result) {
         return false;
     }
 
-    mStackEnd = static_cast<u32*>(pStack);
+    mStackEnd = static_cast<u32 *>(stack);
     mFinishFlag = false;
     mCreateFlag = true;
 
     OSResumeThread(&mThread);
+
     return true;
 }
 
@@ -39,15 +52,19 @@ void TaskThread::Destroy() {
 
     mFinishFlag = true;
     TaskManager::GetInstance().CancelWaitTask();
-    OSJoinThread(&mThread, NULL);
+
+    BOOL result = OSJoinThread(&mThread, nullptr);
+    NW4RAssert_Line(105, result);
+
     mCreateFlag = false;
 }
 
-void* TaskThread::ThreadFunc(void* pArg) {
-    TaskThread* p = static_cast<TaskThread*>(pArg);
-    p->ThreadProc();
+void *TaskThread::ThreadFunc(void *arg) {
+    TaskThread *taskThread = static_cast<TaskThread *>(arg);
 
-    return NULL;
+    taskThread->ThreadProc();
+
+    return nullptr;
 }
 
 void TaskThread::ThreadProc() {
@@ -59,9 +76,10 @@ void TaskThread::ThreadProc() {
         }
 
         TaskManager::GetInstance().ExecuteTask();
+
+        NW4RAssert_Line(160, *mStackEnd == OS_THREAD_STACK_MAGIC);
     }
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

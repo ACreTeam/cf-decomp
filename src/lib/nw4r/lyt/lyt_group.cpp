@@ -11,21 +11,21 @@ namespace lyt {
  * Group
  *
  ******************************************************************************/
-Group::Group(const res::Group* pRes, Pane* pRootPane) {
+Group::Group(const res::Group* pResGroup, Pane* pRootPane) {
     Init();
 
-    std::strncpy(mName, pRes->name, NW4R_LYT_RES_NAME_LEN);
+    std::strncpy(mName, pResGroup->name, NW4R_LYT_RES_NAME_LEN);
     mName[NW4R_LYT_RES_NAME_LEN] = '\0';
 
-    const char* pNameBase =
-        detail::ConvertOffsToPtr<char>(pRes, sizeof(res::Group));
+    const char* const paneNameBase =
+        detail::ConvertOffsToPtr<char>(pResGroup, sizeof(res::Group));
 
-    for (int i = 0; i < pRes->paneNum; i++) {
-        Pane* pResult = pRootPane->FindPaneByName(
-            pNameBase + i * NW4R_LYT_RES_NAME_LEN, true);
+    for (int i = 0; i < pResGroup->paneNum; i++) {
+        Pane* pFindPane = pRootPane->FindPaneByName(
+            paneNameBase + i * NW4R_LYT_RES_NAME_LEN, true);
 
-        if (pResult != NULL) {
-            AppendPane(pResult);
+        if (pFindPane != NULL) {
+            AppendPane(pFindPane);
         }
     }
 }
@@ -35,22 +35,21 @@ void Group::Init() {
 }
 
 Group::~Group() {
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mPaneLinkList, {
-        mPaneLinkList.Erase(it);
-        Layout::FreeMemory(&*it);
-    })
+    for (detail::PaneLinkList::Iterator it = mPaneLinkList.GetBeginIter();
+         it != mPaneLinkList.GetEndIter();) {
+        detail::PaneLinkList::Iterator currIt = it++;
+        mPaneLinkList.Erase(currIt);
+        Layout::DeleteObj(&*currIt);
+    }
 }
 
 void Group::AppendPane(Pane* pPane) {
-    void* pBuffer = Layout::AllocMemory(sizeof(detail::PaneLink));
-    if (pBuffer == NULL) {
-        return;
+    detail::PaneLink* pPaneLink = Layout::NewObj<detail::PaneLink>();
+
+    if (pPaneLink != NULL) {
+        pPaneLink->mTarget = pPane;
+        mPaneLinkList.PushBack(pPaneLink);
     }
-
-    detail::PaneLink* pLink = new (pBuffer) detail::PaneLink();
-    pLink->mTarget = pPane;
-
-    mPaneLinkList.PushBack(pLink);
 }
 
 /******************************************************************************
@@ -59,26 +58,28 @@ void Group::AppendPane(Pane* pPane) {
  *
  ******************************************************************************/
 GroupContainer::~GroupContainer() {
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mGroupList, {
-        mGroupList.Erase(it);
-        
-        if (!it->IsUserAllocated()) {
-            it->~Group();
-            Layout::FreeMemory(&*it);
+    for (GroupList::Iterator it = mGroupList.GetBeginIter();
+         it != mGroupList.GetEndIter();) {
+        GroupList::Iterator currIt = it++;
+        mGroupList.Erase(currIt);
+
+        if (!currIt->IsUserAllocated()) {
+            Layout::DeleteObj(&*currIt);
         }
-    })
+    }
 }
 
 void GroupContainer::AppendGroup(Group* pGroup) {
     mGroupList.PushBack(pGroup);
 }
 
-Group* GroupContainer::FindGroupByName(const char* pName) {
-    NW4R_UT_LINKLIST_FOREACH (it, mGroupList, {
-        if (detail::EqualsResName(it->GetName(), pName)) {
+Group* GroupContainer::FindGroupByName(const char* findName) {
+    for (GroupList::Iterator it = mGroupList.GetBeginIter();
+         it != mGroupList.GetEndIter(); it++) {
+        if (detail::EqualsResName(it->GetName(), findName)) {
             return &*it;
         }
-    })
+    }
 
     return NULL;
 }

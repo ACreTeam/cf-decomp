@@ -1,32 +1,47 @@
-#include <nw4r/snd.h>
+#include <nw4r/snd/snd_Channel.h>
 
-#include <revolution/ax.h>
+#include <types.h>
+
+#include <nw4r/snd/snd_EnvGenerator.h>
+#include <nw4r/snd/snd_global.h>
+#include <nw4r/snd/snd_InstancePool.h>
+#include <nw4r/snd/snd_Lfo.h>
+#include <nw4r/snd/snd_MoveValue.h>
+#include <nw4r/snd/snd_Util.h>
+#include <nw4r/snd/snd_Voice.h>
+#include <nw4r/snd/snd_VoiceManager.h>
+#include <nw4r/snd/snd_WaveFile.h>
+
+#include <nw4r/ut/ut_Lock.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-ChannelManager& ChannelManager::GetInstance() {
+ChannelManager &ChannelManager::GetInstance() {
     static ChannelManager instance;
+
     return instance;
 }
 
-ChannelManager::ChannelManager() : mInitialized(false), mChannelCount(0) {}
-
-u32 ChannelManager::GetRequiredMemSize() {
-    return (AXGetMaxVoices() + VOICE_MARGIN) * sizeof(Channel);
+ChannelManager::ChannelManager() : mInitialized(false), mChannelCount(0) {
 }
 
-void ChannelManager::Setup(void* pWork, u32 workSize) {
+u32 ChannelManager::GetRequiredMemSize(int channelCount) {
+    return sizeof(Channel) * (1 + channelCount);
+}
+
+void ChannelManager::Setup(void *mem, u32 memSize) {
     ut::AutoInterruptLock lock;
 
     if (mInitialized) {
         return;
     }
 
-    mChannelCount = mPool.Create(pWork, workSize);
-    mMem = pWork;
-    mMemSize = workSize;
+    mChannelCount = mPool.Create(mem, memSize);
+    mMem = mem;
+    mMemSize = memSize;
     mInitialized = true;
 }
 
@@ -37,61 +52,73 @@ void ChannelManager::Shutdown() {
         return;
     }
 
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mChannelList, { it->Stop(); })
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mChannelList) {
+        __decltype__(itr) curItr = itr++;
+
+        curItr->Stop();
+    }
+
+    NW4RAssert_Line(78, mChannelList.IsEmpty());
 
     mPool.Destroy(mMem, mMemSize);
     mInitialized = false;
 }
 
-Channel* ChannelManager::Alloc() {
-    Channel* pChannel = mPool.Alloc();
-    mChannelList.PushBack(pChannel);
-    return pChannel;
+Channel *ChannelManager::Alloc() {
+    Channel *channel = mPool.Alloc();
+
+    mChannelList.PushBack(channel);
+    return channel;
 }
 
-void ChannelManager::Free(Channel* pChannel) {
-    mChannelList.Erase(pChannel);
-    mPool.Free(pChannel);
+void ChannelManager::Free(Channel *channel) {
+    mChannelList.Erase(channel);
+    mPool.Free(channel);
 }
 
 void ChannelManager::UpdateAllChannel() {
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mChannelList, { it->Update(true); }); //
+    NW4R_RANGE_FOR_NO_AUTO_INC(itr, mChannelList) {
+        __decltype__(itr) curItr = itr++;
+
+        curItr->Update(true);
+    }
 }
 
 Channel::Channel()
-    : mPauseFlag(false), mActiveFlag(false), mAllocFlag(false), mVoice(NULL) {}
+    : mPauseFlag(false), mActiveFlag(false), mAllocFlag(false),
+      mVoice(nullptr) {
+}
 
-Channel::~Channel() {}
+Channel::~Channel() {
+}
 
-void Channel::InitParam(ChannelCallback pCallback, u32 callbackArg) {
-    mNextLink = NULL;
-
-    mCallback = pCallback;
-    mCallbackData = callbackArg;
-
+void Channel::InitParam(Callback *callback, u32 callbackData) {
+    mNextLink = nullptr;
+    mCallback = callback;
+    mCallbackData = callbackData;
+    mWaveDataLocationCallback = nullptr;
+    mWaveInfo = nullptr;
     mPauseFlag = false;
     mAutoSweep = true;
     mReleasePriorityFixFlag = false;
-
+    mReleaseIgnoreFlag = false;
     mLength = 0;
     mKey = KEY_INIT;
     mOriginalKey = ORIGINAL_KEY_INIT;
-
     mInitVolume = 1.0f;
     mInitPan = 0.0f;
     mInitSurroundPan = 0.0f;
     mTune = 1.0f;
-
     mUserVolume = 1.0f;
     mUserPitch = 0.0f;
     mUserPitchRatio = 1.0f;
     mUserPan = 0.0f;
     mUserSurroundPan = 0.0f;
     mUserLpfFreq = 0.0f;
-
+    mBiquadType = 0;
+    mBiquadValue = 0.0f;
     mRemoteFilter = 0;
     mOutputLineFlag = OUTPUT_LINE_MAIN;
-
     mMainOutVolume = 1.0f;
     mMainSend = 0.0f;
 
@@ -99,7 +126,7 @@ void Channel::InitParam(ChannelCallback pCallback, u32 callbackArg) {
         mFxSend[i] = 0.0f;
     }
 
-    for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
+    for (int i = 0; i < 4; i++) {
         mRemoteOutVolume[i] = 1.0f;
         mRemoteSend[i] = 0.0f;
         mRemoteFxSend[i] = 0.0f;
@@ -111,46 +138,52 @@ void Channel::InitParam(ChannelCallback pCallback, u32 callbackArg) {
     mSweepLength = 0;
     mSweepCounter = 0;
 
-    mEnvelope.Init();
+    mEnvelope.Init(EnvGenerator::VOLUME_INIT);
     mLfo.GetParam().Init();
 
     mLfoTarget = LFO_TARGET_PITCH;
     mPanMode = PAN_MODE_DUAL;
     mPanCurve = PAN_CURVE_SQRT;
+    mAlternateAssign = 0;
 }
 
-void Channel::Update(bool periodic) {
+void Channel::Update(bool doPeriodicProc) {
     if (!mActiveFlag) {
         return;
     }
 
     if (mPauseFlag) {
-        periodic = false;
+        doPeriodicProc = false;
     }
 
     f32 lfoValue = mLfo.GetValue();
+
     mSilenceVolume.Update();
 
     f32 volume = 1.0f;
     volume *= mInitVolume;
     volume *= mUserVolume;
-    volume *= mSilenceVolume.GetValue() / static_cast<f32>(SILENCE_VOLUME_MAX);
+    volume *=
+        mSilenceVolume.GetValue() / static_cast<float>(SILENCE_VOLUME_MAX);
 
     f32 veInitVolume = 1.0f;
     veInitVolume *= Util::CalcVolumeRatio(mEnvelope.GetValue());
+
     if (mLfoTarget == LFO_TARGET_VOLUME) {
-        veInitVolume *= Util::CalcVolumeRatio(VOLUME_MAX_DB * lfoValue);
+        veInitVolume *= Util::CalcVolumeRatio(lfoValue * 6.0f);
     }
 
     if (mEnvelope.GetStatus() == EnvGenerator::STATUS_RELEASE) {
-        if (mCallback != NULL) {
+        if (mCallback) {
             if (veInitVolume == 0.0f) {
                 Stop();
                 return;
             }
-        } else if (volume * veInitVolume == 0.0f) {
-            Stop();
-            return;
+        } else {
+            if (volume * veInitVolume == 0.0f) {
+                Stop();
+                return;
+            }
         }
     }
 
@@ -166,7 +199,7 @@ void Channel::Update(bool periodic) {
     pitchRatio *= mTune;
     pitchRatio *= mUserPitchRatio;
 
-    f32 pitch = Util::CalcPitchRatio(Util::MICROTONE_MAX * cent);
+    f32 pitch = Util::CalcPitchRatio(cent * 256.0f);
     pitch *= pitchRatio;
 
     f32 pan = 0.0f;
@@ -198,21 +231,19 @@ void Channel::Update(bool periodic) {
         fxSend[i] += mFxSend[i];
     }
 
-    f32 remoteOutVolume[WPAD_MAX_CONTROLLERS];
-    f32 remoteSend[WPAD_MAX_CONTROLLERS];
-    f32 remoteFxSend[WPAD_MAX_CONTROLLERS];
-    for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
+    f32 remoteOutVolume[4];
+    f32 remoteSend[4];
+    f32 remoteFxSend[4];
+    for (int i = 0; i < 4; i++) {
         remoteOutVolume[i] = 1.0f;
         remoteOutVolume[i] *= mRemoteOutVolume[i];
-
         remoteSend[i] = 0.0f;
         remoteSend[i] += mRemoteSend[i];
-
         remoteFxSend[i] = 0.0f;
         remoteFxSend[i] += mRemoteFxSend[i];
     }
 
-    if (periodic) {
+    if (doPeriodicProc) {
         if (mAutoSweep) {
             UpdateSweep(3);
         }
@@ -225,11 +256,12 @@ void Channel::Update(bool periodic) {
 
     f32 veTargetVolume = 1.0f;
     veTargetVolume *= Util::CalcVolumeRatio(mEnvelope.GetValue());
+
     if (mLfoTarget == LFO_TARGET_VOLUME) {
-        veTargetVolume *= Util::CalcVolumeRatio(VOLUME_MAX_DB * nextLfoValue);
+        veTargetVolume *= Util::CalcVolumeRatio(nextLfoValue * 6.0f);
     }
 
-    if (mVoice != NULL) {
+    if (mVoice) {
         mVoice->SetPanMode(mPanMode);
         mVoice->SetPanCurve(mPanCurve);
         mVoice->SetVolume(volume);
@@ -238,6 +270,7 @@ void Channel::Update(bool periodic) {
         mVoice->SetPan(pan);
         mVoice->SetSurroundPan(surroundPan);
         mVoice->SetLpfFreq(lpfFreq);
+        mVoice->SetBiquadFilter(mBiquadType, mBiquadValue);
         mVoice->SetRemoteFilter(remoteFilter);
         mVoice->SetOutputLine(mOutputLineFlag);
         mVoice->SetMainOutVolume(mainOutVolume);
@@ -247,30 +280,30 @@ void Channel::Update(bool periodic) {
             mVoice->SetFxSend(static_cast<AuxBus>(i), fxSend[i]);
         }
 
-        for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
+        for (int i = 0; i < 4; i++) {
             mVoice->SetRemoteOutVolume(i, remoteOutVolume[i]);
             mVoice->SetRemoteSend(i, remoteSend[i]);
-            // @bug Should use remoteFxSend
+            // The original also uses remoteSend for the remote effect send.
             mVoice->SetRemoteFxSend(i, remoteSend[i]);
         }
     }
 }
 
-void Channel::Start(const WaveData& rData, int length, u32 offset) {
+void Channel::Start(WaveData const &waveParam, int length, u32 startOffset) {
     mLength = length;
 
     mLfo.Reset();
-    mEnvelope.Reset();
+    mEnvelope.Reset(EnvGenerator::VOLUME_INIT);
     mSweepCounter = 0;
 
-    mVoice->Setup(rData, offset);
+    mVoice->Setup(waveParam, startOffset);
     mVoice->Start();
     mActiveFlag = true;
 }
 
 void Channel::Release() {
     if (mEnvelope.GetStatus() != EnvGenerator::STATUS_RELEASE) {
-        if (mVoice != NULL && !mReleasePriorityFixFlag) {
+        if (mVoice && !mReleasePriorityFixFlag) {
             mVoice->SetPriority(PRIORITY_RELEASE);
         }
 
@@ -280,25 +313,36 @@ void Channel::Release() {
     mPauseFlag = false;
 }
 
+void Channel::NoteOff() {
+    if (!mReleaseIgnoreFlag) {
+        Release();
+    }
+}
+
 void Channel::Stop() {
-    if (mVoice == NULL) {
+    if (!mVoice) {
         return;
     }
 
     mVoice->Stop();
     mVoice->Free();
-    mVoice = NULL;
+
+    mVoice = nullptr;
 
     mPauseFlag = false;
     mActiveFlag = false;
 
+    if (mCallback) {
+        (*mCallback)(this, CALLBACK_STATUS_STOPPED, mCallbackData);
+    }
+
+    if (mWaveDataLocationCallback) {
+        mWaveDataLocationCallback->at_0x0c(mWaveInfo);
+    }
+
     if (mAllocFlag) {
         mAllocFlag = false;
         ChannelManager::GetInstance().Free(this);
-    }
-
-    if (mCallback != NULL) {
-        mCallback(this, CALLBACK_STATUS_STOPPED, mCallbackData);
     }
 }
 
@@ -310,9 +354,9 @@ void Channel::UpdateSweep(int count) {
     }
 }
 
-void Channel::SetSweepParam(f32 pitch, int time, bool autoUpdate) {
-    mSweepPitch = pitch;
-    mSweepLength = time;
+void Channel::SetSweepParam(f32 sweepPitch, int sweepTime, bool autoUpdate) {
+    mSweepPitch = sweepPitch;
+    mSweepLength = sweepTime;
     mAutoSweep = autoUpdate;
     mSweepCounter = 0;
 }
@@ -326,86 +370,95 @@ f32 Channel::GetSweepValue() const {
         return 0.0f;
     }
 
-    f32 sweep = mSweepPitch;
-    sweep *= mSweepLength - mSweepCounter;
+    f32 sweep = mSweepPitch * (mSweepLength - mSweepCounter);
+
+    NW4RAssert_Line(520, mSweepLength != 0);
+
     sweep /= mSweepLength;
 
     return sweep;
 }
 
-void Channel::VoiceCallbackFunc(Voice* pDropVoice,
-                                Voice::VoiceCallbackStatus status,
-                                void* pCallbackArg) {
-    ChannelCallbackStatus channelStatus;
+void Channel::SetBiquadFilter(int type, f32 value) {
+    mBiquadType = type;
+    mBiquadValue = value;
+}
 
+void Channel::VoiceCallbackFunc(Voice *voice, Voice::VoiceCallbackStatus status,
+                                void *arg) {
+    NW4RAssertPointerNonnull_Line(547, arg);
+
+    ChannelCallbackStatus chStatus;
     switch (status) {
-    case Voice::CALLBACK_STATUS_FINISH_WAVE: {
-        channelStatus = CALLBACK_STATUS_FINISH;
-        pDropVoice->Free();
+    case Voice::CALLBACK_STATUS_FINISH_WAVE:
+        chStatus = CALLBACK_STATUS_FINISH;
+        voice->Free();
+        break;
+
+    case Voice::CALLBACK_STATUS_CANCEL:
+        chStatus = CALLBACK_STATUS_CANCEL;
+        voice->Free();
+        break;
+
+    case Voice::CALLBACK_STATUS_DROP_VOICE:
+        chStatus = CALLBACK_STATUS_DROP;
+        break;
+
+    case Voice::CALLBACK_STATUS_DROP_DSP:
+        chStatus = CALLBACK_STATUS_DROP;
         break;
     }
 
-    case Voice::CALLBACK_STATUS_CANCEL: {
-        channelStatus = CALLBACK_STATUS_CANCEL;
-        pDropVoice->Free();
-        break;
-    }
-    case Voice::CALLBACK_STATUS_DROP_VOICE: {
-        channelStatus = CALLBACK_STATUS_DROP;
-        break;
+    Channel *channel = static_cast<Channel *>(arg);
+
+    if (channel->mCallback) {
+        (*channel->mCallback)(channel, chStatus, channel->mCallbackData);
     }
 
-    case Voice::CALLBACK_STATUS_DROP_DSP: {
-        channelStatus = CALLBACK_STATUS_DROP;
-        break;
-    }
+    if (channel->mWaveDataLocationCallback) {
+        channel->mWaveDataLocationCallback->at_0x0c(channel->mWaveInfo);
     }
 
-    Channel* pChannel = static_cast<Channel*>(pCallbackArg);
+    channel->mVoice = nullptr;
+    channel->mPauseFlag = false;
+    channel->mActiveFlag = false;
+    channel->mAllocFlag = false;
 
-    if (pChannel->mCallback != NULL) {
-        pChannel->mCallback(pChannel, channelStatus, pChannel->mCallbackData);
-    }
-
-    pChannel->mVoice = NULL;
-    pChannel->mPauseFlag = false;
-    pChannel->mActiveFlag = false;
-    pChannel->mAllocFlag = false;
-
-    ChannelManager::GetInstance().Free(pChannel);
+    ChannelManager::GetInstance().Free(channel);
 }
 
-Channel* Channel::AllocChannel(int channels, int voices, int priority,
-                               ChannelCallback pCallback, u32 callbackArg) {
-    Channel* pChannel = ChannelManager::GetInstance().Alloc();
-    if (pChannel == NULL) {
-        return NULL;
+Channel *Channel::AllocChannel(int voiceChannelCount, int voiceOutCount,
+                               int priority, Callback *callback,
+                               u32 callbackData) {
+    NW4RAssertHeaderClampedLRValue_Line(606, priority, 0, 255);
+
+    Channel *channel = ChannelManager::GetInstance().Alloc();
+    if (!channel) {
+        NW4RCheckMessage_Line(611, channel, "Channel Allocation failed!");
+        return nullptr;
     }
 
-    pChannel->mAllocFlag = true;
+    channel->mAllocFlag = true;
 
-    Voice* pVoice = VoiceManager::GetInstance().AllocVoice(
-        channels, voices, priority, VoiceCallbackFunc, pChannel);
-
-    if (pVoice == NULL) {
-        ChannelManager::GetInstance().Free(pChannel);
-        return NULL;
+    Voice *voice = VoiceManager::GetInstance().AllocVoice(
+        voiceChannelCount, voiceOutCount, priority, VoiceCallbackFunc, channel);
+    if (!voice) {
+        ChannelManager::GetInstance().Free(channel);
+        return nullptr;
     }
 
-    pChannel->mVoice = pVoice;
-    pChannel->InitParam(pCallback, callbackArg);
-    return pChannel;
+    channel->mVoice = voice;
+    channel->InitParam(callback, callbackData);
+
+    return channel;
 }
 
-void Channel::FreeChannel(Channel* pChannel) {
-    if (pChannel == NULL) {
-        return;
+void Channel::FreeChannel(Channel *channel) {
+    if (channel) {
+        channel->mCallback = nullptr;
+        channel->mCallbackData = 0;
     }
-
-    pChannel->mCallback = NULL;
-    pChannel->mCallbackData = 0;
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

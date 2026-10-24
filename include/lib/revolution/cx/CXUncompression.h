@@ -9,6 +9,7 @@ extern "C" {
 
 u32 CXGetUncompressedSize(const void* src);
 void CXUncompressLZ(const void* src, void* dst);
+void CXUncompressHuffman(const void *src, void *dst);
 
 #ifdef __cplusplus
 }

@@ -1,28 +1,18 @@
-#include "nw4r/snd/snd_BiquadFilterPreset.h"
-
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_BiquadFilterPreset.h>
 
 #include <types.h>
 
-#include "nw4r/snd/snd_BiquadFilterCallback.h"
+#include <nw4r/snd/snd_BiquadFilterCallback.h>
 
-#include "nw4r/ut/ut_algorithm.h" // ut::Clamp
+#include <nw4r/ut/ut_algorithm.h>
 
-/*******************************************************************************
- * variables
- */
-
-namespace nw4r { namespace snd { namespace detail
-{
-	// .rodata
-
-	// clang-format off
+namespace nw4r {
+namespace snd {
+namespace detail {
+// clang-format off
 	BiquadFilterCallback::BiquadCoef const
 	BiquadFilterLpf::coefTable[COEF_TABLE_SIZE] =
 	{
-		/* b0      b1      b2      a1      a2 */
 		{0x3ab3, 0x7566, 0x3ab3, 0x83b8, 0xc391},
 		{0x371b, 0x6e36, 0x371b, 0x8bf8, 0xca8c},
 		{0x33c7, 0x678d, 0x33c7, 0x9428, 0xd078},
@@ -140,7 +130,6 @@ namespace nw4r { namespace snd { namespace detail
 	BiquadFilterCallback::BiquadCoef const
 	BiquadFilterHpf::coefTable[COEF_TABLE_SIZE] =
 	{
-		/* b0      b1      b2      a1      a2 */
 		{0x3bb5, 0x8895, 0x3bb5, 0x7e7b, 0xc17f},
 		{0x3bad, 0x88a6, 0x3bad, 0x7e69, 0xc18f},
 		{0x3ba5, 0x88b6, 0x3ba5, 0x7e57, 0xc1a1},
@@ -243,7 +232,6 @@ namespace nw4r { namespace snd { namespace detail
 	BiquadFilterCallback::BiquadCoef const
 	BiquadFilterBpf512::coefTable[COEF_TABLE_SIZE] =
 	{
-		/* b0      b1      b2      a1      a2 */
 		{0x2efa, 0x0000, 0xd106, 0x21d7, 0x1df4},
 		{0x2e8f, 0x0000, 0xd171, 0x22ad, 0x1d1e},
 		{0x2e24, 0x0000, 0xd1dc, 0x2381, 0x1c49},
@@ -371,7 +359,6 @@ namespace nw4r { namespace snd { namespace detail
 	BiquadFilterCallback::BiquadCoef const
 	BiquadFilterBpf1024::coefTable[COEF_TABLE_SIZE] =
 	{
-		/* b0      b1      b2      a1      a2 */
 		{0x2f04, 0x0000, 0xd0fc, 0x21de, 0x1e08},
 		{0x2e99, 0x0000, 0xd167, 0x22b3, 0x1d32},
 		{0x2e2f, 0x0000, 0xd1d1, 0x2386, 0x1c5d},
@@ -564,69 +551,64 @@ namespace nw4r { namespace snd { namespace detail
 		{0x0864, 0x0000, 0xf79c, 0x6793, 0xd0c8},
 		{0x06b6, 0x0000, 0xf94a, 0x6a89, 0xcd6c}
 	};
-	// clang-format on
-}}} // namespace nw4r::snd::detail
+// clang-format on
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-/*******************************************************************************
- * functions
- */
-
-namespace nw4r { namespace snd { namespace detail {
-
+namespace nw4r {
+namespace snd {
+namespace detail {
 void BiquadFilterLpf::GetCoef(int type ATTR_UNUSED, f32 value,
-                              BiquadCoef *coef) const
-{
-	int coefSize = COEF_TABLE_SIZE;
-	int coefIndex = (coefSize - 1) * value;
-	coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
+                              BiquadCoef *coef) const {
+    int coefSize = COEF_TABLE_SIZE;
+    int coefIndex = (coefSize - 1) * value;
+    coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
 
-	*coef = coefTable[coefIndex];
+    *coef = coefTable[coefIndex];
 }
 
 void BiquadFilterHpf::GetCoef(int type ATTR_UNUSED, f32 value,
-                              BiquadCoef *coef) const
-{
-	int coefSize = COEF_TABLE_SIZE;
-	int coefIndex = (coefSize - 1) * value;
-	coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
+                              BiquadCoef *coef) const {
+    int coefSize = COEF_TABLE_SIZE;
+    int coefIndex = (coefSize - 1) * value;
+    coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
 
-	*coef = coefTable[coefIndex];
+    *coef = coefTable[coefIndex];
 }
 
 void BiquadFilterBpf512::GetCoef(int type ATTR_UNUSED, f32 value,
-                                 BiquadCoef *coef) const
-{
-	value *= 2.0f - value;
+                                 BiquadCoef *coef) const {
+    value *= 2.0f - value;
 
-	int coefSize = COEF_TABLE_SIZE;
-	int coefIndex = (coefSize - 1) * value;
-	coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
+    int coefSize = COEF_TABLE_SIZE;
+    int coefIndex = (coefSize - 1) * value;
+    coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
 
-	*coef = coefTable[coefIndex];
+    *coef = coefTable[coefIndex];
 }
 
 void BiquadFilterBpf1024::GetCoef(int type ATTR_UNUSED, f32 value,
-                                  BiquadCoef *coef) const
-{
-	value *= 2.0f - value;
+                                  BiquadCoef *coef) const {
+    value *= 2.0f - value;
 
-	int coefSize = COEF_TABLE_SIZE;
-	int coefIndex = (coefSize - 1) * value;
-	coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
+    int coefSize = COEF_TABLE_SIZE;
+    int coefIndex = (coefSize - 1) * value;
+    coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
 
-	*coef = coefTable[coefIndex];
+    *coef = coefTable[coefIndex];
 }
 
 void BiquadFilterBpf2048::GetCoef(int type ATTR_UNUSED, f32 value,
-                                  BiquadCoef *coef) const
-{
-	value *= 2.0f - value;
+                                  BiquadCoef *coef) const {
+    value *= 2.0f - value;
 
-	int coefSize = COEF_TABLE_SIZE;
-	int coefIndex = (coefSize - 1) * value;
-	coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
+    int coefSize = COEF_TABLE_SIZE;
+    int coefIndex = (coefSize - 1) * value;
+    coefIndex = ut::Clamp(coefIndex, 0, coefSize - 1);
 
-	*coef = coefTable[coefIndex];
+    *coef = coefTable[coefIndex];
 }
-
-}}} // namespace nw4r::snd::detail
+} // namespace detail
+} // namespace snd
+} // namespace nw4r

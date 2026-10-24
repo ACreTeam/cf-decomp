@@ -18,30 +18,37 @@ ExEffect::ExEffect() {
     reset();
 }
 
-ExEffect::~ExEffect() {}
+ExEffect::~ExEffect() {
+}
 
-void ExEffect::reset() {}
+void ExEffect::reset() {
+}
 
 ExEmitter::ExEmitter() : mFlags(0) {
     reset();
 }
 
-bool ExEmitter::Initialize(nw4r::ef::Effect *pParent, nw4r::ef::EmitterResource *pResource,
+bool ExEmitter::Initialize(nw4r::ef::Effect *pParent,
+                           nw4r::ef::EmitterResource *pResource,
                            u8 drawWeight) {
     reset();
     return nw4r::ef::Emitter::Initialize(pParent, pResource, drawWeight);
 }
 
-nw4r::ef::Emitter *ExEmitter::CreateEmitter(nw4r::ef::EmitterResource *pResource,
-                                            nw4r::ef::EmitterInheritSetting *pSetting,
-                                            nw4r::ef::Particle *pParticle, u16 calcRemain) {
+nw4r::ef::Emitter *
+ExEmitter::CreateEmitter(nw4r::ef::EmitterResource *pResource,
+                         nw4r::ef::EmitterInheritSetting *pSetting,
+                         nw4r::ef::Particle *pParticle, u16 calcRemain,
+                         nw4r::math::VEC3 *position) {
     if ((mFlags & 1) == 0) {
-        return nw4r::ef::Emitter::CreateEmitter(pResource, pSetting, pParticle, calcRemain);
+        return nw4r::ef::Emitter::CreateEmitter(pResource, pSetting, pParticle,
+                                                calcRemain, position);
     }
     return 0;
 }
 
-ExEmitter::~ExEmitter() {}
+ExEmitter::~ExEmitter() {
+}
 
 void ExEmitter::disableChildEmitter() {
     mFlags |= 1;
@@ -55,25 +62,27 @@ ExParticle::ExParticle() {
     reset();
 }
 
-ExParticle::~ExParticle() {}
+ExParticle::~ExParticle() {
+}
 
-void ExParticle::reset() {}
+void ExParticle::reset() {
+}
 
 ExParticleManager::ExParticleManager() : mFlags(0) {
     reset();
 }
 
-bool ExParticleManager::Initialize(nw4r::ef::Emitter *pParent, nw4r::ef::EmitterResource *pResource) {
+bool ExParticleManager::Initialize(nw4r::ef::Emitter *pParent,
+                                   nw4r::ef::EmitterResource *pResource) {
     reset();
     return nw4r::ef::ParticleManager::Initialize(pParent, pResource);
 }
 
-nw4r::ef::Particle *ExParticleManager::CreateParticle(u16 life, nw4r::math::VEC3 pos,
-                                                      nw4r::math::VEC3 vel,
-                                                      const nw4r::math::MTX34 *pSpace, f32 momentum,
-                                                      const nw4r::ef::EmitterInheritSetting *pSetting,
-                                                      nw4r::ef::Particle *pReferencePtcl,
-                                                      u16 calcRemain) {
+nw4r::ef::Particle *ExParticleManager::CreateParticle(
+    u16 life, nw4r::math::VEC3 pos, nw4r::math::VEC3 vel,
+    const nw4r::math::MTX34 *pSpace, f32 momentum,
+    const nw4r::ef::EmitterInheritSetting *pSetting,
+    nw4r::ef::Particle *pReferencePtcl, u16 calcRemain) {
     nw4r::ef::Particle *particle = nw4r::ef::ParticleManager::CreateParticle(
         life, pos, vel, pSpace, momentum, pSetting, pReferencePtcl, calcRemain);
     if (particle != NULL && mFlags != 0) {
@@ -120,7 +129,8 @@ nw4r::ef::Particle *ExParticleManager::CreateParticle(u16 life, nw4r::math::VEC3
     return particle;
 }
 
-ExParticleManager::~ExParticleManager() {}
+ExParticleManager::~ExParticleManager() {
+}
 
 void ExParticleManager::setLife(u16 life) {
     mFlags |= FLAG_LIFE;
@@ -137,7 +147,8 @@ void ExParticleManager::setRotate(const nw4r::math::VEC3 *rotate) {
     set3(mRotate, rotate->x, rotate->y, rotate->z);
 }
 
-void ExParticleManager::setRegisterColor(const _GXColor &color0, const _GXColor &color1, u8 layer) {
+void ExParticleManager::setRegisterColor(const _GXColor &color0,
+                                         const _GXColor &color1, u8 layer) {
     mFlags |= FLAG_COLOR << layer;
     mColor[layer][0].r = color0.r;
     mColor[layer][0].g = color0.g;
@@ -168,7 +179,8 @@ ExOneEmitter::ExOneEmitter(Effect *effect) : mFlags(0) {
     reset();
 }
 
-ExOneEmitter::~ExOneEmitter() {}
+ExOneEmitter::~ExOneEmitter() {
+}
 
 void ExOneEmitter::create() {
     if (mEffect->create()) {
@@ -220,7 +232,9 @@ void ExOneEmitter::update() {
                 mTime -= 1.0f;
                 emitter->CreateEmitterTmp(
                     emitter->mResource,
-                    reinterpret_cast<nw4r::ef::EmitterInheritSetting *>(&mSetting), NULL, 0, &mPos);
+                    reinterpret_cast<nw4r::ef::EmitterInheritSetting *>(
+                        &mSetting),
+                    NULL, 0, &mPos);
             }
         }
     }

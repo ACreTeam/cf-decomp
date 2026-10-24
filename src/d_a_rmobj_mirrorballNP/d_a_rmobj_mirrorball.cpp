@@ -53,13 +53,13 @@ int daRmobjMirrorBall_c::execute() {
         nw4r::g3d::ResMatTevColor tev =
             mdl.GetResMat(materials[i]).GetResMatTevColor();
         GXColor color;
-        tev.GXGetTevKColor(GX_KCOLOR1, &color);
+        tev.GXGetTevColor(GX_TEVREG0, &color);
         if (i < light1Num) {
             color.a = 255.0f * mLight1;
         } else {
             color.a = 255.0f * mLight0;
         }
-        tev.GXSetTevKColor(GX_KCOLOR1, color);
+        tev.GXSetTevColor(GX_TEVREG0, color);
         tev.DCStore(false);
     }
     return SUCCEEDED;

@@ -1,53 +1,108 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_Voice.h>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_AxManager.h>
+#include <nw4r/snd/snd_AxVoiceManager.h>
+#include <nw4r/snd/snd_AxVoice.h>
+#include <nw4r/snd/snd_adpcm.h>
+#include <nw4r/snd/snd_global.h>
+#include <nw4r/snd/snd_Util.h>
+#include <nw4r/snd/snd_VoiceManager.h>
+#include <nw4r/snd/snd_WaveFile.h>
+
+#include <nw4r/ut/ut_algorithm.h>
+#include <nw4r/ut/ut_Lock.h>
+
+#include <revolution/ax.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
+inline u16 CalcMixVolume(f32 volume) {
+    if (volume <= 0.0f) {
+        return 0;
+    }
 
+    return ut::Min<u32>(65535, AX_MAX_VOLUME * volume);
+}
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
+
+namespace nw4r {
+namespace snd {
+namespace detail {
+#if defined(BETTER_OBJDIFF_DIFF)
+#define SEND_MAX 1.0f
+#define SEND_MIN 0.0f
+#define BIQUAD_VALUE_MAX 1.0f
+#define BIQUAD_VALUE_MIN 0.0f
+#define PAN_CENTER 0.0f
+#define PAN_RIGHT 1.0f
+#define PAN_LEFT -1.0f
+#define VOLUME_MAX 1.0f
+#define VOLUME_MIN 0.0f
+#else
+f32 const Voice::SEND_MAX = 1.0f;
+f32 const Voice::SEND_MIN = 0.0f;
+f32 const Voice::BIQUAD_VALUE_MAX = 1.0f;
+f32 const Voice::BIQUAD_VALUE_MIN = 0.0f;
+f32 const Voice::PAN_CENTER = 0.0f;
+f32 const Voice::PAN_RIGHT = 1.0f;
+f32 const Voice::PAN_LEFT = -1.0f;
+f32 const Voice::VOLUME_MAX = 1.0f;
+f32 const Voice::VOLUME_MIN = 0.0f;
+#endif
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
+
+namespace nw4r {
+namespace snd {
+namespace detail {
 Voice::Voice()
-    : mCallback(NULL),
-      mIsActive(false),
-      mIsStarting(false),
-      mIsStarted(false),
-      mIsPause(false),
-      mSyncFlag(0) {
-
-    for (int i = 0; i < CHANNEL_MAX; i++) {
-        for (int j = 0; j < VOICES_MAX; j++) {
-            mAxVoice[i][j] = NULL;
+    : mCallback(nullptr), mActiveFlag(false), mStartFlag(false),
+      mStartedFlag(false), mPauseFlag(false), mSyncFlag(0) {
+    for (int channelIndex = 0; channelIndex < CHANNEL_MAX; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < 4; voiceOutIndex++) {
+            mAxVoice[channelIndex][voiceOutIndex] = nullptr;
         }
     }
 }
 
 Voice::~Voice() {
-    for (int i = 0; i < CHANNEL_MAX; i++) {
-        for (int j = 0; j < VOICES_MAX; j++) {
-            AxVoice* pVoice = mAxVoice[i][j];
-
-            if (pVoice != NULL) {
-                AxVoiceManager::GetInstance().FreeAxVoice(pVoice);
+    for (int channelIndex = 0; channelIndex < CHANNEL_MAX; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < 4; voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                AxVoiceManager::GetInstance().FreeAxVoice(axVoice);
             }
         }
     }
 }
 
-void Voice::InitParam(int channels, int voices, VoiceCallback pCallback,
-                      void* pCallbackArg) {
-    mChannelCount = channels;
-    mVoiceOutCount = voices;
-    mCallback = pCallback;
-    mCallbackArg = pCallbackArg;
+void Voice::InitParam(int channelCount, int voiceOutCount, Callback *callback,
+                      void *callbackData) {
+    NW4RAssertHeaderClampedLRValue_Line(128, channelCount, 1, CHANNEL_MAX);
+    NW4RAssertHeaderClampedLRValue_Line(129, voiceOutCount, 1, 4);
 
+    mChannelCount = channelCount;
+    mVoiceOutCount = voiceOutCount;
+    mCallback = callback;
+    mCallbackData = callbackData;
     mSyncFlag = 0;
-    mIsPause = false;
-    mIsPausing = false;
-    mIsStarted = false;
-
+    mPauseFlag = false;
+    mPausingFlag = false;
+    mStartedFlag = false;
+    mVoiceOutParamPitchDisableFlag = false;
     mVolume = 1.0f;
     mVeInitVolume = 0.0f;
     mVeTargetVolume = 1.0f;
     mLpfFreq = 1.0f;
+    mBiquadType = 0;
+    mBiquadValue = 0.0f;
     mPan = 0.0f;
     mSurroundPan = 0.0f;
     mOutputLineFlag = OUTPUT_LINE_MAIN;
@@ -58,7 +113,7 @@ void Voice::InitParam(int channels, int voices, VoiceCallback pCallback,
         mFxSend[i] = 0.0f;
     }
 
-    for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
+    for (int i = 0; i < 4; i++) {
         mRemoteOutVolume[i] = 1.0f;
         mRemoteSend[i] = 1.0f;
         mRemoteFxSend[i] = 0.0f;
@@ -71,122 +126,150 @@ void Voice::InitParam(int channels, int voices, VoiceCallback pCallback,
 }
 
 void Voice::StopFinished() {
-    if (mIsActive && mIsStarted && IsPlayFinished()) {
-        if (mCallback != NULL) {
-            mCallback(this, CALLBACK_STATUS_FINISH_WAVE, mCallbackArg);
+    if (mActiveFlag && mStartedFlag && IsPlayFinished()) {
+        if (mCallback) {
+            (*mCallback)(this, CALLBACK_STATUS_FINISH_WAVE, mCallbackData);
         }
 
-        mIsStarted = false;
-        mIsStarting = false;
+        mStartedFlag = false;
+        mStartFlag = false;
     }
 }
 
 void Voice::Calc() {
-    if (!mIsStarting) {
+    if (!mStartFlag) {
         return;
     }
 
-    if (mSyncFlag & SYNC_AX_SRC) {
+    if (mSyncFlag & UPDATE_SRC) {
         CalcAxSrc(false);
-        mSyncFlag &= ~SYNC_AX_SRC;
+        mSyncFlag &= ~UPDATE_SRC;
     }
 
-    if (mSyncFlag & SYNC_AX_VE) {
+    if (mSyncFlag & UPDATE_VE) {
         CalcAxVe();
-        mSyncFlag &= ~SYNC_AX_VE;
+        mSyncFlag &= ~UPDATE_VE;
     }
 
-    if (mSyncFlag & SYNC_AX_MIX) {
-        if (!CalcAxMix()) {
-            mSyncFlag &= ~SYNC_AX_MIX;
+    if (mSyncFlag & UPDATE_MIX) {
+        bool nextUpdateFlag = CalcAxMix();
+
+        if (!nextUpdateFlag) {
+            mSyncFlag &= ~UPDATE_MIX;
         }
     }
 
-    if (mSyncFlag & SYNC_AX_LPF) {
+    if (mSyncFlag & UPDATE_LPF) {
         CalcAxLpf();
-        mSyncFlag &= ~SYNC_AX_LPF;
+        mSyncFlag &= ~UPDATE_LPF;
     }
 
-    if (mSyncFlag & SYNC_AX_REMOTE) {
+    if (mSyncFlag & UPDATE_BIQUAD) {
+        CalcAxBiquadFilter();
+        mSyncFlag &= ~UPDATE_BIQUAD;
+    }
+
+    if (mSyncFlag & UPDATE_REMOTE_FILTER) {
         CalcAxRemoteFilter();
-        mSyncFlag &= ~SYNC_AX_REMOTE;
+        mSyncFlag &= ~UPDATE_REMOTE_FILTER;
     }
 }
 
 void Voice::Update() {
     ut::AutoInterruptLock lock;
 
-    if (!mIsActive) {
+    if (!mActiveFlag) {
         return;
     }
 
-    if ((mSyncFlag & SYNC_AX_SRC_INITIAL) && mIsStarting && !mIsStarted) {
-        CalcAxSrc(true);
-        RunAllAxVoice();
+    enum {
+        NONE,
 
-        mIsStarted = true;
-        mSyncFlag &= ~SYNC_AX_SRC_INITIAL;
-        mSyncFlag &= ~SYNC_AX_SRC;
+        RUN,
+        STOP,
+    } runFlag = NONE;
+
+    if (mSyncFlag & UPDATE_START && mStartFlag && !mStartedFlag) {
+        CalcAxSrc(true);
+
+        runFlag = RUN;
+
+        mStartedFlag = true;
+
+        mSyncFlag &= ~UPDATE_START;
+        mSyncFlag &= ~UPDATE_SRC;
     }
 
-    if (mIsStarted) {
-        if ((mSyncFlag & SYNC_AX_VOICE) && mIsStarting) {
-            if (mIsPause || AxManager::GetInstance().IsDiskError()) {
-                StopAllAxVoice();
-                mIsPausing = true;
+    if (mStartedFlag) {
+        if (mSyncFlag & UPDATE_PAUSE && mStartFlag) {
+            if (mPauseFlag) {
+                mPausingFlag = true;
+                runFlag = STOP;
             } else {
-                RunAllAxVoice();
-                mIsPausing = false;
+                mPausingFlag = false;
+                runFlag = RUN;
             }
 
-            mSyncFlag &= ~SYNC_AX_VOICE;
+            mSyncFlag &= ~UPDATE_PAUSE;
         }
 
         SyncAxVoice();
     }
+
+    switch (runFlag) {
+    case NONE:
+        break;
+    case RUN:
+        RunAllAxVoice();
+        break;
+
+    case STOP:
+        StopAllAxVoice();
+        break;
+    }
 }
 
-bool Voice::Acquire(int channels, int voices, int priority,
-                    VoiceCallback pCallback, void* pCallbackArg) {
-    channels = ut::Clamp(channels, CHANNEL_MIN, CHANNEL_MAX);
-    voices = ut::Clamp(voices, VOICES_MIN, VOICES_MAX);
+bool Voice::Acquire(int channelCount, int voiceOutCount, int priority,
+                    Callback *callback, void *callbackData) {
+    NW4RAssertHeaderClampedLRValue_Line(336, channelCount, 1, CHANNEL_MAX);
+    channelCount = ut::Clamp(channelCount, 1, CHANNEL_MAX);
+
+    NW4RAssertHeaderClampedLRValue_Line(339, voiceOutCount, 1, 4);
+    voiceOutCount = ut::Clamp(voiceOutCount, 1, 4);
 
     ut::AutoInterruptLock lock;
 
-    u32 axPrio;
-    if (priority == PRIORITY_MAX) {
-        axPrio = AX_PRIORITY_MAX;
-    } else {
-        axPrio = (AX_PRIORITY_MAX / 2) + 1;
-    }
+    u32 axPriority = priority == PRIORITY_MAX ? VOICE_PRIORITY_MAX : 16;
 
-    int required = channels * voices;
-    AxVoice* voiceTable[CHANNEL_MAX * VOICES_MAX];
+    NW4RAssert_Line(346, !mActiveFlag);
 
-    for (int i = 0; required > i; i++) {
-        AxVoice* pAxVoice = AxVoiceManager::GetInstance().AcquireAxVoice(
-            axPrio, AxVoiceCallbackFunc, this);
+    int requiredVoiceCount = channelCount * voiceOutCount;
+    AxVoice *voiceTable[CHANNEL_MAX * 4];
 
-        if (pAxVoice == NULL) {
-            int rest = required - i;
+    for (int i = 0; i < requiredVoiceCount; i++) {
+        AxVoice *axVoice = nullptr;
 
-            const VoiceList& rVoiceList =
+        axVoice = AxVoiceManager::GetInstance().AcquireAxVoice(
+            axPriority, &AxVoiceCallbackFunc, this);
+
+        if (!axVoice) {
+            int restAXVPBCount = requiredVoiceCount - i;
+
+            Voice::LinkList const &voiceList =
                 VoiceManager::GetInstance().GetVoiceList();
 
-            for (VoiceList::ConstIterator it = rVoiceList.GetBeginIter();
-                 it != rVoiceList.GetEndIter(); ++it) {
-
-                if (priority < it->GetPriority()) {
+            NW4R_RANGE_FOR(itr, voiceList) {
+                if (priority < itr->GetPriority()) {
                     break;
                 }
 
-                rest -= it->GetAxVoiceCount();
-                if (rest <= 0) {
+                restAXVPBCount -= itr->GetPhysicalVoiceCount();
+                if (restAXVPBCount <= 0) {
                     break;
                 }
             }
 
-            if (rest > 0) {
+            if (restAXVPBCount > 0) {
                 for (int j = 0; j < i; j++) {
                     AxVoiceManager::GetInstance().FreeAxVoice(voiceTable[j]);
                 }
@@ -194,18 +277,16 @@ bool Voice::Acquire(int channels, int voices, int priority,
                 return false;
             }
 
-            u32 allocPrio;
-            if (axPrio == AX_PRIORITY_MAX) {
-                allocPrio = AX_PRIORITY_MAX;
-            } else {
-                allocPrio = (AX_PRIORITY_MAX / 2) + 2;
-            }
+            u32 allocPriority =
+                axPriority == VOICE_PRIORITY_MAX ? VOICE_PRIORITY_MAX : 17;
 
-            pAxVoice = AxVoiceManager::GetInstance().AcquireAxVoice(
-                allocPrio, AxVoiceCallbackFunc, this);
+            axVoice = AxVoiceManager::GetInstance().AcquireAxVoice(
+                allocPriority, &AxVoiceCallbackFunc, this);
         }
 
-        if (pAxVoice == NULL) {
+        NW4RAssertPointerNonnull_Line(399, axVoice);
+
+        if (!axVoice) {
             for (int j = 0; j < i; j++) {
                 AxVoiceManager::GetInstance().FreeAxVoice(voiceTable[j]);
             }
@@ -213,357 +294,383 @@ bool Voice::Acquire(int channels, int voices, int priority,
             return false;
         }
 
-        voiceTable[i] = pAxVoice;
+        voiceTable[i] = axVoice;
     }
 
-    int idx = 0;
-    for (int i = 0; i < channels; i++) {
-        for (int j = 0; j < voices; j++) {
-            voiceTable[idx]->SetPriority(axPrio);
-            mAxVoice[i][j] = voiceTable[idx];
-            idx++;
+    int axVoiceIndex = 0;
+    for (int channelIndex = 0; channelIndex < channelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < voiceOutCount;
+             voiceOutIndex++) {
+            voiceTable[axVoiceIndex]->SetPriority(axPriority);
+            mAxVoice[channelIndex][voiceOutIndex] = voiceTable[axVoiceIndex];
+
+            axVoiceIndex++;
         }
     }
 
-    InitParam(channels, voices, pCallback, pCallbackArg);
-    mIsActive = true;
+    InitParam(channelCount, voiceOutCount, callback, callbackData);
+
+    mActiveFlag = true;
     return true;
 }
 
 void Voice::Free() {
     ut::AutoInterruptLock lock;
 
-    if (!mIsActive) {
+    if (!mActiveFlag) {
         return;
     }
 
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                AxVoiceManager::GetInstance().FreeAxVoice(pAxVoice);
-                mAxVoice[i][j] = NULL;
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                AxVoiceManager::GetInstance().FreeAxVoice(axVoice);
+                mAxVoice[channelIndex][voiceOutIndex] = nullptr;
             }
         }
     }
 
     mChannelCount = 0;
     VoiceManager::GetInstance().FreeVoice(this);
-    mIsActive = false;
+
+    mActiveFlag = false;
 }
 
-void Voice::Setup(const WaveData& rData, u32 offset) {
-    AxVoice::Format format = WaveFormatToAxFormat(rData.sampleFormat);
-    int sampleRate = rData.sampleRate;
+void Voice::Setup(WaveData const &waveParam, u32 startOffset) {
+    int sampleRate = waveParam.sampleRate;
 
-    for (int i = 0; i < mChannelCount; i++) {
-        if (mAxVoice[i][0] == NULL) {
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        if (!mAxVoice[channelIndex][0]) {
             continue;
         }
 
-        void* pAddr = rData.channelParam[i].dataAddr;
-        const ChannelParam& rParam = rData.channelParam[i];
-        const AdpcmInfo& rInfo = rData.channelParam[i].adpcmInfo;
+        NW4RAssertPointerNonnull_Line(
+            477, waveParam.channelParam[channelIndex].dataAddr);
+        void *dataAddr = waveParam.channelParam[channelIndex].dataAddr;
 
-        AdpcmParam param;
-        if (format == AxVoice::FORMAT_ADPCM) {
-            param = rInfo.param;
-            AxVoice::CalcOffsetAdpcmParam(&param.pred_scale, &param.yn1,
-                                          &param.yn2, offset, pAddr, param);
+        AdpcmParam adpcmParam;
+        if (waveParam.sampleFormat == SAMPLE_FORMAT_DSP_ADPCM) {
+            adpcmParam = waveParam.channelParam[channelIndex].adpcmParam;
+            AxVoice::CalcOffsetAdpcmParam(&adpcmParam.pred_scale,
+                                          &adpcmParam.yn1, &adpcmParam.yn2,
+                                          startOffset, dataAddr, adpcmParam);
         }
 
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-            if (pAxVoice == NULL) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex];
+            if (!axVoice) {
                 continue;
             }
 
-            pAxVoice->Setup(rData.channelParam[i].dataAddr, format, sampleRate);
-            pAxVoice->SetAddr(rData.loopFlag, pAddr, offset, rData.loopStart,
-                              rData.loopEnd);
+            axVoice->Setup(waveParam.channelParam[channelIndex].dataAddr,
+                           static_cast<AxVoice::Format>(waveParam.sampleFormat),
+                           sampleRate);
+            axVoice->SetAddr(waveParam.loopFlag, dataAddr, startOffset,
+                             waveParam.loopStart, waveParam.loopEnd);
 
-            if (format == AxVoice::FORMAT_ADPCM) {
-                pAxVoice->SetAdpcm(&param);
-                pAxVoice->SetAdpcmLoop(&rInfo.loopParam);
+            if (waveParam.sampleFormat == SAMPLE_FORMAT_DSP_ADPCM) {
+                axVoice->SetAdpcm(&adpcmParam);
+                axVoice->SetAdpcmLoop(
+                    &waveParam.channelParam[channelIndex].adpcmLoopParam);
             }
 
-            pAxVoice->SetSrcType(AxVoice::SRC_4TAP_AUTO, mPitch);
-            pAxVoice->SetVoiceType(AxVoice::VOICE_TYPE_NORMAL);
+            axVoice->SetSrcType(AxVoice::SRC_4TAP_AUTO, mPitch);
+            axVoice->SetVoiceType(AxVoice::VOICE_TYPE_NORMAL);
         }
     }
 
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        mVoiceOutParam[i].volume = 1.0f;
-        mVoiceOutParam[i].pitch = 1.0f;
-        mVoiceOutParam[i].pan = 0.0f;
-        mVoiceOutParam[i].surroundPan = 0.0f;
-        mVoiceOutParam[i].fxSend = 0.0f;
-        mVoiceOutParam[i].lpf = 0.0f;
-        mVoiceOutParam[i].priority = 0;
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        mVoiceOutParam[voiceOutIndex].volume = 1.0f;
+        mVoiceOutParam[voiceOutIndex].pitch = 1.0f;
+        mVoiceOutParam[voiceOutIndex].pan = 0.0f;
+        mVoiceOutParam[voiceOutIndex].surroundPan = 0.0f;
+        mVoiceOutParam[voiceOutIndex].fxSend = 0.0f;
+        mVoiceOutParam[voiceOutIndex].lpf = 0.0f;
     }
 
-    mIsPause = false;
-    mIsPausing = false;
+    mPauseFlag = false;
+    mPausingFlag = false;
+    mStartFlag = false;
+    mStartedFlag = false;
 
-    mIsStarting = false;
-    mIsStarted = false;
-
-    mSyncFlag |= (SYNC_AX_LPF | SYNC_AX_MIX | SYNC_AX_VE);
+    mSyncFlag |= UPDATE_MIX;
+    mSyncFlag |= UPDATE_VE;
+    mSyncFlag |= UPDATE_LPF;
 }
 
 void Voice::Start() {
-    mIsStarting = true;
-    mIsPause = false;
-    mSyncFlag |= SYNC_AX_SRC_INITIAL;
+    mStartFlag = true;
+    mPauseFlag = false;
+
+    mSyncFlag |= UPDATE_START;
 }
 
 void Voice::Stop() {
-    if (mIsStarted) {
+    if (mStartedFlag) {
         StopAllAxVoice();
-        mIsStarted = false;
+
+        mStartedFlag = false;
     }
 
-    mIsPausing = false;
-    mIsPause = false;
-    mIsStarting = false;
+    mPausingFlag = false;
+    mPauseFlag = false;
+    mStartFlag = false;
 }
 
 void Voice::Pause(bool flag) {
-    if (mIsPause == flag) {
-        return;
-    }
+    if (mPauseFlag != flag) {
+        mPauseFlag = flag;
 
-    mIsPause = flag;
-    mSyncFlag |= SYNC_AX_VOICE;
+        mSyncFlag |= UPDATE_PAUSE;
+    }
 }
 
-AxVoice::Format Voice::GetFormat() const {
+SampleFormat Voice::GetFormat() const {
+    NW4RAssert_Line(583, IsActive());
+
     if (IsActive()) {
         return mAxVoice[0][0]->GetFormat();
     }
 
-    return AxVoice::FORMAT_PCM16;
+    return SAMPLE_FORMAT_PCM_S16;
 }
 
 void Voice::SetVolume(f32 volume) {
-    volume = ut::Clamp(volume, 0.0f, 1.0f);
+    volume = ut::Clamp(volume, VOLUME_MIN, VOLUME_MAX);
 
     if (volume != mVolume) {
         mVolume = volume;
-        mSyncFlag |= SYNC_AX_VE;
+
+        mSyncFlag |= UPDATE_VE;
     }
 }
 
-void Voice::SetVeVolume(f32 target, f32 init) {
-    target = ut::Clamp(target, 0.0f, 1.0f);
-    init = ut::Clamp(init, 0.0f, 1.0f);
+void Voice::SetVeVolume(f32 targetVolume, f32 initVolume) {
+    targetVolume = ut::Clamp(targetVolume, VOLUME_MIN, VOLUME_MAX);
+    initVolume = ut::Clamp(initVolume, VOLUME_MIN, VOLUME_MAX);
 
-    // @bug Unreachable code
-    if (init < 0.0f) {
-        if (target == mVeTargetVolume) {
+    if (initVolume < 0.0f) {
+        if (targetVolume == mVeTargetVolume) {
             return;
         }
 
-        mVeTargetVolume = target;
-        mSyncFlag |= SYNC_AX_VE;
+        mVeTargetVolume = targetVolume;
+
+        mSyncFlag |= UPDATE_VE;
         return;
     }
 
-    if (init == mVeInitVolume && target == mVeTargetVolume) {
-        return;
-    }
+    if (initVolume != mVeInitVolume || targetVolume != mVeTargetVolume) {
+        mVeInitVolume = initVolume;
+        mVeTargetVolume = targetVolume;
 
-    mVeInitVolume = init;
-    mVeTargetVolume = target;
-    mSyncFlag |= SYNC_AX_VE;
+        mSyncFlag |= UPDATE_VE;
+    }
 }
 
 void Voice::SetPitch(f32 pitch) {
-    if (pitch == mPitch) {
-        return;
-    }
+    if (pitch != mPitch) {
+        mPitch = pitch;
 
-    mPitch = pitch;
-    mSyncFlag |= SYNC_AX_SRC;
+        mSyncFlag |= UPDATE_SRC;
+    }
 }
 
-void Voice::SetPanMode(PanMode mode) {
-    if (mode == mPanMode) {
-        return;
-    }
+void Voice::SetPanMode(PanMode panMode) {
+    if (panMode != mPanMode) {
+        mPanMode = panMode;
 
-    mPanMode = mode;
-    mSyncFlag |= SYNC_AX_MIX;
+        mSyncFlag |= UPDATE_MIX;
+    }
 }
 
-void Voice::SetPanCurve(PanCurve curve) {
-    if (curve == mPanCurve) {
-        return;
-    }
+void Voice::SetPanCurve(PanCurve panCurve) {
+    if (panCurve != mPanCurve) {
+        mPanCurve = panCurve;
 
-    mPanCurve = curve;
-    mSyncFlag |= SYNC_AX_MIX;
+        mSyncFlag |= UPDATE_MIX;
+    }
 }
 
 void Voice::SetPan(f32 pan) {
-    if (pan == mPan) {
-        return;
-    }
+    if (pan != mPan) {
+        mPan = pan;
 
-    mPan = pan;
-    mSyncFlag |= SYNC_AX_MIX;
+        mSyncFlag |= UPDATE_MIX;
+    }
 }
 
 void Voice::SetSurroundPan(f32 pan) {
-    if (pan == mSurroundPan) {
-        return;
-    }
+    if (pan != mSurroundPan) {
+        mSurroundPan = pan;
 
-    mSurroundPan = pan;
-    mSyncFlag |= SYNC_AX_MIX;
+        mSyncFlag |= UPDATE_MIX;
+    }
 }
 
 void Voice::SetLpfFreq(f32 freq) {
     freq = ut::Clamp(freq, 0.0f, 1.0f);
+    if (freq != mLpfFreq) {
+        mLpfFreq = freq;
 
-    if (freq == mLpfFreq) {
-        return;
+        mSyncFlag |= UPDATE_LPF;
+    }
+}
+
+void Voice::SetBiquadFilter(int type, f32 value) {
+    NW4RAssertHeaderClampedLRValue_Line(680, type, 0, 127);
+
+    value = ut::Clamp(value, BIQUAD_VALUE_MIN, BIQUAD_VALUE_MAX);
+
+    bool isUpdate = false;
+
+    if (type != mBiquadType) {
+        mBiquadType = type;
+        isUpdate = true;
     }
 
-    mLpfFreq = freq;
-    mSyncFlag |= SYNC_AX_LPF;
+    if (value != mBiquadValue) {
+        mBiquadValue = value;
+        isUpdate = true;
+    }
+
+    if (isUpdate) {
+        mSyncFlag |= UPDATE_BIQUAD;
+    }
 }
 
 void Voice::SetRemoteFilter(int filter) {
-    filter = ut::Clamp(filter, 0, REMOTE_FILTER_MAX);
+    filter = ut::Clamp(filter, REMOTE_FILTER_MIN, REMOTE_FILTER_MAX);
 
-    if (filter == mRemoteFilter) {
-        return;
+    if (filter != mRemoteFilter) {
+        mRemoteFilter = filter;
+
+        mSyncFlag |= UPDATE_REMOTE_FILTER;
     }
-
-    mRemoteFilter = filter;
-    mSyncFlag |= SYNC_AX_REMOTE;
 }
 
-void Voice::SetOutputLine(int flag) {
-    if (flag == mOutputLineFlag) {
-        return;
-    }
+void Voice::SetOutputLine(int lineFlag) {
+    if (lineFlag != mOutputLineFlag) {
+        mOutputLineFlag = lineFlag;
 
-    mOutputLineFlag = flag;
-    mSyncFlag |= SYNC_AX_MIX;
+        mSyncFlag |= UPDATE_MIX;
+    }
 }
 
 void Voice::SetMainOutVolume(f32 volume) {
-    volume = ut::Clamp(volume, 0.0f, 1.0f);
+    volume = ut::Clamp(volume, VOLUME_MIN, VOLUME_MAX);
 
-    if (volume == mMainOutVolume) {
-        return;
+    if (volume != mMainOutVolume) {
+        mMainOutVolume = volume;
+
+        mSyncFlag |= UPDATE_MIX;
     }
-
-    mMainOutVolume = volume;
-    mSyncFlag |= SYNC_AX_MIX;
 }
 
 void Voice::SetMainSend(f32 send) {
     send += 1.0f;
-    send = ut::Clamp(send, 0.0f, 1.0f);
+    send = ut::Clamp(send, SEND_MIN, SEND_MAX);
 
-    if (send == mMainSend) {
-        return;
+    if (send != mMainSend) {
+        mMainSend = send;
+
+        mSyncFlag |= UPDATE_MIX;
     }
-
-    mMainSend = send;
-    mSyncFlag |= SYNC_AX_MIX;
 }
 
 void Voice::SetFxSend(AuxBus bus, f32 send) {
-    send = ut::Clamp(send, 0.0f, 1.0f);
+    NW4RAssertHeaderClampedLValue_Line(748, bus, 0, AUX_BUS_NUM);
 
-    if (send == mFxSend[bus]) {
-        return;
+    send = ut::Clamp(send, SEND_MIN, SEND_MAX);
+
+    if (send != mFxSend[bus]) {
+        mFxSend[bus] = send;
+
+        mSyncFlag |= UPDATE_MIX;
     }
-
-    mFxSend[bus] = send;
-    mSyncFlag |= SYNC_AX_MIX;
 }
 
 void Voice::SetRemoteOutVolume(int remote, f32 volume) {
-    volume = ut::Clamp(volume, 0.0f, 1.0f);
+    volume = ut::Clamp(volume, VOLUME_MIN, VOLUME_MAX);
 
-    if (volume == mRemoteOutVolume[remote]) {
+    if (mRemoteOutVolume[remote] == volume) {
         return;
     }
 
     mRemoteOutVolume[remote] = volume;
-    mSyncFlag |= SYNC_AX_MIX;
+    mSyncFlag |= UPDATE_MIX;
 }
 
-void Voice::SetRemoteSend(int remote, f32 send) {
+void Voice::SetRemoteSend(int remoteIndex, f32 send) {
     send += 1.0f;
-    send = ut::Clamp(send, 0.0f, 1.0f);
-
-    if (send == mRemoteSend[remote]) {
-        return;
+    send = ut::Clamp(send, SEND_MIN, SEND_MAX);
+    if (send != mRemoteSend[remoteIndex]) {
+        mRemoteSend[remoteIndex] = send;
+        mSyncFlag |= UPDATE_MIX;
     }
-
-    mRemoteSend[remote] = send;
-    mSyncFlag |= SYNC_AX_MIX;
 }
 
-void Voice::SetRemoteFxSend(int remote, f32 send) {
-    send = ut::Clamp(send, 0.0f, 1.0f);
-
-    if (send == mRemoteFxSend[remote]) {
-        return;
+void Voice::SetRemoteFxSend(int remoteIndex, f32 send) {
+    send = ut::Clamp(send, SEND_MIN, SEND_MAX);
+    if (send != mRemoteFxSend[remoteIndex]) {
+        mRemoteFxSend[remoteIndex] = send;
+        mSyncFlag |= UPDATE_MIX;
     }
+}
 
-    mRemoteFxSend[remote] = send;
-    mSyncFlag |= SYNC_AX_MIX;
+void Voice::SetVoiceOutParam(int voiceOutIndex,
+                             VoiceOutParam const &voiceOutParam) {
+    NW4RAssertHeaderClampedLRValue_Line(820, voiceOutIndex, 0, 4);
+
+    mVoiceOutParam[voiceOutIndex] = voiceOutParam;
+
+    mSyncFlag |= UPDATE_SRC | UPDATE_VE | UPDATE_MIX | UPDATE_LPF;
 }
 
 void Voice::SetPriority(int priority) {
+    NW4RAssertHeaderClampedLRValue_Line(828, priority, PRIORITY_MIN,
+                                        PRIORITY_MAX);
+
     mPriority = priority;
     VoiceManager::GetInstance().ChangeVoicePriority(this);
 
-    if (mPriority != 1) {
+    if (mPriority != AX_PRIORITY_MIN) {
         return;
     }
 
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->SetPriority(AX_PRIORITY_MAX / 2);
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetPriority(15);
             }
         }
     }
 }
 
 void Voice::UpdateVoicesPriority() {
-    if (mPriority == 1) {
+    if (mPriority == AX_PRIORITY_MIN) {
         return;
     }
 
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->SetPriority((AX_PRIORITY_MAX / 2) + 1);
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetPriority(16);
             }
         }
     }
 }
 
-void Voice::SetAdpcmLoop(int channel, const AdpcmLoopParam* pParam) {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        AxVoice* pAxVoice = mAxVoice[channel][i];
-
-        if (pAxVoice != NULL) {
-            pAxVoice->SetAdpcmLoop(pParam);
+void Voice::SetAdpcmLoop(int channelIndex, AdpcmLoopParam const *param) {
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+            axVoice->SetAdpcmLoop(param);
         }
     }
 }
@@ -576,70 +683,70 @@ u32 Voice::GetCurrentPlayingSample() const {
     return 0;
 }
 
-void Voice::SetLoopStart(int channel, const void* pBase, u32 samples) {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        AxVoice* pAxVoice = mAxVoice[channel][i];
-
-        if (pAxVoice != NULL) {
-            pAxVoice->SetLoopStart(pBase, samples);
+void Voice::SetLoopStart(int channelIndex, void const *baseAddress,
+                         u32 samples) {
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+            axVoice->SetLoopStart(baseAddress, samples);
         }
     }
 }
 
-void Voice::SetLoopEnd(int channel, const void* pBase, u32 samples) {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        AxVoice* pAxVoice = mAxVoice[channel][i];
-
-        if (pAxVoice != NULL) {
-            pAxVoice->SetLoopEnd(pBase, samples);
+void Voice::SetLoopEnd(int channelIndex, void const *baseAddress, u32 samples) {
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+            axVoice->SetLoopEnd(baseAddress, samples);
         }
     }
 }
 
-void Voice::SetLoopFlag(bool loop) {
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->SetLoopFlag(loop);
+void Voice::SetLoopFlag(bool loopFlag) {
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetLoopFlag(loopFlag);
             }
         }
     }
 }
 
-void Voice::StopAtPoint(int channel, const void* pBase, u32 samples) {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        AxVoice* pAxVoice = mAxVoice[channel][i];
-
-        if (pAxVoice != NULL) {
-            pAxVoice->StopAtPoint(pBase, samples);
+void Voice::StopAtPoint(int channelIndex, void const *baseAddress,
+                        u32 samples) {
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+            axVoice->StopAtPoint(baseAddress, samples);
         }
     }
 }
 
 void Voice::SetVoiceType(AxVoice::VoiceType type) {
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->SetVoiceType(type);
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetVoiceType(type);
             }
         }
     }
 }
 
-void Voice::CalcAxSrc(bool initial) {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        f32 ratio = ut::Clamp(mVoiceOutParam[i].pitch, 0.0f, 1.0f);
-        ratio = mPitch * ratio;
+void Voice::CalcAxSrc(bool initialUpdate) {
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        f32 ratio = mPitch;
 
-        for (int j = 0; j < mChannelCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[j][i];
+        if (!mVoiceOutParamPitchDisableFlag) {
+            ratio *= mVoiceOutParam[voiceOutIndex].pitch;
+        }
 
-            if (pAxVoice != NULL) {
-                pAxVoice->SetSrc(ratio, initial);
+        for (int channelIndex = 0; channelIndex < mChannelCount;
+             channelIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetSrc(ratio, initialUpdate);
             }
         }
     }
@@ -650,188 +757,208 @@ void Voice::CalcAxVe() {
     baseVolume *= mVolume;
     baseVolume *= AxManager::GetInstance().GetOutputVolume();
 
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        const SoundParam& rParam = mVoiceOutParam[i];
-        f32 volume = baseVolume * rParam.volume;
-        f32 target = volume * mVeTargetVolume;
-        f32 init = volume * mVeInitVolume;
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        f32 volume = baseVolume * mVoiceOutParam[voiceOutIndex].volume;
+        f32 targetVolume = volume * mVeTargetVolume;
+        f32 initVolume = volume * mVeInitVolume;
 
-        for (int j = 0; j < mChannelCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[j][i];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->SetVe(target, init);
+        for (int channelIndex = 0; channelIndex < mChannelCount;
+             channelIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetVe(targetVolume, initVolume);
             }
         }
     }
 }
 
 bool Voice::CalcAxMix() {
-    AxVoice::MixParam param;
-    AxVoice::RemoteMixParam rmtParam;
+    bool nextUpdateFlag = false;
 
-    bool nextUpdate = false;
+    AxVoice::MixParam mix;
 
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-            if (pAxVoice == NULL) {
-                continue;
-            }
+    AxVoice::RemoteMixParam rmtmix;
 
-            CalcMixParam(i, j, &param, &rmtParam);
-            nextUpdate |= pAxVoice->SetMix(param);
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                CalcMixParam(channelIndex, voiceOutIndex, &mix, &rmtmix);
 
-            if (mOutputLineFlag == 0 || mOutputLineFlag == OUTPUT_LINE_MAIN) {
-                pAxVoice->EnableRemote(false);
-            } else {
-                pAxVoice->EnableRemote(true);
-                pAxVoice->SetRmtMix(rmtParam);
+                nextUpdateFlag |= axVoice->SetMix(mix);
+                if (mOutputLineFlag == 0 ||
+                    mOutputLineFlag == OUTPUT_LINE_MAIN) {
+                    axVoice->EnableRemote(false);
+                } else {
+                    axVoice->EnableRemote(true);
+                    axVoice->SetRmtMix(rmtmix);
+                }
             }
         }
     }
 
-    return nextUpdate;
+    return nextUpdateFlag;
 }
 
 void Voice::CalcAxLpf() {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        int freq = Util::CalcLpfFreq(mLpfFreq + mVoiceOutParam[i].lpf);
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        int freq =
+            Util::CalcLpfFreq(mLpfFreq + mVoiceOutParam[voiceOutIndex].lpf);
 
-        for (int j = 0; j < mChannelCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[j][i];
+        for (int channelIndex = 0; channelIndex < mChannelCount;
+             channelIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetLpf(freq);
+            }
+        }
+    }
+}
 
-            if (pAxVoice != NULL) {
-                pAxVoice->SetLpf(freq);
+void Voice::CalcAxBiquadFilter() {
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        for (int channelIndex = 0; channelIndex < mChannelCount;
+             channelIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetBiquad(mBiquadType, mBiquadValue);
             }
         }
     }
 }
 
 void Voice::CalcAxRemoteFilter() {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        for (int j = 0; j < mChannelCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[j][i];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->SetRemoteFilter(mRemoteFilter);
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        for (int channelIndex = 0; channelIndex < mChannelCount;
+             channelIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->SetRemoteFilter(mRemoteFilter);
             }
         }
     }
 }
 
 void Voice::SyncAxVoice() {
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->Sync();
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (mAxVoice[channelIndex][voiceOutIndex]) {
+                mAxVoice[channelIndex][voiceOutIndex]->Sync();
             }
         }
     }
 }
 
 void Voice::ResetDelta() {
-    for (int i = 0; i < mVoiceOutCount; i++) {
-        for (int j = 0; j < mChannelCount; j++) {
-            AxVoice* pAxVoice = mAxVoice[j][i];
-
-            if (pAxVoice != NULL) {
-                pAxVoice->ResetDelta();
+    for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+         voiceOutIndex++) {
+        for (int channelIndex = 0; channelIndex < mChannelCount;
+             channelIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->ResetDelta();
             }
         }
     }
 }
 
-void Voice::AxVoiceCallbackFunc(AxVoice* pDropVoice,
+void Voice::AxVoiceCallbackFunc(AxVoice *dropVoice,
                                 AxVoice::AxVoiceCallbackStatus status,
-                                void* pCallbackArg) {
-    Voice* p = static_cast<Voice*>(pCallbackArg);
+                                void *callbackData) {
+    Voice *voice = static_cast<Voice *>(callbackData);
+    NW4RAssertPointerNonnull_Line(1165, voice);
 
     VoiceCallbackStatus voiceStatus;
     bool freeDropVoice = false;
 
     switch (status) {
-    case AxVoice::CALLBACK_STATUS_CANCEL: {
+    case AxVoice::CALLBACK_STATUS_CANCEL:
         voiceStatus = CALLBACK_STATUS_CANCEL;
         break;
-    }
 
-    case AxVoice::CALLBACK_STATUS_DROP_DSP: {
+    case AxVoice::CALLBACK_STATUS_DROP_DSP:
         voiceStatus = CALLBACK_STATUS_DROP_DSP;
         freeDropVoice = true;
         break;
     }
-    }
 
-    for (int i = 0; i < p->mChannelCount; i++) {
-        for (int j = 0; j < p->mVoiceOutCount; j++) {
-            AxVoice* pAxVoice = p->mAxVoice[i][j];
-
-            if (pAxVoice != NULL) {
-                if (pAxVoice == pDropVoice) {
-                    if (!freeDropVoice) {
-                        AxVoiceManager::GetInstance().FreeAxVoice(pAxVoice);
-                    }
-                } else {
-                    pAxVoice->Stop();
-                    AxVoiceManager::GetInstance().FreeAxVoice(pAxVoice);
-                }
-
-                p->mAxVoice[i][j] = NULL;
+    for (int channelIndex = 0; channelIndex < voice->mChannelCount;
+         channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < voice->mVoiceOutCount;
+             voiceOutIndex++) {
+            AxVoice *axVoice = voice->mAxVoice[channelIndex][voiceOutIndex];
+            if (!axVoice) {
+                continue;
             }
+
+            if (axVoice == dropVoice) {
+                if (!freeDropVoice) {
+                    AxVoiceManager::GetInstance().FreeAxVoice(axVoice);
+                }
+            } else {
+                axVoice->Stop();
+                AxVoiceManager::GetInstance().FreeAxVoice(axVoice);
+            }
+
+            voice->mAxVoice[channelIndex][voiceOutIndex] = nullptr;
         }
     }
 
-    p->mIsPause = false;
-    p->mIsStarting = false;
-    p->mChannelCount = 0;
+    voice->mPauseFlag = false;
+    voice->mStartFlag = false;
+    voice->mChannelCount = 0;
 
     if (freeDropVoice) {
-        p->Free();
+        voice->Free();
     }
 
-    if (p->mCallback != NULL) {
-        p->mCallback(p, voiceStatus, p->mCallbackArg);
+    if (voice->mCallback) {
+        (*voice->mCallback)(voice, voiceStatus, voice->mCallbackData);
     }
 }
 
-void Voice::TransformDpl2Pan(f32* pPan, f32* pSurroundPan, f32 pan,
-                             f32 surroundPan) {
-    surroundPan -= 1.0f;
+void Voice::TransformDpl2Pan(f32 *outPan, f32 *outSurroundPan, f32 inPan,
+                             f32 inSurroundPan) {
+    inSurroundPan -= 1.0f;
 
-    if (ut::Abs(pan) <= ut::Abs(surroundPan)) {
-        if (surroundPan <= 0.0f) {
-            *pPan = pan;
-            *pSurroundPan = -0.12f + 0.88f * surroundPan;
+    if (ut::Abs(inPan) <= ut::Abs(inSurroundPan)) {
+        if (inSurroundPan <= 0.0f) {
+            *outPan = inPan;
+            *outSurroundPan = -0.12f + 0.88f * inSurroundPan;
         } else {
-            *pPan = 0.5f * pan;
-            *pSurroundPan = -0.12f + 1.12f * surroundPan;
+            *outPan = 0.5f * inPan;
+            *outSurroundPan = -0.12f + 1.12f * inSurroundPan;
         }
-    } else if (pan >= 0.0f) {
-        if (surroundPan <= 0.0f) {
-            *pPan =
-                (0.85f + (1.0f - 0.85f) * (-surroundPan / pan)) * ut::Abs(pan);
-            *pSurroundPan = -0.12f + (2.0f * surroundPan + 0.88f * pan);
+    } else if (inPan >= 0.0f) {
+        if (inSurroundPan <= 0.0f) {
+            *outPan = (0.85f + (1.0f - 0.85f) * (-inSurroundPan / inPan)) *
+                      ut::Abs(inPan);
+            *outSurroundPan = -0.12f + (2.0f * inSurroundPan + 0.88f * inPan);
         } else {
-            *pPan =
-                (0.85f + (1.0f - 0.65f) * (-surroundPan / pan)) * ut::Abs(pan);
-            *pSurroundPan = -0.12f + 1.12f * pan;
+            *outPan = (0.85f + (1.0f - 0.65f) * (-inSurroundPan / inPan)) *
+                      ut::Abs(inPan);
+            *outSurroundPan = -0.12f + 1.12f * inPan;
         }
-    } else if (surroundPan <= 0.0f) {
-        *pPan = ((1.0f - 0.85f) * (-surroundPan / pan) - 0.85f) * ut::Abs(pan);
-        *pSurroundPan = -0.12f + (2.0f * surroundPan - 1.12f * pan);
     } else {
-        *pPan = ((1.0f - 0.65f) * (-surroundPan / pan) - 0.85f) * ut::Abs(pan);
-        *pSurroundPan = -0.12f + 1.12f * -pan;
+        if (inSurroundPan <= 0.0f) {
+            *outPan = ((1.0f - 0.85f) * (-inSurroundPan / inPan) - 0.85f) *
+                      ut::Abs(inPan);
+            *outSurroundPan = -0.12f + (2.0f * inSurroundPan - 1.12f * inPan);
+        } else {
+            *outPan = ((1.0f - 0.65f) * (-inSurroundPan / inPan) - 0.85f) *
+                      ut::Abs(inPan);
+            *outSurroundPan = -0.12f + 1.12f * -inPan;
+        }
     }
 
-    *pSurroundPan += 1.0f;
+    *outSurroundPan += 1.0f;
 }
 
-void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
-                         AxVoice::RemoteMixParam* pRmtMix) {
+void Voice::CalcMixParam(int channelIndex, int voiceOutIndex,
+                         AxVoice::MixParam *mix,
+                         AxVoice::RemoteMixParam *rmtmix) {
+    NW4RAssertPointerNonnull_Line(1284, mix);
+
     f32 mainVolume = 0.0f;
     f32 mainSend = 0.0f;
 
@@ -843,8 +970,9 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
         mainVolume = mMainOutVolume;
         mainSend = mMainSend;
 
-        fxSendA = ut::Clamp(mFxSend[AUX_A] + mVoiceOutParam[voice].fxSend, 0.0f,
-                            1.0f);
+        fxSendA =
+            ut::Clamp(mFxSend[AUX_A] + mVoiceOutParam[voiceOutIndex].fxSend,
+                      SEND_MIN, SEND_MAX);
         fxSendB = mFxSend[AUX_B];
         fxSendC = mFxSend[AUX_C];
     }
@@ -854,19 +982,17 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
     f32 fx_b = mainVolume * fxSendB;
     f32 fx_c = mainVolume * fxSendC;
 
-    f32 remote[WPAD_MAX_CONTROLLERS];
-    f32 remoteFx[WPAD_MAX_CONTROLLERS];
-    for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
+    f32 remote[4];
+    f32 remoteFx[4];
+    for (int i = 0; i < 4; i++) {
         f32 remoteVolume = 0.0f;
         f32 remoteSend = 0.0f;
         f32 remoteFxSend = 0.0f;
-
-        if (mOutputLineFlag & (OUTPUT_LINE_REMOTE_N << i)) {
+        if (mOutputLineFlag & (2 << i)) {
             remoteVolume = mRemoteOutVolume[i];
             remoteSend = mRemoteSend[i];
             remoteFxSend = mRemoteFxSend[i];
         }
-
         remote[i] = remoteVolume * remoteSend;
         remoteFx[i] = remoteVolume * remoteFxSend;
     }
@@ -875,69 +1001,70 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
     f32 front, rear;
 
     Util::PanInfo panInfo;
+    panInfo.curve = Util::PAN_CURVE_SQRT;
+    panInfo.centerZeroFlag = false;
+    panInfo.zeroClampFlag = false;
 
     switch (mPanCurve) {
-    case PAN_CURVE_SQRT: {
+    case PAN_CURVE_SQRT:
         panInfo.curve = Util::PAN_CURVE_SQRT;
         break;
-    }
-    case PAN_CURVE_SQRT_0DB: {
-        panInfo.curve = Util::PAN_CURVE_SQRT;
-        panInfo.centerZero = true;
-        break;
-    }
-    case PAN_CURVE_SQRT_0DB_CLAMP: {
-        panInfo.curve = Util::PAN_CURVE_SQRT;
-        panInfo.centerZero = true;
-        panInfo.zeroClamp = true;
-        break;
-    }
 
-    case PAN_CURVE_SINCOS: {
+    case PAN_CURVE_SQRT_0DB:
+        panInfo.curve = Util::PAN_CURVE_SQRT;
+        panInfo.centerZeroFlag = true;
+        break;
+
+    case PAN_CURVE_SQRT_0DB_CLAMP:
+        panInfo.curve = Util::PAN_CURVE_SQRT;
+        panInfo.centerZeroFlag = true;
+        panInfo.zeroClampFlag = true;
+        break;
+
+    case PAN_CURVE_SINCOS:
         panInfo.curve = Util::PAN_CURVE_SINCOS;
         break;
-    }
-    case PAN_CURVE_SINCOS_0DB: {
-        panInfo.curve = Util::PAN_CURVE_SINCOS;
-        panInfo.centerZero = true;
-        break;
-    }
-    case PAN_CURVE_SINCOS_0DB_CLAMP: {
-        panInfo.curve = Util::PAN_CURVE_SINCOS;
-        panInfo.centerZero = true;
-        panInfo.zeroClamp = true;
-        break;
-    }
 
-    case PAN_CURVE_LINEAR: {
-        panInfo.curve = Util::PAN_CURVE_LINEAR;
+    case PAN_CURVE_SINCOS_0DB:
+        panInfo.curve = Util::PAN_CURVE_SINCOS;
+        panInfo.centerZeroFlag = true;
         break;
-    }
-    case PAN_CURVE_LINEAR_0DB: {
-        panInfo.curve = Util::PAN_CURVE_LINEAR;
-        panInfo.centerZero = true;
-        break;
-    }
-    case PAN_CURVE_LINEAR_0DB_CLAMP: {
-        panInfo.curve = Util::PAN_CURVE_LINEAR;
-        panInfo.centerZero = true;
-        panInfo.zeroClamp = true;
-        break;
-    }
 
-    default: {
+    case PAN_CURVE_SINCOS_0DB_CLAMP:
+        panInfo.curve = Util::PAN_CURVE_SINCOS;
+        panInfo.centerZeroFlag = true;
+        panInfo.zeroClampFlag = true;
+        break;
+
+    case PAN_CURVE_LINEAR:
+        panInfo.curve = Util::PAN_CURVE_LINEAR;
+        break;
+
+    case PAN_CURVE_LINEAR_0DB:
+        panInfo.curve = Util::PAN_CURVE_LINEAR;
+        panInfo.centerZeroFlag = true;
+        break;
+
+    case PAN_CURVE_LINEAR_0DB_CLAMP:
+        panInfo.curve = Util::PAN_CURVE_LINEAR;
+        panInfo.centerZeroFlag = true;
+        panInfo.zeroClampFlag = true;
+        break;
+
+    default:
         panInfo.curve = Util::PAN_CURVE_SQRT;
-    }
+        break;
     }
 
     if (mChannelCount > 1 && mPanMode == PAN_MODE_BALANCE) {
-        f32 pan = mPan + mVoiceOutParam[voice].pan;
-        f32 surroundPan = mSurroundPan + mVoiceOutParam[voice].surroundPan;
+        f32 pan = mPan + mVoiceOutParam[voiceOutIndex].pan;
+        f32 surroundPan =
+            mSurroundPan + mVoiceOutParam[voiceOutIndex].surroundPan;
 
-        if (channel == 0) {
+        if (channelIndex == 0) {
             left = Util::CalcPanRatio(pan, panInfo);
             right = 0.0f;
-        } else if (channel == 1) {
+        } else if (channelIndex == 1) {
             left = 0.0f;
             right = Util::CalcPanRatio(-pan, panInfo);
         }
@@ -945,34 +1072,34 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
         front = Util::CalcSurroundPanRatio(surroundPan, panInfo);
         rear = Util::CalcSurroundPanRatio(2.0f - surroundPan, panInfo);
     } else {
-        f32 voicePan = 0.0f;
+        f32 voicePan = PAN_CENTER;
         f32 pan, surroundPan;
 
         if (mChannelCount == 2) {
-            if (channel == 0) {
-                voicePan = -1.0f;
+            if (channelIndex == 0) {
+                voicePan = PAN_LEFT;
             }
-            if (channel == 1) {
-                voicePan = 1.0f;
+            if (channelIndex == 1) {
+                voicePan = PAN_RIGHT;
             }
         }
 
         switch (AxManager::GetInstance().GetOutputMode()) {
-        case OUTPUT_MODE_DPL2: {
-            TransformDpl2Pan(&pan, &surroundPan,
-                             mPan + voicePan + mVoiceOutParam[voice].pan,
-                             mSurroundPan + mVoiceOutParam[voice].surroundPan);
+        case OUTPUT_MODE_DPL2:
+            TransformDpl2Pan(
+                &pan, &surroundPan,
+                mPan + voicePan + mVoiceOutParam[voiceOutIndex].pan,
+                mSurroundPan + mVoiceOutParam[voiceOutIndex].surroundPan);
             break;
-        }
 
         case OUTPUT_MODE_STEREO:
         case OUTPUT_MODE_SURROUND:
         case OUTPUT_MODE_MONO:
-        default: {
-            pan = mPan + voicePan + mVoiceOutParam[voice].pan;
-            surroundPan = mSurroundPan + mVoiceOutParam[voice].surroundPan;
+        default:
+            pan = mPan + voicePan + mVoiceOutParam[voiceOutIndex].pan;
+            surroundPan =
+                mSurroundPan + mVoiceOutParam[voiceOutIndex].surroundPan;
             break;
-        }
         }
 
         left = Util::CalcPanRatio(pan, panInfo);
@@ -984,22 +1111,30 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
     surround = Util::CalcVolumeRatio(-3.0f);
     lrMixed = 0.5f * (left + right);
 
-    f32 m_l, m_r, m_s;
-    f32 a_l, a_r, a_s;
-    f32 b_l, b_r, b_s;
-    f32 c_l, c_r, c_s;
+    f32 m_l;
+    f32 m_r;
+    f32 m_s;
+    f32 a_l;
+    f32 a_r;
+    f32 a_s;
+    f32 b_l;
+    f32 b_r;
+    f32 b_s;
+    f32 c_l;
+    f32 c_r;
+    f32 c_s;
 
-    f32& m_sl = m_s;
-    f32& m_sr = c_l;
+    f32 &m_sl = m_s;
+    f32 &m_sr = c_l;
 
-    f32& a_sl = a_s;
-    f32& a_sr = c_r;
+    f32 &a_sl = a_s;
+    f32 &a_sr = c_r;
 
-    f32& b_sl = b_s;
-    f32& b_sr = c_s;
+    f32 &b_sl = b_s;
+    f32 &b_sr = c_s;
 
     switch (AxManager::GetInstance().GetOutputMode()) {
-    case OUTPUT_MODE_STEREO: {
+    case OUTPUT_MODE_STEREO:
         m_l = main * left;
         m_r = main * right;
         m_s = 0.0f;
@@ -1015,10 +1150,10 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
         c_l = fx_c * left;
         c_r = fx_c * right;
         c_s = 0.0f;
-        break;
-    }
 
-    case OUTPUT_MODE_MONO: {
+        break;
+
+    case OUTPUT_MODE_MONO:
         m_l = main * lrMixed;
         m_r = main * lrMixed;
         m_s = 0.0f;
@@ -1034,8 +1169,8 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
         c_l = fx_c * lrMixed;
         c_r = fx_c * lrMixed;
         c_s = 0.0f;
+
         break;
-    }
 
     case OUTPUT_MODE_SURROUND: {
         f32 fl = left * front;
@@ -1057,8 +1192,7 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
         c_l = fx_c * fl;
         c_r = fx_c * fr;
         c_s = fx_c * rs;
-        break;
-    }
+    } break;
 
     case OUTPUT_MODE_DPL2: {
         f32 fl = left * front;
@@ -1080,91 +1214,81 @@ void Voice::CalcMixParam(int channel, int voice, AxVoice::MixParam* pMix,
         b_r = fx_b * fr;
         b_sl = fx_b * rl;
         b_sr = fx_b * rr;
-        break;
+    } break;
     }
 
-    default: {
-        break;
-    }
-    }
-
-    f32 rmt[WPAD_MAX_CONTROLLERS];
-    f32 rmtFx[WPAD_MAX_CONTROLLERS];
-    for (int i = 0; i < WPAD_MAX_CONTROLLERS; i++) {
+    f32 rmt[4];
+    f32 rmtFx[4];
+    for (int i = 0; i < 4; i++) {
         rmt[i] = lrMixed * remote[i];
         rmtFx[i] = lrMixed * remoteFx[i];
     }
 
-    pMix->vL = CalcMixVolume(m_l);
-    pMix->vR = CalcMixVolume(m_r);
-    pMix->vS = CalcMixVolume(m_s);
+    mix->vL = CalcMixVolume(m_l);
+    mix->vR = CalcMixVolume(m_r);
+    mix->vS = CalcMixVolume(m_s);
+    mix->vAuxAL = CalcMixVolume(a_l);
+    mix->vAuxAR = CalcMixVolume(a_r);
+    mix->vAuxAS = CalcMixVolume(a_s);
+    mix->vAuxBL = CalcMixVolume(b_l);
+    mix->vAuxBR = CalcMixVolume(b_r);
+    mix->vAuxBS = CalcMixVolume(b_s);
+    mix->vAuxCL = CalcMixVolume(c_l);
+    mix->vAuxCR = CalcMixVolume(c_r);
+    mix->vAuxCS = CalcMixVolume(c_s);
 
-    pMix->vAuxAL = CalcMixVolume(a_l);
-    pMix->vAuxAR = CalcMixVolume(a_r);
-    pMix->vAuxAS = CalcMixVolume(a_s);
-
-    pMix->vAuxBL = CalcMixVolume(b_l);
-    pMix->vAuxBR = CalcMixVolume(b_r);
-    pMix->vAuxBS = CalcMixVolume(b_s);
-
-    pMix->vAuxCL = CalcMixVolume(c_l);
-    pMix->vAuxCR = CalcMixVolume(c_r);
-    pMix->vAuxCS = CalcMixVolume(c_s);
-
-    pRmtMix->vMain0 = CalcMixVolume(rmt[0]);
-    pRmtMix->vAux0 = 0;
-
-    pRmtMix->vMain1 = CalcMixVolume(rmt[1]);
-    pRmtMix->vAux1 = 0;
-
-    pRmtMix->vMain2 = CalcMixVolume(rmt[2]);
-    pRmtMix->vAux2 = 0;
-
-    pRmtMix->vMain3 = CalcMixVolume(rmt[3]);
-    pRmtMix->vAux3 = 0;
+    rmtmix->vMain0 = CalcMixVolume(rmt[0]);
+    rmtmix->vAux0 = 0;
+    rmtmix->vMain1 = CalcMixVolume(rmt[1]);
+    rmtmix->vAux1 = 0;
+    rmtmix->vMain2 = CalcMixVolume(rmt[2]);
+    rmtmix->vAux2 = 0;
+    rmtmix->vMain3 = CalcMixVolume(rmt[3]);
+    rmtmix->vAux3 = 0;
 }
 
 void Voice::RunAllAxVoice() {
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            if (mAxVoice[i][j] != NULL) {
-                mAxVoice[i][j]->Run();
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->Run();
             }
         }
     }
 }
 
 void Voice::StopAllAxVoice() {
-    for (int i = 0; i < mChannelCount; i++) {
-        for (int j = 0; j < mVoiceOutCount; j++) {
-            if (mAxVoice[i][j] != NULL) {
-                mAxVoice[i][j]->Stop();
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        for (int voiceOutIndex = 0; voiceOutIndex < mVoiceOutCount;
+             voiceOutIndex++) {
+            if (AxVoice *axVoice = mAxVoice[channelIndex][voiceOutIndex]) {
+                axVoice->Stop();
             }
         }
     }
 }
 
-void Voice::InvalidateWaveData(const void* pStart, const void* pEnd) {
-    bool dispose = false;
+void Voice::InvalidateWaveData(void const *start, void const *end) {
+    bool disposeFlag = false;
 
-    for (int i = 0; i < mChannelCount; i++) {
-        AxVoice* pAxVoice = mAxVoice[i][0];
+    for (int channelIndex = 0; channelIndex < mChannelCount; channelIndex++) {
+        AxVoice *axVoice = mAxVoice[channelIndex][0];
 
-        if (pAxVoice != NULL && pAxVoice->IsDataAddressCoverd(pStart, pEnd)) {
-            dispose = true;
+        if (axVoice && axVoice->IsDataAddressCoverd(start, end)) {
+            disposeFlag = true;
             break;
         }
     }
 
-    if (dispose) {
+    if (disposeFlag) {
         Stop();
 
-        if (mCallback != NULL) {
-            mCallback(this, CALLBACK_STATUS_CANCEL, mCallbackArg);
+        if (mCallback) {
+            (*mCallback)(this, CALLBACK_STATUS_CANCEL, mCallbackData);
         }
     }
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

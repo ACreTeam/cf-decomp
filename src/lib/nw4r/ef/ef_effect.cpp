@@ -11,7 +11,7 @@ Effect::~Effect() {
     RetireEmitterAll();
 }
 
-bool Effect::Initialize(EffectSystem* pSystem, EmitterResource* pResource,
+bool Effect::Initialize(EffectSystem *pSystem, EmitterResource *pResource,
                         u16 calcRemain) {
 
     ReferencedObject::Initialize();
@@ -32,7 +32,7 @@ bool Effect::Initialize(EffectSystem* pSystem, EmitterResource* pResource,
     mVelocity.y = 0.0f;
     mVelocity.z = 0.0f;
 
-    Emitter* pEmitter = pSystem->GetMemoryManager()->AllocEmitter();
+    Emitter *pEmitter = pSystem->GetMemoryManager()->AllocEmitter();
     if (pEmitter == NULL) {
         return false;
     }
@@ -58,7 +58,7 @@ void Effect::DestroyFunc() {
     RetireEmitterAll();
 }
 
-bool Effect::Closing(Emitter* pEmitter) {
+bool Effect::Closing(Emitter *pEmitter) {
     if (pEmitter->mParent != NULL) {
         pEmitter->mParent->UnRef();
     }
@@ -76,10 +76,15 @@ bool Effect::Closing(Emitter* pEmitter) {
     return true;
 }
 
-Emitter* Effect::CreateEmitter(EmitterResource* pResource, u8 drawWeight,
+Emitter *Effect::CreateEmitter(EmitterResource *pResource, u8 drawWeight,
                                u16 calcRemain) {
 
-    Emitter* pEmitter = mManagerES->GetMemoryManager()->AllocEmitter();
+    if (!(pResource->GetEmitterDesc()->commonFlag &
+          EmitterDesc::CMN_FLAG_RELOCATED)) {
+        return NULL;
+    }
+
+    Emitter *pEmitter = mManagerES->GetMemoryManager()->AllocEmitter();
     if (pEmitter == NULL) {
         return false;
     }
@@ -97,7 +102,7 @@ Emitter* Effect::CreateEmitter(EmitterResource* pResource, u8 drawWeight,
     return pEmitter;
 }
 
-u32 Effect::RetireEmitter(Emitter* pEmitter) {
+u32 Effect::RetireEmitter(Emitter *pEmitter) {
     if (pEmitter->mLifeStatus != NW4R_EF_LS_ACTIVE) {
         return 0;
     }
@@ -109,13 +114,13 @@ u32 Effect::RetireEmitter(Emitter* pEmitter) {
 
 u32 Effect::RetireEmitterAll() {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_EMITTER];
+    void *pArray[NW4R_EF_MAX_EMITTER];
 
     u16 size = UtlistToArray(&mActivityList.mActiveList, pArray,
                              UtlistSize(&mActivityList.mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        Emitter* pEmitter = static_cast<Emitter*>(pArray[i]);
+        Emitter *pEmitter = static_cast<Emitter *>(pArray[i]);
 
         if (pEmitter->mLifeStatus == NW4R_EF_LS_ACTIVE) {
             num += RetireEmitter(pEmitter);
@@ -127,22 +132,22 @@ u32 Effect::RetireEmitterAll() {
 
 u32 Effect::RetireParticleAll() {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_EMITTER];
+    void *pArray[NW4R_EF_MAX_EMITTER];
 
     u16 size = UtlistToArray(&mActivityList.mActiveList, pArray,
                              UtlistSize(&mActivityList.mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        Emitter* pEmitter = static_cast<Emitter*>(pArray[i]);
+        Emitter *pEmitter = static_cast<Emitter *>(pArray[i]);
         num += pEmitter->RetireParticleAll();
     }
 
     return num;
 }
 
-void Effect::Calc(bool onlyBillboard) {
-    if (onlyBillboard) {
-        NW4R_UT_LIST_FOREACH (Emitter, it, mActivityList.mActiveList, {
+void Effect::Calc(CalcOption calcoption) {
+    if (calcoption & CALC_TYPE_BILLBOARD) {
+        NW4R_UT_LIST_FOREACH(Emitter, it, mActivityList.mActiveList, {
             if (it->mLifeStatus == NW4R_EF_LS_ACTIVE ||
                 it->mLifeStatus == NW4R_EF_LS_WAIT) {
 
@@ -162,23 +167,28 @@ void Effect::Calc(bool onlyBillboard) {
         return;
     }
 
-    NW4R_UT_LIST_FOREACH (Emitter, pEmitter, mActivityList.mActiveList, {
-        if (pEmitter->mLifeStatus == NW4R_EF_LS_ACTIVE ||
-            pEmitter->mLifeStatus == NW4R_EF_LS_WAIT) {
+    if (!(calcoption & CALC_TYPE_EXTENDED)) {
+        NW4R_UT_LIST_FOREACH(Emitter, pEmitter, mActivityList.mActiveList, {
+            if (pEmitter->mLifeStatus == NW4R_EF_LS_ACTIVE ||
+                pEmitter->mLifeStatus == NW4R_EF_LS_WAIT) {
 
-            if (pEmitter->mEvalStatus == NW4R_EF_ES_DONE) {
-                pEmitter->mEvalStatus = NW4R_EF_ES_WAIT;
+                if (pEmitter->mEvalStatus == NW4R_EF_ES_DONE) {
+                    pEmitter->mEvalStatus = NW4R_EF_ES_WAIT;
+                }
             }
-        }
 
-        NW4R_UT_LIST_FOREACH (ParticleManager, pManager, pEmitter->mActivityList.mActiveList,
-                              { pManager->BeginCalc(false); });
-    });
+            pEmitter->mPrevGlobalPosition = pEmitter->mGlobalPosition;
+
+            NW4R_UT_LIST_FOREACH(ParticleManager, pManager,
+                                 pEmitter->mActivityList.mActiveList,
+                                 { pManager->BeginCalc(false); });
+        });
+    }
 
     SetFlagExistCalcRemain(true);
 
     while (GetFlagExistCalcRemain()) {
-        void* pArray[NW4R_EF_MAX_EMITTER];
+        void *pArray[NW4R_EF_MAX_EMITTER];
 
         SetFlagExistCalcRemain(false);
 
@@ -189,17 +199,19 @@ void Effect::Calc(bool onlyBillboard) {
                                   UtlistSize(&mActivityList.mActiveList));
 
                 for (u16 i = 0; i < size; i++) {
-                    Emitter* pEmitter = static_cast<Emitter*>(pArray[i]);
+                    Emitter *pEmitter = static_cast<Emitter *>(pArray[i]);
                     pEmitter->CalcEmitter();
                 }
             }
 
-            NW4R_UT_LIST_FOREACH (Emitter, it, mActivityList.mActiveList, {
+            NW4R_UT_LIST_FOREACH(Emitter, it, mActivityList.mActiveList, {
                 if (it->mLifeStatus == NW4R_EF_LS_ACTIVE ||
                     it->mLifeStatus == NW4R_EF_LS_WAIT) {
 
-                    if (!(it->mParameter.mEmitFlags & EmitterDesc::EMIT_FLAG_16) &&
-                        !(it->mParameter.mEmitFlags & EmitterDesc::EMIT_FLAG_15)) {
+                    if (!(it->mParameter.mEmitFlags &
+                          EmitterDesc::EMIT_FLAG_16) &&
+                        !(it->mParameter.mEmitFlags &
+                          EmitterDesc::EMIT_FLAG_15)) {
                         continue;
                     }
 
@@ -213,7 +225,7 @@ void Effect::Calc(bool onlyBillboard) {
                                   UtlistSize(&mActivityList.mActiveList));
 
                 for (u16 i = 0; i < size; i++) {
-                    Emitter* pEmitter = static_cast<Emitter*>(pArray[i]);
+                    Emitter *pEmitter = static_cast<Emitter *>(pArray[i]);
 
                     if (pEmitter->mEvalStatus == NW4R_EF_ES_WAIT) {
                         pEmitter->mTick++;
@@ -233,7 +245,7 @@ void Effect::Calc(bool onlyBillboard) {
                                   UtlistSize(&mActivityList.mActiveList));
 
                 for (u16 i = 0; i < size; i++) {
-                    Emitter* pEmitter = static_cast<Emitter*>(pArray[i]);
+                    Emitter *pEmitter = static_cast<Emitter *>(pArray[i]);
                     pEmitter->CalcEmission();
                 }
             }
@@ -244,7 +256,7 @@ void Effect::Calc(bool onlyBillboard) {
                                   UtlistSize(&mActivityList.mActiveList));
 
                 for (u16 i = 0; i < size; i++) {
-                    Emitter* pEmitter = static_cast<Emitter*>(pArray[i]);
+                    Emitter *pEmitter = static_cast<Emitter *>(pArray[i]);
                     pEmitter->CalcParticle();
                 }
             }
@@ -257,7 +269,7 @@ void Effect::Calc(bool onlyBillboard) {
         }
 
         if (GetFlagExistCalcRemain()) {
-            NW4R_UT_LIST_FOREACH (Emitter, pEmitter, mActivityList.mActiveList, {
+            NW4R_UT_LIST_FOREACH(Emitter, pEmitter, mActivityList.mActiveList, {
                 if (pEmitter->mLifeStatus == NW4R_EF_LS_ACTIVE &&
                     pEmitter->mCalcRemain != 0) {
 
@@ -270,13 +282,14 @@ void Effect::Calc(bool onlyBillboard) {
                     }
                 }
 
-                NW4R_UT_LIST_FOREACH (ParticleManager, pManager, pEmitter->mActivityList.mActiveList,
-                                      { pManager->BeginCalc(true); });
+                NW4R_UT_LIST_FOREACH(ParticleManager, pManager,
+                                     pEmitter->mActivityList.mActiveList,
+                                     { pManager->BeginCalc(true); });
             });
         }
     }
 
-    NW4R_UT_LIST_FOREACH (Emitter, pEmitter, mActivityList.mActiveList, {
+    NW4R_UT_LIST_FOREACH(Emitter, pEmitter, mActivityList.mActiveList, {
         if (pEmitter->mLifeStatus == NW4R_EF_LS_ACTIVE ||
             pEmitter->mLifeStatus == NW4R_EF_LS_WAIT) {
 
@@ -285,12 +298,18 @@ void Effect::Calc(bool onlyBillboard) {
             }
         }
 
-        NW4R_UT_LIST_FOREACH (ParticleManager, pManager, pEmitter->mActivityList.mActiveList,
-                              { pManager->EndCalc(); });
+        NW4R_UT_LIST_FOREACH(ParticleManager, pManager,
+                             pEmitter->mActivityList.mActiveList,
+                             { pManager->EndCalc(); });
+        math::MTX34 mtx;
+        pEmitter->CalcGlobalMtx(&mtx);
+        pEmitter->mGlobalPosition.x = mtx._03;
+        pEmitter->mGlobalPosition.y = mtx._13;
+        pEmitter->mGlobalPosition.z = mtx._23;
     });
 }
 
-void Effect::Draw(const DrawInfo& rInfo) {
+void Effect::Draw(const DrawInfo &rInfo) {
     if (GetFlagDisableDraw()) {
         return;
     }
@@ -298,12 +317,16 @@ void Effect::Draw(const DrawInfo& rInfo) {
     mDrawOrderFunc->Draw(this, rInfo);
 }
 
+Emitter *Effect::GetRootEmitter() {
+    return static_cast<Emitter *>(mActivityList.mActiveList.headObject);
+}
+
 u16 Effect::GetNumEmitter() const {
     return UtlistSize(&mActivityList.mActiveList);
 }
 
-Emitter* Effect::GetEmitter(u16 idx) {
-    return static_cast<Emitter*>(
+Emitter *Effect::GetEmitter(u16 idx) {
+    return static_cast<Emitter *>(
         ut::List_GetNth(&mActivityList.mActiveList, idx));
 }
 
@@ -316,24 +339,25 @@ u32 Effect::ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                    bool ignoreLifeStatus) {
     u32 calls = 0;
 
-    NW4R_UT_LIST_FOREACH_SAFE (Emitter, it, mActivityList.mActiveList, {
-        calls += it->ForeachParticleManager(pFunc, param, ignoreLifeStatus, false);
+    NW4R_UT_LIST_FOREACH_SAFE(Emitter, it, mActivityList.mActiveList, {
+        calls +=
+            it->ForeachParticleManager(pFunc, param, ignoreLifeStatus, false);
     });
 
     return calls;
 }
 
 u32 Effect::ForeachEmitterFrom(ForEachFunc pFunc, ForEachParam param,
-                               bool ignoreLifeStatus, Emitter* pEmitter) {
+                               bool ignoreLifeStatus, Emitter *pEmitter) {
     u32 calls = 0;
 
-    NW4R_UT_LIST_FOREACH_SAFE (Emitter, it, mActivityList.mActiveList, {
+    NW4R_UT_LIST_FOREACH_SAFE(Emitter, it, mActivityList.mActiveList, {
         if (!ignoreLifeStatus && it->mLifeStatus != NW4R_EF_LS_ACTIVE) {
             continue;
         }
 
         bool isChild = false;
-        Emitter* pSearch = it;
+        Emitter *pSearch = it;
 
         // Only apply function to effects owned by the specified emitter
         while (!isChild && (pSearch = pSearch->mParent) != NULL) {
@@ -351,10 +375,10 @@ u32 Effect::ForeachEmitterFrom(ForEachFunc pFunc, ForEachParam param,
     return calls;
 }
 
-void Effect::SetRootMtx(const math::MTX34& rMtx) {
+void Effect::SetRootMtx(const math::MTX34 &rMtx) {
     math::MTX34Copy(&mRootMtx, &rMtx);
 
-    NW4R_UT_LIST_FOREACH (Emitter, it, mActivityList.mActiveList, {
+    NW4R_UT_LIST_FOREACH(Emitter, it, mActivityList.mActiveList, {
         if (it->mParent == NULL) {
             it->SetMtxDirty();
         }

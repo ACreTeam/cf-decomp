@@ -18,6 +18,8 @@ public:
     DvdLockedFileStream(const DVDFileInfo* pInfo, bool close);
     virtual ~DvdLockedFileStream(); // at 0xC
 
+    virtual void Close(); // at 0x10
+
     virtual s32 Read(void* pDst, ulong size); // at 0x14
 
     virtual bool ReadAsync(void* /* pDst */, ulong /* size */,
@@ -36,17 +38,23 @@ public:
         return false;
     } // at 0x60
 
+    virtual void Cancel(); // at 0x48
+
     virtual bool CanAsync() const {
         return false;
     } // at 0x28
 
 private:
-    static void InitMutex_();
+    void InitMutex_();
+    bool LockMutex();
+    static void UnlockMutex();
+    void CancelMutex();
 
 private:
-    bool mCancelFlag; // at 0x6F
+    volatile bool mCancelFlag; // at 0x6F
 
     static bool sInitialized;
+    static OSThreadQueue sThreadQueue;
     static OSMutex sMutex;
 };
 

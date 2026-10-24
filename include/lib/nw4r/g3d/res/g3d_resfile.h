@@ -42,13 +42,12 @@ public:
 
     bool Bind(const ResFile file);
 
-    // City Folk additions (names inferred): the file has the group (d_hmn_tool_mng, d_a_rmobj).
-    bool HasResMdl() const;       // 8023487C: "3DModels(NW4R)"
-    bool HasResAnmChr() const;    // 802348C8: "AnmChr(NW4R)"
-    bool HasResAnmVis() const;    // 80234914: "AnmVis(NW4R)"
-    bool HasResAnmClr() const;    // 80234960: "AnmClr(NW4R)"
-    bool HasResAnmTexPat() const; // 802349AC: "AnmTexPat(NW4R)"
-    bool HasResAnmTexSrt() const; // 802349F8: "AnmTexSrt(NW4R)"
+    bool HasResMdl() const;
+    bool HasResAnmChr() const;
+    bool HasResAnmVis() const;
+    bool HasResAnmClr() const;
+    bool HasResAnmTexPat() const;
+    bool HasResAnmTexSrt() const;
     void Release();
 
     bool Bind() {
@@ -97,7 +96,6 @@ public:
     ResAnmScn GetResAnmScn(int idx) const;
     ResAnmScn GetResAnmScn(ulong idx) const;
 
-    // The "External" folder (names inferred; 80234A44 / 80234810).
     bool HasExternal() const;
     void* GetExternal(const char* pName) const;
 

@@ -193,7 +193,7 @@ void dBgoDraw_c::block_c::setMaterials(u32 blockX, u32 blockZ, u32 flags) {
         }
         if (flags & 2) {
             nw4r::g3d::ResMatTevColor tev = river.GetResMatTevColor();
-            tev.GXSetTevKColor(GX_KCOLOR1, dBgoDraw::l_seaColor);
+            tev.GXSetTevColor(GX_TEVREG0, dBgoDraw::l_seaColor);
             tev.DCStore(false);
         }
     }
@@ -224,14 +224,14 @@ void dBgoDraw_c::block_c::setMaterials(u32 blockX, u32 blockZ, u32 flags) {
             mColor color1;
             mColor color2;
             bool changed = false;
-            if (tev.GXGetTevKColor(GX_KCOLOR1, &color1)) {
+            if (tev.GXGetTevColor(GX_TEVREG0, &color1)) {
                 color1.a = dBgoDraw::l_HIO.mOceanAlpha1;
-                tev.GXSetTevKColor(GX_KCOLOR1, color1);
+                tev.GXSetTevColor(GX_TEVREG0, color1);
                 changed = true;
             }
-            if (tev.GXGetTevKColor(GX_KCOLOR2, &color2)) {
+            if (tev.GXGetTevColor(GX_TEVREG1, &color2)) {
                 color2.a = dBgoDraw::l_HIO.mOceanAlpha2;
-                tev.GXSetTevKColor(GX_KCOLOR2, color2);
+                tev.GXSetTevColor(GX_TEVREG1, color2);
                 changed = true;
             }
             if (changed) {

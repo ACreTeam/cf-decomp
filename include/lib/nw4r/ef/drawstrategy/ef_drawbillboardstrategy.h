@@ -17,38 +17,30 @@ public:
     virtual CalcAheadFunc
     GetCalcAheadFunc(ParticleManager* pManager); // at 0x18
 
-    void InitGraphics(const DrawInfo& rInfo, ParticleManager* pManager);
+    void InitGraphics(const DrawInfo &drawInfo, ParticleManager *pm);
 
-private:
-    void DrawNormalBillboard(const DrawInfo& rInfo, ParticleManager* pManager);
+  private:
+    void DrawNormalBillboard(const DrawInfo &drawInfo, ParticleManager *pm);
+    void DrawYBillboard(const DrawInfo &drawInfo, ParticleManager *pm);
+    void DrawDirectionalBillboard(const DrawInfo &drawInfo,
+                                  ParticleManager *pm);
 
-    inline void DispParticle_Normal(Particle* pParticle,
-                                    const math::MTX34& rViewMtx, f32 vx, f32 vy,
-                                    f32 vz, f32 rc, f32 rs, f32 sx, f32 sy,
-                                    const math::VEC2& rPivot, int flags);
+    inline void DispParticle_Normal(Particle *particle, const math::MTX34 *vm,
+                                    f32 vx, f32 vy, f32 rc, f32 rs, f32 sx,
+                                    f32 sy, const math::VEC2 *pivot, int flags);
 
-    void DrawYBillboard(const DrawInfo& rInfo, ParticleManager* pManager);
+    inline void DispParticle_YBillboard(Particle *particle,
+                                        const math::MTX34 &vm, f32 vx, f32 vy,
+                                        f32 rc, f32 rs, f32 sx, f32 sy,
+                                        const math::VEC2 &pivot, int flags);
 
-    inline void DispParticle_YBillboard(Particle* pParticle,
-                                        const math::MTX34& rViewMtx, f32 vx,
-                                        f32 vy, f32 vz, f32 rc, f32 rs, f32 sx,
-                                        f32 sy, const math::VEC2& rPivot,
-                                        int flags);
+    inline void DispParticle_Directional(Particle *particle,
+                                         const math::MTX34 &vm, f32 vx, f32 vy,
+                                         f32 rc, f32 rs, f32 sx, f32 sy, f32 vs,
+                                         const math::VEC2 &pivot, int flags);
 
-    void DrawDirectionalBillboard(const DrawInfo& rInfo,
-                                  ParticleManager* pManager);
-
-    inline void DispParticle_Directional(Particle* pParticle,
-                                         const math::MTX34& rViewMtx, f32 vx,
-                                         f32 vy, f32 vz, f32 rc, f32 rs, f32 sx,
-                                         f32 sy, const math::VEC2& rPivot,
-                                         int flags);
-
-    void DispPolygon(const math::VEC3& rP, const math::VEC3& rD1,
-                     const math::VEC3& rD2, int flags);
-
-    void CalcZOffset(math::MTX34* pMtx, const ParticleManager* pManager,
-                     const DrawInfo& rInfo, f32 offsetZ);
+    inline void DispPolygon(const math::VEC3 &p, const math::VEC3 &d0,
+                            const math::VEC3 &d1, int flags);
 };
 
 } // namespace ef

@@ -217,6 +217,11 @@ public:
         CULLINGSTATUS_NOTEST
     };
 
+    enum CheckStatus {
+        CHECKSTATUS_GATHER_SCNOBJ,
+        CHECKSTATUS_IGNORE_SCNOBJ
+    };
+
 public:
     virtual ~IScnObjGather() {} // at 0x8
 
@@ -230,6 +235,10 @@ public:
 
     virtual void DrawOpa(ResMdlDrawMode* pForceMode) = 0; // at 0x20
     virtual void DrawXlu(ResMdlDrawMode* pForceMode) = 0; // at 0x24
+
+    virtual CheckStatus CheckScnObj(ScnObj* pObj) {
+        return CHECKSTATUS_GATHER_SCNOBJ;
+    } // at 0x28
 };
 
 /******************************************************************************

@@ -6,8 +6,8 @@ namespace nw4r {
 namespace ef {
 
 void EmitterFormCylinder::EmissionSub(
-    Emitter* pEmitter, ParticleManager* pManager, int count, u32 flags,
-    f32* pParams, u16 life, f32 lifeRnd, const math::MTX34* pSpace, f32 sizeX,
+    Emitter *pEmitter, ParticleManager *pManager, int count, u32 flags,
+    f32 *pParams, u16 life, f32 lifeRnd, const math::MTX34 *pSpace, f32 sizeX,
     f32 sizeY, f32 sizeZ, f32 angle, f32 dangle, f32 angleOffset, f32 height) {
 
     for (int i = 0; i < count; i++) {
@@ -18,7 +18,7 @@ void EmitterFormCylinder::EmissionSub(
         f32 inner = pParams[1] / 100.0f;
 
         if (flags & EmitterDesc::EMIT_FLAG_24) {
-            dist = sqrtf(dist + (inner * inner * (1.0f - dist)));
+            dist = math::FSqrt(dist + (inner * inner * (1.0f - dist)));
         } else {
             dist += inner * (1.0f - dist);
         }
@@ -27,8 +27,8 @@ void EmitterFormCylinder::EmissionSub(
             angle = (pParams[3] - pParams[2]) * pEmitter->mRandom.RandFloat();
         }
 
-        f32 sa = std::sinf(angleOffset + angle);
-        f32 ca = std::cosf(angleOffset + angle);
+        f32 sa, ca;
+        PSSinCosRad(&sa, &ca, angleOffset + angle);
 
         math::VEC3 fromYAxis(sa, 0.0f, -ca);
 
@@ -43,15 +43,10 @@ void EmitterFormCylinder::EmissionSub(
         pos.z = fromYAxis.z * dist * sizeZ;
 
         math::VEC3 normal(pos.x, 0.0f, pos.z);
-        if (pos.x != 0.0f || pos.z != 0.0f) {
-            math::VEC3Normalize(&normal, &normal);
-        }
+        Normalize(&normal, &normal);
 
         math::VEC3 fromOrigin = pos;
-        if (fromOrigin.x != 0.0f || fromOrigin.y != 0.0f ||
-            fromOrigin.z != 0.0f) {
-            math::VEC3Normalize(&fromOrigin, &fromOrigin);
-        }
+        Normalize(&fromOrigin, &fromOrigin);
 
         CalcVelocity(&vel, pEmitter, pos, normal, fromOrigin, fromYAxis);
 
@@ -74,9 +69,9 @@ void EmitterFormCylinder::EmissionSub(
     }
 }
 
-void EmitterFormCylinder::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                                   int count, u32 flags, f32* pParams, u16 life,
-                                   f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormCylinder::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                                   int count, u32 flags, f32 *pParams, u16 life,
+                                   f32 lifeRnd, const math::MTX34 *pSpace) {
 
     if (count < 1) {
         return;

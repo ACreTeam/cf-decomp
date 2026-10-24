@@ -33,4 +33,52 @@
 #define NW4R_FILE_VERSION(MAJOR, MINOR)	\
 	(NW4R_BYTE_(MAJOR, 1) | NW4R_BYTE_(MINOR, 0))
 
+#ifdef __cplusplus
+namespace nw4r {
+namespace snd {
+
+class FxBase;
+class SoundPlayer;
+class SoundHandle;
+class SeqSoundHandle;
+class SoundArchive;
+class SoundArchivePlayer;
+class Sound3DActor;
+class Sound3DListener;
+class Sound3DManager;
+class StrmSoundHandle;
+class WaveSoundHandle;
+
+namespace detail {
+
+struct AxfxImpl;
+class AxManager;
+class AxVoice;
+class AxVoiceManager;
+class ExternalSoundPlayer;
+class BasicSound;
+class BasicPlayer;
+class ChannelManager;
+class SeqSound;
+class SeqPlayer;
+class MmlParser;
+class MmlSeqTrack;
+class SeqTrack;
+class SeqTrackAllocator;
+template <typename T> class SoundInstanceManager;
+class StrmBufferPool;
+class StrmSound;
+class NoteOnCallback;
+class PlayerHeap;
+class SoundArchiveFileReader;
+class SoundThread;
+class WaveSound;
+class StrmPlayer;
+class WsdPlayer;
+
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
+#endif
+
 #endif

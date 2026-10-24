@@ -11,75 +11,75 @@
  ******************************************************************************/
 namespace {
 
-s32 FindNameResource(ARCHandle* pHandle, const char* pName) {
-    s32 entrynum = -1;
+s32 FindNameResource(ARCHandle* pArcHandle, const char* resName) {
+    s32 entryNum = -1;
 
     ARCDir dir;
-    ARCOpenDir(pHandle, ".", &dir);
+    ARCOpenDir(pArcHandle, ".", &dir);
 
-    ARCDirEntry ent;
-    while (ARCReadDir(&dir, &ent)) {
-        if (ent.isDir) {
-            ARCChangeDir(pHandle, ent.name);
-            entrynum = FindNameResource(pHandle, pName);
-            ARCChangeDir(pHandle, "..");
+    ARCDirEntry dirEntry;
+    while (ARCReadDir(&dir, &dirEntry)) {
+        if (dirEntry.isDir) {
+            ARCChangeDir(pArcHandle, dirEntry.name);
+            entryNum = FindNameResource(pArcHandle, resName);
+            ARCChangeDir(pArcHandle, "..");
 
-            if (entrynum != -1) {
+            if (entryNum != -1) {
                 break;
             }
         } else {
-            if (std::stricmp(pName, ent.name) == 0) {
-                entrynum = ent.entryNum;
+            if (std::stricmp(resName, dirEntry.name) == 0) {
+                entryNum = dirEntry.entryNum;
                 break;
             }
         }
     }
 
     ARCCloseDir(&dir);
-    return entrynum;
+    return entryNum;
 }
 
-void* GetResourceSub(ARCHandle* pHandle, const char* pRootDir, u32 type,
-                     const char* pName, unsigned long* pSize) {
+void* GetResourceSub(ARCHandle* pArcHandle, const char* resRootDir, ulong resType,
+                     const char* name, ulong* pSize) {
 
-    s32 entrynum = -1;
+    s32 entryNum = -1;
 
-    if (ARCConvertPathToEntrynum(pHandle, pRootDir) != -1) {
-        if (ARCChangeDir(pHandle, pRootDir)) {
-            if (type == 0) {
-                entrynum = FindNameResource(pHandle, pName);
+    if (ARCConvertPathToEntrynum(pArcHandle, resRootDir) != -1) {
+        if (ARCChangeDir(pArcHandle, resRootDir)) {
+            if (resType == 0) {
+                entryNum = FindNameResource(pArcHandle, name);
             } else {
-                char resDir[4 + 1];
-                resDir[0] = type >> 24;
-                resDir[1] = type >> 16;
-                resDir[2] = type >> 8;
-                resDir[3] = type >> 0;
-                resDir[4] = '\0';
+                char resTypeStr[4 + 1];
+                resTypeStr[0] = resType >> 24;
+                resTypeStr[1] = resType >> 16;
+                resTypeStr[2] = resType >> 8;
+                resTypeStr[3] = resType >> 0;
+                resTypeStr[4] = '\0';
 
-                if (ARCConvertPathToEntrynum(pHandle, resDir) != -1 &&
-                    ARCChangeDir(pHandle, resDir)) {
+                if (ARCConvertPathToEntrynum(pArcHandle, resTypeStr) != -1 &&
+                    ARCChangeDir(pArcHandle, resTypeStr)) {
 
-                    entrynum = ARCConvertPathToEntrynum(pHandle, pName);
-                    ARCChangeDir(pHandle, "..");
+                    entryNum = ARCConvertPathToEntrynum(pArcHandle, name);
+                    ARCChangeDir(pArcHandle, "..");
                 }
             }
 
-            ARCChangeDir(pHandle, "..");
+            ARCChangeDir(pArcHandle, "..");
         }
     }
 
-    if (entrynum != -1) {
-        ARCFileInfo info;
-        ARCFastOpen(pHandle, entrynum, &info);
+    if (entryNum != -1) {
+        ARCFileInfo arcFileInfo;
+        ARCFastOpen(pArcHandle, entryNum, &arcFileInfo);
 
-        void* pResource = ARCGetStartAddrInMem(&info);
+        void* resPtr = ARCGetStartAddrInMem(&arcFileInfo);
 
         if (pSize != NULL) {
-            *pSize = ARCGetLength(&info);
+            *pSize = ARCGetLength(&arcFileInfo);
         }
 
-        ARCClose(&info);
-        return pResource;
+        ARCClose(&arcFileInfo);
+        return resPtr;
     }
 
     return NULL;
@@ -92,17 +92,25 @@ namespace lyt {
 
 /******************************************************************************
  *
- * Implementation details
+ * FontRefLink
  *
  ******************************************************************************/
+FontRefLink::FontRefLink() : mpFont(NULL) {}
+
+void FontRefLink::Set(const char* name, ut::Font* pFont) {
+    std::strcpy(mFontName, name);
+    mpFont = pFont;
+}
+
 namespace detail {
 
-ut::Font* FindFont(FontRefLinkList* pFontList, const char* pName) {
-    NW4R_UT_LINKLIST_FOREACH (it, *pFontList, {
-        if (std::strcmp(pName, it->GetFontName()) == 0) {
+ut::Font* FindFont(FontRefLinkList* pFontRefList, const char* name) {
+    for (FontRefLinkList::Iterator it = pFontRefList->GetBeginIter();
+         it != pFontRefList->GetEndIter(); it++) {
+        if (std::strcmp(name, it->GetFontName()) == 0) {
             return it->GetFont();
         }
-    })
+    }
 
     return NULL;
 }
@@ -116,28 +124,111 @@ ut::Font* FindFont(FontRefLinkList* pFontList, const char* pName) {
  ******************************************************************************/
 ArcResourceAccessor::ArcResourceAccessor() : mArcBuf(NULL) {}
 
-bool ArcResourceAccessor::Attach(void* pArchive, const char* pRootDir) {
-    BOOL success = ARCInitHandle(pArchive, &mArcHandle);
-    if (!success) {
+bool ArcResourceAccessor::Attach(void* archiveStart,
+                                 const char* resourceRootDirectory) {
+    BOOL bSuccess = ARCInitHandle(archiveStart, &mArcHandle);
+    if (!bSuccess) {
         return false;
     }
 
-    mArcBuf = pArchive;
+    mArcBuf = archiveStart;
 
-    std::strncpy(mResRootDir, pRootDir, ROOTPATH_MAX - 1);
+    std::strncpy(mResRootDir, resourceRootDirectory, ROOTPATH_MAX - 1);
     mResRootDir[ROOTPATH_MAX - 1] = '\0';
 
     return true;
 }
 
-void* ArcResourceAccessor::GetResource(u32 type, const char* pName,
-                                       u32* pSize) {
-
-    return GetResourceSub(&mArcHandle, mResRootDir, type, pName, pSize);
+void* ArcResourceAccessor::Detach() {
+    void* ret = mArcBuf;
+    mArcBuf = NULL;
+    return ret;
 }
 
-ut::Font* ArcResourceAccessor::GetFont(const char* pName) {
-    return detail::FindFont(&mFontList, pName);
+void* ArcResourceAccessor::GetResource(ulong resType, const char* name,
+                                       ulong* pSize) {
+    return GetResourceSub(&mArcHandle, mResRootDir, resType, name, pSize);
+}
+
+/******************************************************************************
+ *
+ * ArcResourceLink
+ *
+ ******************************************************************************/
+bool ArcResourceLink::Set(void* archiveStart,
+                          const char* resourceRootDirectory) {
+    BOOL bSuccess = ARCInitHandle(archiveStart, &mArcHandle);
+    if (!bSuccess) {
+        return false;
+    }
+
+    std::strncpy(mResRootDir, resourceRootDirectory, ROOTPATH_MAX - 1);
+    mResRootDir[ROOTPATH_MAX - 1] = '\0';
+
+    return true;
+}
+
+void ArcResourceAccessor::RegistFont(FontRefLink* pLink) {
+    mFontList.PushBack(pLink);
+}
+
+void ArcResourceAccessor::UnregistFont(FontRefLink* pLink) {
+    mFontList.Erase(pLink);
+}
+
+ut::Font* ArcResourceAccessor::GetFont(const char* name) {
+    return detail::FindFont(&mFontList, name);
+}
+
+/******************************************************************************
+ *
+ * MultiArcResourceAccessor
+ *
+ ******************************************************************************/
+MultiArcResourceAccessor::MultiArcResourceAccessor() {}
+
+MultiArcResourceAccessor::~MultiArcResourceAccessor() {
+    DetachAll();
+}
+
+void MultiArcResourceAccessor::Attach(ArcResourceLink* pLink) {
+    mArcList.PushBack(pLink);
+}
+
+void MultiArcResourceAccessor::Detach(ArcResourceLink* pLink) {
+    mArcList.Erase(pLink);
+}
+
+void MultiArcResourceAccessor::DetachAll() {
+    mArcList.Clear();
+}
+
+void* MultiArcResourceAccessor::GetResource(ulong resType, const char* name,
+                                            ulong* pSize) {
+    for (ArcResourceLinkList::Iterator it = mArcList.GetBeginIter();
+         it != mArcList.GetEndIter(); it++) {
+        ARCHandle* pArcHandle = it->GetArcHandle();
+        void* resPtr = GetResourceSub(pArcHandle, it->GetResRootDir(),
+                                      resType, name, pSize);
+
+        if (resPtr != NULL) {
+            return resPtr;
+        }
+    }
+
+    return NULL;
+}
+
+void MultiArcResourceAccessor::RegistFont(FontRefLink* pLink) {
+    mFontList.PushBack(pLink);
+}
+
+void MultiArcResourceAccessor::UnregistFont(FontRefLink* pLink) {
+    mFontList.Erase(pLink);
+}
+
+ut::Font* MultiArcResourceAccessor::GetFont(const char* name) {
+    return detail::FindFont(&mFontList, name);
 }
 
 } // namespace lyt

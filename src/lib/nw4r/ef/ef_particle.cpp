@@ -5,18 +5,21 @@
 namespace nw4r {
 namespace ef {
 
-Particle::Particle() {}
+Particle::Particle() {
+}
 
-Particle::~Particle() {}
+Particle::~Particle() {
+}
 
 void Particle::SendClosing() {
     mParticleManager->Closing(this);
 }
 
-void Particle::DestroyFunc() {}
+void Particle::DestroyFunc() {
+}
 
-void ParticleParameter::Initialize(ParticleParameterDesc* pDesc,
-                                   ParticleManager* pManager) {
+void ParticleParameter::Initialize(ParticleParameterDesc *pDesc,
+                                   ParticleManager *pManager) {
 
     int i, j;
 
@@ -54,12 +57,13 @@ void ParticleParameter::Initialize(ParticleParameterDesc* pDesc,
     mTextureReverse = pDesc->textureReverse;
     mACmpRef0 = pDesc->mACmpRef0;
     mACmpRef1 = pDesc->mACmpRef1;
+    mCollisionStatus = 0;
 }
 
 bool Particle::Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
-                          ParticleManager* pManager, const math::MTX34* pSpace,
-                          float momentum, const EmitterInheritSetting* pSetting,
-                          Particle* pReferencePtcl) {
+                          ParticleManager *pManager, const math::MTX34 *pSpace,
+                          float momentum, const EmitterInheritSetting *pSetting,
+                          Particle *pReferencePtcl) {
 
     ReferencedObject::Initialize();
 
@@ -75,8 +79,8 @@ bool Particle::Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
 
     (void)Resource::GetInstance(); // unused
 
-    EmitterDesc* pEmitDesc = pManager->mResource->GetEmitterDesc();
-    ParticleParameterDesc* pPtclDesc =
+    EmitterDesc *pEmitDesc = pManager->mResource->GetEmitterDesc();
+    ParticleParameterDesc *pPtclDesc =
         pManager->mResource->GetParticleParameterDesc();
 
     mParameter.Initialize(pPtclDesc, pManager);
@@ -86,13 +90,13 @@ bool Particle::Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
     mRandSeed = pManager->mManagerEM->mRandom.Rand();
     mLife = life;
     mParameter.mAlphaFlickRnd =
-        (pManager->mManagerEM->mRandom.Rand() % 254) - 127;
+        (pManager->mManagerEM->mRandom.Rand() % 254) - 126;
 
     mParameter.mPosition = pos;
     mParameter.mPrevPosition = mParameter.mPosition;
     mParameter.mVelocity = vel;
 
-    const math::VEC3* pEffVel = pManager->mManagerEM->mManagerEF->GetVelocity();
+    const math::VEC3 *pEffVel = pManager->mManagerEM->mManagerEF->GetVelocity();
 
     if (pEffVel->x != 0.0f || pEffVel->y != 0.0f || pEffVel->z != 0.0f) {
         math::MTX34 glbMtx;
@@ -152,12 +156,60 @@ bool Particle::Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
         }
 
         if (pSetting->alpha != 0) {
+            GXColor modify0 = {255, 255, 255, 255};
+            GXColor modify1 = {255, 255, 255, 255};
+            pReferencePtcl->mParticleManager->Draw_ModifyColor(
+                pReferencePtcl, &modify0, &modify1);
             for (int i = 0; i < COLOR_LAYER_MAX; i++) {
-                for (int j = 0; j < COLOR_IDX_MAX; j++) {
-                    // clang-format off
-                    mParameter.mColor[i][j].a = pSetting->alpha *
-                        pReferencePtcl->mParameter.mColor[i][j].a / 100;
-                    // clang-format on
+                if (pSetting->alphaFuncPri != 0) {
+                    u32 alpha = 255;
+                    if (pSetting->alphaFuncPri & 1) {
+                        alpha =
+                            (pReferencePtcl->mParameter.mColor[i][COLOR_IDX_PRI]
+                                 .a +
+                             1) *
+                            255;
+                        alpha >>= 8;
+                    }
+                    if (pSetting->alphaFuncPri & 2) {
+                        alpha = alpha * pReferencePtcl->mParameter
+                                            .mColor[i][COLOR_IDX_SEC]
+                                            .a +
+                                255;
+                        alpha = alpha >> 8;
+                    }
+                    if (pSetting->alphaFuncPri & 4) {
+                        alpha = (alpha * pReferencePtcl->GetAlphaFlick() + 255);
+                        alpha = alpha * modify0.a + 255;
+                        alpha >>= 16;
+                    }
+                    mParameter.mColor[i][COLOR_IDX_PRI].a =
+                        alpha * pSetting->alpha / 100;
+                }
+                if (pSetting->alphaFuncSec != 0) {
+                    u32 alpha = 255;
+                    if (pSetting->alphaFuncSec & 1) {
+                        alpha =
+                            (pReferencePtcl->mParameter.mColor[i][COLOR_IDX_PRI]
+                                 .a +
+                             1) *
+                            255;
+                        alpha >>= 8;
+                    }
+                    if (pSetting->alphaFuncSec & 2) {
+                        alpha = alpha * pReferencePtcl->mParameter
+                                            .mColor[i][COLOR_IDX_SEC]
+                                            .a +
+                                255;
+                        alpha = alpha >> 8;
+                    }
+                    if (pSetting->alphaFuncSec & 4) {
+                        alpha = (alpha * pReferencePtcl->GetAlphaFlick() + 255);
+                        alpha = alpha * modify0.a + 255;
+                        alpha >>= 16;
+                    }
+                    mParameter.mColor[i][COLOR_IDX_SEC].a =
+                        alpha * pSetting->alpha / 100;
                 }
             }
         }
@@ -165,15 +217,17 @@ bool Particle::Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
         if (pSetting->color != 0) {
             for (int i = 0; i < COLOR_LAYER_MAX; i++) {
                 for (int j = 0; j < COLOR_IDX_MAX; j++) {
+                    GXColor col;
+                    pReferencePtcl->GetColor(i, j, &col);
                     // clang-format off
-                    mParameter.mColor[i][j].r = pSetting->color *
-                        pReferencePtcl->mParameter.mColor[i][j].r / 100;
+                    mParameter.mColor[i][j].r = col.r *
+                        pSetting->color / 100;
 
-                    mParameter.mColor[i][j].g = pSetting->color *
-                        pReferencePtcl->mParameter.mColor[i][j].g / 100;
+                    mParameter.mColor[i][j].g = col.g *
+                        pSetting->color / 100;
 
-                    mParameter.mColor[i][j].b = pSetting->color *
-                        pReferencePtcl->mParameter.mColor[i][j].b / 100;
+                    mParameter.mColor[i][j].b = col.b *
+                        pSetting->color / 100;
                     // clang-format on
                 }
             }
@@ -202,21 +256,19 @@ bool Particle::Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
     return true;
 }
 
-void Particle::Draw_GetColor(int layer, GXColor* pColorPri,
-                             GXColor* pColorSec) {
-
-    const EmitterDesc* pDesc = mParticleManager->mResource->GetEmitterDesc();
-    const EmitterDrawSetting& rSetting = pDesc->drawSetting;
-
-    GetColor(layer, COLOR_IDX_PRI, pColorPri);
-    GetColor(layer, COLOR_IDX_SEC, pColorSec);
+u8 Particle::GetAlphaFlick() const {
+    const EmitterDesc *pDesc = mParticleManager->mResource->GetEmitterDesc();
+    const EmitterDrawSetting &rSetting = pDesc->drawSetting;
 
     u32 cycleL;
     u16 cycle;
     u16 pos;
     s16 alpha;
 
-    if (rSetting.mAlphaFlickType != EmitterDrawSetting::ALPHAFLICK_NONE) {
+    if (rSetting.mAlphaFlickType == EmitterDrawSetting::ALPHAFLICK_NONE) {
+        return 255;
+    }
+    {
         cycleL = rSetting.mAlphaFlickCycle +
                  rSetting.mAlphaFlickCycle * mParameter.mAlphaFlickRnd *
                      rSetting.mAlphaFlickRandom / 12700;
@@ -265,7 +317,7 @@ void Particle::Draw_GetColor(int layer, GXColor* pColorPri,
 
         case EmitterDrawSetting::ALPHAFLICK_SINE: {
             alpha = 128 + rSetting.mAlphaFlickAmplitude *
-                              std::sinf(2 * NW4R_MATH_PI * pos / cycle);
+                              math::SinRad(2 * NW4R_MATH_PI * pos / cycle);
             break;
         }
 
@@ -281,11 +333,8 @@ void Particle::Draw_GetColor(int layer, GXColor* pColorPri,
             alpha = 255;
         }
 
-        pColorPri->a = (pColorPri->a * alpha + 128) >> 8;
-        pColorSec->a = (pColorSec->a * alpha + 128) >> 8;
+        return alpha;
     }
-
-    mParticleManager->Draw_ModifyColor(this, pColorPri, pColorSec);
 }
 
 } // namespace ef

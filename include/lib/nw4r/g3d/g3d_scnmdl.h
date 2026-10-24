@@ -24,10 +24,10 @@ public:
         ResMatChan GetResMatChan(bool markDirty);
         ResGenMode GetResGenMode(bool markDirty);
         ResMatMisc GetResMatMisc(bool markDirty);
-        ResMatMisc GetResMatMisc(); // 802548F4 (m3d::bmdl_c)
+        ResMatMisc GetResMatMisc();
         ResMatPix GetResMatPix(bool markDirty);
         ResMatTevColor GetResMatTevColor(bool markDirty);
-        ResMatTevColor GetResMatTevColor(); // 80254954 (d_fish_field)
+        ResMatTevColor GetResMatTevColor();
 
         bool IsValid() const { return mpScnMdl != NULL; }
         ResTev GetResTev(bool markDirty);
@@ -87,6 +87,10 @@ public:
         BUFFER_RESVTXNRM = (1 << 13),
         BUFFER_RESVTXCLR = (1 << 14),
 
+        BUFFER_KEEP_VTX = (1 << 24),
+
+        REPLACEMENTFLAG_KEEP_VTX = (1 << 0),
+
         ANM_VIS = BUFFER_RESANMVIS,
         ANM_TEXPAT = BUFFER_RESTEXOBJ | BUFFER_RESTLUTOBJ,
         ANM_TEXSRT = BUFFER_RESTEXSRT | BUFFER_RESMATINDMTXSCALE,
@@ -102,7 +106,7 @@ public:
            ulong* pWorldMtxAttribArray, math::MTX34* pViewPosMtxArray,
            math::MTX33* pViewNrmMtxArray, math::MTX34* pViewTexMtxArray,
            int numView, int numViewMtx, DrawResMdlReplacement* pReplacement,
-           ulong* pMatBufferDirtyFlag);
+           ulong* pMatBufferDirtyFlag, ulong replacementFlag);
 
     virtual void G3dProc(ulong task, ulong param, void* pInfo); // at 0xC
     virtual ~ScnMdl();                                      // at 0x10
@@ -164,6 +168,7 @@ private:
     ulong mFlagVisBuffer;                 // at 0x13C
     ulong* mpMatBufferDirtyFlag;          // at 0x140
     DrawResMdlReplacement mReplacement; // at 0x144
+    ulong mReplacementFlag;               // at 0x184
 
     NW4R_G3D_RTTI_DECL_DERIVED(ScnMdl, ScnMdlSimple);
 };

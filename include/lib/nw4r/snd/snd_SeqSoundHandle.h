@@ -49,12 +49,6 @@ public:
         }
     }
 
-    void SetTrackPitch(u32 trackFlags, f32 pitch) {
-        if (IsAttachedSound()) {
-            mSound->SetTrackPitch(trackFlags, pitch);
-        }
-    }
-
     bool ReadVariable(int idx, s16* pValue) const {
         if (IsAttachedSound()) {
             return mSound->ReadVariable(idx, pValue);

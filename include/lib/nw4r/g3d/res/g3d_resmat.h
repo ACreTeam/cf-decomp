@@ -2,6 +2,8 @@
 #define NW4R_G3D_RES_RES_MAT_H
 #include <nw4r/types_nw4r.h>
 
+#include <cstring>
+
 #include <nw4r/g3d/res/g3d_resanmtexsrt.h>
 #include <nw4r/g3d/res/g3d_rescommon.h>
 #include <nw4r/g3d/res/g3d_respltt.h>
@@ -94,6 +96,26 @@ struct ResMatMiscData {
     u8 PADDING_0x3;                        // at 0x3
     u8 indirect_method[GX_ITM_2 + 1];      // at 0x4
     s8 normal_map_ref_light[GX_ITM_2 + 1]; // at 0x8
+};
+
+struct ResMatFurData {
+    enum LayerInterval {
+        UNIFORM,
+        TIP
+    };
+
+    f32 length;                // at 0x0
+    ulong lyrSize;             // at 0x4
+    LayerInterval lyrInterval; // at 0x8
+    f32 alphaCurve;            // at 0xC
+    f32 specCurve;             // at 0x10
+};
+
+class ResMatFur : public ResCommon<ResMatFurData> {
+public:
+    NW4R_G3D_RESOURCE_FUNC_DEF(ResMatFur);
+
+    f32 GetLyrRate(ulong idx) const;
 };
 
 class ResMatMisc : public ResCommon<ResMatMiscData> {
@@ -441,6 +463,8 @@ public:
     void CallDisplayList(u8 indNum, bool sync) const;
 
     bool GXGetIndTexMtx(GXIndTexMtxID id, math::MTX34* pMtx) const;
+    bool GXGetIndTexMtx(GXIndTexMtxID id, math::MTX34* pMtx,
+                        s8* pScaleExp) const;
     void GXSetIndTexMtx(GXIndTexMtxID id, const math::MTX34& rMtx, s8 scaleExp);
 
     void EndEdit() {
@@ -501,6 +525,31 @@ public:
 
     bool IsCIFmt() const {
         return ref().namePltt != 0;
+    }
+
+    bool ForceBindTex(const ResTex tex, ResTexObj texObj, const char* pName,
+                      ulong len);
+    bool ForceBindPltt(const ResPltt pltt, ResTlutObj tlutObj,
+                       const char* pName, ulong len);
+
+    void ReleaseTex(ResTexObj texObj, const char* pName, ulong len) {
+        ResName name = GetTexResName();
+
+        if (name.IsValid() && len == name.GetLength() &&
+            std::strcmp(name.GetName(), pName) == 0) {
+            ref().pTexData = NULL;
+            texObj.Invalidate(ref().mapID);
+        }
+    }
+
+    void ReleasePltt(ResTlutObj tlutObj, const char* pName, ulong len) {
+        ResName name = GetPlttResName();
+
+        if (name.IsValid() && len == name.GetLength() &&
+            std::strcmp(name.GetName(), pName) == 0) {
+            ref().pPlttData = NULL;
+            tlutObj.Invalidate(static_cast<GXTlut>(ref().mapID));
+        }
     }
 
 private:
@@ -576,12 +625,13 @@ public:
 
     bool Bind(const ResFile file);
     void Release();
-    // City Folk additions (names unofficial):
-    bool BindTexByName(const ResTex tex, const char *texName);   // 8023886C: binds tex to every slot named texName
-    void ReleaseTexByName(const char *texName, ulong len);       // 80238C68: unbinds the slots named texName
-    bool BindPlttByName(const ResPltt pltt, const char *plttName); // 80238AC8
-    void ReleasePlttByName(const char *plttName, ulong len);      // 80238D6C
-    void DCStore(bool sync);                                      // 80237144: flushes the whole material
+    bool ForceBindTex(const ResTex tex, const char* pName, ulong len);
+    bool ForceBindTex(const ResTex tex, const char* pName);
+    bool ForceBindPltt(const ResPltt pltt, const char* pName, ulong len);
+    bool ForceBindPltt(const ResPltt pltt, const char* pName);
+    void ReleaseTex(const char* pName, ulong len);
+    void ReleasePltt(const char* pName, ulong len);
+    void DCStore(bool sync);
 
     ResMdl GetParent();
 
@@ -598,7 +648,7 @@ public:
     }
 
     ResTev GetResTev();
-    ResTev GetResTev() const;
+    ResMatFur GetResMatFur();
 
     ulong GetNumResTexPlttInfo() const {
         return ref().numResTexPlttInfo;

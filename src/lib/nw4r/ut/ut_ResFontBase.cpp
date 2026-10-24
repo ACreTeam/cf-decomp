@@ -4,13 +4,24 @@ namespace nw4r {
 namespace ut {
 namespace detail {
 
-ResFontBase::ResFontBase() : mResource(NULL), mFontInfo(NULL) {}
+ResFontBase::ResFontBase()
+    : mResource(NULL),
+      mFontInfo(NULL),
+      mLastCharCode(0),
+      mLastGlyphIndex(GLYPH_INDEX_NOT_FOUND) {}
 
 ResFontBase::~ResFontBase() {}
 
 void ResFontBase::SetResourceBuffer(void* pBuffer, FontInformation* pInfo) {
     mResource = pBuffer;
     mFontInfo = pInfo;
+}
+
+void* ResFontBase::RemoveResourceBuffer() {
+    void* pUserData = mResource;
+    mResource = NULL;
+    mFontInfo = NULL;
+    return pUserData;
 }
 
 int ResFontBase::GetWidth() const {
@@ -92,6 +103,10 @@ void ResFontBase::GetGlyph(Glyph* pGlyph, u16 ch) const {
     GetGlyphFromIndex(pGlyph, GetGlyphIndex(ch));
 }
 
+bool ResFontBase::HasGlyph(u16 ch) const {
+    return GLYPH_INDEX_NOT_FOUND != FindGlyphIndex(ch);
+}
+
 FontEncoding ResFontBase::GetEncoding() const {
     return static_cast<FontEncoding>(mFontInfo->encoding);
 }
@@ -102,15 +117,23 @@ u16 ResFontBase::GetGlyphIndex(u16 ch) const {
 }
 
 u16 ResFontBase::FindGlyphIndex(u16 ch) const {
+    if (ch == mLastCharCode) {
+        return mLastGlyphIndex;
+    }
+
+    mLastCharCode = ch;
+
     for (const FontCodeMap* pIt = mFontInfo->pMap; pIt != NULL;
          pIt = pIt->pNext) {
 
         if (pIt->ccodeBegin <= ch && ch <= pIt->ccodeEnd) {
-            return FindGlyphIndex(pIt, ch);
+            mLastGlyphIndex = FindGlyphIndex(pIt, ch);
+            return mLastGlyphIndex;
         }
     }
 
-    return GLYPH_INDEX_NOT_FOUND;
+    mLastGlyphIndex = GLYPH_INDEX_NOT_FOUND;
+    return mLastGlyphIndex;
 }
 
 u16 ResFontBase::FindGlyphIndex(const FontCodeMap* pMap, u16 ch) const {

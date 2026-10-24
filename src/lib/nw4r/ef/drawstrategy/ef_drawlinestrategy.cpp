@@ -1,4 +1,5 @@
 #include <nw4r/ef.h>
+#include <nw4r/NW4RAssert.hpp>
 #include <nw4r/math.h>
 
 #include <revolution/gx.h>
@@ -20,12 +21,13 @@ void DrawLineStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
     const EmitterDrawSetting& rSetting =
         *pManager->mResource->GetEmitterDrawSetting();
 
-    math::MTX34 glbMtx;
-    math::MTX34 posMtx;
+    math::MTX34 mtxM;
+    pManager->CalcGlobalMtx(&mtxM);
 
-    pManager->CalcGlobalMtx(&glbMtx);
-    math::MTX34Mult(&posMtx, rInfo.GetViewMtx(), &glbMtx);
-    GXLoadPosMtxImm(posMtx, GX_PNMTX0);
+    math::MTX34 mtxVM;
+    rInfo.GetViewMtxCooked(&mtxVM);
+    math::MTX34Mult(&mtxVM, &mtxVM, &mtxM);
+    GXLoadPosMtxImm(mtxVM, GX_PNMTX0);
 
     GetFirstDrawParticleFunc pGetFirstFunc = GetGetFirstDrawParticleFunc(
         rSetting.mFlags & EmitterDrawSetting::FLAG_DRAW_ORDER);
@@ -80,33 +82,8 @@ void DrawLineStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
     }
 }
 
-void DrawLineStrategy::InitGraphics(const DrawInfo& rInfo,
-                                    ParticleManager* pManager) {
-
-    const EmitterDrawSetting& rSetting =
-        *pManager->mResource->GetEmitterDrawSetting();
-
-    InitTexture(rSetting);
-    InitTev(rSetting, rInfo);
-    InitColor(pManager, rSetting, rInfo);
-
-    GXEnableTexOffsets(GX_TEXCOORD0, TRUE, TRUE);
-
-    GXClearVtxDesc();
-    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-
-    if (mNumTexmap > 0) {
-        GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
-    }
-
-    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
-    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
-
-    GXSetCurrentMtx(GX_PNMTX0);
-}
-
-static void DrawPolygon(const nw4r::math::VEC3& rP0,
-                        const nw4r::math::VEC3& rP1, bool texCoord) {
+static void DrawPolygon(const nw4r::math::VEC3 &rP0,
+                        const nw4r::math::VEC3 &rP1, bool texCoord) {
 
     GXBegin(GX_LINES, GX_VTXFMT0, 2);
     {
@@ -121,6 +98,30 @@ static void DrawPolygon(const nw4r::math::VEC3& rP0,
         }
     }
     GXEnd();
+}
+
+void DrawLineStrategy::InitGraphics(const DrawInfo& rInfo,
+                                    ParticleManager* pManager) {
+    NW4RAssertPointerNonnull(pManager);
+
+    const EmitterDrawSetting& rSetting =
+        *pManager->mResource->GetEmitterDrawSetting();
+
+    Initialize(pManager, rSetting, rInfo);
+
+    GXEnableTexOffsets(GX_TEXCOORD0, TRUE, TRUE);
+
+    GXClearVtxDesc();
+    GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
+
+    if (mNumTexmap > 0) {
+        GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+    }
+
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_F32, 0);
+
+    GXSetCurrentMtx(GX_PNMTX0);
 }
 
 } // namespace ef

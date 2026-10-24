@@ -45,10 +45,15 @@ f32 TextWriterBase<T>::VPrintf(const T* pStr, std::va_list args) {
 template <typename T> f32 TextWriterBase<T>::Print(const T* pStr, int len) {
     TextWriterBase<T> clone(*this);
 
-    f32 width = clone.PrintImpl(pStr, len);
+    f32 width = clone.PrintImpl(pStr, len, false);
     SetCursor(clone.GetCursorX(), clone.GetCursorY());
 
     return width;
+}
+
+template <typename T>
+f32 TextWriterBase<T>::PrintMutable(const T* pStr, int len) {
+    return PrintImpl(pStr, len, true);
 }
 
 template <typename T>
@@ -206,7 +211,8 @@ void TextWriterBase<T>::CalcStringRectImpl(Rect* pRect, const T* pStr,
     } while (remain > 0);
 }
 
-template <typename T> f32 TextWriterBase<T>::PrintImpl(const T* pStr, int len) {
+template <typename T>
+f32 TextWriterBase<T>::PrintImpl(const T* pStr, int len, bool bMutable) {
     f32 cursorX = GetCursorX();
     f32 cursorY = GetCursorY();
 
@@ -343,6 +349,10 @@ template <typename T> f32 TextWriterBase<T>::PrintImpl(const T* pStr, int len) {
     if (IsDrawFlagSet(DRAWFLAG_MASK_ALIGN_V, DRAWFLAG_ALIGN_V_CENTER) ||
         IsDrawFlagSet(DRAWFLAG_MASK_ALIGN_V, DRAWFLAG_ALIGN_V_TOP)) {
         SetCursorY(orgCursorY);
+    } else if (bMutable) {
+        if (IsDrawFlagSet(DRAWFLAG_MASK_ALIGN_V, DRAWFLAG_ALIGN_V_BASELINE)) {
+            SetCursorY(GetCursorY() - GetFontAscent());
+        }
     } else {
         MoveCursorY(cursorYAdj);
     }
@@ -363,10 +373,6 @@ f32 TextWriterBase<T>::AdjustCursor(f32* pX, f32* pY, const T* pStr, int len) {
 
         textWidth = rect.left + rect.right;
         textHeight = rect.top + rect.bottom;
-
-        if (textWidth > mWidthLimit) {
-            textWidth = mWidthLimit;
-        }
     }
 
     if (IsDrawFlagSet(DRAWFLAG_MASK_ALIGN_H, DRAWFLAG_ALIGN_H_CENTER)) {

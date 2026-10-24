@@ -48,45 +48,46 @@ PaneBase::~PaneBase() {}
  * Pane
  *
  ******************************************************************************/
-Pane::Pane(const res::Pane* pRes) {
+Pane::Pane(const res::Pane* pBlock) {
     Init();
 
-    mBasePosition = pRes->basePosition;
+    mBasePosition = pBlock->basePosition;
 
-    SetName(pRes->name);
-    SetUserData(pRes->userData);
+    SetName(pBlock->name);
+    SetUserData(pBlock->userData);
 
-    mTranslate = pRes->translate;
-    mRotate = pRes->rotate;
-    mScale = pRes->scale;
-    mSize = pRes->size;
+    mTranslate = pBlock->translate;
+    mRotate = pBlock->rotate;
+    mScale = pBlock->scale;
+    mSize = pBlock->size;
 
-    mAlpha = pRes->alpha;
+    mAlpha = pBlock->alpha;
     mGlbAlpha = mAlpha;
-    mFlag = pRes->flag;
+    mFlag = pBlock->flag;
 }
 
 void Pane::Init() {
     mpParent = NULL;
     mpMaterial = NULL;
     mbUserAllocated = false;
+    mpExtUserDataList = NULL;
 }
 
 Pane::~Pane() {
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mChildList, {
-        mChildList.Erase(it);
+    for (PaneList::Iterator it = mChildList.GetBeginIter();
+         it != mChildList.GetEndIter();) {
+        PaneList::Iterator currIt = it++;
+        mChildList.Erase(currIt);
 
-        if (!it->IsUserAllocated()) {
-            it->~Pane();
-            Layout::FreeMemory(&*it);
+        if (!currIt->IsUserAllocated()) {
+            Layout::DeleteObj(&*currIt);
         }
-    })
+    }
 
     UnbindAnimationSelf(NULL);
 
     if (mpMaterial != NULL && !mpMaterial->IsUserAllocated()) {
-        mpMaterial->~Material();
-        Layout::FreeMemory(mpMaterial);
+        Layout::DeleteObj(mpMaterial);
     }
 }
 
@@ -114,21 +115,22 @@ void Pane::RemoveChild(Pane* pChild) {
     pChild->mpParent = NULL;
 }
 
-ut::Rect Pane::GetPaneRect(const DrawInfo& rInfo) const {
-    ut::Rect rect;
-    math::VEC2 base = GetVtxPos();
+ut::Rect Pane::GetPaneRect() const {
+    ut::Rect ret;
+    math::VEC2 basePt = GetVtxPos();
 
-    rect.left = base.x;
-    rect.top = base.y;
-    rect.right = base.x + mSize.width;
-    rect.bottom = base.y + mSize.height;
+    ret.left = basePt.x;
+    ret.top = basePt.y;
+    ret.right = basePt.x + mSize.width;
+    ret.bottom = basePt.y - mSize.height;
 
-    if (rInfo.IsYAxisUp()) {
-        rect.top = -rect.top;
-        rect.bottom = -rect.bottom;
-    }
+    return ret;
+}
 
-    return rect;
+ut::Rect Pane::GetPaneRect(const DrawInfo& drawInfo) const {
+#pragma unused(drawInfo)
+
+    return GetPaneRect();
 }
 
 ut::Color Pane::GetVtxColor(u32 idx) const {
@@ -142,29 +144,23 @@ void Pane::SetVtxColor(u32 idx, ut::Color color) {
 #pragma unused(color)
 }
 
-u8 Pane::GetColorElement(u32 idx) const {
+u8 Pane::GetColorElement(ulong idx) const {
     switch (idx) {
-    case ANIMTARGET_PANE_COLOR_ALPHA: {
+    case ANIMTARGET_PANE_COLOR_ALPHA:
         return mAlpha;
-    }
-
-    default: {
+    default:
         return GetVtxColorElement(idx);
-    }
     }
 }
 
-void Pane::SetColorElement(u32 idx, u8 value) {
+void Pane::SetColorElement(ulong idx, u8 value) {
     switch (idx) {
-    case ANIMTARGET_PANE_COLOR_ALPHA: {
+    case ANIMTARGET_PANE_COLOR_ALPHA:
         mAlpha = value;
         break;
-    }
-
-    default: {
+    default:
         SetVtxColorElement(idx, value);
         break;
-    }
     }
 }
 
@@ -179,39 +175,41 @@ void Pane::SetVtxColorElement(u32 idx, u8 value) {
 #pragma unused(value)
 }
 
-Pane* Pane::FindPaneByName(const char* pName, bool recursive) {
-    if (detail::EqualsResName(mName, pName)) {
+Pane* Pane::FindPaneByName(const char* findName, bool bRecursive) {
+    if (detail::EqualsResName(mName, findName)) {
         return this;
     }
 
-    if (recursive) {
-        NW4R_UT_LINKLIST_FOREACH (it, mChildList, {
-            Pane* pResult = it->FindPaneByName(pName, true);
+    if (bRecursive) {
+        for (PaneList::Iterator it = mChildList.GetBeginIter();
+             it != mChildList.GetEndIter(); it++) {
+            Pane* pPane = it->FindPaneByName(findName, bRecursive);
 
-            if (pResult != NULL) {
-                return pResult;
+            if (pPane != NULL) {
+                return pPane;
             }
-        })
+        }
     }
 
     return NULL;
 }
 
-Material* Pane::FindMaterialByName(const char* pName, bool recursive) {
+Material* Pane::FindMaterialByName(const char* findName, bool bRecursive) {
     if (mpMaterial != NULL &&
-        detail::EqualsMaterialName(mpMaterial->GetName(), pName)) {
+        detail::EqualsMaterialName(mpMaterial->GetName(), findName)) {
 
         return mpMaterial;
     }
 
-    if (recursive) {
-        NW4R_UT_LINKLIST_FOREACH (it, mChildList, {
-            Material* pResult = it->FindMaterialByName(pName, true);
+    if (bRecursive) {
+        for (PaneList::Iterator it = mChildList.GetBeginIter();
+             it != mChildList.GetEndIter(); it++) {
+            Material* pMat = it->FindMaterialByName(findName, bRecursive);
 
-            if (pResult != NULL) {
-                return pResult;
+            if (pMat != NULL) {
+                return pMat;
             }
-        })
+        }
     }
 
     return NULL;
@@ -343,99 +341,93 @@ void Pane::UnbindAnimationSelf(AnimTransform* pAnimTrans) {
         mpMaterial->UnbindAnimation(pAnimTrans);
     }
 
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mAnimList, {
-        if (pAnimTrans == NULL || it->GetAnimTransform() == pAnimTrans) {
-            mAnimList.Erase(it);
-            it->Reset();
-        }
-    })
+    detail::UnbindAnimationLink(&mAnimList, pAnimTrans);
 }
 
-void Pane::AddAnimationLink(AnimationLink* pAnimLink) {
-    mAnimList.PushBack(pAnimLink);
+void Pane::AddAnimationLink(AnimationLink* pAnimationLink) {
+    mAnimList.PushBack(pAnimationLink);
 }
 
 AnimationLink* Pane::FindAnimationLinkSelf(AnimTransform* pAnimTrans) {
-    AnimationLink* pAnimLink =
-        detail::FindAnimationLink(&mAnimList, pAnimTrans);
+    return detail::FindAnimationLink(&mAnimList, pAnimTrans);
+}
 
+AnimationLink* Pane::FindAnimationLinkSelf(const AnimResource& animRes) {
+    return detail::FindAnimationLink(&mAnimList, animRes);
+}
+
+void Pane::SetAnimationEnable(AnimTransform* pAnimTrans, bool bEnable,
+                              bool bRecursive) {
+    AnimationLink* pAnimLink = FindAnimationLinkSelf(pAnimTrans);
     if (pAnimLink != NULL) {
-        return pAnimLink;
+        pAnimLink->SetEnable(bEnable);
     }
 
-    if (mpMaterial != NULL) {
-        pAnimLink = mpMaterial->FindAnimationLink(pAnimTrans);
+    u8 materialNum = GetMaterialNum();
+    for (u8 i = 0; i < materialNum; i++) {
+        GetMaterial(i)->SetAnimationEnable(pAnimTrans, bEnable);
+    }
 
-        if (pAnimLink != NULL) {
-            return pAnimLink;
+    if (bRecursive) {
+        for (PaneList::Iterator it = mChildList.GetBeginIter();
+             it != mChildList.GetEndIter(); it++) {
+            it->SetAnimationEnable(pAnimTrans, bEnable, bRecursive);
         }
     }
-
-    return NULL;
 }
 
-void Pane::SetAnimationEnable(AnimTransform* pAnimTrans, bool enable,
-                              bool recursive) {
-
-    AnimationLink* pAnimLink =
-        detail::FindAnimationLink(&mAnimList, pAnimTrans);
-
+void Pane::SetAnimationEnable(const AnimResource& animRes, bool bEnable,
+                              bool bRecursive) {
+    AnimationLink* pAnimLink = FindAnimationLinkSelf(animRes);
     if (pAnimLink != NULL) {
-        pAnimLink->SetEnable(enable);
+        pAnimLink->SetEnable(bEnable);
     }
 
-    if (mpMaterial != NULL) {
-        mpMaterial->SetAnimationEnable(pAnimTrans, enable);
+    u8 materialNum = GetMaterialNum();
+    for (u8 i = 0; i < materialNum; i++) {
+        GetMaterial(i)->SetAnimationEnable(animRes, bEnable);
     }
 
-    if (recursive) {
-        NW4R_UT_LINKLIST_FOREACH (it, mChildList, 
-            { it->SetAnimationEnable(pAnimTrans, enable, recursive); })
+    if (bRecursive) {
+        for (PaneList::Iterator it = mChildList.GetBeginIter();
+             it != mChildList.GetEndIter(); it++) {
+            it->SetAnimationEnable(animRes, bEnable, bRecursive);
+        }
     }
 }
 
-void Pane::LoadMtx(const DrawInfo& rInfo) {
+void Pane::LoadMtx(const DrawInfo& drawInfo) {
     math::MTX34 mtx;
-    math::MTX34* pMtx = NULL;
+    math::MTX34* mtxPtr;
 
-    if (rInfo.IsMultipleViewMtxOnDraw()) {
-        math::MTX34Mult(&mtx, &rInfo.GetViewMtx(), &mGlbMtx);
-
-        if (rInfo.IsYAxisUp()) {
-            ReverseYAxis(&mtx);
-        }
-
-        pMtx = &mtx;
-    } else if (rInfo.IsYAxisUp()) {
-        math::MTX34Copy(&mtx, &mGlbMtx);
-        pMtx = &mtx;
-
-        ReverseYAxis(&mtx);
+    if (drawInfo.IsMultipleViewMtxOnDraw()) {
+        PSMTXConcat(drawInfo.GetViewMtx(), mGlbMtx, mtx);
+        mtxPtr = &mtx;
     } else {
-        pMtx = &mGlbMtx;
+        mtxPtr = &mGlbMtx;
     }
 
-    GXLoadPosMtxImm(*pMtx, GX_PNMTX0);
+    GXLoadPosMtxImm(*mtxPtr, GX_PNMTX0);
     GXSetCurrentMtx(GX_PNMTX0);
 }
 
 math::VEC2 Pane::GetVtxPos() const {
-    math::VEC2 base(0.0f, 0.0f);
+    math::VEC2 basePt(0.0f, 0.0f);
 
     switch (mBasePosition % HORIZONTALPOSITION_MAX) {
     default:
     case HORIZONTALPOSITION_LEFT: {
-        base.x = 0.0f;
+        basePt.x = 0.0f;
         break;
     }
 
     case HORIZONTALPOSITION_CENTER: {
-        base.x = -mSize.width / 2;
+        basePt.x = -mSize.width / 2;
         break;
     }
 
     case HORIZONTALPOSITION_RIGHT: {
-        base.x = -mSize.width;
+        basePt.x = -mSize.width;
         break;
     }
     }
@@ -443,26 +435,38 @@ math::VEC2 Pane::GetVtxPos() const {
     switch (mBasePosition / HORIZONTALPOSITION_MAX) {
     default:
     case VERTICALPOSITION_TOP: {
-        base.y = 0.0f;
+        basePt.y = 0.0f;
         break;
     }
 
-    case HORIZONTALPOSITION_CENTER: {
-        base.y = -mSize.height / 2;
+    case VERTICALPOSITION_CENTER: {
+        basePt.y = mSize.height / 2;
         break;
     }
 
-    case HORIZONTALPOSITION_RIGHT: {
-        base.y = -mSize.height;
+    case VERTICALPOSITION_BOTTOM: {
+        basePt.y = mSize.height;
         break;
     }
     }
 
-    return base;
+    return basePt;
+}
+
+u8 Pane::GetMaterialNum() const {
+    return mpMaterial != NULL;
 }
 
 Material* Pane::GetMaterial() const {
     return mpMaterial;
+}
+
+Material* Pane::GetMaterial(ulong idx) const {
+    if (idx == 0) {
+        return GetMaterial();
+    }
+
+    return NULL;
 }
 
 } // namespace lyt

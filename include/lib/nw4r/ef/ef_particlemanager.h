@@ -21,10 +21,11 @@ struct EmitterResource;
 class Particle;
 
 class ParticleManager : public ReferencedObject {
-public:
+  public:
     enum Flag {
         FLAG_MTX_INHERIT_SCALE = (1 << 0),
         FLAG_MTX_INHERIT_ROT = (1 << 1),
+        FLAG_MTX_INHERIT_PIVOT = (1 << 2),
     };
 
     struct ParticleModifier {
@@ -47,53 +48,53 @@ public:
         SimpleLight mLight; // at 0x14
     };
 
-public:
-    Emitter* mManagerEM;         // at 0x20
-    EmitterResource* mResource;  // at 0x24
+  public:
+    Emitter *mManagerEM;         // at 0x20
+    EmitterResource *mResource;  // at 0x24
     u32 mFlag;                   // at 0x28
-    DrawStrategy* mDrawStrategy; // at 0x2C
+    DrawStrategy *mDrawStrategy; // at 0x2C
     ut::Link mDrawOrderLink;     // at 0x30
     ActivityList mActivityList;  // at 0x38
-    Particle* mLastCalced;       // at 0x54
+    Particle *mLastCalced;       // at 0x54
     ParticleModifier mModifier;  // at 0x58
     s8 mInheritTranslate;        // at 0x88
     u8 mWeight;                  // at 0x89
 
-protected:
+  protected:
     bool mMtxDirty; // at 0x8A
 
-public:
+  public:
     math::MTX34 mMtx; // at 0x8C
 
     static math::MTX34 smDrawMtxPMtoEM;
     static math::MTX34 smMtxInv;
     static s32 smMtxInvId;
 
-public:
+  public:
     ParticleManager();
     ~ParticleManager();
 
     virtual void SendClosing(); // at 0x8
     virtual void DestroyFunc(); // at 0xC
 
-    virtual bool Initialize(Emitter* pParent,
-                            EmitterResource* pResource); // at 0x10
+    virtual bool Initialize(Emitter *pParent,
+                            EmitterResource *pResource); // at 0x10
 
-    virtual Particle* CreateParticle(u16 life, math::VEC3 pos, math::VEC3 vel,
-                                     const math::MTX34* pSpace, f32 momentum,
-                                     const EmitterInheritSetting* pSetting,
-                                     Particle* pReferencePtcl,
+    virtual Particle *CreateParticle(u16 life, math::VEC3 pos, math::VEC3 vel,
+                                     const math::MTX34 *pSpace, f32 momentum,
+                                     const EmitterInheritSetting *pSetting,
+                                     Particle *pReferencePtcl,
                                      u16 calcRemain); // at 0x14
 
     virtual void Calc();                      // at 0x18
-    virtual void Draw(const DrawInfo& rInfo); // at 0x1C
+    virtual void Draw(const DrawInfo &rInfo); // at 0x1C
 
-    bool Closing(Particle* pParticle);
+    bool Closing(Particle *pParticle);
 
-    int RetireParticle(Particle* pParticle);
+    int RetireParticle(Particle *pParticle);
     int RetireParticleAll();
 
-    math::MTX34* CalcGlobalMtx(math::MTX34* pResult);
+    math::MTX34 *CalcGlobalMtx(math::MTX34 *pResult);
 
     void BeginCalc(bool remainOnly);
     void EndCalc();
@@ -101,34 +102,34 @@ public:
     void BeginDraw();
     void EndDraw();
 
-    const math::MTX34* Draw_GetMtxPMtoEM() const;
+    const math::MTX34 *Draw_GetMtxPMtoEM() const;
 
-    void Draw_ModifyColor(Particle* pParticle, GXColor* pColorPri,
-                          GXColor* pColorSec);
+    void Draw_ModifyColor(Particle *pParticle, GXColor *pColorPri,
+                          GXColor *pColorSec);
 
-    f32 Draw_ModifyScaleX(Particle* /* pParticle */, f32 sx) {
+    f32 Draw_ModifyScaleX(Particle * /* pParticle */, f32 sx) {
         return sx * mModifier.mScale.x;
     }
-    f32 Draw_ModifyScaleY(Particle* /* pParticle */, f32 sy) {
+    f32 Draw_ModifyScaleY(Particle * /* pParticle */, f32 sy) {
         return sy * mModifier.mScale.y;
     }
 
-    void Draw_ModifyRotate(Particle* /* pParticle */, math::VEC3* pRot) {
+    void Draw_ModifyRotate(Particle * /* pParticle */, math::VEC3 *pRot) {
         pRot->x += mModifier.mRotate.x;
         pRot->y += mModifier.mRotate.y;
         pRot->z += mModifier.mRotate.z;
     }
 
-    void Modifier_SetSimpleLightParameter(const EmitterDrawSetting& rSetting) {
+    void Modifier_SetSimpleLightParameter(const EmitterDrawSetting &rSetting) {
         Modifier_SetSimpleLightParameter(
             rSetting.mLighting.mType, rSetting.mLighting.mAmbient,
             rSetting.mLighting.mDiffuse, rSetting.mLighting.mRadius,
             rSetting.mLighting.mPosition);
     }
 
-    void Modifier_SetSimpleLightParameter(u8 type, const GXColor& rAmbient,
-                                          const GXColor& rDiffuse, f32 radius,
-                                          const math::VEC3& rPos) {
+    void Modifier_SetSimpleLightParameter(u8 type, const GXColor &rAmbient,
+                                          const GXColor &rDiffuse, f32 radius,
+                                          const math::VEC3 &rPos) {
         mModifier.mLight.mType = type;
         mModifier.mLight.mAmbient = rAmbient;
         mModifier.mLight.mDiffuse = rDiffuse;
@@ -136,40 +137,43 @@ public:
         mModifier.mLight.mPosition = rPos;
     }
 
-    ActivityList* GetParticleList() {
+    ActivityList *GetParticleList() {
         return &mActivityList;
     }
 
-    void ParticleToFree(Particle* pParticle) {
+    void ParticleToFree(Particle *pParticle) {
         mActivityList.ToFree(pParticle);
     }
 
     void SetMtxDirty() {
         mMtxDirty = true;
+        if (smMtxInvId == GetObjectIdx()) {
+            smMtxInvId = -1;
+        }
     }
 
-    static void ModifierTravFunc_SetSimpleLightType(void* pObject,
+    static void ModifierTravFunc_SetSimpleLightType(void *pObject,
                                                     ForEachParam param) {
 
-        static_cast<ParticleManager*>(pObject)->mModifier.mLight.mType =
+        static_cast<ParticleManager *>(pObject)->mModifier.mLight.mType =
             static_cast<u8>(param);
     }
 
-    static void ModifierTravFunc_SetSimpleLightAmbient(void* pObject,
+    static void ModifierTravFunc_SetSimpleLightAmbient(void *pObject,
                                                        ForEachParam param) {
 
-        static_cast<ParticleManager*>(pObject)->mModifier.mLight.mAmbient =
-            *reinterpret_cast<GXColor*>(param);
+        static_cast<ParticleManager *>(pObject)->mModifier.mLight.mAmbient =
+            *reinterpret_cast<GXColor *>(param);
     }
 
-    static void ModifierTravFunc_SetScale(void* pObject, ForEachParam param) {
-        static_cast<ParticleManager*>(pObject)->mModifier.mScale =
-            *reinterpret_cast<math::VEC2*>(param);
+    static void ModifierTravFunc_SetScale(void *pObject, ForEachParam param) {
+        static_cast<ParticleManager *>(pObject)->mModifier.mScale =
+            *reinterpret_cast<math::VEC2 *>(param);
     }
 
-    static void ModifierTravFunc_SetRotate(void* pObject, ForEachParam param) {
-        static_cast<ParticleManager*>(pObject)->mModifier.mRotate =
-            *reinterpret_cast<math::VEC3*>(param);
+    static void ModifierTravFunc_SetRotate(void *pObject, ForEachParam param) {
+        static_cast<ParticleManager *>(pObject)->mModifier.mRotate =
+            *reinterpret_cast<math::VEC3 *>(param);
     }
 };
 

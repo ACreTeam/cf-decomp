@@ -23,6 +23,10 @@ void AnimCurveExecuteTexture(u8* pCmdList, Particle* pParticle, u32 tick,
 void AnimCurveExecuteChild(u8* pCmdList, Particle* pParticle, u32 tick,
                            u16 seed, u32 life);
 
+void AnimBakedExecuteU8(u8* pCmdList, u8* pTarget, u32 tick, u32 life);
+
+void AnimBakedExecuteF32(u8* pCmdList, f32* pTarget, u32 tick, u32 life);
+
 } // namespace ef
 } // namespace nw4r
 

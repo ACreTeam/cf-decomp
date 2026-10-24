@@ -1,91 +1,99 @@
-#include "nw4r/snd/snd_WaveArchive.h"
-
-/*******************************************************************************
- * headers
- */
+#include <nw4r/snd/snd_WaveArchive.h>
 
 #include <types.h>
 
-#include "nw4r/snd/snd_Util.h"
-#include "nw4r/snd/snd_WaveFile.h"
+#include <nw4r/snd/snd_Util.h>
+#include <nw4r/snd/snd_WaveFile.h>
 
-#include "nw4r/ut/ut_binaryFileFormat.h" // ut::BinaryFileHeader
-#include "nw4r/ut/ut_algorithm.h" // ut::AddOffsetToPtr
+#include <nw4r/ut/ut_binaryFileFormat.h>
+#include <nw4r/ut/ut_algorithm.h>
 
+#include <nw4r/NW4RAssert.hpp>
 
-/*******************************************************************************
- * functions
- */
+namespace nw4r {
+namespace snd {
+namespace detail {
+WaveArchiveReader::WaveArchiveReader(void const *waveArc)
+    : mTableBlock(nullptr), mDataBlock(nullptr) {
+    NW4RAssertPointerNonnull_Line(44, waveArc);
 
-namespace nw4r { namespace snd { namespace detail {
+    if (!VerifyFileHeader(waveArc)) {
+        return;
+    }
 
-inline bool WaveArchiveReader::VerifyFileHeader(void const *waveArc)
-{
-	ut::BinaryFileHeader const *fileHeader =
-		static_cast<ut::BinaryFileHeader const *>(waveArc);
+    WaveArchive::FileHeader const *fileHeader =
+        static_cast<WaveArchive::FileHeader const *>(waveArc);
 
+    WaveArchive::TableBlock const *tableBlock =
+        static_cast<WaveArchive::TableBlock const *>(
+            ut::AddOffsetToPtr(fileHeader, fileHeader->tableChunkOffset));
 
-	if (fileHeader->signature != WaveArchive::SIGNATURE_FILE)
-		return false;
+    NW4RAssert_Line(53, tableBlock->blockHeader.kind ==
+                            WaveArchive::SIGNATURE_TABLE_BLOCK);
 
-	// specifically not the source variant
+    WaveArchive::DataBlock const *dataBlock =
+        static_cast<WaveArchive::DataBlock const *>(
+            ut::AddOffsetToPtr(fileHeader, fileHeader->dataChunkOffset));
 
-	if (fileHeader->version < SUPPORTED_FILE_VERSION_MIN)
-		return false;
+    NW4RAssert_Line(58, dataBlock->blockHeader.kind ==
+                            WaveArchive::SIGNATURE_DATA_BLOCK);
 
-	if (fileHeader->version > SUPPORTED_FILE_VERSION_MAX)
-		return false;
-
-	return true;
+    mTableBlock = tableBlock;
+    mDataBlock = dataBlock;
 }
 
-WaveArchiveReader::WaveArchiveReader(void const *waveArc) :
-	mTableBlock	(nullptr),
-	mDataBlock	(nullptr)
-{
+WaveFile::FileHeader const *WaveArchiveReader::GetWaveFile(int index) const {
+    if (!mTableBlock) {
+        return nullptr;
+    }
 
-	if (!VerifyFileHeader(waveArc))
-		return;
+    if (!mDataBlock) {
+        return nullptr;
+    }
 
-	WaveArchive::FileHeader const *fileHeader =
-		static_cast<WaveArchive::FileHeader const *>(waveArc);
+    if (index < 0) {
+        return nullptr;
+    }
 
-	WaveArchive::TableBlock const *tableBlock =
-		static_cast<WaveArchive::TableBlock const *>(
-			ut::AddOffsetToPtr(fileHeader, fileHeader->tableChunkOffset));
+    if (index >= mTableBlock->fileTable.count) {
+        return nullptr;
+    }
 
+    Util::DataRef<WaveFile::FileHeader> waveFileRef =
+        mTableBlock->fileTable.items[index].waveFileRef;
 
-	WaveArchive::DataBlock const *dataBlock =
-		static_cast<WaveArchive::DataBlock const *>(
-			ut::AddOffsetToPtr(fileHeader, fileHeader->dataChunkOffset));
+    WaveFile::FileHeader const *fileHeader =
+        Util::GetDataRefAddress0(waveFileRef, mDataBlock);
 
-
-	mTableBlock	= tableBlock;
-	mDataBlock	= dataBlock;
+    return fileHeader;
 }
 
-WaveFile::FileHeader const *WaveArchiveReader::GetWaveFile(int index) const
-{
-	if (!mTableBlock)
-		return nullptr;
+bool WaveArchiveReader::VerifyFileHeader(void const *waveArc) {
+    ut::BinaryFileHeader const *fileHeader =
+        static_cast<ut::BinaryFileHeader const *>(waveArc);
 
-	if (!mDataBlock)
-		return nullptr;
+    NW4RAssertMessage_Line(
+        92, fileHeader->signature == WaveArchive::SIGNATURE_FILE,
+        "invalid file signature. wave archive is not available.");
 
-	if (index < 0)
-		return nullptr;
+    if (fileHeader->signature != WaveArchive::SIGNATURE_FILE) {
+        return false;
+    }
 
-	if (index >= mTableBlock->fileTable.count)
-		return nullptr;
+    NW4RAssertHeaderClampedLRValue_Line(96, fileHeader->version,
+                                        SUPPORTED_FILE_VERSION_MIN,
+                                        SUPPORTED_FILE_VERSION_MAX);
 
-	Util::DataRef<WaveFile::FileHeader> waveFileRef =
-		mTableBlock->fileTable.items[index].waveFileRef;
+    if (fileHeader->version < SUPPORTED_FILE_VERSION_MIN) {
+        return false;
+    }
 
-	WaveFile::FileHeader const *fileHeader =
-		Util::GetDataRefAddress0(waveFileRef, mDataBlock);
+    if (fileHeader->version > SUPPORTED_FILE_VERSION_MAX) {
+        return false;
+    }
 
-	return fileHeader;
+    return true;
 }
-
-
-}}} // namespace nw4r::snd::detail
+} // namespace detail
+} // namespace snd
+} // namespace nw4r

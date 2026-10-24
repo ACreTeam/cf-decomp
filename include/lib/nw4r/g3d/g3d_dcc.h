@@ -10,8 +10,10 @@
 namespace nw4r {
 namespace g3d {
 
-void CalcTexMtx(math::MTX34* pMtx, bool set, const TexSrt& rSrt,
+void CalcTexMtx(math::MTX34* pM, bool bSet, const TexSrt& srt,
                 TexSrt::Flag flag, TexSrtTypedef::TexMatrixMode mode);
+void CalcTexMtx(math::MTX34* pM, bool bSet, const TexSrt& srt,
+                TexSrt::Flag flag);
 
 namespace detail {
 

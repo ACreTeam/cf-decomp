@@ -28,23 +28,26 @@ struct EmitterInheritSetting {
         FLAG_INHERIT_ROT = (1 << 1),
     };
 
-    s16 speed; // at 0x0
-    u8 scale;  // at 0x2
-    u8 alpha;  // at 0x3
-    u8 color;  // at 0x4
-    u8 weight; // at 0x5
-    u8 type;   // at 0x6
-    u8 flag;   // at 0x7
+    s16 speed;       // at 0x0
+    u8 scale;        // at 0x2
+    u8 alpha;        // at 0x3
+    u8 color;        // at 0x4
+    u8 weight;       // at 0x5
+    u8 type;         // at 0x6
+    u8 flag;         // at 0x7
+    u8 alphaFuncPri; // at 0x8
+    u8 alphaFuncSec; // at 0x9
 };
 
 class EmitterParameter {
-public:
+  public:
     enum InheritFlag {
         INHERIT_FLAG_SCALE = (1 << 0),
-        INHERIT_FLAG_ROT = (1 << 1)
+        INHERIT_FLAG_ROT = (1 << 1),
+        INHERIT_FLAG_PIVOT = (1 << 2)
     };
 
-public:
+  public:
     u32 mComFlags;                  // at 0x0
     u32 mEmitFlags;                 // at 0x4
     f32 mEmitRatio;                 // at 0x8
@@ -78,11 +81,11 @@ public:
 class Emitter : public ReferencedObject {
     friend class Effect;
 
-public:
+  public:
     EmitterParameter mParameter;           // at 0x20
     EvaluateStatus mEvalStatus;            // at 0xB4
-    EmitterResource* mResource;            // at 0xB8
-    Effect* mManagerEF;                    // at 0xBC
+    EmitterResource *mResource;            // at 0xB8
+    Effect *mManagerEF;                    // at 0xBC
     ActivityList mActivityList;            // at 0xC0
     bool mIsFirstEmission;                 // at 0xDC
     u16 mWaitTime;                         // at 0xDE
@@ -91,83 +94,83 @@ public:
     u16 mCalcRemain;                       // at 0xE8
     u16 mRandSeed;                         // at 0xEA
     Random mRandom;                        // at 0xEC
-    EmitterForm* mForm;                    // at 0xF0
-    Emitter* mParent;                      // at 0xF4
-    Particle* mpReferenceParticle;         // at 0xF8
+    EmitterForm *mForm;                    // at 0xF0
+    Emitter *mParent;                      // at 0xF4
+    Particle *mpReferenceParticle;         // at 0xF8
     EmitterInheritSetting mInheritSetting; // at 0xFC
 
-protected:
-    bool mMtxDirty; // at 0x104
+    math::VEC3 mGlobalPosition;     // at 0x108
+    math::VEC3 mPrevGlobalPosition; // at 0x114
 
-public:
-    math::MTX34 mMtx; // at 0x108
+  protected:
+    bool mMtxDirty; // at 0x120
 
-public:
+  public:
+    math::MTX34 mMtx; // at 0x124
+
+  public:
     Emitter();
     ~Emitter();
 
     virtual void SendClosing(); // at 0x8
     virtual void DestroyFunc(); // at 0xC
 
-    virtual bool Initialize(Effect* pParent, EmitterResource* pResource,
+    virtual bool Initialize(Effect *pParent, EmitterResource *pResource,
                             u8 drawWeight); // at 0x10
 
-    virtual Emitter* CreateEmitter(EmitterResource* pResource,
-                                   EmitterInheritSetting* pSetting,
-                                   Particle* pParticle,
-                                   u16 calcRemain); // at 0x14
+    virtual Emitter *CreateEmitter(EmitterResource *pResource,
+                                   EmitterInheritSetting *pSetting,
+                                   Particle *pParticle, u16 calcRemain,
+                                   math::VEC3 *position = NULL); // at 0x14
 
     virtual void CalcEmitter();   // at 0x18
     virtual void CalcParticle();  // at 0x1C
     virtual void CalcEmission();  // at 0x20
     virtual void CalcBillboard(); // at 0x24
 
-    bool Closing(ParticleManager* pManager);
+    bool Closing(ParticleManager *pManager);
 
     u32 RetireParticleAll();
-    u32 RetireParticleManager(ParticleManager* pManager);
+    u32 RetireParticleManager(ParticleManager *pManager);
     u32 RetireParticleManagerAll();
 
-    void UpdateDatas(EmitterResource* pResource);
-    bool InitializeDatas(EmitterResource* pResource, Effect* pEffect);
+    void UpdateDatas(EmitterResource *pResource);
+    bool InitializeDatas(EmitterResource *pResource, Effect *pEffect);
 
-    void CreateEmitterTmp(EmitterResource* pResource,
-                          EmitterInheritSetting* pSetting, Particle* pParticle,
-                          u16 calcRemain);
-    // CF: the emission matrix can be translated by an explicit position (used by EGG::ExOneEmitter)
-    void CreateEmitterTmp(EmitterResource* pResource,
-                          EmitterInheritSetting* pSetting, Particle* pParticle,
-                          u16 calcRemain, const math::VEC3* pPos);
+    bool CreateEmitterTmp(EmitterResource *pResource,
+                          EmitterInheritSetting *pSetting, Particle *pParticle,
+                          u16 calcRemain, math::VEC3 *position = NULL);
 
-    ParticleManager* FindParticleManager(EmitterResource* pResource,
-                                         bool inheritS, bool inheritR,
-                                         s8 inheritT, u8 weight);
+    inline ParticleManager *FindParticleManager(EmitterResource *pResource,
+                                                bool inheritS, bool inheritR,
+                                                s8 inheritT, bool movePivot,
+                                                u8 weight);
 
-    void Emission(ParticleManager* pManager, const math::MTX34* pSpace);
+    void Emission(ParticleManager *pManager, const math::MTX34 *pSpace);
 
-    math::MTX34* CalcGlobalMtx(math::MTX34* pResult);
+    math::MTX34 *CalcGlobalMtx(math::MTX34 *pResult);
     void SetMtxDirty();
 
     u16 GetNumParticleManager() const;
-    ParticleManager* GetParticleManager(u16 idx);
+    ParticleManager *GetParticleManager(u16 idx);
 
     u32 ForeachEmitter(ForEachFunc pFunc, ForEachParam param,
                        bool ignoreLifeStatus);
     u32 ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                bool ignoreLifeStatus, bool propogate);
 
-    static math::MTX34* RestructMatrix(math::MTX34* pResult, math::MTX34* pOrig,
+    static math::MTX34 *RestructMatrix(math::MTX34 *pResult, math::MTX34 *pOrig,
                                        bool inheritS, bool inheritR,
-                                       s8 inheritT);
+                                       s8 inheritT, bool movePivot = false);
 
     bool GetFlagDisableCalc() const {
         return mParameter.mComFlags & EmitterDesc::CMN_FLAG_DISABLE_CALC;
     }
 
-    void SetTranslate(const math::VEC3& rTrans) {
+    void SetTranslate(const math::VEC3 &rTrans) {
         mParameter.mTranslate = rTrans;
     }
-    void SetScale(const math::VEC3& rScale) {
+    void SetScale(const math::VEC3 &rScale) {
         mParameter.mScale = rScale;
     }
 };

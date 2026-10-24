@@ -2,7 +2,7 @@
 #define NW4R_SND_UTIL_H
 #include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_Types.h>
+#include <nw4r/snd/snd_global.h>
 
 namespace nw4r {
 namespace snd {
@@ -32,12 +32,9 @@ public:
     };
 
     struct PanInfo {
-        PanCurve curve;  // at 0x0
-        bool centerZero; // at 0x4
-        bool zeroClamp;  // at 0x5
-
-        PanInfo()
-            : curve(PAN_CURVE_SQRT), centerZero(false), zeroClamp(false) {}
+        PanCurve curve;      // at 0x0
+        bool centerZeroFlag; // at 0x4
+        bool zeroClampFlag;  // at 0x5
     };
 
     /******************************************************************************

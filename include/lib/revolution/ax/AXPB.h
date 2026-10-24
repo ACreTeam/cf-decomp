@@ -41,7 +41,8 @@ typedef enum {
 } AXSAMPLETYPE;
 
 enum {
-    AX_PB_LPF_ON = 1,
+    AX_PB_OFF,
+    AX_PB_LPF_ON,
     AX_PB_BIQUAD_ON,
 };
 

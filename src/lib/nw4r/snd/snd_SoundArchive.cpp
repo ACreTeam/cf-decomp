@@ -1,28 +1,53 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_SoundArchive.h>
 
 #include <cstring>
 
+#include <types.h>
+
+#include <nw4r/snd/snd_SoundArchiveFile.h>
+#include <nw4r/snd/snd_SoundArchivePlayer.h>
+
+#include <nw4r/NW4RAssert.hpp>
+
+namespace nw4r {
+namespace ut {
+class FileStream;
+}
+} // namespace nw4r
+
 namespace nw4r {
 namespace snd {
+// The retained archive-player label callback precedes the archive functions.
+u32 SoundArchivePlayer::detail_ConvertLabelStringToSoundId(char const *label) {
+    NW4RAssertPointerNonnull_Line(194, mSoundArchive);
+    return mSoundArchive->ConvertLabelStringToSoundId(label);
+}
 
-SoundArchive::SoundArchive() : mFileReader(NULL) {
+SoundArchive::SoundArchive() : mFileReader(nullptr) {
     mExtFileRoot[0] = '/';
     mExtFileRoot[1] = '\0';
 }
 
-SoundArchive::~SoundArchive() {}
-
-bool SoundArchive::IsAvailable() const {
-    return mFileReader;
+SoundArchive::~SoundArchive() {
 }
 
-void SoundArchive::Setup(detail::SoundArchiveFileReader* pReader) {
-    mFileReader = pReader;
+bool SoundArchive::IsAvailable() const {
+    if (!mFileReader) {
+        return false;
+    }
+
+    return true;
+}
+
+void SoundArchive::Setup(detail::SoundArchiveFileReader *fileReader) {
+    NW4RAssertPointerNonnull_Line(70, fileReader);
+
+    mFileReader = fileReader;
 }
 
 void SoundArchive::Shutdown() {
-    mFileReader = NULL;
+    mFileReader = nullptr;
+
     mExtFileRoot[0] = '/';
     mExtFileRoot[1] = '\0';
 }
@@ -35,124 +60,166 @@ u32 SoundArchive::GetGroupCount() const {
     return mFileReader->GetGroupCount();
 }
 
-const char* SoundArchive::GetSoundLabelString(u32 id) const {
+const char *SoundArchive::GetSoundLabelString(u32 id) const {
     return mFileReader->GetSoundLabelString(id);
 }
 
-u32 SoundArchive::ConvertLabelStringToSoundId(const char* pLabel) const {
-    return mFileReader->ConvertLabelStringToSoundId(pLabel);
+u32 SoundArchive::ConvertLabelStringToSoundId(char const *label) const DONT_INLINE {
+    return mFileReader->ConvertLabelStringToSoundId(label);
 }
 
-u32 SoundArchive::ConvertLabelStringToPlayerId(const char* pLabel) const {
+u32 SoundArchive::ConvertLabelStringToPlayerId(const char *pLabel) const {
     return mFileReader->ConvertLabelStringToPlayerId(pLabel);
 }
 
-u32 SoundArchive::ConvertLabelStringToGroupId(const char* pLabel) const {
+u32 SoundArchive::ConvertLabelStringToGroupId(const char *pLabel) const {
     return mFileReader->ConvertLabelStringToGroupId(pLabel);
+}
+
+u32 SoundArchive::ConvertLabelStringToBankId(const char *pLabel) const {
+    return mFileReader->ConvertLabelStringToBankId(pLabel);
 }
 
 u32 SoundArchive::GetSoundUserParam(u32 id) const {
     return mFileReader->GetSoundUserParam(id);
 }
 
-SoundType SoundArchive::GetSoundType(u32 id) const {
-    return mFileReader->GetSoundType(id);
+SoundArchive::SoundType SoundArchive::GetSoundType(u32 soundId) const {
+    return mFileReader->GetSoundType(soundId);
 }
 
-bool SoundArchive::ReadSoundInfo(u32 id, SoundInfo* pInfo) const {
-    return mFileReader->ReadSoundInfo(id, pInfo);
+bool SoundArchive::ReadSoundInfo(u32 soundId, SoundInfo *info) const {
+    return mFileReader->ReadSoundInfo(soundId, info);
 }
 
-bool SoundArchive::detail_ReadSeqSoundInfo(u32 id, SeqSoundInfo* pInfo) const {
-    return mFileReader->ReadSeqSoundInfo(id, pInfo);
+bool SoundArchive::detail_ReadSeqSoundInfo(u32 soundId,
+                                           SeqSoundInfo *info) const {
+    return mFileReader->ReadSeqSoundInfo(soundId, info);
 }
 
-bool SoundArchive::detail_ReadStrmSoundInfo(u32 id,
-                                            StrmSoundInfo* pInfo) const {
-    return mFileReader->ReadStrmSoundInfo(id, pInfo);
+bool SoundArchive::detail_ReadStrmSoundInfo(u32 soundId,
+                                            StrmSoundInfo *info) const {
+    return mFileReader->ReadStrmSoundInfo(soundId, info);
 }
 
-bool SoundArchive::detail_ReadWaveSoundInfo(u32 id,
-                                            WaveSoundInfo* pInfo) const {
-    return mFileReader->ReadWaveSoundInfo(id, pInfo);
+bool SoundArchive::detail_ReadWaveSoundInfo(u32 soundId,
+                                            WaveSoundInfo *info) const {
+    return mFileReader->ReadWaveSoundInfo(soundId, info);
 }
 
-bool SoundArchive::ReadPlayerInfo(u32 id, PlayerInfo* pInfo) const {
-    return mFileReader->ReadPlayerInfo(id, pInfo);
+bool SoundArchive::ReadPlayerInfo(u32 playerId, PlayerInfo *info) const {
+    return mFileReader->ReadPlayerInfo(playerId, info);
 }
 
 bool SoundArchive::ReadSoundArchivePlayerInfo(
-    SoundArchivePlayerInfo* pInfo) const {
-    return mFileReader->ReadSoundArchivePlayerInfo(pInfo);
+    SoundArchivePlayerInfo *info) const {
+    return mFileReader->ReadSoundArchivePlayerInfo(info);
 }
 
-bool SoundArchive::detail_ReadSound3DParam(u32 id, Sound3DParam* pParam) const {
-    return mFileReader->ReadSound3DParam(id, pParam);
+bool SoundArchive::detail_ReadSound3DParam(
+    u32 soundId, nw4r::snd::SoundArchive::Sound3DParam *info) const {
+    return mFileReader->ReadSound3DParam(soundId, info);
 }
 
-bool SoundArchive::detail_ReadBankInfo(u32 id, BankInfo* pInfo) const {
-    return mFileReader->ReadBankInfo(id, pInfo);
+bool SoundArchive::detail_ReadBankInfo(u32 bankId, BankInfo *info) const {
+    return mFileReader->ReadBankInfo(bankId, info);
 }
 
-bool SoundArchive::detail_ReadGroupInfo(u32 id, GroupInfo* pInfo) const {
-    return mFileReader->ReadGroupInfo(id, pInfo);
+bool SoundArchive::detail_ReadGroupInfo(u32 groupId, GroupInfo *info) const {
+    return mFileReader->ReadGroupInfo(groupId, info);
 }
 
-bool SoundArchive::detail_ReadGroupItemInfo(u32 groupId, u32 itemId,
-                                            GroupItemInfo* pInfo) const {
-    return mFileReader->ReadGroupItemInfo(groupId, itemId, pInfo);
+bool SoundArchive::detail_ReadGroupItemInfo(u32 groupId, u32 index,
+                                            GroupItemInfo *info) const {
+    return mFileReader->ReadGroupItemInfo(groupId, index, info);
 }
 
-bool SoundArchive::detail_ReadFileInfo(u32 id, FileInfo* pInfo) const {
-    return mFileReader->ReadFileInfo(id, pInfo);
+u32 SoundArchive::detail_GetFileCount() const {
+    return mFileReader->GetFileCount();
 }
 
-bool SoundArchive::detail_ReadFilePos(u32 fileId, u32 posId,
-                                      FilePos* pPos) const {
-    return mFileReader->ReadFilePos(fileId, posId, pPos);
+bool SoundArchive::detail_ReadFileInfo(u32 fileId, FileInfo *info) const {
+    return mFileReader->ReadFileInfo(fileId, info);
 }
 
-ut::FileStream* SoundArchive::detail_OpenFileStream(u32 id, void* pBuffer,
-                                                    int bufferSize) const {
+bool SoundArchive::detail_ReadFilePos(u32 fileId, u32 index,
+                                      FilePos *info) const {
+    return mFileReader->ReadFilePos(fileId, index, info);
+}
 
+ut::FileStream *SoundArchive::detail_OpenFileStream(u32 fileId, void *buffer,
+                                                    int size) const {
     FileInfo fileInfo;
-    if (!detail_ReadFileInfo(id, &fileInfo)) {
-        return NULL;
+    if (!detail_ReadFileInfo(fileId, &fileInfo)) {
+        return nullptr;
     }
 
-    if (fileInfo.extFilePath != NULL) {
-        return OpenExtStreamImpl(pBuffer, bufferSize, fileInfo.extFilePath, 0,
-                                 0);
+    if (fileInfo.extFilePath) {
+        ut::FileStream *stream = OpenExtStreamImpl(
+            buffer, size, fileInfo.extFilePath, 0, fileInfo.fileSize);
+
+        return stream;
     }
 
     FilePos filePos;
-    if (!detail_ReadFilePos(id, 0, &filePos)) {
-        return NULL;
+    if (!detail_ReadFilePos(fileId, 0, &filePos)) {
+        return nullptr;
     }
 
     GroupInfo groupInfo;
     if (!detail_ReadGroupInfo(filePos.groupId, &groupInfo)) {
-        return NULL;
+        return nullptr;
     }
 
-    GroupItemInfo groupItemInfo;
-    if (!detail_ReadGroupItemInfo(filePos.groupId, filePos.index,
-                                  &groupItemInfo)) {
-        return NULL;
+    GroupItemInfo itemInfo;
+    if (!detail_ReadGroupItemInfo(filePos.groupId, filePos.index, &itemInfo)) {
+        return nullptr;
     }
 
-    u32 offset = groupInfo.offset + groupItemInfo.offset;
-    u32 size = groupItemInfo.size;
+    u32 itemOffset = groupInfo.offset + itemInfo.offset;
+    u32 itemSize = itemInfo.size;
 
-    if (groupInfo.extFilePath != NULL) {
-        return OpenExtStreamImpl(pBuffer, bufferSize, groupInfo.extFilePath,
-                                 offset, size);
+    if (groupInfo.extFilePath) {
+        ut::FileStream *stream = OpenExtStreamImpl(
+            buffer, size, groupInfo.extFilePath, itemOffset, itemSize);
+
+        return stream;
+    } else {
+        ut::FileStream *stream = OpenStream(buffer, size, itemOffset, itemSize);
+
+        return stream;
     }
-
-    return OpenStream(pBuffer, bufferSize, offset, size);
 }
 
-ut::FileStream* SoundArchive::detail_OpenGroupStream(u32 id, void* pBuffer,
+ut::FileStream *SoundArchive::OpenExtStreamImpl(void *buffer, int size,
+                                                char const *extFilePath,
+                                                u32 begin, u32 length) const {
+    char const *fullPath;
+    char pathBuffer[FILE_PATH_MAX + 1];
+
+    if (extFilePath[0] == '/') {
+        fullPath = extFilePath;
+    } else {
+        u32 fileLen = std::strlen(extFilePath);
+        u32 dirLen = std::strlen(mExtFileRoot);
+
+        if (fileLen + dirLen >= FILE_PATH_MAX + 1) {
+            NW4RWarningMessage_Line(349, "Too long file path \"%s/%s\"",
+                                    mExtFileRoot, extFilePath);
+
+            return nullptr;
+        }
+
+        std::strncpy(pathBuffer, mExtFileRoot, dirLen + 1);
+        std::strncat(pathBuffer, extFilePath, fileLen + 1);
+
+        fullPath = pathBuffer;
+    }
+
+    return OpenExtStream(buffer, size, fullPath, begin, length);
+}
+
+ut::FileStream *SoundArchive::detail_OpenGroupStream(u32 id, void *pBuffer,
                                                      int bufferSize) const {
     GroupInfo groupInfo;
     if (!detail_ReadGroupInfo(id, &groupInfo)) {
@@ -167,8 +234,8 @@ ut::FileStream* SoundArchive::detail_OpenGroupStream(u32 id, void* pBuffer,
     return OpenStream(pBuffer, bufferSize, groupInfo.offset, groupInfo.size);
 }
 
-ut::FileStream*
-SoundArchive::detail_OpenGroupWaveDataStream(u32 id, void* pBuffer,
+ut::FileStream *
+SoundArchive::detail_OpenGroupWaveDataStream(u32 id, void *pBuffer,
                                              int bufferSize) const {
     GroupInfo groupInfo;
     if (!detail_ReadGroupInfo(id, &groupInfo)) {
@@ -185,32 +252,7 @@ SoundArchive::detail_OpenGroupWaveDataStream(u32 id, void* pBuffer,
                       groupInfo.waveDataSize);
 }
 
-ut::FileStream* SoundArchive::OpenExtStreamImpl(void* pBuffer, int bufferSize,
-                                                const char* pExtPath,
-                                                u32 offset, u32 size) const {
-    char pathBuffer[FILE_PATH_MAX];
-    const char* pFullPath;
-
-    if (pExtPath[0] == '/') {
-        pFullPath = pExtPath;
-    } else {
-        u32 fileLen = std::strlen(pExtPath);
-        u32 dirLen = std::strlen(mExtFileRoot);
-
-        if (fileLen + dirLen >= FILE_PATH_MAX) {
-            return NULL;
-        }
-
-        std::strncpy(pathBuffer, mExtFileRoot, dirLen + 1);
-        std::strncat(pathBuffer, pExtPath, fileLen + 1);
-
-        pFullPath = pathBuffer;
-    }
-
-    return OpenExtStream(pBuffer, bufferSize, pFullPath, offset, size);
-}
-
-void SoundArchive::SetExternalFileRoot(const char* pExtFileRoot) {
+void SoundArchive::SetExternalFileRoot(const char *pExtFileRoot) {
     u32 len = std::strlen(pExtFileRoot);
     u32 nullPos = len;
 
@@ -221,9 +263,7 @@ void SoundArchive::SetExternalFileRoot(const char* pExtFileRoot) {
 
     mExtFileRoot[nullPos] = '\0';
 
-    // @bug Long path can overflow mExtFileRoot buffer
     std::strncpy(mExtFileRoot, pExtFileRoot, len);
 }
-
 } // namespace snd
 } // namespace nw4r

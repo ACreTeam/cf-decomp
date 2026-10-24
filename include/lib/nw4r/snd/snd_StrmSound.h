@@ -1,71 +1,121 @@
 #ifndef NW4R_SND_STRM_SOUND_H
 #define NW4R_SND_STRM_SOUND_H
-#include <nw4r/types_nw4r.h>
+
+#include <types.h>
 
 #include <nw4r/snd/snd_BasicSound.h>
+#include <nw4r/snd/snd_debug.h>
+#include <nw4r/snd/snd_MoveValue.h>
 #include <nw4r/snd/snd_StrmPlayer.h>
 
-#include <nw4r/ut.h>
+#include <nw4r/ut/ut_LinkList.h>
 
 namespace nw4r {
 namespace snd {
-
-// Forward declarations
-class StrmSoundHandle;
-
 namespace detail {
-template <typename T> class SoundInstanceManager;
+template <class> class SoundInstanceManager;
+}
+} // namespace snd
+} // namespace nw4r
+namespace nw4r {
+namespace snd {
+namespace detail {
 class StrmBufferPool;
-} // namespace detail
+}
+} // namespace snd
+} // namespace nw4r
+namespace nw4r {
+namespace snd {
+class StrmSoundHandle;
+}
+} // namespace nw4r
 
+namespace nw4r {
+namespace ut {
 namespace detail {
+class RuntimeTypeInfo;
+}
+} // namespace ut
+} // namespace nw4r
+namespace nw4r {
+namespace ut {
+class FileStream;
+}
+} // namespace nw4r
 
+namespace nw4r {
+namespace snd {
+namespace detail {
 class StrmSound : public BasicSound {
-    friend class nw4r::snd::StrmSoundHandle;
+  public:
+    typedef ut::LinkList<StrmSound, 0xec> PriorityLinkList;
 
-public:
-    NW4R_UT_RTTI_DECL(StrmSound);
+  public:
+    StrmSound(SoundInstanceManager<StrmSound> *manager, int priority,
+              int ambientPriority);
 
-public:
-    StrmSound(SoundInstanceManager<StrmSound>* pManager, int priority, int ambientPriority);
-
-    virtual void Shutdown(); // at 0x10
+    virtual ut::detail::RuntimeTypeInfo const *GetRuntimeTypeInfo() const {
+        return &typeInfo;
+    }
+    virtual ~StrmSound() {
+    }
+    virtual void Shutdown();
     virtual bool IsPrepared() const {
         return mStrmPlayer.IsPrepared();
-    } // at 0x14
-
-    virtual void OnUpdatePlayerPriority(); // at 0x2C
-    virtual bool IsAttachedTempSpecialHandle();   // at 0x18
-    virtual void DetachTempSpecialHandle();       // at 0x1C
-
-    virtual BasicPlayer& GetBasicPlayer() {
+    }
+    virtual bool IsAttachedTempSpecialHandle();
+    virtual void DetachTempSpecialHandle();
+    virtual void InitParam();
+    virtual BasicPlayer &GetBasicPlayer() {
         return mStrmPlayer;
-    } // at 0x24
-    virtual const BasicPlayer& GetBasicPlayer() const {
+    }
+    virtual BasicPlayer const &GetBasicPlayer() const {
         return mStrmPlayer;
-    } // at 0x28
+    }
+    virtual void OnUpdatePlayerPriority();
+    virtual void UpdateMoveValue();
+    virtual void UpdateParam();
 
-    bool Prepare(StrmBufferPool* pPool, StrmPlayer::StartOffsetType offsetType,
-                 s32 offset, int voices, ut::FileStream* pStream);
+    StrmPlayer::SetupResult Setup(StrmBufferPool *bufferPool,
+                                  int allocChannelCount, u16 allocTrackFlag);
 
-    void* GetFileStreamBuffer() {
+    void *GetFileStreamBuffer() {
         return mFileStreamBuffer;
     }
     s32 GetFileStreamBufferSize() {
-        return sizeof(mFileStreamBuffer);
+        return sizeof mFileStreamBuffer;
     }
 
-private:
-    static const int FILE_STREAM_BUFFER_SIZE = 512;
+    bool Prepare(StrmPlayer::StartOffsetType startOffsetType, s32 offset,
+                 ut::FileStream *fileStream);
 
-private:
-    StrmPlayer mStrmPlayer;                    // at 0x10C
-    StrmSoundHandle* mTempSpecialHandle;       // at 0x954
-    SoundInstanceManager<StrmSound>* mManager; // at 0x958
-    char UNK_0x928[0x93C - 0x928];
-    char mFileStreamBuffer[FILE_STREAM_BUFFER_SIZE]; // at 0x970
-};
+    void SetTrackVolume(u32 trackFlags, f32 volume, int fadeFrames);
 
+    static DebugSoundType GetSoundType() {
+        return DEBUG_SOUND_TYPE_STRMSOUND;
+    }
+
+    u32 GetPlaySamplePosition() const {
+        return mStrmPlayer.GetPlaySamplePosition();
+    }
+
+  public:
+    static int const FILE_STREAM_BUFFER_SIZE = 128;
+
+    static ut::detail::RuntimeTypeInfo const typeInfo;
+
+  private:
+    /* base BasicSound */                           // size 0x100, offset 0x000
+    StrmPlayer mStrmPlayer;                         // size 0xd08, offset 0x100
+    StrmSoundHandle *mTempSpecialHandle;            // size 0x004, offset 0xe08
+    SoundInstanceManager<StrmSound> *mManager;      // size 0x004, offset 0xe0c
+    MoveValue<f32, int> mTrackVolume[8];            // size 0x080, offset 0xe10
+    ut::FileStream *mFileStream;                    // size 0x004, offset 0xe90
+    int mFileStreamBuffer[FILE_STREAM_BUFFER_SIZE]; // size 0x200, offset 0xe94
+
+  private:
+    friend class snd::StrmSoundHandle;
+}; // size 0x1094
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

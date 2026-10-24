@@ -1,4 +1,5 @@
 #include <nw4r/ef.h>
+#include <nw4r/NW4RAssert.hpp>
 #include <nw4r/math.h>
 
 #include <revolution/gx.h>
@@ -6,12 +7,11 @@
 namespace nw4r {
 namespace ef {
 
-static math::MTX34 CalcLocalTransform(f32 px, f32 py, f32 sx, f32 sy,
-                                      const nw4r::math::MTX34& rRot);
+DrawFreeStrategy::DrawFreeStrategy() {
+}
 
-static math::MTX34 CalcRotate(Particle* pParticle, u8 axis);
-
-static u8 free_tex0_u8[] = {0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01};
+static u8 free_tex0_u8[] ATTRIBUTE_ALIGN(32) = {0x00, 0x01, 0x00, 0x00,
+                                                0x01, 0x00, 0x01, 0x01};
 
 static void DrawQuad(const math::MTX34& rMtx, const math::_VEC3* pPosArray,
                      bool texCoord) {
@@ -52,7 +52,9 @@ static void DrawQuad(const math::MTX34& rMtx, const math::_VEC3* pPosArray,
     GXEnd();
 }
 
-DrawFreeStrategy::DrawFreeStrategy() {}
+static inline math::MTX34 CalcLocalTransform(f32 px, f32 py, f32 sx, f32 sy,
+                                             const nw4r::math::MTX34 &rRot);
+static inline math::MTX34 CalcRotate(Particle *pp, u8 typeAxis);
 
 void DrawFreeStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
     InitGraphics(rInfo, pManager);
@@ -60,12 +62,15 @@ void DrawFreeStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
     const EmitterDrawSetting& rSetting =
         *pManager->mResource->GetEmitterDrawSetting();
 
-    math::MTX34 glbMtx;
-    math::MTX34 posMtx;
+    {
+        math::MTX34 mtxM;
+        pManager->CalcGlobalMtx(&mtxM);
 
-    pManager->CalcGlobalMtx(&glbMtx);
-    math::MTX34Mult(&posMtx, rInfo.GetViewMtx(), &glbMtx);
-    GXLoadPosMtxImm(posMtx, GX_PNMTX0);
+        math::MTX34 mtxVM;
+        rInfo.GetViewMtxCooked(&mtxVM);
+        math::MTX34Mult(&mtxVM, &mtxVM, &mtxM);
+        GXLoadPosMtxImm(mtxVM, GX_PNMTX0);
+    }
 
     f32 px = rSetting.pivotX / 100.0f;
     f32 py = rSetting.pivotY / 100.0f;
@@ -127,15 +132,89 @@ void DrawFreeStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
     }
 }
 
+static inline math::MTX34 CalcLocalTransform(f32 px, f32 py, f32 sx, f32 sy,
+                                             const nw4r::math::MTX34 &rRot) {
+
+    f32 sx_px = sx * px;
+    f32 sy_py = sy * py;
+
+    // clang-format off
+    return math::MTX34(
+        rRot._00 * sx,  rRot._01 * sy,  rRot._02 * sx,  -rRot._00 * sx_px - rRot._01 * sy_py + px,
+        rRot._10 * sx,  rRot._11 * sy,  rRot._12 * sx,  -rRot._10 * sx_px - rRot._11 * sy_py + py,
+        rRot._20 * sx,  rRot._21 * sy,  rRot._22 * sx,  -rRot._20 * sx_px - rRot._21 * sy_py);
+    // clang-format on
+}
+
+static inline math::MTX34 CalcRotate(Particle *pp, u8 typeAxis) {
+    math::VEC3 particleRotate;
+    pp->Draw_GetRotate(&particleRotate);
+
+    f32 sx, cx;
+    f32 sy, cy;
+    f32 sz, cz;
+
+    switch (typeAxis) {
+    case AXIS_X: {
+        PSSinCosRad(&sx, &cx, particleRotate.x);
+
+        // clang-format off
+        return math::MTX34(
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f,   cx,  -sx, 0.0f,
+            0.0f,   sx,   cx, 0.0f);
+        // clang-format on
+    }
+
+    case AXIS_Y: {
+        PSSinCosRad(&sy, &cy, particleRotate.y);
+
+        // clang-format off
+        return math::MTX34(
+              cy, 0.0f,   sy, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+             -sy, 0.0f,   cy, 0.0f);
+        // clang-format on
+    }
+
+    case AXIS_Z: {
+        PSSinCosRad(&sz, &cz, particleRotate.z);
+
+        // clang-format off
+        return math::MTX34(
+              cz,  -sz, 0.0f, 0.0f,
+              sz,   cz, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f);
+        // clang-format on
+    }
+
+    case 3:
+    default: {
+        PSSinCosRad(&sx, &cx, particleRotate.x);
+        PSSinCosRad(&sy, &cy, particleRotate.y);
+        PSSinCosRad(&sz, &cz, particleRotate.z);
+
+        f32 sx_sy = sx * sy;
+        f32 cx_sy = cx * sy;
+
+        // clang-format off
+        return math::MTX34(
+            cy * cz,  sx_sy * cz - cx * sz,  cx_sy * cz + sx * sz,  0.0f,
+            cy * sz,  sx_sy * sz + cx * cz,  cx_sy * sz - sx * cz,  0.0f,
+                -sy,               cy * sx,               cx * cy,  0.0f);
+        // clang-format on
+    }
+    }
+}
+
 void DrawFreeStrategy::InitGraphics(const DrawInfo& rInfo,
                                     ParticleManager* pManager) {
+    NW4RAssertPointerNonnull(pManager);
 
     const EmitterDrawSetting& rSetting =
         *pManager->mResource->GetEmitterDrawSetting();
 
-    InitTexture(rSetting);
-    InitTev(rSetting, rInfo);
-    InitColor(pManager, rSetting, rInfo);
+    Initialize(pManager, rSetting, rInfo);
 
     GXEnableTexOffsets(GX_TEXCOORD0, TRUE, TRUE);
 
@@ -152,46 +231,6 @@ void DrawFreeStrategy::InitGraphics(const DrawInfo& rInfo,
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_U8, 0);
 
     GXSetCurrentMtx(GX_PNMTX0);
-}
-
-static math::MTX34 CalcLocalTransform(f32 px, f32 py, f32 sx, f32 sy,
-                                      const nw4r::math::MTX34& rRot) {
-
-    f32 sx_px = sx * px;
-    f32 sy_py = sy * py;
-
-    // clang-format off
-    return math::MTX34(
-        rRot._00 * sx,  rRot._01 * sy,  rRot._02 * sx,  -rRot._00 * sx_px - rRot._01 * sy_py + px,
-        rRot._10 * sx,  rRot._11 * sy,  rRot._12 * sx,  -rRot._10 * sx_px - rRot._11 * sy_py + py,
-        rRot._20 * sx,  rRot._21 * sy,  rRot._22 * sx,  -rRot._20 * sx_px - rRot._21 * sy_py);
-    // clang-format on
-}
-
-static math::MTX34 CalcRotate(Particle* pParticle, u8 axis) {
-#pragma unused(axis)
-
-    math::VEC3 rot;
-    pParticle->Draw_GetRotate(&rot);
-
-    f32 sx, cx;
-    math::SinCosRad(&sx, &cx, rot.x);
-
-    f32 sy, cy;
-    math::SinCosRad(&sy, &cy, rot.y);
-
-    f32 sz, cz;
-    math::SinCosRad(&sz, &cz, rot.z);
-
-    f32 sx_sy = sx * sy;
-    f32 cx_sy = cx * sy;
-
-    // clang-format off
-    return math::MTX34(
-        cy * cz,  sx_sy * cz - cx * sz,  cx_sy * cz + sx * sz,  0.0f,
-        cy * sz,  sx_sy * sz + cx * cz,  cx_sy * sz - sx * cz,  0.0f,
-            -sy,               cy * sx,               cx * cy,  0.0f);
-    // clang-format on
 }
 
 } // namespace ef

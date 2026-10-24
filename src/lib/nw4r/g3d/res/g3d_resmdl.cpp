@@ -1,5 +1,7 @@
 #include <nw4r/g3d.h>
 
+#include <cstring>
+
 namespace nw4r {
 namespace g3d {
 
@@ -113,6 +115,26 @@ u32 ResMdl::GetResVtxTexCoordNumEntries() const {
     return ofs_to_obj<ResDic>(ref().toResVtxTexCoordDic).GetNumData();
 }
 
+ResVtxFurVec ResMdl::GetResVtxFurVec(u32 idx) const {
+    return ResVtxFurVec(ofs_to_obj<ResDic>(ref().toResVtxFurVecDic)[idx]);
+}
+
+u32 ResMdl::GetResVtxFurVecNumEntries() const {
+    return ofs_to_obj<ResDic>(ref().toResVtxFurVecDic).GetNumData();
+}
+
+ResVtxFurPos ResMdl::GetResVtxFurPos(int idx) const {
+    return ResVtxFurPos(ofs_to_obj<ResDic>(ref().toResVtxFurPosDic)[idx]);
+}
+
+ResVtxFurPos ResMdl::GetResVtxFurPos(u32 idx) const {
+    return GetResVtxFurPos(static_cast<int>(idx));
+}
+
+u32 ResMdl::GetResVtxFurPosNumEntries() const {
+    return ofs_to_obj<ResDic>(ref().toResVtxFurPosDic).GetNumData();
+}
+
 /******************************************************************************
  *
  * ResMat
@@ -199,6 +221,26 @@ void ResMdl::Release() {
     }
 }
 
+void ResMdl::ReleaseTex(const char* pName) {
+    u32 i;
+    u32 len = std::strlen(pName);
+    u32 matNum = GetResMatNumEntries();
+
+    for (i = 0; i < matNum; i++) {
+        GetResMat(i).ReleaseTex(pName, len);
+    }
+}
+
+void ResMdl::ReleasePltt(const char* pName) {
+    u32 i;
+    u32 len = std::strlen(pName);
+    u32 matNum = GetResMatNumEntries();
+
+    for (i = 0; i < matNum; i++) {
+        GetResMat(i).ReleasePltt(pName, len);
+    }
+}
+
 void ResMdl::Init() {
     u32 i;
 
@@ -230,6 +272,16 @@ void ResMdl::Init() {
     u32 texCoordNum = GetResVtxTexCoordNumEntries();
     for (i = 0; i < texCoordNum; i++) {
         GetResVtxTexCoord(i).Init();
+    }
+
+    u32 furVecNum = GetResVtxFurVecNumEntries();
+    for (i = 0; i < furVecNum; i++) {
+        GetResVtxFurVec(i).Init();
+    }
+
+    u32 furPosNum = GetResVtxFurPosNumEntries();
+    for (i = 0; i < furPosNum; i++) {
+        GetResVtxFurPos(i).Init();
     }
 }
 

@@ -47,11 +47,11 @@ public:
     void Set(const TexMap& rOther) {
         *this = rOther;
     }
-    void Set(TPLPalette* pPalette, ulong id);
-    void Set(const TPLDescriptor* pDesc);
+    void Set(TPLPalette* pal, ulong id);
+    void Set(const TPLDescriptor* pTPLDesc);
 
-    void SetNoWrap(const TexMap& rOther);
-    void SetNoWrap(const TPLDescriptor* pDesc);
+    void ReplaceImage(TPLPalette* pal, ulong id);
+    void ReplaceImage(const TPLDescriptor* pTPLDesc);
 
     void* GetImage() const {
         return mpImage;

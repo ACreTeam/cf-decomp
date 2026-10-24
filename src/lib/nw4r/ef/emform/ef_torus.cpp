@@ -5,9 +5,9 @@
 namespace nw4r {
 namespace ef {
 
-void EmitterFormTorus::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                                int count, u32 flags, f32* pParams, u16 life,
-                                f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormTorus::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                                int count, u32 flags, f32 *pParams, u16 life,
+                                f32 lifeRnd, const math::MTX34 *pSpace) {
 
     if (count < 1) {
         return;
@@ -74,26 +74,19 @@ void EmitterFormTorus::Emission(Emitter* pEmitter, ParticleManager* pManager,
             ringAngle = pEmitter->mRandom.RandFloat() * NW4R_MATH_PI * 2;
         }
 
-        f32 sa = std::sinf(angleOffset + angle);
-        f32 ca = std::cosf(angleOffset + angle);
-
-        f32 sr = std::sinf(ringAngle);
-        f32 cr = std::cosf(ringAngle);
+        f32 sa, ca, sr, cr;
+        PSSinCosRad(&sa, &ca, angleOffset + angle);
+        PSSinCosRad(&sr, &cr, ringAngle);
 
         pos.x = (inner * cr * sa + sa) * sizeX / (1.0f + inner);
         pos.y = sizeY * sr;
         pos.z = (-inner * cr * ca - ca) * sizeZ / (1.0f + inner);
 
         math::VEC3 fromOrigin = pos;
-        if (fromOrigin.x != 0.0f || fromOrigin.y != 0.0f ||
-            fromOrigin.z != 0.0f) {
-            math::VEC3Normalize(&fromOrigin, &fromOrigin);
-        }
+        Normalize(&fromOrigin, &fromOrigin);
 
         math::VEC3 fromYAxis(pos.x, 0.0f, pos.z);
-        if (fromYAxis.x != 0.0f || fromYAxis.z != 0.0f) {
-            math::VEC3Normalize(&fromYAxis, &fromYAxis);
-        }
+        Normalize(&fromYAxis, &fromYAxis);
 
         math::VEC3 normal;
         if (inner == 0.0f) {
@@ -106,9 +99,7 @@ void EmitterFormTorus::Emission(Emitter* pEmitter, ParticleManager* pManager,
             normal.z = (-inner * cr * ca) * sizeZ / (1.0f + inner);
         }
 
-        if (normal.x != 0.0f || normal.y != 0.0f || normal.z != 0.0f) {
-            math::VEC3Normalize(&normal, &normal);
-        }
+        Normalize(&normal, &normal);
 
         CalcVelocity(&vel, pEmitter, pos, normal, fromOrigin, fromYAxis);
 

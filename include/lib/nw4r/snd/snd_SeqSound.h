@@ -27,11 +27,14 @@ namespace detail {
 class SeqSound : public BasicSound {
     friend class nw4r::snd::SeqSoundHandle;
 
-public:
+  public:
     NW4R_UT_RTTI_DECL(SeqSound);
 
-public:
-    SeqSound(SoundInstanceManager<SeqSound>* pManager, int priority, int ambientPriority);
+    typedef ut::LinkList<SeqSound, 0xEC> PriorityLinkList;
+
+  public:
+    SeqSound(SoundInstanceManager<SeqSound> *pManager, int priority,
+             int ambientPriority);
 
     virtual void Shutdown(); // at 0x10
     virtual bool IsPrepared() const {
@@ -45,28 +48,28 @@ public:
 
     virtual void InitParam(); // at 0x20
 
-    virtual BasicPlayer& GetBasicPlayer() {
+    virtual BasicPlayer &GetBasicPlayer() {
         return mSeqPlayer;
     } // at 0x24
-    virtual const BasicPlayer& GetBasicPlayer() const {
+    virtual const BasicPlayer &GetBasicPlayer() const {
         return mSeqPlayer;
     } // at 0x28
 
-    SeqPlayer& GetSeqPlayer() {
+    SeqPlayer &GetSeqPlayer() {
         return mSeqPlayer;
     }
-    const SeqPlayer& GetSeqPlayer() const {
+    const SeqPlayer &GetSeqPlayer() const {
         return mSeqPlayer;
     }
 
-    SeqPlayer::SetupResult Setup(SeqTrackAllocator* pAllocator,
-                                 u32 allocTrackFlags, int voices,
-                                 NoteOnCallback* pCallback);
+    SeqPlayer::SetupResult Setup(SeqTrackAllocator *pAllocator,
+                                 u32 allocTrackFlags,
+                                 NoteOnCallback *pCallback);
 
-    void Prepare(const void* pBase, s32 seqOffset,
+    void Prepare(const void *pBase, s32 seqOffset,
                  SeqPlayer::OffsetType startType, int startOffset);
 
-    void Prepare(ut::FileStream* pStream, s32 seqOffset,
+    void Prepare(ut::FileStream *pStream, s32 seqOffset,
                  SeqPlayer::OffsetType startType, int startOffset);
 
     void Skip(SeqPlayer::OffsetType offsetType, int offset);
@@ -74,28 +77,30 @@ public:
     void SetTempoRatio(f32 tempo);
     void SetChannelPriority(int priority);
     void SetReleasePriorityFix(bool flag);
+    void SetSeqUserprocCallback(SeqPlayer::SeqUserprocCallback *callback,
+                                void *arg);
 
     void SetTrackVolume(u32 trackFlags, f32 volume);
     void SetTrackPan(u32 trackFlags, f32 pan);
-    void SetTrackPitch(u32 trackFlags, f32 pitch);
 
-    void SetTrackMute(u32 trackFlags, bool mute);   // CF 8026775C
-    bool ReadVariable(int idx, s16* pValue) const; // CF 80267784: -1 before the sequence started
+    void SetTrackMute(u32 trackFlags, bool mute); // CF 8026775C
+    bool ReadVariable(int idx, s16 *pValue)
+        const; // CF 80267784: -1 before the sequence started
     bool WriteVariable(int idx, s16 value);
-    static bool ReadGlobalVariable(int idx, s16* pValue); // CF 802677D4
+    static bool ReadGlobalVariable(int idx, s16 *pValue); // CF 802677D4
     static bool WriteGlobalVariable(int idx, s16 value);
     u32 GetTick() const; // CF 8026785C: 0 before the sequence started
 
-    void* GetFileStreamBuffer() {
+    void *GetFileStreamBuffer() {
         return mFileStreamBuffer;
     }
     s32 GetFileStreamBufferSize() {
         return sizeof(mFileStreamBuffer);
     }
 
-private:
-    typedef void (*SeqLoadCallback)(bool success, const void* pBase,
-                                    void* pCallbackArg);
+  private:
+    typedef void (*SeqLoadCallback)(bool success, const void *pBase,
+                                    void *pCallbackArg);
 
     /******************************************************************************
      * SeqLoadTask
@@ -107,25 +112,25 @@ private:
         virtual void Cancel();   // at 0x10
         virtual void OnCancel(); // at 0x14
 
-        ut::FileStream* fileStream; // at 0x10
-        void* buffer;               // at 0x14
+        ut::FileStream *fileStream; // at 0x10
+        void *buffer;               // at 0x14
         int bufferSize;             // at 0x18
         SeqLoadCallback callback;   // at 0x1C
-        SeqSound* callbackData;     // at 0x20
+        SeqSound *callbackData;     // at 0x20
     };
 
     static const int FILE_STREAM_BUFFER_SIZE = 512;
 
-private:
-    bool LoadData(SeqLoadCallback pCalllback, void* pCallbackArg);
+  private:
+    bool LoadData(SeqLoadCallback pCalllback, void *pCallbackArg);
 
-    static void NotifyLoadAsyncEndSeqData(bool success, const void* pBase,
-                                          void* pCallbackArg);
+    static void NotifyLoadAsyncEndSeqData(bool success, const void *pBase,
+                                          void *pCallbackArg);
 
-private:
+  private:
     SeqPlayer mSeqPlayer;                     // at 0x10C
-    SeqSoundHandle* mTempSpecialHandle;       // at 0x228
-    SoundInstanceManager<SeqSound>* mManager; // at 0x22C
+    SeqSoundHandle *mTempSpecialHandle;       // at 0x228
+    SoundInstanceManager<SeqSound> *mManager; // at 0x22C
 
     s32 mSeqOffset;                         // at 0x230
     SeqPlayer::OffsetType mStartOffsetType; // at 0x234
@@ -134,11 +139,10 @@ private:
     bool mLoadingFlag;           // at 0x23C
     volatile bool mPreparedFlag; // at 0x23D
 
-    ut::FileStream* mFileStream;                     // at 0x240
+    ut::FileStream *mFileStream;                     // at 0x240
     char mFileStreamBuffer[FILE_STREAM_BUFFER_SIZE]; // at 0x244
 
     SeqLoadTask mSeqLoadTask; // at 0x444
-    mutable OSMutex mMutex;   // at 0x468
 };
 
 } // namespace detail

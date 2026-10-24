@@ -341,22 +341,8 @@ bool ScnMdlSimple::GetScnMtxPos(math::MTX34* pMtx, ScnObjMtxType type,
             }
 
             case MTX_VIEW: {
-                if (id < GetResMdl().GetResMdlInfo().GetNumViewMtx()) {
-                    math::MTX34Copy(pMtx, &GetViewPosMtxArray()[id]);
-                    return true;
-                }
-
-                const math::MTX34* pWorld = GetMtxPtr(MTX_WORLD);
-                const math::MTX34* pView = GetMtxPtr(MTX_VIEW);
-
-                math::MTX34 work0;
-                math::MTX34 work1;
-
-                if (math::MTX34Inv(&work0, pWorld) != FALSE) {
-                    math::MTX34Mult(&work1, pView, &work0);
-                    math::MTX34Mult(pMtx, &work1, &mpWorldMtxArray[id]);
-                    return true;
-                }
+                math::MTX34Copy(pMtx, &GetViewPosMtxArray()[id]);
+                return true;
             }
 
             default: {

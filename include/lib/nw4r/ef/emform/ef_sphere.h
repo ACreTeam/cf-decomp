@@ -8,12 +8,13 @@ namespace nw4r {
 namespace ef {
 
 class EmitterFormSphere : public EmitterForm {
-public:
-    EmitterFormSphere() {}
+  public:
+    EmitterFormSphere() {
+    }
 
-    virtual void Emission(Emitter* pEmitter, ParticleManager* pManager,
-                          int count, u32 flags, f32* pParams, u16 life,
-                          f32 lifeRnd, const math::MTX34* pSpace); // at 0x8
+    virtual void Emission(Emitter *pEmitter, ParticleManager *pManager,
+                          int count, u32 flags, f32 *pParams, u16 life,
+                          f32 lifeRnd, const math::MTX34 *pSpace); // at 0x8
 };
 
 } // namespace ef

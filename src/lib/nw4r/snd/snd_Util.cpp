@@ -57,12 +57,12 @@ f32 Util::CalcPanRatio(f32 pan, const PanInfo& rInfo) {
     const f32* pTable = PanTableTable[rInfo.curve];
 
     f32 ratio = pTable[static_cast<int>(pan * PAN_TABLE_MAX + 0.5f)];
-    if (rInfo.centerZero) {
+    if (rInfo.centerZeroFlag) {
         ratio /= pTable[PAN_TABLE_CENTER];
     }
 
-    return rInfo.zeroClamp ? ut::Clamp(ratio, 0.0f, 1.0f)
-                           : ut::Clamp(ratio, 0.0f, 2.0f);
+    return rInfo.zeroClampFlag ? ut::Clamp(ratio, 0.0f, 1.0f)
+                               : ut::Clamp(ratio, 0.0f, 2.0f);
 }
 
 f32 Util::CalcSurroundPanRatio(f32 pan, const PanInfo& rInfo) {

@@ -1,60 +1,84 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_Bank.h>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_BankFile.h>
+#include <nw4r/snd/snd_Channel.h>
+#include <nw4r/snd/snd_NoteOnCallback.h>
+#include <nw4r/snd/snd_WaveFile.h>
+
+#include <nw4r/ut/ut_algorithm.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-Bank::Bank(const void* pBankBin)
-    : mBankReader(pBankBin), mWaveDataAddress(NULL) {}
-
-Bank::~Bank() {}
-
-Channel* Bank::NoteOn(const NoteOnInfo& rInfo) const {
-    InstInfo instInfo;
-    if (!mBankReader.ReadInstInfo(&instInfo, rInfo.prgNo, rInfo.key,
-                                  rInfo.velocity)) {
-        return NULL;
-    }
-
-    WaveData waveData;
-    if (!mBankReader.ReadWaveParam(&waveData, instInfo.waveIndex,
-                                   mWaveDataAddress)) {
-        return NULL;
-    }
-
-    Channel* pChannel = Channel::AllocChannel(
-        ut::Min<int>(waveData.numChannels, CHANNEL_MAX), rInfo.voiceOutCount,
-        rInfo.priority, rInfo.channelCallback, rInfo.channelCallbackData);
-
-    if (pChannel == NULL) {
-        return NULL;
-    }
-
-    pChannel->SetKey(rInfo.key);
-    pChannel->SetOriginalKey(instInfo.originalKey);
-
-    f32 initVolume = rInfo.velocity / 127.0f;
-    initVolume *= initVolume;
-    initVolume *= instInfo.volume / 127.0f;
-    pChannel->SetInitVolume(initVolume);
-
-    pChannel->SetTune(instInfo.tune);
-    pChannel->SetAttack(instInfo.attack);
-    pChannel->SetDecay(instInfo.decay);
-    pChannel->SetSustain(instInfo.sustain);
-    pChannel->SetRelease(instInfo.release);
-
-    f32 initPan = (instInfo.pan - 64) / 63.0f;
-    initPan += rInfo.initPan / 63.0f;
-    pChannel->SetInitPan(initPan);
-
-    pChannel->SetInitSurroundPan(0.0f);
-    pChannel->Start(waveData, rInfo.length, 0);
-
-    return pChannel;
+Bank::Bank(void const *bankData)
+    : mBankReader(bankData), mWaveDataAddress(nullptr) {
 }
 
+Bank::~Bank() {
+}
+
+Channel *Bank::NoteOn(NoteOnInfo const &noteOnInfo) const {
+    bool result;
+
+    InstInfo instInfo;
+    result = mBankReader.ReadInstInfo(&instInfo, noteOnInfo.prgNo,
+                                      noteOnInfo.key, noteOnInfo.velocity);
+    if (!result) {
+        return nullptr;
+    }
+
+    WaveData waveParam;
+    WaveData const *waveInfoAddress;
+    result = mBankReader.ReadWaveInfo(&waveParam, instInfo.waveDataLocation,
+                                      mWaveDataAddress, &waveInfoAddress);
+    if (!result) {
+        return nullptr;
+    }
+
+    int voiceChannelCount = ut::Min(waveParam.numChannels, CHANNEL_MAX);
+    Channel *ch_p = Channel::AllocChannel(
+        voiceChannelCount, noteOnInfo.voiceOutCount, noteOnInfo.priority,
+        noteOnInfo.channelCallback, noteOnInfo.channelCallbackData);
+    if (!ch_p) {
+        return nullptr;
+    }
+
+    ch_p->SetKey(noteOnInfo.key);
+    ch_p->SetOriginalKey(instInfo.originalKey);
+
+    f32 initVolume = noteOnInfo.velocity / 127.0f;
+    initVolume *= initVolume;
+    initVolume *= instInfo.volume / 127.0f;
+    ch_p->SetInitVolume(initVolume);
+
+    ch_p->SetTune(instInfo.tune);
+    ch_p->SetAttack(instInfo.attack);
+    ch_p->SetHold(instInfo.hold);
+    ch_p->SetDecay(instInfo.decay);
+    ch_p->SetSustain(instInfo.sustain);
+    ch_p->SetRelease(instInfo.release);
+
+    f32 initPan = (instInfo.pan - 64) / 63.0f;
+    initPan += noteOnInfo.initPan / 63.0f;
+    ch_p->SetInitPan(initPan);
+
+    ch_p->SetInitSurroundPan(0.0f);
+    ch_p->SetAlternateAssignId(instInfo.alternateAssign);
+    ch_p->SetReleaseIgnore(instInfo.noteOffType ==
+                           InstInfo::NOTE_OFF_TYPE_IGNORE);
+
+    if (instInfo.waveDataLocation.type ==
+        InstInfo::WaveDataLocation::WAVE_DATA_LOCATION_CALLBACK) {
+        ch_p->SetWaveDataLocationCallback(instInfo.waveDataLocation.callback,
+                                          waveInfoAddress);
+    }
+
+    ch_p->Start(waveParam, noteOnInfo.length, 0);
+
+    return ch_p;
+}
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

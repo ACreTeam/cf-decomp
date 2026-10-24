@@ -7,17 +7,13 @@ namespace detail {
 
 NW4R_UT_RTTI_DEF_DERIVED(SeqSound, BasicSound);
 
-SeqSound::SeqSound(SoundInstanceManager<SeqSound>* pManager, int priority,
-                    int ambientPriority)
+SeqSound::SeqSound(SoundInstanceManager<SeqSound> *pManager, int priority,
+                   int ambientPriority)
     // TODO(kiwi) Fakematch
     : BasicSound(priority, ambientPriority),
-      mTempSpecialHandle(reinterpret_cast<SeqSoundHandle*>(
+      mTempSpecialHandle(reinterpret_cast<SeqSoundHandle *>(
           mPreparedFlag = mLoadingFlag = false)),
-      mManager(pManager),
-      mStartOffset(0),
-      mFileStream(NULL) {
-
-    OSInitMutex(&mMutex);
+      mManager(pManager), mStartOffset(0), mFileStream(NULL) {
 }
 
 void SeqSound::InitParam() {
@@ -25,14 +21,15 @@ void SeqSound::InitParam() {
     mStartOffset = 0;
 }
 
-SeqPlayer::SetupResult SeqSound::Setup(SeqTrackAllocator* pAllocator,
-                                       u32 allocTrackFlags, int voices,
-                                       NoteOnCallback* pCallback) {
+SeqPlayer::SetupResult SeqSound::Setup(SeqTrackAllocator *pAllocator,
+                                       u32 allocTrackFlags,
+                                       NoteOnCallback *pCallback) {
     InitParam();
-    return mSeqPlayer.Setup(pAllocator, allocTrackFlags, voices, pCallback);
+    return mSeqPlayer.Setup(pAllocator, allocTrackFlags, GetVoiceOutCount(),
+                            pCallback);
 }
 
-void SeqSound::Prepare(const void* pBase, s32 seqOffset,
+void SeqSound::Prepare(const void *pBase, s32 seqOffset,
                        SeqPlayer::OffsetType startType, int startOffset) {
     mSeqPlayer.SetSeqData(pBase, seqOffset);
     Skip(startType, startOffset);
@@ -40,7 +37,7 @@ void SeqSound::Prepare(const void* pBase, s32 seqOffset,
     mPreparedFlag = true;
 }
 
-void SeqSound::Prepare(ut::FileStream* pStream, s32 seqOffset,
+void SeqSound::Prepare(ut::FileStream *pStream, s32 seqOffset,
                        SeqPlayer::OffsetType startType, int startOffset) {
     mFileStream = pStream;
     mSeqOffset = seqOffset;
@@ -52,9 +49,9 @@ void SeqSound::Prepare(ut::FileStream* pStream, s32 seqOffset,
     }
 }
 
-void SeqSound::NotifyLoadAsyncEndSeqData(bool success, const void* pBase,
-                                         void* pCallbackArg) {
-    SeqSound* p = static_cast<SeqSound*>(pCallbackArg);
+void SeqSound::NotifyLoadAsyncEndSeqData(bool success, const void *pBase,
+                                         void *pCallbackArg) {
+    SeqSound *p = static_cast<SeqSound *>(pCallbackArg);
 
     p->mLoadingFlag = false;
 
@@ -103,16 +100,40 @@ void SeqSound::SetReleasePriorityFix(bool flag) {
     mSeqPlayer.SetReleasePriorityFix(flag);
 }
 
+void SeqSound::SetSeqUserprocCallback(SeqPlayer::SeqUserprocCallback *callback,
+                                      void *arg) {
+    mSeqPlayer.SetSeqUserprocCallback(callback, arg);
+}
+
 void SeqSound::OnUpdatePlayerPriority() {
     mManager->UpdatePriority(this, BasicSound::CalcCurrentPlayerPriority());
+}
+
+void SeqSound::SetTrackMute(u32 trackFlags, bool mute) {
+    mSeqPlayer.SetTrackMute(trackFlags, mute ? MUTE_STOP : MUTE_OFF);
 }
 
 void SeqSound::SetTrackVolume(u32 trackFlags, f32 volume) {
     mSeqPlayer.SetTrackVolume(trackFlags, volume);
 }
 
-void SeqSound::SetTrackPitch(u32 trackFlags, f32 pitch) {
-    mSeqPlayer.SetTrackPitch(trackFlags, pitch);
+void SeqSound::SetTrackPan(u32 trackFlags, f32 pan) {
+    mSeqPlayer.SetTrackPan(trackFlags, pan);
+}
+
+bool SeqSound::ReadVariable(int idx, s16 *pValue) const {
+    if (!GetStartedFlag()) {
+        *pValue = -1;
+    } else {
+        *pValue = mSeqPlayer.GetLocalVariable(idx);
+    }
+    return true;
+}
+
+// CF 802677D4
+bool SeqSound::ReadGlobalVariable(int idx, s16 *pValue) {
+    *pValue = SeqPlayer::GetGlobalVariable(idx);
+    return true;
 }
 
 bool SeqSound::WriteVariable(int idx, s16 value) {
@@ -120,15 +141,16 @@ bool SeqSound::WriteVariable(int idx, s16 value) {
     return true;
 }
 
-// CF 802677D4
-bool SeqSound::ReadGlobalVariable(int idx, s16* pValue) {
-    *pValue = SeqPlayer::GetGlobalVariable(idx);
-    return true;
-}
-
 bool SeqSound::WriteGlobalVariable(int idx, s16 value) {
     SeqPlayer::SetGlobalVariable(idx, value);
     return true;
+}
+
+u32 SeqSound::GetTick() const {
+    if (GetStartedFlag() == false) {
+        return 0;
+    }
+    return mSeqPlayer.GetTick();
 }
 
 bool SeqSound::IsAttachedTempSpecialHandle() {
@@ -139,16 +161,17 @@ void SeqSound::DetachTempSpecialHandle() {
     mTempSpecialHandle->DetachSound();
 }
 
-bool SeqSound::LoadData(SeqLoadCallback pCalllback, void* pCallbackArg) {
+bool SeqSound::LoadData(SeqLoadCallback pCalllback, void *pCallbackArg) {
     mLoadingFlag = true;
 
-    PlayerHeap* pHeap = static_cast<BasicSound*>(pCallbackArg)->GetPlayerHeap();
+    PlayerHeap *pHeap =
+        static_cast<BasicSound *>(pCallbackArg)->GetPlayerHeap();
     if (pHeap == NULL) {
         return false;
     }
 
     u32 size = mFileStream->GetSize();
-    void* pData = pHeap->Alloc(size);
+    void *pData = pHeap->Alloc(size);
 
     if (pData == NULL) {
         return false;
@@ -165,7 +188,8 @@ bool SeqSound::LoadData(SeqLoadCallback pCalllback, void* pCallbackArg) {
 }
 
 SeqSound::SeqLoadTask::SeqLoadTask()
-    : fileStream(NULL), buffer(NULL), callback(NULL), callbackData(NULL) {}
+    : fileStream(NULL), buffer(NULL), callback(NULL), callbackData(NULL) {
+}
 
 void SeqSound::SeqLoadTask::Execute() {
     fileStream->Seek(0, ut::FileStream::SEEK_ORIGIN_BEG);
@@ -183,7 +207,7 @@ void SeqSound::SeqLoadTask::Execute() {
         }
     } else {
         SeqFileReader reader(buffer);
-        const void* pBase = reader.GetBaseAddress();
+        const void *pBase = reader.GetBaseAddress();
 
         if (callback != NULL) {
             callback(true, pBase, callbackData);

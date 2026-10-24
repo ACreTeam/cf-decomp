@@ -278,7 +278,7 @@ BOOL daSTR_c::windowLight_c::updateColor() {
                 u8 a = (int)dSTR::calcLerp(value, l_offColor.a, color.a);
                 nw4r::ut::Color kColor;
                 kColor.Set(r, g, b, a);
-                tevColor.GXSetTevKColor(GX_KCOLOR1, kColor);
+                tevColor.GXSetTevColor(GX_TEVREG0, kColor);
                 tevColor.DCStore(false);
                 result = TRUE;
             }
@@ -351,7 +351,7 @@ BOOL daSTR_c::neonLight_c::updateColor() {
                 u8 a = (int)dSTR::calcLerp(value, l_offColor.a, color.a);
                 nw4r::ut::Color kColor;
                 kColor.Set(r, g, b, a);
-                tevColor.GXSetTevKColor(GX_KCOLOR1, kColor);
+                tevColor.GXSetTevColor(GX_TEVREG0, kColor);
                 tevColor.DCStore(false);
                 result = TRUE;
             }
@@ -426,7 +426,7 @@ BOOL daSTR_c::etcLight_c::updateColor() {
                 u8 a = (int)dSTR::calcLerp(value, l_offColor.a, color.a);
                 nw4r::ut::Color kColor;
                 kColor.Set(r, g, b, a);
-                tevColor.GXSetTevKColor(GX_KCOLOR1, kColor);
+                tevColor.GXSetTevColor(GX_TEVREG0, kColor);
                 tevColor.DCStore(false);
                 result = TRUE;
             }
@@ -562,7 +562,7 @@ void daSTR_c::drawMdl() {
                 access.GetResMatTevColor(false);
             nw4r::ut::Color kColor;
             kColor.Set(0x20, 0x20, 0x30, alpha);
-            tevColor.GXSetTevKColor(GX_KCOLOR1, kColor);
+            tevColor.GXSetTevColor(GX_TEVREG0, kColor);
             tevColor.DCStore(false);
             if (0.0f != dSTR::getHostIO()->_38) {
                 mMtx_c shadowMtx;

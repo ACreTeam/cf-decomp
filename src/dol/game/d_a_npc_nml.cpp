@@ -905,8 +905,8 @@ void dAcNpcNml_c::clothMng_c::swapCloth(nw4r::g3d::ResMdl mdl) {
     static const char cTexName[] = "cloth";  // 8074FF60
     static const char cPlttName[] = "cloth"; // 8074FF68
     if (mdl.IsValid()) {
-        mdl.ReleasePlttByName(cPlttName);
-        mdl.ReleaseTexByName(cTexName);
+        mdl.ReleasePltt(cPlttName);
+        mdl.ReleaseTex(cTexName);
         bindCloth(mdl);
     }
 }

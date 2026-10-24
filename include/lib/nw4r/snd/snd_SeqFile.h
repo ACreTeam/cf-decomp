@@ -1,57 +1,72 @@
 #ifndef NW4R_SND_SEQ_FILE_H
 #define NW4R_SND_SEQ_FILE_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/ut.h>
+#include <types.h>
+
+#include <nw4r/snd/snd_Util.h>
+
+#include <nw4r/ut/ut_binaryFileFormat.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
+struct SeqFile {
+    struct Header {
+        ut::BinaryFileHeader fileHeader; // size 0x10, offset 0x00
+        u32 dataBlockOffset;             // size 0x04, offset 0x10
+        u32 dataBlockSize;               // size 0x04, offset 0x14
+        u32 labelBlockOffset;            // size 0x04, offset 0x18
+        u32 labelBlockSize;              // size 0x04, offset 0x1c
+    }; // size 0x20
 
-/******************************************************************************
- *
- * RSEQ binary layout
- *
- ******************************************************************************/
-namespace SeqFile {
+    struct LabelInfo {
+        u32 offset;   // size 0x04, offset 0x00
+        u32 nameLen;  // size 0x04, offset 0x04
+        char name[1]; // size 0x01, offset 0x08
+                      /* 3 bytes padding */
+    }; // size 0x0c
 
-struct Header {
-    ut::BinaryFileHeader fileHeader; // at 0x0
-    u32 dataBlockOffset;             // at 0x10
-    u32 dataBlockSize;               // at 0x14
-    u32 labelBlockOffset;            // at 0x18
-    u32 labelBlockSize;              // at 0x1C
+    static u32 const SIGNATURE_LABEL_BLOCK;
+
+    struct LabelBlock {
+        ut::BinaryBlockHeader blockHeader; // size 0x08, offset 0x00
+        Util::Table<u32> labelInfoTable;   // size 0x08, offset 0x08
+    }; // size 0x10
+
+    static u32 const SIGNATURE_DATA_BLOCK = NW4R_FOUR_BYTE('D', 'A', 'T', 'A');
+
+    struct DataBlock {
+        ut::BinaryBlockHeader blockHeader; // size 0x08, offset 0x00
+        u32 baseOffset;                    // size 0x04, offset 0x08
+    }; // size 0x0c
+
+    static u32 const SIGNATURE_FILE = NW4R_FOUR_BYTE('R', 'S', 'E', 'Q');
+    static int const FILE_VERSION = NW4R_FILE_VERSION(1, 2);
 };
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
-struct DataBlock {
-    ut::BinaryBlockHeader blockHeader; // at 0x0
-    u32 baseOffset;                    // at 0x8
-};
-
-} // namespace SeqFile
-
-/******************************************************************************
- *
- * SeqFileReader
- *
- ******************************************************************************/
+namespace nw4r {
+namespace snd {
+namespace detail {
 class SeqFileReader {
-public:
-    static const u32 SIGNATURE = FOURCC('R', 'S', 'E', 'Q');
-    static const int VERSION = NW4R_VERSION(1, 0);
+  public:
+    SeqFileReader(void const *seqData);
 
-public:
-    explicit SeqFileReader(const void* pSeqBin);
+    void const *GetBaseAddress() const;
 
-    bool IsValidFileHeader(const void* pSeqBin);
+    bool IsValidFileHeader(void const *seqData);
 
-    const void* GetBaseAddress() const;
+    bool ReadOffsetByLabel(char const *labelName, u32 *offsetPtr) const;
 
-private:
-    const SeqFile::Header* mHeader;       // at 0x0
-    const SeqFile::DataBlock* mDataBlock; // at 0x4
-};
+  public:
+    static u16 const SUPPORTED_FILE_VERSION = NW4R_FILE_VERSION(1, 0);
 
+  private:
+    SeqFile::Header const *mHeader;       // size 0x04, offset 0x00
+    SeqFile::DataBlock const *mDataBlock; // size 0x04, offset 0x04
+}; // size 0x08
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

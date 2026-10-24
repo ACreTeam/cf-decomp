@@ -9,7 +9,7 @@ namespace nw4r {
 namespace ef {
 
 struct CreationQueue {
-private:
+  private:
     struct CreationQueueData {
         enum Type { TYPE_PARTICLE, TYPE_EMITTER };
 
@@ -17,28 +17,32 @@ private:
         u8 mFlags;                             // at 0x1
         u16 mCalcRemain;                       // at 0x2
         EmitterInheritSetting mInheritSetting; // at 0x4
-        Particle* mReferenceParticle;          // at 0xC
-        EmitterResource* mEmitterResource;     // at 0x10
+        Particle *mReferenceParticle;          // at 0x10
+        EmitterResource *mEmitterResource;     // at 0x14
+        math::VEC3 mPosition;                  // at 0x18
+        math::VEC3 mVelocity;                  // at 0x24
     };
 
-private:
+  private:
     static const int QUEUE_SIZE =
         MAX(NW4R_EF_MAX_PARTICLE, NW4R_EF_MAX_EMITTER);
 
-private:
+  private:
     int mNumItem;                             // at 0x0
     CreationQueueData mQueueData[QUEUE_SIZE]; // at 0x4
 
-public:
+  public:
     CreationQueue();
 
-    void AddParticleCreation(const EmitterInheritSetting* pSetting,
-                             Particle* pParticle, EmitterResource* pResource,
-                             u16 calcRemain);
+    void AddParticleCreation(const EmitterInheritSetting *setting,
+                             Particle *caller, EmitterResource *eh,
+                             u16 calcRemain, const math::VEC3 *position = NULL,
+                             const math::VEC3 *velocity = NULL);
 
-    void AddEmitterCreation(const EmitterInheritSetting* pSetting,
-                            Particle* pParticle, EmitterResource* pResource,
-                            u16 calcRemain);
+    void AddEmitterCreation(const EmitterInheritSetting *setting,
+                            Particle *caller, EmitterResource *eh,
+                            u16 calcRemain, const math::VEC3 *position = NULL,
+                            const math::VEC3 *velocity = NULL);
 
     void Execute();
 

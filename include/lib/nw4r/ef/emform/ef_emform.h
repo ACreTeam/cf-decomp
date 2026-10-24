@@ -19,8 +19,8 @@ enum EmitFormType {
 };
 
 class EmitFormBuilder {
-public:
-    virtual EmitterForm* Create(EmitFormType type); // at 0x8
+  public:
+    virtual EmitterForm *Create(EmitFormType type); // at 0x8
 };
 
 } // namespace ef

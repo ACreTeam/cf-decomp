@@ -142,5 +142,5 @@ void dFishMusFlatfish_c::fadeAlpha(int step, int target) {
         mAlpha = target;
     }
     GXColor color = {0, 0, 0, (u8)mAlpha};
-    mMdl.setTevKColor(matID, GX_KCOLOR1, color, false);
+    mMdl.setTevColor(matID, GX_TEVREG0, color, false);
 }

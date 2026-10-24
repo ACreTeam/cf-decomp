@@ -1,12 +1,11 @@
-#include <nw4r/snd.h>
-
-#include <revolution/mem.h>
+#include <nw4r/snd/snd_FrameHeap.h>
+#include <new>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-FrameHeap::FrameHeap() : mHandle(NULL) {}
+FrameHeap::FrameHeap() : mHandle(NULL) {
+}
 
 FrameHeap::~FrameHeap() {
     if (IsValid()) {
@@ -14,12 +13,12 @@ FrameHeap::~FrameHeap() {
     }
 }
 
-bool FrameHeap::Create(void* pBase, u32 size) {
+bool FrameHeap::Create(void *pBase, u32 size) {
     if (IsValid()) {
         Destroy();
     }
 
-    void* pEnd = static_cast<u8*>(pBase) + size;
+    void *pEnd = static_cast<u8 *>(pBase) + size;
     pBase = ut::RoundUp(pBase, 4);
     if (pBase > pEnd) {
         return false;
@@ -56,18 +55,20 @@ void FrameHeap::Clear() {
     NewSection();
 }
 
-void* FrameHeap::Alloc(u32 size, FreeCallback pCallback, void* pCallbackArg) {
-    void* pBuffer = MEMAllocFromFrmHeapEx(
+void *FrameHeap::Alloc(u32 size, FreeCallback pCallback, void *pCallbackArg) {
+    void *pBuffer = MEMAllocFromFrmHeapEx(
         mHandle, BLOCK_BUFFER_SIZE + ut::RoundUp(size, HEAP_ALIGN), HEAP_ALIGN);
 
     if (pBuffer == NULL) {
         return NULL;
     }
 
-    Block* pBlock = new (pBuffer) Block(size, pCallback, pCallbackArg);
+    void *pBuffer2 = ut::AddOffsetToPtr(pBuffer, BLOCK_BUFFER_SIZE);
+    Block *pBlock =
+        new (pBuffer) Block(pBuffer2, size, pCallback, pCallbackArg);
     mSectionList.GetBack().AppendBlock(pBlock);
 
-    return pBlock->GetBufferAddr();
+    return pBuffer2;
 }
 
 int FrameHeap::SaveState() {
@@ -90,7 +91,7 @@ void FrameHeap::LoadState(int id) {
     }
 
     while (id < static_cast<int>(mSectionList.GetSize())) {
-        Section& rSection = mSectionList.GetBack();
+        Section &rSection = mSectionList.GetBack();
         rSection.~Section();
         mSectionList.Erase(&rSection);
     }
@@ -107,15 +108,15 @@ int FrameHeap::GetCurrentLevel() const {
 
 u32 FrameHeap::GetFreeSize() const {
     u32 freeSize = MEMGetAllocatableSizeForFrmHeapEx(mHandle, HEAP_ALIGN);
-    if (freeSize < BLOCK_BUFFER_SIZE) {
+    if (freeSize < sizeof(Block)) {
         return 0;
     }
 
-    return ut::RoundDown(freeSize - BLOCK_BUFFER_SIZE, HEAP_ALIGN);
+    return ut::RoundDown(freeSize - sizeof(Block), HEAP_ALIGN);
 }
 
 bool FrameHeap::NewSection() {
-    void* pSection = MEMAllocFromFrmHeap(mHandle, sizeof(Section));
+    void *pSection = MEMAllocFromFrmHeap(mHandle, sizeof(Section));
     if (pSection == NULL) {
         return false;
     }
@@ -126,12 +127,11 @@ bool FrameHeap::NewSection() {
 
 void FrameHeap::ClearSection() {
     while (!mSectionList.IsEmpty()) {
-        Section& rSection = mSectionList.GetBack();
+        Section &rSection = mSectionList.GetBack();
         rSection.~Section();
         mSectionList.Erase(&rSection);
     }
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

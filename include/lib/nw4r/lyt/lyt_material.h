@@ -64,7 +64,8 @@ struct Material {
  ******************************************************************************/
 class Material {
 public:
-    Material(const res::Material* pRes, const ResBlockSet& rBlockSet);
+    Material();
+    Material(const res::Material* pRes, const ResBlockSet& resBlockSet);
     virtual ~Material(); // at 0x8
 
     virtual bool SetupGX(bool modulate, u8 alpha); // at 0xC
@@ -150,35 +151,29 @@ public:
     const TexMap* GetTexMapAry() const;
     TexMap* GetTexMapAry();
 
-    const TexSRT* GetTexSRTAry() const;
     TexSRT* GetTexSRTAry();
 
-    const TexCoordGen* GetTexCoordGenAry() const;
     TexCoordGen* GetTexCoordGenAry();
 
-    const ChanCtrl* GetChanCtrlAry() const;
     ChanCtrl* GetChanCtrlAry();
 
-    const ut::Color* GetMatColAry() const;
     ut::Color* GetMatColAry();
 
-    const TevSwapMode* GetTevSwapAry() const;
     TevSwapMode* GetTevSwapAry();
 
-    const AlphaCompare* GetAlphaComparePtr() const;
     AlphaCompare* GetAlphaComparePtr();
 
-    const BlendMode* GetBlendModePtr() const;
     BlendMode* GetBlendModePtr();
 
-    const IndirectStage* GetIndirectStageAry() const;
     IndirectStage* GetIndirectStageAry();
 
-    const TexSRT* GetIndTexSRTAry() const;
     TexSRT* GetIndTexSRTAry();
 
-    const TevStage* GetTevStageAry() const;
     TevStage* GetTevStageAry();
+
+    TexMap* GetTexturePtr(u8 texMapIdx) {
+        return &GetTexMapAry()[texMapIdx];
+    }
 
     const TexMap& GetTexture(u8 idx) const {
         return GetTexMapAry()[idx];
@@ -189,11 +184,8 @@ public:
     void SetTexture(u8 idx, const TexMap& rTexMap) {
         GetTexMapAry()[idx].Set(rTexMap);
     }
-    void SetTextureNoWrap(u8 idx, const TexMap& rTexMap) {
-        GetTexMapAry()[idx].SetNoWrap(rTexMap);
-    }
 
-    const TexSRT& GetTexSRT(ulong idx) const {
+    const TexSRT& GetTexSRT(ulong idx) {
         return GetTexSRTAry()[idx];
     }
     void SetTexSRT(const TexSRT& rTexSRT, ulong idx) {
@@ -209,7 +201,31 @@ public:
         GetTexCoordGenAry()[idx] = gen;
     }
 
-    ut::Color GetMatColor() const {
+    void SetTevStage(ulong idx, const TevStage& tevStage) {
+        GetTevStageAry()[idx] = tevStage;
+    }
+
+    void SetTevSwapMode(ulong idx, const TevSwapMode& tevSwapMode) {
+        GetTevSwapAry()[idx] = tevSwapMode;
+    }
+
+    void SetIndStage(ulong idx, const IndirectStage& indStage) {
+        GetIndirectStageAry()[idx] = indStage;
+    }
+
+    void SetChanCtrl(const ChanCtrl& chanCtrl) {
+        GetChanCtrlAry()[0] = chanCtrl;
+    }
+
+    void SetAlphaCompare(const AlphaCompare& alphaComp) {
+        *GetAlphaComparePtr() = alphaComp;
+    }
+
+    void SetBlendMode(const BlendMode& blendMode) {
+        *GetBlendModePtr() = blendMode;
+    }
+
+    ut::Color GetMatColor() {
         return GetMatColAry()[0];
     }
 

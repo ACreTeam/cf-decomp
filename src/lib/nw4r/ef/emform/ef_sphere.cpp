@@ -5,9 +5,9 @@
 namespace nw4r {
 namespace ef {
 
-void EmitterFormSphere::Emission(Emitter* pEmitter, ParticleManager* pManager,
-                                 int count, u32 flags, f32* pParams, u16 life,
-                                 f32 lifeRnd, const math::MTX34* pSpace) {
+void EmitterFormSphere::Emission(Emitter *pEmitter, ParticleManager *pManager,
+                                 int count, u32 flags, f32 *pParams, u16 life,
+                                 f32 lifeRnd, const math::MTX34 *pSpace) {
 
     if (count < 1) {
         return;
@@ -99,19 +99,15 @@ void EmitterFormSphere::Emission(Emitter* pEmitter, ParticleManager* pManager,
             math::VEC3 normal;
             math::VEC3 fromYAxis;
 
-            fromYAxis.x = -std::sinf(angle);
             fromYAxis.y = 0.0f;
-            fromYAxis.z = std::cosf(angle);
+            PSSinCosRad(&fromYAxis.x, &fromYAxis.z, angle);
+            fromYAxis.x *= -1.0f;
+            _PSSinCosRad(&pos.y, x);
+            pos.x = sizeX * radius * pos.z * fromYAxis.x;
+            pos.y = -sizeY * radius * pos.y;
+            pos.z = pos.z * (fromYAxis.z * (sizeZ * radius));
 
-            pos.x = sizeX * radius * std::cosf(x) * fromYAxis.x;
-            pos.y = sizeY * radius * -std::sinf(x);
-            pos.z = sizeZ * radius * std::cosf(x) * fromYAxis.z;
-
-            if (pos.x != 0.0f || pos.y != 0.0f || pos.z != 0.0f) {
-                math::VEC3Normalize(&normal, &pos);
-            } else {
-                normal.x = normal.y = normal.z = 0.0f;
-            }
+            Normalize(&normal, &pos);
 
             if (std::cosf(x) < 0.0f) {
                 fromYAxis.x = -fromYAxis.x;
@@ -157,23 +153,20 @@ void EmitterFormSphere::Emission(Emitter* pEmitter, ParticleManager* pManager,
             f32 x = pEmitter->mRandom.RandFloat() * NW4R_MATH_PI +
                     (NW4R_MATH_PI / 2);
 
-            pos.x = sizeX * dist * -std::cosf(x) * std::sinf(angle);
-            pos.y = sizeY * dist * -std::sinf(x);
-            pos.z = sizeZ * dist * std::cosf(x) * std::cosf(angle);
+            f32 sx, cx, sa, ca;
+            PSSinCosRad(&sx, &cx, x);
+            PSSinCosRad(&sa, &ca, angle);
+            pos.x = sizeX * dist * -cx * sa;
+            pos.y = sizeY * dist * -sx;
+            pos.z = sizeZ * dist * cx * ca;
 
             math::VEC3 normal;
-            if (pos.x != 0.0f || pos.y != 0.0f || pos.z != 0.0f) {
-                math::VEC3Normalize(&normal, &pos);
-            } else {
-                normal.x = normal.y = normal.z = 0.0f;
-            }
+            Normalize(&normal, &pos);
 
             math::VEC3 fromYAxis = pos;
             fromYAxis.y = 0.0f;
 
-            if (fromYAxis.x != 0.0f || fromYAxis.z != 0.0f) {
-                math::VEC3Normalize(&fromYAxis, &fromYAxis);
-            }
+            Normalize(&fromYAxis, &fromYAxis);
 
             CalcVelocity(&vel, pEmitter, pos, normal, normal, fromYAxis);
 

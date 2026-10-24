@@ -6,6 +6,10 @@
 
 namespace nw4r {
 namespace lyt {
+
+// Forward declarations
+class ResourceAccessor;
+
 namespace res {
 
 /******************************************************************************
@@ -64,6 +68,12 @@ struct ExtUserData {
     u16 numEntries; // at 0x08
     u8 type;        // at 0x0A
     u8 padding;     // at 0x0B
+};
+
+struct ExtUserDataList {
+    DataBlockHeader blockHeader; // at 0x0
+    u16 num;                     // at 0x8
+    u8 padding[2];               // at 0xA
 };
 
 /******************************************************************************
@@ -125,9 +135,25 @@ struct MaterialList {
  *
  ******************************************************************************/
 struct TexMap {
-    u16 texIdx; // at 0x0
-    u8 wrapS;   // at 0x2
-    u8 wrapT;   // at 0x3
+    GXTexWrapMode GetWarpModeS() const {
+        return static_cast<GXTexWrapMode>(detail::GetBits<u8>(wrapSflt, 0, 2));
+    }
+    GXTexWrapMode GetWarpModeT() const {
+        return static_cast<GXTexWrapMode>(detail::GetBits<u8>(wrapTflt, 0, 2));
+    }
+
+    GXTexFilter GetMinFilter() const {
+        const u8 bitData = detail::GetBits<u8>(wrapSflt, 2, 3);
+        return static_cast<GXTexFilter>((bitData + 1) & 7);
+    }
+    GXTexFilter GetMagFilter() const {
+        const u8 bitData = detail::GetBits<u8>(wrapTflt, 2, 1);
+        return static_cast<GXTexFilter>((bitData + 1) & 1);
+    }
+
+    u16 texIdx;  // at 0x0
+    u8 wrapSflt; // at 0x2
+    u8 wrapTflt; // at 0x3
 };
 
 } // namespace res

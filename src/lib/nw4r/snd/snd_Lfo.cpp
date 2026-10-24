@@ -1,9 +1,12 @@
-#include <nw4r/snd.h>
+#include <nw4r/snd/snd_Lfo.h>
+
+#include <types.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
 void LfoParam::Init() {
     depth = 0.0f;
     range = 1;
@@ -27,29 +30,8 @@ void Lfo::Update(int msec) {
         mDelayCounter = mParam.delay;
     }
 
-    mCounter += mParam.speed * msec / 1000.0f;
+    mCounter += mParam.speed * msec / 1000;
     mCounter -= static_cast<int>(mCounter);
-}
-
-s8 Lfo::GetSinIdx(int idx) {
-    static const u8 sinTable[TABLE_SIZE + 1] = {
-        0,   6,   12,  19,  25,  31,  37,  43,  49,  54,  60,
-        65,  71,  76,  81,  85,  90,  94,  98,  102, 106, 109,
-        112, 115, 117, 120, 122, 123, 125, 126, 126, 127, 127};
-
-    if (idx < TABLE_SIZE) {
-        return sinTable[idx];
-    }
-
-    if (idx < TABLE_SIZE * 2) {
-        return sinTable[TABLE_SIZE - (idx - TABLE_SIZE)];
-    }
-
-    if (idx < TABLE_SIZE * 3) {
-        return -sinTable[idx - TABLE_SIZE * 2];
-    }
-
-    return -sinTable[TABLE_SIZE - (idx - TABLE_SIZE * 3)];
 }
 
 f32 Lfo::GetValue() const {
@@ -62,7 +44,7 @@ f32 Lfo::GetValue() const {
     }
 
     f32 value = GetSinIdx(4 * (TABLE_SIZE * mCounter)) /
-                static_cast<float>(TABLE_SIZE * 4 - 1);
+                static_cast<f32>(TABLE_SIZE * 4 - 1);
 
     value *= mParam.depth;
     value *= mParam.range;
@@ -70,6 +52,24 @@ f32 Lfo::GetValue() const {
     return value;
 }
 
+s8 Lfo::GetSinIdx(int index) {
+    static s8 const sinTable[TABLE_SIZE + 1] = {
+        0,   6,   12,  19,  25,  31,  37,  43,  49,  54,  60,
+        65,  71,  76,  81,  85,  90,  94,  98,  102, 106, 109,
+        112, 115, 117, 120, 122, 123, 125, 126, 126, 127, 127};
+
+    NW4RAssertHeaderClampedLValue_Line(123, index, 0, 128);
+
+    if (index < TABLE_SIZE) {
+        return sinTable[index];
+    } else if (index < TABLE_SIZE * 2) {
+        return sinTable[TABLE_SIZE - (index - TABLE_SIZE)];
+    } else if (index < TABLE_SIZE * 3) {
+        return -sinTable[index - TABLE_SIZE * 2];
+    } else {
+        return -sinTable[TABLE_SIZE - (index - TABLE_SIZE * 3)];
+    }
+}
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

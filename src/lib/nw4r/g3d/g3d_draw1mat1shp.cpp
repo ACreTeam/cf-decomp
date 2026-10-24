@@ -1,23 +1,20 @@
 #include <nw4r/g3d.h>
 #include <nw4r/ut.h>
 
+#include <cmath>
+
 #include <revolution/BASE.h>
 #include <revolution/gx.h>
 
 namespace nw4r {
 namespace g3d {
 
-void Draw1Mat1ShpDirectly(ResMat mat, ResShp shp, const math::MTX34* pViewPos,
-                          const math::MTX34* pViewNrm, u32 ctrl,
-                          Draw1Mat1ShpSwap* pSwap,
-                          G3DState::IndMtxOp* pIndMtxOp) {
+namespace {
 
-    if (!(ctrl & DRAW1MAT1SHP_CTRL_NOPPCSYNC)) {
-        ut::LC::QueueWait(0);
-        PPCSync();
-    }
+void LoadMaterial(ResMat mat, u32 ctrl, Draw1Mat1ShpSwap* pSwap,
+                  G3DState::IndMtxOp* pIndMtxOp, bool bIgnoreMaterial) {
 
-    if (mat.IsValid()) {
+    if (!bIgnoreMaterial) {
         ResMatMisc misc;
 
         if (pSwap == NULL || !pSwap->misc.IsValid()) {
@@ -132,49 +129,230 @@ void Draw1Mat1ShpDirectly(ResMat mat, ResShp shp, const math::MTX34* pViewPos,
                                                *pIndMtxOp);
         }
     }
+}
+
+} // namespace
+
+void Draw1Mat1ShpDirectly(ResMat mat, ResShp shp, const math::MTX34* pViewPos,
+                          const math::MTX34* pViewNrm, u32 ctrl,
+                          Draw1Mat1ShpSwap* pSwap,
+                          G3DState::IndMtxOp* pIndMtxOp) {
+
+    if (!(ctrl & DRAW1MAT1SHP_CTRL_NOPPCSYNC)) {
+        ut::LC::QueueWait(0);
+        PPCSync();
+    }
+
+    bool bIgnoreMaterial = false;
+    bool bFur = false;
+    ResMatFur fur(NULL);
+
+    if (mat.IsValid()) {
+        if (ctrl & DRAW1MAT1SHP_CTRL_IGNORE_MATERIAL) {
+            bIgnoreMaterial = true;
+        }
+
+        fur = mat.GetResMatFur();
+        if (fur.IsValid()) {
+            bFur = true;
+        }
+    } else {
+        bIgnoreMaterial = true;
+    }
+
+    LoadMaterial(mat, ctrl, pSwap, pIndMtxOp, bIgnoreMaterial);
 
     if (shp.IsValid() && shp.IsVisible()) {
-        if (!(ctrl & DRAW1MAT1SHP_CTRL_NOSWAPSHP)) {
-            G3DState::LoadResShpPrePrimitive(shp);
+        if (bFur) {
+            f32 rateAlpha;
+            f32 rateSpec;
+            const f32 alphaCurve = fur.ref().alphaCurve;
+            const f32 specCurve = fur.ref().specCurve;
 
-            if (pSwap != NULL) {
-                if (pSwap->vtxPosTable != NULL) {
-                    ResVtxPos(pSwap->vtxPosTable[shp.ref().idVtxPosition])
-                        .SetArray();
+            GXColor rootColor;
+            GXColor tipColor;
+            GXColor kcolor2;
+            u8 brightness;
+
+            GXColorSrc matSrc[4];
+            GXAttnFn attnFunc[4];
+            GXColor matColor[2];
+
+            bool bIndTexMtx[3];
+            math::MTX34 itm[3];
+            s8 scale_exp[3];
+
+            const GXChannelID targetChan[4] = {GX_COLOR0, GX_ALPHA0,
+                                               GX_COLOR1, GX_ALPHA1};
+
+            {
+                ResMatTevColor tevColor =
+                    (!pSwap || !pSwap->tevColor.IsValid())
+                        ? mat.GetResMatTevColor()
+                        : pSwap->tevColor;
+
+                tevColor.GXGetTevKColor(GX_KCOLOR0, &rootColor);
+                tevColor.GXGetTevKColor(GX_KCOLOR1, &tipColor);
+                tevColor.GXGetTevKColor(GX_KCOLOR2, &kcolor2);
+
+                brightness = kcolor2.g;
+
+                ResMatChan chan = (!pSwap || !pSwap->chan.IsValid())
+                                      ? mat.GetResMatChan()
+                                      : pSwap->chan;
+
+                chan.GXGetChanMatColor(GX_COLOR0, &matColor[0]);
+                chan.GXGetChanMatColor(GX_COLOR1, &matColor[1]);
+
+                for (u8 chanIdx = 0; chanIdx < 4; chanIdx++) {
+                    chan.GXGetChanCtrl(targetChan[chanIdx], NULL, NULL,
+                                       &matSrc[chanIdx], NULL, NULL,
+                                       &attnFunc[chanIdx]);
                 }
 
-                if (pSwap->vtxNrmTable != NULL) {
-                    int nrmID = shp.ref().idVtxNormal;
+                ResMatMisc misc = (!pSwap || !pSwap->misc.IsValid())
+                                      ? mat.GetResMatMisc()
+                                      : pSwap->misc;
 
-                    if (nrmID >= 0) {
-                        ResVtxNrm(pSwap->vtxNrmTable[nrmID]).SetArray();
-                    }
-                }
+                ResMatIndMtxAndScale indMtxAndScale =
+                    (!pSwap || !pSwap->indMtxAndScale.IsValid())
+                        ? mat.GetResMatIndMtxAndScale()
+                        : pSwap->indMtxAndScale;
 
-                if (pSwap->vtxClrTable != NULL) {
-                    int clrID = shp.ref().idVtxColor[0];
+                for (u32 itmIdx = 0; itmIdx < 3; itmIdx++) {
+                    ResMatMiscData::IndirectMethod method;
+                    s8 ref_light;
+                    GXIndTexMtxID id = static_cast<GXIndTexMtxID>(itmIdx + 1);
 
-                    if (clrID >= 0) {
-                        ResVtxClr(pSwap->vtxClrTable[clrID])
-                            .SetArray(GX_VA_CLR0);
-                    }
+                    misc.GetIndirectTexMtxCalcMethod(id, &method, &ref_light);
 
-                    clrID = shp.ref().idVtxColor[1];
-
-                    if (clrID >= 0) {
-                        ResVtxClr(pSwap->vtxClrTable[clrID])
-                            .SetArray(GX_VA_CLR1);
+                    if (method == ResMatMiscData::FUR) {
+                        bIndTexMtx[itmIdx] = true;
+                        indMtxAndScale.GXGetIndTexMtx(id, &itm[itmIdx],
+                                                      &scale_exp[itmIdx]);
+                    } else {
+                        bIndTexMtx[itmIdx] = false;
                     }
                 }
             }
-        }
 
-        if (ctrl & DRAW1MAT1SHP_CTRL_CULL_FRONT) {
-            fifo::GDSetCullMode(GX_CULL_FRONT);
-            G3DState::Invalidate(G3DState::INVALIDATE_SHP);
-        }
+            G3DState::LoadResShpPrePrimitive(shp);
 
-        G3DState::LoadResShpPrimitive(shp, pViewPos, pViewNrm);
+            if (ctrl & DRAW1MAT1SHP_CTRL_CULL_FRONT) {
+                fifo::GDSetCullMode(GX_CULL_FRONT);
+                G3DState::Invalidate(G3DState::INVALIDATE_SHP);
+            }
+
+            ResVtxFurPos furPos = shp.GetResVtxFurPos();
+            const u32 numLayer = furPos.GetNumLayer();
+
+            for (u16 i = 0; i < numLayer; i++) {
+                const f32 rate = fur.GetLyrRate(i);
+                const f32 rateInv = 1.0f - rate;
+                rateAlpha = std::pow(rate, alphaCurve);
+                rateSpec = std::pow(rate, specCurve);
+                const f32 rateBright = std::pow(rate, 4.0f);
+
+                kcolor2.r = 255 * rate;
+                kcolor2.g = brightness * rateBright;
+                GXSetTevKColor(GX_KCOLOR2, kcolor2);
+
+                for (u8 itmIdx = 0; itmIdx < 3; itmIdx++) {
+                    if (bIndTexMtx[itmIdx]) {
+                        f32 newItm[2][3];
+                        newItm[0][0] = itm[itmIdx]._00 * rate;
+                        newItm[0][1] = itm[itmIdx]._01 * rate;
+                        newItm[0][2] = itm[itmIdx]._02;
+                        newItm[1][0] = itm[itmIdx]._10 * rate;
+                        newItm[1][1] = itm[itmIdx]._11 * rate;
+                        newItm[1][2] = itm[itmIdx]._12;
+
+                        GXSetIndTexMtx(
+                            static_cast<GXIndTexMtxID>(itmIdx + 1), newItm,
+                            scale_exp[itmIdx]);
+                    }
+                }
+
+                GXColor diffColor;
+                diffColor.r = rootColor.r * rateInv + tipColor.r * rate;
+                diffColor.g = rootColor.g * rateInv + tipColor.g * rate;
+                diffColor.b = rootColor.b * rateInv + tipColor.b * rate;
+                diffColor.a =
+                    rootColor.a * (1.0f - rateAlpha) + tipColor.a * rateAlpha;
+
+                for (u8 colorIdx = 0; colorIdx < 2; colorIdx++) {
+                    u8 chanIdx = colorIdx * 2;
+
+                    GXColor newMatColor;
+
+                    if (matSrc[chanIdx] == GX_SRC_REG ||
+                        matSrc[chanIdx + 1] == GX_SRC_REG) {
+
+                        if (attnFunc[chanIdx] == GX_AF_SPEC) {
+                            newMatColor.r = rateSpec * matColor[colorIdx].r;
+                            newMatColor.g = rateSpec * matColor[colorIdx].g;
+                            newMatColor.b = rateSpec * matColor[colorIdx].b;
+                        } else {
+                            newMatColor.r = diffColor.r;
+                            newMatColor.g = diffColor.g;
+                            newMatColor.b = diffColor.b;
+                        }
+
+                        newMatColor.a = attnFunc[chanIdx + 1] == GX_AF_SPEC
+                                            ? matColor[colorIdx].a
+                                            : diffColor.a;
+
+                        fifo::GDSetChanMatColor(targetChan[chanIdx],
+                                                newMatColor);
+                    }
+                }
+
+                furPos.SetArray(i);
+                G3DState::LoadResShpPrimitive(shp, pViewPos, pViewNrm);
+            }
+        } else {
+            if (!(ctrl & DRAW1MAT1SHP_CTRL_NOSWAPSHP)) {
+                G3DState::LoadResShpPrePrimitive(shp);
+
+                if (pSwap != NULL) {
+                    if (pSwap->vtxPosTable != NULL) {
+                        ResVtxPos(pSwap->vtxPosTable[shp.ref().idVtxPosition])
+                            .SetArray();
+                    }
+
+                    if (pSwap->vtxNrmTable != NULL) {
+                        int nrmID = shp.ref().idVtxNormal;
+
+                        if (nrmID >= 0) {
+                            ResVtxNrm(pSwap->vtxNrmTable[nrmID]).SetArray();
+                        }
+                    }
+
+                    if (pSwap->vtxClrTable != NULL) {
+                        int clrID = shp.ref().idVtxColor[0];
+
+                        if (clrID >= 0) {
+                            ResVtxClr(pSwap->vtxClrTable[clrID])
+                                .SetArray(GX_VA_CLR0);
+                        }
+
+                        clrID = shp.ref().idVtxColor[1];
+
+                        if (clrID >= 0) {
+                            ResVtxClr(pSwap->vtxClrTable[clrID])
+                                .SetArray(GX_VA_CLR1);
+                        }
+                    }
+                }
+            }
+
+            if (ctrl & DRAW1MAT1SHP_CTRL_CULL_FRONT) {
+                fifo::GDSetCullMode(GX_CULL_FRONT);
+                G3DState::Invalidate(G3DState::INVALIDATE_SHP);
+            }
+
+            G3DState::LoadResShpPrimitive(shp, pViewPos, pViewNrm);
+        }
     }
 }
 

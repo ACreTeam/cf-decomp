@@ -10,7 +10,7 @@ using nw4r::math::MTX33;
 using nw4r::math::MTX34;
 using nw4r::math::VEC3;
 
-const f32 dat_epsilon = 1e-36f;
+const f32 det_epsilon = 1e-36f;
 
 // clang-format off
 asm bool CalcViewNrmMtx(register math::MTX33 *pOut, const register math::MTX34 *pW) {
@@ -29,10 +29,10 @@ asm bool CalcViewNrmMtx(register math::MTX33 *pOut, const register math::MTX34 *
     ps_msub    f11, f1,  f7,  f11
     ps_mul     f12, f1,  f8
     ps_msub    f13, f3,  f8,  f13
-    lis        r12, dat_epsilon@ha
+    lis        r12, det_epsilon@ha
     ps_msub    f12, f5,  f6,  f12
     ps_mul     f7,  f0,  f13
-    addi       r12, r12, dat_epsilon@l
+    addi       r12, r12, det_epsilon@l
     ps_mul     f10, f3,  f4
     ps_madd    f7,  f2,  f12, f7
     psq_l      f6,  0x0(r12), 1, 0
@@ -92,10 +92,10 @@ asm bool CalcViewTexMtx(register math::MTX34 *pOut, const register math::MTX34 *
     ps_msub    f11, f1,  f7,  f11
     ps_mul     f12, f1,  f8
     ps_msub    f13, f3,  f8,  f13
-    lis        r12, dat_epsilon@ha
+    lis        r12, det_epsilon@ha
     ps_msub    f12, f5,  f6,  f12
     ps_mul     f7,  f0,  f13
-    addi       r12, r12, dat_epsilon@l
+    addi       r12, r12, det_epsilon@l
     ps_mul     f10, f3,  f4
     ps_madd    f7,  f2,  f12, f7
     psq_l      f6,  0x0(r12), 1, 0
@@ -164,10 +164,10 @@ asm bool CalcInvWorldMtx(register math::MTX34 *pOut, const register math::MTX34 
     ps_msub    f11, f1,  f7,  f11
     ps_mul     f12, f1,  f8
     ps_msub    f13, f3,  f8,  f13
-    lis        r12, dat_epsilon@ha
+    lis        r12, det_epsilon@ha
     ps_msub    f12, f5,  f6,  f12
     ps_mul     f7,  f0,  f13
-    addi       r12, r12, dat_epsilon@l
+    addi       r12, r12, det_epsilon@l
     ps_mul     f10, f3,  f4
     ps_madd    f7,  f2,  f12, f7
     psq_l      f6, 0x0(r12), 1, 0

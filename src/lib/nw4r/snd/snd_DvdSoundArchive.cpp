@@ -1,19 +1,16 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
-
-#include <revolution/dvd.h>
-
+#include <nw4r/snd/snd_DvdSoundArchive.h>
+#include <nw4r/ut/ut_DvdLockedFileStream.h>
 #include <cstring>
+#include <new>
 
 namespace nw4r {
 namespace snd {
-
 class DvdSoundArchive::DvdFileStream : public ut::DvdLockedFileStream {
-public:
-    DvdFileStream(const DVDFileInfo* pFileInfo, u32 offset, u32 size);
+  public:
+    DvdFileStream(const DVDFileInfo *pFileInfo, u32 offset, u32 size);
     DvdFileStream(s32 entrynum, u32 offset, u32 size);
 
-    virtual s32 Read(void* pDst, u32 size);    // at 0x14
+    virtual s32 Read(void *pDst, u32 size);    // at 0x14
     virtual void Seek(s32 offset, u32 origin); // at 0x44
 
     virtual u32 Tell() const {
@@ -24,12 +21,13 @@ public:
         return mSize;
     } // at 0x40
 
-private:
+  private:
     s32 mOffset; // at 0x70
     s32 mSize;   // at 0x74
 };
 
-DvdSoundArchive::DvdSoundArchive() : mOpen(false) {}
+DvdSoundArchive::DvdSoundArchive() : mOpen(false) {
+}
 
 DvdSoundArchive::~DvdSoundArchive() {
     Close();
@@ -44,7 +42,7 @@ bool DvdSoundArchive::Open(s32 entrynum) {
     return LoadFileHeader();
 }
 
-bool DvdSoundArchive::Open(const char* pPath) {
+bool DvdSoundArchive::Open(const char *pPath) {
     s32 entrynum = DVDConvertPathToEntrynum(pPath);
     if (entrynum < 0) {
         return false;
@@ -56,8 +54,10 @@ bool DvdSoundArchive::Open(const char* pPath) {
 
     char extRoot[FILE_PATH_MAX];
     for (int i = std::strlen(pPath) - 1; i >= 0; i--) {
-        if (pPath[i] == '/' || pPath[i] == '\\') {
-            // @bug Long path can overflow extRoot buffer
+        if ((pPath[i] == '/' || pPath[i] == '\\')) {
+            if (i >= FILE_PATH_MAX + 1) {
+                return false;
+            }
             std::strncpy(extRoot, pPath, i);
             extRoot[i] = '\0';
 
@@ -70,12 +70,14 @@ bool DvdSoundArchive::Open(const char* pPath) {
 }
 
 void DvdSoundArchive::Close() {
-    DVDClose(&mFileInfo);
-    mOpen = false;
+    if (mOpen) {
+        DVDClose(&mFileInfo);
+        mOpen = false;
+    }
     Shutdown();
 }
 
-ut::FileStream* DvdSoundArchive::OpenStream(void* pBuffer, int size, u32 offset,
+ut::FileStream *DvdSoundArchive::OpenStream(void *pBuffer, int size, u32 offset,
                                             u32 length) const {
     if (!mOpen) {
         return NULL;
@@ -88,8 +90,8 @@ ut::FileStream* DvdSoundArchive::OpenStream(void* pBuffer, int size, u32 offset,
     return new (pBuffer) DvdFileStream(&mFileInfo, offset, length);
 }
 
-ut::FileStream* DvdSoundArchive::OpenExtStream(void* pBuffer, int size,
-                                               const char* pExtPath, u32 offset,
+ut::FileStream *DvdSoundArchive::OpenExtStream(void *pBuffer, int size,
+                                               const char *pExtPath, u32 offset,
                                                u32 length) const {
     if (!mOpen) {
         return NULL;
@@ -115,9 +117,9 @@ bool DvdSoundArchive::LoadFileHeader() {
     u8 headerArea[detail::SoundArchiveFile::HEADER_AREA_SIZE];
 
     static const u32 headerAlignSize =
-        ut::RoundUp(sizeof(detail::SoundArchiveFile::Header), 32);
+        ROUND_UP(sizeof(detail::SoundArchiveFile::Header), 32);
 
-    void* pFile = ut::RoundUp<u8>(headerArea, 32);
+    void *pFile = ut::RoundUp<u8>(headerArea, 32);
 
     s32 bytesRead =
         DVDReadPrio(&mFileInfo, pFile, headerAlignSize, 0, DVD_PRIO_MEDIUM);
@@ -132,7 +134,7 @@ bool DvdSoundArchive::LoadFileHeader() {
     return true;
 }
 
-bool DvdSoundArchive::LoadHeader(void* pBuffer, u32 size) {
+bool DvdSoundArchive::LoadHeader(void *pBuffer, u32 size) {
     u32 infoSize = mFileReader.GetInfoChunkSize();
     s32 infoOffset = mFileReader.GetInfoChunkOffset();
 
@@ -151,7 +153,7 @@ bool DvdSoundArchive::LoadHeader(void* pBuffer, u32 size) {
     return true;
 }
 
-bool DvdSoundArchive::LoadLabelStringData(void* pBuffer, u32 size) {
+bool DvdSoundArchive::LoadLabelStringData(void *pBuffer, u32 size) {
     u32 labelSize = mFileReader.GetLabelStringChunkSize();
     s32 labelOffset = mFileReader.GetLabelStringChunkOffset();
 
@@ -170,27 +172,19 @@ bool DvdSoundArchive::LoadLabelStringData(void* pBuffer, u32 size) {
     return true;
 }
 
-DvdSoundArchive::DvdFileStream::DvdFileStream(const DVDFileInfo* pFileInfo,
+DvdSoundArchive::DvdFileStream::DvdFileStream(const DVDFileInfo *pFileInfo,
                                               u32 offset, u32 size)
     : DvdLockedFileStream(pFileInfo, false), mOffset(offset), mSize(size) {
-    if (mSize == 0) {
-        mSize = ut::DvdFileStream::GetSize();
-    }
-
     ut::DvdFileStream::Seek(mOffset, SEEK_ORIGIN_BEG);
 }
 
 DvdSoundArchive::DvdFileStream::DvdFileStream(s32 entrynum, u32 offset,
                                               u32 size)
     : DvdLockedFileStream(entrynum), mOffset(offset), mSize(size) {
-    if (mSize == 0) {
-        mSize = ut::DvdFileStream::GetSize();
-    }
-
     ut::DvdFileStream::Seek(mOffset, SEEK_ORIGIN_BEG);
 }
 
-s32 DvdSoundArchive::DvdFileStream::Read(void* pDst, u32 size) {
+s32 DvdSoundArchive::DvdFileStream::Read(void *pDst, u32 size) {
     u32 endOffset = mOffset + mSize;
     u32 startOffset = ut::DvdFileStream::Tell();
 
@@ -231,6 +225,5 @@ void DvdSoundArchive::DvdFileStream::Seek(s32 offset, u32 origin) {
 
     ut::DvdFileStream::Seek(offset, SEEK_ORIGIN_BEG);
 }
-
 } // namespace snd
 } // namespace nw4r

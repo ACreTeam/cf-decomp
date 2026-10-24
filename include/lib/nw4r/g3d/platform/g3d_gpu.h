@@ -99,11 +99,13 @@ inline void GDSetChanCtrlLightOff(GXChannelID chan, ulong param, ulong lightMask
 }
 
 inline void GDSetChanAmbColor(GXChannelID chan, GXColor color) {
-    LoadXFCmd(GX_XF_REG_AMBIENT0 + chan, *reinterpret_cast<ulong*>(&color));
+    LoadXFCmd(GX_XF_REG_AMBIENT0 + (chan & 1),
+              *reinterpret_cast<ulong*>(&color));
 }
 
 inline void GDSetChanMatColor(GXChannelID chan, GXColor color) {
-    LoadXFCmd(GX_XF_REG_MATERIAL0 + chan, *reinterpret_cast<ulong*>(&color));
+    LoadXFCmd(GX_XF_REG_MATERIAL0 + (chan & 1),
+              *reinterpret_cast<ulong*>(&color));
 }
 
 } // namespace fifo

@@ -45,7 +45,7 @@ public:
     }
 
     u32 GetNumActive() const {
-        return mActiveList.numObjects;
+        return mNumActive;
     }
 
     void ToActive(void* pObject) {

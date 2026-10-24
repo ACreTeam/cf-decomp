@@ -182,11 +182,11 @@ int dSky_c::draw() {
     }
     mStarDraw.mAlpha = alpha * (1.0f - mBrightness);
 
-    cloudMat.GetResMatTevColor().GXSetTevKColor(GX_KCOLOR1, cloudColor0);
-    cloudMat.GetResMatTevColor().GXSetTevKColor(GX_KCOLOR2, cloudColor1);
+    cloudMat.GetResMatTevColor().GXSetTevColor(GX_TEVREG0, cloudColor0);
+    cloudMat.GetResMatTevColor().GXSetTevColor(GX_TEVREG1, cloudColor1);
     cloudMat.GetResMatTevColor().DCStore(false);
-    skyMat.GetResMatTevColor().GXSetTevKColor(GX_KCOLOR1, mSkyColor0);
-    skyMat.GetResMatTevColor().GXSetTevKColor(GX_KCOLOR2, mSkyColor1);
+    skyMat.GetResMatTevColor().GXSetTevColor(GX_TEVREG0, mSkyColor0);
+    skyMat.GetResMatTevColor().GXSetTevColor(GX_TEVREG1, mSkyColor1);
     skyMat.GetResMatTevColor().DCStore(false);
 
     mMdlSky.setPriorityDraw(2, 3);
@@ -207,7 +207,7 @@ int dSky_c::draw() {
         moonColor.g = addClamp(moonColor.g, sMoonAdd.g);
         moonColor.b = addClamp(moonColor.b, sMoonAdd.b);
         moonColor.a = addClamp(moonColor.a, sMoonAdd.a);
-        moonMat.GetResMatTevColor().GXSetTevKColor(GX_KCOLOR1, moonColor);
+        moonMat.GetResMatTevColor().GXSetTevColor(GX_TEVREG0, moonColor);
         moonMat.GetResMatTevColor().DCStore(false);
         mMdlMoon.setPriorityDraw(2, 4);
         mMdlMoon.entry();

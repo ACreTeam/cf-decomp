@@ -121,7 +121,7 @@ void AnimTransformPane::Bind(nw4r::lyt::Pane *pane, bool bRecursive,
     }
 }
 
-void AnimTransformPane::Bind(nw4r::lyt::Material *material) {
+void AnimTransformPane::Bind(nw4r::lyt::Material *material, bool bDisable) {
 }
 
 void AnimTransformPane::ForceBind(nw4r::lyt::Pane *pane, const char *name) {

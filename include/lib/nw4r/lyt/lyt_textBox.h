@@ -65,7 +65,7 @@ public:
     TextBox(const res::TextBox* pRes, const ResBlockSet& rBlockSet);
     virtual ~TextBox(); // at 0x8
 
-    virtual void DrawSelf(const DrawInfo& rInfo); // at 0x18
+    virtual void DrawSelf(const DrawInfo& drawInfo); // at 0x18
 
     virtual ut::Color GetVtxColor(ulong idx) const;       // at 0x24
     virtual void SetVtxColor(ulong idx, ut::Color color); // at 0x28
@@ -73,14 +73,17 @@ public:
     virtual u8 GetVtxColorElement(ulong idx) const;       // at 0x34
     virtual void SetVtxColorElement(ulong idx, u8 value); // at 0x38
 
-    virtual void AllocStringBuffer(u16 len); // at 0x64
-    virtual void FreeStringBuffer();         // at 0x68
+    virtual void LoadMtx(const DrawInfo& drawInfo); // at 0x70
+
+    virtual void AllocStringBuffer(u16 minLen); // at 0x74
+    virtual void FreeStringBuffer();            // at 0x78
     u16 GetStringBufferLength() const;
 
-    virtual u16 SetString(const wchar_t* pStr, u16 pos);          // at 0x6C
-    virtual u16 SetString(const wchar_t* pStr, u16 pos, u16 len); // at 0x70
+    virtual u16 SetString(const wchar_t* str, u16 dstIdx); // at 0x7C
+    virtual u16 SetString(const wchar_t* str, u16 dstIdx,
+                          u16 strLen); // at 0x80
 
-    ut::Rect GetTextDrawRect(const DrawInfo& rInfo) const;
+    ut::Rect GetTextDrawRect(const DrawInfo& drawInfo) const;
     ut::Rect GetTextDrawRect(ut::WideTextWriter* pWriter) const;
 
     const wchar_t* GetString() const {
@@ -97,8 +100,8 @@ public:
     const ut::Font* GetFont() const;
     void SetFont(const ut::Font* pFont);
 
-    ut::Color GetTextColor(ulong idx) const;
-    void SetTextColor(ulong idx, ut::Color color);
+    ut::Color GetTextColor(ulong type) const;
+    void SetTextColor(ulong type, ut::Color value);
 
     const Size& GetFontSize() const {
         return mFontSize;
@@ -142,10 +145,13 @@ public:
         detail::SetVerticalPosition(&mTextPosition, value);
     }
 
+    u8 GetTextAlignment() const {
+        return mBits.textAlignment;
+    }
+
     f32 GetTextMagH() const;
     f32 GetTextMagV() const;
-
-    ulong MakeDrawFlag() const;
+    f32 GetTextAlignMag() const;
 
 protected:
     wchar_t* mTextBuf;                    // at 0xD8
@@ -163,10 +169,12 @@ protected:
 
     struct {
         u8 bAllocFont : 1;
+        u8 textAlignment : 2;
     } mBits; // at 0x101
 
 private:
-    void Init(u16 len);
+    void Init(u16 allocStrLen);
+    u16 SetStringImpl(const wchar_t* str, u16 dstIdx, ulong strLen);
 };
 
 } // namespace lyt

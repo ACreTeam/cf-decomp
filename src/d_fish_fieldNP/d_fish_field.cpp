@@ -1624,9 +1624,9 @@ void dFishFldShadow_c::executeEscape() {
         if (cma.IsValid()) {
             GXColor color;
             nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor();
-            tev.GXGetTevKColor(GX_KCOLOR1, &color);
+            tev.GXGetTevColor(GX_TEVREG0, &color);
             color.a = mAlpha = (mTimer * 255) / 60;
-            tev.GXSetTevKColor(GX_KCOLOR1, color);
+            tev.GXSetTevColor(GX_TEVREG0, color);
             tev.DCStore(false);
         }
         calcBgMove();
@@ -1893,9 +1893,9 @@ void dFishFldShadow_c::executeRelease() {
         if (cma.IsValid()) {
             GXColor color;
             nw4r::g3d::ResMatTevColor tev = cma.GetResMatTevColor();
-            tev.GXGetTevKColor(GX_KCOLOR1, &color);
+            tev.GXGetTevColor(GX_TEVREG0, &color);
             color.a = (mTimer * 255) / 60;
-            tev.GXSetTevKColor(GX_KCOLOR1, color);
+            tev.GXSetTevColor(GX_TEVREG0, color);
             tev.DCStore(false);
         }
         sLib::addCalc2(&mSpeed, 1.0f, 0.2f, 0.2f);

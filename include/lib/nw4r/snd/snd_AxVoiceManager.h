@@ -21,8 +21,8 @@ public:
     void Setup(void* pBuffer, u32 size);
     void Shutdown();
 
-    AxVoice* AcquireAxVoice(u32 priority, AxVoice::AxVoiceCallback pCallback,
-                            void* pArg);
+    AxVoice *AcquireAxVoice(u32 priority, AxVoice::Callback *pCallback,
+                            void *pArg);
     void FreeAxVoice(AxVoice* pVoice);
 
     void ReserveForFreeAxVoice(AxVoice* pVoice);
@@ -36,11 +36,11 @@ private:
     void ReserveForFree(AxVoice* pVoice);
 
 private:
-    AxVoiceList mActiveVoiceList;       // at 0x0
-    AxVoiceList mFreeVoiceList;         // at 0xC
-    AxVoiceList mFreeReservedVoiceList; // at 0x18
-    bool mInitialized;                  // at 0x24
-    int mVoiceCount;                    // at 0x28
+  AxVoice::LinkList mActiveVoiceList;       // at 0x0
+  AxVoice::LinkList mFreeVoiceList;         // at 0xC
+  AxVoice::LinkList mFreeReservedVoiceList; // at 0x18
+  bool mInitialized;                        // at 0x24
+  int mVoiceCount;                          // at 0x28
 };
 
 } // namespace detail

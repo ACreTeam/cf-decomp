@@ -1,33 +1,35 @@
 #ifndef NW4R_SND_TASK_H
 #define NW4R_SND_TASK_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/ut.h>
+#include <nw4r/ut/ut_algorithm.h>
+#include <nw4r/ut/ut_LinkList.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
 class Task : private ut::NonCopyable {
+  public:
+    typedef ut::LinkList<Task, 0x04> LinkList;
+
+  public:
+    Task() : mBusyFlag(false) {
+    }
+    virtual ~Task();
+
+    virtual void Execute() = 0;
+    virtual void Cancel() = 0;
+    virtual void OnCancel() = 0;
+
+  private:
+    /* base NonCopyable */      // size 0x00, offset 0x00
+    /* vtable */                // size 0x04, offset 0x00
+    ut::LinkListNode mTaskLink; // size 0x08, offset 0x04
+    bool volatile mBusyFlag;    // size 0x01, offset 0x0c
+                                /* 3 bytes padding */
+
+  private:
     friend class TaskManager;
-
-public:
-    Task() : mBusyFlag(false) {}
-    virtual ~Task(); // at 0x8
-
-    virtual void Execute() = 0;  // at 0xC
-    virtual void Cancel() = 0;   // at 0x10
-    virtual void OnCancel() = 0; // at 0x14
-
-public:
-    NW4R_UT_LINKLIST_NODE_DECL(); // at 0x4
-
-protected:
-    volatile bool mBusyFlag; // at 0xC
-};
-
-NW4R_UT_LINKLIST_TYPEDEF_DECL(Task);
-
+}; // size 0x10
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

@@ -1,46 +1,53 @@
 #ifndef NW4R_SND_STRM_CHANNEL_H
 #define NW4R_SND_STRM_CHANNEL_H
-#include <nw4r/types_nw4r.h>
 
-#include <nw4r/snd/snd_Types.h>
+#include <climits>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_adpcm.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
 struct StrmChannel {
-    void* bufferAddress; // at 0x0
-    u32 bufferSize;      // at 0x4
-    AdpcmInfo adpcmInfo; // at 0x8
-};
+    void *bufferAddress;           // size 0x04, offset 0x00
+    AdpcmParam adpcmParam;         // size 0x28, offset 0x04
+    AdpcmLoopParam adpcmLoopParam; // size 0x06, offset 0x2c
+    u16 adpcmPredScale;            // size 0x02, offset 0x32
+}; // size 0x34
+} // namespace detail
+} // namespace snd
+} // namespace nw4r
 
+namespace nw4r {
+namespace snd {
+namespace detail {
 class StrmBufferPool {
-public:
-    void Setup(void* pBase, u32 size, int count);
+  public:
+    void Setup(void *buffer, u32 size, int blockCount);
     void Shutdown();
-
-    void* Alloc();
-    void Free(void* pBuffer);
 
     u32 GetBlockSize() const {
         return mBlockSize;
     }
 
-private:
-    static const int BLOCK_MAX = 32;
-    static const int BITS_PER_BYTE = 8;
+    void *Alloc();
+    void Free(void *p);
 
-private:
-    void* mBuffer;   // at 0x0
-    u32 mBufferSize; // at 0x4
+  private:
+    static int const BIT_PER_BYTE = CHAR_BIT;
+    static int const BLOCK_MAX = 32;
 
-    u32 mBlockSize;  // at 0x8
-    int mBlockCount; // at 0xC
-
-    int mAllocCount;                           // at 0x10
-    u8 mAllocFlags[BLOCK_MAX / BITS_PER_BYTE]; // at 0x14
-};
-
+  private:
+    void *mBuffer;   // size 0x04, offset 0x00
+    u32 mBufferSize; // size 0x04, offset 0x04
+    u32 mBlockSize;  // size 0x04, offset 0x08
+    int mBlockCount; // size 0x04, offset 0x0c
+    int mAllocCount; // size 0x04, offset 0x10
+    byte_t mAllocFlags[ROUND_UP(BLOCK_MAX, BIT_PER_BYTE) /
+                       BIT_PER_BYTE]; // size 0x04, offset 0x14
+}; // size 0x18
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

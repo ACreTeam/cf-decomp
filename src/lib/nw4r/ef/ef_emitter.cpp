@@ -5,20 +5,22 @@
 namespace nw4r {
 namespace ef {
 
-Emitter::Emitter() : mActivityList(offsetof(ParticleManager, mActivityLink)) {}
+Emitter::Emitter() : mActivityList(offsetof(ParticleManager, mActivityLink)) {
+}
 
-Emitter::~Emitter() {}
+Emitter::~Emitter() {
+}
 
 u32 Emitter::RetireParticleAll() {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_PARTICLEMANAGER];
+    void *pArray[NW4R_EF_MAX_PARTICLEMANAGER];
 
     u16 size = UtlistToArray(&mActivityList.mActiveList, pArray,
                              UtlistSize(&mActivityList.mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        ParticleManager* pManager =
-            reinterpret_cast<ParticleManager*>(pArray[i]);
+        ParticleManager *pManager =
+            reinterpret_cast<ParticleManager *>(pArray[i]);
 
         num += pManager->RetireParticleAll();
     }
@@ -31,7 +33,7 @@ void Emitter::SendClosing() {
 }
 
 void Emitter::DestroyFunc() {
-    void* pArray[NW4R_EF_MAX_EMITTER];
+    void *pArray[NW4R_EF_MAX_EMITTER];
 
     if (mForm != NULL) {
         mForm = NULL;
@@ -49,9 +51,9 @@ void Emitter::DestroyFunc() {
                           UtlistSize(&mManagerEF->mActivityList.mActiveList));
 
         for (u16 i = 0; i < size; i++) {
-            Emitter* pEmitter = reinterpret_cast<Emitter*>(pArray[i]);
+            Emitter *pEmitter = reinterpret_cast<Emitter *>(pArray[i]);
 
-            for (Emitter* pIt = pEmitter->mParent; pIt != NULL;
+            for (Emitter *pIt = pEmitter->mParent; pIt != NULL;
                  pIt = pIt->mParent) {
 
                 if (pIt != this) {
@@ -70,7 +72,7 @@ void Emitter::DestroyFunc() {
     }
 }
 
-bool Emitter::Closing(ParticleManager* pManager) {
+bool Emitter::Closing(ParticleManager *pManager) {
     mManagerEF->ParticleManagerRemove(pManager);
     pManager->mManagerEM->UnRef();
 
@@ -80,7 +82,7 @@ bool Emitter::Closing(ParticleManager* pManager) {
     return true;
 }
 
-u32 Emitter::RetireParticleManager(ParticleManager* pManager) {
+u32 Emitter::RetireParticleManager(ParticleManager *pManager) {
     if (pManager->GetLifeStatus() != NW4R_EF_LS_ACTIVE) {
         return 0;
     }
@@ -92,14 +94,14 @@ u32 Emitter::RetireParticleManager(ParticleManager* pManager) {
 
 u32 Emitter::RetireParticleManagerAll() {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_PARTICLEMANAGER];
+    void *pArray[NW4R_EF_MAX_PARTICLEMANAGER];
 
     u16 size = UtlistToArray(&mActivityList.mActiveList, pArray,
                              UtlistSize(&mActivityList.mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        ParticleManager* pManager =
-            reinterpret_cast<ParticleManager*>(pArray[i]);
+        ParticleManager *pManager =
+            reinterpret_cast<ParticleManager *>(pArray[i]);
 
         if (pManager->GetLifeStatus() != NW4R_EF_LS_ACTIVE) {
             continue;
@@ -114,19 +116,20 @@ u32 Emitter::RetireParticleManagerAll() {
 /******************************************************************************
  * Dummy function required to match float literal order
  ******************************************************************************/
-void Emitter::UpdateDatas(EmitterResource* pResource) {
-    const EmitterDesc* pDesc = pResource->GetEmitterDesc();
+void Emitter::UpdateDatas(EmitterResource *pResource) {
+    const EmitterDesc *pDesc = pResource->GetEmitterDesc();
 
     (void)(pDesc->lodMinEmit / 100.0f);
     (void)(pDesc->emitEmitRandom / 100.0f);
+    (void)(pDesc->emitEmit == 0.0f);
 }
 
-bool Emitter::InitializeDatas(EmitterResource* pResource, Effect* pEffect) {
+bool Emitter::InitializeDatas(EmitterResource *pResource, Effect *pEffect) {
     mTick = 0;
     mLifeStatus = NW4R_EF_LS_ACTIVE;
     mResource = pResource;
 
-    EmitterDesc* pDesc = pResource->GetEmitterDesc();
+    EmitterDesc *pDesc = pResource->GetEmitterDesc();
 
     mEvalStatus = NW4R_EF_ES_WAIT;
     mCalcRemain = pDesc->emitEmitPast;
@@ -190,7 +193,7 @@ bool Emitter::InitializeDatas(EmitterResource* pResource, Effect* pEffect) {
     return true;
 }
 
-bool Emitter::Initialize(Effect* pParent, EmitterResource* pResource,
+bool Emitter::Initialize(Effect *pParent, EmitterResource *pResource,
                          u8 drawWeight) {
 
     (void)pResource->GetEmitterDesc(); // unused
@@ -202,7 +205,7 @@ bool Emitter::Initialize(Effect* pParent, EmitterResource* pResource,
     InitializeDatas(pResource, pParent);
     mManagerEF = pParent;
 
-    ParticleManager* pManager =
+    ParticleManager *pManager =
         pParent->mManagerES->GetMemoryManager()->AllocParticleManager();
 
     if (pManager == NULL) {
@@ -233,17 +236,28 @@ bool Emitter::Initialize(Effect* pParent, EmitterResource* pResource,
     pManager->mInheritTranslate =
         pResource->GetEmitterDesc()->inheritPtclTranslate;
 
+    if (pResource->GetEmitterDesc()->commonFlag &
+        EmitterDesc::CMN_FLAG_INHERIT_PTCL_PIVOT) {
+        pManager->mFlag |= 4;
+    }
+
     pManager->mWeight = drawWeight;
     mManagerEF->ParticleManagerAdd(pManager);
 
     return true;
 }
 
-Emitter* Emitter::CreateEmitter(EmitterResource* pResource,
-                                EmitterInheritSetting* pSetting,
-                                Particle* pParticle, u16 calcRemain) {
+Emitter *Emitter::CreateEmitter(EmitterResource *pResource,
+                                EmitterInheritSetting *pSetting,
+                                Particle *pParticle, u16 calcRemain,
+                                math::VEC3 *position) {
 
-    Emitter* pEmitter =
+    if (!(pResource->GetEmitterDesc()->commonFlag &
+          EmitterDesc::CMN_FLAG_RELOCATED)) {
+        return NULL;
+    }
+
+    Emitter *pEmitter =
         mManagerEF->CreateEmitter(pResource, pSetting->weight, 0);
 
     if (pEmitter == NULL) {
@@ -255,22 +269,23 @@ Emitter* Emitter::CreateEmitter(EmitterResource* pResource,
     pEmitter->mParent->Ref();
     pEmitter->mParameter.mInherit = 0;
 
-    if (mResource->GetEmitterDesc()->commonFlag &
-        EmitterDesc::CMN_FLAG_EMIT_INHERIT_SCALE) {
+    if (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_SCALE) {
 
         pEmitter->mParameter.mInherit |= EmitterParameter::INHERIT_FLAG_SCALE;
     }
 
-    if (mResource->GetEmitterDesc()->commonFlag &
-        EmitterDesc::CMN_FLAG_EMIT_INHERIT_ROT) {
+    if (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_ROT) {
 
         pEmitter->mParameter.mInherit |= EmitterParameter::INHERIT_FLAG_ROT;
     }
 
     pEmitter->mParameter.mInheritTranslate =
         mResource->GetEmitterDesc()->inheritChildEmitTranslate;
+    if (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_PIVOT) {
+        pEmitter->mParameter.mInherit |= EmitterParameter::INHERIT_FLAG_PIVOT;
+    }
 
-    if (pParticle != NULL) {
+    {
         math::VEC3 transSave = pEmitter->mParameter.mTranslate;
 
         pEmitter->mParameter.mTranslate.x = 0.0f;
@@ -282,23 +297,30 @@ Emitter* Emitter::CreateEmitter(EmitterResource* pResource,
         math::MTX34 tmp;
 
         math::MTX34Identity(&mtx);
-        math::MTX34RotXYZRad(&mtx, pEmitter->mParameter.mRotate.x,
-                             pEmitter->mParameter.mRotate.y,
-                             pEmitter->mParameter.mRotate.z);
-        math::MTX34Scale(&mtx, &mtx, &pEmitter->mParameter.mScale);
+        PSMTX34RotXYZRad(&mtx, pEmitter->mParameter.mRotate.x,
+                         pEmitter->mParameter.mRotate.y,
+                         pEmitter->mParameter.mRotate.z);
+        MTX34ScaleNonZero(&mtx, &mtx, &pEmitter->mParameter.mScale);
 
         pEmitter->CalcGlobalMtx(&tmp);
         math::MTX34Inv(&tmp, &tmp);
         math::MTX34Mult(&mtx, &mtx, &tmp);
 
-        pParticle->mParticleManager->CalcGlobalMtx(&tmp);
-        math::MTX34Mult(&mtx, &mtx, &tmp);
-
-        math::MTX34Trans(&mtx, &mtx, &pParticle->mParameter.mPosition);
-        math::MTX34RotXYZRad(&tmp, pEmitter->mParameter.mRotate.x,
-                             pEmitter->mParameter.mRotate.y,
-                             pEmitter->mParameter.mRotate.z);
-        math::MTX34Scale(&tmp, &tmp, &pEmitter->mParameter.mScale);
+        if (pParticle != NULL) {
+            pParticle->mParticleManager->CalcGlobalMtx(&tmp);
+            math::MTX34Mult(&mtx, &mtx, &tmp);
+        }
+        if (position == NULL) {
+            if (pParticle != NULL) {
+                math::MTX34Trans(&mtx, &mtx, &pParticle->mParameter.mPosition);
+            }
+        } else {
+            math::MTX34Trans(&mtx, &mtx, position);
+        }
+        PSMTX34RotXYZRad(&tmp, pEmitter->mParameter.mRotate.x,
+                         pEmitter->mParameter.mRotate.y,
+                         pEmitter->mParameter.mRotate.z);
+        MTX34ScaleNonZero(&tmp, &tmp, &pEmitter->mParameter.mScale);
 
         math::MTX34Inv(&tmp, &tmp);
         math::MTX34Mult(&mtx, &mtx, &tmp);
@@ -322,9 +344,15 @@ Emitter* Emitter::CreateEmitter(EmitterResource* pResource,
     return pEmitter;
 }
 
-void Emitter::CreateEmitterTmp(EmitterResource* pResource,
-                               EmitterInheritSetting* pSetting,
-                               Particle* pParticle, u16 calcRemain) {
+bool Emitter::CreateEmitterTmp(EmitterResource *pResource,
+                               EmitterInheritSetting *pSetting,
+                               Particle *pParticle, u16 calcRemain,
+                               math::VEC3 *position) {
+
+    if (!(pResource->GetEmitterDesc()->commonFlag &
+          EmitterDesc::CMN_FLAG_RELOCATED)) {
+        return false;
+    }
 
     Emitter tempEmitter;
 
@@ -334,8 +362,23 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
     tempEmitter.mCalcRemain += calcRemain;
     tempEmitter.mManagerEF = mManagerEF;
     tempEmitter.mParent = this;
+    tempEmitter.mParameter.mInherit = 0;
+    if (mParameter.mComFlags & EmitterDesc::CMN_FLAG_TMP_INHERIT_SCALE) {
+        tempEmitter.mParameter.mInherit |= EmitterParameter::INHERIT_FLAG_SCALE;
+    }
+    if (mParameter.mComFlags & EmitterDesc::CMN_FLAG_TMP_INHERIT_ROT) {
+        tempEmitter.mParameter.mInherit |= EmitterParameter::INHERIT_FLAG_ROT;
+    }
+    tempEmitter.mParameter.mInheritTranslate =
+        mResource->GetEmitterDesc()->inheritChildPtclTranslate;
+    if (tempEmitter.mParameter.mInheritTranslate != 0) {
+        tempEmitter.mParameter.mInheritTranslate = 100;
+    }
+    if (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_PIVOT) {
+        tempEmitter.mParameter.mInherit |= EmitterParameter::INHERIT_FLAG_PIVOT;
+    }
 
-    Emitter* pEmitter = &tempEmitter;
+    Emitter *pEmitter = &tempEmitter;
 
     if ((pSetting->flag & EmitterInheritSetting::FLAG_FOLLOW_EMIT) &&
         pSetting->speed != 0) {
@@ -352,17 +395,16 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
         pParticle->GetMoveDir(&dir);
         math::VEC3Transform(&dir, &tmpMtx, &dir);
 
-        if (dir.x != 0.0f || dir.y != 0.0f || dir.z != 0.0f) {
-            math::VEC3Normalize(&dir, &dir);
+        if (Normalize(&dir, &dir)) {
 
             if (pSetting->speed < 0) {
                 math::VEC3Scale(&dir, &dir, -1.0f);
             }
 
             GetDirMtxY(&dirMtx, dir);
-            math::MTX34RotXYZRad(&tmpMtx, pEmitter->mParameter.mRotate.x,
-                                 pEmitter->mParameter.mRotate.y,
-                                 pEmitter->mParameter.mRotate.z);
+            PSMTX34RotXYZRad(&tmpMtx, pEmitter->mParameter.mRotate.x,
+                             pEmitter->mParameter.mRotate.y,
+                             pEmitter->mParameter.mRotate.z);
 
             math::MTX34Mult(&dirMtx, &dirMtx, &tmpMtx);
             MtxGetRotation(dirMtx, &pEmitter->mParameter.mRotate);
@@ -380,23 +422,30 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
     math::MTX34 tmp;
 
     math::MTX34Identity(&mtx);
-    math::MTX34RotXYZRad(&mtx, pEmitter->mParameter.mRotate.x,
-                         pEmitter->mParameter.mRotate.y,
-                         pEmitter->mParameter.mRotate.z);
-    math::MTX34Scale(&mtx, &mtx, &pEmitter->mParameter.mScale);
+    PSMTX34RotXYZRad(&mtx, pEmitter->mParameter.mRotate.x,
+                     pEmitter->mParameter.mRotate.y,
+                     pEmitter->mParameter.mRotate.z);
+    MTX34ScaleNonZero(&mtx, &mtx, &pEmitter->mParameter.mScale);
 
     pEmitter->CalcGlobalMtx(&tmp);
     math::MTX34Inv(&tmp, &tmp);
     math::MTX34Mult(&mtx, &mtx, &tmp);
 
-    pParticle->mParticleManager->CalcGlobalMtx(&tmp);
-    math::MTX34Mult(&mtx, &mtx, &tmp);
-
-    math::MTX34Trans(&mtx, &mtx, &pParticle->mParameter.mPosition);
-    math::MTX34RotXYZRad(&tmp, pEmitter->mParameter.mRotate.x,
-                         pEmitter->mParameter.mRotate.y,
-                         pEmitter->mParameter.mRotate.z);
-    math::MTX34Scale(&tmp, &tmp, &pEmitter->mParameter.mScale);
+    if (pParticle != NULL) {
+        pParticle->mParticleManager->CalcGlobalMtx(&tmp);
+        math::MTX34Mult(&mtx, &mtx, &tmp);
+    }
+    if (position == NULL) {
+        if (pParticle != NULL) {
+            math::MTX34Trans(&mtx, &mtx, &pParticle->mParameter.mPosition);
+        }
+    } else {
+        math::MTX34Trans(&mtx, &mtx, position);
+    }
+    PSMTX34RotXYZRad(&tmp, pEmitter->mParameter.mRotate.x,
+                     pEmitter->mParameter.mRotate.y,
+                     pEmitter->mParameter.mRotate.z);
+    MTX34ScaleNonZero(&tmp, &tmp, &pEmitter->mParameter.mScale);
 
     math::MTX34Inv(&tmp, &tmp);
     math::MTX34Mult(&mtx, &mtx, &tmp);
@@ -410,17 +459,22 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
     tempEmitter.CalcBillboard();
 
     // clang-format off
-    bool inheritS = (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_SCALE) &&
+    bool inheritS = (mParameter.mComFlags & EmitterDesc::CMN_FLAG_TMP_INHERIT_SCALE) &&
         (pResource->GetEmitterDesc()->commonFlag & EmitterDesc::CMN_FLAG_INHERIT_PTCL_SCALE);
 
-    bool inheritR = (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_ROT) &&
+    bool inheritR = (mParameter.mComFlags & EmitterDesc::CMN_FLAG_TMP_INHERIT_ROT) &&
         (pResource->GetEmitterDesc()->commonFlag & EmitterDesc::CMN_FLAG_INHERIT_PTCL_ROT);
     // clang-format on
+
+    bool movePivot =
+        (mParameter.mComFlags & EmitterDesc::CMN_FLAG_EMIT_INHERIT_PIVOT) ||
+        (pResource->GetEmitterDesc()->commonFlag &
+         EmitterDesc::CMN_FLAG_INHERIT_PTCL_PIVOT);
 
     s8 inheritT;
 
     const s8 parentChildT =
-        mResource->GetEmitterDesc()->inheritChildEmitTranslate;
+        mResource->GetEmitterDesc()->inheritChildPtclTranslate;
 
     const s8 myPtclT = pResource->GetEmitterDesc()->inheritPtclTranslate;
 
@@ -431,22 +485,22 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
     } else if (myPtclT == 100) {
         inheritT = parentChildT;
     } else {
-        inheritT = mResource->GetEmitterDesc()->inheritChildEmitTranslate *
+        inheritT = mResource->GetEmitterDesc()->inheritChildPtclTranslate *
                    pResource->GetEmitterDesc()->inheritPtclTranslate / 100;
     }
 
-    ParticleManager* pManager = FindParticleManager(
-        pResource, inheritS, inheritR, inheritT, pSetting->weight);
+    ParticleManager *pManager = FindParticleManager(
+        pResource, inheritS, inheritR, inheritT, movePivot, pSetting->weight);
 
     if (pManager == NULL) {
         pManager =
             mManagerEF->mManagerES->GetMemoryManager()->AllocParticleManager();
 
         if (pManager == NULL) {
-            return;
+            return false;
         }
         if (!pManager->Initialize(this, pResource)) {
-            return;
+            return false;
         }
 
         mActivityList.ToActive(pManager);
@@ -461,6 +515,9 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
         }
 
         pManager->mInheritTranslate = inheritT;
+        if (movePivot) {
+            pManager->mFlag |= 4;
+        }
         pManager->mWeight = pSetting->weight;
         mManagerEF->ParticleManagerAdd(pManager);
     }
@@ -500,13 +557,15 @@ void Emitter::CreateEmitterTmp(EmitterResource* pResource,
 
         RetireParticleManager(pManager);
     }
+    return true;
 }
 
-ParticleManager* Emitter::FindParticleManager(EmitterResource* pResource,
+ParticleManager *Emitter::FindParticleManager(EmitterResource *pResource,
                                               bool inheritS, bool inheritR,
-                                              s8 inheritT, u8 weight) {
+                                              s8 inheritT, bool movePivot,
+                                              u8 weight) {
 
-    ParticleManager* pIt = static_cast<ParticleManager*>(
+    ParticleManager *pIt = static_cast<ParticleManager *>(
         ut::List_GetFirst(&mActivityList.mActiveList));
 
     // clang-format off
@@ -529,6 +588,10 @@ ParticleManager* Emitter::FindParticleManager(EmitterResource* pResource,
             continue;
         }
 
+        if (((pIt->mFlag & 4) != 0) != movePivot) {
+            continue;
+        }
+
         if (pIt->mWeight != weight) {
             continue;
         }
@@ -539,7 +602,7 @@ ParticleManager* Emitter::FindParticleManager(EmitterResource* pResource,
     return NULL;
 }
 
-static f32 GetLODratio(math::VEC3& rEmitPos, math::VEC3& rCamPos, f32 cameraFar,
+static f32 GetLODratio(math::VEC3 &rEmitPos, math::VEC3 &rCamPos, f32 cameraFar,
                        f32 cameraNear, f32 lodFar, f32 lodNear) {
 
     f32 Gl, Vl, Nl, Fl;
@@ -547,7 +610,7 @@ static f32 GetLODratio(math::VEC3& rEmitPos, math::VEC3& rCamPos, f32 cameraFar,
     f32 Fl_Nl;
 
     Vl = cameraFar - cameraNear;
-    Gl = std::sqrtf(VEC3DistSq(&rCamPos, &rEmitPos)) - cameraNear;
+    Gl = math::FSqrt(VEC3DistSq(&rCamPos, &rEmitPos)) - cameraNear;
     Nl = Vl * lodNear;
     Fl = Vl * lodFar;
 
@@ -568,7 +631,7 @@ static f32 GetLODratio(math::VEC3& rEmitPos, math::VEC3& rCamPos, f32 cameraFar,
     return LODratio;
 }
 
-void Emitter::Emission(ParticleManager* pManager, const math::MTX34* pSpace) {
+void Emitter::Emission(ParticleManager *pManager, const math::MTX34 *pSpace) {
     if (mEmitIntervalWait > 0) {
         mEmitIntervalWait--;
         return;
@@ -595,11 +658,14 @@ void Emitter::Emission(ParticleManager* pManager, const math::MTX34* pSpace) {
         }
 
         if (mParameter.mEmitFlags & EmitterDesc::EMIT_FLAG_8) {
-            EffectSystem* pSystem = mManagerEF->mManagerES;
+            EffectSystem *pSystem = mManagerEF->mManagerES;
 
+            math::VEC3 pos;
+            math::VEC3Transform(&pos, CalcGlobalMtx(NULL),
+                                &mParameter.mTranslate);
             // clang-format off
             f32 ratio = GetLODratio(
-                mParameter.mTranslate,
+                pos,
                 pSystem->mProcessCameraPos,
                 pSystem->mProcessCameraFar,
                 pSystem->mProcessCameraNear,
@@ -623,7 +689,7 @@ void Emitter::Emission(ParticleManager* pManager, const math::MTX34* pSpace) {
     if (mParameter.mEmitCount >= 1.0f) {
         (void)Resource::GetInstance(); // unused
 
-        EmitterDesc* pDesc = mResource->GetEmitterDesc();
+        EmitterDesc *pDesc = mResource->GetEmitterDesc();
 
         if (mForm != NULL) {
             if (mManagerEF->mCallBack.mPrevEmission != NULL) {
@@ -698,139 +764,25 @@ void Emitter::CalcEmitter() {
     for (u16 i = mTick == 0 ? 0 : mResource->NumEmitInitTrack();
          i < mResource->NumEmitTrack(); i++) {
 
-        u8* pEmitTrack = mResource->GetEmitTrack(i);
+        u8 *pEmitTrack = mResource->GetEmitTrack(i);
 
-#define pTrackAsHeader reinterpret_cast<AnimCurveHeader*>(pEmitTrack)
+#define pTrackAsHeader reinterpret_cast<AnimCurveHeader *>(pEmitTrack)
 
         if (pTrackAsHeader->processFlag & AnimCurveHeader::PROC_FLAG_STOP) {
             continue;
         }
 
-        if (pTrackAsHeader->magic != NW4R_EF_MAGIC_ANIMCURVE) {
+        if (static_cast<u8>(pTrackAsHeader->magic - static_cast<s8>(0xAB)) >
+            1) {
             continue;
         }
 
-        // Load curveFlag and kindEnable
-        u16 ctrl = *reinterpret_cast<u16*>(&pTrackAsHeader->curveFlag);
         u8 kind = pTrackAsHeader->kindType;
-
-        switch (ctrl) {
-        case (AC_TYPE_PARTICLE_U8 << 8 | 0b001):
-        case (AC_TYPE_PARTICLE_U8 << 8 | 0b111): {
-            continue;
-        }
-
-        case (AC_TYPE_PARTICLE_F32 << 8 | 0b001): {
-            f32* pTarget;
-
-            switch (kind) {
-            case AC_TARGET_EMIT_SPEED_ORIG: {
-                pTarget = &mParameter.mVelPowerRadiationDir;
-                break;
-            }
-
-            case AC_TARGET_EMIT_SPEED_YAXIS: {
-                pTarget = &mParameter.mVelPowerYAxis;
-                break;
-            }
-
-            case AC_TARGET_EMIT_SPEED_RANDOM: {
-                pTarget = &mParameter.mVelPowerRandomDir;
-                break;
-            }
-
-            case AC_TARGET_EMIT_EMISSION: {
-                pTarget = &mParameter.mEmitRatio;
-                break;
-            }
-
-            default: {
-                continue;
-            }
-            }
-
-            AnimCurveExecuteF32(pEmitTrack, pTarget, animTime, mRandSeed,
-                                animSpan);
-            continue;
-        }
-
-        case (AC_TYPE_PARTICLE_F32 << 8 | 0b011): {
-            switch (kind) {
-            case AC_TARGET_EMIT_SPEED_NORMAL: {
-                AnimCurveExecuteF32(pEmitTrack, &mParameter.mVelPowerNormalDir,
-                                    animTime, mRandSeed, animSpan);
-            }
-
-            default: {
-                continue;
-            }
-            }
-        }
-
-        case (AC_TYPE_PARTICLE_F32 << 8 | 0b111): {
-            f32* pTarget;
-
-            switch (kind) {
-            case AC_TARGET_EMIT_SCALE: {
-                pTarget = reinterpret_cast<f32*>(&mParameter.mScale);
-                break;
-            }
-
-            case AC_TARGET_EMIT_ROTATE: {
-                pTarget = reinterpret_cast<f32*>(&mParameter.mRotate);
-                break;
-            }
-
-            case AC_TARGET_EMIT_TRANSLATE: {
-                pTarget = reinterpret_cast<f32*>(&mParameter.mTranslate);
-                break;
-            }
-
-            default: {
-                continue;
-            }
-            }
-
-            AnimCurveExecuteF32(pEmitTrack, pTarget, animTime, mRandSeed,
-                                animSpan);
-
+        f32 *pTarget =
+            reinterpret_cast<f32 *>(reinterpret_cast<u8 *>(&mParameter) + kind);
+        AnimCurveExecuteF32(pEmitTrack, pTarget, animTime, mRandSeed, animSpan);
+        if (kind >= offsetof(EmitterParameter, mTranslate)) {
             mtxDirty = true;
-            continue;
-        }
-
-        default: {
-            break;
-        }
-        }
-
-        switch (ctrl & 0xFF00) {
-        case (AC_TYPE_PARTICLE_F32 << 8): {
-            f32* pTarget;
-
-            switch (kind) {
-            case AC_TARGET_EMIT_SPEED_SPECDIR: {
-                pTarget = &mParameter.mVelPowerSpecDir;
-                break;
-            }
-
-            case AC_TARGET_EMIT_COMMONPARAM: {
-                pTarget = mParameter.mParams;
-                break;
-            }
-
-            default: {
-                continue;
-            }
-            }
-
-            AnimCurveExecuteF32(pEmitTrack, pTarget, animTime, mRandSeed,
-                                animSpan);
-            continue;
-        }
-
-        default: {
-            break;
-        }
         }
 
 #undef pTrackAsHeader
@@ -842,7 +794,7 @@ void Emitter::CalcEmitter() {
 }
 
 void Emitter::CalcParticle() {
-    void* pArray[NW4R_EF_MAX_PARTICLEMANAGER];
+    void *pArray[NW4R_EF_MAX_PARTICLEMANAGER];
 
     if (GetFlagDisableCalc()) {
         return;
@@ -852,8 +804,8 @@ void Emitter::CalcParticle() {
                              UtlistSize(&mActivityList.mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        ParticleManager* pManager =
-            reinterpret_cast<ParticleManager*>(pArray[i]);
+        ParticleManager *pManager =
+            reinterpret_cast<ParticleManager *>(pArray[i]);
 
         pManager->Calc();
     }
@@ -875,7 +827,7 @@ void Emitter::CalcEmission() {
     }
 
     if (mLifeStatus == NW4R_EF_LS_ACTIVE) {
-        ParticleManager* pManager = reinterpret_cast<ParticleManager*>(
+        ParticleManager *pManager = reinterpret_cast<ParticleManager *>(
             ut::List_GetFirst(&mActivityList.mActiveList));
 
         math::MTX34 space;
@@ -925,79 +877,78 @@ void Emitter::CalcBillboard() {
 
     // clang-format off
     math::MTX34 tmp = mtx;
-    tmp._00 = math::FSqrt(tmp._00 * tmp._00 + tmp._10 * tmp._10 + tmp._20 * tmp._20);
+    tmp._00 = MTXColLen(&tmp, 0);
     tmp._10 = tmp._20 = 0.0f;
 
-    tmp._11 = math::FSqrt(tmp._01 * tmp._01 + tmp._11 * tmp._11 + tmp._21 * tmp._21);
+    tmp._11 = MTXColLen(&tmp, 1);
     tmp._01 = tmp._21 = 0.0f;
 
-    tmp._22 = math::FSqrt(tmp._02 * tmp._02 + tmp._12 * tmp._12 + tmp._22 * tmp._22);
+    tmp._22 = MTXColLen(&tmp, 2);
     tmp._02 = tmp._12 = 0.0f;
     // clang-format on
 
     if ((mParameter.mEmitFlags & EmitterDesc::EMIT_FLAG_15)) {
         math::MTX34 base;
-        math::MTX34RotXYZRad(&base, NW4R_MATH_PI / 2.0f, 0.0f, 0.0f);
+        PSMTX34RotXYZRad(&base, NW4R_MATH_PI / 2.0f, 0.0f, 0.0f);
         math::MTX34Mult(&tmp, &tmp, &base);
     }
 
     math::MTX34Inv(&mtx, &mtx);
     math::MTX34Mult(&mtx, &mtx, &tmp);
 
-    math::VEC3 vec;
-    vec.x = 1.0f / mParameter.mScale.x;
-    vec.y = 1.0f / mParameter.mScale.y;
-    vec.z = 1.0f / mParameter.mScale.z;
+    MTX34ScaleInv(&mtx, &mtx, &mParameter.mRotate);
 
-    math::MTX34Scale(&mtx, &mtx, &vec);
-    math::MTX34Scale(&mtx, &mParameter.mScale, &mtx);
+    MTX34ScaleNonZero(&mtx, &mParameter.mScale, &mtx);
     MtxGetRotation(mtx, &mParameter.mRotate);
 
     SetMtxDirty();
 }
 
-math::MTX34* Emitter::RestructMatrix(math::MTX34* pResult, math::MTX34* pOrig,
-                                     bool inheritS, bool inheritR,
-                                     s8 inheritT) {
-
+math::MTX34 *Emitter::RestructMatrix(math::MTX34 *pResult, math::MTX34 *pOrig,
+                                     bool inheritS, bool inheritR, s8 inheritT,
+                                     bool movePivot) {
     if (inheritS && inheritR && inheritT == 100) {
         *pResult = *pOrig;
         return pResult;
     }
-
     if (!inheritS && !inheritR && inheritT == 0) {
         math::MTX34Identity(pResult);
         return pResult;
     }
-
     math::MTX34Identity(pResult);
-
-    if (inheritT != 0) {
-        math::VEC3 trans;
-        MtxGetTranslate(*pOrig, &trans);
-
-        math::VEC3Scale(&trans, &trans, static_cast<f32>(inheritT) / 100.0f);
-        math::MTX34Trans(pResult, pResult, &trans);
+    math::VEC3 tra;
+    MtxGetTranslate(*pOrig, &tra);
+    if (inheritT == 100) {
+        math::MTX34Trans(pResult, pResult, &tra);
+    } else if (inheritT != 0) {
+        math::VEC3 scVec;
+        math::VEC3Scale(&scVec, &tra, static_cast<f32>(inheritT) / 100.0f);
+        math::MTX34Trans(pResult, pResult, &scVec);
     }
-
-    if (inheritR) {
-        math::MTX34 rot;
-        MtxGetRotationMtx(*pOrig, &rot);
-
-        math::MTX34Mult(pResult, pResult, &rot);
+    if (inheritR || inheritS) {
+        if (movePivot && inheritT != 100) {
+            math::MTX34Trans(pResult, pResult, &tra);
+        }
+        if (inheritR) {
+            math::MTX34 rot;
+            MtxGetRotationMtx(*pOrig, &rot);
+            math::MTX34Mult(pResult, pResult, &rot);
+        }
+        if (inheritS) {
+            math::VEC3 sca;
+            MtxGetScale(*pOrig, &sca);
+            MTX34ScaleNonZero(pResult, pResult, &sca);
+        }
+        if (movePivot && inheritT != 100) {
+            math::VEC3 scVec;
+            math::VEC3Scale(&scVec, &tra, -1.0f);
+            math::MTX34Trans(pResult, pResult, &scVec);
+        }
     }
-
-    if (inheritS) {
-        math::VEC3 scale;
-        MtxGetScale(*pOrig, &scale);
-
-        math::MTX34Scale(pResult, pResult, &scale);
-    }
-
     return pResult;
 }
 
-math::MTX34* Emitter::CalcGlobalMtx(math::MTX34* pResult) {
+math::MTX34 *Emitter::CalcGlobalMtx(math::MTX34 *pResult) {
     if (mMtxDirty) {
         math::MTX34 tmp;
 
@@ -1011,15 +962,16 @@ math::MTX34* Emitter::CalcGlobalMtx(math::MTX34* pResult) {
                 &mMtx, &orig,
                 mParameter.mInherit & EmitterParameter::INHERIT_FLAG_SCALE,
                 mParameter.mInherit & EmitterParameter::INHERIT_FLAG_ROT,
-                mParameter.mInheritTranslate);
+                mParameter.mInheritTranslate,
+                mParameter.mInherit & EmitterParameter::INHERIT_FLAG_PIVOT);
         }
 
         math::MTX34Trans(&mMtx, &mMtx, &mParameter.mTranslate);
-        math::MTX34RotXYZRad(&tmp, mParameter.mRotate.x, mParameter.mRotate.y,
-                             mParameter.mRotate.z);
+        PSMTX34RotXYZRad(&tmp, mParameter.mRotate.x, mParameter.mRotate.y,
+                         mParameter.mRotate.z);
 
         math::MTX34Mult(&mMtx, &mMtx, &tmp);
-        math::MTX34Scale(&mMtx, &mMtx, &mParameter.mScale);
+        MTX34ScaleNonZero(&mMtx, &mMtx, &mParameter.mScale);
 
         mMtxDirty = false;
     }
@@ -1035,8 +987,8 @@ math::MTX34* Emitter::CalcGlobalMtx(math::MTX34* pResult) {
 void Emitter::SetMtxDirty() {
     mMtxDirty = true;
 
-    ParticleManager* pManager = NULL;
-    while ((pManager = reinterpret_cast<ParticleManager*>(ut::List_GetNext(
+    ParticleManager *pManager = NULL;
+    while ((pManager = reinterpret_cast<ParticleManager *>(ut::List_GetNext(
                 &mActivityList.mActiveList, pManager))) != NULL) {
 
         pManager->SetMtxDirty();
@@ -1046,15 +998,15 @@ void Emitter::SetMtxDirty() {
         return;
     }
 
-    Emitter* pEmitter = NULL;
-    while ((pEmitter = reinterpret_cast<Emitter*>(ut::List_GetNext(
+    Emitter *pEmitter = NULL;
+    while ((pEmitter = reinterpret_cast<Emitter *>(ut::List_GetNext(
                 &mManagerEF->mActivityList.mActiveList, pEmitter))) != NULL) {
 
         if (pEmitter->mMtxDirty) {
             continue;
         }
 
-        for (Emitter* pSearch = pEmitter->mParent; pSearch;
+        for (Emitter *pSearch = pEmitter->mParent; pSearch;
              pSearch = pSearch->mParent) {
 
             if (pSearch != this) {
@@ -1063,8 +1015,8 @@ void Emitter::SetMtxDirty() {
 
             pEmitter->mMtxDirty = true;
 
-            ParticleManager* pManager = NULL;
-            while ((pManager = reinterpret_cast<ParticleManager*>(
+            ParticleManager *pManager = NULL;
+            while ((pManager = reinterpret_cast<ParticleManager *>(
                         ut::List_GetNext(&pEmitter->mActivityList.mActiveList,
                                          pManager))) != NULL) {
 
@@ -1078,8 +1030,8 @@ u16 Emitter::GetNumParticleManager() const {
     return mActivityList.mActiveList.numObjects;
 }
 
-ParticleManager* Emitter::GetParticleManager(u16 idx) {
-    return reinterpret_cast<ParticleManager*>(
+ParticleManager *Emitter::GetParticleManager(u16 idx) {
+    return reinterpret_cast<ParticleManager *>(
         ut::List_GetNth(&mActivityList.mActiveList, idx));
 }
 
@@ -1101,9 +1053,9 @@ u32 Emitter::ForeachEmitter(ForEachFunc pFunc, ForEachParam param,
     return mManagerEF->ForeachEmitterFrom(pFunc, param, ignoreLifeStatus, this);
 }
 
-static void foreachParticleManagerSub(void* pObject, ForEachParam param) {
-    Emitter* pEmitter = reinterpret_cast<Emitter*>(pObject);
-    ForEachContext* pCtx = reinterpret_cast<ForEachContext*>(param);
+static void foreachParticleManagerSub(void *pObject, ForEachParam param) {
+    Emitter *pEmitter = reinterpret_cast<Emitter *>(pObject);
+    ForEachContext *pCtx = reinterpret_cast<ForEachContext *>(param);
 
     pCtx->calls += pEmitter->ForeachParticleManager(
         pCtx->pFunc, pCtx->param, pCtx->ignoreLifeStatus, false);
@@ -1113,7 +1065,7 @@ u32 Emitter::ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
                                     bool ignoreLifeStatus, bool propogate) {
     u32 calls = 0;
 
-    NW4R_UT_LIST_FOREACH_SAFE (ParticleManager, it, mActivityList.mActiveList, {
+    NW4R_UT_LIST_FOREACH_SAFE(ParticleManager, it, mActivityList.mActiveList, {
         if (!ignoreLifeStatus && it->GetLifeStatus() != NW4R_EF_LS_ACTIVE) {
             continue;
         }

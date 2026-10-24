@@ -1,26 +1,29 @@
-#include <nw4r/snd.h>
+#include <nw4r/snd/snd_SoundHandle.h>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_BasicSound.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
-
-void SoundHandle::detail_AttachSoundAsTempHandle(detail::BasicSound* pSound) {
+void SoundHandle::detail_AttachSoundAsTempHandle(detail::BasicSound *pSound) {
     mSound = pSound;
 
     if (pSound->IsAttachedTempGeneralHandle()) {
         mSound->DetachTempGeneralHandle();
     }
 
-    if (mSound->IsAttachedTempSpecialHandle()) {
-        mSound->DetachTempSpecialHandle();
-    }
-
     mSound->mTempGeneralHandle = this;
 }
 
-void SoundHandle::detail_AttachSound(detail::BasicSound* pSound) {
-    mSound = pSound;
+void SoundHandle::detail_AttachSound(detail::BasicSound *sound) {
+    NW4RAssertPointerNonnull_Line(81, sound);
 
-    if (pSound->IsAttachedGeneralHandle()) {
+    mSound = sound;
+
+    if (sound->IsAttachedGeneralHandle()) {
         mSound->DetachGeneralHandle();
     }
 
@@ -30,18 +33,17 @@ void SoundHandle::detail_AttachSound(detail::BasicSound* pSound) {
 void SoundHandle::DetachSound() {
     if (IsAttachedSound()) {
         if (mSound->mGeneralHandle == this) {
-            mSound->mGeneralHandle = NULL;
+            mSound->mGeneralHandle = nullptr;
         }
 
         if (mSound->mTempGeneralHandle == this) {
-            mSound->mTempGeneralHandle = NULL;
+            mSound->mTempGeneralHandle = nullptr;
         }
     }
 
-    if (mSound != NULL) {
-        mSound = NULL;
+    if (mSound) {
+        mSound = nullptr;
     }
 }
-
 } // namespace snd
 } // namespace nw4r

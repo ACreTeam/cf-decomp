@@ -1,134 +1,188 @@
-#include <nw4r/snd.h>
+#include <nw4r/snd/snd_WsdFile.h>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_Util.h>
+#include <nw4r/snd/snd_WaveFile.h>
+#include <nw4r/snd/snd_WaveArchive.h>
+
+#include <nw4r/ut/ut_binaryFileFormat.h>
+#include <nw4r/ut/ut_algorithm.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
+bool WsdFileReader::IsValidFileHeader(void const *wsdData) {
+    ut::BinaryFileHeader const *fileHeader =
+        static_cast<ut::BinaryFileHeader const *>(wsdData);
 
-bool WsdFileReader::IsValidFileHeader(const void* pWsdBin) {
-    const ut::BinaryFileHeader* pFileHeader =
-        static_cast<const ut::BinaryFileHeader*>(pWsdBin);
+    NW4RAssertMessage_Line(
+        59, fileHeader->signature == WsdFile::SIGNATURE_FILE,
+        "invalid file signature. wsd data is not available.");
 
-    if (pFileHeader->signature != SIGNATURE) {
+    if (fileHeader->signature != WsdFile::SIGNATURE_FILE) {
         return false;
     }
 
-    if (pFileHeader->version < NW4R_VERSION(1, 0)) {
+    NW4RAssertMessage_Line(
+        67, fileHeader->version >= NW4R_FILE_VERSION(1, 0),
+        "wsd file is not supported version.\n"
+        "  please reconvert file using new version tools.\n");
+
+    if (fileHeader->version < NW4R_FILE_VERSION(1, 0)) {
         return false;
     }
 
-    if (pFileHeader->version > VERSION) {
+    NW4RAssertMessage_Line(
+        73, fileHeader->version <= SUPPORTED_FILE_VERSION,
+        "wsd file is not supported version.\n"
+        "  please reconvert file using new version tools.\n");
+
+    if (fileHeader->version > SUPPORTED_FILE_VERSION) {
         return false;
     }
 
     return true;
 }
 
-WsdFileReader::WsdFileReader(const void* pWsdBin)
-    : mHeader(NULL), mDataBlock(NULL), mWaveBlock(NULL) {
-    if (!IsValidFileHeader(pWsdBin)) {
+WsdFileReader::WsdFileReader(void const *wsdData)
+    : mHeader(nullptr), mDataBlock(nullptr), mWaveBlock(nullptr) {
+    NW4RAssertPointerNonnull_Line(93, wsdData);
+
+    if (!IsValidFileHeader(wsdData)) {
         return;
     }
 
-    mHeader = static_cast<const WsdFile::Header*>(pWsdBin);
+    mHeader = static_cast<WsdFile::Header const *>(wsdData);
 
-    mDataBlock = static_cast<const WsdFile::DataBlock*>(
-        ut::AddOffsetToPtr(mHeader, mHeader->dataBlockOffset));
+    if (mHeader->dataBlockOffset) {
+        mDataBlock = static_cast<WsdFile::DataBlock const *>(
+            ut::AddOffsetToPtr(mHeader, mHeader->dataBlockOffset));
 
-    mWaveBlock = static_cast<const WsdFile::WaveBlock*>(
-        ut::AddOffsetToPtr(mHeader, mHeader->waveBlockOffset));
+        NW4RAssert_Line(105, mDataBlock->blockHeader.kind ==
+                                 WsdFile::SIGNATURE_DATA_BLOCK);
+    }
+
+    if (mHeader->waveBlockOffset) {
+        mWaveBlock = static_cast<WsdFile::WaveBlock const *>(
+            ut::AddOffsetToPtr(mHeader, mHeader->waveBlockOffset));
+
+        NW4RAssert_Line(113, mWaveBlock->blockHeader.kind ==
+                                 WsdFile::SIGNATURE_WAVE_BLOCK);
+    }
 }
 
-bool WsdFileReader::ReadWaveSoundInfo(WaveSoundInfo* pSoundInfo, int id) const {
-    const WsdFile::Wsd* pWsd =
-        Util::GetDataRefAddress0(mDataBlock->refWsd[id], &mDataBlock->wsdCount);
+bool WsdFileReader::ReadWaveSoundInfo(WaveSoundInfo *info, int index) const {
+    WsdFile::Wsd const *wsd = Util::GetDataRefAddress0(
+        mDataBlock->refWsd[index], &mDataBlock->wsdCount);
 
-    const WsdFile::WsdInfo* pWsdInfo =
-        Util::GetDataRefAddress0(pWsd->refWsdInfo, &mDataBlock->wsdCount);
+    WsdFile::WsdInfo const *src =
+        Util::GetDataRefAddress0(wsd->refWsdInfo, &mDataBlock->wsdCount);
 
-    if (mHeader->fileHeader.version == NW4R_VERSION(1, 2)) {
-        pSoundInfo->pitch = pWsdInfo->pitch;
-        pSoundInfo->pan = pWsdInfo->pan;
-        pSoundInfo->surroundPan = pWsdInfo->surroundPan;
-        pSoundInfo->fxSendA = pWsdInfo->fxSendA;
-        pSoundInfo->fxSendB = pWsdInfo->fxSendB;
-        pSoundInfo->fxSendC = pWsdInfo->fxSendC;
-        pSoundInfo->mainSend = pWsdInfo->mainSend;
-    } else if (mHeader->fileHeader.version == NW4R_VERSION(1, 1)) {
-        pSoundInfo->pitch = pWsdInfo->pitch;
-        pSoundInfo->pan = pWsdInfo->pan;
-        pSoundInfo->surroundPan = pWsdInfo->surroundPan;
-        pSoundInfo->fxSendA = 0;
-        pSoundInfo->fxSendB = 0;
-        pSoundInfo->fxSendC = 0;
-        pSoundInfo->mainSend = 127;
+    if (mHeader->fileHeader.version >= NW4R_FILE_VERSION(1, 2)) {
+        info->pitch = src->pitch;
+        info->pan = src->pan;
+        info->surroundPan = src->surroundPan;
+
+        info->fxSendA = src->fxSendA;
+        info->fxSendB = src->fxSendB;
+        info->fxSendC = src->fxSendC;
+        info->mainSend = src->mainSend;
+    } else if (mHeader->fileHeader.version >= NW4R_FILE_VERSION(1, 1)) {
+        info->pitch = src->pitch;
+        info->pan = src->pan;
+        info->surroundPan = src->surroundPan;
+
+        info->fxSendA = 0;
+        info->fxSendB = 0;
+        info->fxSendC = 0;
+        info->mainSend = 127;
     } else {
-        pSoundInfo->pitch = 1.0f;
-        pSoundInfo->pan = 64;
-        pSoundInfo->surroundPan = 0;
-        pSoundInfo->fxSendA = 0;
-        pSoundInfo->fxSendB = 0;
-        pSoundInfo->fxSendC = 0;
-        pSoundInfo->mainSend = 127;
+        info->pitch = 1.0f;
+        info->pan = 64;
+        info->surroundPan = 0;
+
+        info->fxSendA = 0;
+        info->fxSendB = 0;
+        info->fxSendC = 0;
+        info->mainSend = 127;
     }
 
     return true;
 }
 
-bool WsdFileReader::ReadWaveSoundNoteInfo(WaveSoundNoteInfo* pSoundNoteInfo,
-                                          int id, int note) const {
-    const WsdFile::Wsd* pWsd =
-        Util::GetDataRefAddress0(mDataBlock->refWsd[id], &mDataBlock->wsdCount);
+bool WsdFileReader::ReadWaveSoundNoteInfo(WaveSoundNoteInfo *noteInfo,
+                                          int index, int noteIndex) const {
+    WsdFile::Wsd const *wsd = Util::GetDataRefAddress0(
+        mDataBlock->refWsd[index], &mDataBlock->wsdCount);
 
-    const WsdFile::NoteTable* pTable =
-        Util::GetDataRefAddress0(pWsd->refNoteTable, &mDataBlock->wsdCount);
+    WsdFile::NoteInfoTable const *noteTable =
+        Util::GetDataRefAddress0(wsd->refNoteTable, &mDataBlock->wsdCount);
 
-    const WsdFile::NoteInfo* pNoteInfo =
-        Util::GetDataRefAddress0(pTable->items[note], &mDataBlock->wsdCount);
+    WsdFile::NoteInfo const *src = Util::GetDataRefAddress0(
+        noteTable->items[noteIndex], &mDataBlock->wsdCount);
 
-    pSoundNoteInfo->waveIndex = pNoteInfo->waveIndex;
-    pSoundNoteInfo->attack = pNoteInfo->attack;
-    pSoundNoteInfo->decay = pNoteInfo->decay;
-    pSoundNoteInfo->sustain = pNoteInfo->sustain;
-    pSoundNoteInfo->release = pNoteInfo->release;
-    pSoundNoteInfo->originalKey = pNoteInfo->originalKey;
-    pSoundNoteInfo->volume = pNoteInfo->volume;
+    noteInfo->waveIndex = src->waveIndex;
+    noteInfo->attack = src->attack;
+    noteInfo->hold = src->hold;
+    noteInfo->decay = src->decay;
+    noteInfo->sustain = src->sustain;
+    noteInfo->release = src->release;
+    noteInfo->originalKey = src->originalKey;
+    noteInfo->volume = src->volume;
 
-    if (mHeader->fileHeader.version >= NW4R_VERSION(1, 1)) {
-        pSoundNoteInfo->pan = pNoteInfo->pan;
-        pSoundNoteInfo->surroundPan = pNoteInfo->surroundPan;
-        pSoundNoteInfo->pitch = pNoteInfo->pitch;
+    if (mHeader->fileHeader.version >= NW4R_FILE_VERSION(1, 1)) {
+        noteInfo->pan = src->pan;
+        noteInfo->surroundPan = src->surroundPan;
+        noteInfo->pitch = src->pitch;
     } else {
-        pSoundNoteInfo->pan = 64;
-        pSoundNoteInfo->surroundPan = 0;
-        pSoundNoteInfo->pitch = 1.0f;
+        noteInfo->pan = 64;
+        noteInfo->surroundPan = 0;
+        noteInfo->pitch = 1.0f;
     }
 
     return true;
 }
 
-bool WsdFileReader::ReadWaveParam(int id, WaveData* pWaveData,
-                                  const void* pWaveAddr) const {
-    const WaveFile::WaveInfo* pWaveInfo;
+bool WsdFileReader::ReadWaveInfo(int waveIndex, WaveData *waveData,
+                                 void const *waveDataAddress) const {
+    if (!mWaveBlock) {
+        WaveArchiveReader waveArchiveReader(waveDataAddress);
 
-    if (mHeader->fileHeader.version == NW4R_VERSION(1, 0)) {
-        const WsdFile::WaveBlockOld* pWaveBlockOld =
-            reinterpret_cast<const WsdFile::WaveBlockOld*>(mWaveBlock);
-
-        pWaveInfo = static_cast<const WaveFile::WaveInfo*>(
-            ut::AddOffsetToPtr(pWaveBlockOld, pWaveBlockOld->offsetTable[id]));
-    } else {
-        if (id >= mWaveBlock->waveCount) {
+        WaveFile::FileHeader const *fileHeader =
+            waveArchiveReader.GetWaveFile(waveIndex);
+        if (!fileHeader) {
             return false;
         }
 
-        pWaveInfo = static_cast<const WaveFile::WaveInfo*>(
-            ut::AddOffsetToPtr(mWaveBlock, mWaveBlock->offsetTable[id]));
+        WaveFileReader waveFileReader(fileHeader);
+        return waveFileReader.ReadWaveInfo(waveData);
+    } else {
+        WaveFile::WaveInfo const *waveInfo;
+
+        if (mHeader->fileHeader.version >= NW4R_FILE_VERSION(1, 1)) {
+            if (waveIndex >= mWaveBlock->waveCount) {
+                return false;
+            }
+
+            waveInfo =
+                static_cast<WaveFile::WaveInfo const *>(ut::AddOffsetToPtr(
+                    mWaveBlock, mWaveBlock->offsetTable[waveIndex]));
+        } else {
+            WsdFile::WaveBlockOld const *waveBlockOld =
+                reinterpret_cast<WsdFile::WaveBlockOld const *>(mWaveBlock);
+
+            waveInfo =
+                static_cast<WaveFile::WaveInfo const *>(ut::AddOffsetToPtr(
+                    waveBlockOld, waveBlockOld->offsetTable[waveIndex]));
+        }
+
+        WaveFileReader waveFileReader(waveInfo);
+        return waveFileReader.ReadWaveInfo(waveData, waveDataAddress);
     }
-
-    WaveFileReader reader(pWaveInfo);
-    return reader.ReadWaveParam(pWaveData, pWaveAddr);
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

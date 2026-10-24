@@ -4609,8 +4609,8 @@ void dAcPlayer_c::createBodyModel() {
 
 // .text 0x28B70
 void dAcPlayer_c::releaseClothTex() {
-    mMdl.getResMdl().ReleasePlttByName("cloth");
-    mMdl.getResMdl().ReleaseTexByName("cloth");
+    mMdl.getResMdl().ReleasePltt("cloth");
+    mMdl.getResMdl().ReleaseTex("cloth");
     bindCloth();
 }
 
@@ -4639,10 +4639,10 @@ void dAcPlayer_c::setupHeadModel(nw4r::g3d::ResFile file) {
     nw4r::g3d::ResMdl headMdl = mHeadMdl.getResMdl();
     nw4r::g3d::ResMatTevColor tev = headMdl.GetResMat("h").GetResMatTevColor();
     GXColor hairColor;
-    if (tev.GXGetTevColor(GX_TEVPREV, &hairColor)) {
+    if (tev.GXGetTevKColor(GX_KCOLOR0, &hairColor)) {
         u8 colorNo = pd->getHairColor();
         hairColor.a = l_hairColorAlpha[(u8)colorNo];
-        tev.GXSetTevColor(GX_TEVPREV, hairColor);
+        tev.GXSetTevKColor(GX_KCOLOR0, hairColor);
         tev.DCStore(false);
     }
     mFaceAnmMng.setEyeTex(0);
@@ -4674,10 +4674,10 @@ void dAcPlayer_c::releaseHeadModel() {
         anm.Release();
         anm = mFaceAnmMng.getMouthResAnmTexPat();
         anm.Release();
-        mHeadMdl.getResMdl().ReleasePlttByName("skin");
-        mHeadMdl.getResMdl().ReleasePlttByName("h");
-        mHeadMdl.getResMdl().ReleaseTexByName("e.0");
-        mHeadMdl.getResMdl().ReleaseTexByName("m.0");
+        mHeadMdl.getResMdl().ReleasePltt("skin");
+        mHeadMdl.getResMdl().ReleasePltt("h");
+        mHeadMdl.getResMdl().ReleaseTex("e.0");
+        mHeadMdl.getResMdl().ReleaseTex("m.0");
         mTexPatAnm.remove();
         mHeadMdl.remove();
         mActorFlags &= ~dPlayerMgr::ACTOR_FLAG_HEAD_MDL;
@@ -4690,7 +4690,7 @@ void dAcPlayer_c::setBodyKColor(const GXColor &color) {
     nw4r::g3d::ResMat mat = mdl.GetResMat("b0");
     if (mat.IsValid()) {
         nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
-        tev.GXSetTevKColor(GX_KCOLOR1, color);
+        tev.GXSetTevColor(GX_TEVREG0, color);
         tev.DCStore(false);
     }
 }
@@ -4777,7 +4777,7 @@ void dAcPlayer_c::createHairMdl(nw4r::g3d::ResFile file) {
 // .text 0x29490
 void dAcPlayer_c::releaseHairModel() {
     if (mActorFlags & dPlayerMgr::ACTOR_FLAG_HAIR_MDL) {
-        mHairMdl.getResMdl().ReleasePlttByName("h");
+        mHairMdl.getResMdl().ReleasePltt("h");
         mHairMdl.remove();
         mActorFlags &= ~dPlayerMgr::ACTOR_FLAG_HAIR_MDL;
     }
@@ -4991,16 +4991,16 @@ void dAcPlayer_c::loadMaskHead() {
     if (!mat.IsValid()) {
         return;
     }
-    mHairMdl.getResMdl().ReleasePlttByName("h");
+    mHairMdl.getResMdl().ReleasePltt("h");
     mdl.Bind(mPaletteMng.getResFile(0));
     mdl.Bind(mPaletteMng.getResFile(1));
     nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
     GXColor hairColor;
-    if (tev.GXGetTevColor(GX_TEVPREV, &hairColor)) {
+    if (tev.GXGetTevKColor(GX_KCOLOR0, &hairColor)) {
         dPrivateData_c *pd = dPlayerMgr::Mgr_c::getNetPlayer(mPlayerNo);
         u8 colorNo = pd->getHairColor();
         hairColor.a = l_hairColorAlpha[(u8)colorNo];
-        tev.GXSetTevColor(GX_TEVPREV, hairColor);
+        tev.GXSetTevKColor(GX_KCOLOR0, hairColor);
         tev.DCStore(false);
     }
 }
@@ -5325,11 +5325,11 @@ void dAcPlayer_c::resetFaceTex() {
     if (mActorFlags & dPlayerMgr::ACTOR_FLAG_HEAD_MDL) {
         nw4r::g3d::ResMdl mdl = mHeadMdl.getResMdl();
         nw4r::g3d::ResAnmTexPat eye = mFaceAnmMng.getEyeResAnmTexPat();
-        eye.fn_8023A41C("e.0");
+        eye.ReleaseTex("e.0");
         nw4r::g3d::ResAnmTexPat mouth = mFaceAnmMng.getMouthResAnmTexPat();
-        mouth.fn_8023A41C("m.0");
-        mHeadMdl.getResMdl().ReleaseTexByName("e.0");
-        mHeadMdl.getResMdl().ReleaseTexByName("m.0");
+        mouth.ReleaseTex("m.0");
+        mHeadMdl.getResMdl().ReleaseTex("e.0");
+        mHeadMdl.getResMdl().ReleaseTex("m.0");
         nw4r::g3d::ResFile eyeFile = dHmnFaceTexMng_c::getResFile(getFaceNo());
         mdl.Bind(eyeFile);
         nw4r::g3d::ResFile mouthFile = dHmnFaceTexMng_c::getResFile(getGenderBodyNo());
@@ -5380,10 +5380,10 @@ void dAcPlayer_c::setMatColor(u8 brightness, nw4r::g3d::ResMdl *mdl) {
 // .text 0x2ABE8
 void dAcPlayer_c::rebindShoePalette() {
     nw4r::g3d::ResMdl mdl = mMdl.getResMdl();
-    mdl.ReleasePlttByName("b0");
+    mdl.ReleasePltt("b0");
     mPaletteMng.setPltt(getShoeNo(), 2);
     mdl.Bind(mPaletteMng.getResFile(2));
-    mdl.ReleaseTexByName("b0");
+    mdl.ReleaseTex("b0");
     mdl.Bind(dHmnFaceTexMng_c::getResFile(getShoeNo2()));
 }
 

@@ -485,6 +485,10 @@ f32 AnmObjShpRes::GetFrame() const {
 
 void AnmObjShpRes::SetUpdateRate(f32 rate) {
     SetRate(rate);
+
+    if (rate == 0.0f && mpResultCache != NULL) {
+        UpdateCache();
+    }
 }
 
 f32 AnmObjShpRes::GetUpdateRate() const {
@@ -492,10 +496,12 @@ f32 AnmObjShpRes::GetUpdateRate() const {
 }
 
 void AnmObjShpRes::UpdateFrame() {
-    UpdateFrm();
+    if (GetRate() != 0.0f) {
+        UpdateFrm();
 
-    if (mpResultCache != NULL) {
-        UpdateCache();
+        if (mpResultCache != NULL) {
+            UpdateCache();
+        }
     }
 }
 

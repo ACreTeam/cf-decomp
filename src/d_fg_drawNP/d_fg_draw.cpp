@@ -433,17 +433,17 @@ void entry_c::setupResources() {
                 nw4r::g3d::ResTex tex = always.GetResTex(getSoldOutTexture(
                     (dSaveData_c::getTown()->_0735C2 >> 4) & 15));
                 nw4r::g3d::ResMat mat = mModel.GetResMat("m_soldout");
-                mat.ReleaseTexByName(sSoldOutTextures0,
+                mat.ReleaseTex(sSoldOutTextures0,
                                      strlen(sSoldOutTextures0));
-                mat.BindTexByName(tex, sSoldOutTextures0);
+                mat.ForceBindTex(tex, sSoldOutTextures0);
             } else if (mItem ==
                        dItem::Item(dItem::ITEM_IDX_SOLD_OUT_SIGN_01).getId()) {
                 nw4r::g3d::ResTex tex = always.GetResTex(getGraceSoldOutTexture(
                     (dSaveData_c::getTown()->_0735C2 >> 4) & 15));
                 nw4r::g3d::ResMat mat = mModel.GetResMat("m_grace_soldout");
-                mat.ReleaseTexByName(sGraceSoldOutTextures0,
+                mat.ReleaseTex(sGraceSoldOutTextures0,
                                      strlen(sGraceSoldOutTextures0));
-                mat.BindTexByName(tex, sGraceSoldOutTextures0);
+                mat.ForceBindTex(tex, sGraceSoldOutTextures0);
             }
         }
     }
@@ -1104,15 +1104,15 @@ void dFgDraw_c::bindTreeResources() {
             sprintf(texName, dFgDraw::sBroadleafTextureFormat, stage, variant);
             nw4r::g3d::ResTex tex = file.GetResTex(texName);
             if (tex.IsValid()) {
-                mat.ReleaseTexByName(baseTexName, strlen(baseTexName));
-                mat.BindTexByName(tex, baseTexName);
+                mat.ReleaseTex(baseTexName, strlen(baseTexName));
+                mat.ForceBindTex(tex, baseTexName);
             }
             sprintf(paletteName, dFgDraw::sBroadleafPaletteFormat, variant);
             nw4r::g3d::ResPltt pltt = file.GetResPltt(paletteName);
             if (pltt.IsValid()) {
-                mat.ReleasePlttByName(broadleafPaletteBase,
+                mat.ReleasePltt(broadleafPaletteBase,
                                       strlen(broadleafPaletteBase));
-                mat.BindPlttByName(pltt, broadleafPaletteBase);
+                mat.ForceBindPltt(pltt, broadleafPaletteBase);
             }
             sprintf(modelName, dFgDraw::sBroadleafTopModelFormat, stage,
                     variant);
@@ -1121,24 +1121,24 @@ void dFgDraw_c::bindTreeResources() {
                 sprintf(matName, dFgDraw::sBroadleafTopMaterialAFormat, stage);
                 mat = model.GetResMat(matName);
                 if (tex.IsValid()) {
-                    mat.ReleaseTexByName(baseTexName, strlen(baseTexName));
-                    mat.BindTexByName(tex, baseTexName);
+                    mat.ReleaseTex(baseTexName, strlen(baseTexName));
+                    mat.ForceBindTex(tex, baseTexName);
                 }
                 if (pltt.IsValid()) {
-                    mat.ReleasePlttByName(broadleafPaletteBase,
+                    mat.ReleasePltt(broadleafPaletteBase,
                                           strlen(broadleafPaletteBase));
-                    mat.BindPlttByName(pltt, broadleafPaletteBase);
+                    mat.ForceBindPltt(pltt, broadleafPaletteBase);
                 }
                 sprintf(matName, dFgDraw::sBroadleafTopMaterialBFormat, stage);
                 mat = model.GetResMat(matName);
                 if (tex.IsValid()) {
-                    mat.ReleaseTexByName(baseTexName, strlen(baseTexName));
-                    mat.BindTexByName(tex, baseTexName);
+                    mat.ReleaseTex(baseTexName, strlen(baseTexName));
+                    mat.ForceBindTex(tex, baseTexName);
                 }
                 if (pltt.IsValid()) {
-                    mat.ReleasePlttByName(broadleafPaletteBase,
+                    mat.ReleasePltt(broadleafPaletteBase,
                                           strlen(broadleafPaletteBase));
-                    mat.BindPlttByName(pltt, broadleafPaletteBase);
+                    mat.ForceBindPltt(pltt, broadleafPaletteBase);
                 }
             }
         }
@@ -1156,14 +1156,14 @@ void dFgDraw_c::bindTreeResources() {
             sprintf(matName, dFgDraw::sSaplingMaterialFormat, part);
             mat = model.GetResMat(matName);
             if (tex.IsValid()) {
-                mat.ReleaseTexByName(saplingTextureBase,
+                mat.ReleaseTex(saplingTextureBase,
                                      strlen(saplingTextureBase));
-                mat.BindTexByName(tex, saplingTextureBase);
+                mat.ForceBindTex(tex, saplingTextureBase);
             }
             if (pltt.IsValid()) {
-                mat.ReleasePlttByName(saplingPaletteBase,
+                mat.ReleasePltt(saplingPaletteBase,
                                       strlen(saplingPaletteBase));
-                mat.BindPlttByName(pltt, saplingPaletteBase);
+                mat.ForceBindPltt(pltt, saplingPaletteBase);
             }
         }
     }
@@ -1176,16 +1176,16 @@ void dFgDraw_c::bindTreeResources() {
         sprintf(texName, dFgDraw::sDeadBroadleafTextureFormat, variant);
         nw4r::g3d::ResTex tex = file.GetResTex(texName);
         if (tex.IsValid()) {
-            mat.ReleaseTexByName(deadTreeTextureBase,
+            mat.ReleaseTex(deadTreeTextureBase,
                                  strlen(deadTreeTextureBase));
-            mat.BindTexByName(tex, deadTreeTextureBase);
+            mat.ForceBindTex(tex, deadTreeTextureBase);
         }
         sprintf(paletteName, dFgDraw::sBroadleafPaletteFormat, variant);
         nw4r::g3d::ResPltt pltt = file.GetResPltt(paletteName);
         if (pltt.IsValid()) {
-            mat.ReleasePlttByName(deadTreePaletteBase,
+            mat.ReleasePltt(deadTreePaletteBase,
                                   strlen(deadTreePaletteBase));
-            mat.BindPlttByName(pltt, deadTreePaletteBase);
+            mat.ForceBindPltt(pltt, deadTreePaletteBase);
         }
     }
     for (int variant = 1; variant <= 2; variant++) {
@@ -1201,14 +1201,14 @@ void dFgDraw_c::bindTreeResources() {
             sprintf(matName, dFgDraw::sSaplingMaterialFormat, part);
             mat = model.GetResMat(matName);
             if (tex.IsValid()) {
-                mat.ReleaseTexByName(deadSaplingTextureBase,
+                mat.ReleaseTex(deadSaplingTextureBase,
                                      strlen(deadSaplingTextureBase));
-                mat.BindTexByName(tex, deadSaplingTextureBase);
+                mat.ForceBindTex(tex, deadSaplingTextureBase);
             }
             if (pltt.IsValid()) {
-                mat.ReleasePlttByName(deadSaplingPaletteBase,
+                mat.ReleasePltt(deadSaplingPaletteBase,
                                       strlen(deadSaplingPaletteBase));
-                mat.BindPlttByName(pltt, deadSaplingPaletteBase);
+                mat.ForceBindPltt(pltt, deadSaplingPaletteBase);
             }
         }
     }

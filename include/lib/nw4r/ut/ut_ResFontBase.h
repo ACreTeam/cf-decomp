@@ -97,17 +97,21 @@ public:
     virtual int GetCharWidth(u16 ch) const;             // at 0x48
     virtual CharWidths GetCharWidths(u16 ch) const;     // at 0x4C
     virtual void GetGlyph(Glyph* pGlyph, u16 ch) const; // at 0x50
-    virtual FontEncoding GetEncoding() const;           // at 0x54
+    virtual bool HasGlyph(u16 ch) const;                // at 0x54
+    virtual FontEncoding GetEncoding() const;           // at 0x58
 
 protected:
     bool IsManaging(const void* pBuffer) const {
         return mResource == pBuffer;
     }
 
-    void SetResourceBuffer(void* pBuffer, FontInformation* pInfo);
-    void* RemoveResourceBuffer(); // 8022BC68: clears the resource, returns the buffer
+    FontInformation* GetFontInfo() const {
+        return mFontInfo;
+    }
 
-private:
+    void SetResourceBuffer(void* pBuffer, FontInformation* pInfo);
+    void* RemoveResourceBuffer();
+
     u16 GetGlyphIndex(u16 ch) const;
 
     u16 FindGlyphIndex(u16 ch) const;
@@ -122,8 +126,8 @@ private:
 private:
     void* mResource;            // at 0x10
     FontInformation* mFontInfo; // at 0x14
-    u16 mLastCharCode;          // at 0x18
-    u16 mLastGlyphIndex;        // at 0x1A
+    mutable u16 mLastCharCode;   // at 0x18
+    mutable u16 mLastGlyphIndex; // at 0x1A
 };
 
 } // namespace detail

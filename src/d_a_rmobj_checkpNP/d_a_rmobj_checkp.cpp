@@ -81,12 +81,12 @@ int daRmobjChkp_c::draw() {
         nw4r::g3d::ScnMdl::CopiedMatAccess cma(scnMdl, matId);
         if (cma.IsValid()) {
             nw4r::g3d::ResMatTevColor tevColor = cma.GetResMatTevColor(false);
-            tevColor.GXSetTevKColor(GX_KCOLOR2, color);
+            tevColor.GXSetTevColor(GX_TEVREG1, color);
             tevColor.DCStore(false);
         } else {
             nw4r::g3d::ResMatTevColor tevColor =
                 mdl.GetResMat("m_light_anim").GetResMatTevColor();
-            tevColor.GXSetTevKColor(GX_KCOLOR2, color);
+            tevColor.GXSetTevColor(GX_TEVREG1, color);
             tevColor.DCStore(false);
         }
     }

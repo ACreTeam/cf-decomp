@@ -29,10 +29,10 @@ struct VEC2 : _VEC2 {
     }
 
     operator f32*() {
-        return reinterpret_cast<f32*>(this);
+        return &x;
     }
     operator const f32*() const {
-        return reinterpret_cast<const f32*>(this);
+        return &x;
     }
 
     VEC2 operator+(const VEC2& rRhs) const {

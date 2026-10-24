@@ -1,4 +1,5 @@
 #include <nw4r/ef.h>
+#include <nw4r/NW4RAssert.hpp>
 #include <nw4r/math.h>
 
 #include <revolution/gx.h>
@@ -13,32 +14,30 @@ static void DrawPoint(const math::VEC3& rPos, bool texCoord);
 
 DrawPointStrategy::DrawPointStrategy() {}
 
-void DrawPointStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
-    InitGraphics(rInfo, pManager);
+void DrawPointStrategy::Draw(const DrawInfo &drawInfo, ParticleManager *pm) {
+    InitGraphics(drawInfo, pm);
 
-    const EmitterDrawSetting& rSetting =
-        *pManager->mResource->GetEmitterDrawSetting();
+    const EmitterDrawSetting &ed = *pm->mResource->GetEmitterDrawSetting();
 
-    math::MTX34 glbMtx;
-    math::MTX34 posMtx;
+    math::MTX34 mtxM;
+    pm->CalcGlobalMtx(&mtxM);
 
-    pManager->CalcGlobalMtx(&glbMtx);
-    math::MTX34Mult(&posMtx, rInfo.GetViewMtx(), &glbMtx);
-    GXLoadPosMtxImm(posMtx, GX_PNMTX0);
+    math::MTX34 mtxVM;
+    drawInfo.GetViewMtxCooked(&mtxVM);
+    math::MTX34Mult(&mtxVM, &mtxVM, &mtxM);
+    GXLoadPosMtxImm(mtxVM, GX_PNMTX0);
 
-    GetFirstDrawParticleFunc pGetFirstFunc = GetGetFirstDrawParticleFunc(
-        rSetting.mFlags & EmitterDrawSetting::FLAG_DRAW_ORDER);
+    GetFirstDrawParticleFunc getFirst = GetGetFirstDrawParticleFunc(
+        ed.mFlags & EmitterDrawSetting::FLAG_DRAW_ORDER);
 
-    GetNextDrawParticleFunc pGetNextFunc = GetGetNextDrawParticleFunc(
-        rSetting.mFlags & EmitterDrawSetting::FLAG_DRAW_ORDER);
+    GetNextDrawParticleFunc getNext = GetGetNextDrawParticleFunc(
+        ed.mFlags & EmitterDrawSetting::FLAG_DRAW_ORDER);
 
     u8 prevPointSize = 0;
     bool first = true;
 
-    for (Particle* pParticle = pGetFirstFunc(pManager); pParticle != NULL;
-         pParticle = pGetNextFunc(pManager, pParticle)) {
-
-        f32 sx = pParticle->Draw_GetSizeX();
+    for (Particle *pp = getFirst(pm); pp != NULL; pp = getNext(pm, pp)) {
+        f32 sx = pp->Draw_GetSizeX();
         if (sx < std::numeric_limits<f32>::epsilon()) {
             continue;
         }
@@ -52,13 +51,13 @@ void DrawPointStrategy::Draw(const DrawInfo& rInfo, ParticleManager* pManager) {
             prevPointSize = pointSize;
             GXSetPointSize(pointSize, GX_TO_ONE);
 
-            SetupGP(pParticle, rSetting, rInfo, first, true);
+            SetupGP(pp, ed, drawInfo, first, true);
         } else {
-            SetupGP(pParticle, rSetting, rInfo, first, false);
+            SetupGP(pp, ed, drawInfo, first, false);
         }
 
         first = false;
-        DrawPoint(pParticle->mParameter.mPosition, mNumTexmap > 0);
+        DrawPoint(pp->mParameter.mPosition, mNumTexmap > 0);
     }
 }
 
@@ -76,13 +75,12 @@ static void DrawPoint(const math::VEC3& rPos, bool texCoord) {
 
 void DrawPointStrategy::InitGraphics(const DrawInfo& rInfo,
                                      ParticleManager* pManager) {
+    NW4RAssertPointerNonnull(pManager);
 
     const EmitterDrawSetting& rSetting =
         *pManager->mResource->GetEmitterDrawSetting();
 
-    InitTexture(rSetting);
-    InitTev(rSetting, rInfo);
-    InitColor(pManager, rSetting, rInfo);
+    Initialize(pManager, rSetting, rInfo);
 
     GXEnableTexOffsets(GX_TEXCOORD0, TRUE, TRUE);
 

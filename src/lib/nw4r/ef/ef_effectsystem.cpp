@@ -5,7 +5,7 @@
 
 namespace {
 
-NW4R_LIB_VERSION(EF, "Jun  8 2007", "11:16:29", "0x4199_60831");
+NW4R_LIB_VERSION(EF, "May 15 2008", "05:36:48", "0x4199_60831");
 
 } // namespace
 
@@ -16,13 +16,14 @@ static DrawOrder gBasicDrawOrder;
 static DrawStrategyBuilder gBasicDrawStrategyBuilder;
 static EmitFormBuilder gBasicEmitFormBuilder;
 
-bool EffectSystem::mDisplayVersion = true;
+int EffectSystem::mDisplayVersion = false;
+DrawInfo EffectSystem::mSortEffectOperatorZDrawInfo;
 EffectSystem EffectSystem::instance;
 
 EffectSystem::EffectSystem() {
 #if defined(VERSION_RSPE01_01)
-    if (mDisplayVersion) {
-        mDisplayVersion = false;
+    if (!mDisplayVersion) {
+        mDisplayVersion = true;
         OSRegisterVersion(NW4R_EF_Version_);
     }
 #endif
@@ -38,7 +39,7 @@ EffectSystem::~EffectSystem() {
     }
 }
 
-EffectSystem* EffectSystem::GetInstance() {
+EffectSystem *EffectSystem::GetInstance() {
     return &instance;
 }
 
@@ -63,24 +64,37 @@ bool EffectSystem::Initialize(u32 maxGroupID) {
     return true;
 }
 
-bool EffectSystem::Closing(Effect* pEffect) {
+bool EffectSystem::Closing(Effect *pEffect) {
     mActivityList[pEffect->mGroupID].ToClosing(pEffect);
     pEffect->mLifeStatus = ReferencedObject::NW4R_EF_LS_CLOSING;
 
     return true;
 }
 
-Effect* EffectSystem::CreateEffect(const char* pName, u32 groupID,
+Effect *EffectSystem::CreateEffect(const char *pName, u32 groupID,
                                    u16 calcRemain) {
 
-    EmitterResource* pResource =
+    EmitterResource *pResource =
         Resource::GetInstance()->_FindEmitter(pName, NULL);
 
     if (pResource == NULL) {
         return NULL;
     }
 
-    Effect* pEffect = GetMemoryManager()->AllocEffect();
+    return CreateEffect(pResource, groupID, calcRemain);
+}
+
+Effect *EffectSystem::CreateEffect(EmitterResource *pResource, u32 groupID,
+                                   u16 calcRemain) {
+    if (pResource == NULL) {
+        return NULL;
+    }
+    if (!(pResource->GetEmitterDesc()->commonFlag &
+          EmitterDesc::CMN_FLAG_RELOCATED)) {
+        return NULL;
+    }
+
+    Effect *pEffect = GetMemoryManager()->AllocEffect();
     if (pEffect == NULL) {
         return NULL;
     }
@@ -101,7 +115,7 @@ Effect* EffectSystem::CreateEffect(const char* pName, u32 groupID,
     return pEffect;
 }
 
-u32 EffectSystem::RetireEffect(Effect* pEffect) {
+u32 EffectSystem::RetireEffect(Effect *pEffect) {
     if (pEffect->mLifeStatus != ReferencedObject::NW4R_EF_LS_ACTIVE) {
         return 0;
     }
@@ -113,13 +127,13 @@ u32 EffectSystem::RetireEffect(Effect* pEffect) {
 
 u32 EffectSystem::RetireEffectAll(u32 groupID) {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_EFFECT];
+    void *pArray[NW4R_EF_MAX_EFFECT];
 
     u16 size = UtlistToArray(&mActivityList[groupID].mActiveList, pArray,
                              UtlistSize(&mActivityList[groupID].mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        Effect* pEffect = static_cast<Effect*>(pArray[i]);
+        Effect *pEffect = static_cast<Effect *>(pArray[i]);
 
         if (pEffect->mLifeStatus == ReferencedObject::NW4R_EF_LS_ACTIVE) {
             num += RetireEffect(pEffect);
@@ -131,13 +145,13 @@ u32 EffectSystem::RetireEffectAll(u32 groupID) {
 
 u32 EffectSystem::RetireEmitterAll(u32 groupID) {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_EFFECT];
+    void *pArray[NW4R_EF_MAX_EFFECT];
 
     u16 size = UtlistToArray(&mActivityList[groupID].mActiveList, pArray,
                              UtlistSize(&mActivityList[groupID].mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        Effect* pEffect = static_cast<Effect*>(pArray[i]);
+        Effect *pEffect = static_cast<Effect *>(pArray[i]);
         num += pEffect->RetireEmitterAll();
     }
 
@@ -146,36 +160,64 @@ u32 EffectSystem::RetireEmitterAll(u32 groupID) {
 
 u32 EffectSystem::RetireParticleAll(u32 groupID) {
     u32 num = 0;
-    void* pArray[NW4R_EF_MAX_EFFECT];
+    void *pArray[NW4R_EF_MAX_EFFECT];
 
     u16 size = UtlistToArray(&mActivityList[groupID].mActiveList, pArray,
                              UtlistSize(&mActivityList[groupID].mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        Effect* pEffect = static_cast<Effect*>(pArray[i]);
+        Effect *pEffect = static_cast<Effect *>(pArray[i]);
         num += pEffect->RetireParticleAll();
     }
 
     return num;
 }
 
-void EffectSystem::Calc(u32 groupID, bool onlyBillboard) {
-    void* pArray[NW4R_EF_MAX_EFFECT];
+u32 EffectSystem::GetNumEffect(u32 groupID) const {
+    return UtlistSize(&mActivityList[groupID].mActiveList);
+}
+
+void EffectSystem::Calc(u32 groupID, CalcOption option) {
+    void *pArray[NW4R_EF_MAX_EFFECT];
 
     u16 size = UtlistToArray(&mActivityList[groupID].mActiveList, pArray,
                              UtlistSize(&mActivityList[groupID].mActiveList));
 
     for (u16 i = 0; i < size; i++) {
-        Effect* pEffect = static_cast<Effect*>(pArray[i]);
-        pEffect->Calc(onlyBillboard);
+        Effect *pEffect = static_cast<Effect *>(pArray[i]);
+        pEffect->Calc(option);
     }
 
     mMemoryManager->GarbageCollection();
 }
 
-void EffectSystem::Draw(const DrawInfo& rInfo, u32 groupID) {
-    NW4R_UT_LIST_FOREACH (Effect, it, mActivityList[groupID].mActiveList,
-                          { it->Draw(rInfo); });
+void EffectSystem::Draw(const DrawInfo &rInfo, u32 groupID) {
+    NW4R_UT_LIST_FOREACH(Effect, it, mActivityList[groupID].mActiveList,
+                         { it->Draw(rInfo); });
+}
+
+void EffectSystem::SetProcessCamera(const math::VEC3 &position,
+                                    const math::MTX34 &matrix, f32 nnear,
+                                    f32 ffar) {
+    mProcessCameraPos = position;
+    math::MTX34Copy(&mProcessCameraMtx, &matrix);
+    mProcessCameraNear = nnear;
+    mProcessCameraFar = ffar;
+}
+
+u32 EffectSystem::ForeachParticleManager(ForEachFunc pFunc, ForEachParam param,
+                                         u32 groupID, bool ignoreLifeStatus) {
+    u32 count = 0;
+    Effect *pEffect = static_cast<Effect *>(
+        ut::List_GetNext(&mActivityList[groupID].mActiveList, NULL));
+    while (pEffect != NULL) {
+        Effect *pNext = static_cast<Effect *>(
+            ut::List_GetNext(&mActivityList[groupID].mActiveList, pEffect));
+        count +=
+            pEffect->ForeachParticleManager(pFunc, param, ignoreLifeStatus);
+        pEffect = pNext;
+    }
+    return count;
 }
 
 } // namespace ef

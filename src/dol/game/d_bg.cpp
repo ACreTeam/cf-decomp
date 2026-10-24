@@ -148,7 +148,7 @@ void bkLoader_c::onLoaded() {
             if (mat.IsValid()) {
                 mColor color = getGrassColor(season);
                 nw4r::g3d::ResMatTevColor tev = mat.GetResMatTevColor();
-                tev.GXSetTevKColor(GX_KCOLOR1, color);
+                tev.GXSetTevColor(GX_TEVREG0, color);
                 tev.EndEdit();
             }
         }

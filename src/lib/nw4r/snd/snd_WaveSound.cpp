@@ -11,14 +11,14 @@ WaveSound::WaveSound(SoundInstanceManager<WaveSound>* pManager, int priority,
                       int ambientPriority)
     : BasicSound(priority, ambientPriority), mManager(pManager), mTempSpecialHandle(NULL), mPreparedFlag(false) {}
 
-bool WaveSound::Prepare(const void* pWsdData, s32 wsdOffset,
+bool WaveSound::Prepare(const void *pWsdData, s32 wsdOffset,
                         WsdPlayer::StartOffsetType startType, s32 startOffset,
-                        int voices, const WsdPlayer::WsdCallback* pCallback,
+                        const WsdPlayer::WsdCallback *pCallback,
                         u32 callbackArg) {
     InitParam();
 
-    if (!mWsdPlayer.Prepare(pWsdData, wsdOffset, startType, startOffset, voices,
-                            pCallback, callbackArg)) {
+    if (!mWsdPlayer.Prepare(pWsdData, wsdOffset, startType, startOffset,
+                            GetVoiceOutCount(), pCallback, callbackArg)) {
         return false;
     }
 

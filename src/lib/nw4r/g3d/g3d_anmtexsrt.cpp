@@ -385,6 +385,10 @@ f32 AnmObjTexSrtRes::GetFrame() const {
 
 void AnmObjTexSrtRes::SetUpdateRate(f32 rate) {
     SetRate(rate);
+
+    if (rate == 0.0f && mpResultCache != NULL) {
+        UpdateCache();
+    }
 }
 
 f32 AnmObjTexSrtRes::GetUpdateRate() const {
@@ -392,10 +396,12 @@ f32 AnmObjTexSrtRes::GetUpdateRate() const {
 }
 
 void AnmObjTexSrtRes::UpdateFrame() {
-    UpdateFrm();
+    if (GetRate() != 0.0f) {
+        UpdateFrm();
 
-    if (mpResultCache != NULL) {
-        UpdateCache();
+        if (mpResultCache != NULL) {
+            UpdateCache();
+        }
     }
 }
 
@@ -479,21 +485,25 @@ void AnmObjTexSrtRes::G3dProc(u32 task, u32 param, void* pInfo) {
  *
  ******************************************************************************/
 void ApplyTexSrtAnmResult(ResTexSrt srt, const TexSrtAnmResult* pResult) {
-    ResTexSrtData& r = srt.ref();
+    ResTexSrtData& data = srt.ref();
 
-    u32 flags = pResult->flags;
+    u32 mdlFlags = data.flag;
+    u32 anmFlags = pResult->flags;
     u32 mask = 0x0F;
 
-    for (int i = 0; flags != 0;
-         flags >>= TexSrt::NUM_OF_FLAGS, mask <<= 4, i++) {
+    for (int idx = 0; mdlFlags != 0 && anmFlags != 0;
+         mdlFlags >>= TexSrt::NUM_OF_FLAGS, anmFlags >>= TexSrt::NUM_OF_FLAGS,
+             mask <<= TexSrt::NUM_OF_FLAGS, idx++) {
 
-        if (!(flags & 1)) {
-            continue;
+        if ((mdlFlags & 1) && (anmFlags & 1)) {
+            data.texMtxMode = pResult->texMtxMode;
+            data.texSrt[idx].Su = pResult->srt[idx].Su;
+            data.texSrt[idx].Sv = pResult->srt[idx].Sv;
+            data.texSrt[idx].R = pResult->srt[idx].R;
+            data.texSrt[idx].Tu = pResult->srt[idx].Tu;
+            data.texSrt[idx].Tv = pResult->srt[idx].Tv;
+            data.flag = (data.flag & ~mask) | (pResult->flags & mask);
         }
-
-        r.texMtxMode = pResult->texMtxMode;
-        r.texSrt[i] = pResult->srt[i];
-        r.flag = (r.flag & ~mask) | (pResult->flags & mask);
     }
 }
 
@@ -512,8 +522,7 @@ void ApplyTexSrtAnmResult(ResTexSrt srt, ResMatIndMtxAndScale ind,
         math::MTX34 mtx;
 
         CalcTexMtx(&mtx, true, pResult->srt[i],
-                   static_cast<TexSrt::Flag>(flags & TexSrt::FLAGSET_IDENTITY),
-                   TexSrtTypedef::TEXMATRIXMODE_MAYA);
+                   static_cast<TexSrt::Flag>(flags & TexSrt::FLAGSET_IDENTITY));
 
         s8 scaleExp;
 

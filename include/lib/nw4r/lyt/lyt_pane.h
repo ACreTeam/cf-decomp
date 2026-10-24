@@ -85,7 +85,7 @@ private:
         BIT_LOCATION_ADJUST,
     };
 
-    // Need the typedef before the class definition is complete
+protected:
     typedef ut::LinkList<Pane, offsetof(PaneBase, node)> PaneList;
 
 public:
@@ -130,7 +130,7 @@ public:
     virtual void SetAnimationEnable(const AnimResource &, bool enable,
                                     bool recursive); // at 0x60
 
-    virtual bool GetMaterialNum() const;         // at 0x64
+    virtual u8 GetMaterialNum() const;           // at 0x64
     virtual Material* GetMaterial() const;       // at 0x68
     virtual Material* GetMaterial(ulong) const;    // at 0x6C
     virtual void LoadMtx(const DrawInfo& rInfo); // at 0x70
@@ -138,6 +138,7 @@ public:
     void AppendChild(Pane* pChild);
     void RemoveChild(Pane* pChild);
 
+    ut::Rect GetPaneRect() const;
     ut::Rect GetPaneRect(const DrawInfo& rInfo) const;
 
     void AddAnimationLink(AnimationLink* pAnimLink);
@@ -147,6 +148,10 @@ public:
     u16 GetExtUserDataNum() const;
     const res::ExtUserData *GetExtUserData() const;
     const res::ExtUserData *FindExtUserDataByName(const char *name);
+
+    void SetExtUserDataList(const res::ExtUserDataList* pBlock) {
+        mpExtUserDataList = pBlock;
+    }
 
     Pane* GetParent() const {
         return mpParent;
@@ -282,7 +287,7 @@ protected:
     math::MTX34 mMtx;    // at 0x54
     math::MTX34 mGlbMtx; // at 0x84
 
-    ulong mExtUserDataNum; // at 0xB4
+    const res::ExtUserDataList* mpExtUserDataList; // at 0xB4
 
     u8 mAlpha;        // at 0xB8
     u8 mGlbAlpha;     // at 0xB9
@@ -293,7 +298,7 @@ protected:
     char mUserData[NW4R_LYT_PANE_USERDATA_LEN + 1]; // at 0xCD
 
     bool mbUserAllocated; // at 0xD6
-    u8 PADDING_0xD3;      // at 0xD7
+    u8 mPadding;          // at 0xD7
 
 protected:
     void InsertChild(PaneList::Iterator next, Pane* pChild);

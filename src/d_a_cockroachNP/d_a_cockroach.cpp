@@ -719,9 +719,9 @@ void daCockroachBase_c::setAlpha(u8 alpha) {
         if (access.IsValid()) {
             GXColor color;
             nw4r::g3d::ResMatTevColor tev = access.GetResMatTevColor();
-            tev.GXGetTevKColor(GX_KCOLOR1, &color);
+            tev.GXGetTevColor(GX_TEVREG0, &color);
             color.a = alpha;
-            tev.GXSetTevKColor(GX_KCOLOR1, color);
+            tev.GXSetTevColor(GX_TEVREG0, color);
             tev.DCStore(false);
         }
     }

@@ -2,6 +2,8 @@
 #include <nw4r/math.h>
 #include <nw4r/ut.h>
 
+#include <cstring>
+
 namespace nw4r {
 namespace g3d {
 
@@ -177,6 +179,30 @@ void ResAnmTexPat::Release() {
 
     for (int i = 0; i < numPalette; i++) {
         pResPlttArray[i] = ResPltt(NULL);
+    }
+}
+
+void ResAnmTexPat::ReleaseTex(const char* pName) {
+    const ResAnmTexPatInfoData& rInfoData = ref().info;
+    int numTexture = rInfoData.numTexture;
+    u32 len = std::strlen(pName);
+
+    s32* pTexNameArray = ofs_to_ptr<s32>(ref().toTexNameArray);
+    ResTex* pResTexArray = ofs_to_ptr<ResTex>(ref().toResTexArray);
+
+    for (int i = 0; i < numTexture; i++) {
+        ResName name = GetResNameFromOffsetArray(pTexNameArray, i);
+        bool same = false;
+
+        if (len == name.GetLength() &&
+            std::strcmp(name.GetName(), pName) == 0) {
+            same = true;
+        }
+
+        if (same) {
+            pResTexArray[i] = ResTex(NULL);
+            return;
+        }
     }
 }
 

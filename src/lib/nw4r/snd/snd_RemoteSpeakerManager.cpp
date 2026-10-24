@@ -1,13 +1,10 @@
-#include <nw4r/snd.h>
-
+#include <nw4r/snd/snd_RemoteSpeakerManager.h>
 #include <revolution/ax.h>
-#include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-RemoteSpeakerManager& RemoteSpeakerManager::GetInstance() {
+RemoteSpeakerManager &RemoteSpeakerManager::GetInstance() {
     static RemoteSpeakerManager instance;
     return instance;
 }
@@ -18,7 +15,7 @@ RemoteSpeakerManager::RemoteSpeakerManager() : mInitialized(false) {
     }
 }
 
-RemoteSpeaker& RemoteSpeakerManager::GetRemoteSpeaker(int idx) {
+RemoteSpeaker &RemoteSpeakerManager::GetRemoteSpeaker(int idx) {
     return mSpeaker[idx];
 }
 
@@ -45,12 +42,12 @@ void RemoteSpeakerManager::Shutdown() {
     mInitialized = false;
 }
 
-void RemoteSpeakerManager::RemoteSpeakerAlarmProc(OSAlarm* pAlarm,
-                                                  OSContext* pCtx) {
+void RemoteSpeakerManager::RemoteSpeakerAlarmProc(OSAlarm *pAlarm,
+                                                  OSContext *pCtx) {
 #pragma unused(pAlarm)
 #pragma unused(pCtx)
 
-    RemoteSpeakerManager& r = GetInstance();
+    RemoteSpeakerManager &r = GetInstance();
 
     s16 samples[RemoteSpeaker::SAMPLES_PER_AUDIO_PACKET];
     if (AXRmtGetSamplesLeft() < RemoteSpeaker::SAMPLES_PER_AUDIO_PACKET) {
@@ -70,7 +67,6 @@ void RemoteSpeakerManager::RemoteSpeakerAlarmProc(OSAlarm* pAlarm,
 
     AXRmtAdvancePtr(RemoteSpeaker::SAMPLES_PER_AUDIO_PACKET);
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

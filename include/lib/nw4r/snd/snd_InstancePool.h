@@ -1,96 +1,89 @@
 #ifndef NW4R_SND_INSTANCE_POOL_H
 #define NW4R_SND_INSTANCE_POOL_H
-#include <nw4r/types_nw4r.h>
+
+#include <new>
+
+#include <types.h>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
-
-/******************************************************************************
- *
- * PoolImpl
- *
- ******************************************************************************/
 class PoolImpl {
-public:
-    PoolImpl() : mNext(NULL) {}
+  protected:
+    PoolImpl() : mNext(nullptr) {
+    }
 
-protected:
-    u32 CreateImpl(void* pBuffer, u32 size, u32 stride);
-    void DestroyImpl(void* pBuffer, u32 size);
+    u32 CreateImpl(void *buffer, u32 size, u32 objSize);
+    void DestroyImpl(void *buffer, u32 size);
+
     int CountImpl() const;
 
-    void* AllocImpl();
-    void FreeImpl(void* pElem);
+    void *AllocImpl();
+    void FreeImpl(void *ptr);
 
-private:
-    PoolImpl* mNext; // at 0x0
-};
+  private:
+    PoolImpl *mNext; // size 0x04, offset 0x00
+}; // size 0x04
 
-/******************************************************************************
- *
- * InstancePool
- *
- ******************************************************************************/
-template <typename T> class InstancePool : private PoolImpl {
-public:
-    u32 Create(void* pBuffer, u32 size) {
-        return CreateImpl(pBuffer, size, sizeof(T));
+template <class T> class InstancePool : private PoolImpl {
+  public:
+    u32 Create(void *buffer, u32 size) {
+        u32 objSize = sizeof(T);
+
+        return CreateImpl(buffer, size, objSize);
     }
-
-    void Destroy(void* pPtr, u32 size) {
-        DestroyImpl(pPtr, size);
+    void Destroy(void *buffer, u32 size) {
+        DestroyImpl(buffer, size);
     }
 
     int Count() const {
         return CountImpl();
     }
 
-    T* Alloc() {
-        void* pPtr = AllocImpl();
-        if (pPtr == NULL) {
-            return NULL;
+    T *Alloc() {
+        void *ptr = AllocImpl();
+        if (!ptr) {
+            return nullptr;
         }
 
-        return new (pPtr) T;
+        return new (ptr) T;
     }
-
-    void Free(T* pElem) {
-        if (pElem != NULL) {
-            pElem->~T();
-            FreeImpl(pElem);
+    void Free(T *obj) {
+        if (obj) {
+            obj->~T();
+            FreeImpl(obj);
         }
     }
-};
 
-/******************************************************************************
- *
- * MemoryPool
- *
- ******************************************************************************/
-template <typename T> class MemoryPool : private PoolImpl {
-public:
-    u32 Create(void* pBuffer, u32 size) {
-        return CreateImpl(pBuffer, size, sizeof(T));
+  private:
+    /* base PoolImpl */ // size 0x04, offset 0x00
+}; // size 0x04
+
+template <class T> class MemoryPool : private PoolImpl {
+  public:
+    u32 Create(void *buffer, u32 size) {
+        u32 objSize = sizeof(T);
+
+        return CreateImpl(buffer, size, objSize);
     }
-
-    void Destroy(void* pPtr, u32 size) {
-        DestroyImpl(pPtr, size);
+    void Destroy(void *buffer, u32 size) {
+        DestroyImpl(buffer, size);
     }
 
     int Count() const {
         return CountImpl();
     }
 
-    T* Alloc() {
-        return static_cast<T*>(AllocImpl());
+    T *Alloc() {
+        return static_cast<T *>(AllocImpl());
+    }
+    void Free(T *obj) {
+        FreeImpl(obj);
     }
 
-    void Free(T* pElem) {
-        FreeImpl(pElem);
-    }
-};
-
+  private:
+    /* base PoolImpl */ // size 0x04, offset 0x00
+}; // size 0x04
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

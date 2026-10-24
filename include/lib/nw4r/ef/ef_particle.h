@@ -25,7 +25,7 @@ struct ParticleParameterDesc {
     math::VEC2 textureScale[TEX_LAYER_MAX];         // at 0x2C
     f32 textureRotate[TEX_LAYER_MAX];               // at 0x44
     math::VEC2 textureTranslate[TEX_LAYER_MAX];     // at 0x50
-    TextureData* mTexture[TEX_LAYER_MAX];           // at 0x68
+    TextureData *mTexture[TEX_LAYER_MAX];           // at 0x68
     u16 textureWrap;                                // at 0x74
     u8 textureReverse;                              // at 0x76
     u8 mACmpRef0;                                   // at 0x77
@@ -36,7 +36,7 @@ struct ParticleParameterDesc {
 };
 
 class ParticleParameter {
-public:
+  public:
     GXColor mColor[COLOR_LAYER_MAX][COLOR_IDX_MAX]; // at 0x0
     math::VEC2 mSize;                               // at 0x10
     math::VEC2 mScale;                              // at 0x18
@@ -44,7 +44,7 @@ public:
     math::VEC2 mTextureScale[TEX_LAYER_MAX];        // at 0x2C
     f32 mTextureRotate[TEX_LAYER_MAX];              // at 0x44
     math::VEC2 mTextureTranslate[TEX_LAYER_MAX];    // at 0x50
-    TextureData* mTexture[TEX_LAYER_MAX];           // at 0x68
+    TextureData *mTexture[TEX_LAYER_MAX];           // at 0x68
     u16 mTextureWrap;                               // at 0x74
     u8 mTextureReverse;                             // at 0x76
     u8 mACmpRef0;                                   // at 0x77
@@ -57,16 +57,16 @@ public:
     math::VEC3 mPrevPosition;                       // at 0x98
     f32 mMomentum;                                  // at 0xA4
 
-public:
-    void Initialize(ParticleParameterDesc* pDesc, ParticleManager* pManager);
+  public:
+    void Initialize(ParticleParameterDesc *pDesc, ParticleManager *pManager);
 };
 
 class Particle : public ReferencedObject {
     friend class ParticleManager;
 
-public:
+  public:
     ParticleParameter mParameter;      // at 0x20
-    ParticleManager* mParticleManager; // at 0xC8
+    ParticleManager *mParticleManager; // at 0xC8
     math::VEC3 mPrevAxis;              // at 0xCC
     EvaluateStatus mEvalStatus;        // at 0xD8
     u16 mTick;                         // at 0xDC
@@ -74,29 +74,47 @@ public:
     u16 mLife;                         // at 0xE0
     u16 mCalcRemain;                   // at 0xE2
 
-public:
+  public:
     Particle();
     ~Particle();
 
     virtual void SendClosing(); // at 0x8
     virtual void DestroyFunc(); // at 0xC
     virtual bool Initialize(u16 life, math::VEC3 pos, math::VEC3 vel,
-                            ParticleManager* pManager,
-                            const math::MTX34* pSpace, float momentum,
-                            const EmitterInheritSetting* pSetting,
-                            Particle* pReferencePtcl); // at 0x10
+                            ParticleManager *pManager,
+                            const math::MTX34 *pSpace, float momentum,
+                            const EmitterInheritSetting *pSetting,
+                            Particle *pReferencePtcl); // at 0x10
 
-    ParticleParameter* GetParticleParameter() {
+    ParticleParameter *GetParticleParameter() {
         return &mParameter;
     }
 
-    void Draw_GetColor(int layer, GXColor* pColorPri, GXColor* pColorSec);
+    u8 GetAlphaFlick() const;
+    void Draw_GetColor(int layer, GXColor *pColorPri, GXColor *pColorSec) {
+        GetColor(layer, COLOR_IDX_PRI, pColorPri);
+        GetColor(layer, COLOR_IDX_SEC, pColorSec);
+        u32 alpha = GetAlphaFlick();
+        pColorPri->a = (pColorPri->a * alpha + 128) >> 8;
+        pColorSec->a = (pColorSec->a * alpha + 128) >> 8;
+        mParticleManager->Draw_ModifyColor(this, pColorPri, pColorSec);
+    }
 
-    void GetColor(int layer, int index, GXColor* pColor) {
+    void GetColor(int layer, int index, GXColor *pColor) {
         pColor->r = mParameter.mColor[layer][index].r;
         pColor->g = mParameter.mColor[layer][index].g;
         pColor->b = mParameter.mColor[layer][index].b;
         pColor->a = mParameter.mColor[layer][index].a;
+    }
+
+    void GetColorRGB(int layer, int index, GXColor *color) {
+        color->r = mParameter.mColor[layer][index].r;
+        color->g = mParameter.mColor[layer][index].g;
+        color->b = mParameter.mColor[layer][index].b;
+    }
+
+    u8 GetAlpha(int layer, int index) const {
+        return mParameter.mColor[layer][index].a;
     }
 
     f32 Draw_GetSizeX() {
@@ -135,7 +153,7 @@ public:
         return mParticleManager->Draw_ModifyScaleY(this, sy);
     }
 
-    void Draw_GetRotate(math::VEC3* pRot) {
+    void Draw_GetRotate(math::VEC3 *pRot) {
         *pRot = mParameter.mRotate;
 
         if (mParameter.mRotateOffset[AXIS_X] > 0) {
@@ -240,19 +258,19 @@ public:
         // clang-format on
     }
 
-    math::VEC3& GetMoveDir(math::VEC3* pDir) {
+    math::VEC3 &GetMoveDir(math::VEC3 *pDir) {
         *pDir = mParameter.mPosition - mParameter.mPrevPosition;
         return *pDir;
     }
 
-    math::VEC3& AddPosition(const math::VEC3* pDelta) {
+    math::VEC3 &AddPosition(const math::VEC3 *pDelta) {
         mParameter.mPosition.x += pDelta->x * mParameter.mMomentum;
         mParameter.mPosition.y += pDelta->y * mParameter.mMomentum;
         mParameter.mPosition.z += pDelta->z * mParameter.mMomentum;
         return mParameter.mPosition;
     }
 
-private:
+  private:
     enum TextureReverseFlag {
         TEX_REVERSE_S = (1 << 0),
         TEX_REVERSE_T = (1 << 1),

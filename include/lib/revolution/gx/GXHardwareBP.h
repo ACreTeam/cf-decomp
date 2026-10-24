@@ -1471,6 +1471,142 @@ typedef enum {
         /* get value  */ #define GX_BP_GET_TEVCOLORCOMBINER_DEST(reg) GX_BITGET((reg), 8, 2)
         /* set value  */ #define GX_BP_SET_TEVCOLORCOMBINER_DEST(reg, x) ((reg) = GX_BITSET((reg), 8, 2, x))
 
+/******************************************************************************
+ * BP structure - TevAlphaCombiner
+ *****************************************************************************/
+// RSWAP [30:31] (2)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_RSWAP_B 30
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_RSWAP_E 31
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_RSWAP_SZ 2
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_RSWAP_MASK (((1 << 2) - 1) << 31 - 31)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_RSWAP_LMASK ((1 << 2) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_RSWAP_SHIFT 0
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_RSWAP(reg) GX_BITGET((reg), 30, 2)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_RSWAP(reg, x) ((reg) = GX_BITSET((reg), 30, 2, x))
+
+// TSWAP [28:29] (2)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_TSWAP_B 28
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_TSWAP_E 29
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_TSWAP_SZ 2
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_TSWAP_MASK (((1 << 2) - 1) << 31 - 29)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_TSWAP_LMASK ((1 << 2) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_TSWAP_SHIFT 2
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_TSWAP(reg) GX_BITGET((reg), 28, 2)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_TSWAP(reg, x) ((reg) = GX_BITSET((reg), 28, 2, x))
+
+// D [25:27] (3)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_D_B 25
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_D_E 27
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_D_SZ 3
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_D_MASK (((1 << 3) - 1) << 31 - 27)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_D_LMASK ((1 << 3) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_D_SHIFT 4
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_D(reg) GX_BITGET((reg), 25, 3)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_D(reg, x) ((reg) = GX_BITSET((reg), 25, 3, x))
+
+// C [22:24] (3)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_C_B 22
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_C_E 24
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_C_SZ 3
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_C_MASK (((1 << 3) - 1) << 31 - 24)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_C_LMASK ((1 << 3) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_C_SHIFT 7
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_C(reg) GX_BITGET((reg), 22, 3)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_C(reg, x) ((reg) = GX_BITSET((reg), 22, 3, x))
+
+// B [19:21] (3)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_B_B 19
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_B_E 21
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_B_SZ 3
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_B_MASK (((1 << 3) - 1) << 31 - 21)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_B_LMASK ((1 << 3) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_B_SHIFT 10
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_B(reg) GX_BITGET((reg), 19, 3)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_B(reg, x) ((reg) = GX_BITSET((reg), 19, 3, x))
+
+// A [16:18] (3)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_A_B 16
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_A_E 18
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_A_SZ 3
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_A_MASK (((1 << 3) - 1) << 31 - 18)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_A_LMASK ((1 << 3) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_A_SHIFT 13
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_A(reg) GX_BITGET((reg), 16, 3)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_A(reg, x) ((reg) = GX_BITSET((reg), 16, 3, x))
+
+// BIAS [14:15] (2)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_BIAS_B 14
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_BIAS_E 15
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_BIAS_SZ 2
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_BIAS_MASK (((1 << 2) - 1) << 31 - 15)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_BIAS_LMASK ((1 << 2) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_BIAS_SHIFT 16
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_BIAS(reg) GX_BITGET((reg), 14, 2)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_BIAS(reg, x) ((reg) = GX_BITSET((reg), 14, 2, x))
+
+// OP_OR_COMPARISON [13:13] (1)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_OP_OR_COMPARISON_B 13
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_OP_OR_COMPARISON_E 13
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_OP_OR_COMPARISON_SZ 1
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_OP_OR_COMPARISON_MASK (((1 << 1) - 1) << 31 - 13)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_OP_OR_COMPARISON_LMASK ((1 << 1) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_OP_OR_COMPARISON_SHIFT 18
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_OP_OR_COMPARISON(reg) GX_BITGET((reg), 13, 1)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_OP_OR_COMPARISON(reg, x) ((reg) = GX_BITSET((reg), 13, 1, x))
+
+// CLAMP [12:12] (1)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_CLAMP_B 12
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_CLAMP_E 12
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_CLAMP_SZ 1
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_CLAMP_MASK (((1 << 1) - 1) << 31 - 12)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_CLAMP_LMASK ((1 << 1) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_CLAMP_SHIFT 19
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_CLAMP(reg) GX_BITGET((reg), 12, 1)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_CLAMP(reg, x) ((reg) = GX_BITSET((reg), 12, 1, x))
+
+// SCALE_OR_COMPARE_MODE [10:11] (2)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE_B 10
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE_E 11
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE_SZ 2
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE_MASK (((1 << 2) - 1) << 31 - 11)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE_LMASK ((1 << 2) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE_SHIFT 20
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE(reg) GX_BITGET((reg), 10, 2)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_SCALE_OR_COMPARE_MODE(reg, x) ((reg) = GX_BITSET((reg), 10, 2, x))
+
+// DEST [8:9] (2)
+        /* start bit  */ #define GX_BP_TEVALPHACOMBINER_DEST_B 8
+        /* end bit    */ #define GX_BP_TEVALPHACOMBINER_DEST_E 9
+        /* bit size   */ #define GX_BP_TEVALPHACOMBINER_DEST_SZ 2
+
+        /* raw mask   */ #define GX_BP_TEVALPHACOMBINER_DEST_MASK (((1 << 2) - 1) << 31 - 9)
+        /* local mask */ #define GX_BP_TEVALPHACOMBINER_DEST_LMASK ((1 << 2) - 1)
+        /* bit shift  */ #define GX_BP_TEVALPHACOMBINER_DEST_SHIFT 22
+
+        /* get value  */ #define GX_BP_GET_TEVALPHACOMBINER_DEST(reg) GX_BITGET((reg), 8, 2)
+        /* set value  */ #define GX_BP_SET_TEVALPHACOMBINER_DEST(reg, x) ((reg) = GX_BITSET((reg), 8, 2, x))
+
+
 
 /******************************************************************************
  * BP structure - TevRegLo

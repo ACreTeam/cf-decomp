@@ -111,6 +111,13 @@ void ResVtxTexCoord::GetArray(const void** ppBase, u8* pStride) const {
     }
 }
 
+void ResVtxFurPos::SetArray(u16 idx) {
+    if (IsValid()) {
+        void* base_ptr = GetData(idx);
+        GXSetArray(GX_VA_POS, base_ptr, ref().stride);
+    }
+}
+
 /******************************************************************************
  *
  * DCStore
@@ -150,6 +157,28 @@ void ResVtxClr::DCStore(bool sync) {
 }
 
 void ResVtxTexCoord::DCStore(bool sync) {
+    void* pBase = &ref();
+    u32 size = GetSize();
+
+    if (sync) {
+        DC::StoreRange(pBase, size);
+    } else {
+        DC::StoreRangeNoSync(pBase, size);
+    }
+}
+
+void ResVtxFurVec::DCStore(bool sync) {
+    void* pBase = &ref();
+    u32 size = GetSize();
+
+    if (sync) {
+        DC::StoreRange(pBase, size);
+    } else {
+        DC::StoreRangeNoSync(pBase, size);
+    }
+}
+
+void ResVtxFurPos::DCStore(bool sync) {
     void* pBase = &ref();
     u32 size = GetSize();
 

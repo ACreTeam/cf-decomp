@@ -46,13 +46,15 @@ void EffectCreator::calcAll(bool onlyBillboard) {
     if (EffectManager::sEffectManager != NULL) {
         int groups = EffectManager::sEffectManager->getGroupNum();
         for (int i = 0; i < groups; i++) {
-            system->Calc(mGroupBase | i, onlyBillboard);
+            system->Calc(mGroupBase | i,
+                         static_cast<nw4r::ef::CalcOption>(onlyBillboard));
         }
     }
 }
 
 void EffectCreator::calc(u32 group, bool onlyBillboard) {
-    nw4r::ef::EffectSystem::GetInstance()->Calc(mGroupBase | group, onlyBillboard);
+    nw4r::ef::EffectSystem::GetInstance()->Calc(
+        mGroupBase | group, static_cast<nw4r::ef::CalcOption>(onlyBillboard));
 }
 
 void EffectCreator::draw(const nw4r::ef::DrawInfo &info, u32 group) {
@@ -60,7 +62,8 @@ void EffectCreator::draw(const nw4r::ef::DrawInfo &info, u32 group) {
 }
 
 nw4r::ef::Effect *EffectCreator::create(const char *name) {
-    nw4r::ef::ResEmitter resource = nw4r::ef::Resource::GetInstance()->FindEmitter(name, NULL);
+    nw4r::ef::ResEmitter resource =
+        nw4r::ef::Resource::GetInstance()->FindEmitter(name, NULL);
     if (resource.IsValid()) {
         nw4r::ef::EffectSystem *system = nw4r::ef::EffectSystem::GetInstance();
         nw4r::ef::EmitterResource *emitter = resource.ptr();
@@ -73,7 +76,8 @@ nw4r::ef::Effect *EffectCreator::create(const char *name) {
 
 EffectManager *EffectManager::sEffectManager;
 
-EffectManager *EffectManager::createInstance(int creators, int groups, Heap *heap) {
+EffectManager *EffectManager::createInstance(int creators, int groups,
+                                             Heap *heap) {
     if (sEffectManager == NULL) {
         EffectResource::initialize();
         if (heap == NULL) {
@@ -89,14 +93,17 @@ int EffectManager::initialize(Configuration &config) {
         config.heap = Heap::getCurrentHeap();
     }
 
-    u32 size = MemoryManager::CalcMemorySize(config.effects, config.emitters, config.managers,
-                                             config.particles, mTotalGroupNum);
+    u32 size = MemoryManager::CalcMemorySize(config.effects, config.emitters,
+                                             config.managers, config.particles,
+                                             mTotalGroupNum);
     mMemory = Heap::alloc(size, 32, config.heap);
 
     MemoryManager *memoryManager = new (config.heap, 4)
-        MemoryManager(mMemory, size, config.effects, config.emitters, config.managers, config.particles);
+        MemoryManager(mMemory, size, config.effects, config.emitters,
+                      config.managers, config.particles);
 
-    nw4r::ef::EffectSystem::GetInstance()->SetMemoryManager(memoryManager, mTotalGroupNum);
+    nw4r::ef::EffectSystem::GetInstance()->SetMemoryManager(memoryManager,
+                                                            mTotalGroupNum);
     return size;
 }
 
@@ -116,9 +123,11 @@ void EffectManager::shutdown() {
     }
 }
 
-void EffectManager::setCamera(const nw4r::math::VEC3 *pos, const nw4r::math::MTX34 *mtx, f32 near,
-                              f32 far, int group, bool onlyBillboard) {
-    nw4r::ef::EffectSystem::GetInstance()->SetCamera(pos, mtx, near, far);
+void EffectManager::setCamera(const nw4r::math::VEC3 *pos,
+                              const nw4r::math::MTX34 *mtx, f32 near, f32 far,
+                              int group, bool onlyBillboard) {
+    nw4r::ef::EffectSystem::GetInstance()->SetProcessCamera(*pos, *mtx, near,
+                                                            far);
     for (int i = 0; i < mCreatorNum; i++) {
         if (mCreators[i] != NULL) {
             mCreators[i]->calc(group, onlyBillboard);

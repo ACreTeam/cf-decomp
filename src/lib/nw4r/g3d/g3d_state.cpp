@@ -873,13 +873,7 @@ public:
         }
 
         static math::MTX33 m;
-
-        if (!math::MTX34InvTranspose(&m, GetViewPosMtxPtr(id))) {
-            m._00 = m._11 = m._22 = 1.0f;
-            m._20 = m._21 = 0.0f;
-            m._10 = m._12 = 0.0f;
-            m._01 = m._02 = 0.0f;
-        }
+        detail::CalcViewNrmMtx(&m, GetViewPosMtxPtr(id));
 
         return &m;
     }
@@ -1992,7 +1986,8 @@ void IndMtxOpStd::SetNrmMapMtx(GXIndTexMtxID id, const math::VEC3* pLightVec,
                                const math::MTX34* pNrmMtx,
                                ResMatMiscData::IndirectMethod method) {
 
-    if (id >= GX_ITM_0 && id <= GX_ITM_2 && method != ResMatMiscData::WARP) {
+    if (id >= GX_ITM_0 && id <= GX_ITM_2 && method != ResMatMiscData::WARP &&
+        method != ResMatMiscData::FUR) {
         u32 i = id - GX_ITM_0;
         mIsValidMtx[i] = true;
 

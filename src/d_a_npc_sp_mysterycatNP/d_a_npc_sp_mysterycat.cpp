@@ -91,11 +91,11 @@ int dAcNpcSpMysterycat_c::create() {
     nw4r::g3d::ResMat mat = mdl.GetResMat("face");
     if (mat.IsValid()) {
         const char *texName = "face";
-        mat.ReleaseTexByName(texName, strlen(texName));
-        mat.BindTexByName(tex, texName);
+        mat.ReleaseTex(texName, strlen(texName));
+        mat.ForceBindTex(tex, texName);
         const char *plttName = "skin";
-        mat.ReleasePlttByName(plttName, strlen(plttName));
-        mat.BindPlttByName(pltt, plttName);
+        mat.ReleasePltt(plttName, strlen(plttName));
+        mat.ForceBindPltt(pltt, plttName);
     }
     clearNetSync();
     return SUCCEEDED;

@@ -1,28 +1,19 @@
 #ifndef NW4R_SND_SOUND_ARCHIVE_LOADER_H
 #define NW4R_SND_SOUND_ARCHIVE_LOADER_H
 #include <nw4r/types_nw4r.h>
-
 #include <nw4r/ut.h>
-
 #include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
-
-// Forward declarations
 class SoundArchive;
 class SoundMemoryAllocatable;
 
 namespace detail {
-
-/******************************************************************************
- *
- * FileStreamHandle
- *
- ******************************************************************************/
 class FileStreamHandle {
-public:
-    FileStreamHandle(ut::FileStream* pStream) : mStream(pStream) {}
+  public:
+    FileStreamHandle(ut::FileStream *pFileStream) : mStream(pFileStream) {
+    }
 
     ~FileStreamHandle() {
         if (mStream != NULL) {
@@ -30,11 +21,11 @@ public:
         }
     }
 
-    ut::FileStream* GetFileStream() {
+    ut::FileStream *GetFileStream() {
         return mStream;
     }
 
-    ut::FileStream* operator->() {
+    ut::FileStream *operator->() {
         return mStream;
     }
 
@@ -42,30 +33,26 @@ public:
         return mStream;
     }
 
-private:
-    ut::FileStream* mStream; // at 0x0
+  private:
+    ut::FileStream *mStream; // at 0x0
 };
 
-/******************************************************************************
- *
- * SoundArchiveLoader
- *
- ******************************************************************************/
 class SoundArchiveLoader {
-public:
-    explicit SoundArchiveLoader(const SoundArchive& rArchive);
+  public:
+    explicit SoundArchiveLoader(const SoundArchive &rArchive);
     ~SoundArchiveLoader();
 
-    void* LoadGroup(u32 id, SoundMemoryAllocatable* pAllocatable,
-                    void** ppWaveBuffer, u32 blockSize);
+    void *LoadGroup(u32 id, SoundMemoryAllocatable *pAllocatable,
+                    void **ppWaveBuffer, u32 blockSize);
+    s32 ReadFile(u32, void *, s32, s32);
+    void *LoadFile(u32 id, SoundMemoryAllocatable *pAllocatable);
 
-private:
+  private:
     mutable OSMutex mMutex;   // at 0x0
-    const SoundArchive& mArc; // at 0x18
+    const SoundArchive &mArc; // at 0x18
     u8 mStreamArea[512];      // at 0x1C
-    ut::FileStream* mStream;  // at 0x21C
+    ut::FileStream *mStream;  // at 0x21C
 };
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

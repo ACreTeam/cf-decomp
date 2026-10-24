@@ -226,6 +226,75 @@ public:
     }
 };
 
+struct ResVtxFurVecData {
+    ulong size;          // at 0x0
+    s32 toResMdlData;    // at 0x4
+    s32 toFurVecArray;   // at 0x8
+    s32 name;            // at 0xC
+    ulong id;            // at 0x10
+    u16 numFurVec;       // at 0x14
+};
+
+class ResVtxFurVec : public ResCommon<ResVtxFurVecData> {
+public:
+    NW4R_G3D_RESOURCE_FUNC_DEF(ResVtxFurVec);
+
+    void Init() {
+        DCStore(false);
+    }
+
+    void DCStore(bool sync);
+
+    ulong GetSize() const {
+        return ref().size;
+    }
+};
+
+struct ResVtxFurPosData {
+    ulong size;          // at 0x0
+    s32 toResMdlData;    // at 0x4
+    s32 toFurPosArray;   // at 0x8
+    s32 name;            // at 0xC
+    ulong id;            // at 0x10
+    GXCompCnt cmpcnt;    // at 0x14
+    GXCompType tp;       // at 0x18
+    u8 frac;             // at 0x1C
+    u8 stride;           // at 0x1D
+    u16 numFurPos;       // at 0x1E
+    ulong numLayer;      // at 0x20
+    ulong ofsLayer;      // at 0x24
+};
+
+class ResVtxFurPos : public ResCommon<ResVtxFurPosData> {
+public:
+    NW4R_G3D_RESOURCE_FUNC_DEF(ResVtxFurPos);
+
+    void Init() {
+        DCStore(false);
+    }
+
+    void SetArray(u16 idx);
+    void DCStore(bool sync);
+
+    ulong GetSize() const {
+        return ref().size;
+    }
+
+    ulong GetNumLayer() const {
+        return ref().numLayer;
+    }
+
+    void* GetData(int idx) {
+        ResVtxFurPosData& r = ref();
+
+        return (r.toFurPosArray != 0 &&
+                idx < static_cast<int>(GetNumLayer()) && idx >= 0)
+                   ? reinterpret_cast<u8*>(&r) + r.toFurPosArray +
+                         idx * r.ofsLayer
+                   : NULL;
+    }
+};
+
 } // namespace g3d
 } // namespace nw4r
 

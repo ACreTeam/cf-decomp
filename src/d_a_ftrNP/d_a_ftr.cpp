@@ -2450,7 +2450,7 @@ void daFTR_c::lamp_c::update() {
         color.b = 0xFF;
         color.a = alpha;
         nw4r::g3d::ResMatTevColor tev = mMat.GetResMatTevColor();
-        tev.GXSetTevColor(GX_TEVREG2, color);
+        tev.GXSetTevKColor(GX_KCOLOR3, color);
         tev.DCStore(false);
     }
 }

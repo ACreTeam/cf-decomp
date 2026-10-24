@@ -357,7 +357,7 @@ void dWeatherSakuraDraw_c::drawXlu() {
     m3d::resetMaterial();
     nw4r::g3d::ResMatTevColor color = mMaterial.GetResMatTevColor();
     GXColor tint = dWeatherSakura::sTint;
-    color.GXSetTevColor(GX_TEVPREV, tint);
+    color.GXSetTevKColor(GX_KCOLOR0, tint);
     color.DCStore(false);
     nw4r::g3d::Draw1Mat1ShpDirectly(mMaterial, nw4r::g3d::ResShp(NULL), NULL,
                                     NULL, 0, NULL, NULL);

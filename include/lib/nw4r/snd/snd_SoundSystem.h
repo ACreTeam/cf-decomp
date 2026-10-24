@@ -1,49 +1,58 @@
 #ifndef NW4R_SND_SOUND_SYSTEM_H
 #define NW4R_SND_SOUND_SYSTEM_H
-#include <nw4r/types_nw4r.h>
 
+#include <types.h>
 #include <nw4r/snd/snd_AxManager.h>
+#include <nw4r/snd/snd_RemoteSpeaker.h>
 #include <nw4r/snd/snd_RemoteSpeakerManager.h>
-#include <nw4r/snd/snd_TaskThread.h>
-
-#include <revolution/os.h>
 
 namespace nw4r {
 namespace snd {
+namespace detail {
+class TaskThread;
+}
+} // namespace snd
+} // namespace nw4r
 
-// Forward declarations
-class FxBase;
-
+namespace nw4r {
+namespace snd {
 class SoundSystem {
-public:
-    static const int DEFAULT_DVD_THREAD_PRIORITY = 3;
-    static const int DEFAULT_DVD_THREAD_STACK_SIZE = 16 * 1024;
-
-    static const int DEFAULT_SOUND_THREAD_PRIORITY = 4;
-    static const int DEFAULT_SOUND_THREAD_STACK_SIZE = 16 * 1024;
-
+  public:
     struct SoundSystemParam {
-        s32 soundThreadPriority;  // at 0x0
-        u32 soundThreadStackSize; // at 0x4
-        s32 dvdThreadPriority;    // at 0x8
-        u32 dvdThreadStackSize;   // at 0xC
-
+      public:
         SoundSystemParam()
             : soundThreadPriority(DEFAULT_SOUND_THREAD_PRIORITY),
               soundThreadStackSize(DEFAULT_SOUND_THREAD_STACK_SIZE),
               dvdThreadPriority(DEFAULT_DVD_THREAD_PRIORITY),
-              dvdThreadStackSize(DEFAULT_DVD_THREAD_STACK_SIZE) {}
-    };
+              dvdThreadStackSize(DEFAULT_DVD_THREAD_STACK_SIZE) {
+        }
 
-public:
-    static void InitSoundSystem(s32 soundThreadPrio, s32 dvdThreadPriority);
-    static u32 GetRequiredMemSize(const SoundSystemParam& rParam);
+      public:
+        s32 soundThreadPriority;  // size 0x04, offset 0x00
+        u32 soundThreadStackSize; // size 0x04, offset 0x04
+        s32 dvdThreadPriority;    // size 0x04, offset 0x08
+        u32 dvdThreadStackSize;   // size 0x04, offset 0x0c
+    }; // size 0x10
 
-    static void InitSoundSystem(const SoundSystemParam& rParam, void* pWork,
-                                u32 workSize);
+  private:
+    static int const DEFAULT_DVD_THREAD_STACK_SIZE = 0x4000;
+    static int const DEFAULT_SOUND_THREAD_STACK_SIZE = 0x4000;
+    static int const DEFAULT_DVD_THREAD_PRIORITY = 3;
+    static int const DEFAULT_SOUND_THREAD_PRIORITY = 4;
 
+    static int sMaxVoices;
+    static detail::TaskThread sTaskThread;
+
+  public:
+    static void InitSoundSystem(s32 sndThreadPriority, s32 dvdThreadPriority);
+    static void InitSoundSystem(SoundSystemParam const &param, void *workMem,
+                                u32 workMemSize);
     static void ShutdownSoundSystem();
     static void WaitForResetReady();
+
+    static bool IsInitializedSoundSystem();
+
+    static u32 GetRequiredMemSize(SoundSystemParam const &param);
 
     static void PrepareReset() {
         detail::AxManager::GetInstance().PrepareReset();
@@ -52,6 +61,7 @@ public:
     static OutputMode GetOutputMode() {
         return detail::AxManager::GetInstance().GetOutputMode();
     }
+
     static void SetOutputMode(OutputMode mode) {
         detail::AxManager::GetInstance().SetOutputMode(mode);
     }
@@ -63,22 +73,17 @@ public:
         detail::AxManager::GetInstance().SetMasterVolume(volume, frame);
     }
 
-    static RemoteSpeaker& GetRemoteSpeaker(int idx) {
-        return detail::RemoteSpeakerManager::GetInstance().GetRemoteSpeaker(
-            idx);
+    static RemoteSpeaker &GetRemoteSpeaker(int i) {
+        return detail::RemoteSpeakerManager::GetInstance().GetRemoteSpeaker(i);
     }
 
-    static void AppendEffect(AuxBus bus, FxBase* pFx) {
+    static void AppendEffect(AuxBus bus, FxBase *pFx) {
         detail::AxManager::GetInstance().AppendEffect(bus, pFx);
     }
     static void ClearEffect(AuxBus bus, int frame) {
         detail::AxManager::GetInstance().ClearEffect(bus, frame);
     }
-
-private:
-    static detail::TaskThread sTaskThread;
 };
-
 } // namespace snd
 } // namespace nw4r
 

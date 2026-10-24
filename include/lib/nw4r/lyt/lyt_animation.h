@@ -13,6 +13,7 @@ namespace nw4r {
 namespace lyt {
 
 // Forward declarations
+class Layout;
 class Pane;
 class Material;
 class ResourceAccessor;
@@ -109,9 +110,9 @@ public:
         u16 animNum
     ) = 0;                                              // at 0x10
 
-    virtual void Bind(Pane* pPane, bool recursive,
-                      bool bDisable) = 0; // at 0x14
-    virtual void Bind(Material* pMaterial) = 0;         // at 0x18
+    virtual void Bind(Pane* pPane, bool bRecursive,
+                      bool bDisable) = 0;                        // at 0x14
+    virtual void Bind(Material* pMaterial, bool bDisable) = 0; // at 0x18
 
     virtual void Animate(ulong idx, Pane* pPane) = 0;         // at 0x1C
     virtual void Animate(ulong idx, Material* pMaterial) = 0; // at 0x20
@@ -189,18 +190,35 @@ public:
     AnimTransformBasic();
     virtual ~AnimTransformBasic(); // at 0x8
 
-    virtual void SetResource(const res::AnimationBlock* pBlock,
-                             ResourceAccessor* pAccessor); // at 0xC
-    virtual void SetResource(const res::AnimationBlock *pRes, ResourceAccessor *pResAccessor, u16 animNum); // at 0x10
+    virtual void SetResource(const res::AnimationBlock* pRes,
+                             ResourceAccessor* pResAccessor); // at 0xC
+    virtual void SetResource(const res::AnimationBlock* pRes,
+                             ResourceAccessor* pResAccessor,
+                             u16 animNum); // at 0x10
 
-    virtual void Bind(Pane* pPane, bool recursive,
-                      bool bDisable); // at 0x14
-    virtual void Bind(Material* pMaterial);         // at 0x18
+    virtual void Bind(Pane* pPane, bool bRecursive,
+                      bool bDisable);                        // at 0x14
+    virtual void Bind(Material* pMaterial, bool bDisable); // at 0x18
 
     virtual void Animate(ulong idx, Pane* pPane);         // at 0x1C
     virtual void Animate(ulong idx, Material* pMaterial); // at 0x20
 
+    template <typename T>
+    AnimationLink* Bind(T* pTarget, AnimationLink* pAnimLink, u16 idx,
+                        bool bDisable) {
+        pAnimLink = FindUnbindLink(pAnimLink);
+        if (pAnimLink == NULL) {
+            return NULL;
+        }
+
+        pAnimLink->Set(this, idx, bDisable);
+        pTarget->AddAnimationLink(pAnimLink);
+        return pAnimLink + 1;
+    }
+
 protected:
+    AnimationLink* FindUnbindLink(AnimationLink* pLink) const;
+
     void** mpFileResAry;         // at 0x14
     AnimationLink* mAnimLinkAry; // at 0x18
     u16 mAnimLinkNum;            // at 0x1C
@@ -215,6 +233,40 @@ namespace detail {
 
 AnimationLink* FindAnimationLink(AnimationLinkList* pAnimList,
                                  AnimTransform* pAnimTrans);
+AnimationLink* FindAnimationLink(AnimationLinkList* pAnimList,
+                                 const AnimResource& animRes);
+void UnbindAnimationLink(AnimationLinkList* pAnimList,
+                         AnimTransform* pAnimTrans);
+
+class AnimPaneTree {
+public:
+    AnimPaneTree(Pane* pTargetPane, const AnimResource& animRes) {
+        Init();
+        Set(pTargetPane, animRes);
+    }
+
+    bool IsEnabled() const {
+        return mLinkNum > 0;
+    }
+
+    void Init();
+    void Set(Pane* pTargetPane, const AnimResource& animRes);
+    AnimTransform* Bind(Layout* pLayout, Pane* pTargetPane,
+                        ResourceAccessor* pResAccessor) const;
+
+private:
+    static u16 FindAnimContent(const res::AnimationBlock* pAnimBlock,
+                               const char* animContName, u8 animContType);
+
+    static const int MATERIAL_NUM_MAX = 9;
+    static const u16 NOBIND = 0xFFFF;
+
+    AnimResource mAnimRes;              // at 0x0
+    u16 mAnimPaneIdx;                   // at 0x10
+    u16 mLinkNum;                       // at 0x12
+    u16 mAnimMatIdxs[MATERIAL_NUM_MAX]; // at 0x14
+    u8 mAnimMatCnt;                     // at 0x26
+};
 
 } // namespace detail
 

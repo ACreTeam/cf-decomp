@@ -322,8 +322,8 @@ void dHmnHeadItemMng_c::setupModel(data_c *data, dPrivateData_c *priv) {
     }
 
     nw4r::g3d::ResMdl mdl = file.GetResMdl(0);
-    mdl.ReleaseTexByName("cloth");
-    mdl.ReleasePlttByName("cloth");
+    mdl.ReleaseTex("cloth");
+    mdl.ReleasePltt("cloth");
     file.Bind(nw4r::g3d::ResFile(tex));
 
     nw4r::g3d::ResNode boy = mdl.GetResNode("cap_md_boy_mdl");

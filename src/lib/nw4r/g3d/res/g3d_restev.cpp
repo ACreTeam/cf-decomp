@@ -74,6 +74,121 @@ void ResTev::GXSetTevSwapModeTable(GXTevSwapSel swap, GXTevColorChan r,
     // clang-format on
 }
 
+bool ResTev::GXGetTevSwapMode(GXTevStageID stage, GXTevSwapSel* pRasSel,
+                              GXTevSwapSel* pTexSel) const {
+    const u8* pCmd = ref()
+                         .dl.dl.var[stage / TEV_STAGES_PER_DL]
+                         .dl.alphaCalcAndSwap[stage % TEV_STAGES_PER_DL];
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 cmd;
+    detail::ResReadBPCmd(pCmd, &cmd);
+
+    if (pRasSel != NULL) {
+        *pRasSel = static_cast<GXTevSwapSel>(
+            cmd >> GX_BP_TEVALPHACOMBINER_RSWAP_SHIFT &
+            GX_BP_TEVALPHACOMBINER_RSWAP_LMASK);
+    }
+    if (pTexSel != NULL) {
+        *pTexSel = static_cast<GXTevSwapSel>(
+            cmd >> GX_BP_TEVALPHACOMBINER_TSWAP_SHIFT &
+            GX_BP_TEVALPHACOMBINER_TSWAP_LMASK);
+    }
+
+    return true;
+}
+
+bool ResTev::GXGetTevAlphaIn(GXTevStageID stage, GXTevAlphaArg* pA,
+                             GXTevAlphaArg* pB, GXTevAlphaArg* pC,
+                             GXTevAlphaArg* pD) const {
+    const u8* pCmd = ref()
+                         .dl.dl.var[stage / TEV_STAGES_PER_DL]
+                         .dl.alphaCalcAndSwap[stage % TEV_STAGES_PER_DL];
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 cmd;
+    detail::ResReadBPCmd(pCmd, &cmd);
+
+    if (pA != NULL) {
+        *pA = static_cast<GXTevAlphaArg>(cmd >> GX_BP_TEVALPHACOMBINER_A_SHIFT &
+                                         GX_BP_TEVALPHACOMBINER_A_LMASK);
+    }
+    if (pB != NULL) {
+        *pB = static_cast<GXTevAlphaArg>(cmd >> GX_BP_TEVALPHACOMBINER_B_SHIFT &
+                                         GX_BP_TEVALPHACOMBINER_B_LMASK);
+    }
+    if (pC != NULL) {
+        *pC = static_cast<GXTevAlphaArg>(cmd >> GX_BP_TEVALPHACOMBINER_C_SHIFT &
+                                         GX_BP_TEVALPHACOMBINER_C_LMASK);
+    }
+    if (pD != NULL) {
+        *pD = static_cast<GXTevAlphaArg>(cmd >> GX_BP_TEVALPHACOMBINER_D_SHIFT &
+                                         GX_BP_TEVALPHACOMBINER_D_LMASK);
+    }
+
+    return true;
+}
+
+bool ResTev::GXGetTevAlphaOp(GXTevStageID stage, GXTevOp* pOp, GXTevBias* pBias,
+                             GXTevScale* pScale, GXBool* pClamp,
+                             GXTevRegID* pOutReg) const {
+    const u8* pCmd = ref()
+                         .dl.dl.var[stage / TEV_STAGES_PER_DL]
+                         .dl.alphaCalcAndSwap[stage % TEV_STAGES_PER_DL];
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 cmd;
+    detail::ResReadBPCmd(pCmd, &cmd);
+
+    GXTevBias bias = static_cast<GXTevBias>(
+        cmd >> GX_BP_TEVCOLORCOMBINER_BIAS_SHIFT &
+        GX_BP_TEVCOLORCOMBINER_BIAS_LMASK);
+
+    if (pClamp != NULL) {
+        *pClamp = cmd >> GX_BP_TEVCOLORCOMBINER_CLAMP_SHIFT &
+                  GX_BP_TEVCOLORCOMBINER_CLAMP_LMASK;
+    }
+    if (pOutReg != NULL) {
+        *pOutReg = static_cast<GXTevRegID>(
+            cmd >> GX_BP_TEVCOLORCOMBINER_DEST_SHIFT &
+            GX_BP_TEVCOLORCOMBINER_DEST_LMASK);
+    }
+
+    GXTevOp op = static_cast<GXTevOp>(
+        cmd >> GX_BP_TEVCOLORCOMBINER_OP_OR_COMPARISON_SHIFT &
+        GX_BP_TEVCOLORCOMBINER_OP_OR_COMPARISON_LMASK);
+    GXTevScale scale = static_cast<GXTevScale>(
+        cmd >> GX_BP_TEVCOLORCOMBINER_SCALE_OR_COMPARE_MODE_SHIFT &
+        GX_BP_TEVCOLORCOMBINER_SCALE_OR_COMPARE_MODE_LMASK);
+
+    if (bias == GX_MAX_TEVBIAS) {
+        op = static_cast<GXTevOp>((op | scale << 1) + GX_TEV_COMP_R8_GT);
+        bias = GX_TB_ZERO;
+        scale = GX_CS_SCALE_1;
+    }
+
+    if (pBias != NULL) {
+        *pBias = bias;
+    }
+    if (pOp != NULL) {
+        *pOp = op;
+    }
+    if (pScale != NULL) {
+        *pScale = scale;
+    }
+
+    return true;
+}
+
 bool ResTev::GXGetTevOrder(GXTevStageID stage, GXTexCoordID* pCoord,
                            GXTexMapID* pMap, GXChannelID* pChannel) const {
     // Convert RAS channel ID to GX channel ID
@@ -137,6 +252,156 @@ bool ResTev::GXGetTevOrder(GXTevStageID stage, GXTexCoordID* pCoord,
 
     if (pMap) {
         *pMap = map;
+    }
+
+    return true;
+}
+
+bool ResTev::GXGetTevColorIn(GXTevStageID stage, GXTevColorArg* pA,
+                             GXTevColorArg* pB, GXTevColorArg* pC,
+                             GXTevColorArg* pD) const {
+    const u8* pCmd = ref()
+                         .dl.dl.var[stage / TEV_STAGES_PER_DL]
+                         .dl.tevColorCalc[stage % TEV_STAGES_PER_DL];
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 cmd;
+    detail::ResReadBPCmd(pCmd, &cmd);
+
+    if (pA != NULL) {
+        *pA = static_cast<GXTevColorArg>(cmd >> GX_BP_TEVCOLORCOMBINER_A_SHIFT &
+                                         GX_BP_TEVCOLORCOMBINER_A_LMASK);
+    }
+    if (pB != NULL) {
+        *pB = static_cast<GXTevColorArg>(cmd >> GX_BP_TEVCOLORCOMBINER_B_SHIFT &
+                                         GX_BP_TEVCOLORCOMBINER_B_LMASK);
+    }
+    if (pC != NULL) {
+        *pC = static_cast<GXTevColorArg>(cmd >> GX_BP_TEVCOLORCOMBINER_C_SHIFT &
+                                         GX_BP_TEVCOLORCOMBINER_C_LMASK);
+    }
+    if (pD != NULL) {
+        *pD = static_cast<GXTevColorArg>(cmd >> GX_BP_TEVCOLORCOMBINER_D_SHIFT &
+                                         GX_BP_TEVCOLORCOMBINER_D_LMASK);
+    }
+
+    return true;
+}
+
+bool ResTev::GXGetTevColorOp(GXTevStageID stage, GXTevOp* pOp, GXTevBias* pBias,
+                             GXTevScale* pScale, GXBool* pClamp,
+                             GXTevRegID* pOutReg) const {
+    const u8* pCmd = ref()
+                         .dl.dl.var[stage / TEV_STAGES_PER_DL]
+                         .dl.tevColorCalc[stage % TEV_STAGES_PER_DL];
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 cmd;
+    detail::ResReadBPCmd(pCmd, &cmd);
+
+    GXTevBias bias = static_cast<GXTevBias>(
+        cmd >> GX_BP_TEVCOLORCOMBINER_BIAS_SHIFT &
+        GX_BP_TEVCOLORCOMBINER_BIAS_LMASK);
+
+    if (pClamp != NULL) {
+        *pClamp = cmd >> GX_BP_TEVCOLORCOMBINER_CLAMP_SHIFT &
+                  GX_BP_TEVCOLORCOMBINER_CLAMP_LMASK;
+    }
+    if (pOutReg != NULL) {
+        *pOutReg = static_cast<GXTevRegID>(
+            cmd >> GX_BP_TEVCOLORCOMBINER_DEST_SHIFT &
+            GX_BP_TEVCOLORCOMBINER_DEST_LMASK);
+    }
+
+    GXTevOp op = static_cast<GXTevOp>(
+        cmd >> GX_BP_TEVCOLORCOMBINER_OP_OR_COMPARISON_SHIFT &
+        GX_BP_TEVCOLORCOMBINER_OP_OR_COMPARISON_LMASK);
+    GXTevScale scale = static_cast<GXTevScale>(
+        cmd >> GX_BP_TEVCOLORCOMBINER_SCALE_OR_COMPARE_MODE_SHIFT &
+        GX_BP_TEVCOLORCOMBINER_SCALE_OR_COMPARE_MODE_LMASK);
+
+    if (bias == GX_MAX_TEVBIAS) {
+        op = static_cast<GXTevOp>((op | scale << 1) + GX_TEV_COMP_R8_GT);
+        bias = GX_TB_ZERO;
+        scale = GX_CS_SCALE_1;
+    }
+
+    if (pBias != NULL) {
+        *pBias = bias;
+    }
+    if (pOp != NULL) {
+        *pOp = op;
+    }
+    if (pScale != NULL) {
+        *pScale = scale;
+    }
+
+    return true;
+}
+
+bool ResTev::GXGetTevIndirect(GXTevStageID stage, GXIndTexStageID* pIndStage,
+                              GXIndTexFormat* pFormat, GXIndTexBiasSel* pBias,
+                              GXIndTexMtxID* pMtx, GXIndTexWrap* pWrapS,
+                              GXIndTexWrap* pWrapT, GXBool* pAddPrev,
+                              GXBool* pUtcLod,
+                              GXIndTexAlphaSel* pAlphaSel) const {
+    const u8* pCmd = ref()
+                         .dl.dl.var[stage / TEV_STAGES_PER_DL]
+                         .dl.tevIndirect[stage % TEV_STAGES_PER_DL];
+
+    if (pCmd[0] == 0) {
+        return false;
+    }
+
+    u32 cmd;
+    detail::ResReadBPCmd(pCmd, &cmd);
+
+    if (pIndStage != NULL) {
+        *pIndStage = static_cast<GXIndTexStageID>(
+            cmd >> GX_BP_INDTEVSTAGE_STAGE_SHIFT &
+            GX_BP_INDTEVSTAGE_STAGE_LMASK);
+    }
+    if (pFormat != NULL) {
+        *pFormat = static_cast<GXIndTexFormat>(
+            cmd >> GX_BP_INDTEVSTAGE_FORMAT_SHIFT &
+            GX_BP_INDTEVSTAGE_FORMAT_LMASK);
+    }
+    if (pBias != NULL) {
+        *pBias = static_cast<GXIndTexBiasSel>(
+            cmd >> GX_BP_INDTEVSTAGE_BIAS_SHIFT & GX_BP_INDTEVSTAGE_BIAS_LMASK);
+    }
+    if (pMtx != NULL) {
+        *pMtx = static_cast<GXIndTexMtxID>(cmd >> GX_BP_INDTEVSTAGE_MTX_SHIFT &
+                                           GX_BP_INDTEVSTAGE_MTX_LMASK);
+    }
+    if (pWrapS != NULL) {
+        *pWrapS = static_cast<GXIndTexWrap>(
+            cmd >> GX_BP_INDTEVSTAGE_WRAPS_SHIFT &
+            GX_BP_INDTEVSTAGE_WRAPS_LMASK);
+    }
+    if (pWrapT != NULL) {
+        *pWrapT = static_cast<GXIndTexWrap>(
+            cmd >> GX_BP_INDTEVSTAGE_WRAPT_SHIFT &
+            GX_BP_INDTEVSTAGE_WRAPT_LMASK);
+    }
+    if (pAddPrev != NULL) {
+        *pAddPrev = cmd >> GX_BP_INDTEVSTAGE_ADDPREV_SHIFT &
+                    GX_BP_INDTEVSTAGE_ADDPREV_LMASK;
+    }
+    if (pUtcLod != NULL) {
+        *pUtcLod = cmd >> GX_BP_INDTEVSTAGE_UTCLOD_SHIFT &
+                   GX_BP_INDTEVSTAGE_UTCLOD_LMASK;
+    }
+    if (pAlphaSel != NULL) {
+        *pAlphaSel = static_cast<GXIndTexAlphaSel>(
+            cmd >> GX_BP_INDTEVSTAGE_ALPHA_SHIFT &
+            GX_BP_INDTEVSTAGE_ALPHA_LMASK);
     }
 
     return true;

@@ -3933,15 +3933,15 @@ BOOL daFtrCatalogCW_c::initModel() {
         nw4r::g3d::ResMdl mdl = getResMdl();
         nw4r::g3d::ResMat mat = mdl.GetResMat("m_dummy_wall");
         mFile.Release();
-        mat.BindTexByName(tex, "dummy_wall");
-        mat.BindPlttByName(pltt, "pl_dummy_wall");
+        mat.ForceBindTex(tex, "dummy_wall");
+        mat.ForceBindPltt(pltt, "pl_dummy_wall");
         mFile.Bind();
     } else {
         nw4r::g3d::ResMdl mdl = getResMdl();
         nw4r::g3d::ResMat mat = mdl.GetResMat("m_dummy_floor");
         mFile.Release();
-        mat.BindTexByName(tex, "dummy_floor");
-        mat.BindPlttByName(pltt, "pl_dummy_floor");
+        mat.ForceBindTex(tex, "dummy_floor");
+        mat.ForceBindPltt(pltt, "pl_dummy_floor");
         mFile.Bind();
     }
     return TRUE;

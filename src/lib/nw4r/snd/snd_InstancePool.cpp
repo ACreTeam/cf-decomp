@@ -1,42 +1,48 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_InstancePool.h>
+
+#include <types.h>
+
+#include <nw4r/ut/ut_Lock.h>
+#include <nw4r/ut/ut_algorithm.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
+u32 PoolImpl::CreateImpl(void *buffer, u32 size, u32 objSize) {
+    NW4RAssertPointerNonnull_Line(38, buffer);
 
-u32 PoolImpl::CreateImpl(void* pBuffer, u32 size, u32 stride) {
     ut::AutoInterruptLock lock;
 
-    u8* pPtr = static_cast<u8*>(ut::RoundUp(pBuffer, 4));
-    stride = ut::RoundUp(stride, 4);
+    char *ptr = static_cast<char *>(ut::RoundUp(buffer, 4));
+    objSize = ut::RoundUp(objSize, 4);
 
-    // Account for the aligned buffer address
-    u32 length = (size - ut::GetOffsetFromPtr(pBuffer, pPtr)) / stride;
+    u32 numObjects = (size - (ptr - static_cast<char *>(buffer))) / objSize;
 
-    for (u32 i = 0; i < length; i++, pPtr += stride) {
-        PoolImpl* pHead = reinterpret_cast<PoolImpl*>(pPtr);
-        pHead->mNext = mNext;
-        mNext = pHead;
+    for (u32 i = 0; i < numObjects; i++, ptr += objSize) {
+        PoolImpl *head = reinterpret_cast<PoolImpl *>(ptr);
+
+        head->mNext = mNext;
+        mNext = head;
     }
 
-    return length;
+    return numObjects;
 }
 
-void PoolImpl::DestroyImpl(void* pBuffer, u32 size) {
+void PoolImpl::DestroyImpl(void *buffer, u32 size) {
+    NW4RAssertPointerNonnull_Line(68, buffer);
+
     ut::AutoInterruptLock lock;
 
-    void* pBegin = pBuffer;
-    void* pEnd = static_cast<u8*>(pBegin) + size;
+    void *begin = buffer;
+    void *end = static_cast<char *>(begin) + size;
 
-    PoolImpl* pIt = mNext;
-    PoolImpl* pPrev = this;
-
-    for (; pIt != NULL; pIt = pIt->mNext) {
-        if (pBegin <= pIt && pIt < pEnd) {
-            pPrev->mNext = pIt->mNext;
+    for (PoolImpl *ptr = mNext, *prev = this; ptr; ptr = ptr->mNext) {
+        if (begin <= ptr && ptr < end) {
+            prev->mNext = ptr->mNext;
         } else {
-            pPrev = pIt;
+            prev = ptr;
         }
     }
 }
@@ -44,36 +50,37 @@ void PoolImpl::DestroyImpl(void* pBuffer, u32 size) {
 int PoolImpl::CountImpl() const {
     ut::AutoInterruptLock lock;
 
-    int num = 0;
+    int count = 0;
 
-    for (PoolImpl* pIt = mNext; pIt != NULL; pIt = pIt->mNext) {
-        num++;
+    for (PoolImpl *ptr = mNext; ptr; ptr = ptr->mNext) {
+        count++;
     }
 
-    return num;
+    return count;
 }
 
-void* PoolImpl::AllocImpl() {
+void *PoolImpl::AllocImpl() {
     ut::AutoInterruptLock lock;
 
-    if (mNext == NULL) {
-        return NULL;
+    if (!mNext) {
+        return nullptr;
     }
 
-    PoolImpl* pHead = mNext;
-    mNext = pHead->mNext;
+    PoolImpl *head = mNext;
 
-    return pHead;
+    mNext = head->mNext;
+
+    return head;
 }
 
-void PoolImpl::FreeImpl(void* pElem) {
+void PoolImpl::FreeImpl(void *ptr) {
     ut::AutoInterruptLock lock;
 
-    PoolImpl* pHead = static_cast<PoolImpl*>(pElem);
-    pHead->mNext = mNext;
-    mNext = pHead;
-}
+    PoolImpl *head = static_cast<PoolImpl *>(ptr);
 
+    head->mNext = mNext;
+    mNext = head;
+}
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

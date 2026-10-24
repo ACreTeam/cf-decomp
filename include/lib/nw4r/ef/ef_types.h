@@ -19,6 +19,12 @@ namespace ef {
 
 static const u32 NUM_PARAMS = 6;
 
+enum CalcOption {
+    CALC_TYPE_NORMAL = 0,
+    CALC_TYPE_BILLBOARD = 1,
+    CALC_TYPE_EXTENDED = 2,
+};
+
 enum Axis {
     AXIS_X,
     AXIS_Y,
@@ -57,7 +63,7 @@ enum EvaluateStatus {
 };
 
 typedef u32 ForEachParam;
-typedef void (*ForEachFunc)(void* pObject, ForEachParam param);
+typedef void (*ForEachFunc)(void *pObject, ForEachParam param);
 
 inline u8 ConvertF32RadToU8(f32 rad) {
     rad = math::FCeil(rad / NW4R_MATH_PI * 128.0f - 0.5f);

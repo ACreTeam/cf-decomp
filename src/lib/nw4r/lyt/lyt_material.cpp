@@ -261,7 +261,13 @@ namespace lyt {
  * Material
  *
  ******************************************************************************/
-Material::Material(const res::Material* pRes, const ResBlockSet& rBlockSet) {
+Material::Material() {
+    Init();
+    std::memset(mName, 0, sizeof(mName));
+}
+
+#pragma dont_inline on
+Material::Material(const res::Material* pRes, const ResBlockSet& resBlockSet) {
     Init();
     SetName(pRes->name);
 
@@ -273,159 +279,157 @@ Material::Material(const res::Material* pRes, const ResBlockSet& rBlockSet) {
         mTevKCols[i] = pRes->tevKCols[i];
     }
 
-    u32 offset = sizeof(res::Material);
+    ulong resOffs = sizeof(res::Material);
 
-    // clang-format off
-    const res::TexMap* const pResTexMap = detail::ConvertOffsToPtr<res::TexMap>(pRes, offset);
-    offset += pRes->resNum.GetTexMapNum() * sizeof(res::TexMap);
+    const res::TexMap* const pResTexMap =
+        detail::ConvertOffsToPtr<res::TexMap>(pRes, resOffs);
+    resOffs += pRes->resNum.GetTexMapNum() * sizeof(res::TexMap);
 
-    const TexSRT* const pResTexSrt = detail::ConvertOffsToPtr<TexSRT>(pRes, offset);
-    offset += pRes->resNum.GetTexSRTNum() * sizeof(TexSRT);
+    const TexSRT* const resTexSRTs =
+        detail::ConvertOffsToPtr<TexSRT>(pRes, resOffs);
+    resOffs += pRes->resNum.GetTexSRTNum() * sizeof(TexSRT);
 
-    const TexCoordGen* const pResTexCoordGen = detail::ConvertOffsToPtr<TexCoordGen>(pRes, offset);
-    offset += pRes->resNum.GetTexCoordGenNum() * sizeof(TexCoordGen);
+    const TexCoordGen* const resTexCoordGens =
+        detail::ConvertOffsToPtr<TexCoordGen>(pRes, resOffs);
+    resOffs += pRes->resNum.GetTexCoordGenNum() * sizeof(TexCoordGen);
 
-    u8 texMapNum      = ut::Min<u8>(pRes->resNum.GetTexMapNum(), GX_MAX_TEXMAP);
-    u8 texSrtNum      = ut::Min<u8>(pRes->resNum.GetTexSRTNum(), MAX_TEX_SRT);
-    u8 texCoordGenNum = ut::Min<u8>(pRes->resNum.GetTexCoordGenNum(), GX_MAX_TEXCOORD);
+    u8 texMapNum = ut::Min<u8>(pRes->resNum.GetTexMapNum(), GX_MAX_TEXMAP);
+    u8 texSRTNum = ut::Min<u8>(pRes->resNum.GetTexSRTNum(), MAX_TEX_SRT);
+    u8 texCoordGenNum =
+        ut::Min<u8>(pRes->resNum.GetTexCoordGenNum(), GX_MAX_TEXCOORD);
 
-    bool allocChanCtrl  = pRes->resNum.GetChanCtrlNum() != 0;
-    bool allocMatCol    = pRes->resNum.GetMatColNum() != 0;
-    bool allocTevSwap   = pRes->resNum.HasTevSwapTable();
-    bool allocAlphaComp = pRes->resNum.HasAlphaCompare();
+    bool allocChanCtrl = pRes->resNum.GetChanCtrlNum() != 0;
+    bool allocMatCol = pRes->resNum.GetMatColNum() != 0;
+    bool allocTevSwap = pRes->resNum.HasTevSwapTable();
+    bool allocAlpComp = pRes->resNum.HasAlphaCompare();
     bool allocBlendMode = pRes->resNum.HasBlendMode();
 
-    u8 indTexSrtNum = ut::Min<u8>(pRes->resNum.GetIndTexSRTNum(), MAX_IND_SRT);
-    u8 indStageNum  = ut::Min<u8>(pRes->resNum.GetIndTexStageNum(), GX_MAX_INDTEXSTAGE);
-    u8 tevStageNum  = ut::Min<u8>(pRes->resNum.GetTevStageNum(), GX_MAX_TEVSTAGE);
-    // clang-format on
+    u8 indTexSRTNum = ut::Min<u8>(pRes->resNum.GetIndTexSRTNum(), MAX_IND_SRT);
+    u8 indStageNum =
+        ut::Min<u8>(pRes->resNum.GetIndTexStageNum(), GX_MAX_INDTEXSTAGE);
+    u8 tevStageNum = ut::Min<u8>(pRes->resNum.GetTevStageNum(), GX_MAX_TEVSTAGE);
 
-    ReserveGXMem(texMapNum, texSrtNum, texCoordGenNum, tevStageNum,
-                 allocTevSwap, indStageNum, indTexSrtNum, allocChanCtrl,
-                 allocMatCol, allocAlphaComp, allocBlendMode);
+    ReserveGXMem(texMapNum, texSRTNum, texCoordGenNum, tevStageNum,
+                 allocTevSwap, indStageNum, indTexSRTNum, allocChanCtrl,
+                 allocMatCol, allocAlpComp, allocBlendMode);
 
     if (mpGXMem != NULL) {
         SetTextureNum(texMapNum);
 
-        if (texMapNum > 0) {
-            const res::Texture* const pTexture =
+        if (texMapNum != 0) {
+            const res::Texture* const textures =
                 detail::ConvertOffsToPtr<res::Texture>(
-                    rBlockSet.pTextureList, sizeof(res::TextureList));
+                    resBlockSet.pTextureList, sizeof(res::TextureList));
 
-            TexMap* const pTexMap = GetTexMapAry();
+            TexMap* const texMaps = GetTexMapAry();
 
-            u8 num = 0;
-            for (u8 i = 0; i < mGXMemNum.texMap; num++, i++) {
-                const char* const pName = detail::ConvertOffsToPtr<char>(
-                    pTexture, pTexture[pResTexMap[i].texIdx].nameStrOffset);
+            u8 di = 0;
+            for (u8 si = 0; si < texMapNum; di++, si++) {
+                const char* const fileName = detail::ConvertOffsToPtr<char>(
+                    textures, textures[pResTexMap[si].texIdx].nameStrOffset);
 
-                void* const pTexPalette = rBlockSet.pResAccessor->GetResource(
-                    ArcResourceAccessor::RES_TYPE_TEXTURE, pName, NULL);
+                void* pTplRes = resBlockSet.pResAccessor->GetResource(
+                    ArcResourceAccessor::RES_TYPE_TEXTURE, fileName, NULL);
 
-                TexMap texMap(static_cast<TPLPalette*>(pTexPalette), 0);
-                SetTextureNoWrap(num, texMap);
-
-                pTexMap[num].SetWrapMode(
-                    static_cast<GXTexWrapMode>(pResTexMap[i].wrapS),
-                    static_cast<GXTexWrapMode>(pResTexMap[i].wrapT));
+                texMaps[di].ReplaceImage(static_cast<TPLPalette*>(pTplRes), 0);
+                texMaps[di].SetWrapMode(pResTexMap[si].GetWarpModeS(),
+                                        pResTexMap[si].GetWarpModeT());
+                texMaps[di].SetFilter(pResTexMap[si].GetMinFilter(),
+                                      pResTexMap[si].GetMagFilter());
             }
+
+            SetTextureNum(di);
         }
 
-        TexSRT* pTexSrt = GetTexSRTAry();
-        for (int i = 0; i < texSrtNum; i++) {
-            pTexSrt[i].translate = pResTexSrt[i].translate;
-            pTexSrt[i].rotate = pResTexSrt[i].rotate;
-            pTexSrt[i].scale = pResTexSrt[i].scale;
+        TexSRT* texSRTs = GetTexSRTAry();
+        for (int i = 0; i < texSRTNum; i++) {
+            texSRTs[i].translate = resTexSRTs[i].translate;
+            texSRTs[i].rotate = resTexSRTs[i].rotate;
+            texSRTs[i].scale = resTexSRTs[i].scale;
         }
 
-        TexCoordGen* pTexCoordGen = GetTexCoordGenAry();
+        TexCoordGen* texCoordGens = GetTexCoordGenAry();
         SetTexCoordGenNum(texCoordGenNum);
         for (int i = 0; i < mGXMemNum.texCoordGen; i++) {
-            pTexCoordGen[i] = pResTexCoordGen[i];
+            texCoordGens[i] = resTexCoordGens[i];
         }
 
         if (allocChanCtrl) {
             const ChanCtrl* const pResChanCtrl =
-                detail::ConvertOffsToPtr<ChanCtrl>(pRes, offset);
-
-            *GetChanCtrlAry() = *pResChanCtrl;
-            offset += sizeof(ChanCtrl);
+                detail::ConvertOffsToPtr<ChanCtrl>(pRes, resOffs);
+            GetChanCtrlAry()[0] = *pResChanCtrl;
+            resOffs += sizeof(ChanCtrl);
         }
 
         if (allocMatCol) {
             const ut::Color* const pResMatCol =
-                detail::ConvertOffsToPtr<ut::Color>(pRes, offset);
-
-            *GetMatColAry() = *pResMatCol;
-            offset += sizeof(ut::Color);
+                detail::ConvertOffsToPtr<ut::Color>(pRes, resOffs);
+            GetMatColAry()[0] = *pResMatCol;
+            resOffs += sizeof(ut::Color);
         }
 
         if (allocTevSwap) {
             const TevSwapMode* const pResTevSwap =
-                detail::ConvertOffsToPtr<TevSwapMode>(pRes, offset);
+                detail::ConvertOffsToPtr<TevSwapMode>(pRes, resOffs);
+            TevSwapMode* const tevSwaps = GetTevSwapAry();
 
-            TevSwapMode* const pTevSwap = GetTevSwapAry();
             for (int i = 0; i < GX_MAX_TEVSWAP; i++) {
-                pTevSwap[i] = pResTevSwap[i];
+                tevSwaps[i] = pResTevSwap[i];
             }
 
-            offset += GX_MAX_TEVSWAP * sizeof(TevSwapMode);
+            resOffs += GX_MAX_TEVSWAP * sizeof(TevSwapMode);
         }
 
-        if (indTexSrtNum != 0) {
-            TexSRT* const pIndTexSrt = GetIndTexSRTAry();
+        if (indTexSRTNum != 0) {
+            TexSRT* const indTexSRTs = GetIndTexSRTAry();
+            const TexSRT* const pResIndMtx =
+                detail::ConvertOffsToPtr<TexSRT>(pRes, resOffs);
 
-            const TexSRT* const pResIndTexSrt =
-                detail::ConvertOffsToPtr<TexSRT>(pRes, offset);
-
-            for (int i = 0; i < indTexSrtNum; i++) {
-                pIndTexSrt[i] = pResIndTexSrt[i];
+            for (int i = 0; i < indTexSRTNum; i++) {
+                indTexSRTs[i] = pResIndMtx[i];
             }
         }
-        offset += pRes->resNum.GetIndTexSRTNum() * sizeof(TexSRT);
+        resOffs += pRes->resNum.GetIndTexSRTNum() * sizeof(TexSRT);
 
         if (indStageNum != 0) {
             SetIndStageNum(indStageNum);
-            IndirectStage* const pIndStage = GetIndirectStageAry();
-
-            const IndirectStage* const pResIndStage =
-                detail::ConvertOffsToPtr<IndirectStage>(pRes, offset);
+            IndirectStage* indirectStages = GetIndirectStageAry();
+            const IndirectStage* const pResIndStg =
+                detail::ConvertOffsToPtr<IndirectStage>(pRes, resOffs);
 
             for (int i = 0; i < indStageNum; i++) {
-                pIndStage[i] = pResIndStage[i];
+                indirectStages[i] = pResIndStg[i];
             }
         }
-        offset += pRes->resNum.GetIndTexStageNum() * sizeof(IndirectStage);
+        resOffs += pRes->resNum.GetIndTexStageNum() * sizeof(IndirectStage);
 
         if (tevStageNum != 0) {
             SetTevStageNum(tevStageNum);
-            TevStage* const pTevStage = GetTevStageAry();
-
-            const TevStage* const pResTevStage =
-                detail::ConvertOffsToPtr<TevStage>(pRes, offset);
+            TevStage* const tevStages = GetTevStageAry();
+            const TevStage* const pResTevStg =
+                detail::ConvertOffsToPtr<TevStage>(pRes, resOffs);
 
             for (int i = 0; i < tevStageNum; i++) {
-                pTevStage[i] = pResTevStage[i];
+                tevStages[i] = pResTevStg[i];
             }
         }
-        offset += pRes->resNum.GetTevStageNum() * sizeof(TevStage);
+        resOffs += pRes->resNum.GetTevStageNum() * sizeof(TevStage);
 
-        if (allocAlphaComp) {
+        if (allocAlpComp) {
             const AlphaCompare* const pResAlphaCompare =
-                detail::ConvertOffsToPtr<AlphaCompare>(pRes, offset);
-
+                detail::ConvertOffsToPtr<AlphaCompare>(pRes, resOffs);
             *GetAlphaComparePtr() = *pResAlphaCompare;
-            offset += sizeof(AlphaCompare);
+            resOffs += sizeof(AlphaCompare);
         }
 
         if (allocBlendMode) {
             const BlendMode* const pResBlendMode =
-                detail::ConvertOffsToPtr<BlendMode>(pRes, offset);
-
+                detail::ConvertOffsToPtr<BlendMode>(pRes, resOffs);
             *GetBlendModePtr() = *pResBlendMode;
         }
     }
 }
+#pragma dont_inline reset
 
 void Material::Init() {
     mTevCols[TEVCOLOR_REG0] = DefaultBlackColor;
@@ -570,91 +574,51 @@ TexMap* Material::GetTexMapAry() {
     return detail::ConvertOffsToPtr<TexMap>(mpGXMem, 0);
 }
 
-const TexSRT* Material::GetTexSRTAry() const {
-    return detail::ConvertOffsToPtr<TexSRT>(mpGXMem,
-                                            CalcOffsetTexSRTAry(mGXMemCap));
-}
 TexSRT* Material::GetTexSRTAry() {
     return detail::ConvertOffsToPtr<TexSRT>(mpGXMem,
                                             CalcOffsetTexSRTAry(mGXMemCap));
 }
 
-const TexCoordGen* Material::GetTexCoordGenAry() const {
-    return detail::ConvertOffsToPtr<TexCoordGen>(
-        mpGXMem, CalcOffsetTexCoordGenAry(mGXMemCap));
-}
 TexCoordGen* Material::GetTexCoordGenAry() {
     return detail::ConvertOffsToPtr<TexCoordGen>(
         mpGXMem, CalcOffsetTexCoordGenAry(mGXMemCap));
 }
 
-const ChanCtrl* Material::GetChanCtrlAry() const {
-    return detail::ConvertOffsToPtr<ChanCtrl>(mpGXMem,
-                                              CalcOffsetChanCtrlAry(mGXMemCap));
-}
 ChanCtrl* Material::GetChanCtrlAry() {
     return detail::ConvertOffsToPtr<ChanCtrl>(mpGXMem,
                                               CalcOffsetChanCtrlAry(mGXMemCap));
 }
 
-const ut::Color* Material::GetMatColAry() const {
-    return detail::ConvertOffsToPtr<ut::Color>(mpGXMem,
-                                               CalcOffsetMatColAry(mGXMemCap));
-}
 ut::Color* Material::GetMatColAry() {
     return detail::ConvertOffsToPtr<ut::Color>(mpGXMem,
                                                CalcOffsetMatColAry(mGXMemCap));
 }
 
-const TevSwapMode* Material::GetTevSwapAry() const {
-    return detail::ConvertOffsToPtr<TevSwapMode>(
-        mpGXMem, CalcOffsetTevSwapAry(mGXMemCap));
-}
 TevSwapMode* Material::GetTevSwapAry() {
     return detail::ConvertOffsToPtr<TevSwapMode>(
         mpGXMem, CalcOffsetTevSwapAry(mGXMemCap));
 }
 
-const AlphaCompare* Material::GetAlphaComparePtr() const {
-    return detail::ConvertOffsToPtr<AlphaCompare>(
-        mpGXMem, CalcOffsetGetAlphaCompare(mGXMemCap));
-}
 AlphaCompare* Material::GetAlphaComparePtr() {
     return detail::ConvertOffsToPtr<AlphaCompare>(
         mpGXMem, CalcOffsetGetAlphaCompare(mGXMemCap));
 }
 
-const BlendMode* Material::GetBlendModePtr() const {
-    return detail::ConvertOffsToPtr<BlendMode>(mpGXMem,
-                                               CalcOffsetBlendMode(mGXMemCap));
-}
 BlendMode* Material::GetBlendModePtr() {
     return detail::ConvertOffsToPtr<BlendMode>(mpGXMem,
                                                CalcOffsetBlendMode(mGXMemCap));
 }
 
-const IndirectStage* Material::GetIndirectStageAry() const {
-    return detail::ConvertOffsToPtr<IndirectStage>(
-        mpGXMem, CalcOffsetIndirectStageAry(mGXMemCap));
-}
 IndirectStage* Material::GetIndirectStageAry() {
     return detail::ConvertOffsToPtr<IndirectStage>(
         mpGXMem, CalcOffsetIndirectStageAry(mGXMemCap));
 }
 
-const TexSRT* Material::GetIndTexSRTAry() const {
-    return detail::ConvertOffsToPtr<TexSRT>(mpGXMem,
-                                            CalcOffsetIndTexSRTAry(mGXMemCap));
-}
 TexSRT* Material::GetIndTexSRTAry() {
     return detail::ConvertOffsToPtr<TexSRT>(mpGXMem,
                                             CalcOffsetIndTexSRTAry(mGXMemCap));
 }
 
-const TevStage* Material::GetTevStageAry() const {
-    return detail::ConvertOffsToPtr<TevStage>(mpGXMem,
-                                              CalcOffsetTevStageAry(mGXMemCap));
-}
 TevStage* Material::GetTevStageAry() {
     return detail::ConvertOffsToPtr<TevStage>(mpGXMem,
                                               CalcOffsetTevStageAry(mGXMemCap));
@@ -666,51 +630,51 @@ void Material::SetName(const char* pName) {
 }
 
 void Material::SetTextureNum(u8 num) {
-    if (num > 0) {
+    if (num != 0) {
         TexMap* const pTexMap = GetTexMapAry();
 
         for (u32 i = mGXMemNum.texMap; i < num; i++) {
             new (&pTexMap[i]) TexMap();
         }
-
-        mGXMemNum.texMap = num;
     }
+
+    mGXMemNum.texMap = num;
 }
 
 void Material::SetTexCoordGenNum(u8 num) {
-    if (num > 0) {
+    if (num != 0) {
         TexCoordGen* const pTexCoordGen = GetTexCoordGenAry();
 
         for (u32 i = mGXMemNum.texCoordGen; i < num; i++) {
             new (&pTexCoordGen[i]) TexCoordGen();
         }
-
-        mGXMemNum.texCoordGen = num;
     }
+
+    mGXMemNum.texCoordGen = num;
 }
 
 void Material::SetTevStageNum(u8 num) {
-    if (num > 0) {
+    if (num != 0) {
         TevStage* const pTevStage = GetTevStageAry();
 
         for (u32 i = mGXMemNum.tevStage; i < num; i++) {
             new (&pTevStage[i]) TevStage();
         }
-
-        mGXMemNum.tevStage = num;
     }
+
+    mGXMemNum.tevStage = num;
 }
 
 void Material::SetIndStageNum(u8 num) {
-    if (num > 0) {
+    if (num != 0) {
         IndirectStage* const pIndStage = GetIndirectStageAry();
 
         for (u32 i = mGXMemNum.indStage; i < num; i++) {
             new (&pIndStage[i]) IndirectStage();
         }
-
-        mGXMemNum.indStage = num;
     }
+
+    mGXMemNum.indStage = num;
 }
 
 void Material::SetColorElement(u32 idx, s16 value) {
@@ -1205,18 +1169,11 @@ bool Material::SetupGX(bool modulate, u8 alpha) {
 }
 
 void Material::BindAnimation(AnimTransform* pAnimTrans) {
-    pAnimTrans->Bind(this);
+    pAnimTrans->Bind(this, false);
 }
 
 void Material::UnbindAnimation(AnimTransform* pAnimTrans) {
-    NW4R_UT_LINKLIST_FOREACH_SAFE (it, mAnimList, {
-        if (pAnimTrans != NULL && it->GetAnimTransform() != pAnimTrans) {
-            continue;
-        }
-
-        mAnimList.Erase(it);
-        it->Reset();
-    })
+    detail::UnbindAnimationLink(&mAnimList, pAnimTrans);
 }
 
 void Material::UnbindAllAnimation() {
@@ -1224,37 +1181,41 @@ void Material::UnbindAllAnimation() {
 }
 
 void Material::Animate() {
-    NW4R_UT_LINKLIST_FOREACH (it, mAnimList, {
-        if (!it->IsEnable()) {
-            continue;
+    for (AnimationLinkList::Iterator it = mAnimList.GetBeginIter();
+         it != mAnimList.GetEndIter(); it++) {
+        if (it->IsEnable()) {
+            AnimTransform* pAnimTrans = it->GetAnimTransform();
+            pAnimTrans->Animate(it->GetIndex(), this);
         }
-
-        AnimTransform* pAnimTrans = it->GetAnimTransform();
-        pAnimTrans->Animate(it->GetIndex(), this); 
-    })
+    }
 }
 
-void Material::AddAnimationLink(AnimationLink* pAnimLink) {
-    mAnimList.PushBack(pAnimLink);
+void Material::AddAnimationLink(AnimationLink* pAnimationLink) {
+    mAnimList.PushBack(pAnimationLink);
 }
 
 AnimationLink* Material::FindAnimationLink(AnimTransform* pAnimTrans) {
     return detail::FindAnimationLink(&mAnimList, pAnimTrans);
 }
 
-void Material::SetAnimationEnable(AnimTransform* pAnimTrans, bool enable) {
-    AnimationLink* pAnimLink = FindAnimationLink(pAnimTrans);
+AnimationLink* Material::FindAnimationLink(const AnimResource& animRes) {
+    return detail::FindAnimationLink(&mAnimList, animRes);
+}
 
+void Material::SetAnimationEnable(AnimTransform* pAnimTrans, bool bEnable) {
+    AnimationLink* pAnimLink = FindAnimationLink(pAnimTrans);
     if (pAnimLink != NULL) {
-        pAnimLink->SetEnable(enable);
+        pAnimLink->SetEnable(bEnable);
     }
 }
 
-/******************************************************************************
- *
- * Functions
- *
- ******************************************************************************/
+void Material::SetAnimationEnable(const AnimResource& animRes, bool bEnable) {
+    AnimationLink* pAnimLink = FindAnimationLink(animRes);
+    if (pAnimLink != NULL) {
+        pAnimLink->SetEnable(bEnable);
+    }
+}
+
 namespace detail {
 
 Size GetTextureSize(Material* pMaterial, u8 idx) {

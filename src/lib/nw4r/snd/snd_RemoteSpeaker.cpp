@@ -1,28 +1,18 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
-
-#include <revolution/os.h>
-#include <revolution/wenc.h>
-#include <revolution/wpad.h>
-
+#include <nw4r/snd/snd_RemoteSpeaker.h>
+#include <types.h>
+#include <nw4r/snd/snd_RemoteSpeakerManager.h>
+#include <nw4r/ut/ut_Lock.h>
 #include <cstring>
 
 namespace nw4r {
 namespace snd {
-
 RemoteSpeaker::RemoteSpeaker()
-    : mInitFlag(false),
-      mPlayFlag(false),
-      mEnableFlag(false),
-      mFirstEncodeFlag(false),
-      mValidCallbackFlag(false),
+    : mInitFlag(false), mPlayFlag(false), mEnableFlag(false),
+      mFirstEncodeFlag(false), mValidCallbackFlag(false),
       mCommandBusyFlag(false),
-      mForceResumeFlag(false),
-      mState(STATE_INVALID),
-      mUserCommand(COMMAND_NONE),
-      mInternalCommand(COMMAND_NONE),
-      mWpadCallback(NULL) {
 
+      mState(STATE_INVALID), mUserCommand(COMMAND_NONE),
+      mInternalCommand(COMMAND_NONE), mWpadCallback(nullptr) {
     OSCreateAlarm(&mContinueAlarm);
     OSSetAlarmUserData(&mContinueAlarm, this);
 
@@ -33,7 +23,6 @@ RemoteSpeaker::RemoteSpeaker()
 void RemoteSpeaker::InitParam() {
     ClearParam();
 
-    mForceResumeFlag = false;
     mContinueFlag = false;
     mPlayFlag = false;
     mEnableFlag = true;
@@ -61,8 +50,8 @@ bool RemoteSpeaker::Setup(WPADCallback pCallback) {
         mValidCallbackFlag = false;
     }
 
-    mWpadCallback = pCallback;
     mUserCommand = COMMAND_SPEAKER_ON;
+    mWpadCallback = pCallback;
     mInitFlag = true;
 
     return true;
@@ -147,7 +136,7 @@ void RemoteSpeaker::ExecCommand(SpeakerCommand command) {
     }
 }
 
-void RemoteSpeaker::UpdateStreamData(const s16* pRmtSamples) {
+void RemoteSpeaker::UpdateStreamData(const s16 *pRmtSamples) {
     if (!IsAvailable()) {
         return;
     }
@@ -155,7 +144,7 @@ void RemoteSpeaker::UpdateStreamData(const s16* pRmtSamples) {
     bool playFlag = true;
     bool silentFlag = mEnableFlag ? IsAllSampleZero(pRmtSamples) : true;
 
-    if (silentFlag || mForceResumeFlag) {
+    if (silentFlag) {
         playFlag = false;
     }
 
@@ -216,8 +205,8 @@ void RemoteSpeaker::UpdateStreamData(const s16* pRmtSamples) {
     mPlayFlag = playFlag;
 }
 
-bool RemoteSpeaker::IsAllSampleZero(const s16* pSample) {
-    const u32* pBuffer = reinterpret_cast<const u32*>(pSample);
+bool RemoteSpeaker::IsAllSampleZero(const s16 *pSample) {
+    const u32 *pBuffer = reinterpret_cast<const u32 *>(pSample);
     bool zeroFlag = true;
 
     for (int i = 0; i < SAMPLES_PER_ENCODED_PACKET; i++) {
@@ -231,7 +220,7 @@ bool RemoteSpeaker::IsAllSampleZero(const s16* pSample) {
 }
 
 void RemoteSpeaker::SpeakerOnCallback(s32 chan, s32 result) {
-    RemoteSpeaker& r =
+    RemoteSpeaker &r =
         detail::RemoteSpeakerManager::GetInstance().GetRemoteSpeaker(chan);
 
     switch (result) {
@@ -273,7 +262,7 @@ void RemoteSpeaker::SpeakerOnCallback(s32 chan, s32 result) {
 }
 
 void RemoteSpeaker::SpeakerPlayCallback(s32 chan, s32 result) {
-    RemoteSpeaker& r =
+    RemoteSpeaker &r =
         detail::RemoteSpeakerManager::GetInstance().GetRemoteSpeaker(chan);
 
     switch (result) {
@@ -311,7 +300,7 @@ void RemoteSpeaker::SpeakerPlayCallback(s32 chan, s32 result) {
 }
 
 void RemoteSpeaker::SpeakerOffCallback(s32 chan, s32 result) {
-    RemoteSpeaker& r =
+    RemoteSpeaker &r =
         detail::RemoteSpeakerManager::GetInstance().GetRemoteSpeaker(chan);
 
     switch (result) {
@@ -355,30 +344,26 @@ void RemoteSpeaker::NotifyCallback(s32 chan, s32 result) {
     }
 }
 
-void RemoteSpeaker::ContinueAlarmHandler(OSAlarm* pAlarm, OSContext* pCtx) {
+void RemoteSpeaker::ContinueAlarmHandler(OSAlarm *pAlarm, OSContext *pCtx) {
 #pragma unused(pCtx)
 
     ut::AutoInterruptLock lock;
-    RemoteSpeaker* p = static_cast<RemoteSpeaker*>(OSGetAlarmUserData(pAlarm));
-
-    p->mForceResumeFlag = true;
-    p->mContinueFlag = false;
+    RemoteSpeaker *p = static_cast<RemoteSpeaker *>(OSGetAlarmUserData(pAlarm));
 }
 
-void RemoteSpeaker::IntervalAlarmHandler(OSAlarm* pAlarm, OSContext* pCtx) {
+void RemoteSpeaker::IntervalAlarmHandler(OSAlarm *pAlarm, OSContext *pCtx) {
 #pragma unused(pCtx)
 
     ut::AutoInterruptLock lock;
-    RemoteSpeaker* p = static_cast<RemoteSpeaker*>(OSGetAlarmUserData(pAlarm));
+    RemoteSpeaker *p = static_cast<RemoteSpeaker *>(OSGetAlarmUserData(pAlarm));
 
     if (p->mIntervalFlag) {
         OSCancelAlarm(&p->mContinueAlarm);
-        p->mForceResumeFlag = false;
+
         p->mContinueFlag = false;
     }
 
     p->mIntervalFlag = false;
 }
-
 } // namespace snd
 } // namespace nw4r

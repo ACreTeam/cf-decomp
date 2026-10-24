@@ -1,30 +1,73 @@
-#include <nw4r/snd.h>
-#include <nw4r/ut.h>
+#include <nw4r/snd/snd_StrmSound.h>
+
+#include <types.h>
+
+#include <nw4r/snd/snd_BasicSound.h>
+#include <nw4r/snd/snd_SoundInstanceManager.h>
+#include <nw4r/snd/snd_StrmPlayer.h>
+#include <nw4r/snd/snd_StrmSoundHandle.h>
+#include <nw4r/snd/snd_MoveValue.h>
+
+#include <nw4r/ut/ut_Lock.h>
+#include <nw4r/ut/ut_RuntimeTypeInfo.h>
+
+#include <nw4r/NW4RAssert.hpp>
 
 namespace nw4r {
 namespace snd {
 namespace detail {
+class StrmBufferPool;
+}
+} // namespace snd
+} // namespace nw4r
 
-NW4R_UT_RTTI_DEF_DERIVED(StrmSound, BasicSound);
+namespace nw4r {
+namespace ut {
+class FileStream;
+}
+} // namespace nw4r
 
-StrmSound::StrmSound(SoundInstanceManager<StrmSound>* pManager, int priority,
-                      int ambientPriority)
-    : BasicSound(priority, ambientPriority), mManager(pManager), mTempSpecialHandle(NULL) {}
+namespace nw4r {
+namespace snd {
+namespace detail {
+ut::detail::RuntimeTypeInfo const StrmSound::typeInfo(&BasicSound::typeInfo);
+}
+} // namespace snd
+} // namespace nw4r
 
-bool StrmSound::Prepare(StrmBufferPool* pPool,
-                        StrmPlayer::StartOffsetType offsetType, s32 offset,
-                        int voices, ut::FileStream* pStream) {
-    if (pPool == NULL) {
-        return false;
+namespace nw4r {
+namespace snd {
+namespace detail {
+StrmSound::StrmSound(SoundInstanceManager<StrmSound> *manager, int priority,
+                     int ambientPriority)
+    : BasicSound(priority, ambientPriority), mTempSpecialHandle(nullptr),
+      mManager(manager) {
+}
+
+void StrmSound::InitParam() {
+    BasicSound::InitParam();
+
+    for (int i = 0; i < ARRAY_SIZE(mTrackVolume); i++) {
+        mTrackVolume[i].InitValue(0.0f);
+        mTrackVolume[i].SetTarget(1.0f, 1);
     }
+}
+
+StrmPlayer::SetupResult StrmSound::Setup(StrmBufferPool *bufferPool,
+                                         int allocChannelCount,
+                                         u16 allocTrackFlag) {
+    NW4RAssertPointerNonnull_Line(90, bufferPool);
 
     InitParam();
 
-    if (!mStrmPlayer.Setup(pPool)) {
-        return false;
-    }
+    return mStrmPlayer.Setup(bufferPool, allocChannelCount, allocTrackFlag,
+                             GetVoiceOutCount());
+}
 
-    if (!mStrmPlayer.Prepare(pStream, voices, offsetType, offset)) {
+bool StrmSound::Prepare(StrmPlayer::StartOffsetType startOffsetType, s32 offset,
+                        ut::FileStream *fileStream) {
+    bool result = mStrmPlayer.Prepare(fileStream, startOffsetType, offset);
+    if (!result) {
         mStrmPlayer.Shutdown();
         return false;
     }
@@ -32,8 +75,46 @@ bool StrmSound::Prepare(StrmBufferPool* pPool,
     return true;
 }
 
+void StrmSound::UpdateMoveValue() {
+    BasicSound::UpdateMoveValue();
+
+    for (int trackNo = 0; trackNo < (int)ARRAY_SIZE(mTrackVolume); trackNo++) {
+        if (mStrmPlayer.GetPlayerTrack(trackNo)) {
+            mTrackVolume[trackNo].Update();
+        }
+    }
+}
+
+void StrmSound::UpdateParam() {
+    BasicSound::UpdateParam();
+
+    for (int trackNo = 0; trackNo < (int)ARRAY_SIZE(mTrackVolume); trackNo++) {
+        if (mStrmPlayer.GetPlayerTrack(trackNo)) {
+            mStrmPlayer.SetTrackVolume(1 << trackNo,
+                                       mTrackVolume[trackNo].GetValue());
+        }
+    }
+}
+
+void StrmSound::SetTrackVolume(u32 trackFlags, f32 volume, int fadeFrames) {
+    ut::AutoInterruptLock lock;
+    for (int trackNo = 0;
+         trackNo < (int)ARRAY_SIZE(mTrackVolume) && trackFlags != 0;
+         trackNo++, trackFlags >>= 1) {
+        StrmPlayer::StrmTrack *track = mStrmPlayer.GetPlayerTrack(trackNo);
+        if (track != NULL && ((trackFlags & 1) != 0)) {
+            if (volume < 0.0f) {
+                volume = 0.0f;
+            }
+
+            mTrackVolume[trackNo].SetTarget(volume, fadeFrames);
+        }
+    }
+}
+
 void StrmSound::Shutdown() {
     BasicSound::Shutdown();
+
     mManager->Free(this);
 }
 
@@ -42,13 +123,12 @@ void StrmSound::OnUpdatePlayerPriority() {
 }
 
 bool StrmSound::IsAttachedTempSpecialHandle() {
-    return mTempSpecialHandle != NULL;
+    return mTempSpecialHandle != nullptr;
 }
 
 void StrmSound::DetachTempSpecialHandle() {
     mTempSpecialHandle->DetachSound();
 }
-
 } // namespace detail
 } // namespace snd
 } // namespace nw4r

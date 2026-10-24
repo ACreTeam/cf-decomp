@@ -25,7 +25,9 @@ class WaveSound : public BasicSound {
 public:
     NW4R_UT_RTTI_DECL(WaveSound);
 
-public:
+    typedef ut::LinkList<WaveSound, 0xEC> PriorityLinkList;
+
+  public:
     WaveSound(SoundInstanceManager<WaveSound>* pManager, int priority, int ambientPriority);
 
     virtual void Shutdown(); // at 0x10
@@ -44,10 +46,9 @@ public:
         return mWsdPlayer;
     } // at 0x28
 
-    bool Prepare(const void* pWsdData, s32 wsdOffset,
+    bool Prepare(const void *pWsdData, s32 wsdOffset,
                  WsdPlayer::StartOffsetType startType, s32 startOffset,
-                 int voices, const WsdPlayer::WsdCallback* pCallback,
-                 u32 callbackArg);
+                 const WsdPlayer::WsdCallback *pCallback, u32 callbackArg);
 
     void SetChannelPriority(int priority);
     void SetReleasePriorityFix(bool flag);

@@ -20,7 +20,7 @@ class FontRefLink {
 public:
     FontRefLink();
 
-    void Set(const char* pName, ut::Font* pFont);
+    void Set(const char* name, ut::Font* pFont);
 
     const char* GetFontName() const {
         return mFontName;
@@ -63,8 +63,11 @@ public:
 
     virtual ut::Font* GetFont(const char* pName); // at 0x10
 
-    bool Attach(void* pArchive, const char* pRootDir);
-    void *Detach();
+    bool Attach(void* archiveStart, const char* resourceRootDirectory);
+    void* Detach();
+
+    void RegistFont(FontRefLink* pLink);
+    void UnregistFont(FontRefLink* pLink);
 
     bool IsAttached() const {
         return mArcBuf != NULL;
@@ -87,7 +90,15 @@ protected:
  ******************************************************************************/
 class ArcResourceLink {
 public:
-    bool Set(void* pArchive, const char* pRootDir);
+    bool Set(void* archiveStart, const char* resourceRootDirectory);
+
+    const char* GetResRootDir() const {
+        return mResRootDir;
+    }
+
+    ARCHandle* GetArcHandle() {
+        return &mArcHandle;
+    }
 
 public:
     NW4R_UT_LINKLIST_NODE_DECL(); // at 0x0
@@ -119,6 +130,7 @@ public:
 
     void Attach(ArcResourceLink* pLink);
     void Detach(ArcResourceLink* pLink);
+    void DetachAll();
 
     void RegistFont(FontRefLink* pLink);
     void UnregistFont(FontRefLink* pLink);

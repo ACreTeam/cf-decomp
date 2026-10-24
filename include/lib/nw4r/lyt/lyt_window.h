@@ -127,14 +127,13 @@ public:
 
     virtual void UnbindAnimationSelf(AnimTransform* pAnimTrans); // at 0x50
 
-    virtual AnimationLink*
-    FindAnimationLinkSelf(AnimTransform* pAnimTrans); // at 0x54
+    using Pane::GetMaterial;
 
-    virtual void SetAnimationEnable(AnimTransform* pAnimTrans, bool enable,
-                                    bool recursive); // at 0x58
+    virtual u8 GetMaterialNum() const;              // at 0x64
+    virtual Material* GetMaterial(ulong idx) const; // at 0x6C
 
-    virtual Material* GetContentMaterial() const;      // at 0x64
-    virtual Material* GetFrameMaterial(ulong idx) const; // at 0x68
+    virtual Material* GetContentMaterial() const;           // at 0x74
+    virtual Material* GetFrameMaterial(ulong frameIdx) const; // at 0x78
 
 protected:
     struct Frame {
@@ -142,6 +141,7 @@ protected:
         Material* pMaterial; // at 0x4
 
         Frame() : textureFlip(0), pMaterial(NULL) {}
+        ~Frame();
     };
 
     struct Content {
@@ -150,23 +150,28 @@ protected:
     };
 
 protected:
-    virtual void DrawContent(const math::VEC2& rBase,
-                             const WindowFrameSize& rFrameSize,
-                             u8 alpha); // at 0x6C
+    virtual void DrawContent(const math::VEC2& basePt,
+                             const WindowFrameSize& frameSize,
+                             u8 alpha); // at 0x7C
 
-    virtual void DrawFrame(const math::VEC2& rBase, const Frame& rFrame,
-                           const WindowFrameSize& rFrameSize,
-                           u8 alpha); // at 0x70
+    virtual void DrawFrame(const math::VEC2& basePt, const Frame& frame,
+                           const WindowFrameSize& frameSize,
+                           u8 alpha); // at 0x80
 
-    virtual void DrawFrame4(const math::VEC2& rBase, const Frame* pFrames,
-                            const WindowFrameSize& rFrameSize,
-                            u8 alpha); // at 0x74
+    virtual void DrawFrame4(const math::VEC2& basePt, const Frame* frames,
+                            const WindowFrameSize& frameSize,
+                            u8 alpha); // at 0x84
 
-    virtual void DrawFrame8(const math::VEC2& rBase, const Frame* pFrames,
-                            const WindowFrameSize& rFrameSize,
-                            u8 alpha); // at 0x78
+    virtual void DrawFrame8(const math::VEC2& basePt, const Frame* frames,
+                            const WindowFrameSize& frameSize,
+                            u8 alpha); // at 0x88
 
-    WindowFrameSize GetFrameSize(u8 frameNum, const Frame* pFrames);
+    WindowFrameSize GetFrameSize(u8 frameNum, const Frame* frames);
+
+private:
+    void InitContent(u8 texNum);
+    void InitFrame(u8 frameNum);
+    void ReserveTexCoord(u8 num);
 
 protected:
     InflationLRTB mContentInflation; // at 0xD4
