@@ -155,6 +155,9 @@ class Base : public CommandReceiver,
     virtual void onCommand(INPUT_COMMAND command, void *data);
 
     virtual void update(); // 0xD4
+#if VERSION == VERSION_RUUK01_01
+    virtual void updateCandidateState_();
+#endif
     virtual wchar_t *getWCString() const {
         return mpString->getWCString();
     } // 0xD8

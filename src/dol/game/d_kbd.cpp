@@ -438,7 +438,11 @@ BOOL Mng_c::init(int mode) {
 void Mng_c::setup(int mode) {
     switch (mode) {
     case SETUP_MODE_0:
+#if VERSION == VERSION_RUUK01_01
+        mpManager->configPredictWithoutLineFeed();
+#else
         mpManager->configNormalWithoutLineFeedWithSign();
+#endif
         break;
     case SETUP_MODE_1:
         mpManager->configDefault();
@@ -449,7 +453,11 @@ void Mng_c::setup(int mode) {
     mpManager->reflectSaveData();
     mpManager->getCellPhoneKeyboard()->setPredictLanguageButton(false);
     mpManager->getPCKeyboard()->setPredictLanguageButton(false);
+#if VERSION == VERSION_RUUK01_01
+    mpManager->getCandidateBox();
+#else
     mpManager->getCandidateBox()->setActive(false);
+#endif
 }
 
 BOOL Mng_c::loadRes() {
@@ -477,7 +485,11 @@ void Mng_c::initManager() {
         mpManager->setDestination(textinput::DST_EU);
         break;
     case CONSOLE_REGION_KR:
+#if VERSION == VERSION_RUUK01_01
+        mpManager->setDestination(textinput::DST_KR);
+#else
         mpManager->setDestination(textinput::DST_US);
+#endif
         break;
     }
     switch (getConsoleLanguage()) {
@@ -509,7 +521,12 @@ void Mng_c::initManager() {
         mpManager->setLanguage(textinput::DE);
         break;
     case LANGUAGE_KR:
+#if VERSION == VERSION_RUUK01_01
+        mpManager->setLanguage(textinput::KR);
+        mpManager->enableKSXFilter(true);
+#else
         mpManager->setLanguage(textinput::USA);
+#endif
         break;
     }
     mpManager->setAspectRatio(SCGetAspectRatio() != SC_ASPECT_RATIO_16x9);
@@ -523,7 +540,21 @@ void Mng_c::initManager() {
 void Mng_c::createDirect() {
     createManager();
     mpManager->create(NULL);
+#if VERSION == VERSION_RUUK01_01
+    mpManager->setDestination(textinput::DST_KR);
+    mpManager->setLanguage(textinput::KR);
+    mpManager->setAspectRatio(SCGetAspectRatio() != SC_ASPECT_RATIO_16x9);
+    mpManager->changeState(textinput::extend::memo::Manager::STL_Transition);
+    mpManager->configPredictWithoutLineFeed();
+    textinput::extend::memo::Setting setting = sSetting;
+    mpManager->setSetting(setting);
+    mpManager->reflectSaveData();
+    mpManager->getCellPhoneKeyboard()->setPredictLanguageButton(false);
+    mpManager->getPCKeyboard()->setPredictLanguageButton(false);
+    mpManager->getCandidateBox()->setActive(true);
+#else
     initManager();
+#endif
 }
 
 BOOL Mng_c::create() {
@@ -710,6 +741,43 @@ BOOL Mng_c::updateKeyboard() {
     return TRUE;
 }
 
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+void Mng_c::convertFullWidthSpace() {
+    if (getInputLength() != 0) {
+        return;
+    }
+    if (mFlags & FLAG_CELL_PHONE) {
+        if (isCharInput()) {
+            return;
+        }
+    } else if (!isKanaInput() && !getShiftState()) {
+        return;
+    }
+    wchar_t *text = (wchar_t *)getText();
+    int pos = getCursorPos();
+    if (pos > 0 && text[pos - 1] == L' ') {
+        text[pos - 1] = 0x3000;
+    }
+}
+
+void Mng_c::convertYenSign() {
+    if (getInputLength() != 0) {
+        return;
+    }
+    if (mFlags & FLAG_CELL_PHONE) {
+        return;
+    }
+    if (isSignWindowOpen()) {
+        return;
+    }
+    wchar_t *text = (wchar_t *)getText();
+    int pos = getCursorPos();
+    if (pos > 0 && text[pos - 1] == L'\\') {
+        text[pos - 1] = 0xA5;
+    }
+}
+#endif
+
 void Mng_c::open(int noPointer, int noUpdate) {
     mpManager->calc();
     mFlags = (mFlags | FLAG_OPEN) & ~FLAG_CHANGED;
@@ -724,6 +792,14 @@ void Mng_c::open(int noPointer, int noUpdate) {
     if (isCharInput() || isCharDelete() || isDecide()) {
         mFlags |= FLAG_CHANGED;
     }
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    if (isDecide()) {
+        convertFullWidthSpace();
+    }
+    if (isCharInput()) {
+        convertYenSign();
+    }
+#endif
 }
 
 BOOL Mng_c::reopen() {
@@ -974,6 +1050,11 @@ const wchar_t *Mng_c::getInputText() {
         if (c == 0x309B || c == 0x309C) {
             sCandidateText[0] = 0;
         }
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+        if (sCandidateText[0] == L' ' && isKeypadKana()) {
+            sCandidateText[0] = 0x3000;
+        }
+#endif
         if (sCandidateText[0] == L' ') {
             sCandidateText[0] = 0xE057;
         }
@@ -1065,6 +1146,15 @@ int Mng_c::getShiftState() {
     return (shift & 2) ? 2 : 0;
 }
 
+#if VERSION == VERSION_RUUK01_01
+int Mng_c::getShiftStateKR() {
+    if (getConsoleRegion() != CONSOLE_REGION_KR) {
+        return 0;
+    }
+    return mpManager->getPCKeyboard()->mKeyState.muTranslateMode & 1;
+}
+#endif
+
 BOOL Mng_c::isUpdated() {
     if (mFlags & FLAG_CELL_PHONE) {
         return TRUE;
@@ -1111,6 +1201,21 @@ void Mng_c::updateInput() {
     }
     dLetter::playKeySe(c, updated, shift, pcKeyboard);
 }
+
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+BOOL Mng_c::isKeypadKana() {
+    if (getConsoleRegion() != CONSOLE_REGION_JP) {
+        return FALSE;
+    }
+    if (mFlags & FLAG_CELL_PHONE) {
+        textinput::keyboard::cellphonetype::LayoutByNW4R *keypad = mpManager->getCellPhoneKeyboard();
+        if (keypad->getInputMode() == 0 || keypad->getInputMode() == 1) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+#endif
 
 m2d::ResAccLoader_c *Mng_c::getResAcc() {
     return &mResAcc;
@@ -1183,7 +1288,11 @@ void resetSetting() {
     sSetting.uDictionary = 0xFA;
     sSetting.uPredictOnOff = 0;
     sSetting.uKeitaiUpperCaseJP = 1;
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    sSetting.uKeitaiInputMode = 0;
+#else
     sSetting.uKeitaiInputMode = 2;
+#endif
     sSetting.uABCInputMode = 1;
     sSetting.uSignPage = 0;
     sSetting.uAIUInputMode = 0;

@@ -30,6 +30,107 @@ public:
     virtual void onOutOfLength() { printf("OutOfLength\n"); }                     // 0x20
 };
 
+#if VERSION == VERSION_RUUK01_01
+namespace inputform {
+class EditBuffer;
+}
+
+class Manager : public Base {
+public:
+    Manager(MEMAllocator *allocator, nw4r::lyt::MultiArcResourceAccessor *multiArc, EventObserver *event);
+    virtual ~Manager();                                                                // 0x08
+    virtual void create(MEMAllocator *allocator);                                      // 0x0C
+    virtual void init();                                                               // 0x10
+    virtual void calc();                                                               // 0x14
+    virtual void draw();                                                               // 0x18
+    virtual bool updateInput(int chan, f32 x, f32 y, u32 trig, u32 hold, u32 release); // 0x1C
+    virtual bool updateInput(input::HKBManager &hkbManager);                           // 0x20
+    virtual void SetFont(nw4r::lyt::FontRefLink *fontLink);                            // 0x24
+    virtual wchar_t *getWCString() const;                                              // 0x28
+    virtual void setWCString(const wchar_t *string);                                   // 0x2C
+    virtual void setLanguage(Language language);                                       // 0x30
+    virtual Language getLanguage() const { return meLanguage; }                        // 0x34
+    virtual void setDestination(Destination destination);                             // 0x38
+    virtual void limitStringLength(u32 limitStringLength);                             // 0x3C
+    virtual void limitRowNum(u32 limitRowNum);                                         // 0x40
+    virtual void setAnimationOn(bool flag);                                            // 0x44
+    virtual void setAspectRatio(bool b4x3);                                            // 0x48
+    virtual void setSecretInputMode(bool secretInputMode) {                            // 0x4C
+        mpInputForm->setSecretModeOn(secretInputMode);
+    }
+    virtual void setDefaultPredictionJP(int num, const char **predicts) {              // 0x50
+        getInputForm()->getAtokString()->setDefaultPredictionJP(num, predicts);
+    }
+    virtual void setFixedPredictionJP(int num, const char **predicts) {                // 0x54
+        getInputForm()->getAtokString()->setFixedPredictionJP(num, predicts);
+    }
+    virtual void setTitleText(const wchar_t *titleText);                               // 0x58
+    virtual void start();                                                              // 0x5C
+    virtual void end();                                                                // 0x60
+
+    virtual inputform::LayoutByNW4R *getInputForm() { return mpInputForm; }                         // 0x64
+    virtual const inputform::LayoutByNW4R *getInputForm() const { return mpInputForm; }             // 0x68
+    virtual keyboard::hwkey::HWKeyboard *getHWKeyboard() { return mpHWKeyboard; }                   // 0x6C
+    virtual const keyboard::hwkey::HWKeyboard *getHWKeyboard() const { return mpHWKeyboard; }       // 0x70
+    virtual keyboard::pctype::LayoutByNW4R *getPCKeyboard() { return mpPCKeyboard; }                // 0x74
+    virtual const keyboard::pctype::LayoutByNW4R *getPCKeyboard() const { return mpPCKeyboard; }    // 0x78
+    virtual keyboard::cellphonetype::LayoutByNW4R *getCellPhoneKeyboard() {                         // 0x7C
+        return mpCellPhoneKeyboard;
+    }
+    virtual const keyboard::cellphonetype::LayoutByNW4R *getCellPhoneKeyboard() const {             // 0x80
+        return mpCellPhoneKeyboard;
+    }
+    virtual keyboard::signwindow::LayoutByNW4R *getSignKeyboard() { return mpSignWindow; }            // 0x84
+    virtual const keyboard::signwindow::LayoutByNW4R *getSignKeyboard() const { return mpSignWindow; } // 0x88
+    virtual candidatebox::LayoutByNW4R *getCandidateBox() { return mpCandidateBox; }                // 0x8C
+    virtual const candidatebox::LayoutByNW4R *getCandidateBox() const { return mpCandidateBox; }    // 0x90
+    virtual toolbar::LayoutByNW4R *getToolBar() { return mpToolBar; }                               // 0x94
+    virtual const toolbar::LayoutByNW4R *getToolBar() const { return mpToolBar; }                   // 0x98
+    virtual predictlang::LayoutByNW4R *getPredictLanguageSelectDialog() {                           // 0x9C
+        return mpPredictLanguageDialog;
+    }
+    virtual const predictlang::LayoutByNW4R *getPredictLanguageSelectDialog() const {               // 0xA0
+        return mpPredictLanguageDialog;
+    }
+
+    virtual inputform::EditBuffer *createEditBuffer();                // 0xA4
+    virtual keyboard::hwkey::HWKeyboard *createHWKeyboard();          // 0xA8
+    virtual keyboard::pctype::LayoutByNW4R *createPCTypeKeyboard();   // 0xAC
+    virtual keyboard::cellphonetype::LayoutByNW4R *
+    createCellPhoneTypeKeyboard();                                    // 0xB0
+    virtual inputform::LayoutByNW4R *createInputForm();               // 0xB4
+    virtual candidatebox::LayoutByNW4R *createCandidateBox();         // 0xB8
+    virtual toolbar::LayoutByNW4R *createToolBar();                   // 0xBC
+    virtual predictlang::LayoutByNW4R *createPredictLanguageDialog(); // 0xC0
+    virtual keyboard::signwindow::LayoutByNW4R *createSignWindow();   // 0xC4
+    virtual void setLayoutScaleFor16x9();                             // 0xC8
+    virtual void setLayoutScaleFor4x3();                              // 0xCC
+
+    void initAspect();
+    void startPredictTurnOn(bool on);
+    bool isPredictTurning() const;
+    input::KBDListener *getKBDListenerRoot();
+    void enableKSXFilter(bool enable);
+    EventObserver *getEventObserver() { return mpEventObserver; }
+
+protected:
+    /* 0x04 */ MEMAllocator *mpAllocator;
+    /* 0x08 */ nw4r::lyt::MultiArcResourceAccessor *mpMultiArcResourceAccessor;
+    /* 0x0C */ inputform::EditBuffer *mpEditBuffer;
+    /* 0x10 */ keyboard::hwkey::HWKeyboard *mpHWKeyboard;
+    /* 0x14 */ keyboard::pctype::LayoutByNW4R *mpPCKeyboard;
+    /* 0x18 */ keyboard::cellphonetype::LayoutByNW4R *mpCellPhoneKeyboard;
+    /* 0x1C */ inputform::LayoutByNW4R *mpInputForm;
+    /* 0x20 */ candidatebox::LayoutByNW4R *mpCandidateBox;
+    /* 0x24 */ toolbar::LayoutByNW4R *mpToolBar;
+    /* 0x28 */ predictlang::LayoutByNW4R *mpPredictLanguageDialog;
+    /* 0x2C */ keyboard::signwindow::LayoutByNW4R *mpSignWindow;
+    /* 0x30 */ EventObserver *mpEventObserver;
+    /* 0x34 */ Destination meDestination;
+    /* 0x38 */ Language meLanguage;
+    /* 0x3C */ bool mbAspectRatio4x3;
+}; // size 0x40
+#else
 class Manager : public Base {
 public:
     Manager(MEMAllocator *allocator, nw4r::lyt::MultiArcResourceAccessor *multiArc, EventObserver *event); // 803071BC
@@ -120,5 +221,6 @@ protected:
     /* 0x34 */ Language meLanguage;
     /* 0x38 */ bool mbAspectRatio4x3;
 }; // size 0x3C
+#endif
 
 } // namespace textinput

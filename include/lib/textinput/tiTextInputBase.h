@@ -20,6 +20,10 @@ enum Language {
     IT,
     SP,
     NL,
+#if VERSION == VERSION_RUUK01_01
+    CN,
+    KR,
+#endif
     LanguageEnd,
 };
 

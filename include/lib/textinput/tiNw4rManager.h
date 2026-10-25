@@ -226,6 +226,9 @@ public:
         return mpLayout;
     } // 0x28
     virtual nw4r::lyt::Pane *getPane(const char *paneName);                                             // 0x2C
+#if VERSION == VERSION_RUUK01_01
+    virtual const nw4r::lyt::Pane *getPane(const char *paneName) const;
+#endif
     virtual u32 getFlightDuration(int point, const char *paneName);                                     // 0x30
     virtual void setAnimOn(bool flag) {
         mbAnimOn = flag;

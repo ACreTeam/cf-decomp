@@ -65,6 +65,9 @@ class Manager : public textinput::Manager {
         CT_NumericWithSeparator,
         CT_NormalWithoutLineFeedWithSign,
         CT_PredictWithoutLineFeed,
+#if VERSION == VERSION_RUUK01_01
+        CT_PredictBigText,
+#endif
         CT_Last,
     };
 
@@ -101,6 +104,9 @@ class Manager : public textinput::Manager {
     virtual bool updateInput(int chan, f32 x, f32 y, u32 trig, u32 hold,
                              u32 release);
     virtual bool updateInput(input::HKBManager &hkbManager);
+#if VERSION == VERSION_RUUK01_01
+    virtual void SetFont(nw4r::lyt::FontRefLink *fontLink);
+#endif
     virtual void start();
     virtual void end();
     virtual inputform::LayoutByNW4R *createInputForm();
@@ -136,6 +142,9 @@ class Manager : public textinput::Manager {
     virtual void configNumericWithSeparator();                    // 0x114
     virtual void configNormalWithoutLineFeedWithSign();           // 0x118
     virtual void configPredictWithoutLineFeed();                  // 0x11C
+#if VERSION == VERSION_RUUK01_01
+    virtual void configPredictBigText();
+#endif
     virtual InputForm *createMemoInputForm();                     // 0x120
     virtual InputForm *createLetterInputForm();                   // 0x124
     virtual inputform::LayoutByNW4R *createBigTextInputForm();    // 0x128

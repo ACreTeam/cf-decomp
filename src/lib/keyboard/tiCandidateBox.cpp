@@ -197,6 +197,7 @@ extern const PaneToAnimation csPaneToAnimation[] = {
       &csAninationFile[10], &csAninationFile[11], &csAninationFile[12]}},
 };
 
+#if VERSION != VERSION_RUUK01_01
 void CandidateBoxCaller::updateCandidate() {
     if (mpCandidateBox != NULL) {
         mpCandidateBox->updateCandidate(&mCandidates);
@@ -209,6 +210,7 @@ void CandidateBoxCaller::makeEmptyCandidate() {
         mpCandidateBox->makeEmpty(&mCandidates);
     }
 }
+#endif
 
 void Base::setCommandReceiver(textinput::CommandReceiver *receiver) {
     CommandSender::setCommandReceiver(receiver);
@@ -216,7 +218,11 @@ void Base::setCommandReceiver(textinput::CommandReceiver *receiver) {
 }
 
 void Base::updateCandidate(CandidateBoxCaller::Candidates *candidates) {
+#if VERSION == VERSION_RUUK01_01
+    memcpy(mpCandidates, candidates, sizeof(*mpCandidates));
+#else
     memcpy(&mCandidates, candidates, sizeof(mCandidates));
+#endif
 }
 
 void Base::setOnOff(bool on) {
@@ -267,7 +273,11 @@ void LayoutByNW4R::create(MEMAllocator *allocator) {
     createAnmPane_(allocator);
 
     mTextArea.Create(this);
+#if VERSION == VERSION_RUUK01_01
+    mTextArea.SetCandidates(mpCandidates);
+#else
     mTextArea.SetCandidates(&mCandidates);
+#endif
     mTextArea.Init();
     mOnOffButton.Create(this);
     mOnOffButton.Init();

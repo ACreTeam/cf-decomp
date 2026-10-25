@@ -51,6 +51,17 @@ public:
         /* 0x004 */ wchar_t mszCandidate[50][61];
     }; // size 0x17D8
 
+#if VERSION == VERSION_RUUK01_01
+    CandidateBoxCaller() : mpCandidateBox(NULL) {}
+
+    virtual void resetCandidate();
+    virtual void addCandidate(const wchar_t *wcString);
+    virtual void setCandidateBox(Base *candidateBox) { mpCandidateBox = candidateBox; }
+    virtual void updateCandidate();
+    virtual void makeEmptyCandidate();
+
+    /* 0x04 */ Base *mpCandidateBox;
+#else
     CandidateBoxCaller() : mpCandidateBox(NULL) { mCandidates.mNumCandidate = 0; }
 
     virtual void resetCandidate() { // 0x08
@@ -67,19 +78,31 @@ public:
 
     /* 0x04 */ Base *mpCandidateBox;
     /* 0x08 */ Candidates mCandidates;
+#endif
 }; // size 0x17E0
 
 class Base : public CommandSender {
   public:
+#if VERSION == VERSION_RUUK01_01
+    Base(Manager *manager)
+        : mpCandidates(NULL), mpAllocator(NULL), mbOn(false), mbInvalid(true), meLanguage(USA),
+          mpManager(manager) {
+    }
+#else
     Base(Manager *manager)
         : mbOn(false), mbInvalid(true), meLanguage(USA), mpManager(manager) {
         memset(&mCandidates, 0, sizeof(mCandidates));
     }
+#endif
 
     virtual void init() {
     }
     virtual void setCommandReceiver(textinput::CommandReceiver *receiver);
     virtual void updateFromReceiver(u32 command, void *data);
+#if VERSION == VERSION_RUUK01_01
+    virtual void resetCandidate();
+    virtual void addCandidate(const wchar_t *wcString);
+#endif
     virtual void updateCandidate(CandidateBoxCaller::Candidates *candidates);
     virtual void draw() {
     }
@@ -109,7 +132,12 @@ class Base : public CommandSender {
     Manager *mgr() {
         return mpManager;
     }
+#if VERSION == VERSION_RUUK01_01
+    CandidateBoxCaller::Candidates *mpCandidates;
+    MEMAllocator *mpAllocator;
+#else
     CandidateBoxCaller::Candidates mCandidates;
+#endif
     bool mbOn;
     bool mbInvalid;
     Language meLanguage;
@@ -371,6 +399,9 @@ class LayoutByNW4R : public Base,
     virtual void onLeftPageScroll();
     virtual void onOnOffButton(bool);
 
+#if VERSION == VERSION_RUUK01_01
+    virtual void changeSelectEmpty();
+#endif
     virtual void changeSelectEmpty_compatible();
     virtual void changeSelect(s32 pane);
     virtual void updateDisplay();

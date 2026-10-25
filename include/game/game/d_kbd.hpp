@@ -184,6 +184,10 @@ class Mng_c : public m2d::Base_c {
     void updatePointerOff(); // 800C9368
     BOOL updatePointer();    // 800C9434
     BOOL updateKeyboard();   // 800C966C
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    void convertFullWidthSpace();
+    void convertYenSign();
+#endif
     void open(int noPointer, int noUpdate); // 800C96EC
     BOOL reopen();                          // 800C97C4
     void updateNoInput();                   // 800C983C
@@ -228,9 +232,15 @@ class Mng_c : public m2d::Base_c {
     void closeSignWindow();                       // 800CA530
     BOOL isPCKeyboardVisible();                   // 800CA564
     int getShiftState();                          // 800CA5C4
+#if VERSION == VERSION_RUUK01_01
+    int getShiftStateKR();
+#endif
     BOOL isUpdated();                             // 800CA64C
     int getKeypadState(); // unused (stripped): the keypad's slot 0x40
     void updateInput();   // 800CA6A0
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    BOOL isKeypadKana();
+#endif
     m2d::ResAccLoader_c *getResAcc(); // 800CA7F0
     void saveSetting();               // 800CA7F8
     void saveInputMode();             // 800CA8BC

@@ -253,9 +253,15 @@ class Base : public KeyboardBase {
         return (TranslateMode)mKeyState.getTranslateMode();
     } // 0x58
     virtual void setTranslateMode(TranslateMode mode); // 0x5C
+#if VERSION == VERSION_RUUK01_01
+    virtual void onlyQwerty(bool only);
+#endif
     virtual void setLangKeyActive(bool active);        // 0x60
     virtual void setInputModeJP(bool abc, u32 abcMode, u32 aiuMode) {
     } // 0x64
+#if VERSION == VERSION_RUUK01_01
+    virtual void setInputModeCK(u32 mode);
+#endif
     virtual void refreshState();                          // 0x68
     virtual void changeABCInputMode(InputMode mode);      // 0x6C
     virtual void changeAIUInputMode(InputMode mode);      // 0x70

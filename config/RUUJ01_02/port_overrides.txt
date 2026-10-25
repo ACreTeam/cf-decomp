@@ -48,3 +48,9 @@ kbdKeyMapJAPAN = .data:0x8050BEA0; // type:object size:0x770
 kbdModifierMapJAPAN = .data:0x8050C610; // type:object size:0x70
 -kbdKeyMapUS_International
 -kbdModifierMapUS_International
+-fn_800C9674
+-fn_800C9728
+-fn_800CA91C
+convertFullWidthSpace__Q24dKbd5Mng_cFv = .text:0x800C9674; // type:function size:0xB4
+convertYenSign__Q24dKbd5Mng_cFv = .text:0x800C9728; // type:function size:0x90
+isKeypadKana__Q24dKbd5Mng_cFv = .text:0x800CA91C; // type:function size:0xA0

@@ -102,6 +102,9 @@ class Base : public KeyboardBase {
     } // 0x60
     virtual void setUpperCaseJP(bool upperCase) {
     }                                     // 0x64
+#if VERSION == VERSION_RUUK01_01
+    virtual void setLangKeyActive(bool active);
+#endif
     virtual void onClose();               // 0x68
     virtual void goSignInputMode();       // 0x6C
     virtual void changePredictLanguage(); // 0x70
@@ -116,6 +119,9 @@ class Base : public KeyboardBase {
     /* 0x28 */ const LanguageDependency *mpLanguageData;
     /* 0x2C */ MEMAllocator *mpAllocator;
     /* 0x30 */ Manager *mpManager;
+#if VERSION == VERSION_RUUK01_01
+    /* 0x34 */ bool mbLangKeyActive;
+#endif
 }; // size 0x34
 
 class LayoutByNW4R;

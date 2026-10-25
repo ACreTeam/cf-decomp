@@ -49,6 +49,9 @@ public:
         TM_Direct,
         TM_Hiragana,
         TM_Katakana,
+#if VERSION == VERSION_RUUK01_01
+        TM_Hangul,
+#endif
     };
 
     Decolated(u16 maxLength)
@@ -99,9 +102,21 @@ public:
     virtual bool atTheBeginningOfASentence();                 // 0xB4
     virtual void initKanaConverter();                         // 0xB8
     virtual wchar_t *getKanaBuffer() { return mwcKanaBuffer; } // 0xBC
+#if VERSION == VERSION_RUUK01_01
+    virtual bool isKanaFix() const {
+        if (meTranslateMode == TM_Hangul) {
+            return muHangulLength == 0;
+        }
+        return KPRLookAhead(const_cast<KPRQueue *>(&mKanaQueue), NULL, 0) == 0;
+    }
+    virtual void confirmKana();
+    virtual bool clearKana();
+    virtual void EnableKSXFilter(bool enable);
+#else
     virtual bool isKanaFix() const { return KPRLookAhead(const_cast<KPRQueue *>(&mKanaQueue), NULL, 0) == 0; } // 0xC0
     virtual bool clearKana() { return KPRLookAhead(&mKanaQueue, NULL, 0) == 0; } // 0xC4
     virtual void confirmKana();                               // 0xC8
+#endif
 
     void inputString(const wchar_t *string, TranslateMode mode);
     void setTranslateMode(TranslateMode mode);
@@ -113,6 +128,11 @@ protected:
     /* 0x20 */ bool mbSustain;
     /* 0x24 */ TranslateMode meTranslateMode;
     /* 0x28 */ KPRQueue mKanaQueue;
+#if VERSION == VERSION_RUUK01_01
+    /* 0x40 */ u8 mHangul[0x50 - 0x40];
+    /* 0x50 */ u32 muHangulLength;
+    /* 0x54 */ u8 _54[0x5C - 0x54];
+#endif
     /* 0x40 */ wchar_t mwcKanaBuffer[5];
 }; // size 0x4C
 
