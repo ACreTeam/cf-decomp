@@ -947,12 +947,15 @@ def write_splits(path, mapper, base_bin, unit, header, units):
         out = [re.sub(r"^(\t\.rodata\s+type:rodata) align:32$", r"\1 align:64", h) for h in out]
     out.append("")
     moved = {}
+    renamed = {}
     overrides = path.parent / "port_overrides.txt"
     if overrides.is_file():
         for line in overrides.read_text(encoding="utf-8").splitlines():
             parts = line.split()
             if len(parts) == 5 and parts[0] == "@split" and parts[3] == "start":
                 moved[(parts[1] + ":", parts[2])] = int(parts[4], 16)
+            elif len(parts) == 3 and parts[0] == "@rename-unit":
+                renamed[parts[1] + ":"] = parts[2] + ":"
     starts = {}
     retarget = {}
     for u in units:
@@ -970,7 +973,7 @@ def write_splits(path, mapper, base_bin, unit, header, units):
                 t = map_boundary(mapper, base_bin, unit, e["section"], e["end"], True)
                 ends[e["section"]].add(retarget.get((e["section"], t), t))
     for u in units:
-        out.append(u["header"])
+        out.append(renamed.get(u["header"], u["header"]))
         for e in u["entries"]:
             if "raw" in e:
                 out.append(e["raw"])

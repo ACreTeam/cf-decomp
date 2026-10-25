@@ -42,3 +42,36 @@ AlarmHandler__3EGGFP7OSAlarmP9OSContext = .text:0x804422CC; // type:function siz
 startSyncNTSC__Q23EGG12AsyncDisplayFv = .text:0x8044234C; // type:function size:0x108
 alarmHandler__Q23EGG12AsyncDisplayFv = .text:0x804427E0; // type:function size:0x8C
 @split lib/egg/core/eggAsyncDisplay.cpp .text start 0x804422CC
+@rename-unit lib/RVL_SDK/kbd/kbd_lib_maps_us.c lib/RVL_SDK/kbd/kbd_lib_maps_eu.c
+-KBDInitRegionUS
+-kbdKeyMapCANADA
+-kbdModifierMapCANADA
+-kbdKeyMapCANADA_FR
+-kbdModifierMapCANADA_FR
+-kbdKeyMapLATIN_AMERICA
+-kbdModifierMapLATIN_AMERICA
+-kbdKeyMapUSA
+-kbdModifierMapUSA
+KBDInitRegionEU = .text:0x801F9FC8; // type:function size:0x258
+kbdKeyMapDENMARK = .data:0x80508398; // type:object size:0x320
+kbdModifierMapDENMARK = .data:0x805086B8; // type:object size:0x40
+kbdKeyMapFRANCE = .data:0x805086F8; // type:object size:0x320
+kbdModifierMapFRANCE = .data:0x80508A18; // type:object size:0x40
+kbdKeyMapGERMANY = .data:0x80508A58; // type:object size:0x320
+kbdModifierMapGERMANY = .data:0x80508D78; // type:object size:0x40
+kbdKeyMapGREECE = .data:0x80508DB8; // type:object size:0x4B0
+kbdModifierMapGREECE = .data:0x80509268; // type:object size:0x60
+kbdKeyMapITALY = .data:0x805092C8; // type:object size:0x3E8
+kbdModifierMapITALY = .data:0x805096B0; // type:object size:0x50
+kbdKeyMapNETHERLANDS = .data:0x80509700; // type:object size:0x320
+kbdModifierMapNETHERLANDS = .data:0x80509A20; // type:object size:0x40
+kbdKeyMapNORWAY = .data:0x80509A60; // type:object size:0x320
+kbdModifierMapNORWAY = .data:0x80509D80; // type:object size:0x40
+kbdKeyMapPORTUGAL = .data:0x80509DC0; // type:object size:0x320
+kbdModifierMapPORTUGAL = .data:0x8050A0E0; // type:object size:0x40
+kbdKeyMapSPAIN = .data:0x8050A120; // type:object size:0x320
+kbdModifierMapSPAIN = .data:0x8050A440; // type:object size:0x40
+kbdKeyMapSWEDEN_FINLAND = .data:0x8050A480; // type:object size:0x320
+kbdModifierMapSWEDEN_FINLAND = .data:0x8050A7A0; // type:object size:0x40
+kbdKeyMapUNITED_KINGDOM = .data:0x8050A7E0; // type:object size:0x3E8
+kbdModifierMapUNITED_KINGDOM = .data:0x8050ABC8; // type:object size:0x50

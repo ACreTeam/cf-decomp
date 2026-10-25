@@ -2198,7 +2198,7 @@ lib/RVL_SDK/kbd/kbd_lib.c:
 	.sdata      start:0x8074F6B0 end:0x8074F6B8
 	.sbss       start:0x80751A10 end:0x80751A28
 
-lib/RVL_SDK/kbd/kbd_lib_maps_us.c:
+lib/RVL_SDK/kbd/kbd_lib_maps_eu.c:
 	.text       start:0x801F9FC8 end:0x801FA220
 	.data       start:0x80508398 end:0x8050AC18
 

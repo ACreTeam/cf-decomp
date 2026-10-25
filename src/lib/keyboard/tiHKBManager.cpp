@@ -116,7 +116,13 @@ void HKBManager::Initialize() {
         return;
     }
     mbInitialized = true;
+#if VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+    KBDInitRegionEU();
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    KBDInitRegionJP();
+#else
     KBDInitRegionUS();
+#endif
     KBDInit();
     if (mListener.mpPrev == NULL) {
         KBDSetAttachCallback(AttachCB);

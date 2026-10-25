@@ -152,6 +152,8 @@ typedef void (*KBDLedCallbackF)(KBDLedEvent *ev, void *cbArg);
 
 KBDEc KBDInit(void);
 void KBDInitRegionUS(void);
+void KBDInitRegionEU(void);
+void KBDInitRegionJP(void);
 
 KBDDevCallbackF KBDSetAttachCallback(KBDDevCallbackF callback);
 KBDDevCallbackF KBDSetDetachCallback(KBDDevCallbackF callback);

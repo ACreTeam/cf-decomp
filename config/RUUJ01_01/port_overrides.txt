@@ -33,3 +33,18 @@ g_cautionMsgJP = .data:0x804E3560; // type:object size:0x240
 playKanaKeySe__7dLetterFii = .text:0x800CB2D4; // type:function size:0x68
 playAltKeySe__7dLetterFi = .text:0x800CB3B4; // type:function size:0x5C
 playUnfixKeySe__7dLetterFi = .text:0x800CB410; // type:function size:0x5C
+@rename-unit lib/RVL_SDK/kbd/kbd_lib_maps_us.c lib/RVL_SDK/kbd/kbd_lib_maps_jp.c
+-KBDInitRegionUS
+-kbdKeyMapCANADA
+-kbdModifierMapCANADA
+-kbdKeyMapCANADA_FR
+-kbdModifierMapCANADA_FR
+-kbdKeyMapLATIN_AMERICA
+-kbdModifierMapLATIN_AMERICA
+-kbdKeyMapUSA
+-kbdModifierMapUSA
+KBDInitRegionJP = .text:0x801FA01C; // type:function size:0x58
+kbdKeyMapJAPAN = .data:0x8050BC60; // type:object size:0x770
+kbdModifierMapJAPAN = .data:0x8050C3D0; // type:object size:0x70
+-kbdKeyMapUS_International
+-kbdModifierMapUS_International
