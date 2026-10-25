@@ -30,7 +30,7 @@ struct TextureProject {
 
 class Resource {
   private:
-    static const u16 VERSION = 7;
+    static const u16 RESOURCE_VERSION = 7;
 
   public:
     ut::List mBREFFList; // at 0x0
@@ -40,7 +40,7 @@ class Resource {
 
   public:
     static u16 GetVersion() {
-        return VERSION;
+        return RESOURCE_VERSION;
     }
 
     static Resource *GetInstance();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <game_version.h>
+
 // The original builds declared strcmp before MSL's string.h (most likely a
 // precompiled/prefix header). MWCC only treats a strcmp first declared inside
 // string.h / cstring / memory.h as the library function that reads but never

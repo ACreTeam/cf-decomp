@@ -194,6 +194,53 @@ static void *photoThread(void *) {
             if (l_encodeWork != NULL) {
                 u32 size = 0;
                 u32 quality = 0;
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUP01_01 || VERSION == VERSION_RUUJ01_02 || \
+    VERSION == VERSION_RUUK01_01
+                int ret = TMCJPEG_EncodeFitSize(l_encodeWork, l_image, width, height, GX_TF_RGB565, maxSize, &size,
+                                                &quality);
+                if (size > maxSize) {
+                    while (size > maxSize) {
+                        if (quality >= 1 && quality <= 500) {
+                            if (quality != 1) {
+                                quality--;
+                            }
+                        } else {
+                            quality = 1;
+                        }
+                        ret = TMCJPEG_GetEncodeSize(l_encodeWork, l_image, width, height, GX_TF_RGB565, &size,
+                                                    quality);
+                        if (quality == 1) {
+                            break;
+                        }
+                    }
+                }
+                if (ret == 0 && quality >= 1 && quality <= 500) {
+                    ret = TMCJPEG_Encode(l_encodeWork, l_image, width, height, GX_TF_RGB565, quality, l_jpeg,
+                                         maxSize, &size);
+                    if (size > maxSize) {
+                        while (size > maxSize) {
+                            if (quality >= 1 && quality <= 500) {
+                                if (quality != 1) {
+                                    quality--;
+                                }
+                            } else {
+                                quality = 1;
+                            }
+                            ret = TMCJPEG_GetEncodeSize(l_encodeWork, l_image, width, height, GX_TF_RGB565, &size,
+                                                        quality);
+                            if (quality == 1) {
+                                break;
+                            }
+                        }
+                        ret = TMCJPEG_Encode(l_encodeWork, l_image, width, height, GX_TF_RGB565, quality, l_jpeg,
+                                             maxSize, &size);
+                    }
+                    if (ret == 0 && size <= maxSize) {
+                        l_jpegSize = size;
+                        l_encoded = true;
+                    }
+                }
+#else
                 if (TMCJPEG_EncodeFitSize(l_encodeWork, l_image, width, height, GX_TF_RGB565, maxSize, &size,
                                           &quality) == 0 &&
                     quality >= 1 && quality <= 500 &&
@@ -204,6 +251,7 @@ static void *photoThread(void *) {
                     l_jpegSize = size;
                     l_encoded = true;
                 }
+#endif
             }
             l_step = STEP_NONE;
         }

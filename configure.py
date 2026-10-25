@@ -218,7 +218,7 @@ cflags_base = [
     "-i include",
     f"-i build/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
-    f"-DVERSION_{config.version}",
+    f"-DVERSION={version_num}",
 ]
 
 # Verified for the Matching cLib objects; the others remain candidates.
@@ -241,6 +241,7 @@ cflags_clib = [
     "-i include/lib/MSL",
     "-i include/lib/MSL/internal",
     "-DREVOLUTION",
+    f"-DVERSION={version_num}",
 ]
 
 # Debug flags
@@ -980,7 +981,7 @@ config.libs = [
             Object(Matching, "dol/game/d_pad.cpp"),
             Object(Matching, "dol/game/d_rumble.cpp"),
             Object(Matching, "dol/game/d_paper.cpp"),
-            Object(MatchingFor("RUUE01_00"), "dol/game/d_photo.cpp"),
+            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_photo.cpp"),
             Object(Matching, "dol/game/d_post_office.cpp"),
             Object(Matching, "dol/game/d_prc_mng.cpp"),
             Object(Matching, "dol/game/d_random_field.cpp"),
@@ -1794,7 +1795,7 @@ config.libs = [
         "progress_category": "sdk",
         "src_dir": "lib",
         "objects": [
-            Object(MatchingFor("RUUE01_00", "RUUP01_00", "RUUJ01_01"), "lib/MWM/jpeg/tmc_jpeg.c", source="MWM/src/jpeg/tmc_jpeg.c"),
+            Object(Matching, "lib/MWM/jpeg/tmc_jpeg.c", source="MWM/src/jpeg/tmc_jpeg.c"),
             Object(Matching, "lib/MWM/jpeg/tmc_jpeg_dest.c", source="MWM/src/jpeg/tmc_jpeg_dest.c"),
             Object(Matching, "lib/MWM/jpeg/tmc_jpeg_encoder.c", source="MWM/src/jpeg/tmc_jpeg_encoder.c"),
             Object(Matching, "lib/MWM/jpeg/tmc_jpeg_compress.c", source="MWM/src/jpeg/tmc_jpeg_compress.c"),
@@ -3922,7 +3923,7 @@ config.libs = [
             Object(Matching, "d_menu_photoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_menu_photoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(MatchingFor("RUUE01_00", "RUUP01_00", "RUUJ01_01"), "d_menu_photoNP/d_menu_photo.cpp"),
+            Object(Matching, "d_menu_photoNP/d_menu_photo.cpp"),
         ],
     ),
     Rel(

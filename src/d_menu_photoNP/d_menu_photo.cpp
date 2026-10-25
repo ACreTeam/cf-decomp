@@ -562,7 +562,12 @@ u16 dMenuPhoto_c::getErrorMessage(int result) const {
     case dScreenshot::RESULT_NO_PHOTO:
         return SD_MSG_NO_PHOTO_DATA;
     case dScreenshot::RESULT_ERROR:
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUP01_01 || VERSION == VERSION_RUUJ01_02 || \
+    VERSION == VERSION_RUUK01_01
+        return SD_MSG_UNABLE_TO_SAVE;
+#else
         return SD_MSG_NO_CARD;
+#endif
     default:
         return SD_MSG_NO_CARD;
     }

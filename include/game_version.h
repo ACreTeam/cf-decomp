@@ -1,0 +1,9 @@
+#pragma once
+
+#define VERSION_RUUE01_00 0
+#define VERSION_RUUE01_01 1
+#define VERSION_RUUP01_00 2
+#define VERSION_RUUP01_01 3
+#define VERSION_RUUJ01_01 4
+#define VERSION_RUUJ01_02 5
+#define VERSION_RUUK01_01 6

@@ -828,13 +828,24 @@ def format_symbol(s, addr, size):
     return f"{s['name']} = {s['section']}:0x{addr:08X}; // {' '.join(attrs)}"
 
 
+AUTO_NAME = re.compile(r"^(fn|lbl|jumptable|gap|switch|auto|@etb|@eti|@stringBase)_|^@\d+$")
+
+
 def write_symbols(path, symbols, results):
     lines = []
+    names = {s["name"] for s in symbols}
+    starts = set()
     for s in symbols:
         if results[id(s)] is None:
             continue
         addr, size = results[id(s)]
         lines.append(format_symbol(s, addr, size))
+        starts.add((s["section"], addr))
+    if path.is_file():
+        for s in read_symbols(path):
+            if s["name"] in names or AUTO_NAME.search(s["name"]) or (s["section"], s["addr"]) in starts:
+                continue
+            lines.append(s["line"])
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
