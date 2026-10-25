@@ -1074,7 +1074,7 @@ config.libs = [
             Object(Matching, "dol/game/d_menu_slct_b.cpp"),
             Object(Matching, "dol/game/d_menu_slct_c.cpp"),
             Object(Matching, "dol/game/d_menu_res.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUK01_01"), "dol/game/d_dylink.cpp"),
+            Object(Matching, "dol/game/d_dylink.cpp"),
             Object(Matching, "dol/game/d_item_debug.cpp"),
             Object(Matching, "dol/game/d_item_sel.cpp"),
             Object(Matching, "dol/game/d_activity_log.cpp"),
