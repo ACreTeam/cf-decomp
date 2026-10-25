@@ -1079,7 +1079,9 @@ void dMenuWrite_c::initSelfMail() {
     player->mPID.setWord(&name);
     word.clear();
     word.copy(&name, 0);
+#if VERSION != VERSION_RUUJ01_01 && VERSION != VERSION_RUUJ01_02 && VERSION != VERSION_RUUK01_01
     word.capitalize();
+#endif
     memcpy(mpMail->mFooter, word.getText(),
            (PLAYER_NAME_LEN + 1) * sizeof(wchar_t));
 }

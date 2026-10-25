@@ -4001,7 +4001,7 @@ config.libs = [
             Object(Matching, "d_menu_writeNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_menu_writeNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01"), "d_menu_writeNP/d_menu_write.cpp"),
+            Object(Matching, "d_menu_writeNP/d_menu_write.cpp"),
         ],
     ),
     Rel(
