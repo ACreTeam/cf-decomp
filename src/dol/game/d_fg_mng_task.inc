@@ -675,6 +675,16 @@ void dFgMngStone_c::update() {
             if (fgMngTask_find(0, &pos, 0) < 0) {
                 u16 item = dItem::FG_STONE_A;
                 fd = dField::getInfo(FD_ID_TOWN);
+#if VERSION == VERSION_RUUK01_01
+                if (fd != NULL) {
+                    mTimer = TIMER_NONE;
+                    dItem::Item *cur = fd->getItem(pos.mX, pos.mZ, 0);
+                    if (cur != NULL) {
+                        item = (u32)(cur->mId - dItem::FG_MONEY_ROCK_P0_A) % 5 + dItem::FG_STONE_A;
+                    }
+                    dFgMngProc_c::setUnitItem(fd, mPos.mPos >> 8, mPos.mPos & 0xFF, item, 0);
+                }
+#else
                 mTimer = TIMER_NONE;
                 if (fd != NULL) {
                     dItem::Item *cur = fd->getItem(pos.mX, pos.mZ, 0);
@@ -683,6 +693,7 @@ void dFgMngStone_c::update() {
                     }
                 }
                 dFgMngProc_c::setUnitItem(fd, mPos.mPos >> 8, mPos.mPos & 0xFF, item, 0);
+#endif
             }
         }
     }
