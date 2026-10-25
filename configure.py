@@ -1066,7 +1066,7 @@ config.libs = [
             Object(Matching, "dol/game/d_thunder.cpp"),
             Object(Matching, "dol/game/d_fltg.cpp"),
             Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUJ01_01", "RUUJ01_02"), "dol/game/d_font.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUK01_01"), "dol/game/d_menu_base.cpp"),
+            Object(Matching, "dol/game/d_menu_base.cpp"),
             Object(Matching, "dol/game/d_menu_btn.cpp"),
             Object(Matching, "dol/game/d_hand_item.cpp"),
             Object(Matching, "dol/game/d_environment.cpp"),
