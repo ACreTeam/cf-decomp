@@ -1095,7 +1095,7 @@ config.libs = [
             Object(Matching, "dol/game/d_money.cpp"),
             Object(Matching, "dol/game/d_obj_voice.cpp"),
             Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01"), "dol/game/d_kbd.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_letter.cpp"),
+            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUJ01_01", "RUUJ01_02"), "dol/game/d_letter.cpp"),
             Object(Matching, "dol/game/d_line_draw.cpp"),
             Object(Matching, "dol/game/d_main.cpp"),
             Object(Matching, "dol/game/d_map.cpp"),

@@ -109,6 +109,13 @@ void playUpperKeySe(int idx);                // 800CB1EC: upper case letter key 
 void playAltKeySe(int idx);                // 800CB234: letter key SE (b)
 void playLowerKeySe(int idx);                // 800CB27C: lower case letter key SE
 void playKeySe(wchar_t c, BOOL a, BOOL b, BOOL pcKeyboard); // 800CB2DC: the key SE of c (0x16DA for others); pcKeyboard (d_kbd) is unused
+#if VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+int getUmlautIndex(wchar_t c, BOOL alt);
+BOOL playUmlautKeySe(wchar_t c, BOOL alt);
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+void playKanaKeySe(int idx, BOOL fix);
+void playUnfixKeySe(int idx);
+#endif
 
 int getEntryNum(int kind, const char *label); // 800CB34C: the number of entries of the mail BMG kind/label
 // 800CB3C8: word = entry idx of the mail BMG kind/label (it has to fit)

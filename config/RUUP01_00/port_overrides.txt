@@ -7,3 +7,31 @@ g_cautionMsgFR = .data:0x804DE6A8; // type:object size:0x3C0
 g_cautionMsgDE = .data:0x804DEA68; // type:object size:0x440
 g_cautionMsgIT = .data:0x804DEEA8; // type:object size:0x3E0
 g_cautionMsgES = .data:0x804DF288; // type:object size:0x400
+-lbl_80472E50
+-lbl_80472EC8
+-lbl_80472F30
+-lbl_80472F98
+-lbl_80473000
+-lbl_80473078
+-lbl_804730E0
+-lbl_80473148
+-lbl_804731B0
+-lbl_80473228
+-lbl_80473290
+-lbl_804732F8
+-lbl_80473360
+-lbl_804733D8
+-lbl_80473440
+-lbl_804734A8
+-lbl_80473510
+-lbl_80473588
+-lbl_804735F0
+-lbl_80473658
+-lbl_804736C0
+-lbl_80473738
+-lbl_804737A0
+-lbl_80473808
+-fn_800CB314
+-fn_800CB35C
+getUmlautIndex__7dLetterFwi = .text:0x800CB314; // type:function size:0x48
+playUmlautKeySe__7dLetterFwi = .text:0x800CB35C; // type:function size:0xA0
