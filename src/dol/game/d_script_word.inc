@@ -461,8 +461,15 @@ BOOL Word_c::getChar(wchar_t *out, u32 index) {
 }
 
 // 801590F0
+#if VERSION == VERSION_RUUK01_01
+BOOL Word_c::set(const wchar_t *str, int breakOnNewLine, wchar_t lastChar, s32 numberWord) {
+    clear();
+    mPacchim.check(lastChar);
+    _18 = numberWord;
+#else
 BOOL Word_c::set(const wchar_t *str, int breakOnNewLine) {
     clear();
+#endif
     if (!writeText(str, 0, breakOnNewLine)) {
         return FALSE;
     }
@@ -1069,11 +1076,25 @@ int Word_c::procParticleKR(int pos) {
     u8 len = getTagLength(tag);
     u8 type = 0;
     memcpy(&type, params, 1);
+#if VERSION == VERSION_RUUK01_01
+    if (type != 0) {
+        type--;
+    }
+#endif
     const wchar_t *particle;
     u16 last = mPacchim.mLastChar;
+#if VERSION != VERSION_RUUK01_01
     s32 numberWord = _18;
+#endif
     // (last - 0xAC00) % 28 is the syllable's final consonant (0 = none)
     if (last != 0 && (last - 0xAC00) % 28 != 0) {
+#if VERSION == VERSION_RUUK01_01
+        if (type == 6 && (last - 0xAC00) % 28 == 8) {
+            particle = lbl_80476E10[type];
+        } else {
+            particle = lbl_80476D98[type];
+        }
+#else
         if (numberWord == 1) {
             // a final rieul (8) takes the vowel form of the particle
             if (type == 6 && (last - 0xAC00) % 28 == 8) {
@@ -1084,6 +1105,7 @@ int Word_c::procParticleKR(int pos) {
         } else {
             particle = lbl_80476D98[type];
         }
+#endif
     } else {
         particle = lbl_80476E10[type];
     }

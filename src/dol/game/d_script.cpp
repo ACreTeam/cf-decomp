@@ -161,7 +161,12 @@ u16 getSortKey(wchar_t c) {
 // 80476880: per-language script directories
 static const char lbl_80476880[LANGUAGE_NUM][13] = {
     "/Script/JPN/", "/Script/ENG/", "/Script/SPA/", "/Script/FRA/", "/Script/ENG/",
-    "/Script/SPA/", "/Script/FRA/", "/Script/ITA/", "/Script/GER/", "/Script/JPN/",
+    "/Script/SPA/", "/Script/FRA/", "/Script/ITA/", "/Script/GER/",
+#if VERSION == VERSION_RUUK01_01
+    "/Script/KOR/",
+#else
+    "/Script/JPN/",
+#endif
 };
 
 // 80155D38

@@ -3,3 +3,5 @@
 -g_cautionMsgMX
 g_cautionFont = .data:0x804F02E0; // type:object size:0x8048
 g_cautionMsgKR = .data:0x804F8328; // type:object size:0x220
+-set__Q27dScript6Word_cFPCwi
+set__Q27dScript6Word_cFPCwiwl = .text:0x80158D9C; // type:function size:0x84
