@@ -3502,7 +3502,7 @@ config.libs = [
             Object(Matching, "d_title_demoNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_title_demoNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "d_title_demoNP/d_title_demo.cpp"),
+            Object(Matching, "d_title_demoNP/d_title_demo.cpp"),
         ],
     ),
     Rel(

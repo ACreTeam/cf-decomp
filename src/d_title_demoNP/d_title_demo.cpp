@@ -22,6 +22,16 @@
 #include <revolution/nand.h>
 #include <revolution/wpad.h>
 
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
+#define TITLE_ARCHIVE_PATH "Layout/title_us.arc"
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+#define TITLE_ARCHIVE_PATH "Layout/title_eu.arc"
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+#define TITLE_ARCHIVE_PATH "Layout/title_jp.arc"
+#else
+#define TITLE_ARCHIVE_PATH "Layout/title_kr.arc"
+#endif
+
 namespace dTitleDemo {
 
 // The message window has closed.
@@ -90,7 +100,7 @@ int dTitleDemo_c::create() {
          &dTitleDemo_c::executeToOpening},
         {"処理なし", &dTitleDemo_c::initNone, &dTitleDemo_c::executeNone},
     };
-    if (!mRes.load("Layout/title_us.arc")) {
+    if (!mRes.load(TITLE_ARCHIVE_PATH)) {
         return NOT_READY;
     }
     createLayout();
