@@ -986,7 +986,7 @@ config.libs = [
             Object(Matching, "dol/game/d_prc_mng.cpp"),
             Object(Matching, "dol/game/d_random_field.cpp"),
             Object(Matching, "dol/game/d_rec_bank.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_region.cpp"),
+            Object(Matching, "dol/game/d_region.cpp"),
             Object(Matching, "dol/game/d_reset.cpp"),
             Object(Matching, "dol/game/d_random.cpp"),
             Object(Matching, "dol/game/d_s_boot_static.cpp"),
