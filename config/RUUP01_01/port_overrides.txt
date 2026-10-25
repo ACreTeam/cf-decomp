@@ -1,0 +1,9 @@
+-g_cautionMsgUS
+-g_cautionMsgQC
+-g_cautionMsgMX
+g_cautionFont = .data:0x804D6360; // type:object size:0x8208
+g_cautionMsgEN = .data:0x804DE568; // type:object size:0x3C0
+g_cautionMsgFR = .data:0x804DE928; // type:object size:0x3C0
+g_cautionMsgDE = .data:0x804DECE8; // type:object size:0x440
+g_cautionMsgIT = .data:0x804DF128; // type:object size:0x3E0
+g_cautionMsgES = .data:0x804DF508; // type:object size:0x400

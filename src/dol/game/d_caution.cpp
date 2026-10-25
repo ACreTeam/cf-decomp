@@ -14,7 +14,15 @@
 #include <lib/revolution/os.h>
 #include <string.h>
 
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
 #define CAUTION_FONT_SIZE 0x81F4
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+#define CAUTION_FONT_SIZE 0x8208
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+#define CAUTION_FONT_SIZE 0xD2DC
+#else
+#define CAUTION_FONT_SIZE 0x8044
+#endif
 
 namespace dCaution {
 
@@ -116,6 +124,7 @@ void Caution_c::init() {
     mActive = FALSE;
     mDriveStatus = DVD_STATE_IDLE;
     const EGG::MsgRes::DataBlockHeader *bmg;
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     switch (getLanguage()) {
     case LANGUAGE_US:
         bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgUS;
@@ -127,6 +136,29 @@ void Caution_c::init() {
         bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgMX;
         break;
     }
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+    switch (getLanguage()) {
+    case LANGUAGE_EN:
+        bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgEN;
+        break;
+    case LANGUAGE_FR:
+        bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgFR;
+        break;
+    case LANGUAGE_DE:
+        bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgDE;
+        break;
+    case LANGUAGE_IT:
+        bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgIT;
+        break;
+    case LANGUAGE_ES:
+        bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgES;
+        break;
+    }
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgJP;
+#else
+    bmg = (const EGG::MsgRes::DataBlockHeader *)g_cautionMsgKR;
+#endif
     const EGG::MsgRes::DataBlock *block =
         (const EGG::MsgRes::DataBlock *)((const u8 *)bmg + sizeof(EGG::MsgRes::MessageHeader));
     for (u32 i = 0; i < bmg->mNumBlocks; i++) {

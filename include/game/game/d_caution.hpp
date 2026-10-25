@@ -15,9 +15,21 @@
 extern u8 g_cautionArc[];
 // 804D59A0..804DE6B8, after d_demo_actor's data: the window's font (RFNT) and its BMG messages per language.
 extern u8 g_cautionFont[];   // 804D59A0
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
 extern u8 g_cautionMsgUS[];  // 804DDB98: LANGUAGE_US
 extern u8 g_cautionMsgQC[];  // 804DDF38: LANGUAGE_QC
 extern u8 g_cautionMsgMX[];  // 804DE2F8: LANGUAGE_MX
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+extern u8 g_cautionMsgEN[];
+extern u8 g_cautionMsgFR[];
+extern u8 g_cautionMsgDE[];
+extern u8 g_cautionMsgIT[];
+extern u8 g_cautionMsgES[];
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+extern u8 g_cautionMsgJP[];
+#else
+extern u8 g_cautionMsgKR[];
+#endif
 
 namespace dCaution {
 

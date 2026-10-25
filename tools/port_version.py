@@ -862,14 +862,41 @@ def format_symbol(s, addr, size):
 AUTO_NAME = re.compile(r"^(fn|lbl|jumptable|gap|switch|auto|@etb|@eti|@stringBase)_|^@\d+$")
 
 
+def read_overrides(path):
+    deletes = set()
+    entries = []
+    if path.is_file():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line.startswith("-"):
+                deletes.add(line[1:].strip())
+            elif line:
+                entries.extend(read_symbols_text(line))
+    return deletes, entries
+
+
+def read_symbols_text(text):
+    out = []
+    for line in text.splitlines():
+        m = SYM_RE.match(line)
+        if m:
+            out.append({"name": m.group(1), "section": m.group(2), "addr": int(m.group(3), 16), "line": line})
+    return out
+
+
 def write_symbols(path, symbols, results):
+    deletes, entries = read_overrides(path.parent / "port_overrides.txt")
+    replaced = {e["name"] for e in entries} | deletes
+    taken = {(e["section"], e["addr"]) for e in entries}
     lines = []
-    names = {s["name"] for s in symbols}
-    starts = set()
+    names = {s["name"] for s in symbols} | replaced
+    starts = set(taken)
     for s in symbols:
-        if results[id(s)] is None:
+        if results[id(s)] is None or s["name"] in replaced:
             continue
         addr, size = results[id(s)]
+        if (s["section"], addr) in taken and "size" in s["attrs"]:
+            continue
         lines.append(format_symbol(s, addr, size))
         starts.add((s["section"], addr))
     if path.is_file():
@@ -877,6 +904,7 @@ def write_symbols(path, symbols, results):
             if s["name"] in names or AUTO_NAME.search(s["name"]) or (s["section"], s["addr"]) in starts:
                 continue
             lines.append(s["line"])
+    lines.extend(e["line"] for e in entries)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

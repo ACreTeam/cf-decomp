@@ -1,0 +1,5 @@
+-g_cautionMsgUS
+-g_cautionMsgQC
+-g_cautionMsgMX
+g_cautionFont = .data:0x804D64C0; // type:object size:0xD2E0
+g_cautionMsgJP = .data:0x804E37A0; // type:object size:0x240
