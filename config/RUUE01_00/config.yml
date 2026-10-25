@@ -25,6 +25,14 @@ export_all: true
 globalize_symbols: true
 clean_extab: false
 force_active: [kp_unused_bss, lbl_8074E834, fn_80081848__11dSceneCheckFv, _8074E524__14dNetDsDownload] # Unreferenced storage/stubs retained in the original; the download word preserves its .sbss layout.
+add_relocations:
+# 800FAE28/800FAE54: photoThread builds mTex::base_c's vtable address with a lis/addi pair split through a stack slot.
+- source: 0x800FAE28
+  type: ha
+  target: __vt__Q24mTex6base_c
+- source: 0x800FAE54
+  type: l
+  target: __vt__Q24mTex6base_c
 block_relocations:
 # 80493DC8: a word in encjapanese's table (lbl_8048EA80), 80006F00, which looks like an address inside an RVLFaceLib
 # extabindex entry (RFL_MakeTex). Not a pointer.
