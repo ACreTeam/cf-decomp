@@ -2191,14 +2191,18 @@ lib/RegEad/RegEadPrc.cpp:
 	.sdata      start:0x8074C928 end:0x8074C930
 	.sbss       start:0x8074EC80 end:0x8074EC90
 
-lib/RVL_SDK/kbd/kbd.c:
-	.text       start:0x801F8970 end:0x801FA2AC
-	.data       start:0x80506BB0 end:0x80507D80
+lib/RVL_SDK/kbd/kbd_lib.c:
+	.text       start:0x801F8970 end:0x801FA1B0
+	.data       start:0x80506BB0 end:0x805070D8
 	.bss        start:0x80625E00 end:0x80626D20 align:32
 	.sdata      start:0x8074C930 end:0x8074C938
 	.sbss       start:0x8074EC90 end:0x8074ECA8
 
-lib/RVL_SDK/kbd/kbd_ios.c:
+lib/RVL_SDK/kbd/kbd_lib_maps_us.c:
+	.text       start:0x801FA1B0 end:0x801FA2AC
+	.data       start:0x805070D8 end:0x80507D80
+
+lib/RVL_SDK/usbkbd/usb_kbd.c:
 	.text       start:0x801FA2AC end:0x801FA56C
 	.data       start:0x80507D80 end:0x80507D90
 	.bss        start:0x80626D20 end:0x80626D40
