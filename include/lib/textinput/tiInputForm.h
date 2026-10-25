@@ -21,6 +21,17 @@ namespace inputform {
 
 class DeadKeyStream {
   public:
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    DeadKeyStream() {
+        KPRInitRegionJP();
+        Init();
+    }
+
+    void Init() {
+        KPRInitQueue(&mKPRQueue);
+        KPRSetMode(&mKPRQueue, KPR_MODE_NONE);
+    }
+#else
     DeadKeyStream() {
         KPRInitRegionEU();
         Init();
@@ -30,6 +41,7 @@ class DeadKeyStream {
         KPRInitQueue(&mKPRQueue);
         KPRSetMode(&mKPRQueue, KPR_MODE_DEADKEY);
     }
+#endif
 
     static wchar_t ToCombineClass(Language language, wchar_t ch);
     static wchar_t ToIndependentClass(wchar_t ch);

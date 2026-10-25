@@ -2206,14 +2206,14 @@ lib/RVL_SDK/usbkbd/usb_kbd.c:
 	.text       start:0x801FA074 end:0x801FA334
 	.data       start:0x8050C440 end:0x8050C450
 	.bss        start:0x8062B280 end:0x8062B2A0 align:32
-	.sbss       start:0x80753228 end:0x8075324C
+	.sbss       start:0x80753228 end:0x80753248
 
 lib/RVL_SDK/kpr/kpr_lib.c:
 	.text       start:0x801FA334 end:0x801FAD0C
 	.rodata     start:0x8047FAB0 end:0x80480630
 	.data       start:0x8050C450 end:0x8050C4C8
 	.sdata      start:0x80750EC8 end:0x80750ED0
-	.sbss       start:0x8075324C end:0x80753258 align:4
+	.sbss       start:0x80753248 end:0x80753258
 	.sdata2     start:0x807562C8 end:0x807562D0
 
 lib/prfile2/common/pf_clib.c:

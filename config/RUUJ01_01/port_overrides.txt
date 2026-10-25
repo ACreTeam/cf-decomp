@@ -55,3 +55,13 @@ convertFullWidthSpace__Q24dKbd5Mng_cFv = .text:0x800C9674; // type:function size
 convertYenSign__Q24dKbd5Mng_cFv = .text:0x800C9728; // type:function size:0x90
 isKeypadKana__Q24dKbd5Mng_cFv = .text:0x800CA91C; // type:function size:0xA0
 @add-split lib/RVL_SDK/kpr/kpr_lib.c .sdata2 start 0x807562C8 end 0x807562D0
+-KPRInitRegionEU
+-KPRProcessDeadKeys
+-kprDeadKeyMap
+KPRInitRegionJP = .text:0x801FA334; // type:function size:0x10
+KPRProcessRomaji = .text:0x801FA7CC; // type:function size:0x540 scope:local
+kprRmJpRule = .rodata:0x8047FAB0; // type:object size:0xA40 scope:local
+kprConvertSmallTsu = .sdata2:0x807562C8; // type:object size:0x4 scope:local
+kprConvertNN = .sdata2:0x807562CC; // type:object size:0x4 scope:local
+@split lib/RVL_SDK/kpr/kpr_lib.c .sbss start 0x80753248
+kprProcDeadKeysFP = .sbss:0x80753248; // type:object size:0x4 scope:local data:4byte

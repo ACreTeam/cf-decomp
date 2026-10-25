@@ -379,8 +379,14 @@ void Decolated::setTranslateMode(TranslateMode mode) {
 }
 
 void Decolated::initKanaConverter() {
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    KPRInitRegionJP();
+    KPRInitQueue(&mKanaQueue);
+    KPRSetMode(&mKanaQueue, KPR_MODE_JP_ROMAJI_HIRAGANA);
+#else
     KPRInitQueue(&mKanaQueue);
     KPRSetMode(&mKanaQueue, KPR_MODE_NONE);
+#endif
     mwcKanaBuffer[0] = 0;
     switch (meTranslateMode) {
     case TM_Hiragana:
