@@ -30,7 +30,11 @@ struct ConnectionConfig {
     u8 _0034[0x160];
     void (*mCallback)(int, const void *);
     u32 _0198, _019C;
+#if VERSION == VERSION_RUUK01_01
+    u8 _01A0[0x28];
+#else
     u8 _01A0[0x38];
+#endif
 };
 struct ApplicationConfig {
     void *(*alloc)(u32);
@@ -48,13 +52,33 @@ static ConnectionConfig sConnectionConfig = {
 };
 char sProgramRegistration[] =
     "<NINTENDO-DS-PROGRAM-REGISTRATION-LIST>\n"
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     "F658:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:DWC-DL3.1.30003.080909.2241_DWC-DL_3_1_PLUS3,WiFi2.1.30003.0709200229][UBIQUITOUS:CPS,SSL]\n"
     "1E2E:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:BACKUP]\n"
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+    "BC37:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:DWC-DL3.1.30003.080909.2241_DWC-DL_3_1_PLUS3,WiFi2.1.30003.0709200229][UBIQUITOUS:CPS,SSL]\n"
+#if VERSION == VERSION_RUUP01_00
+    "6C59:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:BACKUP]\n"
+#else
+    "A073:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:BACKUP]\n"
+#endif
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    "9836:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:DWC-DL3.1.30003.080909.2241_DWC-DL_3_1_PLUS3,WiFi2.1.30003.0709200229][UBIQUITOUS:CPS,SSL]\n"
+    "1D5F:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:BACKUP]\n"
+#else
+    "F1EF:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 \n"
+    "BF1E:NTRJ01(00)'NINTENDO    'SDK4.02RELEASEplus1 [NINTENDO:BACKUP]\n"
+#endif
     "</NINTENDO-DS-PROGRAM-REGISTRATION-LIST>\n";
 struct DefaultBanner {
     wchar_t mTitle[10];
+#if VERSION == VERSION_RUUK01_01
+    wchar_t mName[10];
+    wchar_t mDescription[40];
+#else
     wchar_t mName[12];
     wchar_t mDescription[52];
+#endif
 };
 static DefaultBanner sDefaultBanner = {
     L"RVFOREST1", L"DS Appli", L"This is DS Download Appli for RVFOREST1"
@@ -75,7 +99,11 @@ static u8 sDownloadedAddress[MAC_ADDRESS_SIZE];
 
 typedef char CheckApplicationSize[sizeof(Application_c) == 0x19C ? 1 : -1];
 typedef char CheckConnectionSize[sizeof(Connection_c) == 0x1C ? 1 : -1];
+#if VERSION == VERSION_RUUK01_01
+typedef char CheckConnectionConfig[sizeof(ConnectionConfig) == 0x1C8 ? 1 : -1];
+#else
 typedef char CheckConnectionConfig[sizeof(ConnectionConfig) == 0x1D8 ? 1 : -1];
+#endif
 typedef char CheckApplicationConfig[sizeof(ApplicationConfig) == 0x22C ? 1 : -1];
 
 // 800E3E20
