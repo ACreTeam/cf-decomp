@@ -1083,7 +1083,7 @@ config.libs = [
             Object(Matching, "dol/game/d_obj_bal.cpp"),
             Object(Matching, "dol/game/d_obj_chat.cpp"),
             Object(Matching, "dol/game/d_obj_cursor.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01"), "dol/game/d_obj_keyboard.cpp"),
+            Object(Matching, "dol/game/d_obj_keyboard.cpp"),
             Object(Matching, "dol/game/d_obj_staffroll.cpp"),
             Object(Matching, "dol/game/d_obj_telop.cpp"),
             Object(Matching, "dol/game/d_obj_tutorial.cpp"),

@@ -22,13 +22,27 @@ int dObjKeyboard_c::create() {
         return NOT_READY;
     }
     mLyt.build(&mRes, "textBox_free_00.brlyt");
+#if VERSION == VERSION_RUUK01_01
+    mModeLyt.build(&mRes, "modeSelect_Korea_00.brlyt");
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    mModeLyt.build(&mRes, "modeSelect_00.brlyt");
+#endif
     mCapsLyt.build(&mRes, "caps_00.brlyt");
-    mCapsLyt.setAnm(&mNotJpAnm, "caps_00_notJP_00.brlan", nullptr);
-    mNotJpAnm.setToEnd();
+#if VERSION == VERSION_RUUK01_01
+    mCapsLyt.setAnm(&mRegionAnm, "caps_00_KR_00.brlan", nullptr);
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    mCapsLyt.setAnm(&mRegionAnm, "caps_00_JP_00.brlan", nullptr);
+#else
+    mCapsLyt.setAnm(&mRegionAnm, "caps_00_notJP_00.brlan", nullptr);
+#endif
+    mRegionAnm.setToEnd();
     initAnm();
     mWord.setTextBox(mLyt.findTextBox("T_textBox_00"));
     memset(mText, 0, sizeof(mText));
     mLyt.calc();
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    mModeLyt.calc();
+#endif
     mCapsLyt.calc();
     mCur.build();
     mState = STATE_WAIT;
@@ -63,12 +77,18 @@ int dObjKeyboard_c::execute() {
         l_flags &= ~FLAG_CALC;
         mLyt.calc();
         mCapsLyt.calc();
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+        mModeLyt.calc();
+#endif
     }
     return SUCCEEDED;
 }
 
 int dObjKeyboard_c::draw() {
     mLyt.entry();
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    mModeLyt.entry();
+#endif
     mCapsLyt.entry();
     if (mTimer > 0) {
         mCur.draw();
@@ -137,6 +157,16 @@ void dObjKeyboard_c::stateInput() {
         }
     }
     mKbd.calc();
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+#if VERSION == VERSION_RUUK01_01
+    int mode = mKbd.getShiftStateKR();
+#else
+    int mode = mKbd.getShiftState();
+#endif
+    for (int i = 0; i < MODE_NUM; i++) {
+        mModeKeyAnm[i].setNext(i != mode);
+    }
+#endif
     if (mKbd.isUpdated()) {
         l_flags |= FLAG_KBD_UPDATED;
     }
@@ -266,6 +296,25 @@ void dObjKeyboard_c::initAnm() {
         "textBox_free_00_boxAlpIn.brlan",
         "textBox_free_00_boxAlpOut.brlan",
     };
+#if VERSION == VERSION_RUUK01_01
+    static const char *l_modeAnmName[] = {
+        "modeSelect_Korea_00_AlpIn.brlan",
+        "modeSelect_Korea_00_AlpOut.brlan",
+    };
+    static const char *l_modeKeyAnmName[] = {
+        "modeSelect_Korea_00_Pushed.brlan",
+        "modeSelect_Korea_00_toggle-OFF.brlan",
+    };
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    static const char *l_modeAnmName[] = {
+        "modeSelect_00_AlpIn.brlan",
+        "modeSelect_00_AlpOut.brlan",
+    };
+    static const char *l_modeKeyAnmName[] = {
+        "modeSelect_00_Pushed.brlan",
+        "modeSelect_00_toggle-OFF.brlan",
+    };
+#endif
     static const char *l_capsAnmName[] = {
         "caps_00_AlpIn.brlan",
         "caps_00_AlpOut.brlan",
@@ -276,6 +325,15 @@ void dObjKeyboard_c::initAnm() {
     mTimer = 0;
     mLyt.setAnm(&mDownAnm, "textBox_free_00_boxDown.brlan", nullptr);
     mDownAnm.setToEnd();
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    mModeAnm.init(&mModeLyt, &mRes, l_modeAnmName, 2);
+    mModeAnm.start(ANM_OUT);
+    mModeAnm.setToEnd();
+    for (int i = 0; i < MODE_NUM; i++) {
+        mModeKeyAnm[i].init(&mModeLyt, &mRes, l_modeKeyAnmName, 2);
+        mModeKeyAnm[i].setNumber(i);
+    }
+#endif
     mCapsAnm.init(&mCapsLyt, &mRes, l_capsAnmName, 2);
     mCapsAnm.start(ANM_OUT);
     mCapsAnm.setToEnd();
@@ -286,6 +344,30 @@ void dObjKeyboard_c::resetTimer() {
 }
 
 void dObjKeyboard_c::playAnm() {
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (mTimer > 0) {
+        mTimer--;
+        mBoxAnm.setNext(ANM_IN);
+        mModeAnm.setNext(ANM_IN);
+    } else {
+        mBoxAnm.setNext(ANM_OUT);
+        mModeAnm.setNext(ANM_OUT);
+    }
+    if ((l_flags & FLAG_KBD_UPDATED) && mTimer > 0) {
+        mCapsAnm.setNext(ANM_IN);
+    } else {
+        mCapsAnm.setNext(ANM_OUT);
+    }
+    int changed = mBoxAnm.play();
+    changed |= mModeAnm.play();
+    for (int i = 0; i < MODE_NUM; i++) {
+        changed |= mModeKeyAnm[i].play();
+    }
+    changed |= mCapsAnm.play();
+    if (changed) {
+        l_flags |= FLAG_CALC;
+    }
+#else
     if (mTimer > 0) {
         mTimer--;
         mBoxAnm.setNext(ANM_IN);
@@ -302,6 +384,7 @@ void dObjKeyboard_c::playAnm() {
     if (box | caps) {
         l_flags |= FLAG_CALC;
     }
+#endif
 }
 
 bool dObjKeyboard_c::isOpen() {

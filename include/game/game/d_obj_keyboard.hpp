@@ -27,6 +27,12 @@ public:
         ANM_OUT,
     };
 
+#if VERSION == VERSION_RUUK01_01
+    enum { MODE_NUM = 2 };
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+    enum { MODE_NUM = 3 };
+#endif
+
     enum FLAG_e {
         FLAG_OPEN = 0x1,
         FLAG_CALC = 0x2,
@@ -74,8 +80,13 @@ public:
     /* 0x138 */ m2d::SimpleEx_c mLyt;
     /* 0x1D0 */ m2d::AnmEx_c mBoxAnm;
     /* 0x20C */ m2d::Anm_c mDownAnm;
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    /* 0x230 */ m2d::SimpleEx_c mModeLyt;
+    /* 0x2C8 */ m2d::AnmEx_c mModeAnm;
+    /* 0x304 */ m2d::AnmEx2_c mModeKeyAnm[MODE_NUM];
+#endif
     /* 0x230 */ m2d::SimpleEx_c mCapsLyt;
-    /* 0x2C8 */ m2d::Anm_c mNotJpAnm;
+    /* 0x2C8 */ m2d::Anm_c mRegionAnm;
     /* 0x2EC */ m2d::AnmEx_c mCapsAnm;
     /* 0x328 */ u8 mState;
     /* 0x32C */ int mTimer;
