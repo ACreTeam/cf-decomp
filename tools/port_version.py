@@ -736,6 +736,27 @@ def fix_code(mapper, unit, sp, tsp, starts, mapped, how, report, dropped):
                     dropped.add(a)
             report["unpaired"].append(f"{unit} {sp.name} {run[0]:X}..{run[-1]:X}: {len(run)} base vs {len(cands)} target functions, {len(run) - len(paired)} dropped")
         i = j
+    owner = {mapped[a]: a for a in visible if a in valid and a not in dropped}
+    for k in range(len(visible) - 1):
+        prev, succ = visible[k], visible[k + 1]
+        if prev not in valid or prev in dropped or succ not in dropped:
+            continue
+        tprev = mapped[prev]
+        if tprev not in tfresh:
+            continue
+        t = tprev + tfresh[tprev]
+        claim = owner.get(t)
+        if claim is None or claim == succ or bfresh.get(claim) != bfresh.get(succ):
+            continue
+        if bytes_of(sp, claim, bfresh[claim]) != bytes_of(sp, succ, bfresh[succ]):
+            continue
+        mapped[succ] = t
+        how[succ] = "fnorder"
+        dropped.discard(succ)
+        valid.add(succ)
+        dropped.add(claim)
+        valid.discard(claim)
+        owner[t] = succ
     for a in starts:
         if a in bfresh or a in dropped:
             continue
@@ -763,6 +784,16 @@ def fix_code(mapper, unit, sp, tsp, starts, mapped, how, report, dropped):
             mapped[a] = mapped[last] + (a - last)
             how[a] = "interp"
         last = a
+
+
+def bytes_of(sp, addr, size):
+    if sp.data is None:
+        return None
+    out = []
+    for a in range(addr, addr + size, 4):
+        w = struct.unpack(">I", sp.data[a - sp.start:a - sp.start + 4])[0]
+        out.append(w & ~sp.masks.get(a, 0) & 0xFFFFFFFF)
+    return tuple(out)
 
 
 def align_sizes(xs, ys):

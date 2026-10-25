@@ -3,6 +3,7 @@
 #include <game/game/d_s_boot_static.hpp>
 #include <lib/egg/core/eggColorFader.h>
 #include <lib/egg/core/eggHeap.h>
+#include <revolution/sc.h>
 #include <game/mLib/m_dvd.hpp>
 #include <game/mLib/m_effect.hpp>
 #include <game/mLib/m_face.hpp>
@@ -313,17 +314,25 @@ dScBootStatic_c *dScBootStatic_c::getInstance() {
 
 // 801086A4
 BOOL dScBootStatic_c::isBooting() {
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     if (l_bootStatic.mEsrb.mDone && l_bootStatic.mStrap.mDone) {
         return FALSE;
     }
+#else
+    if (l_bootStatic.mStrap.mDone) {
+        return FALSE;
+    }
+#endif
     return TRUE;
 }
 
 // 801086D4
 dScBootStatic_c::dScBootStatic_c() {
     mState = STATE_SHOW;
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     mScreen = SCREEN_STRAP;
     mpFader = NULL;
+#endif
 }
 
 // 8010875C
@@ -332,17 +341,21 @@ BOOL dScBootStatic_c::create() {
     if (!mStrap.create()) {
         created = FALSE;
     }
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     if (!mEsrb.create()) {
         created = FALSE;
     }
+#endif
     if (!created) {
         return FALSE;
     }
     mState = STATE_SHOW;
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     mpFader = new (-4)
         EGG::ColorFader(0.0f, 0.0f, mVideo::m_video->mRenderModeObj.fbWidth,
                         mVideo::m_video->mRenderModeObj.efbHeight,
                         nw4r::ut::Color(0x000000FF), EGG::Fader::HIDDEN);
+#endif
     return TRUE;
 }
 
@@ -358,19 +371,28 @@ BOOL dScBootStatic_c::doDelete() {
     if (strapResult) {
         strapRemoved = true;
     }
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     if (!isRemoved(mEsrb.remove(), strapRemoved)) {
         return FALSE;
     }
     if (mEsrb.mDone && mStrap.mDone) {
+#else
+    if (!strapRemoved) {
+        return FALSE;
+    }
+    if (mStrap.mDone) {
+#endif
         if (result != sPhase_c::DONE) {
             return FALSE;
         }
         dHomeButton_c::getInstance()->mFlags &= ~dHomeButton_c::FLAG_BOOT;
     }
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     if (mpFader != NULL) {
         mHeap::g_gameHeap->free(mpFader);
         mpFader = NULL;
     }
+#endif
     return TRUE;
 }
 
@@ -384,7 +406,9 @@ void dScBootStatic_c::execute() {
     l_bootPhase.callMethod(NULL);
     if (mState == STATE_END) {
         dScene::requestSceneChange(dScene::SCENE_DM_TITLE, 0, 2);
-    } else if (mState == STATE_FADE_OUT) {
+    }
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
+    else if (mState == STATE_FADE_OUT) {
         mpFader->setFrame(30);
         mpFader->fadeOut();
         mState = STATE_FADING;
@@ -403,16 +427,26 @@ void dScBootStatic_c::execute() {
     if (mEsrb.mDone && mStrap.mDone && !dSys::sBootComplete) {
         dSys::sBootComplete = true;
     }
+#else
+    mStrap.execute();
+    if (mStrap.mDone && !dSys::sBootComplete) {
+        dSys::sBootComplete = true;
+    }
+#endif
 }
 
 // 80108A74
 void dScBootStatic_c::draw() {
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     if (mScreen == SCREEN_STRAP) {
         mStrap.draw();
     } else {
         mEsrb.draw();
     }
     mpFader->draw();
+#else
+    mStrap.draw();
+#endif
 }
 
 // 80108AD0
@@ -429,6 +463,7 @@ BOOL dScBootStatic_c::StrapScreen_c::create() {
         return TRUE;
     }
     if (!mCreated) {
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
         const char *arcName = NULL;
         const char *lytName = NULL;
         const char *anmName = NULL;
@@ -449,6 +484,56 @@ BOOL dScBootStatic_c::StrapScreen_c::create() {
             anmName = "strap_00_S_roop.brlan";
             break;
         }
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+        const char *arcName;
+        const char *lytName;
+        const char *anmName;
+        switch (SCGetLanguage()) {
+        case SC_LANG_ENGLISH:
+            arcName = "Strap/strapSampleUK.arc";
+            lytName = "strap_00_E.brlyt";
+            anmName = "strap_00_E_roop.brlan";
+            break;
+        case SC_LANG_SPANISH:
+            arcName = "Strap/strapSampleSP.arc";
+            lytName = "strap_00_S.brlyt";
+            anmName = "strap_00_S_roop.brlan";
+            break;
+        case SC_LANG_FRENCH:
+            arcName = "Strap/strapSampleFR.arc";
+            lytName = "strap_00_F.brlyt";
+            anmName = "strap_00_F_roop.brlan";
+            break;
+        case SC_LANG_ITALIAN:
+            arcName = "Strap/strapSampleIT.arc";
+            lytName = "strap_00_I.brlyt";
+            anmName = "strap_00_I_roop.brlan";
+            break;
+        case SC_LANG_GERMAN:
+            arcName = "Strap/strapSampleGE.arc";
+            lytName = "strap_00_G.brlyt";
+            anmName = "strap_00_G_roop.brlan";
+            break;
+        case SC_LANG_DUTCH:
+            arcName = "Strap/strapSampleDU.arc";
+            lytName = "strap_00_D.brlyt";
+            anmName = "strap_00_D_roop.brlan";
+            break;
+        default:
+            arcName = "Strap/strapSampleUK.arc";
+            lytName = "strap_00_E.brlyt";
+            anmName = "strap_00_E_roop.brlan";
+            break;
+        }
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+        const char *arcName = "Strap/strapSample.arc";
+        const char *lytName = "strap_00_J.brlyt";
+        const char *anmName = "strap_00_J_roop.brlan";
+#else
+        const char *arcName = "Strap/strapSampleKR.arc";
+        const char *lytName = "strap_00_K.brlyt";
+        const char *anmName = "strap_00_K_roop.brlan";
+#endif
         if (!mResAcc.load(arcName)) {
             return FALSE;
         }
@@ -496,11 +581,17 @@ void dScBootStatic_c::StrapScreen_c::execute() {
             mDone = true;
         }
         if (mTimer >= 1200 || (mDone && mPressed)) {
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
             dScBootStatic_c *boot = &l_bootStatic;
             if (boot->mState != STATE_FADE_OUT &&
                 boot->mState != STATE_FADING) {
                 boot->mState = STATE_FADE_OUT;
             }
+#else
+            if (l_bootStatic.mState != STATE_END) {
+                l_bootStatic.mState = STATE_END;
+            }
+#endif
         }
     }
 }
@@ -510,6 +601,7 @@ void dScBootStatic_c::StrapScreen_c::draw() {
     mLyt.entry();
 }
 
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
 // 80108E10
 dScBootStatic_c::EsrbScreen_c::EsrbScreen_c() {
     mCreated = false;
@@ -595,6 +687,8 @@ void dScBootStatic_c::EsrbScreen_c::execute() {
 void dScBootStatic_c::EsrbScreen_c::draw() {
     mLyt.entry();
 }
+
+#endif
 
 // 801090E8
 bool dScBootStatic_c::LoadSaveState_c::isEnd() {

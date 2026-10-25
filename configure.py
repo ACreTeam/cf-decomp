@@ -989,7 +989,7 @@ config.libs = [
             Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_region.cpp"),
             Object(Matching, "dol/game/d_reset.cpp"),
             Object(Matching, "dol/game/d_random.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_s_boot_static.cpp"),
+            Object(Matching, "dol/game/d_s_boot_static.cpp"),
             Object(Matching, "dol/game/d_sv_auc.cpp"),
             Object(Matching, "dol/game/d_save_option.cpp"),
             Object(Matching, "dol/game/d_save_data.cpp"),

@@ -48,6 +48,7 @@ public:
         /* 0x194 */ bool mDone;
     }; // size 0x198
 
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     // The ESRB rating notice: done after 1.5 seconds.
     class EsrbScreen_c {
     public:
@@ -64,6 +65,7 @@ public:
         /* 0x192 */ bool mCreated;
         /* 0x193 */ bool mDone;
     }; // size 0x194
+#endif
 
     // Loads the save (the steps of dSvMgr_c::stepLoad_c without its scene changes).
     class LoadSaveState_c : public dState::mode_c<LoadSaveState_c> {
@@ -125,6 +127,7 @@ public:
     void execute();    // 80108940
     void draw();       // 80108A74
 
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
     bool isEnd() const { return mEsrb.mDone && mStrap.mDone; }
 
     /* 0x000 */ int mScreen; // Screen_e
@@ -137,5 +140,16 @@ public:
     /* 0x3B8 */ PrcInitState_c mPrcInit;
     /* 0x3E0 */ InitSaveState_c mInitSave;
 }; // size 0x408
+#else
+    bool isEnd() const { return mStrap.mDone; }
+
+    /* 0x000 */ int mState; // State_e
+    /* 0x004 */ StrapScreen_c mStrap;
+    /* 0x19C */ LoadSaveState_c mLoadSave;
+    /* 0x1F4 */ Wc24CheckState_c mWc24Check;
+    /* 0x21C */ PrcInitState_c mPrcInit;
+    /* 0x244 */ InitSaveState_c mInitSave;
+}; // size 0x26C
+#endif
 
 inline dScBootStatic_c::LoadSaveState_c::stepLoad_c::~stepLoad_c() {}
