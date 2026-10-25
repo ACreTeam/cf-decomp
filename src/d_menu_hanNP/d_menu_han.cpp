@@ -60,7 +60,16 @@ int dMenuHan_c::create() {
     mLyt.setAnm(&mIconAnm, "cmn_question_00_iconPattern.brlan", nullptr);
     mSlct.create();
     setIcon();
+#if VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (mMenuNo == dMenuMng_c::MENU_INPUT_STAR_SIGN_NAME || mMenuNo == dMenuMng_c::MENU_INPUT_STAR_SIGN_NAME_2) {
+        mLyt.setVisible("T_starName", true);
+        mLyt.setMessage("T_starName", MSG_STAR_SIGN_LABEL, nullptr);
+    } else {
+        mLyt.setVisible("T_starName", false);
+    }
+#else
     mLyt.setVisible("T_starName", false);
+#endif
     if (mMenuNo == dMenuMng_c::MENU_INPUT_TOWN_NAME ||
         mMenuNo == dMenuMng_c::MENU_INPUT_NEW_FRIEND_TOWN ||
         mMenuNo == dMenuMng_c::MENU_INPUT_FRIEND_TOWN) {
@@ -554,9 +563,15 @@ void dMenuHan_c::setQuestion() {
 // .text:0x12FC
 void dMenuHan_c::setMaxLength() {
     int region = getRegion();
+#if VERSION == VERSION_RUUK01_01
+    if (region == 0 || region == 3) {
+        return;
+    }
+#else
     if (region == 0) {
         return;
     }
+#endif
     switch (mMenuNo) {
     case dMenuMng_c::MENU_INPUT_PLAYER_NAME:
     case dMenuMng_c::MENU_INPUT_NEW_FRIEND_NAME:

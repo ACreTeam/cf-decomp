@@ -105,6 +105,7 @@ class dMenuHan_c : public dMenuBase_c {
         MSG_FRIEND_NAME = 0x9D,    // "What's your friend's name?"
         MSG_FRIEND_TOWN = 0x9E,    // "What's your friend's town?"
         MSG_COMMENT = 0x9F,        // "Any comments?"
+        MSG_STAR_SIGN_LABEL = 0xA5, // the constellation name suffix label (empty in English)
         MSG_SAY = 0xBF,            // "Say it!"
         MSG_DESIGN_NAME = 0xC0,    // "What's this design called?"
         MSG_MESSAGE = 0xC1,        // "What's the exact message?"
