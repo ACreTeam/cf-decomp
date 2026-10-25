@@ -2142,7 +2142,7 @@ dol/sound/SoundAmbient.cpp:
 	.text       start:0x801E2D1C end:0x801E3874
 	.bss        start:0x8062A338 end:0x8062A360
 	.sbss       start:0x807531E8 end:0x807531F0
-	.sdata2     start:0x80756290 end:0x807562D0
+	.sdata2     start:0x80756290 end:0x807562C8
 
 lib/RegEad/RegEad.cpp:
 	.text       start:0x801E3874 end:0x801E4DB8
@@ -2214,6 +2214,7 @@ lib/RVL_SDK/kpr/kpr_lib.c:
 	.data       start:0x8050C450 end:0x8050C4C8
 	.sdata      start:0x80750EC8 end:0x80750ED0
 	.sbss       start:0x8075324C end:0x80753258 align:4
+	.sdata2     start:0x807562C8 end:0x807562D0
 
 lib/prfile2/common/pf_clib.c:
 	.text       start:0x801FAD0C end:0x801FB148

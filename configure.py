@@ -1202,7 +1202,7 @@ config.libs = [
             Object(Matching, "dol/sound/SoundManager.cpp"),
             Object(Matching, "dol/sound/SoundBgm.cpp"),
             Object(Matching, "dol/sound/SoundVoice.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUK01_01"), "dol/sound/SoundAmbient.cpp"),
+            Object(Matching, "dol/sound/SoundAmbient.cpp"),
             Object(Matching, "dol/sound/SoundObj.cpp"),
             Object(Matching, "dol/sound/SoundAudioFrameCallback.cpp"),
             Object(Matching, "dol/sound/SoundLoader.cpp"),

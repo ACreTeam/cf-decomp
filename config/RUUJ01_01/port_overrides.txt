@@ -54,3 +54,4 @@ kbdModifierMapJAPAN = .data:0x8050C3D0; // type:object size:0x70
 convertFullWidthSpace__Q24dKbd5Mng_cFv = .text:0x800C9674; // type:function size:0xB4
 convertYenSign__Q24dKbd5Mng_cFv = .text:0x800C9728; // type:function size:0x90
 isKeypadKana__Q24dKbd5Mng_cFv = .text:0x800CA91C; // type:function size:0xA0
+@add-split lib/RVL_SDK/kpr/kpr_lib.c .sdata2 start 0x807562C8 end 0x807562D0
