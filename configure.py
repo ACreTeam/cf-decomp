@@ -1086,7 +1086,7 @@ config.libs = [
             Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUJ01_01", "RUUJ01_02", "RUUK01_01"), "dol/game/d_sys.cpp", extra_cflags=["-sym on"]),
             Object(Matching, "dol/game/d_tag_processor.cpp"),
             Object(Matching, "dol/game/d_pattern_copy.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_ds_dl.cpp"),
+            Object(Matching, "dol/game/d_ds_dl.cpp"),
             Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUJ01_01", "RUUJ01_02"), "dol/game/d_sv_star_sign.cpp"),
             Object(Matching, "dol/game/d_sv_auc_list.cpp"),
             Object(Matching, "dol/game/d_event_mng.cpp"),
