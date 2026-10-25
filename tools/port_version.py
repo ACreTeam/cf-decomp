@@ -949,6 +949,7 @@ def write_splits(path, mapper, base_bin, unit, header, units):
     moved = {}
     renamed = {}
     added = collections.defaultdict(list)
+    set_end = {}
     overrides = path.parent / "port_overrides.txt"
     if overrides.is_file():
         for line in overrides.read_text(encoding="utf-8").splitlines():
@@ -959,6 +960,8 @@ def write_splits(path, mapper, base_bin, unit, header, units):
                 renamed[parts[1] + ":"] = parts[2] + ":"
             elif len(parts) == 7 and parts[0] == "@add-split" and parts[3] == "start" and parts[5] == "end":
                 added[parts[1] + ":"].append((parts[2], int(parts[4], 16), int(parts[6], 16)))
+            elif len(parts) == 4 and parts[0] == "@set-end":
+                set_end[(parts[1] + ":", parts[2])] = int(parts[3], 16)
     starts = {}
     retarget = {}
     for u in units:
@@ -988,6 +991,7 @@ def write_splits(path, mapper, base_bin, unit, header, units):
                 for section, a, b in adds:
                     if section == e["section"] and s < a < t:
                         t = a
+            t = set_end.get((u["header"], e["section"]), t)
             rest = e["rest"]
             m = re.search(r"\balign:(\d+)", rest)
             cur = int(m.group(1)) if m else 4

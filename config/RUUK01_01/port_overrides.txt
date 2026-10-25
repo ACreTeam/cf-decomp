@@ -61,3 +61,11 @@ enableKSXFilter__Q29textinput7ManagerFb = .text:0x8030E6E8; // type:function siz
 __vt__Q24dKbd11myManager_c = .data:0x80504B80; // type:object size:0x140
 __vt__Q49textinput6extend4memo7Manager = .data:0x805511E0; // type:object size:0x140
 __vt__Q29textinput7Manager = .data:0x80548B18; // type:object size:0xD0
+@split lib/keyboard/tiPcKeyboard.cpp .text start 0x802E72A4
+@set-end lib/keyboard/tiLayoutGather.cpp .text 0x8031ECDC
+-fn_8030C0FC
+getPane__Q39textinput11nw4rmanager6LayoutCFPCc = .text:0x8030C0FC; // type:function size:0x1C
+-fn_800CB288
+playDigitKeySe__7dLetterFiii = .text:0x800CB288; // type:function size:0x8
+-loadEntry__7dLetterFPQ27dScript6Word_ciUsPCc
+loadEntry__7dLetterFPQ27dScript6Word_ciUsPCcwl = .text:0x800CB30C; // type:function size:0x1E4

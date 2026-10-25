@@ -749,6 +749,7 @@ static const int sLowerSeJpF[] = {
     SE_Keyboard_JPN_Gal_2u, SE_Keyboard_JPN_Gal_2v, SE_Keyboard_JPN_Gal_2w, SE_Keyboard_JPN_Gal_2x,
     SE_Keyboard_JPN_Gal_2y, SE_Keyboard_JPN_Gal_2z,
 };
+#elif VERSION == VERSION_RUUK01_01
 #else
 // 80472E50
 static const int sDigitSeUs[] = {
@@ -1149,6 +1150,15 @@ void playKeySe(wchar_t c, BOOL a, BOOL b, BOOL pcKeyboard) {
     }
 }
 
+#elif VERSION == VERSION_RUUK01_01
+void playKeySe(wchar_t c, BOOL a, BOOL b, BOOL pcKeyboard) {
+    playSe(SE_pupupu);
+}
+
+void playDigitKeySe(int idx, BOOL a, BOOL b) {
+    playSe(SE_pupupu);
+}
+
 #else
 // 800CB0CC
 BOOL isMalePlayer() {
@@ -1296,7 +1306,11 @@ int getEntryNum(int kind, const char *label) {
 }
 
 // 800CB3C8
+#if VERSION == VERSION_RUUK01_01
+BOOL loadEntry(dScript::Word_c *word, int kind, u16 idx, const char *label, wchar_t lastChar, s32 numberWord) {
+#else
 BOOL loadEntry(dScript::Word_c *word, int kind, u16 idx, const char *label) {
+#endif
     u32 max = word->getCapacity() - 1;
     char path[0x40];
     sprintf(path, "%s%s", sMailDirs[kind], label);
@@ -1313,7 +1327,11 @@ BOOL loadEntry(dScript::Word_c *word, int kind, u16 idx, const char *label) {
         return FALSE;
     }
     dLetter::Word_c text;
+#if VERSION == VERSION_RUUK01_01
+    if (!text.set(msg, 0, lastChar, numberWord)) {
+#else
     if (!text.set(msg, 0)) {
+#endif
         return FALSE;
     }
     if (text.getLength(0) > max) {
@@ -1346,9 +1364,24 @@ BOOL loadText(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *f
 // 800CB66C
 BOOL loadTextParts(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 headerIdx,
                  u16 bodyIdx, u16 footerIdx, const char *headerLabel, const char *bodyLabel, const char *footerLabel) {
+#if VERSION == VERSION_RUUK01_01
+    wchar_t lastChar = 0;
+    s32 numberWord = 0;
+    const dPersonalID_c *to = getTo();
+    if (to->isValid()) {
+        dHmnName::Word_c name;
+        to->setWord(&name);
+        lastChar = name.mPacchim.mLastChar;
+        numberWord = 0;
+    }
+    if (!loadEntry(header, MAIL_KIND_TO, headerIdx, headerLabel, lastChar, numberWord)) {
+        return FALSE;
+    }
+#else
     if (!loadEntry(header, MAIL_KIND_TO, headerIdx, headerLabel)) {
         return FALSE;
     }
+#endif
     if (!loadEntry(body, MAIL_KIND_MSG, bodyIdx, bodyLabel)) {
         return FALSE;
     }
@@ -1369,9 +1402,24 @@ BOOL loadBbsText(dScript::Word_c *word, u16 msgId, const char *group) {
 // 800CB760
 BOOL loadText2(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 headerIdx, u16 bodyA,
                  u16 bodyB, u16 bodyC, u16 footerIdx, const char *bodyLabel, const char *label) {
+#if VERSION == VERSION_RUUK01_01
+    wchar_t lastChar = 0;
+    s32 numberWord = 0;
+    const dPersonalID_c *to = getTo();
+    if (to->isValid()) {
+        dHmnName::Word_c name;
+        to->setWord(&name);
+        lastChar = name.mPacchim.mLastChar;
+        numberWord = 0;
+    }
+    if (!loadEntry(header, MAIL_KIND_TO2, headerIdx, label, lastChar, numberWord)) {
+        return FALSE;
+    }
+#else
     if (!loadEntry(header, MAIL_KIND_TO2, headerIdx, label)) {
         return FALSE;
     }
+#endif
     if (!loadEntry(footer, MAIL_KIND_FROM2, footerIdx, label)) {
         return FALSE;
     }

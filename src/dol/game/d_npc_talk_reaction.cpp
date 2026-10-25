@@ -451,6 +451,9 @@ BOOL dAcNpcNml_c::talk_c::msgNotSeen(msgInfo_s *info, int minDays, int divisor, 
 int dAcNpcNml_c::talk_c::msgRe30days(msgInfo_s *info) {
     switch (getLanguage()) {
     case LANGUAGE_JP:
+#if VERSION == VERSION_RUUK01_01
+    case LANGUAGE_KR:
+#endif
         return msgNotSeen(info, 30, 30, REACTION_30DAYS);
     default:
         return msgNotSeen(info, 60, 30, REACTION_30DAYS);
@@ -461,6 +464,9 @@ int dAcNpcNml_c::talk_c::msgRe30days(msgInfo_s *info) {
 int dAcNpcNml_c::talk_c::msgRe7days(msgInfo_s *info) {
     switch (getLanguage()) {
     case LANGUAGE_JP:
+#if VERSION == VERSION_RUUK01_01
+    case LANGUAGE_KR:
+#endif
         return msgNotSeen(info, 7, 7, REACTION_7DAYS);
     default:
         return msgNotSeen(info, 14, 7, REACTION_7DAYS);

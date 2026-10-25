@@ -288,7 +288,11 @@ void dNotice_c::build(m2d::ResAccIf_c *res) {
     mTextBlack.mBytes[3] = 0;
     clear();
     mpRes = res;
+#if VERSION == VERSION_RUUK01_01
+    mLyt.build(res, "board_win_paper_kr_00.brlyt");
+#else
     mLyt.build(res, "board_win_paper_00.brlyt");
+#endif
     mLyt.calc();
     mLyt.mPriority = LYT_PRIORITY;
     for (int i = 0; i < LINE_NUM; ++i) {
@@ -635,10 +639,17 @@ int dNotice_c::getLineNum() {
 // .text:0x1668
 void dNotice_c::initAnm() {
     static const char *names[ANM_NUM] = {
+#if VERSION == VERSION_RUUK01_01
+        "board_win_paper_kr_00_ppr_R_Out.brlan",
+        "board_win_paper_kr_00_ppr_R_In.brlan",
+        "board_win_paper_kr_00_ppr_L_Out.brlan",
+        "board_win_paper_kr_00_ppr_L_In.brlan",
+#else
         "board_win_paper_00_ppr_R_Out.brlan",
         "board_win_paper_00_ppr_R_In.brlan",
         "board_win_paper_00_ppr_L_Out.brlan",
         "board_win_paper_00_ppr_L_In.brlan",
+#endif
     };
     mAnm.init(&mLyt, mpRes, names, ANM_NUM);
     resetAnm();

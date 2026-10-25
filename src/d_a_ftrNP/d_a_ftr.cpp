@@ -1305,7 +1305,10 @@ void daFTR_c::initPos() {
     int state = l_initState[kind].mState;
     mScale.x = mScale.y = mScale.z = mBgScale = 1.0f;
     mAngle.y = mInfo.mRot << 14;
-    mFlags.mDraw = 0;
+    // Keep the flag-word copy for the Korean register allocation.
+    flags_c flags = mFlags;
+    flags.mDraw = 0;
+    mFlags = flags;
     if (l_initState[kind].mDraw) {
         mFlags.mDraw = 1;
     }
@@ -1314,7 +1317,15 @@ void daFTR_c::initPos() {
         if (dBGCF::getAttr(mInfo.mX, mInfo.mZ) == 0x67) {
             mPos.y = 0.0f;
         } else {
+#if VERSION == VERSION_RUUK01_01
+            if (dScene::getCurrentScene() == dScene::SCENE_RM_AUCTION) {
+                mPos.y = dBGCF::getUnitBaseY(&mPos) + 0.875f;
+            } else {
+                mPos.y = dBGCF::getUnitBaseY(&mPos);
+            }
+#else
             mPos.y = dBGCF::getUnitBaseY(&mPos);
+#endif
         }
     } else {
         mPos.y = dFTR::getGroundY(&mPos);

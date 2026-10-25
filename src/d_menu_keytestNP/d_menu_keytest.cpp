@@ -11,7 +11,11 @@ BASE_PROFILE(MENU_KEYTEST, dMenuKeytest_c)
 int dMenuKeytest_c::create() {
     mKbd.init(dKbd::Mng_c::INIT_MODE_PAD);
     BOOL kbdLoaded = mKbd.loadRes();
+#if VERSION == VERSION_RUUK01_01
+    BOOL loaded = kbdLoaded & mRes.load("Layout/keyboard_free.arc");
+#else
     BOOL loaded = kbdLoaded & mRes.load("Layout/keyboard_add.arc");
+#endif
     if (!loaded) {
         return NOT_READY;
     }

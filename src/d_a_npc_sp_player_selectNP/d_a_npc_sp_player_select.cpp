@@ -581,6 +581,14 @@ void dAcNpcSpPlayerSelect_c::talk_c::openTitleMenu() {
     dMsg::Comp_c *controller = mpController;
     dSelect::Comp_c *select = &controller->mSelect;
     select->setSysMessage(0, SEL_MSG_SOUND, MSG_VOICE, NULL, 0, 0);
+#if VERSION == VERSION_RUUK01_01
+    select->setSysMessage(1, SEL_MSG_MENU, MSG_TUTORIAL, NULL, 0, 0);
+    int num = 2;
+    if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_BUS_NET_EVENT_DONE)) {
+        select->setSysMessage(2, SEL_MSG_WC24, dMsg::MSG_CODE_NONE, NULL, 0, 0);
+        num = 3;
+    }
+#else
     if (getLanguage() == LANGUAGE_JP) {
         select->setSysMessage(1, SEL_MSG_TEXT, MSG_KANA, NULL, 0, 0);
     } else {
@@ -592,6 +600,7 @@ void dAcNpcSpPlayerSelect_c::talk_c::openTitleMenu() {
         select->setSysMessage(3, SEL_MSG_WC24, dMsg::MSG_CODE_NONE, NULL, 0, 0);
         num = 4;
     }
+#endif
     controller->mSelect.mCancel = num;
     select->setSysMessage(num, SEL_MSG_NEVER_MIND_PREPARATIONS, MSG_START, NULL,
                           0, 0);
@@ -925,8 +934,13 @@ void dAcNpcSpPlayerSelect_c::talk_c::onAnswer(int answer) {
         Method method;
     };
     static Entry messages[] = {
+#if VERSION == VERSION_RUUK01_01
+        {dANpcSpPlayerSelect::l_msgLabel, MSG_PREPARATIONS, 2,
+         &talk_c::selectNetSetting},
+#else
         {dANpcSpPlayerSelect::l_msgLabel, MSG_PREPARATIONS, 3,
          &talk_c::selectNetSetting},
+#endif
         {dANpcSpPlayerSelect::l_msgLabel, MSG_DS_EMIGRATE_CONFIRM, 0,
          &talk_c::saveDsPlayer},
         {dANpcSpPlayerSelect::l_msgLabel, MSG_PLAYER_SELECT, 0,

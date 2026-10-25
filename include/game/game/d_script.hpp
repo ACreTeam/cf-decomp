@@ -402,6 +402,7 @@ u16 getSortKey(wchar_t c); // 80155B70: a character's sort key (d_snd_util passe
 BOOL isHiragana(wchar_t c); // 80155D9C
 BOOL isKatakana(wchar_t c); // 80155DD0
 BOOL isAlpha(wchar_t c); // 80155E6C
+BOOL isHangul(wchar_t c); // 80156034
 bool toLower(wchar_t *c); // 80156368
 int getLineLength(const u16 *text, u32 maxSize); // 801579C0
 Bank_c *getBank(); // 80157B30

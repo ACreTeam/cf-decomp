@@ -575,6 +575,9 @@ class dAcNpcSpGkA_c : public dAcNpcSp_c, public dState::mode_c<dAcNpcSpGkA_c> {
         void setFriendCodeWord();   // 0x5F38
         void setNetPlayerName();    // 0x5F74
         void setLeaveMemberName();  // 0x5FF4
+#if VERSION == VERSION_RUUK01_01
+        void setActing();
+#endif
         void switchToSystemSpeaker();     // 0x61D0 (request-end hideSpeaker)
         void switchToGatekeeperSpeaker(); // 0x627C (request-end showSpeaker)
         void startComeInNet();    // 0x6328: the talk mode of the owner's

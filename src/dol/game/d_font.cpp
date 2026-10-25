@@ -15,7 +15,11 @@ BOOL load() {
         if (data == nullptr) {
             return FALSE;
         }
+#if VERSION == VERSION_RUUK01_01
+        u32 size = nw4r::ut::ArchiveFont::GetRequireBufferSize(data, nw4r::ut::ArchiveFont::LOAD_GLYPH_ALL, 70);
+#else
         u32 size = nw4r::ut::ArchiveFont::GetRequireBufferSize(data, nw4r::ut::ArchiveFont::LOAD_GLYPH_ALL, 50);
+#endif
         g_mainFont.mpBuffer = EGG::Heap::alloc(size, 0x20, dHeap::fontHeap_p);
         g_mainFont.mFont.Construct(g_mainFont.mpBuffer, size, data, nw4r::ut::ArchiveFont::LOAD_GLYPH_ALL);
         heap->free(MEM_FRM_HEAP_FREE_ALL);

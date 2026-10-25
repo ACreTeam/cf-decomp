@@ -530,11 +530,19 @@ void daRmobjTel_c::onAnswer(int answer) {
         Method method;
     };
     static Entry messages[] = {
+#if VERSION == VERSION_RUUK01_01
+        {dARmobjTel::l_msgLabel, MSG_ANYTHING_ELSE, 2,
+         &daRmobjTel_c::selectNetSetting},
+        {dARmobjTel::l_msgLabel, MSG_HELLO, 2, &daRmobjTel_c::selectNetSetting},
+        {dARmobjTel::l_msgLabel, MSG_GAME_SETTINGS, 2,
+         &daRmobjTel_c::selectNetSetting},
+#else
         {dARmobjTel::l_msgLabel, MSG_ANYTHING_ELSE, 3,
          &daRmobjTel_c::selectNetSetting},
         {dARmobjTel::l_msgLabel, MSG_HELLO, 3, &daRmobjTel_c::selectNetSetting},
         {dARmobjTel::l_msgLabel, MSG_GAME_SETTINGS, 3,
          &daRmobjTel_c::selectNetSetting},
+#endif
         {dARmobjTel::l_msgLabel, MSG_VOICE, 0, &daRmobjTel_c::selectVoiceMode0},
         {dARmobjTel::l_msgLabel, MSG_VOICE, 1, &daRmobjTel_c::selectVoiceMode1},
         {dARmobjTel::l_msgLabel, MSG_VOICE, 2, &daRmobjTel_c::selectVoiceMode2},
@@ -701,6 +709,14 @@ void daRmobjTel_c::openSettingsMenu() {
     dMsg::Comp_c *controller = getController();
     dSelect::Comp_c *select = &controller->mSelect;
     select->setSysMessage(0, SEL_MSG_SOUND, MSG_VOICE, NULL, 0, 0);
+#if VERSION == VERSION_RUUK01_01
+    select->setSysMessage(1, SEL_MSG_MENU, MSG_TUTORIAL, NULL, 0, 0);
+    int num = 2;
+    if (dSaveData_c::getRaw()->isFlag(SAVE_FLAG_BUS_NET_EVENT_DONE)) {
+        select->setSysMessage(2, SEL_MSG_WC24, dMsg::MSG_CODE_NONE, NULL, 0, 0);
+        num = 3;
+    }
+#else
     if (getLanguage() == LANGUAGE_JP) {
         select->setSysMessage(1, SEL_MSG_TEXT, MSG_KANA, NULL, 0, 0);
     } else {
@@ -712,6 +728,7 @@ void daRmobjTel_c::openSettingsMenu() {
         select->setSysMessage(3, SEL_MSG_WC24, dMsg::MSG_CODE_NONE, NULL, 0, 0);
         num = 4;
     }
+#endif
     controller->mSelect.mCancel = num;
     select->setSysMessage(num, SEL_MSG_NEVER_MIND, MSG_BYE, NULL, 0, 0);
     controller->mSelect.mNum = num + 1;

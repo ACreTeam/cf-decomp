@@ -119,7 +119,11 @@ void playUnfixKeySe(int idx);
 
 int getEntryNum(int kind, const char *label); // 800CB34C: the number of entries of the mail BMG kind/label
 // 800CB3C8: word = entry idx of the mail BMG kind/label (it has to fit)
+#if VERSION == VERSION_RUUK01_01
+BOOL loadEntry(dScript::Word_c *word, int kind, u16 idx, const char *label, wchar_t lastChar = 0, s32 numberWord = 0);
+#else
 BOOL loadEntry(dScript::Word_c *word, int kind, u16 idx, const char *label);
+#endif
 void reset();                       // 800CB594: clears the global Comp_c
 // 800CB638: header / body / footer words of the mail text label (kind: the entry).
 BOOL loadText(dScript::Word_c *header, dScript::Word_c *body, dScript::Word_c *footer, u16 kind, const char *label);

@@ -4116,13 +4116,13 @@ lib/RVL_SDK/hbm/sound/synvoice.cpp:
 	.text       start:0x802E685C end:0x802E69FC
 
 lib/RVL_SDK/hbm/sound/seq.cpp:
-	.text       start:0x802E69FC end:0x802E72F0
+	.text       start:0x802E69FC end:0x802E72A4
 	.rodata     start:0x80493700 end:0x80493728
 	.data       start:0x80541F38 end:0x80541FB8
 	.bss        start:0x806C1F28 end:0x806C1F30
 
 lib/keyboard/tiPcKeyboard.cpp:
-	.text       start:0x802E72F0 end:0x802EE328
+	.text       start:0x802E72A4 end:0x802EE328
 	.ctors      start:0x8046F4D4 end:0x8046F4D8
 	.rodata     start:0x80493728 end:0x80494DE0
 	.data       start:0x80541FB8 end:0x805450D8
@@ -4279,7 +4279,7 @@ lib/keyboard/tiLayout.cpp:
 	.data       start:0x80551D10 end:0x80551F58
 
 lib/keyboard/tiLayoutGather.cpp:
-	.text       start:0x8031EC4C end:0x80321260
+	.text       start:0x8031EC4C end:0x8031ECDC
 
 lib/RevoEX/ssl/ssl_api.c:
 	.text       start:0x80321260 end:0x80321FB8

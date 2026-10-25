@@ -3,6 +3,10 @@
 #include <game/game/d_script.hpp>
 #include <cstring>
 #include <cstdio>
+#if VERSION == VERSION_RUUK01_01
+#include <game/game/d_animal.hpp>
+#include <game/game/d_npc_setup.hpp>
+#endif
 
 // 804760D8
 static const int lbl_804760D8[LANGUAGE_NUM] = {0, 1, 1, 1, 2, 3, 4, 5, 6, 7};
@@ -97,7 +101,27 @@ const wchar_t *dAnmPersonalID_c::getName(int language) {
     if (language >= LANGUAGE_NUM) {
         language = getLanguage();
     }
+#if VERSION == VERSION_RUUK01_01
+    int slot = getNameSlot(language);
+    if (slot == 7) {
+        switch (mNpcIdx) {
+        case 179: {
+            u32 num = 0;
+            dAnimalTemplate_c *list = dNpcSetup::getList(&num);
+            if (list != NULL) {
+                dAnimalTemplate_c *tmpl = dNpcSetup::find(mNpcIdx, list, num);
+                if (tmpl != NULL) {
+                    return tmpl->mNames[7];
+                }
+            }
+            break;
+        }
+        }
+    }
+    return mNameByRegion[slot];
+#else
     return mNameByRegion[getNameSlot(language)];
+#endif
 }
 
 // 801361AC

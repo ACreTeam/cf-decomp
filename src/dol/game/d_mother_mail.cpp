@@ -111,10 +111,19 @@ void update(dTime_c *last, int days) {
                 letter = selectEventLetter(mail, event);
             }
             paper = dPaper::getPaper(LOOKS_TYPE_NORMAL, day.getSeason());
+#if VERSION == VERSION_RUUK01_01
+            u8 sender = event == MOTHER_MAIL_EVENT_FATHERS_DAY ? MAIL_FROM_DAD : MAIL_FROM_MOM;
+            if (korea && event == MOTHER_MAIL_EVENT_MOTHERS_DAY) {
+                sender = MAIL_FROM_MOM_AND_DAD;
+            }
+            u16 kind = letter;
+            l_mail.setupSystem(&kind, "MAIL_ETC_MotherEvent", &sender, &player->mPID, &paper);
+#else
             const dPersonalID_c *pid = &player->mPID;
             u8 sender = event == MOTHER_MAIL_EVENT_FATHERS_DAY ? MAIL_FROM_DAD : MAIL_FROM_MOM;
             u16 kind = letter;
             l_mail.setupSystem(&kind, "MAIL_ETC_MotherEvent", &sender, pid, &paper);
+#endif
             setPresent(&l_mail, TYPE_EVENT, letter);
             if (!dPostOffice::deliverToPlayer(&l_mail)) {
                 mail->setRetry(event);
@@ -485,7 +494,11 @@ void setPresent(dMail_c *mail, int type, int letter) {
             dItem::Item item;
             for (int idx = dItem::ITEM_IDX_RED_TULIP_BAG; idx < 0x29; idx++) {
                 item.setFromIndex(idx);
+#if VERSION == VERSION_RUUK01_01
+                if (!dItem::getBITM(item.mId)->m_noPurchase) {
+#else
                 if (!dItem::getBITM(item.mId)->isNotForSale()) {
+#endif
                     items[count] = item;
                     count++;
                 }

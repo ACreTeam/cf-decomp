@@ -1410,6 +1410,10 @@ void dAcNpcSpGkA_c::talk_c::onMessageStart(int arg) {
          &talk_c::setNetPlayerName},
         {dSvMgr_c::mMessageLabel, SV_MSG_VISITOR_LEFT,
          &talk_c::setLeaveMemberName},
+#if VERSION == VERSION_RUUK01_01
+        {dANpcSpGatekeeperA::l_msgLabel, MSG_DS_RETURN_HINT,
+         &talk_c::setActing},
+#endif
     };
     u16 code = getMessageCode();
     const char *label;
@@ -1468,6 +1472,12 @@ void dAcNpcSpGkA_c::talk_c::setLeaveMemberName() {
     setPersonalName(&player->mPID, 0);
     setNextMessage(SV_MSG_SAVING_VISIT, dSvMgr_c::mMessageLabel);
 }
+
+#if VERSION == VERSION_RUUK01_01
+void dAcNpcSpGkA_c::talk_c::setActing() {
+    mActing = 1;
+}
+#endif
 
 // .text:0x6070 fn_66_6070 (0x160): dAcNpcSpGkA_c::talk_c::onMessageEnd(int
 // kind)

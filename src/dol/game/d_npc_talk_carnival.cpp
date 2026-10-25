@@ -599,6 +599,19 @@ int dAcNpcNml_c::talk_c::msgCarnival2Hand(msgInfo_s *info) {
     // the npc's hand: 0 the player loses, 1 the player wins, 2 draw (code by the player's hand mAnswer)
     switch (cM::rndInt(3)) {
     case 0:
+#if VERSION == VERSION_RUUK01_01
+        switch (mAnswer) {
+        case 0:
+            code = 12;
+            break;
+        case 1:
+            code = 14;
+            break;
+        default:
+            code = 13;
+            break;
+        }
+#else
         switch (mAnswer) {
         case 0:
             code = 14;
@@ -610,10 +623,24 @@ int dAcNpcNml_c::talk_c::msgCarnival2Hand(msgInfo_s *info) {
             code = 13;
             break;
         }
+#endif
         mGameCount[0]++;
         step = &dAcNpcNml_c::talk_c::stepCarnival2Lose;
         break;
     case 1:
+#if VERSION == VERSION_RUUK01_01
+        switch (mAnswer) {
+        case 0:
+            code = 14;
+            break;
+        case 1:
+            code = 13;
+            break;
+        default:
+            code = 12;
+            break;
+        }
+#else
         switch (mAnswer) {
         case 0:
             code = 13;
@@ -625,10 +652,24 @@ int dAcNpcNml_c::talk_c::msgCarnival2Hand(msgInfo_s *info) {
             code = 12;
             break;
         }
+#endif
         mGameCount[1]++;
         step = &dAcNpcNml_c::talk_c::stepCarnival2Win;
         break;
     default:
+#if VERSION == VERSION_RUUK01_01
+        switch (mAnswer) {
+        case 0:
+            code = 13;
+            break;
+        case 1:
+            code = 12;
+            break;
+        default:
+            code = 14;
+            break;
+        }
+#else
         switch (mAnswer) {
         case 0:
             code = 12;
@@ -640,6 +681,7 @@ int dAcNpcNml_c::talk_c::msgCarnival2Hand(msgInfo_s *info) {
             code = 14;
             break;
         }
+#endif
         step = &dAcNpcNml_c::talk_c::stepCarnival2Draw;
         break;
     }
@@ -660,11 +702,19 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival2Lose(int kind) {
 
 // 80040D38
 int dAcNpcNml_c::talk_c::msgCarnival2Lose(msgInfo_s *info) {
+#if VERSION == VERSION_RUUK01_01
+    u16 code = 21;
+    switch (mAnswer) {
+    case 1:
+        code = 20;
+        break;
+#else
     u16 code = 20;
     switch (mAnswer) {
     case 1:
         code = 21;
         break;
+#endif
     case 2:
         code = 22;
         break;
@@ -687,11 +737,19 @@ BOOL dAcNpcNml_c::talk_c::stepCarnival2Win(int kind) {
 
 // 80040E68
 int dAcNpcNml_c::talk_c::msgCarnival2Win(msgInfo_s *info) {
+#if VERSION == VERSION_RUUK01_01
+    u16 code = 18;
+    switch (mAnswer) {
+    case 1:
+        code = 17;
+        break;
+#else
     u16 code = 17;
     switch (mAnswer) {
     case 1:
         code = 18;
         break;
+#endif
     case 2:
         code = 19;
         break;

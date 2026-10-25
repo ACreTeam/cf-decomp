@@ -1,0 +1,5 @@
+-fn_66_1AB0C
+-fn_66_6074
+checkSaveResultImpl<Q213dAcNpcSpGkA_c23stepDemoReunionNetVst_c>__FPQ213dAcNpcSpGkA_c23stepDemoReunionNetVst_c_v = .text:0x0001A8AC; // type:function size:0x260
+checkSaveResultImpl<Q213dAcNpcSpGkA_c23stepDemoReunionNetHst_c>__FPQ213dAcNpcSpGkA_c23stepDemoReunionNetHst_c_v = .text:0x0001AB0C; // type:function size:0x260
+setActing__Q213dAcNpcSpGkA_c6talk_cFv = .text:0x00006074; // type:function size:0xC

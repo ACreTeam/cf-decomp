@@ -34,6 +34,11 @@ BOOL dNicknameWord_c::hasNoLetters() {
         if (dScript::isAlpha(*p)) {
             return FALSE;
         }
+#if VERSION == VERSION_RUUK01_01
+        if (dScript::isHangul(*p)) {
+            return FALSE;
+        }
+#endif
     }
     return TRUE;
 }

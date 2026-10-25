@@ -217,6 +217,10 @@ void dHomeButton_c::setLayoutName() {
     const char *spa = "HomeButton2/homeBtn_SPA.arc";
     const char *ita = "HomeButton2/homeBtn_ITA.arc";
     const char *ned = "HomeButton2/homeBtn_NED.arc";
+#if VERSION == VERSION_RUUK01_01
+    const char *chn = "HomeButton2/homeBtn_CHN.arc";
+    const char *kor = "HomeButton2/homeBtn_KOR.arc";
+#endif
     mDataInfo.region = lang;
     if (lang == SC_LANG_JAPANESE) {
         mLayoutName = jpn;
@@ -232,6 +236,14 @@ void dHomeButton_c::setLayoutName() {
         mLayoutName = ita;
     } else if (lang == SC_LANG_DUTCH) {
         mLayoutName = ned;
+#if VERSION == VERSION_RUUK01_01
+    } else if (lang == SC_LANG_SIMP_CHINESE) {
+        mLayoutName = chn;
+    } else if (lang == SC_LANG_TRAD_CHINESE) {
+        mLayoutName = chn;
+    } else if (lang == SC_LANG_KOREAN) {
+        mLayoutName = kor;
+#endif
     } else {
         mLayoutName = jpn;
         mDataInfo.region = SC_LANG_JAPANESE;
