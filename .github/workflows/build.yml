@@ -23,7 +23,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [RUUE01_00]
+        version:
+          - RUUE01_00
+          - RUUE01_01
+          - RUUP01_00
+          - RUUP01_01
+          - RUUJ01_01
+          - RUUJ01_02
+          - RUUK01_01
 
     steps:
       - name: Checkout

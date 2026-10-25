@@ -14,6 +14,15 @@ This repository does **not** contain any game assets. An existing copy of the ga
 Supported versions:
 
 - `RUUE01_00`: Rev 0 (USA)
+- `RUUE01_01`: Rev 1 (USA)
+- `RUUP01_00`: Rev 0 (Europe/Australia)
+- `RUUP01_01`: Rev 1 (Europe/Australia)
+- `RUUJ01_01`: Rev 1 (Japan)
+- `RUUJ01_02`: Rev 2 (Japan)
+- `RUUK01_01`: Rev 1 (Korea)
+
+`RUUE01_00` is the primary version; the other versions' configurations are
+generated from it with `tools/port_version.py`.
 
 ## Dependencies
 
@@ -34,18 +43,19 @@ platforms, [wibo](https://github.com/decompals/wibo) runs the Windows compiler t
    cd cf-decomp
    ```
 
-2. Extract your game's data partition and copy the files into `orig/RUUE01_00`.
-   The build requires the original DOL and all 187 RELs in this layout:
+2. Extract your game's data partition and copy the files into `orig/<VERSION>`
+   (for example `orig/RUUE01_00`). The build requires the original DOL and all
+   187 RELs in this layout:
 
    ```text
-   orig/RUUE01_00/sys/main.dol
-   orig/RUUE01_00/files/rels/*.rel
+   orig/<VERSION>/sys/main.dol
+   orig/<VERSION>/files/rels/*.rel
    ```
 
-3. Configure:
+3. Configure (the version defaults to `RUUE01_00`):
 
    ```sh
-   python configure.py --version RUUE01_00
+   python configure.py --version <VERSION>
    ```
 
 4. Build:
