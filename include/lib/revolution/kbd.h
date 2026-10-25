@@ -7,9 +7,51 @@
 extern "C" {
 #endif
 
+#define KBD_MAX_CHANNELS 4
+
 typedef u8 KBDChannel;
 typedef u8 KBDHidCode;
 typedef u16 KBDUnicode;
+
+#define KBD_HID_NONE 0
+#define KBD_HID_OVERFLOW 255
+
+typedef enum _KBDHIDEnum {
+    KBD_HID_No_Event = 0x00,
+    KBD_HID_Roll_Over = 0x01,
+    KBD_HID_Post_Fail = 0x02,
+    KBD_HID_Undefined_Error = 0x03,
+    KBD_HID_A = 0x04,
+    KBD_HID_Backslash_Bar = 0x31,
+    KBD_HID_NonUS_Pound_Tilde = 0x32,
+    KBD_HID_Grave_Tilde = 0x35,
+    KBD_HID_L5_Zenkaku_Hankaku = 0x94,
+    KBD_HID_Left_Control = 0xE0,
+    KBD_HID_Left_Shift = 0xE1,
+    KBD_HID_Left_Alt = 0xE2,
+    KBD_HID_Left_GUI = 0xE3,
+    KBD_HID_Right_Control = 0xE4,
+    KBD_HID_Right_Shift = 0xE5,
+    KBD_HID_Right_AltGr = 0xE6,
+    KBD_HID_Right_GUI = 0xE7
+} KBDHIDEnum;
+
+#define KBK_Void 0x0000
+#define KBK_Error 0xFFFF
+
+#define KBK_Mod_Control 0xF000
+#define KBK_Mod_Shift 0xF001
+#define KBK_Mod_Alt 0xF002
+#define KBK_Mod_GUI 0xF003
+#define KBK_Mod_Extra 0xF004
+#define KBK_Mod_AltGr 0xF005
+#define KBK_Lang_Toggle 0xF006
+#define KBK_Num_Lock 0xF007
+#define KBK_Caps_Lock 0xF008
+#define KBK_Print_Screen 0xF020
+#define KBK_Scroll_Lock 0xF021
+#define KBK_Pause 0xF022
+#define KBK_Application 0xF02F
 
 typedef enum _KBDEc {
     KBD_SUCCESS = 0,
@@ -44,6 +86,9 @@ typedef enum _KBDModState {
     KBD_MS_SET_ALL = 4096
 } KBDModState;
 
+#define KBD_MS_TRANSIENTS (KBD_MS_CTRL | KBD_MS_SHIFT | KBD_MS_ALT | KBD_MS_GUI | KBD_MS_EXTRA | KBD_MS_ALTGR)
+#define KBD_MS_TOGGLES (KBD_MS_LANG1 | KBD_MS_LANG2 | KBD_MS_NUM_LOCK | KBD_MS_CAPS_LOCK | KBD_MS_SCROLL_LOCK)
+
 typedef enum _KBDChanStatus {
     KBD_CS_OK = 0,
     KBD_CS_DISCONNECTED = 1,
@@ -72,6 +117,8 @@ typedef enum _KBDCountryCode {
     KBD_CC_UNITED_STATES,
     KBD_CC_RESERVED
 } KBDCountryCode;
+
+#define KBD_NUM_COUNTRY_CODES KBD_CC_RESERVED
 
 typedef enum _KBDLedState {
     KBD_LED_NUM_LOCK = 0x01,
@@ -110,12 +157,15 @@ KBDDevCallbackF KBDSetAttachCallback(KBDDevCallbackF callback);
 KBDDevCallbackF KBDSetDetachCallback(KBDDevCallbackF callback);
 KBDKeyCallbackF KBDSetKeyCallback(KBDKeyCallbackF callback);
 
+KBDEc KBDResetChannel(KBDChannel channel);
+
 KBDEc KBDSetLedsAsync(KBDChannel channel, KBDLedState leds,
                       KBDLedCallbackF callback, void *cbArg);
 KBDEc KBDSetLeds(KBDChannel channel, KBDLedState leds);
 KBDEc KBDSetCountry(KBDChannel channel, KBDCountryCode country);
 KBDEc KBDSetLockProcessing(KBDChannel channel, BOOL enable);
 KBDEc KBDSetModState(KBDChannel channel, KBDModState modState);
+KBDEc KBDGetModState(KBDChannel channel, KBDModState *modState);
 KBDUnicode KBDTranslateHidCode(KBDHidCode hid, KBDModState modState,
                                KBDCountryCode country);
 
