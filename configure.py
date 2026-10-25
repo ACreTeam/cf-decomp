@@ -219,6 +219,7 @@ cflags_base = [
     f"-i build/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
     f"-DVERSION={version_num}",
+    *[f"-DVERSION_{v}={i}" for i, v in enumerate(VERSIONS)],
 ]
 
 # Verified for the Matching cLib objects; the others remain candidates.
@@ -242,6 +243,7 @@ cflags_clib = [
     "-i include/lib/MSL/internal",
     "-DREVOLUTION",
     f"-DVERSION={version_num}",
+    *[f"-DVERSION_{v}={i}" for i, v in enumerate(VERSIONS)],
 ]
 
 # Debug flags
@@ -1114,7 +1116,7 @@ config.libs = [
             Object(Matching, "dol/game/d_sv_player_flag.cpp"),
             Object(Matching, "dol/game/d_sv_daily_rand.cpp"),
             Object(Matching, "dol/game/d_sv_wc24.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_wifi.cpp"),
+            Object(Matching, "dol/game/d_wifi.cpp"),
             Object(Matching, "dol/game/d_wifi_err.cpp"),
             Object(Matching, "dol/game/d_wipe_fader.cpp"),
             Object(Matching, "dol/game/sc_data/d_sc_data_common.cpp"),
@@ -1859,7 +1861,7 @@ config.libs = [
             Object(Matching, "lib/nw4r/g3d/platform/g3d_gpu.cpp"),
             Object(Matching, "lib/nw4r/g3d/platform/g3d_tmem.cpp"),
             Object(Matching, "lib/nw4r/g3d/platform/g3d_cpu.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUK01_01"), "lib/nw4r/g3d/g3d_state.cpp"),
+            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUK01_01"), "lib/nw4r/g3d/g3d_state.cpp"),
             Object(Matching, "lib/nw4r/g3d/g3d_draw1mat1shp.cpp"),
             Object(Matching, "lib/nw4r/g3d/g3d_calcview.cpp"),
             Object(Matching, "lib/nw4r/g3d/g3d_dcc.cpp"),
@@ -2172,7 +2174,7 @@ config.libs = [
             Object(Matching, "lib/egg/core/eggDvdRipper.cpp"),
             Object(Matching, "lib/egg/core/eggDecomp.cpp"),
             Object(Matching, "lib/egg/core/eggAllocator.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUK01_01"), "lib/egg/core/eggHeap.cpp"),
+            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUK01_01"), "lib/egg/core/eggHeap.cpp"),
             Object(Matching, "lib/egg/core/eggExpHeap.cpp"),
             Object(Matching, "lib/egg/core/eggFrmHeap.cpp"),
             Object(Matching, "lib/egg/core/eggAssertHeap.cpp"),
@@ -2181,7 +2183,7 @@ config.libs = [
             Object(Matching, "lib/egg/core/eggThreadMeter.cpp"),
             Object(Matching, "lib/egg/core/eggSystem.cpp"),
             Object(Matching, "lib/egg/core/eggDisplay.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUJ01_01", "RUUJ01_02", "RUUK01_01"), "lib/egg/core/eggColorFader.cpp"),
+            Object(Matching, "lib/egg/core/eggColorFader.cpp"),
             Object(Matching, "lib/egg/core/eggAsyncDisplay.cpp"),
             Object(Matching, "lib/egg/core/eggVideo.cpp"),
             Object(Matching, "lib/egg/core/eggXfb.cpp"),
@@ -2510,7 +2512,7 @@ config.libs = [
             Object(Matching, "d_paperNP/rel_init.cpp", source="runtime/rel_init.cpp"),
             Object(Matching, "d_paperNP/global_destructor_chain.c", source="runtime/global_destructor_chain.c",
                    cflags=[*cflags_runtime, "-sdata 0", "-sdata2 0"]),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "d_paperNP/d_paper.cpp"),
+            Object(Matching, "d_paperNP/d_paper.cpp"),
         ],
     ),
     Rel(

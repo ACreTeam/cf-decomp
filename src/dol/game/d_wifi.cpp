@@ -77,7 +77,15 @@ u32 dWifi::getGameCode(int area) {
     case CONSOLE_REGION_KR:
         return 'RUUK';
     default:
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
         return 'RUUE';
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+        return 'RUUP';
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+        return 'RUUJ';
+#else
+        return 'RUUK';
+#endif
     }
 }
 
@@ -1548,9 +1556,21 @@ void onDistDownload(void *data, u32 size, BOOL arg) {
             if (contentVersion != extra->mDistContent._00000) {
                 extra->mDistContent._00000 = contentVersion;
                 for (u32 i = 0; i < 6; i++) {
-                    loadDistContent(arc, 1, i);
-                    loadDistContent(arc, 2, i);
-                    loadDistContent(arc, 3, i);
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
+                    loadDistContent(arc, LANGUAGE_US, i);
+                    loadDistContent(arc, LANGUAGE_MX, i);
+                    loadDistContent(arc, LANGUAGE_QC, i);
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+                    loadDistContent(arc, LANGUAGE_EN, i);
+                    loadDistContent(arc, LANGUAGE_ES, i);
+                    loadDistContent(arc, LANGUAGE_FR, i);
+                    loadDistContent(arc, LANGUAGE_IT, i);
+                    loadDistContent(arc, LANGUAGE_DE, i);
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+                    loadDistContent(arc, LANGUAGE_JP, i);
+#else
+                    loadDistContent(arc, LANGUAGE_KR, i);
+#endif
                 }
                 dSaveData_c::getExtra()->mLangFlags.updateAll();
             }

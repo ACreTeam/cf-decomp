@@ -260,7 +260,15 @@ void dPaper_c::updateHeader(const wchar_t *text, int namePos,
         dString::Word_c name;
         name.clear();
         name.set(mToName, 0);
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
         name.capitalize();
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+        if (getLanguage() == LANGUAGE_EN) {
+            name.capitalize();
+        } else if (namePos == 0) {
+            name.capitalize();
+        }
+#endif
         if (mFlags & FLAG_NAME_COLOR) {
             mWords[HEADER].insertColored(name.getText(), namePos,
                                          mNameWhite.mBytes, mNameBlack.mBytes);
