@@ -177,7 +177,11 @@ void dInsFldLeaf_c::executeWalk() {
         mVelocity.y = 0.0f;
         mPos.y = getGroundY();
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (mWalkFrames <= mFrame) {
         setState(STATE_WALK);
     }
@@ -186,6 +190,9 @@ void dInsFldLeaf_c::executeWalk() {
         mAlpha = alpha < 0 ? 0 : alpha;
         if (mAlpha == 0) {
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     }
     mLifeTimer++;
@@ -198,7 +205,15 @@ void dInsFldLeaf_c::executeWalk() {
                         checkPtclLanding, 0);
         mActive = false;
         requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+        alive = false;
+#endif
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x25A70

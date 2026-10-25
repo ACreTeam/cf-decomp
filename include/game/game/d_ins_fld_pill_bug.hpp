@@ -106,6 +106,9 @@ class dInsFldPillBug_c : public dInsFldBase_c {
     /* 0x330 */ u16 mMoveFrames;
     /* 0x332 */ u16 mHitTimer;
     /* 0x334 */ bool mLanded; // executeRelease: the landing sound played
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    /* 0x335 */ bool mAlive;
+#endif
     /* 0x338 */ dLevelEffect_c mEffect;
     /* 0x3CC */ int mHitter; // the player that hit the rock (4: none)
 }; // size 0x3D0

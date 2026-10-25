@@ -134,4 +134,7 @@ class dInsFldTumbleBug_c : public dInsFldBase_c {
     /* 0x336 */ s16 _336; // 0.05 degrees
     /* 0x338 */ s16
         mPushTimer; // no new push before it runs out; the bg check runs while 0
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    /* 0x33A */ bool mAlive;
+#endif
 }; // size 0x33C

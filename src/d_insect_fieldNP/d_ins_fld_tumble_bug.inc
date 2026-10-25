@@ -137,9 +137,15 @@ void dInsFldTumbleBug_c::initState() {
 
 // 0x1C02C
 void dInsFldTumbleBug_c::executeState() {
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    mAlive = true;
+#endif
     getTumbleBugParam(mType);
     if (findNearestBall() == sNoBall && mState != STATE_RELEASE) {
         requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+        mAlive = false;
+#endif
         return;
     }
     if (mState != STATE_ESCAPE && mState != STATE_RELEASE &&
@@ -240,7 +246,9 @@ void dInsFldTumbleBug_c::executeWait() {
         hit += mPos;
         ball->hit(&hit);
     }
+#if !(VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01)
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (mWaitFrames <= mFrame) {
         setState(STATE_WALK);
     } else if (mScare.isScared() == true) {
@@ -248,6 +256,11 @@ void dInsFldTumbleBug_c::executeWait() {
     } else if (dInsectUtil::isColumn(mPos) == true) {
         setState(STATE_ESCAPE);
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (mAlive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x1C674
@@ -256,7 +269,9 @@ void dInsFldTumbleBug_c::executeWalk() {
     f32 accel = param->mWalkAccel / (mBall.getRadius() / 5.0f);
     mBall.getRadius();
     walk(0.0f, accel, param->mWalkDrag, param->mWalkTurn);
+#if !(VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01)
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (!isHeld() && (!mBall.cannotPush() || !mBall.isFar(&mPos))) {
         daSnowMan_c *ball = mBall.get();
         mVec3_c hit(0.0f, 0.0f, 0.75f * mBall.getRadius());
@@ -276,12 +291,19 @@ void dInsFldTumbleBug_c::executeWalk() {
         setState(STATE_ESCAPE);
     }
     mWalkTimer++;
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (mAlive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x1C878
 void dInsFldTumbleBug_c::executePush() {
     mPushTimer = PUSH_COOLDOWN_TIME;
+#if !(VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01)
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     mVec3_c normal = mWallNormal;
     normal.rotY(DEG_TO_ANGLE(180));
     mVec3_c origin(0.0f, 0.0f, 0.0f);
@@ -306,6 +328,11 @@ void dInsFldTumbleBug_c::executePush() {
     mVec3_c front(0.0f, 0.0f, 1.0f);
     front.rotY(mAngle.y);
     mAxis.setFront(front);
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (mAlive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x1CA5C

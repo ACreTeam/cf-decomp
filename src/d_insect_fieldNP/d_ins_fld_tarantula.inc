@@ -262,7 +262,11 @@ void dInsFldTarantula_c::executeWalk() {
         mPos.y = getGroundY();
         mVelocity.y = 0.0f;
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (isInWater() == true) {
         mSound.startSound(SE_MushiFallWater);
         dBGCF::groundChk_c chk(&mPos, dBGCF::LAYER_TOP, 0, 0);
@@ -273,6 +277,9 @@ void dInsFldTarantula_c::executeWalk() {
                         checkPtclLanding, 0);
         mActive = false;
         requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+        alive = false;
+#endif
     }
     if (mWalkFrames <= mFrame) {
         setWalkTarget();
@@ -303,6 +310,11 @@ void dInsFldTarantula_c::executeWalk() {
     } else {
         mSound.holdSound(SE_ScorpionRun);
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x231D0
@@ -416,7 +428,11 @@ void dInsFldTarantula_c::executeAttack() {
         mVelocity.y = 0.0f;
         mPos.y = getGroundY();
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (!mScare.isEscaping()) {
         setState(STATE_TURN);
     }
@@ -430,12 +446,20 @@ void dInsFldTarantula_c::executeAttack() {
                         checkPtclLanding, 0);
         mActive = false;
         requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+        alive = false;
+#endif
     }
     if (isTarantula() == true) {
         mSound.holdSound(SE_TarantulaRun);
     } else {
         mSound.holdSound(SE_ScorpionRun);
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x238F4
@@ -469,12 +493,19 @@ void dInsFldTarantula_c::executeEscape() {
         mPos.y = getGroundY();
         mVelocity.y = 0.0f;
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     mEscapeTimer++;
     if ((u16)dInsectUtil::secToFrame(param->mEscapeTime) <= mEscapeTimer) {
         fadeOut();
         if (mAlpha == 0) {
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     } else if (mEscapeFrames <= mFrame) {
         setEscapeTarget();
@@ -492,12 +523,20 @@ void dInsFldTarantula_c::executeEscape() {
                         checkPtclLanding, 0);
         mActive = false;
         requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+        alive = false;
+#endif
     }
     if (isTarantula() == true) {
         mSound.holdSound(SE_TarantulaRun);
     } else {
         mSound.holdSound(SE_ScorpionRun);
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // 0x23C00

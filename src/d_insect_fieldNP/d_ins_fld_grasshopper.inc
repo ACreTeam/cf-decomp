@@ -281,7 +281,11 @@ void dInsFldGrasshopper_c::onRelease() {
 // .text D2F4
 void dInsFldGrasshopper_c::executeWait() {
     const param_c *param = getKindParam(mType);
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (isUnderWater() == true) {
         if (!isOldPosInWater()) {
             mSound.startSound(SE_MushiFallWater);
@@ -295,10 +299,16 @@ void dInsFldGrasshopper_c::executeWait() {
             if (dNet::isSceneOwner() == TRUE) {
                 mActive = FALSE;
                 requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+                alive = false;
+#endif
             }
         } else {
             mActive = FALSE;
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     } else if (isChirper() == true) {
         if (mScare.isScared() == true) {
@@ -308,6 +318,11 @@ void dInsFldGrasshopper_c::executeWait() {
             setAnmRate(param->mChirpAnmRate);
         }
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // .text D460
@@ -318,7 +333,11 @@ void dInsFldGrasshopper_c::executeTurn() {
     mAxis.setIdentity();
     mAxis.rotateY(mAngle.y);
     mAxis.setUp(getGroundNormal(&mPos));
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (isUnderWater() == true) {
         if (!isOldPosInWater()) {
             mSound.startSound(SE_MushiFallWater);
@@ -332,12 +351,23 @@ void dInsFldGrasshopper_c::executeTurn() {
             if (dNet::isSceneOwner() == TRUE) {
                 mActive = FALSE;
                 requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+                alive = false;
+#endif
             }
         } else {
             mActive = FALSE;
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // .text D5D4
@@ -351,7 +381,11 @@ void dInsFldGrasshopper_c::executeJump() {
         mVelocity.y = 0.0f;
         mAxis.setUp(getGroundNormal(&mPos));
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (isUnderWater() == true) {
         if (!isOldPosInWater()) {
             mSound.startSound(SE_MushiFallWater);
@@ -365,14 +399,25 @@ void dInsFldGrasshopper_c::executeJump() {
             if (dNet::isSceneOwner() == TRUE) {
                 mActive = FALSE;
                 requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+                alive = false;
+#endif
             }
         } else {
             mActive = FALSE;
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     } else if (!isChirper()) {
         mSound.holdSound(getChirpSound(mType));
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // .text D790
@@ -382,7 +427,11 @@ void dInsFldGrasshopper_c::executeEscapeTurn() {
     s16 step = mAng::fromDegree(param->mEscapeTurnSpeed);
     sLib::addCalcAngle(&mAngle.y.mAngle, mTargetAngle, 1, step, step);
     mAxis.rotateY((s16)(mAngle.y.mAngle - prev));
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (isUnderWater() == true) {
         if (!isOldPosInWater()) {
             mSound.startSound(SE_MushiFallWater);
@@ -396,12 +445,23 @@ void dInsFldGrasshopper_c::executeEscapeTurn() {
             if (dNet::isSceneOwner() == TRUE) {
                 mActive = FALSE;
                 requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+                alive = false;
+#endif
             }
         } else {
             mActive = FALSE;
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // .text D8F0
@@ -415,7 +475,11 @@ void dInsFldGrasshopper_c::executeEscapeJump() {
         mVelocity.y = 0.0f;
         mAxis.setUp(getGroundNormal(&mPos));
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    bool alive = true;
+#else
     registObjc(&mPos, mBaseRadius, TRUE);
+#endif
     if (isUnderWater() == true) {
         if (!isOldPosInWater()) {
             mSound.startSound(SE_MushiFallWater);
@@ -429,14 +493,25 @@ void dInsFldGrasshopper_c::executeEscapeJump() {
             if (dNet::isSceneOwner() == TRUE) {
                 mActive = FALSE;
                 requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+                alive = false;
+#endif
             }
         } else {
             mActive = FALSE;
             requestDelete();
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+            alive = false;
+#endif
         }
     } else if (!isChirper()) {
         mSound.holdSound(getChirpSound(mType));
     }
+#if VERSION == VERSION_RUUE01_01 || VERSION == VERSION_RUUJ01_02 || VERSION == VERSION_RUUK01_01
+    if (alive == true) {
+        registObjc(&mPos, mBaseRadius, TRUE);
+    }
+#endif
 }
 
 // .text DAAC
