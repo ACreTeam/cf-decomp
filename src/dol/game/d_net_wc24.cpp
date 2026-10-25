@@ -3,6 +3,7 @@
 #include <game/game/d_heap.hpp>
 #include <game/game/d_net_wc24.hpp>
 #include <game/game/d_post_office.hpp>
+#include <game/game/d_region.hpp>
 #include <game/game/d_wifi.hpp>
 #include <revolution/nand.h>
 #include <revolution/NWC24/NWC24Config.h>
@@ -120,9 +121,27 @@ struct SecretFriend_c {
     /* 0x10 */ u8 _10[0x10];
 };
 
+#if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
+#define WC24_CONSOLE_REGION CONSOLE_REGION_NA
 static const char *sDownloadUrls[TASK_COUNT] = {
     "http://nwcs.wapp.wii.com/ruu/rvforestdl_us.enc",
     "http://nwcs.wapp.wii.com/nw/f/RUD/E.enc "};
+#elif VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+#define WC24_CONSOLE_REGION CONSOLE_REGION_EU
+static const char *sDownloadUrls[TASK_COUNT] = {
+    "http://nwcs.wapp.wii.com/ruu/rvforestdl_eu.enc",
+    "http://nwcs.wapp.wii.com/nw/f/RUD/P.enc "};
+#elif VERSION == VERSION_RUUJ01_01 || VERSION == VERSION_RUUJ01_02
+#define WC24_CONSOLE_REGION CONSOLE_REGION_JP
+static const char *sDownloadUrls[TASK_COUNT] = {
+    "http://nwcs.wapp.wii.com/ruu/rvforestdl_jp.enc",
+    "http://nwcs.wapp.wii.com/nw/f/RUD/J.enc "};
+#else
+#define WC24_CONSOLE_REGION CONSOLE_REGION_KR
+static const char *sDownloadUrls[TASK_COUNT] = {
+    "http://nwcs.wapp.wii.com/ruu/rvforestdl_kr.enc",
+    "http://nwcs.wapp.wii.com/nw/f/RUD/K.enc "};
+#endif
 static const char *sDownloadNames[TASK_COUNT] = {"game_data.bin",
                                                  "prc_list.bin"};
 static const char sMessageMagic[] = "BU2mori";
@@ -515,7 +534,7 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
             return FALSE;
         }
         if (NWC24SetMsgSubjectAndTextPublic(&msg, (const wchar_t *)req->mData[0], req->mSize[0] / 2,
-                        (const wchar_t *)req->mData[1], req->mSize[1] / 2, TRUE,
+                        (const wchar_t *)req->mData[1], req->mSize[1] / 2, WC24_CONSOLE_REGION,
                         0, mMessageBuffer, MESSAGE_CAPACITY) != NWC24_OK) {
             return FALSE;
         }

@@ -970,7 +970,7 @@ config.libs = [
             Object(Matching, "dol/game/d_net_mgr.cpp"),
             Object(Matching, "dol/game/d_net_friend.cpp"),
             Object(Matching, "dol/game/d_net_dwc.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_net_wc24.cpp"),
+            Object(Matching, "dol/game/d_net_wc24.cpp"),
             Object(Matching, "dol/game/d_net_wus.cpp"),
             Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUJ01_01", "RUUJ01_02"), "dol/game/d_nickname.cpp"),
             Object(Matching, "dol/game/d_npc_info.cpp"),
