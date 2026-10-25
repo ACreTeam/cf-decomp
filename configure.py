@@ -920,7 +920,7 @@ config.libs = [
             Object(Matching, "dol/game/d_bgcf.cpp"),
             Object(Matching, "dol/game/d_bg_util.cpp"),
             Object(Matching, "dol/game/d_bgm.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01"), "dol/game/d_ds_player_data.cpp"),
+            Object(Matching, "dol/game/d_ds_player_data.cpp"),
             Object(Matching, "dol/game/d_travel_data.cpp"),
             Object(Matching, "dol/game/d_dvd.cpp"),
             Object(MatchingFor("RUUE01_00", "RUUE01_01", "RUUP01_00", "RUUP01_01", "RUUJ01_01", "RUUJ01_02"), "dol/game/d_mother_mail.cpp"),
