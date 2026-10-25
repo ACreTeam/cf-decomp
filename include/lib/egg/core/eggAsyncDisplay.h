@@ -6,6 +6,8 @@
 namespace EGG {
 
 class AsyncDisplay : public Display {
+    friend void AlarmHandler(OSAlarm *, OSContext *);
+
 public:
     AsyncDisplay(u8 frameRate);
 
@@ -17,13 +19,15 @@ public:
 
     void clearEFB();
 
-    void startSyncNTSC(u8 frameRate);
+    void startSyncNTSC();
 
 private:
     void calcTimeScale();
+    void alarmHandler();
     void clearEFB(u16 fbWidth, u16 fbHeight, u16 x, u16 y, u16 width, u16 height, nw4r::ut::Color color);
 
-    u8 _2C[0x34];                  // 0x2C
+    u8 _2C[0x4];                   // 0x2C
+    OSAlarm mAlarm;                // 0x30
     OSThreadQueue mSyncQueue;      // 0x60
     OSMessageQueue mMsgQueue;      // 0x68
     OSMessage mMsgBuf[4];          // 0x88

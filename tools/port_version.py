@@ -946,19 +946,38 @@ def write_splits(path, mapper, base_bin, unit, header, units):
         out = [re.sub(r"^(\t\.ctors\s+type:rodata) align:4$", r"\1 align:32", h) for h in out]
         out = [re.sub(r"^(\t\.rodata\s+type:rodata) align:32$", r"\1 align:64", h) for h in out]
     out.append("")
+    moved = {}
+    overrides = path.parent / "port_overrides.txt"
+    if overrides.is_file():
+        for line in overrides.read_text(encoding="utf-8").splitlines():
+            parts = line.split()
+            if len(parts) == 5 and parts[0] == "@split" and parts[3] == "start":
+                moved[(parts[1] + ":", parts[2])] = int(parts[4], 16)
+    starts = {}
+    retarget = {}
+    for u in units:
+        for e in u["entries"]:
+            if "raw" not in e:
+                starts[id(e)] = map_boundary(mapper, base_bin, unit, e["section"], e["start"], False)
+                new = moved.get((u["header"], e["section"]))
+                if new is not None:
+                    retarget[(e["section"], starts[id(e)])] = new
+                    starts[id(e)] = new
     ends = collections.defaultdict(set)
     for u in units:
         for e in u["entries"]:
             if "raw" not in e:
-                ends[e["section"]].add(map_boundary(mapper, base_bin, unit, e["section"], e["end"], True))
+                t = map_boundary(mapper, base_bin, unit, e["section"], e["end"], True)
+                ends[e["section"]].add(retarget.get((e["section"], t), t))
     for u in units:
         out.append(u["header"])
         for e in u["entries"]:
             if "raw" in e:
                 out.append(e["raw"])
                 continue
-            s = map_boundary(mapper, base_bin, unit, e["section"], e["start"], False)
+            s = starts[id(e)]
             t = map_boundary(mapper, base_bin, unit, e["section"], e["end"], True)
+            t = retarget.get((e["section"], t), t)
             rest = e["rest"]
             m = re.search(r"\balign:(\d+)", rest)
             cur = int(m.group(1)) if m else 4

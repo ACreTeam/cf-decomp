@@ -6174,13 +6174,13 @@ lib/egg/core/eggDisplay.cpp:
 	.sdata2     start:0x80755F88 end:0x80755F98
 
 lib/egg/core/eggColorFader.cpp:
-	.text       start:0x80441D80 end:0x804422D4
+	.text       start:0x80441D80 end:0x804422CC
 	.data       start:0x805644F8 end:0x80564560
 	.sdata      start:0x80750CE8 end:0x80750CF8
 	.sdata2     start:0x80755F98 end:0x80755FA0
 
 lib/egg/core/eggAsyncDisplay.cpp:
-	.text       start:0x804422D4 end:0x80442CB8
+	.text       start:0x804422CC end:0x80442CB8
 	.data       start:0x80564560 end:0x805645E0 align:32
 	.bss        start:0x80748FB8 end:0x80748FD8
 	.sdata      start:0x80750CF8 end:0x80750D00

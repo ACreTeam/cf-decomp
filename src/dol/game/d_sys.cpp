@@ -330,6 +330,11 @@ template <> void EGG::TSystem<>::Configuration::initialize() {
     }
 
     mpDisplay = new EGG::AsyncDisplay(1);
+#if VERSION == VERSION_RUUP01_00 || VERSION == VERSION_RUUP01_01
+    if (Video::getTickPerVRetrace(0) != Video::getTickPerVRetrace()) {
+        mpDisplay->startSyncNTSC();
+    }
+#endif
     mpDisplay->mFlag.resetBit(1);
 
     mpDisplay->setClearColor(nw4r::ut::Color::BLACK);

@@ -24,6 +24,10 @@ namespace EGG {
 
 static AsyncDisplay *spSelector = NULL;
 
+void AlarmHandler(OSAlarm *, OSContext *) {
+    spSelector->alarmHandler();
+}
+
 AsyncDisplay::AsyncDisplay(u8 frameRate) : Display(frameRate) {
     mSyncMode = 0;
     mTimeScale = 1.0f;
@@ -37,9 +41,18 @@ AsyncDisplay::AsyncDisplay(u8 frameRate) : Display(frameRate) {
     OSInitMessageQueue(&mMsgQueue, mMsgBuf, 4);
 }
 
-void AsyncDisplay::startSyncNTSC(u8 frameRate) {
-    mSyncMode = 1;
-    mTimeStep = 1.0f / frameRate;
+void AsyncDisplay::startSyncNTSC() {
+    BOOL enabled = OSDisableInterrupts();
+    if (mSyncMode == 0) {
+        mSyncMode = 1;
+        _B0 = Video::getTickPerVRetrace(0);
+        u32 tick = Video::getTickPerVRetrace();
+        mTimeStep = (f32)(tick - _B0) / (f32)_B0;
+        _B4 = tick;
+        mTimeScale = mTimeStep * (BaseSystem::mConfigData->getXfbMgr()->m_0c - 1);
+        OSSetPeriodicAlarm(&mAlarm, 0, _B0, AlarmHandler);
+    }
+    OSRestoreInterrupts(enabled);
 }
 
 void AsyncDisplay::calcTimeScale() {
@@ -141,6 +154,20 @@ void AsyncDisplay::postVRetrace() {
             mScreenStateFlag &= ~0x08;
         }
     }
+}
+
+void AsyncDisplay::alarmHandler() {
+    _B8 = OSGetTick();
+    mRetraceCountB++;
+    if (mRetraceCountB - mRetraceCountA >= mFrameRate) {
+        mRetraceCountA = mRetraceCountB;
+        mScreenStateFlag |= 0x08;
+        OSSendMessage(&mMsgQueue, mMsgBuf, 0);
+        if (mPendingFrames > 0) {
+            mPendingFrames--;
+        }
+    }
+    OSWakeupThread(&mSyncQueue);
 }
 
 void AsyncDisplay::clearEFB() {

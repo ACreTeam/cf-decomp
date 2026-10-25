@@ -35,3 +35,10 @@ g_cautionMsgES = .data:0x804DF508; // type:object size:0x400
 -fn_800CB35C
 getUmlautIndex__7dLetterFwi = .text:0x800CB314; // type:function size:0x48
 playUmlautKeySe__7dLetterFwi = .text:0x800CB35C; // type:function size:0xA0
+-fn_804422CC
+-fn_8044234C
+-fn_804427E0
+AlarmHandler__3EGGFP7OSAlarmP9OSContext = .text:0x804422CC; // type:function size:0x8
+startSyncNTSC__Q23EGG12AsyncDisplayFv = .text:0x8044234C; // type:function size:0x108
+alarmHandler__Q23EGG12AsyncDisplayFv = .text:0x804427E0; // type:function size:0x8C
+@split lib/egg/core/eggAsyncDisplay.cpp .text start 0x804422CC
