@@ -1,0 +1,20 @@
+Sections:
+	.text       type:code align:4
+	.ctors      type:rodata align:4
+	.dtors      type:rodata align:4
+	.rodata     type:rodata align:8
+	.data       type:data align:8
+	.bss        type:bss align:8
+
+d_a_npc_sp_perikoNP/global_destructor_chain.c:
+	.bss        start:0x00000000 end:0x00000004
+
+d_a_npc_sp_perikoNP/rel_init.cpp:
+	.text       start:0x00000000 end:0x0000005C
+
+d_a_npc_sp_perikoNP/d_a_npc_sp_periko.cpp:
+	.text       start:0x0000005C end:0x00007184
+	.ctors      start:0x00000000 end:0x00000004
+	.rodata     start:0x00000000 end:0x00000A60
+	.data       start:0x00000000 end:0x00000DA0
+	.bss        start:0x00000008 end:0x00000044

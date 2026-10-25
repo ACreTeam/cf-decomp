@@ -1,7 +1,7 @@
 .include "macros.inc"
 
 .section .text, "ax"
-.balign 32
+.balign 16
 
 .global TRKAccessFile
 TRKAccessFile:
