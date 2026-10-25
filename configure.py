@@ -981,7 +981,7 @@ config.libs = [
             Object(Matching, "dol/game/d_pad.cpp"),
             Object(Matching, "dol/game/d_rumble.cpp"),
             Object(Matching, "dol/game/d_paper.cpp"),
-            Object(MatchingFor("RUUE01_00", "RUUE01_01"), "dol/game/d_photo.cpp"),
+            Object(Matching, "dol/game/d_photo.cpp"),
             Object(Matching, "dol/game/d_post_office.cpp"),
             Object(Matching, "dol/game/d_prc_mng.cpp"),
             Object(Matching, "dol/game/d_random_field.cpp"),
