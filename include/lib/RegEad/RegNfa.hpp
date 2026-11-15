@@ -295,8 +295,7 @@ class RegNfa {
     virtual int getError() const {
         return mError;
     } // 801EBE44
-    // Defined (inline) in RegDfa.cpp, its only user; the vtable here
-    // resolves to RegDfa's weak copies.
+    // Defined in RegDfa.cpp, its only user.
     virtual const RegNfaStateArray &getStates() const; // 801E6724
     virtual int getAcceptState() const;                // 801E672C
 

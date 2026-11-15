@@ -16,6 +16,13 @@
 
 #include <game/game/d_shadow_internal.hpp>
 
+// 8074C5A8
+namespace dShadow {
+fProf::fBaseProfile_c g_profile_SHADOW = {
+    reinterpret_cast<void *(*)()>(&dShadow_c::build), fProf::SHADOW,
+    fProf::DRAW_ORDER::SHADOW};
+} // namespace dShadow
+
 namespace dShadow {
 static const char *sTextureNames[TEXTURE_COUNT] = {
     "sh_circle", "sh_default", "sh_treeA", "sh_treeB", "sh_treeC",
@@ -225,6 +232,7 @@ void dShadow_c::drawQuad(const mVec3_c *pos, f32 size) {
         dWorld::curvePositionSimple(&curved, &field);
         GXPosition3f32(curved.x, curved.y, curved.z);
     }
+    GXEnd();
 }
 namespace dShadow {
 static inline void writePosition(volatile f32 *fifo, f32 x, f32 y, f32 z) {
@@ -327,6 +335,7 @@ void dShadow_c::drawTexture(const dShadow::Texture_c *shadow, mColor color) {
             dShadow::writePosition(fifo, curved.x, curved.y, curved.z);
             dShadow::writeTexCoord(fifo, (*uv)[0], (*uv)[1]);
         }
+        GXEnd();
     }
 }
 namespace dShadow { static dShadow_c *sInstance; }
@@ -459,6 +468,7 @@ void shadowDtcb_c::checkFloor(dBGCF::floorList_c *floors) {
         GXPosition3f32(curvedB.x, curvedB.y, curvedB.z);
         GXPosition3f32(curvedA.x, curvedA.y, curvedA.z);
     }
+    GXEnd();
 }
 // 801C8950
 dShadow_hostIO_c::~dShadow_hostIO_c() {}

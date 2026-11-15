@@ -368,6 +368,7 @@ dol/game/d_black_wait.cpp:
 
 dol/game/d_field_block.cpp:
 	.text       start:0x80080D7C end:0x800811F4
+	.sdata2     start:0x80753020 end:0x80753030
 
 dol/game/d_fd_unit_flags.cpp:
 	.text       start:0x800811F4 end:0x800812C8
@@ -1044,7 +1045,10 @@ dol/game/d_save_option.cpp:
 
 dol/game/d_save_data.cpp:
 	.text       start:0x8010D8B4 end:0x8010EDD4
+	.data       start:0x804EF368 end:0x804EF380
+	.sdata      start:0x8074DB10 end:0x8074DB18
 	.sbss       start:0x807511E0 end:0x807511E8
+	.sdata2     start:0x807535C8 end:0x807535D0
 
 dol/game/d_dsn.cpp:
 	.text       start:0x8010EDD4 end:0x8010F81C
@@ -1441,6 +1445,7 @@ dol/game/d_tag_processor.cpp:
 dol/game/d_theater_common.cpp:
 	.text       start:0x8016C9A0 end:0x8016CBCC
 	.ctors      start:0x80465748 end:0x8046574C align:8
+	.rodata     start:0x8047B870 end:0x8047B890
 	.data       start:0x804F5408 end:0x804F5428
 	.bss        start:0x80603348 end:0x80603360
 	.sdata      start:0x8074E000 end:0x8074E008
@@ -1858,7 +1863,7 @@ dol/game/d_field.cpp:
 	.text       start:0x801908D8 end:0x801911F4
 	.data       start:0x804FAD10 end:0x804FADF0
 	.bss        start:0x80626B40 end:0x80626B78
-	.sdata      start:0x8074EA78 end:0x8074EA90 align:4
+	.sdata      start:0x8074EA70 end:0x8074EA90 align:4
 	.sbss       start:0x807514F0 end:0x807514F8
 	.sdata2     start:0x807540F0 end:0x807540F8
 
@@ -2027,7 +2032,7 @@ dol/game/d_shadow.cpp:
 	.ctors      start:0x80465834 end:0x80465838
 	.data       start:0x805010D0 end:0x805012F8
 	.bss        start:0x806284E0 end:0x806287D0 align:32
-	.sdata      start:0x8074F0B0 end:0x8074F0D0 align:4
+	.sdata      start:0x8074F0A8 end:0x8074F0D0 align:4
 	.sbss       start:0x807516D8 end:0x807516E8 align:4
 	.sdata2     start:0x807544A8 end:0x80754508
 
@@ -3756,6 +3761,7 @@ dol/mLib/m_angle.cpp:
 	.text       start:0x802B37E8 end:0x802B3834
 	.ctors      start:0x804658AC end:0x804658B0
 	.sbss       start:0x80751B80 end:0x80751B9E
+	.sdata2     start:0x80755448 end:0x80755468
 
 dol/mLib/m_face.cpp:
 	.text       start:0x802B3834 end:0x802B3C90

@@ -80,9 +80,9 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     cLib::memCpy(getNetTransfer()->mExclude, data + NET_PLAYER_DATA_SIZE,
                  sizeof(getNetTransfer()->mExclude));
     getNetTransfer()->mItemMaskRecv = 1;
-    s64 time;
-    cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(time));
-    setMemberTime(member, time);
+    s64 wiiNumber;
+    cLib::memCpy(&wiiNumber, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(wiiNumber));
+    setWiiNumber(member, wiiNumber);
     if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
@@ -157,9 +157,9 @@ void recvDirectXferPlayer(int member, const u8 *data, u32 size) {
     cLib::memCpy(getNetTransfer()->mExclude, data + NET_PLAYER_DATA_SIZE,
                  sizeof(getNetTransfer()->mExclude));
     getNetTransfer()->mItemMaskRecv = 1;
-    s64 time;
-    cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(time));
-    setMemberTime(member, time);
+    s64 wiiNumber;
+    cLib::memCpy(&wiiNumber, data + NET_PLAYER_DATA_SIZE + 0x20, sizeof(wiiNumber));
+    setWiiNumber(member, wiiNumber);
     if (!getNetPlayerOption(dPlayerMgr::Mgr_c::getNetPlayer(member))->mVoiceChat) {
         dNetMgr_c::connect(member);
     }
@@ -217,9 +217,9 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
     data += sizeof(offset);
     size -= sizeof(offset);
     if (offset < 0x1635) {
-        s64 time;
-        cLib::memCpy(&time, data, sizeof(time));
-        setMemberTime(member, time);
+        s64 wiiNumber;
+        cLib::memCpy(&wiiNumber, data, sizeof(wiiNumber));
+        setWiiNumber(member, wiiNumber);
         u8 value;
         cLib::memCpy(&value, data + 8, sizeof(value));
         dPlayerMgr::setPlayerSlot(0, value);
@@ -305,9 +305,9 @@ void recvDirectXferTown(int member, const u8 *data, u32 size) {
     }
     int myNo = getNetMyNo()->get();
     if (wireOffset == 0) {
-        s64 time;
-        cLib::memCpy(&time, data, sizeof(time));
-        setMemberTime(member, time);
+        s64 wiiNumber;
+        cLib::memCpy(&wiiNumber, data, sizeof(wiiNumber));
+        setWiiNumber(member, wiiNumber);
         u8 value = data[8];
         dPlayerMgr::setPlayerSlot(0, value);
         cLib::memCpy(getNetSyncBuf()->getBuf0(), data + 9, 2);
@@ -353,9 +353,9 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     getNetMyNo()->get();
     cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(member), data,
                  NET_PLAYER_DATA_SIZE);
-    s64 time;
-    cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE, sizeof(time));
-    setMemberTime(member, time);
+    s64 wiiNumber;
+    cLib::memCpy(&wiiNumber, data + NET_PLAYER_DATA_SIZE, sizeof(wiiNumber));
+    setWiiNumber(member, wiiNumber);
     u8 hasMii;
     cLib::memCpy(&hasMii, data + NET_PLAYER_DATA_SIZE + 8, sizeof(hasMii));
     if (hasMii) {
@@ -381,9 +381,9 @@ void recvDirectXferPlayerReply(int member, const u8 *data, u32 size) {
     }
     cLib::memCpy(dPlayerMgr::Mgr_c::getNetPlayer(member), data,
                  NET_PLAYER_DATA_SIZE);
-    s64 time;
-    cLib::memCpy(&time, data + NET_PLAYER_DATA_SIZE, sizeof(time));
-    setMemberTime(member, time);
+    s64 wiiNumber;
+    cLib::memCpy(&wiiNumber, data + NET_PLAYER_DATA_SIZE, sizeof(wiiNumber));
+    setWiiNumber(member, wiiNumber);
     if (hasMii) {
         dMiiIcon::setMemberMii(data + prefix, member);
     } else {

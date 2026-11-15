@@ -31,7 +31,7 @@ void dAcPlayer_c::initNetCatch() {
         mActionItem = dItem::Item(dItem::ITEM_IDX_COMMON_BUTTERFLY).getId();
         if (mInsectLink.mpInsect != NULL) {
             static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->initHold();
-            const int &type = (int)((dInsectFieldActor_c *)mInsectLink.mpInsect)->mType;
+            const int &type = (int)static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->getInsectType();
             dItem::Item item(dItem::ITEM_IDX_COMMON_BUTTERFLY, type, FALSE);
             mActionItem = item.getId();
             if (putInPocket(&item)) {
@@ -89,7 +89,7 @@ void dAcPlayer_c::executeNetCatch() {
             static_cast<dInsFldBase_c *>(insect)->setHeldScale(&scale);
         }
         if (frame > 119.0f && mAnmId == HMN_ANM_NET_GET1) {
-            createCatchEffect(static_cast<dPlayActor_c *>(insect));
+            createCatchEffect(static_cast<dInsFldBase_c *>(insect));
         }
     }
     if (mPlayerNo == dNet::getMyNo()) {
@@ -108,11 +108,11 @@ void dAcPlayer_c::executeNetCatch() {
 }
 
 // .text 0x6580
-void dAcPlayer_c::createCatchEffect(dPlayActor_c *actor) {
+void dAcPlayer_c::createCatchEffect(dInsFldBase_c *actor) {
     if (actor == NULL) {
         return;
     }
-    switch (actor->m2F0) {
+    switch (actor->mType) {
     case 0x1A:
     case 0x38:
     case 0x3A:

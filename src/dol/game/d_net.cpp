@@ -4572,7 +4572,7 @@ void createNetState(EGG::Heap *heap) {
 }
 
 static inline void clearMemberState(int member) {
-    g_dNet.mTime[member] = 0;
+    g_dNet.mWiiNumber[member] = 0;
     g_dNet.mSendCount[member] = g_dNet.mRecvCount[member] = 0;
 }
 
@@ -5238,13 +5238,13 @@ u32 getNetReportedError() {
                : 0;
 }
 
-s64 getMemberTime(int member) {
-    return g_dNet.mTime[member];
+s64 getWiiNumber(int member) {
+    return g_dNet.mWiiNumber[member];
 }
 
-void setMemberTime(int member, s64 time) {
+void setWiiNumber(int member, s64 wiiNumber) {
     if (!dReset::Manage_c::GetInstance()->isResetting()) {
-        g_dNet.mTime[member] = time;
+        g_dNet.mWiiNumber[member] = wiiNumber;
     }
 }
 

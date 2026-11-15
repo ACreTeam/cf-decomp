@@ -2947,14 +2947,14 @@ BOOL dAcNpcSpGkA_c::talk_c::stepDemoGoOutNetVst_c::searchFriend(int member) {
     BOOL peer = no != dNetMgr_c::sInstance->mInfo.mMyNo &&
                 (dNetMgr_c::sInstance->mInfo.mMemberBits & (1 << no));
     if (peer) {
-        u64 time = dNet::getMemberTime(member);
-        if (time != 0) {
+        u64 wiiNumber = dNet::getWiiNumber(member);
+        if (wiiNumber != 0) {
             dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(member);
             int idx = dWifi::findUser(&player->mFriends.mUserData);
             if (idx >= 0 || idx == -1) {
                 if (idx >= 0) {
                     dWifi::updateFriend(idx, &player->mPID,
-                                        player->mFriends.mName, &time);
+                                        player->mFriends.mName, &wiiNumber);
                     return TRUE;
                 }
                 return TRUE;

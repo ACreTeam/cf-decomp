@@ -206,4 +206,4 @@ int fn_8008AEE8();                                             // 8008AEE8: retu
 
 } // namespace dEvent
 
-struct dTimeStamp_c;
+class dTimeStamp_c;

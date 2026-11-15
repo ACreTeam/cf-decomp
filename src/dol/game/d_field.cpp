@@ -13,6 +13,13 @@ bool dField::sSceneReady;
 // 80190BE4
 fBase_c *dField_c::construct() { return new dField_c; }
 
+// 8074BF70
+namespace dField {
+fProf::fBaseProfile_c g_profile_FIELD = {
+    reinterpret_cast<void *(*)()>(&dField_c::construct), fProf::FIELD,
+    fProf::DRAW_ORDER::FIELD};
+} // namespace dField
+
 // 80190C30
 void dField::setInfo(dFdBase_c *field, int idx) { dField::sInfo[idx] = field; }
 

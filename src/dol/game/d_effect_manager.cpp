@@ -8,6 +8,9 @@
 #include <game/mLib/m_3d/global.hpp>
 #include <game/mLib/m_color.hpp>
 #include <nw4r/ef/ef_resource.h>
+#include <lib/egg/util/eggEffectResource.hpp>
+#include <lib/egg/gfxe/eggFog.h>
+#include <lib/egg/gfxe/eggFogManager.h>
 #include <nw4r/ef/ef_drawinfo.h>
 #include <nw4r/g3d/g3d_state.h>
 #include <revolution/sc.h>
@@ -94,20 +97,14 @@ void dEffect::shutdown() {
 }
 
 namespace dEffect {
-// The callback receives the particle's drawing parameters (CF adds a color
-// override at 0x6C).
-struct particleColor_c {
-    /* 0x00 */ u8 _00[0x6C];
-    /* 0x6C */ u8 mOverride;
-    /* 0x6D */ GXColor mColor;
-};
+// The ForeachParticleManager callback of calc: an ambient simple light of l_particleColor.
 // 80087F5C
-static void setParticleColor(particleColor_c *particle, u32) {
-    particle->mOverride = 1;
-    particle->mColor.r = l_particleColor.r;
-    particle->mColor.g = l_particleColor.g;
-    particle->mColor.b = l_particleColor.b;
-    particle->mColor.a = l_particleColor.a;
+static void setParticleColor(nw4r::ef::ParticleManager *manager, nw4r::ef::ForEachParam) {
+    manager->mModifier.mLight.mType = nw4r::ef::ParticleManager::ParticleModifier::SIMPLELIGHT_AMBIENT;
+    manager->mModifier.mLight.mAmbient.r = l_particleColor.r;
+    manager->mModifier.mLight.mAmbient.g = l_particleColor.g;
+    manager->mModifier.mLight.mAmbient.b = l_particleColor.b;
+    manager->mModifier.mLight.mAmbient.a = l_particleColor.a;
 }
 } // namespace dEffect
 
@@ -160,26 +157,6 @@ void dEffect::calc() {
 }
 
 namespace dEffect {
-// EGG fog interface as used here; the rest is not yet recovered.
-struct fog_c {
-    u8 _00[4];
-    GXColor mColor;
-    f32 mStart, mEnd, mNear, mFar;
-    GXFogType mType;
-    u8 mFlags;
-    f32 getStart() const {
-        return mStart;
-    }
-    f32 getEnd() const {
-        return mEnd;
-    }
-    f32 getNear() const {
-        return mNear;
-    }
-    f32 getFar() const {
-        return mFar;
-    }
-};
 static inline nw4r::math::MTX34 makeProjection(f32 fovy, f32 aspect) {
     nw4r::math::MTX34 proj;
     C_MTXLightPerspective(proj, fovy, aspect, 0.5f, -0.5f, 0.5f, 0.5f);
@@ -191,9 +168,8 @@ static inline nw4r::math::MTX34 makeOrtho(f32 height, f32 width) {
                     0.5f);
     return proj;
 }
-static inline fog_c *getFog() {
-    return **reinterpret_cast<fog_c ***>(
-        reinterpret_cast<u8 *>(m3d::getFogMgr()) + 0xC);
+static inline EGG::Fog *getFog() {
+    return *m3d::getFogMgr()->mFog;
 }
 } // namespace dEffect
 
@@ -220,10 +196,10 @@ void dEffect::draw(int creator, int group) {
         color.a = 255;
         info.SetAmbientColor(color);
         info.mIsSpotLight = true;
-        fog_c *fog = getFog();
-        if (fog && (fog->mFlags & 1)) {
-            info.SetFog(fog->mType, fog->getStart(), fog->getEnd(),
-                        fog->getNear(), fog->getFar(), fog->mColor);
+        EGG::Fog *fog = getFog();
+        if (fog && (fog->mFlags & EGG::Fog::FLAG_ENABLE)) {
+            info.SetFog(fog->mFogType, fog->GetStartZ(), fog->GetEndZ(),
+                        fog->GetNearZ(), fog->GetFarZ(), fog->mColor);
         } else {
             info.mFogType = GX_FOG_NONE;
         }
@@ -242,10 +218,10 @@ void dEffect::draw(int creator, int group) {
         color.a = 255;
         info.SetAmbientColor(color);
         info.mIsSpotLight = true;
-        fog_c *fog = getFog();
-        if (fog && (fog->mFlags & 1)) {
-            info.SetFog(fog->mType, fog->getStart(), fog->getEnd(),
-                        fog->getNear(), fog->getFar(), fog->mColor);
+        EGG::Fog *fog = getFog();
+        if (fog && (fog->mFlags & EGG::Fog::FLAG_ENABLE)) {
+            info.SetFog(fog->mFogType, fog->GetStartZ(), fog->GetEndZ(),
+                        fog->GetNearZ(), fog->GetFarZ(), fog->mColor);
         }
         nw4r::g3d::Camera camera = m3d::getCurrentCamera();
         mMtx_c view;
@@ -299,29 +275,15 @@ u32 dEffect::getCallbackHeapSize() {
     return 0x1000;
 }
 
-namespace dEffect {
-// Effect resource-bank list entries, shared by the resource loader (not yet
-// decompiled).
-struct resourceBank_c {
-    u8 _00[0x10];
-    nw4r::ef::EffectProject *mEffectProject;
-    nw4r::ef::TextureProject *mTextureProject;
-    bool isValid() const {
-        return mEffectProject && mTextureProject;
-    }
-};
-} // namespace dEffect
-extern "C" nw4r::ut::List sList__Q23EGG14EffectResource;
-
 // 800887FC
 void dEffect::setTexturePalette(const char *name, u16 *palette) {
     nw4r::ef::Resource *resource = nw4r::ef::Resource::GetInstance();
-    resourceBank_c *bank = NULL;
-    while ((bank = static_cast<resourceBank_c *>(nw4r::ut::List_GetNext(
-                &sList__Q23EGG14EffectResource, bank))) != NULL) {
-        if (bank->isValid()) {
+    EGG::EffectResource *bank = NULL;
+    while ((bank = static_cast<EGG::EffectResource *>(nw4r::ut::List_GetNext(
+                &EGG::EffectResource::getList(), bank))) != NULL) {
+        if (bank->isActive()) {
             nw4r::ef::ResTexture texture =
-                resource->FindTexture(name, bank->mTextureProject);
+                resource->FindTexture(name, bank->getTextureProject());
             if (texture.IsValid()) {
                 texture.ptr()->tlut = reinterpret_cast<u8 *>(palette);
             }

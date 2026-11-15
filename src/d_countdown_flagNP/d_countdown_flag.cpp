@@ -151,6 +151,7 @@ void dCountDownFlag_c::drawProc_c::drawCloth() {
             sendPoint(bottomIndex);
             sendPoint(topIndex);
         }
+        GXEnd();
     }
 }
 

@@ -13,6 +13,7 @@
 #include <game/game/d_region.hpp>
 #include <game/game/d_save_data.hpp>
 #include <game/game/d_scene.hpp>
+#include <game/game/d_ins_fld_base.hpp>
 
 typedef dAcNpcNml_c::talk_c talk_c;
 
@@ -571,7 +572,7 @@ int dAcNpcNml_c::talk_c::msgReBeeFace(msgInfo_s *info) {
 }
 
 // 8005FC5C
-int dAcNpcNml_c::talk_c::findNearItemCb(dPlayActor_c *actor, void *arg) {
+int dAcNpcNml_c::talk_c::findNearItemCb(dInsFldBase_c *actor, void *arg) {
     static dItem::Item l_scorpion(dItem::ITEM_IDX_SCORPION);
     static dItem::Item l_tarantula(dItem::ITEM_IDX_TARANTULA);
     dAcNpcNml_c *npc = static_cast<dAcNpcNml_c *>(arg);
@@ -608,7 +609,7 @@ dItem::Item dAcNpcNml_c::talk_c::findNearItem() {
     }
     npc->mNearItem = dItem::ITEM_ID_NONE;
     npc->mNearDist = 96.0f;
-    BOOL found = g_playActorMng != NULL ? g_playActorMng->forEachActiveActor(findNearItemCb, npc) : FALSE;
+    BOOL found = g_playActorMng != NULL ? findActiveInsect(g_playActorMng, findNearItemCb, npc) : FALSE;
     if (found) {
         return npc->mNearItem;
     }
@@ -900,6 +901,6 @@ BOOL dAcNpcNml_c::talk_c::stepBirthday(int kind) {
 }
 
 // 8006096C
-dItem::Item dAcNpcNml_c::talk_c::getActorItem(dPlayActor_c *actor) {
-    return dItem::Item(dItem::ITEM_IDX_COMMON_BUTTERFLY, actor->m2F0, FALSE);
+dItem::Item dAcNpcNml_c::talk_c::getActorItem(dInsFldBase_c *actor) {
+    return dItem::Item(dItem::ITEM_IDX_COMMON_BUTTERFLY, actor->mType, FALSE);
 }

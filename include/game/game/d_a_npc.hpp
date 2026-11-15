@@ -81,9 +81,9 @@ class Word_c;
 namespace dMsg {
 class Comp_c;
 }
-class dLandID_c;
+struct dLandID_c;
 class dPersonalID_c;
-class dPlayerID_c;
+struct dPlayerID_c;
 class dAnmPersonalID_c;
 class dMail_c;
 class dTime_c;

@@ -28,7 +28,7 @@
 #include <game/game/d_private_data.hpp>
 
 class dAnimal_c;
-class dPlayActor_c;
+class dInsFldBase_c;
 namespace dScene { class dSceneChange_c; }
 class dAnimalMemory_c;
 namespace dSvTownList {
@@ -1442,10 +1442,10 @@ public:
         int msgReAnger(msgInfo_s *info);            // 8005F980 18 "Re_Anger": npc timer mode 2
         int msgReSad(msgInfo_s *info);              // 8005FA4C 19 "Re_Sad": npc timer mode 3
         int msgReBeeFace(msgInfo_s *info);          // 8005FB18 20 "Re_BeeFace": private flag 2 (stung face), not yet seen (memory flags 0x200); 104 = stepBeeFaceSeen
-        // dPlayActorMng_c::forEachActiveActor callback of findNearItem (arg = the npc): keeps the nearest
+        // findActiveInsect (d_play_util) callback of findNearItem (arg = the npc): keeps the nearest
         // item actor that is a scorpion or a tarantula (getActorItem) within 48 height and 96 distance in
         // npc mNearItem / mNearDist.
-        static int findNearItemCb(dPlayActor_c *actor, void *npc); // 8005FC5C
+        static int findNearItemCb(dInsFldBase_c *actor, void *npc); // 8005FC5C
         dItem::Item findNearItem();                  // 8005FDD8 the scorpion / tarantula nearest to the npc (0xFFF1 = none); struct return (r3 = result, r4 = this)
         int msgRePoison(msgInfo_s *info);           // 8005FE7C 21 "Re_Poison": npc timer flag 0x400 clear, outdoors in the town; item name of findNearItem; 104 = stepPoison
         int msgReXmas(msgInfo_s *info);             // 8005FFE4 22 "Re_Xmas": EVENT_TOY_DAY or Dec 25, dNpc::isPastAnimalWakeTime(looks, time); 104 = stepEventTalked
@@ -1461,7 +1461,7 @@ public:
         BOOL stepBirthday(int kind);                 // 8006094C 104: memory flags &= ~0x800
         // Item of an insect actor: dItem::Item(ITEM_IDX_COMMON_BUTTERFLY (the first insect), actor+0x2F0, 0);
         // struct return. Maybe an inline of the actor class. Inferred.
-        static dItem::Item getActorItem(dPlayActor_c *actor); // 8006096C
+        static dItem::Item getActorItem(dInsFldBase_c *actor); // 8006096C
         // ---- d_npc_talk_rollan (.text 80060980..800613BC) ----
         // The Rollan answer for this npc: one of the 4 choices of 8046CD30 (selRollanFloor /
         // selRollanFloorFull / selRollanWall / selRollanWallFull) by the npc's state (dSvPlayerFlag::Flag_c::get: 1 old

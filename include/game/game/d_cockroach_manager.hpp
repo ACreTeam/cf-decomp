@@ -9,7 +9,7 @@
 #include <game/game/d_demo_actor.hpp>
 #include <game/mLib/m_allocator.hpp>
 
-class dHomeRoom_c;
+struct dHomeRoom_c;
 class daCockroachBase_c;
 
 // The cockroaches of a room.

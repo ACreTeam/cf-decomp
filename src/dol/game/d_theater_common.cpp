@@ -8,6 +8,12 @@
 
 namespace dTheater {
 
+// 8047B130
+extern "C" const u8 lbl_8047B130[THEATER_PROGRAM_NUM] = {
+    1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1,
+    1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1,
+};
+
 common_c g_common;
 
 // 8016CCCC

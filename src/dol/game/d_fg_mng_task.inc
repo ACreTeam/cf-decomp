@@ -10,17 +10,8 @@
 #include <game/cLib/c_math.hpp>
 #include <lib/egg/core/eggFrmHeap.h>
 #include <nw4r/math.h>
-
-
-// Actor fields read here (fBase_c / dActor_c).
-struct dFgMngActor_c {
-    /* 0x0000 */ u8 _0000[8];
-    /* 0x0008 */ u16 mProfName;
-    /* 0x000A */ u8 _000A[0x5A];
-    /* 0x0064 */ nw4r::math::VEC3 mPos;
-    /* 0x0070 */ u8 _0070[0x1BC8];
-    /* 0x1C38 */ u8 mState;
-};
+#include <game/game/d_a_npc.hpp>
+#include <game/game/d_a_player.hpp>
 
 static inline BOOL fgMngInRange(u16 id, u16 lo, u16 hi) {
     BOOL in = FALSE;
@@ -874,10 +865,10 @@ BOOL fgMngState_isFreeOfPlayers(int x, int z, int exclude) {
     dFdBase_c::getUnitCenterPos(&pos, x, z);
     for (int i = 0; i < 4; i++) {
         if (i != exclude) {
-            dFgMngActor_c *actor = (dFgMngActor_c *)dPlayerMgr::getPlayerActor(i);
+            dAcPlayer_c *actor = dPlayerMgr::getPlayerActor(i);
             if (actor != NULL) {
-                f32 dx = pos.x - actor->mPos.x;
-                f32 dz = pos.z - actor->mPos.z;
+                f32 dx = pos.x - actor->getPos().x;
+                f32 dz = pos.z - actor->getPos().z;
                 if (dx * dx + dz * dz < 256.0f) {
                     return FALSE;
                 }
@@ -892,10 +883,10 @@ BOOL fgMngState_isFreeOfNpcs(int x, int z) {
     static const u16 sProfs[] = {0x6F, 0x79, 0x97, 0x9B, 0x95, 0x9F, 0x6E, 0x7C};
     const u16 *prof = sProfs;
     for (int i = 0; i < 8; i++, prof++) {
-        dFgMngActor_c *actor = (dFgMngActor_c *)fManager_c::searchBaseByProfName(*prof, NULL);
-        if (actor != NULL && (actor->mState == 1 || actor->mProfName == 0x9F)) {
-            f32 fx = actor->mPos.x;
-            f32 fz = actor->mPos.z;
+        dAcNpc_c *actor = (dAcNpc_c *)fManager_c::searchBaseByProfName(*prof, NULL);
+        if (actor != NULL && (actor->mIsActive == 1 || actor->mProfName == 0x9F)) {
+            f32 fx = actor->getPos().x;
+            f32 fz = actor->getPos().z;
             int ux = (int)fx >> 5;
             int uz = (int)fz >> 5;
             if (ux == x && uz == z) {
@@ -907,10 +898,10 @@ BOOL fgMngState_isFreeOfNpcs(int x, int z) {
     }
     int construction = dSaveData_c::getTown()->mNewConstruction;
     if (construction == NEW_CONSTRUCTION_FOUNTAIN) {
-        dFgMngActor_c *actor = (dFgMngActor_c *)fManager_c::searchBaseByProfName(0x93, NULL);
-        if (actor != NULL && actor->mState == 1) {
-            f32 fx = actor->mPos.x;
-            f32 fz = actor->mPos.z;
+        dAcNpc_c *actor = (dAcNpc_c *)fManager_c::searchBaseByProfName(0x93, NULL);
+        if (actor != NULL && actor->mIsActive == 1) {
+            f32 fx = actor->getPos().x;
+            f32 fz = actor->getPos().z;
             int ux = (int)fx >> 5;
             int uz = (int)fz >> 5;
             if (ux == x && uz == z) {

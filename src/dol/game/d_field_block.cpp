@@ -8,8 +8,14 @@
 #include <game/game/d_save_main_field.hpp>
 #include <game/game/d_fd_block_type.hpp>
 
-extern "C" {
-}
+// 80750520
+const f32 lbl_80750520 = mFI_BK_WORLDSIZE_X_F;
+// 80750524
+const f32 lbl_80750524 = mFI_BK_WORLDSIZE_Z_F;
+// 80750528
+const f32 lbl_80750528 = mFI_BK_WORLDSIZE_X_F / 2.0f;
+// 8075052C
+const f32 lbl_8075052C = mFI_BK_WORLDSIZE_Z_F / 2.0f;
 
 static inline BOOL isUnitInBlock(int unitX, int unitZ) {
     return (u32)unitX < UT_X_NUM && (u32)unitZ < UT_Z_NUM;

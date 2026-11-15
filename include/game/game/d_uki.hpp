@@ -17,7 +17,7 @@ namespace dBGCF {
 class groundChk_c;
 }
 namespace dItem {
-class Item;
+struct Item;
 }
 namespace nw4r {
 namespace ef {

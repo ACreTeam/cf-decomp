@@ -7,9 +7,9 @@
 #include <lib/dwc/dwc.h>
 
 class dFriend_c;
-class dLandID_c;
+struct dLandID_c;
 class dPersonalID_c;
-class dPlayerID_c;
+struct dPlayerID_c;
 class dPrivateData_c;
 
 

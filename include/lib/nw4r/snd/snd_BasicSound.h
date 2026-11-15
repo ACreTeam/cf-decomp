@@ -49,7 +49,7 @@ class SoundPlayer;
 namespace nw4r {
 namespace ut {
 namespace detail {
-class RuntimeTypeInfo;
+struct RuntimeTypeInfo;
 }
 } // namespace ut
 } // namespace nw4r

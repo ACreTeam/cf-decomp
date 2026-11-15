@@ -4467,7 +4467,7 @@ void fgMngProc_procDayChange(BOOL arg) {
                 }
             } else if (dSaveData_c::getTown()->isFlag(flag)) {
                 dSaveData_c::getTown()->clearFlag(flag);
-                memset((u8 *)player + 0x865F, 0, 0x10);
+                memset(player->mFlags1, 0, sizeof(player->mFlags1));
             }
             player->dailyUpdate(days);
         }

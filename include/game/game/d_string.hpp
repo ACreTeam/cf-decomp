@@ -3,7 +3,7 @@
 #include <game/game/d_script.hpp>
 
 class dPersonalID_c;
-class dLandID_c;
+struct dLandID_c;
 
 // BMG string loading, the global word slots and the string words built on dScript::Word_c. Defined in
 // src/dol/game/d_string.cpp. The free function and global names are inferred.

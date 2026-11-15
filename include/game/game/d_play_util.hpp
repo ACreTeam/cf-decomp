@@ -7,45 +7,19 @@
 // the net sync of 8 shared records. Source: src/dol/game/d_play_util.cpp (.text
 // 80160EA4..80161CC4). All names are inferred.
 
-// An actor in dPlayActorMng_c's list.
-class dPlayActor_c {
-public:
-    virtual void vf00();
-    virtual void vf04();
-    virtual void vf08();
-    virtual void vf0C();
-    virtual void vf10();
-    virtual void vf14();
-    virtual BOOL isActive(); // 0x20
+class dInsectField_c;
+class dInsFldBase_c;
+class dFishField_c;
+class dFishFldShadow_c;
 
-    /* 0x004 */ u8 _004[0x1A0 - 0x4];
-    /* 0x1A0 */ mVec3_c mPos; // (d_npc_talk_reaction findNearItemCb)
-    /* 0x1AC */ u8 _1AC[0x1EC - 0x1AC];
-    /* 0x1EC */ dPlayActor_c *mNext;
-    /* 0x1F0 */ u8 _1F0[0x23B - 0x1F0];
-    /* 0x23B */ u8 m23B; // players: not in the play
-    /* 0x23C */ u8 _23C[0x2F0 - 0x23C];
-    /* 0x2F0 */ int m2F0; // item actors: item offset (d_npc_talk_reaction getActorItem: dItem::Item(0x192, m2F0, 0))
-};
+// Searches of the insect field's active insects (dInsectField_c::mActive, linked through
+// dInsFldBase_c::mNext) and of the fish field's town fish (dFishField_c::mFish).
+typedef BOOL (*dInsFldBaseFunc)(dInsFldBase_c *insect, void *arg);
+typedef BOOL (*dFishFldShadowFunc)(dFishFldShadow_c *fish, void *arg);
 
-typedef BOOL (*dPlayActorFunc)(dPlayActor_c *actor, void *arg);
-
-#define PLAY_PLAYER_NUM 8
-
-// The actor manager (g_playActorMng).
-class dPlayActorMng_c {
-public:
-    BOOL findActorIf(dPlayActorFunc func, void *arg); // 801614F0: the first match
-    BOOL forEachActiveActor(dPlayActorFunc func, void *arg); // 8016156C: TRUE if any matched
-    BOOL findPlayerIf(dPlayActorFunc func, void *arg); // 8016160C
-
-    /* 0x000 */ u8 _000[0x138];
-    /* 0x138 */ dPlayActor_c *mPlayers[PLAY_PLAYER_NUM];
-    /* 0x158 */ u8 _158[0x764 - 0x158];
-    /* 0x764 */ dPlayActor_c *mActors;
-    /* 0x768 */ u8 _768[4];
-    /* 0x76C */ void *mNetInsects[4]; // per member: the insect in its net (remote players)
-};
+BOOL findAnyInsect(dInsectField_c *mng, dInsFldBaseFunc func, void *arg);        // 801614F0: the first match
+BOOL findActiveInsect(dInsectField_c *mng, dInsFldBaseFunc func, void *arg); // 8016156C: the active ones; TRUE if any matched
+BOOL findActiveFish(dFishField_c *mng, dFishFldShadowFunc func, void *arg);     // 8016160C: the fish not held by a player
 
 #define PLAY_SYNC_REC_NUM 8
 #define PLAY_SYNC_REC_ID 0x1C // the shared record id of record 0 (getRecord / setRecord)
@@ -195,7 +169,7 @@ struct dPlaySyncMsg_c {
     /* 0x3 */ u8 mMember;
 }; // size 0x4
 
-extern dPlayActorMng_c *g_playActorMng;
+extern dInsectField_c *g_playActorMng; // the insect field
 extern dFishField_c *g_fishField;
 extern u8 g_insectRespawn; // set: the insect field spawns again (net; like g_fishRespawn for the fish)
 extern u8 g_fishRespawn; // set: the fish field spawns again on its next initSpawn (net)

@@ -38,7 +38,7 @@
 class dHmnCloth_c;
 class dHmnHeadItem_c;
 class dHmnToolBank_c;
-class dPlayActor_c;
+class dInsFldBase_c;
 class dFdBase_c;
 struct putUnit_c;
 namespace nw4r {
@@ -387,7 +387,7 @@ class dAcPlayer_c : public dDemoActor_c, public dMsg::Rcpt_c {
     void initDemoStart();          // .text 5D3C
     int checkNetSwingHit();        // .text 5F84: 0 swinging, 1 hit (ground / water), 2 caught, 3 stopped
     void stepGetInsectMsg();       // .text 6370: "sys_MESS/SYS_Get_bug"
-    void createCatchEffect(dPlayActor_c *actor); // .text 6580: "af_ply_kore" for some insects
+    void createCatchEffect(dInsFldBase_c *actor); // .text 6580: "af_ply_kore" for some insects
     void stepGetFishMsg();         // .text 65D8: "sys_MESS/SYS_Get_fish"
     void stepPlayerMsg();          // .text 688C: "sys_MESS/SYS_Player" 0x33
     void checkDigUnit(u32 mode, BOOL alt); // .text 6988: the shovel hits the target unit

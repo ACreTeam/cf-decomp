@@ -20,6 +20,9 @@ public:
     bool isActive() const {
         return mEffectProject != NULL && mTextureProject != NULL;
     }
+    nw4r::ef::TextureProject *getTextureProject() const {
+        return mTextureProject;
+    }
 
 private:
     /* 0x10 */ nw4r::ef::EffectProject *mEffectProject;

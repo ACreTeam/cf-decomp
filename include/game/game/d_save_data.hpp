@@ -46,7 +46,7 @@ struct dSaveOption_c {
     /* 0x2 */ u8 _2_0 : 1;
 };
 
-// The save file's name and size (d_save_data .sdata / .sdata2; used by d_nand and d_sv_mgr).
+// The save file's name and size (d_save_data.cpp .sdata / .sdata2; used by d_nand and d_sv_mgr).
 extern "C" {
 extern const char *lbl_8074B010; // 8074B010: the save file's name (804EE330)
 extern const int lbl_80750AD0;   // 80750AD0: the save file's size (0x40F340, SAVE_DATA_SIZE)

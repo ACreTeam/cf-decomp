@@ -1770,7 +1770,7 @@ BOOL dAcNpcOut_c::isInsectVisible(void *insect, const mAng *fov,
     if (!insect) {
         return FALSE;
     }
-    const mVec3_c *pos = &static_cast<dPlayActor_c *>(insect)->mPos;
+    const mVec3_c *pos = &static_cast<dInsFldBase_c *>(insect)->mPos;
     if (std::fabs(pos->y - mPos.y) > 48.0f) {
         return FALSE;
     }
@@ -1778,7 +1778,7 @@ BOOL dAcNpcOut_c::isInsectVisible(void *insect, const mAng *fov,
 }
 
 // .text 397C
-BOOL dAcNpcOut_c::findInsectCallback(dPlayActor_c *actor, void *arg) {
+BOOL dAcNpcOut_c::findInsectCallback(dInsFldBase_c *actor, void *arg) {
     dAcNpcOut_c *npc = static_cast<dAcNpcOut_c *>(arg);
     if (!npc) {
         return FALSE;
@@ -1809,7 +1809,7 @@ BOOL dAcNpcOut_c::findInsectCallback(dPlayActor_c *actor, void *arg) {
 BOOL dAcNpcOut_c::findInsect() {
     BOOL found =
         g_playActorMng
-            ? g_playActorMng->forEachActiveActor(findInsectCallback, this)
+            ? findActiveInsect(g_playActorMng, findInsectCallback, this)
             : FALSE;
     if (!found) {
         dANpcOut::insectLink_s *link = &mInsectLink;
@@ -1834,7 +1834,7 @@ BOOL dAcNpcOut_c::isFishVisible(dFishFldShadow_c *fish, const mAng *fov,
 }
 
 // .text 3B44
-BOOL dAcNpcOut_c::findFishCallback(dPlayActor_c *actor, void *arg) {
+BOOL dAcNpcOut_c::findFishCallback(dFishFldShadow_c *actor, void *arg) {
     dAcNpcOut_c *npc = static_cast<dAcNpcOut_c *>(arg);
     if (!npc) {
         return FALSE;
@@ -1863,8 +1863,7 @@ BOOL dAcNpcOut_c::findFishCallback(dPlayActor_c *actor, void *arg) {
 
 // .text 3C24
 BOOL dAcNpcOut_c::findFish() {
-    BOOL found = g_fishField ? reinterpret_cast<dPlayActorMng_c *>(g_fishField)
-                                   ->findPlayerIf(findFishCallback, this)
+    BOOL found = g_fishField ? findActiveFish(g_fishField, findFishCallback, this)
                              : FALSE;
     if (!found) {
         dFishLink_c *link = &mFishLink;
@@ -3384,7 +3383,7 @@ BOOL action_c::shouldChangeLook(dAcNpcOut_c *npc) {
 
 // .text 70B0
 void action_c::executeWander(dAcNpcOut_c *npc) {
-    dPlayActor_c *insect;
+    dInsFldBase_c *insect;
     dFishFldShadow_c *fish;
     dAcNpc_c::lookAt_c *look;
     BOOL outside;
@@ -3467,7 +3466,7 @@ void action_c::executeWander(dAcNpcOut_c *npc) {
                 if (!(choice & 1) && npc->findInsect()) {
                     if (npc->mInsectLink.mpInsect) {
                         look->setPos(0,
-                                     static_cast<dPlayActor_c *>(
+                                     static_cast<dInsFldBase_c *>(
                                          npc->mInsectLink.mpInsect)
                                          ->mPos,
                                      true, l_lookPitchStep, l_lookYawStep,
@@ -3532,7 +3531,7 @@ void action_c::executeWander(dAcNpcOut_c *npc) {
             }
         } else {
             if (type == 2) {
-                insect = static_cast<dPlayActor_c *>(npc->mInsectLink.mpInsect);
+                insect = static_cast<dInsFldBase_c *>(npc->mInsectLink.mpInsect);
                 fish = npc->mFishLink.mFish;
                 if (insect) {
                     look->mTargetPos = insect->mPos;

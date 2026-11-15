@@ -610,7 +610,7 @@ void dMenuFriend05_c::openNotice(u16 msg) {
 void dMenuFriend05_c::startRegister() {
     dPrivateData_c *player = getPlayer(mSel);
     mFriend.clear();
-    mFriend.mKey = dNet::getMemberTime(mMember[mSel]);
+    mFriend.mKey = dNet::getWiiNumber(mMember[mSel]);
     mFriend.mPID = player->mPID;
     memcpy(mFriend.mMessage, player->mFriends.mName, sizeof(mFriend.mMessage));
     setSubState(SUB_REQUEST_DATA);

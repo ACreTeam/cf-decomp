@@ -42,6 +42,7 @@ static void DrawQuadLineStripNormal(u8 x1, u8 x2, u8 x3, u8 x4, u8 y) {
     GXPosition2u8(x3, y);
     GXPosition2u8(x4, y);
     GXPosition2u8(x1, y);
+    GXEnd();
 }
 
 static void DrawCircleYPolygonFan(const nw4r::math::MTX34 &mtx, f32 f,
@@ -86,6 +87,7 @@ static void DrawCircleYPolygonFan(const nw4r::math::MTX34 &mtx, f32 f,
 
         GXPosition3f32(v6.x, v6.y, v6.z);
     }
+    GXEnd();
 }
 
 } // namespace
@@ -375,14 +377,17 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             GXBegin(GX_LINES, GX_VTXFMT0, 2);
             GXPosition3f32(0.0f, 0.0f, 0.0f);
             GXPosition3f32(1.0f, 0.0f, 0.0f);
+            GXEnd();
             GXSetChanMatColor(GX_COLOR0A0, GREEN);
             GXBegin(GX_LINES, GX_VTXFMT0, 2);
             GXPosition3f32(0.0f, 0.0f, 0.0f);
             GXPosition3f32(0.0f, 1.0f, 0.0f);
+            GXEnd();
             GXSetChanMatColor(GX_COLOR0A0, BLUE);
             GXBegin(GX_LINES, GX_VTXFMT0, 2);
             GXPosition3f32(0.0f, 0.0f, 0.0f);
             GXPosition3f32(0.0f, 0.0f, 1.0f);
+            GXEnd();
             break;
         case DL_1:
             GXBegin(GX_QUADS, GX_VTXFMT0, 6 * 4);
@@ -392,6 +397,7 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             DrawQuadNormal(3, 2, 1, 0, 3);
             DrawQuadNormal(0, 4, 7, 3, 4);
             DrawQuadNormal(2, 6, 5, 1, 5);
+            GXEnd();
             break;
         case DL_2:
             DrawQuadLineStripNormal(1, 5, 4, 0, 0);
@@ -415,6 +421,7 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
                                0.5f * nw4r::math::SinRad(radPerSegment * i),
                                0.0f);
             }
+            GXEnd();
             break;
         }
         case DL_9:
@@ -430,6 +437,7 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
                 GXPosition3f32(x, 0.5f, z);
                 GXPosition3f32(2.0f * x, 0.0f, 2.0f * z);
             }
+            GXEnd();
             nw4r::math::MTX34 mtx;
             PSMTXTrans(mtx, 0.0f, 0.5f, 0.0f);
             DrawCircleYPolygonFan(mtx, 0.0f, POS_NUM[i - DL_9]);
@@ -477,6 +485,7 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             if (i == DL_13) {
                 GXPosition1x8(lastVertexIndex[0]);
             }
+            GXEnd();
             break;
         }
         case DL_15:
@@ -486,6 +495,7 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             GXPosition3f32(0.5f, -0.5f, 0.0f);
             GXPosition3f32(-0.5f, -0.5f, 0.0f);
             GXPosition3f32(-0.5f, 0.5f, 0.0f);
+            GXEnd();
             break;
         case DL_16:
         case DL_17:
@@ -506,6 +516,7 @@ void DrawGX::CreateDisplayList(Heap *pHeap) {
             if (i == DL_16) {
                 GXPosition1x8(lastVertexIndex[0]);
             }
+            GXEnd();
             break;
         default:
             break;

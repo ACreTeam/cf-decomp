@@ -1054,12 +1054,12 @@ void dSvMgr_c::stepBase_c<Owner, Step>::findFriend() {
             return;
         }
         dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(visitor);
-        u64 friendCode = dNet::getMemberTime(visitor);
+        u64 wiiNumber = dNet::getWiiNumber(visitor);
         int index = dWifi::findUser(&player->mFriends.mUserData);
         if (index >= 0 || index == -1) {
             if (index >= 0) {
                 dWifi::updateFriend(index, &player->mPID,
-                                    player->mFriends.mName, &friendCode);
+                                    player->mFriends.mName, &wiiNumber);
             }
             this->nextStep();
         }

@@ -10,7 +10,7 @@
 
 namespace nw4r {
 namespace ut {
-struct LinkListNode;
+class LinkListNode;
 }
 } // namespace nw4r
 

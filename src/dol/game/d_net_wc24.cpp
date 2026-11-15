@@ -6,82 +6,21 @@
 #include <game/game/d_region.hpp>
 #include <game/game/d_wifi.hpp>
 #include <revolution/nand.h>
-#include <revolution/NWC24/NWC24Config.h>
-#include <revolution/NWC24/NWC24Manage.h>
-#include <revolution/NWC24/NWC24MsgCommit.h>
-#include <revolution/NWC24/NWC24MsgObj.h>
-#include <revolution/NWC24/NWC24Schedule.h>
-#include <revolution/VF.h>
+#include <revolution/net/NETAES.h>
+#include <revolution/net/NETDigest.h>
+#include <revolution/nwc24.h>
+#include <revolution/vf.h>
+#include <private/nwc24/NWC24MsgCommit.h>
+#include <private/nwc24/NWC24UserId.h>
 #include <stddef.h>
 
 
-// Interfaces to SDK units whose public headers have not yet been reconstructed.
-extern "C" {
-NWC24Err NWC24Check(u32);
-int NWC24GetErrorCode();
-NWC24Err NWC24IsFriendInfoThere(u32);
-NWC24Err NWC24ReadFriendInfo(void *, u32);
-NWC24Err NWC24CheckFriendInfo(const void *);
-NWC24Err NWC24GetNumFriendInfos(u32 *);
-NWC24Err NWC24CheckUserId(u64);
-NWC24Err NWC24SetMsgToStr(NWC24MsgObj *, const void *, u32);
-NWC24Err NWC24SetMsgAttached(NWC24MsgObj *, const void *, u32, NWC24MIMEType);
-NWC24Err NWC24SetMsgAltName(NWC24MsgObj *, const wchar_t *, u32);
-NWC24Err NWC24SetMsgMBNoReply(NWC24MsgObj *, BOOL);
-NWC24Err NWC24SetMsgDwcSize(NWC24MsgObj *, int);
-NWC24Err NWC24SetMsgLedPatternRaw(NWC24MsgObj *, u16);
-NWC24Err NWC24GetMsgType(const NWC24MsgObj *, NWC24MsgType *);
-NWC24Err NWC24GetMsgNumAttached(const NWC24MsgObj *, u32 *);
-NWC24Err NWC24GetMsgAttachedSize(const NWC24MsgObj *, u32, u32 *);
-NWC24Err NWC24GetMsgAttachedType(const NWC24MsgObj *, u32, NWC24MIMEType *);
-NWC24Err NWC24GetMsgId(const NWC24MsgObj *, u32 *);
-NWC24Err NWC24GetMsgAppId(const NWC24MsgObj *, u32 *);
-NWC24Err NWC24GetMsgFromId(const NWC24MsgObj *, u64 *);
-NWC24Err NWC24ReadMsgAttached(NWC24MsgObj *, u32, void *, u32);
-NWC24Err NWC24SetMsgSubjectAndTextPublic(NWC24MsgObj *, const wchar_t *, u32, const wchar_t *, u32,
-                     BOOL, u32, void *, u32);
-NWC24Err NWC24InitSearchConds();
-NWC24Err NWC24SetSearchCondMsgBox(u32);
-NWC24Err NWC24SearchMsgs(NWC24MsgObj *, u32, BOOL *, BOOL *);
-NWC24Err NWC24DeleteMsg(u32, u32);
-NWC24Err NWC24AddSecretFriendInfo(const void *);
-NWC24Err NWC24DeleteSecretFriendInfo(const void *);
-NWC24Err NWC24ReadSecretFriendInfo(void *, u32);
-NWC24Err NWC24GetNumSecretFriendInfos(u32 *);
-NWC24Err NWC24InitDlTask(NWC24DlTask *, NWC24DlType);
-NWC24Err NWC24SetDlPriority(NWC24DlTask *, u32);
-NWC24Err NWC24SetDlInterval(NWC24DlTask *, u16);
-NWC24Err NWC24SetDlUrl(NWC24DlTask *, const char *);
-NWC24Err NWC24SetDlFlags(NWC24DlTask *, u8);
-NWC24Err NWC24SetDlFilename(NWC24DlTask *, const char *);
-NWC24Err NWC24GetDlFilename(const NWC24DlTask *, char *, u32);
-NWC24Err NWC24SetDlCount(NWC24DlTask *, s16);
-NWC24Err NWC24SetDlUserParam(NWC24DlTask *, u32);
-NWC24Err NWC24GetDlTaskMine(NWC24DlTask *, int);
-NWC24Err NWC24UpdateDlTask(NWC24DlTask *);
-NWC24Err NWC24DeleteDlTask(NWC24DlTask *);
-NWC24Err NWC24AddDlTask(NWC24DlTask *);
-NWC24Err NWC24GetDlError(const NWC24DlTask *, u32 *, u32 *);
-NWC24Err NWC24GetDlVfPath(char *, u32);
-NWC24Err NWC24CreateDlVf(NWC24DlTask *, u32);
-NWC24Err NWC24SetDlKeys(const void *, const void *);
-NWC24Err NWC24ClearDlKeys();
-u32 NETGetSHA1Interface();
-void NETHMACInit(void *, u32, const void *, u32);
-void NETHMACUpdate(void *, const void *, u32);
-void NETHMACGetDigest(void *, void *);
-BOOL NETAESCreate(void *, const void *, u32, const void *);
-void NETAESDelete(void *);
-BOOL NETAESEncrypt(void *, void *, const void *, u32);
-BOOL NETAESDecrypt(void *, void *, const void *, u32);
-}
 
 namespace dNetWc24 {
 
 enum {
     AUTH_KEY_SIZE = 20,
     AUTH_DIGEST_SIZE = 20,
-    AUTH_WORK_SIZE = 0xC8,
     AUTH_TRAILER_SIZE = sizeof(float) + AUTH_DIGEST_SIZE,
     CIPHER_KEY_SIZE = 16,
     CIPHER_IV_WORDS = 4,
@@ -91,17 +30,6 @@ enum {
     MESSAGE_ROUNDING_OVERHEAD = 0x47
 };
 
-// NWC24FriendInfo is a 0x40-byte attribute followed by its 0x100-byte address.
-struct FriendInfo_c {
-    /* 0x00 */ u32 mType;   // FriendType_e
-    /* 0x04 */ u32 mStatus; // FriendStatus_e
-    /* 0x08 */ u8 mName[0x18];
-    /* 0x20 */ u8 _20[0x20];
-    /* 0x40 */ union {
-        u64 mKey;
-        char mAddress[0x100];
-    } mAddr;
-};
 struct Message_c {
     /* 0x00 */ u64 mSender;
     /* 0x08 */ char mMagic[8];
@@ -116,9 +44,11 @@ struct Message_c {
     };
     /* 0x1C */ u32 _1C;
 };
-struct SecretFriend_c {
-    /* 0x00 */ dNetWc24FriendRec_c mRec;
-    /* 0x10 */ u8 _10[0x10];
+// An NWC24 secret friend record: the SDK's id, key and app id are the game's friend key, the
+// friend's DWC profile id and its game code (dNetWc24FriendRec_c)
+union SecretFriend_c {
+    NWC24SecretFriendInfo mInfo;
+    dNetWc24FriendRec_c mRec;
 };
 
 #if VERSION == VERSION_RUUE01_00 || VERSION == VERSION_RUUE01_01
@@ -145,7 +75,7 @@ static const char *sDownloadUrls[TASK_COUNT] = {
 static const char *sDownloadNames[TASK_COUNT] = {"game_data.bin",
                                                  "prc_list.bin"};
 static const char sMessageMagic[] = "BU2mori";
-static const u8 sDownloadFlags[TASK_COUNT] = {0xB8, 0xDC};
+static const u8 sDownloadPriorities[TASK_COUNT] = {0xB8, 0xDC};
 static const u16 sDownloadIntervals[TASK_COUNT] = {720, 1440};
 static const s16 sDownloadCounts[TASK_COUNT] = {20, 1};
 
@@ -227,19 +157,19 @@ BOOL readTaskFile(NWC24DlTask *task, void *data, u32 capacity, u32 *size,
     char path[0x208];
     path[0] = 0;
     NWC24GetDlFilename(task, path, sizeof(path));
-    VFFile file = VFOpenFile(path, "r", 0);
+    VFFile *file = VFOpenFile(path, "r", 0);
     if (file != NULL) {
         if (data != NULL) {
             int length = VFGetFileSizeByFd(file);
             if (length < 0) {
                 *error = VFGetLastError();
             } else if ((u32)length <= capacity) {
-                u32 lastUpdate;
                 u32 lastError;
+                s32 errorCount;
+                errorCount = 0;
                 lastError = 0;
-                lastUpdate = 0;
-                if (NWC24GetDlError(task, &lastUpdate, &lastError) == NWC24_OK &&
-                    lastError == 0) {
+                if (NWC24GetDlError(task, &lastError, &errorCount) == NWC24_OK &&
+                    errorCount == 0) {
                     *error = VFReadFile(file, data, length, size);
                 }
             }
@@ -251,7 +181,7 @@ BOOL readTaskFile(NWC24DlTask *task, void *data, u32 capacity, u32 *size,
         return FALSE;
     }
     *error = VFGetLastError();
-    return *error != VF_ERROR_0002;
+    return *error != VF_ERR_ENOENT; // no download yet
 }
 
 // 800E94A8
@@ -306,7 +236,7 @@ BOOL dNetWc24_c::open() {
             (u8 *)dHeap::netWc24Heap_p->alloc(MESSAGE_WORK_SIZE, 32);
         mCryptBuffer = mMessageBuffer + MESSAGE_CAPACITY;
     }
-    if (setError(NWC24OpenLib((NWC24Work*)mLibraryWork), ERROR_OPEN)) {
+    if (setError(NWC24OpenLib(mLibraryWork), ERROR_OPEN)) {
         dHeap::netWc24Heap_p->free(mMessageBuffer);
         mMessageBuffer = NULL;
         dHeap::netWc24Heap_p->free(mLibraryWork);
@@ -366,8 +296,9 @@ BOOL dNetWc24_c::canDownload() {
 }
 
 // 800E98C0
-BOOL dNetWc24_c::readFriend(u32 idx, FriendInfo_c *info) {
-    NWC24Err error = NWC24IsFriendInfoThere(idx);
+BOOL dNetWc24_c::readFriend(u32 idx, NWC24FriendInfo *info) {
+    // TRUE, or an error
+    NWC24Err error = (NWC24Err)NWC24IsFriendInfoThere(idx);
     if (error != 1) {
         setError(error, ERROR_DOWNLOAD);
         return FALSE;
@@ -378,31 +309,31 @@ BOOL dNetWc24_c::readFriend(u32 idx, FriendInfo_c *info) {
     if (NWC24CheckFriendInfo(info) != NWC24_OK) {
         return FALSE;
     }
-    return info->mStatus == FRIEND_CONFIRMED;
+    return info->attr.status == NWC24_FRIENDSTATUS_CONFIRMED;
 }
 // 800E997C
 BOOL dNetWc24_c::getFriendKey(u32 idx, u64 *key) {
-    FriendInfo_c info ALIGN(32);
+    NWC24FriendInfo info ALIGN(32);
     if (readFriend(idx, &info) == FALSE) {
         return FALSE;
     }
-    if (info.mType != FRIEND_WII) {
+    if (info.attr.type != NWC24_FRIENDTYPE_WII) {
         return FALSE;
     }
-    *key = info.mAddr.mKey;
+    *key = info.addr.wiiId;
     return TRUE;
 }
 // 800E99F4
 u32 dNetWc24_c::getFriends(dNetWc24Friend_c *friends, u32 max) {
     u32 count ALIGN(32);
-    FriendInfo_c info ALIGN(32);
+    NWC24FriendInfo info ALIGN(32);
     int num = 0;
     if (!setError(NWC24GetNumFriendInfos(&count), ERROR_DOWNLOAD)) {
         for (u32 i = 0; i < count; i++) {
             if (readFriend(i, &info)) {
                 friends[num].mIdx = i;
-                friends[num].mType = info.mType;
-                memcpy(friends[num].mName, info.mName, sizeof(info.mName));
+                friends[num].mType = info.attr.type;
+                memcpy(friends[num].mName, info.attr.name, sizeof(info.attr.name));
                 num++;
                 if (num >= max) {
                     break;
@@ -468,7 +399,7 @@ BOOL dNetWc24_c::sendMessage(const u64 *key, u32 size, int profileId) {
 // 800E9D34
 BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
     u64 key;
-    FriendInfo_c info ALIGN(32);
+    NWC24FriendInfo info ALIGN(32);
     u32 type;
     NWC24MsgObj msg;
     wchar_t subject[MAX_SUBJECT_LENGTH];
@@ -476,17 +407,17 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
         if (readFriend(req->mFriend, &info) == FALSE) {
             return FALSE;
         }
-        type = info.mType;
-        if (type == FRIEND_WII) {
-            key = info.mAddr.mKey;
+        type = info.attr.type;
+        if (type == NWC24_FRIENDTYPE_WII) {
+            key = info.addr.wiiId;
         }
     } else {
-        type = FRIEND_WII;
+        type = NWC24_FRIENDTYPE_WII;
         if (NWC24GetMyUserId(&key) != NWC24_OK) {
             return FALSE;
         }
     }
-    if (type == FRIEND_WII) {
+    if (type == NWC24_FRIENDTYPE_WII) {
         if (NWC24InitMsgObj(&msg, NWC24_MSGTYPE_RVL_MENU) != NWC24_OK) {
             return FALSE;
         }
@@ -506,7 +437,7 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
                 subject[i] = ((const wchar_t *)req->mData[0])[i];
             }
             subject[length] = 0;
-            if (NWC24SetMsgAltName(&msg, subject, length + 1) != NWC24_OK) {
+            if (NWC24SetMsgAltName(&msg, (const u16 *)subject, length + 1) != NWC24_OK) {
                 return FALSE;
             }
         } else {
@@ -529,13 +460,14 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
         if (NWC24InitMsgObj(&msg, NWC24_MSGTYPE_PUBLIC) != NWC24_OK) {
             return FALSE;
         }
-        if (NWC24SetMsgToStr(&msg, info.mAddr.mAddress,
-                        strlen(info.mAddr.mAddress)) != NWC24_OK) {
+        if (NWC24SetMsgToStr(&msg, info.addr.mailAddr,
+                        strlen(info.addr.mailAddr)) != NWC24_OK) {
             return FALSE;
         }
-        if (NWC24SetMsgSubjectAndTextPublic(&msg, (const wchar_t *)req->mData[0], req->mSize[0] / 2,
-                        (const wchar_t *)req->mData[1], req->mSize[1] / 2, WC24_CONSOLE_REGION,
-                        0, mMessageBuffer, MESSAGE_CAPACITY) != NWC24_OK) {
+        if (NWC24SetMsgSubjectAndTextPublic(&msg, (const u16 *)req->mData[0], req->mSize[0] / 2,
+                        (const u16 *)req->mData[1], req->mSize[1] / 2,
+                        (NWC24EncodingRegion)WC24_CONSOLE_REGION, 0, mMessageBuffer,
+                        MESSAGE_CAPACITY) != NWC24_OK) {
             return FALSE;
         }
         if (req->mSize[3] != 0 && req->mData[3] != NULL &&
@@ -553,7 +485,7 @@ BOOL dNetWc24_c::sendBoardMessage(const dPostRequest_c *req) {
 // 800EA0DC
 void dNetWc24_c::receiveMessages(ReceiveCallback callback) {
     NWC24MsgObj msg;
-    BOOL found, more;
+    u32 found, more;
     u32 attachmentCount;
     NWC24MsgType type;
     NWC24MIMEType mime;
@@ -564,7 +496,7 @@ void dNetWc24_c::receiveMessages(ReceiveCallback callback) {
     if (NWC24InitSearchConds() != NWC24_OK) {
         return;
     }
-    if (NWC24SetSearchCondMsgBox(1) != NWC24_OK) {
+    if (NWC24SetSearchCondMsgBox(NWC24_MBOX_TYPE_RECV) != NWC24_OK) {
         return;
     }
     int remaining = MAX_RECEIVE_MESSAGES;
@@ -598,7 +530,7 @@ void dNetWc24_c::receiveMessages(ReceiveCallback callback) {
             }
             if (remove) {
                 NWC24GetMsgId(&msg, &id);
-                NWC24DeleteMsg(1, id);
+                NWC24DeleteMsg(NWC24_MBOX_TYPE_RECV, id);
             }
         }
     } while (more && remaining > 0);
@@ -647,11 +579,11 @@ u32 dNetWc24_c::makeMessage(const void *data, u32 size, const void *data2,
     authKey[18] = 0xDA;
     authKey[19] = 0x72;
     u8 digest[AUTH_DIGEST_SIZE];
-    u8 authWork[AUTH_WORK_SIZE];
+    NETHMACContext authWork;
     u8 *cryptBuffer = getCryptBuffer();
-    NETHMACInit(authWork, NETGetSHA1Interface(), authKey, sizeof(authKey));
-    NETHMACUpdate(authWork, cryptBuffer, size);
-    NETHMACGetDigest(authWork, digest);
+    NETHMACInit(&authWork, NETGetSHA1Interface(), authKey, sizeof(authKey));
+    NETHMACUpdate(&authWork, cryptBuffer, size);
+    NETHMACGetDigest(&authWork, digest);
     memcpy(mCryptBuffer + size, &authNonce, 4);
     memcpy(mCryptBuffer + size + 4, digest, sizeof(digest));
     float iv[CIPHER_IV_WORDS];
@@ -667,9 +599,9 @@ u32 dNetWc24_c::makeMessage(const void *data, u32 size, const void *data2,
     cryptKey[14] = 0x71;
     cryptKey[15] = 0x71;
     u8 cryptWork[CIPHER_WORK_SIZE];
-    NETAESCreate(cryptWork, cryptKey, sizeof(cryptKey), iv);
-    NETAESEncrypt(cryptWork, mMessageBuffer, mCryptBuffer, encryptedSize);
-    NETAESDelete(cryptWork);
+    NETAESCreate((NETAESContext *)cryptWork, cryptKey, sizeof(cryptKey), iv);
+    NETAESEncrypt((NETAESContext *)cryptWork, mMessageBuffer, mCryptBuffer, encryptedSize);
+    NETAESDelete((NETAESContext *)cryptWork);
     memcpy(mMessageBuffer + encryptedSize, iv, sizeof(iv));
     memcpy(mMessageBuffer + encryptedSize + sizeof(iv), &cryptNonce, 4);
     return encryptedSize + CIPHER_TRAILER_SIZE;
@@ -682,7 +614,7 @@ BOOL dNetWc24_c::decodeMessage(const u64 *key, const void *data, u32 size) {
     u8 cryptKey[CIPHER_KEY_SIZE];
     u8 cryptWork[CIPHER_WORK_SIZE];
     u8 authKey[AUTH_KEY_SIZE];
-    u8 authWork[AUTH_WORK_SIZE];
+    NETHMACContext authWork;
     u8 digest[AUTH_DIGEST_SIZE];
     memcpy(cryptKey, bytes + encryptedSize + 0x10, 4);
     memcpy(cryptKey + 4, key, 8);
@@ -690,14 +622,14 @@ BOOL dNetWc24_c::decodeMessage(const u64 *key, const void *data, u32 size) {
     cryptKey[13] = 0x71;
     cryptKey[14] = 0x71;
     cryptKey[15] = 0x71;
-    if (NETAESCreate(cryptWork, cryptKey, sizeof(cryptKey),
+    if (NETAESCreate((NETAESContext *)cryptWork, cryptKey, sizeof(cryptKey),
                     bytes + encryptedSize) == FALSE) {
         return FALSE;
     }
-    if (NETAESDecrypt(cryptWork, mMessageBuffer, data, encryptedSize) == FALSE) {
+    if (NETAESDecrypt((NETAESContext *)cryptWork, mMessageBuffer, data, encryptedSize) == FALSE) {
         return FALSE;
     }
-    NETAESDelete(cryptWork);
+    NETAESDelete((NETAESContext *)cryptWork);
     memcpy(authKey, key, 8);
     memcpy(authKey + 8, encryptedSize - AUTH_TRAILER_SIZE + mMessageBuffer, 4);
     authKey[12] = 0x45;
@@ -709,10 +641,10 @@ BOOL dNetWc24_c::decodeMessage(const u64 *key, const void *data, u32 size) {
     authKey[18] = 0xDA;
     authKey[19] = 0x72;
     u8 *message = getMessageBuffer();
-    NETHMACInit(authWork, NETGetSHA1Interface(), authKey, sizeof(authKey));
+    NETHMACInit(&authWork, NETGetSHA1Interface(), authKey, sizeof(authKey));
     u32 authenticatedSize = encryptedSize - AUTH_TRAILER_SIZE;
-    NETHMACUpdate(authWork, message, authenticatedSize);
-    NETHMACGetDigest(authWork, digest);
+    NETHMACUpdate(&authWork, message, authenticatedSize);
+    NETHMACGetDigest(&authWork, digest);
     Message_c *msg = (Message_c *)mMessageBuffer;
     if (memcmp(digest, encryptedSize - 0x14 + (u8 *)msg, sizeof(digest)) != 0) {
         return FALSE;
@@ -753,7 +685,7 @@ BOOL dNetWc24_c::registerFriendRec(const u64 *key, int profileId,
     rec.mKey = *key;
     rec.mProfileId = profileId;
     rec.mGameCode = gameCode;
-    if (NWC24AddSecretFriendInfo(&rec) == NWC24_OK) {
+    if (NWC24AddSecretFriendInfo((const NWC24SecretFriendInfo *)&rec) == NWC24_OK) {
         return TRUE;
     }
     return FALSE;
@@ -766,10 +698,10 @@ void dNetWc24_c::cleanFriendRecs(FriendRecCallback keep) {
         return;
     }
     for (u32 i = 0; i < count; i++) {
-        if (NWC24ReadSecretFriendInfo(&info, i) == NWC24_OK && keep(&info.mRec) == FALSE) {
+        if (NWC24ReadSecretFriendInfo(&info.mInfo, i) == NWC24_OK && keep(&info.mRec) == FALSE) {
             // The release build has no additional action for either removal
             // result.
-            switch (NWC24DeleteSecretFriendInfo(&info)) {
+            switch (NWC24DeleteSecretFriendInfo(&info.mInfo)) {
             case NWC24_OK:
                 break;
             default:
@@ -802,7 +734,7 @@ BOOL dNetWc24_c::prepareTask(int task) {
 // 800EA9F0
 BOOL dNetWc24_c::configureTask(int task) {
     NWC24DlTask *entry = getTask(task);
-    if (setError(NWC24SetDlFlags(entry, DOWNLOAD_PRIORITY), ERROR_DOWNLOAD)) {
+    if (setError(NWC24SetDlFlags(entry, DOWNLOAD_FLAGS), ERROR_DOWNLOAD)) {
         return FALSE;
     }
     if (setError(NWC24SetDlCount(entry, sDownloadCounts[task]), ERROR_DOWNLOAD)) {
@@ -815,7 +747,7 @@ BOOL dNetWc24_c::configureTask(int task) {
                  ERROR_DOWNLOAD)) {
         return FALSE;
     }
-    if (setError(NWC24SetDlPriority(entry, sDownloadFlags[task]), ERROR_DOWNLOAD)) {
+    if (setError(NWC24SetDlPriority(entry, sDownloadPriorities[task]), ERROR_DOWNLOAD)) {
         return FALSE;
     }
     if (setError(NWC24SetDlFilename(entry, sDownloadNames[task]), ERROR_DOWNLOAD)) {
@@ -871,7 +803,7 @@ BOOL dNetWc24_c::deleteTasks() {
     char path[0x40];
     u8 type;
     if (NWC24GetDlVfPath(path, sizeof(path)) == NWC24_OK &&
-        VFMountDriveNANDFlash("C", path) == VF_OK) {
+        VFMountDriveNANDFlash("C", path) == VF_ERR_SUCCESS) {
         VFUnmountDrive("C");
         mNandResult = NANDDelete(path);
         if (mNandResult != NAND_RESULT_OK) {
@@ -897,7 +829,7 @@ int dNetWc24_c::readDownload(int task, void *data, u32 capacity, u32 *size) {
     NWC24GetDlVfPath(path, sizeof(path));
     error = VFMountDriveNANDFlash("C", path);
     BOOL missing;
-    if (error == VF_OK) {
+    if (error == VF_ERR_SUCCESS) {
         missing = readTaskFile(&mTasks[task], data, capacity, size, &error);
         VFUnmountDrive("C");
     } else {

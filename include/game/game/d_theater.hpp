@@ -17,9 +17,9 @@ class dRandom_c;
 
 namespace dTheater {
 
-// Program flags (8047B130, in another TU; also read by fn_8016CD8C for d_a_npc_sp_sisyoNP):
+// Program flags (8047B130, d_theater_common.cpp; also read by fn_8016CD8C for d_a_npc_sp_sisyoNP):
 // nonzero for Dr. Shrunk's programs, 0 for Frillard's.
-extern "C" const u8 lbl_8047B130[];
+extern "C" const u8 lbl_8047B130[THEATER_PROGRAM_NUM];
 
 // Dr. Shrunk's programs (d_theater.cpp; also used by d_theater_common).
 class dSearchProgramSisyo_c : public dSearchCand_c<THEATER_PROGRAM_NUM> {

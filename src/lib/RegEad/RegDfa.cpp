@@ -608,13 +608,15 @@ bool RegDfa::load(const void *data) {
     return true;
 }
 
-// 801E6724..: weak. RegNfa's getters are only used here; defined after their
-// callers, they are emitted at this point instead of next to them.
-inline const RegNfaStateArray &RegNfa::getStates() const {
+// RegNfa's getters are only used here; defined after their callers, they are
+// emitted at this point instead of next to them.
+// 801E6724
+const RegNfaStateArray &RegNfa::getStates() const {
     return mStates;
 }
 
-inline int RegNfa::getAcceptState() const {
+// 801E672C
+int RegNfa::getAcceptState() const {
     return mAccept;
 }
 

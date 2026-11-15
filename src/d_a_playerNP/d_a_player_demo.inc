@@ -926,7 +926,7 @@ void dAcPlayer_c::checkNetInsect() {
     if (dObjc::ins_c::check(&start, &end, radius, &hit) && hit != 0) {
         mInsectLink.set((void *)hit);
         if (mInsectLink.mpInsect != NULL &&
-            ((dInsectFieldActor_c *)mInsectLink.mpInsect)->mType == 0xC) {
+            static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->getInsectType() == 0xC) {
             dBgm::Event_c *event = &dBgm::l_mgr.mEvent;
             if (event != NULL) {
                 event->stop14();
@@ -1023,7 +1023,7 @@ void dAcPlayer_c::stepGetInsectMsg() {
             attachDemoActor(this);
             int kind = 0;
             if (mInsectLink.mpInsect != NULL) {
-                kind = ((dInsectFieldActor_c *)mInsectLink.mpInsect)->mType;
+                kind = static_cast<dInsFldBase_c *>(mInsectLink.mpInsect)->getInsectType();
             }
             setMessageLabel("sys_MESS/SYS_Get_bug");
             setMessageCode(kind + 1);

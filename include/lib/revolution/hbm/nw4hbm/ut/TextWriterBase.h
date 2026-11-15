@@ -16,7 +16,7 @@
 namespace nw4hbm {
 namespace ut {
 
-struct Rect;
+class Rect;
 template <typename> class TagProcessorBase;
 
 template <typename T> class TextWriterBase : public CharWriter {

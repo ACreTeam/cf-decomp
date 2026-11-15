@@ -7,7 +7,7 @@
 namespace nw4r {
 namespace snd {
 class Sound3DManager;
-class Sound3DParam;
+struct Sound3DParam;
 
 class Sound3DCalculator {
   public:

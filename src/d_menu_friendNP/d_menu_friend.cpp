@@ -502,7 +502,7 @@ void dMenuFriend_c::setEntryFromNetPlayer(int member) {
     dPrivateData_c *player = dPlayerMgr::Mgr_c::getNetPlayer(member);
     sInstance->mFriend.clear();
     dMenuFriend_c *self = sInstance;
-    self->mFriend.mKey = dNet::getMemberTime(member);
+    self->mFriend.mKey = dNet::getWiiNumber(member);
     self->mFriend.mPID = player->mPID;
     memcpy(self->mFriend.mMessage, player->mFriends.mName,
            sizeof(self->mFriend.mMessage));

@@ -33,6 +33,11 @@
 // 8074E6E0
 dSaveData_c *dSaveData_c::sSaveData;
 
+// 8074B010
+const char *lbl_8074B010 = "rvforest.dat";
+// 80750AD0
+const int lbl_80750AD0 = SAVE_DATA_SIZE;
+
 // 8010DC04
 u32 dSaveData_c::getDLDataOffset() {
     return offsetof(dSaveData_c, mDLItems);

@@ -14,12 +14,12 @@
 #include <game/game/d_msg_def.hpp>
 
 class dDemoActor_c;
-class dLandID_c;
+struct dLandID_c;
 class dPersonalID_c;
-class dPlayerID_c;
+struct dPlayerID_c;
 class dAnmPersonalID_c;
 namespace dItem {
-class Item;
+struct Item;
 }
 namespace dScript {
 class Word_c;

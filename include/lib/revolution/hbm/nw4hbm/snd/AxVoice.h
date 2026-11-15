@@ -113,7 +113,7 @@ private:
     /* 0x0E */ u16 mVolume;
 };
 
-class WaveData;
+struct WaveData;
 class AxVoice : public DisposeCallback {
     friend class AxManager;
 

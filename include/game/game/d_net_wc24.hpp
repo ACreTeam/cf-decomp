@@ -4,9 +4,7 @@
 // WiiConnect24 library, message transport and background downloads. Names inferred.
 
 #include <types.h>
-#include <revolution/NWC24/NWC24Types.h>
-#include <revolution/NWC24/NWC24Download.h>
-#include <revolution/NWC24/NWC24MsgObj.h>
+#include <revolution/nwc24.h>
 
 struct dPostRequest_c;
 struct dWifiMsgHeader_c;
@@ -15,8 +13,6 @@ namespace dNetWc24 {
 
 enum ErrorKind_e { ERROR_OPEN, ERROR_CHECK, ERROR_SEND, ERROR_DOWNLOAD, ERROR_NONE };
 enum TaskState_e { TASK_REGISTERED, TASK_NEW, TASK_UNCHECKED };
-enum FriendType_e { FRIEND_NONE, FRIEND_WII, FRIEND_EMAIL };
-enum FriendStatus_e { FRIEND_STATUS_NONE, FRIEND_PENDING, FRIEND_CONFIRMED, FRIEND_DECLINED };
 enum DownloadTask_e { TASK_DISTRIBUTION, TASK_NGWORD };
 enum ReadResult_e { READ_ERROR = -1, READ_DONE, READ_MISSING };
 enum {
@@ -25,7 +21,7 @@ enum {
     MESSAGE_VERSION = 2,
     MESSAGE_REGION_MASK = 0xFFFFFF00,
     MESSAGE_GAME_CODE = 0x52555500,
-    DOWNLOAD_PRIORITY = 10,
+    DOWNLOAD_FLAGS = 10, // NWC24SetDlFlags
     NAND_DELETE_ERROR = 5,
     HEAP_SIZE = 0x5C800,
     TASK_COUNT = 2,
@@ -61,7 +57,7 @@ struct dNetWc24Data_c {
 // One entry of dNetWc24_c::getFriends (0x20).
 struct dNetWc24Friend_c {
     /* 0x00 */ u32 mIdx;      // the NWC24 friend list index (= the dSaveWc24_c roster index)
-    /* 0x04 */ u32 mType;     // 1: a friend registered with a key
+    /* 0x04 */ u32 mType;     // NWC24FriendType
     /* 0x08 */ wchar_t mName[0xC]; // the friend's name
 }; // size 0x20
 
@@ -130,7 +126,7 @@ public:
     u8 *getMessageBuffer() { return mMessageBuffer; }
     u8 *getCryptBuffer() { return mCryptBuffer; }
 
-    BOOL readFriend(u32 idx, struct FriendInfo_c *info); // 800E98C0
+    BOOL readFriend(u32 idx, NWC24FriendInfo *info); // 800E98C0
     BOOL commitMessage(NWC24MsgObj *msg, u32 size, int profileId); // 800E9AC8
     BOOL decodeMessage(const u64 *key, const void *data, u32 size); // 800EA584
     BOOL setError(NWC24Err error, int kind); // 800EA760

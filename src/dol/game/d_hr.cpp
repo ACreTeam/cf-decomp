@@ -102,6 +102,10 @@ void dHR::updateRate(u32 home) {
     if (home == 4) {
         home = dSaveData_c::getRaw()->mHomes.findCurrentPlayer();
     }
+    // BUG: findCurrentPlayer is -1 while the current player has no house (e.g. when Rover's scene
+    // ends during player creation), so this indexes l_rates[0xFFFFFFFF] and clear() zeroes the 4
+    // bytes before l_rates (getHomePlayerRaw(-1) is NULL, so the else branch zeroes them again).
+    // Harmless on the Wii, where the index wraps; with 64-bit pointers it is 16 GiB out of range.
     dHR::rate_c *rate = &l_rates[home];
     rate->clear();
     if (dSaveData_c::getRaw()->mHomes.getHomePlayerRaw(home) != NULL) {

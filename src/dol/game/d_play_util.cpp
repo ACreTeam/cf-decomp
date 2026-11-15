@@ -6,6 +6,7 @@
 #include <game/game/d_scene.hpp>
 #include <game/game/d_sky.hpp>
 #include <game/game/d_fish_field.hpp>
+#include <game/game/d_insect_field.hpp>
 #include <game/game/d_weather.hpp>
 #include <game/cLib/c_lib.hpp>
 #include <revolution/os/OSTime.h>
@@ -13,7 +14,7 @@
 
 dSky_c *g_sky; // 8074E830: the sky actor
 u32 lbl_8074E834; // 8074E834
-dPlayActorMng_c *g_playActorMng; // 8074E838: the actor manager (findActorIf, ...)
+dInsectField_c *g_playActorMng; // 8074E838: the insect field (findAnyInsect, ...)
 u8 g_insectRespawn; // 8074E83C
 dFishField_c *g_fishField; // 8074E840: the fish field (the shared records' host)
 u8 g_fishRespawn; // 8074E844: the fish field respawns on its next initSpawn
@@ -143,9 +144,9 @@ int getWeatherPhaseB() {
 }
 
 // 801614F0
-BOOL dPlayActorMng_c::findActorIf(dPlayActorFunc func, void *arg) {
-    dPlayActor_c *actor;
-    dPlayActor_c **link = &mActors;
+BOOL findAnyInsect(dInsectField_c *mng, dInsFldBaseFunc func, void *arg) {
+    dInsFldBase_c *actor;
+    dInsFldBase_c **link = &mng->mActive;
     while ((actor = *link) != NULL) {
         if (func(actor, arg)) {
             return TRUE;
@@ -156,10 +157,10 @@ BOOL dPlayActorMng_c::findActorIf(dPlayActorFunc func, void *arg) {
 }
 
 // 8016156C
-BOOL dPlayActorMng_c::forEachActiveActor(dPlayActorFunc func, void *arg) {
-    dPlayActor_c *actor;
+BOOL findActiveInsect(dInsectField_c *mng, dInsFldBaseFunc func, void *arg) {
+    dInsFldBase_c *actor;
     BOOL found = FALSE;
-    dPlayActor_c **link = &mActors;
+    dInsFldBase_c **link = &mng->mActive;
     while ((actor = *link) != NULL) {
         if (actor->isActive() && func(actor, arg)) {
             found = TRUE;
@@ -170,10 +171,10 @@ BOOL dPlayActorMng_c::forEachActiveActor(dPlayActorFunc func, void *arg) {
 }
 
 // 8016160C
-BOOL dPlayActorMng_c::findPlayerIf(dPlayActorFunc func, void *arg) {
-    for (int i = 0; i < PLAY_PLAYER_NUM; i++) {
-        dPlayActor_c *player = mPlayers[i];
-        if (player != NULL && !player->m23B && func(player, arg)) {
+BOOL findActiveFish(dFishField_c *mng, dFishFldShadowFunc func, void *arg) {
+    for (int i = 0; i < FISH_FIELD_FISH_NUM; i++) {
+        dFishFldShadow_c *player = mng->mFish[i];
+        if (player != NULL && !player->mHeld && func(player, arg)) {
             return TRUE;
         }
     }

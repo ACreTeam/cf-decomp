@@ -13,7 +13,7 @@
 //
 // dInsectField_c (fBase_c, 0x7D0)    the manager; its instance is the DOL's
 // g_playActorMng (the DOL
-//                                    sees it as dPlayActorMng_c,
+//                                    sees it as dInsectField_c,
 //                                    d_play_util.hpp)
 //   dInsFldBank_c [15]               the insect .brres files
 //   (/Insect/<model>.brres) dInsFldBase_c                    one insect: model
@@ -54,7 +54,6 @@
 #include <lib/egg/core/eggHeap.h>
 #include <lib/egg/core/eggFrmHeap.h>
 
-class dPlayActorMng_c;
 class dSearchCandXZCore_c;
 class dInsFldBase_c;
 class dInsectField_c;
@@ -79,17 +78,6 @@ void removeNpcLink(void *insect, void *link); // .text 65B0
 f32 getObjcRadiusAdd(); // .text 5B1C: 4.0 (the player's net reach is shortened
                         // by it)
 } // namespace dInsectField
-
-// The field insect as other modules read it (= dInsFldBase_c; switch the users
-// over later).
-class dInsectFieldActor_c {
-  public:
-    u8 _000[0x1A0];
-    /* 0x1A0 */ mVec3_c
-        mPos; // the player looks at it while it flies off (STATE_SHOW_CATCH_AT)
-    u8 _1AC[0x2F0 - 0x1AC];
-    /* 0x2F0 */ int mType; // dInsectType_e (0xC: the bees)
-};
 
 // A node of an insect's link list (someone who refers to the insect; unlinked
 // on deletion). Same layout as dANpcOut::insectLink_s (d_a_npc_out.hpp).
@@ -292,11 +280,11 @@ struct catchMsg_c {
     /* 0x3 */ u8 b3;
 }; // size 0x4
 
-// dPlayActorMng_c::findActorIf callbacks on the insects (arg: a catchMsg_c).
-BOOL tryCatchCb(dPlayActor_c *actor, void *arg);   // 0x52F8
-BOOL resetCatchCb(dPlayActor_c *actor, void *arg); // 0x5340: CATCH_STATE_NONE
-BOOL caughtCb(dPlayActor_c *actor, void *arg);     // 0x536C: CATCH_STATE_CAUGHT
-BOOL missedCb(dPlayActor_c *actor, void *arg);     // 0x5398: CATCH_STATE_MISSED
+// findAnyInsect (d_play_util) callbacks on the insects (arg: a catchMsg_c).
+BOOL tryCatchCb(dInsFldBase_c *actor, void *arg);   // 0x52F8
+BOOL resetCatchCb(dInsFldBase_c *actor, void *arg); // 0x5340: CATCH_STATE_NONE
+BOOL caughtCb(dInsFldBase_c *actor, void *arg);     // 0x536C: CATCH_STATE_CAUGHT
+BOOL missedCb(dInsFldBase_c *actor, void *arg);     // 0x5398: CATCH_STATE_MISSED
 // 0x53C4: the NET_PACKET_INSECT_FIELD handler (lbl_8074E510).
 void recvCatchMsg(int member, const u8 *data, u32 size, u32 arg);
 
@@ -389,7 +377,7 @@ class dInsFldBase_c {
     virtual int execute();                              // 0x6244
     virtual int draw();                                 // 0x6378
     virtual BOOL doDelete();      // 0x6470: FALSE while a hold proc runs
-    virtual BOOL isActive();      // 0x65E4: TRUE (dPlayActor_c::isActive)
+    virtual BOOL isActive();      // 0x65E4: TRUE (dInsFldBase_c::isActive)
     virtual void onBecomeOwner(); // 0x65EC: this console now runs the scene
     virtual void onHold();        // 0x66E8: first frame held by a player
     virtual void initParam();     // 0x6D98: from getParam()

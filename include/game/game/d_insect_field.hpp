@@ -78,7 +78,7 @@ class dInsectField_c : public fBase_c {
     BOOL acceptCatch(int member, dInsectField::catchMsg_c *msg); // 0x525C
 
     // The manager instance: the DOL keeps it in g_playActorMng, typed as its
-    // own view of the manager (dPlayActorMng_c, d_play_util.hpp).
+    // own view of the manager (dInsectField_c, d_play_util.hpp).
     static dInsectField_c *getInstance() {
         return reinterpret_cast<dInsectField_c *>(g_playActorMng);
     }

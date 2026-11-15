@@ -8,7 +8,7 @@
 #include <game/mLib/m_vec.hpp>
 
 class dFdBase_c;
-class dPlayActor_c;
+class dInsFldBase_c;
 
 namespace dANpcOut {
 // Inferred names. The route helper has no RTTI; the actor's RTTI is
@@ -639,9 +639,9 @@ class dAcNpcOut_c : public dAcNpcNml_c {
     BOOL canWatchFireworks();                                       // 3640
     BOOL isPlayerPushing();                                         // 2C08
     static BOOL isTurnAngleWide(const mAng *angle);                 // 3858
-    static BOOL findInsectCallback(dPlayActor_c *actor, void *arg); // 397C
+    static BOOL findInsectCallback(dInsFldBase_c *actor, void *arg); // 397C
     BOOL findInsect();                                              // 3A5C
-    static BOOL findFishCallback(dPlayActor_c *actor, void *arg);   // 3B44
+    static BOOL findFishCallback(dFishFldShadow_c *actor, void *arg);   // 3B44
     BOOL findFish();                                                // 3C24
     /* 0x219A */ u8 _219A[2];
     /* 0x219C */ int mMode;

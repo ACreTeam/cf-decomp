@@ -1215,7 +1215,7 @@ struct dNet_c {
     /* 0x628 */ s32 mErrorReported;
     /* 0x62C */ u8 mSendCount[NET_MEMBER_MAX];
     /* 0x630 */ u8 mRecvCount[NET_MEMBER_MAX];
-    /* 0x638 */ s64 mTime[NET_MEMBER_MAX]; // getMemberTime / setMemberTime
+    /* 0x638 */ s64 mWiiNumber[NET_MEMBER_MAX]; // each member's console Wii number (dNetWc24_c::mUserId); getWiiNumber / setWiiNumber
     /* 0x658 */ u8 mJoinStarted;
 }; // size 0x660
 
@@ -1589,10 +1589,10 @@ BOOL isDisconnectReady();
 void sendDisconnectGo();
 // 800DDD50: mErrorReported, 0 while resetting; d_wifi_err
 u32 getNetReportedError();
-// 800DDDAC: mTime[member]; d_sv_mgr findFriend, friend menus, gatekeeper
-s64 getMemberTime(int member);
-// 800DDDC8: mTime[member] unless resetting
-void setMemberTime(int member, s64 time);
+// 800DDDAC: mWiiNumber[member]; d_sv_mgr findFriend, friend menus, gatekeeper
+s64 getWiiNumber(int member);
+// 800DDDC8: mWiiNumber[member] unless resetting
+void setWiiNumber(int member, s64 wiiNumber);
 // 800DDE4C: dNetRequest_c::mLeave: the post stage frees the request lock (host
 // mBusy.off(0) / NET_PACKET_JOIN_RELEASE); d_sv_mgr, gatekeeper
 void releaseRequest();

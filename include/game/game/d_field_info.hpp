@@ -45,7 +45,7 @@ class dFdUnitFlags_c;
 #define mFI_BK_WORLDSIZE_X_F ((f32)mFI_BK_WORLDSIZE_X)
 #define mFI_BK_WORLDSIZE_Z_F ((f32)mFI_BK_WORLDSIZE_Z)
 
-// The same as variables (.sdata2 80750520..80750530, owner not split yet; C linkage keeps the
+// The same as variables (.sdata2 80750520..80750530, d_field_block.cpp; C linkage keeps the
 // target names). d_field_info and d_bg read them.
 extern "C" {
 extern const f32 lbl_80750520; // 80750520: block world size in x (512)
