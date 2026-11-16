@@ -4,8 +4,8 @@
 Run it from this repository (the directory containing `configure.py`):
 
 ```powershell
-& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' tools/prepare_config.py
-& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' tools/prepare_config.py --check
+python tools/prepare_config.py
+python tools/prepare_config.py --check
 ```
 
 The helper uses PyYAML. If needed, install `tools/requirements-config.txt` with
@@ -249,7 +249,7 @@ always validate relocation targets and the final checksum before linking a file.
 For example, after building the configured source objects:
 
 ```powershell
-& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' tools/find_candidates.py build/RUUE01_00/src/dol/cLib/c_tree.o --dol orig/RUUE01_00/sys/main.dol --symbols config/RUUE01_00/symbols.txt --r2 0x80757D40 --r13 0x807516C0
+python tools/find_candidates.py build/RUUE01_00/src/dol/cLib/c_tree.o --dol orig/RUUE01_00/sys/main.dol --symbols config/RUUE01_00/symbols.txt --r2 0x80757D40 --r13 0x807516C0
 ```
 
 The nine-object scan is saved at `build/shared-file-test/clib-scan.json`;
@@ -259,6 +259,6 @@ the passing build and empty DOL diff logs are `clib-build.log` and
 ## Helper tests
 
 ```powershell
-& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' -m unittest discover -s tools -p test_prepare_config.py -v
-& 'C:\Users\olsen\AppData\Local\Programs\Python\Python313\python.exe' -m unittest discover -s tools -p test_find_candidates.py -v
+python -m unittest discover -s tools -p test_prepare_config.py -v
+python -m unittest discover -s tools -p test_find_candidates.py -v
 ```
