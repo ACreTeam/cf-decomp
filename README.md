@@ -1,6 +1,6 @@
 # Animal Crossing: City Folk
 
-[![Build Status]][actions] [![Discord Badge]][discord]
+[![Build Status]][actions] [![Code Progress]][Progress] [![DOL Progress]][Progress] [![REL Progress]][Progress] [![Discord Badge]][discord]
 
 [<img src="https://decomp.dev/ACreTeam/cf-decomp/RUUE01_00.svg?w=512&h=256" width="512" height="256">][Progress]
 
@@ -9,6 +9,9 @@
 [Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
 [discord]: https://discord.gg/hKx3FJJgrV
 [Progress]: https://decomp.dev/ACreTeam/cf-decomp
+[Code Progress]: https://decomp.dev/ACreTeam/cf-decomp/RUUE01_00.svg?mode=shield&measure=code&label=Code
+[DOL Progress]: https://decomp.dev/ACreTeam/cf-decomp/RUUE01_00.svg?mode=shield&measure=code&category=dol&label=DOL
+[REL Progress]: https://decomp.dev/ACreTeam/cf-decomp/RUUE01_00.svg?mode=shield&measure=code&category=modules&label=REL
 
 A decompilation of Animal Crossing: City Folk for the Nintendo Wii.
 
