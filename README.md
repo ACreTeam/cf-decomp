@@ -2,10 +2,13 @@
 
 [![Build Status]][actions] [![Discord Badge]][discord]
 
+[<img src="https://decomp.dev/ACreTeam/cf-decomp/RUUE01_00.svg?w=512&h=256" width="512" height="256">][Progress]
+
 [Build Status]: https://github.com/ACreTeam/cf-decomp/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/ACreTeam/cf-decomp/actions/workflows/build.yml
 [Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
 [discord]: https://discord.gg/hKx3FJJgrV
+[Progress]: https://decomp.dev/ACreTeam/cf-decomp
 
 A decompilation of Animal Crossing: City Folk for the Nintendo Wii.
 
